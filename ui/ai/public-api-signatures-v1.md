@@ -3264,13 +3264,12 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 type GridRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-columns'?: never;
+    'data-min-column-width'?: never;
     'data-flex'?: never;
     'data-fill'?: never;
 }>;
-interface GridProps {
+interface GridCommonProps {
     children?: KerfUiContent;
-    /** Number of equal-width columns. Must be a positive safe integer. */
-    columns: number;
     /** A named UI spacing token or typed CSS length. Defaults to xs. */
     gap?: UiSpaceName | CssLength;
     /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -3287,8 +3286,17 @@ interface GridProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-/** A fixed-count grid whose columns share the available width equally. */
-declare function Grid({ children, columns, gap, flex, fill, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
+type GridProps = GridCommonProps & ({
+    /** Number of equal-width columns. Must be a positive safe integer. */
+    columns: number;
+    minColumnWidth?: never;
+} | {
+    columns?: never;
+    /** Fit equal columns of at least this width; collapse as the container narrows. */
+    minColumnWidth: CssLength;
+});
+/** Render equal tracks with a fixed count or a responsive minimum width. */
+declare function Grid({ children, columns, minColumnWidth, gap, flex, fill, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, UiSpaceName };
 ```

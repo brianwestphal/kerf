@@ -331,26 +331,37 @@ insets.
 
 ## Grid
 
-Use `Grid` from `@kerfjs/ui/grid` when a fixed positive number of columns must
-share the available width evenly. Every track is `minmax(0, 1fr)`, so a child
-with wider intrinsic content cannot make its column wider than its peers. Grid
-defaults to the `xs` gap and accepts the same finite spacing names, complete
-typed `CssLength` values, and typed flex-participation contract as Row.
+Use `Grid` from `@kerfjs/ui/grid` when equal-width columns must share the
+available width. Set a fixed positive `columns` count or a typed
+`minColumnWidth` for automatic container-width collapse. Fixed tracks use
+`minmax(0, 1fr)`; responsive tracks use `auto-fit` and cap their minimum at
+100% so a narrow container keeps one column without overflow. Grid defaults
+to the `xs` gap and accepts the same finite spacing names, complete typed
+`CssLength` values, and typed flex-participation contract as Row.
 
 ```tsx
 import { Grid } from "@kerfjs/ui/grid";
+import { px } from "@kerfjs/ui/css-values";
 
 <Grid columns={2} gap="m">
   <label>Quantity <input /></label>
   <label>Unit <input /></label>
 </Grid>;
+
+<Grid minColumnWidth={px(376)} gap="m">
+  <label>Provider <input /></label>
+  <label>Endpoint <input /></label>
+</Grid>;
 ```
 
 `columns` must be a positive safe integer; invalid counts throw instead of
-silently producing invalid CSS. Grid is layout-only and adds no ARIA grid role.
-The application owns child semantics and responsive count changes. Use
-application-owned CSS grid for intrinsic, asymmetric, spanning, auto-fit, or
-masonry tracks, and use `ResizableRegion` when people must adjust a boundary.
+silently producing invalid CSS. Import `px` from `@kerfjs/ui/css-values` for a
+pixel minimum. `columns` and `minColumnWidth` are mutually exclusive. In the
+responsive mode, the container width decides how many equal tracks fit; constrain
+the Grid's outer width when the form should have a maximum count. Grid is
+layout-only and adds no ARIA grid role. The application owns child semantics.
+Use application-owned CSS grid for intrinsic, asymmetric, spanning, or masonry
+tracks, and use `ResizableRegion` when people must adjust a boundary.
 
 ## Row and List alignment
 

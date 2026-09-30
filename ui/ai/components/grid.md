@@ -4,21 +4,22 @@
 
 `@kerfjs/ui:grid` · Kerf UI · component · Structure
 
-A fixed positive number of evenly distributed minmax columns with a typed xs gap by default and optional flex participation.
+Equal-width columns with a fixed count or a minimum-width responsive mode, typed gaps, and optional flex participation.
 
 ## When to use
 
-Arrange related siblings in equal-width columns without repeating application-owned grid-template-columns CSS.
+Arrange related siblings in equal-width columns with either a fixed count or automatic container-width collapse.
 
 - Arrange related siblings into a fixed positive number of equal-width columns.
+- Fit equal-width columns down to a typed minimum and collapse as the container narrows.
 - Prevent wider intrinsic content from making one fractional track wider than its peers.
 - Use a finite flex keyword or the flex() builder when Grid participates in a flexible parent layout.
 
 **Not when:**
 
-- Do not use Grid for intrinsic, asymmetric, spanning, auto-fit, or masonry tracks; use application-owned CSS grid.
+- Do not use Grid for intrinsic, asymmetric, spanning, or masonry tracks; use application-owned CSS grid.
 - Do not use Grid when columns need a user-operable separator; use ResizableRegion.
-- Do not expect Grid to choose responsive breakpoints or change the column count; the application owns that policy.
+- Do not combine fixed columns with minColumnWidth; choose one layout mode.
 - Do not pass raw CSS strings to gap or flex, mix their distinct grammars, or use s/xl spacing steps without a deliberate exception.
 
 **Alternatives:**
@@ -40,6 +41,7 @@ Exact prop names and types: [`@kerfjs/ui/grid`](../public-api-signatures-v1.md#k
 **Variants (configure, do not restyle):**
 
 - any positive safe-integer equal-track count
+- typed minimum column width with automatic container-width collapse
 - named none/2xs/xs/s/m/l/xl token gap
 - typed CssLength gap
 - boolean, finite-keyword, or typed CssFlex flex
@@ -48,6 +50,7 @@ Exact prop names and types: [`@kerfjs/ui/grid`](../public-api-signatures-v1.md#k
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
+- `minColumnWidth`: length grammar; raw values: forbid; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `minColumnWidth={px(376)}`
 - `gap`: length grammar; raw values: forbid; shorthands `none`, `2xs`, `xs`, `m`, `l`; exceptional (justify) `s`, `xl`; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `gap="m"`
 - `flex`: flex grammar; raw values: forbid; shorthands `none`, `auto`, `initial`; helpers `flex` — e.g. `flex`
 
@@ -59,7 +62,7 @@ Exact prop names and types: [`@kerfjs/ui/grid`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** child semantics and content; column count and responsive changes; typed gap and flex choices.
+**The app owns:** child semantics and content; fixed column count or responsive minimum width; typed gap and flex choices.
 
 No wiring helper.
 
@@ -67,12 +70,12 @@ No wiring helper.
 
 Margin: none · border: none · padding: none (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- Every track uses minmax(0, 1fr), so unequal intrinsic widths cannot break equal distribution.
+- Fixed tracks use minmax(0, 1fr); responsive tracks use auto-fit with a minimum width capped at 100%, preserving equal distribution without narrow overflow.
 
 ## Accessibility
 
 - Grid adds layout only and no grid role; children retain responsibility for native or ARIA semantics.
-- Responsive column-count changes must preserve source and focus order.
+- Responsive column-count changes preserve source and focus order.
 
 ## Styling boundary
 

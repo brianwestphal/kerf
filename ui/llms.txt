@@ -190,11 +190,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   or `foregroundColorVar()`; fill tokens such as `uiColor('success-fill-quiet')` do not
   type-check. These brands are intentionally
   not interchangeable; rows use classes/tokens/props rather than raw `style`.
-- **Use `Grid` for a fixed positive count of equal-width columns.** It uses
-  zero-minimum fractional tracks, so intrinsic content cannot make one column
-  wider than its peers. The app owns responsive count changes; use custom CSS
-  grid for asymmetric/intrinsic tracks and `ResizableRegion` for adjustable
-  boundaries. `Grid.gap` and `Grid.flex` use the same typed grammars as Row.
+- **Use `Grid` for equal-width columns.** Set a fixed positive `columns` count
+  or typed `minColumnWidth` for automatic container-width collapse, never both.
+  The app owns the outer width and child semantics; use custom CSS grid for
+  asymmetric/intrinsic tracks and `ResizableRegion` for adjustable boundaries.
+  `Grid.gap` and `Grid.flex` use the same typed grammars as Row.
 - **Give a layout root `fill`, not a frame `Pane`.** A Row, List, or Grid that
   is the sole layout root of a definite-height parent takes its full height
   with `fill` and carries safe `data-*` markers through `rootAttributes`.

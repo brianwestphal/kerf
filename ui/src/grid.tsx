@@ -11,6 +11,7 @@ import type { KerfUiContent } from './semantic-content.js';
 const gridProtectedAttributes = new Set([
   'data-component',
   'data-columns',
+  'data-min-column-width',
   'data-flex',
   'data-fill',
 ]);
@@ -19,6 +20,7 @@ type GridRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-columns'?: never;
+    'data-min-column-width'?: never;
     'data-flex'?: never;
     'data-fill'?: never;
   }
@@ -34,10 +36,8 @@ const spaceNames: readonly UiSpaceName[] = [
   'xl',
 ];
 
-export interface GridProps {
+interface GridCommonProps {
   children?: KerfUiContent;
-  /** Number of equal-width columns. Must be a positive safe integer. */
-  columns: number;
   /** A named UI spacing token or typed CSS length. Defaults to xs. */
   gap?: UiSpaceName | CssLength;
   /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -55,10 +55,25 @@ export interface GridProps {
   slot?: string;
 }
 
-/** A fixed-count grid whose columns share the available width equally. */
+export type GridProps = GridCommonProps &
+  (
+    | {
+        /** Number of equal-width columns. Must be a positive safe integer. */
+        columns: number;
+        minColumnWidth?: never;
+      }
+    | {
+        columns?: never;
+        /** Fit equal columns of at least this width; collapse as the container narrows. */
+        minColumnWidth: CssLength;
+      }
+  );
+
+/** Render equal tracks with a fixed count or a responsive minimum width. */
 export function Grid({
   children,
   columns,
+  minColumnWidth,
   gap = 'xs',
   flex = false,
   fill = false,
@@ -66,7 +81,15 @@ export function Grid({
   rootAttributes = {},
   slot,
 }: GridProps) {
-  if (!Number.isSafeInteger(columns) || columns < 1) {
+  if (minColumnWidth !== undefined && columns !== undefined) {
+    throw new RangeError(
+      'Grid columns and minColumnWidth are mutually exclusive',
+    );
+  }
+  if (
+    minColumnWidth === undefined &&
+    (columns === undefined || !Number.isSafeInteger(columns) || columns < 1)
+  ) {
     throw new RangeError('Grid columns must be a positive safe integer');
   }
 
@@ -79,7 +102,10 @@ export function Grid({
     : gap;
   const flexValue = flex === true ? '1 1 auto' : flex || undefined;
   const style = [
-    `--_kui-grid-columns:${columns}`,
+    columns === undefined ? '' : `--_kui-grid-columns:${columns}`,
+    minColumnWidth === undefined
+      ? ''
+      : `--_kui-grid-min-column-width:${minColumnWidth}`,
     `--_kui-grid-gap:${gapValue}`,
     flexValue ? `--_kui-grid-flex:${flexValue}` : '',
   ]
@@ -91,7 +117,8 @@ export function Grid({
       {...safeRootAttributes}
       class={`kui-grid ${className}`.trim()}
       data-component="grid"
-      data-columns={String(columns)}
+      data-columns={columns === undefined ? undefined : String(columns)}
+      data-min-column-width={minColumnWidth === undefined ? undefined : 'true'}
       data-flex={String(Boolean(flex))}
       data-fill={fill ? 'true' : undefined}
       style={style}

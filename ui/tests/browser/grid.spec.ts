@@ -78,3 +78,43 @@ test('Grid keeps fixed equal tracks, typed gaps, and flex participation', async 
     });
   }
 });
+
+test('Grid fits minimum-width columns and collapses at the container boundary', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=grid');
+  const responsive = page.locator(
+    '[data-demo="grid"] [data-component="grid"][data-min-column-width="true"]',
+  );
+  await expect(responsive).toHaveAttribute('data-min-column-width', 'true');
+  await expect(responsive).not.toHaveAttribute('data-columns');
+  for (const [width, count] of [
+    [768, 2],
+    [767, 1],
+    [320, 1],
+  ]) {
+    await responsive.evaluate((element, value) => {
+      (element as HTMLElement).style.width = `${value}px`;
+      (element as HTMLElement).style.flex = 'none';
+      (element as HTMLElement).style.maxWidth = 'none';
+    }, width);
+    const geometry = await responsive.evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return {
+        width: element.getBoundingClientRect().width,
+        columns: style.gridTemplateColumns.split(' ').length,
+        gap: style.columnGap,
+        scrollWidth: element.scrollWidth,
+        clientWidth: element.clientWidth,
+      };
+    });
+    expect(geometry.width).toBe(width);
+    expect(geometry.columns).toBe(count);
+    expect(geometry.gap).toBe('16px');
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth);
+    await responsive.screenshot({
+      path: testInfo.outputPath(`responsive-grid-${width}.png`),
+    });
+  }
+});

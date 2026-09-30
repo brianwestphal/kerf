@@ -107,11 +107,11 @@ Use `Spacer` for one intentional empty dimension rather than repeated sibling
 rhythm. Fixed spacers do not shrink; `flex` consumes remaining space along a
 flex parent's main axis. The component is decorative and accepts no children.
 
-Use `Grid` from `@kerfjs/ui/grid` for a fixed positive number of equal-width
-columns. Its zero-minimum fractional tracks stay equal despite intrinsic child
-widths, and its `gap`/`flex` values use the shared typed contracts. The app owns
-responsive count changes; use application CSS grid for asymmetric or intrinsic
-tracks and `ResizableRegion` for adjustable boundaries.
+Use `Grid` from `@kerfjs/ui/grid` for equal-width columns: pass fixed `columns`
+or a typed `minColumnWidth` such as `px(376)` for automatic container-width
+collapse, never both. Its `gap`/`flex` values use the shared typed contracts.
+The app owns the outer width and child semantics; use application CSS grid for
+asymmetric or intrinsic tracks and `ResizableRegion` for adjustable boundaries.
 
 Keep runtime CSS grammars property-specific: use `flex()` for Row/Grid/List flex,
 length builders for Skeleton dimensions, and a foreground color for choice

@@ -314,7 +314,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Arrange related siblings in equal-width columns without repeating application-owned grid-template-columns CSS.",
+    "description": "Arrange related siblings in equal-width columns with either a fixed count or automatic container-width collapse.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/grid.tsx",
     "componentSource": "ui/src/grid.tsx",

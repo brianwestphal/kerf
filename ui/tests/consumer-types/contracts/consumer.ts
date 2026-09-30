@@ -160,6 +160,11 @@ Row({ gap: spacingName });
 Row({ gap: responsiveGap });
 Grid({ columns: 3, gap: spacingName });
 Grid({ columns: 3, gap: responsiveGap });
+Grid({ minColumnWidth: px(376), gap: 'm' });
+// @ts-expect-error Grid modes cannot combine a fixed count and minimum width.
+Grid({ columns: 2, minColumnWidth: px(376) });
+// @ts-expect-error Responsive Grid requires a typed CSS length.
+Grid({ minColumnWidth: '376px' });
 Spacer({ width: spacingName, height: responsiveGap, flex: true });
 void genericCssValue;
 // @ts-expect-error KUI-T012 an incomplete expression must be wrapped in calc().

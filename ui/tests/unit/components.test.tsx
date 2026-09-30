@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { AppTab } from '../../src/app-tab.js';
 import { Badge } from '../../src/badge.js';
 import { Chip } from '../../src/chip.js';
-import { flex, rem, uiColor } from '../../src/css-values.js';
+import { flex, px, rem, uiColor } from '../../src/css-values.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
 import { FloatingToolbar } from '../../src/floating-toolbar.js';
@@ -660,6 +660,21 @@ describe('production UI primitives', () => {
     expect(asHtml(Grid({ columns: 1, flex: 'none' }))).toContain(
       '--_kui-grid-flex:none',
     );
+    const responsive = asHtml(
+      Grid({
+        minColumnWidth: px(376),
+        gap: 'm',
+        rootAttributes: {
+          'data-project': 'setup',
+          ...({ 'data-min-column-width': 'false' } as object),
+        },
+      }),
+    );
+    expect(responsive).toContain('data-min-column-width="true"');
+    expect(responsive).not.toContain('data-min-column-width="false"');
+    expect(responsive).not.toContain('data-columns=');
+    expect(responsive).toContain('--_kui-grid-min-column-width:376px');
+    expect(responsive).toContain('data-project="setup"');
   });
 
   it('rejects invalid Grid column counts before rendering', () => {
@@ -675,6 +690,13 @@ describe('production UI primitives', () => {
         new RangeError('Grid columns must be a positive safe integer'),
       );
     }
+    expect(() =>
+      Grid({ columns: 2, minColumnWidth: px(376) } as unknown as Parameters<
+        typeof Grid
+      >[0]),
+    ).toThrowError(
+      new RangeError('Grid columns and minColumnWidth are mutually exclusive'),
+    );
   });
 
   it('keeps inset selections explicit on nested rows and lists', () => {

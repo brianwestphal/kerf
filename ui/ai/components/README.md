@@ -34,7 +34,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Headers](./headers.md) — Page, dialog, and definition-list hierarchy.
 - [ValueTable](./value-table.md) — Key/value rows with optional icons and aligned separators.
 - [Row](./row.md) — Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full/baseline alignment instead of application-owned flex wrappers.
-- [Grid](./grid.md) — Arrange related siblings in equal-width columns without repeating application-owned grid-template-columns CSS.
+- [Grid](./grid.md) — Arrange related siblings in equal-width columns with either a fixed count or automatic container-width collapse.
 - [Spacer](./spacer.md) — Express an intentional empty dimension or consume remaining flex space without application-owned spacer markup or raw CSS lengths.
 - [ListInsetControl](./list-inset-control.md) — Apply the standard 8px outer margin to all physical sides of a self-bordered control by default, or only the sides selected with the canonical Sides contract.
 - [ListInsetText](./list-inset-text.md) — Apply the full 8px margin + 1px transparent border + 8px padding to all physical sides of bare text by default, or only the sides selected with the canonical Sides contract.

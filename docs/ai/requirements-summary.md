@@ -317,6 +317,9 @@ primitive `CssLength` values are distinct from non-standalone
 input, and `Row.gap`/`Grid.gap`/`List.gap` plus `Spacer` width/height accept direct `UiSpaceName` shorthands or a complete typed
 length instead of unrestricted CSS strings. Source and packed-tarball type
 contracts pin that distinction.
+Grid also accepts a typed `minColumnWidth` instead of fixed `columns`, fitting
+equal tracks to its container and collapsing to one when another minimum-width
+track plus the gap does not fit.
 `CssFlex`, `CssSize`, and `CssForegroundColor` (a `CssColor` subtype minted
 only from foreground tokens or `foregroundColorVar()`) extend the same
 property-specific rule to Row/Grid/List flex, Skeleton geometry, and Select

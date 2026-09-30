@@ -2037,7 +2037,7 @@
           "required": false
         },
         {
-          "id": "column count and responsive changes",
+          "id": "fixed column count or responsive minimum width",
           "owner": "application",
           "required": false
         },
@@ -2061,17 +2061,28 @@
           "border": "none",
           "padding": "none",
           "notes": [
-            "Every track uses minmax(0, 1fr), so unequal intrinsic widths cannot break equal distribution."
+            "Fixed tracks use minmax(0, 1fr); responsive tracks use auto-fit with a minimum width capped at 100%, preserving equal distribution without narrow overflow."
           ]
         }
       },
       "accessibility": {
         "obligations": [
           "Grid adds layout only and no grid role; children retain responsibility for native or ARIA semantics.",
-          "Responsive column-count changes must preserve source and focus order."
+          "Responsive column-count changes preserve source and focus order."
         ]
       },
       "cssValueProps": [
+        {
+          "path": "minColumnWidth",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["minColumnWidth={px(376)}"]
+        },
         {
           "path": "gap",
           "grammar": "length",

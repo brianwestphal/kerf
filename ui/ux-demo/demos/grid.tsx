@@ -2,6 +2,7 @@ import '@awesome.me/webawesome/dist/components/card/card.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { px } from '@kerfjs/ui/css-values';
 import { Grid } from '@kerfjs/ui/grid';
 
 export function GridDemo() {
@@ -24,6 +25,19 @@ export function GridDemo() {
           {['Requested', 'Quoted price', 'Reviewed', 'Decided'].map((label) => (
             <wa-card appearance="outlined">{label}</wa-card>
           ))}
+        </Grid>
+      </CatalogExample>
+      <CatalogExample
+        label="Responsive form columns"
+        note="Equal tracks stay at least 376px wide, then collapse to one when a second track no longer fits."
+        viewport={{ width: 'wide' }}
+      >
+        <Grid minColumnWidth={px(376)} gap="m">
+          <wa-input label="Provider name" value="Example provider"></wa-input>
+          <wa-input
+            label="API endpoint"
+            value="https://example.test"
+          ></wa-input>
         </Grid>
       </CatalogExample>
       <CatalogExample

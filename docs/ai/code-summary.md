@@ -900,6 +900,9 @@ Each `List`/`Row`/`Grid` resets its private `--_kui-*-gap`/`--_kui-*-flex`
 variables, so a nested instance never inherits its ancestor's `gap` or `flex`
 (`ui/tests/browser/nested-layout-variables.spec.ts` with
 `ui/tests/browser/fixtures/nested-layout-variables.tsx`).
+`Grid.minColumnWidth` is an exclusive alternative to `columns`; its auto-fit
+tracks collapse against the Grid container and cap the minimum at 100% to avoid
+overflow. `ui/tests/browser/grid.spec.ts` pins the 768px two-to-one boundary.
 `ResizableRegion` content is a column flex container whose lone child fills
 the region (`ui/tests/browser/resizable-region-fill.spec.ts` with
 `ui/tests/browser/fixtures/resizable-region-fill.tsx`, plus the app-shell case in

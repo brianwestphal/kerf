@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 307800,
-  "measuredLargestJavaScriptGzip": 126038,
-  "measuredTotalJavaScriptGzip": 307751,
+  "totalJavaScriptGzip": 308100,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 308005,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1475,6 +1475,22 @@
         "measuredTotalJavaScriptGzip": 307751,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 307800
+      }
+    },
+    {
+      "at": "2026-09-30T12:24:54.659Z",
+      "reason": "Responsive Grid catalog example and typed minimum-width API",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126038,
+        "measuredTotalJavaScriptGzip": 307751,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 307800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 308005,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 308100
       }
     }
   ]

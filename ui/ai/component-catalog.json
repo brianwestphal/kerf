@@ -2283,13 +2283,36 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "A fixed positive number of evenly distributed minmax columns with a typed xs gap by default and optional flex participation.",
+      "description": "Equal-width columns with a fixed count or a minimum-width responsive mode, typed gaps, and optional flex participation.",
       "uses": [],
-      "purpose": "Arrange related siblings in equal-width columns without repeating application-owned grid-template-columns CSS.",
+      "purpose": "Arrange related siblings in equal-width columns with either a fixed count or automatic container-width collapse.",
       "publicExports": [
         "Grid"
       ],
       "cssValueProps": [
+        {
+          "path": "minColumnWidth",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "minColumnWidth={px(376)}"
+          ]
+        },
         {
           "path": "gap",
           "grammar": "length",
@@ -2359,13 +2382,14 @@
       ],
       "useWhen": [
         "Arrange related siblings into a fixed positive number of equal-width columns.",
+        "Fit equal-width columns down to a typed minimum and collapse as the container narrows.",
         "Prevent wider intrinsic content from making one fractional track wider than its peers.",
         "Use a finite flex keyword or the flex() builder when Grid participates in a flexible parent layout."
       ],
       "avoidWhen": [
-        "Do not use Grid for intrinsic, asymmetric, spanning, auto-fit, or masonry tracks; use application-owned CSS grid.",
+        "Do not use Grid for intrinsic, asymmetric, spanning, or masonry tracks; use application-owned CSS grid.",
         "Do not use Grid when columns need a user-operable separator; use ResizableRegion.",
-        "Do not expect Grid to choose responsive breakpoints or change the column count; the application owns that policy.",
+        "Do not combine fixed columns with minColumnWidth; choose one layout mode.",
         "Do not pass raw CSS strings to gap or flex, mix their distinct grammars, or use s/xl spacing steps without a deliberate exception."
       ],
       "alternatives": [
@@ -2387,11 +2411,12 @@
       ],
       "appOwns": [
         "child semantics and content",
-        "column count and responsive changes",
+        "fixed column count or responsive minimum width",
         "typed gap and flex choices"
       ],
       "variants": [
         "any positive safe-integer equal-track count",
+        "typed minimum column width with automatic container-width collapse",
         "named none/2xs/xs/s/m/l/xl token gap",
         "typed CssLength gap",
         "boolean, finite-keyword, or typed CssFlex flex",
@@ -2400,14 +2425,14 @@
       ],
       "accessibility": [
         "Grid adds layout only and no grid role; children retain responsibility for native or ARIA semantics.",
-        "Responsive column-count changes must preserve source and focus order."
+        "Responsive column-count changes preserve source and focus order."
       ],
       "geometry": {
         "margin": "none",
         "border": "none",
         "padding": "none",
         "notes": [
-          "Every track uses minmax(0, 1fr), so unequal intrinsic widths cannot break equal distribution."
+          "Fixed tracks use minmax(0, 1fr); responsive tracks use auto-fit with a minimum width capped at 100%, preserving equal distribution without narrow overflow."
         ]
       },
       "delivery": {
