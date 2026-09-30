@@ -1510,6 +1510,23 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
     handle();
   });
 
+  it('does not enable chip keyboard for an unrelated field when another field has a model', () => {
+    const { root, editor, lead } = tokenedField();
+    const model = createTokenSearchModel({ rules: [] });
+    const handle = wireTokenSearchFields(root, {
+      models: { 'other-field': model },
+    });
+
+    focusAt(editor, lead, lead.length);
+    const deletion = keydown('Delete');
+    editor.dispatchEvent(deletion);
+    expect(deletion.defaultPrevented).toBe(false);
+    const navigation = keydown('ArrowRight');
+    editor.dispatchEvent(navigation);
+    expect(navigation.defaultPrevented).toBe(false);
+    handle();
+  });
+
   it('Backspace removes the token before the caret and Delete the token after', () => {
     const { root, editor, lead, tail } = tokenedField();
     const onRemoveToken = vi.fn();

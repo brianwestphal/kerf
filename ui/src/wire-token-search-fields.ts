@@ -595,6 +595,7 @@ export function wireTokenSearchFields(
         );
         const id = field?.dataset.tokenSearchId;
         if (!id || field?.dataset.disabled === 'true') return;
+        const keyboardForField = keyboard !== false || Boolean(models[id]);
         if (keyboardEvent.key === 'Enter') {
           keyboardEvent.preventDefault();
           const model = models[id];
@@ -617,6 +618,7 @@ export function wireTokenSearchFields(
         }
         if (models[id] && keyboardEvent.key === 'Escape') models[id].dismiss();
         if (
+          keyboardForField &&
           removeAdjacentToken &&
           (keyboardEvent.key === 'Backspace' || keyboardEvent.key === 'Delete')
         ) {
@@ -636,7 +638,11 @@ export function wireTokenSearchFields(
             return;
           }
         }
-        if (moveCaretPastToken && keyboardEvent.key === 'ArrowRight') {
+        if (
+          keyboardForField &&
+          moveCaretPastToken &&
+          keyboardEvent.key === 'ArrowRight'
+        ) {
           const chip = adjacentToken(editor, 'forward');
           if (chip) {
             keyboardEvent.preventDefault();
