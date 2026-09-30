@@ -48,6 +48,11 @@ Override the public properties at the composition boundary:
 - `--kui-sunken-panel-gap`
 - `--kui-sunken-panel-radius`
 
+`--kui-sunken-panel-background` can be overridden for a known backdrop. Keep
+the default lowered surface opaque; a translucent override compounds when
+sunken panels nest. See [Contextual transparency](./webawesome-theme.md#contextual-transparency)
+for the color and contrast evaluation.
+
 The public root class is `.kui-sunken-panel`. Prefer the properties above over
 styling descendants. The `square` shape deliberately overrides the radius
 property with zero; use `rounded` when customizing the radius token.

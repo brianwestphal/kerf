@@ -131,6 +131,38 @@ tiers:
   content stays compact and the action group has a clearer boundary. These two
   parts do not inherit the dialog's shared `--spacing` value.
 
+## Contextual transparency
+
+Keep the shared `--kui-color-*` semantic fills, foregrounds, and borders opaque
+by default. Their light and dark values mirror the Web Awesome theme, and the
+contrast checks in `tests/browser/tone-contrast.spec.ts` assume known surfaces.
+Compositing those tokens over arbitrary app backgrounds changes text contrast
+and makes the same token mean a different visible color in each container.
+
+The strongest candidate for transparency is a **component-scoped sunken
+background**, through the existing `--kui-sunken-panel-background` and
+`--kui-wa-sunken-background` overrides. A simple black overlay of 5.5% over
+white approximates `#f1f1f1`, near the current light lowered surface; a second
+nesting level becomes `#e4e4e4`. Matching the current dark lowered surface from
+`#1c1c1e` takes about 39% black, and a second layer becomes near-black
+`#0a0a0b`. An alpha that works for one level therefore needs a separate nesting
+rule or a lighter dark treatment before it can become a default. The existing
+opaque `--kui-color-surface-lowered` remains appropriate for page backgrounds.
+
+| Candidate                             | Finding                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Selected `ListItem` fill and border   | A translucent brand layer would preserve a tinted or textured backdrop. Keep it in the component's existing `--kui-list-item-selected-*` overrides: making the shared brand fill translucent would also affect components that put `--kui-color-brand-on-fill` text on it. A 16% brand overlay gives about 4.35:1 for that text over the light lowered surface and 3.99:1 over a warm `#eee7dc` surface, below the 4.5:1 text target. |
+| `ToolbarControlGroup` fill and border | A light 10% black layer approximates the current fill over white, and a dark 13% white layer approximates it over the dark surface. On a warm `#eee7dc` backdrop, the light layer puts the existing quiet text at about 3.31:1. Its dark tone already uses a translucent fill. Keep default control chrome opaque until a backdrop matrix validates its text, icons, borders, and selected state.                                     |
+| Quiet or disabled text and icons      | Keep normal and quiet text/foreground tokens opaque; alpha changes their contrast with every backdrop. Disabled controls may use component-owned opacity, as they do now, without weakening shared foreground tokens.                                                                                                                                                                                                                 |
+| Dividers and borders                  | Decorative separators can use scoped alpha over a known surface. Control boundaries and focus indicators need reliable contrast; do not replace the shared border or focus tokens with alpha globally.                                                                                                                                                                                                                                |
+
+The numeric examples are sRGB compositing estimates, not a browser acceptance
+test. Before changing a default, inspect one and two sunken levels on default,
+lowered, warm, and textured backdrops in light and dark; verify text and control
+contrast, forced contrast, and Web Awesome parity. The opt-in sunken prototype
+is tracked by `KF-1HDSZF` and should include Pane once `KF-RGNS18` establishes
+its sunken appearance.
+
 Add `class="hide-actions"` to a `wa-dialog` when the dialog supplies its own
 dismissal affordance and should omit Web Awesome's header action region. The
 theme sets `display: none` on the directly exported `header-actions` part; it
