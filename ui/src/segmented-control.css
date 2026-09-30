@@ -1,7 +1,7 @@
 .kui-segmented-control {
   --kui-segmented-background: var(--kui-color-neutral-fill-normal);
   --kui-segmented-border: transparent;
-  --kui-segmented-foreground: var(--kui-color-neutral-on-quiet);
+  --kui-segmented-foreground: var(--kui-color-neutral-on-normal);
   --kui-segmented-hover-background: var(--kui-color-surface);
   --kui-segmented-hover-border: var(--kui-color-neutral-border-normal);
   --kui-segmented-selected-background: var(--kui-color-surface);
@@ -38,6 +38,7 @@
 .kui-segmented-control[data-appearance="outlined"] {
   --kui-segmented-border: var(--kui-color-neutral-border-normal);
   --kui-segmented-background: var(--kui-color-surface);
+  --kui-segmented-foreground: var(--kui-color-neutral-on-quiet);
 }
 
 .kui-segmented-control[data-appearance="toolbar"] {

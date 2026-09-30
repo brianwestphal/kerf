@@ -363,7 +363,8 @@ stays in sequential Tab order, matching Hot Sheet 2's compact view and inspector
 controls; Enter and Space use native button activation. The application handles
 the supplied `data-action`, reads `data-segment-value`, updates `value`, and
 re-renders. Keep labels unique and meaningful even when `content` shows only an
-icon. Use tabs—not a segmented control—when choices switch page regions that
+icon. The filled track uses the normal neutral text role for readable unselected
+labels in light and dark themes. Use tabs—not a segmented control—when choices switch page regions that
 need `tab`/`tabpanel` semantics.
 
 ## TokenSearchField

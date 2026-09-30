@@ -5,6 +5,30 @@ import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
 describe('SegmentedControl corner geometry', () => {
+  it('uses a stronger unselected text role on filled tracks while outlined stays quiet', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/segmented-control.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const foreground = (selector: string) => {
+      const rule = root.nodes.find(
+        (node) => node.type === 'rule' && node.selector === selector,
+      );
+      if (!rule || rule.type !== 'rule') throw new Error(`Missing ${selector}`);
+      return rule.nodes.find(
+        (node) =>
+          node.type === 'decl' && node.prop === '--kui-segmented-foreground',
+      );
+    };
+    expect(foreground('.kui-segmented-control')).toMatchObject({
+      value: 'var(--kui-color-neutral-on-normal)',
+    });
+    expect(
+      foreground('.kui-segmented-control[data-appearance="outlined"]'),
+    ).toMatchObject({ value: 'var(--kui-color-neutral-on-quiet)' });
+  });
+
   it('subtracts the shared full inset from the item radius', async () => {
     const file = resolve(
       import.meta.dirname,
