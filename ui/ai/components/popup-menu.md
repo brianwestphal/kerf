@@ -6,10 +6,11 @@
 
 ## When to use
 
-A trigger button that opens a typed list of commands, built on the Web Awesome dropdown.
+A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.
 
 - Offer a short list of commands behind one trigger, such as a toolbar sort or More menu.
 - Group related commands under headings and dividers in one popup.
+- Nest decisions under a parent command, show checked or trailing choice state, or open a context menu at pointer coordinates.
 
 **Not when:**
 
@@ -23,7 +24,7 @@ A trigger button that opens a typed list of commands, built on the Web Awesome d
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/popup-menu` — exports `PopupMenu`.
+- JavaScript: `@kerfjs/ui/popup-menu` — exports `PopupMenu`, `openPopupMenuAt`, `closePopupMenu`.
 - CSS: the browser build of `@kerfjs/ui/popup-menu` pulls its CSS automatically; import `@kerfjs/ui/popup-menu.css` manually only without the `browser` export condition.
 - Theme CSS: import `@kerfjs/ui/webawesome.css` once.
 - Registration: import `@kerfjs/ui/popup-menu/register` once (a side effect).
@@ -41,6 +42,10 @@ Exact prop names and types: [`@kerfjs/ui/popup-menu`](../public-api-signatures-v
 - headings and dividers
 - item icons
 - disabled items
+- nested actions
+- checked choices and trailing details
+- danger tone and disabled reasons
+- context trigger
 - placement
 
 ## Composition
@@ -52,7 +57,7 @@ Exact prop names and types: [`@kerfjs/ui/popup-menu`](../public-api-signatures-v
 
 ## State and wiring
 
-**The app owns:** commands and their delegated actions; which items are enabled; reactions to the menu opening or closing.
+**The app owns:** commands and their delegated actions; which items are enabled; reactions to the menu opening or closing; contextmenu event handling and identification of the menu root when using a pointer-anchored context menu.
 
 No wiring helper.
 
@@ -62,21 +67,105 @@ Margin: none · border: child · padding: child (layout role: controls). `self` 
 
 ## Accessibility
 
-- An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. Web Awesome provides menu roles, arrow-key navigation, typeahead, and Escape.
+- An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. The context anchor stays out of the accessibility tree. Web Awesome provides menu roles, nested arrow-key navigation, typeahead, and Escape.
 - Once registered, an icon-only trigger shows its label as an aria-hidden Web Awesome help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.
+
+## Usage examples
+
+### Nested decisions
+
+The app owns the current decision, batch disabled state, and delegated actions. Each child keeps its own record metadata.
+
+```tsx
+<PopupMenu
+  label="Line actions"
+  items={[
+    {
+      label: 'Decide',
+      submenu: [
+        {
+          label: 'Approve',
+          action: 'decide',
+          checked: current === 'approve',
+          attributes: { 'data-line-id': lineId, 'data-decision': 'approve' },
+        },
+        {
+          label: 'Reject',
+          action: 'decide',
+          tone: 'danger',
+          disabled: needsPrice,
+          disabledReason: needsPrice ? 'Add a price first' : undefined,
+          attributes: { 'data-line-id': lineId, 'data-decision': 'reject' },
+        },
+      ],
+    },
+    { kind: 'divider' },
+    { label: 'Remove', action: 'remove', tone: 'danger' },
+  ]}
+/>
+```
+
+### Flat selected choices
+
+Headings separate sort dimensions; trailing safe content marks the active command without changing its accessible label.
+
+```tsx
+<PopupMenu
+  label="Sort chat"
+  items={[
+    { kind: 'heading', label: 'Sort by' },
+    {
+      label: 'Updated',
+      action: 'sort-updated',
+      details: sort === 'updated' ? tick : undefined,
+    },
+    {
+      label: 'Priority',
+      action: 'sort-priority',
+      details: sort === 'priority' ? tick : undefined,
+    },
+    { kind: 'heading', label: 'Order' },
+    {
+      label: 'Newest first',
+      action: 'order-newest',
+      details: order === 'newest' ? tick : undefined,
+    },
+  ]}
+/>
+```
+
+### Pointer anchored context menu
+
+Keep the row's visible disabled action separate from the context menu anchor. Find the menu root with a stable data attribute.
+
+```tsx
+<PopupMenu
+  context
+  label="Demand actions"
+  rootAttributes={{ 'data-demand-menu': '' }}
+  items={[{ label: 'Open', action: 'open-demand' }]}
+/>;
+// In the app's row wiring:
+row.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+  const menu = row.querySelector('[data-demand-menu]') as PopupMenuElement;
+  openPopupMenuAt(menu, event.clientX, event.clientY);
+});
+// Call closePopupMenu(menu) when the app needs to dismiss it.
+```
 
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-popup-menu`, `kui-popup-menu__label`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-popup-menu`, `kui-popup-menu__label`, `kui-popup-menu__details`, `kui-popup-menu__context-anchor`.
 
-Never put `kui-popup-menu`, `kui-popup-menu__label` on an element you write; render `PopupMenu` instead (`KUI-L103`).
+Never put `kui-popup-menu`, `kui-popup-menu__label`, `kui-popup-menu__details`, `kui-popup-menu__context-anchor` on an element you write; render `PopupMenu` instead (`KUI-L103`).
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 
 ## Related
 
 - Components: [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md), [Button](./wa-button.md), [Divider](./wa-divider.md), [Select](./select.md).
-- Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#web-awesome-overlap-policy`](../../docs/component-selection.md#web-awesome-overlap-policy).
+- Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#popup-menu-migration`](../../docs/component-selection.md#popup-menu-migration).
 - UX catalog route: `?component=popup-menu`.

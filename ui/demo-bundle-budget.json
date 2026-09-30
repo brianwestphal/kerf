@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 303600,
-  "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 303549,
+  "totalJavaScriptGzip": 304300,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 304279,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1155,6 +1155,54 @@
         "measuredTotalJavaScriptGzip": 303549,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 303600
+      }
+    },
+    {
+      "at": "2026-09-30T01:01:05.088Z",
+      "reason": "KF-1ECMGQ: nested PopupMenu choices and context menu demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 303549,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 303600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 304258,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304300
+      }
+    },
+    {
+      "at": "2026-09-30T01:22:41.877Z",
+      "reason": "KF-1ECMGQ: nested PopupMenu choices and context menu demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 304258,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 304279,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304300
+      }
+    },
+    {
+      "at": "2026-09-30T01:26:14.985Z",
+      "reason": "KF-1ECMGQ: PopupMenu migration examples",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 304279,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 304279,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304300
       }
     }
   ]

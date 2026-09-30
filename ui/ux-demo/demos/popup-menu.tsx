@@ -1,11 +1,20 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { PopupSurface } from '@kerfjs/ui/surface-scaffold';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
-import { Archive, ArrowDownAZ, Copy, MoreHorizontal, Trash2 } from 'lucide';
+import {
+  Archive,
+  ArrowDownAZ,
+  Check,
+  Copy,
+  Gavel,
+  MoreHorizontal,
+  Trash2,
+} from 'lucide';
 
 export function PopupMenuDemo() {
   return (
@@ -82,6 +91,69 @@ export function PopupMenuDemo() {
               />
             </ToolbarControlGroup>
           }
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Decisions and selected choices"
+        align="inline-control"
+      >
+        <PopupMenu
+          text="Decide"
+          items={[
+            { kind: 'heading', label: 'Sort by' },
+            {
+              label: 'Updated',
+              action: 'sort-recent',
+              details: <LucideIcon icon={Check} name="Selected" />,
+            },
+            { label: 'Priority', action: 'sort-priority' },
+            { kind: 'divider' },
+            {
+              label: 'Decide',
+              icon: <LucideIcon icon={Gavel} name="decide" />,
+              submenu: [
+                {
+                  label: 'Approve',
+                  action: 'log-decision',
+                  checked: true,
+                  attributes: { 'data-decision': 'approve' },
+                },
+                {
+                  label: 'Reject',
+                  action: 'log-decision',
+                  tone: 'danger',
+                  disabled: true,
+                  disabledReason: 'A price is required',
+                  attributes: { 'data-decision': 'reject' },
+                },
+              ],
+            },
+          ]}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Context menu"
+        note="Right-click the row; its visible action stays disabled until the row opens a menu at the pointer."
+        align="inline-control"
+      >
+        <ListItem
+          label="Demand draft"
+          action="log-more"
+          rootAttributes={{ 'data-popup-menu-context-target': '' }}
+        />
+        <ToolbarControlGroup single>
+          <button type="button" disabled aria-label="Demand actions">
+            <LucideIcon icon={MoreHorizontal} name="actions" />
+          </button>
+        </ToolbarControlGroup>
+        <PopupMenu
+          context
+          label="Demand actions"
+          rootAttributes={{ 'data-popup-context-menu': '' }}
+          items={[
+            { label: 'Open', action: 'log-context-open' },
+            { label: 'Archive', action: 'log-more', tone: 'danger' },
+          ]}
         />
       </CatalogExample>
       <CatalogExample

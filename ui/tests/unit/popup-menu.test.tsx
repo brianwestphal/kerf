@@ -1,10 +1,16 @@
 import { mount, signal } from 'kerfjs';
-import { ArrowDownAZ, Copy } from 'lucide';
+import { ArrowDownAZ, Check, Copy } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { installPopupMenuKeyboard } from '../../src/install-popup-menu-keyboard.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
-import { PopupMenu, type PopupMenuEntry } from '../../src/popup-menu.js';
+import {
+  closePopupMenu,
+  openPopupMenuAt,
+  PopupMenu,
+  type PopupMenuElement,
+  type PopupMenuEntry,
+} from '../../src/popup-menu.js';
 
 const asHtml = (value: unknown) => String(value);
 
@@ -15,6 +21,95 @@ const render = (html: string) => {
 };
 
 describe('PopupMenu', () => {
+  it('renders nested choices, selected details, disabled reasons, and danger tone', () => {
+    const menu = render(
+      asHtml(
+        PopupMenu({
+          text: 'Actions',
+          items: [
+            { label: 'Copy', action: 'copy' },
+            {
+              label: 'Decide',
+              submenu: [
+                {
+                  label: 'Approve',
+                  action: 'decide',
+                  checked: true,
+                  attributes: { 'data-decision': 'approve' },
+                },
+                {
+                  label: 'Reject',
+                  action: 'decide',
+                  tone: 'danger',
+                  disabled: true,
+                  disabledReason: 'Needs a price',
+                  attributes: { 'data-decision': 'reject' },
+                },
+              ],
+            },
+            { kind: 'divider' },
+            {
+              label: 'Newest first',
+              action: 'sort',
+              details: <LucideIcon icon={Check} name="Selected" />,
+            },
+          ],
+        }),
+      ),
+    );
+    const parent = menu.querySelector<HTMLElement>(
+      'wa-dropdown-item:has(> [slot="submenu"])',
+    )!;
+    expect(parent.textContent).toContain('Decide');
+    expect(parent.querySelector('[slot="details"]')).not.toBeNull();
+    const children = parent.querySelectorAll<HTMLElement>(
+      ':scope > wa-dropdown-item[slot="submenu"]',
+    );
+    expect(children).toHaveLength(2);
+    expect(children[0].getAttribute('type')).toBe('checkbox');
+    expect(children[0].hasAttribute('checked')).toBe(true);
+    expect(children[0].getAttribute('data-decision')).toBe('approve');
+    expect(children[1].getAttribute('variant')).toBe('danger');
+    expect(children[1].getAttribute('title')).toBe('Needs a price');
+    expect(children[1].hasAttribute('disabled')).toBe(true);
+    expect(
+      menu.querySelector('.kui-popup-menu__details [data-lucide]'),
+    ).not.toBeNull();
+  });
+
+  it('renders a context anchor and controls its open state at pointer coordinates', () => {
+    const menu = render(
+      asHtml(
+        PopupMenu({
+          context: true,
+          label: 'Demand actions',
+          rootAttributes: { 'data-demand-menu': 'd-1' },
+          items: [
+            {
+              label: 'Open',
+              action: 'open',
+              attributes: { 'data-demand-id': 'd-1' },
+            },
+          ],
+        }),
+      ),
+    ) as PopupMenuElement;
+    expect(menu.dataset.trigger).toBe('context');
+    expect(menu.dataset.demandMenu).toBe('d-1');
+    const anchor = menu.querySelector('button[slot="trigger"]')!;
+    expect(anchor.getAttribute('aria-label')).toBe('Demand actions');
+    expect(anchor.getAttribute('tabindex')).toBe('-1');
+    openPopupMenuAt(menu, 123, 456);
+    expect(menu.open).toBe(true);
+    expect(menu.style.getPropertyValue('--kui-popup-menu-context-x')).toBe(
+      '123px',
+    );
+    expect(menu.style.getPropertyValue('--kui-popup-menu-context-y')).toBe(
+      '456px',
+    );
+    closePopupMenu(menu);
+    expect(menu.open).toBe(false);
+  });
   it('renders an icon-only trigger named by its label over typed commands', () => {
     const menu = render(
       asHtml(

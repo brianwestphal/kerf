@@ -17,6 +17,7 @@ import {
 import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { openPopupMenuAt, type PopupMenuElement } from '@kerfjs/ui/popup-menu';
 import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -878,6 +879,12 @@ const stopActions = delegateActions(app, 'click', {
   'log-more': () => {
     actionLog.value = 'More actions requested';
   },
+  'log-decision': (_event, element) => {
+    actionLog.value = `Decision: ${(element as HTMLElement).dataset.decision ?? ''}`;
+  },
+  'log-context-open': () => {
+    actionLog.value = 'Context demand opened';
+  },
   'log-pin': () => {
     actionLog.value = 'Pin requested';
   },
@@ -1358,6 +1365,23 @@ const stopListActionRowContextMenu = delegate(
     actionLog.value = `Context menu for ${(element as HTMLElement).dataset.itemId ?? 'row'} primary`;
   },
 );
+const stopPopupMenuContextDemo = delegate(
+  app,
+  'contextmenu',
+  '[data-popup-menu-context-target]',
+  (event) => {
+    event.preventDefault();
+    const menu = app.querySelector<PopupMenuElement>(
+      '[data-popup-context-menu]',
+    );
+    if (menu)
+      openPopupMenuAt(
+        menu,
+        (event as MouseEvent).clientX,
+        (event as MouseEvent).clientY,
+      );
+  },
+);
 const updateAnimationSetting = (element: Element): void => {
   const demo = animationDemoFrom(element);
   if (!demo) return;
@@ -1503,6 +1527,7 @@ window.addEventListener(
     stopListItemDrop();
     stopListActionRowDoubleClick();
     stopListActionRowContextMenu();
+    stopPopupMenuContextDemo();
     stopAnimationSelects();
     stopAnimationRanges();
     stopAnimationEvents.forEach((dispose) => dispose());

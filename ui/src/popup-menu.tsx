@@ -24,9 +24,19 @@ export interface PopupMenuItem {
   value?: string;
   /** Leading icon, typically a `LucideIcon`; it is placed in the item's icon slot. */
   icon?: SafeHtml;
+  /** A checked menu choice, including nested choices. */
+  checked?: boolean;
+  /** Trailing safe content, such as a selected-choice tick. */
+  details?: SafeHtml;
+  /** Destructive command styling. */
+  tone?: 'default' | 'danger';
   disabled?: boolean;
+  /** Native tooltip text for a disabled command. */
+  disabledReason?: string;
   /** Application `data-*` metadata such as a record id. */
   attributes?: PopupMenuDataAttributes;
+  /** Child commands opened by hover or keyboard navigation. */
+  submenu?: readonly PopupMenuItem[];
 }
 
 /** A labeled group heading; items that follow it belong to the group. */
@@ -58,7 +68,18 @@ type PopupMenuTriggerName =
       label: string;
     };
 
-export type PopupMenuProps = PopupMenuTriggerName & {
+type PopupMenuTrigger =
+  | (PopupMenuTriggerName & { context?: false })
+  | {
+      context: true;
+      label: string;
+      text?: never;
+      icon?: never;
+      caret?: never;
+      disabled?: never;
+    };
+
+export type PopupMenuProps = PopupMenuTrigger & {
   /** Trigger icon, typically a `LucideIcon`, before any visible text. */
   icon?: KerfUiContent;
   items: readonly PopupMenuEntry[];
@@ -91,12 +112,17 @@ function entryKey(entry: PopupMenuEntry): string {
     entry.action ?? '',
     entry.value ?? '',
     entry.disabled ? '1' : '0',
+    entry.checked ? '1' : '0',
+    entry.tone ?? '',
+    entry.disabledReason ?? '',
     String(entry.icon ?? ''),
+    String(entry.details ?? ''),
     JSON.stringify(entry.attributes ?? {}),
+    ...(entry.submenu ?? []).map(entryKey),
   ].join('\u0001');
 }
 
-function renderEntry(entry: PopupMenuEntry) {
+function renderEntry(entry: PopupMenuEntry, nested = false) {
   if (entry.kind === 'divider') return <wa-divider></wa-divider>;
   // A group title styled like the Select's group title. It is not a slotted
   // h1-h6, whose Web Awesome group-label metrics are !important.
@@ -105,9 +131,14 @@ function renderEntry(entry: PopupMenuEntry) {
   return (
     <wa-dropdown-item
       {...(entry.attributes ?? {})}
+      slot={nested ? 'submenu' : undefined}
       data-action={entry.action}
       value={entry.value}
+      type={entry.checked === undefined ? undefined : 'checkbox'}
+      checked={entry.checked}
+      variant={entry.tone === 'danger' ? 'danger' : undefined}
       disabled={entry.disabled}
+      title={entry.disabled ? entry.disabledReason : undefined}
     >
       {entry.icon ? (
         <span slot="icon" class="kui-popup-menu__icon">
@@ -115,8 +146,35 @@ function renderEntry(entry: PopupMenuEntry) {
         </span>
       ) : null}
       {entry.label}
+      {entry.details ? (
+        <span slot="details" class="kui-popup-menu__details">
+          {entry.details}
+        </span>
+      ) : entry.submenu ? (
+        <span slot="details"></span>
+      ) : null}
+      {entry.submenu?.map((child) => renderEntry(child, true))}
     </wa-dropdown-item>
   );
+}
+
+/** A rendered context PopupMenu with Web Awesome's controlled open state. */
+export type PopupMenuElement = HTMLElement & { open: boolean };
+
+/** Open a context PopupMenu at viewport pointer coordinates. */
+export function openPopupMenuAt(
+  menu: PopupMenuElement,
+  x: number,
+  y: number,
+): void {
+  menu.style.setProperty('--kui-popup-menu-context-x', `${x}px`);
+  menu.style.setProperty('--kui-popup-menu-context-y', `${y}px`);
+  menu.open = true;
+}
+
+/** Close a programmatically opened PopupMenu. */
+export function closePopupMenu(menu: PopupMenuElement): void {
+  menu.open = false;
 }
 
 /**
@@ -137,6 +195,7 @@ export function PopupMenu({
   disabled = false,
   rootAttributes = {},
   slot,
+  context = false,
 }: PopupMenuProps) {
   // Web Awesome owns the trigger and item DOM once upgraded, so the morph
   // skips the children; the content key rebuilds the menu when they change.
@@ -146,6 +205,7 @@ export function PopupMenu({
     String(icon ?? ''),
     String(caret),
     String(disabled),
+    String(context),
     ...items.map(entryKey),
   ])}`;
   // size="m" is Web Awesome's reflected default; rendering it keeps a
@@ -158,23 +218,35 @@ export function PopupMenu({
       data-component="popup-menu"
       data-key={key}
       data-morph-skip-children
+      data-trigger={context ? 'context' : 'button'}
       placement={placement}
       slot={slot}
     >
-      <wa-button
-        slot="trigger"
-        appearance="plain"
-        with-caret={caret}
-        disabled={disabled}
-      >
-        {icon}
-        {text ? (
-          <span>{text}</span>
-        ) : (
-          <span class="kui-popup-menu__label">{label}</span>
-        )}
-      </wa-button>
-      {items.map(renderEntry)}
+      {context ? (
+        <button
+          type="button"
+          slot="trigger"
+          class="kui-popup-menu__context-anchor"
+          aria-label={label}
+          aria-hidden="true"
+          tabindex={-1}
+        ></button>
+      ) : (
+        <wa-button
+          slot="trigger"
+          appearance="plain"
+          with-caret={caret}
+          disabled={disabled}
+        >
+          {icon}
+          {text ? (
+            <span>{text}</span>
+          ) : (
+            <span class="kui-popup-menu__label">{label}</span>
+          )}
+        </wa-button>
+      )}
+      {items.map((entry) => renderEntry(entry))}
     </wa-dropdown>
   );
 }

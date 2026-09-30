@@ -33,6 +33,7 @@ const catalog = {
       ],
       appOwns: ['view order'],
       variants: ['pushed detail view'],
+      usageExamples: [{ title: 'Open a detail', code: '<Stack />' }],
       accessibility: ['Label the stack region.'],
       geometry: { margin: 'none', border: 'self', padding: 'child' },
       delivery: {
@@ -208,11 +209,13 @@ describe('AI-facing component markdown', { timeout: 30_000 }, () => {
       '## State and wiring',
       '## Geometry',
       '## Accessibility',
+      '## Usage examples',
       '## Styling boundary',
       '## Diagnostics',
       '## Related',
     ])
       expect(page).toContain(`${heading}\n`);
+    expect(page).toContain('### Open a detail\n\n```tsx\n<Stack />\n```');
     expect(page).toContain('side-by-side \\<panes>');
     expect(page).toContain(
       '[`@kerfjs/ui/stack`](../public-api-signatures-v1.md#kerfjsuistack)',

@@ -242,7 +242,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   (`@kerfjs/ui/popup-menu`, registered once via `@kerfjs/ui/popup-menu/register`)
   in a `single` `ToolbarControlGroup` with `nestedDropdown`; never hand-write
   `wa-dropdown` markup for a menu. Let the group size the trigger from its icon,
-  localized text, and caret; do not force a dropdown or button width. Nothing
+  localized text, and caret. `PopupMenu` items also support nested `submenu`
+  actions, checked or trailing choice marks, danger tone, and disabled reasons;
+  use `context` with `openPopupMenuAt`/`closePopupMenu` for pointer-anchored row
+  menus. Do not force a dropdown or button width. Nothing
   wraps inside a group: an icon sits beside its label on one row, and a
   `ToolbarText` is one ellipsized line unless you opt into `wrap`/`maxLines`. A
   Select or PopupMenu trigger drops its focus ring while its popup is open and

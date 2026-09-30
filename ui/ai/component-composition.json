@@ -3323,6 +3323,11 @@
           "id": "reactions to the menu opening or closing",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "contextmenu event handling and identification of the menu root when using a pointer-anchored context menu",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -3338,14 +3343,19 @@
       },
       "accessibility": {
         "obligations": [
-          "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. Web Awesome provides menu roles, arrow-key navigation, typeahead, and Escape.",
+          "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. The context anchor stays out of the accessibility tree. Web Awesome provides menu roles, nested arrow-key navigation, typeahead, and Escape.",
           "Once registered, an icon-only trigger shows its label as an aria-hidden Web Awesome help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
         ]
       },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-popup-menu",
-        "publicClasses": ["kui-popup-menu", "kui-popup-menu__label"],
+        "publicClasses": [
+          "kui-popup-menu",
+          "kui-popup-menu__label",
+          "kui-popup-menu__details",
+          "kui-popup-menu__context-anchor"
+        ],
         "publicTokens": []
       },
       "diagnostics": [],

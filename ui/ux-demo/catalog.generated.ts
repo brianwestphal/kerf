@@ -537,7 +537,7 @@ export const generatedKerfCatalog = [
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
-    "description": "A trigger button that opens a typed list of commands, built on the Web Awesome dropdown.",
+    "description": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.",
     "uses": [
       "wa-dropdown",
       "wa-dropdown-item",

@@ -250,6 +250,8 @@ Common mistakes:
 | Keep chrome, a label, or a readout that aids no decision                                                                          | Delete it; every element must help a person decide or act                                                                                                                                                                                                                                     |
 | Override a component's default size or color because it "looks off"                                                               | Trust the default (a LucideIcon is 24px) and fix the surrounding layout instead                                                                                                                                                                                                               |
 
+For nested action menus, use `PopupMenuItem.submenu` and its `checked`, `icon`, `details`, `disabledReason`, and `tone` options. The app owns choice state. For a right-click menu, use `PopupMenu` with `context: true` and call `openPopupMenuAt` from the app's `contextmenu` handler; the package positions and opens the menu. Call `closePopupMenu` for programmatic dismissal.
+
 ## Select lifecycle ownership
 
 Import `@kerfjs/ui/select/register` once. It owns the canonical Select animation

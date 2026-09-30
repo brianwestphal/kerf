@@ -92,8 +92,11 @@ export {
   type PaneSeparatorSide,
 } from './pane.js';
 export {
+  closePopupMenu,
+  openPopupMenuAt,
   PopupMenu,
   type PopupMenuDivider,
+  type PopupMenuElement,
   type PopupMenuEntry,
   type PopupMenuHeading,
   type PopupMenuItem,

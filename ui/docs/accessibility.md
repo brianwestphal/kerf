@@ -195,6 +195,12 @@ are presentational. A keyboard-focused item is the menu's current row, painted
 with the Select's current-option fill rather than a second focus ring inside the
 open popup. A disabled item stays in the menu but cannot be
 chosen; disable the whole trigger only when every command is unavailable.
+Nested items use Web Awesome's submenu pointer and Left/Right arrow routing;
+checked items expose checkbox menu semantics. `details` supplies optional
+trailing visual content without changing a command's accessible label. A
+`context` menu's invisible anchor is outside the accessibility tree and normal
+Tab order; opening the menu moves focus into its commands and Escape dismisses
+it. Keep a separate visible row action named even when it is disabled.
 
 ## ListActionRow
 

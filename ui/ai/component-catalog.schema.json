@@ -37,6 +37,7 @@
         "wiring": { "type": "array", "items": { "$ref": "#/$defs/wiring" } },
         "appOwns": { "type": "array", "items": { "type": "string" } },
         "variants": { "type": "array", "items": { "type": "string" } },
+        "usageExamples": { "type": "array", "items": { "$ref": "#/$defs/usageExample" } },
         "accessibility": { "type": "array", "items": { "type": "string" } },
         "publicClasses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "placeableClasses": { "description": "Public classes an application may place on its own elements (layout utilities, a document root, or item geometry on a non-div carrier). Every other public class is component anatomy: render the component instead.", "type": "array", "items": { "type": "string" }, "uniqueItems": true },
@@ -46,6 +47,16 @@
         "geometry": { "$ref": "#/$defs/geometry" },
         "delivery": { "$ref": "#/$defs/delivery" },
         "links": { "$ref": "#/$defs/links" }
+      },
+      "additionalProperties": false
+    },
+    "usageExample": {
+      "type": "object",
+      "required": ["title", "code"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "code": { "type": "string", "minLength": 1 }
       },
       "additionalProperties": false
     },

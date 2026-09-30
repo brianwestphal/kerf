@@ -405,9 +405,19 @@ interface PopupMenuItem {
     value?: string;
     /** Leading icon, typically a `LucideIcon`; it is placed in the item's icon slot. */
     icon?: SafeHtml;
+    /** A checked menu choice, including nested choices. */
+    checked?: boolean;
+    /** Trailing safe content, such as a selected-choice tick. */
+    details?: SafeHtml;
+    /** Destructive command styling. */
+    tone?: 'default' | 'danger';
     disabled?: boolean;
+    /** Native tooltip text for a disabled command. */
+    disabledReason?: string;
     /** Application `data-*` metadata such as a record id. */
     attributes?: PopupMenuDataAttributes;
+    /** Child commands opened by hover or keyboard navigation. */
+    submenu?: readonly PopupMenuItem[];
 }
 /** A labeled group heading; items that follow it belong to the group. */
 interface PopupMenuHeading {
@@ -431,7 +441,17 @@ type PopupMenuTriggerName = {
      */
     label: string;
 };
-type PopupMenuProps = PopupMenuTriggerName & {
+type PopupMenuTrigger = (PopupMenuTriggerName & {
+    context?: false;
+}) | {
+    context: true;
+    label: string;
+    text?: never;
+    icon?: never;
+    caret?: never;
+    disabled?: never;
+};
+type PopupMenuProps = PopupMenuTrigger & {
     /** Trigger icon, typically a `LucideIcon`, before any visible text. */
     icon?: KerfUiContent;
     items: readonly PopupMenuEntry[];
@@ -445,6 +465,14 @@ type PopupMenuProps = PopupMenuTriggerName & {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 };
+/** A rendered context PopupMenu with Web Awesome's controlled open state. */
+type PopupMenuElement = HTMLElement & {
+    open: boolean;
+};
+/** Open a context PopupMenu at viewport pointer coordinates. */
+declare function openPopupMenuAt(menu: PopupMenuElement, x: number, y: number): void;
+/** Close a programmatically opened PopupMenu. */
+declare function closePopupMenu(menu: PopupMenuElement): void;
 /**
  * An action menu: a trigger button that opens a list of commands. Renders the
  * `wa-dropdown` root directly, so a `single` `ToolbarControlGroup` (with
@@ -453,9 +481,9 @@ type PopupMenuProps = PopupMenuTriggerName & {
  * open-state reaction. Import `@kerfjs/ui/popup-menu/register` once to register
  * the Web Awesome elements.
  */
-declare function PopupMenu({ text, label, icon, items, placement, caret, disabled, rootAttributes, slot, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu({ text, label, icon, items, placement, caret, disabled, rootAttributes, slot, context, }: PopupMenuProps): SafeHtml;
 
-export { PopupMenu, type PopupMenuDivider, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps };
+export { PopupMenu, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, closePopupMenu, openPopupMenuAt };
 ```
 
 ## `@kerfjs/ui/list-header`

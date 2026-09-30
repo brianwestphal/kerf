@@ -439,6 +439,22 @@ function renderPage(entry, contract, link, modules) {
     stateSection(contract),
     layoutSection(contract),
     accessibilitySection(contract),
+    ...(entry.usageExamples?.length
+      ? [
+          [
+            '## Usage examples',
+            ...entry.usageExamples.map((example) =>
+              [
+                `### ${text(example.title)}`,
+                example.description ? text(example.description) : null,
+                `\`\`\`tsx\n${example.code}\n\`\`\``,
+              ]
+                .filter(Boolean)
+                .join('\n\n'),
+            ),
+          ].join('\n\n'),
+        ]
+      : []),
     stylingSection(entry, contract),
     diagnosticsSection(contract),
     relatedSection(entry, link),

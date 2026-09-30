@@ -33,7 +33,7 @@
   scale: none !important;
 }
 
-.kui-popup-menu > wa-dropdown-item {
+.kui-popup-menu wa-dropdown-item {
   /* Leading inset plus the Select's check column, so item icons and labels
      start where a Select option's do. */
   padding: var(--_kui-popup-row-padding-block)
@@ -43,13 +43,13 @@
         var(--_kui-popup-row-check-width)
     );
 }
-.kui-popup-menu > wa-dropdown-item::part(label) {
+.kui-popup-menu wa-dropdown-item::part(label) {
   padding-block: var(--_kui-popup-row-label-padding-block);
   line-height: var(--_kui-popup-row-label-line-height);
 }
 /* A keyboard-focused item is the menu's current row: the Select's brand fill,
    with no second focus ring inside the open popup. */
-.kui-popup-menu > wa-dropdown-item:focus-visible {
+.kui-popup-menu wa-dropdown-item:focus-visible {
   outline: none;
   color: var(--_kui-popup-row-current-color);
   background-color: var(--_kui-popup-row-current-background);
@@ -59,7 +59,7 @@
 }
 
 /* Center the icon on the label's line, like the Select's start slot. */
-.kui-popup-menu > wa-dropdown-item::part(icon) {
+.kui-popup-menu wa-dropdown-item::part(icon) {
   display: flex;
   align-self: center;
 }
@@ -76,6 +76,35 @@
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.kui-popup-menu__details {
+  display: inline-flex;
+  align-items: center;
+}
+
+.kui-popup-menu__details svg {
+  display: block;
+  width: var(--_kui-popup-row-icon-size);
+  height: var(--_kui-popup-row-icon-size);
+}
+
+.kui-popup-menu[data-trigger="context"] {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}
+
+.kui-popup-menu__context-anchor {
+  position: fixed;
+  top: var(--kui-popup-menu-context-y, 0px);
+  left: var(--kui-popup-menu-context-x, 0px);
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* A group title matches the Select's group title. It is a styled element

@@ -252,6 +252,8 @@ Common toolbar patterns:
 | A command menu                | `<ToolbarControlGroup single nestedDropdown><PopupMenu … /></ToolbarControlGroup>`     | Register `@kerfjs/ui/popup-menu/register` once; set `menuInset` on the group                                      |
 | A collapsible search box      | `<ToolbarControlGroup single><TokenSearchField collapsible … /></ToolbarControlGroup>` | The group animates the iconic ↔ expanded states; `wireTokenSearchFields` manages expand/collapse/focus by default |
 
+### Popup menu migration
+
 A **popup menu in a toolbar** is a `PopupMenu` (`@kerfjs/ui/popup-menu`) in a
 `single` `ToolbarControlGroup` with `nestedDropdown`; the group sizes the trigger
 as a toolbar button and `menuInset` sets the menu's inset. `PopupMenu` renders the
@@ -272,6 +274,42 @@ menu.
   />
 </ToolbarControlGroup>
 ```
+
+Nested decisions use an item with `submenu`. Children keep their own actions,
+`attributes` metadata, icons, `checked` state, disabled state and
+`disabledReason` tooltip. `tone: 'danger'` maps to the Web Awesome destructive
+variant. A parent can sit among ordinary commands and dividers, so the same
+items shape covers single-line and batch actions; compute each batch child's
+`disabled` state from the current selection.
+
+```tsx
+<PopupMenu
+  label="Line actions"
+  items={[
+    { label: 'Copy reference', action: 'copy-reference', attributes: { 'data-item-id': lineId } },
+    { label: 'Decide', submenu: [
+      { label: 'Approve', action: 'decide', checked: current === 'approve', attributes: { 'data-item-id': lineId, 'data-decision': 'approve' } },
+      { label: 'Reject', action: 'decide', tone: 'danger', disabled: needsPrice, disabledReason: needsPrice ? 'Add a price first' : undefined, attributes: { 'data-item-id': lineId, 'data-decision': 'reject' } },
+    ] },
+    { kind: 'divider' },
+    { label: 'Remove', action: 'remove', tone: 'danger' },
+  ]}
+/>
+```
+
+For a flat command menu with persistent sort choices, group commands under
+`heading` entries and set `details` to a safe trailing tick for the chosen
+item. Set `checked` when checkbox menu semantics fit. Commands still dispatch
+their own `data-action` once on pointer and keyboard selection.
+
+For a row opened by right-click, render `PopupMenu` with `context`, `label`,
+and a stable root `data-*` marker. Its trigger is an invisible anchor removed
+from the accessibility tree; a separate visible button may stay disabled. In
+the app's `contextmenu` handler, find that root, call `openPopupMenuAt` with
+the menu and `event.clientX` / `event.clientY`, and prevent the browser
+menu. Call `closePopupMenu` for programmatic dismissal. The pointer anchor
+retains Web Awesome's collision placement, focus management, submenu keyboard
+navigation, and outside/Escape dismissal.
 
 ## Configuring recurring list rows
 

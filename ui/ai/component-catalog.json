@@ -4018,20 +4018,23 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "A trigger button that opens a typed list of commands, built on the Web Awesome dropdown.",
+      "description": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.",
       "uses": [
         "wa-dropdown",
         "wa-dropdown-item",
         "wa-button",
         "wa-divider"
       ],
-      "purpose": "A trigger button that opens a typed list of commands, built on the Web Awesome dropdown.",
+      "purpose": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.",
       "publicExports": [
-        "PopupMenu"
+        "PopupMenu",
+        "openPopupMenuAt",
+        "closePopupMenu"
       ],
       "useWhen": [
         "Offer a short list of commands behind one trigger, such as a toolbar sort or More menu.",
-        "Group related commands under headings and dividers in one popup."
+        "Group related commands under headings and dividers in one popup.",
+        "Nest decisions under a parent command, show checked or trailing choice state, or open a context menu at pointer coordinates."
       ],
       "avoidWhen": [
         "Do not use it to choose a persistent value (use Select) or for navigation rows (use ListItem).",
@@ -4050,7 +4053,8 @@
       "appOwns": [
         "commands and their delegated actions",
         "which items are enabled",
-        "reactions to the menu opening or closing"
+        "reactions to the menu opening or closing",
+        "contextmenu event handling and identification of the menu root when using a pointer-anchored context menu"
       ],
       "variants": [
         "icon trigger",
@@ -4059,10 +4063,31 @@
         "headings and dividers",
         "item icons",
         "disabled items",
+        "nested actions",
+        "checked choices and trailing details",
+        "danger tone and disabled reasons",
+        "context trigger",
         "placement"
       ],
+      "usageExamples": [
+        {
+          "title": "Nested decisions",
+          "description": "The app owns the current decision, batch disabled state, and delegated actions. Each child keeps its own record metadata.",
+          "code": "<PopupMenu\n  label=\"Line actions\"\n  items={[\n    { label: 'Decide', submenu: [\n      { label: 'Approve', action: 'decide', checked: current === 'approve',\n        attributes: { 'data-line-id': lineId, 'data-decision': 'approve' } },\n      { label: 'Reject', action: 'decide', tone: 'danger',\n        disabled: needsPrice, disabledReason: needsPrice ? 'Add a price first' : undefined,\n        attributes: { 'data-line-id': lineId, 'data-decision': 'reject' } },\n    ] },\n    { kind: 'divider' },\n    { label: 'Remove', action: 'remove', tone: 'danger' },\n  ]}\n/>"
+        },
+        {
+          "title": "Flat selected choices",
+          "description": "Headings separate sort dimensions; trailing safe content marks the active command without changing its accessible label.",
+          "code": "<PopupMenu\n  label=\"Sort chat\"\n  items={[\n    { kind: 'heading', label: 'Sort by' },\n    { label: 'Updated', action: 'sort-updated', details: sort === 'updated' ? tick : undefined },\n    { label: 'Priority', action: 'sort-priority', details: sort === 'priority' ? tick : undefined },\n    { kind: 'heading', label: 'Order' },\n    { label: 'Newest first', action: 'order-newest', details: order === 'newest' ? tick : undefined },\n  ]}\n/>"
+        },
+        {
+          "title": "Pointer anchored context menu",
+          "description": "Keep the row's visible disabled action separate from the context menu anchor. Find the menu root with a stable data attribute.",
+          "code": "<PopupMenu\n  context\n  label=\"Demand actions\"\n  rootAttributes={{ 'data-demand-menu': '' }}\n  items={[{ label: 'Open', action: 'open-demand' }]}\n/>\n// In the app's row wiring:\nrow.addEventListener('contextmenu', (event) => {\n  event.preventDefault();\n  const menu = row.querySelector('[data-demand-menu]') as PopupMenuElement;\n  openPopupMenuAt(menu, event.clientX, event.clientY);\n});\n// Call closePopupMenu(menu) when the app needs to dismiss it."
+        }
+      ],
       "accessibility": [
-        "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. Web Awesome provides menu roles, arrow-key navigation, typeahead, and Escape.",
+        "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. The context anchor stays out of the accessibility tree. Web Awesome provides menu roles, nested arrow-key navigation, typeahead, and Escape.",
         "Once registered, an icon-only trigger shows its label as an aria-hidden Web Awesome help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
       ],
       "geometry": {
@@ -4083,13 +4108,15 @@
       "wiring": [],
       "publicClasses": [
         "kui-popup-menu",
-        "kui-popup-menu__label"
+        "kui-popup-menu__label",
+        "kui-popup-menu__details",
+        "kui-popup-menu__context-anchor"
       ],
       "publicTokens": [],
       "links": {
         "catalogRoute": "?component=popup-menu",
         "documentation": "docs/component-selection.md",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#popup-menu-migration"
       }
     },
     {
