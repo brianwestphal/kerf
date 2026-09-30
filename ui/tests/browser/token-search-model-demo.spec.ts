@@ -34,6 +34,13 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
     await expect(chips).toHaveCount(1);
     await expect(result).toHaveText('No free text · 1 filters');
     await expect(editor).toBeFocused();
+    await editor.pressSequentially('tag:c');
+    await expect(
+      field.locator('[data-token-search-suggestion="tag:client"]'),
+    ).toHaveCount(0);
+    for (let index = 0; index < 'tag:c'.length; index++)
+      await editor.press('Backspace');
+    await expect(chips).toHaveCount(1);
     await demo.screenshot({
       path: testInfo.outputPath(`grammar-chip-${width}.png`),
     });

@@ -38,9 +38,13 @@ export const grammarSearchModel = createTokenSearchModel({
   rules: [
     {
       name: 'tag',
-      suggest: (input: string) =>
-        ['client', 'design system', 'urgent'].filter((value) =>
-          value.startsWith(input.toLowerCase()),
+      suggest: (input: string, state) =>
+        ['client', 'design system', 'urgent'].filter(
+          (value) =>
+            value.startsWith(input.toLowerCase()) &&
+            !state.tokens.some(
+              (token) => token.kind === 'tag' && token.parsedValue === value,
+            ),
         ),
     },
     {

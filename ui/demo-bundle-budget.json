@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 305900,
+  "totalJavaScriptGzip": 306000,
   "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 305870,
+  "measuredTotalJavaScriptGzip": 305936,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1347,6 +1347,22 @@
         "measuredTotalJavaScriptGzip": 305870,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 305900
+      }
+    },
+    {
+      "at": "2026-09-30T08:15:55.846Z",
+      "reason": "Grammar search suggestions filter already committed tags in the catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 305870,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 305900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 305936,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 306000
       }
     }
   ]

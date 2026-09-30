@@ -54,7 +54,7 @@ export function TokenSearchFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Grammar assisted search"
-        note="Type tag: or is: for suggestions. Whitespace commits valid filters as chips; the model evaluates every edit."
+        note="Type tag: or is: for suggestions. Committed tags leave the suggestion list; whitespace commits valid filters as chips, and the model evaluates every edit."
         align="inline-control"
       >
         <List gap="xs">

@@ -247,4 +247,37 @@ describe('createTokenSearchModel', () => {
     model.choose('tag:client');
     expect(model.state.value.tokens).toHaveLength(2);
   });
+
+  it('passes committed tokens to suggestions after initial state and each transition', () => {
+    const suggest = vi.fn((input: string, state: TokenSearchState) =>
+      ['client', 'design'].filter(
+        (value) =>
+          value.startsWith(input) &&
+          !state.tokens.some(
+            (token) => token.kind === 'tag' && token.parsedValue === value,
+          ),
+      ),
+    );
+    const model = createTokenSearchModel({
+      rules: [{ name: 'tag', suggest }],
+      initial: {
+        query: 'tag:c',
+        tokens: [{ value: 'tag:client', label: 'Client', offset: 0 }],
+      },
+    });
+    expect(model.suggestions.value).toEqual([]);
+    expect(suggest).toHaveBeenLastCalledWith('c', model.state.value);
+
+    model.remove('tag:client');
+    expect(model.suggestions.value).toEqual([
+      { value: 'tag:client', label: 'tag:client' },
+    ]);
+    model.choose('tag:client');
+    expect(model.suggestions.value).toEqual([]);
+    model.clear();
+    model.edit({ query: 'tag:c', tokens: [] });
+    expect(model.suggestions.value).toEqual([
+      { value: 'tag:client', label: 'tag:client' },
+    ]);
+  });
 });

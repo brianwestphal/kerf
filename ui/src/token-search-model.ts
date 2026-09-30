@@ -12,9 +12,10 @@ export interface TokenSearchRule {
   parse?: (input: string) => string | undefined;
   /** Label for a committed chip. Defaults to `name:input`. */
   label?: (value: string, input: string) => string;
-  /** Suggestions for the unfinished value after `name:`. */
+  /** Suggestions for the unfinished value after `name:`, with current committed tokens. */
   suggest?: (
     input: string,
+    state: TokenSearchState,
   ) => readonly (string | { value: string; label: string })[];
 }
 
@@ -145,19 +146,22 @@ export function createTokenSearchModel<Result = unknown>({
     const input = separator < 0 ? '' : unquote(raw!.slice(separator + 1));
     activeStart =
       match && raw ? match.index + match[0].lastIndexOf(raw) : undefined;
-    suggestions.value = (rule?.suggest?.(input) ?? []).flatMap((candidate) => {
-      const value = typeof candidate === 'string' ? candidate : candidate.value;
-      const token = resolve(`${rule!.name}:${quote(value)}`, 0);
-      return token
-        ? [
-            {
-              value: token.value,
-              label:
-                typeof candidate === 'string' ? token.label : candidate.label,
-            },
-          ]
-        : [];
-    });
+    suggestions.value = (rule?.suggest?.(input, state.value) ?? []).flatMap(
+      (candidate) => {
+        const value =
+          typeof candidate === 'string' ? candidate : candidate.value;
+        const token = resolve(`${rule!.name}:${quote(value)}`, 0);
+        return token
+          ? [
+              {
+                value: token.value,
+                label:
+                  typeof candidate === 'string' ? token.label : candidate.label,
+              },
+            ]
+          : [];
+      },
+    );
   };
   const publish = (next: TokenSearchState) => {
     state.value = next;

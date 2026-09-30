@@ -401,6 +401,11 @@ the existing controls, wiring, and application state. Automatic TabBar
 activation preserves logical tab focus when controlled selection replaces the
 strip.
 
+The optional `createTokenSearchModel` grammar now gives rule suggestion callbacks
+both the unfinished value and the current committed token state, enabling
+selected values to disappear from suggestions while preserving one-argument
+callbacks.
+
 The UX catalog detail projects visible, repository-relative `View demo source`
 and existing guidance links for every canonical entry, adds `View component
 source` for first-party components from their browser-import paths, and labels

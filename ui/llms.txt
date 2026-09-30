@@ -358,7 +358,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   Select All deletion does the same; deletion
   restoration finishes before the next keystroke rather than on a delayed frame.
   Persist both query and remaining tokens read from an edited field; change
-  `revision` to replace its DOM-owned text programmatically. The one richer case is `wireTokenSearchFields`, which manages the
+  `revision` to replace its DOM-owned text programmatically. In grammar-assisted
+  search, a model rule's `suggest(input, state)` receives current committed tokens
+  so suggestions can omit selected values; one-argument callbacks still work.
+  The one richer case is `wireTokenSearchFields`, which manages the
   collapsible field's expand/collapse/focus by default (on, per-behavior opt-out) and
   exposes the `expanded` signal on its handle — bind it in render or hand in your own
   via `collapsible.signals`. Do not hand-roll open/collapse/focus that helper

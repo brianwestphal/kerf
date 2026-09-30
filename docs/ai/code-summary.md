@@ -838,6 +838,9 @@ repeated mixed-token Select All deletion and refill in real browsers at wide and
 narrow widths. Deletion capture covers native beforeinput and synthetic shortcut
 input, protects replacement blur, and observes the controlled replacement at its
 mutation checkpoint before later user input. The adoption demo persists both query and token edits.
+`ui/src/token-search-model.ts` calls rule `suggest(input, state)` with the
+current committed tokens on initial load and after each state change. The
+grammar demo and browser test exercise suppression of already selected tags.
 Safe areas: `ui/src/foundation.css` defines the `--kui-safe-area-*` device insets
 (default `env(safe-area-inset-*)`); the pane and layout stylesheets route the
 inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe areas
