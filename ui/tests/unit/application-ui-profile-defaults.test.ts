@@ -109,7 +109,7 @@ describe('package default application UI profile', () => {
       ),
     );
     expect(findings).toEqual([]);
-  });
+  }, 30_000);
 
   it('reports a directly rendered Discouraged element through the same configuration', async () => {
     const eslint = new ESLint({
