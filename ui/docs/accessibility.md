@@ -40,6 +40,12 @@ chosen option shows its check, and the closed control reads the chosen labels
 in choice order as one short localized list (the `placeholderText` when none
 are chosen) instead of a removable tag per choice. `change` and `input` report
 the value array; in a form, every chosen value is submitted under `name`.
+Disabled choices remain visible with `aria-disabled` and cannot be selected;
+`disabledReason` adds a native tooltip. For a multiple Select, opt-in
+`selectAllLabel` and `clearLabel` render named footer buttons. They keep the
+popup open, select only enabled choices or clear the selection, and emit the
+ordinary `input` and `change` events only when the value changes. Their labels
+come from the application so they can be localized.
 
 A toolbar filter menu (a "Filter by label" funnel) is a multiple Select with
 `selectedPresentation="icon-only"` and a fixed `triggerIcon`; the types accept

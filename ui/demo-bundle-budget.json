@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 306700,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 306643,
+  "totalJavaScriptGzip": 307300,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 307270,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1427,6 +1427,22 @@
         "measuredTotalJavaScriptGzip": 306643,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 306700
+      }
+    },
+    {
+      "at": "2026-09-30T10:35:54.637Z",
+      "reason": "Select disabled choices and multiple-selection footer actions",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 306643,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 306700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 307270,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 307300
       }
     }
   ]

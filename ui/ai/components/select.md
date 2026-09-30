@@ -4,11 +4,11 @@
 
 `@kerfjs/ui:select` · Kerf UI · component · Controls
 
-Controlled Web Awesome select with typed single or multiple values and form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.
+Controlled Web Awesome select with typed single or multiple values, disabled choices, optional bulk actions, and form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.
 
 ## When to use
 
-Controlled Web Awesome select with typed form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.
+Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.
 
 - Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices.
 - Color an optional choice icon with a CssForegroundColor: uiColor() with a foreground token such as success-on-quiet, or foregroundColorVar() for an app-owned property. Fill tokens such as success are backgrounds that leave the icon nearly invisible, so they, lengths, raw color strings, and unqualified colorVar() values are rejected.
@@ -51,6 +51,8 @@ Exact prop names and types: [`@kerfjs/ui/select`](../public-api-signatures-v1.md
 - fit-content, max-content, or fill trigger width
 - custom selected content typography and ellipsis
 - multiple selection
+- disabled choice with an optional reason
+- opt-in select-all and clear actions for multiple selection
 - multiple icon-only filter trigger with a fixed triggerIcon
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
@@ -83,6 +85,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control.
 - Import select/register once; its scoped lifecycle adapter keeps the latest open/close request authoritative across animation reversals, canceled transitions, and removal. Do not add consumer popup timing or position repairs.
 - With multiple, the popup stays open while choices toggle (pointer, Enter, or Space) and closes on an outside press, Escape, or focus leaving; each chosen option shows a check, and the closed control summarizes the chosen labels in choice order.
+- Disabled choices stay visible but cannot be selected; disabledReason exposes a tooltip. A multiple Select can opt in to localized select-all and clear buttons, which skip disabled choices and publish ordinary input/change events for changed values.
 - A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the combobox's accessible name ends with the chosen labels in choice order, and its hidden value stays empty.
 - Once registered, an icon-only trigger (single or multiple) shows an aria-hidden Web Awesome help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the popup is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.
 

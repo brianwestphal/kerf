@@ -853,6 +853,10 @@ as items. Browser coverage verifies the nested group structure and actions.
 `ui/src/chip.tsx` renders a self-styled tag with an optional native remove
 button. It exposes delegated action and item identity, semantic appearance,
 compact geometry, and a disabled state.
+`ui/src/select.tsx` renders disabled choices and opt-in multiple-select action
+buttons. `ui/src/install-select-actions.ts` applies select-all or clear through
+the registered Web Awesome selection path and publishes normal input/change
+events for changed values.
 Safe areas: `ui/src/foundation.css` defines the `--kui-safe-area-*` device insets
 (default `env(safe-area-inset-*)`); the pane and layout stylesheets route the
 inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe areas

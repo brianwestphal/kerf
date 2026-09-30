@@ -244,6 +244,13 @@ Custom `renderSelected` text inherits the control color by default; the
 `--kui-select-selected-font-weight` tokens configure its typography. Plain
 selected text stays on one ellipsized line when the trigger narrows.
 
+For an unavailable entry, set `SelectChoice.disabled` and optionally
+`disabledReason`; the option stays visible but cannot be chosen. A multiple
+`Select` can opt in to `selectAllLabel` and `clearLabel` footer buttons.
+Select all includes only enabled choices, Clear removes the selection, and
+both report changes through the normal `input` and `change` events. The app
+still owns the controlled `value` and localized action labels.
+
 - `ResizableRegion` is an interactive controlled pane. `Grid` is the right answer for static equal-width columns; application CSS grid remains the answer for asymmetric or intrinsic tracks.
 - A `ResizableRegion`'s content spans the whole region, like its separator. Give
   it one child — normally a `Pane` — and that child fills the region, so the

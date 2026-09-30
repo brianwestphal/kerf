@@ -73,6 +73,7 @@ export const toolbarGroupSearchOpen = signal(false);
 export const toolbarGroupShape = signal<'pill' | 'rounded'>('pill');
 export const toolbarSort = signal<'recent' | 'priority' | 'title'>('recent');
 export const ticketLabels = signal<readonly string[]>(['bug', 'docs']);
+export const itemTypes = signal<readonly string[]>(['files']);
 export const ticketLabelFilter = signal<readonly string[]>(['bug', 'docs']);
 export const toolbarAvatarChoice = signal<'primary' | 'secondary'>('primary');
 export const floatingToolbarOpen = signal(false);

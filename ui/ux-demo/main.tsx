@@ -105,6 +105,7 @@ import {
   floatingToolbarOpen,
   grammarSearchModel,
   inspectorSection,
+  itemTypes,
   menuActionCurrent,
   menuActionPressed,
   menuToolsOpen,
@@ -1037,6 +1038,7 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
   if (Array.isArray(value)) {
     const name = element.getAttribute('name');
     if (name === 'ticket-labels') ticketLabels.value = value;
+    if (name === 'item-types') itemTypes.value = value;
     if (
       name === 'ticket-label-filter' ||
       name === 'toolbar-ticket-label-filter'

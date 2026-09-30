@@ -233,10 +233,25 @@ Select<'bug' | 'docs'>({
   multiple: true,
   value: ['bug'],
   label: 'Labels',
+  selectAllLabel: 'Select all',
+  clearLabel: 'Clear',
   choices: [
     { value: 'bug', label: 'Bug' },
-    { value: 'docs', label: 'Docs' },
+    {
+      value: 'docs',
+      label: 'Docs',
+      disabled: true,
+      disabledReason: 'Unavailable',
+    },
   ],
+});
+// @ts-expect-error Bulk actions are only available for multiple Selects.
+Select({
+  name: 'state',
+  value: 'ready',
+  label: 'State',
+  choices: [],
+  selectAllLabel: 'Select all',
 });
 // @ts-expect-error A multiple Select's value is an array of choice values.
 Select({

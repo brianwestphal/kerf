@@ -2012,6 +2012,43 @@ describe('production UI primitives', () => {
     ).toContain('data-trigger-width="fill"');
   });
 
+  it('renders disabled Select choices and opt-in multiple actions', () => {
+    const multiple = asHtml(
+      Select({
+        name: 'types',
+        multiple: true,
+        value: ['files'],
+        label: 'Item types',
+        choices: [
+          { value: 'files', label: 'Files' },
+          {
+            value: 'browsers',
+            label: 'Web Browsers',
+            disabled: true,
+            disabledReason: 'Not yet supported',
+          },
+        ],
+        selectAllLabel: 'Select all',
+        clearLabel: 'Clear',
+      }),
+    );
+    expect(multiple).toContain(
+      '<wa-option value="browsers" disabled title="Not yet supported">Web Browsers</wa-option>',
+    );
+    expect(multiple).toContain('data-select-action="all"');
+    expect(multiple).toContain('data-select-action="clear"');
+    expect(multiple).toContain('role="group" aria-label="Item types"');
+    const single = asHtml(
+      Select({
+        name: 'type',
+        value: 'files',
+        label: 'Item type',
+        choices: [{ value: 'files', label: 'Files' }],
+      }),
+    );
+    expect(single).not.toContain('kui-select__actions');
+  });
+
   it('renders a multiple Select as selected options without a single value or selected icon', () => {
     const host = document.createElement('div');
     host.innerHTML = asHtml(

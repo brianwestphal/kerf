@@ -87,6 +87,66 @@ test('a multiple Select stays open while choices toggle and closes on click away
   expect((await state(select)).display).toBe('Feature, Docs');
 });
 
+test('disabled choices and opt-in bulk actions keep the multiple Select controlled', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 800 });
+  await page.goto('/?component=select');
+  const select = page.locator('wa-select[name="item-types"]');
+  await select.scrollIntoViewIfNeeded();
+  const changes: unknown[] = [];
+  await page.exposeFunction('recordItemTypes', (value: unknown) =>
+    changes.push(value),
+  );
+  await select.evaluate((host) =>
+    host.addEventListener('change', () =>
+      (
+        window as unknown as { recordItemTypes(v: unknown): void }
+      ).recordItemTypes((host as HTMLElement & { value: unknown }).value),
+    ),
+  );
+  await select.click();
+  const browser = select.locator('wa-option[value="browsers"]');
+  await expect(browser).toHaveAttribute('aria-disabled', 'true');
+  await expect(browser).toHaveAttribute('title', 'Not yet supported');
+  const selectAll = select.locator('button[data-select-action="all"]');
+  const clear = select.locator('button[data-select-action="clear"]');
+  await expect(selectAll).toBeVisible();
+  await expect(clear).toBeVisible();
+  await selectAll.click();
+  await expect.poll(() => changes.length).toBe(1);
+  await expect
+    .poll(async () => (await state(select)).checked)
+    .toEqual(['files', 'windows', 'tabs']);
+  expect((await state(select)).display).toBe('Files, Windows, Tabs');
+  await expect(select).toHaveAttribute('open', '');
+  await selectAll.click();
+  expect(changes).toHaveLength(1);
+  if (browserName === 'chromium')
+    await page.screenshot({ path: 'test-results/select-actions-wide.png' });
+  await clear.focus();
+  await page.keyboard.press('Enter');
+  await expect.poll(() => changes.length).toBe(2);
+  await expect.poll(async () => (await state(select)).checked).toEqual([]);
+  await expect(select).toHaveAttribute('open', '');
+  await browser.click({ force: true });
+  expect((await state(select)).checked).toEqual([]);
+  await select.getByRole('combobox').focus();
+  await page.keyboard.press('Home');
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await expect(browser).toBeFocused();
+  await page.keyboard.press('Enter');
+  expect((await state(select)).checked).toEqual([]);
+  expect(changes).toHaveLength(2);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(selectAll).toBeVisible();
+  await expect(clear).toBeVisible();
+  if (browserName === 'chromium')
+    await page.screenshot({ path: 'test-results/select-actions-narrow.png' });
+});
+
 test('a multiple Select toggles from the keyboard and closes on Escape', async ({
   page,
 }) => {

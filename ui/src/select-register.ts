@@ -8,11 +8,13 @@ import WaOption from '@awesome.me/webawesome/dist/components/option/option.js';
 import WaSelect from '@awesome.me/webawesome/dist/components/select/select.js';
 
 import { installHelpTags } from './install-help-tag.js';
+import { installSelectActions } from './install-select-actions.js';
 import { installSelectLifecycle } from './install-select-lifecycle.js';
 import { installSelectMultiple } from './install-select-multiple.js';
 
 installSelectLifecycle(WaSelect.prototype);
 installSelectMultiple(WaSelect.prototype, WaOption.prototype);
+installSelectActions();
 installHelpTags();
 
 /**

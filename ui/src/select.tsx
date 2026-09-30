@@ -20,6 +20,10 @@ export interface SelectChoice<Value extends string = string> {
    */
   color?: CssForegroundColor;
   group?: string;
+  /** Keep an unavailable choice visible but prevent selection. */
+  disabled?: boolean;
+  /** Optional explanation exposed as the disabled option's native tooltip. */
+  disabledReason?: string;
   /**
    * Draw a divider between this choice and the previous choice in the same
    * list. A group boundary is already a separator, so the first choice of a
@@ -70,6 +74,8 @@ export interface SelectSingleValueProps<Value extends string = string> {
   /** Show only the selected choice icon while retaining the Select's accessible name. */
   selectedPresentation?: SelectSelectedPresentation;
   triggerIcon?: never;
+  selectAllLabel?: never;
+  clearLabel?: never;
 }
 
 /**
@@ -83,6 +89,10 @@ export interface SelectMultipleLabelProps<Value extends string = string> {
   renderSelected?: never;
   selectedPresentation?: 'label';
   triggerIcon?: never;
+  /** Opt in to a footer action that selects every enabled choice. */
+  selectAllLabel?: string;
+  /** Opt in to a footer action that clears the current selection. */
+  clearLabel?: string;
 }
 
 /**
@@ -102,6 +112,10 @@ export interface SelectMultipleIconProps<Value extends string = string> {
    * purpose (a funnel for a filter), independent of the selection.
    */
   triggerIcon: KerfUiContent;
+  /** Opt in to a footer action that selects every enabled choice. */
+  selectAllLabel?: string;
+  /** Opt in to a footer action that clears the current selection. */
+  clearLabel?: string;
 }
 
 export type SelectMultipleValueProps<Value extends string = string> =
@@ -192,9 +206,11 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
   // leading with one selected icon.
   const selected = multiple
     ? undefined
-    : choices.find((choice) => choice.value === values[0]);
+    : choices.find((choice) => choice.value === values[0] && !choice.disabled);
   const chosenCount = iconTrigger
-    ? choices.filter((choice) => values.includes(choice.value)).length
+    ? choices.filter(
+        (choice) => !choice.disabled && values.includes(choice.value),
+      ).length
     : 0;
   const icon = (choice: SelectChoice<Value>, selectedIcon = false) => (
     <span
@@ -229,7 +245,9 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
       )}
       <wa-option
         value={choice.value}
-        selected={multiple && values.includes(choice.value)}
+        selected={multiple && !choice.disabled && values.includes(choice.value)}
+        disabled={choice.disabled}
+        title={choice.disabled ? choice.disabledReason : undefined}
       >
         {choice.icon ? icon(choice) : null}
         {choice.label}
@@ -325,6 +343,32 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
           {choices.filter((choice) => choice.group === group).map(option)}
         </div>
       ))}
+      {props.multiple && (props.selectAllLabel || props.clearLabel) && (
+        <div
+          class="kui-select__actions"
+          role="group"
+          aria-label={label || ariaLabel}
+        >
+          {props.selectAllLabel && (
+            <button
+              class="kui-select__action"
+              type="button"
+              data-select-action="all"
+            >
+              {props.selectAllLabel}
+            </button>
+          )}
+          {props.clearLabel && (
+            <button
+              class="kui-select__action"
+              type="button"
+              data-select-action="clear"
+            >
+              {props.clearLabel}
+            </button>
+          )}
+        </div>
+      )}
     </wa-select>
   );
 }

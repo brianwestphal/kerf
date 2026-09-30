@@ -187,6 +187,12 @@ Use `Chip` for a removable tag. Pass `removeAction` and a specific
 root and update the application tag list. `size="compact"` and `disabled`
 cover dense and unavailable tags without custom Web Awesome selectors.
 
+For an unavailable Select value, set `SelectChoice.disabled` and optionally
+`disabledReason`. A multiple Select can pass `selectAllLabel` and `clearLabel`
+to show localized bulk actions. Listen for its ordinary `change` event and
+write the reported value array back to the controlled `value`; select-all
+includes only enabled choices.
+
 Compose a panel, dialog, or page heading with a plain `Toolbar`: the leading zone
 holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; grouped actions belong in the trailing zone. Keep optional

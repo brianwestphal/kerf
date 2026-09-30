@@ -233,6 +233,36 @@
   text-transform: uppercase;
 }
 
+.kui-select__actions {
+  display: flex;
+  gap: remify(4px);
+  margin-block-start: remify(4px);
+  padding-block-start: remify(8px);
+  border-block-start: 1px solid var(--kui-color-neutral-border-quiet);
+}
+
+.kui-select__action {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: remify(36px);
+  padding-inline: remify(8px);
+  border: 0;
+  border-radius: var(--kui-radius-s);
+  color: var(--kui-color-neutral-on-quiet);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.kui-select__action:hover {
+  background: var(--kui-color-neutral-fill-quiet);
+}
+
+.kui-select__action:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+
 /* Loading placeholder: a static box that mirrors the closed combobox (label
    above, a value skeleton and a dormant chevron inside a 44px control box).
    Rendered instead of the interactive wa-select, so it needs no registration. */

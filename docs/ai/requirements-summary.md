@@ -416,6 +416,9 @@ two separate groups visually while keyboard navigation remains on commands.
 Chip presents a short tag with an optional named remove button and delegated
 action. It supports semantic tone, appearance, shape, compact size, and disabled
 state without consumer rules on Web Awesome internals.
+Select choices can be disabled with an optional reason. Multiple Selects can
+show localized select-all and clear actions that preserve controlled values,
+skip disabled choices, and report changes through ordinary events.
 
 The UX catalog detail projects visible, repository-relative `View demo source`
 and existing guidance links for every canonical entry, adds `View component

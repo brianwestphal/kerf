@@ -2558,6 +2558,10 @@ interface SelectChoice<Value extends string = string> {
      */
     color?: CssForegroundColor;
     group?: string;
+    /** Keep an unavailable choice visible but prevent selection. */
+    disabled?: boolean;
+    /** Optional explanation exposed as the disabled option's native tooltip. */
+    disabledReason?: string;
     /**
      * Draw a divider between this choice and the previous choice in the same
      * list. A group boundary is already a separator, so the first choice of a
@@ -2609,6 +2613,8 @@ interface SelectSingleValueProps<Value extends string = string> {
     /** Show only the selected choice icon while retaining the Select's accessible name. */
     selectedPresentation?: SelectSelectedPresentation;
     triggerIcon?: never;
+    selectAllLabel?: never;
+    clearLabel?: never;
 }
 /**
  * Any number of chosen values. The popup stays open while the person toggles
@@ -2621,6 +2627,10 @@ interface SelectMultipleLabelProps<Value extends string = string> {
     renderSelected?: never;
     selectedPresentation?: 'label';
     triggerIcon?: never;
+    /** Opt in to a footer action that selects every enabled choice. */
+    selectAllLabel?: string;
+    /** Opt in to a footer action that clears the current selection. */
+    clearLabel?: string;
 }
 /**
  * A multiple Select drawn as an icon-only toolbar trigger, such as a
@@ -2639,6 +2649,10 @@ interface SelectMultipleIconProps<Value extends string = string> {
      * purpose (a funnel for a filter), independent of the selection.
      */
     triggerIcon: KerfUiContent;
+    /** Opt in to a footer action that selects every enabled choice. */
+    selectAllLabel?: string;
+    /** Opt in to a footer action that clears the current selection. */
+    clearLabel?: string;
 }
 type SelectMultipleValueProps<Value extends string = string> = SelectMultipleLabelProps<Value> | SelectMultipleIconProps<Value>;
 type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName & (SelectSingleValueProps<Value> | SelectMultipleValueProps<Value>);

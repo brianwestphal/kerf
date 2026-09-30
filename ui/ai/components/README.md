@@ -55,7 +55,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [SegmentedControl](./segmented-control.md) — Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.
 - [TokenSearchField](./token-search-field.md) — Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.
 - [ResizableRegion](./resize.md) — Pointer and keyboard-operable split region with a customizable handle icon.
-- [Select](./select.md) — Controlled Web Awesome select with typed form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.
+- [Select](./select.md) — Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.
 - [PopupMenu](./popup-menu.md) — A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.
 
 ## Kerf UI — Feedback

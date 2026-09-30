@@ -16,7 +16,12 @@ import {
   Wrench,
 } from 'lucide';
 
-import { selectedChoice, ticketLabelFilter, ticketLabels } from './state.js';
+import {
+  itemTypes,
+  selectedChoice,
+  ticketLabelFilter,
+  ticketLabels,
+} from './state.js';
 
 const toolbarChoices = [
   { value: 'quiet', label: 'Quiet', icon: Bell },
@@ -99,6 +104,32 @@ export function SelectDemo() {
           label="Labels"
           placeholderText="No labels"
           choices={labelChoices}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Multiple selection actions"
+        note="Select all includes enabled choices only; Clear reports an ordinary change. Unavailable choices remain visible with a reason."
+        align="inline-control"
+      >
+        <Select<string>
+          name="item-types"
+          multiple
+          value={itemTypes.value}
+          label="Item types"
+          placeholderText="No types"
+          selectAllLabel="Select all"
+          clearLabel="Clear"
+          choices={[
+            { value: 'files', label: 'Files' },
+            { value: 'windows', label: 'Windows' },
+            {
+              value: 'browsers',
+              label: 'Web Browsers',
+              disabled: true,
+              disabledReason: 'Not yet supported',
+            },
+            { value: 'tabs', label: 'Tabs' },
+          ]}
         />
       </CatalogExample>
       <CatalogExample
