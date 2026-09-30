@@ -95,6 +95,13 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+/* Equal side tracks center the middle zone on the toolbar's content box even
+   when one side has no controls. Side content still shrinks or wraps within
+   its own track, and responsive policies below may move a zone to a new row. */
+.kui-toolbar[data-center-align="balanced"][data-has-center="true"] {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
 .kui-toolbar[data-responsive="trailing-priority"][data-has-center="false"]:has(
     > .kui-toolbar__trailing [data-expanded="true"]
   ) {

@@ -317,6 +317,25 @@ describe('production UI primitives', () => {
       'divider-sides="tr" data-has-center="true" data-center-align="stretch" data-responsive="center-priority" data-responsive-at="compact" aria-label="Tools"',
     );
     expect(html).not.toContain('data-safe-area');
+    const balanced = asHtml(
+      Toolbar({
+        center: ToolbarText({ text: 'TICKET-123' }),
+        trailing: group,
+        centerAlign: 'balanced',
+      }),
+    );
+    expect(balanced).toContain(
+      'data-has-center="true" data-center-align="balanced"',
+    );
+    expect(balanced).toContain('class="kui-toolbar__leading"');
+    expect(
+      readFileSync(
+        resolve(import.meta.dirname, '../../src/toolbar.css'),
+        'utf8',
+      ),
+    ).toMatch(
+      /\.kui-toolbar\[data-center-align="balanced"\]\[data-has-center="true"\] \{\s*grid-template-columns: minmax\(0, 1fr\) auto minmax\(0, 1fr\)/,
+    );
     // An app bar claims only the screen edges it lists.
     const appBar = asHtml(
       Toolbar({

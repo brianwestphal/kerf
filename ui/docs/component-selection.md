@@ -218,7 +218,9 @@ name. Disabled and loading links omit `href` and leave the tab order. Use
 Use `Toolbar responsive="trailing-priority"` for a collapsible search in the
 trailing zone that should take a full second row when expanded. `responsiveAt`
 chooses the compact or narrow container breakpoint. The leading identity stays
-in the first row. `--kui-toolbar-leading-min-width`,
+in the first row. Set `centerAlign="balanced"` when the center zone must sit on
+the toolbar's midpoint despite unequal or empty side content; it gives the
+leading and trailing zones equal tracks. `--kui-toolbar-leading-min-width`,
 `--kui-toolbar-trailing-gap`, `--kui-toolbar-trailing-justify`, and the
 `--kui-toolbar-*-padding-inline` zone tokens adjust local geometry without
 selecting toolbar anatomy from application CSS.

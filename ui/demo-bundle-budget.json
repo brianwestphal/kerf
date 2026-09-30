@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 310100,
+  "totalJavaScriptGzip": 310200,
   "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 310063,
+  "measuredTotalJavaScriptGzip": 310197,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1635,6 +1635,22 @@
         "measuredTotalJavaScriptGzip": 310063,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 310100
+      }
+    },
+    {
+      "at": "2026-09-30T18:58:39.059Z",
+      "reason": "Balanced Toolbar side tracks center middle content",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 310063,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 310197,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310200
       }
     }
   ]

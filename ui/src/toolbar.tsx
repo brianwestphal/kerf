@@ -16,8 +16,8 @@ export interface ToolbarProps {
    * then draws its facing side the same way.
    */
   dividerSides?: Sides;
-  /** Horizontal treatment of the center zone. Defaults to centered content. */
-  centerAlign?: 'center' | 'stretch';
+  /** `balanced` gives both side zones equal tracks, centering the middle zone on the toolbar even if only one side has controls. */
+  centerAlign?: 'center' | 'stretch' | 'balanced';
   /**
    * Component-owned responsive layout; applications choose the policy rather
    * than restyling toolbar internals. Under every policy the trailing zone

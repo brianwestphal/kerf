@@ -98,6 +98,27 @@ export function ToolbarDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
+        label="Balanced center with trailing actions"
+        note="Equal leading and trailing tracks keep the ticket number on the toolbar midpoint even when only the trailing side has actions."
+        viewport={{ width: 'wide', frame: 'solid' }}
+      >
+        <Toolbar
+          label="Ticket header"
+          centerAlign="balanced"
+          center={<ToolbarText text="TICKET-123" size="large" />}
+          trailing={
+            <ToolbarControlGroup appearance="borderless">
+              <button type="button" aria-label="Refresh ticket">
+                <LucideIcon icon={RefreshCw} name="refresh-cw" />
+              </button>
+              <button type="button" aria-label="Ticket settings">
+                <LucideIcon icon={Settings} name="settings" />
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
+      <CatalogExample
         label="Gap without outer inset"
         note="An embedded toolbar can keep the 8px zone gap while its own padding is zero."
         viewport={{
