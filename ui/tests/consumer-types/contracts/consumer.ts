@@ -26,6 +26,7 @@ import {
   CatalogExample,
   CatalogExampleStack,
 } from '@kerfjs/ui/catalog';
+import { Chip } from '@kerfjs/ui/chip';
 import {
   CollapsiblePanel,
   CollapsiblePanelToggle,
@@ -107,6 +108,16 @@ import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { Workbench } from '@kerfjs/ui/workbench';
 
 const icon = ToolbarText({ text: 'Icon' });
+Chip({
+  children: 'Urgent',
+  removeAction: 'remove-tag',
+  removeLabel: 'Remove Urgent tag',
+});
+Chip({ children: 'Backlog', size: 'compact', disabled: true });
+// @ts-expect-error A removable chip requires a specific accessible name.
+Chip({ children: 'Unlabeled', removeAction: 'remove-tag' });
+// @ts-expect-error A plain chip cannot carry an orphan remove label.
+Chip({ children: 'Unlabeled', removeLabel: 'Remove tag' });
 const textVariant: TextVariant = 'h3';
 const inlineTextVariant: TextVariant = 'span';
 const textTone: TextTone = 'quiet';

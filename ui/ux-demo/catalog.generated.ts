@@ -13,6 +13,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "chip",
+    "name": "Chip",
+    "category": "Foundation",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Render removable tags without application rules on Web Awesome internals.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/chip.tsx",
+    "componentSource": "ui/src/chip.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "lucide-icon",
     "name": "LucideIcon",
     "category": "Foundation",

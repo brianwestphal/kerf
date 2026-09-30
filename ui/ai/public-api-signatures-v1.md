@@ -3044,6 +3044,40 @@ declare function Badge(props: BadgeProps): SafeHtml;
 export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgeProps, type BadgeShape, type BadgeSize, type BadgeTextProps, type BadgeTone };
 ```
 
+## `@kerfjs/ui/chip`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+import { BadgeTone, BadgeAppearance, BadgeShape, BadgeSize } from './badge.js';
+
+interface ChipCommonProps {
+    /** Visible, non-interactive chip content. */
+    children: SafeHtml | string | number;
+    tone?: BadgeTone;
+    appearance?: BadgeAppearance;
+    shape?: BadgeShape;
+    size?: BadgeSize;
+    disabled?: boolean;
+    /** Record identifier available to an application delegated action handler. */
+    itemId?: string;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/** A removable chip needs both a delegated action and a specific accessible name. */
+type ChipProps = ChipCommonProps & ({
+    removeAction: string;
+    removeLabel: string;
+} | {
+    removeAction?: never;
+    removeLabel?: never;
+});
+/** A short label with an optional native remove button. The application owns removal. */
+declare function Chip({ children, tone, appearance, shape, size, disabled, itemId, className, slot, ...remove }: ChipProps): SafeHtml;
+
+export { Chip, type ChipProps };
+```
+
 ## `@kerfjs/ui/lucide-icon`
 
 ```ts

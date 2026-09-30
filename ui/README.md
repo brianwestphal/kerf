@@ -181,6 +181,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | ------------------------------------------------------------------- | --------------------------------------- | -------------------------------------- |
 | `LucideIcon`                                                        | `@kerfjs/ui/lucide-icon`                | `@kerfjs/ui/lucide-icon.css`           |
 | `Badge`                                                             | `@kerfjs/ui/badge`                      | `@kerfjs/ui/badge.css`                 |
+| `Chip`                                                              | `@kerfjs/ui/chip`                       | `@kerfjs/ui/chip.css`                  |
 | `DisclosureArrow`                                                   | `@kerfjs/ui/disclosure-arrow`           | `@kerfjs/ui/disclosure-arrow.css`      |
 | `Toolbar`                                                           | `@kerfjs/ui/toolbar`                    | `@kerfjs/ui/toolbar.css`               |
 | `ToolbarControlGroup`, `ToolbarActionLink`                          | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css` |

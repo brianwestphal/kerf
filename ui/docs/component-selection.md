@@ -435,6 +435,28 @@ forks the package anatomy and spacing contract.
 </aside>
 ```
 
+## Removable tags
+
+Use `Chip` when a short tag has a remove action. `removeAction` becomes the
+native button's `data-action`; `removeLabel` must name the specific tag for
+assistive technology. Use `itemId` for the application's delegated handler.
+The application updates its tag list after the action. `size="compact"` uses a
+20px chip with a 16px remove button, and `disabled` disables removal. Tone,
+appearance, and shape use the same semantic choices as `Badge`; use `Badge`
+when no removal is needed and the content is status or count metadata.
+
+```tsx
+<Chip
+  size="compact"
+  tone="brand"
+  itemId={tag.id}
+  removeAction="remove-tag"
+  removeLabel={`Remove ${tag.name} tag`}
+>
+  {tag.name}
+</Chip>
+```
+
 ## Web Awesome overlap policy
 
 Web Awesome catalog coverage means supported and themed, not preferred. Import
@@ -451,7 +473,7 @@ replaces it (`PopupMenu` renders `wa-dropdown`; `Select` renders `wa-select` /
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wa-button`, `wa-dropdown`, `wa-dropdown-item`                     | Use buttons for actions and `PopupMenu` for a command menu, never raw dropdown markup. Use `ListItem` for a navigation row and `Select` for a value.  |
 | `wa-button-group`                                                  | Use only for exceptional grouped actions; use `SegmentedControl` for one-of-many selection.                                                           |
-| `wa-input`, `wa-tag`                                               | Use for ordinary text and tags; use `TokenSearchField` only when text and ordered filter tokens form one editor.                                      |
+| `wa-input`, `wa-tag`                                               | Use `Chip` for removable or disabled tags; use `TokenSearchField` only when text and ordered filter tokens form one editor.                           |
 | `wa-select`, `wa-option`                                           | Use `Select`, which owns Kerf spacing, controlled rendering, icon stability, and explicit registration.                                               |
 | `wa-tab-group`, `wa-tab`, `wa-tab-panel`                           | Use `TabBar`/`AppTab` for application tabs or `SegmentedControl` for compact local views.                                                             |
 | `wa-icon`                                                          | Use `LucideIcon` in application UI.                                                                                                                   |

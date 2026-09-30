@@ -484,6 +484,7 @@ describe('UX catalog metadata', () => {
         .map((entry) => entry.name),
     ).toEqual([
       'Badge',
+      'Chip',
       'LucideIcon',
       'DisclosureArrow',
       'Pane',

@@ -3,6 +3,7 @@ import { defineConfig } from 'tsup';
 const entries = [
   'index',
   'badge',
+  'chip',
   'css-values',
   'lucide-icon',
   'disclosure-arrow',

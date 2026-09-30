@@ -421,6 +421,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   takes no children, and needs a `label` (announced as an image) or
   `ariaHidden` when its owner announces it. A `TabScaffold` tab shows the dot
   with `badge: true` plus its required `badgeLabel`.
+- **Use `Chip` for removable tags.** Give the native remove button a delegated
+  `removeAction` and a specific `removeLabel`; the application updates the tag
+  list. `itemId` identifies the chip to the action handler. `size="compact"`
+  gives a 20px chip and 16px remove button; `disabled` disables removal.
 
 ## Public exports
 

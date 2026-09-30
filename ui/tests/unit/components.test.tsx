@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
 import { Badge } from '../../src/badge.js';
+import { Chip } from '../../src/chip.js';
 import { flex, rem, uiColor } from '../../src/css-values.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
@@ -44,6 +45,49 @@ const asHtml = (value: unknown) => String(value);
 const icon = LucideIcon({ icon: Circle, name: 'circle' });
 
 describe('production UI primitives', () => {
+  it('renders a named delegated remove action and native disabled state for Chip', () => {
+    const removable = asHtml(
+      Chip({
+        children: 'Urgent',
+        tone: 'danger',
+        appearance: 'outline',
+        shape: 'rounded',
+        size: 'compact',
+        itemId: 'tag-17',
+        removeAction: 'remove-tag',
+        removeLabel: 'Remove Urgent tag',
+        className: 'ticket-tag',
+        slot: 'end',
+      }),
+    );
+    expect(removable).toContain('class="kui-chip ticket-tag"');
+    expect(removable).toContain('data-component="chip"');
+    expect(removable).toContain('data-tone="danger"');
+    expect(removable).toContain('data-appearance="outline"');
+    expect(removable).toContain('data-shape="rounded"');
+    expect(removable).toContain('data-size="compact"');
+    expect(removable).toContain('data-item-id="tag-17"');
+    expect(removable).toContain('slot="end"');
+    expect(removable).toContain('class="kui-chip__label">Urgent</span>');
+    expect(removable).toContain('type="button"');
+    expect(removable).toContain('data-action="remove-tag"');
+    expect(removable).toContain('aria-label="Remove Urgent tag"');
+    expect(removable).not.toContain('data-disabled');
+
+    const disabled = asHtml(
+      Chip({
+        children: 'Locked',
+        disabled: true,
+        removeAction: 'remove-tag',
+        removeLabel: 'Remove Locked tag',
+      }),
+    );
+    expect(disabled).toContain('data-disabled=""');
+    expect(disabled).toContain('disabled');
+    const plain = asHtml(Chip({ children: 'Backlog' }));
+    expect(plain).not.toContain('<button');
+  });
+
   it('configures Badge semantics and presentation without consumer CSS', () => {
     const badge = asHtml(
       Badge({

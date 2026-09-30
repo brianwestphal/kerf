@@ -850,6 +850,9 @@ a token change; the grammar demo exercises repeated saved-search replacement.
 `ui/src/popup-menu.tsx` accepts the full `PopupMenuEntry` union in nested
 submenus and assigns the native submenu slot to headings and dividers as well
 as items. Browser coverage verifies the nested group structure and actions.
+`ui/src/chip.tsx` renders a self-styled tag with an optional native remove
+button. It exposes delegated action and item identity, semantic appearance,
+compact geometry, and a disabled state.
 Safe areas: `ui/src/foundation.css` defines the `--kui-safe-area-*` device insets
 (default `env(safe-area-inset-*)`); the pane and layout stylesheets route the
 inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe areas

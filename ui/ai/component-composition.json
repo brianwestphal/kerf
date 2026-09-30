@@ -61,6 +61,59 @@
       }
     },
     {
+      "key": "@kerfjs/ui:chip",
+      "package": "@kerfjs/ui",
+      "id": "chip",
+      "name": "Chip",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "tag text and identity",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "remove action and list update",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "disabled policy", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["foundation"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "The remove control is a native button and requires an action and a specific removeLabel. A disabled chip disables that button and removes it from keyboard interaction.",
+          "Keep meaningful tag text visible because tone is supplementary."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-chip",
+        "publicClasses": ["kui-chip"],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:lucide-icon",
       "package": "@kerfjs/ui",
       "id": "lucide-icon",

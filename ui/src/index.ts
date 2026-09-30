@@ -14,6 +14,7 @@ export {
   type BadgeTextProps,
   type BadgeTone,
 } from './badge.js';
+export { Chip, type ChipProps } from './chip.js';
 export {
   ContentItem,
   type ContentItemFrame,

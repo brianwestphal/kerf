@@ -182,6 +182,11 @@ For nested `PopupMenu` actions, put item, heading, and divider entries in
 `submenu`. The heading and divider remain visual group boundaries while the
 menu's keyboard navigation moves among actionable items.
 
+Use `Chip` for a removable tag. Pass `removeAction` and a specific
+`removeLabel` together; a delegated handler can read `itemId` from the chip
+root and update the application tag list. `size="compact"` and `disabled`
+cover dense and unavailable tags without custom Web Awesome selectors.
+
 Compose a panel, dialog, or page heading with a plain `Toolbar`: the leading zone
 holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; grouped actions belong in the trailing zone. Keep optional

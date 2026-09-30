@@ -64,6 +64,65 @@
       }
     },
     {
+      "id": "chip",
+      "name": "Chip",
+      "category": "Foundation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A short tag with semantic tone and an optional accessible remove button, including compact and disabled variants.",
+      "uses": [],
+      "purpose": "Render removable tags without application rules on Web Awesome internals.",
+      "publicExports": [
+        "Chip"
+      ],
+      "useWhen": [
+        "Show a short tag that the application can remove through a delegated action, including a compact or disabled tag."
+      ],
+      "avoidWhen": [
+        "Use Badge for non-interactive status and count metadata.",
+        "Do not use the remove button without a specific accessible name."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "tag text and identity",
+        "remove action and list update",
+        "disabled policy"
+      ],
+      "variants": [
+        "neutral, brand, pop, success, warning, or danger tone",
+        "quiet, solid, or outline appearance",
+        "pill or rounded shape",
+        "compact or default size",
+        "removable or plain, enabled or disabled"
+      ],
+      "accessibility": [
+        "The remove control is a native button and requires an action and a specific removeLabel. A disabled chip disables that button and removes it from keyboard interaction.",
+        "Keep meaningful tag text visible because tone is supplementary."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/chip",
+        "manualCssImport": "@kerfjs/ui/chip.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-chip"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=chip",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "lucide-icon",
       "name": "LucideIcon",
       "category": "Foundation",

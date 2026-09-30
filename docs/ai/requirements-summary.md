@@ -413,6 +413,9 @@ state and advances the editor revision, so an unchanged chip set cannot leave
 stale DOM-owned query text visible.
 PopupMenu nested menus accept action items, headings, and dividers; the latter
 two separate groups visually while keyboard navigation remains on commands.
+Chip presents a short tag with an optional named remove button and delegated
+action. It supports semantic tone, appearance, shape, compact size, and disabled
+state without consumer rules on Web Awesome internals.
 
 The UX catalog detail projects visible, repository-relative `View demo source`
 and existing guidance links for every canonical entry, adds `View component
