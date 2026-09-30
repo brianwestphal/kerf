@@ -53,6 +53,86 @@ afterEach(() => {
 });
 
 describe('TabBar wiring', () => {
+  it('corrects an RTL pinned tab through scroll, controlled render, direction change, and disposal', async () => {
+    const root = bar();
+    const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+    const pinned = root.querySelector<HTMLElement>('[data-tab-id="one"]')!;
+    pinned.dataset.pinned = 'true';
+    strip.dir = 'rtl';
+    strip.style.direction = 'rtl';
+    strip.style.borderRight = '1px solid black';
+    strip.style.paddingRight = '1px';
+    Object.defineProperties(strip, {
+      scrollWidth: { configurable: true, value: 600 },
+      clientWidth: { configurable: true, value: 300 },
+    });
+    vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue({
+      left: 0,
+      right: 300,
+    } as DOMRect);
+    let emulateBrokenSticky = true;
+    vi.spyOn(pinned, 'getBoundingClientRect').mockImplementation(
+      () =>
+        ({
+          right:
+            298 -
+            (emulateBrokenSticky ? strip.scrollLeft : 0) +
+            (Number.parseFloat(pinned.style.translate) || 0),
+        }) as DOMRect,
+    );
+    pinned.style.translate = '20px 0';
+    const stop = wireTabBars(root, { onReorder: vi.fn() });
+    expect(pinned.style.translate).toBe('-20px 0');
+    for (const [scrollLeft, translate] of [
+      [-100, '-100px 0'],
+      [-200, '-200px 0'],
+      [0, ''],
+      [-200, '-200px 0'],
+    ] as const) {
+      strip.scrollLeft = scrollLeft;
+      strip.dispatchEvent(new Event('scroll'));
+      expect(pinned.style.translate).toBe(translate);
+    }
+    strip.dispatchEvent(new Event('scroll'));
+    expect(pinned.style.translate).toBe('-200px 0');
+    root.dispatchEvent(new Event('scroll'));
+    expect(pinned.style.translate).toBe('-200px 0');
+    pinned.style.translate = '';
+    pinned
+      .querySelector('[role="tab"]')!
+      .setAttribute('aria-selected', 'false');
+    await Promise.resolve();
+    expect(pinned.style.translate).toBe('-200px 0');
+    emulateBrokenSticky = false;
+    strip.dispatchEvent(new Event('scroll'));
+    expect(pinned.style.translate).toBe('');
+    emulateBrokenSticky = true;
+    strip.dispatchEvent(new Event('scroll'));
+    expect(pinned.style.translate).toBe('-200px 0');
+    Object.defineProperty(strip, 'scrollWidth', {
+      configurable: true,
+      value: 200,
+    });
+    strip.dispatchEvent(new Event('scroll'));
+    expect(pinned.style.translate).toBe('');
+    Object.defineProperty(strip, 'scrollWidth', {
+      configurable: true,
+      value: 600,
+    });
+    strip.dispatchEvent(new Event('scroll'));
+    expect(pinned.style.translate).toBe('-200px 0');
+    strip.dir = 'ltr';
+    strip.style.direction = 'ltr';
+    strip.dispatchEvent(new Event('scroll'));
+    expect(pinned.style.translate).toBe('');
+    strip.dir = 'rtl';
+    strip.style.direction = 'rtl';
+    strip.dispatchEvent(new Event('scroll'));
+    expect(pinned.style.translate).toBe('-200px 0');
+    stop();
+    expect(pinned.style.translate).toBe('');
+  });
+
   it('reorders immutably before and after and leaves invalid requests unchanged', () => {
     const items = ['one', 'two', 'three'];
     expect(

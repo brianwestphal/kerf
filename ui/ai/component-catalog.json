@@ -3602,7 +3602,8 @@
         "overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)"
       ],
       "accessibility": [
-        "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model."
+        "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model.",
+        "Call wireTabBars for keyboard focus and selection, including the pinned leading tab's WebKit RTL scroll correction."
       ],
       "geometry": {
         "margin": "none",

@@ -151,6 +151,45 @@ export function wireTabBars(
     root.nodeType === 9 ? (root as Document) : root.ownerDocument
   )!;
   const view = ownerDocument.defaultView!;
+  // WebKit positions an RTL sticky flex child as though the negative scroll
+  // offset were added to its inline-start inset. Measure the actual pinned
+  // edge and correct only the displacement; Chromium and Firefox stay at 0.
+  const pinnedOffsets = new WeakMap<HTMLElement, number>();
+  const adjustedPinned = new Set<HTMLElement>();
+  const syncPinned = (strip: HTMLElement) => {
+    const pinned = strip.querySelector<HTMLElement>(
+      ':scope > .kui-app-tab[data-pinned="true"]',
+    );
+    if (!pinned) return;
+    const previous = pinned.style.translate
+      ? (pinnedOffsets.get(pinned) ?? 0)
+      : 0;
+    const style = view.getComputedStyle(strip);
+    if (style.direction !== 'rtl' || strip.scrollWidth <= strip.clientWidth) {
+      if (previous !== 0) pinned.style.translate = '';
+      pinnedOffsets.set(pinned, 0);
+      return;
+    }
+    const targetRight =
+      strip.getBoundingClientRect().right -
+      (Number.parseFloat(style.borderRightWidth) || 0) -
+      (Number.parseFloat(style.paddingRight) || 0);
+    const rawRight = pinned.getBoundingClientRect().right - previous;
+    const delta = targetRight - rawRight;
+    const next = Math.abs(delta) < 0.5 ? 0 : delta;
+    if (next !== previous) pinned.style.translate = next ? `${next}px 0` : '';
+    pinnedOffsets.set(pinned, next);
+    adjustedPinned.add(pinned);
+  };
+  const syncPinnedInRoot = () =>
+    root
+      .querySelectorAll<HTMLElement>('[data-kui-tab-list]')
+      .forEach(syncPinned);
+  const onStripScroll = (event: Event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.matches('[data-kui-tab-list]'))
+      syncPinned(target);
+  };
   let autoScroll:
     | {
         strip: HTMLElement;
@@ -439,6 +478,7 @@ export function wireTabBars(
   root.addEventListener('dragend', clear);
   root.addEventListener('keydown', onKeyDown);
   root.addEventListener('focusin', onFocusIn);
+  root.addEventListener('scroll', onStripScroll, true);
   root
     .querySelectorAll<HTMLElement>(
       '[data-kui-tab-list] [role="tab"][aria-selected="true"]',
@@ -464,16 +504,18 @@ export function wireTabBars(
     return changed;
   };
   recordSelection();
+  syncPinnedInRoot();
   const selectionObserver = new view.MutationObserver(() => {
     if (disposed) return;
     for (const button of recordSelection())
       if (ownerDocument.activeElement !== button) revealInStrip(button);
+    syncPinnedInRoot();
   });
   selectionObserver.observe(root, {
     subtree: true,
     childList: true,
     attributes: true,
-    attributeFilter: ['aria-selected'],
+    attributeFilter: ['aria-selected', 'dir'],
   });
 
   return () => {
@@ -486,5 +528,8 @@ export function wireTabBars(
     root.removeEventListener('dragend', clear);
     root.removeEventListener('keydown', onKeyDown);
     root.removeEventListener('focusin', onFocusIn);
+    root.removeEventListener('scroll', onStripScroll, true);
+    for (const pinned of adjustedPinned) pinned.style.translate = '';
+    adjustedPinned.clear();
   };
 }

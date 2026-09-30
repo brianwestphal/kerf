@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 308400,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 308364,
+  "totalJavaScriptGzip": 308700,
+  "measuredLargestJavaScriptGzip": 126042,
+  "measuredTotalJavaScriptGzip": 308608,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1539,6 +1539,22 @@
         "measuredTotalJavaScriptGzip": 308364,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 308400
+      }
+    },
+    {
+      "at": "2026-09-30T14:47:59.710Z",
+      "reason": "WebKit RTL pinned tab wiring correction",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 308364,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 308400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 308608,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 308700
       }
     }
   ]

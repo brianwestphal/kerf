@@ -248,7 +248,9 @@ its internal classes. `--kui-tab-bar-trailing-flex` controls the trailing zone.
 Set `pinned` on the first `AppTab` when that tab must remain visible as peers
 scroll. It stays inside the tablist and keyboard order. Set the public
 `--kui-app-tab-pinned-background` token if the surrounding surface differs from
-the default; the pinned tab must cover peers as they scroll beneath it.
+the default; the pinned tab must cover peers as they scroll beneath it. Call
+`wireTabBars` for keyboard selection and reorder behavior and its WebKit RTL
+scroll correction.
 
 - `StateBanner` persists beside affected work; `EmptyState` replaces absent content; `wa-callout` is contextual ecosystem content; `wa-toast` and `wa-toast-item` are transient and must not carry the only copy of important state.
 

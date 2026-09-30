@@ -77,20 +77,39 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
 
 test('pinned tab stays at the inline start in a right-to-left strip', async ({
   page,
-  browserName,
-}) => {
-  test.skip(
-    browserName === 'webkit',
-    'KF-MYFQAS: WebKit RTL sticky positioning',
-  );
+}, testInfo) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto('/?component=tab-bar');
   const bar = page.locator('[data-tab-bar-id="pinned-tab-bar"]');
   await bar.evaluate((element) => {
     const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
     strip.dir = 'rtl';
-    strip.scrollLeft = -strip.scrollWidth;
   });
+  const maxScroll = await bar.evaluate((element) => {
+    const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
+    return strip.scrollWidth - strip.clientWidth;
+  });
+  for (const offset of [0, -maxScroll / 2, -maxScroll, 0, -maxScroll]) {
+    await bar.evaluate((element, next) => {
+      element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!.scrollLeft =
+        next;
+    }, offset);
+    await expect
+      .poll(() =>
+        bar.evaluate((element) => {
+          const strip =
+            element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
+          const pinned = element.querySelector<HTMLElement>(
+            '[data-pinned="true"]',
+          )!;
+          return Math.abs(
+            pinned.getBoundingClientRect().right -
+              (strip.getBoundingClientRect().right - 2),
+          );
+        }),
+      )
+      .toBeLessThanOrEqual(2);
+  }
   const geometry = await bar.evaluate((element) => {
     const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
     const pinned = element.querySelector<HTMLElement>('[data-pinned="true"]')!;
@@ -103,4 +122,34 @@ test('pinned tab stays at the inline start in a right-to-left strip', async ({
   expect(geometry.scrollLeft).toBeLessThan(0);
   expect(geometry.pinnedRight).toBeLessThanOrEqual(geometry.stripRight + 1);
   expect(geometry.pinnedRight).toBeGreaterThanOrEqual(geometry.stripRight - 4);
+  await bar.screenshot({ path: testInfo.outputPath('pinned-rtl-390.png') });
+  const buttons = bar.getByRole('tab');
+  // A controlled render may replace the inline correction while keeping the
+  // same tab node. Selection mutation must restore the pinned edge.
+  await bar.evaluate((element) => {
+    const pinned = element.querySelector<HTMLElement>('[data-pinned="true"]')!;
+    pinned.style.translate = '';
+    const button = pinned.querySelector<HTMLButtonElement>('[role="tab"]')!;
+    button.setAttribute('aria-selected', 'false');
+    button.setAttribute('aria-selected', 'true');
+  });
+  await expect
+    .poll(() =>
+      bar.evaluate((element) => {
+        const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
+        const pinned = element.querySelector<HTMLElement>(
+          '[data-pinned="true"]',
+        )!;
+        return Math.abs(
+          pinned.getBoundingClientRect().right -
+            (strip.getBoundingClientRect().right - 2),
+        );
+      }),
+    )
+    .toBeLessThanOrEqual(2);
+  await buttons.last().focus();
+  await buttons.last().press('Home');
+  await expect(buttons.first()).toBeFocused();
+  await buttons.first().press('ArrowRight');
+  await expect(buttons.nth(1)).toBeFocused();
 });
