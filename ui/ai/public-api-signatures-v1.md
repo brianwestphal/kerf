@@ -174,9 +174,11 @@ interface ToolbarProps {
      * - `wrap` keeps one row while every zone fits at its natural width, and
      *   otherwise moves the trailing zone below a whole leading identity.
      * - `center-priority` gives an expanded center control the full row.
+     * - `trailing-priority` moves an expanded trailing control to a full row
+     *   below the leading identity at `responsiveAt`.
      */
-    responsive?: 'none' | 'stack' | 'wrap' | 'center-priority';
-    /** Container width at which `responsive="stack"` activates. */
+    responsive?: 'none' | 'stack' | 'wrap' | 'center-priority' | 'trailing-priority';
+    /** Container width at which `stack` or `trailing-priority` activates. */
     responsiveAt?: 'compact' | 'narrow';
     /**
      * Screen edges this toolbar claims for device safe-area compensation, for an

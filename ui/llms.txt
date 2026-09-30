@@ -157,6 +157,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `ToolbarText size="xsmall"` suits a dense rail heading. The
   `TokenSearchField` editor shrinks in narrow groups; its minimum width can be
   set with `--kui-token-search-editor-min-width`.
+- **Use Toolbar zone options.** `responsive="trailing-priority"` moves an
+  expanded trailing control to a full second row at `responsiveAt`; the leading
+  title remains above it. Public leading-min-width, trailing-gap/justify, and
+  per-zone inline-padding tokens cover app-specific toolbar geometry.
 - **Use `Row` for horizontal and `List` for vertical layout.** Both expose
   physical `hAlign`/`vAlign` props and typed gaps. Row defaults to left/full,
   an `xs` gap, and no wrapping; List retains full/top and zero-gap defaults.

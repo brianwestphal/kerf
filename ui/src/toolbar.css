@@ -92,6 +92,14 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+.kui-toolbar[data-responsive="trailing-priority"][data-has-center="false"]:has(
+    > .kui-toolbar__trailing [data-expanded="true"]
+  ) {
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, var(--kui-token-search-expanded-width, remify(480px)));
+}
+
 .kui-toolbar {
   --_kui-toolbar-divider-top: transparent;
   --_kui-toolbar-divider-right: transparent;
@@ -154,6 +162,8 @@
   display: flex;
   min-width: 0;
   min-height: var(--_kui-toolbar-band);
+  padding-inline: var(--kui-toolbar-zone-padding-inline, 0px);
+  box-sizing: border-box;
   align-items: flex-start;
   gap: var(--kui-toolbar-gap, remify(8px));
 }
@@ -165,6 +175,11 @@
    the 3- and 2-column layouts, and still stacks under the leading zone when a
    consumer collapses the toolbar to a single column. */
 .kui-toolbar__leading {
+  min-width: var(--kui-toolbar-leading-min-width, 0px);
+  padding-inline: var(
+    --kui-toolbar-leading-padding-inline,
+    var(--kui-toolbar-zone-padding-inline, 0px)
+  );
   grid-column: 1;
   overflow: hidden;
 }
@@ -175,6 +190,10 @@
      the leading identity gives way first, the way a platform toolbar truncates
      its title before it overlaps the centered controls. */
   min-width: min-content;
+  padding-inline: var(
+    --kui-toolbar-center-padding-inline,
+    var(--kui-toolbar-zone-padding-inline, 0px)
+  );
   justify-content: center;
   grid-column: 2;
 }
@@ -189,13 +208,76 @@
 }
 
 .kui-toolbar__trailing {
-  justify-content: flex-end;
+  padding-inline: var(
+    --kui-toolbar-trailing-padding-inline,
+    var(--kui-toolbar-zone-padding-inline, 0px)
+  );
+  justify-content: var(--kui-toolbar-trailing-justify, flex-end);
+  justify-self: var(--kui-toolbar-trailing-justify-self, stretch);
   grid-column: -2 / -1;
+  gap: var(--kui-toolbar-trailing-gap, var(--kui-toolbar-gap, remify(8px)));
   /* Trailing actions never clip (KF-4EYES0): the zone wraps its groups, so its
      track can shrink only to the widest single group. When one row cannot hold
      every group, the next group moves to a new trailing-aligned row instead of
      overflowing the toolbar. */
   flex-wrap: wrap;
+}
+
+/* An expanded trailing search gets a complete second row while the leading
+   identity and optional center controls remain in the first. The query styles
+   descendants because a toolbar cannot query its own container width. */
+@container kui-toolbar (max-width: remify(832px)) {
+  .kui-toolbar[data-responsive="trailing-priority"][data-responsive-at="narrow"][data-has-center="false"]:has(
+      > .kui-toolbar__trailing [data-expanded="true"]
+    )
+    > .kui-toolbar__leading {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .kui-toolbar[data-responsive="trailing-priority"][data-responsive-at="narrow"]:has(
+      > .kui-toolbar__trailing [data-expanded="true"]
+    )
+    > .kui-toolbar__trailing {
+    width: 100%;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+  }
+
+  .kui-toolbar[data-responsive="trailing-priority"][data-responsive-at="narrow"]
+    > .kui-toolbar__trailing
+    > [data-expanded="true"] {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+}
+
+@container kui-toolbar (max-width: remify(704px)) {
+  .kui-toolbar[data-responsive="trailing-priority"][data-responsive-at="compact"][data-has-center="false"]:has(
+      > .kui-toolbar__trailing [data-expanded="true"]
+    )
+    > .kui-toolbar__leading {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .kui-toolbar[data-responsive="trailing-priority"][data-responsive-at="compact"]:has(
+      > .kui-toolbar__trailing [data-expanded="true"]
+    )
+    > .kui-toolbar__trailing {
+    width: 100%;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+  }
+
+  .kui-toolbar[data-responsive="trailing-priority"][data-responsive-at="compact"]
+    > .kui-toolbar__trailing
+    > [data-expanded="true"] {
+    width: 100%;
+    flex: 1 1 100%;
+  }
 }
 
 /* Content-driven wrap: one row while every zone fits at its natural width;

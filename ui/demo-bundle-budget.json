@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 305000,
-  "measuredLargestJavaScriptGzip": 126038,
-  "measuredTotalJavaScriptGzip": 304975,
+  "totalJavaScriptGzip": 305100,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 305099,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1283,6 +1283,22 @@
         "measuredTotalJavaScriptGzip": 304975,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 305000
+      }
+    },
+    {
+      "at": "2026-09-30T04:40:08.255Z",
+      "reason": "Trailing-priority Toolbar layout and catalog specimen extend the demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126038,
+        "measuredTotalJavaScriptGzip": 304975,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 305000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 305099,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 305100
       }
     }
   ]

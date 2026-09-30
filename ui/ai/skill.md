@@ -214,6 +214,8 @@ tokens; plain text ellipsizes in a narrow trigger.
 
 For application tabs, `AppTab presentation="icon-only"` retains its accessible `name`, `labelMaxWidth` truncates the visible name, and `attention` colors it through `--kui-app-tab-attention-color`. Configure TabBar strip geometry through public `--kui-tab-bar-strip-*` tokens.
 
+Use `Toolbar responsive="trailing-priority"` when an expanded trailing search needs a full second row below its heading at `responsiveAt`. Configure a leading minimum width, trailing gap and justification, or zone inline padding with the public `--kui-toolbar-*` tokens rather than selectors into toolbar zones.
+
 For compact dialog copy, use `Text flush lineHeight="tight"`; for compact metadata, use `ValueTable density="compact"` and its public row columns/padding/gap tokens. `ToolbarText size="xsmall"` fits a dense rail heading. A `TokenSearchField` editor shrinks inside a narrow group by default; set `--kui-token-search-editor-min-width` when a minimum is needed. A full-height shell uses the one `.kui-app-root` mount container documented in `docs/document-baseline.md`.
 
 Common mistakes:

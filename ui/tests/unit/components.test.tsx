@@ -353,6 +353,18 @@ describe('production UI primitives', () => {
     expect(
       asHtml(
         Toolbar({
+          leading: ToolbarText({ text: 'Tickets' }),
+          trailing: ToolbarText({ text: 'Search' }),
+          responsive: 'trailing-priority',
+          responsiveAt: 'compact',
+        }),
+      ),
+    ).toContain(
+      'data-responsive="trailing-priority" data-responsive-at="compact"',
+    );
+    expect(
+      asHtml(
+        Toolbar({
           leading: ToolbarText({ text: 'Release plan', size: 'xlarge' }),
           trailing: ToolbarControlGroup({ children: icon }),
           responsive: 'wrap',

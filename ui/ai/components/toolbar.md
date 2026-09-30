@@ -34,6 +34,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - stacked zones at compact or narrow widths
 - content-driven wrap that keeps a heading title whole
 - center priority for an expanded center control
+- trailing priority for an expanded trailing control at compact or narrow widths
 - trailing groups wrap instead of clipping
 - app bar or bottom bar claiming its screen edges (safeAreaEdges)
 
@@ -80,7 +81,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-toolbar`, `kui-toolbar__center`, `kui-toolbar__leading`, `kui-toolbar__trailing` on an element you write; render `Toolbar` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-font-sans`, `--kui-toolbar-divider-color`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-font-sans`, `--kui-toolbar-center-padding-inline`, `--kui-toolbar-divider-color`, `--kui-toolbar-leading-min-width`, `--kui-toolbar-leading-padding-inline`, `--kui-toolbar-trailing-gap`, `--kui-toolbar-trailing-justify`, `--kui-toolbar-trailing-justify-self`, `--kui-toolbar-trailing-padding-inline`, `--kui-toolbar-zone-padding-inline`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

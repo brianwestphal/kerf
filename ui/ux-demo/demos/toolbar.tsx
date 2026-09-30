@@ -171,6 +171,30 @@ export function ToolbarDemo() {
           }
         />
       </CatalogExample>
+      <CatalogExample
+        label="Trailing search priority"
+        note="An expanded trailing search takes the full row below the heading at narrow widths."
+        viewport={{ width: 'text', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-toolbar-overflow': 'trailing-priority' }}
+      >
+        <Toolbar
+          label="Search tickets"
+          responsive="trailing-priority"
+          leading={<ToolbarText text="Tickets" size="large" />}
+          trailing={
+            <ToolbarControlGroup content="search" expanded>
+              <TokenSearchField
+                id="trailing-priority-search"
+                label="Search tickets"
+                collapsible
+                expanded
+                presentation="toolbar-group"
+                placeholder="Search tickets"
+              />
+            </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

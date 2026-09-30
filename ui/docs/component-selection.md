@@ -174,6 +174,14 @@ an upstream component or recipe request.
 
 ## Ambiguous choices
 
+Use `Toolbar responsive="trailing-priority"` for a collapsible search in the
+trailing zone that should take a full second row when expanded. `responsiveAt`
+chooses the compact or narrow container breakpoint. The leading identity stays
+in the first row. `--kui-toolbar-leading-min-width`,
+`--kui-toolbar-trailing-gap`, `--kui-toolbar-trailing-justify`, and the
+`--kui-toolbar-*-padding-inline` zone tokens adjust local geometry without
+selecting toolbar anatomy from application CSS.
+
 For compact dialog copy, use `Text flush lineHeight="tight"`; block Text still
 resets native margins. `ValueTable density="compact"` reduces row padding and
 gap. Its `--kui-value-table-row-columns`, `--kui-value-table-row-padding-block`,

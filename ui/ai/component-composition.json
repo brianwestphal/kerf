@@ -1405,7 +1405,15 @@
         "publicTokens": [
           "--kui-color-neutral-border-normal",
           "--kui-font-sans",
-          "--kui-toolbar-divider-color"
+          "--kui-toolbar-center-padding-inline",
+          "--kui-toolbar-divider-color",
+          "--kui-toolbar-leading-min-width",
+          "--kui-toolbar-leading-padding-inline",
+          "--kui-toolbar-trailing-gap",
+          "--kui-toolbar-trailing-justify",
+          "--kui-toolbar-trailing-justify-self",
+          "--kui-toolbar-trailing-padding-inline",
+          "--kui-toolbar-zone-padding-inline"
         ]
       },
       "diagnostics": [
