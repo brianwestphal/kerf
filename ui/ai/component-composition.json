@@ -1481,7 +1481,7 @@
       },
       "cssValueProps": [],
       "boundaries": {
-        "rootClass": "kui-toolbar-action-link",
+        "rootClass": "kui-toolbar-control-group",
         "publicClasses": [
           "kui-toolbar-action-link",
           "kui-toolbar-control-group"

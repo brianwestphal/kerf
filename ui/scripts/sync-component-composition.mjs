@@ -39,6 +39,7 @@ function defaultEntry(entry) {
   const helpers = (entry.wiring ?? []).map((item) => item.export);
   const requiredWiring = (entry.wiring ?? []).filter((item) => item.required);
   const isRecipe = entry.kind === 'recipe';
+  const componentRootClass = `kui-${entry.id}`;
   return {
     key: qualify(entry.id),
     package: v1.package,
@@ -80,7 +81,9 @@ function defaultEntry(entry) {
     accessibility: { obligations: entry.accessibility ?? [] },
     cssValueProps: entry.cssValueProps ?? [],
     boundaries: {
-      rootClass: entry.publicClasses?.[0] ?? null,
+      rootClass: entry.publicClasses?.includes(componentRootClass)
+        ? componentRootClass
+        : (entry.publicClasses?.[0] ?? null),
       publicClasses: entry.publicClasses ?? [],
       ...(entry.placeableClasses?.length
         ? { placeableClasses: entry.placeableClasses }

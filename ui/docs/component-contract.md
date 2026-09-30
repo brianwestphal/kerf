@@ -55,6 +55,8 @@ diagnostic even when both the wrapper and a rendered root reject that parent.
 When one catalog entry exports another JSX component with different placement,
 `jsxExports` gives that export its own parent contract. The extra export does
 not stand for the entry's root when a parent zone is checked.
+Generated `boundaries.rootClass` prefers the public `kui-<entry-id>` class when
+present, so a sibling export's class cannot become the entry's root class.
 
 `boundaries.placeableClasses` names the subset of `publicClasses` an
 application may write onto its own elements (layout utilities, the document

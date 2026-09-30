@@ -72,6 +72,15 @@ describe('component composition catalog contract', () => {
           entry.provenance,
       ),
     ).toBe(true);
+    const controlGroup = composition.entries.find(
+      (entry) => entry.id === 'toolbar-control-group',
+    );
+    expect(controlGroup?.boundaries.rootClass).toBe(
+      'kui-toolbar-control-group',
+    );
+    expect(controlGroup?.boundaries.publicClasses).toContain(
+      'kui-toolbar-action-link',
+    );
   });
 
   it('declares wiring-owned state attributes on every entry, flattened with their helper', async () => {
