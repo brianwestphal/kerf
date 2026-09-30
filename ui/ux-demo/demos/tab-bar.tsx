@@ -103,6 +103,41 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
+        label="Compact project tabs"
+        align="none"
+        viewport={{
+          tokens: {
+            '--kui-tab-bar-strip-min-height': '36px',
+            '--kui-tab-bar-strip-padding': '2px',
+            '--kui-tab-bar-strip-gap': '4px',
+            '--kui-tab-bar-strip-radius': '10px',
+            '--kui-tab-bar-strip-background':
+              'var(--kui-color-neutral-fill-quiet)',
+            '--kui-app-tab-attention-color':
+              'var(--kui-color-warning-on-quiet)',
+          },
+        }}
+      >
+        <TabBar id="compact-project-tab-bar" label="Compact project tabs">
+          <AppTab
+            id="compact-inspector"
+            name="Inspector"
+            presentation="icon-only"
+            size="compact"
+            closable={false}
+            leading={<LucideIcon icon={PanelLeft} name="panel-left" />}
+          />
+          <AppTab
+            id="compact-attention"
+            name="A project with a longer name"
+            size="compact"
+            labelMaxWidth={112}
+            attention
+            closable={false}
+          />
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample
         label="Overflow · scroll dividers"
         note="When the tabs overflow, a divider marks each side of the strip with tabs scrolled out of view. wireScrollDividers reports the strip's scroll state; the tab bar draws the lines."
         align="none"

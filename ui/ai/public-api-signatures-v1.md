@@ -934,6 +934,7 @@ type AppTabRootAttributes = Readonly<Record<`data-${string}`, string | undefined
     'data-selected'?: never;
     'data-tab-dragging'?: never;
     'data-tab-drop-position'?: never;
+    'data-attention'?: never;
 }>;
 type AppTabPresentation = 'pill' | 'segmented' | 'icon-only';
 type AppTabSize = 'default' | 'compact';
@@ -941,6 +942,8 @@ interface AppTabProps {
     id: string;
     name: string;
     selected?: boolean;
+    /** Emphasize the visible tab name with the attention color token. */
+    attention?: boolean;
     closable?: boolean;
     draggable?: boolean;
     leading?: KerfUiContent;
@@ -973,7 +976,7 @@ interface AppTabProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: AppTabProps): SafeHtml;
+declare function AppTab({ id, name, selected, attention, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: AppTabProps): SafeHtml;
 
 export { AppTab, type AppTabPresentation, type AppTabProps, type AppTabSize };
 ```

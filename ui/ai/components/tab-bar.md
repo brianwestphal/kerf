@@ -97,7 +97,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-tab-bar`, `kui-tab-bar__leading`, `kui-tab-bar__tabs`, `kui-tab-bar__trailing`, `kui-tab-bar__end` on an element you write; render `TabBar` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-tab-bar-background`, `--kui-tab-bar-border`, `--kui-tab-bar-divider-color`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-tab-bar-background`, `--kui-tab-bar-border`, `--kui-tab-bar-divider-color`, `--kui-tab-bar-strip-background`, `--kui-tab-bar-strip-border-width`, `--kui-tab-bar-strip-flex`, `--kui-tab-bar-strip-gap`, `--kui-tab-bar-strip-margin-block`, `--kui-tab-bar-strip-min-height`, `--kui-tab-bar-strip-overflow-block`, `--kui-tab-bar-strip-padding`, `--kui-tab-bar-strip-radius`, `--kui-tab-bar-strip-scroll-padding-inline`, `--kui-tab-bar-trailing-flex`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

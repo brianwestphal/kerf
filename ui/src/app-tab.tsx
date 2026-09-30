@@ -12,6 +12,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-selected',
   'data-tab-dragging',
   'data-tab-drop-position',
+  'data-attention',
 ]);
 
 type AppTabRootAttributes = Readonly<
@@ -22,6 +23,7 @@ type AppTabRootAttributes = Readonly<
     'data-selected'?: never;
     'data-tab-dragging'?: never;
     'data-tab-drop-position'?: never;
+    'data-attention'?: never;
   }
 >;
 
@@ -32,6 +34,8 @@ export interface AppTabProps {
   id: string;
   name: string;
   selected?: boolean;
+  /** Emphasize the visible tab name with the attention color token. */
+  attention?: boolean;
   closable?: boolean;
   draggable?: boolean;
   leading?: KerfUiContent;
@@ -85,6 +89,7 @@ export function AppTab({
   id,
   name,
   selected = false,
+  attention = false,
   closable = true,
   draggable = false,
   leading,
@@ -123,6 +128,7 @@ export function AppTab({
       data-component="app-tab"
       data-tab-id={id}
       data-selected={String(selected)}
+      data-attention={attention ? 'true' : undefined}
       data-presentation={presentation}
       data-size={size}
       data-placeholder={placeholder ? 'true' : undefined}

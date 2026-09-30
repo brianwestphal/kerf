@@ -106,6 +106,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.kui-app-tab[data-attention="true"] .kui-app-tab__name {
+  color: var(--kui-app-tab-attention-color, var(--kui-color-warning-on-quiet));
+}
 .kui-app-tab[data-presentation="icon-only"] .kui-app-tab__select {
   width: 100%;
   justify-content: center;

@@ -176,6 +176,14 @@ an upstream component or recipe request.
 
 - `Toolbar` serves persistent app chrome and headings; the zone contents and accessible naming distinguish the purpose.
 - `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `Select` handles a longer value list.
+
+Use `AppTab presentation="icon-only"` with its `name` kept as the accessible
+tab name, and `labelMaxWidth` for an ellipsized visible name. Set `attention`
+to color a tab's name with `--kui-app-tab-attention-color`. A `TabBar` owns its
+scrolling strip; its public `--kui-tab-bar-strip-*` tokens configure strip
+height, spacing, border, radius, background, and scroll inset without styling
+its internal classes. `--kui-tab-bar-trailing-flex` controls the trailing zone.
+
 - `StateBanner` persists beside affected work; `EmptyState` replaces absent content; `wa-callout` is contextual ecosystem content; `wa-toast` and `wa-toast-item` are transient and must not carry the only copy of important state.
 
 For a banner with multi-line supporting copy, use `copyLayout="stacked"` to put

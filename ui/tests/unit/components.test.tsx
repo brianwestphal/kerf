@@ -1402,6 +1402,7 @@ describe('production UI primitives', () => {
       'data-Action': 'unsafe-root-action',
       'data-Component': 'unsafe-component',
       'data-Selected': 'false',
+      'data-Attention': 'false',
       'data-Tab-Dragging': 'true',
       'data-Tab-Drop-Position': 'before',
       role: 'menuitem',
@@ -1411,6 +1412,7 @@ describe('production UI primitives', () => {
         id: 'first',
         name: 'First',
         selected: true,
+        attention: true,
         leading: icon,
         trailing: icon,
         closeIcon: <span data-custom-close-icon>×</span>,
@@ -1425,6 +1427,7 @@ describe('production UI primitives', () => {
       }),
     );
     expect(selected).toContain('data-selected="true"');
+    expect(selected).toContain('data-attention="true"');
     expect(selected).toContain('draggable="true"');
     expect(selected).toContain(
       'data-presentation="segmented" data-size="compact"',
@@ -1450,6 +1453,7 @@ describe('production UI primitives', () => {
     )!;
     expect(selectedRoot.dataset.tabId).toBe('first');
     expect(selectedRoot.dataset.selected).toBe('true');
+    expect(selectedRoot.dataset.attention).toBe('true');
     expect(selectedRoot.dataset.projectId).toBe('project-one');
     expect(selectedRoot.hasAttribute('data-action')).toBe(false);
     expect(selectedRoot.hasAttribute('role')).toBe(false);

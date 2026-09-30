@@ -18,19 +18,31 @@
 .kui-tab-bar__tabs {
   display: flex;
   min-width: 0;
-  min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
-  padding: 1px;
+  min-height: var(
+    --kui-tab-bar-strip-min-height,
+    var(--kui-toolbar-group-size, calc(2px + remify(42px)))
+  );
+  margin-block: var(--kui-tab-bar-strip-margin-block, 0);
+  padding: var(--kui-tab-bar-strip-padding, 1px);
   /* Scroll along the strip only: overflow-x alone computes overflow-y to auto,
      so any vertical excess would let the strip scroll vertically on touch. */
-  overflow: auto hidden;
+  overflow: auto var(--kui-tab-bar-strip-overflow-block, hidden);
   box-sizing: border-box;
-  border: 1px solid var(--kui-tab-bar-border);
-  border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
-  background: var(--kui-tab-bar-background);
+  border: var(--kui-tab-bar-strip-border-width, 1px) solid
+    var(--kui-tab-bar-border);
+  border-radius: var(
+    --kui-tab-bar-strip-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
+  background: var(
+    --kui-tab-bar-strip-background,
+    var(--kui-tab-bar-background)
+  );
   scrollbar-width: none;
   align-items: center;
-  flex: 1 1 auto;
-  gap: 0;
+  flex: var(--kui-tab-bar-strip-flex, 1 1 auto);
+  gap: var(--kui-tab-bar-strip-gap, 0);
+  scroll-padding-inline: var(--kui-tab-bar-strip-scroll-padding-inline, 0);
   overscroll-behavior-inline: contain;
 }
 .kui-tab-bar[data-presentation="segmented"],
@@ -54,8 +66,8 @@
   padding: 0;
 }
 .kui-tab-bar[data-presentation="inspector"] .kui-tab-bar__tabs {
-  min-height: remify(34px);
-  border-radius: var(--kui-radius-s);
+  min-height: var(--kui-tab-bar-strip-min-height, remify(34px));
+  border-radius: var(--kui-tab-bar-strip-radius, var(--kui-radius-s));
 }
 .kui-tab-bar[data-trailing-placement="adjacent"] .kui-tab-bar__tabs {
   flex: 0 1 auto;
@@ -72,6 +84,9 @@
   min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   align-items: center;
   flex: none;
+}
+.kui-tab-bar__trailing {
+  flex: var(--kui-tab-bar-trailing-flex, none);
 }
 
 .kui-tab-bar__end {

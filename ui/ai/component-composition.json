@@ -2778,6 +2778,7 @@
           "kui-app-tab__trailing"
         ],
         "publicTokens": [
+          "--kui-app-tab-attention-color",
           "--kui-app-tab-color",
           "--kui-app-tab-drop-indicator",
           "--kui-app-tab-hover-background",
@@ -2922,7 +2923,18 @@
         "publicTokens": [
           "--kui-tab-bar-background",
           "--kui-tab-bar-border",
-          "--kui-tab-bar-divider-color"
+          "--kui-tab-bar-divider-color",
+          "--kui-tab-bar-strip-background",
+          "--kui-tab-bar-strip-border-width",
+          "--kui-tab-bar-strip-flex",
+          "--kui-tab-bar-strip-gap",
+          "--kui-tab-bar-strip-margin-block",
+          "--kui-tab-bar-strip-min-height",
+          "--kui-tab-bar-strip-overflow-block",
+          "--kui-tab-bar-strip-padding",
+          "--kui-tab-bar-strip-radius",
+          "--kui-tab-bar-strip-scroll-padding-inline",
+          "--kui-tab-bar-trailing-flex"
         ]
       },
       "diagnostics": [

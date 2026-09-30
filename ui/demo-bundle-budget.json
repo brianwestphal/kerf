@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 304700,
+  "totalJavaScriptGzip": 304900,
   "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 304618,
+  "measuredTotalJavaScriptGzip": 304806,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1251,6 +1251,22 @@
         "measuredTotalJavaScriptGzip": 304618,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 304700
+      }
+    },
+    {
+      "at": "2026-09-30T04:18:37.299Z",
+      "reason": "AppTab attention and configurable TabBar strip add a reviewed catalog specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 304618,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 304806,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304900
       }
     }
   ]
