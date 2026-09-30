@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 304400,
+  "totalJavaScriptGzip": 304500,
   "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 304320,
+  "measuredTotalJavaScriptGzip": 304440,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1219,6 +1219,22 @@
         "measuredTotalJavaScriptGzip": 304320,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 304400
+      }
+    },
+    {
+      "at": "2026-09-30T03:56:23.573Z",
+      "reason": "StateBanner stacked layout adds a reviewed catalog example and CSS",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 304320,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 304440,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304500
       }
     }
   ]

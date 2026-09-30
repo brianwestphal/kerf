@@ -1627,8 +1627,9 @@ describe('production UI primitives', () => {
       }),
     );
     expect(banner).toContain(
-      'data-tone="danger" role="alert" aria-live="assertive"',
+      'data-tone="danger" data-copy-layout="inline" data-action-placement="trailing"',
     );
+    expect(banner).toContain('role="alert" aria-live="assertive"');
     expect(banner).toContain(
       'data-component="badge" data-tone="danger" data-appearance="solid" data-shape="pill" data-size="compact">3</span>',
     );
@@ -1636,8 +1637,19 @@ describe('production UI primitives', () => {
       'class="kui-state-banner__detail"><span>Reconnect</span></span>',
     );
     expect(asHtml(StateBanner({ title: 'Ready' }))).toContain(
-      'data-tone="info" role="status" aria-live="polite"',
+      'data-tone="info" data-copy-layout="inline" data-action-placement="trailing"',
     );
+    expect(
+      asHtml(
+        StateBanner({
+          title: 'Review',
+          detail: 'Details',
+          copyLayout: 'stacked',
+          actionPlacement: 'below',
+          action: icon,
+        }),
+      ),
+    ).toContain('data-copy-layout="stacked" data-action-placement="below"');
     for (const tone of [
       'neutral',
       'info',

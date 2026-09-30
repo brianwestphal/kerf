@@ -177,6 +177,13 @@ an upstream component or recipe request.
 - `Toolbar` serves persistent app chrome and headings; the zone contents and accessible naming distinguish the purpose.
 - `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `Select` handles a longer value list.
 - `StateBanner` persists beside affected work; `EmptyState` replaces absent content; `wa-callout` is contextual ecosystem content; `wa-toast` and `wa-toast-item` are transient and must not carry the only copy of important state.
+
+For a banner with multi-line supporting copy, use `copyLayout="stacked"` to put
+the detail below the title and badge. Use `actionPlacement="below"` when its
+action needs a separate trailing row. The default values keep both inline;
+`--kui-state-banner-copy-gap` and `--kui-state-banner-copy-row-gap` adjust the
+stacked copy's spacing at an instance boundary.
+
 - `ResizableRegion` is an interactive controlled pane. `Grid` is the right answer for static equal-width columns; application CSS grid remains the answer for asymmetric or intrinsic tracks.
 - A `ResizableRegion`'s content spans the whole region, like its separator. Give
   it one child — normally a `Pane` — and that child fills the region, so the

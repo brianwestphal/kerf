@@ -23,7 +23,7 @@ test('StateBanner title and detail share a baseline, and its parts share a cente
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=state-banner');
   const banners = page.locator(
-    '[data-demo="state-banner"] [data-component="state-banner"]:not([data-placeholder]):has(.kui-state-banner__detail)',
+    '[data-demo="state-banner"] [data-component="state-banner"][data-copy-layout="inline"]:not([data-placeholder]):has(.kui-state-banner__detail)',
   );
   await expect(banners.first()).toBeVisible();
   const count = await banners.count();
@@ -91,5 +91,50 @@ test('StateBanner title and detail share a baseline, and its parts share a cente
         `${String(geometry.tone)} ${part}`,
       ).toBeLessThanOrEqual(1);
     }
+  }
+});
+
+test('stacked StateBanner copy and action keep their reading order at wide and narrow widths', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=state-banner');
+    const banner = page.locator(
+      '[data-demo="state-banner"] [data-copy-layout="stacked"][data-action-placement="below"]',
+    );
+    await expect(banner).toBeVisible();
+    await banner.scrollIntoViewIfNeeded();
+    const geometry = await banner.evaluate((element) => {
+      const bounds = (selector: string) =>
+        element.querySelector(selector)!.getBoundingClientRect();
+      const title = bounds('.kui-state-banner__copy > strong');
+      const detail = bounds('.kui-state-banner__detail');
+      const detailText = element.querySelector(
+        '.kui-state-banner__detail > span',
+      )!;
+      const action = bounds('.kui-state-banner__action');
+      const root = element.getBoundingClientRect();
+      return {
+        titleBottom: title.bottom,
+        detailTop: detail.top,
+        detailBottom: detail.bottom,
+        actionTop: action.top,
+        actionRight: action.right,
+        rootRight: root.right,
+        pageWidth: document.documentElement.clientWidth,
+        detailOverflow: window.getComputedStyle(detailText).overflow,
+        detailWhiteSpace: window.getComputedStyle(detailText).whiteSpace,
+      };
+    });
+    expect(geometry.detailTop).toBeGreaterThanOrEqual(geometry.titleBottom);
+    expect(geometry.actionTop).toBeGreaterThanOrEqual(geometry.detailBottom);
+    expect(geometry.actionRight).toBeLessThanOrEqual(geometry.rootRight);
+    expect(geometry.rootRight).toBeLessThanOrEqual(geometry.pageWidth);
+    expect(geometry.detailOverflow).toBe('visible');
+    expect(geometry.detailWhiteSpace).toBe('normal');
+    await banner.screenshot({
+      path: testInfo.outputPath(`state-banner-stacked-${width}.png`),
+    });
   }
 });

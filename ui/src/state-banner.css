@@ -156,6 +156,43 @@
      height instead of the larger inherited strut. */
   font-size: var(--kui-font-xs);
 }
+.kui-state-banner[data-copy-layout="stacked"] > .kui-state-banner__copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--kui-state-banner-copy-gap, var(--kui-space-xs));
+  row-gap: var(--kui-state-banner-copy-row-gap, var(--kui-space-2xs));
+}
+.kui-state-banner[data-copy-layout="stacked"]
+  > .kui-state-banner__copy
+  > strong {
+  margin-inline-end: 0;
+}
+.kui-state-banner[data-copy-layout="stacked"]
+  > .kui-state-banner__copy
+  > .kui-state-banner__detail {
+  flex-basis: 100%;
+  white-space: normal;
+}
+.kui-state-banner[data-copy-layout="stacked"]
+  > .kui-state-banner__copy
+  > .kui-state-banner__detail
+  > span {
+  overflow: visible;
+  text-overflow: clip;
+}
+.kui-state-banner[data-action-placement="below"] {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+.kui-state-banner[data-action-placement="below"]:not(
+    :has(> .kui-state-banner__icon)
+  )
+  > .kui-state-banner__copy {
+  grid-column: 1 / -1;
+}
+.kui-state-banner[data-action-placement="below"] > .kui-state-banner__action {
+  grid-column: 1 / -1;
+}
 .kui-state-banner__copy strong {
   margin-inline-end: var(--kui-layout-item-gap, remify(8px));
   font-size: var(--kui-font-xs);

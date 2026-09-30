@@ -4249,6 +4249,8 @@
         "status",
         "alert",
         "badge",
+        "stacked copy",
+        "action below",
         "placeholder (loading)"
       ],
       "accessibility": [
@@ -4304,6 +4306,8 @@
         "--kui-state-banner-action-hover-background",
         "--kui-state-banner-background",
         "--kui-state-banner-border",
+        "--kui-state-banner-copy-gap",
+        "--kui-state-banner-copy-row-gap",
         "--kui-state-banner-danger-background",
         "--kui-state-banner-danger-border",
         "--kui-state-banner-danger-foreground",

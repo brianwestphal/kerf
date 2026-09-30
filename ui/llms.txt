@@ -374,6 +374,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   optional string `badge` for a terse count or status beside the title. It
   inherits the banner tone and is announced with the banner, so keep its text
   meaningful and never rely on color alone.
+- **Configure StateBanner copy and action placement.** `copyLayout="stacked"`
+  puts detail below the title and badge; `actionPlacement="below"` gives the
+  action a separate trailing row. The inline defaults remain compact.
 - **Use `Badge` for compact non-interactive metadata.** Configure its semantic
   tone, appearance, shape, and size instead of creating badge CSS in an app or
   consuming component. Use a real button or link for interactive content.

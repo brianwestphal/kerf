@@ -2619,6 +2619,8 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type StateBannerTone = 'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger';
 type StateBannerUrgency = 'status' | 'alert';
+type StateBannerCopyLayout = 'inline' | 'stacked';
+type StateBannerActionPlacement = 'trailing' | 'below';
 interface StateBannerProps {
     title: string;
     detail?: string;
@@ -2628,15 +2630,19 @@ interface StateBannerProps {
     action?: KerfUiContent;
     tone?: StateBannerTone;
     urgency?: StateBannerUrgency;
+    /** Keep the detail beside the title, or give it its own line. */
+    copyLayout?: StateBannerCopyLayout;
+    /** Place the action beside the copy or on a separate trailing row. */
+    actionPlacement?: StateBannerActionPlacement;
     className?: string;
     /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. The detail line appears only when `detail` is set, as in the live banner. */
     placeholder?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, className, placeholder, slot, }: StateBannerProps): SafeHtml;
+declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, copyLayout, actionPlacement, className, placeholder, slot, }: StateBannerProps): SafeHtml;
 
-export { StateBanner, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
+export { StateBanner, type StateBannerActionPlacement, type StateBannerCopyLayout, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
 ```
 
 ## `@kerfjs/ui/empty-state`

@@ -60,6 +60,17 @@ export function StateBannerDemo() {
           icon={<LucideIcon icon={Check} name="check" />}
         />
       </CatalogExample>
+      <CatalogExample label="Stacked copy and action" align="none">
+        <StateBanner
+          tone="warning"
+          title="Migration needs review"
+          detail="Check the imported projects before removing the old source."
+          icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+          copyLayout="stacked"
+          actionPlacement="below"
+          action={<wa-button size="small">Review projects</wa-button>}
+        />
+      </CatalogExample>
       <CatalogExample label="Placeholder" align="none">
         <StateBanner
           tone="neutral"
