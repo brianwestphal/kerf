@@ -19,6 +19,7 @@ const scene = (title: string, detail: string) => (
 const tabs: readonly TabScaffoldTab<DemoTabId>[] = [
   {
     id: 'projects',
+    appearance: 'sunken',
     label: 'Projects',
     icon: <LucideIcon icon={FolderKanban} name="folder-kanban" />,
     badge: 3,

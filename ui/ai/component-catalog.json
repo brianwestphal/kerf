@@ -582,7 +582,8 @@
       "useWhen": [
         "An application column needs shared header, content, and optional footer organization with exactly one scrolling content owner.",
         "A pane boundary needs an opt-in separator on any combination of logical sides.",
-        "Pinned chrome needs a divider from the scrolling content only while content is scrolled beneath it (wireScrollDividers)."
+        "Pinned chrome needs a divider from the scrolling content only while content is scrolled beneath it (wireScrollDividers).",
+        "A lowered background must cover the scrolling work viewport and blank space after short content without a second scroll container (appearance: sunken)."
       ],
       "avoidWhen": [
         "Do not use Pane as a padded card or add a competing scroll owner around its content slot.",
@@ -602,7 +603,8 @@
         "which logical boundaries show separators",
         "which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges)",
         "responsive placement and visibility",
-        "whether the chrome dividers follow the scroll, always show, or never show (chromeDividers)"
+        "whether the chrome dividers follow the scroll, always show, or never show (chromeDividers)",
+        "default or sunken scrolling work surface (appearance)"
       ],
       "variants": [
         "content only",
@@ -667,7 +669,9 @@
         "--kui-edge-inset-inline-end",
         "--kui-edge-inset-inline-start",
         "--kui-pane-separator-color",
-        "--kui-pane-separator-width"
+        "--kui-pane-separator-width",
+        "--kui-pane-chrome-background",
+        "--kui-sunken-panel-background"
       ],
       "links": {
         "catalogRoute": "?component=pane",

@@ -19,6 +19,34 @@ describe('Workbench', () => {
     expect(html).not.toContain('data-workbench-drawer');
   });
 
+  it('puts the sunken choice on uncomposed Workbench scroll regions', () => {
+    const host = document.createElement('div');
+    host.innerHTML = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        mainPane: { appearance: 'sunken' },
+        leftRail: {
+          label: 'Files',
+          content: panel('Files'),
+          pane: { appearance: 'sunken' },
+        },
+      }),
+    );
+    expect(
+      host
+        .querySelector('[data-workbench-main]')
+        ?.getAttribute('data-appearance'),
+    ).toBe('sunken');
+    expect(
+      host
+        .querySelector('[data-workbench-rail]')
+        ?.getAttribute('data-appearance'),
+    ).toBe('sunken');
+    expect(host.querySelectorAll('[data-component="pane"]')).toHaveLength(0);
+  });
+
   it('renders left rail, right rail, and bottom drawer with their collapsed state', () => {
     const html = String(
       Workbench({

@@ -59,6 +59,11 @@ truncate horizontally with an ellipsis when a destination name exceeds its
 share of the bar. On larger device classes, promote the tab set to a
 `Workbench` rail or a persistent sidebar instead of a bottom bar.
 
+Set a tab's `appearance: "sunken"` when its scene owns scrolling and should
+paint the lowered surface behind short or long content. For a scene whose
+only child is a `Pane` or `NavStack`, set appearance on that child's scroll
+owner. See [Lowered work surfaces](layout.md#lowered-work-surfaces).
+
 ## Scroll divider
 
 The bar has no permanent top border. With `wireScrollDividers(appRoot)`

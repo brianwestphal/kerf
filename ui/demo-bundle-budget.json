@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 308700,
-  "measuredLargestJavaScriptGzip": 126042,
-  "measuredTotalJavaScriptGzip": 308608,
+  "totalJavaScriptGzip": 309100,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 309082,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1555,6 +1555,22 @@
         "measuredTotalJavaScriptGzip": 308608,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 308700
+      }
+    },
+    {
+      "at": "2026-09-30T15:26:41.447Z",
+      "reason": "Sunken appearance on scrolling work regions and catalog demos",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 308608,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 308700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 309082,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 309100
       }
     }
   ]

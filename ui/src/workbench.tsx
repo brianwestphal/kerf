@@ -354,6 +354,11 @@ function Rail({
       id={workbenchRegionId(id, key)}
       class={`kui-workbench__rail kui-workbench__rail--${side}`}
       data-workbench-rail={side}
+      data-appearance={
+        !panel.toolbar && panel.pane?.appearance === 'sunken'
+          ? 'sunken'
+          : undefined
+      }
       data-collapsed={String(panel.collapsed ?? false)}
       data-separator={panel.separator ?? 'auto'}
       data-collapse-motion={panel.collapseMotion ?? 'slide'}
@@ -394,6 +399,11 @@ function Drawer({ id, panel }: { id: string; panel: WorkbenchPanel }) {
       id={workbenchRegionId(id, 'bottomDrawer')}
       class="kui-workbench__drawer"
       data-workbench-drawer
+      data-appearance={
+        !panel.toolbar && panel.pane?.appearance === 'sunken'
+          ? 'sunken'
+          : undefined
+      }
       data-collapsed={String(panel.collapsed ?? false)}
       data-separator={panel.separator ?? 'auto'}
       data-collapse-motion={panel.collapseMotion ?? 'slide'}
@@ -513,7 +523,19 @@ export function Workbench({
         floatingRestore(id, 'leftRail', leftRail, Boolean(mainToolbar)),
       )}
       <div class="kui-workbench__center">
-        <div class="kui-workbench__main" data-workbench-main>
+        <div
+          class="kui-workbench__main"
+          data-workbench-main
+          data-appearance={
+            !mainToolbar &&
+            !mainBottomToolbar &&
+            !mainHeader &&
+            !mainFooter &&
+            mainPane?.appearance === 'sunken'
+              ? 'sunken'
+              : undefined
+          }
+        >
           {mainBody({
             workbenchId: id,
             main,

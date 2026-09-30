@@ -141,3 +141,107 @@ test('Pane header toolbar and ListHeader trailing actions share one axis', async
     );
   }
 });
+
+test('sunken Pane paints short and long scroll viewports with fixed and auto chrome', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1200, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=pane');
+    const chat = page.locator('#sunken-chat [data-component="pane"]');
+    await expect(chat).toHaveAttribute('data-appearance', 'sunken');
+    const chatGeometry = await chat.evaluate((pane) => {
+      const content = pane.querySelector<HTMLElement>('.kui-pane__content')!;
+      const footer = pane.querySelector<HTMLElement>('.kui-pane__footer')!;
+      return {
+        paneBackground: window.getComputedStyle(pane).backgroundColor,
+        contentBackground: window.getComputedStyle(content).backgroundColor,
+        footerBackground: window.getComputedStyle(footer).backgroundColor,
+        contentFits: content.scrollHeight <= content.clientHeight + 1,
+        contentBottom: content.getBoundingClientRect().bottom,
+        footerTop: footer.getBoundingClientRect().top,
+      };
+    });
+    expect(chatGeometry.paneBackground).toBe('rgba(0, 0, 0, 0)');
+    expect(chatGeometry.contentBackground).not.toBe('rgba(0, 0, 0, 0)');
+    expect(chatGeometry.footerBackground).toBe('rgba(0, 0, 0, 0)');
+    expect(chatGeometry.contentFits).toBe(true);
+    expect(
+      Math.abs(chatGeometry.contentBottom - chatGeometry.footerTop),
+    ).toBeLessThanOrEqual(1);
+    await chat.screenshot({
+      path: testInfo.outputPath(`sunken-chat-${width}.png`),
+    });
+    await chat.evaluate((pane) => {
+      (pane as HTMLElement).style.setProperty(
+        '--kui-sunken-panel-background',
+        'rgba(10, 20, 30, 0.2)',
+      );
+    });
+    await expect(chat.locator('.kui-pane__content')).toHaveCSS(
+      'background-color',
+      'rgba(10, 20, 30, 0.2)',
+    );
+    await expect(chat).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+
+    const long = page.locator('[data-scroll-divider-demo="pane"]');
+    await expect(long).toHaveAttribute('data-appearance', 'sunken');
+    const longContent = long.locator('.kui-pane__content');
+    await longContent.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    expect(
+      await longContent.evaluate((element) => element.scrollTop),
+    ).toBeGreaterThan(0);
+    await expect(longContent).not.toHaveCSS(
+      'background-color',
+      'rgba(0, 0, 0, 0)',
+    );
+
+    const auto = page.locator(
+      '[data-component="pane"][aria-label="Sunken auto workspace"]',
+    );
+    await expect(auto).toHaveAttribute('data-appearance', 'sunken');
+    const autoGeometry = await auto.evaluate((pane) => {
+      const content = pane.querySelector<HTMLElement>('.kui-pane__content')!;
+      return {
+        rootBackground: window.getComputedStyle(pane).backgroundColor,
+        contentBackground: window.getComputedStyle(content).backgroundColor,
+      };
+    });
+    expect(autoGeometry.rootBackground).not.toBe('rgba(0, 0, 0, 0)');
+    expect(autoGeometry.contentBackground).toBe('rgba(0, 0, 0, 0)');
+    await auto.evaluate((pane) => {
+      (pane as HTMLElement).style.height = '300px';
+      pane.scrollTop = pane.scrollHeight;
+    });
+    expect(await auto.evaluate((pane) => pane.scrollTop)).toBeGreaterThan(0);
+    await expect(auto.locator('.kui-pane__content')).toHaveCSS(
+      'overflow-y',
+      'visible',
+    );
+
+    const raw = page.locator('#sunken-raw-workbench');
+    const rawMain = raw.locator('[data-workbench-main]');
+    const rawRail = raw.locator('[data-workbench-rail="left"]');
+    await expect(rawMain).toHaveAttribute('data-appearance', 'sunken');
+    await expect(rawRail).toHaveAttribute('data-appearance', 'sunken');
+    await expect(rawMain).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(rawRail).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(raw.locator('[data-component="pane"]')).toHaveCount(0);
+  }
+});
+
+test('sunken NavStack view and TabScaffold scene paint their own scroll areas', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=nav-stack');
+  const view = page.locator('#catalog-nav-stack [data-nav-key="library"]');
+  await expect(view).toHaveAttribute('data-appearance', 'sunken');
+  await expect(view).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await page.goto('/?component=tab-scaffold');
+  const scene = page.locator('[data-tab-scaffold-scene="projects"]');
+  await expect(scene).toHaveAttribute('data-appearance', 'sunken');
+  await expect(scene).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+});

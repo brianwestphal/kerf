@@ -19,6 +19,19 @@ afterEach(() => {
 });
 
 describe('TabScaffold markup', () => {
+  it('marks a scene for sunken scroll painting', () => {
+    const html = String(
+      TabScaffold({
+        id: 'app',
+        label: 'Sections',
+        tabs: [{ ...tabs[0]!, appearance: 'sunken' }, tabs[1]!],
+        active: 'home',
+      }),
+    );
+    expect(html).toContain(
+      'data-tab-scaffold-scene="home" data-active="true" data-appearance="sunken"',
+    );
+  });
   it('renders a scene and a bottom-bar tab per entry, marking the active one', () => {
     const html = String(
       TabScaffold({ id: 'app', label: 'Sections', tabs, active: 'home' }),

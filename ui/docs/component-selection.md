@@ -176,6 +176,11 @@ an upstream component or recipe request.
 
 ## Ambiguous choices
 
+For a lowered background behind an entire scrolling work area, choose
+`Pane appearance="sunken"` or the appearance option on the layout that owns
+the scroll viewport. Use `SunkenPanel` for a padded content group that does
+not introduce scrolling. See [Lowered work surfaces](./layout.md#lowered-work-surfaces).
+
 Set `ResizableRegion`'s `--kui-resizable-region-background` for an inline
 surface. Use `contentOverflow="visible"` while an anchored popup must escape
 the region; this also raises the region on its public popup layer. A collapsed

@@ -4,6 +4,7 @@ import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Pane } from '@kerfjs/ui/pane';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { Workbench } from '@kerfjs/ui/workbench';
 
 export function PaneDemo() {
   return (
@@ -60,6 +61,7 @@ export function PaneDemo() {
         <Pane
           element="section"
           label="Scrolling pane"
+          appearance="sunken"
           rootAttributes={{ 'data-scroll-divider-demo': 'pane' }}
           header={
             <Toolbar
@@ -78,6 +80,72 @@ export function PaneDemo() {
             <ContentItem>{`Update ${index + 1}`}</ContentItem>
           ))}
         </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Sunken chat workspace"
+        note="The lowered surface fills short conversations behind the fixed composer without another scroller."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <Workbench
+          id="sunken-chat"
+          label="Chat workspace"
+          mainPane={{ appearance: 'sunken' }}
+          main={<ContentItem>Welcome to the conversation</ContentItem>}
+          mainFooter={
+            <ContentItem>
+              <input aria-label="Message" placeholder="Write a message" />
+            </ContentItem>
+          }
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Sunken auto chrome"
+        note="At short heights the Pane root owns the scroll, while its header and footer stay on the normal surface."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <Pane
+          appearance="sunken"
+          chromePlacement="auto"
+          label="Sunken auto workspace"
+          header={<Toolbar label="Header" leading={<span>Header</span>} />}
+          footer={<Toolbar label="Footer" leading={<span>Footer</span>} />}
+        >
+          {Array.from({ length: 12 }, (_, index) => (
+            <ContentItem>{`Entry ${index + 1}`}</ContentItem>
+          ))}
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Sunken workbench regions without Pane chrome"
+        note="The main region and rail paint their own surfaces when no Pane chrome is composed."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <Workbench
+          id="sunken-raw-workbench"
+          label="Bare work regions"
+          mainPane={{ appearance: 'sunken' }}
+          main={<ContentItem>Main work area</ContentItem>}
+          leftRail={{
+            label: 'Navigator',
+            pane: { appearance: 'sunken' },
+            content: <ContentItem>Navigator</ContentItem>,
+          }}
+        />
       </CatalogExample>
     </CatalogExampleStack>
   );

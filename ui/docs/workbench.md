@@ -236,11 +236,14 @@ The `Pane`s and `List`s the Workbench composes around your content are
 configurable the same way:
 
 - `mainPane` (`PaneConfig`: `contentElement`, `contentLabel`, `separators`,
-  `safeAreaEdges`, `chromeDividers`) configures the work area's `Pane`, which exists whenever the
-  work area has a toolbar, `mainHeader`, or `mainFooter`;
+  `safeAreaEdges`, `chromeDividers`, `appearance`) configures the work area's
+  `Pane`, which exists whenever the work area has a toolbar, `mainHeader`, or
+  `mainFooter`. Without that chrome, `appearance: "sunken"` paints the main
+  region's own scroll surface;
 - a panel's `pane` configures the `Pane` a `toolbar` panel's `content` renders
   in — for example `{ contentElement: "nav", contentLabel: "Files" }` for a
-  navigator rail;
+  navigator rail. Without a toolbar, `appearance: "sunken"` paints the panel
+  scroll region;
 - `mainHeaderList` / `mainFooterList` (`ListConfig`: `gap`, `hAlign`,
   `vAlign`, `dividerSides`, `textInsets`, `controlInsets`) configure the
   `List`s holding `mainHeader` / `mainFooter`.

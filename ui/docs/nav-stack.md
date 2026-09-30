@@ -60,6 +60,11 @@ optional per-view `bottomToolbar`. The component-level
 The back control appears automatically once the stack has more than one entry;
 `wireNavStack`'s `onBack` is where the app pops its own signal.
 
+Set a view's `appearance: "sunken"` to paint its scroll viewport with the
+shared lowered-surface color, including space after short content. When the
+view holds a `Pane` as its only child, set the appearance on the Pane instead
+if its content owns scrolling. See [Lowered work surfaces](layout.md#lowered-work-surfaces).
+
 ## The top toolbar
 
 The top chrome is a real `Toolbar`, so it follows the same zone,

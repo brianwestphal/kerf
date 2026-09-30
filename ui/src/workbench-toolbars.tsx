@@ -167,7 +167,8 @@ export type WorkbenchChromePlacement = 'fixed' | 'scroll' | 'auto';
  * list and `mainBottomToolbar` (the header and footer lists configured by
  * `mainHeaderList` / `mainFooterList`), with each collapsed panel's groups
  * added to the toolbar on its side. Without any of that chrome, `main`
- * renders as given and `mainPane` is ignored.
+ * renders as given; only `mainPane.appearance` applies to the Workbench's
+ * own scroll region in that case.
  */
 export function mainBody({
   workbenchId,
@@ -279,6 +280,7 @@ export function mainBody({
       separators={mainPane?.separators}
       safeAreaEdges={mainPane?.safeAreaEdges}
       chromeDividers={mainPane?.chromeDividers}
+      appearance={mainPane?.appearance}
     >
       {scrollHeader || scrollFooter ? (
         // Chrome that scrolls joins the content in one gapless column that

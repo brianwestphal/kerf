@@ -115,6 +115,35 @@
   overflow: auto;
 }
 
+/* When no Pane chrome is composed, the Workbench region owns its scroll.
+   A resizable auto-overflow panel instead scrolls its content box so its
+   separator handle remains fixed. Paint only that owner. */
+.kui-workbench__main[data-appearance="sunken"],
+:is(.kui-workbench__rail, .kui-workbench__drawer)[data-appearance="sunken"] {
+  background: var(
+    --kui-sunken-panel-background,
+    var(--kui-color-surface-lowered)
+  );
+}
+
+:is(
+    .kui-workbench__rail,
+    .kui-workbench__drawer
+  )[data-appearance="sunken"][data-resizable="true"][data-content-overflow="auto"] {
+  background: transparent;
+}
+
+:is(
+    .kui-workbench__rail,
+    .kui-workbench__drawer
+  )[data-appearance="sunken"][data-resizable="true"][data-content-overflow="auto"]
+  > .kui-workbench__panel-content {
+  background: var(
+    --kui-sunken-panel-background,
+    var(--kui-color-surface-lowered)
+  );
+}
+
 .kui-workbench__main:has(
   ~ .kui-workbench__drawer[data-presentation="inline"]:not(
       [data-collapsed="true"]

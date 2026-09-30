@@ -114,6 +114,30 @@ describe('Pane', () => {
     ).not.toContain('data-chrome-placement');
   });
 
+  it('opts into sunken scroll painting without changing chrome or metadata ownership', () => {
+    const normal = String(Pane({ children: <span>Body</span> }));
+    expect(normal).not.toContain('data-appearance');
+    for (const chromePlacement of ['fixed', 'auto'] as const) {
+      const html = String(
+        Pane({
+          appearance: 'sunken',
+          chromePlacement,
+          header: <span>Head</span>,
+          children: <span>Body</span>,
+          footer: <span>Foot</span>,
+          rootAttributes: {
+            // @ts-expect-error appearance is owned by Pane.
+            'data-appearance': 'default',
+          },
+        }),
+      );
+      expect(html).toContain('data-appearance="sunken"');
+      expect(html.match(/data-appearance=/g)).toHaveLength(1);
+      expect(html).toContain('kui-pane__header');
+      expect(html).toContain('kui-pane__footer');
+    }
+  });
+
   it('protects structural data attributes while forwarding safe metadata', () => {
     const html = String(
       Pane({

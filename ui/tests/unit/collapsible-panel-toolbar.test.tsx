@@ -186,6 +186,7 @@ describe('CollapsiblePanel toolbar', () => {
           contentLabel: 'Sections',
           separators: ['block-end'],
           safeAreaEdges: [],
+          appearance: 'sunken',
         },
         children: raw('<p data-content>files</p>'),
       }),
@@ -196,6 +197,7 @@ describe('CollapsiblePanel toolbar', () => {
     expect(content.getAttribute('aria-label')).toBe('Sections');
     expect(pane.getAttribute('data-separator-block-end')).toBe('true');
     expect(pane.getAttribute('data-safe-area-inline-start')).toBe('false');
+    expect(pane.getAttribute('data-appearance')).toBe('sunken');
 
     const props = {
       id: 'nav',

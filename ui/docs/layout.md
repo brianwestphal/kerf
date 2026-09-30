@@ -36,6 +36,37 @@ size) tall, and below that lets the whole pane scroll as one column, header,
 content, and footer together, so the content keeps its natural height. The
 default `fixed` always pins them.
 
+### Lowered work surfaces
+
+Set `appearance="sunken"` when the work area itself should use the lowered
+surface color, including blank space below short content and the scroll
+viewport. The default appearance is unchanged. The fixed Pane paints its
+content scroller; with `chromePlacement="auto"`, the Pane root paints the
+surface because it becomes the scroller in a short viewport. Header and footer
+chrome stay on the normal surface. No second scroll container or
+`SunkenPanel` wrapper is needed.
+For custom chrome colors in auto mode, set `--kui-pane-chrome-background`
+on the Pane; it defaults to `--kui-color-surface`.
+
+```tsx
+<Pane appearance="sunken" footer={<Composer />}>
+  <Conversation />
+</Pane>
+```
+
+`PaneConfig.appearance` forwards through Workbench `mainPane`, panel `pane`,
+and CollapsiblePanel `pane`. Workbench also applies that choice to its main or
+panel region when it renders no Pane chrome. Set `appearance: "sunken"` on a
+`NavStackView` or `TabScaffoldTab` when its view or scene owns scrolling.
+For a `SplitView`, put a `Pane` in the list or detail region and set its
+appearance; SplitView only arranges the regions and does not own their scroll.
+Choose the innermost owner when composing layouts.
+
+The color uses `--kui-sunken-panel-background`, falling back to
+`--kui-color-surface-lowered`, just like `SunkenPanel`. Select one scroll owner
+in a nested layout so a translucent override paints once. The public color
+override may be set at a Pane or layout boundary.
+
 Pass any combination of logical sides to `separators`: `block-start`,
 `block-end`, `inline-start`, and `inline-end`. Every line is off by default and
 each enabled side uses `--kui-pane-separator-width` (1px) and

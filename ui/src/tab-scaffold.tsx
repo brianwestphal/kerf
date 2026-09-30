@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import { Badge } from './badge.js';
+import type { PaneAppearance } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 interface TabScaffoldTabBase<Id extends string> {
@@ -10,6 +11,8 @@ interface TabScaffoldTabBase<Id extends string> {
   icon?: SafeHtml;
   /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
   content: KerfUiContent;
+  /** Background of this scene's scrolling work surface. */
+  appearance?: PaneAppearance;
 }
 
 /** A tab with an optional count or short-status badge. */
@@ -108,6 +111,7 @@ export function TabScaffold<Id extends string>({
             class="kui-tab-scaffold__scene"
             data-tab-scaffold-scene={tab.id}
             data-active={String(tab.id === active)}
+            data-appearance={tab.appearance === 'sunken' ? 'sunken' : undefined}
             aria-hidden={String(tab.id !== active)}
           >
             {tab.content}

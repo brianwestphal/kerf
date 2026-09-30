@@ -39,6 +39,16 @@ afterEach(() => {
 });
 
 describe('NavStack markup', () => {
+  it('marks a selected view for sunken scroll painting', () => {
+    const html = String(
+      NavStack({
+        id: 'nav',
+        label: 'Flow',
+        views: [{ ...view('home', 'Home'), appearance: 'sunken' }],
+      }),
+    );
+    expect(html).toContain('data-nav-active="true" data-appearance="sunken"');
+  });
   it('renders a single view with no back control', () => {
     const html = String(
       NavStack({ id: 'nav', label: 'Flow', views: [view('home', 'Home')] }),

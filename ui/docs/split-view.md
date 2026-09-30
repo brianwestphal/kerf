@@ -26,6 +26,11 @@ shared interior edge. A pane whose only child is a `Pane` lets that child own
 the insets, and the compact form hands them to its `NavStack`. See
 [Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
 
+For a lowered list or detail background, render a `Pane` in that region with
+`appearance="sunken"`. SplitView arranges regions but does not own their
+vertical scroll; its compact NavStack form can use the view's or nested Pane's
+appearance. See [Lowered work surfaces](layout.md#lowered-work-surfaces).
+
 ## Responsive by device class
 
 `SplitView` is declarative; the app derives `compact` from the device class and

@@ -185,6 +185,7 @@ export function composedPanelBody({
       separators={pane?.separators}
       safeAreaEdges={pane?.safeAreaEdges}
       chromeDividers={pane?.chromeDividers}
+      appearance={pane?.appearance}
     >
       {content}
     </Pane>

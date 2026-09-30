@@ -18,6 +18,7 @@ const paneProtectedAttributes = new Set([
   'data-component',
   'data-chrome-placement',
   'data-chrome-dividers',
+  'data-appearance',
   'data-separator-block-start',
   'data-separator-block-end',
   'data-separator-inline-start',
@@ -48,6 +49,7 @@ type PaneRootAttributes = Readonly<
     'data-safe-area-inline-end'?: never;
     'data-chrome-placement'?: never;
     'data-chrome-dividers'?: never;
+    'data-appearance'?: never;
   }
 >;
 
@@ -60,6 +62,9 @@ export type PaneChromePlacement = 'fixed' | 'auto';
  * chrome, as `wireScrollDividers` reports; `always`; or `none`.
  */
 export type PaneChromeDividers = 'scroll' | 'always' | 'none';
+
+/** Background treatment of the Pane's scrolling work surface. */
+export type PaneAppearance = 'default' | 'sunken';
 
 export interface PaneProps {
   /** Optional fixed chrome above the scrolling content, arranged vertically. */
@@ -86,6 +91,8 @@ export interface PaneProps {
    * The line is drawn inside the chrome, so no state moves the content.
    */
   chromeDividers?: PaneChromeDividers;
+  /** Paint the scrolling work surface with the shared lowered-surface color. */
+  appearance?: PaneAppearance;
   /** Root semantics. Defaults to `div`. */
   element?: PaneElement;
   /** Scrolling content semantics. Defaults to `div`. */
@@ -128,6 +135,7 @@ export type PaneConfig = Pick<
   | 'separators'
   | 'safeAreaEdges'
   | 'chromeDividers'
+  | 'appearance'
 >;
 
 function paneContent(
@@ -159,6 +167,7 @@ export function Pane({
   footer,
   chromePlacement = 'fixed',
   chromeDividers = 'scroll',
+  appearance = 'default',
   element = 'div',
   contentElement = 'div',
   separators = [],
@@ -205,6 +214,7 @@ export function Pane({
     class: `kui-pane ${className}`.trim(),
     id,
     'data-component': 'pane',
+    'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-chrome-dividers':
       chromeDividers === 'always' || chromeDividers === 'none'

@@ -90,6 +90,7 @@ export {
 } from './lucide-icon.js';
 export {
   Pane,
+  type PaneAppearance,
   type PaneChromeDividers,
   type PaneChromePlacement,
   type PaneConfig,

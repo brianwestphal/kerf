@@ -589,6 +589,11 @@
           "id": "whether the chrome dividers follow the scroll, always show, or never show (chromeDividers)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "default or sunken scrolling work surface (appearance)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -645,7 +650,9 @@
           "--kui-edge-inset-inline-end",
           "--kui-edge-inset-inline-start",
           "--kui-pane-separator-color",
-          "--kui-pane-separator-width"
+          "--kui-pane-separator-width",
+          "--kui-pane-chrome-background",
+          "--kui-sunken-panel-background"
         ]
       },
       "diagnostics": [],

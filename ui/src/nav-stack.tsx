@@ -1,6 +1,7 @@
 import { ChevronLeft } from 'lucide';
 
 import { LucideIcon } from './lucide-icon.js';
+import type { PaneAppearance } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Toolbar, type ToolbarConfig } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
@@ -18,6 +19,8 @@ export interface NavStackView {
   /** Stable identity for keyed reconcile and transition direction. */
   key: string;
   content: KerfUiContent;
+  /** Background of this view's scrolling work surface. */
+  appearance?: PaneAppearance;
   /** Title shown in the top toolbar for this view. */
   title?: string;
   /** Leading groups for this view's top toolbar, after the back control and before the title. */
@@ -187,6 +190,9 @@ export function NavStack({
             data-key={view.key}
             data-nav-key={view.key}
             data-nav-active={String(index === topIndex)}
+            data-appearance={
+              view.appearance === 'sunken' ? 'sunken' : undefined
+            }
             aria-hidden={String(index !== topIndex)}
           >
             {view.content}

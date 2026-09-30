@@ -13,6 +13,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 - An application column needs shared header, content, and optional footer organization with exactly one scrolling content owner.
 - A pane boundary needs an opt-in separator on any combination of logical sides.
 - Pinned chrome needs a divider from the scrolling content only while content is scrolled beneath it (wireScrollDividers).
+- A lowered background must cover the scrolling work viewport and blank space after short content without a second scroll container (appearance: sunken).
 
 **Not when:**
 
@@ -60,7 +61,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers).
+**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance).
 
 **Wiring:** `wireScrollDividers` is optional.
 
@@ -89,7 +90,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-pane`, `kui-pane__content`, `kui-pane__footer`, `kui-pane__header`, `kui-pane__toolbar` on an element you write; render `Pane` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-edge-inset-block-end`, `--kui-edge-inset-block-start`, `--kui-edge-inset-inline-end`, `--kui-edge-inset-inline-start`, `--kui-pane-separator-color`, `--kui-pane-separator-width`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-edge-inset-block-end`, `--kui-edge-inset-block-start`, `--kui-edge-inset-inline-end`, `--kui-edge-inset-inline-start`, `--kui-pane-separator-color`, `--kui-pane-separator-width`, `--kui-pane-chrome-background`, `--kui-sunken-panel-background`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

@@ -57,6 +57,7 @@ const footer = (text: string) => (
 
 const rootView = (): NavStackView => ({
   key: 'library',
+  appearance: 'sunken',
   title: 'Library',
   toolbar: <ToolbarText text="Projects" size="small" />,
   bottomToolbar: footer('2 saved projects'),

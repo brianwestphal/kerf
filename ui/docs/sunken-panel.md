@@ -38,6 +38,10 @@ Do not use `SunkenPanel` merely to add padding, as a substitute for pane
 header/content/footer anatomy, or around a child that already owns the same
 outer surface.
 
+For a lowered scrolling work area with Pane chrome, use
+[`Pane appearance="sunken"`](layout.md#lowered-work-surfaces). It paints the
+scroll viewport and empty space without adding a second scroller.
+
 ## Public styling boundary
 
 Override the public properties at the composition boundary:

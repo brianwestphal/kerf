@@ -1175,10 +1175,10 @@ export { type ScrollDividerTarget, type WireScrollDividersOptions, wireScrollDiv
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { PaneAppearance } from './pane.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { ToolbarConfig } from './toolbar.js';
 import { ToolbarTextSize, HeadingLevel } from './toolbar-text.js';
-import './pane.js';
 import './sides-BPSWde0A.js';
 
 /**
@@ -1189,6 +1189,8 @@ interface NavStackView {
     /** Stable identity for keyed reconcile and transition direction. */
     key: string;
     content: KerfUiContent;
+    /** Background of this view's scrolling work surface. */
+    appearance?: PaneAppearance;
     /** Title shown in the top toolbar for this view. */
     title?: string;
     /** Leading groups for this view's top toolbar, after the back control and before the title. */
@@ -1294,8 +1296,8 @@ import * as kerfjs from 'kerfjs';
 import { NavStackProps, NavStackView } from './nav-stack.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import './toolbar.js';
 import './pane.js';
+import './toolbar.js';
 import './sides-BPSWde0A.js';
 import './toolbar-text.js';
 import './css-values.js';
@@ -1393,6 +1395,7 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-safe-area-inline-end'?: never;
     'data-chrome-placement'?: never;
     'data-chrome-dividers'?: never;
+    'data-appearance'?: never;
 }>;
 /** How a Pane's header and footer relate to its scrolling content. */
 type PaneChromePlacement = 'fixed' | 'auto';
@@ -1402,6 +1405,8 @@ type PaneChromePlacement = 'fixed' | 'auto';
  * chrome, as `wireScrollDividers` reports; `always`; or `none`.
  */
 type PaneChromeDividers = 'scroll' | 'always' | 'none';
+/** Background treatment of the Pane's scrolling work surface. */
+type PaneAppearance = 'default' | 'sunken';
 interface PaneProps {
     /** Optional fixed chrome above the scrolling content, arranged vertically. */
     header?: KerfUiContent;
@@ -1427,6 +1432,8 @@ interface PaneProps {
      * The line is drawn inside the chrome, so no state moves the content.
      */
     chromeDividers?: PaneChromeDividers;
+    /** Paint the scrolling work surface with the shared lowered-surface color. */
+    appearance?: PaneAppearance;
     /** Root semantics. Defaults to `div`. */
     element?: PaneElement;
     /** Scrolling content semantics. Defaults to `div`. */
@@ -1461,16 +1468,16 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'appearance'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, chromeDividers, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, chromeDividers, appearance, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
+export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```
 
 ## `@kerfjs/ui/workbench`
@@ -2035,6 +2042,7 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { PaneAppearance } from './pane.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface TabScaffoldTabBase<Id extends string> {
@@ -2044,6 +2052,8 @@ interface TabScaffoldTabBase<Id extends string> {
     icon?: SafeHtml;
     /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
     content: KerfUiContent;
+    /** Background of this scene's scrolling work surface. */
+    appearance?: PaneAppearance;
 }
 /** A tab with an optional count or short-status badge. */
 interface TabScaffoldTabCountBadge {

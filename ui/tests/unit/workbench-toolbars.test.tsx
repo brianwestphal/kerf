@@ -614,6 +614,7 @@ describe('Workbench panel toolbars', () => {
         separators: ['inline-start'],
         safeAreaEdges: ['block-end'],
         chromeDividers: 'always',
+        appearance: 'sunken',
       },
       mainHeaderList: {
         dividerSides: 't',
@@ -630,12 +631,15 @@ describe('Workbench panel toolbars', () => {
           contentElement: 'nav',
           contentLabel: 'Files',
           chromeDividers: 'none',
+          appearance: 'sunken',
         },
       },
     });
     const main = workArea(host);
     expect(main.getAttribute('data-chrome-dividers')).toBe('always');
+    expect(main.getAttribute('data-appearance')).toBe('sunken');
     expect(railPane(host).getAttribute('data-chrome-dividers')).toBe('none');
+    expect(railPane(host).getAttribute('data-appearance')).toBe('sunken');
     const content = main.querySelector(':scope > .kui-pane__content')!;
     expect(content.tagName).toBe('SECTION');
     expect(content.getAttribute('aria-label')).toBe('Document');

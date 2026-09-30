@@ -46,6 +46,13 @@
   inset: 0;
 }
 
+.kui-tab-scaffold__scene[data-appearance="sunken"] {
+  background: var(
+    --kui-sunken-panel-background,
+    var(--kui-color-surface-lowered)
+  );
+}
+
 /* A scene is its region's scroll owner, so its top inset is padding inside
    the scroller. A scene whose only child is a Pane or layout (usually a
    NavStack) lets that child own the insets instead. */
