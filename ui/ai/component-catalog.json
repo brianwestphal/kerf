@@ -2941,14 +2941,15 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Configurable native-button navigation rows with structured labels, status/busy metadata, density, group dividers, protected domain metadata hooks, and rounded-boundary overflow clipping.",
+      "description": "Configurable native-button action rows and native-anchor navigation rows with structured labels, status/busy metadata, density, group dividers, protected domain metadata hooks, and rounded-boundary overflow clipping.",
       "uses": [
         "lucide-icon",
         "loading-spinner"
       ],
-      "purpose": "Selectable, disabled, trailing, and multiline navigation rows.",
+      "purpose": "Selectable, disabled, trailing, and multiline action or link rows.",
       "publicExports": [
-        "ListItem"
+        "ListItem",
+        "ListItemLink"
       ],
       "cssValueProps": [
         {
@@ -2965,7 +2966,7 @@
         }
       ],
       "useWhen": [
-        "Render a selectable, disabled, trailing, or multiline sidebar/navigation action row whose descendants must remain clipped to the rounded row boundary."
+        "Render a selectable, disabled, trailing, or multiline sidebar action row whose descendants must remain clipped to the rounded row boundary; use ListItemLink when the destination has an href and needs native link activation."
       ],
       "avoidWhen": [
         "Do not use for an ordinary inline link, form button, isolated ARIA menuitem, or an interactive trailing action; use ListActionRow for sibling row actions.",
@@ -2980,12 +2981,14 @@
       ],
       "appOwns": [
         "routing",
+        "link destinations",
         "selection",
         "permissions",
         "action handling",
         "domain data attributes"
       ],
       "variants": [
+        "native link and external link",
         "selected",
         "pressed",
         "disabled",
@@ -3001,7 +3004,7 @@
         "before, after, or paired group divider"
       ],
       "accessibility": [
-        "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
+        "ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
       ],
       "geometry": {
         "margin": "self",

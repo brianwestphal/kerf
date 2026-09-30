@@ -74,7 +74,12 @@ export {
   type ListInsetControlProps,
 } from './list-inset-control.js';
 export { ListInsetText, type ListInsetTextProps } from './list-inset-text.js';
-export { ListItem, type ListItemProps } from './list-item.js';
+export {
+  ListItem,
+  ListItemLink,
+  type ListItemLinkProps,
+  type ListItemProps,
+} from './list-item.js';
 export { LoadingSpinner, type LoadingSpinnerProps } from './loading-spinner.js';
 export {
   LucideIcon,

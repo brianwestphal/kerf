@@ -377,7 +377,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Selectable, disabled, trailing, and multiline navigation rows.",
+    "description": "Selectable, disabled, trailing, and multiline action or link rows.",
     "uses": [
       "lucide-icon",
       "loading-spinner"

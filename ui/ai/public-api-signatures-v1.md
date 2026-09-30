@@ -783,9 +783,19 @@ interface ListItemProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
+interface ListItemLinkProps extends Omit<ListItemProps, 'action' | 'pressed'> {
+    /** Native destination for this navigation row. */
+    href: string;
+    /** Open in a new tab with a safe rel and announce that behavior. */
+    external?: boolean;
+    action?: never;
+    pressed?: never;
+}
 declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, rootAttributes, slot, }: ListItemProps): SafeHtml;
+/** A navigation row with native link activation and ListItem geometry. */
+declare function ListItemLink({ href, external, label, description, icon, trailing, status, busy, density, divider, selected, itemId, className, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, rootAttributes, slot, }: ListItemLinkProps): SafeHtml;
 
-export { ListItem, type ListItemProps };
+export { ListItem, ListItemLink, type ListItemLinkProps, type ListItemProps };
 ```
 
 ## `@kerfjs/ui/list-inset-control`

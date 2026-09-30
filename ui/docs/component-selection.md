@@ -195,6 +195,13 @@ whole label. `divider` owns a before or after separator. Set
 and color. `ListHeader` exposes `--kui-list-header-min-height`, title padding,
 title minimum height, and border-width tokens for section density.
 
+Use `ListItemLink` from `@kerfjs/ui/list-item` for a navigation row with a
+real `href`. It shares `ListItem` content slots, density, selection, and row
+geometry while rendering a native anchor. `external` opens a new tab with
+`noopener noreferrer` and announces that behavior in the default accessible
+name. Disabled and loading links omit `href` and leave the tab order. Use
+`ListItem` for an application action dispatched through `action`.
+
 Use `Toolbar responsive="trailing-priority"` for a collapsible search in the
 trailing zone that should take a full second row when expanded. `responsiveAt`
 chooses the compact or narrow container breakpoint. The leading identity stays

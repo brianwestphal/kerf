@@ -2438,6 +2438,11 @@
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         { "id": "routing", "owner": "application", "required": false },
+        {
+          "id": "link destinations",
+          "owner": "application",
+          "required": false
+        },
         { "id": "selection", "owner": "application", "required": false },
         { "id": "permissions", "owner": "application", "required": false },
         { "id": "action handling", "owner": "application", "required": false },
@@ -2460,7 +2465,7 @@
       },
       "accessibility": {
         "obligations": [
-          "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
+          "ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
         ]
       },
       "cssValueProps": [

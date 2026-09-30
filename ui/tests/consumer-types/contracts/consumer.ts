@@ -400,6 +400,16 @@ UI.ListInsetControl({ children: slottedContent, slot: 'named' });
 UI.ListInsetText({ children: 'Copy', slot: 'named' });
 UI.ContentItem({ children: slottedContent, slot: 'named' });
 UI.ListItem({ label: 'Item', action: 'open', slot: 'named' });
+UI.ListItemLink({
+  label: 'Item',
+  href: '/item',
+  external: true,
+  slot: 'named',
+});
+// @ts-expect-error links own href navigation, not action dispatch
+UI.ListItemLink({ label: 'Item', href: '/item', action: 'open' });
+// @ts-expect-error pressed applies to button actions, not links
+UI.ListItemLink({ label: 'Item', href: '/item', pressed: true });
 UI.LoadingSpinner({ slot: 'named' });
 UI.LucideIcon({ icon: [], name: 'empty', slot: 'named' });
 NavStack({

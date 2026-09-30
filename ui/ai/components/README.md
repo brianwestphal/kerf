@@ -44,7 +44,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [List](./list.md) — Standardize vertical component layout, optional physical-side text/control insets, and scroll/divider ownership instead of repeating ad-hoc flex-column wrappers.
 - [ListHeader](./list-header.md) — Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and mutually exclusive semantic count or badge from an optional logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.
 - [ListActionRow](./list-action-row.md) — Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.
-- [ListItem](./list-item.md) — Selectable, disabled, trailing, and multiline navigation rows.
+- [ListItem](./list-item.md) — Selectable, disabled, trailing, and multiline action or link rows.
 - [Application tabs](./application-tabs.md) — Show AppTab and TabBar in a complete controlled composition.
 - [AppTab](./tabs.md) — Roving-tabindex-ready tabs with typed compact, segmented, icon-only, and truncating-label presentations.
 - [TabBar](./tab-bar.md) — Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.

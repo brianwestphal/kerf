@@ -1,5 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { ListItem } from '@kerfjs/ui/list-item';
+import { ListItem, ListItemLink } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { CircleHelp, Folder, Inbox, Wrench } from 'lucide';
 
@@ -35,6 +35,24 @@ export function ListItemDemo() {
           trailing={<span>12</span>}
           selected
           rootAttributes={{ 'data-demo-drop-status': 'ready' }}
+        />
+      </CatalogExample>
+      <CatalogExample label="Native navigation link" align="none">
+        <ListItemLink
+          href="#list-item-link-target"
+          itemId="link"
+          label="Jump to list destination"
+          icon={<LucideIcon icon={Folder} name="folder" />}
+          trailing={<span>Link</span>}
+        />
+        <span id="list-item-link-target">List destination</span>
+      </CatalogExample>
+      <CatalogExample label="External navigation link" align="none">
+        <ListItemLink
+          href="https://example.com"
+          itemId="external-link"
+          label="Open external example"
+          external
         />
       </CatalogExample>
       <CatalogExample align="none">

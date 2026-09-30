@@ -72,6 +72,83 @@ export interface ListItemProps {
   slot?: string;
 }
 
+export interface ListItemLinkProps extends Omit<
+  ListItemProps,
+  'action' | 'pressed'
+> {
+  /** Native destination for this navigation row. */
+  href: string;
+  /** Open in a new tab with a safe rel and announce that behavior. */
+  external?: boolean;
+  action?: never;
+  pressed?: never;
+}
+
+function listItemContent({
+  label,
+  description,
+  icon,
+  trailing,
+  status,
+  busy = false,
+  multiline = false,
+  placeholder = false,
+}: Pick<
+  ListItemProps,
+  | 'label'
+  | 'description'
+  | 'icon'
+  | 'trailing'
+  | 'status'
+  | 'busy'
+  | 'multiline'
+  | 'placeholder'
+>) {
+  return (
+    <>
+      {icon && (
+        <span class="kui-list-item__icon">
+          {placeholder ? (
+            <Skeleton block width={remify(18)} height={remify(18)} />
+          ) : (
+            icon
+          )}
+        </span>
+      )}
+      <span class="kui-list-item__label">
+        <span class="kui-list-item__primary-label">
+          {placeholder ? (
+            <Skeleton width={em(9)} />
+          ) : multiline ? (
+            withWordBreaks(label)
+          ) : (
+            label
+          )}
+        </span>
+        {description && (
+          <span class="kui-list-item__description">
+            {placeholder ? <Skeleton width={em(11)} /> : description}
+          </span>
+        )}
+      </span>
+      {(busy || status || trailing) && (
+        <span class="kui-list-item__trailing">
+          {/* The busy spinner is component-owned chrome drawn from a known
+              prop, so a placeholder keeps it live. Status text and
+              author-supplied trailing content are values: skeletons. */}
+          {busy && <LoadingSpinner />}
+          {status && (
+            <span class="kui-list-item__status">
+              {placeholder ? <Skeleton width={em(3.5)} /> : status}
+            </span>
+          )}
+          {trailing && (placeholder ? <Skeleton width={em(1.5)} /> : trailing)}
+        </span>
+      )}
+    </>
+  );
+}
+
 export function ListItem({
   label,
   description,
@@ -128,45 +205,93 @@ export function ListItem({
       aria-busy={placeholder || busy ? 'true' : undefined}
       slot={slot}
     >
-      {icon && (
-        <span class="kui-list-item__icon">
-          {placeholder ? (
-            <Skeleton block width={remify(18)} height={remify(18)} />
-          ) : (
-            icon
-          )}
-        </span>
-      )}
-      <span class="kui-list-item__label">
-        <span class="kui-list-item__primary-label">
-          {placeholder ? (
-            <Skeleton width={em(9)} />
-          ) : multiline ? (
-            withWordBreaks(label)
-          ) : (
-            label
-          )}
-        </span>
-        {description && (
-          <span class="kui-list-item__description">
-            {placeholder ? <Skeleton width={em(11)} /> : description}
-          </span>
-        )}
-      </span>
-      {(busy || status || trailing) && (
-        <span class="kui-list-item__trailing">
-          {/* The busy spinner is component-owned chrome drawn from a known
-              prop, so a placeholder keeps it live. Status text and
-              author-supplied trailing content are values: skeletons. */}
-          {busy && <LoadingSpinner />}
-          {status && (
-            <span class="kui-list-item__status">
-              {placeholder ? <Skeleton width={em(3.5)} /> : status}
-            </span>
-          )}
-          {trailing && (placeholder ? <Skeleton width={em(1.5)} /> : trailing)}
-        </span>
-      )}
+      {listItemContent({
+        label,
+        description,
+        icon,
+        trailing,
+        status,
+        busy,
+        multiline,
+        placeholder,
+      })}
     </button>
+  );
+}
+
+/** A navigation row with native link activation and ListItem geometry. */
+export function ListItemLink({
+  href,
+  external = false,
+  label,
+  description,
+  icon,
+  trailing,
+  status,
+  busy = false,
+  density = 'standard',
+  divider = 'none',
+  selected = false,
+  itemId,
+  className = '',
+  accessibleLabel,
+  title,
+  multiline = false,
+  multilineIconAlign = 'first-line',
+  state,
+  disabled = false,
+  tabIndex,
+  placeholder = false,
+  rootAttributes = {},
+  slot,
+}: ListItemLinkProps) {
+  const extensionAttributes = filterDataAttributes(
+    rootAttributes,
+    PROTECTED_ROOT_DATA_ATTRIBUTES,
+  );
+  const inactive = disabled || placeholder;
+  const linkLabel =
+    accessibleLabel ??
+    (external && typeof label === 'string'
+      ? `${label} (opens in new tab)`
+      : undefined);
+  return (
+    <a
+      {...extensionAttributes}
+      class={`kui-list-item ${className}`.trim()}
+      href={inactive ? undefined : href}
+      target={inactive || !external ? undefined : '_blank'}
+      rel={inactive || !external ? undefined : 'noopener noreferrer'}
+      title={placeholder ? undefined : title}
+      tabindex={inactive ? -1 : tabIndex}
+      data-component="list-item-link"
+      data-item-id={itemId}
+      data-has-icon={String(Boolean(icon))}
+      data-has-description={String(Boolean(description))}
+      data-multiline={multiline ? 'true' : undefined}
+      data-icon-align={multiline ? multilineIconAlign : undefined}
+      data-density={density}
+      data-divider={divider}
+      data-busy={busy ? 'true' : undefined}
+      data-state={state}
+      data-kui-disabled={disabled ? 'true' : undefined}
+      data-placeholder={placeholder ? 'true' : undefined}
+      aria-label={linkLabel}
+      aria-current={selected ? 'page' : undefined}
+      aria-disabled={inactive ? 'true' : undefined}
+      aria-busy={placeholder || busy ? 'true' : undefined}
+      slot={slot}
+    >
+      {listItemContent({
+        label,
+        description,
+        icon,
+        trailing,
+        status,
+        busy,
+        multiline,
+        placeholder,
+      })}
+    </a>
   );
 }

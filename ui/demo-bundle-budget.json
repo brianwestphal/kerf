@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 305600,
-  "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 305504,
+  "totalJavaScriptGzip": 305900,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 305870,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1331,6 +1331,22 @@
         "measuredTotalJavaScriptGzip": 305504,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 305600
+      }
+    },
+    {
+      "at": "2026-09-30T07:07:28.121Z",
+      "reason": "ListItemLink adds native anchor navigation to the catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 305504,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 305600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 305870,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 305900
       }
     }
   ]

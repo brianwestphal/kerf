@@ -36,6 +36,7 @@
   column-gap: var(--kui-list-item-gap, var(--kui-layout-item-gap, remify(8px)));
   font: inherit;
   text-align: start;
+  text-decoration: none;
 }
 
 .kui-list-item[data-density="compact"] {
@@ -112,7 +113,9 @@
   opacity: 0.58;
 }
 
-.kui-list-item:disabled:not([data-placeholder="true"]) {
+.kui-list-item:is(:disabled, [aria-disabled="true"]):not(
+    [data-placeholder="true"]
+  ) {
   cursor: not-allowed;
 }
 

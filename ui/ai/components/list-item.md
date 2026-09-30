@@ -4,13 +4,13 @@
 
 `@kerfjs/ui:list-item` · Kerf UI · component · Navigation
 
-Configurable native-button navigation rows with structured labels, status/busy metadata, density, group dividers, protected domain metadata hooks, and rounded-boundary overflow clipping.
+Configurable native-button action rows and native-anchor navigation rows with structured labels, status/busy metadata, density, group dividers, protected domain metadata hooks, and rounded-boundary overflow clipping.
 
 ## When to use
 
-Selectable, disabled, trailing, and multiline navigation rows.
+Selectable, disabled, trailing, and multiline action or link rows.
 
-- Render a selectable, disabled, trailing, or multiline sidebar/navigation action row whose descendants must remain clipped to the rounded row boundary.
+- Render a selectable, disabled, trailing, or multiline sidebar action row whose descendants must remain clipped to the rounded row boundary; use ListItemLink when the destination has an href and needs native link activation.
 
 **Not when:**
 
@@ -23,7 +23,7 @@ Selectable, disabled, trailing, and multiline navigation rows.
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/list-item` — exports `ListItem`.
+- JavaScript: `@kerfjs/ui/list-item` — exports `ListItem`, `ListItemLink`.
 - CSS: the browser build of `@kerfjs/ui/list-item` pulls its CSS automatically; import `@kerfjs/ui/list-item.css` manually only without the `browser` export condition.
 - Declared side effects: browser-condition-css.
 
@@ -33,6 +33,7 @@ Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1
 
 **Variants (configure, do not restyle):**
 
+- native link and external link
 - selected
 - pressed
 - disabled
@@ -60,7 +61,7 @@ Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1
 
 ## State and wiring
 
-**The app owns:** routing; selection; permissions; action handling; domain data attributes.
+**The app owns:** routing; link destinations; selection; permissions; action handling; domain data attributes.
 
 No wiring helper.
 
@@ -70,7 +71,7 @@ Margin: self · border: self · padding: self (layout role: navigation). `self` 
 
 ## Accessibility
 
-- Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls.
+- ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls.
 
 ## Styling boundary
 

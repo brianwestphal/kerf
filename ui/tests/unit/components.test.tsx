@@ -16,7 +16,7 @@ import { ListActionRow } from '../../src/list-action-row.js';
 import { ListHeader, type ListHeaderProps } from '../../src/list-header.js';
 import { ListInsetControl } from '../../src/list-inset-control.js';
 import { ListInsetText } from '../../src/list-inset-text.js';
-import { ListItem } from '../../src/list-item.js';
+import { ListItem, ListItemLink } from '../../src/list-item.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
 import {
@@ -1097,6 +1097,102 @@ describe('production UI primitives', () => {
       // @ts-expect-error Component-owned count presence cannot be overridden.
       rootAttributes: { 'data-has-count': 'false' },
     });
+  });
+
+  it('renders ListItemLink with native navigation and inert loading states', () => {
+    const link = asHtml(
+      ListItemLink({
+        href: '/projects',
+        label: 'Projects',
+        description: 'All projects',
+        icon,
+        trailing: <span>12</span>,
+        itemId: 'projects',
+        selected: true,
+        external: true,
+        rootAttributes: { 'data-project-id': 'p1' },
+      }),
+    );
+    expect(link).toContain('<a ');
+    expect(link).toContain('class="kui-list-item"');
+    expect(link).toContain('href="/projects"');
+    expect(link).toContain('target="_blank"');
+    expect(link).toContain('rel="noopener noreferrer"');
+    expect(link).toContain('aria-label="Projects (opens in new tab)"');
+    expect(link).toContain('aria-current="page"');
+    expect(link).toContain('data-component="list-item-link"');
+    expect(link).toContain('data-project-id="p1"');
+    expect(link).toContain('kui-list-item__description">All projects');
+    expect(link).toContain('kui-list-item__trailing"><span>12</span>');
+    expect(link).not.toContain('data-action=');
+    expect(link).not.toContain('aria-pressed=');
+
+    const ordinary = asHtml(
+      ListItemLink({
+        href: '/projects',
+        label: 'Long project name',
+        accessibleLabel: 'Browse projects',
+        title: 'Projects',
+        multiline: true,
+        multilineIconAlign: 'center',
+        busy: true,
+        status: 'Updating',
+        density: 'spacious',
+        divider: 'after',
+        state: 'ready',
+        className: 'project-link',
+        tabIndex: 0,
+        slot: 'navigation',
+      }),
+    );
+    expect(ordinary).toContain('href="/projects"');
+    expect(ordinary).not.toContain('target=');
+    expect(ordinary).toContain('aria-label="Browse projects"');
+    expect(ordinary).toContain('data-multiline="true"');
+    expect(ordinary).toContain('data-icon-align="center"');
+    expect(ordinary).toContain('data-busy="true"');
+    expect(ordinary).toContain('aria-busy="true"');
+    expect(ordinary).toContain('kui-list-item__status">Updating');
+    expect(ordinary).toContain('tabindex="0"');
+    expect(ordinary).toContain('slot="navigation"');
+
+    const richLabel = asHtml(
+      ListItemLink({
+        href: '/projects',
+        label: <strong>Projects</strong>,
+        external: true,
+      }),
+    );
+    expect(richLabel).toContain('<strong>Projects</strong>');
+    expect(richLabel).not.toContain('aria-label=');
+
+    const disabled = asHtml(
+      ListItemLink({
+        href: '/projects',
+        label: 'Projects',
+        external: true,
+        disabled: true,
+      }),
+    );
+    expect(disabled).not.toContain('href=');
+    expect(disabled).not.toContain('target=');
+    expect(disabled).toContain('aria-disabled="true"');
+    expect(disabled).toContain('tabindex="-1"');
+    expect(disabled).toContain('data-kui-disabled="true"');
+
+    const placeholder = asHtml(
+      ListItemLink({
+        href: '/projects',
+        label: 'Projects',
+        external: true,
+        placeholder: true,
+      }),
+    );
+    expect(placeholder).not.toContain('href=');
+    expect(placeholder).not.toContain('target=');
+    expect(placeholder).toContain('aria-disabled="true"');
+    expect(placeholder).toContain('aria-busy="true"');
+    expect(placeholder).toContain('kui-skeleton');
   });
 
   it('normalizes ListHeader counts and keeps widened legacy badges safe', () => {
