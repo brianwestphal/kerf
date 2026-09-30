@@ -484,9 +484,14 @@ writeJson('component-composition.json', {
   schemaVersion: 1,
   package: 'karwan-app',
   entries: [
-    wrapper('demand-segments-control', 'DemandSegmentsControl', [
-      '@kerfjs/ui:toolbar-control-group',
-    ]),
+    wrapper(
+      'demand-segments-control',
+      'DemandSegmentsControl',
+      ['@kerfjs/ui:toolbar-control-group'],
+      {
+        parents: { mode: 'listed', entries: ['@kerfjs/ui:toolbar'] },
+      },
+    ),
     wrapper('view-segmented-control', 'ViewSegmentedControl', [
       '@kerfjs/ui:toolbar-control-group',
       '@kerfjs/ui:toolbar-text',
@@ -722,9 +727,16 @@ tester.run('ui-composition rendersAs wrappers', composition, {
       "import { DemandSegmentsControl } from './demand-segments-control.js'; <DemandSegmentsControl><ToolbarControlGroup /></DemandSegmentsControl>;",
       { errors: [{ messageId: 'parent' }] },
     ),
-    // The rendered ToolbarControlGroup still needs a Toolbar parent.
+    // The wrapper and rendered ToolbarControlGroup both require Toolbar;
+    // the placement gets one diagnostic, not two.
     appCase(
       "import { DemandSegmentsControl } from './demand-segments-control.js'; <div><DemandSegmentsControl /></div>;",
+      { errors: [{ messageId: 'parent' }] },
+    ),
+    // Distinct listed requirements from multiple roots still yield one
+    // diagnostic at the placement.
+    appCase(
+      "import { ViewSegmentedControl } from './view-segmented-control.js'; <div><ViewSegmentedControl /></div>;",
       { errors: [{ messageId: 'parent' }] },
     ),
   ],

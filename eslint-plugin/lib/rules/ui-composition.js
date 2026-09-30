@@ -167,34 +167,37 @@ export default {
         const entry = contract.entries.get(key);
         if (!entry) return;
         // A wrapper answers to its own parent contract and to each root's.
+        // Report one violated requirement per placement, with roots first.
         const placed = [
-          { entry, child: key },
           ...(entry.rendersAs ?? []).flatMap((root) => {
             const rootEntry = contract.entries.get(root);
             return rootEntry
               ? [{ entry: rootEntry, child: `${key} (renders ${root})` }]
               : [];
           }),
+          { entry, child: key },
         ].filter(
           ({ entry: placedEntry }) => placedEntry.parents?.mode === 'listed',
         );
         if (placed.length && !isExcepted(contract, PARENT_CODE, filename)) {
           const parent = directParentKey(node, registry, contract);
-          if (parent)
-            for (const { entry: placedEntry, child } of placed)
-              if (
+          if (parent) {
+            const violation = placed.find(
+              ({ entry: placedEntry }) =>
                 !rootsOf(parent.key, contract).every((root) =>
                   placedEntry.parents.entries.includes(root),
-                )
-              )
-                context.report({
-                  node: node.name,
-                  messageId: 'parent',
-                  data: {
-                    child,
-                    parents: placedEntry.parents.entries.join(', '),
-                  },
-                });
+                ),
+            );
+            if (violation)
+              context.report({
+                node: node.name,
+                messageId: 'parent',
+                data: {
+                  child: violation.child,
+                  parents: violation.entry.parents.entries.join(', '),
+                },
+              });
+          }
         }
         for (const zone of entry.zones ?? []) {
           const bound = boundZone(node, zone, registry, contract);

@@ -50,7 +50,8 @@ responsive ownership, layout and geometry, accessibility obligations, public
 CSS boundaries, diagnostics, and provenance. A wrapper entry may add
 `rendersAs`: the cataloged roots it renders (any one of them, or nothing), so
 composition checks treat its elements as each root rather than as an unknown
-child.
+child. A placement with listed parent constraints produces one `KUI-L201`
+diagnostic even when both the wrapper and a rendered root reject that parent.
 
 `boundaries.placeableClasses` names the subset of `publicClasses` an
 application may write onto its own elements (layout utilities, the document

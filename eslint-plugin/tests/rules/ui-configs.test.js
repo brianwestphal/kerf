@@ -121,6 +121,87 @@ test('strict-ui promotes advisory UI contracts without changing diagnostic ids',
   assert.match(result.messages[0].message, /^KUI-L301:/);
 });
 
+test('recommended-ui reports one parent diagnostic for a wrapper and its rendered root', async (t) => {
+  const workspace = await mkdtemp(
+    resolve(tmpdir(), 'kerf-composition-wrapper-'),
+  );
+  t.after(() => rm(workspace, { recursive: true, force: true }));
+  await mkdir(resolve(workspace, 'src'));
+  await writeFile(
+    resolve(workspace, 'package.json'),
+    '{"name":"hotsheet-web"}',
+  );
+  await writeFile(
+    resolve(workspace, 'component-composition.json'),
+    JSON.stringify({
+      schemaVersion: 1,
+      package: 'hotsheet-web',
+      entries: [
+        {
+          key: 'hotsheet-web:ticket-search-field',
+          package: 'hotsheet-web',
+          id: 'ticket-search-field',
+          name: 'TicketSearchField',
+          source: 'src/ticket-search-field.tsx',
+          publicExports: [{ name: 'TicketSearchField' }],
+          rendersAs: ['@kerfjs/ui:toolbar-control-group'],
+          parents: { mode: 'listed', entries: ['@kerfjs/ui:toolbar'] },
+          wiring: { required: false, helpers: [] },
+          boundaries: { publicClasses: [], publicTokens: [] },
+        },
+      ],
+    }),
+  );
+  await writeFile(
+    resolve(workspace, '.kerf-ui-profile.json'),
+    JSON.stringify({
+      schemaVersion: 1,
+      scope: 'package',
+      catalogs: [
+        {
+          package: 'hotsheet-web',
+          composition: {
+            path: './component-composition.json',
+            schemaVersion: 1,
+          },
+        },
+      ],
+    }),
+  );
+  await writeFile(
+    resolve(workspace, 'src/ticket-search-field.tsx'),
+    'export function TicketSearchField() { return null; }',
+  );
+  const eslint = new ESLint({
+    cwd: workspace,
+    overrideConfigFile: true,
+    overrideConfig: [
+      {
+        files: ['**/*.tsx'],
+        languageOptions: {
+          parser: tsParser,
+          parserOptions: { ecmaFeatures: { jsx: true } },
+        },
+        settings: uiSettings({
+          workspaceRoot: workspace,
+          profilePath: resolve(workspace, '.kerf-ui-profile.json'),
+        }),
+      },
+      plugin.configs['recommended-ui'],
+    ],
+  });
+  const [result] = await eslint.lintText(
+    "import { TicketSearchField } from './ticket-search-field.js'; <div><TicketSearchField /></div>;",
+    { filePath: resolve(workspace, 'src/view.tsx') },
+  );
+  assert.deepEqual(
+    result.messages
+      .filter(({ ruleId }) => ruleId === 'kerfjs/ui-composition')
+      .map(({ message }) => message.slice(0, 8)),
+    ['KUI-L201'],
+  );
+});
+
 test('packed plugin resolves packed @kerfjs/ui assets from an installed flat-config consumer', async (t) => {
   const temporary = await mkdtemp(resolve(tmpdir(), 'kerf-eslint-installed-'));
   t.after(() => rm(temporary, { recursive: true, force: true }));

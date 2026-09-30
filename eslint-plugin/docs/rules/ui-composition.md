@@ -30,7 +30,9 @@ cataloged roots, or nothing) is checked as those roots:
 
 - **Zones (`KUI-L202`):** the zone must accept every declared root.
 - **Parents (`KUI-L201`):** each root's listed parents apply where the wrapper
-  is placed, and a wrapper used as a parent counts as each of its roots.
+  is placed, and a wrapper used as a parent counts as each of its roots. A
+  placement reports once, using the first violated root requirement before a
+  separate wrapper requirement if both apply.
 - **Cardinality (`KUI-L203`):** the wrapper counts as zero or one child, since
   it may render nothing.
 
