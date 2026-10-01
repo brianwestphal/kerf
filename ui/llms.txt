@@ -176,8 +176,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   target. Public ListItem tokens set row, icon, label, and trailing geometry;
   ListHeader height, title padding, and border tokens tune section density.
   For a filled command list, scope `--kui-list-item-background`,
-  `--kui-list-item-border`, `--kui-list-item-hover-border`, and
-  `--kui-list-item-selected-border` at the list or row boundary.
+  `--kui-list-item-color`, `--kui-list-item-border`,
+  `--kui-list-item-hover-background`, `--kui-list-item-hover-border`,
+  `--kui-list-item-selected-background`, `--kui-list-item-selected-color`,
+  and `--kui-list-item-selected-border` at the list or row boundary.
 - **Use `Row` for horizontal and `List` for vertical layout.** Both expose
   physical `hAlign`/`vAlign` props and typed gaps. Row defaults to left/full,
   an `xs` gap, and no wrapping; List retains full/top and zero-gap defaults.

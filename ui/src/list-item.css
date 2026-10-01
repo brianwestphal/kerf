@@ -1,9 +1,5 @@
 .kui-list-item {
   --kui-list-group-divider-color: var(--kui-color-neutral-border-quiet);
-  --kui-list-item-color: var(--kui-color-neutral-on-normal);
-  --kui-list-item-hover-background: var(--kui-color-neutral-fill-quiet);
-  --kui-list-item-selected-color: var(--kui-color-neutral-on-normal);
-  --kui-list-item-selected-background: var(--kui-color-brand-fill-normal);
   display: grid;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-height: var(--kui-list-item-min-height, remify(44px));
@@ -24,7 +20,7 @@
     --kui-list-item-radius,
     var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
   );
-  color: var(--kui-list-item-color);
+  color: var(--kui-list-item-color, var(--kui-color-neutral-on-normal));
   background: var(--kui-list-item-background, transparent);
   cursor: pointer;
   grid-template-columns: var(--kui-list-item-columns, minmax(0, 1fr) auto);
@@ -99,7 +95,10 @@
     --kui-list-item-hover-border,
     var(--kui-color-neutral-border-normal)
   );
-  background: var(--kui-list-item-hover-background);
+  background: var(
+    --kui-list-item-hover-background,
+    var(--kui-color-neutral-fill-quiet)
+  );
 }
 
 /* A placeholder is disabled to stay inert, but it is loading, not unavailable:
@@ -124,8 +123,14 @@
     --kui-list-item-selected-border,
     var(--kui-color-brand-border-quiet)
   );
-  color: var(--kui-list-item-selected-color);
-  background: var(--kui-list-item-selected-background);
+  color: var(
+    --kui-list-item-selected-color,
+    var(--kui-color-neutral-on-normal)
+  );
+  background: var(
+    --kui-list-item-selected-background,
+    var(--kui-color-brand-fill-normal)
+  );
   font-weight: 650;
 }
 

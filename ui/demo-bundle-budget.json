@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 310400,
-  "measuredLargestJavaScriptGzip": 126042,
-  "measuredTotalJavaScriptGzip": 310303,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 310326,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1665,6 +1665,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 126042,
         "measuredTotalJavaScriptGzip": 310303,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310400
+      }
+    },
+    {
+      "at": "2026-10-01T00:24:31.806Z",
+      "reason": "Scope ListItem state tones from containing list",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 310303,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 310326,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 310400
       }

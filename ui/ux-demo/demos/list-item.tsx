@@ -20,15 +20,21 @@ export function ListItemDemo() {
       </CatalogExample>
       <CatalogExample
         label="Filled command rows"
-        note="Public resting, hover, and selected border tokens let a list carry its own fill without a background wrapper."
+        note="Public color, fill, and border tokens let a list carry its own resting, hover, and selected tones without a wrapper."
         align="none"
         viewport={{
           width: 'medium',
           tokens: {
             '--kui-list-item-background': 'var(--kui-color-neutral-fill-quiet)',
+            '--kui-list-item-color': 'var(--kui-color-brand-on-quiet)',
             '--kui-list-item-border': 'var(--kui-color-neutral-border-quiet)',
+            '--kui-list-item-hover-background':
+              'var(--kui-color-brand-fill-quiet)',
             '--kui-list-item-hover-border':
               'var(--kui-color-brand-border-normal)',
+            '--kui-list-item-selected-background':
+              'var(--kui-color-brand-fill-quiet)',
+            '--kui-list-item-selected-color': 'var(--kui-color-brand-on-quiet)',
             '--kui-list-item-selected-border':
               'var(--kui-color-brand-border-normal)',
           },

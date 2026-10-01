@@ -69,7 +69,7 @@ No wiring helper.
 
 Margin: self · border: self · padding: self (layout role: navigation). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- Public resting background and border, hover border, and selected border tokens can be scoped to a row or its containing list without changing the default tones.
+- Public resting, hover, and selected text, fill, and border tokens can be scoped to a row or its containing list without changing the default tones.
 
 ## Accessibility
 

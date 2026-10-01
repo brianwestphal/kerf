@@ -15,13 +15,26 @@ test('ListItem uses public resting and state border tones from its list', async 
     await viewport.evaluate((element) => {
       const style = (element as HTMLElement).style;
       style.setProperty('--kui-list-item-background', 'rgb(232, 242, 250)');
+      style.setProperty('--kui-list-item-color', 'rgb(25, 70, 105)');
       style.setProperty('--kui-list-item-border', 'rgb(110, 120, 130)');
+      style.setProperty(
+        '--kui-list-item-hover-background',
+        'rgb(219, 242, 232)',
+      );
       style.setProperty('--kui-list-item-hover-border', 'rgb(160, 50, 90)');
+      style.setProperty(
+        '--kui-list-item-selected-background',
+        'rgb(242, 228, 247)',
+      );
+      style.setProperty('--kui-list-item-selected-color', 'rgb(86, 32, 93)');
       style.setProperty('--kui-list-item-selected-border', 'rgb(20, 80, 160)');
     });
     await expect(rest).toHaveCSS('background-color', 'rgb(232, 242, 250)');
+    await expect(rest).toHaveCSS('color', 'rgb(25, 70, 105)');
     await expect(rest).toHaveCSS('border-top-color', 'rgb(110, 120, 130)');
     await expect(selected).toHaveCSS('border-top-color', 'rgb(20, 80, 160)');
+    await expect(selected).toHaveCSS('background-color', 'rgb(242, 228, 247)');
+    await expect(selected).toHaveCSS('color', 'rgb(86, 32, 93)');
     const defaultRow = demo.locator('[data-item-id="default"]');
     await expect(defaultRow).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     await viewport.screenshot({
@@ -30,5 +43,9 @@ test('ListItem uses public resting and state border tones from its list', async 
 
     await rest.hover();
     await expect(rest).toHaveCSS('border-top-color', 'rgb(160, 50, 90)');
+    await expect(rest).toHaveCSS('background-color', 'rgb(219, 242, 232)');
+    await viewport.screenshot({
+      path: testInfo.outputPath(`list-item-tone-hover-${width}.png`),
+    });
   }
 });
