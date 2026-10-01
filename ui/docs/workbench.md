@@ -89,6 +89,12 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   each exactly at its configured size (its separator border included, as in
   flow) up to the viewport-relative overlay maximum; the content fills the
   panel inside its border, so it is clamped with it;
+- `overlayBackdrop` on the Workbench opts in to a `--kui-color-scrim` backdrop
+  whenever a static or responsive rail/drawer overlay is open. It sits below
+  the panel and above the work area, absorbs an outside press, and lets
+  `wireWorkbench` close the overlay without activating the control underneath.
+  It is off by default; without it, the compact rail's dismiss strip remains
+  transparent. Pair it with `wireWorkbench` for outside-press dismissal;
 - `responsiveOverlayAt: "narrow" | "compact" | "never"` presents a rail or the
   bottom drawer as an overlay below a Workbench container breakpoint — 704px
   or less for `narrow`, 448px or less for `compact`, the breakpoints of

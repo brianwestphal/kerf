@@ -1763,6 +1763,8 @@ interface WorkbenchProps {
      * shorter. Workbenches without a drawer ignore it.
      */
     mainMinHeight?: number;
+    /** Dim the work area below any open overlay and absorb outside presses; off by default. */
+    overlayBackdrop?: boolean;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -1780,7 +1782,7 @@ interface WorkbenchProps {
  * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, overlayBackdrop, className, slot, }: WorkbenchProps): SafeHtml;
 
 export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchPanel, type WorkbenchPanelBottomToolbar, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
 ```

@@ -220,6 +220,8 @@ export interface WorkbenchProps {
    * shorter. Workbenches without a drawer ignore it.
    */
   mainMinHeight?: number;
+  /** Dim the work area below any open overlay and absorb outside presses; off by default. */
+  overlayBackdrop?: boolean;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -512,6 +514,7 @@ export function Workbench({
   mainFooterList,
   mainMinSize = WORKBENCH_MAIN_MIN_SIZE,
   mainMinHeight = WORKBENCH_MAIN_MIN_HEIGHT,
+  overlayBackdrop = false,
   className = '',
   slot,
 }: WorkbenchProps) {
@@ -565,6 +568,17 @@ export function Workbench({
           ? 'true'
           : undefined
       }
+      data-drawer-overlay-expanded={
+        bottomDrawer?.presentation === 'overlay' && expanded(bottomDrawer)
+          ? 'true'
+          : undefined
+      }
+      data-drawer-responsive-expanded={
+        inline(bottomDrawer) && expanded(bottomDrawer)
+          ? responsiveDrawer(bottomDrawer)
+          : undefined
+      }
+      data-overlay-backdrop={overlayBackdrop ? 'true' : undefined}
       data-responsive-overlay={
         responsiveRail(leftRail) ||
         responsiveRail(rightRail) ||
@@ -640,6 +654,13 @@ export function Workbench({
         'bottom-end',
         floatingRestore(id, 'rightRail', rightRail, Boolean(mainToolbar)),
       )}
+      {overlayBackdrop ? (
+        <div
+          class="kui-workbench__backdrop"
+          data-workbench-backdrop
+          aria-hidden="true"
+        />
+      ) : null}
     </section>
   );
 }

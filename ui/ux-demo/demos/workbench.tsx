@@ -3,6 +3,7 @@ import '@kerfjs/ui/lucide-icon.css';
 import '@kerfjs/ui/workbench.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -167,11 +168,25 @@ export function WorkbenchDemo() {
         <Workbench
           id={RESIZABLE_WORKBENCH_ID}
           label="Resizable workbench"
+          overlayBackdrop
           mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
-          main={region(
-            'Resize the panels',
-            'Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size.',
-          )}
+          main={
+            <div class="kui-content">
+              <DemoContentItem
+                title="Resize the panels"
+                detail="Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size."
+              />
+              <ContentItem
+                interactive
+                action="workbench-demo-command"
+                itemId="underlay"
+                ariaLabel="Select underlying item"
+                rootAttributes={{ 'data-demo-underlay': '' }}
+              >
+                Select underlying item
+              </ContentItem>
+            </div>
+          }
           leftRail={{
             label: 'Navigator',
             toolbar: {
@@ -261,6 +276,7 @@ export function WorkbenchDemo() {
         <Workbench
           id={RESPONSIVE_DRAWER_WORKBENCH_ID}
           label="Responsive drawer workbench"
+          overlayBackdrop
           mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
           mainBottomToolbar={{
             label: 'Editor status',

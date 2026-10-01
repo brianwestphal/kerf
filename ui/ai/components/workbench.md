@@ -99,9 +99,9 @@ Margin: none · border: self · padding: child (layout role: structure). `self` 
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-workbench`, `kui-workbench__rail`, `kui-workbench__rail--left`, `kui-workbench__rail--right`, `kui-workbench__drawer`, `kui-workbench__center`, `kui-workbench__main`, `kui-workbench__panel-content`, `kui-workbench__handle`, `kui-workbench__handle-icon`, `kui-workbench__restore`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-workbench`, `kui-workbench__rail`, `kui-workbench__rail--left`, `kui-workbench__rail--right`, `kui-workbench__drawer`, `kui-workbench__center`, `kui-workbench__main`, `kui-workbench__panel-content`, `kui-workbench__handle`, `kui-workbench__handle-icon`, `kui-workbench__restore`, `kui-workbench__backdrop`.
 
-Never put `kui-workbench`, `kui-workbench__rail`, `kui-workbench__rail--left`, `kui-workbench__rail--right`, `kui-workbench__drawer`, `kui-workbench__center`, `kui-workbench__main`, `kui-workbench__panel-content`, `kui-workbench__handle`, `kui-workbench__handle-icon`, `kui-workbench__restore` on an element you write; render `Workbench` instead (`KUI-L103`).
+Never put `kui-workbench`, `kui-workbench__rail`, `kui-workbench__rail--left`, `kui-workbench__rail--right`, `kui-workbench__drawer`, `kui-workbench__center`, `kui-workbench__main`, `kui-workbench__panel-content`, `kui-workbench__handle`, `kui-workbench__handle-icon`, `kui-workbench__restore`, `kui-workbench__backdrop` on an element you write; render `Workbench` instead (`KUI-L103`).
 
 Public tokens it reads: `--kui-workbench-rail-width`, `--kui-workbench-drawer-height`, `--kui-workbench-popup-z`, `--kui-workbench-overlay-z`, `--kui-workbench-overlay-max-width`, `--kui-workbench-overlay-max-height`, `--kui-workbench-restore-inset`, `--kui-workbench-restore-z`, `--kui-workbench-overlay-dismiss-margin`. Set a token only where its public contract allows; prefer a prop.
 

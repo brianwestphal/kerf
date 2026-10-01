@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 313400,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 313391,
+  "totalJavaScriptGzip": 313500,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 313488,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1891,6 +1891,22 @@
         "measuredTotalJavaScriptGzip": 313391,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 313400
+      }
+    },
+    {
+      "at": "2026-10-01T03:11:44.377Z",
+      "reason": "Demonstrate Workbench overlay backdrop",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 313391,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 313488,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313500
       }
     }
   ]

@@ -568,6 +568,25 @@
   inset-block-end: 0;
 }
 
+/* Optional shared backdrop sits over work-area controls and restores, below
+   the overlay drawer and rails. It is last in document order so an equal-z
+   restore control cannot receive the outside press. */
+.kui-workbench__backdrop {
+  position: absolute;
+  z-index: calc(var(--kui-workbench-overlay-z, 41) - 2);
+  display: none;
+  inset: 0;
+  background: var(--kui-color-scrim, rgb(0 0 0 / 32%));
+}
+
+.kui-workbench[data-overlay-backdrop="true"]:is(
+    [data-rail-overlay-expanded="true"],
+    [data-drawer-overlay-expanded="true"]
+  )
+  > .kui-workbench__backdrop {
+  display: block;
+}
+
 /* A collapsed overlay keeps its box for the slide-out, so it drops its surface
    and shadow; the sliding content carries the surface instead. */
 .kui-workbench__rail[data-presentation="overlay"][data-collapsed="true"],
@@ -610,6 +629,15 @@
 }
 
 @container kui-workbench (max-width: remify(704px)) {
+  .kui-workbench[data-overlay-backdrop="true"]:is(
+      [data-left-responsive-expanded="narrow"],
+      [data-right-responsive-expanded="narrow"],
+      [data-drawer-responsive-expanded="narrow"]
+    )
+    > .kui-workbench__backdrop {
+    display: block;
+  }
+
   .kui-workbench__rail[data-responsive-overlay-at="narrow"] {
     position: absolute;
     z-index: var(--kui-workbench-overlay-z, 41);
@@ -692,6 +720,15 @@
 }
 
 @container kui-workbench (max-width: remify(448px)) {
+  .kui-workbench[data-overlay-backdrop="true"]:is(
+      [data-left-responsive-expanded="compact"],
+      [data-right-responsive-expanded="compact"],
+      [data-drawer-responsive-expanded="compact"]
+    )
+    > .kui-workbench__backdrop {
+    display: block;
+  }
+
   .kui-workbench__rail[data-responsive-overlay-at="compact"] {
     position: absolute;
     z-index: var(--kui-workbench-overlay-z, 41);

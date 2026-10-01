@@ -1206,7 +1206,8 @@
         "kui-workbench__panel-content",
         "kui-workbench__handle",
         "kui-workbench__handle-icon",
-        "kui-workbench__restore"
+        "kui-workbench__restore",
+        "kui-workbench__backdrop"
       ],
       "publicTokens": [
         "--kui-workbench-rail-width",
