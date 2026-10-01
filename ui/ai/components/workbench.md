@@ -77,6 +77,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 
 - `data-responsive-overlay-active` on `kui-workbench__rail and kui-workbench__drawer` (`wireWorkbench`): Present while a panel's numeric responsiveOverlayAt threshold applies to the Workbench width; the same measurement drives overlay layout and collapsed-state transitions.
+- `data-numeric-overlays` on `kui-workbench` (`wireWorkbench`): Space-separated left, right, drawer, rail-open, and open tokens mirror numeric overlay state for local CSS invalidation. Absent when no numeric overlay is active.
 - `data-handle-inset` on `kui-workbench__rail` (`wireWorkbench`): Written by the shared resize wiring when the work-area minimum or a parent clamp holds a rail's maximum near its size. It carries no Workbench styling; the Workbench handle stays at the rail's inner edge.
 - `data-resizing` on `kui-workbench__rail` (`wireWorkbench`): Present on a resizable rail or the drawer while a pointer drag resizes it.
 - `data-scroll-overflow` on `kui-pane__content of each panel and work-area Pane` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.

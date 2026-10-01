@@ -391,6 +391,11 @@ anchor(--kui-restore-drawer top, <safe-area fallback>))` with
     the breakpoint the CSS applies the overlay presentation (out of flow at its
     edge, the overlay z-index/maximums/shadow, separator hidden, the work area
     keeping its safe-area inset) while `data-presentation` stays `inline`.
+    For a numeric breakpoint, `wireWorkbench` mirrors active and open overlay
+    state to attributes on the Workbench root so CSS does not use a root
+    `:has()` selector that invalidates the whole work area on unrelated DOM
+    changes. It reads Workbench width only when a wired panel has a numeric
+    breakpoint.
     The bottom drawer takes the same prop (KF-N64H06: an overlay drawer used
     to collapse to its 1px border because its content is absolutely
     positioned): it overlays the work-area column (the center is its containing block) from the bottom edge at

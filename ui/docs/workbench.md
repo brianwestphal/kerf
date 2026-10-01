@@ -379,7 +379,11 @@ const stop = wireWorkbench(root, {
   full-size overlay over the work area rather than squeezing beside it (see
   the catalog's resizable and responsive-drawer Workbench examples).
   A numeric value measures the Workbench container, not the viewport. If the
-  rest of an app switches by viewport width and its Workbench can be narrower
+  app has no numeric Workbench breakpoint, the overlay wiring does not measure
+  the Workbench on ordinary panel updates. For numeric breakpoints the wiring
+  mirrors the active panel state onto the Workbench root, keeping work-area
+  styles local to actual overlay transitions. If the rest of an app switches
+  by viewport width and its Workbench can be narrower
   than the viewport, keep the app's viewport decision in
   `presentation: "overlay"` and pass its `collapsed` signals to
   `wireWorkbench`. On entering that mode, collapse the panels; after leaving,

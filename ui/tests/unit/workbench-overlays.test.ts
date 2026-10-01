@@ -95,6 +95,7 @@ afterEach(() => {
 
 interface StudioOptions {
   at?: WorkbenchResponsiveOverlayAt;
+  rightAt?: WorkbenchResponsiveOverlayAt;
   rightPresentation?: 'inline' | 'overlay';
   render?: boolean;
   /** Render the app's toggles with `aria-controls` naming their panels. */
@@ -106,6 +107,7 @@ interface StudioOptions {
 /** A mounted Workbench whose panels' collapsed flags are app-owned signals. */
 function studio({
   at = 'narrow',
+  rightAt,
   rightPresentation = 'inline',
   render = true,
   controls = false,
@@ -150,6 +152,7 @@ function studio({
             label: 'Inspector',
             collapsed: right.value,
             presentation: rightMode.value,
+            responsiveOverlayAt: rightAt,
             restoreControl: raw(
               '<div><button type="button" data-restore>Show inspector</button></div>',
             ),
@@ -234,6 +237,9 @@ const escape = (target: Element = document.body) => {
 describe('wireWorkbench transient overlays', () => {
   it('uses an app pixel threshold for presentation and inline-state crossings', async () => {
     const app = studio({ at: 1024 });
+    const workbench = () =>
+      app.root.querySelector<HTMLElement>('.kui-workbench')!;
+    const markers = () => workbench().dataset.numericOverlays?.split(' ') ?? [];
     app.wire();
     expect(app.leftRail().dataset.responsiveOverlayAt).toBe('1024');
     expect(app.leftRail().dataset.responsiveOverlayActive).toBeUndefined();
@@ -248,6 +254,9 @@ describe('wireWorkbench transient overlays', () => {
     expect(app.left.value).toBe(true);
     expect(app.leftRail().dataset.responsiveOverlayActive).toBe('true');
     expect(app.drawerPanel().dataset.responsiveOverlayActive).toBe('true');
+    expect(markers()).toContain('left');
+    expect(markers()).toContain('drawer');
+    expect(markers()).not.toContain('open');
     expect(app.left.value).toBe(true);
     expect(app.drawer.value).toBe(true);
 
@@ -255,6 +264,8 @@ describe('wireWorkbench transient overlays', () => {
     workbenchWidth = 1025;
     resize(false);
     expect(app.leftRail().dataset.responsiveOverlayActive).toBeUndefined();
+    expect(markers()).not.toContain('left');
+    expect(markers()).not.toContain('drawer');
     expect(app.left.value).toBe(false);
     workbenchWidth = 1024;
     resize(false);
@@ -262,12 +273,50 @@ describe('wireWorkbench transient overlays', () => {
     expect(app.leftRail().dataset.responsiveOverlayActive).toBe('true');
 
     app.left.value = false;
+    await flush();
+    expect(markers()).toContain('open');
+    expect(markers()).toContain('rail-open');
     workbenchWidth = 1025;
     resize(false);
     await flush();
     expect(app.leftRail().dataset.responsiveOverlayActive).toBeUndefined();
     expect(app.left.value).toBe(false);
     expect(app.drawer.value).toBe(false);
+    expect(markers()).not.toContain('open');
+  });
+  it('does not measure layout for a Workbench without a numeric breakpoint', async () => {
+    const app = studio({ at: 'never' });
+    const measure = vi.mocked(HTMLElement.prototype.getBoundingClientRect);
+    app.wire();
+    const workbench = app.root.querySelector<HTMLElement>('.kui-workbench')!;
+    workbench.dataset.numericOverlays = 'stale';
+    measure.mockClear();
+
+    app.leftRail().dataset.presentation = 'inline';
+    await flush();
+    expect(measure).not.toHaveBeenCalled();
+    expect(workbench.dataset.numericOverlays).toBeUndefined();
+  });
+  it('tracks a numeric right rail and an open numeric drawer independently', async () => {
+    const app = studio({ at: 1024, rightAt: 1024 });
+    const markers = () =>
+      app.root.querySelector<HTMLElement>('.kui-workbench')!.dataset
+        .numericOverlays ?? '';
+    app.wire();
+    workbenchWidth = 1024;
+    resize(false);
+    await flush();
+    expect(markers()).toContain('right');
+    expect(markers()).toContain('drawer');
+
+    app.drawer.value = false;
+    await flush();
+    expect(markers()).toContain('open');
+    expect(markers()).not.toContain('rail-open');
+
+    app.right.value = false;
+    await flush();
+    expect(markers()).toContain('rail-open');
   });
   it('collapses responsive overlays when the breakpoint applies and restores them when it stops', () => {
     const app = studio();

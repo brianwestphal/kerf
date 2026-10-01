@@ -675,11 +675,11 @@ test.describe('resizable Workbench panels', () => {
 
   test('a numeric Workbench breakpoint controls overlay layout at its own width', async ({
     page,
-  }) => {
+  }, testInfo) => {
     const workbench = page.locator('#catalog-workbench-resizable');
     const inspector = workbench.locator('[data-workbench-rail="right"]');
     const handle = inspector.locator('[data-kui-resize-handle]');
-    await workbench.scrollIntoViewIfNeeded();
+    await workbench.evaluate((element) => element.scrollIntoView());
     await workbench.evaluate((element) => {
       element.style.width = '800px';
       element.querySelector<HTMLElement>(
@@ -690,9 +690,30 @@ test.describe('resizable Workbench panels', () => {
       'data-responsive-overlay-active',
       'true',
     );
+    await expect(workbench).toHaveAttribute('data-numeric-overlays', /right/);
     await expect(inspector).toHaveCSS('position', 'absolute');
     await expect(handle).toBeHidden();
     await expect(inspector).toHaveAttribute('data-collapsed', 'true');
+    await expect(workbench).not.toHaveAttribute(
+      'data-numeric-overlays',
+      /open/,
+    );
+
+    // This catalog case mutates the rendered threshold directly rather than
+    // the app prop. A click would rerender and replace that ad hoc threshold.
+    await inspector.evaluate((element) => {
+      element.dataset.collapsed = 'false';
+    });
+    await expect(workbench).toHaveAttribute(
+      'data-numeric-overlays',
+      /rail-open/,
+    );
+    await expect(workbench.locator('.kui-workbench__backdrop')).toBeVisible();
+    await expect(inspector).toHaveAttribute('data-collapsed', 'false');
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: 'test-results/workbench-numeric-overlay-open.png',
+      });
 
     await workbench.evaluate((element) => {
       element.style.width = '900px';
@@ -701,7 +722,11 @@ test.describe('resizable Workbench panels', () => {
       'data-responsive-overlay-active',
     );
     await expect(inspector).toHaveCSS('position', 'relative');
-    await expect(handle).toBeHidden(); // The inline inspector remains collapsed.
+    await expect(handle).toBeVisible();
+    await expect(workbench).not.toHaveAttribute(
+      'data-numeric-overlays',
+      /right|open/,
+    );
   });
 
   test('a detached action from a rail keeps its overlay open', async ({

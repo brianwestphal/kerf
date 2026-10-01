@@ -1098,6 +1098,12 @@
             "meaning": "Present while a panel's numeric responsiveOverlayAt threshold applies to the Workbench width; the same measurement drives overlay layout and collapsed-state transitions."
           },
           {
+            "name": "data-numeric-overlays",
+            "on": "kui-workbench",
+            "helper": "wireWorkbench",
+            "meaning": "Space-separated left, right, drawer, rail-open, and open tokens mirror numeric overlay state for local CSS invalidation. Absent when no numeric overlay is active."
+          },
+          {
             "name": "data-handle-inset",
             "on": "kui-workbench__rail",
             "helper": "wireWorkbench",

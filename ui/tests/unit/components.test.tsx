@@ -2633,7 +2633,7 @@ describe('production UI primitives', () => {
     const workbench = flags(source('workbench.css'), 'workbench');
     expect(workbench).toHaveLength(4);
     expect(workbench[0]).toContain('[data-rail-overlay-expanded="true"]');
-    expect(workbench[1]).toContain('[data-responsive-overlay-active="true"]');
+    expect(workbench[1]).toContain('[data-numeric-overlays~="rail-open"]');
     expect(workbench[2]).toContain('[data-left-responsive-expanded="narrow"]');
     expect(workbench[2]).toContain('[data-right-responsive-expanded="narrow"]');
     expect(workbench[3]).toContain('[data-left-responsive-expanded="compact"]');

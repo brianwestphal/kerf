@@ -227,7 +227,7 @@ export function wireWorkbenchOverlays(
   const inlineState = new Map<WorkbenchOverlayPanel, boolean>();
   const sync = (): void => {
     const workbench = findWorkbench();
-    const width = workbench?.getBoundingClientRect().width ?? 0;
+    let width: number | undefined;
     for (const panel of panels) {
       const element = panelElement(panel);
       if (!element) continue;
@@ -235,12 +235,12 @@ export function wireWorkbenchOverlays(
       // numeric threshold the same measured Workbench width drives the CSS
       // presentation hook and the collapsed-state transition below.
       const at = Number(element.dataset.responsiveOverlayAt);
-      const custom =
+      const customActive =
         element.dataset.responsiveOverlayAt !== undefined &&
         Number.isFinite(at) &&
-        at > 0;
-      const customActive =
-        custom && element.dataset.presentation === 'inline' && width <= at;
+        at > 0 &&
+        element.dataset.presentation === 'inline' &&
+        (width ??= workbench!.getBoundingClientRect().width) <= at;
       if (customActive) {
         if (element.dataset.responsiveOverlayActive !== 'true')
           element.dataset.responsiveOverlayActive = 'true';
@@ -265,6 +265,38 @@ export function wireWorkbenchOverlays(
       )
         rendered.dataset.responsiveOverlayActive = 'true';
     }
+    if (!workbench) return;
+    // A direct root attribute limits style invalidation to overlay changes.
+    // Descendant :has() selectors on the Workbench caused every ordinary
+    // work-area mutation to restyle the entire center subtree.
+    const active = (key: WorkbenchPanelKey): HTMLElement | null => {
+      const element = workbench.querySelector<HTMLElement>(
+        PANEL_SELECTORS[key],
+      );
+      return element?.dataset.responsiveOverlayActive === 'true'
+        ? element
+        : null;
+    };
+    const left = active('leftRail');
+    const right = active('rightRail');
+    const drawer = active('bottomDrawer');
+    const railOpen = [left, right].some(
+      (element) => element && element.dataset.collapsed !== 'true',
+    );
+    const markers = [
+      left && 'left',
+      right && 'right',
+      drawer && 'drawer',
+      railOpen && 'rail-open',
+      (railOpen || (drawer && drawer.dataset.collapsed !== 'true')) && 'open',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    if (markers) {
+      if (workbench.dataset.numericOverlays !== markers)
+        workbench.dataset.numericOverlays = markers;
+    } else if (workbench.hasAttribute('data-numeric-overlays'))
+      workbench.removeAttribute('data-numeric-overlays');
   };
 
   // The Workbench is its own breakpoint container, so its size is what moves a
@@ -294,6 +326,7 @@ export function wireWorkbenchOverlays(
       'data-presentation',
       'data-responsive-overlay-at',
       'data-responsive-overlay-active',
+      'data-collapsed',
     ],
     childList: true,
     subtree: true,
