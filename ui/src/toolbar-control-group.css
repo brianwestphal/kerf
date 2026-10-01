@@ -157,11 +157,25 @@
 }
 
 .kui-toolbar-control-group[data-content="search"]:has(
+    > .kui-token-search[data-expanded="true"][data-fill="true"]
+  ) {
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+.kui-toolbar-control-group[data-content="search"]:has(
     .kui-token-search__suggestions
   ) {
   overflow: visible;
 }
 .kui-toolbar-control-group[data-content="search"][data-expanded="false"] {
+  width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  flex: 0 0 auto;
+}
+
+.kui-toolbar-control-group[data-content="search"]:has(
+    > .kui-token-search[data-expanded="false"][data-fill="true"]
+  ) {
   width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   flex: 0 0 auto;
 }

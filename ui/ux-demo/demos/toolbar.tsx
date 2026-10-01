@@ -49,6 +49,7 @@ export function ToolbarDemo() {
                   query={toolbarFindQuery.value}
                   collapsible
                   expanded={toolbarFindOpen.value}
+                  fill
                   presentation="toolbar-group"
                   placeholder="Find in workspace"
                   expandLabel="Open find"

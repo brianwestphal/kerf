@@ -50,6 +50,8 @@ interface TokenSearchFieldBaseProps {
   tokenPlaceholder?: string;
   disabled?: boolean;
   autofocus?: boolean;
+  /** Let an expanded collapsible field consume the available inline width. */
+  fill?: boolean;
   leading?: KerfUiContent;
   /** Standalone field chrome or the inset visual layer of a configured toolbar group. */
   presentation?: 'standalone' | 'toolbar-group';
@@ -136,6 +138,7 @@ export function TokenSearchField({
   tokenPlaceholder = 'Add search…',
   disabled = false,
   autofocus = false,
+  fill = false,
   collapsible = false,
   expanded = false,
   expandAction = 'expand-token-search',
@@ -175,6 +178,7 @@ export function TokenSearchField({
       data-disabled={String(disabled)}
       data-collapsible={String(collapsible)}
       data-expanded={String(resolvedExpanded)}
+      data-fill={String(fill)}
       data-has-trailing={String(Boolean(trailing || trailingAction))}
       data-presentation={presentation}
       slot={slot}

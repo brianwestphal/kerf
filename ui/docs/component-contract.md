@@ -596,6 +596,9 @@ bounded render-frame focus handoff for that reveal and cancels it on disposal.
 `action`, and optional `id`; the field renders a 24px wide button that fills its
 34px line slot, including the hit target, disabled state, hover, and focus ring.
 Use `trailing` for passive content. The two props are mutually exclusive.
+For a collapsible search in a stretched Toolbar center, `fill` lets the expanded
+field and its enclosing search `ToolbarControlGroup` consume the available width;
+the collapsed action retains its fixed icon width.
 
 A public subpath that exposes several visual components is a folder-backed
 surface. Put each component in its own source file and give each visual

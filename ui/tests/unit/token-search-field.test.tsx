@@ -75,6 +75,33 @@ describe('TokenSearchField', () => {
     expect(html).toMatch(/Negative.*middle.*Late one.*Late two/s);
   });
 
+  it('marks expanded fill without changing a collapsed search action', () => {
+    const expanded = asHtml(
+      TokenSearchField({
+        id: 'fill-search',
+        label: 'Fill search',
+        collapsible: true,
+        expanded: true,
+        fill: true,
+        presentation: 'toolbar-group',
+      }),
+    );
+    expect(expanded).toContain('data-fill="true"');
+    expect(expanded).toContain('data-expanded="true"');
+    const collapsed = asHtml(
+      TokenSearchField({
+        id: 'fill-search',
+        label: 'Fill search',
+        collapsible: true,
+        fill: true,
+        presentation: 'toolbar-group',
+      }),
+    );
+    expect(collapsed).toContain('data-fill="true"');
+    expect(collapsed).toContain('data-expanded="false"');
+    expect(collapsed).toContain('class="kui-token-search__expand"');
+  });
+
   it('supports custom actions, adornments, disabled state, and token-aware placeholders', () => {
     const html = asHtml(
       TokenSearchField({

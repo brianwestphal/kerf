@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Collapsible TokenSearchField can fill a stretched Toolbar center.** The
+  `fill` prop expands the field and its search group to the available width
+  while preserving the compact collapsed action.
+
 - **TokenSearchField has a typed trailing icon action.** `trailingAction`
   renders an accessible button with Kerf owned chrome and a full 24px wide hit
   target; the existing `trailing` content slot remains for passive content.

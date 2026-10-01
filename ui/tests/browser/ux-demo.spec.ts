@@ -2778,7 +2778,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   page,
   browserName,
 }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.setViewportSize({ width: 1920, height: 900 });
   await page.goto('/?component=toolbar');
   const toolbar = page
     .locator('[data-demo="toolbar"] [data-component="toolbar"]')
@@ -2791,6 +2791,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   await expect(editor).toBeHidden();
   await expect(trigger).toBeVisible();
   await expect(field).toHaveAttribute('data-collapsible', 'true');
+  await expect(field).toHaveAttribute('data-fill', 'true');
   await expect(field).toHaveAttribute('data-expanded', 'false');
   await expect(group).toHaveAttribute(
     'data-component',
@@ -2813,6 +2814,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
     collapsedIconGeometry.center,
     1,
   );
+  expect((await group.boundingBox())!.width).toBeLessThanOrEqual(50);
   await group.evaluate((element) =>
     element.addEventListener('transitionrun', (event) => {
       if ((event as TransitionEvent).propertyName === 'width')
@@ -2849,6 +2851,31 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   await expect(toolbar.locator('.kui-toolbar__trailing')).toBeVisible();
   await expect(group).toHaveCSS('height', '44px');
   await expect(field).toHaveCSS('height', '40px');
+  // The catalog preview is fixed at 734px. Widen the rendered Toolbar after
+  // expansion to exercise a center above the old 480px search cap.
+  await toolbar.evaluate((element) => {
+    element.style.width = '1280px';
+    element.style.maxWidth = 'none';
+  });
+  const centerWidth = (await toolbar
+    .locator('.kui-toolbar__center')
+    .boundingBox())!.width;
+  const groupWidth = (await group.boundingBox())!.width;
+  const fieldWidth = (await field.boundingBox())!.width;
+  expect(groupWidth).toBeGreaterThan(500);
+  expect(Math.abs(groupWidth - centerWidth)).toBeLessThanOrEqual(2);
+  expect(Math.abs(groupWidth - fieldWidth)).toBeLessThanOrEqual(6);
+  if (browserName === 'chromium')
+    await toolbar.screenshot({
+      path: 'test-results/toolbar-find-fill-wide.png',
+    });
+  await toolbar.evaluate((element) => {
+    element.style.removeProperty('width');
+    element.style.removeProperty('max-width');
+  });
+  await expect
+    .poll(async () => (await group.boundingBox())!.width)
+    .toBeLessThan(500);
   await expect(field).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   expect(
     await group.evaluate(
@@ -2903,6 +2930,9 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   await outsideControl.focus();
   await expect(editor).toBeHidden();
   await expect(trigger).toBeVisible();
+  await expect
+    .poll(async () => (await group.boundingBox())!.width)
+    .toBeLessThanOrEqual(50);
   if (browserName === 'chromium')
     await toolbar.screenshot({
       path: 'test-results/toolbar-find-narrow-collapsed.png',
@@ -2913,6 +2943,19 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   await expect(editor).toBeFocused();
   await expect(toolbar.locator('.kui-toolbar__leading')).toBeHidden();
   await expect(toolbar.locator('.kui-toolbar__trailing')).toBeHidden();
+  await expect
+    .poll(async () => {
+      const center = (await toolbar
+        .locator('.kui-toolbar__center')
+        .boundingBox())!;
+      const searchGroup = (await group.boundingBox())!;
+      const searchField = (await field.boundingBox())!;
+      return Math.max(
+        Math.abs(searchGroup.width - center.width),
+        Math.abs(searchGroup.width - searchField.width),
+      );
+    })
+    .toBeLessThanOrEqual(6);
   if (browserName === 'chromium')
     await toolbar.screenshot({
       path: 'test-results/toolbar-find-narrow-open.png',

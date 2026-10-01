@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 315800,
-  "measuredLargestJavaScriptGzip": 126043,
-  "measuredTotalJavaScriptGzip": 315794,
+  "totalJavaScriptGzip": 315900,
+  "measuredLargestJavaScriptGzip": 126044,
+  "measuredTotalJavaScriptGzip": 315822,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2163,6 +2163,22 @@
         "measuredTotalJavaScriptGzip": 315794,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 315800
+      }
+    },
+    {
+      "at": "2026-10-01T13:11:54.849Z",
+      "reason": "Add opt-in TokenSearchField fill sizing for stretched Toolbar centers",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 315794,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 315800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 315822,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 315900
       }
     }
   ]

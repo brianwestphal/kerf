@@ -224,6 +224,11 @@
     border-color 0.2s ease;
 }
 
+.kui-token-search[data-collapsible="true"][data-expanded="true"][data-fill="true"] {
+  width: 100%;
+  flex: 1 1 auto;
+}
+
 .kui-token-search[data-collapsible="true"][data-expanded="true"]:has(
     .kui-token-search__suggestions
   ) {

@@ -337,6 +337,9 @@ For an icon action at the end of the field, pass `trailingAction` with `icon`,
 accessible `label`, and delegated `action` (plus optional `id`). The component
 renders a button that fills the trailing hit target. Reserve `trailing` for
 passive content such as a shortcut hint.
+Set `fill` on a collapsible `TokenSearchField` in a stretched Toolbar center to
+use the available width when expanded; the field and its search group retain
+their compact widths when collapsed.
 
 ## Toolbar composition
 
