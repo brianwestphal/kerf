@@ -447,7 +447,8 @@ to suggestions, arrow keys move between suggestions, Enter selects one, and
 Escape returns focus to the editor. The application still announces results
 when needed and can supply an `evaluate` callback to compute them. Omitting the
 model leaves the manual behavior above intact. After a chip commit, suggestion
-choice, or chip edit, focus restoration runs at the controlled render checkpoint;
+choice, chip edit, or Backspace/Delete chip removal, focus restoration runs at
+the controlled render checkpoint and keeps the query-relative caret offset;
 it leaves focus on a different control if the user moved there in the meantime.
 Suggestions appear below the field without growing its toolbar row. One
 suggestion keeps a pill outline; lists with multiple choices use the standard
@@ -455,7 +456,8 @@ rounded surface and scroll once they reach 240px. The clear button's hover and f
 highlight follows the field's pill shape or its toolbar group's rounded shape.
 
 Managed clear captures the action before application handlers run, keeps the adopted
-expanded signal open during editor replacement, and restores focus at the actual
+expanded signal open for a collapsible field, and restores the editor focus for
+both collapsible and plain model fields at the actual
 mutation checkpoint before the next input task. It also returns keyboard activation
 from the clear button to a surviving editor immediately. No animation frame owns
 clear focus, so fast typing cannot escape to page shortcuts or lose its first letter. The app still owns clearing query/tokens and emptying

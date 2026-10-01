@@ -211,6 +211,56 @@ test('an app helper commits an active grammar value outside suggestions', async 
   }
 });
 
+test('model chip keys and plain-field clear keep the replacement editor focused', async ({
+  page,
+}) => {
+  await page.goto('/?component=token-search-field');
+  const demo = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: 'Grammar assisted search',
+      }),
+    });
+  const field = demo.locator('[data-component="token-search-field"]');
+  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const chips = field.locator('[data-component="token-search-token"]');
+  const helper = demo.getByRole('button', { name: 'Add release tag' });
+  const clear = field.getByRole('button', { name: 'Clear search' });
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const key of ['Backspace', 'Delete']) {
+      await editor.fill('lead');
+      await helper.click();
+      await expect(chips).toHaveCount(1);
+      await editor.evaluate((element, direction) => {
+        const chip = element.querySelector(
+          '[data-component="token-search-token"]',
+        )!;
+        const range = document.createRange();
+        if (direction === 'Backspace') range.setStartAfter(chip);
+        else range.setStartBefore(chip);
+        range.collapse(true);
+        const selection = window.getSelection()!;
+        selection.removeAllRanges();
+        selection.addRange(range);
+        (element as HTMLElement).focus();
+      }, key);
+      await editor.press(key);
+      await expect(chips).toHaveCount(0);
+      await expect(editor).toBeFocused();
+      await editor.pressSequentially('x');
+      await expect(editor).toHaveText('lead x');
+      await clear.click();
+      await expect(editor).toBeFocused();
+      await editor.pressSequentially('z');
+      await expect(editor).toHaveText('z');
+      await clear.click();
+    }
+  }
+});
+
 test('an app helper replaces DOM-owned draft text from saved search state', async ({
   page,
 }, testInfo) => {

@@ -104,6 +104,82 @@ describe('wireTokenSearchFields', () => {
     stopMount();
   });
 
+  it.each(['Backspace', 'Delete'])(
+    'restores the model editor and query offset after %s removes a chip',
+    async (key) => {
+      const model = createTokenSearchModel({
+        rules: [{ name: 'tag' }],
+        initial: {
+          query: 'lead tail',
+          tokens: [{ value: 'tag:client', label: 'Client', offset: 5 }],
+        },
+      });
+      const root = document.createElement('div');
+      document.body.append(root);
+      const stopMount = mount(root, () =>
+        TokenSearchField({ id: 'tickets', label: 'Search', model }),
+      );
+      const stop = wireTokenSearchFields(root, { models: { tickets: model } });
+      const editor = root.querySelector<HTMLElement>(
+        '[data-token-search-editor]',
+      )!;
+      const chip = editor.querySelector<HTMLElement>(
+        '[data-component="token-search-token"]',
+      )!;
+      const chipIndex = [...editor.childNodes].indexOf(chip);
+      expect(chipIndex).toBeGreaterThanOrEqual(0);
+      focusAt(editor, editor, chipIndex + (key === 'Backspace' ? 1 : 0));
+      editor.dispatchEvent(keydown(key));
+      await Promise.resolve();
+
+      const replacement = root.querySelector<HTMLElement>(
+        '[data-token-search-editor]',
+      )!;
+      expect(replacement).not.toBe(editor);
+      expect(document.activeElement).toBe(replacement);
+      expect(model.state.value.tokens).toHaveLength(0);
+      const selection = document.getSelection()!.getRangeAt(0);
+      const prefix = document.createRange();
+      prefix.selectNodeContents(replacement);
+      prefix.setEnd(selection.startContainer, selection.startOffset);
+      expect(prefix.toString()).toBe('lead ');
+
+      stop();
+      stopMount();
+    },
+  );
+
+  it('restores a non-collapsible model editor after managed clear without stealing newer focus', async () => {
+    const model = createTokenSearchModel({
+      rules: [],
+      initial: { query: 'plain', tokens: [] },
+    });
+    const root = document.createElement('div');
+    const next = document.createElement('input');
+    document.body.append(root, next);
+    const stopMount = mount(root, () =>
+      TokenSearchField({ id: 'tickets', label: 'Search', model }),
+    );
+    const stop = wireTokenSearchFields(root, { models: { tickets: model } });
+    const editor = () =>
+      root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    editor().focus();
+    root.querySelector<HTMLButtonElement>('.kui-token-search__clear')!.click();
+    await Promise.resolve();
+    expect(document.activeElement).toBe(editor());
+    expect(model.state.value).toEqual({ query: '', tokens: [] });
+
+    model.replace({ query: 'again', tokens: [] });
+    editor().focus();
+    root.querySelector<HTMLButtonElement>('.kui-token-search__clear')!.click();
+    next.focus();
+    await Promise.resolve();
+    expect(document.activeElement).toBe(next);
+
+    stop();
+    stopMount();
+  });
+
   it('does not steal a newer focus move after a model chip commit', async () => {
     const model = createTokenSearchModel({
       rules: [{ name: 'tag', suggest: () => ['client'] }],

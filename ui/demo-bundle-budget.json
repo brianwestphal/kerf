@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 314100,
-  "measuredLargestJavaScriptGzip": 126039,
-  "measuredTotalJavaScriptGzip": 314077,
+  "totalJavaScriptGzip": 314200,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 314101,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2019,6 +2019,22 @@
         "measuredTotalJavaScriptGzip": 314077,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 314100
+      }
+    },
+    {
+      "at": "2026-10-01T05:49:57.627Z",
+      "reason": "Model token removal and clear focus",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126039,
+        "measuredTotalJavaScriptGzip": 314077,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 314100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 314101,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 314200
       }
     }
   ]

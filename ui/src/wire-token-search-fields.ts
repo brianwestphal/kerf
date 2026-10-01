@@ -477,7 +477,7 @@ export function wireTokenSearchFields(
   };
   const restoreDeletion = (
     editor: HTMLElement,
-    deletion: PendingTokenDeletion,
+    deletion: Pick<PendingTokenDeletion, 'id' | 'offset'>,
   ) => {
     deleting.get(deletion.id)?.();
     const stop = () => {
@@ -670,7 +670,11 @@ export function wireTokenSearchFields(
               editor,
               direction,
             };
-            models[id]?.remove(removal.value);
+            if (models[id]) {
+              const offset = caretQueryOffset(editor);
+              if (offset !== undefined) restoreDeletion(editor, { id, offset });
+              models[id].remove(removal.value);
+            }
             onRemoveToken?.(removal);
             return;
           }
@@ -828,7 +832,7 @@ export function wireTokenSearchFields(
           const id = field?.dataset.tokenSearchId;
           if (
             !id ||
-            field.dataset.collapsible !== 'true' ||
+            (field.dataset.collapsible !== 'true' && !models[id]) ||
             field.dataset.disabled === 'true'
           )
             return;
@@ -860,7 +864,7 @@ export function wireTokenSearchFields(
           observer.observe(root, { childList: true, subtree: true });
           const timeout = view().setTimeout(stop, 0);
           clearing.set(id, stop);
-          setExpanded(id, true);
+          if (field.dataset.collapsible === 'true') setExpanded(id, true);
           const current = replacementEditor(root, id);
           // Keyboard activation may start on the clear button. Own the current
           // editor now, and its replacement at the mutation checkpoint. Expiration
