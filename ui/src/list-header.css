@@ -1,5 +1,4 @@
 .kui-list-header {
-  --kui-list-group-divider-color: var(--kui-color-neutral-border-quiet);
   --kui-list-header-color: var(--kui-color-neutral-on-quiet);
   --kui-list-header-hover-background: var(--kui-color-neutral-border-quiet);
   --_kui-list-header-action-icon-size: var(
@@ -32,12 +31,14 @@
 
 .kui-list-header[data-divider="before"],
 .kui-list-header[data-divider="both"] {
-  border-block-start: 1px solid var(--kui-list-group-divider-color);
+  border-block-start: 1px solid
+    var(--kui-list-group-divider-color, var(--kui-color-neutral-border-quiet));
 }
 
 .kui-list-header[data-divider="after"],
 .kui-list-header[data-divider="both"] {
-  border-block-end: 1px solid var(--kui-list-group-divider-color);
+  border-block-end: 1px solid
+    var(--kui-list-group-divider-color, var(--kui-color-neutral-border-quiet));
 }
 
 .kui-list-header[data-inline="true"] {

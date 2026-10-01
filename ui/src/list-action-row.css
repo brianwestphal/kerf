@@ -1,5 +1,4 @@
 .kui-list-action-row {
-  --kui-list-group-divider-color: var(--kui-color-neutral-border-quiet);
   --kui-list-action-row-color: var(--kui-color-neutral-on-normal);
   --kui-list-action-row-border: transparent;
   --kui-list-action-row-background: transparent;
@@ -33,14 +32,16 @@
 
 .kui-list-action-row[data-divider="before"],
 .kui-list-action-row[data-divider="both"] {
-  border-block-start: 1px solid var(--kui-list-group-divider-color);
+  border-block-start: 1px solid
+    var(--kui-list-group-divider-color, var(--kui-color-neutral-border-quiet));
   border-start-start-radius: 0;
   border-start-end-radius: 0;
 }
 
 .kui-list-action-row[data-divider="after"],
 .kui-list-action-row[data-divider="both"] {
-  border-block-end: 1px solid var(--kui-list-group-divider-color);
+  border-block-end: 1px solid
+    var(--kui-list-group-divider-color, var(--kui-color-neutral-border-quiet));
   border-end-start-radius: 0;
   border-end-end-radius: 0;
 }

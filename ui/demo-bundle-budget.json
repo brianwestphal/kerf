@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 310400,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 310326,
+  "totalJavaScriptGzip": 310500,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 310476,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1683,6 +1683,38 @@
         "measuredTotalJavaScriptGzip": 310326,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 310400
+      }
+    },
+    {
+      "at": "2026-10-01T00:53:39.536Z",
+      "reason": "Demonstrate inherited list divider token",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 310326,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 310471,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310500
+      }
+    },
+    {
+      "at": "2026-10-01T00:58:30.578Z",
+      "reason": "Demonstrate inherited list divider token",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 310471,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 310476,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310500
       }
     }
   ]

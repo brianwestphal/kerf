@@ -202,6 +202,9 @@ whole label. `divider` owns a before or after separator. Set
 `--kui-list-item-*` tokens control its row, icon, label, and trailing geometry
 and color. `ListHeader` exposes `--kui-list-header-min-height`, title padding,
 title minimum height, and border-width tokens for section density.
+Set `--kui-list-group-divider-color` on a containing `List` to give
+`ListHeader`, `ListItem`, and `ListActionRow` the same before/after divider
+color; each row otherwise uses the quiet neutral border tone.
 For a filled command list, set `--kui-list-item-background` and
 `--kui-list-item-border` on the list or row. Scope `--kui-list-item-color`,
 `--kui-list-item-hover-background`, `--kui-list-item-selected-color`, and

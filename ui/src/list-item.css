@@ -1,5 +1,4 @@
 .kui-list-item {
-  --kui-list-group-divider-color: var(--kui-color-neutral-border-quiet);
   display: grid;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-height: var(--kui-list-item-min-height, remify(44px));
@@ -51,14 +50,20 @@
 
 .kui-list-item[data-divider="before"],
 .kui-list-item[data-divider="both"] {
-  border-block-start-color: var(--kui-list-group-divider-color);
+  border-block-start-color: var(
+    --kui-list-group-divider-color,
+    var(--kui-color-neutral-border-quiet)
+  );
   border-start-start-radius: 0;
   border-start-end-radius: 0;
 }
 
 .kui-list-item[data-divider="after"],
 .kui-list-item[data-divider="both"] {
-  border-block-end-color: var(--kui-list-group-divider-color);
+  border-block-end-color: var(
+    --kui-list-group-divider-color,
+    var(--kui-color-neutral-border-quiet)
+  );
   border-end-start-radius: 0;
   border-end-end-radius: 0;
 }

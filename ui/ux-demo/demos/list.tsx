@@ -5,6 +5,7 @@ import '@awesome.me/webawesome/dist/components/tag/tag.js';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { flex, space } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
+import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -18,6 +19,7 @@ import {
   FileText,
   Folder,
   Inbox,
+  MoreHorizontal,
   Plus,
   Settings,
   Wrench,
@@ -145,6 +147,33 @@ export function ListDemo() {
             </List>
           </Pane>
         </wa-card>
+      </CatalogExample>
+      <CatalogExample
+        label="Shared row dividers"
+        note="Scope the public divider color on a List so headers, items, and action rows share the same line."
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <List rootAttributes={{ 'data-demo-divider-list': '' }}>
+          <ListHeader label="Section" divider="both" />
+          <ListItem
+            action="log-inbox"
+            itemId="divider-row"
+            label="Regular row"
+            divider="both"
+          />
+          <ListActionRow
+            action="log-projects"
+            itemId="divider-action-row"
+            label="Action row"
+            divider="both"
+            trailingAction="log-settings"
+            trailingActionLabel="Action row options"
+            trailingActionIcon={
+              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+            }
+          />
+        </List>
       </CatalogExample>
       <CatalogExample
         label="Physical-axis alignment"
