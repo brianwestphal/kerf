@@ -3097,8 +3097,8 @@ import { SafeHtml } from 'kerfjs';
 import { BadgeTone, BadgeAppearance, BadgeShape, BadgeSize } from './badge.js';
 
 interface ChipCommonProps {
-    /** Visible, non-interactive chip content. */
-    children: SafeHtml | string | number;
+    /** Decorative leading icon, normally an unsized LucideIcon. */
+    icon?: SafeHtml;
     tone?: BadgeTone;
     appearance?: BadgeAppearance;
     shape?: BadgeShape;
@@ -3112,6 +3112,12 @@ interface ChipCommonProps {
 }
 /** A removable chip needs both a delegated action and a specific accessible name. */
 type ChipProps = ChipCommonProps & ({
+    children: SafeHtml | string | number;
+    truncate?: false;
+} | {
+    children: string;
+    truncate: true;
+}) & ({
     removeAction: string;
     removeLabel: string;
 } | {
@@ -3119,7 +3125,7 @@ type ChipProps = ChipCommonProps & ({
     removeLabel?: never;
 });
 /** A short label with an optional native remove button. The application owns removal. */
-declare function Chip({ children, tone, appearance, shape, size, disabled, itemId, className, slot, ...remove }: ChipProps): SafeHtml;
+declare function Chip({ children, icon, truncate, tone, appearance, shape, size, disabled, itemId, className, slot, ...remove }: ChipProps): SafeHtml;
 
 export { Chip, type ChipProps };
 ```

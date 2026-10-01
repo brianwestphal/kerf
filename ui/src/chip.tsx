@@ -8,8 +8,8 @@ import type {
 } from './badge.js';
 
 interface ChipCommonProps {
-  /** Visible, non-interactive chip content. */
-  children: SafeHtml | string | number;
+  /** Decorative leading icon, normally an unsized LucideIcon. */
+  icon?: SafeHtml;
   tone?: BadgeTone;
   appearance?: BadgeAppearance;
   shape?: BadgeShape;
@@ -25,6 +25,10 @@ interface ChipCommonProps {
 /** A removable chip needs both a delegated action and a specific accessible name. */
 export type ChipProps = ChipCommonProps &
   (
+    | { children: SafeHtml | string | number; truncate?: false }
+    | { children: string; truncate: true }
+  ) &
+  (
     | { removeAction: string; removeLabel: string }
     | { removeAction?: never; removeLabel?: never }
   );
@@ -32,6 +36,8 @@ export type ChipProps = ChipCommonProps &
 /** A short label with an optional native remove button. The application owns removal. */
 export function Chip({
   children,
+  icon,
+  truncate = false,
   tone = 'neutral',
   appearance = 'quiet',
   shape = 'pill',
@@ -42,6 +48,8 @@ export function Chip({
   slot,
   ...remove
 }: ChipProps) {
+  if (truncate && typeof children !== 'string')
+    throw new TypeError('Chip truncate requires a plain text label');
   return (
     <span
       class={`kui-chip ${className}`.trim()}
@@ -51,10 +59,21 @@ export function Chip({
       data-shape={shape}
       data-size={size}
       data-disabled={disabled ? '' : undefined}
+      data-truncate={truncate ? '' : undefined}
       data-item-id={itemId}
       slot={slot}
     >
-      <span class="kui-chip__label">{children}</span>
+      {icon === undefined ? null : (
+        <span class="kui-chip__icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
+      <span
+        class="kui-chip__label"
+        title={truncate ? String(children) : undefined}
+      >
+        {children}
+      </span>
       {remove.removeAction !== undefined ? (
         <button
           class="kui-chip__remove"

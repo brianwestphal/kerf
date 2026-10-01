@@ -82,6 +82,20 @@
   pointer-events: none;
 }
 
+.kui-chip[data-truncate] {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.kui-chip__icon {
+  display: inline-grid;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+  place-items: center;
+  flex: none;
+}
+
 .kui-chip__label {
   min-width: 0;
   overflow: hidden;

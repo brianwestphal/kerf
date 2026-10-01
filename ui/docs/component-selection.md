@@ -495,6 +495,12 @@ The application updates its tag list after the action. `size="compact"` uses a
 20px chip with a 16px remove button, and `disabled` disables removal. Tone,
 appearance, and shape use the same semantic choices as `Badge`; use `Badge`
 when no removal is needed and the content is status or count metadata.
+Pass an unsized, decorative `LucideIcon` through `icon` for a leading glyph;
+Chip sizes it to its own type scale and aligns it beside the label. For a long
+plain-text label, set `truncate`: the chip can shrink within a `Row`, its label
+gets a one-line ellipsis, and the full string is the label's native `title`.
+Keep a price or other unbreakable sibling in `Text wrap="nowrap"`. `truncate`
+requires a string label so the title cannot lose text hidden inside markup.
 
 ```tsx
 <Chip

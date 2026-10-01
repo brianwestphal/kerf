@@ -1,5 +1,9 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Row } from '@kerfjs/ui/row';
+import { Text } from '@kerfjs/ui/text';
+import { Check, Trophy } from 'lucide';
 
 export function ChipDemo() {
   return (
@@ -28,6 +32,7 @@ export function ChipDemo() {
           appearance="outline"
           shape="rounded"
           size="compact"
+          icon={<LucideIcon icon={Check} name="check" />}
           itemId="reviewed"
           removeAction="log-chip-remove"
           removeLabel="Remove Reviewed tag"
@@ -48,6 +53,25 @@ export function ChipDemo() {
       </CatalogExample>
       <CatalogExample label="Plain label" align="inline-control">
         <Chip appearance="solid">Backlog</Chip>
+      </CatalogExample>
+      <CatalogExample
+        label="Icon and truncated label"
+        note="Chip sizes a decorative leading icon and clips a long label inside its own width. The adjacent price stays whole. Hover the label for the full native title."
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <Row gap="xs" rootAttributes={{ 'data-demo-chip-offer': '' }}>
+          <Chip
+            tone="success"
+            icon={<LucideIcon icon={Trophy} name="trophy" />}
+            truncate
+          >
+            Acme International Procurement and Manufacturing Limited
+          </Chip>
+          <Text variant="span" wrap="nowrap">
+            $129 / unit
+          </Text>
+        </Row>
       </CatalogExample>
     </CatalogExampleStack>
   );
