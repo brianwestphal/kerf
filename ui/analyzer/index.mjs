@@ -540,6 +540,7 @@ async function inspectCss(
     siblingOnLoud,
   );
   root.walkRules((rule) => {
+    const subjects = subjectClasses(rule.selector);
     inspectComponentOwnership(
       file,
       rule,
@@ -549,7 +550,7 @@ async function inspectCss(
       isForeign,
     );
     if (!inKeyframes(rule) && restylingDeclarations(rule).length > 0)
-      for (const className of subjectClasses(rule.selector)) {
+      for (const className of subjects) {
         const record = cssFacts.get(className) ?? {
           scroll: false,
           inset: false,
@@ -678,7 +679,7 @@ async function inspectCss(
                 },
               ),
             );
-      for (const className of classes) {
+      for (const className of subjects) {
         const record = cssFacts.get(className) ?? {
           scroll: false,
           inset: false,

@@ -80,6 +80,10 @@ policy, or analysis inputs to the containing application.
 | `KUI-L021` | error  | CSS overrides a component token that a typed prop sets.                               |
 | `KUI-L022` | error  | A class placed on a component's root is styled by the application (a hook class).     |
 
+For `KUI-L004` and `KUI-L007`, scroll and inset declarations belong to the
+subject of each CSS selector. An ancestor class used only to qualify a
+descendant selector is not treated as a scroll owner or inset source.
+
 Errors are provable contract violations and make the command exit 1. Review
 findings are deliberately heuristic and do not fail by default; pass
 `--fail-on-review` when a project has reviewed its baseline and wants them to

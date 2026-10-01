@@ -10,6 +10,33 @@ import { describe, expect, it } from 'vitest';
 const execFileAsync = promisify(execFile);
 
 describe('kerf-ui-analyze downstream command', { timeout: 30_000 }, () => {
+  it('accepts a descendant selector whose ancestor does not own scrolling or inset', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-subject-cli-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/app.css'),
+      '.chat-composer .chat-input { max-height: 160px; overflow-y: auto; padding: 8px; }',
+    );
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      `import './app.css';
+export const App = () => <div class="chat-composer"><div class="chat-input" /></div>;
+`,
+    );
+    const cli = resolve(import.meta.dirname, '../../analyzer/cli.mjs');
+
+    const { stdout } = await execFileAsync(process.execPath, [
+      cli,
+      '--root',
+      root,
+      '--format',
+      'json',
+    ]);
+    const report = JSON.parse(stdout);
+    expect(report.summary).toMatchObject({ errors: 0, review: 0 });
+    expect(report.diagnostics).toEqual([]);
+  });
+
   it('writes versioned JSON and fails on definite integration errors', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-cli-'));
     await mkdir(join(root, 'src'));

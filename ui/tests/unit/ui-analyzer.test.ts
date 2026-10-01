@@ -119,6 +119,42 @@ describe('Kerf UI static analyzer', () => {
     expect(first.summary.suppressed).toBe(1);
   });
 
+  it('attributes scroll and inset declarations only to selector subjects', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-subjects-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/app.css'),
+      `.chat-composer .chat-input { overflow-y: auto; padding: 8px; }
+.panel .actual-scroll { overflow: auto; }
+.panel .actual-inset { padding: 8px; }
+.other, .alternate .extra-scroll { overflow: auto; }
+`,
+    );
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      `import './app.css';
+export const App = () => <>
+  <div class="chat-composer"><div class="chat-input" /></div>
+  <div class="panel actual-scroll actual-inset">
+    <div class="actual-scroll actual-inset" />
+  </div>
+  <div class="alternate"><div class="extra-scroll" /></div>
+</>;
+`,
+    );
+
+    const report = await analyzeUiProject({ root });
+    const nested = report.diagnostics.filter(({ ruleId }) =>
+      ['KUI-L004', 'KUI-L007'].includes(ruleId),
+    );
+    expect(nested.map(({ ruleId }) => ruleId)).toEqual([
+      'KUI-L004',
+      'KUI-L007',
+    ]);
+    expect(JSON.stringify(nested)).not.toContain('chat-composer');
+    expect(JSON.stringify(nested)).not.toContain('alternate');
+  });
+
   it('supports staged adoption and cataloged shadow-part extension points', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-parts-'));
     await mkdir(join(root, 'src'));
