@@ -33,6 +33,7 @@
   --_kui-toolbar-control-group-slot-overlap: 0px;
   --_kui-toolbar-control-group-slot-radius: var(--kui-toolbar-item-radius);
   display: inline-flex;
+  position: relative;
   height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   min-width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   padding: 1px;
@@ -44,6 +45,34 @@
   align-items: center;
   flex: 0 0 auto;
   gap: 0;
+}
+
+.kui-toolbar-control-group[data-busy="true"] > svg,
+.kui-toolbar-control-group[data-busy="true"]
+  > :not(.kui-toolbar-control-group__busy-spinner)
+  svg {
+  visibility: hidden;
+}
+
+.kui-toolbar-control-group__busy-spinner {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  display: grid;
+  width: remify(16px);
+  height: remify(16px);
+  transform: translate(-50%, -50%);
+  place-items: center;
+  pointer-events: none;
+}
+
+.kui-toolbar-control-group__busy-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* In a Toolbar zone, a group shorter than the toolbar's control band (the

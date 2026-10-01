@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 311900,
+  "totalJavaScriptGzip": 312100,
   "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 311828,
+  "measuredTotalJavaScriptGzip": 312045,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1811,6 +1811,22 @@
         "measuredTotalJavaScriptGzip": 311828,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 311900
+      }
+    },
+    {
+      "at": "2026-10-01T02:08:01.591Z",
+      "reason": "Demonstrate ToolbarControlGroup busy state",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 311828,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 311900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 312045,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 312100
       }
     }
   ]

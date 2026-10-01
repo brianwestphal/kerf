@@ -122,6 +122,7 @@ import {
   toolbarChoice,
   toolbarFindOpen,
   toolbarFindQuery,
+  toolbarGroupBusy,
   toolbarGroupSearchOpen,
   toolbarGroupShape,
   toolbarSort,
@@ -897,6 +898,12 @@ const stopActions = delegateActions(app, 'click', {
   },
   'log-pin': () => {
     actionLog.value = 'Pin requested';
+  },
+  'toggle-toolbar-group-busy': () => {
+    toolbarGroupBusy.value = !toolbarGroupBusy.value;
+  },
+  'log-pricing-check': () => {
+    actionLog.value = 'Pricing check requested';
   },
   'log-sidebar': () => {
     actionLog.value = 'Sidebar requested';

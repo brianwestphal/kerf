@@ -28,6 +28,7 @@ import {
 import {
   toolbarAvatarChoice,
   toolbarChoice,
+  toolbarGroupBusy,
   toolbarGroupSearchOpen,
   toolbarGroupShape,
   toolbarSort,
@@ -195,6 +196,29 @@ export function ToolbarControlGroupDemo() {
             <LucideIcon icon={Pin} name="pin" />
           </wa-button>
         </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample
+        label="Busy action"
+        note="The original action keeps its size while inert; a status announces the work."
+        align="inline-control"
+      >
+        <ToolbarControlGroup
+          single
+          shape={shape}
+          busy={toolbarGroupBusy.value}
+          busyLabel="Running pricing check"
+        >
+          <button
+            type="button"
+            aria-label="Run pricing check"
+            data-action="log-pricing-check"
+          >
+            <LucideIcon icon={GitCompare} name="git-compare" />
+          </button>
+        </ToolbarControlGroup>
+        <button type="button" data-action="toggle-toolbar-group-busy">
+          {toolbarGroupBusy.value ? 'Finish' : 'Start'} pricing check
+        </button>
       </CatalogExample>
       <CatalogExample label="Borderless group" align="inline-control">
         <ToolbarControlGroup appearance="borderless" single shape={shape}>

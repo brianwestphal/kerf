@@ -365,6 +365,11 @@ to make it look right.
 
 Common toolbar patterns:
 
+For a long-running icon action, set `busy` on its single-control
+`ToolbarControlGroup` and supply a descriptive `busyLabel`. The group preserves
+the control's dimensions, shows `LoadingSpinner` in its icon slot, sets
+`aria-busy`, and makes the control inert until the app clears `busy`.
+
 | Want                          | Put in the zone                                                                        | Notes                                                                                                             |
 | ----------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Identity or title text        | `<ToolbarText text="…" size="large" />` (or `xlarge` for a page/panel title that fits) | Wrap in a `single` borderless group only when it must align with adjacent control pills                           |

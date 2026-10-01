@@ -321,6 +321,10 @@ interface ToolbarControlGroupProps {
     relocateOnCollapse?: boolean;
     /** Add contrast behind photo-backed avatar content. */
     scrim?: boolean;
+    /** Block the group's controls and show a spinner without changing its dimensions. */
+    busy?: boolean;
+    /** Announced status while busy; defaults to “Working”. */
+    busyLabel?: string;
     /**
      * Avatar image URL. A single-control group paints it on the group; a
      * multi-control group paints it only on the pressed selection highlight.
@@ -329,7 +333,7 @@ interface ToolbarControlGroupProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, relocateOnCollapse, scrim, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
 export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```

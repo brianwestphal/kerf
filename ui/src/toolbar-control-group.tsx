@@ -1,3 +1,4 @@
+import { LoadingSpinner } from './loading-spinner.js';
 import { markRelocatableGroup } from './panel-toolbar-group.js';
 import type { KerfUiContent } from './semantic-content.js';
 
@@ -92,6 +93,10 @@ export interface ToolbarControlGroupProps {
   relocateOnCollapse?: boolean;
   /** Add contrast behind photo-backed avatar content. */
   scrim?: boolean;
+  /** Block the group's controls and show a spinner without changing its dimensions. */
+  busy?: boolean;
+  /** Announced status while busy; defaults to “Working”. */
+  busyLabel?: string;
   /**
    * Avatar image URL. A single-control group paints it on the group; a
    * multi-control group paints it only on the pressed selection highlight.
@@ -123,6 +128,8 @@ export function ToolbarControlGroup({
   visibility = 'always',
   relocateOnCollapse = false,
   scrim = false,
+  busy = false,
+  busyLabel = 'Working',
   avatarImage,
   slot,
 }: ToolbarControlGroupProps) {
@@ -149,6 +156,9 @@ export function ToolbarControlGroup({
       data-overflow={overflow}
       data-visibility={visibility}
       data-scrim={String(scrim)}
+      data-busy={String(busy)}
+      aria-busy={busy ? 'true' : undefined}
+      inert={busy}
       style={
         avatarImage
           ? `--kui-toolbar-avatar-image:url(${JSON.stringify(avatarImage)})`
@@ -157,7 +167,27 @@ export function ToolbarControlGroup({
       slot={slot}
     >
       {children}
+      {busy ? (
+        <span
+          class="kui-toolbar-control-group__busy-spinner"
+          aria-hidden="true"
+        >
+          <LoadingSpinner />
+        </span>
+      ) : null}
     </div>
   );
-  return relocateOnCollapse ? markRelocatableGroup(group) : group;
+  const renderedGroup = relocateOnCollapse
+    ? markRelocatableGroup(group)
+    : group;
+  return busy ? (
+    <>
+      {renderedGroup}
+      <span class="kui-toolbar-control-group__busy-status" role="status">
+        {busyLabel}
+      </span>
+    </>
+  ) : (
+    renderedGroup
+  );
 }
