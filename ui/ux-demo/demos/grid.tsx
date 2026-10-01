@@ -52,6 +52,15 @@ export function GridDemo() {
           </Grid>
         </wa-card>
       </CatalogExample>
+      <CatalogExample
+        label="Sparse document tiles"
+        note="Auto-fill keeps empty tracks, so a single document tile stays at the shared card width instead of stretching across the row."
+        viewport={{ width: 'wide' }}
+      >
+        <Grid minColumnWidth={px(160)} autoFill gap="m">
+          <wa-card appearance="outlined">One document</wa-card>
+        </Grid>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

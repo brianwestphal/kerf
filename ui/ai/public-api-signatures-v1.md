@@ -3380,6 +3380,7 @@ type GridRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-component'?: never;
     'data-columns'?: never;
     'data-min-column-width'?: never;
+    'data-auto-fill'?: never;
     'data-flex'?: never;
     'data-fill'?: never;
 }>;
@@ -3405,13 +3406,16 @@ type GridProps = GridCommonProps & ({
     /** Number of equal-width columns. Must be a positive safe integer. */
     columns: number;
     minColumnWidth?: never;
+    autoFill?: never;
 } | {
     columns?: never;
     /** Fit equal columns of at least this width; collapse as the container narrows. */
     minColumnWidth: CssLength;
+    /** Keep empty tracks instead of stretching a sparse row. Defaults to false. */
+    autoFill?: boolean;
 });
 /** Render equal tracks with a fixed count or a responsive minimum width. */
-declare function Grid({ children, columns, minColumnWidth, gap, flex, fill, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
+declare function Grid({ children, columns, minColumnWidth, autoFill, gap, flex, fill, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, UiSpaceName };
 ```

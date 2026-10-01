@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 316400,
-  "measuredLargestJavaScriptGzip": 126045,
-  "measuredTotalJavaScriptGzip": 316358,
+  "totalJavaScriptGzip": 316500,
+  "measuredLargestJavaScriptGzip": 126043,
+  "measuredTotalJavaScriptGzip": 316484,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2195,6 +2195,22 @@
         "measuredTotalJavaScriptGzip": 316358,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 316400
+      }
+    },
+    {
+      "at": "2026-10-01T14:14:12.708Z",
+      "reason": "Grid autoFill retains sparse responsive tracks and adds a demo specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126045,
+        "measuredTotalJavaScriptGzip": 316358,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 316400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 316484,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 316500
       }
     }
   ]

@@ -85,7 +85,7 @@ test('Grid fits minimum-width columns and collapses at the container boundary', 
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=grid');
   const responsive = page.locator(
-    '[data-demo="grid"] [data-component="grid"][data-min-column-width="true"]',
+    '[data-demo="grid"] [data-component="grid"][data-min-column-width="true"]:not([data-auto-fill])',
   );
   await expect(responsive).toHaveAttribute('data-min-column-width', 'true');
   await expect(responsive).not.toHaveAttribute('data-columns');
@@ -116,5 +116,47 @@ test('Grid fits minimum-width columns and collapses at the container boundary', 
     await responsive.screenshot({
       path: testInfo.outputPath(`responsive-grid-${width}.png`),
     });
+  }
+});
+
+test('Grid autoFill keeps sparse tracks at wide and phone widths', async ({
+  page,
+  browserName,
+}, testInfo) => {
+  await page.goto('/?component=grid');
+  const sparse = page.locator('[data-demo="grid"] [data-auto-fill="true"]');
+  await expect(sparse).toHaveAttribute('data-min-column-width', 'true');
+  for (const width of [1100, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    const geometry = await sparse.evaluate((element) => {
+      const tracks = window
+        .getComputedStyle(element)
+        .gridTemplateColumns.split(' ')
+        .map(Number.parseFloat);
+      const tile = element.firstElementChild!;
+      const tileStyle = window.getComputedStyle(tile);
+      return {
+        width: element.getBoundingClientRect().width,
+        tracks,
+        tileWidth: tile.getBoundingClientRect().width,
+        tileOuterWidth:
+          tile.getBoundingClientRect().width +
+          Number.parseFloat(tileStyle.marginLeft) +
+          Number.parseFloat(tileStyle.marginRight),
+        overflows: element.scrollWidth > element.clientWidth,
+      };
+    });
+    expect(geometry.overflows).toBe(false);
+    if (width === 320) {
+      expect(geometry.tracks).toHaveLength(1);
+    } else {
+      expect(geometry.tracks.length).toBeGreaterThan(1);
+      expect(geometry.tileWidth).toBeLessThan(geometry.width / 2);
+    }
+    expect(geometry.tileOuterWidth).toBeCloseTo(geometry.tracks[0]!, 0);
+    if (browserName === 'chromium' && width !== 320)
+      await sparse.screenshot({
+        path: testInfo.outputPath(`sparse-grid-${width}.png`),
+      });
   }
 });

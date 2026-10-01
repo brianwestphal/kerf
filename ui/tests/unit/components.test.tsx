@@ -694,6 +694,19 @@ describe('production UI primitives', () => {
     expect(responsive).not.toContain('data-columns=');
     expect(responsive).toContain('--_kui-grid-min-column-width:376px');
     expect(responsive).toContain('data-project="setup"');
+    const sparse = asHtml(
+      Grid({
+        minColumnWidth: px(160),
+        autoFill: true,
+        rootAttributes: {
+          ...({ 'data-auto-fill': 'false' } as object),
+        },
+      }),
+    );
+    expect(sparse).toContain('data-auto-fill="true"');
+    expect(sparse).not.toContain('data-auto-fill="false"');
+    expect(sparse).toContain('--_kui-grid-min-column-width:160px');
+    expect(responsive).not.toContain('data-auto-fill');
   });
 
   it('rejects invalid Grid column counts before rendering', () => {
@@ -716,6 +729,11 @@ describe('production UI primitives', () => {
     ).toThrowError(
       new RangeError('Grid columns and minColumnWidth are mutually exclusive'),
     );
+    expect(() =>
+      Grid({ columns: 2, autoFill: true } as unknown as Parameters<
+        typeof Grid
+      >[0]),
+    ).toThrowError(new RangeError('Grid autoFill requires minColumnWidth'));
   });
 
   it('keeps inset selections explicit on nested rows and lists', () => {

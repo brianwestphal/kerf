@@ -163,6 +163,9 @@ Grid({ columns: 3, gap: responsiveGap });
 Grid({ minColumnWidth: px(376), gap: 'm' });
 // @ts-expect-error Grid modes cannot combine a fixed count and minimum width.
 Grid({ columns: 2, minColumnWidth: px(376) });
+// @ts-expect-error Grid autoFill is only meaningful with a minimum column width.
+Grid({ columns: 2, autoFill: true });
+Grid({ minColumnWidth: px(160), autoFill: true });
 // @ts-expect-error Responsive Grid requires a typed CSS length.
 Grid({ minColumnWidth: '376px' });
 Spacer({ width: spacingName, height: responsiveGap, flex: true });

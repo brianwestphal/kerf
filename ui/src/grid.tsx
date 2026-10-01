@@ -12,6 +12,7 @@ const gridProtectedAttributes = new Set([
   'data-component',
   'data-columns',
   'data-min-column-width',
+  'data-auto-fill',
   'data-flex',
   'data-fill',
 ]);
@@ -21,6 +22,7 @@ type GridRootAttributes = Readonly<
     'data-component'?: never;
     'data-columns'?: never;
     'data-min-column-width'?: never;
+    'data-auto-fill'?: never;
     'data-flex'?: never;
     'data-fill'?: never;
   }
@@ -61,11 +63,14 @@ export type GridProps = GridCommonProps &
         /** Number of equal-width columns. Must be a positive safe integer. */
         columns: number;
         minColumnWidth?: never;
+        autoFill?: never;
       }
     | {
         columns?: never;
         /** Fit equal columns of at least this width; collapse as the container narrows. */
         minColumnWidth: CssLength;
+        /** Keep empty tracks instead of stretching a sparse row. Defaults to false. */
+        autoFill?: boolean;
       }
   );
 
@@ -74,6 +79,7 @@ export function Grid({
   children,
   columns,
   minColumnWidth,
+  autoFill = false,
   gap = 'xs',
   flex = false,
   fill = false,
@@ -85,6 +91,9 @@ export function Grid({
     throw new RangeError(
       'Grid columns and minColumnWidth are mutually exclusive',
     );
+  }
+  if (autoFill && minColumnWidth === undefined) {
+    throw new RangeError('Grid autoFill requires minColumnWidth');
   }
   if (
     minColumnWidth === undefined &&
@@ -119,6 +128,7 @@ export function Grid({
       data-component="grid"
       data-columns={columns === undefined ? undefined : String(columns)}
       data-min-column-width={minColumnWidth === undefined ? undefined : 'true'}
+      data-auto-fill={autoFill ? 'true' : undefined}
       data-flex={String(Boolean(flex))}
       data-fill={fill ? 'true' : undefined}
       style={style}

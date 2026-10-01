@@ -410,14 +410,24 @@ import { px } from "@kerfjs/ui/css-values";
   <label>Provider <input /></label>
   <label>Endpoint <input /></label>
 </Grid>;
+
+<Grid minColumnWidth={px(160)} autoFill gap="m">
+  <DocumentTile />
+</Grid>;
 ```
 
 `columns` must be a positive safe integer; invalid counts throw instead of
 silently producing invalid CSS. Import `px` from `@kerfjs/ui/css-values` for a
 pixel minimum. `columns` and `minColumnWidth` are mutually exclusive. In the
 responsive mode, the container width decides how many equal tracks fit; constrain
-the Grid's outer width when the form should have a maximum count. Grid is
-layout-only and adds no ARIA grid role. The application owns child semantics.
+the Grid's outer width when the form should have a maximum count.
+`autoFill` keeps the unoccupied responsive tracks so one or two tiles retain
+their shared track width rather than expanding across an otherwise empty row.
+It requires `minColumnWidth`; the default `auto-fit` keeps the existing form
+behavior. When Grid is a direct child of a flex-owned `ListInsetControl`, pass
+`flex` so the Grid takes the available row width instead of shrink-wrapping.
+Grid is layout-only and adds no ARIA grid role. The application owns child
+semantics.
 Use application-owned CSS grid for intrinsic, asymmetric, spanning, or masonry
 tracks, and use `ResizableRegion` when people must adjust a boundary.
 
