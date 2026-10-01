@@ -234,6 +234,42 @@ test('nested checked choices, disabled commands, and context opening work', asyn
     });
 });
 
+test('context example keeps its row gutter on click without geometry highlights', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const example = page.locator('[data-catalog-example]').filter({
+    has: page.locator('[data-catalog-example-label]', {
+      hasText: 'Context menu',
+    }),
+  });
+  await expect(example).toHaveAttribute(
+    'data-catalog-geometry-overlay-skip',
+    '',
+  );
+  const row = example.locator('[data-popup-menu-context-target]');
+  for (const [width, name] of [
+    [1100, 'wide'],
+    [390, 'narrow'],
+  ] as const) {
+    await page.setViewportSize({ width, height: 844 });
+    await row.scrollIntoViewIfNeeded();
+    const before = await row.boundingBox();
+    await row.click();
+    const after = await row.boundingBox();
+    expect(after?.x).toBeCloseTo(before!.x, 0);
+    expect(after?.width).toBeCloseTo(before!.width, 0);
+    await expect(page.locator('.catalog-log')).toHaveText(
+      'More actions requested',
+    );
+    if (browserName === 'chromium')
+      await example.screenshot({
+        path: `test-results/popup-menu-context-row-${name}.png`,
+      });
+  }
+});
+
 test('checked PopupMenu choice follows application state on pointer and keyboard selection', async ({
   page,
   browserName,
