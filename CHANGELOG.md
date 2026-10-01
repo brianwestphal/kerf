@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **PopupMenu submenu checkmarks stay inside the menu surface.** Checked
+  submenu rows align their checkmark beside the label instead of letting the
+  Web Awesome negative check margin paint beyond the submenu border.
+
 - **Filled SegmentedControl labels keep contrast while switching themes.**
   Web Awesome's native button color transition no longer interpolates the
   label against the already-switched track fill.

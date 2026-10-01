@@ -513,7 +513,8 @@ open popup, fade-in surface, surface inset, row height and padding, current-row
 fill, and group titles, all read from one private popup-choice contract in
 `foundation.css`. Checkbox items reserve a check column; plain commands start
 at the checkmark's leading edge, beside the group title rather than the
-farther-in Select option label. Compact mixed controls retain the standard
+farther-in Select option label. Checked submenu items keep their checkmark and
+label inside the submenu surface. Compact mixed controls retain the standard
 item padding, omit an internal separator, and let the raised selected item paint
 over the outer border instead of shrinking to an inset highlight. The Web
 Awesome trigger's shadow base owns max-content sizing, so icons, localized text,

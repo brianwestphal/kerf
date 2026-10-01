@@ -48,6 +48,15 @@
       var(--_kui-popup-row-check-width)
   );
 }
+/* Web Awesome's nested submenu owns its item host padding. Move its exposed
+   checkmark inside the panel and leave room for the label beside it. */
+.kui-popup-menu
+  wa-dropdown-item[slot="submenu"][type="checkbox"]::part(checkmark) {
+  margin-inline-start: 0;
+}
+.kui-popup-menu wa-dropdown-item[slot="submenu"][type="checkbox"]::part(label) {
+  padding-inline-start: 1em;
+}
 .kui-popup-menu wa-dropdown-item::part(label) {
   padding-block: var(--_kui-popup-row-label-padding-block);
   line-height: var(--_kui-popup-row-label-line-height);

@@ -138,6 +138,25 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await expect(other).toBeFocused();
   await other.press('ArrowUp');
   await expect(approve).toBeFocused();
+  const checkmark = await approve.evaluate((element) => {
+    const check = element.shadowRoot?.querySelector('#check');
+    const label = element.shadowRoot?.querySelector('#label');
+    const submenu =
+      element.parentElement?.shadowRoot?.querySelector('#submenu');
+    if (!check || !label || !submenu) throw new Error('Submenu parts missing');
+    return {
+      checkLeft: check.getBoundingClientRect().left,
+      checkRight: check.getBoundingClientRect().right,
+      labelLeft: label.getBoundingClientRect().left,
+      panelLeft: submenu.getBoundingClientRect().left,
+      checkVisibility: window.getComputedStyle(check).visibility,
+    };
+  });
+  expect(checkmark.checkVisibility).toBe('visible');
+  expect(checkmark.checkLeft).toBeGreaterThanOrEqual(checkmark.panelLeft + 4);
+  expect(checkmark.checkRight).toBeLessThan(checkmark.labelLeft);
+  if (browserName === 'chromium')
+    await page.screenshot({ path: 'test-results/popup-menu-nested-wide.png' });
   await page.keyboard.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText('Decision: approve');
   await expect(page.locator('body')).toHaveAttribute(
@@ -154,8 +173,6 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await expect(headings).toHaveText(['Review', 'More']);
   await expect(divider).toBeVisible();
   await expect(other).toBeVisible();
-  if (browserName === 'chromium')
-    await page.screenshot({ path: 'test-results/popup-menu-nested-wide.png' });
   await approve.click();
   await expect(page.locator('.catalog-log')).toHaveText('Decision: approve');
   await expect(page.locator('body')).toHaveAttribute(
