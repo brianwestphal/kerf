@@ -3131,18 +3131,21 @@ import * as kerfjs from 'kerfjs';
 import { IconNode } from 'lucide';
 
 type LucideNode = IconNode;
+type LucideIconSize = 'xs' | 's' | 'm' | 'l' | 'xl' | number;
 interface LucideIconProps {
     icon: LucideNode;
     name: string;
     className?: string;
     label?: string;
+    /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
+    size?: LucideIconSize;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-declare function LucideIcon({ icon, name, className, label, slot, }: LucideIconProps): kerfjs.SafeHtml;
+declare function LucideIcon({ icon, name, className, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
 
-export { LucideIcon, type LucideIconProps, type LucideNode };
+export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
 ```
 
 ## `@kerfjs/ui/surface-scaffold`

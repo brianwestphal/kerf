@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Row } from '@kerfjs/ui/row';
 import { Bell } from 'lucide';
 
 export function LucideIconDemo() {
@@ -29,6 +30,20 @@ export function LucideIconDemo() {
           name="notification"
           label="Notifications ready"
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Icon sizes"
+        note="Named xs/s/m/l/xl steps use 12/16/20/24/32px at a 16px root; a positive numeric pixel size converts to rem. The default remains 1em."
+        align="none"
+      >
+        <Row gap="m" rootAttributes={{ 'data-demo-icon-sizes': '' }}>
+          <LucideIcon icon={Bell} name="bell-xs" size="xs" />
+          <LucideIcon icon={Bell} name="bell-s" size="s" />
+          <LucideIcon icon={Bell} name="bell-m" size="m" />
+          <LucideIcon icon={Bell} name="bell-l" size="l" />
+          <LucideIcon icon={Bell} name="bell-xl" size="xl" />
+          <LucideIcon icon={Bell} name="bell-30" size={30} />
+        </Row>
       </CatalogExample>
     </CatalogExampleStack>
   );
