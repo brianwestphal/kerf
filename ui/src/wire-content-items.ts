@@ -3,13 +3,19 @@ const ITEM_SELECTOR =
 const NESTED_CONTROL_SELECTOR =
   'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"]';
 
-function actionItem(root: HTMLElement, target: EventTarget | null) {
+function actionItem(root: HTMLElement, event: Event) {
+  const target = event.target;
   if (!(target instanceof Element)) return null;
   const item = target.closest<HTMLElement>(ITEM_SELECTOR);
   if (!item || !root.contains(item) || item.dataset.disabled === 'true')
     return null;
-  const nested = target.closest(NESTED_CONTROL_SELECTOR);
-  if (nested && nested !== item && item.contains(nested)) return null;
+  // Composed events expose native controls inside a custom element's shadow
+  // root even though event.target is retargeted to its host here.
+  for (const node of event.composedPath()) {
+    if (node === item) break;
+    if (node instanceof Element && node.matches(NESTED_CONTROL_SELECTOR))
+      return null;
+  }
   return item;
 }
 
@@ -35,7 +41,7 @@ export function wireContentItems(root: HTMLElement): () => void {
       event.metaKey
     )
       return;
-    const item = actionItem(root, event.target);
+    const item = actionItem(root, event);
     if (!item) return;
     if (event.key === 'Enter') {
       event.preventDefault();
@@ -58,7 +64,7 @@ export function wireContentItems(root: HTMLElement): () => void {
     event.preventDefault();
     clearSpace();
     if (
-      item === actionItem(root, event.target) &&
+      item === actionItem(root, event) &&
       item.ownerDocument.activeElement === item
     )
       item.click();

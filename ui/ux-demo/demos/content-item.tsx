@@ -1,3 +1,5 @@
+import '@awesome.me/webawesome/dist/components/button/button.js';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
@@ -87,6 +89,20 @@ export function ContentItemDemo() {
             rootAttributes={{ 'data-demo-item': 'toggle-card' }}
           >
             {itemCopy('Line item 42', 'Select this item for review.')}
+          </ContentItem>
+          <ContentItem
+            interactive
+            action="toggle-content-card"
+            itemId="card-with-action"
+            selectionMode="toggle"
+            selected={false}
+            ariaLabel="Card with nested action"
+            rootAttributes={{ 'data-demo-item': 'card-with-action' }}
+          >
+            {itemCopy('Card with action', 'The inner button acts on its own.')}
+            <wa-button appearance="plain" data-action="log-more">
+              More actions
+            </wa-button>
           </ContentItem>
           <ContentItem
             interactive

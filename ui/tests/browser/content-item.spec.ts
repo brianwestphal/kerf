@@ -72,3 +72,41 @@ test('ContentItem owns the 8/1/8 geometry and frames without moving content', as
       .evaluate((element) => element.scrollWidth <= element.clientWidth),
   ).toBe(true);
 });
+
+test('a nested Web Awesome button keeps Enter and Space from activating its ContentItem', async ({
+  page,
+}) => {
+  await page.goto('/?component=content-item');
+  const card = page.locator('[data-demo-item="card-with-action"]');
+  const action = card.locator('wa-button');
+  await page.evaluate(() => {
+    document.body.dataset.testCardClicks = '0';
+    document.addEventListener('click', (event) => {
+      if (
+        event.target instanceof Element &&
+        event.target.matches('[data-demo-item="card-with-action"]')
+      )
+        document.body.dataset.testCardClicks = String(
+          Number(document.body.dataset.testCardClicks) + 1,
+        );
+    });
+  });
+  for (const key of ['Enter', 'Space']) {
+    await action.focus();
+    await action.press(key);
+    await expect(page.locator('.catalog-log')).toHaveText(
+      'More actions requested',
+    );
+    await expect(page.locator('body')).toHaveAttribute(
+      'data-test-card-clicks',
+      '0',
+    );
+    await expect(card).not.toHaveAttribute('data-kui-pressed');
+  }
+  await card.focus();
+  await card.press('Enter');
+  await expect(page.locator('body')).toHaveAttribute(
+    'data-test-card-clicks',
+    '1',
+  );
+});

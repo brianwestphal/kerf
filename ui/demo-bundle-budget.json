@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 316500,
-  "measuredLargestJavaScriptGzip": 126043,
-  "measuredTotalJavaScriptGzip": 316484,
+  "totalJavaScriptGzip": 316600,
+  "measuredLargestJavaScriptGzip": 126044,
+  "measuredTotalJavaScriptGzip": 316599,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2211,6 +2211,22 @@
         "measuredTotalJavaScriptGzip": 316484,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 316500
+      }
+    },
+    {
+      "at": "2026-10-01T14:26:05.287Z",
+      "reason": "ContentItem demo adds a real nested Web Awesome button for keyboard-guard coverage",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 316484,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 316500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 316599,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 316600
       }
     }
   ]

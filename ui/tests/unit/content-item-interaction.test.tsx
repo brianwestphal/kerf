@@ -191,6 +191,56 @@ describe('wireContentItems', () => {
     root.remove();
   });
 
+  it('does not activate the card for a native control inside a custom-element shadow root', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      <ContentItem interactive action="pick" itemId="card">
+        Card
+      </ContentItem>,
+    );
+    document.body.append(root);
+    const item = root.querySelector<HTMLElement>('[data-item-id="card"]')!;
+    const host = document.createElement('x-card-action');
+    const shadow = host.attachShadow({ mode: 'open' });
+    const button = document.createElement('button');
+    button.textContent = 'Nested action';
+    shadow.append(button);
+    item.append(host);
+    let cardClicks = 0;
+    item.addEventListener('click', (event) => {
+      if (event.target === item) cardClicks++;
+    });
+    const stop = wireContentItems(root);
+    for (const key of ['Enter', ' ']) {
+      button.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key,
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        }),
+      );
+      button.dispatchEvent(
+        new KeyboardEvent('keyup', {
+          key,
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        }),
+      );
+    }
+    expect(cardClicks).toBe(0);
+    expect(item.dataset.kuiPressed).toBeUndefined();
+
+    item.focus();
+    item.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+    );
+    expect(cardClicks).toBe(1);
+    stop();
+    root.remove();
+  });
+
   it('cancels pending Space when the target changes or leaves the wired root', () => {
     const outer = document.createElement('div');
     outer.innerHTML = String(

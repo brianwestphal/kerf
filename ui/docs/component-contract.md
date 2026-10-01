@@ -483,6 +483,10 @@ declarations.
 one child 8px inline margin, a real 1px border, 8px padding, and 12px corners;
 the border stays transparent unless `frame="framed"`, so framing never changes
 geometry. `shape="pill"` selects the 22px radius.
+For an interactive ContentItem, `wireContentItems` activates the card on Enter
+or Space only when the key event originated from the card itself. A nested
+native control, including one inside a custom element's shadow root, keeps its
+own keyboard activation.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Each group reserves `calc(2px + remify(42px))`, or 44px, with 8px between
