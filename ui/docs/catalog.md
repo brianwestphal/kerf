@@ -215,6 +215,11 @@ border, and padding. Catalogs for downstream components should conform to the
 contract and can start from the checked
 [`component-catalog-extension.json`](./examples/component-catalog-extension.json)
 example; provide those entries beside Kerf's shipped catalog to AI tools.
+An extension entry may declare `uses` with direct Kerf or extension entry ids,
+plus repository-relative `source` and `demoSource` paths. Keep the ids unique
+and resolvable across both catalogs; paths use `/` separators and cannot
+traverse outside the repository. These fields let consumer demos derive source
+links and composition relationships from the catalog.
 
 ### Automated conformance and reviewed exceptions
 

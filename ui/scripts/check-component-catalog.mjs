@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
 import { validateComposition } from './component-composition-validation.mjs';
+import { validateCatalogExtensionReferences } from './component-catalog-extension-validation.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const [
@@ -158,6 +159,12 @@ function validateSchema(value, rule, path = '$', activeSchema = schema) {
     value.length < rule.minLength
   ) {
     fail(`${path} must contain at least ${rule.minLength} character(s)`);
+  } else if (
+    rule.type === 'string' &&
+    rule.pattern &&
+    !new RegExp(rule.pattern).test(value)
+  ) {
+    fail(`${path} must match ${rule.pattern}`);
   }
 }
 
@@ -345,6 +352,11 @@ if (
   extensionExample.entries.length
 )
   fail('consumer extension example ids must be unique');
+for (const failure of validateCatalogExtensionReferences(
+  extensionExample,
+  artifact,
+))
+  fail(`consumer extension example: ${failure}`);
 
 if (
   artifact.schemaVersion !== 1 ||

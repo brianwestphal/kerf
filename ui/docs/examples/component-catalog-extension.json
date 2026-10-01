@@ -17,6 +17,9 @@
       ],
       "publicClasses": ["acme-filter-chip"],
       "publicTokens": ["--acme-filter-chip-accent"],
+      "uses": ["chip"],
+      "source": "src/filter-chip.tsx",
+      "demoSource": "ux-demo/demos/filter-chip.tsx",
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -31,6 +34,9 @@
       "purpose": "An application inspector composed from Kerf panel, content, and value primitives.",
       "useWhen": ["A selected record needs a titled fact-and-action region."],
       "avoidWhen": ["A ValueTable alone expresses the complete interaction."],
+      "uses": ["acme-filter-chip", "toolbar", "value-table"],
+      "source": "src/inspector.tsx",
+      "demoSource": "ux-demo/demos/inspector.tsx",
       "geometry": {
         "margin": "parent",
         "border": "child",

@@ -243,6 +243,9 @@ example. Keep app and Kerf entries as package-qualified inputs, then let people
 or AI tools search their combined entries and compare `geometry` before adding
 wrappers or insets. Do not add app-owned entries to Kerf's canonical catalog or
 claim Kerf delivery paths for them.
+Extension entries may add `uses` for direct composition dependencies and
+repository-relative `source` and `demoSource` files. Resolve each dependency
+against the combined Kerf and consumer catalogs; do not duplicate a Kerf id.
 
 - Components own semantic markup, stable anatomy, documented variants, ARIA projection, and package CSS hooks.
 - Applications own signals/stores, product copy, domain-state mapping, persistence, routing, permissions, and transport.

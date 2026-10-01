@@ -52,6 +52,14 @@
           "items": { "type": "string" },
           "uniqueItems": true
         },
+        "uses": {
+          "description": "Directly composed Kerf or consumer catalog entry ids.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "source": { "$ref": "#/$defs/repositoryPath" },
+        "demoSource": { "$ref": "#/$defs/repositoryPath" },
         "geometry": { "$ref": "#/$defs/geometry" },
         "documentation": { "type": "string", "minLength": 1 }
       },
@@ -74,6 +82,11 @@
     },
     "geometryOwner": {
       "enum": ["self", "parent", "child", "none", "conditional"]
+    },
+    "repositoryPath": {
+      "description": "A repository-relative POSIX path without traversal or empty segments.",
+      "type": "string",
+      "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
     }
   }
 }
