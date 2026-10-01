@@ -2391,7 +2391,7 @@ import 'lucide';
 declare function Catalog({ id, brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
-type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
+type CatalogExampleAlign = 'glyph' | 'inline-control' | 'text-trigger' | 'none';
 interface CatalogExampleViewport {
     layout?: 'grid' | 'flex' | 'flex-column';
     width?: 'full' | 'compact' | 'medium' | 'wide' | 'text' | 'control';

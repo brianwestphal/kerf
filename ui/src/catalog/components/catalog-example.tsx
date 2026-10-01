@@ -7,7 +7,8 @@ import type { KerfUiContent } from '../../semantic-content.js';
 import { Text } from '../../text.js';
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
-export type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
+export type CatalogExampleAlign =
+  'glyph' | 'inline-control' | 'text-trigger' | 'none';
 
 export interface CatalogExampleViewport {
   layout?: 'grid' | 'flex' | 'flex-column';

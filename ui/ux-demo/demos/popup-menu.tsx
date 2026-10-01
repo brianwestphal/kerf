@@ -97,7 +97,7 @@ export function PopupMenuDemo() {
       <CatalogExample
         label="Checked choices"
         note="Open the menu to compare a checked choice, an unchecked choice that keeps the checkmark space, and a plain command with no checkmark space. Choosing a sort option updates the checks."
-        align="inline-control"
+        align="text-trigger"
       >
         <PopupMenu
           text="Sort choices"
@@ -118,7 +118,7 @@ export function PopupMenuDemo() {
           ]}
         />
       </CatalogExample>
-      <CatalogExample label="Nested decisions" align="inline-control">
+      <CatalogExample label="Nested decisions" align="text-trigger">
         <PopupMenu
           text="Decide"
           items={[

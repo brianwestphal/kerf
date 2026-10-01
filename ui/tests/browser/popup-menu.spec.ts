@@ -14,12 +14,16 @@ async function expectDemoTriggerAlignment(page: Page, label: string) {
         ?.shadowRoot?.querySelector('[part~="label"]');
       if (!heading || !triggerText)
         throw new Error('PopupMenu demo label missing');
+      const labelText = heading.querySelector('.kui-text')?.firstChild;
+      if (!labelText) throw new Error('PopupMenu heading text missing');
+      const textRange = document.createRange();
+      textRange.selectNodeContents(labelText);
       return (
         triggerText.getBoundingClientRect().x -
-        heading.getBoundingClientRect().x
+        textRange.getBoundingClientRect().x
       );
     });
-  expect(Math.abs(offset)).toBeLessThanOrEqual(2);
+  expect(Math.abs(offset), `${label}: ${offset}px`).toBeLessThanOrEqual(2);
 }
 
 test('PopupMenu opens from its toolbar trigger and dispatches the chosen command', async ({
@@ -85,7 +89,12 @@ test('nested checked choices, disabled commands, and context opening work', asyn
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=popup-menu');
+  await expectDemoTriggerAlignment(page, 'Checked choices');
   await expectDemoTriggerAlignment(page, 'Nested decisions');
+  await page.setViewportSize({ width: 390, height: 800 });
+  await expectDemoTriggerAlignment(page, 'Checked choices');
+  await expectDemoTriggerAlignment(page, 'Nested decisions');
+  await page.setViewportSize({ width: 1100, height: 800 });
   const demo = page.locator('[data-demo="popup-menu"]');
   const nested = demo.locator('[data-component="popup-menu"]').filter({
     has: page.locator('wa-dropdown-item[slot="submenu"]'),

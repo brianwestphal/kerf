@@ -162,3 +162,7 @@
   --kui-catalog-example-align: remify(8px);
   margin-inline-start: var(--kui-catalog-example-align);
 }
+
+.kui-catalog-example[data-align="text-trigger"] > wa-dropdown > wa-button {
+  margin-inline-start: remify(8px);
+}

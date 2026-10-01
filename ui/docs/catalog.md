@@ -117,8 +117,12 @@ own overlay implementation.
   spacing wrapper. A composition row may place the composition root there.
 
 Use `align="glyph"` for a bare glyph/text specimen, `align="inline-control"`
-for a control whose own inline padding contributes about 8px, and `align="none"`
-(the default) for a content item or composition that owns its geometry.
+for a control whose own inline padding contributes about 8px, and
+`align="text-trigger"` for a Web Awesome dropdown's text trigger whose visible
+label needs an 8px inset (such as a plain `PopupMenu` trigger). The dropdown host
+has no layout box, so this inset applies to its button child. Use
+`align="none"` (the default) for a content item or composition that owns its
+geometry.
 
 ```tsx
 import { CatalogExample, CatalogExampleStack } from "@kerfjs/ui/catalog";
