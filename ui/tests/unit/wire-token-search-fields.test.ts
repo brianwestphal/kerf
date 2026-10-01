@@ -1028,6 +1028,117 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     handle();
   });
 
+  it('defers an empty blur through pointerup and click, then collapses', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    const openAtClick: boolean[] = [];
+    outside.addEventListener('click', () =>
+      openAtClick.push(field.expandedSignal.value),
+    );
+    editor.focus();
+
+    outside.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    outside.focus();
+    editor.dispatchEvent(focusoutEvent(outside));
+    await micro();
+    expect(field.expandedSignal.value).toBe(true);
+    outside.dispatchEvent(new Event('pointerup', { bubbles: true }));
+    await micro();
+    expect(field.expandedSignal.value).toBe(true);
+    outside.click();
+    expect(openAtClick).toEqual([true]);
+    expect(field.expandedSignal.value).toBe(true);
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(field.expandedSignal.value).toBe(false);
+    handle();
+  });
+
+  it.each(['pointerup', 'pointercancel'])(
+    'releases a pending blur after %s without a click',
+    async (end) => {
+      const field = mountCollapsibleField(signal(true));
+      const handle = wireCollapsible(field);
+      const editor = field.editor()!;
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      editor.focus();
+      outside.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+      outside.focus();
+      editor.dispatchEvent(focusoutEvent(outside));
+      await micro();
+      expect(field.expandedSignal.value).toBe(true);
+      outside.dispatchEvent(new Event(end, { bubbles: true }));
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+      expect(field.expandedSignal.value).toBe(false);
+      handle();
+    },
+  );
+
+  it('keeps a pending pointer blur open after refocus or new content', async () => {
+    for (const transition of ['refocus', 'content'] as const) {
+      const field = mountCollapsibleField(signal(true));
+      const handle = wireCollapsible(field);
+      const editor = field.editor()!;
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      editor.focus();
+      outside.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+      outside.focus();
+      editor.dispatchEvent(focusoutEvent(outside));
+      if (transition === 'refocus') editor.focus();
+      else editor.textContent = 'new query';
+      outside.dispatchEvent(new Event('pointerup', { bubbles: true }));
+      outside.click();
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+      expect(field.expandedSignal.value).toBe(true);
+      handle();
+      field.root.remove();
+      outside.remove();
+    }
+  });
+
+  it('drops a pending pointer blur when wiring is disposed before release', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    editor.focus();
+    outside.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    outside.focus();
+    editor.dispatchEvent(focusoutEvent(outside));
+    outside.dispatchEvent(new Event('pointerup', { bubbles: true }));
+    handle();
+    outside.click();
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(field.expandedSignal.value).toBe(true);
+  });
+
+  it('waits for a second press when it begins before the first release task', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const first = document.createElement('button');
+    const second = document.createElement('button');
+    document.body.append(first, second);
+    editor.focus();
+    first.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    first.focus();
+    editor.dispatchEvent(focusoutEvent(first));
+    first.dispatchEvent(new Event('pointerup', { bubbles: true }));
+    second.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(field.expandedSignal.value).toBe(true);
+    second.dispatchEvent(new Event('pointerup', { bubbles: true }));
+    second.click();
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(field.expandedSignal.value).toBe(false);
+    handle();
+  });
+
   it('does not collapse while focus stays on an in-field control', async () => {
     const field = mountCollapsibleField(signal(true));
     const handle = wireCollapsible(field);

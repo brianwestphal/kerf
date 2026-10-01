@@ -357,6 +357,8 @@ export function wireTokenSearchFields(
   const created = new Map<string, Signal<boolean>>();
   let disposed = false;
   let pointerActivationTarget: Element | null = null;
+  const pendingPointerBlurCollapses = new Map<string, () => void>();
+  let pointerReleaseTimer: number | undefined;
   const positionedSuggestions = new Map<HTMLElement, () => void>();
 
   const syncSuggestions = () => {
@@ -443,14 +445,39 @@ export function wireTokenSearchFields(
   // across that focus transition so a keep-open surface cannot be collapsed
   // (and removed) between pointerdown and click.
   const trackPointerActivation = (event: Event) => {
+    if (pointerReleaseTimer !== undefined)
+      view().clearTimeout(pointerReleaseTimer);
+    pointerReleaseTimer = undefined;
     pointerActivationTarget =
       event.target instanceof Element ? event.target : null;
+  };
+  const flushPointerBlurCollapses = () => {
+    pointerReleaseTimer = undefined;
+    for (const collapse of pendingPointerBlurCollapses.values()) collapse();
+    pendingPointerBlurCollapses.clear();
+  };
+  const flushAfterPointerClick = () => {
+    if (pendingPointerBlurCollapses.size === 0) return;
+    if (pointerReleaseTimer !== undefined)
+      view().clearTimeout(pointerReleaseTimer);
+    // A pointerup can have no click (drag/cancel); a click can run app handlers
+    // after capture. A task after either event preserves the pressed target.
+    pointerReleaseTimer = view().setTimeout(flushPointerBlurCollapses, 0);
   };
   const clearPointerActivation = () => {
     pointerActivationTarget = null;
   };
   const clearPointerActivationAfterDefault = () => {
     view().queueMicrotask(clearPointerActivation);
+    flushAfterPointerClick();
+  };
+  const clearPointerActivationAfterClick = () => {
+    clearPointerActivation();
+    flushAfterPointerClick();
+  };
+  const cancelPointerActivation = () => {
+    clearPointerActivation();
+    flushAfterPointerClick();
   };
 
   const signalFor = (id: string): Signal<boolean> => {
@@ -969,10 +996,14 @@ export function wireTokenSearchFields(
     );
     root.ownerDocument.addEventListener(
       'pointercancel',
-      clearPointerActivation,
+      cancelPointerActivation,
       true,
     );
-    root.ownerDocument.addEventListener('click', clearPointerActivation, true);
+    root.ownerDocument.addEventListener(
+      'click',
+      clearPointerActivationAfterClick,
+      true,
+    );
     disposers.push(
       () =>
         root.ownerDocument.removeEventListener(
@@ -989,13 +1020,13 @@ export function wireTokenSearchFields(
       () =>
         root.ownerDocument.removeEventListener(
           'pointercancel',
-          clearPointerActivation,
+          cancelPointerActivation,
           true,
         ),
       () =>
         root.ownerDocument.removeEventListener(
           'click',
-          clearPointerActivation,
+          clearPointerActivationAfterClick,
           true,
         ),
     );
@@ -1039,11 +1070,15 @@ export function wireTokenSearchFields(
           if (next instanceof Node && field.contains(next)) return;
           if (isExemptTarget(next instanceof Element ? next : null)) return;
           if (!editorIsEmpty(editor)) return;
-          view().queueMicrotask(() => {
+          const collapseIfStillEmptyAndBlurred = () => {
+            if (disposed || !editorIsEmpty(editor)) return;
             const active = field.ownerDocument.activeElement;
             if (!field.contains(active) && !isExemptTarget(active))
               setExpanded(id, false);
-          });
+          };
+          if (pointerActivationTarget)
+            pendingPointerBlurCollapses.set(id, collapseIfStillEmptyAndBlurred);
+          else view().queueMicrotask(collapseIfStillEmptyAndBlurred);
         },
       ),
     );
@@ -1051,6 +1086,9 @@ export function wireTokenSearchFields(
 
   const dispose = () => {
     disposed = true;
+    if (pointerReleaseTimer !== undefined)
+      view().clearTimeout(pointerReleaseTimer);
+    pendingPointerBlurCollapses.clear();
     suggestionsObserver.disconnect();
     for (const stop of positionedSuggestions.values()) stop();
     positionedSuggestions.clear();

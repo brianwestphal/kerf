@@ -58,6 +58,68 @@ test('the TokenSearchField demo shows and drives the collapsible state', async (
   await expect(editor).toBeHidden();
 });
 
+test('empty blur waits for the pressed control click before collapsing a shifting row', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 1000 });
+  await page.goto('/?component=token-search-field');
+  const example = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: /^\s*Collapsible\s*$/,
+      }),
+    });
+  const field = example.locator('[data-component="token-search-field"]');
+  await field.getByRole('button', { name: 'Open find' }).click();
+  await expect(
+    field.getByRole('searchbox', { name: 'Find records' }),
+  ).toBeFocused();
+  await example.evaluate((node) => {
+    const search = node.querySelector<HTMLElement>(
+      '[data-component="token-search-field"]',
+    )!;
+    const target = document.createElement('button');
+    target.type = 'button';
+    target.textContent = 'Target below search';
+    target.dataset.testPressTarget = '';
+    target.addEventListener('click', () => {
+      document.body.dataset.testPressClicks = String(
+        Number(document.body.dataset.testPressClicks ?? '0') + 1,
+      );
+    });
+    node.insertAdjacentElement('afterend', target);
+    const syncHeight = () => {
+      (node as HTMLElement).style.height =
+        search.dataset.expanded === 'true' ? '240px' : '80px';
+    };
+    new MutationObserver(syncHeight).observe(search, {
+      attributes: true,
+      attributeFilter: ['data-expanded'],
+    });
+    syncHeight();
+    document.body.dataset.testPressClicks = '0';
+  });
+  const target = page.locator('[data-test-press-target]');
+  await target.scrollIntoViewIfNeeded();
+  const before = await target.boundingBox();
+  expect(before).not.toBeNull();
+  await page.mouse.move(
+    before!.x + before!.width / 2,
+    before!.y + before!.height / 2,
+  );
+  await page.mouse.down();
+  await page.waitForTimeout(50);
+  await expect(field).toHaveAttribute('data-expanded', 'true');
+  expect(Math.abs((await target.boundingBox())!.y - before!.y)).toBeLessThan(1);
+  await page.mouse.up();
+  await expect(page.locator('body')).toHaveAttribute(
+    'data-test-press-clicks',
+    '1',
+  );
+  await expect(field).toHaveAttribute('data-expanded', 'false');
+});
+
 test('disposing the demo wiring cancels pending collapsible focus restoration', async ({
   page,
 }) => {

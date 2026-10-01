@@ -436,7 +436,11 @@ it) with `data-token-search-keep-open`, or pass `collapsible.keepOpenOn(target)`
 so focus or pointer activation moving into it does not collapse an empty field.
 The helper preserves the pointer target when a browser omits
 `focusout.relatedTarget`, preventing the field or target from disappearing
-between pointerdown and click. `wireTokenSearchFields`
+between pointerdown and click. For an empty field losing focus during a pointer
+press, managed collapse waits until that press's click has dispatched (or the
+press ends without a click), then rechecks focus and content before closing.
+This keeps a shifting search row from moving the pressed control mid-click.
+`wireTokenSearchFields`
 can also, opt-in via `keyboard`, own atomic-chip editing keys: from a collapsed
 caret with no selection, Backspace removes the token before the caret and Delete
 the token after it (reported through `onRemoveToken` for the app to apply to its
