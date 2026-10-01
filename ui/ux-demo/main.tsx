@@ -912,6 +912,14 @@ const stopActions = delegateActions(app, 'click', {
   'log-context-open': () => {
     actionLog.value = 'Context demand opened';
   },
+  'open-demand-actions': (_event, element) => {
+    const menu = app.querySelector<PopupMenuElement>(
+      '[data-popup-context-menu]',
+    );
+    if (!menu) return;
+    const anchor = element.getBoundingClientRect();
+    openPopupMenuAt(menu, anchor.left, anchor.bottom);
+  },
   'log-pin': () => {
     actionLog.value = 'Pin requested';
   },

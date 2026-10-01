@@ -174,14 +174,14 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await other.click();
   await expect(page.locator('.catalog-log')).toHaveText('Decision: other');
 
+  await page.setViewportSize({ width: 1100, height: 800 });
   const context = demo.locator('[data-popup-context-menu]');
   const row = demo.locator('[data-popup-menu-context-target]');
   await row.click({ button: 'right', position: { x: 20, y: 12 } });
   const rowBox = await row.boundingBox();
   await expect(context).toHaveAttribute('open', '');
-  await expect(
-    demo.getByRole('button', { name: 'Demand actions' }),
-  ).toBeDisabled();
+  const contextButton = demo.getByRole('button', { name: 'Demand actions' });
+  await expect(contextButton).toBeEnabled();
   const anchorBox = await context.locator('[slot="trigger"]').boundingBox();
   expect(Math.abs(anchorBox!.x - (rowBox!.x + 20))).toBeLessThanOrEqual(2);
   expect(Math.abs(anchorBox!.y - (rowBox!.y + 12))).toBeLessThanOrEqual(2);
@@ -193,12 +193,44 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   );
   await expect(context).not.toHaveAttribute('open', '');
 
+  await contextButton.click();
+  await expect(context).toHaveAttribute('open', '');
+  const buttonBox = await contextButton.boundingBox();
+  const buttonAnchorBox = await context
+    .locator('[slot="trigger"]')
+    .boundingBox();
+  expect(Math.abs(buttonAnchorBox!.x - buttonBox!.x)).toBeLessThanOrEqual(2);
+  expect(
+    Math.abs(buttonAnchorBox!.y - (buttonBox!.y + buttonBox!.height)),
+  ).toBeLessThanOrEqual(2);
+  if (browserName === 'chromium')
+    await page.screenshot({ path: 'test-results/popup-menu-button-wide.png' });
+  await page.keyboard.press('Escape');
+  await expect(context).not.toHaveAttribute('open', '');
+
+  await contextButton.focus();
+  await page.keyboard.press('Enter');
+  await expect(context).toHaveAttribute('open', '');
+  const keyboardOpen = context.getByRole('menuitem', { name: 'Open' });
+  await keyboardOpen.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'Context demand opened',
+  );
+
   await page.setViewportSize({ width: 390, height: 844 });
   await row.click({ button: 'right', position: { x: 20, y: 12 } });
   await expect(context.getByRole('menuitem', { name: 'Open' })).toBeVisible();
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/popup-menu-context-narrow.png',
+    });
+  await page.keyboard.press('Escape');
+  await contextButton.click();
+  await expect(context.getByRole('menuitem', { name: 'Open' })).toBeVisible();
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/popup-menu-button-narrow.png',
     });
 });
 

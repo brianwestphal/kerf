@@ -155,7 +155,7 @@ export function PopupMenuDemo() {
       </CatalogExample>
       <CatalogExample
         label="Context menu"
-        note="Right-click the row; its visible action stays disabled until the row opens a menu at the pointer."
+        note="Right-click the row to open actions at the pointer, or use the adjacent action button."
         align="inline-control"
       >
         <ListItem
@@ -164,7 +164,12 @@ export function PopupMenuDemo() {
           rootAttributes={{ 'data-popup-menu-context-target': '' }}
         />
         <ToolbarControlGroup single>
-          <button type="button" disabled aria-label="Demand actions">
+          <button
+            type="button"
+            aria-label="Demand actions"
+            title="Demand actions"
+            data-action="open-demand-actions"
+          >
             <LucideIcon icon={MoreHorizontal} name="actions" />
           </button>
         </ToolbarControlGroup>
