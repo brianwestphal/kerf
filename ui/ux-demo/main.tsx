@@ -1166,6 +1166,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
             size: workbenchNavigatorSize,
             storageKey: 'kerf-ui-demo.workbench.navigator',
             collapsed: workbenchNavigatorCollapsed,
+            // A detached menu or dialog launched from this rail can keep it
+            // open by placing its root at this app-owned portal anchor.
+            keepOpenOn: (target) =>
+              target instanceof Element &&
+              target.id === 'catalog-workbench-portal',
           },
           rightRail: {
             size: workbenchInspectorSize,

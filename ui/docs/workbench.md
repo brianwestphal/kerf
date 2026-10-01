@@ -431,7 +431,12 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
 - **Outside press:** a pointer press that starts and ends outside an open
   overlay panel closes it. The app's own toggle still works: its click closes
   the panel before the wiring looks, and the press that opens a panel never
-  closes it.
+  closes it. For a body-level menu, dialog, or other portal opened from a
+  panel, set that panel's `keepOpenOn: (target) => target === portalRoot` in
+  `wireWorkbench`. The predicate receives each node in the press's composed
+  path, so matching the portal root keeps the panel open when the press starts
+  or ends anywhere inside the portal. Escape and Tab inside that portal remain
+  with its own keyboard handler. Other outside presses still close the panel.
 - **Focus:** when a panel closes with focus inside it — whatever closed it,
   including the app's own control inside the panel — focus returns to the
   control that had it when the panel opened (typically its toggle; one inside

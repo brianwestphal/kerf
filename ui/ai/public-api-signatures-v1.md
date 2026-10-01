@@ -1825,6 +1825,13 @@ interface WireWorkbenchPanel {
      * keeps Tab inside it, and it closes on Escape or a press outside it.
      */
     collapsed?: Signal<boolean>;
+    /**
+     * Treat presses in a portal surface launched by this panel (for example a
+     * body-level menu or dialog) as inside it. The predicate receives each Node
+     * in the press's composed path; return true for the portal root. Ordinary
+     * presses outside the panel and its allowed surfaces still dismiss it.
+     */
+    keepOpenOn?: (target: Node) => boolean;
 }
 /** A resize the user made, after `wireWorkbench` wrote it to the size signal. */
 interface WorkbenchResize {

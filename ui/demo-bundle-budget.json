@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 313700,
+  "totalJavaScriptGzip": 313800,
   "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 313636,
+  "measuredTotalJavaScriptGzip": 313760,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1923,6 +1923,22 @@
         "measuredTotalJavaScriptGzip": 313636,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 313700
+      }
+    },
+    {
+      "at": "2026-10-01T03:47:07.563Z",
+      "reason": "Workbench portal press handling",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 313636,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 313760,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313800
       }
     }
   ]

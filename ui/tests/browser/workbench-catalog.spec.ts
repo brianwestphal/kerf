@@ -704,6 +704,30 @@ test.describe('resizable Workbench panels', () => {
     await expect(handle).toBeHidden(); // The inline inspector remains collapsed.
   });
 
+  test('a detached action from a rail keeps its overlay open', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const navigator = workbench.locator('[data-workbench-rail="left"]');
+    await workbench.scrollIntoViewIfNeeded();
+    await expect(navigator).toHaveAttribute('data-collapsed', 'true');
+    await workbench.getByRole('button', { name: 'Show navigator' }).click();
+    await expect(navigator).toHaveAttribute('data-collapsed', 'false');
+
+    await page.evaluate(() => {
+      const portal = document.createElement('div');
+      portal.id = 'catalog-workbench-portal';
+      portal.innerHTML = '<button type="button">Confirm portal action</button>';
+      document.body.append(portal);
+    });
+    const action = page.getByRole('button', { name: 'Confirm portal action' });
+    await action.click();
+    await expect(navigator).toHaveAttribute('data-collapsed', 'false');
+    await action.press('Escape');
+    await expect(navigator).toHaveAttribute('data-collapsed', 'false');
+  });
+
   test('an overlay drawer keeps its height, statically and responsively', async ({
     page,
   }) => {

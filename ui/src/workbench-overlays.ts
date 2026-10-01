@@ -12,6 +12,7 @@ import type { WorkbenchPanelKey } from './workbench-resize.js';
 export interface WorkbenchOverlayPanel {
   key: WorkbenchPanelKey;
   collapsed: Signal<boolean>;
+  keepOpenOn?: (target: Node) => boolean;
 }
 
 /** Each panel's own element, never a nested Workbench's. */
@@ -406,6 +407,17 @@ export function wireWorkbenchOverlays(
         : [];
     });
 
+  const inAllowedPortal = (
+    panel: WorkbenchOverlayPanel,
+    path: EventTarget[],
+  ): boolean => {
+    const keepOpenOn = panel.keepOpenOn;
+    return Boolean(
+      keepOpenOn &&
+      path.some((target) => target instanceof Node && keepOpenOn(target)),
+    );
+  };
+
   const onKeydown = (event: KeyboardEvent): void => {
     if (
       (event.key !== 'Escape' && event.key !== 'Tab') ||
@@ -414,6 +426,9 @@ export function wireWorkbenchOverlays(
       return;
     const open = openOverlays();
     if (open.length === 0) return;
+    // A dialog or menu launched from a panel owns its own keyboard handling.
+    if (open.some(([panel]) => inAllowedPortal(panel, event.composedPath())))
+      return;
     const active = ownerDocument.activeElement;
     const [panel, element] =
       open.find(([, candidate]) => candidate.contains(active)) ??
@@ -445,10 +460,15 @@ export function wireWorkbenchOverlays(
   // outside it. Deciding at the click lets an app toggle that closes the panel
   // run first, and a press that opens a panel never closes it.
   let pressed: WorkbenchOverlayPanel[] = [];
+  const inside = (
+    panel: WorkbenchOverlayPanel,
+    element: HTMLElement,
+    path: EventTarget[],
+  ): boolean => path.includes(element) || inAllowedPortal(panel, path);
   const onPointerdown = (event: PointerEvent): void => {
     const path = event.composedPath();
     pressed = openOverlays()
-      .filter(([, element]) => !path.includes(element))
+      .filter(([panel, element]) => !inside(panel, element, path))
       .map(([panel]) => panel);
     // Before the press's default action moves focus: the open panel it
     // started in, when focus was inside that panel too.
@@ -468,7 +488,7 @@ export function wireWorkbenchOverlays(
     pressed = [];
     const path = event.composedPath();
     for (const [panel, element] of openOverlays())
-      if (candidates.includes(panel) && !path.includes(element))
+      if (candidates.includes(panel) && !inside(panel, element, path))
         panel.collapsed.value = true;
   };
   const onActivate = (event: MouseEvent): void => {

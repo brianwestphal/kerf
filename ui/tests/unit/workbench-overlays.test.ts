@@ -192,16 +192,21 @@ function studio({
         (button) => button.textContent === text,
       )!,
     wire: (
-      options: { dismissOverlays?: boolean; exclusiveOverlays?: boolean } = {},
+      options: {
+        dismissOverlays?: boolean;
+        exclusiveOverlays?: boolean;
+        keepOpenOn?: (target: Node) => boolean;
+      } = {},
     ) => {
+      const { keepOpenOn, ...wireOptions } = options;
       const dispose = wireWorkbench(root, {
         id: 'studio',
         panels: {
-          leftRail: { collapsed: left },
+          leftRail: { collapsed: left, keepOpenOn },
           rightRail: { collapsed: right },
           bottomDrawer: { collapsed: drawer },
         },
-        ...options,
+        ...wireOptions,
       });
       disposers.push(dispose);
       return dispose;
@@ -803,6 +808,52 @@ describe('wireWorkbench transient overlays', () => {
     // A press outside the whole Workbench closes it too.
     press(document.body);
     expect(app.left.value).toBe(true);
+  });
+
+  it('keeps a panel open when either end of a press is in its allowed portal', () => {
+    const app = studio();
+    narrow = true;
+    const portal = document.createElement('div');
+    portal.innerHTML = '<button type="button">Menu action</button>';
+    document.body.append(portal);
+    try {
+      app.wire({ keepOpenOn: (target) => target === portal });
+      press(app.button('Show nav'));
+      const action = portal.querySelector('button')!;
+      press(action);
+      expect(app.left.value).toBe(false);
+      action.focus();
+      const tab = new KeyboardEvent('keydown', {
+        key: 'Tab',
+        bubbles: true,
+        cancelable: true,
+      });
+      action.dispatchEvent(tab);
+      expect(tab.defaultPrevented).toBe(false);
+      expect(document.activeElement).toBe(action);
+      const portalEscape = escape(action);
+      expect(portalEscape.defaultPrevented).toBe(false);
+      expect(app.left.value).toBe(false);
+
+      action.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, composed: true }),
+      );
+      app.button('Plain').click();
+      expect(app.left.value).toBe(false);
+
+      app
+        .button('Plain')
+        .dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles: true, composed: true }),
+        );
+      action.click();
+      expect(app.left.value).toBe(false);
+
+      press(app.button('Plain'));
+      expect(app.left.value).toBe(true);
+    } finally {
+      portal.remove();
+    }
   });
 
   it('returns stranded focus to the restore control when there is no opener', async () => {
