@@ -31,6 +31,56 @@ function inputEvent(
 }
 
 describe('wireTokenSearchFields', () => {
+  it('positions suggestion surfaces and cleans up when they leave the field', async () => {
+    const root = document.createElement('div');
+    const field = document.createElement('div');
+    field.dataset.component = 'token-search-field';
+    field.dataset.tokenSearchId = 'tickets';
+    const popup = document.createElement('div');
+    popup.className = 'kui-token-search__suggestions';
+    field.append(popup);
+    root.append(field);
+    document.body.append(root);
+    const stop = wireTokenSearchFields(root);
+
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(popup.style.visibility).toBe('visible');
+    expect(popup.style.width).toBe('240px');
+    expect(popup.style.left).not.toBe('');
+    expect(popup.style.top).not.toBe('');
+
+    field.append(document.createElement('span'));
+    await Promise.resolve();
+    popup.remove();
+    await Promise.resolve();
+    const stray = document.createElement('div');
+    stray.className = 'kui-token-search__suggestions';
+    root.append(stray);
+    await Promise.resolve();
+    expect(stray.style.visibility).toBe('');
+    stop();
+    expect(popup.style.position).toBe('');
+  });
+
+  it('dismisses model suggestions with Escape', () => {
+    const model = createTokenSearchModel({
+      rules: [{ name: 'tag', suggest: () => ['client'] }],
+      initial: { query: 'tag:c', tokens: [] },
+    });
+    const root = document.createElement('div');
+    document.body.append(root);
+    const stopMount = mount(root, () =>
+      TokenSearchField({ id: 'tickets', label: 'Search', model }),
+    );
+    const stop = wireTokenSearchFields(root, { models: { tickets: model } });
+    expect(model.suggestions.value).toHaveLength(1);
+    root
+      .querySelector<HTMLElement>('[data-token-search-editor]')!
+      .dispatchEvent(keydown('Escape'));
+    expect(model.suggestions.value).toHaveLength(0);
+    stop();
+    stopMount();
+  });
   afterEach(() => {
     document.body.replaceChildren();
     document.getSelection()?.removeAllRanges();

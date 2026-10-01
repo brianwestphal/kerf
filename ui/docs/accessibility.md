@@ -450,7 +450,10 @@ model leaves the manual behavior above intact. After a chip commit, suggestion
 choice, chip edit, or Backspace/Delete chip removal, focus restoration runs at
 the controlled render checkpoint and keeps the query-relative caret offset;
 it leaves focus on a different control if the user moved there in the meantime.
-Suggestions appear below the field without growing its toolbar row. One
+Suggestions use Floating UI positioning, following the same viewport-aware
+popup behavior as the Web Awesome controls behind Select and PopupMenu. They
+follow the field while scrolling, flip above it at the bottom edge, and shift
+within narrow viewports without growing its toolbar row. One
 suggestion keeps a pill outline; lists with multiple choices use the standard
 rounded surface and scroll once they reach 240px. The clear button's hover and focus
 highlight follows the field's pill shape or its toolbar group's rounded shape.

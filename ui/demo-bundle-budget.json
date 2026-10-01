@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 314200,
-  "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 314101,
+  "totalJavaScriptGzip": 314700,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 314682,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2035,6 +2035,22 @@
         "measuredTotalJavaScriptGzip": 314101,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 314200
+      }
+    },
+    {
+      "at": "2026-10-01T06:12:55.179Z",
+      "reason": "Viewport-aware token suggestions",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 314101,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 314200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 314682,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 314700
       }
     }
   ]

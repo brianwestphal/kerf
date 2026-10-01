@@ -32,7 +32,12 @@ test('long suggestions scroll in a rounded list and clear uses a pill highlight'
     const fieldBox = (await field.boundingBox())!;
     const popupBox = (await suggestions.boundingBox())!;
     expect(fieldBox.height).toBeLessThanOrEqual(50);
-    expect(popupBox.y).toBeGreaterThanOrEqual(fieldBox.y + fieldBox.height);
+    expect(
+      popupBox.y >= fieldBox.y + fieldBox.height ||
+        popupBox.y + popupBox.height <= fieldBox.y,
+    ).toBe(true);
+    expect(popupBox.y).toBeGreaterThanOrEqual(8);
+    expect(popupBox.y + popupBox.height).toBeLessThanOrEqual(836);
     await suggestions.evaluate((element) =>
       element.scrollIntoView({ block: 'center' }),
     );
@@ -48,6 +53,108 @@ test('long suggestions scroll in a rounded list and clear uses a pill highlight'
       Number.parseFloat(window.getComputedStyle(element).borderTopLeftRadius),
     );
     expect(radius).toBeGreaterThanOrEqual(20);
+    await field.getByRole('button', { name: 'Clear search' }).click();
+  }
+});
+
+test('suggestions stay in the viewport and track their field while scrolling', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=token-search-field');
+  const demo = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: 'Grammar assisted search',
+      }),
+    });
+  const field = demo.locator('[data-component="token-search-field"]');
+  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const suggestions = field.locator('.kui-token-search__suggestions');
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 420 });
+    await editor.fill('tag:');
+    await field.evaluate((element) => {
+      element.style.position = 'fixed';
+      element.style.left = '16px';
+      element.style.width = 'min(320px, calc(100vw - 32px))';
+      element.style.top = '0px';
+      const originY = element.getBoundingClientRect().y;
+      element.style.top = `${window.innerHeight - element.getBoundingClientRect().height - 8 - originY}px`;
+    });
+    await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+    await expect(suggestions).toBeVisible();
+    await expect
+      .poll(async () => {
+        const fieldBox = (await field.boundingBox())!;
+        const popupBox = (await suggestions.boundingBox())!;
+        return Math.min(
+          Math.abs(popupBox.y + popupBox.height - fieldBox.y),
+          Math.abs(popupBox.y - (fieldBox.y + fieldBox.height)),
+        );
+      })
+      .toBeLessThan(8);
+    const popupBox = (await suggestions.boundingBox())!;
+    const fieldBox = (await field.boundingBox())!;
+    expect(fieldBox.y + fieldBox.height).toBeLessThanOrEqual(412);
+    expect(popupBox.y + popupBox.height).toBeLessThanOrEqual(fieldBox.y);
+    expect(popupBox.x).toBeGreaterThanOrEqual(8);
+    expect(popupBox.x + popupBox.width).toBeLessThanOrEqual(width - 8);
+    expect(popupBox.y).toBeGreaterThanOrEqual(8);
+    expect(popupBox.y + popupBox.height).toBeLessThanOrEqual(412);
+    await page.screenshot({
+      path: testInfo.outputPath(`grammar-flipped-${width}.png`),
+    });
+    await editor.press('ArrowDown');
+    await suggestions.locator('button').first().press('Enter');
+    await expect(
+      field.locator('[data-component="token-search-token"]'),
+    ).toHaveCount(1);
+    await field.getByRole('button', { name: 'Clear search' }).click();
+
+    await field.evaluate((element) => {
+      element.removeAttribute('style');
+    });
+    await editor.fill('tag:');
+    await expect(suggestions).toBeVisible();
+    await editor.scrollIntoViewIfNeeded();
+    const before = {
+      field: (await field.boundingBox())!,
+      popup: (await suggestions.boundingBox())!,
+    };
+    const scrolled = await field.evaluate((element) => {
+      let ancestor = element.parentElement;
+      while (ancestor) {
+        const style = getComputedStyle(ancestor);
+        const maximum = ancestor.scrollHeight - ancestor.clientHeight;
+        if (maximum > 0 && /auto|scroll/.test(style.overflowY)) {
+          const current = ancestor.scrollTop;
+          ancestor.scrollTop =
+            current + 40 <= maximum ? current + 40 : Math.max(0, current - 40);
+          return ancestor.scrollTop !== current;
+        }
+        ancestor = ancestor.parentElement;
+      }
+      return false;
+    });
+    expect(scrolled).toBe(true);
+    await expect
+      .poll(async () =>
+        Math.abs((await field.boundingBox())!.y - before.field.y),
+      )
+      .toBeGreaterThan(0);
+    await expect
+      .poll(async () => {
+        const fieldBox = (await field.boundingBox())!;
+        const popupBox = (await suggestions.boundingBox())!;
+        return Math.min(
+          Math.abs(popupBox.y + popupBox.height - fieldBox.y),
+          Math.abs(popupBox.y - (fieldBox.y + fieldBox.height)),
+        );
+      })
+      .toBeLessThan(8);
+    expect((await suggestions.boundingBox())!.y).not.toBe(before.popup.y);
     await field.getByRole('button', { name: 'Clear search' }).click();
   }
 });
@@ -99,7 +206,6 @@ test('a committed chip does not reclaim focus from the next form control', async
 test('grammar model suggests, commits, edits, removes, and clears in the real catalog', async ({
   page,
 }, testInfo) => {
-  await page.goto('/?component=token-search-field');
   const demo = page
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
@@ -114,8 +220,9 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
-    await editor.click();
-    await editor.pressSequentially('tag:cl');
+    await page.goto('/?component=token-search-field');
+    await editor.fill('tag:cl');
+    await expect(editor).toHaveText('tag:cl');
     await expect(
       field.getByRole('button', { name: 'tag:client' }),
     ).toBeVisible();

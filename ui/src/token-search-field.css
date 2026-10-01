@@ -155,13 +155,13 @@
   inset-inline-start: 0;
   width: min(max(100%, remify(240px)), calc(100vw - remify(16px)));
   max-height: remify(240px);
-  padding: remify(4px);
+  padding: var(--_kui-popup-inset);
   box-sizing: border-box;
-  border: 1px solid var(--kui-token-search-border);
+  border: 1px solid var(--kui-color-neutral-border-normal);
   border-radius: var(--kui-radius-pill);
-  background: var(--kui-token-search-background);
+  background: var(--kui-color-surface-raised);
   box-shadow: var(--kui-shadow-m);
-  gap: remify(2px);
+  gap: var(--_kui-popup-row-gap);
   overflow-y: auto;
 }
 

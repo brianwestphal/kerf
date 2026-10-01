@@ -1,3 +1,11 @@
+import {
+  autoUpdate,
+  computePosition,
+  flip,
+  offset,
+  shift,
+  size,
+} from '@floating-ui/dom';
 import { delegate, delegateCapture, type Signal, signal } from 'kerfjs';
 
 import {
@@ -349,6 +357,79 @@ export function wireTokenSearchFields(
   const created = new Map<string, Signal<boolean>>();
   let disposed = false;
   let pointerActivationTarget: Element | null = null;
+  const positionedSuggestions = new Map<HTMLElement, () => void>();
+
+  const syncSuggestions = () => {
+    const current = new Set(
+      root.querySelectorAll<HTMLElement>('.kui-token-search__suggestions'),
+    );
+    for (const [popup, stop] of positionedSuggestions) {
+      if (current.has(popup)) continue;
+      stop();
+      positionedSuggestions.delete(popup);
+    }
+    for (const popup of current) {
+      if (positionedSuggestions.has(popup)) continue;
+      const field = popup.closest<HTMLElement>(
+        '[data-component="token-search-field"]',
+      );
+      if (!field) continue;
+      let active = true;
+      popup.style.position = 'absolute';
+      popup.style.insetBlockStart = 'auto';
+      popup.style.insetInlineStart = 'auto';
+      popup.style.left = '0';
+      popup.style.top = '0';
+      popup.style.visibility = 'hidden';
+      const update = async () => {
+        const width = Math.min(
+          Math.max(field.getBoundingClientRect().width, 240),
+          Math.max(0, field.ownerDocument.defaultView!.innerWidth - 16),
+        );
+        popup.style.width = `${width}px`;
+        const position = await computePosition(field, popup, {
+          strategy: 'absolute',
+          placement: 'bottom-start',
+          middleware: [
+            offset(4),
+            flip({ padding: 8 }),
+            shift({ padding: 8 }),
+            size({
+              padding: 8,
+              apply({ availableHeight }) {
+                popup.style.maxHeight = `${Math.max(0, Math.min(240, availableHeight))}px`;
+              },
+            }),
+          ],
+        });
+        if (!active || disposed || !popup.isConnected) return;
+        popup.style.left = `${position.x}px`;
+        popup.style.top = `${position.y}px`;
+        popup.style.visibility = 'visible';
+      };
+      const stopAutoUpdate = autoUpdate(field, popup, () => void update(), {
+        layoutShift: false,
+      });
+      positionedSuggestions.set(popup, () => {
+        active = false;
+        stopAutoUpdate();
+        for (const property of [
+          'position',
+          'inset-block-start',
+          'inset-inline-start',
+          'left',
+          'top',
+          'visibility',
+          'width',
+          'max-height',
+        ])
+          popup.style.removeProperty(property);
+      });
+    }
+  };
+  const suggestionsObserver = new MutationObserver(syncSuggestions);
+  suggestionsObserver.observe(root, { childList: true, subtree: true });
+  syncSuggestions();
 
   /** True when focus moving to `element` should keep an empty field expanded. */
   const isExemptTarget = (element: Element | null): boolean => {
@@ -970,6 +1051,9 @@ export function wireTokenSearchFields(
 
   const dispose = () => {
     disposed = true;
+    suggestionsObserver.disconnect();
+    for (const stop of positionedSuggestions.values()) stop();
+    positionedSuggestions.clear();
     for (const stop of focusing.values()) stop();
     for (const stop of disposers.splice(0)) stop();
   };
