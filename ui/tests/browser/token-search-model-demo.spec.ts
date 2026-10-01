@@ -18,6 +18,28 @@ test('long suggestions scroll in a rounded list and clear uses a pill highlight'
     await page.setViewportSize({ width, height: 844 });
     await editor.fill('tag:');
     await expect(suggestions.locator('button')).toHaveCount(9);
+    const leadingEdges = await suggestions
+      .locator('button')
+      .evaluateAll((buttons) =>
+        buttons.slice(0, 3).map((button) => {
+          const range = document.createRange();
+          range.selectNodeContents(button);
+          return {
+            label: button.textContent,
+            row: button.getBoundingClientRect().left,
+            text: range.getBoundingClientRect().left,
+          };
+        }),
+      );
+    expect(
+      Math.max(...leadingEdges.map((edge) => edge.text)) -
+        Math.min(...leadingEdges.map((edge) => edge.text)),
+      JSON.stringify(leadingEdges),
+    ).toBeLessThanOrEqual(1);
+    for (const edge of leadingEdges) {
+      expect(edge.text - edge.row).toBeGreaterThanOrEqual(6);
+      expect(edge.text - edge.row).toBeLessThanOrEqual(16);
+    }
     const geometry = await suggestions.evaluate((element) => ({
       radius: Number.parseFloat(
         window.getComputedStyle(element).borderTopLeftRadius,

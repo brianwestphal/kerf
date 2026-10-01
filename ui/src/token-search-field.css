@@ -188,6 +188,7 @@
   background: transparent;
   font: inherit;
   text-align: start;
+  justify-content: flex-start;
   cursor: pointer;
 }
 

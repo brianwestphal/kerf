@@ -606,6 +606,8 @@ Use `trailing` for passive content. The two props are mutually exclusive.
 For a collapsible search in a stretched Toolbar center, `fill` lets the expanded
 field and its enclosing search `ToolbarControlGroup` consume the available width;
 the collapsed action retains its fixed icon width.
+Grammar suggestion rows align their labels to one leading edge inside the
+anchored popover, including when the labels have different lengths.
 
 A public subpath that exposes several visual components is a folder-backed
 surface. Put each component in its own source file and give each visual
