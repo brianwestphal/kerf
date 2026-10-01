@@ -155,6 +155,12 @@
     background-color 0.2s ease,
     border-color 0.2s ease;
 }
+
+.kui-toolbar-control-group[data-content="search"]:has(
+    .kui-token-search__suggestions
+  ) {
+  overflow: visible;
+}
 .kui-toolbar-control-group[data-content="search"][data-expanded="false"] {
   width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   flex: 0 0 auto;

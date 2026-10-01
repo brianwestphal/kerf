@@ -6,6 +6,7 @@
   --kui-token-search-line-size: remify(34px);
 
   display: grid;
+  position: relative;
   width: 100%;
   min-width: 0;
   min-height: remify(44px);
@@ -139,6 +140,7 @@
 
 .kui-token-search__clear {
   grid-column: 3;
+  border-radius: var(--kui-radius-pill);
 }
 
 .kui-token-search__trailing {
@@ -147,13 +149,24 @@
 
 .kui-token-search__suggestions {
   display: grid;
-  grid-column: 2 / -1;
-  min-width: 0;
+  position: absolute;
+  z-index: 20;
+  inset-block-start: calc(100% + remify(4px));
+  inset-inline-start: 0;
+  width: min(max(100%, remify(240px)), calc(100vw - remify(16px)));
+  max-height: remify(240px);
   padding: remify(4px);
+  box-sizing: border-box;
   border: 1px solid var(--kui-token-search-border);
   border-radius: var(--kui-radius-pill);
   background: var(--kui-token-search-background);
+  box-shadow: var(--kui-shadow-m);
   gap: remify(2px);
+  overflow-y: auto;
+}
+
+.kui-token-search__suggestions:has(> :nth-child(2)) {
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
 }
 
 .kui-token-search__suggestion {
@@ -198,6 +211,12 @@
     width 0.25s ease,
     background-color 0.2s ease,
     border-color 0.2s ease;
+}
+
+.kui-token-search[data-collapsible="true"][data-expanded="true"]:has(
+    .kui-token-search__suggestions
+  ) {
+  overflow: visible;
 }
 
 .kui-token-search[data-collapsible="true"][data-expanded="false"] {
@@ -254,6 +273,10 @@
   border-radius: var(--kui-control-highlight-radius);
   background: transparent;
   box-shadow: none;
+}
+
+.kui-token-search[data-presentation="toolbar-group"] .kui-token-search__clear {
+  border-radius: var(--kui-control-highlight-radius);
 }
 
 .kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"]:focus-within {

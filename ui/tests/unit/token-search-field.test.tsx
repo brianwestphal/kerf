@@ -133,6 +133,13 @@ describe('TokenSearchField', () => {
     expect(css).toMatch(
       /\.kui-token-search__clear,[^}]+height: var\(--kui-token-search-line-size\)[^}]+place-items: center/s,
     );
+    expect(css).toMatch(
+      /\.kui-token-search__clear \{[^}]+border-radius: var\(--kui-radius-pill\)/s,
+    );
+    expect(css).toContain('max-height: remify(240px)');
+    expect(css).toContain(
+      '.kui-token-search__suggestions:has(> :nth-child(2))',
+    );
   });
 
   it('optionally collapses to an iconic field, stays open with content, and animates standalone or grouped', async () => {

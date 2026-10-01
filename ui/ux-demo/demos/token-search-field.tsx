@@ -54,7 +54,7 @@ export function TokenSearchFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Grammar assisted search"
-        note="Type tag: or is: for suggestions. Committed tags leave the list; whitespace commits filters. Type tag:rel and use Add release tag for a value outside suggestions. Load saved search replaces the current draft."
+        note="Type tag: or is: for suggestions below the field. Longer lists scroll inside a rounded popup. Committed tags leave the list; whitespace commits filters. Add release tag works directly or with an unfinished tag:rel prefix. Load saved search replaces the current draft."
         align="inline-control"
       >
         <List gap="xs">

@@ -1,5 +1,57 @@
 import { expect, test } from '@playwright/test';
 
+test('long suggestions scroll in a rounded list and clear uses a pill highlight', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=token-search-field');
+  const demo = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: 'Grammar assisted search',
+      }),
+    });
+  const field = demo.locator('[data-component="token-search-field"]');
+  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const suggestions = field.locator('.kui-token-search__suggestions');
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await editor.fill('tag:');
+    await expect(suggestions.locator('button')).toHaveCount(9);
+    const geometry = await suggestions.evaluate((element) => ({
+      radius: Number.parseFloat(
+        window.getComputedStyle(element).borderTopLeftRadius,
+      ),
+      height: element.getBoundingClientRect().height,
+      scrollHeight: element.scrollHeight,
+      clientHeight: element.clientHeight,
+    }));
+    expect(geometry.radius).toBeLessThanOrEqual(20);
+    expect(geometry.height).toBeLessThanOrEqual(250);
+    expect(geometry.scrollHeight).toBeGreaterThan(geometry.clientHeight);
+    const fieldBox = (await field.boundingBox())!;
+    const popupBox = (await suggestions.boundingBox())!;
+    expect(fieldBox.height).toBeLessThanOrEqual(50);
+    expect(popupBox.y).toBeGreaterThanOrEqual(fieldBox.y + fieldBox.height);
+    await suggestions.evaluate((element) =>
+      element.scrollIntoView({ block: 'center' }),
+    );
+    await page.screenshot({
+      path: testInfo.outputPath(`grammar-long-suggestions-${width}.png`),
+    });
+
+    await editor.fill('tag:cl');
+    await field.getByRole('button', { name: 'tag:client' }).click();
+    const clear = field.getByRole('button', { name: 'Clear search' });
+    await clear.hover();
+    const radius = await clear.evaluate((element) =>
+      Number.parseFloat(window.getComputedStyle(element).borderTopLeftRadius),
+    );
+    expect(radius).toBeGreaterThanOrEqual(20);
+    await field.getByRole('button', { name: 'Clear search' }).click();
+  }
+});
+
 test('a committed chip does not reclaim focus from the next form control', async ({
   page,
 }) => {
@@ -127,6 +179,14 @@ test('an app helper commits an active grammar value outside suggestions', async 
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
+    await helper.click();
+    await expect(chips).toHaveCount(1);
+    await expect(chips.first()).toHaveAttribute(
+      'data-token-value',
+      'tag:release',
+    );
+    await field.getByRole('button', { name: 'Clear search' }).click();
+    await expect(chips).toHaveCount(0);
     await editor.click();
     await editor.pressSequentially('tag:rel');
     await expect(field.locator('[data-token-search-suggestion]')).toHaveCount(

@@ -449,6 +449,10 @@ when needed and can supply an `evaluate` callback to compute them. Omitting the
 model leaves the manual behavior above intact. After a chip commit, suggestion
 choice, or chip edit, focus restoration runs at the controlled render checkpoint;
 it leaves focus on a different control if the user moved there in the meantime.
+Suggestions appear below the field without growing its toolbar row. One
+suggestion keeps a pill outline; lists with multiple choices use the standard
+rounded surface and scroll once they reach 240px. The clear button's hover and focus
+highlight follows the field's pill shape or its toolbar group's rounded shape.
 
 Managed clear captures the action before application handlers run, keeps the adopted
 expanded signal open during editor replacement, and restores focus at the actual

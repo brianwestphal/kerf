@@ -719,6 +719,16 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = `Selected ${value} profile`;
   },
   'commit-grammar-release': () => {
+    const current = grammarSearchModel.state.value;
+    if (current.tokens.some((token) => token.value === 'tag:release')) return;
+    grammarSearchModel.commit('release');
+    if (grammarSearchModel.state.value.tokens.length > current.tokens.length)
+      return;
+    const separator = current.query && !/\s$/.test(current.query) ? ' ' : '';
+    grammarSearchModel.replace({
+      query: `${current.query}${separator}tag:`,
+      tokens: current.tokens,
+    });
     grammarSearchModel.commit('release');
   },
   'replace-grammar-search': () => {
