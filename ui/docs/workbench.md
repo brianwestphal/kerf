@@ -95,10 +95,14 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   `wireWorkbench` close the overlay without activating the control underneath.
   It is off by default; without it, the compact rail's dismiss strip remains
   transparent. Pair it with `wireWorkbench` for outside-press dismissal;
-- `responsiveOverlayAt: "narrow" | "compact" | "never"` presents a rail or the
+- `responsiveOverlayAt: "narrow" | "compact" | "never" | number` presents a rail or the
   bottom drawer as an overlay below a Workbench container breakpoint — 704px
   or less for `narrow`, 448px or less for `compact`, the breakpoints of
-  `ResizableRegion`'s `responsiveFillAt` — and inline above it. **Rails
+  `ResizableRegion`'s `responsiveFillAt` — and inline above it. A positive
+  number such as `1024` uses that many CSS pixels of Workbench width. Numeric
+  thresholds require `wireWorkbench` with that panel's `collapsed` signal;
+  its resize observer applies the overlay layout and the collapse/restore
+  transition together. **Rails
   default to `narrow`**, so on a small screen a sidebar covers the work area
   (and an open drawer) instead of squeezing it; pass `never` to keep a rail
   inline. The drawer stays inline unless it opts in. On a compact (448px or
@@ -374,6 +378,13 @@ const stop = wireWorkbench(root, {
   `"compact"` (448px or less) instead: below that breakpoint it presents as a
   full-size overlay over the work area rather than squeezing beside it (see
   the catalog's resizable and responsive-drawer Workbench examples).
+  A numeric value measures the Workbench container, not the viewport. If the
+  rest of an app switches by viewport width and its Workbench can be narrower
+  than the viewport, keep the app's viewport decision in
+  `presentation: "overlay"` and pass its `collapsed` signals to
+  `wireWorkbench`. On entering that mode, collapse the panels; after leaving,
+  restore their preferred inline state once the inline presentation has
+  rendered, so exclusive overlay handling cannot close a sibling rail.
 - **Collapse:** `collapsed` never changes a size. A collapsed panel keeps its
   size (its content slides out at that width), its separator leaves the tab
   order, and expanding it returns it at the size it had.

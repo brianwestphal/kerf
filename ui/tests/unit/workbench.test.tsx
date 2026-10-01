@@ -745,7 +745,7 @@ describe('Workbench', () => {
     expect(
       selectors.filter(
         (selector) =>
-          selector.includes(':has(') && !selector.includes('wa-dropdown[open]'),
+          selector.includes(':has(') && selector.includes(':only-child'),
       ),
     ).toHaveLength(1);
     expect(selectors.join('\n')).toContain('[data-component="workbench"]');
@@ -844,6 +844,7 @@ describe('Workbench', () => {
         '--kui-restore-drawer',
       '.kui-workbench__drawer[data-responsive-overlay-at="narrow"]': 'none',
       '.kui-workbench__drawer[data-responsive-overlay-at="compact"]': 'none',
+      '.kui-workbench__drawer[data-responsive-overlay-active="true"]': 'none',
     });
     expect(
       rules.find((rule) => rule.decls['anchor-name'] === '--kui-restore-drawer')

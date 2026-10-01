@@ -628,6 +628,98 @@
   container: kui-workbench / inline-size;
 }
 
+/* A numeric pixel threshold is measured by wireWorkbench and marked on the
+   panel. Keep its overlay geometry and covered work area in step with that
+   single mark, including when the app changes the threshold at render time. */
+.kui-workbench__rail[data-responsive-overlay-active="true"] {
+  position: absolute;
+  z-index: var(--kui-workbench-overlay-z, 41);
+  width: var(--_kui-workbench-rail-extent);
+  max-width: var(--kui-workbench-overlay-max-width, 85vw);
+  inset-block: 0;
+  box-shadow: var(--kui-shadow-l);
+  clip-path: none;
+}
+
+.kui-workbench__rail--left[data-responsive-overlay-active="true"] {
+  inset-inline-start: 0;
+}
+
+.kui-workbench__rail--right[data-responsive-overlay-active="true"] {
+  inset-inline-end: 0;
+}
+
+.kui-workbench__rail[data-responsive-overlay-active="true"][data-collapsed="true"],
+.kui-workbench__drawer[data-responsive-overlay-active="true"][data-collapsed="true"] {
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.kui-workbench__rail[data-responsive-overlay-active="true"]
+  > .kui-workbench__panel-content {
+  width: 100%;
+  background: var(--kui-color-surface);
+}
+
+.kui-workbench__rail[data-responsive-overlay-active="true"]
+  > .kui-workbench__handle,
+.kui-workbench__drawer[data-responsive-overlay-active="true"]
+  > .kui-workbench__handle {
+  display: none;
+}
+
+.kui-workbench:has(
+    > .kui-workbench__rail--left[data-responsive-overlay-active="true"]
+  )
+  > .kui-workbench__center {
+  --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
+}
+
+.kui-workbench:has(
+    > .kui-workbench__rail--right[data-responsive-overlay-active="true"]
+  )
+  > .kui-workbench__center {
+  --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
+}
+
+.kui-workbench__drawer[data-responsive-overlay-active="true"] {
+  position: absolute;
+  anchor-name: none;
+  z-index: calc(var(--kui-workbench-overlay-z, 41) - 1);
+  height: var(--_kui-workbench-drawer-extent);
+  max-height: var(--kui-workbench-overlay-max-height, 85vh);
+  inset-inline: 0;
+  inset-block-end: 0;
+  box-shadow: var(--kui-shadow-l);
+  clip-path: none;
+}
+
+.kui-workbench__drawer[data-responsive-overlay-active="true"]
+  > .kui-workbench__panel-content {
+  height: 100%;
+  background: var(--kui-color-surface);
+}
+
+.kui-workbench__main:has(
+  + .kui-workbench__drawer[data-responsive-overlay-active="true"]
+) {
+  --_kui-workbench-content-edge-block-end: var(--_kui-workbench-safe-block-end);
+}
+
+.kui-workbench[data-overlay-backdrop="true"]:has(
+    > .kui-workbench__rail[data-responsive-overlay-active="true"]:not(
+        [data-collapsed="true"]
+      ),
+    > .kui-workbench__center
+      > .kui-workbench__drawer[data-responsive-overlay-active="true"]:not(
+        [data-collapsed="true"]
+      )
+  )
+  > .kui-workbench__backdrop {
+  display: block;
+}
+
 @container kui-workbench (max-width: remify(704px)) {
   .kui-workbench[data-overlay-backdrop="true"]:is(
       [data-left-responsive-expanded="narrow"],
@@ -932,6 +1024,15 @@
   --_kui-workbench-covered: hidden;
 }
 
+.kui-workbench:has(
+    > .kui-workbench__rail[data-responsive-overlay-active="true"]:not(
+        [data-collapsed="true"]
+      )
+  )
+  > :is(.kui-workbench__center, .kui-workbench__restore) {
+  --_kui-workbench-covered: hidden;
+}
+
 @container kui-workbench (max-width: remify(704px)) {
   .kui-workbench:is(
       [data-left-responsive-expanded="narrow"],
@@ -963,14 +1064,22 @@
    closes it (the wiring's outside press); `compactOverlay: "full"` fills the
    Workbench. The rail's resize and configured size stop applying there. */
 @container kui-workbench (max-width: remify(448px)) {
-  .kui-workbench__rail[data-responsive-overlay-at] {
+  .kui-workbench__rail:is(
+    [data-responsive-overlay-at="narrow"],
+    [data-responsive-overlay-at="compact"],
+    [data-responsive-overlay-active="true"]
+  ) {
     width: calc(
       100% - var(--kui-workbench-overlay-dismiss-margin, remify(44px))
     );
     max-width: none;
   }
 
-  .kui-workbench__rail[data-responsive-overlay-at][data-compact-overlay="full"] {
+  .kui-workbench__rail:is(
+      [data-responsive-overlay-at="narrow"],
+      [data-responsive-overlay-at="compact"],
+      [data-responsive-overlay-active="true"]
+    )[data-compact-overlay="full"] {
     width: 100%;
   }
 }

@@ -225,9 +225,26 @@ export function wireWorkbenchOverlays(
   // currently applies, restored when it stops applying.
   const inlineState = new Map<WorkbenchOverlayPanel, boolean>();
   const sync = (): void => {
+    const workbench = findWorkbench();
+    const width = workbench?.getBoundingClientRect().width ?? 0;
     for (const panel of panels) {
       const element = panelElement(panel);
       if (!element) continue;
+      // CSS container queries cannot take a runtime pixel value. For a
+      // numeric threshold the same measured Workbench width drives the CSS
+      // presentation hook and the collapsed-state transition below.
+      const at = Number(element.dataset.responsiveOverlayAt);
+      const custom =
+        element.dataset.responsiveOverlayAt !== undefined &&
+        Number.isFinite(at) &&
+        at > 0;
+      const customActive =
+        custom && element.dataset.presentation === 'inline' && width <= at;
+      if (customActive) {
+        if (element.dataset.responsiveOverlayActive !== 'true')
+          element.dataset.responsiveOverlayActive = 'true';
+      } else if (element.hasAttribute('data-responsive-overlay-active'))
+        element.removeAttribute('data-responsive-overlay-active');
       const active = responsive(element);
       if (active && !inlineState.has(panel)) {
         inlineState.set(panel, panel.collapsed.peek());
@@ -237,6 +254,15 @@ export function wireWorkbenchOverlays(
         inlineState.delete(panel);
         adapt(panel, element, remembered);
       }
+      // A signal write can patch or replace the panel synchronously. Preserve
+      // the measured presentation marker on the rendered element too.
+      const rendered = panelElement(panel);
+      if (
+        rendered &&
+        customActive &&
+        rendered.dataset.responsiveOverlayActive !== 'true'
+      )
+        rendered.dataset.responsiveOverlayActive = 'true';
     }
   };
 
@@ -263,7 +289,11 @@ export function wireWorkbenchOverlays(
   });
   mutationObserver.observe(root, {
     attributes: true,
-    attributeFilter: ['data-presentation', 'data-responsive-overlay-at'],
+    attributeFilter: [
+      'data-presentation',
+      'data-responsive-overlay-at',
+      'data-responsive-overlay-active',
+    ],
     childList: true,
     subtree: true,
   });
@@ -474,6 +504,8 @@ export function wireWorkbenchOverlays(
 
   return () => {
     for (const dispose of disposers.splice(0)) dispose();
+    for (const panel of panels)
+      panelElement(panel)?.removeAttribute('data-responsive-overlay-active');
     // After every observer and effect is gone, so handing the inline state
     // back cannot re-enter the wiring.
     for (const [panel, remembered] of inlineState) {

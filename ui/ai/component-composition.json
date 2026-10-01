@@ -1092,6 +1092,12 @@
         "obligations": [],
         "stateAttributes": [
           {
+            "name": "data-responsive-overlay-active",
+            "on": "kui-workbench__rail and kui-workbench__drawer",
+            "helper": "wireWorkbench",
+            "meaning": "Present while a panel's numeric responsiveOverlayAt threshold applies to the Workbench width; the same measurement drives overlay layout and collapsed-state transitions."
+          },
+          {
             "name": "data-handle-inset",
             "on": "kui-workbench__rail",
             "helper": "wireWorkbench",

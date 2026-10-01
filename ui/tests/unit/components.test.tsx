@@ -2631,12 +2631,13 @@ describe('production UI primitives', () => {
     // responsive breakpoint applies (each inside its container query), flags
     // the rail's siblings only: the work area and the restore corners.
     const workbench = flags(source('workbench.css'), 'workbench');
-    expect(workbench).toHaveLength(3);
+    expect(workbench).toHaveLength(4);
     expect(workbench[0]).toContain('[data-rail-overlay-expanded="true"]');
-    expect(workbench[1]).toContain('[data-left-responsive-expanded="narrow"]');
-    expect(workbench[1]).toContain('[data-right-responsive-expanded="narrow"]');
-    expect(workbench[2]).toContain('[data-left-responsive-expanded="compact"]');
-    expect(workbench[2]).toContain(
+    expect(workbench[1]).toContain('[data-responsive-overlay-active="true"]');
+    expect(workbench[2]).toContain('[data-left-responsive-expanded="narrow"]');
+    expect(workbench[2]).toContain('[data-right-responsive-expanded="narrow"]');
+    expect(workbench[3]).toContain('[data-left-responsive-expanded="compact"]');
+    expect(workbench[3]).toContain(
       '[data-right-responsive-expanded="compact"]',
     );
     for (const selector of workbench)

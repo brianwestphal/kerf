@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 313500,
+  "totalJavaScriptGzip": 313700,
   "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 313488,
+  "measuredTotalJavaScriptGzip": 313636,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1907,6 +1907,22 @@
         "measuredTotalJavaScriptGzip": 313488,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 313500
+      }
+    },
+    {
+      "at": "2026-10-01T03:34:06.694Z",
+      "reason": "Workbench custom responsive overlay breakpoint",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 313488,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 313636,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313700
       }
     }
   ]

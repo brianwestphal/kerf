@@ -47,7 +47,8 @@ export type {
  * breakpoints as `ResizableRegion`'s `responsiveFillAt` — or `never` to keep
  * it inline at every width.
  */
-export type WorkbenchResponsiveOverlayAt = 'compact' | 'narrow' | 'never';
+export type WorkbenchResponsiveOverlayAt =
+  'compact' | 'narrow' | 'never' | number;
 
 /**
  * How wide a rail's overlay is in a compact (448px or less) Workbench: `inset`
@@ -118,8 +119,9 @@ export interface WorkbenchPanel {
   presentation?: ResizableRegionPresentation;
   /**
    * Present the panel as an overlay, without a separator, below a Workbench
-   * container breakpoint, and inline above it — the CSS decides, so the app
-   * needs no device-class check. A rail overlays from its side at full
+   * container breakpoint, and inline above it. `compact` and `narrow` use
+   * CSS container queries; a positive number is a pixel threshold measured
+   * by `wireWorkbench` and requires a `collapsed` signal. A rail overlays from its side at full
    * height, over the work area and an open drawer; the bottom drawer
    * overlays the bottom of the work-area column. Rails default to `narrow`
    * (pass `never` to keep one inline); the drawer defaults to inline.

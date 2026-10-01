@@ -673,6 +673,37 @@ test.describe('resizable Workbench panels', () => {
     await expect(left).toHaveCSS('width', '256px');
   });
 
+  test('a numeric Workbench breakpoint controls overlay layout at its own width', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const inspector = workbench.locator('[data-workbench-rail="right"]');
+    const handle = inspector.locator('[data-kui-resize-handle]');
+    await workbench.scrollIntoViewIfNeeded();
+    await workbench.evaluate((element) => {
+      element.style.width = '800px';
+      element.querySelector<HTMLElement>(
+        '[data-workbench-rail="right"]',
+      )!.dataset.responsiveOverlayAt = '850';
+    });
+    await expect(inspector).toHaveAttribute(
+      'data-responsive-overlay-active',
+      'true',
+    );
+    await expect(inspector).toHaveCSS('position', 'absolute');
+    await expect(handle).toBeHidden();
+    await expect(inspector).toHaveAttribute('data-collapsed', 'true');
+
+    await workbench.evaluate((element) => {
+      element.style.width = '900px';
+    });
+    await expect(inspector).not.toHaveAttribute(
+      'data-responsive-overlay-active',
+    );
+    await expect(inspector).toHaveCSS('position', 'relative');
+    await expect(handle).toBeHidden(); // The inline inspector remains collapsed.
+  });
+
   test('an overlay drawer keeps its height, statically and responsively', async ({
     page,
   }) => {

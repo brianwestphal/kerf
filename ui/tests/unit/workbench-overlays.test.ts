@@ -12,6 +12,7 @@ const disposers: Array<() => void> = [];
 
 /** Whether the fake Workbench container is below the `narrow` breakpoint. */
 let narrow = false;
+let workbenchWidth = 1200;
 const observers: FakeResizeObserver[] = [];
 
 /** happy-dom never lays out, so the tests drive container resizes. */
@@ -45,6 +46,14 @@ const flush = () => new Promise((resolve) => globalThis.setTimeout(resolve, 0));
 
 beforeEach(() => {
   narrow = false;
+  workbenchWidth = 1200;
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+    function (this: HTMLElement) {
+      return {
+        width: this.matches('.kui-workbench') ? workbenchWidth : 0,
+      } as DOMRect;
+    },
+  );
   vi.stubGlobal('ResizeObserver', FakeResizeObserver);
   // The container query, modeled: a responsive panel below its breakpoint and
   // a static overlay are out of flow.
@@ -59,7 +68,11 @@ beforeEach(() => {
         return style;
       const overlay =
         element.dataset.presentation === 'overlay' ||
-        (narrow && element.hasAttribute('data-responsive-overlay-at'));
+        element.dataset.responsiveOverlayActive === 'true' ||
+        (narrow &&
+          ['narrow', 'compact'].includes(
+            element.dataset.responsiveOverlayAt ?? '',
+          ));
       return new Proxy(style, {
         get: (target, property) =>
           property === 'position'
@@ -214,6 +227,43 @@ const escape = (target: Element = document.body) => {
 };
 
 describe('wireWorkbench transient overlays', () => {
+  it('uses an app pixel threshold for presentation and inline-state crossings', async () => {
+    const app = studio({ at: 1024 });
+    app.wire();
+    expect(app.leftRail().dataset.responsiveOverlayAt).toBe('1024');
+    expect(app.leftRail().dataset.responsiveOverlayActive).toBeUndefined();
+    expect(app.left.value).toBe(false);
+
+    workbenchWidth = 1024;
+    expect(
+      app.root.querySelector('.kui-workbench')?.getBoundingClientRect().width,
+    ).toBe(1024);
+    resize(false);
+    await flush();
+    expect(app.left.value).toBe(true);
+    expect(app.leftRail().dataset.responsiveOverlayActive).toBe('true');
+    expect(app.drawerPanel().dataset.responsiveOverlayActive).toBe('true');
+    expect(app.left.value).toBe(true);
+    expect(app.drawer.value).toBe(true);
+
+    // Leaving before opening also removes the live marker from the panel.
+    workbenchWidth = 1025;
+    resize(false);
+    expect(app.leftRail().dataset.responsiveOverlayActive).toBeUndefined();
+    expect(app.left.value).toBe(false);
+    workbenchWidth = 1024;
+    resize(false);
+    await flush();
+    expect(app.leftRail().dataset.responsiveOverlayActive).toBe('true');
+
+    app.left.value = false;
+    workbenchWidth = 1025;
+    resize(false);
+    await flush();
+    expect(app.leftRail().dataset.responsiveOverlayActive).toBeUndefined();
+    expect(app.left.value).toBe(false);
+    expect(app.drawer.value).toBe(false);
+  });
   it('collapses responsive overlays when the breakpoint applies and restores them when it stops', () => {
     const app = studio();
     narrow = true;
