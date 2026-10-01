@@ -4,8 +4,17 @@ import { installPopupMenuSubmenuFocus } from '../../src/install-popup-menu-subme
 
 class TestParent extends HTMLElement {
   submenuElement?: HTMLElement;
-  submenuOpen = true;
+  private _submenuOpen = true;
   private finishOpening?: () => void;
+  private finishClosing?: () => void;
+
+  get submenuOpen() {
+    return this._submenuOpen;
+  }
+
+  set submenuOpen(value: boolean) {
+    this._submenuOpen = value;
+  }
 
   getSubmenuItems() {
     return [
@@ -14,6 +23,8 @@ class TestParent extends HTMLElement {
   }
 
   openSubmenu(): Promise<void> {
+    if (this.submenuElement) this.submenuElement.hidden = false;
+    this.submenuOpen = true;
     return new Promise((resolve) => {
       this.finishOpening = () => {
         window.setTimeout(() => {
@@ -26,8 +37,22 @@ class TestParent extends HTMLElement {
     });
   }
 
+  closeSubmenu(): Promise<void> {
+    this.submenuOpen = false;
+    return new Promise((resolve) => {
+      this.finishClosing = () => {
+        if (this.submenuElement) this.submenuElement.hidden = true;
+        resolve();
+      };
+    });
+  }
+
   finish() {
     this.finishOpening?.();
+  }
+
+  finishClose() {
+    this.finishClosing?.();
   }
 }
 
@@ -129,5 +154,79 @@ describe('PopupMenu submenu focus repair', () => {
     await closedOpening;
     await vi.runAllTimersAsync();
     expect(document.activeElement).toBe(closed.first);
+  });
+
+  it('reopens after a pending close hides a newer open', async () => {
+    vi.useFakeTimers();
+    const { parent, submenu } = fixture();
+    const closing = parent.closeSubmenu();
+    const opening = parent.openSubmenu();
+    parent.finish();
+    await opening;
+    parent.finishClose();
+    await Promise.resolve();
+    expect(submenu.hidden).toBe(false);
+    expect(parent.submenuOpen).toBe(true);
+    parent.finish();
+    await closing;
+    await vi.runAllTimersAsync();
+  });
+
+  it('repairs a stale hidden submenu on a repeated open assignment', async () => {
+    vi.useFakeTimers();
+    const { parent, submenu } = fixture();
+    submenu.hidden = true;
+    parent.submenuOpen = true;
+    expect(submenu.hidden).toBe(false);
+    parent.finish();
+    await vi.runAllTimersAsync();
+
+    const raw = fixture(false);
+    raw.submenu.hidden = true;
+    raw.parent.submenuOpen = true;
+    expect(raw.submenu.hidden).toBe(true);
+  });
+
+  it('keeps ordinary and raw close results closed', async () => {
+    const normal = fixture();
+    const normalClose = normal.parent.closeSubmenu();
+    normal.parent.finishClose();
+    await normalClose;
+    expect(normal.submenu.hidden).toBe(true);
+    expect(normal.parent.submenuOpen).toBe(false);
+
+    const raw = fixture(false);
+    const rawClose = raw.parent.closeSubmenu();
+    const rawOpen = raw.parent.openSubmenu();
+    raw.parent.finish();
+    await rawOpen;
+    raw.parent.finishClose();
+    await rawClose;
+    expect(raw.submenu.hidden).toBe(true);
+  });
+
+  it('installs once and leaves a repeated flag assignment without a submenu alone', () => {
+    const open = TestParent.prototype.openSubmenu;
+    installPopupMenuSubmenuFocus(TestParent.prototype);
+    expect(TestParent.prototype.openSubmenu).toBe(open);
+
+    const { parent } = fixture();
+    parent.submenuElement = undefined;
+    parent.submenuOpen = true;
+    expect(parent.submenuOpen).toBe(true);
+  });
+
+  it('skips a duplicate show and cancels a stale show before reopening', async () => {
+    const { parent, submenu } = fixture();
+    submenu.classList.add('show');
+    await parent.openSubmenu();
+    expect(submenu.classList.contains('show')).toBe(true);
+
+    submenu.hidden = true;
+    const opening = parent.openSubmenu();
+    expect(submenu.classList.contains('show')).toBe(false);
+    expect(submenu.hidden).toBe(false);
+    parent.finish();
+    await opening;
   });
 });

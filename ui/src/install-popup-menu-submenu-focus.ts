@@ -7,6 +7,7 @@ interface PopupMenuParentItem extends HTMLElement {
   submenuOpen: boolean;
   getSubmenuItems(): SubmenuItem[];
   openSubmenu(): Promise<void>;
+  closeSubmenu(): Promise<void>;
 }
 
 const installed = new WeakSet<object>();
@@ -17,12 +18,56 @@ export function installPopupMenuSubmenuFocus(prototype: object): void {
   installed.add(prototype);
   const target = prototype as PopupMenuParentItem;
   const openSubmenu = target.openSubmenu;
+  const closeSubmenu = target.closeSubmenu;
+  const submenuOpen = Object.getOwnPropertyDescriptor(prototype, 'submenuOpen');
+  if (submenuOpen?.set) {
+    Object.defineProperty(prototype, 'submenuOpen', {
+      ...submenuOpen,
+      set(this: PopupMenuParentItem, value: boolean) {
+        const wasOpen = this.submenuOpen;
+        submenuOpen.set!.call(this, value);
+        // Web Awesome's pointer, click, and ArrowRight paths assign true. A
+        // repeated assignment does not schedule updated(), so repair a stale
+        // open flag over a hidden submenu at the point of that user action.
+        if (
+          value &&
+          wasOpen &&
+          this.submenuElement?.hidden &&
+          this.closest('wa-dropdown.kui-popup-menu')
+        )
+          void this.openSubmenu();
+      },
+    });
+  }
+  target.closeSubmenu = async function (
+    this: PopupMenuParentItem,
+  ): Promise<void> {
+    const submenu = this.submenuElement;
+    await closeSubmenu.call(this);
+    // A new open can start while Web Awesome awaits its hide animation. Its
+    // late completion must not leave submenuOpen=true over a hidden submenu.
+    if (
+      this.submenuOpen &&
+      submenu?.hidden &&
+      this.isConnected &&
+      this.closest('wa-dropdown.kui-popup-menu')
+    )
+      void this.openSubmenu();
+  };
   target.openSubmenu = async function (
     this: PopupMenuParentItem,
   ): Promise<void> {
     const submenu = this.submenuElement;
     if (!this.closest('wa-dropdown.kui-popup-menu') || !submenu)
       return openSubmenu.call(this);
+
+    // WA's animation helper never resolves if asked to add an animation class
+    // already on the element. A second open while showing needs no new show;
+    // a stale hidden popup needs the old show canceled before reopening.
+    if (submenu.classList.contains('show')) {
+      if (!submenu.hidden) return;
+      submenu.classList.remove('show');
+    }
 
     let desired: SubmenuItem | undefined;
     const trackFocus = (event: FocusEvent) => {

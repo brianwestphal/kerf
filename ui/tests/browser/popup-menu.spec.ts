@@ -296,3 +296,70 @@ test('rapid submenu arrows keep the chosen item focused after opening', async ({
   await page.keyboard.press('Escape');
   await expect(trigger).toBeFocused();
 });
+
+test('submenu recovers from an interrupted close and a stale hidden open', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const nested = page.locator('[data-component="popup-menu"]').filter({
+    has: page.locator('wa-dropdown-item[slot="submenu"]'),
+  });
+  const trigger = nested.getByRole('button', { name: 'Decide' });
+  const parent = nested.locator(
+    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
+  );
+  const approve = parent.locator('[data-decision="approve"]');
+  await trigger.click();
+  await parent.hover();
+  await expect(approve).toBeVisible();
+
+  await parent.evaluate(async (element) => {
+    const item = element as HTMLElement & {
+      closeSubmenu(): Promise<void>;
+      openSubmenu(): Promise<void>;
+      submenuElement?: HTMLElement;
+      submenuOpen: boolean;
+    };
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 400));
+    const closing = item.closeSubmenu();
+    await Promise.resolve();
+    void item.openSubmenu();
+    void closing;
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 600));
+    if (item.submenuElement?.hidden || !item.submenuOpen)
+      throw new Error('Submenu stayed hidden after reopening during close');
+  });
+  await expect(approve).toBeVisible();
+
+  await page.mouse.move(0, 0);
+  await parent.evaluate((element) => {
+    const item = element as HTMLElement & {
+      submenuElement?: HTMLElement;
+      submenuOpen: boolean;
+    };
+    item.submenuOpen = true;
+    if (item.submenuElement) item.submenuElement.hidden = true;
+  });
+  await parent.hover();
+  await expect(approve).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await trigger.click();
+  await parent.evaluate((element) => {
+    const item = element as HTMLElement & {
+      submenuElement?: HTMLElement;
+      submenuOpen: boolean;
+      active: boolean;
+    };
+    item.submenuOpen = true;
+    item.active = true;
+    if (item.submenuElement) item.submenuElement.hidden = true;
+    item.focus();
+  });
+  await parent.press('ArrowRight');
+  await expect(approve).toBeVisible();
+  await expect(approve).toBeFocused();
+  if (browserName === 'chromium')
+    await page.screenshot({ path: 'test-results/popup-menu-reopened.png' });
+});
