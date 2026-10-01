@@ -1,9 +1,12 @@
 .kui-sunken-panel {
+  /* Reset the private value on each panel so nested panels do not inherit it. */
+  --_kui-sunken-panel-flex: 0 1 auto;
   display: flex;
   min-width: 0;
   min-height: 0;
   padding: var(--kui-sunken-panel-padding, remify(8px));
   box-sizing: border-box;
+  flex: var(--_kui-sunken-panel-flex, initial);
   border-radius: var(
     --kui-sunken-panel-radius,
     var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
@@ -15,6 +18,10 @@
   );
   flex-direction: column;
   gap: var(--kui-sunken-panel-gap, remify(8px));
+}
+
+.kui-sunken-panel[data-fill="true"] {
+  height: 100%;
 }
 
 .kui-sunken-panel[data-shape="square"] {

@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
@@ -28,6 +29,29 @@ export function SunkenPanelDemo() {
           <strong>Recent activity</strong>
           <span>Three checks completed.</span>
           <span>One beta is ready to publish.</span>
+        </SunkenPanel>
+      </CatalogExample>
+      <CatalogExample
+        label="Panel fills a work area"
+        note="fill takes the height of a definite-height frame; flex takes the remaining space in a flex column. Neither creates another scroller."
+        align="none"
+        viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
+      >
+        <List fill>
+          <strong>Work area</strong>
+          <SunkenPanel flex ariaLabel="Growing work surface">
+            <span>Content stays at the top while the surface fills space.</span>
+          </SunkenPanel>
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Direct frame fill"
+        note="A panel can fill a definite-height frame without an application wrapper."
+        align="none"
+        viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
+      >
+        <SunkenPanel fill ariaLabel="Full-height work surface">
+          <span>Full-height surface</span>
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample

@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
+import { flex } from '../../src/css-values.js';
 import { SunkenPanel } from '../../src/sunken-panel.js';
 
 describe('SunkenPanel', () => {
@@ -20,6 +21,8 @@ describe('SunkenPanel', () => {
     );
     expect(html).not.toContain('role=');
     expect(html).not.toContain('aria-label=');
+    expect(html).toContain('data-flex="false"');
+    expect(html).not.toContain('data-fill');
     expect(html).toContain('<strong>Activity</strong><span>Ready</span>');
   });
 
@@ -38,6 +41,20 @@ describe('SunkenPanel', () => {
     expect(String(SunkenPanel({ shape: 'square' }))).toContain(
       'data-shape="square"',
     );
+  });
+
+  it('fills a definite-height parent or grows inside a flex parent', () => {
+    expect(String(SunkenPanel({ fill: true }))).toContain('data-fill="true"');
+    expect(String(SunkenPanel({ flex: true }))).toContain(
+      'data-flex="true" style="--_kui-sunken-panel-flex:1 1 auto"',
+    );
+    expect(String(SunkenPanel({ flex: flex(2) }))).toContain(
+      'style="--_kui-sunken-panel-flex:2 1 auto"',
+    );
+    const css = readFileSync(resolve('src/sunken-panel.css'), 'utf8');
+    expect(css).toContain('flex: var(--_kui-sunken-panel-flex, initial)');
+    expect(css).toContain('.kui-sunken-panel[data-fill="true"]');
+    expect(css).toContain('height: 100%');
   });
 
   it('keeps the bounded translucent prototype opt-in and caps its third layer', () => {

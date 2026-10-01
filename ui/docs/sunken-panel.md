@@ -23,6 +23,28 @@ The default `shape="rounded"` uses the shared rounded-rectangle radius. Choose
 </SunkenPanel>
 ```
 
+## Filling a work area
+
+Set `fill` when the panel is the direct layout root of a parent with a definite
+height. Inside a flex column, use `flex` so it takes the remaining space and
+can shrink with its parent. Like `Grid`, `flex` accepts `true` (equivalent to
+`1 1 auto`), a CSS flex keyword, or a typed `CssFlex` value. The panel keeps
+`min-height: 0`, allowing its parent to own scrolling.
+
+```tsx
+<List fill>
+  <Toolbar label="Work area" />
+  <SunkenPanel flex>
+    <WorkArea />
+  </SunkenPanel>
+</List>
+```
+
+Inside a `Pane`, the Pane's content remains the scroll owner. Place a
+`SunkenPanel fill` in a definite-height Pane content region when the surface
+itself needs to cover empty space, or use `flex` when a flex parent allocates
+the remaining space. The panel does not add another scroller.
+
 ## Ownership
 
 The root owns its lowered background, 8px padding, and 8px vertical gap.

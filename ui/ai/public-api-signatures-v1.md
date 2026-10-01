@@ -2800,6 +2800,7 @@ export { Skeleton, type SkeletonProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { CssFlexKeyword, CssFlex } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type SunkenPanelShape = 'rounded' | 'square';
@@ -2809,6 +2810,10 @@ interface SunkenPanelProps {
     ariaLabel?: string;
     /** Corner shape: a rounded rectangle (default) or square corners. */
     shape?: SunkenPanelShape;
+    /** Grow or shrink within a flex parent, using Grid's typed flex contract. */
+    flex?: boolean | CssFlexKeyword | CssFlex;
+    /** Fill a parent with a definite height; use flex inside a flex layout. */
+    fill?: boolean;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -2818,7 +2823,7 @@ interface SunkenPanelProps {
  * stack. The panel owns its background and padding; children own their own
  * borders and internal geometry.
  */
-declare function SunkenPanel({ children, ariaLabel, shape, className, slot, }: SunkenPanelProps): kerfjs.SafeHtml;
+declare function SunkenPanel({ children, ariaLabel, shape, flex, fill, className, slot, }: SunkenPanelProps): kerfjs.SafeHtml;
 
 export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ```

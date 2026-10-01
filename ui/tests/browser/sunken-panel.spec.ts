@@ -43,6 +43,49 @@ test('SunkenPanel owns one lowered 8px inset and vertical content stack', async 
       .screenshot({ path: 'test-results/sunken-panel-shapes.png' });
 });
 
+test('SunkenPanel fills a frame and takes remaining flex space without a wrapper', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=sunken-panel');
+  const growing = page.getByRole('region', { name: 'Growing work surface' });
+  const fullHeight = page.getByRole('region', {
+    name: 'Full-height work surface',
+  });
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await expect(growing).toHaveAttribute('data-flex', 'true');
+    await expect(fullHeight).toHaveAttribute('data-fill', 'true');
+    const geometry = await page.evaluate(() => {
+      const growing = document.querySelector<HTMLElement>(
+        '[aria-label="Growing work surface"]',
+      )!;
+      const fullHeight = document.querySelector<HTMLElement>(
+        '[aria-label="Full-height work surface"]',
+      )!;
+      return {
+        growingHeight: growing.getBoundingClientRect().height,
+        growingParentHeight:
+          growing.parentElement!.getBoundingClientRect().height,
+        fillHeight: fullHeight.getBoundingClientRect().height,
+        fillParentHeight:
+          fullHeight.parentElement!.getBoundingClientRect().height,
+        growingFlex:
+          growing.ownerDocument.defaultView!.getComputedStyle(growing).flexGrow,
+      };
+    });
+    expect(geometry.growingFlex).toBe('1');
+    expect(geometry.growingHeight).toBeGreaterThan(
+      geometry.growingParentHeight / 2,
+    );
+    expect(
+      Math.abs(geometry.fillHeight - geometry.fillParentHeight),
+    ).toBeLessThanOrEqual(1);
+    await fullHeight.screenshot({
+      path: testInfo.outputPath(`sunken-panel-fill-${width}.png`),
+    });
+  }
+});
+
 test('opt-in translucent sunken prototype bounds nesting across themes and backdrops', async ({
   page,
 }, testInfo) => {
