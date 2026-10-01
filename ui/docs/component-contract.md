@@ -592,6 +592,10 @@ render, hands in its own via `collapsible.signals`, drives it through
 UI is consistent by default without every app reinventing it. A collapsed
 field may reveal its editor after the current microtask; the helper keeps a
 bounded render-frame focus handoff for that reveal and cancels it on disposal.
+`TokenSearchField.trailingAction` supplies an icon, accessible `label`, delegated
+`action`, and optional `id`; the field renders a 24px wide button that fills its
+34px line slot, including the hit target, disabled state, hover, and focus ring.
+Use `trailing` for passive content. The two props are mutually exclusive.
 
 A public subpath that exposes several visual components is a folder-backed
 surface. Put each component in its own source file and give each visual

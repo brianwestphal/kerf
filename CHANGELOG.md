@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **TokenSearchField has a typed trailing icon action.** `trailingAction`
+  renders an accessible button with Kerf owned chrome and a full 24px wide hit
+  target; the existing `trailing` content slot remains for passive content.
+
 - **PopupMenu and registered PopupSurface dropdowns preserve fast keyboard
   navigation during opening.** Item focus gained while Web Awesome animates
   the menu is restored after its initial focus handoff, so Enter acts on the

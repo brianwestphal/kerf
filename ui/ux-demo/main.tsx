@@ -735,6 +735,9 @@ const stopActions = delegateActions(app, 'click', {
   'replace-grammar-search': () => {
     grammarSearchModel.replace({ query: 'roadmap', tokens: [] });
   },
+  'show-token-search-help': () => {
+    actionLog.value = 'Search help requested';
+  },
   'edit-search-token': (_event, element) => {
     const value = element.getAttribute('data-token-value');
     const token = tokenSearchTokens.value.find(

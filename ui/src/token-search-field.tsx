@@ -12,6 +12,13 @@ export interface TokenSearchToken {
   accessibleLabel?: string;
 }
 
+export interface TokenSearchTrailingAction {
+  icon: SafeHtml;
+  label: string;
+  action: string;
+  id?: string;
+}
+
 export type TokenSearchEditorAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -44,7 +51,6 @@ interface TokenSearchFieldBaseProps {
   disabled?: boolean;
   autofocus?: boolean;
   leading?: KerfUiContent;
-  trailing?: KerfUiContent;
   /** Standalone field chrome or the inset visual layer of a configured toolbar group. */
   presentation?: 'standalone' | 'toolbar-group';
   editAction?: string;
@@ -58,6 +64,10 @@ interface TokenSearchFieldBaseProps {
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
+
+type TokenSearchTrailingProps =
+  | { trailing?: KerfUiContent; trailingAction?: never }
+  | { trailing?: never; trailingAction: TokenSearchTrailingAction };
 
 type TokenSearchCollapsibleProps =
   | {
@@ -76,7 +86,8 @@ type TokenSearchCollapsibleProps =
     };
 
 export type TokenSearchFieldProps = TokenSearchFieldBaseProps &
-  TokenSearchCollapsibleProps;
+  TokenSearchCollapsibleProps &
+  TokenSearchTrailingProps;
 
 export interface TokenSearchFieldValue {
   query: string;
@@ -131,6 +142,7 @@ export function TokenSearchField({
   expandLabel,
   leading,
   trailing,
+  trailingAction,
   presentation = 'standalone',
   editAction = 'edit-search-token',
   removeAction = 'remove-search-token',
@@ -163,7 +175,7 @@ export function TokenSearchField({
       data-disabled={String(disabled)}
       data-collapsible={String(collapsible)}
       data-expanded={String(resolvedExpanded)}
-      data-has-trailing={String(Boolean(trailing))}
+      data-has-trailing={String(Boolean(trailing || trailingAction))}
       data-presentation={presentation}
       slot={slot}
     >
@@ -249,9 +261,21 @@ export function TokenSearchField({
               {clearIcon ?? <CloseIcon />}
             </button>
           )}
-          {trailing && (
+          {trailingAction ? (
+            <button
+              type="button"
+              class="kui-token-search__trailing-action"
+              id={trailingAction.id}
+              data-action={trailingAction.action}
+              aria-label={trailingAction.label}
+              title={trailingAction.label}
+              disabled={disabled}
+            >
+              {trailingAction.icon}
+            </button>
+          ) : trailing ? (
             <span class="kui-token-search__trailing">{trailing}</span>
-          )}
+          ) : null}
           {!disabled && suggestions.length > 0 && (
             <div
               class="kui-token-search__suggestions"

@@ -85,7 +85,8 @@
 }
 
 .kui-token-search__token button,
-.kui-token-search__clear {
+.kui-token-search__clear,
+.kui-token-search__trailing-action {
   appearance: none;
   display: inline-grid;
   padding: 0;
@@ -110,12 +111,15 @@
 .kui-token-search__token-remove:hover,
 .kui-token-search__token-remove:focus-visible,
 .kui-token-search__clear:hover,
-.kui-token-search__clear:focus-visible {
+.kui-token-search__clear:focus-visible,
+.kui-token-search__trailing-action:hover,
+.kui-token-search__trailing-action:focus-visible {
   background: color-mix(in srgb, currentColor 12%, transparent);
 }
 
 .kui-token-search__token button:focus-visible,
-.kui-token-search__clear:focus-visible {
+.kui-token-search__clear:focus-visible,
+.kui-token-search__trailing-action:focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
@@ -130,7 +134,8 @@
 }
 
 .kui-token-search__clear,
-.kui-token-search__trailing {
+.kui-token-search__trailing,
+.kui-token-search__trailing-action {
   display: inline-grid;
   width: remify(24px);
   height: var(--kui-token-search-line-size);
@@ -145,6 +150,11 @@
 
 .kui-token-search__trailing {
   grid-column: 4;
+}
+
+.kui-token-search__trailing-action {
+  grid-column: 4;
+  border-radius: var(--kui-radius-pill);
 }
 
 .kui-token-search__suggestions {
@@ -192,7 +202,8 @@
 }
 
 .kui-token-search__clear svg,
-.kui-token-search__trailing svg {
+.kui-token-search__trailing svg,
+.kui-token-search__trailing-action svg {
   width: remify(13.6px);
   height: remify(13.6px);
 }

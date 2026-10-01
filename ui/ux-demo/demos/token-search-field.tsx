@@ -6,7 +6,7 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
-import { CircleX } from 'lucide';
+import { CircleHelp, CircleX } from 'lucide';
 
 import {
   ADOPTION_SUGGESTIONS,
@@ -38,6 +38,12 @@ export function TokenSearchFieldDemo() {
             query={tokenSearchQuery.value}
             tokens={tokenSearchTokens.value}
             autofocus
+            trailingAction={{
+              icon: <LucideIcon icon={CircleHelp} name="circle-help" />,
+              label: 'Search help',
+              action: 'show-token-search-help',
+              id: 'catalog-token-search-help',
+            }}
             editorAttributes={{ 'data-demo-token-search': 'true' }}
           />
           <Text

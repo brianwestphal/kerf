@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 315700,
-  "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 315698,
+  "totalJavaScriptGzip": 315800,
+  "measuredLargestJavaScriptGzip": 126043,
+  "measuredTotalJavaScriptGzip": 315794,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2147,6 +2147,22 @@
         "measuredTotalJavaScriptGzip": 315698,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 315700
+      }
+    },
+    {
+      "at": "2026-10-01T12:46:25.254Z",
+      "reason": "Add typed TokenSearchField trailing action and production-backed demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 315698,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 315700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 315794,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 315800
       }
     }
   ]

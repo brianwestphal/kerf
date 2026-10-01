@@ -199,6 +199,7 @@ export {
   type TokenSearchFieldProps,
   type TokenSearchFieldValue,
   type TokenSearchToken,
+  type TokenSearchTrailingAction,
 } from './token-search-field.js';
 export {
   createTokenSearchModel,

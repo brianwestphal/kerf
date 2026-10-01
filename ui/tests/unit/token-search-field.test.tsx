@@ -83,11 +83,12 @@ describe('TokenSearchField', () => {
         tokens: [{ value: 'tag:client', label: 'tag:client' }],
         disabled: true,
         leading: <span>Filter</span>,
-        trailing: (
-          <button type="button">
-            <LucideIcon icon={CircleHelp} name="help" />
-          </button>
-        ),
+        trailingAction: {
+          icon: <LucideIcon icon={CircleHelp} name="help" />,
+          label: 'Saved search help',
+          action: 'show-saved-search-help',
+          id: 'saved-search-help',
+        },
         editAction: 'edit-filter',
         removeAction: 'remove-filter',
         clearAction: 'clear-filter',
@@ -98,7 +99,7 @@ describe('TokenSearchField', () => {
     expect(html).toContain('class="kui-token-search compact"');
     expect(html).toContain('data-placeholder="Add search…"');
     expect(html).toContain('aria-disabled="true" contenteditable="false"');
-    expect(html.match(/ disabled/g)).toHaveLength(3);
+    expect(html.match(/ disabled/g)).toHaveLength(4);
     expect(html).toContain('data-action="edit-filter"');
     expect(html).toContain('data-action="remove-filter"');
     expect(html).toContain(
@@ -107,6 +108,20 @@ describe('TokenSearchField', () => {
     expect(html).toContain('<span>Filter</span>');
     expect(html).toContain('data-lucide="help"');
     expect(html).toContain('data-has-trailing="true"');
+    expect(html).toContain(
+      'class="kui-token-search__trailing-action" id="saved-search-help" data-action="show-saved-search-help" aria-label="Saved search help" title="Saved search help" disabled',
+    );
+    expect(
+      asHtml(
+        TokenSearchField({
+          id: 'passive',
+          label: 'Passive trailing',
+          trailing: <span>⌘K</span>,
+        }),
+      ),
+    ).toContain(
+      '<span class="kui-token-search__trailing"><span>⌘K</span></span>',
+    );
     expect(
       asHtml(
         TokenSearchField({

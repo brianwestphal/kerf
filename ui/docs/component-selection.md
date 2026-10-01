@@ -333,6 +333,10 @@ For common structured search, use `createTokenSearchModel` from `@kerfjs/ui/toke
 For a sibling date picker or other app helper, call `model.commit(value)` while a `name:` prefix is active. It parses and commits that value for the active rule even when it is absent from suggestions, replacing the unfinished prefix text. Invalid values and calls without an active prefix leave the query unchanged; `choose(value)` remains restricted to suggested tokens.
 To apply a saved search or restore a query programmatically, call `model.replace({ query, tokens })`. It publishes parsed state and rebuilds the DOM-owned editor text even when no chip changed. For a field without a model, change the field's `revision` prop when setting `query` yourself.
 When one root contains both kinds of field, a registered model enables chip keyboard behavior only for its own field. Other fields keep native editing unless the root opts into `keyboard` with an application removal callback.
+For an icon action at the end of the field, pass `trailingAction` with `icon`,
+accessible `label`, and delegated `action` (plus optional `id`). The component
+renders a button that fills the trailing hit target. Reserve `trailing` for
+passive content such as a shortcut hint.
 
 ## Toolbar composition
 
