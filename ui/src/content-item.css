@@ -23,6 +23,11 @@
   );
 }
 
+.kui-content-item--flush {
+  padding-block: 0;
+  border-block-width: 0;
+}
+
 /* A visible frame for a content item that marks a real distinction: the
    standard neutral border, same geometry (the border is always reserved). */
 .kui-content-item--framed {
@@ -42,11 +47,15 @@
     [data-selected="true"]
   ) {
   --kui-content-item-border: var(--kui-color-neutral-border-normal);
-  --kui-content-item-background: var(--kui-color-neutral-fill-quiet);
+  --kui-content-item-background: var(--kui-color-neutral-fill-normal);
 }
 
 .kui-content-item[data-interactive="true"]:active:not([data-disabled="true"]) {
-  --kui-content-item-background: var(--kui-color-neutral-fill-normal);
+  --kui-content-item-background: color-mix(
+    in srgb,
+    var(--kui-color-neutral-fill-normal) 75%,
+    var(--kui-color-neutral-fill-loud)
+  );
 }
 
 .kui-content-item[data-interactive="true"][data-selected="true"] {

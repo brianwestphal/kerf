@@ -483,6 +483,11 @@ declarations.
 one child 8px inline margin, a real 1px border, 8px padding, and 12px corners;
 the border stays transparent unless `frame="framed"`, so framing never changes
 geometry. `shape="pill"` selects the 22px radius.
+`flush` removes block padding and borders while preserving inline geometry;
+`title` passes through as the native tooltip. Interactive hover uses the normal
+neutral fill so it remains visible on a lowered surface. For a card with
+multiple actions, put sibling buttons in a static ContentItem (or use
+`ListActionRow` for a simple two-action row).
 For an interactive ContentItem, `wireContentItems` activates the card on Enter
 or Space only when the key event originated from the card itself. A nested
 native control, including one inside a custom element's shadow root, keeps its

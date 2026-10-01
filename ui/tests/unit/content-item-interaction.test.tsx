@@ -4,6 +4,19 @@ import { ContentItem } from '../../src/content-item.js';
 import { wireContentItems } from '../../src/wire-content-items.js';
 
 describe('interactive ContentItem', () => {
+  it('renders flush geometry and native title on static and interactive items', () => {
+    const staticItem = String(
+      ContentItem({ children: 'Preview', flush: true, title: 'Preview title' }),
+    );
+    expect(staticItem).toContain('kui-content-item--flush');
+    expect(staticItem).toContain('title="Preview title"');
+    const interactive = String(
+      ContentItem({ interactive: true, action: 'open', title: 'Open title' }),
+    );
+    expect(interactive).toContain('title="Open title"');
+    expect(interactive).not.toContain('kui-content-item--flush');
+  });
+
   it('keeps static region and root metadata behavior', () => {
     const html = String(
       ContentItem({

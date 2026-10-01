@@ -902,8 +902,12 @@ interface ContentItemBaseProps {
      * marks a real distinction. Defaults to `none` (transparent border).
      */
     frame?: ContentItemFrame;
+    /** Remove block padding and block borders while retaining inline geometry. */
+    flush?: boolean;
     /** Corner shape. Defaults to `rounded`. */
     shape?: ContentItemShape;
+    /** Native hover tooltip. */
+    title?: string;
     /**
      * Names the item as a distinct region (`role="region"`). Omit it for an
      * ordinary item, which stays a non-landmark grouping.
@@ -945,7 +949,7 @@ type ContentItemProps = ContentItemBaseProps & ({
  * border (transparent unless `framed`), 8px padding, and a rounded or pill
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
-declare function ContentItem({ children, frame, shape, ariaLabel, focusTarget, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
+declare function ContentItem({ children, frame, flush, shape, title, ariaLabel, focusTarget, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
 export { ContentItem, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape };
 ```

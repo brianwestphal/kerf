@@ -906,6 +906,9 @@ const stopActions = delegateActions(app, 'click', {
   'log-more': () => {
     actionLog.value = 'More actions requested';
   },
+  'log-card-primary': () => {
+    actionLog.value = 'Quotation opened';
+  },
   'log-decision': (_event, element) => {
     actionLog.value = `Decision: ${(element as HTMLElement).dataset.decision ?? ''}`;
   },

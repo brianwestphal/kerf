@@ -49,6 +49,22 @@ test('ContentItem owns the 8/1/8 geometry and frames without moving content', as
   expect(pill).toMatchObject({ radius: '22px', contentInset: 9 });
   expect(pill.borderColor).not.toBe('rgba(0, 0, 0, 0)');
 
+  const flush = item('flush');
+  await expect(flush).toHaveClass(/kui-content-item--flush/);
+  expect(
+    await flush.evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return [
+        style.paddingTop,
+        style.paddingBottom,
+        style.borderTopWidth,
+        style.borderBottomWidth,
+        style.paddingLeft,
+        style.borderLeftWidth,
+      ];
+    }),
+  ).toEqual(['0px', '0px', '0px', '0px', '8px', '1px']);
+
   // Framing changes only the border paint: both items' content starts at the
   // same x position inside the shared pane.
   const lefts = await Promise.all(
@@ -71,6 +87,24 @@ test('ContentItem owns the 8/1/8 geometry and frames without moving content', as
       .locator('html')
       .evaluate((element) => element.scrollWidth <= element.clientWidth),
   ).toBe(true);
+});
+
+test('a rich static card gives its primary and secondary buttons independent actions', async ({
+  page,
+}) => {
+  await page.goto('/?component=content-item');
+  const card = page.locator('[data-demo-item="multi-action-card"]');
+  await expect(card).not.toHaveAttribute('role', 'button');
+  const primary = card.locator('[data-action="log-card-primary"]');
+  const secondary = card.locator('[data-action="log-more"]');
+  await primary.focus();
+  await primary.press('Enter');
+  await expect(page.locator('.catalog-log')).toHaveText('Quotation opened');
+  await secondary.focus();
+  await secondary.press('Enter');
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'More actions requested',
+  );
 });
 
 test('a nested Web Awesome button keeps Enter and Space from activating its ContentItem', async ({

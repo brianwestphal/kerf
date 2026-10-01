@@ -49,8 +49,12 @@ interface ContentItemBaseProps {
    * marks a real distinction. Defaults to `none` (transparent border).
    */
   frame?: ContentItemFrame;
+  /** Remove block padding and block borders while retaining inline geometry. */
+  flush?: boolean;
   /** Corner shape. Defaults to `rounded`. */
   shape?: ContentItemShape;
+  /** Native hover tooltip. */
+  title?: string;
   /**
    * Names the item as a distinct region (`role="region"`). Omit it for an
    * ordinary item, which stays a non-landmark grouping.
@@ -101,7 +105,9 @@ export type ContentItemProps = ContentItemBaseProps &
 export function ContentItem({
   children,
   frame = 'none',
+  flush = false,
   shape = 'rounded',
+  title,
   ariaLabel,
   focusTarget = false,
   interactive = false,
@@ -130,6 +136,7 @@ export function ContentItem({
     'kui-content-item',
     shape === 'pill' ? 'kui-content-item--pill' : '',
     frame === 'framed' ? 'kui-content-item--framed' : '',
+    flush ? 'kui-content-item--flush' : '',
     className,
   ]
     .filter(Boolean)
@@ -150,6 +157,7 @@ export function ContentItem({
       {...safeRootAttributes}
       {...interactiveAttributes}
       class={cls}
+      title={title}
       data-component="content-item"
       role={
         interactive

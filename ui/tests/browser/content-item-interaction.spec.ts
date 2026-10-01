@@ -13,6 +13,11 @@ test('interactive cards select with pointer and keyboard without moving their fr
 
   await expect(toggle).toHaveAttribute('role', 'button');
   await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(toggle).toHaveAttribute('title', 'Edit this quotation');
+  const loweredBackground = await toggle.evaluate(
+    (element) =>
+      window.getComputedStyle(element.parentElement!).backgroundColor,
+  );
   const before = await toggle.boundingBox();
   const restingBorder = await toggle.evaluate(
     (element) => window.getComputedStyle(element).borderColor,
@@ -24,6 +29,7 @@ test('interactive cards select with pointer and keyboard without moving their fr
   const hoverBackground = await toggle.evaluate(
     (element) => window.getComputedStyle(element).backgroundColor,
   );
+  expect(hoverBackground).not.toBe(loweredBackground);
   expect(hoverBorder).not.toBe(restingBorder);
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');

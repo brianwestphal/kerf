@@ -188,6 +188,7 @@ import { ContentItem } from "@kerfjs/ui/content-item";
 <Pane label="Inspector">
   <ContentItem>{details}</ContentItem>
   <ContentItem frame="framed">{pendingChanges}</ContentItem>
+  <ContentItem flush>{markdownPreview}</ContentItem>
   <ContentItem shape="pill">{summary}</ContentItem>
 </Pane>;
 ```
@@ -202,7 +203,10 @@ needs to align with neighboring items is `ListInsetText`. Safe `data-*`
 metadata goes in `rootAttributes`. Pass `ariaLabel` only for a distinct named
 region (`role="region"`), and `focusTarget` to make the item a programmatic
 focus target (`tabindex="-1"`), for example a NavStack view's `data-nav-focus`
-target.
+target. `flush` removes block padding and both block borders while retaining
+the inline margin, padding, and border. Use it for content such as a markdown
+preview that must reach the item's top and bottom edges. `title` passes through
+to the root element as a native tooltip.
 
 For a selectable card, set `interactive`, a delegated `action`, and an optional
 `itemId`. Wire `wireContentItems(root)` once on the containing app root; it
@@ -211,13 +215,19 @@ the app's ordinary `data-action` handler. `selectionMode="toggle"` maps
 `selected` to a button's `aria-pressed`; `selectionMode="single"` maps it to an
 option's `aria-selected` and belongs in an app-owned `role="listbox"` container.
 An interactive card is a Tab stop, and `disabled` removes its action and Tab
-stop while exposing `aria-disabled`. Keep interactive descendants outside a
-card; a card is one action target. Hover, pressed, focus, and selected paints
-reuse the reserved border without changing geometry. `rootAttributes` still
-accepts safe app `data-*` metadata, while the card owns its interaction data.
+stop while exposing `aria-disabled`. Hover uses the normal neutral fill so it
+remains visible on a lowered surface; hover, pressed, focus, and selected paints
+do not change geometry. A single-action card has no interactive descendants.
+For a rich card with a primary and secondary action, render a static
+`ContentItem` with sibling buttons inside it. Each button then has its own
+focus stop and action without nesting controls inside an interactive card.
+`ListActionRow` already packages this pattern for a simple two-action row.
+`rootAttributes` still accepts safe app `data-*` metadata, while the card owns
+its interaction data.
 
-The rendered classes — `.kui-content-item`, `.kui-content-item--framed`, and
-`.kui-content-item--pill` — stay public for the rare element that must carry the
+The rendered classes — `.kui-content-item`, `.kui-content-item--framed`,
+`.kui-content-item--pill`, and `.kui-content-item--flush` — stay public for the
+rare element that must carry the
 geometry itself (for example a `<ul>` list or a `Text` paragraph in an
 application-owned adapter). Prefer `ContentItem` everywhere else so the framing
 choice is typed. A plain `<div class="kui-content-item">` is exactly what

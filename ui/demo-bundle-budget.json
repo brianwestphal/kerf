@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 316600,
+  "totalJavaScriptGzip": 316900,
   "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 316599,
+  "measuredTotalJavaScriptGzip": 316833,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2227,6 +2227,22 @@
         "measuredTotalJavaScriptGzip": 316599,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 316600
+      }
+    },
+    {
+      "at": "2026-10-01T14:39:14.134Z",
+      "reason": "ContentItem flush and card action demo add reviewed public behavior",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 316599,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 316600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 316833,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 316900
       }
     }
   ]

@@ -4,6 +4,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
+import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 
 import { contentCardChoice, contentCardSelected } from './state.js';
@@ -54,6 +55,32 @@ export function ContentItemDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
+        label="Flush content and separate card actions"
+        note="Flush removes block padding and borders. A rich card keeps its primary and secondary buttons as siblings inside a static item."
+        align="none"
+      >
+        <Pane label="Quotation preview">
+          <ContentItem flush rootAttributes={{ 'data-demo-item': 'flush' }}>
+            <Text variant="p">
+              A compact markdown preview can reach the item's block edges.
+            </Text>
+          </ContentItem>
+          <ContentItem
+            frame="framed"
+            rootAttributes={{ 'data-demo-item': 'multi-action-card' }}
+          >
+            <Row vAlign="middle" wrap>
+              <wa-button appearance="plain" data-action="log-card-primary">
+                Open quotation
+              </wa-button>
+              <wa-button appearance="plain" data-action="log-more">
+                More actions
+              </wa-button>
+            </Row>
+          </ContentItem>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
         label="Pill shape"
         note={
           <>
@@ -78,7 +105,7 @@ export function ContentItemDemo() {
         note="Enter and Space activate the focused card; selection keeps the reserved border geometry."
         align="none"
       >
-        <Pane label="Interactive content items">
+        <Pane label="Interactive content items" appearance="sunken">
           <ContentItem
             interactive
             action="toggle-content-card"
@@ -86,6 +113,7 @@ export function ContentItemDemo() {
             selectionMode="toggle"
             selected={contentCardSelected.value}
             ariaLabel="Line item 42"
+            title="Edit this quotation"
             rootAttributes={{ 'data-demo-item': 'toggle-card' }}
           >
             {itemCopy('Line item 42', 'Select this item for review.')}
