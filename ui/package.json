@@ -224,6 +224,10 @@
       "types": "./dist/wire-nav-stack.d.ts",
       "import": "./dist/wire-nav-stack.js"
     },
+    "./wire-content-items": {
+      "types": "./dist/wire-content-items.d.ts",
+      "import": "./dist/wire-content-items.js"
+    },
     "./split-view": {
       "types": "./dist/split-view.d.ts",
       "browser": "./dist/browser/split-view.js",

@@ -877,10 +877,22 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 type ContentItemFrame = 'none' | 'framed';
 /** Corner shape: the 12px rounded rectangle or the 22px pill. */
 type ContentItemShape = 'rounded' | 'pill';
+/** `single` uses option selection; `toggle` uses a pressed button. */
+type ContentItemSelectionMode = 'none' | 'single' | 'toggle';
 type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
 }>;
-interface ContentItemProps {
+type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+    'data-item-id'?: never;
+    'data-interactive'?: never;
+    'data-selected'?: never;
+    'data-disabled'?: never;
+    'data-selection-mode'?: never;
+    'data-kui-pressed'?: never;
+}>;
+interface ContentItemBaseProps {
     /** Item content; a plain string is allowed for bare copy. */
     children?: KerfUiContent | string;
     /**
@@ -903,19 +915,38 @@ interface ContentItemProps {
      */
     focusTarget?: boolean;
     className?: string;
-    /** Safe `data-*` metadata; component-owned structural attributes stay protected. */
-    rootAttributes?: ContentItemRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
+type ContentItemProps = ContentItemBaseProps & ({
+    interactive?: false;
+    action?: never;
+    itemId?: never;
+    selectionMode?: never;
+    selected?: never;
+    disabled?: never;
+    /** Existing static `data-*` metadata remains available. */
+    rootAttributes?: ContentItemRootAttributes;
+} | {
+    /** Enable a keyboard reachable card; wire `wireContentItems` once on its containing root. */
+    interactive: true;
+    /** Delegated action dispatched by pointer, Enter, or Space. */
+    action: string;
+    itemId?: string;
+    selectionMode?: ContentItemSelectionMode;
+    selected?: boolean;
+    disabled?: boolean;
+    /** Safe app metadata; interaction attributes are component-owned. */
+    rootAttributes?: ContentItemInteractiveRootAttributes;
+});
 /**
  * One self-contained `.kui-content` child: an 8px inline margin, a real 1px
  * border (transparent unless `framed`), 8px padding, and a rounded or pill
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
-declare function ContentItem({ children, frame, shape, ariaLabel, focusTarget, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
+declare function ContentItem({ children, frame, shape, ariaLabel, focusTarget, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
-export { ContentItem, type ContentItemFrame, type ContentItemProps, type ContentItemShape };
+export { ContentItem, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape };
 ```
 
 ## `@kerfjs/ui/value-table`

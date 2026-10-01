@@ -4,6 +4,8 @@ import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 
+import { contentCardChoice, contentCardSelected } from './state.js';
+
 function itemCopy(title: string, detail: string) {
   return (
     <List gap="2xs">
@@ -67,6 +69,53 @@ export function ContentItemDemo() {
           >
             <Text variant="span">Three reviewers approved this change.</Text>
           </ContentItem>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Interactive cards"
+        note="Enter and Space activate the focused card; selection keeps the reserved border geometry."
+        align="none"
+      >
+        <Pane label="Interactive content items">
+          <ContentItem
+            interactive
+            action="toggle-content-card"
+            itemId="line-42"
+            selectionMode="toggle"
+            selected={contentCardSelected.value}
+            ariaLabel="Line item 42"
+            rootAttributes={{ 'data-demo-item': 'toggle-card' }}
+          >
+            {itemCopy('Line item 42', 'Select this item for review.')}
+          </ContentItem>
+          <ContentItem
+            interactive
+            action="toggle-content-card"
+            itemId="locked-card"
+            disabled
+            ariaLabel="Locked item"
+            rootAttributes={{ 'data-demo-item': 'disabled-card' }}
+          >
+            {itemCopy('Locked item', 'Unavailable while processing.')}
+          </ContentItem>
+          <div role="listbox" aria-label="Documents">
+            {(['document-a', 'document-b'] as const).map((id) => (
+              <ContentItem
+                interactive
+                action="choose-content-card"
+                itemId={id}
+                selectionMode="single"
+                selected={contentCardChoice.value === id}
+                ariaLabel={id === 'document-a' ? 'Document A' : 'Document B'}
+                rootAttributes={{ 'data-demo-item': id }}
+              >
+                {itemCopy(
+                  id === 'document-a' ? 'Document A' : 'Document B',
+                  'Choose a document.',
+                )}
+              </ContentItem>
+            ))}
+          </div>
         </Pane>
       </CatalogExample>
     </CatalogExampleStack>

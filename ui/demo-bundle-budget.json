@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 312100,
-  "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 312045,
+  "totalJavaScriptGzip": 313000,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 312967,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1827,6 +1827,38 @@
         "measuredTotalJavaScriptGzip": 312045,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 312100
+      }
+    },
+    {
+      "at": "2026-10-01T02:37:37.165Z",
+      "reason": "Demonstrate interactive ContentItem cards",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 312045,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 312100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 312940,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313000
+      }
+    },
+    {
+      "at": "2026-10-01T02:44:16.323Z",
+      "reason": "Demonstrate interactive ContentItem cards",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 312940,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 312967,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313000
       }
     }
   ]

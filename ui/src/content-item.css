@@ -28,3 +28,39 @@
 .kui-content-item--framed {
   --kui-content-item-border: var(--kui-color-neutral-border-normal);
 }
+
+.kui-content-item[data-interactive="true"] {
+  color: var(--kui-color-neutral-on-normal);
+  cursor: pointer;
+}
+
+.kui-content-item[data-interactive="true"]:hover:not(
+    [data-disabled="true"],
+    [data-selected="true"]
+  ),
+.kui-content-item[data-interactive="true"][data-kui-pressed="true"]:not(
+    [data-selected="true"]
+  ) {
+  --kui-content-item-border: var(--kui-color-neutral-border-normal);
+  --kui-content-item-background: var(--kui-color-neutral-fill-quiet);
+}
+
+.kui-content-item[data-interactive="true"]:active:not([data-disabled="true"]) {
+  --kui-content-item-background: var(--kui-color-neutral-fill-normal);
+}
+
+.kui-content-item[data-interactive="true"][data-selected="true"] {
+  --kui-content-item-border: var(--kui-color-brand-border-quiet);
+  --kui-content-item-background: var(--kui-color-brand-fill-normal);
+}
+
+.kui-content-item[data-interactive="true"]:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-content-item[data-interactive="true"][data-disabled="true"] {
+  color: var(--kui-color-neutral-on-quiet);
+  opacity: 0.58;
+  cursor: not-allowed;
+}

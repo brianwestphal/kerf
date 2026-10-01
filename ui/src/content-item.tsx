@@ -6,8 +6,20 @@ export type ContentItemFrame = 'none' | 'framed';
 
 /** Corner shape: the 12px rounded rectangle or the 22px pill. */
 export type ContentItemShape = 'rounded' | 'pill';
+/** `single` uses option selection; `toggle` uses a pressed button. */
+export type ContentItemSelectionMode = 'none' | 'single' | 'toggle';
 
 const contentItemProtectedAttributes = new Set(['data-component']);
+const interactiveProtectedAttributes = new Set([
+  'data-component',
+  'data-action',
+  'data-item-id',
+  'data-interactive',
+  'data-selected',
+  'data-disabled',
+  'data-selection-mode',
+  'data-kui-pressed',
+]);
 
 type ContentItemRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
@@ -15,7 +27,20 @@ type ContentItemRootAttributes = Readonly<
   }
 >;
 
-export interface ContentItemProps {
+type ContentItemInteractiveRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+    'data-item-id'?: never;
+    'data-interactive'?: never;
+    'data-selected'?: never;
+    'data-disabled'?: never;
+    'data-selection-mode'?: never;
+    'data-kui-pressed'?: never;
+  }
+>;
+
+interface ContentItemBaseProps {
   /** Item content; a plain string is allowed for bare copy. */
   children?: KerfUiContent | string;
   /**
@@ -38,11 +63,35 @@ export interface ContentItemProps {
    */
   focusTarget?: boolean;
   className?: string;
-  /** Safe `data-*` metadata; component-owned structural attributes stay protected. */
-  rootAttributes?: ContentItemRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
+
+export type ContentItemProps = ContentItemBaseProps &
+  (
+    | {
+        interactive?: false;
+        action?: never;
+        itemId?: never;
+        selectionMode?: never;
+        selected?: never;
+        disabled?: never;
+        /** Existing static `data-*` metadata remains available. */
+        rootAttributes?: ContentItemRootAttributes;
+      }
+    | {
+        /** Enable a keyboard reachable card; wire `wireContentItems` once on its containing root. */
+        interactive: true;
+        /** Delegated action dispatched by pointer, Enter, or Space. */
+        action: string;
+        itemId?: string;
+        selectionMode?: ContentItemSelectionMode;
+        selected?: boolean;
+        disabled?: boolean;
+        /** Safe app metadata; interaction attributes are component-owned. */
+        rootAttributes?: ContentItemInteractiveRootAttributes;
+      }
+  );
 
 /**
  * One self-contained `.kui-content` child: an 8px inline margin, a real 1px
@@ -55,14 +104,28 @@ export function ContentItem({
   shape = 'rounded',
   ariaLabel,
   focusTarget = false,
+  interactive = false,
+  action,
+  itemId,
+  selectionMode = 'none',
+  selected = false,
+  disabled = false,
   className = '',
   rootAttributes = {},
   slot,
 }: ContentItemProps) {
   const safeRootAttributes = filterDataAttributes(
     rootAttributes,
-    contentItemProtectedAttributes,
+    interactive
+      ? interactiveProtectedAttributes
+      : contentItemProtectedAttributes,
   );
+  if (interactive && !action) {
+    throw new Error('Interactive ContentItem requires an action');
+  }
+  if (interactive && selected && selectionMode === 'none') {
+    throw new Error('Selected ContentItem requires a selectionMode');
+  }
   const cls = [
     'kui-content-item',
     shape === 'pill' ? 'kui-content-item--pill' : '',
@@ -71,14 +134,43 @@ export function ContentItem({
   ]
     .filter(Boolean)
     .join(' ');
+  const interactiveAttributes = interactive
+    ? {
+        'data-interactive': 'true',
+        'data-action': disabled ? undefined : action,
+        'data-item-id': itemId,
+        'data-selection-mode': selectionMode,
+        'data-selected':
+          selectionMode === 'none' ? undefined : String(selected),
+        'data-disabled': disabled ? 'true' : undefined,
+      }
+    : {};
   return (
     <div
       {...safeRootAttributes}
+      {...interactiveAttributes}
       class={cls}
       data-component="content-item"
-      role={ariaLabel ? 'region' : undefined}
+      role={
+        interactive
+          ? selectionMode === 'single'
+            ? 'option'
+            : 'button'
+          : ariaLabel
+            ? 'region'
+            : undefined
+      }
       aria-label={ariaLabel}
-      tabindex={focusTarget ? '-1' : undefined}
+      aria-selected={
+        interactive && selectionMode === 'single' ? String(selected) : undefined
+      }
+      aria-pressed={
+        interactive && selectionMode === 'toggle' ? String(selected) : undefined
+      }
+      aria-disabled={interactive && disabled ? 'true' : undefined}
+      tabindex={
+        interactive ? (disabled ? '-1' : '0') : focusTarget ? '-1' : undefined
+      }
       slot={slot}
     >
       {children}

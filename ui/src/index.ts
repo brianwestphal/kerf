@@ -20,6 +20,7 @@ export {
   ContentItem,
   type ContentItemFrame,
   type ContentItemProps,
+  type ContentItemSelectionMode,
   type ContentItemShape,
 } from './content-item.js';
 export {

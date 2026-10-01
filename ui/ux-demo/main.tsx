@@ -26,6 +26,7 @@ import {
   wireCatalog,
   wireCatalogGeometryOverlay,
 } from '@kerfjs/ui/wire-catalog';
+import { wireContentItems } from '@kerfjs/ui/wire-content-items';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
@@ -99,6 +100,8 @@ import {
   adoptionTokens,
   bannerTone,
   collapsibleSearchOpen,
+  contentCardChoice,
+  contentCardSelected,
   customDisclosureOpen,
   disclosureOpen,
   displayDensity,
@@ -905,6 +908,14 @@ const stopActions = delegateActions(app, 'click', {
   'log-pricing-check': () => {
     actionLog.value = 'Pricing check requested';
   },
+  'toggle-content-card': (_event, element) => {
+    contentCardSelected.value = !contentCardSelected.value;
+    actionLog.value = `Card ${element.getAttribute('data-item-id')} ${contentCardSelected.value ? 'selected' : 'cleared'}`;
+  },
+  'choose-content-card': (_event, element) => {
+    contentCardChoice.value = element.getAttribute('data-item-id') ?? '';
+    actionLog.value = `Card ${contentCardChoice.value} selected`;
+  },
   'log-sidebar': () => {
     actionLog.value = 'Sidebar requested';
   },
@@ -1500,6 +1511,7 @@ const stopResizeObserver = delegate(
     output.textContent = `Observed width · ${Math.round(entry.contentRect.width)}px`;
   },
 );
+const stopContentItems = wireContentItems(app);
 const stopTabBars = wireTabBars(app, {
   onReorder: ({ barId, sourceId, targetId, position, source }) => {
     tabBarTabs.value = reorderTabs(
@@ -1553,6 +1565,7 @@ window.addEventListener(
     stopMutationObserver();
     stopResizeObserver();
     stopTabBars();
+    stopContentItems();
     systemDarkTheme.removeEventListener('change', syncSystemTheme);
   },
   { once: true },

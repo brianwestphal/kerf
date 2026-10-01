@@ -485,6 +485,12 @@ geometry and 44px targets.
 </Pane>
 ```
 
+When that child is a selectable card, configure `ContentItem` with
+`interactive`, `action`, `itemId`, and a `selectionMode`; wire
+`wireContentItems` once for Enter and Space. The component owns selection,
+hover, focus, and disabled paint in its reserved 1px frame (see
+[Content items](./layout.md#content-items)).
+
 Incorrect: duplicating component-like rows and compensating for nested padding
 forks the package anatomy and spacing contract.
 

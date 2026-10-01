@@ -37,6 +37,7 @@ const entries = [
   'wire-scroll-dividers',
   'nav-stack',
   'wire-nav-stack',
+  'wire-content-items',
   'split-view',
   'pane',
   'workbench',

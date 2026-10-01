@@ -204,6 +204,18 @@ region (`role="region"`), and `focusTarget` to make the item a programmatic
 focus target (`tabindex="-1"`), for example a NavStack view's `data-nav-focus`
 target.
 
+For a selectable card, set `interactive`, a delegated `action`, and an optional
+`itemId`. Wire `wireContentItems(root)` once on the containing app root; it
+activates focused cards with Enter or Space and forwards the resulting click to
+the app's ordinary `data-action` handler. `selectionMode="toggle"` maps
+`selected` to a button's `aria-pressed`; `selectionMode="single"` maps it to an
+option's `aria-selected` and belongs in an app-owned `role="listbox"` container.
+An interactive card is a Tab stop, and `disabled` removes its action and Tab
+stop while exposing `aria-disabled`. Keep interactive descendants outside a
+card; a card is one action target. Hover, pressed, focus, and selected paints
+reuse the reserved border without changing geometry. `rootAttributes` still
+accepts safe app `data-*` metadata, while the card owns its interaction data.
+
 The rendered classes — `.kui-content-item`, `.kui-content-item--framed`, and
 `.kui-content-item--pill` — stay public for the rare element that must carry the
 geometry itself (for example a `<ul>` list or a `Text` paragraph in an
