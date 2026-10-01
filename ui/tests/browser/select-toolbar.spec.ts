@@ -300,19 +300,24 @@ test('caret-free icon-only Select is a round value trigger with keyboard access'
         '[part~="expand-icon"]',
       )!;
       const icon = host.querySelector('.kui-select__icon--selected')!;
+      const glyph = icon.querySelector('svg')!;
       const box = combobox.getBoundingClientRect();
       const iconBox = icon.getBoundingClientRect();
+      const glyphBox = glyph.getBoundingClientRect();
       return {
         width: box.width,
         height: box.height,
         iconOffset:
           iconBox.left + iconBox.width / 2 - (box.left + box.width / 2),
+        glyphOffset:
+          glyphBox.left + glyphBox.width / 2 - (box.left + box.width / 2),
         caretDisplay: window.getComputedStyle(caret).display,
       };
     });
     expect(geometry.caretDisplay).toBe('none');
     expect(geometry.width).toBe(geometry.height);
     expect(Math.abs(geometry.iconOffset)).toBeLessThanOrEqual(1);
+    expect(Math.abs(geometry.glyphOffset)).toBeLessThanOrEqual(1);
     const groupShape = await group.evaluate((element) => ({
       size: element.getBoundingClientRect().width,
       radius: Number.parseFloat(
@@ -334,6 +339,27 @@ test('caret-free icon-only Select is a round value trigger with keyboard access'
     await expect(select).toHaveAttribute('open');
     await page.keyboard.press('Escape');
     await expect(select).not.toHaveAttribute('open');
+
+    const custom = page.locator(
+      '[data-demo="select"] [name="toolbar-round-custom-rendering-balance"]',
+    );
+    const customGeometry = await custom.evaluate((host) => {
+      const combobox =
+        host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
+      const icon = host.querySelector('.kui-select__custom-selected svg')!;
+      const trigger = combobox.getBoundingClientRect();
+      const glyph = icon.getBoundingClientRect();
+      return {
+        triggerSize: [trigger.width, trigger.height],
+        glyphOffset:
+          glyph.left + glyph.width / 2 - (trigger.left + trigger.width / 2),
+      };
+    });
+    expect(customGeometry.triggerSize[0]).toBe(customGeometry.triggerSize[1]);
+    expect(Math.abs(customGeometry.glyphOffset)).toBeLessThanOrEqual(1);
+    await custom.locator('xpath=..').screenshot({
+      path: testInfo.outputPath(`select-round-custom-${width}.png`),
+    });
   }
 });
 

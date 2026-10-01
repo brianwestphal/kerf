@@ -280,6 +280,36 @@ export function SelectDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
+      <CatalogExample
+        label="Round toolbar custom icon"
+        note="A custom selected icon stays centered in the same caret-free round trigger."
+        align="inline-control"
+      >
+        <ToolbarControlGroup
+          label="Custom workspace sort"
+          content="icon"
+          focusRing="outline"
+          shape="pill"
+          single
+        >
+          <Select<string>
+            name="toolbar-round-custom-rendering-balance"
+            value={selectedChoice.value}
+            ariaLabel="Custom workspace sort"
+            presentation="toolbar-borderless"
+            selectedPresentation="icon-only"
+            caret={false}
+            focusRingOwner="group"
+            renderSelected={(choice) => (
+              <LucideIcon
+                icon={choice.icon!}
+                name={choice.label.toLowerCase()}
+              />
+            )}
+            choices={toolbarChoices}
+          />
+        </ToolbarControlGroup>
+      </CatalogExample>
       <CatalogExample label="Compact toolbar icon" align="inline-control">
         <ToolbarControlGroup
           label="Rendering mode"

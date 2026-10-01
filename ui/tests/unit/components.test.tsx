@@ -2009,6 +2009,20 @@ describe('production UI primitives', () => {
       }),
     );
     expect(roundIcon).toContain('data-caret="false"');
+    const customRoundIcon = asHtml(
+      Select({
+        name: 'custom-round-icon',
+        value: 'quiet',
+        ariaLabel: 'Workspace sort',
+        selectedPresentation: 'icon-only',
+        caret: false,
+        renderSelected: () => <strong>Sort icon</strong>,
+        choices: [{ value: 'quiet', label: 'Quiet', icon: Check }],
+      }),
+    );
+    expect(customRoundIcon).toContain('kui-select--custom-selected');
+    expect(customRoundIcon).toContain('data-caret="false"');
+    expect(customRoundIcon).toContain('kui-select__custom-selected');
     // "Manual" opens the separated "Other" group, whose border is already the
     // separator, so its separatorBefore must not add a second divider.
     expect(grouped).not.toContain('<wa-divider');

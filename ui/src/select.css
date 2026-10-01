@@ -222,6 +222,17 @@
   min-width: 0;
   flex: 1 1 auto;
 }
+/* A label can use the free start-slot width to truncate, but a caret-free
+   icon must keep its intrinsic width so the combobox can center the glyph. */
+.kui-select--custom-selected[data-selected-presentation="icon-only"][data-caret="false"]::part(
+    start
+  ) {
+  flex: 0 0 auto;
+}
+.kui-select--custom-selected[data-selected-presentation="icon-only"][data-caret="false"]
+  .kui-select__custom-selected {
+  margin-inline-end: 0 !important;
+}
 .kui-select--custom-selected::part(display-input) {
   position: absolute;
   width: 1px;
