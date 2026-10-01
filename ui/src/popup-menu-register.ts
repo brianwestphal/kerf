@@ -8,9 +8,11 @@ import WaDropdownItem from '@awesome.me/webawesome/dist/components/dropdown-item
 
 import { installHelpTags } from './install-help-tag.js';
 import { installPopupMenuKeyboard } from './install-popup-menu-keyboard.js';
+import { installPopupMenuLifecycle } from './install-popup-menu-lifecycle.js';
 import { installPopupMenuSubmenuFocus } from './install-popup-menu-submenu-focus.js';
 
 installPopupMenuKeyboard(WaDropdown.prototype);
+installPopupMenuLifecycle(WaDropdown.prototype);
 installPopupMenuSubmenuFocus(WaDropdownItem.prototype);
 installHelpTags();
 

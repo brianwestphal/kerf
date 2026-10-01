@@ -206,6 +206,8 @@ are presentational. A keyboard-focused item is the menu's current row, painted
 with the Select's current-option fill rather than a second focus ring inside the
 open popup. A disabled item stays in the menu but cannot be
 chosen; disable the whole trigger only when every command is unavailable.
+Clicking outside dismisses a context `PopupMenu`, including one reopened while
+its previous hide animation is still finishing.
 Nested items use Web Awesome's submenu pointer and Left/Right arrow routing;
 headings and dividers can separate nested groups without becoming keyboard
 choices. A rapid ArrowDown or ArrowUp after opening a submenu keeps the chosen

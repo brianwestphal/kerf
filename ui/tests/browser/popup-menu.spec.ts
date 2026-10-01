@@ -431,3 +431,34 @@ test('submenu recovers from an interrupted close and a stale hidden open', async
   if (browserName === 'chromium')
     await page.screenshot({ path: 'test-results/popup-menu-reopened.png' });
 });
+
+test('context PopupMenu dismisses when clicking outside after either opening path', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const demo = page.locator('[data-demo="popup-menu"]');
+  const context = demo.locator('[data-popup-context-menu]');
+  const row = demo.locator('[data-popup-menu-context-target]');
+  const button = demo.getByRole('button', { name: 'Demand actions' });
+  const heading = demo.locator('[data-catalog-example-label]', {
+    hasText: 'Context menu',
+  });
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await row.click({ button: 'right' });
+    await expect(context).toHaveAttribute('open', '');
+    await heading.click();
+    await expect(context).not.toHaveAttribute('open', '');
+
+    await button.click();
+    await expect(context).toHaveAttribute('open', '');
+    await heading.click();
+    await expect(context).not.toHaveAttribute('open', '');
+    if (browserName === 'chromium')
+      await page.screenshot({
+        path: `test-results/popup-menu-dismissed-${width}.png`,
+      });
+  }
+});

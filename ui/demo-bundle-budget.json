@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 315200,
-  "measuredLargestJavaScriptGzip": 126043,
-  "measuredTotalJavaScriptGzip": 315133,
+  "totalJavaScriptGzip": 315300,
+  "measuredLargestJavaScriptGzip": 126044,
+  "measuredTotalJavaScriptGzip": 315275,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2099,6 +2099,22 @@
         "measuredTotalJavaScriptGzip": 315133,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 315200
+      }
+    },
+    {
+      "at": "2026-10-01T09:28:02.917Z",
+      "reason": "Restore PopupMenu outside-click dismissal across close/reopen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 315133,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 315200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 315275,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 315300
       }
     }
   ]
