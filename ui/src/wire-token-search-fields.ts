@@ -387,17 +387,41 @@ export function wireTokenSearchFields(
     if (state.value !== next) state.value = next;
   };
   const view = () => root.ownerDocument.defaultView!;
+  const focusing = new Map<string, () => void>();
   const focusAfterRender = (id: string, selector: string) => {
-    view().requestAnimationFrame(() => {
-      if (disposed) return;
-      const target = root.querySelector<HTMLElement>(
-        `[data-component="token-search-field"][data-token-search-id="${CSS.escape(id)}"] ${selector}`,
+    focusing.get(id)?.();
+    const stop = () => {
+      observer.disconnect();
+      view().clearTimeout(timeout);
+      if (focusing.get(id) === stop) focusing.delete(id);
+    };
+    const restore = () => {
+      if (disposed) return stop();
+      const field = root.querySelector<HTMLElement>(
+        `[data-component="token-search-field"][data-token-search-id="${CSS.escape(id)}"]`,
       );
-      if (!target) return;
+      const target = field?.querySelector<HTMLElement>(selector);
+      if (!field || !target) return;
+      const active = field.ownerDocument.activeElement;
+      // A later focus move to another control wins. The original editor may
+      // have been replaced, leaving body active; controls of this field are
+      // still part of the same interaction.
+      if (
+        active !== field.ownerDocument.body &&
+        active !== target &&
+        !field.contains(active)
+      )
+        return stop();
+      stop();
       if (target.matches('[data-token-search-editor]'))
         placeTokenSearchCaret(target);
       else target.focus();
-    });
+    };
+    const observer = new MutationObserver(restore);
+    observer.observe(root, { childList: true, subtree: true });
+    const timeout = view().setTimeout(stop, 0);
+    focusing.set(id, stop);
+    view().queueMicrotask(restore);
   };
   const openField = (id: string) => {
     setExpanded(id, true);
@@ -929,6 +953,7 @@ export function wireTokenSearchFields(
 
   const dispose = () => {
     disposed = true;
+    for (const stop of focusing.values()) stop();
     for (const stop of disposers.splice(0)) stop();
   };
   const handle = (() => dispose()) as TokenSearchFieldsHandle;

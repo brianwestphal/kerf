@@ -1,5 +1,49 @@
 import { expect, test } from '@playwright/test';
 
+test('a committed chip does not reclaim focus from the next form control', async ({
+  page,
+}) => {
+  await page.goto('/?component=token-search-field');
+  const demo = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: 'Grammar assisted search',
+      }),
+    });
+  const field = demo.locator('[data-component="token-search-field"]');
+  const next = page.locator('[data-after-commit-input]');
+  await demo.evaluate((element) => {
+    const editor = element.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const input = document.createElement('input');
+    input.setAttribute('data-after-commit-input', '');
+    document.body.append(input);
+    editor.focus();
+    editor.textContent = 'tag:client ';
+    editor.dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        inputType: 'insertText',
+        data: ' ',
+      }),
+    );
+    input.focus();
+  });
+  await expect(
+    field.locator('[data-component="token-search-token"]'),
+  ).toHaveCount(1);
+  await expect(next).toBeFocused();
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        window.requestAnimationFrame(() => resolve()),
+      ),
+  );
+  await expect(next).toBeFocused();
+});
+
 test('grammar model suggests, commits, edits, removes, and clears in the real catalog', async ({
   page,
 }, testInfo) => {

@@ -3,7 +3,7 @@
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 313800,
   "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 313760,
+  "measuredTotalJavaScriptGzip": 313800,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1937,6 +1937,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 126040,
         "measuredTotalJavaScriptGzip": 313760,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313800
+      }
+    },
+    {
+      "at": "2026-10-01T03:58:48.966Z",
+      "reason": "Token search focus checkpoint",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 313760,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 313800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 313800,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 313800
       }

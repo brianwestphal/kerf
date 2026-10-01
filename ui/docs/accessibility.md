@@ -446,7 +446,9 @@ remove actions, and suggestions are managed. Arrow Down moves from the editor
 to suggestions, arrow keys move between suggestions, Enter selects one, and
 Escape returns focus to the editor. The application still announces results
 when needed and can supply an `evaluate` callback to compute them. Omitting the
-model leaves the manual behavior above intact.
+model leaves the manual behavior above intact. After a chip commit, suggestion
+choice, or chip edit, focus restoration runs at the controlled render checkpoint;
+it leaves focus on a different control if the user moved there in the meantime.
 
 Managed clear captures the action before application handlers run, keeps the adopted
 expanded signal open during editor replacement, and restores focus at the actual

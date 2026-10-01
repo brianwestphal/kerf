@@ -104,6 +104,68 @@ describe('wireTokenSearchFields', () => {
     stopMount();
   });
 
+  it('does not steal a newer focus move after a model chip commit', async () => {
+    const model = createTokenSearchModel({
+      rules: [{ name: 'tag', suggest: () => ['client'] }],
+    });
+    const root = document.createElement('div');
+    const next = document.createElement('input');
+    document.body.append(root, next);
+    const stopMount = mount(root, () =>
+      TokenSearchField({ id: 'tickets', label: 'Search', model }),
+    );
+    const stop = wireTokenSearchFields(root, { models: { tickets: model } });
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    editor.focus();
+    editor.textContent = 'tag:client ';
+    editor.dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        inputType: 'insertText',
+        data: ' ',
+      }),
+    );
+    expect(model.state.value.tokens).toHaveLength(1);
+    next.focus();
+    await Promise.resolve();
+    expect(document.activeElement).toBe(next);
+
+    stop();
+    stopMount();
+  });
+
+  it('preserves newer focus after choosing or editing a model token', async () => {
+    const model = createTokenSearchModel({
+      rules: [{ name: 'tag', suggest: () => ['client'] }],
+      initial: { query: 'tag:cl', tokens: [] },
+    });
+    const root = document.createElement('div');
+    const next = document.createElement('input');
+    document.body.append(root, next);
+    const stopMount = mount(root, () =>
+      TokenSearchField({ id: 'tickets', label: 'Search', model }),
+    );
+    const stop = wireTokenSearchFields(root, { models: { tickets: model } });
+    root
+      .querySelector<HTMLButtonElement>('[data-token-search-suggestion]')!
+      .click();
+    next.focus();
+    await Promise.resolve();
+    expect(document.activeElement).toBe(next);
+
+    root
+      .querySelector<HTMLButtonElement>('.kui-token-search__token-edit')!
+      .click();
+    next.focus();
+    await Promise.resolve();
+    expect(document.activeElement).toBe(next);
+
+    stop();
+    stopMount();
+  });
+
   it('submits Enter without inserting a contenteditable line break', () => {
     const root = document.createElement('div');
     root.innerHTML =
