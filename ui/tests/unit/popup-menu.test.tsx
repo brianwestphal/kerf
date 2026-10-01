@@ -1,5 +1,5 @@
 import { mount, signal } from 'kerfjs';
-import { ArrowDownAZ, Check, Copy } from 'lucide';
+import { ArrowDownAZ, Copy } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { installPopupMenuKeyboard } from '../../src/install-popup-menu-keyboard.js';
@@ -21,7 +21,7 @@ const render = (html: string) => {
 };
 
 describe('PopupMenu', () => {
-  it('renders nested choices, selected details, disabled reasons, and danger tone', () => {
+  it('renders nested choices, selected state, disabled reasons, and danger tone', () => {
     const menu = render(
       asHtml(
         PopupMenu({
@@ -53,7 +53,7 @@ describe('PopupMenu', () => {
             {
               label: 'Newest first',
               action: 'sort',
-              details: <LucideIcon icon={Check} name="Selected" />,
+              selected: true,
             },
           ],
         }),
@@ -83,9 +83,9 @@ describe('PopupMenu', () => {
     expect(children[1].getAttribute('variant')).toBe('danger');
     expect(children[1].getAttribute('title')).toBe('Needs a price');
     expect(children[1].hasAttribute('disabled')).toBe(true);
-    expect(
-      menu.querySelector('.kui-popup-menu__details [data-lucide]'),
-    ).not.toBeNull();
+    const selected = menu.querySelector('wa-dropdown-item[data-selected]')!;
+    expect(selected.getAttribute('type')).toBe('checkbox');
+    expect(selected.hasAttribute('checked')).toBe(true);
   });
 
   it('renders a context anchor and controls its open state at pointer coordinates', () => {

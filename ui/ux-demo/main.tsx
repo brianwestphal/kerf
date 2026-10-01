@@ -112,6 +112,7 @@ import {
   menuActionCurrent,
   menuActionPressed,
   menuToolsOpen,
+  popupSortChoice,
   regionSize,
   selectedChoice,
   sizedDisclosureOpen,
@@ -889,9 +890,11 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = 'Terminal drawer restored';
   },
   'sort-recent': () => {
+    popupSortChoice.value = 'recent';
     actionLog.value = 'Sorted by recently updated';
   },
   'sort-priority': () => {
+    popupSortChoice.value = 'priority';
     actionLog.value = 'Sorted by priority';
   },
   'log-favorite': () => {

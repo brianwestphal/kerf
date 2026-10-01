@@ -9,12 +9,13 @@ import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import {
   Archive,
   ArrowDownAZ,
-  Check,
   Copy,
   Gavel,
   MoreHorizontal,
   Trash2,
 } from 'lucide';
+
+import { popupSortChoice } from './state.js';
 
 export function PopupMenuDemo() {
   return (
@@ -104,9 +105,13 @@ export function PopupMenuDemo() {
             {
               label: 'Updated',
               action: 'sort-recent',
-              details: <LucideIcon icon={Check} name="Selected" />,
+              selected: popupSortChoice.value === 'recent',
             },
-            { label: 'Priority', action: 'sort-priority' },
+            {
+              label: 'Priority',
+              action: 'sort-priority',
+              selected: popupSortChoice.value === 'priority',
+            },
             { kind: 'divider' },
             {
               label: 'Decide',

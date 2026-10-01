@@ -422,6 +422,8 @@ interface PopupMenuItem {
     icon?: SafeHtml;
     /** A checked menu choice, including nested choices. */
     checked?: boolean;
+    /** Persistent selected choice; draws the shared Select current-row treatment. */
+    selected?: boolean;
     /** Trailing safe content, such as a selected-choice tick. */
     details?: SafeHtml;
     /** Destructive command styling. */

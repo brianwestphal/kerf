@@ -54,6 +54,10 @@
   color: var(--_kui-popup-row-current-color);
   background-color: var(--_kui-popup-row-current-background);
 }
+.kui-popup-menu wa-dropdown-item[data-selected]:not(:hover, :focus-visible) {
+  color: var(--_kui-popup-row-current-color);
+  background-color: var(--_kui-popup-row-current-background);
+}
 .kui-popup-menu > wa-divider,
 .kui-popup-menu wa-divider[slot="submenu"] {
   --spacing: 0.5em;

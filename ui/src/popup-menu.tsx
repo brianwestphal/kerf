@@ -26,6 +26,8 @@ export interface PopupMenuItem {
   icon?: SafeHtml;
   /** A checked menu choice, including nested choices. */
   checked?: boolean;
+  /** Persistent selected choice; draws the shared Select current-row treatment. */
+  selected?: boolean;
   /** Trailing safe content, such as a selected-choice tick. */
   details?: SafeHtml;
   /** Destructive command styling. */
@@ -113,6 +115,7 @@ function entryKey(entry: PopupMenuEntry): string {
     entry.value ?? '',
     entry.disabled ? '1' : '0',
     entry.checked ? '1' : '0',
+    entry.selected ? '1' : '0',
     entry.tone ?? '',
     entry.disabledReason ?? '',
     String(entry.icon ?? ''),
@@ -142,8 +145,13 @@ function renderEntry(entry: PopupMenuEntry, nested = false) {
       slot={nested ? 'submenu' : undefined}
       data-action={entry.action}
       value={entry.value}
-      type={entry.checked === undefined ? undefined : 'checkbox'}
-      checked={entry.checked}
+      type={
+        entry.checked === undefined && entry.selected === undefined
+          ? undefined
+          : 'checkbox'
+      }
+      checked={entry.selected ?? entry.checked}
+      data-selected={entry.selected ? '' : undefined}
       variant={entry.tone === 'danger' ? 'danger' : undefined}
       disabled={entry.disabled}
       title={entry.disabled ? entry.disabledReason : undefined}

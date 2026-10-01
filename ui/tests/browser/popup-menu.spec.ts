@@ -84,10 +84,17 @@ test('nested choices, selected details, disabled commands, and context opening w
   await trigger.focus();
   await page.keyboard.press('Enter');
   await expect(nested).toHaveAttribute('open', '');
-  await expect(nested.getByRole('menuitem', { name: 'Updated' })).toBeFocused();
   await expect(
-    nested.locator('.kui-popup-menu__details [data-lucide]'),
-  ).toBeVisible();
+    nested.getByRole('menuitemcheckbox', { name: 'Updated' }),
+  ).toBeFocused();
+  const selected = nested.getByRole('menuitemcheckbox', { name: 'Updated' });
+  await expect(selected).toHaveAttribute('checked', '');
+  await expect(selected).toHaveAttribute('aria-checked', 'true');
+  await expect(selected).toHaveAttribute('data-selected', '');
+  const selectedFill = await selected.evaluate(
+    (element) => window.getComputedStyle(element).backgroundColor,
+  );
+  expect(selectedFill).not.toBe('rgba(0, 0, 0, 0)');
   const parent = nested.locator(
     'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
   );
@@ -170,4 +177,35 @@ test('nested choices, selected details, disabled commands, and context opening w
     await page.screenshot({
       path: 'test-results/popup-menu-context-narrow.png',
     });
+});
+
+test('selected PopupMenu choice follows application state on pointer and keyboard selection', async ({
+  page,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const menu = page
+    .locator('[data-demo="popup-menu"] [data-component="popup-menu"]')
+    .filter({ has: page.locator('wa-dropdown-item[data-selected]') });
+  const trigger = menu.getByRole('button', { name: 'Decide' });
+  const updated = menu.getByRole('menuitemcheckbox', { name: 'Updated' });
+  const priority = menu.getByRole('menuitemcheckbox', { name: 'Priority' });
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await trigger.click();
+    await expect(updated).toHaveAttribute('aria-checked', 'true');
+    await expect(priority).toHaveAttribute('aria-checked', 'false');
+    await priority.click();
+    await trigger.click();
+    await expect(updated).toHaveAttribute('aria-checked', 'false');
+    await expect(priority).toHaveAttribute('aria-checked', 'true');
+    await expect(priority).toHaveAttribute('data-selected', '');
+    await priority.focus();
+    await page.keyboard.press('Home');
+    await expect(updated).toBeFocused();
+    await page.keyboard.press('Enter');
+    await trigger.click();
+    await expect(updated).toHaveAttribute('aria-checked', 'true');
+    await expect(priority).toHaveAttribute('aria-checked', 'false');
+    await page.keyboard.press('Escape');
+  }
 });
