@@ -16,6 +16,7 @@ Standardize vertical component layout, optional physical-side text/control inset
 - Use a finite flex keyword or the flex() builder when List participates in flexible layout.
 - Apply the standard text or control inset to selected physical sides without an application wrapper.
 - Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row.
+- Use selectionMode="multiple" and ariaLabel to group selectable rich ContentItem rows in a multi-select grid.
 
 **Not when:**
 
@@ -49,6 +50,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 - fill: the layout root fills a definite-height parent
 - rootAttributes: safe data-\* metadata on the root
 - scroll dividers when named as wireScrollDividers targets chrome
+- multi-select grid for rich ContentItem rows
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -64,7 +66,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** child semantics and content; the bounded height needed for scrolling; typed gap, flex, alignment, and divider choices.
+**The app owns:** child semantics and content; the bounded height needed for scrolling; typed gap, flex, alignment, and divider choices; the accessible label and selection state of a multi-select grid.
 
 **Wiring:** `wireScrollDividers` is optional.
 
@@ -81,7 +83,7 @@ Margin: none · border: conditional · padding: conditional (layout role: naviga
 
 ## Accessibility
 
-- List adds layout only and no list role; children retain responsibility for their native or ARIA semantics.
+- List adds layout only and no list role by default; selectionMode="multiple" makes it an aria-multiselectable grid with a required ariaLabel for selectable ContentItem rows.
 - Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.
 
 ## Styling boundary

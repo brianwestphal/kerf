@@ -214,13 +214,25 @@ activates focused cards with Enter or Space and forwards the resulting click to
 the app's ordinary `data-action` handler. `selectionMode="toggle"` maps
 `selected` to a button's `aria-pressed`; `selectionMode="single"` maps it to an
 option's `aria-selected` and belongs in an app-owned `role="listbox"` container.
+For a card with nested controls and multi-selection, place
+`selectionMode="multiple"` cards inside a `List selectionMode="multiple"` with
+`ariaLabel`. The List is a labeled `grid` with `aria-multiselectable`, each card
+is a focusable `row` with `aria-selected`, and its content is a `gridcell` that
+may contain native controls. The app owns the selection set, including
+Shift/Cmd extension; the card renders the supplied `selected` state and
+dispatches its `action`. Give nested controls their own actions.
+When the app delegates clicks by `data-action`, guard the card's selection
+handler with `isContentItemActivation(event, card)` from
+`@kerfjs/ui/wire-content-items`; it ignores clicks from nested controls that
+have no separate action, including a `PopupMenu` trigger.
+`wireContentItems` moves focus among enabled rows with Up/Down and Home/End
+when a row has focus; arrows from nested controls retain their native behavior.
 An interactive card is a Tab stop, and `disabled` removes its action and Tab
 stop while exposing `aria-disabled`. Hover uses the normal neutral fill so it
 remains visible on a lowered surface; hover, pressed, focus, and selected paints
 do not change geometry. A single-action card has no interactive descendants.
-For a rich card with a primary and secondary action, render a static
-`ContentItem` with sibling buttons inside it. Each button then has its own
-focus stop and action without nesting controls inside an interactive card.
+For a rich card without card selection, render a static `ContentItem` with
+sibling buttons inside it. Each button then has its own focus stop and action.
 `ListActionRow` already packages this pattern for a simple two-action row.
 `rootAttributes` still accepts safe app `data-*` metadata, while the card owns
 its interaction data.

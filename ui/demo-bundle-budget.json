@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 316900,
-  "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 316833,
+  "totalJavaScriptGzip": 317500,
+  "measuredLargestJavaScriptGzip": 126043,
+  "measuredTotalJavaScriptGzip": 317463,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2243,6 +2243,70 @@
         "measuredTotalJavaScriptGzip": 316833,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 316900
+      }
+    },
+    {
+      "at": "2026-10-01T22:44:45.300Z",
+      "reason": "Selectable rich-card demo and keyboard selection behavior",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 316833,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 316900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 317295,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317300
+      }
+    },
+    {
+      "at": "2026-10-01T22:51:07.270Z",
+      "reason": "Rich-card grid navigation and demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 317295,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 317450,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317500
+      }
+    },
+    {
+      "at": "2026-10-01T22:54:48.852Z",
+      "reason": "Nested PopupMenu specimen in selectable rich card",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 317450,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 317453,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317500
+      }
+    },
+    {
+      "at": "2026-10-01T22:57:11.684Z",
+      "reason": "Guard nested PopupMenu activation in rich cards",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 317453,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 317463,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317500
       }
     }
   ]

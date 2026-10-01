@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { ContentItem } from '../../src/content-item.js';
-import { wireContentItems } from '../../src/wire-content-items.js';
+import {
+  isContentItemActivation,
+  wireContentItems,
+} from '../../src/wire-content-items.js';
 
 describe('interactive ContentItem', () => {
   it('renders flush geometry and native title on static and interactive items', () => {
@@ -65,6 +68,20 @@ describe('interactive ContentItem', () => {
     expect(single).toContain('aria-selected="false"');
     expect(single).not.toContain('aria-pressed');
 
+    const multiple = String(
+      ContentItem({
+        interactive: true,
+        action: 'select',
+        selectionMode: 'multiple',
+        selected: true,
+        children: <button type="button">Approve</button>,
+      }),
+    );
+    expect(multiple).toContain('role="row"');
+    expect(multiple).toContain('aria-selected="true"');
+    expect(multiple).toContain('<div role="gridcell"><button');
+    expect(multiple).not.toContain('aria-pressed');
+
     const disabled = String(
       ContentItem({ interactive: true, action: 'pick', disabled: true }),
     );
@@ -84,6 +101,102 @@ describe('interactive ContentItem', () => {
 });
 
 describe('wireContentItems', () => {
+  it('distinguishes card clicks from nested control clicks for app delegates', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      <ContentItem interactive action="pick" selectionMode="multiple">
+        <span>Copy</span>
+        <button type="button">Open menu</button>
+      </ContentItem>,
+    );
+    document.body.append(root);
+    const card = root.firstElementChild as HTMLElement;
+    const button = card.querySelector('button')!;
+    const activations: boolean[] = [];
+    root.addEventListener('click', (event) => {
+      activations.push(isContentItemActivation(event, card));
+    });
+    card.click();
+    button.click();
+    expect(activations).toEqual([true, false]);
+    root.remove();
+  });
+
+  it('moves focus between enabled multi-select rows without changing selection', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      <div role="grid" aria-multiselectable="true">
+        <ContentItem
+          interactive
+          action="pick"
+          selectionMode="multiple"
+          itemId="one"
+        >
+          One
+        </ContentItem>
+        <ContentItem
+          interactive
+          action="pick"
+          selectionMode="multiple"
+          itemId="two"
+          disabled
+        >
+          Two
+        </ContentItem>
+        <ContentItem
+          interactive
+          action="pick"
+          selectionMode="multiple"
+          itemId="three"
+        >
+          <button type="button">Nested</button>
+        </ContentItem>
+      </div>,
+    );
+    document.body.append(root);
+    const first = root.querySelector<HTMLElement>('[data-item-id="one"]')!;
+    const last = root.querySelector<HTMLElement>('[data-item-id="three"]')!;
+    const nested = last.querySelector('button')!;
+    const stop = wireContentItems(root);
+    const arrow = (target: Element, key: string) =>
+      target.dispatchEvent(
+        new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }),
+      );
+    first.focus();
+    expect(arrow(first, 'ArrowUp')).toBe(true);
+    expect(document.activeElement).toBe(first);
+    expect(arrow(first, 'Home')).toBe(false);
+    expect(arrow(first, 'ArrowDown')).toBe(false);
+    expect(document.activeElement).toBe(last);
+    expect(last.getAttribute('aria-selected')).toBe('false');
+    expect(arrow(last, 'Home')).toBe(false);
+    expect(document.activeElement).toBe(first);
+    expect(arrow(first, 'End')).toBe(false);
+    expect(document.activeElement).toBe(last);
+    expect(arrow(last, 'ArrowDown')).toBe(true);
+    expect(arrow(last, 'ArrowUp')).toBe(false);
+    expect(document.activeElement).toBe(first);
+    last.focus();
+    nested.focus();
+    expect(arrow(nested, 'ArrowUp')).toBe(true);
+    expect(document.activeElement).toBe(nested);
+    stop();
+    root.remove();
+
+    const isolated = document.createElement('div');
+    isolated.innerHTML = String(
+      <ContentItem interactive action="pick" selectionMode="multiple">
+        Isolated
+      </ContentItem>,
+    );
+    document.body.append(isolated);
+    const stopIsolated = wireContentItems(isolated);
+    const orphan = isolated.firstElementChild!;
+    expect(arrow(orphan, 'ArrowDown')).toBe(true);
+    stopIsolated();
+    isolated.remove();
+  });
+
   it('handles Enter and Space, cancellation, disabled state, and disposal', () => {
     const root = document.createElement('div');
     root.innerHTML = String(

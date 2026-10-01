@@ -559,6 +559,15 @@ describe('production UI primitives', () => {
     expect(html).toContain('<span>One</span><span>Two</span>');
 
     const defaults = asHtml(List({ children: <span>Only</span> }));
+    const grid = asHtml(
+      List({ selectionMode: 'multiple', ariaLabel: 'Demand lines' }),
+    );
+    expect(grid).toContain('role="grid"');
+    expect(grid).toContain('aria-label="Demand lines"');
+    expect(grid).toContain('aria-multiselectable="true"');
+    expect(() => List({ selectionMode: 'multiple' })).toThrow(
+      'requires an ariaLabel',
+    );
     expect(defaults).toContain(
       'data-gap="false" data-flex="false" data-h-align="full" data-v-align="top" data-scrollable="false"',
     );

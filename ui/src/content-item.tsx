@@ -6,8 +6,9 @@ export type ContentItemFrame = 'none' | 'framed';
 
 /** Corner shape: the 12px rounded rectangle or the 22px pill. */
 export type ContentItemShape = 'rounded' | 'pill';
-/** `single` uses option selection; `toggle` uses a pressed button. */
-export type ContentItemSelectionMode = 'none' | 'single' | 'toggle';
+/** `single` uses an option; `multiple` uses a grid row; `toggle` uses a pressed button. */
+export type ContentItemSelectionMode =
+  'none' | 'single' | 'multiple' | 'toggle';
 
 const contentItemProtectedAttributes = new Set(['data-component']);
 const interactiveProtectedAttributes = new Set([
@@ -163,14 +164,19 @@ export function ContentItem({
         interactive
           ? selectionMode === 'single'
             ? 'option'
-            : 'button'
+            : selectionMode === 'multiple'
+              ? 'row'
+              : 'button'
           : ariaLabel
             ? 'region'
             : undefined
       }
       aria-label={ariaLabel}
       aria-selected={
-        interactive && selectionMode === 'single' ? String(selected) : undefined
+        interactive &&
+        (selectionMode === 'single' || selectionMode === 'multiple')
+          ? String(selected)
+          : undefined
       }
       aria-pressed={
         interactive && selectionMode === 'toggle' ? String(selected) : undefined
@@ -181,7 +187,11 @@ export function ContentItem({
       }
       slot={slot}
     >
-      {children}
+      {interactive && selectionMode === 'multiple' ? (
+        <div role="gridcell">{children}</div>
+      ) : (
+        children
+      )}
     </div>
   );
 }

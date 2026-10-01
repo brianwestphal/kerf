@@ -53,6 +53,10 @@ const spaceNames: readonly UiSpaceName[] = [
 
 export interface ListProps {
   children?: KerfUiContent;
+  /** Make this list a labeled multi-select grid for `ContentItem selectionMode="multiple"` rows. */
+  selectionMode?: 'multiple';
+  /** Accessible name for the multi-select grid. */
+  ariaLabel?: string;
   /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
   gap?: boolean | UiSpaceName | CssLength;
   /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -96,6 +100,8 @@ export type ListConfig = Pick<
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
 export function List({
   children,
+  selectionMode,
+  ariaLabel,
   gap = false,
   flex = false,
   fill = false,
@@ -109,6 +115,9 @@ export function List({
   rootAttributes = {},
   slot,
 }: ListProps) {
+  if (selectionMode === 'multiple' && !ariaLabel) {
+    throw new Error('Multi-select List requires an ariaLabel');
+  }
   const safeRootAttributes = filterDataAttributes(
     rootAttributes,
     listProtectedAttributes,
@@ -132,6 +141,9 @@ export function List({
       {...safeRootAttributes}
       class={`kui-list ${className}`.trim()}
       data-component="list"
+      role={selectionMode === 'multiple' ? 'grid' : undefined}
+      aria-label={selectionMode === 'multiple' ? ariaLabel : undefined}
+      aria-multiselectable={selectionMode === 'multiple' ? 'true' : undefined}
       data-gap={String(Boolean(gap))}
       data-flex={String(Boolean(flex))}
       data-fill={fill ? 'true' : undefined}

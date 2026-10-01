@@ -500,6 +500,10 @@ When that child is a selectable card, configure `ContentItem` with
 `wireContentItems` once for Enter and Space. The component owns selection,
 hover, focus, and disabled paint in its reserved 1px frame (see
 [Content items](./layout.md#content-items)).
+For a multi-select card containing its own controls, place
+`selectionMode="multiple"` ContentItems inside a labeled
+`List selectionMode="multiple"`; the app supplies each card's `selected`
+state and handles range gestures.
 
 Incorrect: duplicating component-like rows and compensating for nested padding
 forks the package anatomy and spacing contract.

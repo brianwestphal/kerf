@@ -823,6 +823,13 @@ ContentItem({
   focusTarget: true,
   rootAttributes: { 'data-item': 'details' },
 });
+ContentItem({
+  interactive: true,
+  action: 'select-line',
+  selectionMode: 'multiple',
+  selected: true,
+  children: icon,
+});
 // @ts-expect-error KUI-T010 ContentItem frames are none or framed; a fill is SunkenPanel.
 ContentItem({ frame: 'filled' });
 // @ts-expect-error KUI-T010 ContentItem shapes are rounded or pill.
@@ -831,6 +838,8 @@ ContentItem({ shape: 'square' });
 ContentItem({ rootAttributes: { 'data-component': 'spoof' } });
 List({
   children: icon,
+  selectionMode: 'multiple',
+  ariaLabel: 'Demand lines',
   gap: true,
   flex: flex(1, 1, px(0)),
   scrollable: true,

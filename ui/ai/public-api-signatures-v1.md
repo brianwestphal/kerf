@@ -629,6 +629,10 @@ type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
 }>;
 interface ListProps {
     children?: KerfUiContent;
+    /** Make this list a labeled multi-select grid for `ContentItem selectionMode="multiple"` rows. */
+    selectionMode?: 'multiple';
+    /** Accessible name for the multi-select grid. */
+    ariaLabel?: string;
     /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
     gap?: boolean | UiSpaceName | CssLength;
     /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -665,7 +669,7 @@ interface ListProps {
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, gap, flex, fill, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
 ```
@@ -878,8 +882,8 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 type ContentItemFrame = 'none' | 'framed';
 /** Corner shape: the 12px rounded rectangle or the 22px pill. */
 type ContentItemShape = 'rounded' | 'pill';
-/** `single` uses option selection; `toggle` uses a pressed button. */
-type ContentItemSelectionMode = 'none' | 'single' | 'toggle';
+/** `single` uses an option; `multiple` uses a grid row; `toggle` uses a pressed button. */
+type ContentItemSelectionMode = 'none' | 'single' | 'multiple' | 'toggle';
 type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
 }>;

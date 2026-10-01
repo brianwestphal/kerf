@@ -144,3 +144,45 @@ test('a nested Web Awesome button keeps Enter and Space from activating its Cont
     '1',
   );
 });
+
+test('multi-select rich rows keep selection and nested controls independent', async ({
+  page,
+}) => {
+  await page.goto('/?component=content-item');
+  const grid = page.getByRole('grid', { name: 'Demand lines' });
+  const first = grid.getByRole('row', { name: 'Demand line A' });
+  const second = grid.getByRole('row', { name: 'Demand line B' });
+  await expect(grid).toHaveAttribute('aria-multiselectable', 'true');
+  await expect(first).toHaveAttribute('aria-selected', 'false');
+  await expect(first.getByRole('gridcell')).toContainText('Open quote');
+  await first.focus();
+  await first.press('Enter');
+  await expect(first).toHaveAttribute('aria-selected', 'true');
+  await first.press('ArrowDown');
+  await expect(second).toBeFocused();
+  await second.focus();
+  await second.press('Space');
+  await expect(second).toHaveAttribute('aria-selected', 'true');
+  await expect(first).toHaveAttribute('aria-selected', 'true');
+
+  await first.getByRole('button', { name: 'Approve' }).click();
+  await expect(page.locator('.catalog-log')).toHaveText('Decision: approve');
+  await expect(first).toHaveAttribute('aria-selected', 'true');
+  const menu = first.locator('[data-component="popup-menu"]');
+  await menu.getByRole('button', { name: 'More actions' }).press('Enter');
+  await expect(first).toHaveAttribute('aria-selected', 'true');
+  await menu.getByRole('menuitem', { name: 'Show details' }).click();
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'More actions requested',
+  );
+  await expect(first).toHaveAttribute('aria-selected', 'true');
+  await grid.screenshot({ path: 'test-results/content-item-rich-wide.png' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(grid).toBeVisible();
+  await grid.screenshot({ path: 'test-results/content-item-rich-narrow.png' });
+  expect(
+    await page
+      .locator('html')
+      .evaluate((html) => html.scrollWidth <= html.clientWidth),
+  ).toBe(true);
+});

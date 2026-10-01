@@ -4,10 +4,15 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 
-import { contentCardChoice, contentCardSelected } from './state.js';
+import {
+  contentCardChoice,
+  contentCardSelected,
+  contentCardSelections,
+} from './state.js';
 
 function itemCopy(title: string, detail: string) {
   return (
@@ -161,6 +166,46 @@ export function ContentItemDemo() {
             ))}
           </div>
         </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Selectable rich cards"
+        note="Each card is a focusable grid row. Its buttons and decision control keep independent actions; the app owns multi-selection."
+        align="none"
+      >
+        <List selectionMode="multiple" ariaLabel="Demand lines">
+          {(['demand-a', 'demand-b'] as const).map((id) => (
+            <ContentItem
+              interactive
+              action="select-rich-card"
+              itemId={id}
+              selectionMode="multiple"
+              selected={contentCardSelections.value.includes(id)}
+              ariaLabel={id === 'demand-a' ? 'Demand line A' : 'Demand line B'}
+              rootAttributes={{ 'data-demo-item': id }}
+            >
+              <Row vAlign="middle" wrap>
+                {itemCopy(
+                  id === 'demand-a' ? 'Demand line A' : 'Demand line B',
+                  'Review the quote and choose a decision.',
+                )}
+                <button type="button" data-action="log-card-primary">
+                  Open quote
+                </button>
+                <PopupMenu
+                  text="More actions"
+                  items={[{ label: 'Show details', action: 'log-more' }]}
+                />
+                <button
+                  type="button"
+                  data-action="log-decision"
+                  data-decision="approve"
+                >
+                  Approve
+                </button>
+              </Row>
+            </ContentItem>
+          ))}
+        </List>
       </CatalogExample>
     </CatalogExampleStack>
   );

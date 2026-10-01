@@ -19,6 +19,14 @@ function actionItem(root: HTMLElement, event: Event) {
   return item;
 }
 
+/** True when a card action originated on the card rather than a nested control. */
+export function isContentItemActivation(
+  event: Event,
+  item: HTMLElement,
+): boolean {
+  return actionItem(item, event) === item;
+}
+
 /**
  * Give interactive ContentItems native-like Enter/Space activation with one
  * delegated listener pair. Space activates on release and is cancelled if
@@ -43,6 +51,31 @@ export function wireContentItems(root: HTMLElement): () => void {
       return;
     const item = actionItem(root, event);
     if (!item) return;
+    if (
+      item.dataset.selectionMode === 'multiple' &&
+      ['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)
+    ) {
+      const grid = item.closest('[role="grid"][aria-multiselectable="true"]');
+      if (!grid) return;
+      const rows = Array.from(
+        grid.querySelectorAll<HTMLElement>(
+          `${ITEM_SELECTOR}[data-selection-mode="multiple"]:not([data-disabled="true"])`,
+        ),
+      );
+      const index = rows.indexOf(item);
+      if (index < 0) return;
+      const next =
+        event.key === 'Home'
+          ? rows[0]
+          : event.key === 'End'
+            ? rows[rows.length - 1]
+            : rows[index + (event.key === 'ArrowDown' ? 1 : -1)];
+      if (next) {
+        event.preventDefault();
+        next.focus();
+      }
+      return;
+    }
     if (event.key === 'Enter') {
       event.preventDefault();
       item.click();

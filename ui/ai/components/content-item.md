@@ -13,6 +13,7 @@ Render one self-contained .kui-content child that owns its 8px inline margin, re
 - An ordinary surface-like child of a Pane or .kui-content stack needs the shared content-item geometry so its content edge lands at the standard 17px inset.
 - A content item marks a real distinction and must read as visibly bounded: pass frame="framed" (the border is always reserved, so geometry does not change).
 - A content item should follow a pill control's 22px radius: pass shape="pill".
+- A selectable rich card needs nested controls: use selectionMode="multiple" inside a labeled List multi-select grid.
 
 **Not when:**
 
@@ -44,6 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 - pill item
 - framed pill item
 - named focus-target region
+- multi-select rich grid row
 
 ## Composition
 
@@ -53,7 +55,7 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 
 ## State and wiring
 
-**The app owns:** the item content; whether the item marks a real distinction that warrants a visible frame; corner shape; region semantics and accessible name; whether the item is a programmatic focus target.
+**The app owns:** the item content; whether the item marks a real distinction that warrants a visible frame; corner shape; region semantics and accessible name; whether the item is a programmatic focus target; the selection set and Shift/Cmd extension for multi-select rich cards.
 
 No wiring helper.
 
@@ -68,6 +70,7 @@ Margin: self · border: self · padding: self (layout role: structure). `self` m
 - An ordinary item adds no role or name; pass ariaLabel only when the item is a distinct named region (it then renders role="region").
 - focusTarget makes the item a programmatic focus target (tabindex="-1", never a tab stop), such as a NavStack view's data-nav-focus target.
 - The frame is decorative and never the only signal of state.
+- selectionMode="multiple" renders a focusable row with aria-selected and a gridcell for nested controls; place it in a labeled List selectionMode="multiple" grid. wireContentItems moves focus among rows with Up/Down and Home/End while nested controls retain those keys. Guard the app's delegated card action with isContentItemActivation so a nested control does not select the row.
 
 ## Styling boundary
 

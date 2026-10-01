@@ -26,7 +26,10 @@ import {
   wireCatalog,
   wireCatalogGeometryOverlay,
 } from '@kerfjs/ui/wire-catalog';
-import { wireContentItems } from '@kerfjs/ui/wire-content-items';
+import {
+  isContentItemActivation,
+  wireContentItems,
+} from '@kerfjs/ui/wire-content-items';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
@@ -102,6 +105,7 @@ import {
   collapsibleSearchOpen,
   contentCardChoice,
   contentCardSelected,
+  contentCardSelections,
   customDisclosureOpen,
   disclosureOpen,
   displayDensity,
@@ -942,6 +946,14 @@ const stopActions = delegateActions(app, 'click', {
   'choose-content-card': (_event, element) => {
     contentCardChoice.value = element.getAttribute('data-item-id') ?? '';
     actionLog.value = `Card ${contentCardChoice.value} selected`;
+  },
+  'select-rich-card': (event, element) => {
+    if (!isContentItemActivation(event, element as HTMLElement)) return;
+    const id = element.getAttribute('data-item-id') ?? '';
+    contentCardSelections.value = contentCardSelections.value.includes(id)
+      ? contentCardSelections.value.filter((selected) => selected !== id)
+      : [...contentCardSelections.value, id];
+    actionLog.value = `Selected ${contentCardSelections.value.length} demand lines`;
   },
   'log-sidebar': () => {
     actionLog.value = 'Sidebar requested';

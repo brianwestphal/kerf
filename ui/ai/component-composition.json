@@ -2258,6 +2258,11 @@
           "id": "typed gap, flex, alignment, and divider choices",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "the accessible label and selection state of a multi-select grid",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -2293,7 +2298,7 @@
       },
       "accessibility": {
         "obligations": [
-          "List adds layout only and no list role; children retain responsibility for their native or ARIA semantics.",
+          "List adds layout only and no list role by default; selectionMode=\"multiple\" makes it an aria-multiselectable grid with a required ariaLabel for selectable ContentItem rows.",
           "Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll."
         ]
       },
@@ -2746,6 +2751,11 @@
           "id": "whether the item is a programmatic focus target",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "the selection set and Shift/Cmd extension for multi-select rich cards",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -2770,7 +2780,8 @@
         "obligations": [
           "An ordinary item adds no role or name; pass ariaLabel only when the item is a distinct named region (it then renders role=\"region\").",
           "focusTarget makes the item a programmatic focus target (tabindex=\"-1\", never a tab stop), such as a NavStack view's data-nav-focus target.",
-          "The frame is decorative and never the only signal of state."
+          "The frame is decorative and never the only signal of state.",
+          "selectionMode=\"multiple\" renders a focusable row with aria-selected and a gridcell for nested controls; place it in a labeled List selectionMode=\"multiple\" grid. wireContentItems moves focus among rows with Up/Down and Home/End while nested controls retain those keys. Guard the app's delegated card action with isContentItemActivation so a nested control does not select the row."
         ]
       },
       "cssValueProps": [],
