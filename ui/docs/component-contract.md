@@ -428,7 +428,9 @@ tones can be rethemed globally with
 segmented-control, app-tab, and tab-bar colors likewise use their public
 `--kui-*-*` variables. `SegmentedControl` exposes surface, border, foreground,
 hover, and selected-state variables, so rounded, pill, and toolbar presentations
-remain opinionated but locally overridable.
+remain opinionated but locally overridable. Its label color switches with the
+theme without Web Awesome's native button color transition, so a dark filled
+track never briefly pairs with an interpolated low-contrast label.
 
 Inset hover and selection surfaces follow the outer control shape instead of
 choosing an independent radius. `--kui-layout-highlight-inset` is the full

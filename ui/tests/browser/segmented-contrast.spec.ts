@@ -39,19 +39,21 @@ for (const width of [1100, 390]) {
       const colors = await unselected.first().evaluate((item) => ({
         text: window.getComputedStyle(item).color,
         track: window.getComputedStyle(item.parentElement!).backgroundColor,
+        transitionProperty: window.getComputedStyle(item).transitionProperty,
       }));
       const text = luminance(colors.text);
       const track = luminance(colors.track);
       const ratio =
         (Math.max(text, track) + 0.05) / (Math.min(text, track) + 0.05);
-      expect(
-        ratio,
-        `${theme} filled segmented label contrast`,
-      ).toBeGreaterThanOrEqual(4.5);
       if (testInfo.project.name === 'chromium')
         await control.screenshot({
           path: `test-results/segmented-filled-${theme}-${width}.png`,
         });
+      expect(
+        ratio,
+        `${theme} filled segmented label contrast (${JSON.stringify(colors)})`,
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(colors.transitionProperty.split(', ')).not.toContain('color');
     }
   });
 }

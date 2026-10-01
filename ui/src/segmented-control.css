@@ -119,6 +119,9 @@
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
+  /* Web Awesome's native button transition includes color. During a theme
+     switch that briefly puts the old text tone on the new filled track. */
+  transition-property: background, border, box-shadow;
 }
 
 .kui-segmented-control[data-size="small"] .kui-segmented-control__item {
