@@ -382,6 +382,57 @@ test('rapid submenu arrows keep the chosen item focused after opening', async ({
   await expect(trigger).toBeFocused();
 });
 
+test('keyboard navigation during the dropdown show animation survives its focus handoff', async ({
+  page,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const menu = page.locator('[data-popup-checked-menu]');
+  const trigger = menu.getByRole('button', { name: 'Sort choices' });
+  const priority = menu.getByRole('menuitemcheckbox', { name: 'Priority' });
+  await menu.evaluate((element) => {
+    (element as HTMLElement & { menu?: HTMLElement }).menu?.style.setProperty(
+      '--show-duration',
+      '1500ms',
+    );
+  });
+
+  await trigger.click();
+  await expect
+    .poll(() =>
+      menu.evaluate((element) =>
+        (
+          element as HTMLElement & { menu?: HTMLElement }
+        ).menu?.classList.contains('show'),
+      ),
+    )
+    .toBe(true);
+  await page.keyboard.press('Home');
+  await page.keyboard.press('ArrowDown');
+  const duringShow = await priority.evaluate((item) => {
+    const dropdown = item.closest('wa-dropdown') as unknown as HTMLElement & {
+      menu?: HTMLElement;
+    };
+    return {
+      focused: document.activeElement === item,
+      animating: dropdown.menu?.classList.contains('show'),
+    };
+  });
+  expect(duringShow.focused, JSON.stringify(duringShow)).toBe(true);
+  expect(duringShow.animating, JSON.stringify(duringShow)).toBe(true);
+  await expect
+    .poll(() =>
+      menu.evaluate((element) =>
+        (
+          element as HTMLElement & { menu?: HTMLElement }
+        ).menu?.classList.contains('show'),
+      ),
+    )
+    .toBe(false);
+  await expect(priority).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+});
+
 test('submenu recovers from an interrupted close and a stale hidden open', async ({
   page,
   browserName,

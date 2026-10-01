@@ -123,3 +123,53 @@ test('applies typed dialog and popup surface geometry', async ({
     ),
   ).toBe('0px');
 });
+
+test('a raw dropdown inside PopupSurface keeps keyboard navigation made during show', async ({
+  page,
+}) => {
+  await page.goto('/?component=surface-scaffold');
+  await page.evaluate(async () => {
+    await customElements.whenDefined('wa-dropdown');
+    const surface = document.createElement('span');
+    surface.className = 'kui-popup-surface';
+    surface.innerHTML =
+      '<wa-dropdown id="test-surface-dropdown"><button slot="trigger">Choose action</button><wa-dropdown-item>First</wa-dropdown-item><wa-dropdown-item>Second</wa-dropdown-item></wa-dropdown>';
+    document.body.append(surface);
+    const dropdown = surface.querySelector(
+      'wa-dropdown',
+    ) as unknown as HTMLElement & {
+      updateComplete: Promise<unknown>;
+      menu?: HTMLElement;
+    };
+    await dropdown.updateComplete;
+    dropdown.menu?.style.setProperty('--show-duration', '1500ms');
+  });
+  const dropdown = page.locator('#test-surface-dropdown');
+  const trigger = dropdown.getByRole('button', { name: 'Choose action' });
+  const second = dropdown.getByRole('menuitem', { name: 'Second' });
+  await trigger.click();
+  await expect
+    .poll(() =>
+      dropdown.evaluate((element) =>
+        (
+          element as HTMLElement & { menu?: HTMLElement }
+        ).menu?.classList.contains('show'),
+      ),
+    )
+    .toBe(true);
+  await page.keyboard.press('Home');
+  await page.keyboard.press('ArrowDown');
+  await expect(second).toBeFocused();
+  await expect
+    .poll(() =>
+      dropdown.evaluate((element) =>
+        (
+          element as HTMLElement & { menu?: HTMLElement }
+        ).menu?.classList.contains('show'),
+      ),
+    )
+    .toBe(false);
+  await expect(second).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(dropdown).not.toHaveAttribute('open', '');
+});

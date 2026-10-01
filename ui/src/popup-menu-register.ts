@@ -6,6 +6,7 @@ import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js';
 import WaDropdown from '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
 import WaDropdownItem from '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
 
+import { installDropdownShowFocus } from './install-dropdown-show-focus.js';
 import { installHelpTags } from './install-help-tag.js';
 import { installPopupMenuKeyboard } from './install-popup-menu-keyboard.js';
 import { installPopupMenuLifecycle } from './install-popup-menu-lifecycle.js';
@@ -13,6 +14,7 @@ import { installPopupMenuSubmenuFocus } from './install-popup-menu-submenu-focus
 
 installPopupMenuKeyboard(WaDropdown.prototype);
 installPopupMenuLifecycle(WaDropdown.prototype);
+installDropdownShowFocus(WaDropdown.prototype);
 installPopupMenuSubmenuFocus(WaDropdownItem.prototype);
 installHelpTags();
 

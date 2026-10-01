@@ -519,6 +519,9 @@ item padding, omit an internal separator, and let the raised selected item paint
 over the outer border instead of shrinking to an inset highlight. The Web
 Awesome trigger's shadow base owns max-content sizing, so icons, localized text,
 and the shadow caret determine the width without a fixed host measurement.
+With `popup-menu/register` loaded, PopupMenu and a raw dropdown inside
+`PopupSurface` preserve item navigation made during the Web Awesome show
+animation across its final initial-focus handoff.
 The enclosing `Toolbar` owns zone alignment and responsive topology: use
 `centerAlign="stretch"` when the center group should consume its track, and
 choose `responsive="stack"` with `responsiveAt="compact" | "narrow"`,
