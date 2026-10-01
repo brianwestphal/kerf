@@ -21,7 +21,7 @@ const render = (html: string) => {
 };
 
 describe('PopupMenu', () => {
-  it('renders nested choices, selected state, disabled reasons, and danger tone', () => {
+  it('renders nested checkbox choices, plain commands, disabled reasons, and danger tone', () => {
     const menu = render(
       asHtml(
         PopupMenu({
@@ -53,7 +53,7 @@ describe('PopupMenu', () => {
             {
               label: 'Newest first',
               action: 'sort',
-              selected: true,
+              checked: true,
             },
           ],
         }),
@@ -83,9 +83,14 @@ describe('PopupMenu', () => {
     expect(children[1].getAttribute('variant')).toBe('danger');
     expect(children[1].getAttribute('title')).toBe('Needs a price');
     expect(children[1].hasAttribute('disabled')).toBe(true);
-    const selected = menu.querySelector('wa-dropdown-item[data-selected]')!;
-    expect(selected.getAttribute('type')).toBe('checkbox');
-    expect(selected.hasAttribute('checked')).toBe(true);
+    const checked = [...menu.querySelectorAll('wa-dropdown-item')].find(
+      (item) => item.textContent === 'Newest first',
+    )!;
+    expect(checked.getAttribute('type')).toBe('checkbox');
+    expect(checked.hasAttribute('checked')).toBe(true);
+    expect(menu.querySelector('wa-dropdown-item')?.hasAttribute('type')).toBe(
+      false,
+    );
   });
 
   it('renders a context anchor and controls its open state at pointer coordinates', () => {
@@ -244,6 +249,16 @@ describe('PopupMenu', () => {
     // Equal items keep the key, so Web Awesome's upgraded children survive.
     items.value = [{ label: 'Inbox' }];
     expect(menu()).toBe(first);
+
+    // A defined false state changes the row to a checkbox with no checkmark.
+    items.value = [{ label: 'Inbox', checked: false }];
+    expect(menu()).not.toBe(first);
+    expect(menu().querySelector('wa-dropdown-item')?.getAttribute('type')).toBe(
+      'checkbox',
+    );
+    expect(
+      menu().querySelector('wa-dropdown-item')?.hasAttribute('checked'),
+    ).toBe(false);
 
     items.value = [{ label: 'Inbox' }, { label: 'Archive' }];
     expect(menu()).not.toBe(first);

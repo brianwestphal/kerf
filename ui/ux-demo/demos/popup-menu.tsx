@@ -95,24 +95,33 @@ export function PopupMenuDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Decisions and selected choices"
+        label="Checked choices"
+        note="Open the menu to compare a checked choice, an unchecked choice that keeps the checkmark space, and a plain command with no checkmark space. Choosing a sort option updates the checks."
         align="inline-control"
       >
         <PopupMenu
-          text="Decide"
+          text="Sort choices"
+          rootAttributes={{ 'data-popup-checked-menu': '' }}
           items={[
-            { kind: 'heading', label: 'Sort by' },
             {
               label: 'Updated',
               action: 'sort-recent',
-              selected: popupSortChoice.value === 'recent',
+              checked: popupSortChoice.value === 'recent',
             },
             {
               label: 'Priority',
               action: 'sort-priority',
-              selected: popupSortChoice.value === 'priority',
+              checked: popupSortChoice.value === 'priority',
             },
             { kind: 'divider' },
+            { label: 'More sort options', action: 'log-more' },
+          ]}
+        />
+      </CatalogExample>
+      <CatalogExample label="Nested decisions" align="inline-control">
+        <PopupMenu
+          text="Decide"
+          items={[
             {
               label: 'Decide',
               icon: <LucideIcon icon={Gavel} name="decide" />,

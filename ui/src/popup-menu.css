@@ -11,10 +11,9 @@
   clip-path: inset(50%);
 }
 
-/* A PopupMenu draws exactly the Select's popup: the same caret motion, surface
-   inset, row geometry, reserved check column, current-row fill, and group
-   titles, all read from the private popup-choice contract in foundation.css
-   (select.css reads the same values). */
+/* PopupMenu shares the Select's caret motion, surface inset, row rhythm,
+   current-row fill, and group titles from the popup-choice contract in
+   foundation.css. Only checkbox items reserve a check column. */
 
 /* The trigger caret turns to face the open menu, like the Select's. */
 .kui-popup-menu > wa-button::part(caret) {
@@ -34,14 +33,20 @@
 }
 
 .kui-popup-menu wa-dropdown-item {
-  /* Leading inset plus the Select's check column, so item icons and labels
-     start where a Select option's do. */
+  /* A plain command starts at the checkbox glyph's leading edge. The glyph
+     sits half a smaller-font em beyond the row's base inset; its label starts
+     after the full check column below. */
   padding: var(--_kui-popup-row-padding-block)
     var(--_kui-popup-row-padding-inline-end) var(--_kui-popup-row-padding-block)
-    calc(
-      var(--_kui-popup-row-padding-inline-start) +
-        var(--_kui-popup-row-check-width)
-    );
+    calc(var(--_kui-popup-row-padding-inline-start) + 0.4375em);
+}
+.kui-popup-menu wa-dropdown-item[type="checkbox"] {
+  /* Web Awesome marks every sibling checkbox-adjacent; reserve this column
+     only on items whose checked state was explicitly supplied. */
+  padding-inline-start: calc(
+    var(--_kui-popup-row-padding-inline-start) +
+      var(--_kui-popup-row-check-width)
+  );
 }
 .kui-popup-menu wa-dropdown-item::part(label) {
   padding-block: var(--_kui-popup-row-label-padding-block);
@@ -51,10 +56,6 @@
    with no second focus ring inside the open popup. */
 .kui-popup-menu wa-dropdown-item:focus-visible {
   outline: none;
-  color: var(--_kui-popup-row-current-color);
-  background-color: var(--_kui-popup-row-current-background);
-}
-.kui-popup-menu wa-dropdown-item[data-selected]:not(:hover, :focus-visible) {
   color: var(--_kui-popup-row-current-color);
   background-color: var(--_kui-popup-row-current-background);
 }

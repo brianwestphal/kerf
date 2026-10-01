@@ -420,11 +420,9 @@ interface PopupMenuItem {
     value?: string;
     /** Leading icon, typically a `LucideIcon`; it is placed in the item's icon slot. */
     icon?: SafeHtml;
-    /** A checked menu choice, including nested choices. */
+    /** A checkbox choice, including nested choices; omit for a plain command. */
     checked?: boolean;
-    /** Persistent selected choice; draws the shared Select current-row treatment. */
-    selected?: boolean;
-    /** Trailing safe content, such as a selected-choice tick. */
+    /** Trailing safe content, such as secondary status. */
     details?: SafeHtml;
     /** Destructive command styling. */
     tone?: 'default' | 'danger';

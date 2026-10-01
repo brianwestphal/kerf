@@ -434,11 +434,12 @@ items shape covers single-line and batch actions; compute each batch child's
 ```
 
 For a flat command menu with persistent sort choices, group commands under
-`heading` entries and set `selected` on the current choice. It uses the same
-selected row fill and reserved check column as `Select`, including in context
-menus and nested menus. Set `checked` for independent checkbox commands.
-Commands still dispatch
-their own `data-action` once on pointer and keyboard selection.
+`heading` entries and set `checked` explicitly on each choice. Checked rows
+show a checkmark; the background marks the current keyboard row, as in `Select`.
+Only items with `checked: true` or `checked: false` reserve checkmark space.
+Omit `checked` for a plain command, including one beside checkbox items.
+Commands still dispatch their own `data-action` once on pointer and keyboard
+selection.
 
 For a row opened by right-click, render `PopupMenu` with `context`, `label`,
 and a stable root `data-*` marker. Its trigger is an invisible anchor removed

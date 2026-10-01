@@ -507,9 +507,10 @@ without application `::part(menu)` CSS; the default `standard` keeps each menu's
 own inset (8px for a raw `wa-dropdown`, the Select listbox's 4px for a
 `PopupMenu`), while `compact` and `list-zero` apply to every nested menu. A
 `PopupMenu` and a `Select` draw one popup: the same caret that turns to face the
-open popup, fade-in surface, surface inset, row height and padding, reserved
-check column, current-row fill, and group titles, all read from one private
-popup-choice contract in `foundation.css`. Compact mixed controls retain the standard
+open popup, fade-in surface, surface inset, row height and padding, current-row
+fill, and group titles, all read from one private popup-choice contract in
+`foundation.css`. Checkbox items reserve a check column; plain commands start
+at the checkmark's leading edge. Compact mixed controls retain the standard
 item padding, omit an internal separator, and let the raised selected item paint
 over the outer border instead of shrinking to an inset highlight. The Web
 Awesome trigger's shadow base owns max-content sizing, so icons, localized text,

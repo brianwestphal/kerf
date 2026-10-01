@@ -1,4 +1,26 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
+
+async function expectDemoTriggerAlignment(page: Page, label: string) {
+  const offset = await page
+    .locator('[data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', { hasText: label }),
+    })
+    .first()
+    .evaluate((section) => {
+      const heading = section.querySelector('[data-catalog-example-label]');
+      const triggerText = section
+        .querySelector('wa-dropdown.kui-popup-menu > wa-button')
+        ?.shadowRoot?.querySelector('[part~="label"]');
+      if (!heading || !triggerText)
+        throw new Error('PopupMenu demo label missing');
+      return (
+        triggerText.getBoundingClientRect().x -
+        heading.getBoundingClientRect().x
+      );
+    });
+  expect(Math.abs(offset)).toBeLessThanOrEqual(2);
+}
 
 test('PopupMenu opens from its toolbar trigger and dispatches the chosen command', async ({
   page,
@@ -57,12 +79,13 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   ).toBeHidden();
 });
 
-test('nested choices, selected details, disabled commands, and context opening work', async ({
+test('nested checked choices, disabled commands, and context opening work', async ({
   page,
   browserName,
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=popup-menu');
+  await expectDemoTriggerAlignment(page, 'Nested decisions');
   const demo = page.locator('[data-demo="popup-menu"]');
   const nested = demo.locator('[data-component="popup-menu"]').filter({
     has: page.locator('wa-dropdown-item[slot="submenu"]'),
@@ -84,17 +107,6 @@ test('nested choices, selected details, disabled commands, and context opening w
   await trigger.focus();
   await page.keyboard.press('Enter');
   await expect(nested).toHaveAttribute('open', '');
-  await expect(
-    nested.getByRole('menuitemcheckbox', { name: 'Updated' }),
-  ).toBeFocused();
-  const selected = nested.getByRole('menuitemcheckbox', { name: 'Updated' });
-  await expect(selected).toHaveAttribute('checked', '');
-  await expect(selected).toHaveAttribute('aria-checked', 'true');
-  await expect(selected).toHaveAttribute('data-selected', '');
-  const selectedFill = await selected.evaluate(
-    (element) => window.getComputedStyle(element).backgroundColor,
-  );
-  expect(selectedFill).not.toBe('rgba(0, 0, 0, 0)');
   const parent = nested.locator(
     'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
   );
@@ -105,9 +117,6 @@ test('nested choices, selected details, disabled commands, and context opening w
   const divider = parent.locator('wa-divider[slot="submenu"]');
   await expect(parent).toHaveJSProperty('hasSubmenu', true);
   await expect(parent).toHaveJSProperty('submenuOpen', false);
-  await page.keyboard.press('Home');
-  await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('ArrowDown');
   await expect(parent).toBeFocused();
   await page.keyboard.press('ArrowRight');
   await expect(parent).toHaveJSProperty('submenuOpen', true);
@@ -154,6 +163,7 @@ test('nested choices, selected details, disabled commands, and context opening w
     '2',
   );
   await page.setViewportSize({ width: 390, height: 844 });
+  await expectDemoTriggerAlignment(page, 'Nested decisions');
   await trigger.click();
   await parent.hover();
   await expect(other).toBeVisible();
@@ -192,26 +202,49 @@ test('nested choices, selected details, disabled commands, and context opening w
     });
 });
 
-test('selected PopupMenu choice follows application state on pointer and keyboard selection', async ({
+test('checked PopupMenu choice follows application state on pointer and keyboard selection', async ({
   page,
+  browserName,
 }) => {
   await page.goto('/?component=popup-menu');
-  const menu = page
-    .locator('[data-demo="popup-menu"] [data-component="popup-menu"]')
-    .filter({ has: page.locator('wa-dropdown-item[data-selected]') });
-  const trigger = menu.getByRole('button', { name: 'Decide' });
+  const menu = page.locator('[data-popup-checked-menu]');
+  const trigger = menu.getByRole('button', { name: 'Sort choices' });
   const updated = menu.getByRole('menuitemcheckbox', { name: 'Updated' });
   const priority = menu.getByRole('menuitemcheckbox', { name: 'Priority' });
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
+    await expectDemoTriggerAlignment(page, 'Checked choices');
     await trigger.click();
     await expect(updated).toHaveAttribute('aria-checked', 'true');
     await expect(priority).toHaveAttribute('aria-checked', 'false');
+    const plain = menu.getByRole('menuitem', { name: 'More sort options' });
+    const checkX = await updated.evaluate(
+      (element) =>
+        element.shadowRoot?.querySelector('#check')?.getBoundingClientRect().x,
+    );
+    const plainLabelX = await plain.evaluate(
+      (element) =>
+        element.shadowRoot?.querySelector('#label')?.getBoundingClientRect().x,
+    );
+    expect(checkX).toBeDefined();
+    expect(plainLabelX).toBeDefined();
+    expect(Math.abs(checkX! - plainLabelX!)).toBeLessThanOrEqual(1);
+    if (browserName === 'chromium') {
+      await menu.evaluate(async (element) => {
+        await Promise.all(
+          element
+            .getAnimations({ subtree: true })
+            .map((animation) => animation.finished.catch(() => undefined)),
+        );
+      });
+      await page.screenshot({
+        path: `test-results/popup-menu-checked-${width}.png`,
+      });
+    }
     await priority.click();
     await trigger.click();
     await expect(updated).toHaveAttribute('aria-checked', 'false');
     await expect(priority).toHaveAttribute('aria-checked', 'true');
-    await expect(priority).toHaveAttribute('data-selected', '');
     await priority.focus();
     await page.keyboard.press('Home');
     await expect(updated).toBeFocused();
