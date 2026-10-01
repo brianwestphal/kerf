@@ -510,7 +510,8 @@ own inset (8px for a raw `wa-dropdown`, the Select listbox's 4px for a
 open popup, fade-in surface, surface inset, row height and padding, current-row
 fill, and group titles, all read from one private popup-choice contract in
 `foundation.css`. Checkbox items reserve a check column; plain commands start
-at the checkmark's leading edge. Compact mixed controls retain the standard
+at the checkmark's leading edge, beside the group title rather than the
+farther-in Select option label. Compact mixed controls retain the standard
 item padding, omit an internal separator, and let the raised selected item paint
 over the outer border instead of shrinking to an inset highlight. The Web
 Awesome trigger's shadow base owns max-content sizing, so icons, localized text,

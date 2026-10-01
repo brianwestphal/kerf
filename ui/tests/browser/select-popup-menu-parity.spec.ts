@@ -134,14 +134,17 @@ test('PopupMenu draws the same popup, rows, and caret motion as Select', async (
   // The open caret turns to face the popup in both controls.
   expect(openSelect.caretRotate).toBe('-180deg');
   expect(openMenu.caretRotate).toBe(openSelect.caretRotate);
-  // One surface inset, one row geometry, one reserved check column.
+  // One surface inset and row geometry. The checked choice test in
+  // popup-menu.spec.ts covers the reserved check column; this menu contains
+  // a plain Archive command, which starts at the checkmark's leading edge.
   expect(openMenu.inset).toBe(openSelect.inset);
   expect(openMenu.rowHeight).toBe(openSelect.rowHeight);
   expect(openMenu.rowPaddingBlock).toBe(openSelect.rowPaddingBlock);
   expect(openMenu.rowPaddingInlineEnd).toBe(openSelect.rowPaddingInlineEnd);
   expect(openMenu.labelPaddingBlock).toBe(openSelect.labelPaddingBlock);
   expect(openMenu.labelLineHeight).toBe(openSelect.labelLineHeight);
-  expect(openMenu.contentStart).toBe(openSelect.contentStart);
+  expect(openMenu.contentStart).toBeGreaterThanOrEqual(8);
+  expect(openMenu.contentStart).toBeLessThan(openSelect.contentStart);
   // The PopupMenu fades like the Select's popup instead of scaling in.
   expect(openMenu.surfaceScale).toBe('none');
   await page.keyboard.press('Escape');

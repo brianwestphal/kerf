@@ -2,6 +2,14 @@ import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
 async function screenshotRelated(page: Page, path: string) {
+  await expect
+    .poll(() =>
+      page.locator('[data-catalog-related]').evaluate((root) => {
+        const menu = root.shadowRoot?.querySelector('[part~="menu"]');
+        return menu ? window.getComputedStyle(menu).opacity : '';
+      }),
+    )
+    .toBe('1');
   const clip = await page.locator('[data-catalog-related]').evaluate((root) => {
     const trigger = root.getBoundingClientRect();
     // `[data-catalog-related]` is the wa-dropdown itself.
@@ -127,13 +135,19 @@ test('related Components selector fits its trigger and popup content', async ({
           }
         : null;
     });
-    // Group headings are the Select's group titles: a real 12px inset inside
-    // the 4px popup inset, outdented over the check column that the item
-    // labels (like Select options) reserve.
+    if (browserName === 'chromium')
+      await screenshotRelated(
+        page,
+        `test-results/catalog-related-selector-${viewport.name}.png`,
+      );
+    // These are plain commands, so their labels sit at the checkmark's
+    // leading edge, near the group heading. Checkbox labels are farther in.
     expect(popupSpacing?.headingLeft).toBeGreaterThanOrEqual(10);
-    expect(popupSpacing?.itemLeft ?? 0).toBeGreaterThan(
-      popupSpacing?.headingLeft ?? 0,
-    );
+    expect(
+      Math.abs(
+        (popupSpacing?.itemLeft ?? 0) - (popupSpacing?.headingLeft ?? 0),
+      ),
+    ).toBeLessThanOrEqual(2);
     expect(popupSpacing?.itemRight).toBeGreaterThanOrEqual(8);
     expect(popupSpacing?.menuLeft).toBeGreaterThanOrEqual(10);
     expect(popupSpacing?.menuRight).toBeLessThanOrEqual(viewport.width - 10);
@@ -144,10 +158,5 @@ test('related Components selector fits its trigger and popup content', async ({
           document.documentElement.clientWidth + 1,
       ),
     ).toBe(true);
-    if (browserName === 'chromium')
-      await screenshotRelated(
-        page,
-        `test-results/catalog-related-selector-${viewport.name}.png`,
-      );
   }
 });
