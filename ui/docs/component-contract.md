@@ -522,6 +522,13 @@ and the shadow caret determine the width without a fixed host measurement.
 With `popup-menu/register` loaded, PopupMenu and a raw dropdown inside
 `PopupSurface` preserve item navigation made during the Web Awesome show
 animation across its final initial-focus handoff.
+At viewport widths of 480px or less, `PopupMenu` places an open submenu above
+or below its parent menu, choosing the side with room and constraining the
+submenu to the viewport. It never paints over the parent list. The submenu
+remains a native Web Awesome `menu`: the reverse horizontal arrow (ArrowLeft in
+LTR, ArrowRight in RTL) returns focus to its parent item, Escape dismisses the
+menu, and choosing a child dispatches the normal
+`data-action` and `wa-select` events. Wider viewports retain the side cascade.
 The enclosing `Toolbar` owns zone alignment and responsive topology: use
 `centerAlign="stretch"` when the center group should consume its track, and
 choose `responsive="stack"` with `responsiveAt="compact" | "narrow"`,

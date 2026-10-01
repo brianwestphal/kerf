@@ -494,7 +494,8 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  * `nestedDropdown`) or a `PopupSurface` sizes and insets it as usual. Items
  * dispatch through delegated `data-action`s; the app owns the commands and any
  * open-state reaction. Import `@kerfjs/ui/popup-menu/register` once to register
- * the Web Awesome elements.
+ * the Web Awesome elements. At viewport widths up to 480px, submenus appear
+ * above or below their parent menu so their rows do not cover the parent list.
  */
 declare function PopupMenu({ text, label, icon, items, placement, caret, disabled, rootAttributes, slot, context, }: PopupMenuProps): SafeHtml;
 

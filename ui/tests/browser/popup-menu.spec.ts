@@ -193,6 +193,42 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await trigger.click();
   await parent.hover();
   await expect(other).toBeVisible();
+  const narrowPlacement = await parent.evaluate((item) => {
+    const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
+    const dropdown = item.closest('wa-dropdown');
+    const menu = dropdown?.shadowRoot?.querySelector('[part~="menu"]');
+    if (!submenu || !menu) throw new Error('PopupMenu surface missing');
+    const child = submenu.getBoundingClientRect();
+    const parentMenu = menu.getBoundingClientRect();
+    return {
+      childTop: child.top,
+      childBottom: child.bottom,
+      childLeft: child.left,
+      childRight: child.right,
+      parentTop: parentMenu.top,
+      parentBottom: parentMenu.bottom,
+    };
+  });
+  expect(
+    narrowPlacement.childBottom <= narrowPlacement.parentTop ||
+      narrowPlacement.childTop >= narrowPlacement.parentBottom,
+  ).toBe(true);
+  expect(narrowPlacement.childLeft).toBeGreaterThanOrEqual(8);
+  expect(narrowPlacement.childRight).toBeLessThanOrEqual(390 - 8);
+  expect(narrowPlacement.childTop).toBeGreaterThanOrEqual(8);
+  expect(narrowPlacement.childBottom).toBeLessThanOrEqual(844 - 8 + 0.1);
+  await approve.focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(parent).toBeFocused();
+  await expect(parent).toHaveJSProperty('submenuOpen', false);
+  await page.keyboard.press('ArrowRight');
+  await expect(other).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(nested).not.toHaveAttribute('open', '');
+  await trigger.click();
+  await parent.hover();
+  await expect(other).toBeVisible();
+  await expect(parent.locator('[part~="submenu"]')).not.toHaveClass(/show/);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/popup-menu-nested-narrow.png',
@@ -201,6 +237,19 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await expect(page.locator('.catalog-log')).toHaveText('Decision: other');
 
   await page.setViewportSize({ width: 1100, height: 800 });
+  await trigger.click();
+  await parent.hover();
+  await expect(approve).toBeVisible();
+  const widePlacement = await parent.evaluate((item) => {
+    const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
+    if (!submenu) throw new Error('PopupMenu submenu missing');
+    return {
+      position: (submenu as HTMLElement).style.position,
+      maxHeight: (submenu as HTMLElement).style.maxHeight,
+    };
+  });
+  expect(widePlacement).toEqual({ position: '', maxHeight: '' });
+  await page.keyboard.press('Escape');
   const context = demo.locator('[data-popup-context-menu]');
   const row = demo.locator('[data-popup-menu-context-target]');
   await row.click({ button: 'right', position: { x: 20, y: 12 } });

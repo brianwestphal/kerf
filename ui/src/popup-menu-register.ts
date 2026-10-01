@@ -11,11 +11,13 @@ import { installHelpTags } from './install-help-tag.js';
 import { installPopupMenuKeyboard } from './install-popup-menu-keyboard.js';
 import { installPopupMenuLifecycle } from './install-popup-menu-lifecycle.js';
 import { installPopupMenuSubmenuFocus } from './install-popup-menu-submenu-focus.js';
+import { installPopupMenuSubmenuPlacement } from './install-popup-menu-submenu-placement.js';
 
 installPopupMenuKeyboard(WaDropdown.prototype);
 installPopupMenuLifecycle(WaDropdown.prototype);
 installDropdownShowFocus(WaDropdown.prototype);
 installPopupMenuSubmenuFocus(WaDropdownItem.prototype);
+installPopupMenuSubmenuPlacement(WaDropdown.prototype);
 installHelpTags();
 
 /**

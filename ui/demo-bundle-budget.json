@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 315900,
-  "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 315822,
+  "totalJavaScriptGzip": 316400,
+  "measuredLargestJavaScriptGzip": 126045,
+  "measuredTotalJavaScriptGzip": 316358,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2179,6 +2179,22 @@
         "measuredTotalJavaScriptGzip": 315822,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 315900
+      }
+    },
+    {
+      "at": "2026-10-01T13:46:04.876Z",
+      "reason": "Phone-width PopupMenu submenus need viewport-aware placement and keyboard-preserving registration",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 315822,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 315900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126045,
+        "measuredTotalJavaScriptGzip": 316358,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 316400
       }
     }
   ]
