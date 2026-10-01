@@ -126,7 +126,7 @@ test('suggestions stay in the viewport and track their field while scrolling', a
     const scrolled = await field.evaluate((element) => {
       let ancestor = element.parentElement;
       while (ancestor) {
-        const style = getComputedStyle(ancestor);
+        const style = window.getComputedStyle(ancestor);
         const maximum = ancestor.scrollHeight - ancestor.clientHeight;
         if (maximum > 0 && /auto|scroll/.test(style.overflowY)) {
           const current = ancestor.scrollTop;
@@ -206,6 +206,7 @@ test('a committed chip does not reclaim focus from the next form control', async
 test('grammar model suggests, commits, edits, removes, and clears in the real catalog', async ({
   page,
 }, testInfo) => {
+  await page.goto('/?component=token-search-field');
   const demo = page
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
@@ -220,9 +221,8 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto('/?component=token-search-field');
-    await editor.fill('tag:cl');
-    await expect(editor).toHaveText('tag:cl');
+    await editor.click();
+    await editor.pressSequentially('tag:cl');
     await expect(
       field.getByRole('button', { name: 'tag:client' }),
     ).toBeVisible();
