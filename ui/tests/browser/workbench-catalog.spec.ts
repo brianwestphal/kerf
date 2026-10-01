@@ -1454,7 +1454,9 @@ test('the responsive drawer example is inline when wide and a transient overlay 
   await expect(drawer).toHaveAttribute('data-collapsed', 'true');
   await editorToggle.click();
   await expect(drawer).toHaveAttribute('data-collapsed', 'false');
-  await workbench.getByText('Narrow the workbench').click();
+  await workbench
+    .locator('[data-workbench-backdrop]')
+    .click({ position: { x: 10, y: 10 } });
   await expect(drawer).toHaveAttribute('data-collapsed', 'true');
 
   // Wide again: back inline and open, as it was before the breakpoint.

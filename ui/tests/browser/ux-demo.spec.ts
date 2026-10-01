@@ -726,15 +726,18 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   const demo = page.locator('[data-demo="lucide-icon"]');
   await expect(demo).toHaveClass(/kui-catalog-example-stack/);
   const examples = demo.locator('.kui-catalog-example');
-  await expect(examples).toHaveCount(2);
-  // Each example is a ListHeader label + a note + the icon (left-aligned stack).
+  await expect(examples).toHaveCount(3);
+  // Each example is a ListHeader label + a note with aligned left edges.
   await expect(examples.nth(0).locator('.kui-list-header')).toHaveText(
     /Decorative/,
   );
   await expect(examples.nth(1).locator('.kui-list-header')).toHaveText(
     /Meaningful/,
   );
-  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(2);
+  await expect(examples.nth(2).locator('.kui-list-header')).toHaveText(
+    /Icon sizes/,
+  );
+  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(3);
   const alignedLeftEdges = await examples.evaluateAll((nodes) =>
     nodes.map((example) => {
       const contentLeft = (selector: string) => {
@@ -1004,15 +1007,13 @@ test('computes component geometry overlays from live CSS and leaves composition 
     .evaluate((style) => style.remove());
 
   // The overlay marks the demoed SPECIMEN, not the example's ListHeader label or
-  // note. In a labeled demo the two transparent LucideIcon specimens each get a
-  // bound and no margin; the labels (which have their own 8px inline margins and
-  // transparent background) must not be marked, so there are exactly two bounds
-  // and zero margin bands — not four bounds and label side-bands.
+  // note. The two mode specimens and the size specimen each get a bound and no
+  // margin; the labels must not be marked.
   await page.goto('/?component=lucide-icon');
   await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
   await expect
     .poll(() => overlay.locator('.kui-catalog__geometry-bound').count())
-    .toBe(2);
+    .toBe(3);
   await expect
     .poll(() => overlay.locator('.kui-catalog__geometry-margin').count())
     .toBe(0);
@@ -6218,6 +6219,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Button group',
     'Select beside actions',
     'Single button',
+    'Busy action',
     'Borderless group',
     'Push button, resting',
     'Push button, pressed',
@@ -6229,7 +6231,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Collapsible search',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(16);
+  await expect(groups).toHaveCount(17);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
   );
@@ -6383,7 +6385,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       .screenshot({ path: 'test-results/toolbar-control-group-avatar.png' });
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(16);
+  await expect(groups).toHaveCount(17);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/toolbar-control-groups-narrow.png',
@@ -7048,8 +7050,8 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
 
   await page.goto('/?component=tab-bar');
   const tabBars = page.locator('[data-demo="tab-bar"]');
-  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(6);
-  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(6);
+  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(7);
+  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(7);
   const splitBar = tabBars.locator('[data-tab-bar-id="inspector-tab-bar"]');
   const splitTabs = splitBar.locator('[data-kui-tab-list]');
   const adjacentAction = splitBar.getByRole('button', {

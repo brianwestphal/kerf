@@ -111,10 +111,23 @@ test('nested choices, selected details, disabled commands, and context opening w
   await expect(parent).toBeFocused();
   await page.keyboard.press('ArrowRight');
   await expect(parent).toHaveJSProperty('submenuOpen', true);
+  // Web Awesome focuses the first submenu item once on opening and again when
+  // its show animation ends. Let that second handoff finish before testing
+  // arrow navigation so it cannot overwrite the next keyboard move.
+  await parent.evaluate(async (element) => {
+    const submenu = (element as HTMLElement & { submenuElement?: HTMLElement })
+      .submenuElement;
+    await Promise.all(
+      (submenu?.getAnimations() ?? []).map((animation) =>
+        animation.finished.catch(() => undefined),
+      ),
+    );
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+  });
   await expect(approve).toBeFocused();
-  await page.keyboard.press('ArrowDown');
+  await approve.press('ArrowDown');
   await expect(other).toBeFocused();
-  await page.keyboard.press('ArrowUp');
+  await other.press('ArrowUp');
   await expect(approve).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText('Decision: approve');
