@@ -8,6 +8,7 @@ import {
   PanelRightOpen,
 } from 'lucide';
 
+import { List, type ListConfig } from './list.js';
 import { LucideIcon } from './lucide-icon.js';
 import { Pane, type PaneConfig } from './pane.js';
 import { isRelocatableGroup } from './panel-toolbar-group.js';
@@ -88,6 +89,32 @@ export interface PanelToolbar extends ToolbarConfig {
   toggle?: PanelToggle;
 }
 
+/** A panel's fixed bottom toolbar, below its optional footer content. */
+export interface PanelBottomToolbar extends ToolbarConfig {
+  label: string;
+  leading?: KerfUiContent;
+  center?: KerfUiContent;
+  trailing?: KerfUiContent;
+}
+
+/** Whether panel chrome stays fixed, scrolls, or follows Pane's auto rule. */
+export type PanelChromePlacement = 'fixed' | 'scroll' | 'auto';
+
+function panelChromeList(content: KerfUiContent, config?: ListConfig) {
+  return (
+    <List
+      dividerSides={config?.dividerSides}
+      gap={config?.gap}
+      hAlign={config?.hAlign}
+      vAlign={config?.vAlign}
+      textInsets={config?.textInsets}
+      controlInsets={config?.controlInsets}
+    >
+      {content}
+    </List>
+  );
+}
+
 /** Owner-specific attributes a toggle button carries (its wiring hooks). */
 export type PanelToggleAttributes = Readonly<Record<string, string>>;
 
@@ -165,7 +192,13 @@ export function composedPanelBody({
   collapsed,
   attributes,
   pane,
+  header,
+  headerList,
+  headerPlacement = 'fixed',
   footer,
+  footerList,
+  bottomToolbar,
+  footerPlacement = 'fixed',
   content,
 }: {
   toolbar: PanelToolbar;
@@ -173,13 +206,52 @@ export function composedPanelBody({
   collapsed: boolean;
   attributes: PanelToggleAttributes;
   pane: PaneConfig | undefined;
-  footer: KerfUiContent;
+  header?: KerfUiContent;
+  headerList?: ListConfig;
+  headerPlacement?: PanelChromePlacement;
+  footer?: KerfUiContent;
+  footerList?: ListConfig;
+  bottomToolbar?: PanelBottomToolbar;
+  footerPlacement?: PanelChromePlacement;
   content: KerfUiContent;
 }): SafeHtml {
+  const panelHeader = (
+    <>
+      {composedPanelToolbar(toolbar, side, collapsed, attributes)}
+      {header ? panelChromeList(header, headerList) : null}
+    </>
+  );
+  const panelFooter =
+    footer || bottomToolbar ? (
+      <>
+        {footer ? panelChromeList(footer, footerList) : null}
+        {bottomToolbar ? (
+          <Toolbar
+            position="footer"
+            label={bottomToolbar.label}
+            dividerSides={bottomToolbar.dividerSides}
+            centerAlign={bottomToolbar.centerAlign}
+            responsive={bottomToolbar.responsive}
+            responsiveAt={bottomToolbar.responsiveAt}
+            safeAreaEdges={bottomToolbar.safeAreaEdges}
+            leading={bottomToolbar.leading}
+            center={bottomToolbar.center}
+            trailing={bottomToolbar.trailing}
+          />
+        ) : null}
+      </>
+    ) : undefined;
+  const scrollHeader = headerPlacement === 'scroll';
+  const scrollFooter = footerPlacement === 'scroll';
   return (
     <Pane
-      header={composedPanelToolbar(toolbar, side, collapsed, attributes)}
-      footer={footer}
+      header={scrollHeader ? undefined : panelHeader}
+      footer={scrollFooter ? undefined : panelFooter}
+      chromePlacement={
+        headerPlacement === 'auto' || footerPlacement === 'auto'
+          ? 'auto'
+          : 'fixed'
+      }
       contentElement={pane?.contentElement}
       contentLabel={pane?.contentLabel}
       separators={pane?.separators}
@@ -187,7 +259,9 @@ export function composedPanelBody({
       chromeDividers={pane?.chromeDividers}
       appearance={pane?.appearance}
     >
+      {scrollHeader ? panelHeader : null}
       {content}
+      {scrollFooter ? panelFooter : null}
     </Pane>
   );
 }

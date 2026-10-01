@@ -134,13 +134,20 @@ and that of the components it renders (`Pane`, `Toolbar`, `ToolbarControlGroup`,
 
 Give a panel a `toolbar` (the same roles as a
 [Workbench panel toolbar](workbench.md#panel-toolbars)) and it composes its own
-top toolbar over a `Pane`, with an optional `footer` below its content:
+top toolbar over a `Pane`:
 
 - `title` precedes the `leading` zone; `leading`, `center`, and `trailing`
   place groups wherever the open panel needs them;
 - a `ToolbarControlGroup` marked `relocateOnCollapse` stays available in the
   work area when the panel closes; the standard `toggle: { action, name,
 showLabel?, hideLabel? }` is always the final group.
+
+The panel can also take `header` under its toolbar, `footer` below its content,
+`bottomToolbar` below that, `headerList` / `footerList` for those fixed content
+stacks, and `headerPlacement` / `footerPlacement` (`fixed`, `scroll`, or `auto`).
+These slots share the panel's one `Pane` scroll owner; the bottom toolbar uses
+footer semantics. With no `toolbar`, the panel renders its children directly
+and ignores the chrome slots.
 
 The toolbar also takes the `Toolbar`'s configuration (`dividerSides`,
 `centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`); it draws no

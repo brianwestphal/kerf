@@ -1,10 +1,13 @@
 import type { SafeHtml } from 'kerfjs';
 
+import type { ListConfig } from './list.js';
 import { LucideIcon } from './lucide-icon.js';
 import type { PaneConfig } from './pane.js';
 import {
   collapsiblePanelToggleIcon,
   composedPanelBody,
+  type PanelBottomToolbar,
+  type PanelChromePlacement,
   type PanelSide,
   type PanelToggle,
   type PanelToggleAttributes,
@@ -35,6 +38,8 @@ export type CollapsiblePanelToolbarToggle = PanelToggle;
  * {@link CollapsiblePanelRelocated} while it is collapsed.
  */
 export type CollapsiblePanelToolbar = PanelToolbar;
+export type CollapsiblePanelBottomToolbar = PanelBottomToolbar;
+export type CollapsiblePanelChromePlacement = PanelChromePlacement;
 
 /** A CollapsiblePanel toggle's `wireSidebar` hook. */
 const toggleAttributes = (panelId: string): PanelToggleAttributes => ({
@@ -113,8 +118,15 @@ export interface CollapsiblePanelProps {
    * marked groups and toggle stay reachable while the panel is collapsed.
    */
   toolbar?: CollapsiblePanelToolbar;
-  /** Optional bottom toolbar under a `toolbar` panel's content. */
+  /** Fixed content below a toolbar panel's top toolbar. */
+  header?: KerfUiContent;
+  headerList?: ListConfig;
+  headerPlacement?: CollapsiblePanelChromePlacement;
+  /** Fixed content above a toolbar panel's bottom toolbar. */
   footer?: KerfUiContent;
+  footerList?: ListConfig;
+  bottomToolbar?: CollapsiblePanelBottomToolbar;
+  footerPlacement?: CollapsiblePanelChromePlacement;
   /**
    * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
    * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example
@@ -157,7 +169,13 @@ export function CollapsiblePanel({
   label,
   children,
   toolbar,
+  header,
+  headerList,
+  headerPlacement,
   footer,
+  footerList,
+  bottomToolbar,
+  footerPlacement,
   pane,
   separator = 'auto',
   collapseMotion = 'slide',
@@ -198,7 +216,13 @@ export function CollapsiblePanel({
                 collapsed,
                 attributes: toggleAttributes(id),
                 pane,
+                header,
+                headerList,
+                headerPlacement,
                 footer,
+                footerList,
+                bottomToolbar,
+                footerPlacement,
                 content: children,
               })
             : children}

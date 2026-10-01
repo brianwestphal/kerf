@@ -28,6 +28,7 @@ import {
   type WorkbenchChromePlacement,
   type WorkbenchMainBottomToolbar,
   type WorkbenchMainToolbar,
+  type WorkbenchPanelBottomToolbar,
   type WorkbenchPanelToolbar,
 } from './workbench-toolbars.js';
 
@@ -35,6 +36,7 @@ export type {
   WorkbenchChromePlacement,
   WorkbenchMainBottomToolbar,
   WorkbenchMainToolbar,
+  WorkbenchPanelBottomToolbar,
   WorkbenchPanelToggle,
   WorkbenchPanelToolbar,
 } from './workbench-toolbars.js';
@@ -71,8 +73,20 @@ export interface WorkbenchPanel {
    * collapsed. With it, `content` renders in a `Pane` below the toolbar.
    */
   toolbar?: WorkbenchPanelToolbar;
-  /** Optional bottom toolbar under a `toolbar` panel's content. */
+  /** Fixed content below a toolbar panel's top toolbar, above its scroll region. */
+  header?: KerfUiContent;
+  /** List layout for `header`; omitted fields keep List defaults. */
+  headerList?: ListConfig;
+  /** Placement of the top toolbar and header together; default `fixed`. */
+  headerPlacement?: WorkbenchChromePlacement;
+  /** Fixed content above a toolbar panel's bottom toolbar. */
   footer?: KerfUiContent;
+  /** List layout for `footer`; omitted fields keep List defaults. */
+  footerList?: ListConfig;
+  /** Fixed toolbar below `footer`, using footer semantics. */
+  bottomToolbar?: WorkbenchPanelBottomToolbar;
+  /** Placement of the footer and bottom toolbar together; default `fixed`. */
+  footerPlacement?: WorkbenchChromePlacement;
   /**
    * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
    * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example

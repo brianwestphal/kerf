@@ -1531,7 +1531,7 @@ import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-DqwtBxQL.js';
+import { a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-DDKh4uKd.js';
 import { ToolbarConfig } from './toolbar.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -1550,6 +1550,7 @@ type WorkbenchPanelToggle = PanelToggle;
  * `FloatingToolbar` in the work area's bottom-end corner.
  */
 type WorkbenchPanelToolbar = PanelToolbar;
+type WorkbenchPanelBottomToolbar = PanelBottomToolbar;
 /**
  * The work area's top toolbar; collapsed rails add their groups to it. Its
  * configuration forwards to its `Toolbar`. It draws no divider of its own by
@@ -1585,7 +1586,7 @@ interface WorkbenchMainBottomToolbar extends ToolbarConfig {
  * the Pane's `chromePlacement="auto"`; it applies to the pinned header and
  * footer together).
  */
-type WorkbenchChromePlacement = 'fixed' | 'scroll' | 'auto';
+type WorkbenchChromePlacement = PanelChromePlacement;
 
 /**
  * The Workbench container breakpoint below which a panel presents as an
@@ -1616,8 +1617,20 @@ interface WorkbenchPanel {
      * collapsed. With it, `content` renders in a `Pane` below the toolbar.
      */
     toolbar?: WorkbenchPanelToolbar;
-    /** Optional bottom toolbar under a `toolbar` panel's content. */
+    /** Fixed content below a toolbar panel's top toolbar, above its scroll region. */
+    header?: KerfUiContent;
+    /** List layout for `header`; omitted fields keep List defaults. */
+    headerList?: ListConfig;
+    /** Placement of the top toolbar and header together; default `fixed`. */
+    headerPlacement?: WorkbenchChromePlacement;
+    /** Fixed content above a toolbar panel's bottom toolbar. */
     footer?: KerfUiContent;
+    /** List layout for `footer`; omitted fields keep List defaults. */
+    footerList?: ListConfig;
+    /** Fixed toolbar below `footer`, using footer semantics. */
+    bottomToolbar?: WorkbenchPanelBottomToolbar;
+    /** Placement of the footer and bottom toolbar together; default `fixed`. */
+    footerPlacement?: WorkbenchChromePlacement;
     /**
      * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
      * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example
@@ -1769,7 +1782,7 @@ interface WorkbenchProps {
  */
 declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
 
-export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
+export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchPanel, type WorkbenchPanelBottomToolbar, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
 ```
 
 ## `@kerfjs/ui/wire-workbench`
@@ -1890,16 +1903,18 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
-import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-DqwtBxQL.js';
-export { c as collapsiblePanelToggleIcon } from './panel-toolbar-DqwtBxQL.js';
+import { P as PanelSide, a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-DDKh4uKd.js';
+export { e as collapsiblePanelToggleIcon } from './panel-toolbar-DDKh4uKd.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import './css-values.js';
+import './flex-alignment-4ms8ZbV8.js';
+import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
 import './toolbar.js';
-import './sides-BPSWde0A.js';
-import './css-values.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 type CollapsiblePanelSide = PanelSide;
@@ -1912,6 +1927,8 @@ type CollapsiblePanelToolbarToggle = PanelToggle;
  * {@link CollapsiblePanelRelocated} while it is collapsed.
  */
 type CollapsiblePanelToolbar = PanelToolbar;
+type CollapsiblePanelBottomToolbar = PanelBottomToolbar;
+type CollapsiblePanelChromePlacement = PanelChromePlacement;
 interface CollapsiblePanelToggleProps {
     /** The panel this toggle controls. */
     side: CollapsiblePanelSide;
@@ -1955,8 +1972,15 @@ interface CollapsiblePanelProps {
      * marked groups and toggle stay reachable while the panel is collapsed.
      */
     toolbar?: CollapsiblePanelToolbar;
-    /** Optional bottom toolbar under a `toolbar` panel's content. */
+    /** Fixed content below a toolbar panel's top toolbar. */
+    header?: KerfUiContent;
+    headerList?: ListConfig;
+    headerPlacement?: CollapsiblePanelChromePlacement;
+    /** Fixed content above a toolbar panel's bottom toolbar. */
     footer?: KerfUiContent;
+    footerList?: ListConfig;
+    bottomToolbar?: CollapsiblePanelBottomToolbar;
+    footerPlacement?: CollapsiblePanelChromePlacement;
     /**
      * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
      * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example
@@ -1990,7 +2014,7 @@ interface CollapsiblePanelProps {
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
-declare function CollapsiblePanel({ id, side, collapsed, size, label, children, toolbar, footer, pane, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
+declare function CollapsiblePanel({ id, side, collapsed, size, label, children, toolbar, header, headerList, headerPlacement, footer, footerList, bottomToolbar, footerPlacement, pane, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
 interface CollapsiblePanelRelocatedProps {
     /** The panel's `id`. */
     panelId: string;
@@ -2010,7 +2034,7 @@ interface CollapsiblePanelRelocatedProps {
  */
 declare function CollapsiblePanelRelocated({ panelId, side, collapsed, toolbar, }: CollapsiblePanelRelocatedProps): SafeHtml;
 
-export { CollapsiblePanel, type CollapsiblePanelProps, CollapsiblePanelRelocated, type CollapsiblePanelRelocatedProps, type CollapsiblePanelSide, CollapsiblePanelToggle, type CollapsiblePanelToggleProps, type CollapsiblePanelToolbar, type CollapsiblePanelToolbarToggle };
+export { CollapsiblePanel, type CollapsiblePanelBottomToolbar, type CollapsiblePanelChromePlacement, type CollapsiblePanelProps, CollapsiblePanelRelocated, type CollapsiblePanelRelocatedProps, type CollapsiblePanelSide, CollapsiblePanelToggle, type CollapsiblePanelToggleProps, type CollapsiblePanelToolbar, type CollapsiblePanelToolbarToggle };
 ```
 
 ## `@kerfjs/ui/wire-sidebar`
@@ -2343,7 +2367,7 @@ import './list.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './resizable-region.js';
-import './panel-toolbar-DqwtBxQL.js';
+import './panel-toolbar-DDKh4uKd.js';
 import './lucide-icon.js';
 import 'lucide';
 
@@ -2436,7 +2460,7 @@ import './list.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './resizable-region.js';
-import './panel-toolbar-DqwtBxQL.js';
+import './panel-toolbar-DDKh4uKd.js';
 import './lucide-icon.js';
 import 'lucide';
 

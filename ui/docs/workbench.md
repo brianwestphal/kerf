@@ -219,6 +219,17 @@ it pinned while the work area is tall enough and lets it scroll with `main`
 when the work area is short (the Pane's `chromePlacement="auto"`; it applies to
 the pinned header and footer together).
 
+A toolbar panel has the same fixed chrome sequence: `toolbar`, optional
+`header`, scrolling `content`, optional `footer`, and optional
+`bottomToolbar`. `header` sits below the panel toolbar, so an inspector can
+keep its title, notices, and section tabs visible while its detail content
+scrolls in the one `Pane` scroll owner. `headerList` and `footerList` configure
+their `List` wrappers. `headerPlacement` and `footerPlacement` accept
+`"fixed"` (default), `"scroll"`, or `"auto"` with the same behavior as the
+work area's placement props. The panel's bottom toolbar renders a semantic
+`footer`. These panel slots apply only when the panel has a `toolbar`; a panel
+without one continues to render `content` as supplied.
+
 Every toolbar the Workbench composes — `mainToolbar`, `mainBottomToolbar`, and
 each panel's `toolbar` — takes the `Toolbar`'s configuration (`ToolbarConfig`):
 `dividerSides`, `centerAlign`, `responsive`, `responsiveAt`, and
@@ -245,7 +256,8 @@ configurable the same way:
   in — for example `{ contentElement: "nav", contentLabel: "Files" }` for a
   navigator rail. Without a toolbar, `appearance: "sunken"` paints the panel
   scroll region;
-- `mainHeaderList` / `mainFooterList` (`ListConfig`: `gap`, `hAlign`,
+- `mainHeaderList` / `mainFooterList` and a panel's `headerList` /
+  `footerList` (`ListConfig`: `gap`, `hAlign`,
   `vAlign`, `dividerSides`, `textInsets`, `controlInsets`) configure the
   `List`s holding `mainHeader` / `mainFooter`.
 

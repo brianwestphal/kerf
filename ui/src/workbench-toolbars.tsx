@@ -6,6 +6,8 @@ import { List, type ListConfig } from './list.js';
 import { Pane, type PaneConfig } from './pane.js';
 import {
   composedPanelBody,
+  type PanelBottomToolbar,
+  type PanelChromePlacement,
   type PanelSide,
   type PanelToggle,
   type PanelToggleAttributes,
@@ -31,6 +33,7 @@ export type WorkbenchPanelToggle = PanelToggle;
  * `FloatingToolbar` in the work area's bottom-end corner.
  */
 export type WorkbenchPanelToolbar = PanelToolbar;
+export type WorkbenchPanelBottomToolbar = PanelBottomToolbar;
 
 /**
  * The work area's top toolbar; collapsed rails add their groups to it. Its
@@ -71,7 +74,13 @@ const SIDES: Record<WorkbenchPanelKey, PanelSide> = {
 /** A panel as far as its toolbar is concerned. */
 export interface WorkbenchToolbarPanel {
   toolbar?: WorkbenchPanelToolbar;
+  header?: KerfUiContent;
+  headerList?: ListConfig;
+  headerPlacement?: PanelChromePlacement;
   footer?: KerfUiContent;
+  footerList?: ListConfig;
+  bottomToolbar?: WorkbenchPanelBottomToolbar;
+  footerPlacement?: PanelChromePlacement;
   /** Configuration for the `Pane` a `toolbar` panel's content renders in. */
   pane?: PaneConfig;
   content: KerfUiContent;
@@ -127,7 +136,13 @@ export function panelBody(
     collapsed: Boolean(panel.collapsed),
     attributes: toggleAttributes(workbenchId, key),
     pane: panel.pane,
+    header: panel.header,
+    headerList: panel.headerList,
+    headerPlacement: panel.headerPlacement,
     footer: panel.footer,
+    footerList: panel.footerList,
+    bottomToolbar: panel.bottomToolbar,
+    footerPlacement: panel.footerPlacement,
     content: panel.content,
   });
 }
@@ -159,7 +174,7 @@ function chromeList(content: KerfUiContent, config: ListConfig | undefined) {
  * the Pane's `chromePlacement="auto"`; it applies to the pinned header and
  * footer together).
  */
-export type WorkbenchChromePlacement = 'fixed' | 'scroll' | 'auto';
+export type WorkbenchChromePlacement = PanelChromePlacement;
 
 /**
  * The work area: the app's `main` in a `Pane` (configured by `mainPane`)

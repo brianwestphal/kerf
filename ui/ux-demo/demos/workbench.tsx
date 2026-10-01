@@ -197,7 +197,30 @@ export function WorkbenchDemo() {
                 name: 'inspector',
               },
             },
-            content: region('Selection', '160–360 px wide'),
+            header: (
+              <>
+                <ToolbarText text="Ticket #42" headingLevel={3} />
+                <ToolbarText text="Open for review" size="small" />
+              </>
+            ),
+            headerList: { gap: '2xs', textInsets: 'trbl' },
+            footer: <ToolbarText text="Updated just now" size="small" />,
+            footerList: { textInsets: 'trbl' },
+            bottomToolbar: {
+              label: 'Inspector actions',
+              trailing: iconGroup('Search inspector', Search, 'search'),
+            },
+            content: (
+              <div class="kui-content">
+                <DemoContentItem title="Selection" detail="160–360 px wide" />
+                {Array.from({ length: 12 }, (_, index) => (
+                  <DemoContentItem
+                    title={`Field ${index + 1}`}
+                    detail="Scrollable inspector detail"
+                  />
+                ))}
+              </div>
+            ),
             collapsed: workbenchInspectorCollapsed.value,
             size: workbenchInspectorSize.value,
             resizable: { min: 160, max: 360 },
