@@ -208,7 +208,8 @@ open popup. A disabled item stays in the menu but cannot be
 chosen; disable the whole trigger only when every command is unavailable.
 Nested items use Web Awesome's submenu pointer and Left/Right arrow routing;
 headings and dividers can separate nested groups without becoming keyboard
-choices. Set `checked` to `true` or `false` for checkbox menu semantics; omit it
+choices. A rapid ArrowDown or ArrowUp after opening a submenu keeps the chosen
+item focused when its show animation finishes. Set `checked` to `true` or `false` for checkbox menu semantics; omit it
 for a plain command. `details` supplies optional
 trailing visual content without changing a command's accessible label. A
 `context` menu's invisible anchor is outside the accessibility tree and normal

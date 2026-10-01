@@ -4,11 +4,14 @@ import '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
 import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js';
 
 import WaDropdown from '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
+import WaDropdownItem from '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
 
 import { installHelpTags } from './install-help-tag.js';
 import { installPopupMenuKeyboard } from './install-popup-menu-keyboard.js';
+import { installPopupMenuSubmenuFocus } from './install-popup-menu-submenu-focus.js';
 
 installPopupMenuKeyboard(WaDropdown.prototype);
+installPopupMenuSubmenuFocus(WaDropdownItem.prototype);
 installHelpTags();
 
 /**

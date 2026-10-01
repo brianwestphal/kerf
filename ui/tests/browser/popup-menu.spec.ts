@@ -255,3 +255,44 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
     await page.keyboard.press('Escape');
   }
 });
+
+test('rapid submenu arrows keep the chosen item focused after opening', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const nested = page.locator('[data-component="popup-menu"]').filter({
+    has: page.locator('wa-dropdown-item[slot="submenu"]'),
+  });
+  const trigger = nested.getByRole('button', { name: 'Decide' });
+  const parent = nested.locator(
+    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
+  );
+  const approve = parent.locator('[data-decision="approve"]');
+  const other = parent.locator('[data-decision="other"]');
+
+  await trigger.focus();
+  await page.keyboard.press('Enter');
+  await expect(parent).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect(approve).toBeFocused();
+  await approve.press('ArrowDown');
+  await expect(other).toBeFocused();
+  await parent.evaluate(async (element) => {
+    const submenu = (element as HTMLElement & { submenuElement?: HTMLElement })
+      .submenuElement;
+    await Promise.all(
+      (submenu?.getAnimations() ?? []).map((animation) =>
+        animation.finished.catch(() => undefined),
+      ),
+    );
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+  });
+  await expect(other).toBeFocused();
+  if (browserName === 'chromium')
+    await page.screenshot({ path: 'test-results/popup-menu-rapid-focus.png' });
+  await other.press('ArrowUp');
+  await expect(approve).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+});
