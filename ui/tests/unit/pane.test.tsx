@@ -132,6 +132,7 @@ describe('Pane', () => {
         }),
       );
       expect(html).toContain('data-appearance="sunken"');
+      expect(html).toContain('data-chrome-dividers="always"');
       expect(html.match(/data-appearance=/g)).toHaveLength(1);
       expect(html).toContain('kui-pane__header');
       expect(html).toContain('kui-pane__footer');

@@ -45,6 +45,9 @@ content scroller; with `chromePlacement="auto"`, the Pane root paints the
 surface because it becomes the scroller in a short viewport. Header and footer
 chrome stay on the normal surface. No second scroll container or
 `SunkenPanel` wrapper is needed.
+Sunken panes draw their header/footer dividers by default, even when short
+content does not scroll. Pass `chromeDividers="scroll"` to restore scroll-state
+dividers or `"none"` to hide them.
 For custom chrome colors in auto mode, set `--kui-pane-chrome-background`
 on the Pane; it defaults to `--kui-color-surface`.
 
@@ -116,9 +119,10 @@ Toolbar, and List stylesheets draw from those. The line is an inset shadow or a 
 inside the component, so no state ever moves the chrome, the content, or a tab.
 Never write a border onto a component to show one.
 
-Configure a pane with `chromeDividers`: `scroll` (the default) follows the
-scroll state and draws nothing until the wiring runs; `always` keeps both lines;
-`none` drops them. Layouts forward it through `PaneConfig`
+Configure a pane with `chromeDividers`: `scroll` (the plain-pane default) follows
+the scroll state and draws nothing until the wiring runs; `always` (the sunken
+pane default) keeps both lines; `none` drops them. Explicit values override
+either default. Layouts forward it through `PaneConfig`
 (`mainPane.chromeDividers`, a panel's `pane.chromeDividers`). A `NavStack` and a
 `TabScaffold` take the same `chromeDividers` for their own chrome (the stack's
 top chrome and bottom toolbar, the scaffold's bar), and a `SplitView` forwards

@@ -137,7 +137,7 @@ describe('scroll-divider components', () => {
     );
   });
 
-  it('Pane renders chromeDividers only when it departs from the scroll default', () => {
+  it('Pane defaults to scroll for plain chrome and always for sunken chrome', () => {
     expect(String(Pane({ children: body }))).not.toContain(
       'data-chrome-dividers',
     );
@@ -150,6 +150,23 @@ describe('scroll-divider components', () => {
     expect(String(Pane({ children: body, chromeDividers: 'none' }))).toContain(
       'data-chrome-dividers="none"',
     );
+    expect(String(Pane({ children: body, appearance: 'sunken' }))).toContain(
+      'data-chrome-dividers="always"',
+    );
+    expect(
+      String(
+        Pane({
+          children: body,
+          appearance: 'sunken',
+          chromeDividers: 'scroll',
+        }),
+      ),
+    ).not.toContain('data-chrome-dividers');
+    expect(
+      String(
+        Pane({ children: body, appearance: 'sunken', chromeDividers: 'none' }),
+      ),
+    ).toContain('data-chrome-dividers="none"');
     // Application metadata cannot claim the Pane-owned attribute.
     expect(
       String(

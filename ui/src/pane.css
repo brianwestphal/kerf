@@ -176,9 +176,10 @@
 
 /* Chrome dividers: one line under the header and one over the footer, where
    the pinned chrome meets the scrolling content, whatever the chrome holds.
-   `chromeDividers="scroll"` (the default, no attribute) draws each only while
+   `chromeDividers="scroll"` (the plain-pane default, no attribute) draws each only while
    `wireScrollDividers` reports content scrolled away beneath it through
-   `data-scroll-divider` on the slot; `always` draws both; `none` neither. The
+   `data-scroll-divider` on the slot; a sunken pane defaults to `always`, which
+   draws both; `none` draws neither. The
    line is an inset shadow inside the slot, so showing or hiding it never
    moves the chrome or the content. */
 .kui-pane > :is(.kui-pane__header, .kui-pane__toolbar, .kui-pane__footer) {

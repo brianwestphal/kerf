@@ -150,6 +150,11 @@ test('sunken Pane paints short and long scroll viewports with fixed and auto chr
     await page.goto('/?component=pane');
     const chat = page.locator('#sunken-chat [data-component="pane"]');
     await expect(chat).toHaveAttribute('data-appearance', 'sunken');
+    await expect(chat).toHaveAttribute('data-chrome-dividers', 'always');
+    await expect(chat.locator('.kui-pane__footer')).not.toHaveCSS(
+      'box-shadow',
+      'none',
+    );
     const chatGeometry = await chat.evaluate((pane) => {
       const content = pane.querySelector<HTMLElement>('.kui-pane__content')!;
       const footer = pane.querySelector<HTMLElement>('.kui-pane__footer')!;

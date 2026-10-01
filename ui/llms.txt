@@ -338,12 +338,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Dividers between pinned chrome and scrolling content are scroll state.**
   Toolbars draw no divider by default. Call `wireScrollDividers(appRoot)`
   (`@kerfjs/ui/wire-scroll-dividers`) once and keep its disposer: every `Pane`
-  then draws the line under its header only while content is scrolled beneath
+  with `chromeDividers="scroll"` then draws the line under its header only while content is scrolled beneath
   it and the line over its footer only while more content lies below (never
   when the content fits), every `NavStack`'s top chrome and bottom toolbar and
   every `TabScaffold` bar do the same around the active view or scene, and
   every `TabBar` marks each side of its strip with tabs scrolled out of view. Configure a pane with `chromeDividers`
-  (`scroll` default, `always`, `none`), and a `NavStack` or `TabScaffold`
+  (`scroll` for a plain pane by default, `always` for a sunken pane by default,
+  or explicit `scroll`, `always`, `none`), and a `NavStack` or `TabScaffold`
   with its own `chromeDividers` (same values; a `SplitView` forwards it through
   `compactStack`); name app-owned chrome in `targets`.
   Never add a border, or a permanent `dividerSides`, to fake one.

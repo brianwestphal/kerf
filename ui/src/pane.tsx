@@ -83,7 +83,8 @@ export interface PaneProps {
   chromePlacement?: PaneChromePlacement;
   /**
    * The divider under the header and over the footer, where they meet the
-   * scrolling content. `scroll` (default) shows the header's divider only
+   * scrolling content. Omitted defaults to `scroll` for a plain pane and
+   * `always` for `appearance="sunken"`. `scroll` shows the header's divider only
    * while the content is scrolled down, and the footer's only while more
    * content lies below — never when the content fits — once
    * `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above
@@ -166,7 +167,7 @@ export function Pane({
   children,
   footer,
   chromePlacement = 'fixed',
-  chromeDividers = 'scroll',
+  chromeDividers,
   appearance = 'default',
   element = 'div',
   contentElement = 'div',
@@ -192,6 +193,8 @@ export function Pane({
     contentClassName,
     contentLabel,
   );
+  const resolvedChromeDividers =
+    chromeDividers ?? (appearance === 'sunken' ? 'always' : 'scroll');
   const body = (
     <>
       {header === undefined ? null : (
@@ -217,8 +220,8 @@ export function Pane({
     'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-chrome-dividers':
-      chromeDividers === 'always' || chromeDividers === 'none'
-        ? chromeDividers
+      resolvedChromeDividers === 'always' || resolvedChromeDividers === 'none'
+        ? resolvedChromeDividers
         : undefined,
     'data-separator-block-start': String(separators.includes('block-start')),
     'data-separator-block-end': String(separators.includes('block-end')),
