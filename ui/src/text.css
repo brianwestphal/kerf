@@ -3,6 +3,35 @@
   box-sizing: border-box;
   border: 1px solid transparent;
   margin: 0;
+  white-space: normal;
+  overflow-wrap: normal;
+}
+
+.kui-text[data-wrap="anywhere"] {
+  overflow-wrap: anywhere;
+}
+
+.kui-text[data-wrap="nowrap"] {
+  white-space: nowrap;
+}
+
+.kui-text[data-wrap="truncate"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+span.kui-text[data-wrap="truncate"] {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.kui-text__clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--_kui-text-max-lines);
 }
 
 .kui-text[data-tone="quiet"] {

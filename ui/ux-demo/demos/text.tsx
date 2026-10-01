@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 
 export function TextDemo() {
@@ -53,6 +54,32 @@ export function TextDemo() {
       <CatalogExample label="Flush dialog copy" align="none">
         <Text flush lineHeight="tight" data-demo-copy="flush">
           Compact supporting copy inside a dialog body.
+        </Text>
+      </CatalogExample>
+      <CatalogExample
+        label="Long copy and truncation"
+        note="Text breaks long identifiers, caps summaries, or yields space to a fixed sibling with a one-line ellipsis."
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <Text wrap="anywhere" data-demo-copy="anywhere">
+          DOCUMENT-2026-OCTOBER-PROCUREMENT-VERY-LONG-UNBROKEN-REFERENCE-123456789
+        </Text>
+        <Text wrap="normal" maxLines={2} data-demo-copy="capped">
+          A long summary can stop after two lines while retaining a useful
+          preview of the original message. Additional detail stays available in
+          the full record, and the summary keeps the surrounding layout compact.
+        </Text>
+        <Row gap="xs">
+          <Text variant="span" wrap="truncate" data-demo-copy="truncate">
+            Acme International Procurement and Manufacturing Limited
+          </Text>
+          <Text variant="span" wrap="nowrap" data-demo-copy="price">
+            $129 / unit
+          </Text>
+        </Row>
+        <Text wrap="nowrap" data-demo-copy="nowrap">
+          This status stays on one line.
         </Text>
       </CatalogExample>
     </CatalogExampleStack>

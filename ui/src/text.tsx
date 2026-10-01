@@ -9,11 +9,12 @@ export type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
 export type TextFont = 'default' | 'monospace';
 export type TextBorder = 'transparent' | 'none';
 export type TextLineHeight = 'default' | 'tight';
+export type TextWrap = 'normal' | 'anywhere' | 'nowrap' | 'truncate';
 
 export type TextContent =
   KerfUiContent | string | number | readonly TextContent[];
 
-export type TextProps = Omit<
+type TextCommonProps = Omit<
   KerfBaseAttrs,
   'children' | 'class' | 'className'
 > & {
@@ -36,6 +37,21 @@ export type TextProps = Omit<
   className?: string;
 };
 
+export type TextProps = TextCommonProps &
+  (
+    | {
+        /** Wrap normally or break long unbroken strings. Defaults to normal. */
+        wrap?: 'normal' | 'anywhere';
+        /** Cap wrapped text to this positive number of lines. */
+        maxLines?: number;
+      }
+    | {
+        /** Keep one line, with or without an ellipsis. */
+        wrap: 'nowrap' | 'truncate';
+        maxLines?: never;
+      }
+  );
+
 /**
  * Semantic heading, paragraph, or inline text. Block variants use the standard
  * content-item padding; `span` adds no box geometry.
@@ -49,11 +65,23 @@ export function Text({
   border = 'transparent',
   flush = false,
   lineHeight = 'default',
+  wrap = 'normal',
+  maxLines,
   children,
   class: classValue = '',
   className = '',
   ...attributes
 }: TextProps) {
+  if (
+    maxLines !== undefined &&
+    (!Number.isSafeInteger(maxLines) ||
+      maxLines < 1 ||
+      wrap === 'nowrap' ||
+      wrap === 'truncate')
+  )
+    throw new RangeError(
+      'Text maxLines requires a positive integer and wrapping',
+    );
   const classes = ['kui-text', classValue, className].filter(Boolean).join(' ');
   return (
     <Variant
@@ -66,8 +94,19 @@ export function Text({
       data-border={border}
       data-flush={flush ? 'true' : undefined}
       data-line-height={lineHeight === 'tight' ? 'tight' : undefined}
+      data-wrap={wrap === 'normal' ? undefined : wrap}
+      data-max-lines={maxLines === undefined ? undefined : String(maxLines)}
     >
-      {children}
+      {maxLines === undefined ? (
+        children
+      ) : (
+        <span
+          class="kui-text__clamp"
+          style={`--_kui-text-max-lines:${maxLines}`}
+        >
+          {children}
+        </span>
+      )}
     </Variant>
   );
 }

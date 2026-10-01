@@ -186,6 +186,52 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await page.screenshot({ path: 'test-results/text-size-narrow.png' });
 });
 
+test('Text wrap policies keep long copy within the row and cap summaries', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=text');
+  const anywhere = page.locator('[data-demo-copy="anywhere"]');
+  const capped = page.locator('[data-demo-copy="capped"]');
+  const truncated = page.locator('[data-demo-copy="truncate"]');
+  const nowrap = page.locator('[data-demo-copy="nowrap"]');
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await expect(anywhere).toHaveCSS('overflow-wrap', 'anywhere');
+    await expect(nowrap).toHaveCSS('white-space', 'nowrap');
+    await expect(page.locator('[data-demo-copy="price"]')).toHaveCSS(
+      'white-space',
+      'nowrap',
+    );
+    await expect(truncated).toHaveCSS('text-overflow', 'ellipsis');
+    await expect(truncated).toHaveCSS('min-width', '0px');
+    await expect(capped).toHaveCSS('white-space', 'normal');
+    await expect(capped.locator('.kui-text__clamp')).toHaveCSS(
+      '-webkit-line-clamp',
+      '2',
+    );
+    const row = truncated.locator('..');
+    const geometry = await row.evaluate((element) => {
+      const text = element.querySelector<HTMLElement>('.kui-text')!;
+      const detail = element.querySelector<HTMLElement>(
+        '[data-demo-copy="price"]',
+      )!;
+      return {
+        textEnd: text.getBoundingClientRect().right,
+        detailStart: detail.getBoundingClientRect().left,
+        detailEnd: detail.getBoundingClientRect().right,
+        rowEnd: element.getBoundingClientRect().right,
+        clipped: text.scrollWidth > text.clientWidth,
+      };
+    });
+    expect(geometry.textEnd).toBeLessThanOrEqual(geometry.detailStart);
+    expect(geometry.detailEnd).toBeLessThanOrEqual(geometry.rowEnd + 1);
+    if (width === 390) expect(geometry.clipped).toBe(true);
+    await row.screenshot({
+      path: testInfo.outputPath(`text-wrap-row-${width}.png`),
+    });
+  }
+});
+
 test('Text font="monospace" resolves to the Kerf code stack with Web Awesome loaded', async ({
   page,
   browserName,

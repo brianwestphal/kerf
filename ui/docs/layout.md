@@ -326,6 +326,14 @@ display copy, and `font="monospace"` for code or identifiers (the
 finite props compose with each other and with every semantic `variant`; omit
 them to inherit the surrounding color, size, and font.
 
+Control long copy with `wrap`: `normal` (default) restores ordinary wrapping,
+`anywhere` breaks long unbroken strings, `nowrap` holds one line, and
+`truncate` holds one line with an ellipsis. `truncate` sets `min-width: 0`, so
+Text can shrink beside a fixed-size sibling in a `Row`; the sibling keeps its
+width. On `normal` or `anywhere`, set a positive integer `maxLines` to clamp
+wrapped text with an ellipsis. Omit `maxLines` for unlimited lines. The cap is
+incompatible with `nowrap` and `truncate`.
+
 ```tsx
 import { Text } from "@kerfjs/ui/text";
 
@@ -337,6 +345,9 @@ import { Text } from "@kerfjs/ui/text";
 <Text variant="h2" size="xlarge">A display-sized section title</Text>;
 <strong>Inbox<Text variant="span" tone="quiet" size="compact"> · 3 msg</Text></strong>;
 <Text tone="danger" font="monospace">ERR_INVALID_ID</Text>;
+<Text wrap="anywhere">A-very-long-unbroken-identifier</Text>;
+<Text wrap="truncate" variant="span">Long vendor name</Text>;
+<Text wrap="normal" maxLines={2}>A long summary capped at two lines.</Text>;
 ```
 
 ## Spacer

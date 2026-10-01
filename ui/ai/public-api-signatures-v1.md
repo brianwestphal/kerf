@@ -3193,8 +3193,9 @@ type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
 type TextFont = 'default' | 'monospace';
 type TextBorder = 'transparent' | 'none';
 type TextLineHeight = 'default' | 'tight';
+type TextWrap = 'normal' | 'anywhere' | 'nowrap' | 'truncate';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
-type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
+type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
     variant?: TextVariant;
     /** Semantic foreground treatment. Defaults to the inherited foreground. */
@@ -3213,14 +3214,24 @@ type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     class?: string;
     className?: string;
 };
+type TextProps = TextCommonProps & ({
+    /** Wrap normally or break long unbroken strings. Defaults to normal. */
+    wrap?: 'normal' | 'anywhere';
+    /** Cap wrapped text to this positive number of lines. */
+    maxLines?: number;
+} | {
+    /** Keep one line, with or without an ellipsis. */
+    wrap: 'nowrap' | 'truncate';
+    maxLines?: never;
+});
 /**
  * Semantic heading, paragraph, or inline text. Block variants use the standard
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, size, font, border, flush, lineHeight, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, size, font, border, flush, lineHeight, wrap, maxLines, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
 
-export { Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextVariant };
+export { Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextVariant, type TextWrap };
 ```
 
 ## `@kerfjs/ui/row`
