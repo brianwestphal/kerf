@@ -363,6 +363,11 @@ example `b`, `tr`, or `trbl`) only when the toolbar owns a permanent separator
 edge. Dividers earn their place: never fake one with a border or pad below one
 to make it look right.
 
+`Toolbar` renders a semantic `header` by default. Set `position="footer"`
+for a toolbar at the bottom of a pane or page; Workbench's
+`mainBottomToolbar` and the catalog resource bar apply this automatically.
+The position changes the HTML element without changing zones or geometry.
+
 Common toolbar patterns:
 
 For a long-running icon action, set `busy` on its single-control

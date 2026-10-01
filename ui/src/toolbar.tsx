@@ -2,11 +2,15 @@ import type { PaneSeparatorSide } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
 import type { Sides } from './sides.js';
 
+export type ToolbarPosition = 'header' | 'footer';
+
 export interface ToolbarProps {
   leading?: KerfUiContent;
   center?: KerfUiContent;
   trailing?: KerfUiContent;
   label?: string;
+  /** Use footer semantics for a bottom toolbar; defaults to header. */
+  position?: ToolbarPosition;
   /**
    * Physical divider edges in canonical top/right/bottom/left order, drawn
    * always. Defaults to none: a toolbar pinned over or under scrolling content
@@ -76,6 +80,7 @@ export function Toolbar({
   center,
   trailing,
   label,
+  position = 'header',
   dividerSides = '',
   centerAlign = 'center',
   responsive = 'none',
@@ -84,26 +89,32 @@ export function Toolbar({
   className = '',
   slot,
 }: ToolbarProps) {
-  return (
-    <header
-      class={`kui-toolbar ${className}`.trim()}
-      data-component="toolbar"
-      divider-sides={dividerSides || undefined}
-      data-has-center={String(Boolean(center))}
-      data-center-align={centerAlign}
-      data-responsive={responsive}
-      data-responsive-at={responsiveAt}
-      data-safe-area-block-start={claim(safeAreaEdges, 'block-start')}
-      data-safe-area-block-end={claim(safeAreaEdges, 'block-end')}
-      data-safe-area-inline-start={claim(safeAreaEdges, 'inline-start')}
-      data-safe-area-inline-end={claim(safeAreaEdges, 'inline-end')}
-      aria-label={label}
-      slot={slot}
-    >
+  const attributes = {
+    class: `kui-toolbar ${className}`.trim(),
+    'data-component': 'toolbar',
+    'divider-sides': dividerSides || undefined,
+    'data-has-center': String(Boolean(center)),
+    'data-center-align': centerAlign,
+    'data-responsive': responsive,
+    'data-responsive-at': responsiveAt,
+    'data-safe-area-block-start': claim(safeAreaEdges, 'block-start'),
+    'data-safe-area-block-end': claim(safeAreaEdges, 'block-end'),
+    'data-safe-area-inline-start': claim(safeAreaEdges, 'inline-start'),
+    'data-safe-area-inline-end': claim(safeAreaEdges, 'inline-end'),
+    'aria-label': label,
+    slot,
+  };
+  const zones = (
+    <>
       <div class="kui-toolbar__leading">{leading}</div>
       <div class="kui-toolbar__center">{center}</div>
       <div class="kui-toolbar__trailing">{trailing}</div>
-    </header>
+    </>
+  );
+  return position === 'footer' ? (
+    <footer {...attributes}>{zones}</footer>
+  ) : (
+    <header {...attributes}>{zones}</header>
   );
 }
 

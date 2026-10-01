@@ -146,11 +146,14 @@ import { PaneSeparatorSide } from './pane.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 
+type ToolbarPosition = 'header' | 'footer';
 interface ToolbarProps {
     leading?: KerfUiContent;
     center?: KerfUiContent;
     trailing?: KerfUiContent;
     label?: string;
+    /** Use footer semantics for a bottom toolbar; defaults to header. */
+    position?: ToolbarPosition;
     /**
      * Physical divider edges in canonical top/right/bottom/left order, drawn
      * always. Defaults to none: a toolbar pinned over or under scrolling content
@@ -200,9 +203,9 @@ interface ToolbarProps {
  * toolbar) forwards, so the app configures that toolbar instead of styling it.
  */
 type ToolbarConfig = Pick<ToolbarProps, 'dividerSides' | 'centerAlign' | 'responsive' | 'responsiveAt' | 'safeAreaEdges'>;
-declare function Toolbar({ leading, center, trailing, label, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
+declare function Toolbar({ leading, center, trailing, label, position, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
 
-export { Sides, Toolbar, type ToolbarConfig, type ToolbarProps };
+export { Sides, Toolbar, type ToolbarConfig, type ToolbarPosition, type ToolbarProps };
 ```
 
 ## `@kerfjs/ui/toolbar-text`

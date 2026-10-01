@@ -208,7 +208,12 @@ export {
   type TokenSearchState,
   type TokenSearchSuggestion,
 } from './token-search-model.js';
-export { Toolbar, type ToolbarConfig, type ToolbarProps } from './toolbar.js';
+export {
+  Toolbar,
+  type ToolbarConfig,
+  type ToolbarPosition,
+  type ToolbarProps,
+} from './toolbar.js';
 export {
   ToolbarActionLink,
   type ToolbarActionLinkProps,

@@ -66,6 +66,7 @@ export function CatalogResourceFooter({
         </Row>
       ) : null}
       <Toolbar
+        position="footer"
         label={`${name} resources`}
         dividerSides={toolbar?.dividerSides}
         centerAlign={toolbar?.centerAlign}

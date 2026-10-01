@@ -246,6 +246,7 @@ export function mainBody({
         {mainFooter ? chromeList(mainFooter, mainFooterList) : null}
         {mainBottomToolbar ? (
           <Toolbar
+            position="footer"
             label={mainBottomToolbar.label}
             dividerSides={mainBottomToolbar.dividerSides}
             centerAlign={mainBottomToolbar.centerAlign}
