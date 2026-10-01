@@ -388,11 +388,16 @@ export function wireTokenSearchFields(
   };
   const view = () => root.ownerDocument.defaultView!;
   const focusing = new Map<string, () => void>();
-  const focusAfterRender = (id: string, selector: string) => {
+  const focusAfterRender = (
+    id: string,
+    selector: string,
+    guardMovedFocus = false,
+  ) => {
     focusing.get(id)?.();
+    let frame: number | undefined;
     const stop = () => {
       observer.disconnect();
-      view().clearTimeout(timeout);
+      if (frame !== undefined) view().cancelAnimationFrame(frame);
       if (focusing.get(id) === stop) focusing.delete(id);
     };
     const restore = () => {
@@ -407,6 +412,7 @@ export function wireTokenSearchFields(
       // have been replaced, leaving body active; controls of this field are
       // still part of the same interaction.
       if (
+        guardMovedFocus &&
         active !== field.ownerDocument.body &&
         active !== target &&
         !field.contains(active)
@@ -419,9 +425,16 @@ export function wireTokenSearchFields(
     };
     const observer = new MutationObserver(restore);
     observer.observe(root, { childList: true, subtree: true });
-    const timeout = view().setTimeout(stop, 0);
     focusing.set(id, stop);
     view().queueMicrotask(restore);
+    // A collapsed field may reveal its editor in the next render frame.
+    // The microtask/mutation path runs first; this bounded fallback keeps
+    // opening reliable without reclaiming focus a user moved elsewhere.
+    frame = view().requestAnimationFrame(() => {
+      frame = undefined;
+      restore();
+      stop();
+    });
   };
   const openField = (id: string) => {
     setExpanded(id, true);
@@ -533,7 +546,7 @@ export function wireTokenSearchFields(
           (input.inputType === 'insertFromPaste' && /\s$/.test(current.query));
         model.edit(current, commit);
         if (model.state.value.tokens.length > before)
-          focusAfterRender(id, '[data-token-search-editor]');
+          focusAfterRender(id, '[data-token-search-editor]', true);
       }
       if (onEdit) onEdit({ id, editor, event: event as InputEvent });
     }
@@ -733,7 +746,7 @@ export function wireTokenSearchFields(
           const value = (element as HTMLElement).dataset.tokenSearchSuggestion;
           if (!id || !value || field?.dataset.disabled === 'true') return;
           models[id]?.choose(value);
-          focusAfterRender(id, '[data-token-search-editor]');
+          focusAfterRender(id, '[data-token-search-editor]', true);
         },
       ),
       delegate(
@@ -754,7 +767,7 @@ export function wireTokenSearchFields(
           )
             return;
           models[id].expandToken(value);
-          focusAfterRender(id, '[data-token-search-editor]');
+          focusAfterRender(id, '[data-token-search-editor]', true);
         },
       ),
       delegate(

@@ -804,6 +804,18 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     handle();
   });
 
+  it('completes a collapsible reveal even if another app autofocus runs first', async () => {
+    const field = mountCollapsibleField();
+    const other = document.createElement('input');
+    document.body.append(other);
+    const handle = wireCollapsible(field);
+    field.trigger()!.click();
+    other.focus();
+    await raf();
+    expect(document.activeElement).toBe(field.editor());
+    handle();
+  });
+
   it.each(['open', 'close'] as const)(
     'does not move focus after disposal with a pending %s',
     async (transition) => {

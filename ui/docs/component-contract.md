@@ -581,7 +581,9 @@ by default it also owns the collapsible field's transient expand/collapse/focus
 state in a signal it exposes on the returned handle. An app reads that signal in
 render, hands in its own via `collapsible.signals`, drives it through
 `handle.open`/`handle.close`, or disables any individual behavior — so transient
-UI is consistent by default without every app reinventing it.
+UI is consistent by default without every app reinventing it. A collapsed
+field may reveal its editor after the current microtask; the helper keeps a
+bounded render-frame focus handoff for that reveal and cancels it on disposal.
 
 A public subpath that exposes several visual components is a folder-backed
 surface. Put each component in its own source file and give each visual
