@@ -53,8 +53,6 @@ interface TokenSearchFieldBaseProps {
   /** Let an expanded collapsible field consume the available inline width. */
   fill?: boolean;
   leading?: KerfUiContent;
-  /** Standalone field chrome or the inset visual layer of a configured toolbar group. */
-  presentation?: 'standalone' | 'toolbar-group';
   editAction?: string;
   removeAction?: string;
   clearAction?: string;
@@ -70,6 +68,21 @@ interface TokenSearchFieldBaseProps {
 type TokenSearchTrailingProps =
   | { trailing?: KerfUiContent; trailingAction?: never }
   | { trailing?: never; trailingAction: TokenSearchTrailingAction };
+
+type TokenSearchPresentationProps =
+  | {
+      /** Standalone field chrome or the inset visual layer of a configured toolbar group. */
+      presentation?: 'standalone' | 'toolbar-group';
+      hint?: never;
+      required?: never;
+    }
+  | {
+      /** Visible form label and optional hint around the full-width standalone control. */
+      presentation: 'form-field';
+      hint?: string;
+      /** Marks the editor required; the app validates its value. */
+      required?: boolean;
+    };
 
 type TokenSearchCollapsibleProps =
   | {
@@ -89,7 +102,8 @@ type TokenSearchCollapsibleProps =
 
 export type TokenSearchFieldProps = TokenSearchFieldBaseProps &
   TokenSearchCollapsibleProps &
-  TokenSearchTrailingProps;
+  TokenSearchTrailingProps &
+  TokenSearchPresentationProps;
 
 export interface TokenSearchFieldValue {
   query: string;
@@ -147,6 +161,8 @@ export function TokenSearchField({
   trailing,
   trailingAction,
   presentation = 'standalone',
+  hint,
+  required = false,
   editAction = 'edit-search-token',
   removeAction = 'remove-search-token',
   clearAction = 'clear-token-search',
@@ -170,7 +186,7 @@ export function TokenSearchField({
       : `${id}@${String(revision)}:${tokenKey}`;
   const resolvedExpanded =
     !collapsible || expanded || query.length > 0 || tokens.length > 0;
-  return (
+  const control = (
     <div
       class={`kui-token-search ${className}`.trim()}
       data-component="token-search-field"
@@ -208,7 +224,14 @@ export function TokenSearchField({
             data-token-count={tokens.length}
             data-placeholder={tokens.length ? tokenPlaceholder : placeholder}
             role="searchbox"
-            aria-label={label}
+            aria-label={presentation === 'form-field' ? undefined : label}
+            aria-labelledby={
+              presentation === 'form-field' ? `${id}-label` : undefined
+            }
+            aria-describedby={
+              presentation === 'form-field' && hint ? `${id}-hint` : undefined
+            }
+            aria-required={required ? 'true' : undefined}
             aria-disabled={disabled ? 'true' : undefined}
             contenteditable={disabled ? 'false' : 'true'}
             spellcheck="false"
@@ -297,6 +320,29 @@ export function TokenSearchField({
             </div>
           )}
         </>
+      )}
+    </div>
+  );
+  if (presentation !== 'form-field') return control;
+  return (
+    <div class="kui-token-search__field" data-token-search-form-field={id}>
+      <div
+        class="kui-token-search__field-label"
+        id={`${id}-label`}
+        data-token-search-form-label={id}
+      >
+        {label}
+        {required && (
+          <span class="kui-token-search__field-required" aria-hidden="true">
+            *
+          </span>
+        )}
+      </div>
+      {control}
+      {hint && (
+        <div class="kui-token-search__field-hint" id={`${id}-hint`}>
+          {hint}
+        </div>
       )}
     </div>
   );

@@ -10,6 +10,7 @@ Token-controlled, optionally collapsible search editor with ordered, editable, r
 
 - Combine DOM-owned free text with ordered editable/removable filter tokens in one searchbox.
 - Enable collapsible mode when an empty, unfocused search should reduce to one iconic action, standalone or inside a toolbar group.
+- Use presentation="form-field" for a structured search query beside Web Awesome form controls, with a visible label, optional hint, and required marker.
 
 **Not when:**
 
@@ -40,6 +41,7 @@ Exact prop names and types: [`@kerfjs/ui/token-search-field`](../public-api-sign
 - free text
 - disabled
 - collapsible standalone or toolbar composition
+- visible form-field label, hint, and required marker
 
 ## Composition
 
@@ -79,6 +81,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - Keep leading and trailing controls aligned to the first text line while content wraps. Managed Clear restores replacement focus before the next input task, preserving immediate typing and later focus handoffs without a frame delay.
 - Wire Enter to submit without inserting a contenteditable line break and preserve focus plus the text-relative caret across controlled keyboard chip deletion before the next keystroke. Select All deletion preserves managed open state and replacement focus; persist both edited query and tokens. Visual wrapping remains available.
 - In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out.
+- The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireTokenSearchFields focus the editor from a label click. The app validates required input.
 
 ## Styling boundary
 

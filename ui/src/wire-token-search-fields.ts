@@ -729,6 +729,23 @@ export function wireTokenSearchFields(
   disposers.push(
     delegate(
       root,
+      'click',
+      '[data-token-search-form-label]',
+      (_event, label) => {
+        const field = label.parentElement?.querySelector<HTMLElement>(
+          '[data-component="token-search-field"]',
+        );
+        if (field?.dataset.disabled === 'true') return;
+        field
+          ?.querySelector<HTMLElement>('[data-token-search-editor]')
+          ?.focus();
+      },
+    ),
+  );
+
+  disposers.push(
+    delegate(
+      root,
       'keydown',
       '[data-token-search-editor]',
       (event, element) => {

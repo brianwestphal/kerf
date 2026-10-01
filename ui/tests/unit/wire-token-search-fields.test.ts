@@ -31,6 +31,42 @@ function inputEvent(
 }
 
 describe('wireTokenSearchFields', () => {
+  it('focuses an enabled form editor when its visible label is clicked', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      String(
+        TokenSearchField({
+          id: 'query',
+          label: 'Search query',
+          presentation: 'form-field',
+        }),
+      ) +
+      String(
+        TokenSearchField({
+          id: 'disabled-query',
+          label: 'Disabled query',
+          presentation: 'form-field',
+          disabled: true,
+        }),
+      );
+    document.body.append(root);
+    const stop = wireTokenSearchFields(root);
+    root.querySelector<HTMLElement>('[data-token-search-form-label]')!.click();
+    expect(document.activeElement).toBe(
+      root.querySelector('[data-token-search-editor]'),
+    );
+    root
+      .querySelector<HTMLElement>(
+        '[data-token-search-form-label="disabled-query"]',
+      )!
+      .click();
+    expect(document.activeElement).toBe(
+      root.querySelector('[data-token-search-editor="query"]'),
+    );
+    stop();
+    root.remove();
+  });
+
   it('positions suggestion surfaces and cleans up when they leave the field', async () => {
     const root = document.createElement('div');
     const field = document.createElement('div');

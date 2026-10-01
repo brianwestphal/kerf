@@ -3844,7 +3844,8 @@
       },
       "useWhen": [
         "Combine DOM-owned free text with ordered editable/removable filter tokens in one searchbox.",
-        "Enable collapsible mode when an empty, unfocused search should reduce to one iconic action, standalone or inside a toolbar group."
+        "Enable collapsible mode when an empty, unfocused search should reduce to one iconic action, standalone or inside a toolbar group.",
+        "Use presentation=\"form-field\" for a structured search query beside Web Awesome form controls, with a visible label, optional hint, and required marker."
       ],
       "avoidWhen": [
         "Do not use for ordinary text input or separately labeled filter controls."
@@ -3859,19 +3860,22 @@
         "the grammar and evaluation callback when using the optional managed model, or parsing, suggestions, tokens, and query execution in manual mode",
         "results",
         "the revision that rebuilds the DOM-owned editor for a programmatic text replacement",
-        "optional override of the collapsible expand/collapse/focus, which wireTokenSearchFields manages by default (adopt an app expanded signal, opt out per behavior, or drive it via the returned handle)"
+        "optional override of the collapsible expand/collapse/focus, which wireTokenSearchFields manages by default (adopt an app expanded signal, opt out per behavior, or drive it via the returned handle)",
+        "validation of a required form-field value"
       ],
       "variants": [
         "tokens",
         "free text",
         "disabled",
-        "collapsible standalone or toolbar composition"
+        "collapsible standalone or toolbar composition",
+        "visible form-field label, hint, and required marker"
       ],
       "accessibility": [
         "Announce result changes when useful and keep tokens atomic during editing.",
         "Keep leading and trailing controls aligned to the first text line while content wraps. Managed Clear restores replacement focus before the next input task, preserving immediate typing and later focus handoffs without a frame delay.",
         "Wire Enter to submit without inserting a contenteditable line break and preserve focus plus the text-relative caret across controlled keyboard chip deletion before the next keystroke. Select All deletion preserves managed open state and replacement focus; persist both edited query and tokens. Visual wrapping remains available.",
-        "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out."
+        "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out.",
+        "The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireTokenSearchFields focus the editor from a label click. The app validates required input."
       ],
       "geometry": {
         "margin": "none",

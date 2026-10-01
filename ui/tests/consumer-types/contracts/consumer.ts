@@ -680,6 +680,15 @@ TokenSearchField({
   expandLabel: 'Open search',
 });
 TokenSearchField({ id: 'search', label: 'Search' });
+TokenSearchField({
+  id: 'saved-query',
+  label: 'Search query',
+  presentation: 'form-field',
+  hint: 'Add filters.',
+  required: true,
+});
+// @ts-expect-error A visible hint requires the form-field presentation.
+TokenSearchField({ id: 'search', label: 'Search', hint: 'Add filters.' });
 // @ts-expect-error KUI-T005 expanded has no effect on a non-collapsible field.
 TokenSearchField({ id: 'search', label: 'Search', expanded: true });
 

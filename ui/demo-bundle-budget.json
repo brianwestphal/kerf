@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 317500,
-  "measuredLargestJavaScriptGzip": 126043,
-  "measuredTotalJavaScriptGzip": 317463,
+  "totalJavaScriptGzip": 317800,
+  "measuredLargestJavaScriptGzip": 126044,
+  "measuredTotalJavaScriptGzip": 317799,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2307,6 +2307,22 @@
         "measuredTotalJavaScriptGzip": 317463,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 317500
+      }
+    },
+    {
+      "at": "2026-10-01T23:21:49.270Z",
+      "reason": "Labeled TokenSearchField form specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 317463,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 317799,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 317800
       }
     }
   ]

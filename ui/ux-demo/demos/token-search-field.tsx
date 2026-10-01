@@ -1,4 +1,5 @@
 import '@awesome.me/webawesome/dist/components/button/button.js';
+import '@awesome.me/webawesome/dist/components/input/input.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
@@ -26,6 +27,29 @@ export function TokenSearchFieldDemo() {
       label="TokenSearchField states"
       rootAttributes={{ 'data-demo': 'token-search-field' }}
     >
+      <CatalogExample
+        label="Saved-view form fields"
+        note="The query field shares label, hint, required, and control edges with Web Awesome input without a Toolbar."
+        align="none"
+        viewport={{ layout: 'grid', width: 'compact' }}
+      >
+        <List gap="m" rootAttributes={{ 'data-demo-token-form': '' }}>
+          <wa-input
+            label="View name"
+            hint="Name this saved view."
+            required
+            value="Open procurement"
+          ></wa-input>
+          <TokenSearchField
+            id="saved-view-query"
+            label="Search query"
+            presentation="form-field"
+            hint="Add filters to narrow the view."
+            required
+            query="status:open"
+          />
+        </List>
+      </CatalogExample>
       <CatalogExample
         label="Structured ticket search"
         note="Text and atomic filters remain in one keyboard-focusable editor."

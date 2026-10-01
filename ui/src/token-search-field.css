@@ -1,3 +1,32 @@
+.kui-token-search__field {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: var(--wa-space-2xs, remify(4px));
+}
+
+.kui-token-search__field-label {
+  padding-inline: remify(9px);
+  color: var(--kui-color-neutral-on-quiet, var(--wa-color-text-quiet));
+  font-size: var(--kui-font-xs, var(--wa-font-size-xs));
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: var(--wa-line-height-condensed, 1.2);
+  text-transform: uppercase;
+}
+
+.kui-token-search__field-required {
+  margin-inline-start: 0.15em;
+  color: var(--wa-color-danger-on-normal, currentColor);
+}
+
+.kui-token-search__field-hint {
+  padding-inline: remify(9px);
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+  line-height: var(--wa-line-height-normal, 1.6);
+}
+
 .kui-token-search {
   --kui-token-search-background: var(--kui-color-surface);
   --kui-token-search-border: var(--kui-color-neutral-border-normal);

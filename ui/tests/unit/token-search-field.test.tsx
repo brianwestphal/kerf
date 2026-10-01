@@ -19,6 +19,42 @@ const asHtml = (value: unknown) => String(value);
 describe('TokenSearchField', () => {
   beforeEach(() => document.body.replaceChildren());
 
+  it('renders a visible form label, hint, and required searchbox without toolbar geometry', () => {
+    const html = asHtml(
+      TokenSearchField({
+        id: 'saved-query',
+        label: 'Search query',
+        presentation: 'form-field',
+        hint: 'Add filters to narrow the view.',
+        required: true,
+      }),
+    );
+    expect(html).toContain('class="kui-token-search__field"');
+    expect(html).toContain('id="saved-query-label"');
+    expect(html).toContain('data-token-search-form-label="saved-query"');
+    expect(html).toContain(
+      'class="kui-token-search__field-required" aria-hidden="true"',
+    );
+    expect(html).toContain('id="saved-query-hint"');
+    expect(html).toContain('aria-labelledby="saved-query-label"');
+    expect(html).toContain('aria-describedby="saved-query-hint"');
+    expect(html).toContain('aria-required="true"');
+    expect(html).not.toContain('aria-label="Search query"');
+    expect(html).not.toContain('kui-toolbar');
+
+    const optional = asHtml(
+      TokenSearchField({
+        id: 'optional-query',
+        label: 'Optional query',
+        presentation: 'form-field',
+      }),
+    );
+    expect(optional).toContain('aria-labelledby="optional-query-label"');
+    expect(optional).not.toContain('aria-describedby');
+    expect(optional).not.toContain('aria-required');
+    expect(optional).not.toContain('kui-token-search__field-hint');
+  });
+
   it('renders ordered, editable atomic tokens inside a labeled searchbox', () => {
     const tokens: TokenSearchToken[] = [
       {

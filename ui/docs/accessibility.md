@@ -405,6 +405,15 @@ need `tab`/`tabpanel` semantics.
 
 ## TokenSearchField
 
+Use `presentation="form-field"` when a structured search query sits beside
+Web Awesome form controls. It renders the visible `label` with the same inset
+and typography, an optional `hint`, and an optional `required` marker. The
+searchbox references the label and hint with `aria-labelledby` and
+`aria-describedby`, and `required` sets `aria-required`; the application
+validates the value before submission. `wireTokenSearchFields()` also moves
+focus to the editor when the visible label is clicked. The field stands outside
+a Toolbar and fills the same inline space as a neighboring `wa-input`.
+
 `TokenSearchField` exposes the editable surface as a named `searchbox`. Each
 chip is atomic (`contenteditable="false"`) and contains separately named edit
 and remove buttons; the clear action is also named. Disabled fields publish
