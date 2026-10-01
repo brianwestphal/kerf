@@ -30,7 +30,8 @@
   "bin": {
     "kerf-ui-analyze": "./analyzer/cli.mjs",
     "kerf-ui-doctor": "./doctor/cli.mjs",
-    "kerf-ui-evaluate": "./evaluator/cli.mjs"
+    "kerf-ui-evaluate": "./evaluator/cli.mjs",
+    "kerf-catalog-demo": "./catalog-projection-cli.mjs"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -49,6 +50,10 @@
     "./css-values": {
       "types": "./dist/css-values.d.ts",
       "import": "./dist/css-values.js"
+    },
+    "./catalog-projection": {
+      "types": "./catalog-projection.d.mts",
+      "import": "./catalog-projection.mjs"
     },
     "./lucide-icon": {
       "types": "./dist/lucide-icon.d.ts",
@@ -385,6 +390,10 @@
   "files": [
     "dist",
     "ai",
+    "catalog-projection.mjs",
+    "catalog-projection.d.mts",
+    "catalog-projection-cli.mjs",
+    "scripts/component-catalog-extension-validation.mjs",
     "analyzer",
     "doctor",
     "evaluator",

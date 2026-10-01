@@ -221,6 +221,37 @@ and resolvable across both catalogs; paths use `/` separators and cannot
 traverse outside the repository. These fields let consumer demos derive source
 links and composition relationships from the catalog.
 
+For a consumer UX demo, `@kerfjs/ui/catalog-projection` exports
+`projectConsumerCatalog(extension, kerfCatalog, options)` and
+`projectCatalogEntries(entries, options)`. The projection maps `purpose` to
+`description`, `uses` to related-entry ids, `source` to `componentSource`, and
+`demoSource` to the demo source link. It defaults the source identity to
+`consumer` and category to `Application`. Explicit paths in an extension entry
+take precedence over templates. Template placeholders are `{id}`, `{name}`,
+`{kind}`, and `{package}`. Design templates are omitted unless configured.
+
+The package also ships `kerf-catalog-demo` for a committed TypeScript module:
+
+```sh
+kerf-catalog-demo --extension ai/component-catalog-extension.json \
+  --out ux-demo/catalog.generated.ts \
+  --repo-base https://github.com/acme/app/blob/main/ \
+  --source-template 'src/{id}.tsx' \
+  --demo-template 'ux-demo/demos/{id}.tsx' --write
+kerf-catalog-demo --extension ai/component-catalog-extension.json \
+  --out ux-demo/catalog.generated.ts \
+  --repo-base https://github.com/acme/app/blob/main/ \
+  --source-template 'src/{id}.tsx' \
+  --demo-template 'ux-demo/demos/{id}.tsx' --check
+```
+
+The command uses the Kerf catalog shipped with the package to resolve `uses`;
+`--kerf-catalog` selects another catalog file. `--category`,
+`--documentation-template`, and `--design-template` configure optional row
+fields. `--check` fails if the generated file is missing or stale. The output
+exports `generatedConsumerCatalog` and `catalogRepositoryBlobUrl`; the latter
+is normalized to a trailing slash for source and documentation links.
+
 ### Automated conformance and reviewed exceptions
 
 Run `npm run check:demo-conformance` after changing a first-party demo, its

@@ -73,7 +73,9 @@ preserve their source identity, and use the shared `geometry` vocabulary across
 their composition boundary. An extension entry's optional `uses` ids resolve
 against both catalogs; its `source` and `demoSource` are repository-relative
 files for consumer catalog links. When a consuming project has reusable visual
-components, prefer its generated `component-composition.json`. A package
+components, derive demo rows with `@kerfjs/ui/catalog-projection` or
+`kerf-catalog-demo --write`, then guard drift with `--check`; see
+`../docs/catalog.md`. Prefer its generated `component-composition.json`. A package
 scaffolded by `create-kerf-component` owns the decisions in
 `kerf.components.json`; run `npm run catalog:check` before using its output. If
 no generated extension exists, start from the checked examples and require the

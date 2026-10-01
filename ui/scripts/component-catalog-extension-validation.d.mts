@@ -11,3 +11,5 @@ export function validateCatalogExtensionReferences(
   extension: CatalogEntries,
   kerfCatalog: CatalogEntries,
 ): string[];
+
+export function isRepositoryPath(value: unknown): value is string;

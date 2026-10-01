@@ -342,6 +342,10 @@ guidance, public hooks, and explicit geometry ownership; then concatenate its
 identity alongside each input when ids could collide. This makes a combined
 tool reason about both sides of a composition using one vocabulary without
 pretending app-local components are `@kerfjs/ui` exports.
+For a consumer UX demo, `@kerfjs/ui/catalog-projection` derives rows and
+relationships from that extension; `kerf-catalog-demo --write` emits a typed
+module and `--check` catches drift. See the [catalog guide](./docs/catalog.md)
+for repository base and source path configuration.
 
 Composition-aware consumers use
 [`component-composition-extension.schema.json`](./ai/component-composition-extension.schema.json),
