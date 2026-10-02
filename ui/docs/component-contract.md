@@ -518,7 +518,10 @@ a plain `<button>` — the group styles `> button` fully, and it keeps the group
 free of a Web Awesome dependency and shadow DOM. Use `ToolbarActionLink` when
 the action must retain native anchor navigation; the group owns its geometry,
 hover, and focus treatment. Set `overflow="scroll"` when a row of controls must
-stay inside the available toolbar width. Set `visibility="compact-only"` for a
+stay inside the available toolbar width. A disabled native button keeps the
+group's geometry, dims to half opacity, uses the `not-allowed` cursor, and
+paints neither its own nor a lone group's hover surface.
+Set `visibility="compact-only"` for a
 group that replaces wider toolbar controls below the Toolbar's compact container
 breakpoint; do not hide the group with an application class.
 Use `sizing="grow"` on an expanded search group in a wrapping zone: it grows from

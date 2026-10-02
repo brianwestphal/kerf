@@ -321,7 +321,12 @@
   place-items: center;
 }
 
-.kui-toolbar-control-group > button:hover {
+.kui-toolbar-control-group > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kui-toolbar-control-group > button:not(:disabled):hover {
   border-color: var(--kui-toolbar-control-border);
   background: var(--kui-toolbar-control-hover-background);
 }
@@ -532,7 +537,7 @@
 
 .kui-toolbar-control-group[data-single="true"]:has(
     > :is(
-      button,
+      button:not(:disabled),
       wa-button,
       .kui-popup-menu,
       wa-dropdown:not(.kui-popup-menu),
@@ -556,7 +561,12 @@
    inner layer inset from the border (KF-J9P1ZD — a heading toolbar's lone Close/
    Done action). */
 .kui-toolbar-control-group:not([data-single="true"]):has(
-    > :is(button, wa-button, .kui-select, .kui-toolbar-action-link):only-child
+    > :is(
+        button:not(:disabled),
+        wa-button,
+        .kui-select,
+        .kui-toolbar-action-link
+      ):only-child
   ):hover {
   background-color: var(--kui-toolbar-control-hover-background);
 }
