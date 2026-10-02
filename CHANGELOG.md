@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Pinned tabs cover the full leading edge of their scroll strip.** The
+  backing now includes the strip border as well as its padding, preventing a
+  sliver of a scrolling tab label from showing beside the pinned tab.
+
 - **Catalog resource links remain readable at phone widths.** The resource
   group wraps whole actions onto another row instead of clipping the Guidance
   label at the right edge; `ToolbarControlGroup overflow="wrap"` is available

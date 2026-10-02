@@ -43,7 +43,13 @@
   position: absolute;
   z-index: -1;
   inset-block: 0;
-  inset-inline-start: calc(-1 * var(--kui-tab-bar-strip-padding, 1px));
+  inset-inline-start: calc(
+    -1 *
+      (
+        var(--kui-tab-bar-strip-padding, 1px) +
+          var(--kui-tab-bar-strip-border-width, 1px)
+      )
+  );
   inset-inline-end: 0;
   background: var(
     --kui-app-tab-pinned-background,
