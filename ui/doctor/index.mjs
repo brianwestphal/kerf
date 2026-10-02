@@ -134,6 +134,7 @@ export function validateUiDoctorConfig(
     'stages',
     'browser',
     'cache',
+    'failOn',
     'suppressions',
   ]);
   for (const key of Object.keys(config))
@@ -224,6 +225,11 @@ export function validateUiDoctorConfig(
   }
   if (config.cache !== undefined && typeof config.cache !== 'boolean')
     add('$.cache', 'cache must be boolean.');
+  if (
+    config.failOn !== undefined &&
+    !['error', 'review', 'warning'].includes(config.failOn)
+  )
+    add('$.failOn', 'failOn must be error, review, or warning.');
   if (config.suppressions !== undefined) {
     if (!Array.isArray(config.suppressions))
       add('$.suppressions', 'suppressions must be an array.');
@@ -975,6 +981,7 @@ export async function runUiDoctor({
   config: suppliedConfig,
   configPath,
   cache,
+  failOn,
   signal,
   browser,
   runners = {},
@@ -1008,6 +1015,14 @@ export async function runUiDoctor({
     );
   }
   const selectedMode = mode ?? config.mode ?? 'full';
+  const selectedFailOn = failOn ?? config.failOn ?? 'error';
+  if (failOn !== undefined && !['error', 'review', 'warning'].includes(failOn))
+    initialDiagnostics.push(
+      configDiagnostic('failOn must be error, review, or warning.', {
+        file: '<options>',
+        path: '$.failOn',
+      }),
+    );
   const stages = { ...defaultStages, ...config.stages };
   if (browser?.url || config.browser?.url) stages.browser = true;
   const selectedPaths =
@@ -1035,6 +1050,7 @@ export async function runUiDoctor({
   const cachePath = resolve(root, '.kerf-cache/ui-doctor-v1.json');
   const key = await cacheKey(root, packageRoot, selectedMode, selectedPaths, {
     ...config,
+    failOn: selectedFailOn,
     browser: config.browser
       ? { ...config.browser, url: '<redacted-url>' }
       : undefined,
@@ -1228,7 +1244,9 @@ export async function runUiDoctor({
     ? UI_DOCTOR_EXIT.cancelled
     : infrastructureFailure
       ? UI_DOCTOR_EXIT.configuration
-      : summary.errors
+      : summary.errors ||
+          (selectedFailOn !== 'error' && summary.review) ||
+          (selectedFailOn === 'warning' && summary.warnings)
         ? UI_DOCTOR_EXIT.findings
         : UI_DOCTOR_EXIT.clean;
   const report = redact(root, {

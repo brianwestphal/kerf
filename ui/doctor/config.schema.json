@@ -37,6 +37,7 @@
       "additionalProperties": false
     },
     "cache": { "type": "boolean" },
+    "failOn": { "enum": ["error", "review", "warning"] },
     "suppressions": {
       "type": "array",
       "items": {

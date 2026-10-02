@@ -36,6 +36,7 @@ export interface UiDoctorConfig {
     reportPath?: string;
   };
   cache?: boolean;
+  failOn?: 'error' | 'review' | 'warning';
   suppressions?: UiDoctorSuppression[];
 }
 
@@ -109,6 +110,7 @@ export function runUiDoctor(options?: {
   config?: UiDoctorConfig;
   configPath?: string;
   cache?: boolean;
+  failOn?: 'error' | 'review' | 'warning';
   signal?: AbortSignal;
   browser?: UiDoctorConfig['browser'];
   eslintConfig?: 'recommended-ui' | 'strict-ui';

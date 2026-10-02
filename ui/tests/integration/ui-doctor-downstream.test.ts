@@ -22,7 +22,7 @@ async function link(directory: string, name: string, target: string) {
   await symlink(target, path, 'dir');
 }
 
-async function doctor(root: string) {
+async function doctor(root: string, args: string[] = []) {
   try {
     const { stdout } = await execFileAsync(
       process.execPath,
@@ -33,6 +33,7 @@ async function doctor(root: string) {
         '--format',
         'json',
         '--no-cache',
+        ...args,
       ],
       { cwd: root },
     );
@@ -252,6 +253,27 @@ test(
           .filter((item: { status: string }) => item.status === 'ran')
           .map((item: { id: string }) => item.id),
       ).toEqual(['analyzer', 'catalog', 'eslint', 'typescript']);
+
+      await writeFile(
+        resolve(root, 'src/view.css'),
+        '.theme { --wa-color-brand-fill-loud: #ffffff; --wa-color-brand-on-loud: #ffffff; }\n',
+      );
+      const defaultReview = await doctor(root);
+      expect(defaultReview.status).toBe(0);
+      expect(defaultReview.report.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ id: 'KUI-L018', severity: 'review' }),
+        ]),
+      );
+      const strictReview = await doctor(root, ['--fail-on', 'review']);
+      expect(strictReview.status).toBe(1);
+      expect(strictReview.report.exitCode).toBe(1);
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        '{"schemaVersion":1,"failOn":"review"}\n',
+      );
+      expect((await doctor(root)).status).toBe(1);
+      expect((await doctor(root, ['--fail-on', 'error'])).status).toBe(0);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

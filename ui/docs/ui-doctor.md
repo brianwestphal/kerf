@@ -7,6 +7,7 @@ npx kerf-ui-doctor --full
 npx kerf-ui-doctor --changed
 npx kerf-ui-doctor --package @acme/admin --changed
 npx kerf-ui-doctor --full --browser-url http://127.0.0.1:4173
+npx kerf-ui-doctor --full --fail-on warning
 ```
 
 The default terminal output is short and repair-oriented. `--format json` emits the schema-version-1 report; `--output report.json` writes the same representation. The package exports its contract from `@kerfjs/ui/doctor`, its configuration schema from `@kerfjs/ui/doctor/config.schema.json`, and its report schema from `@kerfjs/ui/doctor/report.schema.json`.
@@ -68,6 +69,7 @@ Place `.kerf-ui-doctor.json` at the workspace root:
   "mode": "full",
   "stages": { "browser": false },
   "cache": true,
+  "failOn": "warning",
   "suppressions": [
     {
       "id": "legacy-toolbar",
@@ -91,14 +93,14 @@ Reports replace the workspace's absolute path with `<repo-root>` and express in-
 
 Every diagnostic has a stable `id`, `severity`, `stage`, message, and—when applicable—an exact source location with JSON path or DOM context/selector. Analyzer evidence, catalog facts, documentation links, and safe next actions are preserved when the source tool provides them. Identical findings merge with their source stages; same identifiers with conflicting severities remain separate and add `KUI-D003`.
 
-Exit codes are deterministic:
+Exit codes are deterministic. `failOn` defaults to `error`; `--fail-on error|review|warning` overrides the config for a run. `review` fails on errors or review findings; `warning` also fails on warnings. Suppressed diagnostics never count. The effective threshold is part of the cache key.
 
-- `0`: no active error diagnostics;
+- `0`: no active diagnostics at or above the selected threshold;
 - `1`: repairable application findings;
 - `2`: malformed configuration, unavailable required tooling, or a failed stage;
 - `130`: cancellation.
 
-Warnings and review findings remain visible but do not fail unless their originating preset promotes them to errors. A cached report keeps its original exit code and labels previously run stages `cached`.
+Warnings and review findings remain visible at every threshold. A cached report keeps its original exit code and labels previously run stages `cached`.
 
 ## Monorepos and repair loops
 

@@ -86,6 +86,7 @@ describe('Kerf UI doctor', () => {
     const root = await fixture();
     const config = {
       schemaVersion: 1 as const,
+      failOn: 'warning' as const,
       stages: disabled,
       suppressions: [
         {
@@ -119,6 +120,7 @@ describe('Kerf UI doctor', () => {
     const result = validateUiDoctorConfig({
       schemaVersion: 2,
       mode: 'quick',
+      failOn: 'info',
       mystery: true,
       suppressions: [{ id: 'X', rules: [], target: '../all', rationale: 'no' }],
     });
@@ -126,6 +128,7 @@ describe('Kerf UI doctor', () => {
       expect.arrayContaining([
         '$.schemaVersion',
         '$.mode',
+        '$.failOn',
         '$.mystery',
         '$.suppressions[0].id',
         '$.suppressions[0].rules',
@@ -133,6 +136,82 @@ describe('Kerf UI doctor', () => {
         '$.suppressions[0].rationale',
       ]),
     );
+  });
+
+  it('applies failure thresholds to active findings and keeps cache results separate', async () => {
+    const root = await fixture();
+    const config = {
+      schemaVersion: 1 as const,
+      stages: { ...disabled, analyzer: true },
+      suppressions: [
+        {
+          id: 'accepted-warning',
+          rules: ['KUI-L091'],
+          target: 'src/view.tsx',
+          rationale: 'Accepted for this threshold test.',
+        },
+      ],
+    };
+    const runners = {
+      analyzer: async () => ({
+        diagnostics: [
+          { ...diagnostic('analyzer'), id: 'KUI-L006', severity: 'review' },
+          { ...diagnostic('analyzer'), id: 'KUI-L091', severity: 'warning' },
+        ],
+      }),
+    };
+    const run = (
+      failOn?: 'error' | 'review' | 'warning',
+      supplied: Record<string, unknown> = config,
+    ) => runUiDoctor({ root, config: supplied, failOn, runners } as never);
+    const errors = await run();
+    const review = await run('review');
+    const warning = await run('warning');
+    expect([errors.exitCode, review.exitCode, warning.exitCode]).toEqual([
+      0, 1, 1,
+    ]);
+    expect([errors.cache.hit, review.cache.hit, warning.cache.hit]).toEqual([
+      false,
+      false,
+      false,
+    ]);
+    expect(
+      new Set([errors.cache.key, review.cache.key, warning.cache.key]).size,
+    ).toBe(3);
+    expect(warning.summary).toMatchObject({
+      errors: 0,
+      review: 1,
+      warnings: 0,
+      suppressed: 1,
+    });
+    expect((await run('warning')).cache.hit).toBe(true);
+    expect(
+      (await run(undefined, { ...config, failOn: 'warning' })).exitCode,
+    ).toBe(1);
+    expect(
+      (await run('error', { ...config, failOn: 'warning' })).exitCode,
+    ).toBe(0);
+    const warningOnly = {
+      schemaVersion: 1 as const,
+      stages: { ...disabled, analyzer: true },
+    };
+    const warningRunner = {
+      analyzer: async () => ({
+        diagnostics: [
+          { ...diagnostic('analyzer'), id: 'KUI-L091', severity: 'warning' },
+        ],
+      }),
+    };
+    const warningRun = (failOn: 'review' | 'warning') =>
+      runUiDoctor({
+        root,
+        cache: false,
+        config: warningOnly,
+        failOn,
+        runners: warningRunner,
+      } as never);
+    expect((await warningRun('review')).exitCode).toBe(0);
+    expect((await warningRun('warning')).exitCode).toBe(1);
   });
 
   it('merges identical findings, retains conflicts, and makes exits deterministic', async () => {

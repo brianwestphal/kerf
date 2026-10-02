@@ -54,6 +54,7 @@ Options:
   --browser <list>       Comma-separated chromium,firefox,webkit
   --eslint <preset>      recommended-ui or strict-ui
   --format <format>      text or json (default: text)
+  --fail-on <severity>   error, review, or warning (default: error)
   --output <path>        Also write the merged report
   --no-cache             Disable the content-addressed cache
 
@@ -68,6 +69,7 @@ Exit codes: 0 clean, 1 findings, 2 configuration/tool failure, 130 cancelled.`);
   const browserList = take('--browser');
   const eslintConfig = take('--eslint') ?? 'recommended-ui';
   const format = take('--format') ?? 'text';
+  const failOn = take('--fail-on');
   const output = take('--output');
   const full = args.includes('--full');
   const changed = args.includes('--changed');
@@ -80,6 +82,8 @@ Exit codes: 0 clean, 1 findings, 2 configuration/tool failure, 130 cancelled.`);
     throw new Error('--full and --changed are mutually exclusive.');
   if (!['text', 'json'].includes(format))
     throw new Error('--format must be text or json.');
+  if (failOn && !['error', 'review', 'warning'].includes(failOn))
+    throw new Error('--fail-on must be error, review, or warning.');
   if (!['recommended-ui', 'strict-ui'].includes(eslintConfig))
     throw new Error('--eslint must be recommended-ui or strict-ui.');
   const abort = new globalThis.AbortController();
@@ -95,6 +99,7 @@ Exit codes: 0 clean, 1 findings, 2 configuration/tool failure, 130 cancelled.`);
     cache: !noCache,
     signal: abort.signal,
     eslintConfig,
+    failOn,
     browser: url
       ? { url, browsers: browserList?.split(',').map((item) => item.trim()) }
       : undefined,
