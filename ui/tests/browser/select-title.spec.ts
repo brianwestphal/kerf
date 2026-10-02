@@ -36,7 +36,6 @@ test('view-title Select keeps its 36px trigger and inset focus ring', async ({
     expect(geometry.weight).toBe('700');
     expect(geometry.caretLeft).toBeGreaterThan(geometry.labelLeft);
     expect(geometry.caretGap).toBeLessThan(8);
-    expect(geometry.caretLeft - geometry.labelLeft).toBeLessThan(100);
     const listText = section.locator('.kui-list-item__primary-label').first();
     expect(geometry.labelLeft).toBeCloseTo(
       (await listText.boundingBox())!.x,

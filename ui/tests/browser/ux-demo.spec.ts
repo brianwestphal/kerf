@@ -469,7 +469,7 @@ test('shows a visible hover background on borderless toolbar-group buttons', asy
   await expect.poll(groupBackground).not.toBe('rgb(255, 255, 255)');
 });
 
-test('the ToolbarControlGroup demo shape toggle switches every group between pill and rounded', async ({
+test('the ToolbarControlGroup demo shape toggle switches each shape-controlled specimen', async ({
   page,
 }) => {
   await page.goto('/?component=toolbar-control-group');
@@ -489,10 +489,10 @@ test('the ToolbarControlGroup demo shape toggle switches every group between pil
   await expect(sampleGroup).toHaveCSS('border-radius', '22px');
   await expect(roundedGroups).toHaveCount(0);
 
-  // Rounded switches every example group (the toggle's own group stays pill).
+  // The toggle group and wrapping-zone fixture keep their own shapes.
   await demo.getByRole('button', { name: 'Rounded' }).click();
   await expect(sampleGroup).toHaveCSS('border-radius', '12px');
-  await expect(roundedGroups).toHaveCount(exampleCount - 1);
+  await expect(roundedGroups).toHaveCount(exampleCount - 2);
 
   // And back to pill.
   await demo.getByRole('button', { name: 'Pill' }).click();
@@ -6274,9 +6274,10 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Avatar profile',
     'Avatar selection',
     'Collapsible search',
+    'Wrapping zone sizing',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(17);
+  await expect(groups).toHaveCount(23);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
   );
@@ -6430,7 +6431,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       .screenshot({ path: 'test-results/toolbar-control-group-avatar.png' });
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(17);
+  await expect(groups).toHaveCount(23);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/toolbar-control-groups-narrow.png',
@@ -7095,8 +7096,8 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
 
   await page.goto('/?component=tab-bar');
   const tabBars = page.locator('[data-demo="tab-bar"]');
-  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(7);
-  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(7);
+  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(8);
+  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(8);
   const splitBar = tabBars.locator('[data-tab-bar-id="inspector-tab-bar"]');
   const splitTabs = splitBar.locator('[data-kui-tab-list]');
   const adjacentAction = splitBar.getByRole('button', {

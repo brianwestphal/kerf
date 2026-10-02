@@ -352,7 +352,7 @@
 
 .kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"]:focus-within {
   border-color: var(--kui-color-focus);
-  background: var(--kui-token-search-background);
+  background: var(--kui-token-search-background, var(--kui-color-surface));
 }
 
 .kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"][data-expanded="false"] {

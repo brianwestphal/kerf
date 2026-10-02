@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **UI browser checks cover the current catalog specimens.** Select, toolbar,
+  tab, and control group browser assertions now address the expanded demos;
+  a focused toolbar search field restores its default surface color when no
+  background override is set.
+
 - **Pinned tabs cover the full leading edge of their scroll strip.** The
   backing now includes the strip border as well as its padding, preventing a
   sliver of a scrolling tab label from showing beside the pinned tab.

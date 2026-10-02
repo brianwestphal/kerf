@@ -72,10 +72,10 @@ test('keeps toolbar selections concentric with pill and rounded group shapes', a
   const shapeGroup = pillChoice.locator(
     'xpath=ancestor::*[@data-component="toolbar-control-group"]',
   );
-  const selectedView = demo.getByRole('button', {
-    name: 'List view',
-    exact: true,
-  });
+  const selectedView = demo
+    .locator(':scope > [data-catalog-example]')
+    .nth(1)
+    .getByRole('button', { name: 'List view', exact: true });
   const viewGroup = selectedView.locator(
     'xpath=ancestor::*[@data-component="toolbar-control-group"]',
   );

@@ -366,6 +366,9 @@ passive content such as a shortcut hint.
 Set `fill` on a collapsible `TokenSearchField` in a stretched Toolbar center to
 use the available width when expanded; the field and its search group retain
 their compact widths when collapsed.
+When the expanded toolbar field has focus, its inset surface uses
+`--kui-token-search-background` or the default surface color if that token is
+unset.
 
 ## Toolbar composition
 

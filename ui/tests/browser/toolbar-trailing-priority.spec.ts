@@ -12,7 +12,9 @@ for (const width of [1100, 390]) {
     const toolbar = example.locator('.kui-toolbar');
     const leading = toolbar.locator('.kui-toolbar__leading');
     const trailing = toolbar.locator('.kui-toolbar__trailing');
-    const group = trailing.locator('.kui-toolbar-control-group');
+    const group = trailing.locator(
+      '.kui-toolbar-control-group[data-content="search"]',
+    );
     await expect(group).toBeVisible();
     const rects = await toolbar.evaluate((el) => {
       const leading = el.querySelector('.kui-toolbar__leading')!;
