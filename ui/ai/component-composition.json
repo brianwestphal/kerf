@@ -1521,7 +1521,10 @@
       "name": "ToolbarControlGroup",
       "kind": "component",
       "source": "kerf",
-      "parents": { "mode": "listed", "entries": ["@kerfjs/ui:toolbar"] },
+      "parents": {
+        "mode": "listed",
+        "entries": ["@kerfjs/ui:toolbar", "@kerfjs/ui:floating-toolbar"]
+      },
       "contexts": ["toolbar-zone"],
       "zones": [
         {

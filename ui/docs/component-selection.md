@@ -351,6 +351,10 @@ their compact widths when collapsed.
 
 ## Toolbar composition
 
+A `FloatingToolbar` accepts `ToolbarControlGroup` directly as its children in
+both floating and inline placement. Name the toolbar with `label`; group its
+controls as you would in a `Toolbar` zone.
+
 A `Toolbar` has three zones — `leading`, `center`, and `trailing`. In almost
 every case the only things that go **directly** in a zone are `ToolbarText`
 (identity/title text) and `ToolbarControlGroup` (any control or cluster of

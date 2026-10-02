@@ -313,7 +313,7 @@ test(
 );
 
 test(
-  'the doctor accepts ToolbarActionLink inside ToolbarControlGroup',
+  'the doctor accepts ToolbarControlGroup in Toolbar and FloatingToolbar',
   async () => {
     const root = await mkdtemp(
       resolve(tmpdir(), 'kerf-ui-doctor-toolbar-link-'),
@@ -343,13 +343,26 @@ test(
         resolve(root, 'src/view.tsx'),
         [
           "import { Toolbar } from '@kerfjs/ui/toolbar';",
+          "import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';",
           "import { ToolbarControlGroup, ToolbarActionLink } from '@kerfjs/ui/toolbar-control-group';",
           'export const view = () => (',
+          '  <>',
           '  <Toolbar label="Report" trailing={',
           '    <ToolbarControlGroup label="Actions">',
           '      <ToolbarActionLink href="/report" label="Report" />',
           '    </ToolbarControlGroup>',
           '  } />',
+          '  <FloatingToolbar label="Report tools">',
+          '    <ToolbarControlGroup label="Actions" single>',
+          '      <button type="button" aria-label="Restore report">Restore</button>',
+          '    </ToolbarControlGroup>',
+          '  </FloatingToolbar>',
+          '  <FloatingToolbar label="Inline report tools" placement="inline">',
+          '    <ToolbarControlGroup label="Actions" single>',
+          '      <button type="button" aria-label="Open report">Open</button>',
+          '    </ToolbarControlGroup>',
+          '  </FloatingToolbar>',
+          '  </>',
           ');',
           '',
         ].join('\n'),

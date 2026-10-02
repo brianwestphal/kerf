@@ -89,7 +89,7 @@
     },
     "parents": {
       "mode": "listed",
-      "entries": ["@kerfjs/ui:toolbar"]
+      "entries": ["@kerfjs/ui:toolbar", "@kerfjs/ui:floating-toolbar"]
     },
     "contexts": ["toolbar-zone"],
     "zones": [

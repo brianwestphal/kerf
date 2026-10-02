@@ -149,6 +149,13 @@ describe('component composition catalog contract', () => {
     expect(toolbar.diagnostics[0].id).toBe('KUI-C101');
     expect(
       composition.entries.find((entry) => entry.id === 'toolbar-control-group')
+        ?.parents,
+    ).toEqual({
+      mode: 'listed',
+      entries: ['@kerfjs/ui:toolbar', '@kerfjs/ui:floating-toolbar'],
+    });
+    expect(
+      composition.entries.find((entry) => entry.id === 'toolbar-control-group')
         ?.jsxExports?.ToolbarActionLink,
     ).toEqual({
       parents: {
