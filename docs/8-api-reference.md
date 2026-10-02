@@ -751,7 +751,20 @@ Shows a non-modal, auto-dismissing notification, stacked in a shared body-level 
 
 ## 8.9 Dispose scopes — `kerfjs/scope` subpath
 
-Optional subpath (`import { disposeScope, disposeSubtree, observeRemovals } from 'kerfjs/scope'`) that ties a set of disposers to a DOM element's lifetime. kerf hands out disposers (`mount()` / `effect()` / `delegate()` all return `() => void`), but nothing scopes them to a subtree, so append-heavy UIs leak detached-but-subscribed effects and listeners. No module-level mutable state — scopes live in a `WeakMap` keyed by element.
+Optional subpath (`import { createScope, disposeScope, disposeSubtree, observeRemovals } from 'kerfjs/scope'`) that groups disposers. `createScope()` owns a reusable group without an element; `disposeScope(el)` ties one to a DOM element's lifetime. kerf hands out disposers (`mount()` / `effect()` / `delegate()` all return `() => void`), but nothing scopes them to a subtree, so append-heavy UIs leak detached-but-subscribed effects and listeners. Element scopes live in a `WeakMap`; standalone scopes keep their state in a closure.
+
+### `createScope(): DisposerScope`
+
+```ts
+const scope = createScope();
+window.addEventListener('resize', update, { signal: scope.signal });
+scope.add(() => observer.disconnect());
+// …later:
+scope.dispose(); // runs registered disposers newest first, then aborts the signal
+// The same handle can now collect another generation of listeners.
+```
+
+`add(dispose)` returns the disposer. `size` counts registered disposers in the current generation. `dispose()` is bound and idempotent for that generation; it keeps running after a disposer throws, then aborts the generation's `signal`. The next read of `signal` returns a fresh, un-aborted signal. New registrations made during cleanup belong to the next generation. Reading `signal` starts that generation even if no disposer is added, so native listeners registered with the signal alone are removed by the next `dispose()`.
 
 ### `disposeScope(el): Scope`
 
@@ -787,6 +800,7 @@ Installs a `MutationObserver` on `root` that auto-runs a node's scope (via `disp
 ### `Scope` (type)
 
 The handle returned by `disposeScope`, exported for annotation: `{ add, mount, effect, delegate, dispose }` (see `disposeScope` above).
+`DisposerScope` is the separate return type of `createScope`: `{ add, dispose, signal, size }`.
 
 ## 8.10 Async state — `kerfjs/async` subpath
 

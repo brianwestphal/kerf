@@ -243,7 +243,7 @@ Nothing is self-hosted — `kerfjs` is on npm, so every ESM CDN (esm.sh, jsDeliv
 
 ### Batteries when you need them: the companion subpaths
 
-The core stays tiny because the patterns every real app rebuilds live in optional, tree-shakeable subpaths — a modal you'd otherwise hand-roll (`kerfjs/overlay`), an async-state container with the stale-response race already solved (`kerfjs/async`), a debounce that composes inside the reactive graph (`kerfjs/timing`), teardown tied to a DOM node's lifetime (`kerfjs/scope`). The largest is `kerfjs/list` — a keyed list that mounts each row individually (so a signal one row reads updates just that row) and virtualizes a long viewport, with fixed, app-declared, or measured row heights:
+The core stays tiny because the patterns every real app rebuilds live in optional, tree-shakeable subpaths — a modal you'd otherwise hand-roll (`kerfjs/overlay`), an async-state container with the stale-response race already solved (`kerfjs/async`), a debounce that composes inside the reactive graph (`kerfjs/timing`), and disposer groups with or without a DOM owner (`kerfjs/scope`). The largest is `kerfjs/list` — a keyed list that mounts each row individually (so a signal one row reads updates just that row) and virtualizes a long viewport, with fixed, app-declared, or measured row heights:
 
 ```ts
 import { bindList, observeRowHeights } from 'kerfjs/list';

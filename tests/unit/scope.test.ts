@@ -2,10 +2,66 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { signal } from '../../src/reactive.js';
 import {
+  createScope,
   disposeScope,
   disposeSubtree,
   observeRemovals,
 } from '../../src/scope.js';
+
+describe('createScope()', () => {
+  it('runs newest first, keeps going after errors, and rotates its signal after cleanup', () => {
+    const scope = createScope();
+    const order: string[] = [];
+    const firstSignal = scope.signal;
+    const first = () => order.push('first');
+    expect(scope.add(first)).toBe(first);
+    scope.add(() => {
+      order.push(`second:${firstSignal.aborted}`);
+      throw new Error('cleanup failed');
+    });
+    scope.add(() => order.push('third'));
+    expect(scope.size).toBe(3);
+    const dispose = scope.dispose;
+    expect(() => dispose()).not.toThrow();
+    expect(order).toEqual(['third', 'second:false', 'first']);
+    expect(firstSignal.aborted).toBe(true);
+    dispose();
+    expect(scope.signal).not.toBe(firstSignal);
+    expect(scope.signal.aborted).toBe(false);
+    expect(scope.size).toBe(0);
+    dispose();
+    expect(order).toHaveLength(3);
+  });
+
+  it('refills after empty and populated disposals, including registrations during disposal', () => {
+    const scope = createScope();
+    const initialSignal = scope.signal;
+    scope.dispose();
+    expect(initialSignal.aborted).toBe(true);
+    const nextSignal = scope.signal;
+    const calls: string[] = [];
+    scope.add(() => calls.push('old'));
+    scope.add(() => {
+      calls.push('register');
+      scope.add(() => calls.push('new'));
+      scope.dispose(); // nested disposal cannot consume the new generation
+    });
+    scope.dispose();
+    expect(calls).toEqual(['register', 'old']);
+    expect(nextSignal.aborted).toBe(true);
+    expect(scope.size).toBe(1);
+    const finalSignal = scope.signal;
+    expect(finalSignal.aborted).toBe(false);
+    scope.dispose();
+    expect(calls).toEqual(['register', 'old', 'new']);
+    expect(finalSignal.aborted).toBe(true);
+    scope.dispose();
+    expect(calls).toHaveLength(3);
+    const signalOnly = scope.signal;
+    scope.dispose();
+    expect(signalOnly.aborted).toBe(true);
+  });
+});
 
 afterEach(() => {
   document.body.innerHTML = '';

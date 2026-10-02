@@ -7,7 +7,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { signal } from '../../src/reactive.js';
-import { disposeScope, observeRemovals } from '../../src/scope.js';
+import { createScope, disposeScope, observeRemovals } from '../../src/scope.js';
 
 const microtask = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -16,6 +16,52 @@ afterEach(() => {
 });
 
 describe('scope — append-heavy feed', () => {
+  it('groups native listeners across window, document, and roots across generations', () => {
+    const scope = createScope();
+    const root = document.createElement('div');
+    document.body.appendChild(root);
+    const calls: string[] = [];
+    const listen = () => {
+      window.addEventListener('kerf-scope-test', () => calls.push('window'), {
+        signal: scope.signal,
+      });
+      document.addEventListener(
+        'kerf-scope-test',
+        () => calls.push('document'),
+        { signal: scope.signal },
+      );
+      root.addEventListener('kerf-scope-test', () => calls.push('root'), {
+        signal: scope.signal,
+      });
+    };
+    const dispatch = () => {
+      window.dispatchEvent(new Event('kerf-scope-test'));
+      document.dispatchEvent(new Event('kerf-scope-test'));
+      root.dispatchEvent(new Event('kerf-scope-test'));
+    };
+    listen();
+    dispatch();
+    expect(calls).toEqual(['window', 'document', 'root']);
+    scope.dispose();
+    dispatch();
+    expect(calls).toHaveLength(3);
+    listen();
+    scope.add(() => calls.push('cleanup'));
+    dispatch();
+    expect(calls).toEqual([
+      'window',
+      'document',
+      'root',
+      'window',
+      'document',
+      'root',
+    ]);
+    scope.dispose();
+    expect(calls.at(-1)).toBe('cleanup');
+    dispatch();
+    expect(calls).toHaveLength(7);
+  });
+
   it('removed cards stop their effects (no leak); surviving cards keep updating', async () => {
     const feed = document.createElement('div');
     document.body.appendChild(feed);

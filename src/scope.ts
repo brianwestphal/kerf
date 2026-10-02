@@ -1,5 +1,5 @@
 /**
- * `kerfjs/scope` — tie a set of disposers to a DOM element's lifetime.
+ * `kerfjs/scope` — group disposers with or without a DOM owner.
  *
  * kerf hands out disposers (`mount()` / `effect()` / `delegate()` all return
  * `() => void`), but nothing scopes them to a subtree's lifetime — so an
@@ -7,7 +7,7 @@
  * effects, listeners, and observers. Every such app hand-rolls the same
  * `WeakMap<Element, disposers[]>` swept on removal. This subpath blesses it.
  *
- *   import { disposeScope, disposeSubtree, observeRemovals } from 'kerfjs/scope';
+ *   import { createScope, disposeScope, disposeSubtree, observeRemovals } from 'kerfjs/scope';
  *
  *   const s = disposeScope(card);
  *   s.mount(card, renderCard);              // mounts AND registers its disposer
@@ -21,12 +21,68 @@
  * Or install one observer and let removals auto-dispose:
  *   observeRemovals(document.body);
  *
- * No module-level mutable state: scopes live in a `WeakMap` (GC-tied, keyed by
- * element), and `disposeSubtree` finds them by walking the subtree.
+ * Use `createScope()` for a reusable group spanning several event targets.
+ * Its `signal` also removes native listeners when the group is disposed.
+ *
+ * No module-level mutable state: element scopes live in a `WeakMap` (GC-tied),
+ * standalone scopes use closure-local state, and `disposeSubtree` walks the DOM.
  */
 import { delegate, type DelegateOptions } from './delegate.js';
 import { mount, type MountResult } from './mount.js';
 import { effect } from './reactive.js';
+
+/** A reusable disposer group with no DOM owner. */
+export interface DisposerScope {
+  /** Register a disposer in the current generation and return it. */
+  add(dispose: () => void): () => void;
+  /** Run the current generation newest first, then abort its signal. */
+  dispose(): void;
+  /** Signal for native listeners in the current generation. */
+  readonly signal: AbortSignal;
+  /** Number of registered disposers in the current generation. */
+  readonly size: number;
+}
+
+/**
+ * Create an element-free scope for listeners and other disposers spanning
+ * several targets. After disposal, the same scope accepts a new generation.
+ */
+export function createScope(): DisposerScope {
+  let disposers: Array<() => void> = [];
+  let controller = new AbortController();
+  let active = true;
+  let disposing = false;
+  return {
+    add(dispose) {
+      disposers.push(dispose);
+      active = true;
+      return dispose;
+    },
+    get signal() {
+      active = true;
+      return controller.signal;
+    },
+    get size() {
+      return disposers.length;
+    },
+    dispose() {
+      if (!active || disposing) return;
+      active = false;
+      disposing = true;
+      const pending = disposers;
+      const oldController = controller;
+      disposers = [];
+      controller = new AbortController();
+      try {
+        for (let index = pending.length - 1; index >= 0; index--)
+          runBestEffort(pending[index]);
+      } finally {
+        oldController.abort();
+        disposing = false;
+      }
+    },
+  };
+}
 
 /** A per-element teardown scope. Calling `disposeScope(el)` again returns the SAME scope. */
 export interface Scope {
