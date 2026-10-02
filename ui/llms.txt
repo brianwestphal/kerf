@@ -416,7 +416,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `busy` spinner while its `status` (and a `ListItem`'s `trailing`) content
   become skeletons. Use the standalone `Skeleton` for a custom slot. Prefer it over `wa-skeleton`
   (the pure-Kerf primitives avoid Web Awesome), and never animate it — use
-  `LoadingSpinner` for known busy activity instead.
+  `LoadingSpinner` for known busy activity instead. Set its `size` prop to a
+  named icon step or positive pixel number when the inherited 1em is unsuitable.
 - **Keep ListItem content inside the row.** The rounded `ListItem` root clips
   overflowing label, status, and dormant trailing content. Set `multiline` when
   the primary label should wrap; use `ListActionRow` instead when trailing content

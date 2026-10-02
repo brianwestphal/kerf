@@ -34,6 +34,7 @@ Exact prop names and types: [`@kerfjs/ui/loading-spinner`](../public-api-signatu
 
 - labeled
 - decorative
+- sized
 
 ## Composition
 

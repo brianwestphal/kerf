@@ -336,6 +336,8 @@ The analyzer and Doctor also support opt-in ownership between a consumer's own
 cataloged components. With `ownership: "component"`, a component owns only its
 declared stylesheet paths and source module; package ownership remains the
 default.
+`LoadingSpinner` also accepts LucideIcon's named size steps or a positive
+numeric pixel size while retaining 1em when omitted.
 
 Dialog bodies default to `List` composition with no competing body inset; bare
 dialog prose uses `ListInsetText` so it aligns with bordered siblings through

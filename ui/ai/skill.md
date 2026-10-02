@@ -57,6 +57,9 @@ and `KUI-L022` (a hook class on a component's root) are errors, and
 `eslint-plugin-kerfjs`'s `ui-component-ownership` reports `KUI-L020` /
 `KUI-L021` in script. Repair them with the configuration each message names;
 when none exists, report the component gap rather than suppressing the finding.
+For compact known activity, give `LoadingSpinner` its `size` prop (`xs` through
+`xl`, or a positive pixel number) instead of styling its SVG; omitted size is
+1em.
 For an application's own cataloged components, opt into Doctor's
 `"ownership": "component"` and declare each entry's `styleSources` so sibling
 components cannot style one another; package ownership remains the default.

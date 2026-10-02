@@ -4698,7 +4698,8 @@
       ],
       "variants": [
         "labeled",
-        "decorative"
+        "decorative",
+        "sized"
       ],
       "accessibility": [
         "Labeled spinners use role img; decorative spinners are hidden and stop for reduced motion."

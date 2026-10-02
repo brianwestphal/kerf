@@ -2852,17 +2852,22 @@ export { EmptyState, type EmptyStateProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { LucideIconSize } from './lucide-icon.js';
+import 'lucide';
 
+type LoadingSpinnerSize = LucideIconSize;
 interface LoadingSpinnerProps {
     className?: string;
     label?: string;
+    /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
+    size?: LoadingSpinnerSize;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** Stable viewBox-centered progress ring based on svg-spinners' MIT-licensed 180-ring. */
-declare function LoadingSpinner({ className, label, slot, }: LoadingSpinnerProps): kerfjs.SafeHtml;
+declare function LoadingSpinner({ className, label, size, slot, }: LoadingSpinnerProps): kerfjs.SafeHtml;
 
-export { LoadingSpinner, type LoadingSpinnerProps };
+export { LoadingSpinner, type LoadingSpinnerProps, type LoadingSpinnerSize };
 ```
 
 ## `@kerfjs/ui/skeleton`

@@ -1964,6 +1964,16 @@ describe('production UI primitives', () => {
       asHtml(LoadingSpinner({ label: 'Loading', className: 'small' })),
     ).toContain('role="img" aria-label="Loading"');
     expect(asHtml(LoadingSpinner({}))).toContain('aria-hidden="true"');
+    expect(asHtml(LoadingSpinner({}))).not.toContain('data-size=');
+    expect(asHtml(LoadingSpinner({ size: 's' }))).toContain('data-size="s"');
+    expect(asHtml(LoadingSpinner({ size: 16.8 }))).toContain(
+      '--_kui-loading-spinner-size:1.05rem',
+    );
+    expect(() => LoadingSpinner({ size: 0 })).toThrow(RangeError);
+    expect(() => LoadingSpinner({ size: Number.POSITIVE_INFINITY })).toThrow(
+      RangeError,
+    );
+    expect(() => LoadingSpinner({ size: 'huge' as 's' })).toThrow(RangeError);
     const banner = asHtml(
       StateBanner({
         title: 'Offline',

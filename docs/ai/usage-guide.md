@@ -434,6 +434,8 @@ from TypeScript, Kerf ESLint, static analysis, and cache inputs.
 For applications that catalog their own components, set Doctor's
 `"ownership": "component"` and declare each entry's `styleSources` to catch
 CSS that reaches from one app component into another.
+Use `LoadingSpinner.size` for a known activity indicator that needs a named
+icon step or positive pixel size; omitting it keeps the inherited 1em size.
 Enable its browser stage with an explicit running-app URL (or invoke
 `kerf-ui-evaluate --url <app>` directly) to exercise the
 responsive/zoom/theme/motion matrix across Playwright engines and retain

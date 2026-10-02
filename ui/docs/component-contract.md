@@ -694,6 +694,12 @@ line of its own and centers in its slot. It is a
 placeholder, not progress: use `LoadingSpinner` for known busy activity, and never
 animate the skeleton.
 
+`LoadingSpinner` accepts the same `size` steps as `LucideIcon`: `xs`, `s`, `m`,
+`l`, `xl` (12/16/20/24/32px at a 16px root) or a positive finite pixel
+number converted to rem. Omit `size` to keep its inherited 1em box. A supplied
+size is exposed as `data-size`; callers configure the spinner through this prop
+instead of sizing its SVG from outside.
+
 A placeholder is loading, not unavailable, so it keeps the `disabled` attribute (its
 controls stay inert and out of the keyboard order) but never shows disabled chrome.
 `skeleton.css`, which every component that renders a skeleton loads, neutralizes generic
