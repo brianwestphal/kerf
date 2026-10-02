@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **TokenSearchField form fields match adjacent Web Awesome inputs.** The
+  control uses the form-control radius, and its required marker uses the
+  same neutral color and offset tokens as `wa-input`.
+
 - **Grid supports labeled multi-select ContentItem tiles.** Opt into
   `selectionMode="multiple"` with `ariaLabel`; `wireContentItems` follows the
   rendered columns with four arrow keys and keeps nested controls independent.

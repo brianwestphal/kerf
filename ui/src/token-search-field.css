@@ -16,8 +16,8 @@
 }
 
 .kui-token-search__field-required {
-  margin-inline-start: 0.15em;
-  color: var(--wa-color-danger-on-normal, currentColor);
+  margin-inline-start: var(--wa-form-control-required-content-offset, 0.1em);
+  color: var(--wa-form-control-required-content-color, inherit);
 }
 
 .kui-token-search__field-hint {
@@ -54,6 +54,13 @@
   border-color: var(--kui-color-text-link);
   box-shadow: 0 0 0 3px
     color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
+}
+
+.kui-token-search[data-presentation="form-field"] {
+  border-radius: var(
+    --wa-form-control-border-radius,
+    var(--wa-border-radius-m)
+  );
 }
 
 .kui-token-search[data-disabled="true"] {

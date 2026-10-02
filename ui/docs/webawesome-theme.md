@@ -364,6 +364,12 @@ smallest subtree that needs a different identity:
 }
 ```
 
+`TokenSearchField` with `presentation="form-field"` uses
+`--wa-form-control-border-radius` for its control corners and
+`--wa-form-control-required-content-color` and
+`--wa-form-control-required-content-offset` for its required marker. These
+tokens keep it aligned with a neighboring `wa-input` when a form theme changes.
+
 The shipped theme pairs every `--wa-color-{variant}-fill-loud` with an
 `--wa-color-{variant}-on-loud` that clears WCAG AA (4.5:1) in both color
 schemes. When you override a loud fill, set its `on-loud` alongside it, in the

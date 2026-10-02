@@ -334,6 +334,9 @@ In a form, use `TokenSearchField presentation="form-field"` with its `label`,
 optional `hint`, and `required` state. It renders a full-width control beside
 `wa-input` without a Toolbar or extra inline inset. The app validates required
 search content before saving.
+The form-field corners and required marker use the same Web Awesome
+form-control radius, marker color, and offset tokens as a neighboring
+`wa-input`.
 `TokenSearchRule.suggest(input, state)` receives the unfinished value and current committed tokens, so a rule can omit values already selected. Existing one-argument suggestion callbacks continue to work.
 For a sibling date picker or other app helper, call `model.commit(value)` while a `name:` prefix is active. It parses and commits that value for the active rule even when it is absent from suggestions, replacing the unfinished prefix text. Invalid values and calls without an active prefix leave the query unchanged; `choose(value)` remains restricted to suggested tokens.
 To apply a saved search or restore a query programmatically, call `model.replace({ query, tokens })`. It publishes parsed state and rebuilds the DOM-owned editor text even when no chip changed. For a field without a model, change the field's `revision` prop when setting `query` yourself.

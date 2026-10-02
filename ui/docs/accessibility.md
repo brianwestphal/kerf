@@ -418,6 +418,8 @@ searchbox references the label and hint with `aria-labelledby` and
 validates the value before submission. `wireTokenSearchFields()` also moves
 focus to the editor when the visible label is clicked. The field stands outside
 a Toolbar and fills the same inline space as a neighboring `wa-input`.
+Its control radius and required-marker color and offset follow Web Awesome's
+form-control tokens, so the two controls read as one form.
 
 `TokenSearchField` exposes the editable surface as a named `searchbox`. Each
 chip is atomic (`contenteditable="false"`) and contains separately named edit

@@ -27,6 +27,8 @@ test('TokenSearchField form presentation matches Web Awesome field geometry and 
       )!;
       const waHint =
         wa.shadowRoot!.querySelector<HTMLElement>('[part~="hint"]')!;
+      const waControl =
+        wa.shadowRoot!.querySelector<HTMLElement>('.text-field')!;
       const search = container.querySelector<HTMLElement>(
         '[data-component="token-search-field"]',
       )!;
@@ -35,6 +37,9 @@ test('TokenSearchField form presentation matches Web Awesome field geometry and 
       )!;
       const searchHint = container.querySelector<HTMLElement>(
         '.kui-token-search__field-hint',
+      )!;
+      const searchRequired = container.querySelector<HTMLElement>(
+        '.kui-token-search__field-required',
       )!;
       const style = (element: Element) => {
         const css = globalThis.getComputedStyle(element);
@@ -70,6 +75,10 @@ test('TokenSearchField form presentation matches Web Awesome field geometry and 
           parseFloat(globalThis.getComputedStyle(searchHint).paddingLeft),
         waLabel: style(waLabel),
         searchLabel: style(searchLabel),
+        waControlRadius: globalThis.getComputedStyle(waControl).borderRadius,
+        searchControlRadius: globalThis.getComputedStyle(search).borderRadius,
+        waRequiredColor: globalThis.getComputedStyle(waLabel, '::after').color,
+        searchRequiredColor: globalThis.getComputedStyle(searchRequired).color,
       };
     });
     expect(geometry.searchLeft).toBeCloseTo(geometry.hostLeft, 0);
@@ -77,6 +86,8 @@ test('TokenSearchField form presentation matches Web Awesome field geometry and 
     expect(geometry.searchLabelInset).toBeCloseTo(geometry.waLabelInset, 0);
     expect(geometry.searchHintInset).toBeCloseTo(geometry.waHintInset, 0);
     expect(geometry.searchLabel).toEqual(geometry.waLabel);
+    expect(geometry.searchControlRadius).toBe(geometry.waControlRadius);
+    expect(geometry.searchRequiredColor).toBe(geometry.waRequiredColor);
 
     await field.locator('[data-token-search-form-label]').click();
     await expect(editor).toBeFocused();

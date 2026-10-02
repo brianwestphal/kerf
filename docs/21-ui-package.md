@@ -260,6 +260,9 @@ slot without mixing authoring rules into the per-entry component catalog.
   with named edit/remove buttons, and a named clear action. The application
   owns parsing, suggestions, result feedback, and state; editable text remains
   DOM-owned between controlled token changes to preserve the caret.
+  In `presentation="form-field"`, its corners and required marker follow the
+  Web Awesome form-control radius, required color, and offset tokens used by
+  adjacent `wa-input` controls.
   `wireTokenSearchFields` restores focus and the text-relative caret when
   keyboard chip deletion causes controlled rendering to replace the editor. Managed
   clear also keeps an adopted field open and restores the replacement editor for
