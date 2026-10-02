@@ -300,6 +300,124 @@ test(
 );
 
 test(
+  'the doctor detects a styled hook on an application component imported through a TS path alias',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-alias-'));
+    try {
+      await mkdir(resolve(root, 'src/components'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        JSON.stringify({ name: 'app' }),
+      );
+      await writeFile(
+        resolve(root, 'tsconfig.json'),
+        JSON.stringify({
+          compilerOptions: {
+            module: 'esnext',
+            moduleResolution: 'bundler',
+            baseUrl: '.',
+            paths: { '@app/*': ['src/*'] },
+          },
+        }),
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'workspace',
+          catalogs: [
+            {
+              package: 'app',
+              composition: { path: './composition.json', schemaVersion: 2 },
+              selection: { path: './selection.json', schemaVersion: 1 },
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'composition.json'),
+        JSON.stringify({
+          schemaVersion: 2,
+          package: 'app',
+          entries: [
+            {
+              key: 'app:search',
+              package: 'app',
+              id: 'search',
+              name: 'Search',
+              kind: 'component',
+              source: 'application',
+              boundaries: {
+                rootClass: 'search',
+                publicClasses: ['search'],
+                publicTokens: [],
+              },
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'selection.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          package: 'app',
+          entries: [
+            {
+              id: 'search',
+              source: 'src/components/search.tsx',
+              styleSources: ['src/components/search.css'],
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/components/search.tsx'),
+        'export const Search = () => <div class="search" />;\n',
+      );
+      await writeFile(
+        resolve(root, 'src/components/search.css'),
+        '.search { color: blue; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/header.css'),
+        '.hook { color: red; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/header.tsx'),
+        "import './header.css';\nimport { Search } from '@app/components/search';\nexport const Header = () => <Search className=\"hook\" />;\n",
+      );
+
+      const broken = await doctor(root);
+      expect(broken.status).toBe(1);
+      expect(broken.report.diagnostics).toMatchObject([{ id: 'KUI-L022' }]);
+      expect(broken.report.diagnostics[0].evidence).toMatchObject({
+        component: 'app:search',
+        className: 'hook',
+      });
+
+      await writeFile(
+        resolve(root, 'src/header.tsx'),
+        "import './header.css';\nimport { Search } from '@app/components/search';\nexport const Header = () => <div class=\"hook\"><Search /></div>;\n",
+      );
+      const clean = await doctor(root);
+      expect(clean.status).toBe(0);
+      expect(clean.report.diagnostics).toEqual([]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor opts into ownership between cataloged components in one package',
   async () => {
     const root = await mkdtemp(

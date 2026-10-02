@@ -144,6 +144,10 @@ which element a selector styles.
   imported component's JSX (`<Toolbar className="header" />`) is the subject
   of a rule in a stylesheet that file imports, so the application restyles the
   component through it. The evidence names the stylesheet, line, and selector.
+  For cataloged application components, the import may be direct and relative
+  or use an exact or wildcard TypeScript `paths` alias from the nearest
+  `tsconfig.json` inside the analyzed root (including inherited options).
+  Unresolved aliases remain unclassified; the analyzer does not execute code.
 
 Every message names the configuration to use (the component's typed props,
 public tokens, and variants from its catalog entry) and ends with the same

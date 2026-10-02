@@ -109,7 +109,7 @@ not a reason to override — and your own components follow the same rule.
    pair measures below 4.5:1, is review finding `KUI-L018` (set both); CSS that restyles a component
    (`KUI-L019`), touches its private `--_*` variables (`KUI-L020`), overrides a token a typed prop sets
    (`KUI-L021`), or styles it through a hook class on its root (`KUI-L022`) is an error: configure the
-   component instead, and report a component gap when no prop exists; use `"ownership": "component"` with catalog `styleSources` to apply this boundary between an app's own components; repair source-located errors until exit 0. Use full mode for release gates;
+   component instead, and report a component gap when no prop exists; application-component imports may use TypeScript `paths` aliases; use `"ownership": "component"` with catalog `styleSources` to apply this boundary between an app's own components; repair source-located errors until exit 0. Use full mode for release gates;
    generated `dist`/`coverage`, dependency, cache, evidence, and nested-worktree
    directories are excluded consistently from every static stage.
    [`kerf-ui-analyze`](./docs/ui-analyzer.md) remains available when only static

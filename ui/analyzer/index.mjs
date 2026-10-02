@@ -328,11 +328,21 @@ function isComponentExport(name) {
 // an entry whose own import subpath is the module wins, then an entry that
 // declares the name as a public export, then catalog order. A helper export
 // never resolves to an entry.
-function resolveExportEntry(candidates, name, module, file, packageDirectory) {
+function resolveExportEntry(
+  candidates,
+  name,
+  module,
+  file,
+  packageDirectory,
+  aliasSource,
+) {
   if (!isComponentExport(name)) return undefined;
   const localSource =
-    module?.startsWith('.') && packageDirectory
-      ? relative(packageDirectory, resolve(dirname(file), module))
+    packageDirectory && (module?.startsWith('.') || aliasSource)
+      ? relative(
+          packageDirectory,
+          aliasSource ?? resolve(dirname(file), module),
+        )
           .replaceAll('\\', '/')
           .replace(/\.[cm]?[jt]sx?$/, '')
       : undefined;
@@ -352,6 +362,39 @@ function resolveExportEntry(candidates, name, module, file, packageDirectory) {
     eligible.find(exported) ??
     eligible[0]
   );
+}
+
+// Use the nearest project tsconfig without walking into a parent repository.
+// TypeScript expands `extends` and resolves exact and wildcard `paths` here.
+function compilerOptionsFor(file, root, cache) {
+  let directory = dirname(file);
+  const visited = [];
+  while (directory === root || !relative(root, directory).startsWith('..')) {
+    if (cache.has(directory)) break;
+    visited.push(directory);
+    const configPath = resolve(directory, 'tsconfig.json');
+    if (ts.sys.fileExists(configPath)) {
+      const config = ts.readConfigFile(configPath, ts.sys.readFile);
+      cache.set(
+        directory,
+        config.error
+          ? undefined
+          : ts.parseJsonConfigFileContent(
+              config.config,
+              ts.sys,
+              directory,
+              undefined,
+              configPath,
+            ).options,
+      );
+      break;
+    }
+    if (directory === root) break;
+    directory = dirname(directory);
+  }
+  const options = cache.get(directory);
+  for (const path of visited) cache.set(path, options);
+  return options;
 }
 
 function catalogFacts(entries) {
@@ -903,6 +946,7 @@ function inspectTsx(
   adoption = false,
   isForeign = () => true,
   packageDirectory,
+  compilerOptions,
 ) {
   const source = ts.createSourceFile(
     file,
@@ -914,6 +958,18 @@ function inspectTsx(
   const imports = new Map();
   const helperImports = new Map();
   const namespaces = new Map();
+  const aliasSources = new Map();
+  const aliasSource = (module) => {
+    if (!module || module.startsWith('.') || !compilerOptions?.paths)
+      return undefined;
+    if (!aliasSources.has(module))
+      aliasSources.set(
+        module,
+        ts.resolveModuleName(module, file, compilerOptions, ts.sys)
+          .resolvedModule?.resolvedFileName,
+      );
+    return aliasSources.get(module);
+  };
   for (const statement of source.statements) {
     if (
       !ts.isImportDeclaration(statement) ||
@@ -942,6 +998,7 @@ function inspectTsx(
         module,
         file,
         packageDirectory,
+        aliasSource(module),
       );
       if (entry) imports.set(item.name.text, entry);
     }
@@ -960,6 +1017,7 @@ function inspectTsx(
               namespaces.get(opening.tagName.expression.text),
               file,
               packageDirectory,
+              aliasSource(namespaces.get(opening.tagName.expression.text)),
             )
           : undefined;
       const entry = imports.get(tag) ?? namespaceEntry;
@@ -1078,6 +1136,7 @@ function inspectTsx(
               namespaces.get(node.expression.expression.text),
               file,
               packageDirectory,
+              aliasSource(namespaces.get(node.expression.expression.text)),
             )
           : undefined;
       if (entry)
@@ -1172,6 +1231,7 @@ export async function analyzeUiProject({
   // A stylesheet or source file belongs to the package whose manifest is
   // nearest it; entries of every other catalog package are foreign to it.
   const packages = new Map();
+  const compilerOptions = new Map();
   const packageOf = async (directory) => {
     if (!packages.has(directory))
       packages.set(
@@ -1305,6 +1365,7 @@ export async function analyzeUiProject({
       adoption,
       await foreignTo(file),
       own?.directory,
+      compilerOptionsFor(file, root, compilerOptions),
     );
     recordDiagnostics(fileDiagnostics, context);
   }

@@ -150,6 +150,95 @@ const ids = (report: Awaited<ReturnType<typeof analyzeUiProject>>) =>
   );
 
 describe('kerf-ui-analyze component ownership diagnostics', () => {
+  it('resolves exact and wildcard TypeScript path aliases to cataloged component sources', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'tsconfig.base.json': JSON.stringify({
+        compilerOptions: {
+          moduleResolution: 'bundler',
+          module: 'esnext',
+          baseUrl: '.',
+          paths: {
+            '@search': ['src/search.tsx'],
+            '@app/*': ['src/*'],
+          },
+        },
+      }),
+      'tsconfig.json': JSON.stringify({ extends: './tsconfig.base.json' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [
+          {
+            key: 'app:search',
+            package: 'app',
+            id: 'search',
+            name: 'Search',
+            kind: 'component',
+            source: 'application',
+            boundaries: {
+              rootClass: 'search',
+              publicClasses: ['search'],
+              publicTokens: [],
+            },
+          },
+        ],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          {
+            id: 'search',
+            source: 'src/search.tsx',
+            styleSources: ['src/search.css'],
+          },
+        ],
+      }),
+      'src/search.tsx': 'export const Search = () => <div class="search" />;\n',
+      'src/search.css': '.search { color: blue; }\n',
+      'src/header.css': '.hook { color: red; }\n',
+      'src/isolated/tsconfig.json': JSON.stringify({
+        compilerOptions: {
+          moduleResolution: 'bundler',
+          module: 'esnext',
+          baseUrl: '.',
+          paths: { '@app/*': ['missing/*'] },
+        },
+      }),
+      'src/isolated/header.tsx':
+        "import '../header.css';\nimport { Search } from '@app/search';\nexport const Header = () => <Search className=\"hook\" />;\n",
+      'src/header.tsx': [
+        "import './header.css';",
+        "import { Search as Exact } from '@search';",
+        "import * as Widgets from '@app/search';",
+        "import { Search as Unknown } from '@missing/search';",
+        'export const Header = () => <><Exact className="hook" /><Widgets.Search className="hook" /><Unknown className="hook" /></>;',
+        '',
+      ].join('\n'),
+    });
+    const report = await analyzeUiProject({ root, ownership: 'component' });
+    expect(ids(report)).toEqual([
+      'KUI-L022 src/header.tsx:5',
+      'KUI-L022 src/header.tsx:5',
+    ]);
+    expect(report.diagnostics.map((item) => item.evidence)).toMatchObject([
+      { component: 'app:search' },
+      { component: 'app:search' },
+    ]);
+  });
+
   it('optionally enforces ownership between components in one package', async () => {
     const entry = (id: string) => ({
       key: `app:${id}`,

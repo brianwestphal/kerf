@@ -335,7 +335,8 @@ semantic props; media queries and numeric pixel APIs keep their own grammars.
 The analyzer and Doctor also support opt-in ownership between a consumer's own
 cataloged components. With `ownership: "component"`, a component owns only its
 declared stylesheet paths and source module; package ownership remains the
-default.
+default. The analyzer resolves cataloged application components imported
+through direct relative paths or TypeScript `paths` aliases for `KUI-L022`.
 `LoadingSpinner` also accepts LucideIcon's named size steps or a positive
 numeric pixel size while retaining 1em when omitted.
 

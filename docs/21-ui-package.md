@@ -474,7 +474,9 @@ another package's cataloged component (`KUI-L019`), another component's
 private `--_*` variable (`KUI-L020`), an override of a token a typed prop sets
 (`KUI-L021`), and a hook class on a component's root (`KUI-L022`) are errors
 that name the configuration to use and route a missing prop to a component-gap
-report. Ownership is per package, so a component package styling its own
+report. For application components, `KUI-L022` resolves direct relative imports
+and TypeScript `paths` aliases from the nearest consumer tsconfig. Ownership is
+per package, so a component package styling its own
 components in a Kerf UI parent's context passes; `eslint-plugin-kerfjs`'s
 `ui-component-ownership` reports `KUI-L020` / `KUI-L021` in script. A forced
 component dimension is one such `KUI-L019` restyle; the former review-only

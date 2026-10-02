@@ -54,6 +54,8 @@ wa-dropdown.kui-popup-menu { … }` lives with PopupMenu). A parent may key its
 (a rule whose subject is a cataloged component), `KUI-L020` (another
 component's private `--_*` variable), `KUI-L021` (a token a typed prop sets),
 and `KUI-L022` (a hook class on a component's root) are errors, and
+the analyzer resolves cataloged application imports through TypeScript `paths`
+aliases as well as direct relative imports.
 `eslint-plugin-kerfjs`'s `ui-component-ownership` reports `KUI-L020` /
 `KUI-L021` in script. Repair them with the configuration each message names;
 when none exists, report the component gap rather than suppressing the finding.

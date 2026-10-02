@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **The UI analyzer resolves application component imports through TypeScript
+  path aliases.** `KUI-L022` now catches a styled hook class when an imported
+  cataloged component uses an exact or wildcard `paths` mapping; Doctor uses
+  the same resolution.
+
 - **TabBar accepts standalone Web Awesome actions in `trailing` and `end`.**
   A single `wa-button` can sit beside the scrolling tabs or at the far edge
   without ToolbarControlGroup chrome; the composition rule recognizes the

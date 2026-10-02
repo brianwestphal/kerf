@@ -40,6 +40,9 @@ root (`KUI-L022`); the ESLint stage's `ui-component-ownership` rule reports
 component's configuration, and its message routes a need with no prop to a
 component-gap report instead of an override (see
 [the analyzer rule](./ui-analyzer.md#component-ownership-kui-l019kui-l022)).
+The analyzer resolves a cataloged application component imported through an
+exact or wildcard TypeScript `paths` alias from the nearest consumer tsconfig,
+so the same root hook-class check applies in those files.
 Set `"ownership": "component"` in `.kerf-ui-doctor.json` to enforce the same
 boundary between a consumer package's own cataloged components. The default is
 `"package"`. Each local catalog entry then owns only its declared
