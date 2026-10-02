@@ -1219,11 +1219,11 @@ test('links catalog details to their first-party source and existing guidance', 
       documentOverflow:
         document.documentElement.scrollWidth -
         document.documentElement.clientWidth,
-      resourceOverflowX: window.getComputedStyle(
+      resourceFlexWrap: window.getComputedStyle(
         document.querySelector<HTMLElement>(
-          '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar-control-group[data-overflow="scroll"]',
+          '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar-control-group[data-overflow="wrap"]',
         )!,
-      ).overflowX,
+      ).flexWrap,
       footerSections: [
         ...document.querySelectorAll<HTMLElement>(
           '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar__leading, #kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar__trailing',
@@ -1255,7 +1255,7 @@ test('links catalog details to their first-party source and existing guidance', 
       }),
     }));
     expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
-    expect(geometry.resourceOverflowX).toBe('auto');
+    expect(geometry.resourceFlexWrap).toBe('wrap');
     for (const section of geometry.footerSections) {
       expect(section.left).toBeGreaterThanOrEqual(-1);
       expect(section.right).toBeLessThanOrEqual(layout.width + 1);

@@ -339,6 +339,9 @@ default. The analyzer resolves cataloged application components imported
 through direct relative paths or TypeScript `paths` aliases for `KUI-L022`.
 `LoadingSpinner` also accepts LucideIcon's named size steps or a positive
 numeric pixel size while retaining 1em when omitted.
+The catalog resource footer uses whole-action wrapping to keep source and
+Guidance links readable at phone widths; `ToolbarControlGroup overflow="wrap"`
+offers that layout for other independent links.
 
 Dialog bodies default to `List` composition with no competing body inset; bare
 dialog prose uses `ListInsetText` so it aligns with bordered siblings through

@@ -275,7 +275,7 @@ type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar' | 'search
 type ToolbarControlGroupFocusRing = 'control' | 'outline' | 'halo';
 type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
-type ToolbarControlGroupOverflow = 'visible' | 'scroll';
+type ToolbarControlGroupOverflow = 'visible' | 'scroll' | 'wrap';
 type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
 type ToolbarControlGroupVisibility = 'always' | 'compact-only' | 'hide-collapsed-tiny' | 'yield-to-expanded-sibling';
 type ToolbarControlGroupSizing = 'content' | 'grow' | 'fill';
@@ -318,7 +318,7 @@ interface ToolbarControlGroupProps {
     nestedDropdown?: boolean;
     /** Configure the nested dropdown menu inset without consumer ::part() CSS. */
     menuInset?: ToolbarControlGroupMenuInset;
-    /** Keep an overlong row of actions inside the available width with horizontal scrolling. */
+    /** Keep an overlong row inside the available width by scrolling or wrapping. */
     overflow?: ToolbarControlGroupOverflow;
     /** Responsive visibility owned by the enclosing Toolbar container. */
     visibility?: ToolbarControlGroupVisibility;

@@ -289,7 +289,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   (`@kerfjs/ui/popup-menu`, registered once via `@kerfjs/ui/popup-menu/register`)
   in a `single` `ToolbarControlGroup` with `nestedDropdown`; never hand-write
   `wa-dropdown` markup for a menu. Let the group size the trigger from its icon,
-  localized text, and caret. `PopupMenu` items also support nested `submenu`
+  localized text, and caret. Set `overflow="wrap"` for independent action links
+  that must remain fully visible at narrow widths; whole links move to a second
+  row, as in the catalog resource footer. `PopupMenu` items also support nested `submenu`
   actions, headings, dividers, checked or trailing choice marks, danger tone,
   and disabled reasons; nested headings/dividers stay out of keyboard choices;
   use `context` with `openPopupMenuAt`/`closePopupMenu` for pointer-anchored row

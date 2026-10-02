@@ -198,7 +198,8 @@ doctor feedback covers local components too.
 
 Toolbar action links and menus are configuration, not application CSS: put
 `ToolbarActionLink` inside `ToolbarControlGroup`, set `overflow="scroll"` for a
-bounded action row, use `menuInset` for nested dropdown surface padding, and set
+bounded action row or `overflow="wrap"` to keep independent links fully visible
+at narrow widths, use `menuInset` for nested dropdown surface padding, and set
 `visibility="compact-only"` when a group appears only below the Toolbar's compact
 container breakpoint. Never add app-owned anchor chrome, width/visibility
 repairs, or `::part(menu)` overrides.

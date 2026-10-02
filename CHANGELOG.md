@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Catalog resource links remain readable at phone widths.** The resource
+  group wraps whole actions onto another row instead of clipping the Guidance
+  label at the right edge; `ToolbarControlGroup overflow="wrap"` is available
+  for the same independent-link pattern.
+
 - **The UI analyzer resolves application component imports through TypeScript
   path aliases.** `KUI-L022` now catches a styled hook class when an imported
   cataloged component uses an exact or wildcard `paths` mapping; Doctor uses

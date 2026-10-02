@@ -387,10 +387,13 @@ copy below as app-owned content. Size the title to its track: a narrow
 peripheral rail or drawer (a navigator, inspector, or console beside a work
 area that carries the extra-large title, often with its own close control in
 the header) labels itself with the default size, because extra-large truncates
-there — "Inspector" becomes "Ins…" in a 160px rail. Nothing wraps inside a
-`ToolbarControlGroup`: an icon sits beside its label on one row and the group
-sizes to its content, so a row that does not fit relocates whole groups
-through the toolbar's `responsive` policy rather than breaking a group. A
+there — "Inspector" becomes "Ins…" in a 160px rail. By default, nothing wraps
+inside a `ToolbarControlGroup`: an icon sits beside its label on one row and the
+group sizes to its content, so a row that does not fit relocates whole groups
+through the toolbar's `responsive` policy. For independent action links that
+must all remain visible, set `overflow="wrap"`: whole links move to another
+row inside the group without breaking an icon from its label. Use
+`overflow="scroll"` when a single-row action strip is intentional. A
 toolbar draws no divider by default: pinned over or under scrolling content,
 it gets one from the scroll state instead — the `Pane` it heads draws the line
 only while content is scrolled beneath it, once `wireScrollDividers` is wired

@@ -360,6 +360,9 @@ describe('production UI primitives', () => {
     expect(asHtml(group)).toContain(
       'data-size="compact" data-density="tight" data-content="mixed" data-focus-ring="outline" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-visibility="compact-only" data-sizing="content" data-placement="start" data-scrim="true"',
     );
+    expect(
+      asHtml(ToolbarControlGroup({ children: icon, overflow: 'wrap' })),
+    ).toContain('data-overflow="wrap"');
     expect(asHtml(group)).toContain(
       'style="--kui-toolbar-avatar-image:url(&quot;/profile.svg&quot;)"',
     );

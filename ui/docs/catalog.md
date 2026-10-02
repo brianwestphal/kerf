@@ -441,6 +441,9 @@ revealCatalogEntry(app, initial, { block: "center" });
   the preview (`scroll`), or stay pinned while the entry pane is tall enough and
   scroll with the preview when it is short (`auto`, the default) — so a short
   window or large text never squeezes the preview out.
+  The resource footer uses `ToolbarControlGroup overflow="wrap"`: whole links
+  move to another row when they do not fit, keeping Guidance and source labels
+  readable without horizontal scrolling.
 - **`sidebar`** configures the sidebar rail — it forwards to the Workbench's left
   rail: `size` (default 288px), `resizable` (`true` or `{ min, max }`),
   `separator`, `collapseMotion`, `presentation`, `responsiveOverlayAt` (default

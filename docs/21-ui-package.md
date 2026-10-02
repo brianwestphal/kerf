@@ -113,7 +113,9 @@ filled surface is `SunkenPanel`.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Groups stay 44px outside (`calc(2px + remify(42px))`) with 8px between
-groups and inside items. `ListHeader` fills the available inline width and
+groups and inside items. Its `overflow="wrap"` option moves whole independent
+links to another row when they do not fit; the catalog resource footer uses it
+to keep Guidance visible at phone widths. `ListHeader` fills the available inline width and
 separates a dormant title and count-or-badge cluster from its optional
 logical-end 44px action with an 18px visual. Non-negative safe-integer section
 counts use the required localized `count`/`countLabel` pair and the shared

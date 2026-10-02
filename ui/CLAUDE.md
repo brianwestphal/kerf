@@ -96,10 +96,12 @@ matters, and ask rather than guess when a design brief is ambiguous.**
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never a bare
   button, input, link, or loose markup in a zone. A title is `ToolbarText`, not an
   `<h2>`. (Popup menu = a `PopupMenu` in a `single` ToolbarControlGroup with `nestedDropdown`.)
-- **Nothing wraps inside a `ToolbarControlGroup`.** An icon sits beside its
-  label on one row; a group's controls never break onto a second line, and no
-  trigger gets a fixed width — the group sizes to its content and the toolbar's
-  `responsive` policy relocates whole groups. A `ToolbarText` is one ellipsized
+- **Keep each control whole inside a `ToolbarControlGroup`.** An icon sits beside
+  its label on one row; the default group stays on one row and the toolbar's
+  `responsive` policy relocates whole groups. Set `overflow="wrap"` only for a
+  group of independent links that should remain visible at a narrow width;
+  it moves whole links to another row without clipping their labels. No trigger
+  gets a fixed width. A `ToolbarText` is one ellipsized
   line unless `wrap`/`maxLines` is set deliberately; a wrapped title keeps the
   trailing groups beside its first line, in the toolbar's top 44px band.
 - **Dividers earn their place.** Toolbars draw no divider by default; the line

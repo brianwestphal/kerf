@@ -13,7 +13,7 @@ export type ToolbarControlGroupContent =
 export type ToolbarControlGroupFocusRing = 'control' | 'outline' | 'halo';
 export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
-export type ToolbarControlGroupOverflow = 'visible' | 'scroll';
+export type ToolbarControlGroupOverflow = 'visible' | 'scroll' | 'wrap';
 export type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
 export type ToolbarControlGroupVisibility =
   | 'always'
@@ -91,7 +91,7 @@ export interface ToolbarControlGroupProps {
   nestedDropdown?: boolean;
   /** Configure the nested dropdown menu inset without consumer ::part() CSS. */
   menuInset?: ToolbarControlGroupMenuInset;
-  /** Keep an overlong row of actions inside the available width with horizontal scrolling. */
+  /** Keep an overlong row inside the available width by scrolling or wrapping. */
   overflow?: ToolbarControlGroupOverflow;
   /** Responsive visibility owned by the enclosing Toolbar container. */
   visibility?: ToolbarControlGroupVisibility;

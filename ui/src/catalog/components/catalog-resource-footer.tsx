@@ -79,7 +79,7 @@ export function CatalogResourceFooter({
               label={`${name} resources`}
               content="mixed"
               size="compact"
-              overflow="scroll"
+              overflow="wrap"
             >
               {resources.map((resource) => (
                 <ToolbarActionLink

@@ -103,7 +103,7 @@ describe('Catalog', () => {
     expect(html).toContain('class="preview">Select preview');
     // Footer resource link + related popup menu (a wa-dropdown, grouped by `group`)
     expect(html).toContain('data-component="toolbar-action-link"');
-    expect(html).toContain('data-overflow="scroll"');
+    expect(html).toContain('data-overflow="wrap"');
     expect(html).toContain('href="https://example.com/select.ts"');
     expect(html).toContain('data-catalog-related');
     expect(html).toContain('data-menu-inset="compact"');

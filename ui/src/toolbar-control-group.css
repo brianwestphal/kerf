@@ -161,6 +161,11 @@
   max-width: 100%;
   overflow-x: auto;
 }
+.kui-toolbar-control-group[data-overflow="wrap"] {
+  max-width: 100%;
+  height: auto;
+  flex-wrap: wrap;
+}
 .kui-toolbar-control-group[data-content="search"] {
   width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
   max-width: 100%;
