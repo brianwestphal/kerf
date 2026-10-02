@@ -10,7 +10,7 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     const strip = bar.locator('.kui-tab-bar__tabs');
     const pinned = bar.locator('.kui-app-tab[data-pinned="true"]');
     const buttons = strip.getByRole('tab');
-    await expect(buttons).toHaveCount(8);
+    await expect(buttons).toHaveCount(9);
     await expect(pinned).toHaveAttribute('data-pinned', 'true');
     await expect(buttons.first()).toHaveAccessibleName('Project grid');
     await expect(buttons.first()).toHaveAttribute('aria-selected', 'true');
@@ -20,6 +20,24 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
       clientWidth: element.clientWidth,
     }));
     expect(before.scrollWidth).toBeGreaterThan(before.clientWidth);
+    for (const offset of [0, 32, 64, 96, 128, before.scrollWidth]) {
+      await strip.evaluate((element, next) => {
+        element.scrollLeft = next;
+      }, offset);
+      const edgeTabId = await bar.evaluate((element) => {
+        const tab = element.querySelector<HTMLElement>('[data-pinned="true"]')!;
+        const box = tab.getBoundingClientRect();
+        return document
+          .elementFromPoint(box.left - 2, box.top + box.height / 2)
+          ?.closest('[data-tab-id]')
+          ?.getAttribute('data-tab-id');
+      });
+      expect(edgeTabId).toBe('project-grid');
+      if (offset === 64)
+        await bar.screenshot({
+          path: testInfo.outputPath(`pinned-offset-64-${width}.png`),
+        });
+    }
     await strip.evaluate((element) => {
       element.scrollLeft = element.scrollWidth;
     });
@@ -46,7 +64,7 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     });
     expect(position.scrollLeft).toBeGreaterThan(0);
     expect(position.tabLeft).toBeGreaterThanOrEqual(position.stripLeft - 1);
-    expect(position.tabLeft).toBeLessThanOrEqual(position.stripLeft + 4);
+    expect(position.tabLeft).toBeLessThanOrEqual(position.stripLeft + 6);
     expect(position.background).not.toBe('rgba(0, 0, 0, 0)');
     expect(position.position).toBe('sticky');
     expect(position.topmostTabId).toBe('project-grid');
@@ -64,7 +82,7 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
         '[data-pinned="true"]',
       )!;
       const peer = element.querySelector<HTMLElement>(
-        '[data-tab-id="pinned-backlog"]',
+        '[data-tab-id="pinned-claude-1"]',
       )!;
       return (
         peer.getBoundingClientRect().left -
@@ -104,11 +122,22 @@ test('pinned tab stays at the inline start in a right-to-left strip', async ({
           )!;
           return Math.abs(
             pinned.getBoundingClientRect().right -
-              (strip.getBoundingClientRect().right - 2),
+              (strip.getBoundingClientRect().right - 5),
           );
         }),
       )
       .toBeLessThanOrEqual(2);
+    const edgeTabId = await bar.evaluate((element) => {
+      const pinned = element.querySelector<HTMLElement>(
+        '[data-pinned="true"]',
+      )!;
+      const box = pinned.getBoundingClientRect();
+      return document
+        .elementFromPoint(box.right + 2, box.top + box.height / 2)
+        ?.closest('[data-tab-id]')
+        ?.getAttribute('data-tab-id');
+    });
+    expect(edgeTabId).toBe('project-grid');
   }
   const geometry = await bar.evaluate((element) => {
     const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
@@ -121,7 +150,7 @@ test('pinned tab stays at the inline start in a right-to-left strip', async ({
   });
   expect(geometry.scrollLeft).toBeLessThan(0);
   expect(geometry.pinnedRight).toBeLessThanOrEqual(geometry.stripRight + 1);
-  expect(geometry.pinnedRight).toBeGreaterThanOrEqual(geometry.stripRight - 4);
+  expect(geometry.pinnedRight).toBeGreaterThanOrEqual(geometry.stripRight - 6);
   await bar.screenshot({ path: testInfo.outputPath('pinned-rtl-390.png') });
   const buttons = bar.getByRole('tab');
   // A controlled render may replace the inline correction while keeping the
@@ -142,7 +171,7 @@ test('pinned tab stays at the inline start in a right-to-left strip', async ({
         )!;
         return Math.abs(
           pinned.getBoundingClientRect().right -
-            (strip.getBoundingClientRect().right - 2),
+            (strip.getBoundingClientRect().right - 5),
         );
       }),
     )

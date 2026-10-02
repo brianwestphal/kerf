@@ -3,7 +3,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { PanelLeft, Plus, SquarePlus } from 'lucide';
+import { LayoutGrid, PanelLeft, Plus, SquarePlus } from 'lucide';
 
 const tabs = (presentation: 'pill' | 'segmented' = 'pill') => [
   <AppTab
@@ -195,9 +195,15 @@ export function TabBarDemo() {
       </CatalogExample>
       <CatalogExample
         label="Pinned leading tab"
-        note="Project grid remains in the tablist and stays visible while other tabs scroll beneath it."
+        note="The compact icon-only Project grid tab remains visible while labeled tabs scroll beneath it."
         align="none"
-        viewport={{ width: 'compact' }}
+        viewport={{
+          width: 'compact',
+          tokens: {
+            '--kui-tab-bar-strip-padding': '4px',
+            '--kui-tab-bar-strip-gap': '8px',
+          },
+        }}
       >
         <TabBar id="pinned-tab-bar" label="Pinned project tabs">
           <AppTab
@@ -206,8 +212,12 @@ export function TabBarDemo() {
             pinned
             selected
             closable={false}
+            presentation="icon-only"
+            size="compact"
+            leading={<LucideIcon icon={LayoutGrid} name="layout-grid" />}
           />
           {[
+            'Claude 1',
             'Backlog',
             'Activity',
             'Automations',
@@ -217,9 +227,10 @@ export function TabBarDemo() {
             'Reports',
           ].map((name) => (
             <AppTab
-              id={`pinned-${name.toLowerCase()}`}
+              id={`pinned-${name.toLowerCase().replaceAll(' ', '-')}`}
               name={name}
               closable={false}
+              size="compact"
             />
           ))}
         </TabBar>

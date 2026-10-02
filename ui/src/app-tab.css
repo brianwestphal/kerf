@@ -38,6 +38,18 @@
     var(--_kui-app-tab-pinned-default-background, var(--kui-color-surface))
   );
 }
+.kui-app-tab[data-pinned="true"]::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  inset-inline-start: calc(-1 * var(--kui-tab-bar-strip-padding, 1px));
+  inset-inline-end: 0;
+  background: var(
+    --kui-app-tab-pinned-background,
+    var(--_kui-app-tab-pinned-default-background, var(--kui-color-surface))
+  );
+}
 .kui-tab-bar[data-presentation="segmented"] .kui-app-tab[data-pinned="true"],
 .kui-tab-bar[data-presentation="inspector"] .kui-app-tab[data-pinned="true"] {
   --_kui-app-tab-pinned-default-background: var(
