@@ -154,7 +154,7 @@ check in `.kerf-ui-profile.json` conforming to
 [`application-ui-profile.schema.json`](../ai/application-ui-profile.schema.json).
 Keep package-qualified catalog locations and recurring-concept preferences,
 allowed color schemes and density, public semantic-token overrides,
-layout/responsive conventions, and narrow rule exceptions there. Product
+layout/responsive conventions, application wiring entry paths, and narrow rule exceptions there. Product
 records, copy, permissions, user preferences, and transport state do not belong
 in this policy file.
 
@@ -175,6 +175,12 @@ Discovery and precedence are deterministic:
 Later scalar and object-map values win. Catalogs merge by package; preferences
 and token overrides merge by key; exceptions merge by stable id. Lists such as
 allowed themes/densities replace the earlier list rather than accumulating.
+`wiring.entries` similarly names workspace-relative application entry modules;
+later profile layers replace the entry list. The `ui-wiring` ESLint rule checks
+application-scoped helper calls and registration imports once at each entry
+that reaches a rendering module, while a composition entry with
+`wiring.scope: "module"` keeps a local obligation. See the
+[`ui-wiring` rule](../../eslint-plugin/docs/rules/ui-wiring.md).
 Every resolved field retains its source file. The shipped
 `application-ui-profile.mjs` API implements discovery, merge, loading, and
 validation and reports actionable originating file + JSON-path diagnostics for stale

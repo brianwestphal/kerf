@@ -39,6 +39,10 @@ export interface ApplicationUiProfile {
     scrollOwnership?: 'one-per-pane' | 'application';
     spacingScale?: 'kerf-five-step' | 'application';
   };
+  wiring?: {
+    /** Static application entry modules, relative to the workspace root. */
+    entries?: string[];
+  };
   exceptions?: Array<{
     id: string;
     rules: string[];

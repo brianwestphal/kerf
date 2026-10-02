@@ -123,6 +123,14 @@ export function mergeApplicationUiProfiles(layers) {
       profile.layout = { ...profile.layout, ...layer.layout };
       recordProvenance(provenance, source, '$layout', layer.layout);
     }
+    if (
+      layer.wiring &&
+      typeof layer.wiring === 'object' &&
+      !Array.isArray(layer.wiring)
+    ) {
+      profile.wiring = { ...profile.wiring, ...layer.wiring };
+      recordProvenance(provenance, source, '$wiring', layer.wiring);
+    }
     for (const exception of Array.isArray(layer.exceptions)
       ? layer.exceptions
       : []) {
@@ -250,6 +258,7 @@ export function validateApplicationUiProfile(
       'theme',
       'tokens',
       'layout',
+      'wiring',
       'exceptions',
     ],
     '$',
@@ -269,7 +278,25 @@ export function validateApplicationUiProfile(
   const theme = objectAt(profile?.theme, '$.theme');
   const tokens = objectAt(profile?.tokens, '$.tokens') ?? {};
   const layout = objectAt(profile?.layout, '$.layout');
+  const wiring = objectAt(profile?.wiring, '$.wiring');
   const exceptions = arrayAt(profile?.exceptions, '$.exceptions');
+  rejectUnknown(wiring, ['entries'], '$.wiring');
+  if (wiring?.entries !== undefined) {
+    if (
+      !stringList(wiring.entries) ||
+      wiring.entries.some(
+        (entry) =>
+          isAbsolute(entry) ||
+          entry.split('/').includes('..') ||
+          /[*?]/.test(entry),
+      )
+    )
+      add(
+        'KUI-P030',
+        '$.wiring.entries',
+        'Wiring entries must be unique workspace-relative paths without traversal or wildcards.',
+      );
+  }
 
   const catalogPackages = new Set();
   for (const [index, catalog] of catalogs.entries()) {

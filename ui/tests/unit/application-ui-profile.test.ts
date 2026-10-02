@@ -22,6 +22,28 @@ const layer = (
 ): ApplicationUiProfileLayer => ({ source, profile });
 
 describe('application UI profile policy', () => {
+  it('validates and merges application wiring entries', () => {
+    const resolved = mergeApplicationUiProfiles([
+      layer('/package/default.json', { schemaVersion: 1, scope: 'package' }),
+      layer('/workspace/.kerf-ui-profile.json', {
+        schemaVersion: 1,
+        scope: 'workspace',
+        wiring: { entries: ['src/main.tsx', 'src/demo.tsx'] },
+      }),
+    ]);
+    expect(resolved.profile.wiring?.entries).toEqual([
+      'src/main.tsx',
+      'src/demo.tsx',
+    ]);
+    expect(validateApplicationUiProfile(resolved.profile)).toEqual([]);
+    expect(
+      validateApplicationUiProfile({
+        ...resolved.profile,
+        wiring: { entries: ['../other/main.tsx'] },
+      }).map(({ path }) => path),
+    ).toContain('$.wiring.entries');
+  });
+
   it('keeps the synchronous ESLint projection behaviorally aligned', () => {
     const layers = [
       layer('/package/default.json', {

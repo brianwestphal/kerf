@@ -1,9 +1,13 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { relative, resolve } from 'node:path';
+
 import {
   helperCall,
   importRegistry,
   isExcepted,
   jsxKey,
   loadUiContract,
+  relativeImportCandidates,
   UI_RULE_SCHEMA,
   UI_CONTRACT_LOAD_CODE,
 } from '../ui-contract.js';
@@ -12,6 +16,104 @@ const MISSING_CODE = 'KUI-L401';
 const CLEANUP_CODE = 'KUI-L402';
 
 const retained = (call) => call.parent?.type !== 'ExpressionStatement';
+
+const script = /\.(?:[cm]?[jt]sx?)$/;
+const imports =
+  /(?:^|[;\n])\s*(?:import|export)\s+(?:[^;'"`]*?\s+from\s*)?['"]([^'"]+)['"]/g;
+const dynamicImports = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
+
+function entryModules(entryFile, currentFile, currentText) {
+  const modules = new Map();
+  const visit = (file) => {
+    if (modules.has(file)) return;
+    let source;
+    try {
+      source = file === currentFile ? currentText : readFileSync(file, 'utf8');
+    } catch {
+      return;
+    }
+    modules.set(file, source);
+    for (const [, specifier] of [
+      ...source.matchAll(imports),
+      ...source.matchAll(dynamicImports),
+    ]) {
+      if (!specifier.startsWith('.')) continue;
+      const dependency = relativeImportCandidates(file, specifier).find(
+        (candidate) => script.test(candidate) && existsSync(candidate),
+      );
+      if (dependency) visit(dependency);
+    }
+  };
+  visit(entryFile);
+  return modules;
+}
+
+// The entry graph is read from disk because ESLint visits one source file at a
+// time. Match only imported JSX names; an unrelated local tag cannot satisfy a
+// catalog obligation. The current entry's in-memory text covers editor linting.
+function moduleUses(source, file, contract) {
+  const uses = new Set();
+  const declarations = /\bimport\s+([^;'"`]*?)\s+from\s*['"]([^'"]+)['"]/g;
+  for (const [, bindings, from] of source.matchAll(declarations)) {
+    const direct = contract.imports.get(from);
+    const keyFor = (name) =>
+      direct ??
+      (from === contract.package ? contract.exports.get(name) : undefined) ??
+      contract.packageExports.get(`${from}\0${name}`) ??
+      (from.startsWith('.')
+        ? relativeImportCandidates(file, from)
+            .map((candidate) =>
+              contract.sourceExports.get(`${candidate}\0${name}`),
+            )
+            .find(Boolean)
+        : undefined);
+    const named = bindings.match(/\{([^}]*)\}/)?.[1];
+    if (named)
+      for (const part of named.split(',')) {
+        const match = part.trim().match(/^(\w+)(?:\s+as\s+(\w+))?$/);
+        if (!match) continue;
+        const [, imported, local = imported] = match;
+        const key = keyFor(imported);
+        if (key && new RegExp(`<${local}(?=[\\s/>])`).test(source))
+          uses.add(key);
+      }
+    const namespace = bindings.match(/\*\s+as\s+(\w+)/)?.[1];
+    if (namespace) {
+      const names = new Set([
+        ...contract.exports.keys(),
+        ...[...contract.packageExports.keys()].map((key) => key.split('\0')[1]),
+      ]);
+      for (const name of names) {
+        const key = keyFor(name);
+        if (
+          key &&
+          new RegExp(`<${namespace}\\.${name}(?=[\\s/>])`).test(source)
+        )
+          uses.add(key);
+      }
+    }
+    const defaultName = bindings.match(/^\s*(\w+)\s*(?:,|$)/)?.[1];
+    if (
+      direct &&
+      defaultName &&
+      new RegExp(`<${defaultName}(?=[\\s/>])`).test(source)
+    )
+      uses.add(direct);
+  }
+  return uses;
+}
+
+function applicationEntries(contract, filename, source) {
+  const root = resolve(contract.cwd);
+  const entries = [];
+  for (const path of contract.profile.wiring?.entries ?? []) {
+    const file = resolve(root, path);
+    if (relative(root, file).startsWith('..')) continue;
+    const modules = entryModules(file, filename, source);
+    if (modules.size) entries.push({ file, modules });
+  }
+  return entries;
+}
 
 export default {
   meta: {
@@ -60,9 +162,26 @@ export default {
       },
       'Program:exit'(node) {
         if (!registry) return;
-        for (const [key, usage] of used) {
+        const entries = applicationEntries(
+          contract,
+          filename,
+          context.sourceCode.text,
+        );
+        const reachable = entries.filter(({ modules }) =>
+          modules.has(filename),
+        );
+        const ownEntry = entries.find(({ file }) => file === filename);
+        const required = new Map(used);
+        if (ownEntry)
+          for (const [file, source] of ownEntry.modules)
+            for (const key of moduleUses(source, file, contract))
+              if (!required.has(key)) required.set(key, node);
+        for (const [key, usage] of required) {
           const entry = contract.entries.get(key);
           if (!entry?.wiring.required) continue;
+          if (entry.wiring.scope === 'module' && !used.has(key)) continue;
+          if (entry.wiring.scope !== 'module' && reachable.length && !ownEntry)
+            continue;
           for (const helper of entry.wiring.helpers) {
             if (helper.startsWith('@')) {
               if (
@@ -86,7 +205,17 @@ export default {
                 messageId: 'missing',
                 data: { component: key, helper },
               });
-            if (!isExcepted(contract, CLEANUP_CODE, filename))
+          }
+        }
+        if (!isExcepted(contract, CLEANUP_CODE, filename)) {
+          const disposerHelpers = new Set(
+            [...contract.entries.values()]
+              .filter((entry) => entry.wiring?.required)
+              .flatMap((entry) => entry.wiring.helpers)
+              .filter((helper) => !helper.startsWith('@')),
+          );
+          for (const [helper, helperCalls] of calls)
+            if (disposerHelpers.has(helper))
               for (const { node: call } of helperCalls)
                 if (!retained(call))
                   context.report({
@@ -94,7 +223,6 @@ export default {
                     messageId: 'cleanup',
                     data: { helper },
                   });
-          }
         }
       },
     };

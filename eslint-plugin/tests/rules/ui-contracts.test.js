@@ -71,6 +71,40 @@ const thirdPartySettings = uiSettings({
   profile: { schemaVersion: 1, scope: 'package' },
 });
 
+const wiringRoot = mkdtempSync(join(tmpdir(), 'kerf-wiring-'));
+const wiringEntry = join(wiringRoot, 'main.tsx');
+const wiringEntryTwo = join(wiringRoot, 'other.tsx');
+const wiringLeaf = join(wiringRoot, 'leaf.tsx');
+writeFileSync(
+  wiringEntry,
+  "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);\n",
+);
+writeFileSync(
+  wiringLeaf,
+  "import { TokenSearchField, Select } from '@kerfjs/ui'; export const View = () => <><TokenSearchField /><Select /></>;\n",
+);
+writeFileSync(wiringEntryTwo, "import('./leaf');\n");
+const entrySettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  profile: { ...profile, wiring: { entries: ['main.tsx'] } },
+});
+const twoEntrySettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  profile: { ...profile, wiring: { entries: ['main.tsx', 'other.tsx'] } },
+});
+const moduleScopeSettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  profile: { ...profile, wiring: { entries: ['main.tsx'] } },
+  catalog: {
+    ...settings.kerfjs.ui.catalog,
+    entries: settings.kerfjs.ui.catalog.entries.map((entry) =>
+      entry.id === 'token-search-field'
+        ? { ...entry, wiring: { ...entry.wiring, scope: 'module' } }
+        : entry,
+    ),
+  },
+});
+
 tester.run('ui-public-boundaries', boundaries, {
   valid: [
     // A component's own root class on that component is not a recreation.
@@ -1067,6 +1101,16 @@ tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
 tester.run('ui-wiring', wiring, {
   valid: [
     {
+      code: "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);",
+      filename: wiringEntry,
+      settings: entrySettings,
+    },
+    {
+      code: "import { TokenSearchField, Select } from '@kerfjs/ui'; <><TokenSearchField /><Select /></>;",
+      filename: wiringLeaf,
+      settings: twoEntrySettings,
+    },
+    {
       code: "import { TokenSearchField } from '@kerfjs/ui'; import { wireTokenSearchFields as wire } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wire(root); <TokenSearchField />;",
       settings,
     },
@@ -1096,6 +1140,30 @@ tester.run('ui-wiring', wiring, {
     },
   ],
   invalid: [
+    {
+      code: "import('./leaf');",
+      filename: wiringEntryTwo,
+      settings: twoEntrySettings,
+      errors: [{ messageId: 'missing' }, { messageId: 'missing' }],
+    },
+    {
+      code: "import './leaf'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);",
+      filename: wiringEntry,
+      settings: entrySettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; wireTokenSearchFields(root);",
+      filename: wiringEntry,
+      settings: entrySettings,
+      errors: [{ messageId: 'cleanup' }],
+    },
+    {
+      code: "import { TokenSearchField } from '@kerfjs/ui'; <TokenSearchField />;",
+      filename: wiringLeaf,
+      settings: moduleScopeSettings,
+      errors: [{ messageId: 'missing' }],
+    },
     {
       code: "import { TokenSearchField } from '@kerfjs/ui'; <TokenSearchField />;",
       settings,

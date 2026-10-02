@@ -214,6 +214,7 @@
           "required": ["required", "helpers", "obligations"],
           "properties": {
             "required": { "type": "boolean" },
+            "scope": { "enum": ["application", "module"] },
             "helpers": { "$ref": "#/$defs/stringList" },
             "obligations": { "$ref": "#/$defs/stringList" },
             "stateAttributes": {

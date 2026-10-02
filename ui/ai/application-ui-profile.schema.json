@@ -25,6 +25,16 @@
       "additionalProperties": { "type": "string", "minLength": 1 }
     },
     "layout": { "$ref": "#/$defs/layout" },
+    "wiring": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "description": "Application entry modules, relative to the workspace root, where application-scoped wiring is installed.",
+          "$ref": "#/$defs/stringList"
+        }
+      },
+      "additionalProperties": false
+    },
     "exceptions": {
       "type": "array",
       "items": { "$ref": "#/$defs/exception" }
