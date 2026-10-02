@@ -102,6 +102,12 @@
   }
 }
 
+@container kui-toolbar (max-width: remify(224px)) {
+  .kui-toolbar-control-group[data-visibility="hide-collapsed-tiny"][data-expanded="false"] {
+    display: none;
+  }
+}
+
 /* `shape="rounded"` swaps the default pill radius for the design system's softer
    rounded rectangle. The shared highlight contract derives every inner hover or
    selected surface from this outer radius and the group's full inset. */
@@ -178,6 +184,25 @@
   ) {
   width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   flex: 0 0 auto;
+}
+
+.kui-toolbar-control-group[data-sizing="grow"][data-expanded="true"] {
+  --_kui-toolbar-group-grow-search-width: 100%;
+  width: auto;
+  min-width: min(100%, var(--kui-toolbar-group-grow-basis, remify(304px)));
+  flex: 1 1 var(--kui-toolbar-group-grow-basis, remify(304px));
+}
+.kui-toolbar-control-group[data-sizing="fill"] {
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 100%;
+}
+@container kui-toolbar (max-width: remify(480px)) {
+  .kui-toolbar-control-group[data-sizing="grow"][data-expanded="true"] {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
 }
 .kui-toolbar-control-group[data-content="text"]
   > :is(button, wa-button, .kui-toolbar-action-link),

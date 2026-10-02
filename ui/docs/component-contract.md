@@ -518,9 +518,15 @@ the action must retain native anchor navigation; the group owns its geometry,
 hover, and focus treatment. Set `overflow="scroll"` when a row of controls must
 stay inside the available toolbar width. Set `visibility="compact-only"` for a
 group that replaces wider toolbar controls below the Toolbar's compact container
-breakpoint; do not hide the group with an application class. Reach for
-`wa-button` only when you need
-a Web Awesome feature; a popup menu is a `PopupMenu`, which renders its own
+breakpoint; do not hide the group with an application class.
+Use `sizing="grow"` on an expanded search group in a wrapping zone: it grows from
+`growBasis` (19rem by default) into available row space, then takes a whole
+row at 480px container width or less. The collapsed search stays icon-sized.
+Use `sizing="fill"` for a group, including a non-search segmented control,
+that spans its wrapping row. Set `visibility="hide-collapsed-tiny"` on a
+collapsible group to omit its closed icon at 224px or less; expanded content
+remains visible. These sizes use the enclosing Toolbar's container width.
+Reach for `wa-button` only when you need a Web Awesome feature; a popup menu is a `PopupMenu`, which renders its own
 trigger. Nothing wraps inside a group: an icon sits beside its label on one
 row, and a group's controls never break onto a second line — the group sizes
 to its content and the enclosing `Toolbar`'s responsive policy relocates whole

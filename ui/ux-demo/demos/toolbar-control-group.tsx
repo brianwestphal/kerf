@@ -4,6 +4,7 @@ import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarActionLink,
   ToolbarControlGroup,
@@ -369,6 +370,85 @@ export function ToolbarControlGroupDemo() {
               expandLabel="Open search"
             />
           </ToolbarControlGroup>
+        </div>
+      </CatalogExample>
+      <CatalogExample
+        label="Wrapping zone sizing"
+        note="The expanded search grows from a 19rem basis alongside actions, then takes its own row at 480px. The view group fills a stacked row."
+        align="none"
+        viewport={{ width: 'full' }}
+      >
+        <div data-demo-section="toolbar-group-sizing">
+          <Toolbar
+            responsive="stack"
+            trailing={
+              <>
+                <ToolbarControlGroup
+                  content="search"
+                  sizing="grow"
+                  growBasis="19rem"
+                  expanded
+                  single
+                  label="Search"
+                >
+                  <TokenSearchField
+                    id="toolbar-group-grow-search"
+                    label="Search tickets"
+                    collapsible
+                    expanded
+                    presentation="toolbar-group"
+                    placeholder="Search tickets"
+                  />
+                </ToolbarControlGroup>
+                <ToolbarControlGroup label="View" single>
+                  <button type="button" aria-label="List view">
+                    <LucideIcon icon={List} name="list" />
+                  </button>
+                </ToolbarControlGroup>
+                <ToolbarControlGroup label="Sort" single>
+                  <button type="button" aria-label="Sort tickets">
+                    <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
+                  </button>
+                </ToolbarControlGroup>
+              </>
+            }
+          />
+          <Toolbar
+            responsive="stack"
+            trailing={
+              <>
+                <ToolbarControlGroup sizing="fill" label="Rail view">
+                  <SegmentedControl
+                    id="toolbar-group-fill-view"
+                    label="Rail view"
+                    value="list"
+                    action="select-segment-demo"
+                    appearance="toolbar"
+                    choices={[
+                      { value: 'list', label: 'List' },
+                      { value: 'board', label: 'Board' },
+                    ]}
+                  />
+                </ToolbarControlGroup>
+                <ToolbarControlGroup
+                  content="search"
+                  visibility="hide-collapsed-tiny"
+                  expanded={false}
+                  single
+                  label="Search"
+                >
+                  <TokenSearchField
+                    id="toolbar-group-tiny-search"
+                    label="Search tickets"
+                    collapsible
+                    expanded={false}
+                    presentation="toolbar-group"
+                    expandLabel="Open search"
+                  />
+                </ToolbarControlGroup>
+              </>
+            }
+          />
         </div>
       </CatalogExample>
     </CatalogExampleStack>

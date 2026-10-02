@@ -277,7 +277,8 @@ type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 type ToolbarControlGroupOverflow = 'visible' | 'scroll';
 type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
-type ToolbarControlGroupVisibility = 'always' | 'compact-only';
+type ToolbarControlGroupVisibility = 'always' | 'compact-only' | 'hide-collapsed-tiny';
+type ToolbarControlGroupSizing = 'content' | 'grow' | 'fill';
 interface ToolbarActionLinkProps {
     href: string;
     label: string;
@@ -320,6 +321,10 @@ interface ToolbarControlGroupProps {
     overflow?: ToolbarControlGroupOverflow;
     /** Responsive visibility owned by the enclosing Toolbar container. */
     visibility?: ToolbarControlGroupVisibility;
+    /** Intrinsic (default), grow from a basis, or occupy a full wrapping row. */
+    sizing?: ToolbarControlGroupSizing;
+    /** CSS length used as the minimum width and flex basis for `sizing="grow"`; defaults to 19rem. */
+    growBasis?: string;
     /** Move this group into the work-area toolbar when its panel collapses. */
     relocateOnCollapse?: boolean;
     /** Add contrast behind photo-backed avatar content. */
@@ -336,9 +341,9 @@ interface ToolbarControlGroupProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, sizing, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
-export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
+export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
 
 ## `@kerfjs/ui/floating-toolbar`

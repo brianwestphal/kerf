@@ -358,7 +358,7 @@ describe('production UI primitives', () => {
       'role="group" aria-label="View" data-appearance="borderless" data-tone="dark" data-button-appearance="push" data-expanded="true" data-single="true"',
     );
     expect(asHtml(group)).toContain(
-      'data-size="compact" data-density="tight" data-content="mixed" data-focus-ring="outline" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-visibility="compact-only" data-scrim="true"',
+      'data-size="compact" data-density="tight" data-content="mixed" data-focus-ring="outline" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-visibility="compact-only" data-sizing="content" data-scrim="true"',
     );
     expect(asHtml(group)).toContain(
       'style="--kui-toolbar-avatar-image:url(&quot;/profile.svg&quot;)"',
@@ -389,6 +389,22 @@ describe('production UI primitives', () => {
     expect(
       asHtml(ToolbarControlGroup({ children: icon, shape: 'rounded' })),
     ).toContain('data-shape="rounded"');
+    const growGroup = asHtml(
+      ToolbarControlGroup({
+        children: icon,
+        content: 'search',
+        expanded: true,
+        sizing: 'grow',
+        growBasis: '19rem',
+        visibility: 'hide-collapsed-tiny',
+      }),
+    );
+    expect(growGroup).toContain('data-sizing="grow"');
+    expect(growGroup).toContain('data-visibility="hide-collapsed-tiny"');
+    expect(growGroup).toContain('style="--kui-toolbar-group-grow-basis:19rem"');
+    expect(
+      asHtml(ToolbarControlGroup({ children: icon, sizing: 'fill' })),
+    ).toContain('data-sizing="fill"');
     const link = asHtml(
       ToolbarActionLink({
         href: '/guide',

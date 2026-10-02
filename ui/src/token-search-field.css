@@ -258,7 +258,13 @@
 }
 
 .kui-token-search[data-collapsible="true"] {
-  width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
+  width: min(
+    var(
+      --_kui-toolbar-group-grow-search-width,
+      var(--kui-token-search-expanded-width, remify(480px))
+    ),
+    100%
+  );
   max-width: 100%;
   overflow: hidden;
   /* Size the inline axis through `width` only. A `flex-basis` of the expanded

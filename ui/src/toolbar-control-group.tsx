@@ -15,7 +15,9 @@ export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 export type ToolbarControlGroupOverflow = 'visible' | 'scroll';
 export type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
-export type ToolbarControlGroupVisibility = 'always' | 'compact-only';
+export type ToolbarControlGroupVisibility =
+  'always' | 'compact-only' | 'hide-collapsed-tiny';
+export type ToolbarControlGroupSizing = 'content' | 'grow' | 'fill';
 
 export interface ToolbarActionLinkProps {
   href: string;
@@ -89,6 +91,10 @@ export interface ToolbarControlGroupProps {
   overflow?: ToolbarControlGroupOverflow;
   /** Responsive visibility owned by the enclosing Toolbar container. */
   visibility?: ToolbarControlGroupVisibility;
+  /** Intrinsic (default), grow from a basis, or occupy a full wrapping row. */
+  sizing?: ToolbarControlGroupSizing;
+  /** CSS length used as the minimum width and flex basis for `sizing="grow"`; defaults to 19rem. */
+  growBasis?: string;
   /** Move this group into the work-area toolbar when its panel collapses. */
   relocateOnCollapse?: boolean;
   /** Add contrast behind photo-backed avatar content. */
@@ -126,6 +132,8 @@ export function ToolbarControlGroup({
   menuInset = 'standard',
   overflow = 'visible',
   visibility = 'always',
+  sizing = 'content',
+  growBasis,
   relocateOnCollapse = false,
   scrim = false,
   busy = false,
@@ -133,6 +141,12 @@ export function ToolbarControlGroup({
   avatarImage,
   slot,
 }: ToolbarControlGroupProps) {
+  const inlineStyles = [
+    avatarImage
+      ? `--kui-toolbar-avatar-image:url(${JSON.stringify(avatarImage)})`
+      : '',
+    growBasis ? `--kui-toolbar-group-grow-basis:${growBasis}` : '',
+  ].filter(Boolean);
   const group = (
     <div
       class={`kui-toolbar-control-group ${className}`.trim()}
@@ -155,15 +169,12 @@ export function ToolbarControlGroup({
       data-menu-inset={menuInset}
       data-overflow={overflow}
       data-visibility={visibility}
+      data-sizing={sizing}
       data-scrim={String(scrim)}
       data-busy={String(busy)}
       aria-busy={busy ? 'true' : undefined}
       inert={busy}
-      style={
-        avatarImage
-          ? `--kui-toolbar-avatar-image:url(${JSON.stringify(avatarImage)})`
-          : undefined
-      }
+      style={inlineStyles.length ? inlineStyles.join(';') : undefined}
       slot={slot}
     >
       {children}
