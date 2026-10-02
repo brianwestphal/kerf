@@ -47,6 +47,7 @@ export function TokenSearchFieldDemo() {
             hint="Add filters to narrow the view."
             required
             query="status:open"
+            tokens={[{ value: 'tag:client', label: 'tag:client', offset: 0 }]}
           />
         </List>
       </CatalogExample>

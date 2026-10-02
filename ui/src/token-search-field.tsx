@@ -188,7 +188,7 @@ export function TokenSearchField({
     !collapsible || expanded || query.length > 0 || tokens.length > 0;
   const control = (
     <div
-      class={`kui-token-search ${className}`.trim()}
+      class={`kui-token-search ${presentation === 'form-field' ? '' : className}`.trim()}
       data-component="token-search-field"
       data-token-search-id={id}
       data-disabled={String(disabled)}
@@ -325,7 +325,10 @@ export function TokenSearchField({
   );
   if (presentation !== 'form-field') return control;
   return (
-    <div class="kui-token-search__field" data-token-search-form-field={id}>
+    <div
+      class={`kui-token-search__field ${className}`.trim()}
+      data-token-search-form-field={id}
+    >
       <div
         class="kui-token-search__field-label"
         id={`${id}-label`}

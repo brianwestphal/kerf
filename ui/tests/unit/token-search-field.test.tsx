@@ -55,6 +55,28 @@ describe('TokenSearchField', () => {
     expect(optional).not.toContain('kui-token-search__field-hint');
   });
 
+  it('places className on the rendered root in every presentation', () => {
+    const form = asHtml(
+      TokenSearchField({
+        id: 'form-query',
+        label: 'Search',
+        presentation: 'form-field',
+        className: 'query-colors',
+      }),
+    );
+    expect(form).toContain('class="kui-token-search__field query-colors"');
+    expect(form).toContain('class="kui-token-search"');
+    expect(form).not.toContain('class="kui-token-search query-colors"');
+    const standalone = asHtml(
+      TokenSearchField({
+        id: 'plain-query',
+        label: 'Search',
+        className: 'query-colors',
+      }),
+    );
+    expect(standalone).toContain('class="kui-token-search query-colors"');
+  });
+
   it('renders ordered, editable atomic tokens inside a labeled searchbox', () => {
     const tokens: TokenSearchToken[] = [
       {

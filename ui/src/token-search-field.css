@@ -28,10 +28,6 @@
 }
 
 .kui-token-search {
-  --kui-token-search-background: var(--kui-color-surface);
-  --kui-token-search-border: var(--kui-color-neutral-border-normal);
-  --kui-token-search-token-background: var(--kui-color-brand-fill-normal);
-  --kui-token-search-token-foreground: var(--kui-color-brand-on-quiet);
   --kui-token-search-line-size: remify(34px);
 
   display: grid;
@@ -41,10 +37,11 @@
   min-height: remify(44px);
   padding: remify(4px) remify(8px);
   box-sizing: border-box;
-  border: 1px solid var(--kui-token-search-border);
+  border: 1px solid
+    var(--kui-token-search-border, var(--kui-color-neutral-border-normal));
   border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
   color: var(--kui-color-text);
-  background: var(--kui-token-search-background);
+  background: var(--kui-token-search-background, var(--kui-color-surface));
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: start;
   gap: var(--kui-layout-item-gap, remify(8px));
@@ -119,8 +116,14 @@
   margin-inline: remify(2px);
   padding-inline-start: remify(7.2px);
   border-radius: var(--kui-radius-pill);
-  color: var(--kui-token-search-token-foreground);
-  background: var(--kui-token-search-token-background);
+  color: var(
+    --kui-token-search-token-foreground,
+    var(--kui-color-brand-on-quiet)
+  );
+  background: var(
+    --kui-token-search-token-background,
+    var(--kui-color-brand-fill-normal)
+  );
   font-size: var(--kui-font-xs);
   line-height: 1;
   white-space: nowrap;

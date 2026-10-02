@@ -96,3 +96,67 @@ test('TokenSearchField form presentation matches Web Awesome field geometry and 
     });
   }
 });
+
+test('TokenSearchField accepts inherited app color tokens in form and standalone presentations', async ({
+  page,
+}) => {
+  await page.goto('/?component=token-search-field');
+  await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+  await page.addStyleTag({
+    content: `
+    [data-demo="token-search-field"] {
+      --kui-token-search-background: #f9f7fb;
+      --kui-token-search-border: #8b6f9c;
+      --kui-token-search-token-background: #e8dff0;
+      --kui-token-search-token-foreground: #342547;
+    }
+  `,
+  });
+  const colors = await page
+    .locator('[data-demo="token-search-field"]')
+    .evaluate((demo) => {
+      const form = demo.querySelector<HTMLElement>(
+        '[data-demo-token-form] .kui-token-search',
+      )!;
+      const formToken = form.querySelector<HTMLElement>(
+        '.kui-token-search__token',
+      )!;
+      const standalone = demo.querySelector<HTMLElement>(
+        '[data-token-search-id="catalog-search"]',
+      )!;
+      const token = standalone.querySelector<HTMLElement>(
+        '.kui-token-search__token',
+      )!;
+      const style = (element: HTMLElement) =>
+        globalThis.getComputedStyle(element);
+      return {
+        formBackground: style(form).backgroundColor,
+        formBorder: style(form).borderTopColor,
+        formTokenBackground: style(formToken).backgroundColor,
+        formTokenForeground: style(formToken).color,
+        standaloneBackground: style(standalone).backgroundColor,
+        standaloneBorder: style(standalone).borderTopColor,
+        tokenBackground: style(token).backgroundColor,
+        tokenForeground: style(token).color,
+      };
+    });
+  expect(colors).toEqual({
+    formBackground: 'rgb(249, 247, 251)',
+    formBorder: 'rgb(139, 111, 156)',
+    formTokenBackground: 'rgb(232, 223, 240)',
+    formTokenForeground: 'rgb(52, 37, 71)',
+    standaloneBackground: 'rgb(249, 247, 251)',
+    standaloneBorder: 'rgb(139, 111, 156)',
+    tokenBackground: 'rgb(232, 223, 240)',
+    tokenForeground: 'rgb(52, 37, 71)',
+  });
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.locator('[data-demo-token-form]').screenshot({
+      path: `test-results/token-search-colors-form-chip-${width}.png`,
+    });
+    await page.locator('[data-token-search-id="catalog-search"]').screenshot({
+      path: `test-results/token-search-colors-tokens-${width}.png`,
+    });
+  }
+});
