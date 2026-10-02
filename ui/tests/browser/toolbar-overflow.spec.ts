@@ -186,9 +186,9 @@ test('center-priority gives an expanded center control the whole row at 390px', 
   page,
 }) => {
   await open(page, 390, 'toolbar');
-  const toolbar = page
-    .locator('[data-demo="toolbar"] [data-component="toolbar"]')
-    .first();
+  const toolbar = page.locator(
+    '[data-demo="toolbar"] [data-component="toolbar"][data-responsive="center-priority"]',
+  );
   await expect(toolbar).toHaveAttribute('data-responsive', 'center-priority');
   const center = toolbar.locator('.kui-toolbar__center');
   const group = center.locator('[data-component="toolbar-control-group"]');
@@ -223,9 +223,9 @@ test('center-priority keeps every zone on one row when the toolbar is wide', asy
   page,
 }) => {
   await open(page, 1440, 'toolbar');
-  const toolbar = page
-    .locator('[data-demo="toolbar"] [data-component="toolbar"]')
-    .first();
+  const toolbar = page.locator(
+    '[data-demo="toolbar"] [data-component="toolbar"][data-responsive="center-priority"]',
+  );
   await toolbar.getByRole('button', { name: 'Open find' }).click();
   await expect(toolbar.locator('.kui-toolbar__leading')).toBeVisible();
   await expect(toolbar.locator('.kui-toolbar__trailing')).toBeVisible();

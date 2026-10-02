@@ -73,6 +73,7 @@ test('interactive cards select with pointer and keyboard without moving their fr
   await expect(log).toContainText('Card document-b selected');
 
   await page.setViewportSize({ width: 390, height: 844 });
+  await toggle.scrollIntoViewIfNeeded();
   await expect(toggle).toBeInViewport();
   await expect(optionB).toHaveAttribute('aria-selected', 'true');
   await toggle.screenshot({

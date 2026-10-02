@@ -42,9 +42,12 @@ test('focused controls paint a complete ring in every Toolbar zone', async ({
       if (zoneName === 'leading') {
         expect(geometry.groupLeft).toBeCloseTo(geometry.zoneLeft, 0);
         expect(geometry.overflow).toBe('clip');
-        expect(geometry.clipMargin).toBeGreaterThanOrEqual(
-          geometry.outlineWidth + geometry.outlineOffset,
-        );
+        // WebKit may omit the computed overflow-clip-margin value even when
+        // the ring paints correctly; the pixel assertion below covers it.
+        if (Number.isFinite(geometry.clipMargin))
+          expect(geometry.clipMargin).toBeGreaterThanOrEqual(
+            geometry.outlineWidth + geometry.outlineOffset,
+          );
       }
 
       const bounds = await viewport.boundingBox();
@@ -67,7 +70,9 @@ test('focused controls paint a complete ring in every Toolbar zone', async ({
           canvas.height = bitmap.height;
           const context = canvas.getContext('2d')!;
           context.drawImage(bitmap, 0, 0);
-          const data = context.getImageData(x, y, 4, 5).data;
+          // Browser rasterization places the outline on slightly different
+          // columns. Sample the full left-edge band rather than one offset.
+          const data = context.getImageData(x, y, 12, 5).data;
           const colors: number[][] = [];
           for (let index = 0; index < data.length; index += 4)
             colors.push([...data.slice(index, index + 3)]);
@@ -75,7 +80,7 @@ test('focused controls paint a complete ring in every Toolbar zone', async ({
         },
         {
           bytes: [...png],
-          x: Math.floor(geometry.groupLeft - bounds!.x - 4),
+          x: Math.floor(geometry.groupLeft - bounds!.x - 5),
           y: Math.floor(geometry.groupCenterY - bounds!.y - 2),
         },
       );

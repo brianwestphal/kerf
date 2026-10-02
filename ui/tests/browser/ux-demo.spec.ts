@@ -2700,15 +2700,17 @@ test('edits, removes, and clears controlled token search content', async ({
     'owner',
   );
 
-  await demo.getByRole('button', { name: 'Clear search' }).first().click();
+  await demo
+    .locator('[data-token-search-id="catalog-search"]')
+    .getByRole('button', { name: 'Clear search' })
+    .click();
   await expect(editor).toHaveText('');
   await expect(editor).toHaveAttribute('data-placeholder', 'Search');
 
   await editor.pressSequentially('hello');
   const alignment = () =>
     demo
-      .locator('[data-component="token-search-field"]')
-      .first()
+      .locator('[data-token-search-id="catalog-search"]')
       .evaluate((field) => {
         const fieldRect = field.getBoundingClientRect();
         const leadingRect = field
@@ -2747,7 +2749,7 @@ test('edits, removes, and clears controlled token search content', async ({
   );
   await page.mouse.move(0, 0);
   if (browserName === 'chromium')
-    await demo.locator('.kui-catalog-example').first().screenshot({
+    await demo.locator('[data-token-search-id="catalog-search"]').screenshot({
       path: 'test-results/token-search-field-alignment-single-line-wide.png',
     });
 
@@ -2760,7 +2762,7 @@ test('edits, removes, and clears controlled token search content', async ({
   expect(multiline.firstLineCenter).toBeCloseTo(singleLine.firstLineCenter, 1);
   expect(multiline.clearCenter).toBeCloseTo(singleLine.clearCenter, 1);
   if (browserName === 'chromium')
-    await demo.locator('.kui-catalog-example').first().screenshot({
+    await demo.locator('[data-token-search-id="catalog-search"]').screenshot({
       path: 'test-results/token-search-field-alignment-multiline-wide.png',
     });
 
@@ -2780,9 +2782,9 @@ test('renders an interactive responsive find field inside a toolbar', async ({
 }) => {
   await page.setViewportSize({ width: 1920, height: 900 });
   await page.goto('/?component=toolbar');
-  const toolbar = page
-    .locator('[data-demo="toolbar"] [data-component="toolbar"]')
-    .first();
+  const toolbar = page.locator(
+    '[data-demo="toolbar"] [data-component="toolbar"][data-responsive="center-priority"]',
+  );
   const editor = toolbar.getByRole('searchbox', { name: 'Find in workspace' });
   const trigger = toolbar.getByRole('button', { name: 'Open find' });
   const field = toolbar.locator('[data-component="token-search-field"]');
