@@ -8,7 +8,7 @@ export function TextDemo() {
       <CatalogExample
         label="Semantic variants"
         note="Text renders the selected native heading or paragraph while giving each text box the standard transparent border and content padding."
-        align="none"
+        align="inline-control"
         rootAttributes={{ 'data-demo-section': 'semantic-variants' }}
       >
         <Text variant="h1">Heading level 1</Text>
@@ -30,7 +30,7 @@ export function TextDemo() {
       <CatalogExample
         label="Presentation roles"
         note="Tone, size, and font are independent of the native semantic element, so applications can express supporting copy, errors, compact metadata, prominent copy, and code without global utility classes."
-        align="none"
+        align="inline-control"
         rootAttributes={{ 'data-demo-section': 'presentation-roles' }}
       >
         <Text tone="quiet">Quiet supporting copy</Text>
@@ -51,7 +51,7 @@ export function TextDemo() {
         <Text size="large">Large body copy</Text>
         <Text size="xlarge">Extra large body copy</Text>
       </CatalogExample>
-      <CatalogExample label="Flush dialog copy" align="none">
+      <CatalogExample label="Flush dialog copy" align="glyph">
         <Text flush lineHeight="tight" data-demo-copy="flush">
           Compact supporting copy inside a dialog body.
         </Text>
@@ -59,7 +59,7 @@ export function TextDemo() {
       <CatalogExample
         label="Long copy and truncation"
         note="Text breaks long identifiers, caps summaries, or yields space to a fixed sibling with a one-line ellipsis."
-        align="none"
+        align="inline-control"
         viewport={{ width: 'medium' }}
       >
         <Text wrap="anywhere" data-demo-copy="anywhere">
@@ -70,7 +70,7 @@ export function TextDemo() {
           preview of the original message. Additional detail stays available in
           the full record, and the summary keeps the surrounding layout compact.
         </Text>
-        <Row gap="xs">
+        <Row gap="xs" controlInsets="rl">
           <Text variant="span" wrap="truncate" data-demo-copy="truncate">
             Acme International Procurement and Manufacturing Limited
           </Text>
