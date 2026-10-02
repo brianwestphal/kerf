@@ -25,6 +25,57 @@ export function ToolbarDemo() {
     toolbarFindOpen.value || toolbarFindQuery.value.length > 0;
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'toolbar' }}>
+      <CatalogExample
+        label="Focus rings across toolbar zones"
+        note="Keyboard focus stays visible on leading, center, and trailing controls, including beside a shrinking title."
+        viewport={{ width: 'wide', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-toolbar-focus-zones': '' }}
+      >
+        <Toolbar
+          label="Focus ring zones"
+          responsive="stack"
+          responsiveAt="compact"
+          leading={
+            <>
+              <ToolbarControlGroup
+                label="Leading action"
+                focusRing="outline"
+                single
+              >
+                <button type="button" aria-label="Leading action">
+                  <LucideIcon icon={Filter} name="filter" />
+                </button>
+              </ToolbarControlGroup>
+              <ToolbarText
+                text="A long toolbar identity that can shrink"
+                size="large"
+              />
+            </>
+          }
+          center={
+            <ToolbarControlGroup
+              label="Center action"
+              focusRing="outline"
+              single
+            >
+              <button type="button" aria-label="Center action">
+                <LucideIcon icon={RefreshCw} name="refresh-cw" />
+              </button>
+            </ToolbarControlGroup>
+          }
+          trailing={
+            <ToolbarControlGroup
+              label="Trailing action"
+              focusRing="outline"
+              single
+            >
+              <button type="button" aria-label="Trailing action">
+                <LucideIcon icon={Settings} name="settings" />
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
       <CatalogExample viewport={{ width: 'wide', frame: 'solid' }}>
         <List gap="xs">
           <Toolbar

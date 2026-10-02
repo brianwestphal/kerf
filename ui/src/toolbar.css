@@ -191,7 +191,11 @@
     var(--kui-toolbar-zone-padding-inline, 0px)
   );
   grid-column: 1;
-  overflow: hidden;
+  /* Keep a shrinking title clipped while letting the 3px focus outline plus
+     its 1px offset paint past the zone edge. `hidden` cropped the ring of the
+     first control in this zone. */
+  overflow: clip;
+  overflow-clip-margin: 4px;
 }
 
 .kui-toolbar__center {

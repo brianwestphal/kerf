@@ -289,6 +289,9 @@ item no taller than the band is centered in it by its own size, and a taller
 item (a wrapped title, a second trailing row) starts at the band's top and
 grows down, so it never moves the other controls. A wrapped `ToolbarText`
 centers its first line in the band.
+The leading zone clips a shrinking title but reserves 4px of paint overflow
+for the focus outline of a control at its edge. Focus rings in all three zones
+remain visible at narrow and wide widths.
 Trailing icon actions share one axis: a toolbar control centers its glyph in
 that 44px slot at the 8px inline margin, and a `ListHeader` action centers its
 fitted 36px square in a slot of the same size (a transparent hit layer extends
