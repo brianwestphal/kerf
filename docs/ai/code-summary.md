@@ -615,8 +615,10 @@ component-gap guidance; the analyzer uses it for `KUI-L019` (a rule whose
 subject is another package's component), `KUI-L020` (another component's
 private variable), `KUI-L021` (a token a typed prop sets), and `KUI-L022` (a
 hook class on a component's root, joined from TSX through the reachable CSS
-import graph). Foreignness is per package (nearest `package.json` name versus
-catalog entry `package`). `ui/tests/unit/ui-analyzer-ownership.test.ts` pins
+import graph). Foreignness defaults to the nearest package name versus the
+catalog entry package; opt-in component mode uses each entry's cataloged
+`styleSources` and source module to protect siblings in the same package.
+`ui/tests/unit/ui-analyzer-ownership.test.ts` pins
 the reject/allow shapes, and the downstream analyzer/doctor integration suites
 cover the CLI formats, the doctor repair loop, and a `create-kerf-component`
 scaffold that passes its own `check:styles` while an app restyling its Counter

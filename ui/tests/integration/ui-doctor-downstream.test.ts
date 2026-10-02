@@ -300,6 +300,99 @@ test(
 );
 
 test(
+  'the doctor opts into ownership between cataloged components in one package',
+  async () => {
+    const root = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-component-ownership-'),
+    );
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        JSON.stringify({ name: 'app' }),
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'workspace',
+          catalogs: [
+            {
+              package: 'app',
+              composition: { path: './composition.json', schemaVersion: 2 },
+              selection: { path: './selection.json', schemaVersion: 1 },
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'composition.json'),
+        JSON.stringify({
+          schemaVersion: 2,
+          package: 'app',
+          entries: ['search', 'sort'].map((id) => ({
+            key: `app:${id}`,
+            package: 'app',
+            id,
+            name: id,
+            kind: 'component',
+            source: 'application',
+            boundaries: {
+              rootClass: id,
+              publicClasses: [id],
+              publicTokens: [],
+            },
+          })),
+        }),
+      );
+      await writeFile(
+        resolve(root, 'selection.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          package: 'app',
+          entries: ['search', 'sort'].map((id) => ({
+            id,
+            source: `src/${id}.tsx`,
+            styleSources: [`src/${id}.css`],
+          })),
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/search.css'),
+        '.search { color: blue; }\n.sort { color: red; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/sort.css'),
+        '.sort { color: blue; }\n',
+      );
+      const config = {
+        schemaVersion: 1,
+        stages: { catalog: false, typescript: false, eslint: false },
+      };
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify(config),
+      );
+      expect((await doctor(root)).status).toBe(0);
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({ ...config, ownership: 'component' }),
+      );
+      const result = await doctor(root);
+      expect(result.status).toBe(1);
+      expect(
+        result.report.diagnostics.filter(
+          (item: { id: string }) => item.id === 'KUI-L019',
+        ),
+      ).toMatchObject([{ location: { file: 'src/search.css', line: 2 } }]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'doctor surfaces catalog-driven CSS value diagnostics for downstream JSX',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-values-'));

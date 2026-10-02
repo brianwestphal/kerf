@@ -19,6 +19,7 @@
       "publicTokens": ["--acme-filter-chip-accent"],
       "uses": ["chip"],
       "source": "src/filter-chip.tsx",
+      "styleSources": ["src/filter-chip.css"],
       "demoSource": "ux-demo/demos/filter-chip.tsx",
       "geometry": {
         "margin": "none",

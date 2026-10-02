@@ -131,6 +131,7 @@ export function validateUiDoctorConfig(
     'schemaVersion',
     'mode',
     'package',
+    'ownership',
     'stages',
     'browser',
     'cache',
@@ -153,6 +154,11 @@ export function validateUiDoctorConfig(
       '$.package',
       'package must be a non-empty workspace package name or path.',
     );
+  if (
+    config.ownership !== undefined &&
+    !['package', 'component'].includes(config.ownership)
+  )
+    add('$.ownership', 'ownership must be package or component.');
   if (config.stages !== undefined) {
     if (
       !config.stages ||
@@ -1139,6 +1145,7 @@ export async function runUiDoctor({
                 root,
                 packageRoot,
                 paths: selectedPaths,
+                ownership: config.ownership ?? 'package',
                 signal,
               })
             : (async () => ({
@@ -1146,6 +1153,7 @@ export async function runUiDoctor({
                   await analyzeUiProject({
                     root: packageRoot,
                     paths: selectedPaths,
+                    ownership: config.ownership ?? 'package',
                     knownRules: [...registeredRuleIds, ...eslintRuleIds],
                   }),
                 ),

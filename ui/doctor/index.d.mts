@@ -22,6 +22,7 @@ export interface UiDoctorConfig {
   schemaVersion: 1;
   mode?: 'full' | 'changed';
   package?: string;
+  ownership?: 'package' | 'component';
   stages?: Partial<
     Record<
       'catalog' | 'typescript' | 'eslint' | 'analyzer' | 'browser',

@@ -188,6 +188,14 @@ findings. `eslint-plugin-kerfjs`'s `ui-component-ownership` rule reports
 `KUI-L020` and `KUI-L021` in JavaScript and TypeScript (style strings, style
 objects, and `style.setProperty()`), where this analyzer reads only CSS.
 
+Pass `ownership: 'component'` to `analyzeUiProject` to enforce the boundary
+between components in one package. In that mode each catalog entry owns only
+its declared `styleSources` for CSS and its selection catalog `source` module
+for JSX; sibling files are foreign. Paths are relative to that entry's package
+root. Declare `styleSources` on the selection catalog extension entry or
+composition entry. Entries without those paths own no files in component mode,
+so add them before adopting it.
+
 ### Retired: `KUI-L005` (forced component dimension)
 
 `KUI-L005` used to report, as a review finding, any `width`/`height`/`min-*`/

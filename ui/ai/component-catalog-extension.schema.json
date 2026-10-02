@@ -59,6 +59,18 @@
           "uniqueItems": true
         },
         "source": { "$ref": "#/$defs/repositoryPath" },
+        "styleSources": {
+          "description": "Stylesheets owned by this component, relative to the consumer package root. Used by Doctor's opt-in component ownership mode.",
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/repositoryPath" },
+              { "pattern": "\\.css$" }
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
         "demoSource": { "$ref": "#/$defs/repositoryPath" },
         "geometry": { "$ref": "#/$defs/geometry" },
         "documentation": { "type": "string", "minLength": 1 }

@@ -262,6 +262,8 @@ claim Kerf delivery paths for them.
 Extension entries may add `uses` for direct composition dependencies and
 repository-relative `source` and `demoSource` files. Resolve each dependency
 against the combined Kerf and consumer catalogs; do not duplicate a Kerf id.
+For Doctor's opt-in component ownership mode, add `styleSources` with the CSS
+paths each entry owns, relative to the consumer package root.
 
 - Components own semantic markup, stable anatomy, documented variants, ARIA projection, and package CSS hooks.
 - Applications own signals/stores, product copy, domain-state mapping, persistence, routing, permissions, and transport.

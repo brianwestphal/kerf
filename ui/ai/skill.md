@@ -57,6 +57,9 @@ and `KUI-L022` (a hook class on a component's root) are errors, and
 `eslint-plugin-kerfjs`'s `ui-component-ownership` reports `KUI-L020` /
 `KUI-L021` in script. Repair them with the configuration each message names;
 when none exists, report the component gap rather than suppressing the finding.
+For an application's own cataloged components, opt into Doctor's
+`"ownership": "component"` and declare each entry's `styleSources` so sibling
+components cannot style one another; package ownership remains the default.
 
 Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
 shared theme tokens. When overriding a loud fill

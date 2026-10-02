@@ -150,6 +150,68 @@ const ids = (report: Awaited<ReturnType<typeof analyzeUiProject>>) =>
   );
 
 describe('kerf-ui-analyze component ownership diagnostics', () => {
+  it('optionally enforces ownership between components in one package', async () => {
+    const entry = (id: string) => ({
+      key: `app:${id}`,
+      package: 'app',
+      id,
+      name: id === 'search' ? 'Search' : 'Sort',
+      kind: 'component',
+      source: 'application',
+      boundaries: {
+        rootClass: id,
+        publicClasses: [id, `${id}__input`],
+        publicTokens: [],
+      },
+    });
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [entry('search'), entry('sort')],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          {
+            id: 'search',
+            source: 'src/search.tsx',
+            styleSources: ['src/search.css'],
+          },
+          {
+            id: 'sort',
+            source: 'src/sort.tsx',
+            styleSources: ['src/sort.css'],
+          },
+        ],
+      }),
+      'src/search.css': '.search { color: blue; }\n.sort { color: red; }\n',
+      'src/sort.css': '.sort { color: blue; }\n',
+      'src/header.css': '.my-search { color: red; }\n',
+      'src/header.tsx':
+        "import './header.css';\nimport { Search } from './search.js';\nexport const Header = () => <Search className=\"my-search\" />;\n",
+      'src/search.tsx': 'export const Search = () => <div class="search" />;\n',
+      'src/sort.tsx': 'export const Sort = () => <div class="sort" />;\n',
+    });
+    expect(ids(await analyzeUiProject({ root }))).toEqual([]);
+    expect(
+      ids(await analyzeUiProject({ root, ownership: 'component' })),
+    ).toEqual(['KUI-L022 src/header.tsx:3', 'KUI-L019 src/search.css:2']);
+  });
+
   it('rejects application CSS that restyles, overrides, or hooks a component', async () => {
     const root = await project({
       'src/app.css': [
@@ -325,6 +387,7 @@ export const App = () => (
           name: 'Meter',
           kind: 'component',
           source: 'src/meter.tsx',
+          styleSources: ['src/meter.css'],
           publicExports: [{ name: 'Meter', subpath: '.' }],
           boundaries: {
             rootClass: 'acme-meter',
@@ -393,5 +456,8 @@ export const App = () => (
       'report the component gap to @acme/widgets',
     );
     expect(report.diagnostics[2].message).toContain('`<Meter gap="s" />`');
+    expect(
+      ids(await analyzeUiProject({ root, ownership: 'component' })),
+    ).toEqual(ids(report));
   });
 });

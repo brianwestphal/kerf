@@ -418,6 +418,9 @@ restyle). It reports repeated insets, exceptional spacing shorthands, and
 dynamic classes separately as review findings. Text, versioned JSON,
 and SARIF outputs carry stable `KUI-L###` ids, repository-relative locations,
 evidence, and ownership chains. See the [analyzer guide](./docs/ui-analyzer.md).
+Opt into ownership between components in one package with Doctor's
+`"ownership": "component"` setting and catalog `styleSources` declarations;
+the default keeps package-level ownership.
 
 ### Browser-backed integration evaluation
 

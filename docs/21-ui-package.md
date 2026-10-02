@@ -474,6 +474,11 @@ components in a Kerf UI parent's context passes; `eslint-plugin-kerfjs`'s
 component dimension is one such `KUI-L019` restyle; the former review-only
 `KUI-L005` duplicate is retired (its id stays registered so existing
 exceptions load).
+An application may opt into component ownership with Doctor's
+`"ownership": "component"` setting or the analyzer API option. Cataloged
+`styleSources` and the entry's source module then define which files may style
+that component; sibling files in the same package receive ownership findings.
+Package ownership remains the default.
 Each source resolves its own parent-to-child directory profile and only receives
 facts from its reachable relative CSS import graph, so sibling monorepo apps do
 not leak policy or same-named class behavior into one another. Shared stylesheet

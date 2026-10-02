@@ -120,6 +120,7 @@ describe('Kerf UI doctor', () => {
     const result = validateUiDoctorConfig({
       schemaVersion: 2,
       mode: 'quick',
+      ownership: 'none',
       failOn: 'info',
       mystery: true,
       suppressions: [{ id: 'X', rules: [], target: '../all', rationale: 'no' }],
@@ -128,6 +129,7 @@ describe('Kerf UI doctor', () => {
       expect.arrayContaining([
         '$.schemaVersion',
         '$.mode',
+        '$.ownership',
         '$.failOn',
         '$.mystery',
         '$.suppressions[0].id',

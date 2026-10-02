@@ -40,6 +40,12 @@ root (`KUI-L022`); the ESLint stage's `ui-component-ownership` rule reports
 component's configuration, and its message routes a need with no prop to a
 component-gap report instead of an override (see
 [the analyzer rule](./ui-analyzer.md#component-ownership-kui-l019kui-l022)).
+Set `"ownership": "component"` in `.kerf-ui-doctor.json` to enforce the same
+boundary between a consumer package's own cataloged components. The default is
+`"package"`. Each local catalog entry then owns only its declared
+`styleSources` (relative to its package root) and its selection catalog
+`source` module. The component mode reports sibling CSS and hook-class
+restyles while still allowing a component's own stylesheet and module.
 
 The browser evaluator is different: it runs the application and is disabled by default. It only runs when configuration supplies `browser.url` or the command receives `--browser-url`. Start and authorize the target application separately.
 
@@ -67,6 +73,7 @@ Place `.kerf-ui-doctor.json` at the workspace root:
   "$schema": "./node_modules/@kerfjs/ui/doctor/config.schema.json",
   "schemaVersion": 1,
   "mode": "full",
+  "ownership": "component",
   "stages": { "browser": false },
   "cache": true,
   "failOn": "warning",

@@ -258,14 +258,19 @@ async function loadCatalogs(profileResult) {
       const selection = await loadSelectionFacts(owner, catalog);
       for (const entry of artifact.entries ?? []) {
         const selected = selection.get(entry.key);
+        const componentSource =
+          selected?.componentSource ??
+          (/\.[cm]?[jt]sx?$/.test(entry.source) ? entry.source : undefined);
         entries.push(
           selected
             ? {
                 ...entry,
                 publicExports: entry.publicExports ?? selected.publicExports,
                 moduleImports: selected.moduleImports,
+                componentSource,
+                styleSources: entry.styleSources ?? selected.styleSources,
               }
-            : entry,
+            : { ...entry, componentSource },
         );
       }
     } catch {
@@ -295,6 +300,8 @@ async function loadSelectionFacts(owner, catalog) {
     const delivery = entry.delivery ?? {};
     facts.set(`${packageName}:${entry.id}`, {
       publicExports: entry.publicExports,
+      componentSource: entry.source,
+      styleSources: entry.styleSources,
       moduleImports: [delivery.browserImport, delivery.moduleImport].filter(
         Boolean,
       ),
@@ -321,11 +328,20 @@ function isComponentExport(name) {
 // an entry whose own import subpath is the module wins, then an entry that
 // declares the name as a public export, then catalog order. A helper export
 // never resolves to an entry.
-function resolveExportEntry(candidates, name, module) {
+function resolveExportEntry(candidates, name, module, file, packageDirectory) {
   if (!isComponentExport(name)) return undefined;
+  const localSource =
+    module?.startsWith('.') && packageDirectory
+      ? relative(packageDirectory, resolve(dirname(file), module))
+          .replaceAll('\\', '/')
+          .replace(/\.[cm]?[jt]sx?$/, '')
+      : undefined;
   const eligible = (candidates ?? []).filter(
     (entry) =>
-      module === entry.package || module?.startsWith(`${entry.package}/`),
+      module === entry.package ||
+      module?.startsWith(`${entry.package}/`) ||
+      (localSource &&
+        entry.componentSource?.replace(/\.[cm]?[jt]sx?$/, '') === localSource),
   );
   const exported = (entry) =>
     (entry.publicExports ?? []).some(
@@ -886,6 +902,7 @@ function inspectTsx(
   diagnostics,
   adoption = false,
   isForeign = () => true,
+  packageDirectory,
 ) {
   const source = ts.createSourceFile(
     file,
@@ -923,6 +940,8 @@ function inspectTsx(
         facts.exportEntries.get(exported),
         exported,
         module,
+        file,
+        packageDirectory,
       );
       if (entry) imports.set(item.name.text, entry);
     }
@@ -939,6 +958,8 @@ function inspectTsx(
               facts.exportEntries.get(opening.tagName.name.text),
               opening.tagName.name.text,
               namespaces.get(opening.tagName.expression.text),
+              file,
+              packageDirectory,
             )
           : undefined;
       const entry = imports.get(tag) ?? namespaceEntry;
@@ -1055,6 +1076,8 @@ function inspectTsx(
               facts.exportEntries.get(node.expression.name.text),
               node.expression.name.text,
               namespaces.get(node.expression.expression.text),
+              file,
+              packageDirectory,
             )
           : undefined;
       if (entry)
@@ -1078,6 +1101,7 @@ export async function analyzeUiProject({
   paths,
   knownRules = [],
   adoption = false,
+  ownership = 'package',
   profile: packageProfile = resolve(
     import.meta.dirname,
     '../ai/application-ui-profile.defaults.json',
@@ -1147,17 +1171,18 @@ export async function analyzeUiProject({
   );
   // A stylesheet or source file belongs to the package whose manifest is
   // nearest it; entries of every other catalog package are foreign to it.
-  const packageNames = new Map();
-  const packageNameOf = async (directory) => {
-    if (!packageNames.has(directory))
-      packageNames.set(
+  const packages = new Map();
+  const packageOf = async (directory) => {
+    if (!packages.has(directory))
+      packages.set(
         directory,
         (async () => {
           try {
             const manifest = JSON.parse(
               await readFile(resolve(directory, 'package.json'), 'utf8'),
             );
-            if (typeof manifest.name === 'string') return manifest.name;
+            if (typeof manifest.name === 'string')
+              return { name: manifest.name, directory };
           } catch {
             // No readable manifest here; keep walking up.
           }
@@ -1169,14 +1194,22 @@ export async function analyzeUiProject({
             inside.startsWith('../')
           )
             return undefined;
-          return packageNameOf(parent);
+          return packageOf(parent);
         })(),
       );
-    return packageNames.get(directory);
+    return packages.get(directory);
   };
   const foreignTo = async (file) => {
-    const own = await packageNameOf(dirname(file));
-    return (entry) => entry.package !== own;
+    const own = await packageOf(dirname(file));
+    const source = own && relative(own.directory, file).replaceAll('\\', '/');
+    return (entry) => {
+      if (entry.package !== own?.name) return true;
+      if (ownership !== 'component') return false;
+      const ownedSources = file.endsWith('.css')
+        ? entry.styleSources
+        : [entry.componentSource];
+      return !ownedSources?.includes(source);
+    };
   };
   const styleFacts = new Map();
   const recordDiagnostics = (items, context) => {
@@ -1259,6 +1292,7 @@ export async function analyzeUiProject({
     sourceExtensions.has(extname(item)),
   )) {
     const context = contexts.get(file);
+    const own = await packageOf(dirname(file));
     for (const style of reachableStyleFiles(file, imports, styleFacts))
       styleConsumers.get(style).add(context);
     const fileDiagnostics = [];
@@ -1270,6 +1304,7 @@ export async function analyzeUiProject({
       fileDiagnostics,
       adoption,
       await foreignTo(file),
+      own?.directory,
     );
     recordDiagnostics(fileDiagnostics, context);
   }
