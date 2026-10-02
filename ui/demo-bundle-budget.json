@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 320100,
-  "measuredLargestJavaScriptGzip": 126042,
-  "measuredTotalJavaScriptGzip": 320092,
+  "totalJavaScriptGzip": 320200,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 320147,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2467,6 +2467,22 @@
         "measuredTotalJavaScriptGzip": 320092,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 320100
+      }
+    },
+    {
+      "at": "2026-10-02T20:27:13.717Z",
+      "reason": "Stacked toolbar search placement and row entrance specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 320092,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 320100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 320147,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 320200
       }
     }
   ]

@@ -531,6 +531,10 @@ Use `sizing="fill"` for a group, including a non-search segmented control,
 that spans its wrapping row. Set `visibility="hide-collapsed-tiny"` on a
 collapsible group to omit its closed icon at 224px or less; expanded content
 remains visible. These sizes use the enclosing Toolbar's container width.
+In a stacked Toolbar, set `placement="end"` on a collapsed group that should
+sit at the trailing edge of its flex row. An expanded search with
+`sizing="fill"` takes a whole row and enters from the row above; reduced-motion
+preferences remove that entrance animation.
 Use `visibility="yield-to-expanded-sibling"` on trailing groups that should
 leave a 480px-or-narrower toolbar while a sibling trailing group is expanded.
 They return when it collapses or the toolbar widens; leading and center zones

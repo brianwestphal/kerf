@@ -21,6 +21,7 @@ export type ToolbarControlGroupVisibility =
   | 'hide-collapsed-tiny'
   | 'yield-to-expanded-sibling';
 export type ToolbarControlGroupSizing = 'content' | 'grow' | 'fill';
+export type ToolbarControlGroupPlacement = 'start' | 'end';
 
 export interface ToolbarActionLinkProps {
   href: string;
@@ -96,6 +97,8 @@ export interface ToolbarControlGroupProps {
   visibility?: ToolbarControlGroupVisibility;
   /** Intrinsic (default), grow from a basis, or occupy a full wrapping row. */
   sizing?: ToolbarControlGroupSizing;
+  /** Place this group at the end of its flex row in a wrapping Toolbar zone. */
+  placement?: ToolbarControlGroupPlacement;
   /** CSS length used as the minimum width and flex basis for `sizing="grow"`; defaults to 19rem. */
   growBasis?: string;
   /** Move this group into the work-area toolbar when its panel collapses. */
@@ -136,6 +139,7 @@ export function ToolbarControlGroup({
   overflow = 'visible',
   visibility = 'always',
   sizing = 'content',
+  placement = 'start',
   growBasis,
   relocateOnCollapse = false,
   scrim = false,
@@ -173,6 +177,7 @@ export function ToolbarControlGroup({
       data-overflow={overflow}
       data-visibility={visibility}
       data-sizing={sizing}
+      data-placement={placement}
       data-scrim={String(scrim)}
       data-busy={String(busy)}
       aria-busy={busy ? 'true' : undefined}

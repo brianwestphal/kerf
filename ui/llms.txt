@@ -165,6 +165,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   expanded trailing control to a full second row at `responsiveAt`; the leading
   title remains above it. Public leading-min-width, trailing-gap/justify, and
   per-zone inline-padding tokens cover app-specific toolbar geometry.
+  In a stacked Toolbar, `ToolbarControlGroup placement="end"` places a collapsed
+  search at its row's trailing edge; `sizing="fill"` gives its expanded state a
+  full row and a reduced-motion-aware downward entrance.
   `--kui-toolbar-inset: 0px` removes an embedded Toolbar's outer padding and
   corresponding minimum-height allowance while preserving its zone gap and
   safe-area compensation.

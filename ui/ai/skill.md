@@ -200,6 +200,9 @@ bounded action row, use `menuInset` for nested dropdown surface padding, and set
 `visibility="compact-only"` when a group appears only below the Toolbar's compact
 container breakpoint. Never add app-owned anchor chrome, width/visibility
 repairs, or `::part(menu)` overrides.
+In a stacked Toolbar, use `ToolbarControlGroup placement="end"` for a collapsed
+search at its flex row's trailing edge. Switch that group to `sizing="fill"`
+when expanded; the full-row search enters from above and honors reduced motion.
 
 Hard rules:
 

@@ -209,6 +209,36 @@
   min-width: 0;
   flex: 1 1 100%;
 }
+
+/* Auto margin consumes the free space before this group on its flex line;
+   when the expanded fill search takes a whole line, the margin resolves to 0. */
+.kui-toolbar[data-responsive="stack"]
+  > :is(.kui-toolbar__center, .kui-toolbar__trailing)
+  > .kui-toolbar-control-group[data-placement="end"] {
+  margin-inline-start: auto;
+}
+
+/* A fill search crosses from the preceding control line to its own line.
+   Move its visual down one control band as it opens without changing layout. */
+.kui-toolbar[data-responsive="stack"]
+  > :is(.kui-toolbar__center, .kui-toolbar__trailing)
+  > .kui-toolbar-control-group[data-content="search"][data-sizing="fill"][data-expanded="true"] {
+  animation: kui-toolbar-fill-search-enter 0.25s ease-out both;
+}
+
+@keyframes kui-toolbar-fill-search-enter {
+  from {
+    transform: translateY(
+      calc(
+        -1 * (var(--_kui-toolbar-band) + var(--kui-toolbar-gap, remify(8px)))
+      )
+    );
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @container kui-toolbar (max-width: remify(480px)) {
   .kui-toolbar-control-group[data-sizing="grow"][data-expanded="true"] {
     width: 100%;
@@ -699,6 +729,12 @@
 @media (prefers-reduced-motion: reduce) {
   .kui-toolbar-control-group[data-content="search"] {
     transition-duration: 0s;
+  }
+
+  .kui-toolbar[data-responsive="stack"]
+    > :is(.kui-toolbar__center, .kui-toolbar__trailing)
+    > .kui-toolbar-control-group[data-content="search"][data-sizing="fill"][data-expanded="true"] {
+    animation: none;
   }
 }
 

@@ -33,6 +33,7 @@ import {
   toolbarGroupSearchOpen,
   toolbarGroupShape,
   toolbarSort,
+  toolbarStackSearchOpen,
 } from './state.js';
 
 const profileImageUrl = new URL(
@@ -374,7 +375,7 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample
         label="Wrapping zone sizing"
-        note="The expanded search grows from a 19rem basis alongside actions, then takes its own row at 480px. The view group fills a stacked row."
+        note="The first search grows from a 19rem basis. In the rail example, the collapsed search sits after Sort at the row's end, then expands onto a full row with a downward entrance."
         align="none"
         viewport={{ width: 'full' }}
       >
@@ -430,20 +431,29 @@ export function ToolbarControlGroupDemo() {
                     ]}
                   />
                 </ToolbarControlGroup>
+                <ToolbarControlGroup label="Sort" single>
+                  <button type="button" aria-label="Sort tickets">
+                    <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
+                  </button>
+                </ToolbarControlGroup>
                 <ToolbarControlGroup
                   content="search"
                   visibility="hide-collapsed-tiny"
-                  expanded={false}
-                  single
+                  sizing={toolbarStackSearchOpen.value ? 'fill' : 'content'}
+                  placement="end"
+                  expanded={toolbarStackSearchOpen.value}
+                  single={!toolbarStackSearchOpen.value}
                   label="Search"
                 >
                   <TokenSearchField
-                    id="toolbar-group-tiny-search"
+                    id="toolbar-stack-search"
                     label="Search tickets"
                     collapsible
-                    expanded={false}
+                    expanded={toolbarStackSearchOpen.value}
+                    fill={toolbarStackSearchOpen.value}
                     presentation="toolbar-group"
                     expandLabel="Open search"
+                    placeholder="Search tickets"
                   />
                 </ToolbarControlGroup>
               </>

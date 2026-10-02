@@ -135,6 +135,7 @@ import {
   toolbarGroupSearchOpen,
   toolbarGroupShape,
   toolbarSort,
+  toolbarStackSearchOpen,
 } from './demos/state.js';
 import {
   resetTabScaffoldDemo,
@@ -1393,6 +1394,7 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
       'toolbar-find': toolbarFindOpen,
       'collapsible-search': collapsibleSearchOpen,
       'toolbar-group-search': toolbarGroupSearchOpen,
+      'toolbar-stack-search': toolbarStackSearchOpen,
       'adoption-search': adoptionOpen,
     },
   },

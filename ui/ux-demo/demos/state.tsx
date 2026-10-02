@@ -81,6 +81,7 @@ export const toolbarFindQuery = signal('');
 export const toolbarFindOpen = signal(false);
 export const collapsibleSearchOpen = signal(false);
 export const toolbarGroupSearchOpen = signal(false);
+export const toolbarStackSearchOpen = signal(false);
 export const toolbarGroupShape = signal<'pill' | 'rounded'>('pill');
 export const toolbarGroupBusy = signal(false);
 export const contentCardSelected = signal(false);
