@@ -61,13 +61,14 @@ test('every toolbar item is centered in, or starts at the top of, the control ba
     await page.goto(`/?component=${route}`);
     const toolbars = await bandGeometry(page, '.kui-toolbar');
     expect(toolbars.length, route).toBeGreaterThan(0);
-    for (const { band, items } of toolbars) {
+    for (const [toolbarIndex, { band, items }] of toolbars.entries()) {
       expect(band, route).toBeGreaterThan(0);
       for (const item of items) {
         if (item.height <= band + 0.5) {
-          expect(Math.abs(item.center - band / 2), item.label).toBeLessThan(
-            0.75,
-          );
+          expect(
+            Math.abs(item.center - band / 2),
+            `${route} toolbar ${toolbarIndex}: ${item.label}, top=${item.top}, height=${item.height}, band=${band}`,
+          ).toBeLessThan(0.75);
         } else {
           expect(Math.abs(item.top), item.label).toBeLessThan(0.75);
         }

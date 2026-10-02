@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Wrapping catalog resource groups align with the toolbar control band.** A
+  single row centers in the band, while multiple rows start at its top.
+
 - **UI browser checks cover the current catalog specimens.** Select, toolbar,
   tab, and control group browser assertions now address the expanded demos;
   a focused toolbar search field restores its default surface color when no

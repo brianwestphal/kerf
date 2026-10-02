@@ -22,9 +22,14 @@ test('catalog resource links wrap as whole actions at compact widths', async ({
     await expect(resources).toHaveAttribute('data-overflow', 'wrap');
     const geometry = await resources.evaluate((element) => {
       const bounds = element.getBoundingClientRect();
+      const zone = element.parentElement!.getBoundingClientRect();
       return {
         groupLeft: bounds.left,
         groupRight: bounds.right,
+        groupTop: bounds.top,
+        groupHeight: bounds.height,
+        zoneTop: zone.top,
+        zoneHeight: zone.height,
         clientWidth: element.clientWidth,
         scrollWidth: element.scrollWidth,
         actions: [...element.querySelectorAll('a')].map((link) => {
@@ -49,11 +54,21 @@ test('catalog resource links wrap as whole actions at compact widths', async ({
       expect(action.labelLeft).toBeGreaterThanOrEqual(action.left);
       expect(action.labelRight).toBeLessThanOrEqual(action.right);
     }
-    if (links > 2)
+    if (links > 2) {
       expect(geometry.actions.at(-1)!.top).toBeGreaterThan(
         geometry.actions[0].top,
       );
-    else expect(geometry.actions.at(-1)!.top).toBe(geometry.actions[0].top);
+      expect(Math.abs(geometry.groupTop - geometry.zoneTop)).toBeLessThan(0.75);
+    } else {
+      expect(geometry.actions.at(-1)!.top).toBe(geometry.actions[0].top);
+      expect(
+        Math.abs(
+          geometry.groupTop +
+            geometry.groupHeight / 2 -
+            (geometry.zoneTop + geometry.zoneHeight / 2),
+        ),
+      ).toBeLessThan(0.75);
+    }
     await actions.last().focus();
     await expect(actions.last()).toBeFocused();
     if (testInfo.project.name === 'chromium')

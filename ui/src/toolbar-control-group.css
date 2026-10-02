@@ -166,6 +166,11 @@
   height: auto;
   flex-wrap: wrap;
 }
+:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+  > .kui-toolbar-control-group[data-overflow="wrap"] {
+  margin-block-start: 0;
+  align-self: center;
+}
 .kui-toolbar-control-group[data-content="search"] {
   width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
   max-width: 100%;

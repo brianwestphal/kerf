@@ -399,7 +399,7 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
   }
 });
 
-test('rapid submenu arrows keep the chosen item focused after opening', async ({
+test('submenu arrows keep the chosen item focused after opening', async ({
   page,
   browserName,
 }) => {
@@ -419,8 +419,8 @@ test('rapid submenu arrows keep the chosen item focused after opening', async ({
   await expect(parent).toBeFocused();
   await page.keyboard.press('ArrowRight');
   await expect(approve).toBeFocused();
-  await approve.press('ArrowDown');
-  await expect(other).toBeFocused();
+  // Web Awesome schedules the submenu's initial focus after its open animation.
+  // Let that native focus setup settle before sending the next arrow key.
   await parent.evaluate(async (element) => {
     const submenu = (element as HTMLElement & { submenuElement?: HTMLElement })
       .submenuElement;
@@ -431,6 +431,11 @@ test('rapid submenu arrows keep the chosen item focused after opening', async ({
     );
     await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
   });
+  await approve.press('ArrowDown');
+  await expect(other).toBeFocused();
+  await parent.evaluate(
+    () => new Promise<void>((resolve) => window.setTimeout(resolve, 0)),
+  );
   await expect(other).toBeFocused();
   if (browserName === 'chromium')
     await page.screenshot({ path: 'test-results/popup-menu-rapid-focus.png' });

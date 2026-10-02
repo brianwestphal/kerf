@@ -544,7 +544,9 @@ trigger. By default a group stays on one row: each icon sits beside its label,
 and the enclosing `Toolbar`'s responsive policy relocates whole groups. Set
 `overflow="wrap"` only for independent links that should move as whole actions
 to another row within the group; use `overflow="scroll"` for a bounded one-row
-action strip. For a compact mixed-content group, set `nestedDropdown`; a
+action strip. A wrapping group centers in the toolbar band on one row and
+starts at its top when it grows to multiple rows. For a compact mixed-content
+group, set `nestedDropdown`; a
 text-and-caret trigger grows to its intrinsic width while an icon-only trigger
 can remain square. A compact icon `<button>` is a 32px circle, so a selected
 compact segment never becomes an oval. An icon-only `Select` joins a group as
