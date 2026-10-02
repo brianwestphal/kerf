@@ -7,6 +7,7 @@ Native Apple applications should use native platform controls and follow the Hum
 - Accessibility is behavior: every workflow is keyboard-operable; focus is visible; DOM and reading order agree; controls have accessible names; decorative icons are hidden.
 - Use adaptive semantic colors. Every custom role needs usable light, dark, and increased-contrast behavior. Never rely on color alone.
 - Use the system UI font stack and allow browser zoom through 200%. Avoid thin weights and hard minimums that clip enlarged text.
+- On iOS, prevent unwanted focus magnification by keeping editable text legible at touch widths. Do not force the page scale back on blur: that would also undo a person's deliberate pinch zoom.
 - Group with space and alignment before adding borders. Keep essential content in the leading reading path and secondary detail in progressive disclosure.
 - Use one icon family and one metaphor per action. Directional icons may mirror in RTL; checkmarks, logos, and real-world objects do not.
 - Motion is brief, causal, and optional. Honor reduced-motion and reduced-transparency preferences; repeating indicators stop moving under reduced motion.
