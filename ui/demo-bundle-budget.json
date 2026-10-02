@@ -3,7 +3,7 @@
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 320100,
   "measuredLargestJavaScriptGzip": 126042,
-  "measuredTotalJavaScriptGzip": 320051,
+  "measuredTotalJavaScriptGzip": 320092,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2449,6 +2449,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 126042,
         "measuredTotalJavaScriptGzip": 320051,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 320100
+      }
+    },
+    {
+      "at": "2026-10-02T20:11:20.581Z",
+      "reason": "Trailing-priority toolbar specimen shows compact sibling yielding",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 320051,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 320100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 320092,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 320100
       }

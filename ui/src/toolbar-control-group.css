@@ -108,6 +108,18 @@
   }
 }
 
+/* An expanded trailing control owns the compact row when sibling groups opt
+   into yielding. Scoping to the trailing zone keeps independent center and
+   leading controls visible, and the siblings return when it closes. */
+@container kui-toolbar (max-width: remify(480px)) {
+  .kui-toolbar__trailing:has(> .kui-toolbar-control-group[data-expanded="true"])
+    > .kui-toolbar-control-group[data-visibility="yield-to-expanded-sibling"]:not(
+      [data-expanded="true"]
+    ) {
+    display: none;
+  }
+}
+
 /* `shape="rounded"` swaps the default pill radius for the design system's softer
    rounded rectangle. The shared highlight contract derives every inner hover or
    selected surface from this outer radius and the group's full inset. */

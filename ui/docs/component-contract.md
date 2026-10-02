@@ -528,6 +528,10 @@ Use `sizing="fill"` for a group, including a non-search segmented control,
 that spans its wrapping row. Set `visibility="hide-collapsed-tiny"` on a
 collapsible group to omit its closed icon at 224px or less; expanded content
 remains visible. These sizes use the enclosing Toolbar's container width.
+Use `visibility="yield-to-expanded-sibling"` on trailing groups that should
+leave a 480px-or-narrower toolbar while a sibling trailing group is expanded.
+They return when it collapses or the toolbar widens; leading and center zones
+remain visible.
 Reach for `wa-button` only when you need a Web Awesome feature; a popup menu is a `PopupMenu`, which renders its own
 trigger. Nothing wraps inside a group: an icon sits beside its label on one
 row, and a group's controls never break onto a second line — the group sizes

@@ -277,7 +277,7 @@ type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 type ToolbarControlGroupOverflow = 'visible' | 'scroll';
 type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
-type ToolbarControlGroupVisibility = 'always' | 'compact-only' | 'hide-collapsed-tiny';
+type ToolbarControlGroupVisibility = 'always' | 'compact-only' | 'hide-collapsed-tiny' | 'yield-to-expanded-sibling';
 type ToolbarControlGroupSizing = 'content' | 'grow' | 'fill';
 interface ToolbarActionLinkProps {
     href: string;

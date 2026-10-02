@@ -281,16 +281,36 @@ export function ToolbarDemo() {
           responsive="trailing-priority"
           leading={<ToolbarText text="Tickets" size="large" />}
           trailing={
-            <ToolbarControlGroup content="search" expanded>
-              <TokenSearchField
-                id="trailing-priority-search"
-                label="Search tickets"
-                collapsible
-                expanded
-                presentation="toolbar-group"
-                placeholder="Search tickets"
-              />
-            </ToolbarControlGroup>
+            <>
+              <ToolbarControlGroup content="search" expanded>
+                <TokenSearchField
+                  id="trailing-priority-search"
+                  label="Search tickets"
+                  collapsible
+                  expanded
+                  presentation="toolbar-group"
+                  placeholder="Search tickets"
+                />
+              </ToolbarControlGroup>
+              <ToolbarControlGroup
+                label="View"
+                single
+                visibility="yield-to-expanded-sibling"
+              >
+                <button type="button" aria-label="List view">
+                  <LucideIcon icon={FileText} name="file-text" />
+                </button>
+              </ToolbarControlGroup>
+              <ToolbarControlGroup
+                label="Actions"
+                single
+                visibility="yield-to-expanded-sibling"
+              >
+                <button type="button" aria-label="More actions">
+                  <LucideIcon icon={MoreHorizontal} name="ellipsis" />
+                </button>
+              </ToolbarControlGroup>
+            </>
           }
         />
       </CatalogExample>

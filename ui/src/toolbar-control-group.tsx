@@ -16,7 +16,10 @@ export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 export type ToolbarControlGroupOverflow = 'visible' | 'scroll';
 export type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
 export type ToolbarControlGroupVisibility =
-  'always' | 'compact-only' | 'hide-collapsed-tiny';
+  | 'always'
+  | 'compact-only'
+  | 'hide-collapsed-tiny'
+  | 'yield-to-expanded-sibling';
 export type ToolbarControlGroupSizing = 'content' | 'grow' | 'fill';
 
 export interface ToolbarActionLinkProps {

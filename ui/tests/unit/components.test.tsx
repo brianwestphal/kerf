@@ -405,6 +405,14 @@ describe('production UI primitives', () => {
     expect(
       asHtml(ToolbarControlGroup({ children: icon, sizing: 'fill' })),
     ).toContain('data-sizing="fill"');
+    expect(
+      asHtml(
+        ToolbarControlGroup({
+          children: icon,
+          visibility: 'yield-to-expanded-sibling',
+        }),
+      ),
+    ).toContain('data-visibility="yield-to-expanded-sibling"');
     const link = asHtml(
       ToolbarActionLink({
         href: '/guide',
