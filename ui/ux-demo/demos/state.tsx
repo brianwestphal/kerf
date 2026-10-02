@@ -20,6 +20,7 @@ export const tabBarTabs = signal<DemoTab[]>([
   { id: 'examples', name: 'Consumer examples' },
 ]);
 export const selectedChoice = signal('balanced');
+export const selectViewTitle = signal<'queue' | 'active' | 'archive'>('queue');
 export const popupSortChoice = signal<'recent' | 'priority'>('recent');
 export const disclosureOpen = signal(false);
 export const customDisclosureOpen = signal(false);

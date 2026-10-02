@@ -2,11 +2,13 @@ import { Badge } from '@kerfjs/ui/badge';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
+import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
 import { Select } from '@kerfjs/ui/select';
 import { Text } from '@kerfjs/ui/text';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import {
   Bell,
@@ -20,6 +22,7 @@ import {
 import {
   itemTypes,
   selectedChoice,
+  selectViewTitle,
   ticketLabelFilter,
   ticketLabels,
 } from './state.js';
@@ -349,6 +352,39 @@ export function SelectDemo() {
             { value: 'explicit', label: 'Explicit navigation workspace' },
           ]}
         />
+      </CatalogExample>
+      <CatalogExample
+        label="View title"
+        note="The 36px title trigger starts flush, keeps its caret beside the name, and draws focus inside clipped panels."
+        viewport={{ width: 'compact' }}
+      >
+        <div data-demo-section="select-view-title">
+          <Toolbar
+            leading={
+              <ToolbarControlGroup appearance="borderless" single>
+                <Select<string>
+                  name="view-title-demo"
+                  value={selectViewTitle.value}
+                  ariaLabel="Ticket view"
+                  presentation="title"
+                  focusRingInset
+                  choices={[
+                    { value: 'queue', label: 'Queue' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'archive', label: 'Archive' },
+                  ]}
+                />
+              </ToolbarControlGroup>
+            }
+          />
+          <List gap="none">
+            <ListItem
+              label="Review incoming tickets"
+              action="select-demo-ticket"
+            />
+            <ListItem label="Check assigned work" action="select-demo-ticket" />
+          </List>
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Inline status badge"

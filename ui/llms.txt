@@ -439,7 +439,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
   `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
   selected text, use the public color, font-size, and font-weight tokens; the
-  closed value ellipsizes when space runs out.
+  closed value ellipsizes when space runs out. `presentation="title"` gives a
+  rail view heading a 36px bold, flush-start trigger and adjacent caret;
+  `focusRingInset` keeps its ring inside clipping ancestors.
 - **Configure application tabs at their owners.** AppTab's `icon-only`
   presentation keeps `name` accessible, `labelMaxWidth` ellipsizes a long name,
   `nameOverflow="visible"` shows the full name during inline loading, and

@@ -548,7 +548,16 @@ text-and-caret trigger grows to its intrinsic width while an icon-only trigger
 can remain square. A compact icon `<button>` is a 32px circle, so a selected
 compact segment never becomes an oval. An icon-only `Select` joins a group as
 one more segment with its siblings' inset, radius, hover, and focus ring; only a
-lone Select grows the group to its icon-and-caret pill. Set `menuInset` to configure the dropdown menu surface
+lone Select grows the group to its icon-and-caret pill.
+
+For a rail view heading, use `Select presentation="title"`: its intrinsic
+36px borderless trigger has a bold large label flush with its leading edge and
+a caret beside that label. Set `focusRingInset` when a NavStack or panel clips
+outside painting; the Select keeps its focus outline 3px inside the trigger
+and drops it while the listbox is open. Both settings belong to Select, not an
+application `::part()` override.
+
+Set `menuInset` to configure the dropdown menu surface
 without application `::part(menu)` CSS; the default `standard` keeps each menu's
 own inset (8px for a raw `wa-dropdown`, the Select listbox's 4px for a
 `PopupMenu`), while `compact` and `list-zero` apply to every nested menu. A

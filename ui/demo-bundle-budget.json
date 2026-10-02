@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 320200,
-  "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 320147,
+  "totalJavaScriptGzip": 320400,
+  "measuredLargestJavaScriptGzip": 126042,
+  "measuredTotalJavaScriptGzip": 320366,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2483,6 +2483,22 @@
         "measuredTotalJavaScriptGzip": 320147,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 320200
+      }
+    },
+    {
+      "at": "2026-10-02T20:40:45.165Z",
+      "reason": "Select title presentation and clipped-focus specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 320147,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 320200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 320366,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 320400
       }
     }
   ]

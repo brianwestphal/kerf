@@ -120,6 +120,7 @@ import {
   popupSortChoice,
   regionSize,
   selectedChoice,
+  selectViewTitle,
   sizedDisclosureOpen,
   tabBarActive,
   tabBarTabs,
@@ -1137,6 +1138,11 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
   }
   if (value === 'quiet' || value === 'balanced' || value === 'explicit')
     selectedChoice.value = value;
+  if (
+    element.getAttribute('name') === 'view-title-demo' &&
+    (value === 'queue' || value === 'active' || value === 'archive')
+  )
+    selectViewTitle.value = value;
   if (value === 'recent' || value === 'priority' || value === 'title')
     toolbarSort.value = value;
 });

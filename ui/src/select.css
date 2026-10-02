@@ -40,6 +40,33 @@
   width: max-content;
   max-width: 100%;
 }
+.kui-select[data-presentation="title"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select[data-presentation="title"]::part(combobox) {
+  width: max-content;
+  min-height: remify(36px);
+  padding-inline: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  font-size: var(--kui-font-l, remify(20px));
+  font-weight: 700;
+}
+.kui-select[data-presentation="title"]::part(display-input) {
+  field-sizing: content;
+  flex: 0 0 auto;
+}
+.kui-select[data-presentation="title"]::part(expand-icon) {
+  margin-inline-start: 0;
+}
+/* A Toolbar has an 8px inset; ListItem text starts at 17px after its own
+   margin, border, and padding. The group contributes 3px, so the title
+   Select advances 6px to share the list's text edge. */
+.kui-toolbar-control-group > .kui-select[data-presentation="title"] {
+  margin-inline-start: remify(6px);
+}
 .kui-select[data-presentation="inline"] {
   width: max-content;
   max-width: 100%;
@@ -122,6 +149,12 @@
   > .kui-select:not([open]):focus-within::part(combobox) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
+}
+.kui-select[data-focus-ring-inset="true"][data-focus-ring-owner="select"]:focus-within:not(
+    [open]
+  )::part(combobox) {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
 }
 /* The popup-menu wa-button draws the same chevron glyph at 0.875em inside a
    20px box; match its box, spacing, and glyph size rather than the smaller
@@ -353,6 +386,19 @@
 .kui-select--placeholder[data-presentation="navigation"] {
   width: max-content;
   max-width: 100%;
+}
+.kui-select--placeholder[data-presentation="title"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select--placeholder[data-presentation="title"]
+  .kui-select__placeholder-box {
+  min-height: remify(36px);
+  padding-inline: 0;
+  border-color: transparent;
+  background: transparent;
+  font-size: var(--kui-font-l, remify(20px));
+  font-weight: 700;
 }
 .kui-select--placeholder[data-presentation="inline"] {
   width: max-content;

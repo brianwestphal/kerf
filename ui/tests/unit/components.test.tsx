@@ -2172,6 +2172,18 @@ describe('production UI primitives', () => {
     expect(plain).toContain(
       'aria-label="Plain" value="one" placeholder="Choose" hint="Choose the primary option." disabled',
     );
+    const title = asHtml(
+      Select({
+        name: 'view',
+        value: 'queue',
+        ariaLabel: 'Ticket view',
+        presentation: 'title',
+        focusRingInset: true,
+        choices: [{ value: 'queue', label: 'Queue' }],
+      }),
+    );
+    expect(title).toContain('data-presentation="title"');
+    expect(title).toContain('data-focus-ring-inset="true"');
     expect(plain).toContain(
       'data-key="plain:one:selected" data-morph-skip slot="start" class="kui-select__icon kui-select__icon--selected"',
     );
@@ -2206,10 +2218,14 @@ describe('production UI primitives', () => {
           ariaLabel: 'Loading choice',
           choices: [{ value: 'one', label: 'One' }],
           placeholder: true,
+          presentation: 'title',
+          focusRingInset: true,
           triggerWidth: 'fill',
         }),
       ),
-    ).toContain('data-trigger-width="fill"');
+    ).toContain(
+      'data-presentation="title" data-size="default" data-trigger-width="fill"',
+    );
   });
 
   it('publishes an inline Select trigger around custom selected content', () => {

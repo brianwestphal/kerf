@@ -2709,7 +2709,7 @@ type SelectAccessibleName = {
     label?: never;
     ariaLabel: string;
 };
-type SelectPresentation = 'form' | 'toolbar-borderless' | 'navigation' | 'inline';
+type SelectPresentation = 'form' | 'toolbar-borderless' | 'navigation' | 'inline' | 'title';
 type SelectSize = 'default' | 'compact';
 type SelectSelectedPresentation = 'label' | 'icon-only';
 type SelectFocusRingOwner = 'select' | 'group';
@@ -2726,7 +2726,7 @@ interface SelectBaseProps<Value extends string = string> {
     fitMenu?: boolean;
     /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
     placeholder?: boolean;
-    /** Form (default), borderless toolbar, intrinsic navigation, or content-sized inline chrome. */
+    /** Form (default), borderless toolbar, intrinsic navigation, inline, or view-title chrome. */
     presentation?: SelectPresentation;
     size?: SelectSize;
     /** Closed trigger width; omit to keep the presentation's default. */
@@ -2735,6 +2735,8 @@ interface SelectBaseProps<Value extends string = string> {
     caret?: boolean;
     /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
     focusRingOwner?: SelectFocusRingOwner;
+    /** Keep the trigger's focus ring inside its box when an ancestor clips overflow. */
+    focusRingInset?: boolean;
     /** Maximum closed-control label width in CSS pixels before ellipsis. */
     labelMaxWidth?: number;
     /** Native named-slot assignment when composed inside a web component. */
