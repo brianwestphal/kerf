@@ -591,6 +591,23 @@
   }
 }
 
+/* Small Web Awesome fields have 14px hosts by default. Raise only the editable
+   shadow part on touch devices so focusing them need not magnify the page;
+   their compact chrome and desktop typography keep their normal sizes. */
+@media (hover: none) and (pointer: coarse) {
+  @layer wa-theme-overrides {
+    :is(wa-input, wa-number-input, wa-time-input):is(
+        [size="xs"],
+        [size="s"],
+        [size="small"]
+      )::part(input),
+    wa-textarea:is([size="xs"], [size="s"], [size="small"])::part(textarea),
+    wa-select:is([size="xs"], [size="s"], [size="small"])::part(display-input) {
+      font-size: max(16px, var(--wa-font-size-m, 16px));
+    }
+  }
+}
+
 @media (prefers-contrast: more) {
   @layer wa-theme-overrides {
     :where(:root),

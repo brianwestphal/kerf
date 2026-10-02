@@ -444,6 +444,10 @@ there as the editor wraps. In `collapsible` mode, the closed state is one named
 iconic search button and the open state is the same named searchbox, whether
 the field stands alone or is composed inside `ToolbarControlGroup`.
 
+On coarse touch devices, the editor's computed text size has a 16px floor. This
+avoids iOS focus magnification of the small-text editor while preserving the
+user's ability to pinch zoom; other field chrome and desktop density are unchanged.
+
 For an app-driven query replacement with an unmanaged field, change its
 `revision` along with `query` so the editor text rebuilds. For a model-managed
 field, call `model.replace({ query, tokens })`: it parses the supplied state and

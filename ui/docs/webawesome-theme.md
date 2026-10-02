@@ -86,6 +86,13 @@ exposes `label` instead of `form-control-label`; the theme gives it the same
 uppercase 12px/650 treatment. Inline control labels (Checkbox, Switch) keep
 their natural sentence case.
 
+On coarse touch devices, the editable part of small and extra-small Web Awesome
+Input, Number Input, Time Input, Textarea, and Select has a 16px minimum text
+size. Small field chrome keeps its compact height and desktop typography stays
+small. This prevents Safari from magnifying the page just to focus text; it does
+not constrain a user's own pinch zoom. App-owned native fields need the same
+editable-text audit.
+
 Known Date's field captions and bordered text-like field hints use the same 9px
 inline inset, keeping secondary text aligned with the value rather than the
 field's outer border. This covers Input, Known Date, Number Input, OTP Input,

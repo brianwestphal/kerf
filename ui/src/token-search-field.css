@@ -98,6 +98,15 @@
   cursor: text;
 }
 
+/* iOS can magnify a small editor on focus and leave the page magnified after
+   blur. Keep the desktop small-text rhythm, but give touch editors legible text
+   without restricting the user's own page zoom. */
+@media (hover: none) and (pointer: coarse) {
+  .kui-token-search__editor {
+    font-size: max(16px, var(--kui-font-s));
+  }
+}
+
 .kui-token-search__editor:empty::before {
   color: var(--kui-color-text-quiet);
   content: attr(data-placeholder);
