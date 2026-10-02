@@ -246,6 +246,8 @@ Set `--kui-toolbar-inset: 0px` on an embedded Toolbar to remove its outer paddin
 
 For compact dialog copy, use `Text flush lineHeight="tight"`; for compact metadata, use `ValueTable density="compact"` and its public row columns/padding/gap tokens. `ToolbarText size="xsmall"` fits a dense rail heading. A `TokenSearchField` editor shrinks inside a narrow group by default; set `--kui-token-search-editor-min-width` when a minimum is needed. A full-height shell uses the one `.kui-app-root` mount container documented in `docs/document-baseline.md`.
 
+For a read-only field preview that replaces a Web Awesome input, use `FieldLabel` from `@kerfjs/ui/text` above the preview. Put it in `ListInsetControl sides="trl"` beside a `ContentItem` value; give it an id and use `aria-labelledby` on the preview group. The app owns preview/edit state and hint copy.
+
 Common mistakes:
 
 | Mistake                                                                                                                           | Fix                                                                                                                                                                                                                                                                                           |

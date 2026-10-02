@@ -331,6 +331,27 @@ CSS strings.
 
 ## Text
 
+`FieldLabel` from `@kerfjs/ui/text` gives a read-only or click-to-edit field
+preview the same visible heading as a themed Web Awesome form control. Put it
+in `ListInsetControl sides="trl"` above the preview so its text starts at the
+same 17px content column as a `ContentItem` value. Unlike a native `<label>`, it
+is a plain element: give it an `id` and name the preview's group with
+`aria-labelledby`. Keep the app's preview/edit switching and hint copy beside
+the preview; use the live control's own `label` when editing.
+
+```tsx
+import { ContentItem } from "@kerfjs/ui/content-item";
+import { ListInsetControl } from "@kerfjs/ui/list-inset-control";
+import { FieldLabel } from "@kerfjs/ui/text";
+
+<div role="group" aria-labelledby="needed-by-label">
+  <ListInsetControl sides="trl">
+    <FieldLabel id="needed-by-label">Needed by</FieldLabel>
+  </ListInsetControl>
+  <ContentItem>October 16, 2026</ContentItem>
+</div>;
+```
+
 Use `Text` from `@kerfjs/ui/text` for ordinary semantic headings, paragraphs,
 and inline secondary text. It renders a native `p` by default; set `variant` to
 `h1`–`h6` when the document outline calls for a heading, or `span` for inline

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 319000,
+  "totalJavaScriptGzip": 319300,
   "measuredLargestJavaScriptGzip": 126042,
-  "measuredTotalJavaScriptGzip": 318963,
+  "measuredTotalJavaScriptGzip": 319224,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2371,6 +2371,22 @@
         "measuredTotalJavaScriptGzip": 318963,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 319000
+      }
+    },
+    {
+      "at": "2026-10-02T07:54:35.901Z",
+      "reason": "FieldLabel demo adds a form-control parity specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 318963,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 319000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 319224,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 319300
       }
     }
   ]

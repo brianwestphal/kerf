@@ -1942,14 +1942,16 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Semantic native paragraph text by default, with heading and inline-span variants plus composable semantic presentation roles.",
+      "description": "Semantic native text plus a FieldLabel heading for read-only field previews that matches themed Web Awesome form labels.",
       "uses": [],
       "purpose": "Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.",
       "publicExports": [
-        "Text"
+        "Text",
+        "FieldLabel"
       ],
       "useWhen": [
-        "Render ordinary application headings or paragraphs with native document semantics, or inline secondary text inside rows, labels, and table cells."
+        "Render ordinary application headings or paragraphs with native document semantics, or inline secondary text inside rows, labels, and table cells.",
+        "Render FieldLabel over a read-only or click-to-edit preview that replaces a Web Awesome form control."
       ],
       "avoidWhen": [
         "Do not use Text for toolbar identity or title content; use ToolbarText inside a Toolbar zone.",
@@ -1971,7 +1973,8 @@
         "size",
         "font",
         "copy",
-        "document heading hierarchy"
+        "document heading hierarchy",
+        "FieldLabel copy, preview/edit state, and aria-labelledby association"
       ],
       "variants": [
         "p, h1 through h6, or inline span semantic variant",
@@ -1983,14 +1986,15 @@
       "accessibility": [
         "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance, or span for inline secondary text.",
         "Ordinary global, data, and ARIA attributes pass through to the native element.",
-        "Choose tone, size, and font independently of the heading level so appearance does not distort the document outline."
+        "Choose tone, size, and font independently of the heading level so appearance does not distort the document outline.",
+        "FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby."
       ],
       "geometry": {
         "margin": "none",
         "border": "self",
         "padding": "self",
         "notes": [
-          "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding."
+          "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap."
         ]
       },
       "delivery": {
@@ -2002,7 +2006,8 @@
       },
       "wiring": [],
       "publicClasses": [
-        "kui-text"
+        "kui-text",
+        "kui-text__field-label"
       ],
       "publicTokens": [
         "--kui-color-danger-on-quiet",

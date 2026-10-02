@@ -157,6 +157,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `ToolbarText size="xsmall"` suits a dense rail heading. The
   `TokenSearchField` editor shrinks in narrow groups; its minimum width can be
   set with `--kui-token-search-editor-min-width`.
+- **Label read-only field previews.** Use `FieldLabel` from `@kerfjs/ui/text`
+  in `ListInsetControl sides="trl"` above a `ContentItem` value. Connect its
+  id to the preview group's `aria-labelledby`; use the live control's own
+  `label` while editing.
 - **Use Toolbar zone options.** `responsive="trailing-priority"` moves an
   expanded trailing control to a full second row at `responsiveAt`; the leading
   title remains above it. Public leading-min-width, trailing-gap/justify, and

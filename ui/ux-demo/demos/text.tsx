@@ -1,6 +1,10 @@
+import '@awesome.me/webawesome/dist/components/input/input.js';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
+import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { Row } from '@kerfjs/ui/row';
-import { Text } from '@kerfjs/ui/text';
+import { FieldLabel, Text } from '@kerfjs/ui/text';
 
 export function TextDemo() {
   return (
@@ -50,6 +54,22 @@ export function TextDemo() {
         </Text>
         <Text size="large">Large body copy</Text>
         <Text size="xlarge">Extra large body copy</Text>
+      </CatalogExample>
+      <CatalogExample
+        label="Read-only field preview"
+        note="FieldLabel mirrors a Web Awesome form-control label when a field is a preview rather than an input. The preview group uses the label id as its accessible name."
+        align="none"
+        rootAttributes={{ 'data-demo-section': 'field-label' }}
+      >
+        <div role="group" aria-labelledby="needed-by-label">
+          <ListInsetControl sides="trl">
+            <FieldLabel id="needed-by-label">Needed by</FieldLabel>
+          </ListInsetControl>
+          <ContentItem>October 16, 2026</ContentItem>
+        </div>
+        <ListInsetControl sides="trl">
+          <wa-input label="Needed by" value="October 16, 2026"></wa-input>
+        </ListInsetControl>
       </CatalogExample>
       <CatalogExample label="Flush dialog copy" align="glyph">
         <Text flush lineHeight="tight" data-demo-copy="flush">

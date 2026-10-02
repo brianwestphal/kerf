@@ -1,6 +1,23 @@
 import { describe, expect, it } from 'vitest';
 
-import { Text, type TextProps } from '../../src/text.js';
+import { FieldLabel, Text, type TextProps } from '../../src/text.js';
+
+describe('FieldLabel', () => {
+  it('renders a plain heading that can name a read-only preview group', () => {
+    const html = String(
+      FieldLabel({
+        id: 'needed-by-label',
+        children: 'Needed by',
+        className: 'app-field',
+      }),
+    );
+    expect(html).toContain('<div id="needed-by-label"');
+    expect(html).toContain('class="kui-text__field-label app-field"');
+    expect(html).toContain('data-component="field-label"');
+    expect(html).toContain('>Needed by</div>');
+    expect(html).not.toContain('<label');
+  });
+});
 
 describe('Text wrapping', () => {
   it('keeps native attributes and defaults to ordinary wrapping', () => {

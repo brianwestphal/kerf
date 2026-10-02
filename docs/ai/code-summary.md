@@ -1041,6 +1041,9 @@ transparent border and item padding to block variants while leaving `span`
 without box geometry. Its
 independent `tone`, `size`, and `font` unions expose quiet/danger, compact, and
 monospace roles through stable data attributes and semantic foundation tokens.
+The same `text` entry exports `FieldLabel`, a plain preview heading whose
+typography and inline inset mirror a themed Web Awesome form-control label;
+applications connect its id to a preview group with `aria-labelledby`.
 The optional `ui/src/document.css` entry provides global border-box sizing,
 token-backed body/link presentation, and a definite `html` → `body` →
 `.kui-app-root` height chain for top-level percentage-height shells. It is an

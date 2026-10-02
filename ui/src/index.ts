@@ -183,6 +183,8 @@ export {
   type TabBarTrailingPlacement,
 } from './tab-bar.js';
 export {
+  FieldLabel,
+  type FieldLabelProps,
   Text,
   type TextContent,
   type TextFont,

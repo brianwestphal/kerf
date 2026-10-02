@@ -7,6 +7,24 @@
   overflow-wrap: normal;
 }
 
+/* Match the themed Web Awesome form-control label without introducing a
+   native <label> that would falsely point at a non-form preview. */
+.kui-text__field-label {
+  box-sizing: border-box;
+  min-width: 0;
+  padding-inline: calc(
+    var(--wa-form-control-border-width, 1px) +
+      var(--wa-form-control-padding-inline, remify(8px))
+  );
+  margin: 0 0 0.5em;
+  color: var(--kui-color-neutral-on-quiet, var(--wa-color-text-quiet));
+  font-size: var(--kui-font-xs, var(--wa-font-size-xs));
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: var(--wa-line-height-condensed);
+  text-transform: uppercase;
+}
+
 .kui-text[data-wrap="anywhere"] {
   overflow-wrap: anywhere;
 }

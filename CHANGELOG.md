@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **FieldLabel matches form-control labels over field previews.** The
+  `@kerfjs/ui/text` export gives a read-only field the same label typography
+  and inset as a themed Web Awesome input, with an id for accessible grouping.
+
 - **TokenSearchField form fields match adjacent Web Awesome inputs.** The
   control uses the form-control radius, and its required marker uses the
   same neutral color and offset tokens as `wa-input`.

@@ -234,6 +234,11 @@ independent of semantics: compose `tone="quiet"` or
 `tone="danger"`, `size="compact"`, and `font="monospace"` for supporting,
 validation, metadata, and code roles instead of global utility classes.
 
+For a read-only or click-to-edit field preview, import `FieldLabel` from the
+same subpath. Place it in `ListInsetControl sides="trl"` above a `ContentItem`
+value, and use its id in the preview group's `aria-labelledby`. When editing,
+let the Web Awesome control render its own visible label.
+
 For an avatar toolbar control, set `content="avatar"` and `avatarImage` on
 `ToolbarControlGroup`; do not insert an `img` into the button. A lone control
 paints the contained image on the outer group, while a multi-button group paints

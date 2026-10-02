@@ -448,6 +448,10 @@ selected native semantics.
 Independent finite tone, size, and font props cover quiet/danger, compact, and
 monospace presentation roles without appearance-only heading choices or global
 utility classes.
+The same text subpath exports `FieldLabel` for a read-only field preview. It
+mirrors the themed Web Awesome form-control label treatment and inset; the app
+associates its id with a preview group through `aria-labelledby` and owns the
+preview/edit transition.
 
 ### §23 App and dialog layouts
 

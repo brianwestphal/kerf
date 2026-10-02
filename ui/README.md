@@ -189,7 +189,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`      |
 | `PopupMenu` (register with `@kerfjs/ui/popup-menu/register`)        | `@kerfjs/ui/popup-menu`                 | `@kerfjs/ui/popup-menu.css`            |
 | `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |
-| `Text`                                                              | `@kerfjs/ui/text`                       | `@kerfjs/ui/text.css`                  |
+| `Text`, `FieldLabel`                                                | `@kerfjs/ui/text`                       | `@kerfjs/ui/text.css`                  |
 | `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                  |
 | `Row`                                                               | `@kerfjs/ui/row`                        | `@kerfjs/ui/row.css`                   |
 | `Grid`                                                              | `@kerfjs/ui/grid`                       | `@kerfjs/ui/grid.css`                  |

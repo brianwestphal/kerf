@@ -4,13 +4,14 @@
 
 `@kerfjs/ui:text` · Kerf UI · component · Structure
 
-Semantic native paragraph text by default, with heading and inline-span variants plus composable semantic presentation roles.
+Semantic native text plus a FieldLabel heading for read-only field previews that matches themed Web Awesome form labels.
 
 ## When to use
 
 Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.
 
 - Render ordinary application headings or paragraphs with native document semantics, or inline secondary text inside rows, labels, and table cells.
+- Render FieldLabel over a read-only or click-to-edit preview that replaces a Web Awesome form control.
 
 **Not when:**
 
@@ -24,7 +25,7 @@ Render paragraph semantics by default, h1 through h6 when selected, or geometry-
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/text` — exports `Text`.
+- JavaScript: `@kerfjs/ui/text` — exports `Text`, `FieldLabel`.
 - CSS: the browser build of `@kerfjs/ui/text` pulls its CSS automatically; import `@kerfjs/ui/text.css` manually only without the `browser` export condition.
 - Declared side effects: browser-condition-css.
 
@@ -48,7 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** semantic variant; tone; size; font; copy; document heading hierarchy.
+**The app owns:** semantic variant; tone; size; font; copy; document heading hierarchy; FieldLabel copy, preview/edit state, and aria-labelledby association.
 
 No wiring helper.
 
@@ -56,21 +57,22 @@ No wiring helper.
 
 Margin: none · border: self · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding.
+- Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap.
 
 ## Accessibility
 
 - Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance, or span for inline secondary text.
 - Ordinary global, data, and ARIA attributes pass through to the native element.
 - Choose tone, size, and font independently of the heading level so appearance does not distort the document outline.
+- FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby.
 
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-text`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-text`, `kui-text__field-label`.
 
-Never put `kui-text` on an element you write; render `Text` instead (`KUI-L103`).
+Never put `kui-text`, `kui-text__field-label` on an element you write; render `Text` instead (`KUI-L103`).
 
 Public tokens it reads: `--kui-color-danger-on-quiet`, `--kui-color-text-quiet`, `--kui-font-2xl`, `--kui-font-l`, `--kui-font-mono`, `--kui-font-xs`, `--kui-layout-item-padding`. Set a token only where its public contract allows; prefer a prop.
 
