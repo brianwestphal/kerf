@@ -9,6 +9,20 @@
     "schemaVersion": { "const": 1 },
     "package": { "const": "@kerfjs/ui" },
     "description": { "type": "string", "minLength": 1 },
+    "wiringProviders": {
+      "description": "Public helpers whose call installs other cataloged wiring helpers.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["export", "import", "provides"],
+        "properties": {
+          "export": { "type": "string", "minLength": 1 },
+          "import": { "type": "string", "minLength": 1 },
+          "provides": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "uniqueItems": true }
+        },
+        "additionalProperties": false
+      }
+    },
     "entries": {
       "type": "array",
       "items": { "$ref": "#/$defs/entry" }

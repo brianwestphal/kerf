@@ -111,6 +111,12 @@ scrolls under its pinned header; with a header it draws the line under that
 header itself, so the stack's chrome never doubles it. It follows re-renders: panes that appear later are paired, and an
 attribute a morph drops returns before paint.
 
+Multiple calls in one document share one attribute writer, including calls on
+overlapping roots. Each call contributes its own root and optional named
+targets; its disposer removes only that registration. When the last disposer
+runs, the writer removes the attributes it owns. An app that calls `wireCatalog`
+for a root already has scroll dividers there and does not need another call.
+
 The wiring only reports state; every component draws its own line. It writes
 `data-scroll-overflow` (the edges with content hidden beyond them, in canonical
 `t`/`r`/`b`/`l` order) on each scroller and `data-scroll-divider` (the sides to

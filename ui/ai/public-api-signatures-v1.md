@@ -1186,6 +1186,7 @@ interface WireScrollDividersOptions {
      */
     targets?: readonly ScrollDividerTarget[];
 }
+type Root = HTMLElement | Document;
 /**
  * Wire scroll dividers below `root`: a divider between pinned chrome and the
  * content that scrolls beside it shows only while content is scrolled away
@@ -1213,11 +1214,13 @@ interface WireScrollDividersOptions {
  *
  * Structure is re-read after every DOM change below root (a re-render that
  * drops the attributes gets them back before paint), scroll is tracked with
- * one capturing listener, and size changes of each scroller and its children
- * with a `ResizeObserver`. Returns a disposer that removes every attribute it
- * wrote. See `docs/23-app-layouts.md` §3.7.
+ * one capturing listener per registered root, and size changes of each
+ * scroller and its children with a `ResizeObserver`. Overlapping registrations
+ * share one attribute writer; each disposer removes its registration, and the
+ * final disposer removes the wiring-owned attributes. See
+ * `docs/23-app-layouts.md` §3.7.
  */
-declare function wireScrollDividers(root: HTMLElement | Document, { targets }?: WireScrollDividersOptions): () => void;
+declare function wireScrollDividers(root: Root, { targets }?: WireScrollDividersOptions): () => void;
 
 export { type ScrollDividerTarget, type WireScrollDividersOptions, wireScrollDividers };
 ```

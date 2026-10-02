@@ -341,5 +341,11 @@ const dispose = wireScrollDividers(root, {
   ],
 });
 (
-  window as unknown as { disposeScrollDividers: () => void }
+  window as unknown as {
+    disposeScrollDividers: () => void;
+    installDuplicateScrollDividers: () => () => void;
+  }
 ).disposeScrollDividers = dispose;
+(
+  window as unknown as { installDuplicateScrollDividers: () => () => void }
+).installDuplicateScrollDividers = () => wireScrollDividers(root);

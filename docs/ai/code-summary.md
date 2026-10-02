@@ -831,7 +831,10 @@ only `data-scroll-overflow` (scroller) / `data-scroll-divider` (chrome); `Pane`
 (the same `chromeDividers`, rendered as `data-chrome-dividers` on the layout
 root; `SplitView` forwards it via `compactStack`), `TabBar`, `Toolbar`, and `List` draw from them in their own CSS. `Toolbar.dividerSides` defaults to `''`, and the
 Workbench / CollapsiblePanel / Catalog toolbars place no dividers of their own;
-`wireCatalog` installs the wiring. Unit transition matrix in
+`wireCatalog` installs the wiring. A per-document controller combines overlapping
+registrations and keeps one attribute writer through independent disposer calls;
+the UI selection catalog names `wireCatalog` as a `wireScrollDividers` provider
+for `ui-wiring`. Unit transition matrix in
 `ui/tests/unit/wire-scroll-dividers.test.ts`; three-engine geometry and
 computed-style coverage in `ui/tests/browser/scroll-dividers.spec.ts` with the
 fixture `ui/tests/browser/fixtures/scroll-dividers.tsx`. See docs/23 §3.7.

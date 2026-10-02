@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 319300,
-  "measuredLargestJavaScriptGzip": 126042,
-  "measuredTotalJavaScriptGzip": 319224,
+  "totalJavaScriptGzip": 319500,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 319444,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2387,6 +2387,22 @@
         "measuredTotalJavaScriptGzip": 319224,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 319300
+      }
+    },
+    {
+      "at": "2026-10-02T12:04:27.438Z",
+      "reason": "Shared scroll-divider controller prevents overlapping registrations from looping and preserves independent disposers",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 319224,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 319300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 319444,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 319500
       }
     }
   ]

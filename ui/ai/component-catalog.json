@@ -3,6 +3,13 @@
   "schemaVersion": 1,
   "package": "@kerfjs/ui",
   "description": "Machine-readable selection, composition, delivery, ownership, and accessibility metadata for Kerf UI and its supported Web Awesome set.",
+  "wiringProviders": [
+    {
+      "export": "wireCatalog",
+      "import": "@kerfjs/ui/wire-catalog",
+      "provides": ["wireScrollDividers"]
+    }
+  ],
   "entries": [
     {
       "id": "badge",

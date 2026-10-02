@@ -184,6 +184,19 @@ function measure(scroller: HTMLElement): string {
 }
 
 type StateAttribute = typeof SCROLL_OVERFLOW | typeof SCROLL_DIVIDER;
+type Root = HTMLElement | Document;
+
+interface Registration {
+  root: Root;
+  targets: readonly ScrollDividerTarget[];
+}
+
+// A document has one attribute writer even when registrations overlap. The
+// WeakMap ties this coordination cache to the document's lifetime.
+const CONTROLLERS = new WeakMap<
+  Document,
+  (registration: Registration) => () => void
+>();
 
 /** Set (or, for an empty value, remove) one of this wiring's attributes. */
 function write(element: Element, name: StateAttribute, value: string) {
@@ -222,25 +235,40 @@ function write(element: Element, name: StateAttribute, value: string) {
  *
  * Structure is re-read after every DOM change below root (a re-render that
  * drops the attributes gets them back before paint), scroll is tracked with
- * one capturing listener, and size changes of each scroller and its children
- * with a `ResizeObserver`. Returns a disposer that removes every attribute it
- * wrote. See `docs/23-app-layouts.md` §3.7.
+ * one capturing listener per registered root, and size changes of each
+ * scroller and its children with a `ResizeObserver`. Overlapping registrations
+ * share one attribute writer; each disposer removes its registration, and the
+ * final disposer removes the wiring-owned attributes. See
+ * `docs/23-app-layouts.md` §3.7.
  */
 export function wireScrollDividers(
-  root: HTMLElement | Document,
+  root: Root,
   { targets = [] }: WireScrollDividersOptions = {},
 ): () => void {
   const ownerDocument = (
     root.nodeType === 9 ? (root as Document) : root.ownerDocument
   )!;
+  let register = CONTROLLERS.get(ownerDocument);
+  if (!register) {
+    register = createController(ownerDocument);
+    CONTROLLERS.set(ownerDocument, register);
+  }
+  return register({ root, targets });
+}
+
+function createController(
+  ownerDocument: Document,
+): (registration: Registration) => () => void {
   const view = ownerDocument.defaultView;
   let disposed = false;
+  const registrations = new Set<Registration>();
+  const listenedRoots = new Set<Root>();
   let pairings: Pairing[] = [];
   const overflow = new Map<HTMLElement, string>();
   /** Every element this wiring has written, with what it wrote. */
   const written = new Map<Element, Map<StateAttribute, string>>();
 
-  const byId = (id: string | undefined) => {
+  const byId = (root: Root, id: string | undefined) => {
     if (!id) return undefined;
     const [match] = within<HTMLElement>(root, `[id=${quoted(id)}]`);
     return match;
@@ -248,41 +276,44 @@ export function wireScrollDividers(
 
   const collect = (): Pairing[] => {
     const found: Pairing[] = [];
-    for (const pane of within<HTMLElement>(root, '.kui-pane')) {
-      const scroller = directChild(pane, '.kui-pane__content');
-      const header = directChild(pane, PANE_CHROME.t);
-      const footer = directChild(pane, PANE_CHROME.b);
-      if (scroller && (header || footer))
-        found.push({ scroller, chrome: { t: header, b: footer } });
-    }
-    const pairRegion = (
-      region: HTMLElement | undefined,
-      edge: 't' | 'b',
-      chrome: HTMLElement | undefined,
-    ) => {
-      if (!region || !chrome) return;
-      for (const scroller of regionScrollers(region, edge))
-        found.push({ scroller, chrome: { [edge]: chrome } });
-    };
-    for (const stack of within<HTMLElement>(root, '.kui-nav-stack')) {
-      const view = activeView(stack);
-      for (const edge of ['t', 'b'] as const)
-        pairRegion(view, edge, directChild(stack, NAV_STACK_CHROME[edge]));
-    }
-    for (const scaffold of within<HTMLElement>(root, '.kui-tab-scaffold'))
-      pairRegion(
-        activeScene(scaffold),
-        'b',
-        directChild(scaffold, '.kui-tab-scaffold__bar'),
-      );
-    for (const strip of within<HTMLElement>(root, '[data-kui-tab-list]'))
-      found.push({ scroller: strip, chrome: {} });
-    for (const target of targets) {
-      const scroller = byId(target.scroller);
-      if (!scroller) continue;
-      const chrome: Pairing['chrome'] = {};
-      for (const edge of EDGES) chrome[edge] = byId(target[TARGET_EDGES[edge]]);
-      found.push({ scroller, chrome });
+    for (const { root, targets } of registrations) {
+      for (const pane of within<HTMLElement>(root, '.kui-pane')) {
+        const scroller = directChild(pane, '.kui-pane__content');
+        const header = directChild(pane, PANE_CHROME.t);
+        const footer = directChild(pane, PANE_CHROME.b);
+        if (scroller && (header || footer))
+          found.push({ scroller, chrome: { t: header, b: footer } });
+      }
+      const pairRegion = (
+        region: HTMLElement | undefined,
+        edge: 't' | 'b',
+        chrome: HTMLElement | undefined,
+      ) => {
+        if (!region || !chrome) return;
+        for (const scroller of regionScrollers(region, edge))
+          found.push({ scroller, chrome: { [edge]: chrome } });
+      };
+      for (const stack of within<HTMLElement>(root, '.kui-nav-stack')) {
+        const view = activeView(stack);
+        for (const edge of ['t', 'b'] as const)
+          pairRegion(view, edge, directChild(stack, NAV_STACK_CHROME[edge]));
+      }
+      for (const scaffold of within<HTMLElement>(root, '.kui-tab-scaffold'))
+        pairRegion(
+          activeScene(scaffold),
+          'b',
+          directChild(scaffold, '.kui-tab-scaffold__bar'),
+        );
+      for (const strip of within<HTMLElement>(root, '[data-kui-tab-list]'))
+        found.push({ scroller: strip, chrome: {} });
+      for (const target of targets) {
+        const scroller = byId(root, target.scroller);
+        if (!scroller) continue;
+        const chrome: Pairing['chrome'] = {};
+        for (const edge of EDGES)
+          chrome[edge] = byId(root, target[TARGET_EDGES[edge]]);
+        found.push({ scroller, chrome });
+      }
     }
     return found;
   };
@@ -374,6 +405,7 @@ export function wireScrollDividers(
 
   const mutationObserver = view?.MutationObserver
     ? new view.MutationObserver((records) => {
+        if (disposed) return;
         // A re-render that only dropped or changed attributes this wiring
         // owns gets them back without re-measuring; structure changes
         // re-read every pairing.
@@ -390,35 +422,59 @@ export function wireScrollDividers(
       })
     : undefined;
 
-  refresh();
-  root.addEventListener('scroll', onScroll, { capture: true, passive: true });
-  mutationObserver?.observe(root, {
-    subtree: true,
-    childList: true,
-    attributes: true,
-    // The shown NavStack view and TabScaffold scene change by attribute.
-    attributeFilter: [
-      SCROLL_OVERFLOW,
-      SCROLL_DIVIDER,
-      'id',
-      'class',
-      'data-nav-active',
-      'data-nav-exiting',
-      'data-active',
-    ],
-  });
-
-  return () => {
-    if (disposed) return;
-    disposed = true;
+  const syncRoots = () => {
+    const roots = new Set([...registrations].map(({ root }) => root));
+    for (const root of listenedRoots)
+      if (!roots.has(root)) {
+        root.removeEventListener('scroll', onScroll, { capture: true });
+        listenedRoots.delete(root);
+      }
+    for (const root of roots)
+      if (!listenedRoots.has(root)) {
+        root.addEventListener('scroll', onScroll, {
+          capture: true,
+          passive: true,
+        });
+        listenedRoots.add(root);
+      }
     mutationObserver?.disconnect();
-    resizeObserver?.disconnect();
-    root.removeEventListener('scroll', onScroll, { capture: true });
-    for (const [element, values] of written)
-      for (const name of values.keys()) write(element, name, '');
-    written.clear();
-    overflow.clear();
-    observed.clear();
-    pairings = [];
+    for (const root of roots)
+      mutationObserver?.observe(root, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        // The shown NavStack view and TabScaffold scene change by attribute.
+        attributeFilter: [
+          SCROLL_OVERFLOW,
+          SCROLL_DIVIDER,
+          'id',
+          'class',
+          'data-nav-active',
+          'data-nav-exiting',
+          'data-active',
+        ],
+      });
+  };
+
+  return (registration) => {
+    registrations.add(registration);
+    syncRoots();
+    refresh();
+    return () => {
+      if (!registrations.delete(registration)) return;
+      syncRoots();
+      if (registrations.size) refresh();
+      else {
+        disposed = true;
+        resizeObserver?.disconnect();
+        for (const [element, values] of written)
+          for (const name of values.keys()) write(element, name, '');
+        written.clear();
+        overflow.clear();
+        observed.clear();
+        pairings = [];
+        CONTROLLERS.delete(ownerDocument);
+      }
+    };
   };
 }

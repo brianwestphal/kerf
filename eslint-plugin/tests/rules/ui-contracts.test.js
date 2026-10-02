@@ -104,6 +104,19 @@ const moduleScopeSettings = uiSettings({
     ),
   },
 });
+const catalogProviderSettings = uiSettings({
+  catalog: {
+    ...settings.kerfjs.ui.catalog,
+    entries: settings.kerfjs.ui.catalog.entries.map((entry) =>
+      entry.id === 'pane'
+        ? {
+            ...entry,
+            wiring: { required: true, helpers: ['wireScrollDividers'] },
+          }
+        : entry,
+    ),
+  },
+});
 
 tester.run('ui-public-boundaries', boundaries, {
   valid: [
@@ -1147,6 +1160,10 @@ tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
 tester.run('ui-wiring', wiring, {
   valid: [
     {
+      code: "import { Pane } from '@kerfjs/ui'; import { wireCatalog } from '@kerfjs/ui/wire-catalog'; const stop = wireCatalog(root, options); <Pane />;",
+      settings: catalogProviderSettings,
+    },
+    {
       code: "import './wiring-view.js'; import { start } from './wiring-start.js'; const dispose = start();",
       filename: join(appRoot, 'src/wiring-entry.tsx'),
       settings: appSettings,
@@ -1206,6 +1223,11 @@ tester.run('ui-wiring', wiring, {
     },
   ],
   invalid: [
+    {
+      code: "import { Pane } from '@kerfjs/ui'; import { wireCatalog } from 'other-ui'; const stop = wireCatalog(root, options); <Pane />;",
+      settings: catalogProviderSettings,
+      errors: [{ messageId: 'missing' }],
+    },
     {
       code: "import { wireTicketSearch } from './interactions/ticket-search.js'; wireTicketSearch(root);",
       filename: join(appRoot, 'src/wiring-start.ts'),

@@ -288,7 +288,9 @@ each `Pane` draw its header/footer divider, each `NavStack` / `TabScaffold` its
 chrome and bottom-bar dividers around the active view or scene (each layout,
 like a `Pane`, takes `chromeDividers: 'scroll' | 'always' | 'none'`), and each
 `TabBar` its overflow dividers, only while content is scrolled beneath or
-beyond them. Apply tab reorder reports with
+beyond them. Overlapping calls share one writer and keep independent
+disposers; `wireCatalog` already provides the scroll wiring for its root.
+Apply tab reorder reports with
 `reorderTabs()`. For a tab-local action immediately after the strip plus a
 workspace action at the far edge, set `trailingPlacement="adjacent"`, put the
 local action in `trailing`, and put the workspace action in `end`; TabBar owns

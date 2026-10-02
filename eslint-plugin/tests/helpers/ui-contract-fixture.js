@@ -211,6 +211,13 @@ export const catalog = {
 export const selectionCatalog = {
   schemaVersion: 1,
   package: '@kerfjs/ui',
+  wiringProviders: [
+    {
+      export: 'wireCatalog',
+      import: '@kerfjs/ui/wire-catalog',
+      provides: ['wireScrollDividers'],
+    },
+  ],
   entries: catalog.entries.map((entry) => ({
     id: entry.id,
     publicExports:

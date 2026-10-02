@@ -126,6 +126,37 @@ const rects = (locator: Locator, selectors: string[]) =>
   );
 
 test.describe('scroll dividers', () => {
+  test('duplicate registration keeps the page responsive and survives either disposer', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const content = page.locator(
+      '[data-case="pane-scroll"] .kui-pane__content',
+    );
+    const header = page.locator('[data-case="pane-scroll"] .kui-pane__header');
+    await page.evaluate(() => {
+      (window as unknown as { stopDuplicate: () => void }).stopDuplicate = (
+        window as unknown as {
+          installDuplicateScrollDividers: () => () => void;
+        }
+      ).installDuplicateScrollDividers();
+    });
+    await scroll(content, 'middle');
+    expect(await header.getAttribute('data-scroll-divider')).toBe('b');
+    await page.evaluate(() =>
+      (
+        window as unknown as { disposeScrollDividers: () => void }
+      ).disposeScrollDividers(),
+    );
+    await scroll(content, 'start');
+    await scroll(content, 'middle');
+    expect(await header.getAttribute('data-scroll-divider')).toBe('b');
+    await page.evaluate(() =>
+      (window as unknown as { stopDuplicate: () => void }).stopDuplicate(),
+    );
+    expect(await header.getAttribute('data-scroll-divider')).toBeNull();
+  });
+
   test('a Pane shows each chrome divider only while content hides beyond it, without moving anything', async ({
     page,
   }) => {

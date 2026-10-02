@@ -169,6 +169,27 @@ function validateSchema(value, rule, path = '$', activeSchema = schema) {
 }
 
 validateSchema(artifact, schema);
+const catalogWiring = new Set(
+  artifact.entries.flatMap((entry) =>
+    (entry.wiring ?? []).map((item) => item.export),
+  ),
+);
+for (const provider of artifact.wiringProviders ?? []) {
+  if (!packageJson.exports?.[provider.import.replace('@kerfjs/ui', '.')])
+    fail(
+      `wiring provider ${provider.export} import ${provider.import} is not exported`,
+    );
+  const source = await readFile(
+    resolve(root, `src/${provider.import.slice('@kerfjs/ui/'.length)}.ts`),
+    'utf8',
+  );
+  for (const helper of provider.provides) {
+    if (!catalogWiring.has(helper))
+      fail(`wiring provider ${provider.export} names unknown helper ${helper}`);
+    if (!source.includes(`${helper}(`))
+      fail(`wiring provider ${provider.export} does not invoke ${helper}`);
+  }
+}
 validateSchema(
   extensionExample,
   extensionSchema,

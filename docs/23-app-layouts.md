@@ -977,8 +977,10 @@ content lies beyond it — never when the content fits.
   the Workbench's old rule of moving the divider between the toolbar and a
   `mainHeader` list.
 - **The wiring reports; components draw.** `wireScrollDividers(root, {
-targets? })` follows the established wire pattern (one call per root,
-  delegated, returns an idempotent disposer that removes everything it wrote).
+targets? })` follows the established wire pattern (delegated, returns an
+  idempotent disposer). Registrations in one document share a single attribute
+  writer, even when roots overlap; each disposer removes only its own root and
+  targets, and the last disposer removes the wiring-owned attributes.
   It pairs, by structure, every `.kui-pane` content slot with its header and
   footer and every `TabBar` strip, plus app-owned `targets` (`{ scroller, top?,
 right?, bottom?, left? }` element ids, resolved on each refresh). It writes

@@ -634,6 +634,58 @@ describe('wireScrollDividers — app-owned targets', () => {
 });
 
 describe('wireScrollDividers — lifecycle', () => {
+  it('shares one writer for duplicate and overlapping roots through disposal transitions', async () => {
+    const { root, header, content } = pane();
+    const state = geometry(content, { scrollHeight: 300, scrollTop: 50 });
+    const first = wireScrollDividers(root);
+    const second = wireScrollDividers(root);
+    const enclosing = wireScrollDividers(document);
+    expect(FakeResizeObserver.instances).toHaveLength(1);
+    expect(divider(header)).toBe('b');
+    await settle();
+    expect(divider(header)).toBe('b');
+
+    second();
+    expect(divider(header)).toBe('b');
+    scrollTo(content, state, { scrollTop: 0 });
+    expect(divider(header)).toBeNull();
+    first();
+    scrollTo(content, state, { scrollTop: 50 });
+    expect(divider(header)).toBe('b');
+    enclosing();
+    expect(divider(header)).toBeNull();
+    enclosing();
+
+    const restarted = wireScrollDividers(root);
+    expect(FakeResizeObserver.instances).toHaveLength(2);
+    expect(divider(header)).toBe('b');
+    restarted();
+  });
+
+  it('combines app-owned targets and removes only a disposed registration’s chrome', async () => {
+    const root = mountHtml(
+      '<div id="top"></div><div id="scroller"></div><div id="bottom"></div>',
+    );
+    const scroller = root.querySelector<HTMLElement>('#scroller')!;
+    geometry(scroller, { scrollHeight: 300, scrollTop: 50 });
+    const first = wireScrollDividers(root, {
+      targets: [{ scroller: 'scroller', top: 'top' }],
+    });
+    const second = wireScrollDividers(root, {
+      targets: [{ scroller: 'scroller', bottom: 'bottom' }],
+    });
+    const top = root.querySelector('#top');
+    const bottom = root.querySelector('#bottom');
+    expect(divider(top)).toBe('b');
+    expect(divider(bottom)).toBe('t');
+    await settle();
+    first();
+    expect(divider(top)).toBeNull();
+    expect(divider(bottom)).toBe('t');
+    second();
+    expect(divider(bottom)).toBeNull();
+  });
+
   it('restores attributes a re-render dropped, before paint and without re-measuring', async () => {
     const { root, header, footer, content } = pane();
     const state = geometry(content, { scrollHeight: 300, scrollTop: 50 });

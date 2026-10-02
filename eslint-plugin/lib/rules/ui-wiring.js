@@ -252,11 +252,11 @@ export default {
                 });
               continue;
             }
-            const helperCalls = calls.get(helper) ?? [];
-            if (
-              !(ownEntry ? reachableCalls.has(helper) : helperCalls.length) &&
-              !isExcepted(contract, MISSING_CODE, filename)
-            )
+            const providers = contract.helperProviders.get(helper) ?? new Set();
+            const provided = [helper, ...providers].some((name) =>
+              ownEntry ? reachableCalls.has(name) : calls.has(name),
+            );
+            if (!provided && !isExcepted(contract, MISSING_CODE, filename))
               context.report({
                 node: usage,
                 messageId: 'missing',

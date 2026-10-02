@@ -266,6 +266,7 @@ export function loadUiContract(context) {
     // (`<wa-dropdown>`) rather than through an imported component.
     const customElements = new Map();
     const helperSources = new Map();
+    const helperProviders = new Map();
     const addHelperSource = (name, source) => {
       const sources = helperSources.get(name) ?? new Set();
       sources.add(source);
@@ -285,6 +286,14 @@ export function loadUiContract(context) {
       for (const wiring of entry.wiring ?? [])
         addHelperSource(wiring.export, wiring.import);
     }
+    for (const provider of selection.wiringProviders ?? []) {
+      addHelperSource(provider.export, provider.import);
+      for (const helper of provider.provides) {
+        const providers = helperProviders.get(helper) ?? new Set();
+        providers.add(provider.export);
+        helperProviders.set(helper, providers);
+      }
+    }
     const value = {
       entries,
       package: selection.package,
@@ -295,6 +304,7 @@ export function loadUiContract(context) {
       componentSources,
       customElements,
       helperSources,
+      helperProviders,
       helperSourceFiles,
       profile,
       cwd,

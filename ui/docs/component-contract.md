@@ -98,6 +98,10 @@ package root; `ui-wiring` resolves helper imports through this file, including
 relative re-export barrels. Every named export must also appear in
 `wiring.helpers`.
 
+The selection catalog's `wiringProviders` lists public helpers that install
+other wiring helpers. The `ui-wiring` rule accepts a provider call for each
+helper it declares; `wireCatalog` provides `wireScrollDividers`.
+
 The generator starts with permissive defaults. An `any` mode records that the
 catalog has no defensible prohibition; it does not claim every composition is
 recommended. Objective rules live in
