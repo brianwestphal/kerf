@@ -258,6 +258,20 @@ test(
         resolve(root, 'src/view.css'),
         '.theme { --wa-color-brand-fill-loud: #ffffff; --wa-color-brand-on-loud: #ffffff; }\n',
       );
+      // The repair loop above exercised every stage. Threshold checks need a
+      // real analyzer finding, without rebuilding TypeScript and ESLint four
+      // more times inside this one integration case.
+      const reviewStages = {
+        catalog: false,
+        typescript: false,
+        eslint: false,
+        analyzer: true,
+        browser: false,
+      };
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({ schemaVersion: 1, stages: reviewStages }),
+      );
       const defaultReview = await doctor(root);
       expect(defaultReview.status).toBe(0);
       expect(defaultReview.report.diagnostics).toEqual(
@@ -270,7 +284,11 @@ test(
       expect(strictReview.report.exitCode).toBe(1);
       await writeFile(
         resolve(root, '.kerf-ui-doctor.json'),
-        '{"schemaVersion":1,"failOn":"review"}\n',
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: reviewStages,
+          failOn: 'review',
+        }),
       );
       expect((await doctor(root)).status).toBe(1);
       expect((await doctor(root, ['--fail-on', 'error'])).status).toBe(0);
