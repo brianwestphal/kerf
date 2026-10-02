@@ -540,10 +540,11 @@ leave a 480px-or-narrower toolbar while a sibling trailing group is expanded.
 They return when it collapses or the toolbar widens; leading and center zones
 remain visible.
 Reach for `wa-button` only when you need a Web Awesome feature; a popup menu is a `PopupMenu`, which renders its own
-trigger. Nothing wraps inside a group: an icon sits beside its label on one
-row, and a group's controls never break onto a second line — the group sizes
-to its content and the enclosing `Toolbar`'s responsive policy relocates whole
-groups. For a compact mixed-content group, set `nestedDropdown`; a
+trigger. By default a group stays on one row: each icon sits beside its label,
+and the enclosing `Toolbar`'s responsive policy relocates whole groups. Set
+`overflow="wrap"` only for independent links that should move as whole actions
+to another row within the group; use `overflow="scroll"` for a bounded one-row
+action strip. For a compact mixed-content group, set `nestedDropdown`; a
 text-and-caret trigger grows to its intrinsic width while an icon-only trigger
 can remain square. A compact icon `<button>` is a 32px circle, so a selected
 compact segment never becomes an oval. An icon-only `Select` joins a group as
