@@ -65,32 +65,45 @@ const oneContext = [
   },
 ];
 
+// This case visits 18 contexts across three browser engines sequentially.
+// Under the full package gate it exceeded the old 60s budget. Focused cases
+// that launch a real browser use 30s; simulated launch cases keep the default.
+const ALL_CONTEXTS_TIMEOUT = 120_000;
+const ONE_CONTEXT_TIMEOUT = 30_000;
+
 describe('browser evaluator against running downstream fixtures', () => {
-  it('passes the known-good app in every engine/context and removes passing screenshots', async () => {
-    const outputDirectory = join(temporaryRoot, 'good');
-    const report = await evaluateUi({
-      url: `${origin}/good`,
-      workspaceRoot: resolve('.'),
-      startDirectory: resolve('.'),
-      packageProfile,
-      browsers: ['chromium', 'firefox', 'webkit'],
-      outputDirectory,
-      recordedAt: '2026-09-21T00:00:00.000Z',
-      retention: 'on-failure',
-    });
-    expect(report.summary, JSON.stringify(report.diagnostics, null, 2)).toEqual(
-      { errors: 0, warnings: 0, passed: true },
-    );
-    expect(report.contexts).toHaveLength(18);
-    for (const browser of ['chromium', 'firefox', 'webkit'])
+  it(
+    'passes the known-good app in every engine/context and removes passing screenshots',
+    async () => {
+      const outputDirectory = join(temporaryRoot, 'good');
+      const report = await evaluateUi({
+        url: `${origin}/good`,
+        workspaceRoot: resolve('.'),
+        startDirectory: resolve('.'),
+        packageProfile,
+        browsers: ['chromium', 'firefox', 'webkit'],
+        outputDirectory,
+        recordedAt: '2026-09-21T00:00:00.000Z',
+        retention: 'on-failure',
+      });
       expect(
-        report.contexts.filter((context) => context.browser === browser),
-      ).toHaveLength(6);
-    expect(report.artifacts.files).toEqual([]);
-    expect(
-      JSON.parse(await readFile(join(outputDirectory, 'report.json'), 'utf8')),
-    ).toEqual(report);
-  }, 60_000);
+        report.summary,
+        JSON.stringify(report.diagnostics, null, 2),
+      ).toEqual({ errors: 0, warnings: 0, passed: true });
+      expect(report.contexts).toHaveLength(18);
+      for (const browser of ['chromium', 'firefox', 'webkit'])
+        expect(
+          report.contexts.filter((context) => context.browser === browser),
+        ).toHaveLength(6);
+      expect(report.artifacts.files).toEqual([]);
+      expect(
+        JSON.parse(
+          await readFile(join(outputDirectory, 'report.json'), 'utf8'),
+        ),
+      ).toEqual(report);
+    },
+    ALL_CONTEXTS_TIMEOUT,
+  );
 
   for (const browser of ['chromium', 'firefox', 'webkit'] as const) {
     it(`reports the deterministic failure set in ${browser}`, async () => {
@@ -190,140 +203,156 @@ describe('browser evaluator against running downstream fixtures', () => {
     }, 30_000);
   }
 
-  it('removes stale evaluator screenshots for never and passing on-failure retention', async () => {
-    for (const retention of ['never', 'on-failure'] as const) {
-      const outputDirectory = join(temporaryRoot, `retention-${retention}`);
-      await mkdir(outputDirectory, { recursive: true });
-      const stale = join(outputDirectory, 'firefox-stale-context.png');
-      await writeFile(stale, 'stale');
+  it(
+    'removes stale evaluator screenshots for never and passing on-failure retention',
+    async () => {
+      for (const retention of ['never', 'on-failure'] as const) {
+        const outputDirectory = join(temporaryRoot, `retention-${retention}`);
+        await mkdir(outputDirectory, { recursive: true });
+        const stale = join(outputDirectory, 'firefox-stale-context.png');
+        await writeFile(stale, 'stale');
+        const report = await evaluateUi({
+          url: `${origin}/good`,
+          workspaceRoot: resolve('.'),
+          startDirectory: resolve('.'),
+          packageProfile,
+          browsers: ['chromium'],
+          contexts: oneContext,
+          outputDirectory,
+          retention,
+        });
+        expect(report.summary.passed).toBe(true);
+        await expect(stat(stale)).rejects.toMatchObject({ code: 'ENOENT' });
+      }
+    },
+    ONE_CONTEXT_TIMEOUT,
+  );
+
+  it(
+    'applies only exact browser-rule exceptions for the evaluated directory',
+    async () => {
+      const workspaceRoot = join(temporaryRoot, 'exception-workspace');
+      const startDirectory = join(workspaceRoot, 'app');
+      await mkdir(startDirectory, { recursive: true });
+      await writeFile(
+        join(startDirectory, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'directory',
+          exceptions: [
+            {
+              id: 'accepted-overflow',
+              rules: ['KUI-B010'],
+              target: 'app',
+              rationale:
+                'This fixture verifies exact runtime exception matching.',
+            },
+          ],
+        }),
+      );
       const report = await evaluateUi({
-        url: `${origin}/good`,
+        url: `${origin}/bad`,
+        workspaceRoot,
+        startDirectory,
+        packageProfile,
+        browsers: ['chromium'],
+        contexts: oneContext,
+        outputDirectory: join(workspaceRoot, 'evidence'),
+        retention: 'never',
+      });
+      expect(report.diagnostics.some(({ code }) => code === 'KUI-B010')).toBe(
+        false,
+      );
+      expect(report.diagnostics.some(({ code }) => code === 'KUI-B011')).toBe(
+        true,
+      );
+    },
+    ONE_CONTEXT_TIMEOUT,
+  );
+
+  it(
+    'uses explicit catalog rootClass rather than publicClasses order for geometry',
+    async () => {
+      const workspaceRoot = join(temporaryRoot, 'geometry-workspace');
+      await mkdir(workspaceRoot, { recursive: true });
+      const catalog = JSON.parse(
+        await readFile(
+          resolve('docs/examples/component-composition-extension.json'),
+          'utf8',
+        ),
+      );
+      catalog.entries[0].boundaries = {
+        rootClass: 'acme-inspector',
+        publicClasses: ['decoy-root', 'acme-inspector'],
+        publicTokens: [],
+      };
+      catalog.entries[0].layout.geometry.margin = 'none';
+      await writeFile(
+        join(workspaceRoot, 'catalog.json'),
+        JSON.stringify(catalog),
+      );
+      const profilePath = join(workspaceRoot, 'profile.json');
+      await writeFile(
+        profilePath,
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'package',
+          catalogs: [
+            {
+              package: '@acme/ui',
+              composition: { path: 'catalog.json', schemaVersion: 1 },
+            },
+          ],
+        }),
+      );
+      const report = await evaluateUi({
+        url: `${origin}/geometry`,
+        workspaceRoot,
+        startDirectory: workspaceRoot,
+        packageProfile: profilePath,
+        browsers: ['chromium'],
+        contexts: oneContext,
+        outputDirectory: join(workspaceRoot, 'evidence'),
+        retention: 'never',
+      });
+      expect(report.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            code: 'KUI-B080',
+            selector: 'main.acme-inspector',
+            evidence: expect.objectContaining({
+              className: 'acme-inspector',
+            }),
+          }),
+        ]),
+      );
+    },
+    ONE_CONTEXT_TIMEOUT,
+  );
+
+  it(
+    'turns navigation timeouts into repair-oriented report diagnostics',
+    async () => {
+      const report = await evaluateUi({
+        url: `${origin}/hang`,
         workspaceRoot: resolve('.'),
         startDirectory: resolve('.'),
         packageProfile,
         browsers: ['chromium'],
         contexts: oneContext,
-        outputDirectory,
-        retention,
+        outputDirectory: join(temporaryRoot, 'timeout'),
+        timeoutMs: 100,
+        settleMs: 0,
+        retention: 'never',
       });
-      expect(report.summary.passed).toBe(true);
-      await expect(stat(stale)).rejects.toMatchObject({ code: 'ENOENT' });
-    }
-  });
-
-  it('applies only exact browser-rule exceptions for the evaluated directory', async () => {
-    const workspaceRoot = join(temporaryRoot, 'exception-workspace');
-    const startDirectory = join(workspaceRoot, 'app');
-    await mkdir(startDirectory, { recursive: true });
-    await writeFile(
-      join(startDirectory, '.kerf-ui-profile.json'),
-      JSON.stringify({
-        schemaVersion: 1,
-        scope: 'directory',
-        exceptions: [
-          {
-            id: 'accepted-overflow',
-            rules: ['KUI-B010'],
-            target: 'app',
-            rationale:
-              'This fixture verifies exact runtime exception matching.',
-          },
-        ],
-      }),
-    );
-    const report = await evaluateUi({
-      url: `${origin}/bad`,
-      workspaceRoot,
-      startDirectory,
-      packageProfile,
-      browsers: ['chromium'],
-      contexts: oneContext,
-      outputDirectory: join(workspaceRoot, 'evidence'),
-      retention: 'never',
-    });
-    expect(report.diagnostics.some(({ code }) => code === 'KUI-B010')).toBe(
-      false,
-    );
-    expect(report.diagnostics.some(({ code }) => code === 'KUI-B011')).toBe(
-      true,
-    );
-  });
-
-  it('uses explicit catalog rootClass rather than publicClasses order for geometry', async () => {
-    const workspaceRoot = join(temporaryRoot, 'geometry-workspace');
-    await mkdir(workspaceRoot, { recursive: true });
-    const catalog = JSON.parse(
-      await readFile(
-        resolve('docs/examples/component-composition-extension.json'),
-        'utf8',
-      ),
-    );
-    catalog.entries[0].boundaries = {
-      rootClass: 'acme-inspector',
-      publicClasses: ['decoy-root', 'acme-inspector'],
-      publicTokens: [],
-    };
-    catalog.entries[0].layout.geometry.margin = 'none';
-    await writeFile(
-      join(workspaceRoot, 'catalog.json'),
-      JSON.stringify(catalog),
-    );
-    const profilePath = join(workspaceRoot, 'profile.json');
-    await writeFile(
-      profilePath,
-      JSON.stringify({
-        schemaVersion: 1,
-        scope: 'package',
-        catalogs: [
-          {
-            package: '@acme/ui',
-            composition: { path: 'catalog.json', schemaVersion: 1 },
-          },
-        ],
-      }),
-    );
-    const report = await evaluateUi({
-      url: `${origin}/geometry`,
-      workspaceRoot,
-      startDirectory: workspaceRoot,
-      packageProfile: profilePath,
-      browsers: ['chromium'],
-      contexts: oneContext,
-      outputDirectory: join(workspaceRoot, 'evidence'),
-      retention: 'never',
-    });
-    expect(report.diagnostics).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          code: 'KUI-B080',
-          selector: 'main.acme-inspector',
-          evidence: expect.objectContaining({
-            className: 'acme-inspector',
-          }),
-        }),
-      ]),
-    );
-  });
-
-  it('turns navigation timeouts into repair-oriented report diagnostics', async () => {
-    const report = await evaluateUi({
-      url: `${origin}/hang`,
-      workspaceRoot: resolve('.'),
-      startDirectory: resolve('.'),
-      packageProfile,
-      browsers: ['chromium'],
-      contexts: oneContext,
-      outputDirectory: join(temporaryRoot, 'timeout'),
-      timeoutMs: 100,
-      settleMs: 0,
-      retention: 'never',
-    });
-    expect(report.diagnostics).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 'KUI-B001', severity: 'error' }),
-      ]),
-    );
-  });
+      expect(report.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ code: 'KUI-B001', severity: 'error' }),
+        ]),
+      );
+    },
+    ONE_CONTEXT_TIMEOUT,
+  );
 
   it('turns browser launch failures into one stable diagnostic per context', async () => {
     const report = await evaluateUi({
