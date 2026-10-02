@@ -85,6 +85,8 @@ export interface CatalogCompositionEntry {
   wiring: {
     required: boolean;
     helpers: string[];
+    /** Defining source files for application-owned helpers, relative to the catalog package root. */
+    sources?: Array<{ export: string; source: string }>;
     obligations: string[];
     /** Wiring-owned `data-*` attributes a helper writes at runtime. Optional
      *  for extension catalogs; first-party entries always list it. */

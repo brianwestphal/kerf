@@ -42,6 +42,9 @@ without product data. Shipped schema/types/discovery APIs and gates diagnose
 stale catalogs, unknown component/token/rule references, conflicts, and broad
 exemptions with source file and JSON-path locations. Catalog-aware validation
 runs per layer, so a child override cannot erase a broken or stale parent.
+Application wiring entries credit helper calls in reachable startup modules;
+extension catalogs can resolve app-owned helpers through declared source files
+and relative re-export barrels.
 An AST conformance gate now enforces public helpers and package imports,
 `rootAttributes` metadata, nonempty specimens, private-structure boundaries,
 and component-only overlay routing across every first-party demo. Its explicit

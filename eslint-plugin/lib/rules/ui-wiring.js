@@ -103,6 +103,57 @@ function moduleUses(source, file, contract) {
   return uses;
 }
 
+// ESLint supplies an AST only for the file currently being linted. For other
+// files in an entry graph, recognize imported helper calls by their local
+// binding (including aliases and namespace imports) and resolved source.
+function moduleCalls(source, file, contract) {
+  const calls = new Set();
+  // Keep import declarations intact, but exclude comments and literals from
+  // the call search so a documented example cannot satisfy an obligation.
+  const callableText = source.replace(
+    /\/\*[\s\S]*?\*\/|\/\/[^\n]*|(['"`])(?:\\.|(?!\1)[^\\])*?\1/g,
+    (match) => match.replace(/[^\n]/g, ' '),
+  );
+  const declarations = /\bimport\s+([^;'"`]*?)\s+from\s*['"]([^'"]+)['"]/g;
+  for (const [, bindings, from] of source.matchAll(declarations)) {
+    const named = bindings.match(/\{([^}]*)\}/)?.[1];
+    if (named)
+      for (const part of named.split(',')) {
+        const match = part.trim().match(/^(\w+)(?:\s+as\s+(\w+))?$/);
+        if (!match) continue;
+        const [, imported, local = imported] = match;
+        if (new RegExp(`\\b${local}\\s*\\(`).test(callableText)) {
+          const recognized = helperCall(
+            { type: 'Identifier', name: local },
+            { helpers: new Map([[local, { imported, source: from }]]) },
+            contract,
+            file,
+          );
+          if (recognized) calls.add(recognized.imported);
+        }
+      }
+    const namespace = bindings.match(/\*\s+as\s+(\w+)/)?.[1];
+    if (namespace)
+      for (const [, helper] of callableText.matchAll(
+        new RegExp(`\\b${namespace}\\.(\\w+)\\s*\\(`, 'g'),
+      )) {
+        const recognized = helperCall(
+          {
+            type: 'MemberExpression',
+            computed: false,
+            object: { type: 'Identifier', name: namespace },
+            property: { type: 'Identifier', name: helper },
+          },
+          { namespaces: new Map([[namespace, from]]) },
+          contract,
+          file,
+        );
+        if (recognized) calls.add(recognized.imported);
+      }
+  }
+  return calls;
+}
+
 function applicationEntries(contract, filename, source) {
   const root = resolve(contract.cwd);
   const entries = [];
@@ -154,7 +205,7 @@ export default {
       },
       CallExpression(node) {
         if (!registry) return;
-        const imported = helperCall(node.callee, registry, contract);
+        const imported = helperCall(node.callee, registry, contract, filename);
         if (!imported) return;
         const list = calls.get(imported.imported) ?? [];
         list.push({ node, source: imported.source });
@@ -171,6 +222,12 @@ export default {
           modules.has(filename),
         );
         const ownEntry = entries.find(({ file }) => file === filename);
+        const reachableCalls = new Set(calls.keys());
+        if (ownEntry)
+          for (const [file, source] of ownEntry.modules)
+            if (file !== filename)
+              for (const helper of moduleCalls(source, file, contract))
+                reachableCalls.add(helper);
         const required = new Map(used);
         if (ownEntry)
           for (const [file, source] of ownEntry.modules)
@@ -197,7 +254,7 @@ export default {
             }
             const helperCalls = calls.get(helper) ?? [];
             if (
-              !helperCalls.length &&
+              !(ownEntry ? reachableCalls.has(helper) : helperCalls.length) &&
               !isExcepted(contract, MISSING_CODE, filename)
             )
               context.report({

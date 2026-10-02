@@ -40,6 +40,29 @@ const readPath = (target: Record<string, unknown>, path: string) =>
   path.split('.').reduce<unknown>(childAt, target);
 
 describe('component composition catalog contract', () => {
+  it('accepts declared helper sources and rejects unknown or duplicate exports', async () => {
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
+    );
+    const entry = composition.entries.find(
+      (item) => item.id === 'token-search-field',
+    )!;
+    entry.wiring.sources = [
+      { export: entry.wiring.helpers[0], source: 'src/interactions/search.ts' },
+    ];
+    expect(validateComposition(composition)).toEqual([]);
+    entry.wiring.sources.push({ ...entry.wiring.sources[0] });
+    expect(validateComposition(composition)).toContain(
+      `${entry.key} wiring source export ${entry.wiring.helpers[0]} is declared twice`,
+    );
+    entry.wiring.sources = [
+      { export: 'unknown', source: 'src/interactions/search.ts' },
+    ];
+    expect(validateComposition(composition)).toContain(
+      `${entry.key} wiring source export unknown must name a wiring helper`,
+    );
+  });
+
   it('projects every live v1 entry with package-qualified identity and complete boundaries', async () => {
     const [v1, composition] = await Promise.all([
       readJson<{ package: string; entries: Array<{ id: string }> }>(

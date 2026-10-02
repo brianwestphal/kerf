@@ -412,6 +412,10 @@ Every raw layer is validated against the catalogs effective at that precedence
 point, so do not assume a child override hides invalid parent policy. ESLint
 uses the packaged synchronous projection and reports contract failures as
 `KUI-L090`.
+For UI wiring checks, declare `wiring.entries` in the application profile;
+helper calls in modules reachable from an entry satisfy its application-scoped
+obligations. An extension catalog can identify app-owned helpers with
+`wiring.sources` entries that name the export and its defining source file.
 The schema, types, and
 [`workspace example`](../../ui/docs/examples/application-ui-profile.json) are
 shipped with `@kerfjs/ui`.

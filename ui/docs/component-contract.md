@@ -92,6 +92,12 @@ the `data-*` attributes it actually writes. First-party entries always carry
 the list, empty when their helpers write none; it is optional in extension
 catalogs.
 
+An extension catalog may add `wiring.sources` entries with `export` and
+`source` for each application-owned helper. The source path is relative to its
+package root; `ui-wiring` resolves helper imports through this file, including
+relative re-export barrels. Every named export must also appear in
+`wiring.helpers`.
+
 The generator starts with permissive defaults. An `any` mode records that the
 catalog has no defensible prohibition; it does not claim every composition is
 recommended. Objective rules live in

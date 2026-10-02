@@ -567,6 +567,19 @@ writeJson('component-composition.json', {
       ['@kerfjs/ui:toolbar-control-group'],
       { publicExports: [{ name: 'SourceOnlyGroup' }] },
     ),
+    wrapper('ticket-search', 'TicketSearch', undefined, {
+      publicExports: [{ name: 'TicketSearch' }],
+      wiring: {
+        required: true,
+        helpers: ['wireTicketSearch'],
+        sources: [
+          {
+            export: 'wireTicketSearch',
+            source: 'src/interactions/ticket-search.ts',
+          },
+        ],
+      },
+    }),
   ],
 });
 writeJson('vendor/acme/catalog.json', {
@@ -626,6 +639,7 @@ writeJson('.kerf-ui-profile.json', {
       composition: { path: './vendor/acme/catalog.json', schemaVersion: 1 },
     },
   ],
+  wiring: { entries: ['src/wiring-entry.tsx'] },
 });
 // Barrels that re-export cataloged wrappers (and one that is not cataloged),
 // as an app imports them: `import { X } from './components/index.js'`.
@@ -659,6 +673,38 @@ writeSource(
 );
 writeSource('src/cycle-a.ts', "export * from './cycle-b.js';\n");
 writeSource('src/cycle-b.ts', "export * from './cycle-a.js';\n");
+writeSource(
+  'src/interactions/ticket-search.ts',
+  'export function wireTicketSearch() {}\n',
+);
+writeSource(
+  'src/interactions/index.ts',
+  "export { wireTicketSearch } from './ticket-search.js';\n",
+);
+writeSource(
+  'src/interactions/alias.ts',
+  "export { wireTicketSearch as wire } from './ticket-search.js';\n",
+);
+writeSource(
+  'src/other-interactions.ts',
+  'export function wireTicketSearch() {}\n',
+);
+writeSource(
+  'src/wiring-view.tsx',
+  "import { TicketSearch } from './ticket-search.js'; export const View = () => <TicketSearch />;\n",
+);
+writeSource(
+  'src/wiring-start.ts',
+  "import { wireTicketSearch as wire } from './interactions/index.js'; export function start() { return wire(root); }\n",
+);
+writeSource(
+  'src/wiring-start-alias.ts',
+  "import { wire } from './interactions/alias.js'; export function start() { return wire(root); }\n",
+);
+writeSource(
+  'src/wiring-commented.ts',
+  "import { wireTicketSearch } from './interactions/ticket-search.js'; // wireTicketSearch(root)\nexport const example = 'wireTicketSearch(root)';\n",
+);
 const appSettings = uiSettings({
   profile: undefined,
   workspaceRoot: appRoot,
@@ -1101,6 +1147,26 @@ tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
 tester.run('ui-wiring', wiring, {
   valid: [
     {
+      code: "import './wiring-view.js'; import { start } from './wiring-start.js'; const dispose = start();",
+      filename: join(appRoot, 'src/wiring-entry.tsx'),
+      settings: appSettings,
+    },
+    {
+      code: "import './wiring-view.js'; import { start } from './wiring-start-alias.js'; const dispose = start();",
+      filename: join(appRoot, 'src/wiring-entry.tsx'),
+      settings: appSettings,
+    },
+    {
+      code: "import { TicketSearch } from './ticket-search.js'; import { wire } from './interactions/alias.js'; const dispose = wire(root); <TicketSearch />;",
+      filename: appFile,
+      settings: appSettings,
+    },
+    {
+      code: "import { TicketSearch } from './ticket-search.js'; import { wireTicketSearch as wire } from './interactions/index.js'; const dispose = wire(root); <TicketSearch />;",
+      filename: appFile,
+      settings: appSettings,
+    },
+    {
       code: "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);",
       filename: wiringEntry,
       settings: entrySettings,
@@ -1140,6 +1206,30 @@ tester.run('ui-wiring', wiring, {
     },
   ],
   invalid: [
+    {
+      code: "import { wireTicketSearch } from './interactions/ticket-search.js'; wireTicketSearch(root);",
+      filename: join(appRoot, 'src/wiring-start.ts'),
+      settings: appSettings,
+      errors: [{ messageId: 'cleanup' }],
+    },
+    {
+      code: "import './wiring-view.js'; import './wiring-commented.js';",
+      filename: join(appRoot, 'src/wiring-entry.tsx'),
+      settings: appSettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: "import './wiring-view.js'; import { wireTicketSearch } from './other-interactions.js'; const dispose = wireTicketSearch(root);",
+      filename: join(appRoot, 'src/wiring-entry.tsx'),
+      settings: appSettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: "import { TicketSearch } from './ticket-search.js'; import { wireTicketSearch } from './other-interactions.js'; const dispose = wireTicketSearch(root); <TicketSearch />;",
+      filename: appFile,
+      settings: appSettings,
+      errors: [{ messageId: 'missing' }],
+    },
     {
       code: "import('./leaf');",
       filename: wiringEntryTwo,

@@ -216,6 +216,19 @@
             "required": { "type": "boolean" },
             "scope": { "enum": ["application", "module"] },
             "helpers": { "$ref": "#/$defs/stringList" },
+            "sources": {
+              "description": "Application-owned helper exports and their defining source files, relative to the catalog package root.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["export", "source"],
+                "properties": {
+                  "export": { "type": "string", "minLength": 1 },
+                  "source": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": false
+              }
+            },
             "obligations": { "$ref": "#/$defs/stringList" },
             "stateAttributes": {
               "description": "Wiring-owned state attributes: data-* attributes a wiring helper writes at runtime, which the application must not render, remove, or treat as its own state. Optional for extension catalogs; first-party entries always list it, empty when their helpers write none.",

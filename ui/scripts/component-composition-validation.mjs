@@ -174,6 +174,28 @@ export function validateComposition(catalog, options = {}) {
       fail(`${at} wiring lists must contain unique non-empty strings`);
     if (entry?.wiring?.required && !entry.wiring.helpers.length)
       fail(`${at} required wiring must name a helper or import`);
+    if (entry?.wiring?.sources !== undefined) {
+      if (!Array.isArray(entry.wiring.sources))
+        fail(`${at} wiring.sources must be an array`);
+      const exports = new Set();
+      for (const helper of Array.isArray(entry.wiring.sources)
+        ? entry.wiring.sources
+        : []) {
+        if (!entry.wiring.helpers?.includes(helper?.export))
+          fail(
+            `${at} wiring source export ${helper?.export} must name a wiring helper`,
+          );
+        if (exports.has(helper?.export))
+          fail(
+            `${at} wiring source export ${helper?.export} is declared twice`,
+          );
+        exports.add(helper?.export);
+        if (typeof helper?.source !== 'string' || !helper.source)
+          fail(
+            `${at} wiring source ${helper?.export} needs a non-empty source`,
+          );
+      }
+    }
     const stateAttributes = entry?.wiring?.stateAttributes;
     if (stateAttributes !== undefined) {
       if (!Array.isArray(stateAttributes))

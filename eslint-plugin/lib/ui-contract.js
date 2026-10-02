@@ -208,6 +208,7 @@ export function loadUiContract(context) {
     // `<absolute source file>\0<Export>` to the entry key.
     const packageExports = new Map();
     const sourceExports = new Map();
+    const helperSourceFiles = new Map();
     // Source files of declared components: a wrapper's own source may render
     // the element it wraps (Kerf's PopupMenu renders `wa-dropdown`).
     const componentSources = new Set();
@@ -253,6 +254,11 @@ export function loadUiContract(context) {
             componentSources.add(resolve(root, entry.source));
           }
         }
+        for (const helper of entry.wiring?.sources ?? [])
+          helperSourceFiles.set(
+            `${resolve(root, helper.source)}\0${helper.export}`,
+            helper.export,
+          );
       }
     const imports = new Map();
     const exports = new Map();
@@ -289,6 +295,7 @@ export function loadUiContract(context) {
       componentSources,
       customElements,
       helperSources,
+      helperSourceFiles,
       profile,
       cwd,
       publicClasses: new Set(
@@ -386,9 +393,19 @@ function declaredComponentKey(contract, source, imported, filename) {
 // definition, a file that cannot be read — stays unresolved.
 const MAX_REEXPORT_VISITS = 64;
 function sourceComponentKey(contract, fromFile, specifier, imported, seen) {
+  return sourceExportKey(
+    contract.sourceExports,
+    fromFile,
+    specifier,
+    imported,
+    seen,
+  );
+}
+
+function sourceExportKey(exports, fromFile, specifier, imported, seen) {
   const candidates = relativeImportCandidates(fromFile, specifier);
   for (const candidate of candidates) {
-    const key = contract.sourceExports.get(`${candidate}\0${imported}`);
+    const key = exports.get(`${candidate}\0${imported}`);
     if (key) return key;
   }
   // `seen` holds each (file, name) already followed: it breaks re-export
@@ -402,8 +419,8 @@ function sourceComponentKey(contract, fromFile, specifier, imported, seen) {
     seen.add(visit);
     for (const { name, local, from } of reExports) {
       if (name !== undefined && name !== imported) continue;
-      const key = sourceComponentKey(
-        contract,
+      const key = sourceExportKey(
+        exports,
         candidate,
         from,
         name === undefined ? imported : local,
@@ -502,7 +519,7 @@ export function customElementKey(name, contract) {
   return contract.customElements?.get(name.name);
 }
 
-export function helperCall(callee, registry, contract) {
+export function helperCall(callee, registry, contract, filename) {
   let imported;
   let source;
   if (callee.type === 'Identifier') {
@@ -517,9 +534,19 @@ export function helperCall(callee, registry, contract) {
     source = registry.namespaces.get(callee.object.name);
   }
   if (!imported || !source) return undefined;
-  return contract.helperSources.get(imported)?.has(source)
-    ? { imported, source }
-    : undefined;
+  if (contract.helperSources.get(imported)?.has(source))
+    return { imported, source };
+  if (filename && source.startsWith('.') && contract.helperSourceFiles?.size) {
+    const resolved = sourceExportKey(
+      contract.helperSourceFiles,
+      filename,
+      source,
+      imported,
+      new Set(),
+    );
+    if (resolved) return { imported: resolved, source };
+  }
+  return undefined;
 }
 
 export function isExcepted(contract, code, filename) {
