@@ -40,6 +40,10 @@ const spaceNames: readonly UiSpaceName[] = [
 
 interface GridCommonProps {
   children?: KerfUiContent;
+  /** Make this a labeled multi-select grid for `ContentItem selectionMode="multiple"` tiles. */
+  selectionMode?: 'multiple';
+  /** Accessible name for the multi-select grid. */
+  ariaLabel?: string;
   /** A named UI spacing token or typed CSS length. Defaults to xs. */
   gap?: UiSpaceName | CssLength;
   /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -77,6 +81,8 @@ export type GridProps = GridCommonProps &
 /** Render equal tracks with a fixed count or a responsive minimum width. */
 export function Grid({
   children,
+  selectionMode,
+  ariaLabel,
   columns,
   minColumnWidth,
   autoFill = false,
@@ -87,6 +93,9 @@ export function Grid({
   rootAttributes = {},
   slot,
 }: GridProps) {
+  if (selectionMode === 'multiple' && !ariaLabel) {
+    throw new Error('Multi-select Grid requires an ariaLabel');
+  }
   if (minColumnWidth !== undefined && columns !== undefined) {
     throw new RangeError(
       'Grid columns and minColumnWidth are mutually exclusive',
@@ -126,6 +135,9 @@ export function Grid({
       {...safeRootAttributes}
       class={`kui-grid ${className}`.trim()}
       data-component="grid"
+      role={selectionMode === 'multiple' ? 'grid' : undefined}
+      aria-label={selectionMode === 'multiple' ? ariaLabel : undefined}
+      aria-multiselectable={selectionMode === 'multiple' ? 'true' : undefined}
       data-columns={columns === undefined ? undefined : String(columns)}
       data-min-column-width={minColumnWidth === undefined ? undefined : 'true'}
       data-auto-fill={autoFill ? 'true' : undefined}

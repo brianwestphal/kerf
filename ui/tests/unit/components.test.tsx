@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { AppTab } from '../../src/app-tab.js';
 import { Badge } from '../../src/badge.js';
 import { Chip } from '../../src/chip.js';
+import { ContentItem } from '../../src/content-item.js';
 import { flex, px, rem, uiColor } from '../../src/css-values.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
@@ -716,6 +717,34 @@ describe('production UI primitives', () => {
     expect(sparse).not.toContain('data-auto-fill="false"');
     expect(sparse).toContain('--_kui-grid-min-column-width:160px');
     expect(responsive).not.toContain('data-auto-fill');
+  });
+
+  it('makes a selectable Grid a named multi-select grid while ordinary Grid stays layout-only', () => {
+    const plain = asHtml(Grid({ columns: 2, ariaLabel: 'Ignored' }));
+    expect(plain).not.toContain('role="grid"');
+    expect(plain).not.toContain('aria-label=');
+
+    const selectable = asHtml(
+      Grid({
+        columns: 2,
+        selectionMode: 'multiple',
+        ariaLabel: 'Documents',
+        children: ContentItem({
+          interactive: true,
+          action: 'select',
+          selectionMode: 'multiple',
+          children: 'Brief',
+        }),
+      }),
+    );
+    expect(selectable).toContain('role="grid"');
+    expect(selectable).toContain('aria-label="Documents"');
+    expect(selectable).toContain('aria-multiselectable="true"');
+    expect(selectable).toContain('role="row"');
+    expect(selectable).toContain('role="gridcell"');
+    expect(() => Grid({ columns: 2, selectionMode: 'multiple' })).toThrow(
+      'Multi-select Grid requires an ariaLabel',
+    );
   });
 
   it('rejects invalid Grid column counts before rendering', () => {

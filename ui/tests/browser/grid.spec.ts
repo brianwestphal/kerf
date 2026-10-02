@@ -124,7 +124,9 @@ test('Grid autoFill keeps sparse tracks at wide and phone widths', async ({
   browserName,
 }, testInfo) => {
   await page.goto('/?component=grid');
-  const sparse = page.locator('[data-demo="grid"] [data-auto-fill="true"]');
+  const sparse = page.locator(
+    '[data-demo="grid"] [data-auto-fill="true"]:not([data-demo-grid])',
+  );
   await expect(sparse).toHaveAttribute('data-min-column-width', 'true');
   for (const width of [1100, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
@@ -159,4 +161,69 @@ test('Grid autoFill keeps sparse tracks at wide and phone widths', async ({
         path: testInfo.outputPath(`sparse-grid-${width}.png`),
       });
   }
+});
+
+test('selectable Grid tiles follow wrapped rows and keep nested actions independent', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=grid');
+  const grid = page.locator('[data-demo-grid="selectable-tiles"]');
+  const tiles = grid.locator('[data-component="content-item"]');
+  const first = tiles.nth(0);
+  const second = tiles.nth(1);
+  const fourth = tiles.nth(3);
+  await expect(grid).toHaveAttribute('role', 'grid');
+  await expect(grid).toHaveAttribute('aria-label', 'Documents');
+  await expect(grid).toHaveAttribute('aria-multiselectable', 'true');
+  await expect(first).toHaveAttribute('role', 'row');
+  await expect(first.locator('[role="gridcell"]')).toHaveCount(1);
+
+  await grid.evaluate((element: HTMLElement) => {
+    element.style.width = '360px';
+    element.style.maxWidth = 'none';
+  });
+  await expect
+    .poll(() =>
+      grid.evaluate(
+        (element) =>
+          window.getComputedStyle(element).gridTemplateColumns.split(' ')
+            .length,
+      ),
+    )
+    .toBe(2);
+  await first.focus();
+  await first.press('ArrowRight');
+  await expect(second).toBeFocused();
+  await second.press('ArrowDown');
+  await expect(fourth).toBeFocused();
+  await fourth.press('Space');
+  await expect(fourth).toHaveAttribute('aria-selected', 'true');
+  await fourth.locator('button').click();
+  await expect(fourth).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('.catalog-log')).toContainText('Quotation opened');
+  await grid.screenshot({
+    path: testInfo.outputPath('selectable-grid-wide.png'),
+  });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await grid.evaluate((element: HTMLElement) => {
+    element.style.width = '170px';
+  });
+  await expect
+    .poll(() =>
+      grid.evaluate(
+        (element) =>
+          window.getComputedStyle(element).gridTemplateColumns.split(' ')
+            .length,
+      ),
+    )
+    .toBe(1);
+  await first.focus();
+  await first.press('ArrowDown');
+  await expect(second).toBeFocused();
+  await second.press('End');
+  await expect(tiles.nth(4)).toBeFocused();
+  await grid.screenshot({
+    path: testInfo.outputPath('selectable-grid-phone.png'),
+  });
 });

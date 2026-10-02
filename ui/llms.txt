@@ -203,6 +203,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   The app owns the outer width and child semantics; use custom CSS grid for
   asymmetric/intrinsic tracks and `ResizableRegion` for adjustable boundaries.
   `Grid.gap` and `Grid.flex` use the same typed grammars as Row.
+  For selectable document tiles, use `selectionMode="multiple"` and a required
+  `ariaLabel`, with `ContentItem selectionMode="multiple"` children. Wire
+  `wireContentItems` for spatial arrow navigation and Enter/Space activation.
 - **Give a layout root `fill`, not a frame `Pane`.** A Row, List, or Grid that
   is the sole layout root of a definite-height parent takes its full height
   with `fill` and carries safe `data-*` markers through `rootAttributes`.

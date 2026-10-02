@@ -47,6 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/grid`](../public-api-signatures-v1.md#k
 - boolean, finite-keyword, or typed CssFlex flex
 - fill: the layout root fills a definite-height parent
 - rootAttributes: safe data-\* metadata on the root
+- selectionMode=multiple: labeled multi-select grid for ContentItem tiles
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -74,7 +75,8 @@ Margin: none · border: none · padding: none (layout role: structure). `self` m
 
 ## Accessibility
 
-- Grid adds layout only and no grid role; children retain responsibility for native or ARIA semantics.
+- Grid adds no role by default; selectionMode=multiple requires ariaLabel and supplies a multi-select grid for ContentItem row/gridcell tiles.
+- wireContentItems uses rendered tile positions for Left/Right/Up/Down and reaches the first or last tile with Home/End.
 - Responsive column-count changes preserve source and focus order.
 
 ## Styling boundary

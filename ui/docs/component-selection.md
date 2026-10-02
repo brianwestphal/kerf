@@ -509,6 +509,10 @@ For a multi-select card containing its own controls, place
 `selectionMode="multiple"` ContentItems inside a labeled
 `List selectionMode="multiple"`; the app supplies each card's `selected`
 state and handles range gestures.
+For wrapped document tiles, use `Grid minColumnWidth={px(160)}` with
+`selectionMode="multiple"` and `ariaLabel`. The same ContentItem row/gridcell
+contract applies, while `wireContentItems` follows the rendered tile layout
+with all four arrow keys.
 
 Incorrect: duplicating component-like rows and compensating for nested padding
 forks the package anatomy and spacing contract.

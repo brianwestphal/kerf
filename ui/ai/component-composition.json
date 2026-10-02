@@ -2099,7 +2099,8 @@
       },
       "accessibility": {
         "obligations": [
-          "Grid adds layout only and no grid role; children retain responsibility for native or ARIA semantics.",
+          "Grid adds no role by default; selectionMode=multiple requires ariaLabel and supplies a multi-select grid for ContentItem row/gridcell tiles.",
+          "wireContentItems uses rendered tile positions for Left/Right/Up/Down and reaches the first or last tile with Home/End.",
           "Responsive column-count changes preserve source and focus order."
         ]
       },

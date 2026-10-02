@@ -451,7 +451,12 @@ their shared track width rather than expanding across an otherwise empty row.
 It requires `minColumnWidth`; the default `auto-fit` keeps the existing form
 behavior. When Grid is a direct child of a flex-owned `ListInsetControl`, pass
 `flex` so the Grid takes the available row width instead of shrink-wrapping.
-Grid is layout-only and adds no ARIA grid role. The application owns child
+Grid is layout-only by default and adds no ARIA grid role. With
+`selectionMode="multiple"` and a required `ariaLabel`, it supplies a labeled
+multi-select grid for `ContentItem selectionMode="multiple"` tiles. Their
+row/gridcell structure can contain independent controls, while
+`wireContentItems` follows the rendered tile positions with arrow keys.
+The application owns child
 semantics.
 Use application-owned CSS grid for intrinsic, asymmetric, spanning, or masonry
 tracks, and use `ResizableRegion` when people must adjust a boundary.

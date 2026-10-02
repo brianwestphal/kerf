@@ -86,6 +86,7 @@ export const toolbarGroupBusy = signal(false);
 export const contentCardSelected = signal(false);
 export const contentCardChoice = signal('document-a');
 export const contentCardSelections = signal<string[]>([]);
+export const gridTileSelections = signal<string[]>([]);
 export const toolbarSort = signal<'recent' | 'priority' | 'title'>('recent');
 export const ticketLabels = signal<readonly string[]>(['bug', 'docs']);
 export const itemTypes = signal<readonly string[]>(['files']);

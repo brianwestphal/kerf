@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 318500,
+  "totalJavaScriptGzip": 319000,
   "measuredLargestJavaScriptGzip": 126042,
-  "measuredTotalJavaScriptGzip": 318460,
+  "measuredTotalJavaScriptGzip": 318963,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2355,6 +2355,22 @@
         "measuredTotalJavaScriptGzip": 318460,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 318500
+      }
+    },
+    {
+      "at": "2026-10-02T03:58:55.418Z",
+      "reason": "Selectable Grid tile demo and spatial keyboard navigation add reviewed UI behavior",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 318460,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 318500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 318963,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 319000
       }
     }
   ]

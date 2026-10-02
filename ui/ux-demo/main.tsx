@@ -111,6 +111,7 @@ import {
   displayDensity,
   floatingToolbarOpen,
   grammarSearchModel,
+  gridTileSelections,
   inspectorSection,
   itemTypes,
   menuActionCurrent,
@@ -961,6 +962,14 @@ const stopActions = delegateActions(app, 'click', {
       ? contentCardSelections.value.filter((selected) => selected !== id)
       : [...contentCardSelections.value, id];
     actionLog.value = `Selected ${contentCardSelections.value.length} demand lines`;
+  },
+  'select-grid-tile': (event, element) => {
+    if (!isContentItemActivation(event, element as HTMLElement)) return;
+    const id = element.getAttribute('data-item-id') ?? '';
+    gridTileSelections.value = gridTileSelections.value.includes(id)
+      ? gridTileSelections.value.filter((selected) => selected !== id)
+      : [...gridTileSelections.value, id];
+    actionLog.value = `Selected ${gridTileSelections.value.length} document tiles`;
   },
   'log-sidebar': () => {
     actionLog.value = 'Sidebar requested';

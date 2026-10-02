@@ -3410,6 +3410,10 @@ type GridRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
 }>;
 interface GridCommonProps {
     children?: KerfUiContent;
+    /** Make this a labeled multi-select grid for `ContentItem selectionMode="multiple"` tiles. */
+    selectionMode?: 'multiple';
+    /** Accessible name for the multi-select grid. */
+    ariaLabel?: string;
     /** A named UI spacing token or typed CSS length. Defaults to xs. */
     gap?: UiSpaceName | CssLength;
     /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -3439,7 +3443,7 @@ type GridProps = GridCommonProps & ({
     autoFill?: boolean;
 });
 /** Render equal tracks with a fixed count or a responsive minimum width. */
-declare function Grid({ children, columns, minColumnWidth, autoFill, gap, flex, fill, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
+declare function Grid({ children, selectionMode, ariaLabel, columns, minColumnWidth, autoFill, gap, flex, fill, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, UiSpaceName };
 ```

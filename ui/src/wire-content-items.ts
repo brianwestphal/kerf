@@ -2,6 +2,39 @@ const ITEM_SELECTOR =
   '[data-component="content-item"][data-interactive="true"]';
 const NESTED_CONTROL_SELECTOR =
   'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"]';
+const MULTI_GRID_SELECTOR = '[role="grid"][aria-multiselectable="true"]';
+
+function nextTile(
+  item: HTMLElement,
+  rows: HTMLElement[],
+  key: string,
+): HTMLElement | undefined {
+  const current = item.getBoundingClientRect();
+  const centerX = current.left + current.width / 2;
+  const candidates = rows
+    .filter((row) => row !== item)
+    .map((row) => {
+      const rect = row.getBoundingClientRect();
+      return { row, x: rect.left + rect.width / 2, y: rect.top };
+    });
+  const sameLine = (y: number) => Math.abs(y - current.top) < 1;
+  const directed = candidates.filter(({ x, y }) =>
+    key === 'ArrowLeft'
+      ? sameLine(y) && x < centerX
+      : key === 'ArrowRight'
+        ? sameLine(y) && x > centerX
+        : key === 'ArrowUp'
+          ? y < current.top - 1
+          : y > current.top + 1,
+  );
+  directed.sort((a, b) => {
+    if (key === 'ArrowLeft') return b.x - a.x;
+    if (key === 'ArrowRight') return a.x - b.x;
+    const vertical = Math.abs(a.y - current.top) - Math.abs(b.y - current.top);
+    return vertical || Math.abs(a.x - centerX) - Math.abs(b.x - centerX);
+  });
+  return directed[0]?.row;
+}
 
 function actionItem(root: HTMLElement, event: Event) {
   const target = event.target;
@@ -53,23 +86,35 @@ export function wireContentItems(root: HTMLElement): () => void {
     if (!item) return;
     if (
       item.dataset.selectionMode === 'multiple' &&
-      ['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)
+      [
+        'ArrowDown',
+        'ArrowUp',
+        'ArrowLeft',
+        'ArrowRight',
+        'Home',
+        'End',
+      ].includes(event.key)
     ) {
-      const grid = item.closest('[role="grid"][aria-multiselectable="true"]');
+      const grid = item.closest(MULTI_GRID_SELECTOR);
       if (!grid) return;
       const rows = Array.from(
         grid.querySelectorAll<HTMLElement>(
           `${ITEM_SELECTOR}[data-selection-mode="multiple"]:not([data-disabled="true"])`,
         ),
-      );
+      ).filter((row) => row.closest(MULTI_GRID_SELECTOR) === grid);
       const index = rows.indexOf(item);
       if (index < 0) return;
+      const isTileGrid = grid.getAttribute('data-component') === 'grid';
       const next =
         event.key === 'Home'
           ? rows[0]
           : event.key === 'End'
             ? rows[rows.length - 1]
-            : rows[index + (event.key === 'ArrowDown' ? 1 : -1)];
+            : isTileGrid
+              ? nextTile(item, rows, event.key)
+              : event.key === 'ArrowDown' || event.key === 'ArrowUp'
+                ? rows[index + (event.key === 'ArrowDown' ? 1 : -1)]
+                : undefined;
       if (next) {
         event.preventDefault();
         next.focus();

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Grid supports labeled multi-select ContentItem tiles.** Opt into
+  `selectionMode="multiple"` with `ariaLabel`; `wireContentItems` follows the
+  rendered columns with four arrow keys and keeps nested controls independent.
+
 - **Collapsible TokenSearchField can fill a stretched Toolbar center.** The
   `fill` prop expands the field and its search group to the available width
   while preserving the compact collapsed action.

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ContentItem } from '../../src/content-item.js';
+import { Grid } from '../../src/grid.js';
 import {
   isContentItemActivation,
   wireContentItems,
@@ -101,6 +102,66 @@ describe('interactive ContentItem', () => {
 });
 
 describe('wireContentItems', () => {
+  it('navigates the rendered tile geometry and skips disabled tiles', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      <Grid columns={3} selectionMode="multiple" ariaLabel="Documents">
+        {['one', 'two', 'three', 'four', 'five', 'six'].map((id) => (
+          <ContentItem
+            interactive
+            action="pick"
+            itemId={id}
+            selectionMode="multiple"
+            disabled={id === 'two'}
+          >
+            {id}
+          </ContentItem>
+        ))}
+      </Grid>,
+    );
+    document.body.append(root);
+    const items = Array.from(
+      root.querySelectorAll<HTMLElement>('[data-item-id]'),
+    );
+    items.forEach((item, index) => {
+      item.getBoundingClientRect = () =>
+        ({
+          left: (index % 3) * 100,
+          top: Math.floor(index / 3) * 100,
+          width: 80,
+          height: 80,
+        }) as DOMRect;
+    });
+    const [one, , three, four, five, six] = items as HTMLElement[];
+    const stop = wireContentItems(root);
+    const press = (item: HTMLElement, key: string) =>
+      item.dispatchEvent(
+        new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }),
+      );
+    one!.focus();
+    expect(press(one!, 'ArrowRight')).toBe(false);
+    expect(document.activeElement).toBe(three);
+    expect(press(three!, 'ArrowDown')).toBe(false);
+    expect(document.activeElement).toBe(six);
+    expect(press(six!, 'ArrowLeft')).toBe(false);
+    expect(document.activeElement).toBe(five);
+    expect(press(five!, 'ArrowUp')).toBe(false);
+    expect(document.activeElement).toBe(one);
+    expect(press(one!, 'ArrowDown')).toBe(false);
+    expect(document.activeElement).toBe(four);
+    expect(press(four!, 'ArrowRight')).toBe(false);
+    expect(document.activeElement).toBe(five);
+    expect(press(five!, 'ArrowLeft')).toBe(false);
+    expect(document.activeElement).toBe(four);
+    expect(press(four!, 'Home')).toBe(false);
+    expect(document.activeElement).toBe(one);
+    expect(press(one!, 'End')).toBe(false);
+    expect(document.activeElement).toBe(six);
+    expect(press(six!, 'ArrowDown')).toBe(true);
+    stop();
+    root.remove();
+  });
+
   it('distinguishes card clicks from nested control clicks for app delegates', () => {
     const root = document.createElement('div');
     root.innerHTML = String(
@@ -163,6 +224,8 @@ describe('wireContentItems', () => {
         new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }),
       );
     first.focus();
+    expect(arrow(first, 'ArrowRight')).toBe(true);
+    expect(document.activeElement).toBe(first);
     expect(arrow(first, 'ArrowUp')).toBe(true);
     expect(document.activeElement).toBe(first);
     expect(arrow(first, 'Home')).toBe(false);

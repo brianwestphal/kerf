@@ -2,8 +2,11 @@ import '@awesome.me/webawesome/dist/components/card/card.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { px } from '@kerfjs/ui/css-values';
 import { Grid } from '@kerfjs/ui/grid';
+
+import { gridTileSelections } from './state.js';
 
 export function GridDemo() {
   return (
@@ -59,6 +62,41 @@ export function GridDemo() {
       >
         <Grid minColumnWidth={px(160)} autoFill gap="m">
           <wa-card appearance="outlined">One document</wa-card>
+        </Grid>
+      </CatalogExample>
+      <CatalogExample
+        label="Selectable document tiles"
+        note="Arrow keys follow the wrapped tile layout; Home and End reach its edges. Enter or Space selects a tile, while its button acts independently."
+        viewport={{ width: 'wide' }}
+      >
+        <Grid
+          minColumnWidth={px(160)}
+          autoFill
+          gap="s"
+          selectionMode="multiple"
+          ariaLabel="Documents"
+          rootAttributes={{ 'data-demo-grid': 'selectable-tiles' }}
+        >
+          {['Brief', 'Budget', 'Contract', 'Invoice', 'Receipt'].map(
+            (name, index) => (
+              <ContentItem
+                interactive
+                action="select-grid-tile"
+                itemId={`tile-${index + 1}`}
+                selectionMode="multiple"
+                selected={gridTileSelections.value.includes(
+                  `tile-${index + 1}`,
+                )}
+                ariaLabel={name}
+                frame="framed"
+              >
+                <strong>{name}</strong>
+                <button type="button" data-action="log-card-primary">
+                  Add as quote
+                </button>
+              </ContentItem>
+            ),
+          )}
         </Grid>
       </CatalogExample>
     </CatalogExampleStack>

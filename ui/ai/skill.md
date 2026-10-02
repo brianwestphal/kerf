@@ -160,6 +160,10 @@ For equal-width responsive forms, set `Grid minColumnWidth={px(376)}` instead of
 `columns`. Grid fits tracks from its own container width and collapses to one
 when a second minimum-width track plus the gap no longer fits. Constrain the
 outer Grid width when the form should have a maximum column count.
+For selectable document tiles, set `Grid selectionMode="multiple"` and
+`ariaLabel`, render `ContentItem selectionMode="multiple"` children, and wire
+`wireContentItems` for arrows, Home/End, and card activation. The app owns the
+selection set and each tile's nested controls.
 
 For a complete shell, sidebar, workspace header, list-detail dialog, composer
 form, list-state lifecycle, or mixed-control toolbar, start from the runnable
