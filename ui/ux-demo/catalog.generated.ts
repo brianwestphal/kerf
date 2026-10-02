@@ -477,7 +477,8 @@ export const generatedKerfCatalog = [
     "description": "Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.",
     "uses": [
       "tabs",
-      "toolbar-control-group"
+      "toolbar-control-group",
+      "wa-button"
     ],
     "demoSource": "ui/ux-demo/demos/tab-bar.tsx",
     "componentSource": "ui/src/tab-bar.tsx",

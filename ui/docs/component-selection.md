@@ -268,6 +268,11 @@ instead of the default ellipsis. A `TabBar` owns its
 scrolling strip; its public `--kui-tab-bar-strip-*` tokens configure strip
 height, spacing, border, radius, background, and scroll inset without styling
 its internal classes. `--kui-tab-bar-trailing-flex` controls the trailing zone.
+For a distinct application action, use `end` to pin it at the far edge; use
+`trailingPlacement="adjacent"` to keep a tab-local `trailing` action beside the
+strip. Each zone accepts one `ToolbarControlGroup` or one standalone
+`wa-button` for a primary action with its own chrome. Avoid wrappers and
+application flex overrides.
 Set `pinned` on the first `AppTab` when that tab must remain visible as peers
 scroll. It stays inside the tablist and keyboard order. Set the public
 `--kui-app-tab-pinned-background` token if the surrounding surface differs from

@@ -382,7 +382,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   callbacks. For a tab-local action plus a separate far-edge action, set
   `TabBar trailingPlacement="adjacent"`, put the local action in `trailing`, and
   the workspace action in `end`; the component keeps both visible while its tab
-  list shrinks and scrolls, without application descendant CSS. Managed
+  list shrinks and scrolls, without application descendant CSS. Each action
+  zone accepts one ToolbarControlGroup or a standalone `wa-button` for its own
+  Web Awesome chrome. Managed
   TokenSearchField clear also preserves open state and replacement
   editor focus before the next input task, so shortcut-letter typing stays in search.
   Select All deletion does the same; deletion

@@ -133,6 +133,29 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
+        label="Project strip · primary action"
+        note="A standalone Web Awesome action keeps its own brand chrome at the far edge while tabs shrink and scroll."
+        align="none"
+      >
+        <TabBar
+          id="raw-action-tab-bar"
+          label="Project tabs with primary action"
+          trailingPlacement="adjacent"
+          trailing={
+            <wa-button appearance="plain" data-action="log-more">
+              Add tab
+            </wa-button>
+          }
+          end={
+            <wa-button variant="brand" data-action="log-add">
+              New ticket…
+            </wa-button>
+          }
+        >
+          {overflowTabs}
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample
         label="Compact project tabs"
         align="none"
         viewport={{

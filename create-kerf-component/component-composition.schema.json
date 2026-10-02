@@ -159,6 +159,16 @@
         },
         "sourceLinks": { "$ref": "#/$defs/stringList" },
         "source": { "type": "string", "minLength": 1 },
+        "styleSources": {
+          "description": "Stylesheets owned by this component, relative to the catalog package root. Required for an entry to own its CSS in opt-in component ownership mode when no selection catalog supplies it.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*\\.css$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
         "rendersAs": {
           "description": "For a wrapper component: the cataloged roots it renders (package-qualified keys), any one of them or nothing. Composition checks treat an element of this entry as each declared root: a zone accepts it only if it accepts every root, and each root's parent contract applies to where it is placed.",
           "type": "array",

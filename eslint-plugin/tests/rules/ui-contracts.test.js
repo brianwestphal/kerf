@@ -449,6 +449,15 @@ tester.run('ui-composition', composition, {
       settings,
     },
     {
+      code: "import { TabBar, AppTab } from '@kerfjs/ui'; <TabBar trailing={<wa-button>Add tab</wa-button>} end={<wa-button variant='brand'>New ticket</wa-button>}><AppTab /></TabBar>;",
+      settings: shippedUiSettings,
+    },
+    // Zone validation deliberately stops at a local binding.
+    {
+      code: "import { TabBar, AppTab } from '@kerfjs/ui'; const actions = <div><wa-button>New ticket</wa-button></div>; <TabBar trailing={actions}><AppTab /></TabBar>;",
+      settings: shippedUiSettings,
+    },
+    {
       code: "import { SplitView } from '@kerfjs/ui'; const list = getList(); const detail = getDetail(); <SplitView list={list} detail={detail} />;",
       settings,
     },
@@ -492,6 +501,11 @@ tester.run('ui-composition', composition, {
     {
       code: "import { TabBar, ToolbarText } from '@kerfjs/ui'; <TabBar><ToolbarText /></TabBar>;",
       settings,
+      errors: [{ messageId: 'zone' }],
+    },
+    {
+      code: "import { TabBar, AppTab } from '@kerfjs/ui'; <TabBar end={<div><wa-button>New ticket</wa-button></div>}><AppTab /></TabBar>;",
+      settings: shippedUiSettings,
       errors: [{ messageId: 'zone' }],
     },
     {

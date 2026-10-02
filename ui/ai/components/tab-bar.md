@@ -45,6 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-bar`](../public-api-signatures-v1.m
 - intrinsic or fill allocation
 - separate or adjacent trailing action
 - far-edge end action
+- standalone Web Awesome action in trailing or end
 - overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)
 
 ## Composition
@@ -52,14 +53,14 @@ Exact prop names and types: [`@kerfjs/ui/tab-bar`](../public-api-signatures-v1.m
 - Parents: any.
 - Contexts: `tabpanel-navigation`.
 - Children: only `app-tab` (required: `app-tab`).
-- Built from: [AppTab](./tabs.md), [ToolbarControlGroup](./toolbar-control-group.md).
+- Built from: [AppTab](./tabs.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
 
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
 - `tabs` — JSX prop `children`; accepts [AppTab](./tabs.md); at least 1.
 - `leading` — JSX prop `leading`; accepts [ToolbarControlGroup](./toolbar-control-group.md); 0–1.
-- `trailing` — JSX prop `trailing`; accepts [ToolbarControlGroup](./toolbar-control-group.md); 0–1.
-- `end` — JSX prop `end`; accepts [ToolbarControlGroup](./toolbar-control-group.md); 0–1.
+- `trailing` — JSX prop `trailing`; accepts [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md); 0–1.
+- `end` — JSX prop `end`; accepts [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md); 0–1.
 
 ## State and wiring
 
@@ -107,6 +108,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [AppTab](./tabs.md), [ToolbarControlGroup](./toolbar-control-group.md), [SegmentedControl](./segmented-control.md), [Select](./select.md), [Tab Group](./wa-tab-group.md).
+- Components: [AppTab](./tabs.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md), [SegmentedControl](./segmented-control.md), [Select](./select.md), [Tab Group](./wa-tab-group.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/accessibility.md#tabs`](../../docs/accessibility.md#tabs).
 - UX catalog route: `?component=tab-bar`.

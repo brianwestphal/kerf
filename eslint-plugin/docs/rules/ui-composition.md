@@ -5,6 +5,12 @@ Enforces composition facts published by the versioned UI catalog. `KUI-L201` rep
 The parent check is intentionally conservative about the child: it runs only for a child that resolves to a cataloged entry (or a declared wrapper's roots) whose parents are `listed`. Its direct JSX parent may be any element the rule can see: a cataloged component, a declared wrapper (which counts as each of its roots), an intrinsic element such as `<div>`, or an unresolved component, and any parent that is not a listed parent reports `KUI-L201`. Bound zone checks understand aliases, namespace imports, fragments, arrays, and conditional/logical branches, but expressions whose content cannot be resolved statically remain runtime and accessibility work. Accepted concepts that do not identify a catalog entry remain machine-readable guidance while the rule enforces their statically provable cardinality only. No autofix is offered because wrapping or moving UI changes structure and behavior.
 An additional JSX export from an entry can declare its own `jsxExports.<name>.parents` contract. It uses that placement instead of the entry's root placement and is opaque to zone matching, so an action link does not impersonate its enclosing control group.
 
+`KUI-L202` inspects JSX written directly in a bound zone prop, including its
+fragments, arrays, and conditional branches. It does not follow a local binding
+such as `const actions = <div />; <TabBar trailing={actions} />`. Review those
+bindings against the zone's catalog contract; an unknown expression produces
+no zone-child diagnostic.
+
 ## Application and third-party wrappers
 
 Beyond `@kerfjs/ui`'s own catalog, the rule loads every composition catalog the

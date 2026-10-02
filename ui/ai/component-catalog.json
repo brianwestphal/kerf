@@ -3599,7 +3599,8 @@
       "description": "Controlled tab strips with typed presentation and allocation, a scroll-owning tab region, an optional adjacent trailing action, and a separately pinned far-edge end action.",
       "uses": [
         "tabs",
-        "toolbar-control-group"
+        "toolbar-control-group",
+        "wa-button"
       ],
       "purpose": "Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.",
       "publicExports": [
@@ -3644,6 +3645,7 @@
         "intrinsic or fill allocation",
         "separate or adjacent trailing action",
         "far-edge end action",
+        "standalone Web Awesome action in trailing or end",
         "overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)"
       ],
       "accessibility": [

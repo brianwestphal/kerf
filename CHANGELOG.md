@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **TabBar accepts standalone Web Awesome actions in `trailing` and `end`.**
+  A single `wa-button` can sit beside the scrolling tabs or at the far edge
+  without ToolbarControlGroup chrome; the composition rule recognizes the
+  cataloged custom element in these zones.
+
 - **FieldLabel matches form-control labels over field previews.** The
   `@kerfjs/ui/text` export gives a read-only field the same label typography
   and inset as a themed Web Awesome input, with an id for accessible grouping.

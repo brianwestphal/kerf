@@ -3024,14 +3024,14 @@
         {
           "id": "trailing",
           "jsx": { "prop": "trailing" },
-          "accepts": ["toolbar-control-group"],
+          "accepts": ["toolbar-control-group", "wa-button"],
           "cardinality": { "min": 0, "max": 1 },
           "exclusiveWith": []
         },
         {
           "id": "end",
           "jsx": { "prop": "end" },
-          "accepts": ["toolbar-control-group"],
+          "accepts": ["toolbar-control-group", "wa-button"],
           "cardinality": { "min": 0, "max": 1 },
           "exclusiveWith": []
         }

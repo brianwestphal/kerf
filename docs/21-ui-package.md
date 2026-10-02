@@ -286,7 +286,9 @@ slot without mixing authoring rules into the per-entry component catalog.
   shortcut metadata. `rootAttributes` accepts runtime-filtered application
   `data-*` metadata while component- and wiring-owned case variants stay
   protected. `closeIcon` replaces dormant decoration inside the named close
-  button. `TabBar` provides the containing list and scroll owner;
+  button. `TabBar` provides the containing list and scroll owner; its
+  `trailing` and `end` zones each accept one `ToolbarControlGroup` or a
+  standalone `wa-button`, so an app action keeps its own chrome as tabs scroll.
   `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,
   proximity-based horizontal edge autoscroll, `Alt+Shift+Arrow` reorder, focus
   restoration after reorder or automatic activation replaces the strip, and a

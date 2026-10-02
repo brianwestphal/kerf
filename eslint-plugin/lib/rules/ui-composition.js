@@ -1,4 +1,5 @@
 import {
+  customElementKey,
   importRegistry,
   isExcepted,
   jsxExportName,
@@ -35,7 +36,9 @@ function jsxLabel(name) {
 function zoneShape(node, registry, contract) {
   if (!node || node.type === 'JSXEmptyExpression') return emptyShape();
   if (node.type === 'JSXElement') {
-    const key = jsxKey(node.openingElement.name, registry, contract);
+    const key =
+      jsxKey(node.openingElement.name, registry, contract) ??
+      customElementKey(node.openingElement.name, contract);
     const entry = contract.entries.get(key);
     const exportName = jsxExportName(node.openingElement.name, registry);
     // A second JSX export from one package entry may have its own element
