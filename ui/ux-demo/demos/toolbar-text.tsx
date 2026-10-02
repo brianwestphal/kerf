@@ -39,7 +39,7 @@ export function ToolbarTextDemo() {
       <CatalogExample
         label="Ellipsis (default)"
         note="One line, ellipsized when it does not fit."
-        align="none"
+        align="inline-control"
         viewport={{ layout: 'flex', width: 'text', frame: 'dashed' }}
         rootAttributes={{ 'data-demo-toolbar-text-overflow': 'ellipsis' }}
       >
@@ -52,7 +52,7 @@ export function ToolbarTextDemo() {
             <code>wrap</code> flows onto multiple lines instead.
           </>
         }
-        align="none"
+        align="inline-control"
         viewport={{ layout: 'flex', width: 'text', frame: 'dashed' }}
         rootAttributes={{ 'data-demo-toolbar-text-overflow': 'wrap' }}
       >
@@ -65,7 +65,7 @@ export function ToolbarTextDemo() {
             <code>maxLines</code> caps the wrap and ellipsizes past it.
           </>
         }
-        align="none"
+        align="inline-control"
         viewport={{ layout: 'flex', width: 'text', frame: 'dashed' }}
         rootAttributes={{ 'data-demo-toolbar-text-overflow': 'capped' }}
       >
