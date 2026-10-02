@@ -125,7 +125,11 @@ which element a selector styles.
   arguments) names a public class of a cataloged component (`.kui-toolbar`,
   `.kui-list-item__label`, `.acme-meter`), its `[data-component="…"]` root, or
   a Web Awesome tag the package themes (`wa-button`, `wa-select`), and the rule
-  sets at least one ordinary property. A `::part()` subject is left to
+  sets at least one ordinary property. It also catches a raw descendant of
+  cataloged component anatomy, such as `.kui-app-tab__select > svg`, even when
+  the component class is not the final compound. A component root used only as
+  context (`.kui-toolbar > .my-widget`) and app-named descendants remain
+  available for app-owned content. A `::part()` subject is left to
   `KUI-L011`; a rule that only sets custom properties is configuration, judged
   by the token rules. Forcing a component's dimensions is one such restyle
   and reports here once: `.kui-pane { width: 300px }`.

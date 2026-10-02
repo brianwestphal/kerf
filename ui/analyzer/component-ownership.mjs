@@ -87,10 +87,11 @@ export function componentOwnershipFacts(entries) {
 }
 
 /**
- * The cataloged components a selector list makes its subject: the rightmost
- * compound of each complex selector, with `:has()` / `:not()` arguments
- * removed because keying on or excluding a component does not style it. A
- * subject that is a `::part()` is left to the shadow-part rule (`KUI-L011`).
+ * The cataloged components a selector list restyles: the rightmost compound
+ * of each complex selector, or an unclassed descendant reached through a
+ * cataloged anatomy class. `:has()` / `:not()` arguments are removed because
+ * keying on or excluding a component does not style it. A subject that is a
+ * `::part()` is left to the shadow-part rule (`KUI-L011`).
  * Returns `{ entry, via, name }` records; `isForeign(entry)` decides which
  * entries the stylesheet does not own.
  */
@@ -108,6 +109,7 @@ export function restyledComponents(selectorList, facts, isForeign) {
     const subject = parts.at(-1)?.compound;
     if (!subject || /::part\(/i.test(subject)) continue;
     const bare = withoutRelationalArguments(subject);
+    const subjectClasses = classNames(bare);
     for (const className of classNames(bare))
       add(facts.classOwners.get(className), 'class', `.${className}`);
     for (const value of dataComponents(bare))
@@ -118,9 +120,26 @@ export function restyledComponents(selectorList, facts, isForeign) {
       );
     // An application class on the subject scopes a Web Awesome tag to the
     // application's own element; a component package never places one there.
-    if (classNames(bare).some((name) => !facts.classOwners.has(name))) continue;
+    if (subjectClasses.some((name) => !facts.classOwners.has(name))) continue;
     for (const type of subjectTypes(subject) ?? [])
       add(facts.tagOwners.get(type), 'tag', type);
+    // A raw descendant of a component's cataloged anatomy is still inside
+    // that component. Do not infer ownership through its root, where an app
+    // may place its own children, or through an app-named intermediate node.
+    if (subjectClasses.length || parts.length < 2) continue;
+    for (let index = parts.length - 2; index >= 0; index -= 1) {
+      const classes = classNames(
+        withoutRelationalArguments(parts[index].compound),
+      );
+      if (classes.some((name) => !facts.classOwners.has(name))) break;
+      const anatomy = classes.find(
+        (name) => name.includes('__') && facts.classOwners.has(name),
+      );
+      if (anatomy) {
+        add(facts.classOwners.get(anatomy), 'descendant', `.${anatomy}`);
+        break;
+      }
+    }
   }
   return found;
 }

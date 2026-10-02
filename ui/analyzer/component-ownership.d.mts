@@ -22,7 +22,7 @@ export interface ComponentOwnershipFacts {
 
 export interface RestyledComponent {
   entry: OwnershipCatalogEntry;
-  via: 'class' | 'data-component' | 'tag';
+  via: 'class' | 'data-component' | 'tag' | 'descendant';
   name: string;
 }
 

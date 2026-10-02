@@ -82,7 +82,8 @@ test(
       );
       await writeFile(
         resolve(root, 'src/view.css'),
-        '.view { color: var(--kui-not-public); }\n',
+        '.view { color: var(--kui-not-public); }\n' +
+          '.ticket-inspector__tabs .kui-app-tab__select > svg { width: 0.9rem; }\n',
       );
       await writeFile(
         resolve(root, 'src/model.ts'),
@@ -182,7 +183,13 @@ test(
       expect(
         broken.report.diagnostics.map((item: { id: string }) => item.id),
       ).toEqual(
-        expect.arrayContaining(['TS2304', 'KUI-L002', 'KUI-L090', 'KUI-D020']),
+        expect.arrayContaining([
+          'TS2304',
+          'KUI-L002',
+          'KUI-L019',
+          'KUI-L090',
+          'KUI-D020',
+        ]),
       );
       for (const id of ['KUI-L002', 'KUI-L090', 'KUI-D020'])
         expect(

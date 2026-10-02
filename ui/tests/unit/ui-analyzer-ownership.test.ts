@@ -66,6 +66,24 @@ describe('downstream component ownership rules', () => {
     expect(restyled('.app-panel')).toEqual([]);
   });
 
+  it('catches raw descendants of cataloged anatomy without treating app content as component-owned', () => {
+    expect(
+      restyled('.ticket-inspector__tabs .kui-app-tab__select > svg'),
+    ).toEqual(['@kerfjs/ui:tabs descendant .kui-app-tab__select']);
+    expect(restyled('.kui-app-tab__select svg path')).toEqual([
+      '@kerfjs/ui:tabs descendant .kui-app-tab__select',
+    ]);
+    expect(restyled('.kui-app-tab__select > .app-icon')).toEqual([]);
+    expect(restyled('.kui-app-tab__select .app-icon > svg')).toEqual([]);
+    expect(restyled('.kui-app-tab > svg')).toEqual([]);
+    expect(restyled('.kui-app-tab__select:has(> svg)')).toEqual([
+      '@kerfjs/ui:tabs class .kui-app-tab__select',
+    ]);
+    expect(
+      restyledComponents('.kui-app-tab__select > svg', facts, () => false),
+    ).toEqual([]);
+  });
+
   it('never reports a component the stylesheet itself owns', () => {
     expect(restyledComponents('.kui-toolbar', facts, () => false)).toHaveLength(
       0,
@@ -170,6 +188,30 @@ export const App = () => <Toolbar className="my-toolbar" />;
       line: 6,
     });
     expect(JSON.stringify(report)).not.toContain(tmpdir());
+  });
+
+  it('reports a downstream override of raw AppTab anatomy in CSS', async () => {
+    const root = await project({
+      'src/ticket-inspector.css': [
+        '.ticket-inspector__tabs .kui-app-tab__select > svg { width: 0.9rem; height: 0.9rem; }',
+        '.ticket-inspector__tabs .kui-app-tab__select > .app-icon { width: 0.9rem; }',
+        '',
+      ].join('\n'),
+    });
+    const report = await analyzeUiProject({ root });
+    const findings = report.diagnostics.filter(
+      ({ ruleId }) => ruleId === 'KUI-L019',
+    );
+    expect(findings).toHaveLength(1);
+    expect(findings[0]).toMatchObject({
+      location: { file: 'src/ticket-inspector.css', line: 1 },
+      evidence: {
+        component: '@kerfjs/ui:tabs',
+        via: 'descendant',
+        target: '.kui-app-tab__select',
+        properties: ['width', 'height'],
+      },
+    });
   });
 
   it('accepts own elements in a component context, theming, and token configuration', async () => {

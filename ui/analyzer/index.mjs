@@ -435,7 +435,9 @@ function inspectComponentOwnership(
       diagnostic(
         'KUI-L019',
         location(file, rule),
-        `\`${name}\` makes ${componentLabel(entry)} the subject of an application rule (${properties.join(', ')}); components own their styles. Configure it through ${configurationFor(entry)}. To place your own content in its context, style your own element (\`${name} > .your-element\`). ${reportGap(entry)}`,
+        via === 'descendant'
+          ? `\`${name}\` reaches an unclassed descendant inside ${componentLabel(entry)} (${properties.join(', ')}); components own their styles. Configure it through ${configurationFor(entry)}. To place your own content in its context, style your own element. ${reportGap(entry)}`
+          : `\`${name}\` makes ${componentLabel(entry)} the subject of an application rule (${properties.join(', ')}); components own their styles. Configure it through ${configurationFor(entry)}. To place your own content in its context, style your own element (\`${name} > .your-element\`). ${reportGap(entry)}`,
         {
           selector: rule.selector,
           component: entry.key,
