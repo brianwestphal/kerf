@@ -1,3 +1,4 @@
+import { Badge } from '@kerfjs/ui/badge';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
@@ -347,6 +348,25 @@ export function SelectDemo() {
             },
             { value: 'explicit', label: 'Explicit navigation workspace' },
           ]}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Inline status badge"
+        note="The selected badge supplies the whole closed trigger box; focus and the listbox remain Select-owned."
+        align="inline-control"
+      >
+        <Select<string>
+          name="inline-status"
+          value={selectedChoice.value}
+          ariaLabel="Status"
+          presentation="inline"
+          caret={false}
+          choices={toolbarChoices}
+          renderSelected={(choice) => (
+            <Badge tone="success" size="compact">
+              {choice.label}
+            </Badge>
+          )}
         />
       </CatalogExample>
       <CatalogExample

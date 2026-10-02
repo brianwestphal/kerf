@@ -101,6 +101,13 @@ Navigation selects can use intrinsic `presentation="navigation"` plus
 `labelMaxWidth` for component-owned ellipsis. These props own the control's
 appearance; its parent continues to own outer placement.
 
+Use `presentation="inline"` with a single-value `renderSelected` when the
+selected content, such as a `Badge`, already provides the trigger chrome. The
+closed combobox has no minimum height, inline padding, or border width, so the
+rendered content defines its box. The Select still owns the focus ring,
+accessible combobox name, and listbox interaction; keep `label` or `ariaLabel`
+even when the selected content shows its own short text.
+
 Use `hint` for persistent supporting text below the control; use
 `placeholderText` only for the empty value shown inside the closed control.
 Kerf passes hint text through Web Awesome's form-control contract, which renders

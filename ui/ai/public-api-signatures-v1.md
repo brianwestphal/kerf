@@ -2701,7 +2701,7 @@ type SelectAccessibleName = {
     label?: never;
     ariaLabel: string;
 };
-type SelectPresentation = 'form' | 'toolbar-borderless' | 'navigation';
+type SelectPresentation = 'form' | 'toolbar-borderless' | 'navigation' | 'inline';
 type SelectSize = 'default' | 'compact';
 type SelectSelectedPresentation = 'label' | 'icon-only';
 type SelectFocusRingOwner = 'select' | 'group';
@@ -2718,7 +2718,7 @@ interface SelectBaseProps<Value extends string = string> {
     fitMenu?: boolean;
     /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
     placeholder?: boolean;
-    /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
+    /** Form (default), borderless toolbar, intrinsic navigation, or content-sized inline chrome. */
     presentation?: SelectPresentation;
     size?: SelectSize;
     /** Closed trigger width; omit to keep the presentation's default. */

@@ -40,6 +40,28 @@
   width: max-content;
   max-width: 100%;
 }
+.kui-select[data-presentation="inline"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select[data-presentation="inline"]::part(combobox) {
+  width: max-content;
+  min-height: 0;
+  padding: 0;
+  border-width: 0;
+  background: transparent;
+}
+.kui-select--custom-selected[data-presentation="inline"]::part(start) {
+  flex: 0 0 auto;
+}
+.kui-select--custom-selected[data-presentation="inline"]
+  .kui-select__custom-selected {
+  margin-inline-end: 0 !important;
+}
+.kui-select--custom-selected[data-presentation="inline"]
+  .kui-select__custom-selected-content {
+  display: flex;
+}
 .kui-select[data-focus-ring-owner="group"]:focus-within::part(combobox) {
   outline: none;
   box-shadow: none;
@@ -331,6 +353,17 @@
 .kui-select--placeholder[data-presentation="navigation"] {
   width: max-content;
   max-width: 100%;
+}
+.kui-select--placeholder[data-presentation="inline"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select--placeholder[data-presentation="inline"]
+  .kui-select__placeholder-box {
+  min-height: 0;
+  padding: 0;
+  border-width: 0;
+  background: transparent;
 }
 .kui-select__placeholder-hint {
   /* The live wa-select hint part: small body text at Web Awesome's form-control

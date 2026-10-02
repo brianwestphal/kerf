@@ -2175,6 +2175,25 @@ describe('production UI primitives', () => {
     ).toContain('data-trigger-width="fill"');
   });
 
+  it('publishes an inline Select trigger around custom selected content', () => {
+    const html = asHtml(
+      Select({
+        name: 'status',
+        value: 'open',
+        ariaLabel: 'Status',
+        presentation: 'inline',
+        caret: false,
+        choices: [{ value: 'open', label: 'Open' }],
+        renderSelected: (choice) => <strong>{choice.label}</strong>,
+      }),
+    );
+    expect(html).toContain('data-presentation="inline"');
+    expect(html).toContain('data-caret="false"');
+    expect(html).toContain('kui-select--custom-selected');
+    expect(html).toContain('<strong>Open</strong>');
+    expect(html).toContain('<wa-option');
+  });
+
   it('renders disabled Select choices and opt-in multiple actions', () => {
     const multiple = asHtml(
       Select({
