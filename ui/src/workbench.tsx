@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { ListConfig } from './list.js';
+import type { NavStackProps } from './nav-stack.js';
 import type { PaneConfig } from './pane.js';
 import {
   clampRegionSize,
@@ -65,37 +66,8 @@ export interface WorkbenchPanelResizable {
   max?: number;
 }
 
-/** A collapsible Workbench panel — a side rail or the bottom drawer. */
-export interface WorkbenchPanel {
-  content: KerfUiContent;
-  /**
-   * The panel's top toolbar, composed by the Workbench: its marked groups
-   * and standard `toggle` move to the work area's toolbar while the panel is
-   * collapsed. With it, `content` renders in a `Pane` below the toolbar.
-   */
-  toolbar?: WorkbenchPanelToolbar;
-  /** Fixed content below a toolbar panel's top toolbar, above its scroll region. */
-  header?: KerfUiContent;
-  /** List layout for `header`; omitted fields keep List defaults. */
-  headerList?: ListConfig;
-  /** Placement of the top toolbar and header together; default `fixed`. */
-  headerPlacement?: WorkbenchChromePlacement;
-  /** Fixed content above a toolbar panel's bottom toolbar. */
-  footer?: KerfUiContent;
-  /** List layout for `footer`; omitted fields keep List defaults. */
-  footerList?: ListConfig;
-  /** Fixed toolbar below `footer`, using footer semantics. */
-  bottomToolbar?: WorkbenchPanelBottomToolbar;
-  /** Placement of the footer and bottom toolbar together; default `fixed`. */
-  footerPlacement?: WorkbenchChromePlacement;
-  /**
-   * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
-   * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example
-   * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
-   * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
-   * without a `toolbar`, where `content` renders as given.
-   */
-  pane?: PaneConfig;
+/** Region sizing, collapse, and presentation shared by either panel body. */
+interface WorkbenchPanelBase {
   /** Whether the panel is currently collapsed (the app owns this). */
   collapsed?: boolean;
   /**
@@ -142,6 +114,50 @@ export interface WorkbenchPanel {
   restoreControl?: SafeHtml;
   restorePosition?: ResizableRegionRestorePosition;
 }
+
+/** The original static panel body: one toolbar, optional fixed chrome, and one Pane. */
+export interface WorkbenchStaticPanel extends WorkbenchPanelBase {
+  content: KerfUiContent;
+  /** The composed toolbar; marked groups and its toggle relocate on collapse. */
+  toolbar?: WorkbenchPanelToolbar;
+  header?: KerfUiContent;
+  headerList?: ListConfig;
+  headerPlacement?: WorkbenchChromePlacement;
+  footer?: KerfUiContent;
+  footerList?: ListConfig;
+  bottomToolbar?: WorkbenchPanelBottomToolbar;
+  footerPlacement?: WorkbenchChromePlacement;
+  /** Configuration for the static toolbar panel's Pane. */
+  pane?: PaneConfig;
+  navStack?: never;
+}
+
+/** A panel whose active NavStack view supplies the toolbar, fixed header, and scroll body. */
+export interface WorkbenchNavigationPanel extends WorkbenchPanelBase {
+  navStack: Omit<
+    NavStackProps,
+    'panelToggle' | 'hideToolbar' | 'className' | 'slot'
+  >;
+  /** Supplies the standard toggle; active view groups precede it and may relocate on collapse. */
+  toolbar: Omit<
+    WorkbenchPanelToolbar,
+    'title' | 'leading' | 'center' | 'trailing'
+  > & {
+    toggle: NonNullable<WorkbenchPanelToolbar['toggle']>;
+  };
+  content?: never;
+  header?: never;
+  headerList?: never;
+  headerPlacement?: never;
+  footer?: never;
+  footerList?: never;
+  bottomToolbar?: never;
+  footerPlacement?: never;
+  pane?: never;
+}
+
+/** A collapsible Workbench side rail or bottom drawer. */
+export type WorkbenchPanel = WorkbenchStaticPanel | WorkbenchNavigationPanel;
 
 export interface WorkbenchProps {
   /**

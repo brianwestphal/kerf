@@ -69,6 +69,10 @@
   background: var(--kui-color-surface);
 }
 
+.kui-nav-stack__header {
+  min-width: 0;
+}
+
 .kui-nav-stack__viewport {
   --kui-edge-inset-block-start: var(--_kui-nav-stack-safe-block-start);
   --kui-edge-inset-block-end: var(--_kui-nav-stack-safe-block-end);

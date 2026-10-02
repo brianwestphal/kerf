@@ -192,6 +192,35 @@ describe('NavStack markup', () => {
     ).not.toBeNull();
   });
 
+  it('keeps the active view header fixed below its toolbar and a panel toggle last', () => {
+    const root = mountStack(
+      [
+        {
+          ...view('home', 'Collection'),
+          header: raw('<h2>Collection header</h2>'),
+        },
+        {
+          ...view('detail', 'Ticket', raw('<button>Actions</button>')),
+          header: raw('<h2>Ticket header</h2>'),
+        },
+      ],
+      { panelToggle: raw('<button data-toggle>Toggle</button>') },
+    );
+    const chrome = root.querySelector('[data-nav-stack-chrome]')!;
+    expect(chrome.querySelector('[data-nav-stack-header]')?.textContent).toBe(
+      'Ticket header',
+    );
+    expect(chrome.textContent).not.toContain('Collection header');
+    expect(
+      Array.from(chrome.querySelectorAll('.kui-toolbar__trailing button')).map(
+        (button) => button.textContent,
+      ),
+    ).toEqual(['Actions', 'Toggle']);
+    expect(
+      root.querySelector('[data-nav-stack-viewport] [data-nav-stack-header]'),
+    ).toBeNull();
+  });
+
   it('accepts a custom back icon and visible back text', () => {
     const root = mountStack([view('home', 'Home'), view('detail', 'Detail')], {
       backLabel: 'Unused',

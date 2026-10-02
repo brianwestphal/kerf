@@ -57,6 +57,9 @@ mounted (so their DOM state survives) but hidden. Each entry carries a
 `leading`, `center`, and trailing `toolbar` groups for the top toolbar, and an
 optional per-view `bottomToolbar`. The component-level
 `bottomToolbar` remains a persistent fallback for views that do not provide one.
+Each view can also provide `header`, pinned below its top toolbar and above
+that view's single scroll area. A fixed heading, notice, or section selector
+can therefore change with the active screen without adding another scroller.
 The back control appears automatically once the stack has more than one entry;
 `wireNavStack`'s `onBack` is where the app pops its own signal.
 
@@ -102,6 +105,10 @@ Configure the toolbar with `toolbarConfig` instead of styling it:
 - `backIcon` replaces the default chevron-left icon. `backText` adds visible
   text beside it (for example, the previous view's title); visible text names
   the control, so `backLabel` applies only to the icon-only control.
+
+`panelToggle` supplies a persistent final group in the trailing zone of every
+view's top toolbar. `Workbench` uses it for a navigation panel's standard
+collapse toggle; the active view still owns the preceding toolbar groups.
 
 The catalog's **Configured toolbar** example shows these together: a level-2
 heading title over a bottom divider, leading and center groups on the root

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 318000,
-  "measuredLargestJavaScriptGzip": 126043,
-  "measuredTotalJavaScriptGzip": 317928,
+  "totalJavaScriptGzip": 318500,
+  "measuredLargestJavaScriptGzip": 126042,
+  "measuredTotalJavaScriptGzip": 318460,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2339,6 +2339,22 @@
         "measuredTotalJavaScriptGzip": 317928,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 318000
+      }
+    },
+    {
+      "at": "2026-10-02T00:34:08.132Z",
+      "reason": "Workbench navigation panel",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 317928,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 318000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 318460,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 318500
       }
     }
   ]

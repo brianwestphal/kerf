@@ -2,7 +2,11 @@ import { raw } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
 import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
-import { Workbench, type WorkbenchPanel } from '../../src/workbench.js';
+import {
+  Workbench,
+  type WorkbenchPanel,
+  type WorkbenchStaticPanel,
+} from '../../src/workbench.js';
 
 const group = (name: string, relocateOnCollapse = false) => (
   <ToolbarControlGroup relocateOnCollapse={relocateOnCollapse}>
@@ -17,8 +21,8 @@ const title = (text: string) =>
 const rail = (
   name: string,
   collapsed: boolean,
-  extra: Partial<WorkbenchPanel> = {},
-): WorkbenchPanel => ({
+  extra: Partial<WorkbenchStaticPanel> = {},
+): WorkbenchStaticPanel => ({
   label: name,
   content: raw(`<p data-content="${name}">${name}</p>`),
   collapsed,
@@ -62,6 +66,90 @@ const panelToolbar = (host: Element, selector: string) =>
   host.querySelector(`${selector} .kui-toolbar`);
 
 describe('Workbench panel toolbars', () => {
+  it('hosts per-view navigation chrome and keeps the standard right-rail toggle last through collapse', () => {
+    const views = [
+      {
+        key: 'collection',
+        title: 'Tickets',
+        header: raw('<h2>Collection header</h2>'),
+        content: raw('<p>Collection content</p>'),
+      },
+      {
+        key: 'detail',
+        title: 'T-42',
+        toolbar: group('detail-share', true),
+        header: raw('<h2>Detail header</h2>'),
+        content: raw('<p>Detail content</p>'),
+      },
+    ];
+    const panel = (depth: number, collapsed: boolean) => ({
+      label: 'Tickets',
+      toolbar: {
+        label: 'Ticket rail',
+        toggle: { action: 'toggle-tickets', name: 'tickets' },
+      },
+      navStack: {
+        id: 'ticket-nav',
+        label: 'Ticket navigation',
+        views: views.slice(0, depth),
+      },
+      collapsed,
+    });
+    const props = (depth: number, collapsed = false) => ({
+      id: 'wb',
+      label: 'Studio',
+      main: raw('<p>Main</p>'),
+      mainToolbar: { label: 'Main toolbar' },
+      rightRail: panel(depth, collapsed),
+    });
+
+    const root = render(props(1));
+    const rootRail = root.querySelector('[data-workbench-rail="right"]')!;
+    expect(
+      rootRail.querySelectorAll('[data-component="toolbar"]'),
+    ).toHaveLength(1);
+    expect(rootRail.querySelector('[data-nav-back]')).toBeNull();
+    expect(rootRail.querySelector('[data-nav-stack-header]')?.textContent).toBe(
+      'Collection header',
+    );
+    expect(rootRail.querySelectorAll('.kui-nav-stack__view')).toHaveLength(1);
+
+    const detail = render(props(2));
+    const detailRail = detail.querySelector('[data-workbench-rail="right"]')!;
+    expect(
+      detailRail.querySelectorAll('[data-component="toolbar"]'),
+    ).toHaveLength(1);
+    expect(detailRail.querySelector('[data-nav-back]')).not.toBeNull();
+    expect(
+      detailRail.querySelector('[data-nav-stack-header]')?.textContent,
+    ).toBe('Detail header');
+    expect(order(detailRail.querySelector('.kui-toolbar__trailing'))).toEqual([
+      'detail-share',
+      'toggle:Hide tickets',
+    ]);
+    expect(detailRail.querySelectorAll('.kui-nav-stack__view')).toHaveLength(2);
+
+    const collapsed = render(props(2, true));
+    expect(order(mainZone(collapsed, 'trailing'))).toEqual([
+      'detail-share',
+      'toggle:Show tickets',
+    ]);
+    expect(
+      collapsed.querySelector(
+        '[data-workbench-rail="right"] [data-workbench-toggle]',
+      ),
+    ).not.toBeNull();
+
+    const emptied = render(props(0, true));
+    expect(order(mainZone(emptied, 'trailing'))).toEqual([
+      'toggle:Show tickets',
+    ]);
+    const refilled = render(props(1, true));
+    expect(order(mainZone(refilled, 'trailing'))).toEqual([
+      'toggle:Show tickets',
+    ]);
+  });
+
   it('composes an open panel toolbar: title and unmarked groups lead; marked groups and the toggle trail', () => {
     const host = render({
       id: 'wb',
@@ -435,6 +523,14 @@ describe('Workbench panel toolbars', () => {
         [...node.attributes].find((a) => a.name.startsWith('data-'))!.name,
     );
     expect(order).toEqual(['data-header', 'data-main', 'data-footer']);
+
+    const mixed = pane(render({ ...base, mainHeaderPlacement: 'scroll' }));
+    expect(
+      mixed.querySelector(':scope > .kui-pane__content [data-header]'),
+    ).not.toBeNull();
+    expect(
+      mixed.querySelector(':scope > .kui-pane__footer [data-footer]'),
+    ).not.toBeNull();
 
     // `auto` keeps the chrome pinned in the markup and hands the choice to
     // the Pane, which lets it scroll with the content only when short; the

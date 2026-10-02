@@ -14,8 +14,8 @@ import { Workbench } from "@kerfjs/ui/workbench";
 In a browser bundler that honors the `browser` export condition (Vite, esbuild, and
 webpack do by default), the import above also
 loads Workbench's stylesheet and those of the components it renders internally
-(`Pane`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ResizableRegion`,
-`List`, `LucideIcon`). Without that condition, import the manual stylesheets instead:
+(`Pane`, `NavStack`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`,
+`ResizableRegion`, `List`, `LucideIcon`). Without that condition, import the manual stylesheets instead:
 `@kerfjs/ui/workbench.css` plus those components' CSS, or `@kerfjs/ui/styles.css`.
 
 A top-level `Workbench` needs a definite containing height. Import the opt-in
@@ -71,7 +71,7 @@ const navCollapsed = signal(false);
 />;
 ```
 
-Each `WorkbenchPanel` takes `content`, an optional `toolbar` and `footer` (see
+Each static `WorkbenchPanel` takes `content`, an optional `toolbar` and `footer` (see
 [Panel toolbars](#panel-toolbars)), an optional `collapsed`, an optional
 `size` (rail width or drawer height in px, overriding the CSS default —
 `--kui-workbench-rail-width` 280px, `--kui-workbench-drawer-height` 220px), and
@@ -164,6 +164,30 @@ The same policy props are available on `ResizableRegion` and
 into `.kui-resizable-region__content`.
 
 ## Panel toolbars
+
+A panel with `navStack` hosts a controlled `NavStack` in place of the static
+`content` and `Pane` slots. Give it a `toolbar` with a `toggle`; each
+`navStack.views` entry then supplies its own title, leading/center/trailing
+groups, fixed `header`, and scrolling `content`. The active view's toolbar is
+the panel's only toolbar row, with the standard toggle always last. On
+collapse, marked groups from the active view and the toggle relocate to the
+work-area toolbar; the view stack stays mounted. The app owns the view array
+and calls `wireNavStack` for animated push/pop and focus movement. See
+[Navigation stack](nav-stack.md) and the catalog's navigation ticket rail.
+
+```tsx
+<Workbench
+  id="tickets"
+  label="Tickets workspace"
+  main={<Workspace />}
+  rightRail={{
+    label: "Tickets",
+    collapsed: ticketsCollapsed.value,
+    toolbar: { toggle: { action: "toggle-tickets", name: "tickets" } },
+    navStack: { id: "ticket-stack", label: "Tickets", views: ticketViews.value },
+  }}
+/>
+```
 
 A panel's controls follow it open and closed when the Workbench composes the
 toolbars. Give a panel a `toolbar` and the work area a `mainToolbar` (and, for

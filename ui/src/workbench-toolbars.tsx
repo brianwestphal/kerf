@@ -3,6 +3,7 @@ import {
   type FloatingToolbarPosition,
 } from './floating-toolbar.js';
 import { List, type ListConfig } from './list.js';
+import { NavStack, type NavStackProps } from './nav-stack.js';
 import { Pane, type PaneConfig } from './pane.js';
 import {
   composedPanelBody,
@@ -11,6 +12,7 @@ import {
   type PanelSide,
   type PanelToggle,
   type PanelToggleAttributes,
+  panelToggleGroup,
   type PanelToolbar,
   relocatedPanelGroups,
 } from './panel-toolbar.js';
@@ -74,6 +76,10 @@ const SIDES: Record<WorkbenchPanelKey, PanelSide> = {
 /** A panel as far as its toolbar is concerned. */
 export interface WorkbenchToolbarPanel {
   toolbar?: WorkbenchPanelToolbar;
+  navStack?: Omit<
+    NavStackProps,
+    'panelToggle' | 'hideToolbar' | 'className' | 'slot'
+  >;
   header?: KerfUiContent;
   headerList?: ListConfig;
   headerPlacement?: PanelChromePlacement;
@@ -83,7 +89,7 @@ export interface WorkbenchToolbarPanel {
   footerPlacement?: PanelChromePlacement;
   /** Configuration for the `Pane` a `toolbar` panel's content renders in. */
   pane?: PaneConfig;
-  content: KerfUiContent;
+  content?: KerfUiContent;
   collapsed?: boolean;
   /** The corner a collapsed panel's restore controls float in. */
   restorePosition?: FloatingToolbarPosition;
@@ -110,8 +116,18 @@ export function relocatedGroups(
   key: WorkbenchPanelKey,
   panel: WorkbenchToolbarPanel | undefined,
 ): KerfUiContent[] {
+  const active = panel?.navStack?.views.at(-1);
+  const toolbar =
+    active && panel?.toolbar
+      ? {
+          ...panel.toolbar,
+          leading: active.leading,
+          center: active.center,
+          trailing: active.toolbar,
+        }
+      : panel?.toolbar;
   return relocatedPanelGroups(
-    panel?.toolbar,
+    toolbar,
     SIDES[key],
     Boolean(panel?.collapsed),
     toggleAttributes(workbenchId, key),
@@ -129,6 +145,33 @@ export function panelBody(
   panel: WorkbenchToolbarPanel,
 ) {
   const toolbar = panel.toolbar;
+  if (panel.navStack) {
+    const stack = panel.navStack;
+    return NavStack({
+      ...stack,
+      toolbarConfig: {
+        label: stack.toolbarConfig?.label ?? toolbar?.label,
+        dividerSides:
+          stack.toolbarConfig?.dividerSides ?? toolbar?.dividerSides,
+        centerAlign: stack.toolbarConfig?.centerAlign ?? toolbar?.centerAlign,
+        responsive: stack.toolbarConfig?.responsive ?? toolbar?.responsive,
+        responsiveAt:
+          stack.toolbarConfig?.responsiveAt ?? toolbar?.responsiveAt,
+        safeAreaEdges:
+          stack.toolbarConfig?.safeAreaEdges ?? toolbar?.safeAreaEdges,
+        titleSize: stack.toolbarConfig?.titleSize,
+        headingLevel: stack.toolbarConfig?.headingLevel,
+      },
+      panelToggle: toolbar?.toggle
+        ? panelToggleGroup(
+            SIDES[key],
+            toolbar.toggle,
+            Boolean(panel.collapsed),
+            toggleAttributes(workbenchId, key),
+          )
+        : undefined,
+    });
+  }
   if (!toolbar) return panel.content;
   return composedPanelBody({
     toolbar,
@@ -143,7 +186,7 @@ export function panelBody(
     footerList: panel.footerList,
     bottomToolbar: panel.bottomToolbar,
     footerPlacement: panel.footerPlacement,
-    content: panel.content,
+    content: panel.content ?? null,
   });
 }
 

@@ -141,14 +141,20 @@ import {
 } from './demos/tab-scaffold.js';
 import {
   COLLAPSED_WORKBENCH_ID,
+  NAVIGATION_STACK_ID,
+  NAVIGATION_WORKBENCH_ID,
+  openWorkbenchTicket,
+  popWorkbenchTicket,
   resetWorkbenchDemo,
   RESIZABLE_WORKBENCH_ID,
   RESPONSIVE_DRAWER_WORKBENCH_ID,
+  selectWorkbenchTicketSection,
   toggleWorkbenchCollapsedNavigator,
   toggleWorkbenchConsole,
   toggleWorkbenchInspector,
   toggleWorkbenchNavigator,
   toggleWorkbenchOutput,
+  toggleWorkbenchTicketRail,
   workbenchCollapsedNavigator,
   workbenchConsoleCollapsed,
   workbenchConsoleSize,
@@ -157,6 +163,7 @@ import {
   workbenchNavigatorCollapsed,
   workbenchNavigatorSize,
   workbenchOutputCollapsed,
+  workbenchTicketRailCollapsed,
 } from './demos/workbench.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController, RecipePresentation } from './recipes/types.js';
@@ -1009,6 +1016,21 @@ const stopActions = delegateActions(app, 'click', {
   'workbench-demo-command': (_event, element) => {
     actionLog.value = `${(element as HTMLElement).getAttribute('aria-label') ?? 'Command'} requested`;
   },
+  'open-workbench-ticket': (_event, element) => {
+    const id = (element as HTMLElement).dataset.itemId ?? '';
+    openWorkbenchTicket(id);
+    actionLog.value = `Opened ${id}`;
+  },
+  'select-workbench-ticket-section': (_event, element) => {
+    selectWorkbenchTicketSection(
+      (element as HTMLElement).dataset.segmentValue ?? '',
+    );
+  },
+  'toggle-workbench-ticket-rail': () => {
+    actionLog.value = toggleWorkbenchTicketRail()
+      ? 'Tickets hidden'
+      : 'Tickets shown';
+  },
   'collapsible-panel-demo-command': (_event, element) => {
     actionLog.value = `${(element as HTMLElement).getAttribute('aria-label') ?? 'Command'} requested`;
   },
@@ -1241,7 +1263,19 @@ const routeWires: Partial<Record<string, RouteWire>> = {
           bottomDrawer: { collapsed: workbenchConsoleCollapsed },
         },
       });
+      const stopNavigation = wireWorkbench(root, {
+        id: NAVIGATION_WORKBENCH_ID,
+        panels: { rightRail: { collapsed: workbenchTicketRailCollapsed } },
+      });
+      const ticketStack = root.querySelector<HTMLElement>(
+        `#${NAVIGATION_STACK_ID}`,
+      );
+      const stopTicketStack = ticketStack
+        ? wireNavStack(ticketStack, { onBack: popWorkbenchTicket })
+        : () => {};
       return () => {
+        stopTicketStack();
+        stopNavigation();
         stopCollapsed();
         stopResponsiveDrawer();
         stopResizable();

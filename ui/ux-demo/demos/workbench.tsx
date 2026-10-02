@@ -1,11 +1,16 @@
 import '@kerfjs/ui/floating-toolbar.css';
 import '@kerfjs/ui/lucide-icon.css';
+import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/workbench.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
+import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import type { NavStackView } from '@kerfjs/ui/nav-stack';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
+import { SegmentedControl } from '@kerfjs/ui/segmented-control';
+import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
@@ -49,6 +54,110 @@ export const RESPONSIVE_DRAWER_WORKBENCH_ID =
  */
 export const workbenchOutputCollapsed = signal(false);
 
+/** A right-rail NavStack whose active view owns its toolbar, header, and scroll. */
+export const NAVIGATION_WORKBENCH_ID = 'catalog-workbench-navigation';
+export const NAVIGATION_STACK_ID = 'catalog-workbench-ticket-stack';
+export const workbenchTicketRailCollapsed = signal(false);
+export const workbenchTicketStack = signal<string[]>([]);
+export const workbenchTicketSection = signal<'overview' | 'activity'>(
+  'overview',
+);
+
+export function openWorkbenchTicket(id: string): void {
+  workbenchTicketStack.value = [id];
+  workbenchTicketSection.value = 'overview';
+}
+
+export function popWorkbenchTicket(): void {
+  workbenchTicketStack.value = workbenchTicketStack.value.slice(0, -1);
+}
+
+export function toggleWorkbenchTicketRail(): boolean {
+  workbenchTicketRailCollapsed.value = !workbenchTicketRailCollapsed.value;
+  return workbenchTicketRailCollapsed.value;
+}
+
+export function selectWorkbenchTicketSection(value: string): void {
+  if (value === 'overview' || value === 'activity')
+    workbenchTicketSection.value = value;
+}
+
+const ticketIds = ['T-42', 'T-43', 'T-44'];
+
+function ticketCollectionView(): NavStackView {
+  return {
+    key: 'collection',
+    title: 'Tickets',
+    leading: iconGroup('Choose project', Search, 'search'),
+    header: (
+      <List gap="2xs" textInsets="rl">
+        <ToolbarText text="Ticket queue" headingLevel={3} />
+        <Text tone="quiet" size="compact">
+          Three open tickets
+        </Text>
+      </List>
+    ),
+    content: (
+      <div class="kui-content">
+        {ticketIds.map((id) => (
+          <ContentItem
+            interactive
+            action="open-workbench-ticket"
+            itemId={id}
+            ariaLabel={`Open ticket ${id}`}
+          >
+            <List gap="2xs">
+              <Text variant="span">
+                <strong>{id}</strong>
+              </Text>
+              <Text variant="span" tone="quiet" size="compact">
+                Review the workspace rail
+              </Text>
+            </List>
+          </ContentItem>
+        ))}
+      </div>
+    ),
+  };
+}
+
+function ticketDetailView(id: string): NavStackView {
+  return {
+    key: id,
+    title: id,
+    toolbar: iconGroup('Ticket action', FilePlus, 'file-plus'),
+    header: (
+      <List gap="2xs" textInsets="rl" controlInsets="rl">
+        <ToolbarText text="Workspace rail detail" headingLevel={3} />
+        <Text tone="quiet" size="compact">
+          Open for review
+        </Text>
+        <SegmentedControl
+          id="workbench-ticket-sections"
+          label="Ticket sections"
+          value={workbenchTicketSection.value}
+          choices={[
+            { value: 'overview', label: 'Overview' },
+            { value: 'activity', label: 'Activity' },
+          ]}
+          action="select-workbench-ticket-section"
+          size="small"
+        />
+      </List>
+    ),
+    content: (
+      <div class="kui-content">
+        {Array.from({ length: 14 }, (_, index) => (
+          <DemoContentItem
+            title={`${workbenchTicketSection.value === 'overview' ? 'Detail' : 'Event'} ${index + 1}`}
+            detail={`${id} has its own scrolling content below fixed chrome.`}
+          />
+        ))}
+      </div>
+    ),
+  };
+}
+
 /**
  * Start each visit with the navigator shown and the inspector hidden; the
  * remembered sizes are the wiring's to restore.
@@ -59,6 +168,9 @@ export function resetWorkbenchDemo(): void {
   workbenchConsoleCollapsed.value = true;
   workbenchOutputCollapsed.value = false;
   workbenchCollapsedNavigator.value = true;
+  workbenchTicketRailCollapsed.value = false;
+  workbenchTicketStack.value = [];
+  workbenchTicketSection.value = 'overview';
 }
 
 export function toggleWorkbenchNavigator(): boolean {
@@ -118,6 +230,46 @@ const mainTitle = (text: string) => <ToolbarText text={text} size="xlarge" />;
 export function WorkbenchDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'workbench' }}>
+      <CatalogExample
+        label="Navigating ticket rail"
+        note="The right rail pushes from a collection to a detail with one toolbar per screen. Each screen keeps its own header above one scroll area; the standard rail toggle stays last and relocates while collapsed."
+        align="none"
+        viewport={{
+          layout: 'grid',
+          width: 'full',
+          height: 'tall',
+          frame: 'solid',
+          surface: 'lowered',
+        }}
+        rootAttributes={{ 'data-demo-workbench-navigation': '' }}
+      >
+        <Workbench
+          id={NAVIGATION_WORKBENCH_ID}
+          label="Ticket workbench"
+          mainToolbar={{ label: 'Workspace', title: mainTitle('Workspace') }}
+          main={region('Workspace', 'Open a ticket in the right rail.')}
+          rightRail={{
+            label: 'Tickets',
+            size: 360,
+            collapsed: workbenchTicketRailCollapsed.value,
+            toolbar: {
+              label: 'Ticket rail toolbar',
+              toggle: {
+                action: 'toggle-workbench-ticket-rail',
+                name: 'tickets',
+              },
+            },
+            navStack: {
+              id: NAVIGATION_STACK_ID,
+              label: 'Ticket navigation',
+              views: [
+                ticketCollectionView(),
+                ...workbenchTicketStack.value.map(ticketDetailView),
+              ],
+            },
+          }}
+        />
+      </CatalogExample>
       <CatalogExample
         label="Full desktop workspace"
         note="The shell owns panel tracks and separators; each region owns its content and scroll behavior."

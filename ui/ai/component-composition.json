@@ -704,6 +704,11 @@
           "required": false
         },
         {
+          "id": "per-view fixed header content above the active view's scroll area",
+          "owner": "application",
+          "required": false
+        },
+        {
           "id": "top-toolbar configuration, title size, and heading level",
           "owner": "application",
           "required": false
@@ -783,6 +788,7 @@
           "kui-nav-stack__chrome-copy",
           "kui-nav-stack__chrome-copy--bottom",
           "kui-nav-stack__chrome-copy--exiting",
+          "kui-nav-stack__header",
           "kui-nav-stack__viewport",
           "kui-nav-stack__view",
           "kui-nav-stack__view--entering",
@@ -1075,6 +1081,11 @@
         },
         { "id": "collapsed state", "owner": "application", "required": false },
         { "id": "panel sizes", "owner": "application", "required": false },
+        {
+          "id": "navigation panel view stack and push/pop actions when navStack is supplied",
+          "owner": "application",
+          "required": false
+        },
         {
           "id": "responsive replacement below desktop",
           "owner": "application",

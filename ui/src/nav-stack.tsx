@@ -29,6 +29,8 @@ export interface NavStackView {
   center?: KerfUiContent;
   /** Trailing actions for this view's top toolbar. */
   toolbar?: KerfUiContent;
+  /** Fixed chrome below this view's toolbar, above its scrolling content. */
+  header?: KerfUiContent;
   /** Bottom toolbar for this view. Cross-fades with the top chrome on navigation. */
   bottomToolbar?: KerfUiContent;
 }
@@ -65,6 +67,8 @@ export interface NavStackProps {
   backText?: string;
   /** The top toolbar's configuration, forwarded to its `Toolbar`. */
   toolbarConfig?: NavStackToolbarConfig;
+  /** Persistent last group in every view's top toolbar, supplied by a hosting panel. */
+  panelToggle?: KerfUiContent;
   /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
   hideToolbar?: boolean;
   /** Optional persistent bottom toolbar used when the active view does not provide one. */
@@ -108,6 +112,7 @@ export function NavStack({
   backIcon,
   backText,
   toolbarConfig = {},
+  panelToggle,
   hideToolbar = false,
   bottomToolbar,
   chromeDividers = 'scroll',
@@ -179,8 +184,18 @@ export function NavStack({
               </>
             }
             center={top?.center}
-            trailing={top?.toolbar}
+            trailing={
+              <>
+                {top?.toolbar}
+                {panelToggle}
+              </>
+            }
           />
+          {top?.header && (
+            <div class="kui-nav-stack__header" data-nav-stack-header>
+              {top.header}
+            </div>
+          )}
         </div>
       )}
       <div class="kui-nav-stack__viewport" data-nav-stack-viewport>

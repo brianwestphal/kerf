@@ -149,7 +149,9 @@ export const generatedKerfCatalog = [
     "kind": "component",
     "source": "kerf",
     "description": "Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.",
-    "uses": [],
+    "uses": [
+      "nav-stack"
+    ],
     "demoSource": "ui/ux-demo/demos/workbench.tsx",
     "componentSource": "ui/src/workbench.tsx",
     "documentation": "ui/docs/workbench.md"

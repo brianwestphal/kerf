@@ -725,6 +725,7 @@
         "preferred initial focus targets when DOM order is insufficient",
         "per-view bottom toolbar content or a persistent fallback",
         "per-view leading, center, and trailing top-toolbar groups",
+        "per-view fixed header content above the active view's scroll area",
         "top-toolbar configuration, title size, and heading level",
         "whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers)"
       ],
@@ -735,6 +736,7 @@
         "configured top toolbar",
         "custom back icon or visible back text",
         "per-view bottom toolbar",
+        "persistent final top-toolbar group (panelToggle) when embedded in a Workbench panel",
         "persistent bottom-toolbar fallback",
         "chrome and bottom-toolbar dividers only while the active view scrolls beneath them (wired by wireScrollDividers)",
         "permanent or no chrome dividers (chromeDividers always or none)"
@@ -811,6 +813,7 @@
         "kui-nav-stack__chrome-copy",
         "kui-nav-stack__chrome-copy--bottom",
         "kui-nav-stack__chrome-copy--exiting",
+        "kui-nav-stack__header",
         "kui-nav-stack__viewport",
         "kui-nav-stack__view",
         "kui-nav-stack__view--entering",
@@ -1079,7 +1082,9 @@
       "kind": "component",
       "source": "kerf",
       "description": "A desktop-class multi-panel workspace with independently collapsible, optionally drag-resizable left and right rails and a bottom drawer around one central work area.",
-      "uses": [],
+      "uses": [
+        "nav-stack"
+      ],
       "purpose": "Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.",
       "publicExports": [
         "Workbench",
@@ -1088,6 +1093,8 @@
         "WorkbenchMainBottomToolbar",
         "WorkbenchMainToolbar",
         "WorkbenchPanel",
+        "WorkbenchStaticPanel",
+        "WorkbenchNavigationPanel",
         "WorkbenchPanelResizable",
         "WorkbenchPanelToggle",
         "WorkbenchPanelToolbar",
@@ -1114,6 +1121,7 @@
         "panel presence and content",
         "collapsed state",
         "panel sizes",
+        "navigation panel view stack and push/pop actions when navStack is supplied",
         "responsive replacement below desktop",
         "collapse controls and focus policy"
       ],
@@ -1124,6 +1132,7 @@
         "bottom drawer",
         "all panels",
         "independently collapsed panels",
+        "navigation panel with per-screen toolbar, fixed header, and one scroll owner; standard toggle remains last and relocates while collapsed",
         "opt-in drag and keyboard resizable panels with min/max limits",
         "resizable rails that leave the work area a minimum width and shrink in proportion when the Workbench narrows",
         "rails or a drawer that present as overlays below a narrow or compact Workbench container breakpoint",
