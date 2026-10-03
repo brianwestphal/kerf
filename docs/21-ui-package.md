@@ -497,6 +497,9 @@ names still require an explicit catalog boundary.
 Consumers may opt into the same inference for uncataloged source modules that
 directly import CSS with `"implicitComponentOwnership": true` in Doctor or
 the analyzer API option.
+`"ownershipContext": "any"` also forbids one same-package component stylesheet
+from using a sibling's classes as selector context, including relational
+pseudo-classes; the default `"subject"` checks the styled subject.
 Package ownership remains the default.
 Each source resolves its own parent-to-child directory profile and only receives
 facts from its reachable relative CSS import graph, so sibling monorepo apps do

@@ -87,6 +87,7 @@ describe('Kerf UI doctor', () => {
     const config = {
       schemaVersion: 1 as const,
       ownership: 'component' as const,
+      ownershipContext: 'any' as const,
       implicitComponentOwnership: true,
       failOn: 'warning' as const,
       stages: disabled,

@@ -550,7 +550,7 @@ test(
         'src/rail.tsx':
           "import './rail.css';\nimport { LoadingSpinner } from '@kerfjs/ui/loading-spinner';\nexport const Rail = () => <div class=\"active-claim-spinner\"><LoadingSpinner /></div>;\n",
         'src/rail.css':
-          '.active-claim-spinner > svg { color: red; }\n.ticket-search-field svg { color: red; }\n',
+          '.active-claim-spinner > svg { color: red; }\n.ticket-search-field svg { color: red; }\n.ticket-search-field .rail { color: red; }\n',
         'src/search.tsx':
           'import \'./search.css\';\nexport const Search = () => <div class="ticket-search-field" />;\n',
         'src/search.css': '.ticket-search-field { color: blue; }\n',
@@ -567,6 +567,27 @@ test(
               `${item.location.file}:${item.location.line}`,
           ),
       ).toEqual(['src/rail.css:1', 'src/rail.css:2']);
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          ownershipContext: 'any',
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      const strict = await doctor(root);
+      expect(
+        strict.report.diagnostics
+          .filter((item: { id: string }) => item.id === 'KUI-L019')
+          .map(
+            (item: {
+              location: { line: number };
+              evidence: { position?: string };
+            }) =>
+              `${item.location.line}:${item.evidence.position ?? 'subject'}`,
+          ),
+      ).toEqual(['1:subject', '2:subject', '3:ancestor']);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

@@ -40,6 +40,16 @@ export function restyledComponents(
     composedChildren?: Map<string, OwnershipCatalogEntry>;
   },
 ): RestyledComponent[];
+export function contextualComponents(
+  selectorList: string,
+  facts: ComponentOwnershipFacts,
+  isForeign: (entry: OwnershipCatalogEntry) => boolean,
+  ownPackage: string | undefined,
+): Array<{
+  entry: OwnershipCatalogEntry;
+  name: string;
+  position: 'subject' | 'ancestor' | 'sibling' | 'has' | 'is' | 'where' | 'not';
+}>;
 export function privateVariableOwner(
   property: string,
   facts: ComponentOwnershipFacts,

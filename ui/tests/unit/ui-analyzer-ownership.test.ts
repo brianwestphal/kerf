@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import {
   componentOwnershipFacts,
   configurationFor,
+  contextualComponents,
   type OwnershipCatalogEntry,
   privateVariableOwner,
   reportGap,
@@ -143,6 +144,53 @@ describe('downstream component ownership rules', () => {
     expect(restyledComponents('.kui-toolbar', facts, () => false)).toHaveLength(
       0,
     );
+  });
+
+  it('classifies sibling classes in every selector context', () => {
+    const sibling = {
+      key: 'app:search',
+      package: 'app',
+      id: 'search',
+      name: 'Search',
+      boundaries: { publicClasses: ['ticket-search-field'] },
+    };
+    const local = componentOwnershipFacts([sibling]);
+    const positions = [
+      '.ticket-search-field .mine',
+      '.ticket-search-field + .mine',
+      '.mine:has(.ticket-search-field)',
+      '.mine:is(.ticket-search-field)',
+      '.mine:where(.ticket-search-field)',
+      '.mine:not(.ticket-search-field)',
+    ].map((selector) =>
+      contextualComponents(selector, local, foreign, 'app').map(
+        (item) => item.position,
+      ),
+    );
+    expect(positions).toEqual([
+      ['ancestor'],
+      ['sibling'],
+      ['has'],
+      ['is'],
+      ['where'],
+      ['not'],
+    ]);
+    expect(
+      contextualComponents(
+        '.ticket-search-field .mine',
+        local,
+        foreign,
+        'other',
+      ),
+    ).toEqual([]);
+    expect(
+      contextualComponents(
+        '[data-name=".ticket-search-field"] .mine',
+        local,
+        foreign,
+        'app',
+      ),
+    ).toEqual([]);
   });
 
   it('names private variables after their component', () => {
@@ -299,13 +347,44 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
       'src/ticket-row.tsx':
         'import \'./ticket-row.css\';\nexport const TicketRow = () => <article class="ticket-row ticket-row__title" />;\n',
       'src/ticket-row.css': '.ticket-row { color: blue; }\n',
-      'src/header.css':
-        '.ticket-row__title { color: red; }\n.unrelated__title { color: red; }\n',
+      'src/header.css': [
+        '.ticket-row__title { color: red; }',
+        '.unrelated__title { color: red; }',
+        '.ticket-row .header { color: red; }',
+        '.ticket-row + .header { color: red; }',
+        '.header:has(.ticket-row) { color: red; }',
+        ':is(.ticket-row) .header { color: red; }',
+        ':where(.ticket-row) .header { color: red; }',
+        '.header:not(.ticket-row) { color: red; }',
+        '.kui-toolbar .header { color: red; }',
+        '',
+      ].join('\n'),
     });
     expect(ids(await analyzeUiProject({ root }))).toEqual([]);
     expect(
       ids(await analyzeUiProject({ root, ownership: 'component' })),
     ).toEqual(['KUI-L019 src/header.css:1']);
+    const strict = await analyzeUiProject({
+      root,
+      ownership: 'component',
+      ownershipContext: 'any',
+    });
+    expect(
+      strict.diagnostics
+        .filter((item) => item.ruleId === 'KUI-L019')
+        .map(
+          (item) =>
+            `${item.location.file}:${item.location.line} ${(item.evidence as { position?: string }).position ?? 'subject'}`,
+        ),
+    ).toEqual([
+      'src/header.css:1 subject',
+      'src/header.css:3 ancestor',
+      'src/header.css:4 sibling',
+      'src/header.css:5 has',
+      'src/header.css:6 is',
+      'src/header.css:7 where',
+      'src/header.css:8 not',
+    ]);
   });
 
   it('can opt in to source modules as implicit owners without a catalog entry', async () => {

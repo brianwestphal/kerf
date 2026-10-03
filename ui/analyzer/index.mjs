@@ -18,6 +18,7 @@ import {
   componentLabel,
   componentName,
   componentOwnershipFacts,
+  contextualComponents,
   configurationFor,
   privateVariableOwner,
   reportGap,
@@ -637,17 +638,19 @@ function inspectComponentOwnership(
   adoption,
   isForeign,
   ownershipEvidence,
+  ownershipContext,
 ) {
   if (inKeyframes(rule)) return;
   const restyling = restylingDeclarations(rule);
   if (restyling.length === 0) return;
   const properties = [...new Set(restyling.map((decl) => decl.prop))];
-  for (const { entry, via, name } of restyledComponents(
+  const restyled = restyledComponents(
     rule.selector,
     facts.ownership,
     isForeign,
     ownershipEvidence,
-  ))
+  );
+  for (const { entry, via, name } of restyled)
     diagnostics.push(
       diagnostic(
         'KUI-L019',
@@ -666,6 +669,38 @@ function inspectComponentOwnership(
         adoption,
       ),
     );
+  if (ownershipContext !== 'any' || !ownershipEvidence?.ownPackage) return;
+  for (const { entry, name, position } of contextualComponents(
+    rule.selector,
+    facts.ownership,
+    isForeign,
+    ownershipEvidence.ownPackage,
+  )) {
+    if (position === 'subject') continue;
+    if (
+      restyled.some(
+        (item) => item.entry.key === entry.key && item.name === name,
+      )
+    )
+      continue;
+    diagnostics.push(
+      diagnostic(
+        'KUI-L019',
+        location(file, rule),
+        `\`${name}\` uses ${componentLabel(entry)} as ${position} selector context (${properties.join(', ')}); in strict component ownership, sibling classes cannot key this stylesheet. Configure the component through ${configurationFor(entry)}. ${reportGap(entry)}`,
+        {
+          selector: rule.selector,
+          component: entry.key,
+          via: 'context',
+          position,
+          target: name,
+          properties,
+        },
+        undefined,
+        adoption,
+      ),
+    );
+  }
 }
 
 function inspectVariableOwnership(
@@ -736,6 +771,7 @@ async function inspectCss(
   siblingOnLoud = [],
   isForeign = () => true,
   ownershipEvidence,
+  ownershipContext = 'subject',
 ) {
   let root;
   try {
@@ -769,6 +805,7 @@ async function inspectCss(
       adoption,
       isForeign,
       ownershipEvidence,
+      ownershipContext,
     );
     if (!inKeyframes(rule) && restylingDeclarations(rule).length > 0)
       for (const className of subjects) {
@@ -1465,6 +1502,7 @@ export async function analyzeUiProject({
   knownRules = [],
   adoption = false,
   ownership = 'package',
+  ownershipContext = 'subject',
   implicitComponentOwnership = false,
   profile: packageProfile = resolve(
     import.meta.dirname,
@@ -1726,6 +1764,7 @@ export async function analyzeUiProject({
               ownPackage: own?.name,
             }
           : undefined,
+        ownershipContext,
       );
       recordDiagnostics(fileDiagnostics, context);
     }

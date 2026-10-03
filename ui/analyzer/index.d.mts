@@ -44,6 +44,7 @@ export function analyzeUiProject(options?: {
   knownRules?: Iterable<string>;
   adoption?: boolean;
   ownership?: 'package' | 'component';
+  ownershipContext?: 'subject' | 'any';
   implicitComponentOwnership?: boolean;
 }): Promise<UiAnalysisReport>;
 

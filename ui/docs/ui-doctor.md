@@ -52,6 +52,10 @@ Literal rendered BEM classes are inferred when those stylesheets style their
 block. Set `"implicitComponentOwnership": true` to include uncataloged modules
 that directly import CSS. Component mode reports sibling CSS and hook-class
 restyles while allowing a component's own stylesheet and module.
+Set `"ownershipContext": "any"` to also report a same-package sibling's class
+used as ancestor or sibling context or within `:has()`, `:is()`, `:where()`, or
+`:not()`. The default `"subject"` keeps subject-only context policy; classes
+from another package may still provide context.
 
 The browser evaluator is different: it runs the application and is disabled by default. It only runs when configuration supplies `browser.url` or the command receives `--browser-url`. Start and authorize the target application separately.
 

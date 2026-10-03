@@ -132,6 +132,7 @@ export function validateUiDoctorConfig(
     'mode',
     'package',
     'ownership',
+    'ownershipContext',
     'implicitComponentOwnership',
     'stages',
     'browser',
@@ -160,6 +161,11 @@ export function validateUiDoctorConfig(
     !['package', 'component'].includes(config.ownership)
   )
     add('$.ownership', 'ownership must be package or component.');
+  if (
+    config.ownershipContext !== undefined &&
+    !['subject', 'any'].includes(config.ownershipContext)
+  )
+    add('$.ownershipContext', 'ownershipContext must be subject or any.');
   if (
     config.implicitComponentOwnership !== undefined &&
     typeof config.implicitComponentOwnership !== 'boolean'
@@ -1155,6 +1161,7 @@ export async function runUiDoctor({
                 packageRoot,
                 paths: selectedPaths,
                 ownership: config.ownership ?? 'package',
+                ownershipContext: config.ownershipContext ?? 'subject',
                 implicitComponentOwnership:
                   config.implicitComponentOwnership ?? false,
                 signal,
@@ -1165,6 +1172,7 @@ export async function runUiDoctor({
                     root: packageRoot,
                     paths: selectedPaths,
                     ownership: config.ownership ?? 'package',
+                    ownershipContext: config.ownershipContext ?? 'subject',
                     implicitComponentOwnership:
                       config.implicitComponentOwnership ?? false,
                     knownRules: [...registeredRuleIds, ...eslintRuleIds],

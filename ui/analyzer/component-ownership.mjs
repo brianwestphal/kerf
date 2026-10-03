@@ -17,6 +17,7 @@ import {
   classNames,
   complexSelectorParts,
   dataComponents,
+  pseudoArguments,
   subjectTypes,
   withoutRelationalArguments,
 } from './selectors.mjs';
@@ -177,6 +178,49 @@ export function restyledComponents(
             add(entry, 'descendant', `.${root}`);
           break;
         }
+      }
+    }
+  }
+  return found;
+}
+
+/** Same-package classes used to key another component's selector. */
+export function contextualComponents(
+  selectorList,
+  facts,
+  isForeign,
+  ownPackage,
+) {
+  const found = [];
+  const seen = new Set();
+  const selectorClasses = (text) => classNames(text.replace(/\[[^\]]*\]/g, ''));
+  for (const parts of complexSelectorParts(selectorList)) {
+    for (const [index, part] of parts.entries()) {
+      const compound = part.compound;
+      for (const name of selectorClasses(compound)) {
+        const entry = facts.classOwners.get(name);
+        if (!entry || entry.package !== ownPackage || !isForeign(entry))
+          continue;
+        const pseudo = ['has', 'is', 'where', 'not'].find((candidate) =>
+          pseudoArguments(compound, candidate).some((argument) =>
+            selectorClasses(argument).includes(name),
+          ),
+        );
+        const position = pseudo
+          ? pseudo
+          : index === parts.length - 1
+            ? 'subject'
+            : ['+', '~'].includes(parts[index + 1].combinator)
+              ? 'sibling'
+              : 'ancestor';
+        const key = `${entry.key}|${name}|${position}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        found.push({
+          entry,
+          name: `.${name}`,
+          position,
+        });
       }
     }
   }

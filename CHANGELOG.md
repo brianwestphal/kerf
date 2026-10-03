@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Doctor offers strict same-package selector context checks.**
+  `ownershipContext: "any"` reports a sibling component's class even when it is
+  only used as selector context; cross-package composition stays available.
+
 - **Doctor catches classless descendants of composed components.** Component
   mode uses JSX evidence to identify element selectors below component hooks,
   sibling roots, and direct composed child roots.

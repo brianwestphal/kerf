@@ -23,6 +23,7 @@ export interface UiDoctorConfig {
   mode?: 'full' | 'changed';
   package?: string;
   ownership?: 'package' | 'component';
+  ownershipContext?: 'subject' | 'any';
   implicitComponentOwnership?: boolean;
   stages?: Partial<
     Record<

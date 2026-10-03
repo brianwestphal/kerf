@@ -206,6 +206,12 @@ stylesheets, including element and modifier classes. Sibling files are foreign.
 Paths are relative to the entry's package root. Set
 `implicitComponentOwnership: true` to apply the same source and stylesheet
 inference to modules with direct CSS imports that have no catalog entry.
+Set `ownershipContext: 'any'` alongside component ownership when one sibling
+component must not mention another sibling's class anywhere in a CSS selector.
+The default, `'subject'`, checks the styled subject. Strict findings use
+`KUI-L019` with `evidence.via: 'context'` and a `position` of `ancestor`,
+`sibling`, `has`, `is`, `where`, or `not`. Context from another package remains
+allowed.
 
 ### Retired: `KUI-L005` (forced component dimension)
 
