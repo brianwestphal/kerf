@@ -35,11 +35,13 @@ Component ownership is part of the same loop. The analyzer stage reports
 application or third-party CSS that restyles another package's component
 (`KUI-L019`), touches its private `--_*` variables (`KUI-L020`), overrides a
 token a typed prop sets (`KUI-L021`), or styles it through a hook class on its
-root (`KUI-L022`); the ESLint stage's `ui-component-ownership` rule reports
+root (`KUI-L022`). It also reports source modules that render another
+component's public classes as their own markup (`KUI-L023`), including raw HTML
+and DOM class writes. The ESLint stage's `ui-component-ownership` rule reports
 `KUI-L020` / `KUI-L021` in script. Each finding's `action` points at the
 component's configuration, and its message routes a need with no prop to a
 component-gap report instead of an override (see
-[the analyzer rule](./ui-analyzer.md#component-ownership-kui-l019kui-l022)).
+[the analyzer rule](./ui-analyzer.md#component-ownership-kui-l019kui-l023)).
 The analyzer resolves a cataloged application component imported through an
 exact or wildcard TypeScript `paths` alias from the nearest consumer tsconfig,
 so the same root hook-class check applies in those files.

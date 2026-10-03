@@ -79,6 +79,7 @@ policy, or analysis inputs to the containing application.
 | `KUI-L020` | error  | CSS reads or writes another component's private `--_*` variable.                      |
 | `KUI-L021` | error  | CSS overrides a component token that a typed prop sets.                               |
 | `KUI-L022` | error  | A class placed on a component's root is styled by the application (a hook class).     |
+| `KUI-L023` | error  | A source module renders another component's public class as its own markup.           |
 
 For `KUI-L004` and `KUI-L007`, scroll and inset declarations belong to the
 subject of each CSS selector. An ancestor class used only to qualify a
@@ -112,7 +113,7 @@ uses that same metadata for direct component calls and JSX, including nested
 paths such as `choices[].color`; consumer catalogs receive identical checks.
 Dynamic values remain a type-system responsibility rather than being guessed.
 
-## Component ownership (`KUI-L019`–`KUI-L022`)
+## Component ownership (`KUI-L019`–`KUI-L023`)
 
 Components own their styles and are configured, never overridden. These
 diagnostics apply the package's own `check:css-ownership` rules to
@@ -152,6 +153,13 @@ which element a selector styles.
   or use an exact or wildcard TypeScript `paths` alias from the nearest
   `tsconfig.json` inside the analyzed root (including inherited options).
   Unresolved aliases remain unclassified; the analyzer does not execute code.
+- **`KUI-L023` — borrowed component markup.** An intrinsic JSX element, raw
+  HTML class attribute, `classList.add`/`toggle`/`replace`, `className`
+  assignment, or `setAttribute('class', …)` writes another cataloged
+  component's public class. The package boundary applies by default;
+  component mode also protects sibling modules through `componentSource`.
+  A component's own source and its `placeableClasses` remain allowed. Findings
+  name the class, owner, write site, and configuration route.
 
 Every message names the configuration to use (the component's typed props,
 public tokens, and variants from its catalog entry) and ends with the same
@@ -334,6 +342,6 @@ validator.
 Review findings remain visible until explicitly suppressed. Avoid suppressing
 `KUI-L001`, `KUI-L002`, `KUI-L003`, `KUI-L007`, `KUI-L009`, `KUI-L010`,
 `KUI-L011`, `KUI-L012`, `KUI-L013`, `KUI-L014`, `KUI-L015`, `KUI-L016`,
-`KUI-L019`, `KUI-L020`, `KUI-L021`, or `KUI-L022`:
+`KUI-L019`, `KUI-L020`, `KUI-L021`, `KUI-L022`, or `KUI-L023`:
 those indicate a
 definite boundary or parsing failure rather than an aesthetic judgment.

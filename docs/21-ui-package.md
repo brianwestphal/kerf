@@ -474,7 +474,8 @@ JSX. First- and third-party catalogs use the same contract.
 Component ownership applies downstream too: a CSS rule whose subject is
 another package's cataloged component (`KUI-L019`), another component's
 private `--_*` variable (`KUI-L020`), an override of a token a typed prop sets
-(`KUI-L021`), and a hook class on a component's root (`KUI-L022`) are errors
+(`KUI-L021`), a hook class on a component's root (`KUI-L022`), and a module
+rendering another component's public classes as its own markup (`KUI-L023`) are errors
 that name the configuration to use and route a missing prop to a component-gap
 report. For application components, `KUI-L022` resolves direct relative imports
 and TypeScript `paths` aliases from the nearest consumer tsconfig. Ownership is

@@ -1,6 +1,6 @@
 /**
  * Downstream component-ownership facts for `kerf-ui-analyze` (`KUI-L019` –
- * `KUI-L022`): the consumer-side form of the package's own
+ * `KUI-L023`): the consumer-side form of the package's own
  * `check:css-ownership` rules.
  *
  * Components own their styles and are configured, never overridden. An

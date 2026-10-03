@@ -81,6 +81,10 @@ export const UI_ANALYSIS_RULES = Object.freeze({
     severity: 'error',
     title: "Hook class restyles a cataloged component's root",
   },
+  'KUI-L023': {
+    severity: 'error',
+    title: "Another component's public class is rendered as markup",
+  },
 });
 
 const ownershipAction =
@@ -93,6 +97,7 @@ export const UI_ANALYSIS_ACTIONS = Object.freeze({
   'KUI-L021':
     'Set the typed prop the diagnostic names on the component instead of overriding its token.',
   'KUI-L022': ownershipAction,
+  'KUI-L023': ownershipAction,
 });
 
 const adoptionRules = new Set([
@@ -105,6 +110,7 @@ const adoptionRules = new Set([
   'KUI-L020',
   'KUI-L021',
   'KUI-L022',
+  'KUI-L023',
 ]);
 
 const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx']);
@@ -972,6 +978,20 @@ function literalClasses(attribute) {
   return { values: [], dynamic: true };
 }
 
+function literalClassValues(expression) {
+  if (!expression) return [];
+  if (ts.isStringLiteralLike(expression))
+    return expression.text.split(/\s+/).filter(Boolean);
+  if (ts.isParenthesizedExpression(expression))
+    return literalClassValues(expression.expression);
+  if (ts.isConditionalExpression(expression))
+    return [
+      ...literalClassValues(expression.whenTrue),
+      ...literalClassValues(expression.whenFalse),
+    ];
+  return [];
+}
+
 function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
   const hooks = new Map();
   const composedChildren = new Map();
@@ -1345,6 +1365,28 @@ function inspectTsx(
     }
   }
   const stack = [];
+  const borrowed = (className, node, via) => {
+    for (const owner of facts.classEntries.get(className) ?? []) {
+      if (
+        !isForeign(owner) ||
+        owner.boundaries?.placeableClasses?.includes(className)
+      )
+        continue;
+      diagnostics.push(
+        diagnostic(
+          'KUI-L023',
+          location(file, node, source),
+          `\`.${className}\` is rendered in this module's ${via} but belongs to ${componentLabel(owner)}. Render that component or configure it through ${configurationFor(owner)}. ${reportGap(owner)}`,
+          { className, component: owner.key, via },
+          undefined,
+          adoption,
+        ),
+      );
+    }
+  };
+  const borrowedValues = (values, node, via) => {
+    for (const className of new Set(values)) borrowed(className, node, via);
+  };
   const visit = (node) => {
     if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
       const opening = ts.isJsxElement(node) ? node.openingElement : node;
@@ -1369,6 +1411,15 @@ function inspectTsx(
       );
       const classes = literalClasses(classAttribute);
       const at = location(file, opening, source);
+      if (!entry && /^[a-z]/.test(tag))
+        borrowedValues(
+          classAttribute?.initializer &&
+            ts.isJsxExpression(classAttribute.initializer)
+            ? literalClassValues(classAttribute.initializer.expression)
+            : classes.values,
+          classAttribute ?? opening,
+          'JSX markup',
+        );
       if (entry)
         inspectCssValues(
           file,
@@ -1467,6 +1518,36 @@ function inspectTsx(
       return;
     }
     if (ts.isCallExpression(node)) {
+      if (ts.isPropertyAccessExpression(node.expression)) {
+        const method = node.expression.name.text;
+        const receiver = node.expression.expression;
+        if (
+          ts.isPropertyAccessExpression(receiver) &&
+          receiver.name.text === 'classList'
+        ) {
+          const written =
+            method === 'add'
+              ? node.arguments
+              : method === 'toggle'
+                ? node.arguments.slice(0, 1)
+                : method === 'replace'
+                  ? node.arguments.slice(1, 2)
+                  : [];
+          for (const value of written)
+            borrowedValues(literalClassValues(value), value, 'classList write');
+        }
+        if (
+          method === 'setAttribute' &&
+          node.arguments[0] &&
+          ts.isStringLiteralLike(node.arguments[0]) &&
+          node.arguments[0].text === 'class'
+        )
+          borrowedValues(
+            literalClassValues(node.arguments[1]),
+            node.arguments[1] ?? node,
+            'setAttribute write',
+          );
+      }
       const entry = ts.isIdentifier(node.expression)
         ? imports.get(node.expression.text)
         : ts.isPropertyAccessExpression(node.expression) &&
@@ -1490,6 +1571,25 @@ function inspectTsx(
           namespaces,
           diagnostics,
         );
+    }
+    if (
+      ts.isBinaryExpression(node) &&
+      [ts.SyntaxKind.EqualsToken, ts.SyntaxKind.PlusEqualsToken].includes(
+        node.operatorToken.kind,
+      ) &&
+      ts.isPropertyAccessExpression(node.left) &&
+      node.left.name.text === 'className'
+    )
+      borrowedValues(
+        literalClassValues(node.right),
+        node.right,
+        'className assignment',
+      );
+    if (ts.isStringLiteralLike(node) && node.text.includes('<')) {
+      for (const match of node.text.matchAll(
+        /<[a-z][^>]*\sclass\s*=\s*["']([^"']+)["']/gi,
+      ))
+        borrowedValues(match[1].split(/\s+/).filter(Boolean), node, 'raw HTML');
     }
     ts.forEachChild(node, visit);
   };

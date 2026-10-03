@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Doctor detects borrowed component markup.** Source modules that place a
+  foreign public class in JSX, raw HTML, or DOM class writes now receive
+  `KUI-L023`; documented placeable classes remain allowed.
+
 - **Doctor offers strict same-package selector context checks.**
   `ownershipContext: "any"` reports a sibling component's class even when it is
   only used as selector context; cross-package composition stays available.

@@ -253,6 +253,76 @@ const ids = (report: Awaited<ReturnType<typeof analyzeUiProject>>) =>
   );
 
 describe('kerf-ui-analyze component ownership diagnostics', () => {
+  it('reports borrowed public classes across JSX, raw HTML, and DOM writes', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          { id: 'ticket-row', name: 'TicketRow', source: 'src/ticket-row.tsx' },
+        ],
+      }),
+      'src/ticket-row.tsx':
+        'import \'./ticket-row.css\';\nexport const TicketRow = () => <article class="ticket-row ticket-row--selected" />;\n',
+      'src/ticket-row.css': '.ticket-row { color: blue; }\n',
+      'src/host.tsx': [
+        `const markup = '<div class="kui-toolbar kui-toolbar__leading"></div>';`,
+        'const el = document.createElement("div");',
+        "el.classList.add('ticket-row', 'kui-toolbar');",
+        "el.classList.toggle('ticket-row--selected'); el.classList.replace('old', 'ticket-row'); el.classList.remove('kui-toolbar');",
+        "el.className = 'ticket-row';",
+        "el.setAttribute('class', 'ticket-row kui-app-root');",
+        'export const Host = () => <><article class="ticket-row ticket-row--selected" /><div class="kui-app-root" /><section className="kui-toolbar" /></>;',
+        "export const Alt = (flag) => <div className={flag ? 'ticket-row' : 'kui-app-root'} />;",
+        '',
+      ].join('\n'),
+    });
+    const findings = async (ownership: 'package' | 'component') =>
+      (await analyzeUiProject({ root, ownership })).diagnostics
+        .filter((item) => item.ruleId === 'KUI-L023')
+        .map(
+          (item) =>
+            `${item.location.file}:${item.location.line} ${(item.evidence as { className: string }).className}`,
+        );
+    expect(await findings('package')).toEqual([
+      'src/host.tsx:1 kui-toolbar',
+      'src/host.tsx:1 kui-toolbar__leading',
+      'src/host.tsx:3 kui-toolbar',
+      'src/host.tsx:7 kui-toolbar',
+    ]);
+    expect(await findings('component')).toEqual([
+      'src/host.tsx:1 kui-toolbar',
+      'src/host.tsx:1 kui-toolbar__leading',
+      'src/host.tsx:3 ticket-row',
+      'src/host.tsx:3 kui-toolbar',
+      'src/host.tsx:4 ticket-row--selected',
+      'src/host.tsx:4 ticket-row',
+      'src/host.tsx:5 ticket-row',
+      'src/host.tsx:6 ticket-row',
+      'src/host.tsx:7 ticket-row',
+      'src/host.tsx:7 ticket-row--selected',
+      'src/host.tsx:7 kui-toolbar',
+      'src/host.tsx:8 ticket-row',
+    ]);
+  });
+
   it('finds foreign element subjects using the stylesheet owner JSX', async () => {
     const root = await project({
       'package.json': JSON.stringify({ name: 'app' }),

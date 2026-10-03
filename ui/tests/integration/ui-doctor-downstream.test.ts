@@ -548,7 +548,7 @@ test(
           ],
         }),
         'src/rail.tsx':
-          "import './rail.css';\nimport { LoadingSpinner } from '@kerfjs/ui/loading-spinner';\nexport const Rail = () => <div class=\"active-claim-spinner\"><LoadingSpinner /></div>;\n",
+          "import './rail.css';\nimport { LoadingSpinner } from '@kerfjs/ui/loading-spinner';\nexport const Rail = () => <div class=\"active-claim-spinner kui-toolbar\"><LoadingSpinner /></div>;\n",
         'src/rail.css':
           '.active-claim-spinner > svg { color: red; }\n.ticket-search-field svg { color: red; }\n.ticket-search-field .rail { color: red; }\n',
         'src/search.tsx':
@@ -567,6 +567,14 @@ test(
               `${item.location.file}:${item.location.line}`,
           ),
       ).toEqual(['src/rail.css:1', 'src/rail.css:2']);
+      expect(result.report.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: 'KUI-L023',
+            evidence: expect.objectContaining({ className: 'kui-toolbar' }),
+          }),
+        ]),
+      );
       await writeFile(
         resolve(root, '.kerf-ui-doctor.json'),
         JSON.stringify({
