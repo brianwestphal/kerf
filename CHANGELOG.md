@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **LucideIcon supports filled glyphs.** Pass `appearance="solid"` to use the
+  icon's current text color as its fill; outline remains the default.
+
 - **Doctor detects borrowed component markup.** Source modules that place a
   foreign public class in JSX, raw HTML, or DOM class writes now receive
   `KUI-L023`; documented placeable classes remain allowed.

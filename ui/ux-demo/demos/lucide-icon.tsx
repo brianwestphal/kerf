@@ -1,7 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
-import { Bell } from 'lucide';
+import { Bell, Star } from 'lucide';
 
 export function LucideIconDemo() {
   // Both render the same glyph — LucideIcon's two modes differ in semantics, not
@@ -43,6 +43,16 @@ export function LucideIconDemo() {
           <LucideIcon icon={Bell} name="bell-l" size="l" />
           <LucideIcon icon={Bell} name="bell-xl" size="xl" />
           <LucideIcon icon={Bell} name="bell-30" size={30} />
+        </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Outline and solid"
+        note="Use the solid appearance for a selected or emphasized glyph; its fill follows the current text color."
+        align="glyph"
+      >
+        <Row gap="m" rootAttributes={{ 'data-demo-icon-appearance': '' }}>
+          <LucideIcon icon={Star} name="star-outline" />
+          <LucideIcon icon={Star} name="star-solid" appearance="solid" />
         </Row>
       </CatalogExample>
     </CatalogExampleStack>

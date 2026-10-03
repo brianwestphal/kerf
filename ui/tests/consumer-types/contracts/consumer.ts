@@ -282,6 +282,9 @@ Select({
   renderSelected: () => undefined,
 });
 const filterIcon = UI.LucideIcon({ icon: [], name: 'funnel' });
+UI.LucideIcon({ icon: [], name: 'star', appearance: 'solid' });
+// @ts-expect-error LucideIcon appearance accepts only outline or solid.
+UI.LucideIcon({ icon: [], name: 'star', appearance: 'filled' });
 // A multiple icon-only trigger (a toolbar filter menu) shows a fixed icon.
 Select<'bug' | 'docs'>({
   name: 'label-filter',

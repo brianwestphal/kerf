@@ -159,7 +159,16 @@
       ],
       "variants": [
         "decorative",
-        "labeled"
+        "labeled",
+        "outline (default appearance)",
+        "solid (appearance=solid)"
+      ],
+      "usageExamples": [
+        {
+          "title": "Solid selected glyph",
+          "description": "The solid appearance fills a compatible Lucide glyph with currentColor while retaining its stroke and accessible name policy.",
+          "code": "<LucideIcon icon={Star} name=\"star\" appearance=\"solid\" />"
+        }
       ],
       "accessibility": [
         "Decorative icons are aria-hidden; meaningful icons require a label."

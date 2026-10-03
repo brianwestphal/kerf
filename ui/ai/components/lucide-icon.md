@@ -32,6 +32,8 @@ Exact prop names and types: [`@kerfjs/ui/lucide-icon`](../public-api-signatures-
 
 - decorative
 - labeled
+- outline (default appearance)
+- solid (appearance=solid)
 
 ## Composition
 
@@ -52,6 +54,16 @@ Margin: none · border: none · padding: none (layout role: foundation). `self` 
 ## Accessibility
 
 - Decorative icons are aria-hidden; meaningful icons require a label.
+
+## Usage examples
+
+### Solid selected glyph
+
+The solid appearance fills a compatible Lucide glyph with currentColor while retaining its stroke and accessible name policy.
+
+```tsx
+<LucideIcon icon={Star} name="star" appearance="solid" />
+```
 
 ## Styling boundary
 

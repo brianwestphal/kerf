@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 321200,
-  "measuredLargestJavaScriptGzip": 126042,
-  "measuredTotalJavaScriptGzip": 321102,
+  "totalJavaScriptGzip": 321300,
+  "measuredLargestJavaScriptGzip": 126044,
+  "measuredTotalJavaScriptGzip": 321280,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2531,6 +2531,22 @@
         "measuredTotalJavaScriptGzip": 321102,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 321200
+      }
+    },
+    {
+      "at": "2026-10-03T03:33:42.881Z",
+      "reason": "LucideIcon solid appearance adds a catalog specimen and typed SVG fill support",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126042,
+        "measuredTotalJavaScriptGzip": 321102,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 321280,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321300
       }
     }
   ]

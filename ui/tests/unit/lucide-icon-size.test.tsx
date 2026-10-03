@@ -1,4 +1,4 @@
-import { Circle } from 'lucide';
+import { Circle, Star } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { LucideIcon, type LucideIconProps } from '../../src/lucide-icon.js';
@@ -6,6 +6,16 @@ import { LucideIcon, type LucideIconProps } from '../../src/lucide-icon.js';
 const props = { icon: Circle, name: 'circle' };
 
 describe('LucideIcon size', () => {
+  it('defaults to outline and fills a solid glyph from currentColor', () => {
+    const star = { icon: Star, name: 'star' };
+    expect(String(LucideIcon(star))).toContain('fill="none"');
+    expect(String(LucideIcon({ ...star, appearance: 'outline' }))).toContain(
+      'fill="none"',
+    );
+    expect(String(LucideIcon({ ...star, appearance: 'solid' }))).toContain(
+      'fill="currentColor"',
+    );
+  });
   it('keeps the original 1em default and semantics', () => {
     const html = String(LucideIcon(props));
     expect(html).toContain('data-lucide="circle" aria-hidden="true"');

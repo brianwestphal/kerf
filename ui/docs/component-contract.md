@@ -725,6 +725,13 @@ line of its own and centers in its slot. It is a
 placeholder, not progress: use `LoadingSpinner` for known busy activity, and never
 animate the skeleton.
 
+`LucideIcon` defaults to `appearance="outline"`. Pass
+`appearance="solid"` for a filled state glyph such as a selected star or
+triangle. The SVG uses `fill="currentColor"`, so fill follows the icon's text
+color without styling its internal SVG from the application. Choose a Lucide
+node whose geometry supports a solid fill; the prop does not replace an icon
+node's own fill attributes.
+
 `LoadingSpinner` accepts the same `size` steps as `LucideIcon`: `xs`, `s`, `m`,
 `l`, `xl` (12/16/20/24/32px at a 16px root) or a positive finite pixel
 number converted to rem. Omit `size` to keep its inherited 1em box. A supplied

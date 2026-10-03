@@ -34,3 +34,23 @@ test('LucideIcon named and numeric sizes follow the root font scale', async ({
     });
   }
 });
+
+test('LucideIcon solid appearance fills the glyph with currentColor', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=lucide-icon');
+  const row = page.locator('[data-demo-icon-appearance]');
+  const outline = row.locator('[data-lucide="star-outline"]');
+  const solid = row.locator('[data-lucide="star-solid"]');
+  await expect(outline).toHaveAttribute('fill', 'none');
+  await expect(solid).toHaveAttribute('fill', 'currentColor');
+  await row.evaluate((element) => {
+    (element as HTMLElement).style.color = 'rgb(24, 96, 160)';
+  });
+  await expect(solid).toHaveCSS('fill', 'rgb(24, 96, 160)');
+  await expect(solid.locator('path')).toHaveCSS('fill', 'rgb(24, 96, 160)');
+  await expect(outline.locator('path')).toHaveCSS('fill', 'none');
+  await row.screenshot({
+    path: testInfo.outputPath('lucide-icon-appearance.png'),
+  });
+});

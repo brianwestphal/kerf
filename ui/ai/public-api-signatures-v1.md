@@ -3260,6 +3260,8 @@ type LucideIconSize = 'xs' | 's' | 'm' | 'l' | 'xl' | number;
 interface LucideIconProps {
     icon: LucideNode;
     name: string;
+    /** Outline by default; solid fills compatible glyphs with the current text color. */
+    appearance?: 'outline' | 'solid';
     className?: string;
     label?: string;
     /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
@@ -3268,7 +3270,7 @@ interface LucideIconProps {
     slot?: string;
 }
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-declare function LucideIcon({ icon, name, className, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
+declare function LucideIcon({ icon, name, appearance, className, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
 
 export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
 ```

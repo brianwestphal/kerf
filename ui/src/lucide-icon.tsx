@@ -17,6 +17,8 @@ const lucideIconSizePixels = {
 export interface LucideIconProps {
   icon: LucideNode;
   name: string;
+  /** Outline by default; solid fills compatible glyphs with the current text color. */
+  appearance?: 'outline' | 'solid';
   className?: string;
   label?: string;
   /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
@@ -29,6 +31,7 @@ export interface LucideIconProps {
 export function LucideIcon({
   icon,
   name,
+  appearance = 'outline',
   className,
   label,
   size,
@@ -53,7 +56,7 @@ export function LucideIcon({
       aria-label={label}
       aria-hidden={label ? undefined : 'true'}
       viewBox="0 0 24 24"
-      fill="none"
+      fill={appearance === 'solid' ? 'currentColor' : 'none'}
       stroke="currentColor"
       stroke-width="2"
       stroke-linecap="round"
