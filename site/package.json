@@ -23,7 +23,7 @@
     "pretest:visual": "npm run build",
     "preview:visual": "node scripts/serve-visual-preview.mjs",
     "test:visual": "playwright test tests/full-visual-audit.spec.ts --project=chromium",
-    "check:audit": "npm audit --include=dev --audit-level=high"
+    "check:audit": "node --test tests/audit-policy.test.mjs && node scripts/check-audit.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.0",

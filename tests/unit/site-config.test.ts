@@ -84,7 +84,7 @@ describe('site config', { timeout: 30_000 }, () => {
     );
   });
 
-  it('gates the complete site build tree on high and critical dependency advisories', () => {
+  it('audits the complete site build tree with a reviewed advisory policy', () => {
     const sitePackage = JSON.parse(
       readFileSync(`${cwd()}/site/package.json`, 'utf8'),
     ) as {
@@ -94,10 +94,16 @@ describe('site config', { timeout: 30_000 }, () => {
       `${cwd()}/.github/workflows/ci.yml`,
       'utf8',
     );
+    const auditRunner = readFileSync(
+      `${cwd()}/site/scripts/check-audit.mjs`,
+      'utf8',
+    );
 
     expect(sitePackage.scripts['check:audit']).toBe(
-      'npm audit --include=dev --audit-level=high',
+      'node --test tests/audit-policy.test.mjs && node scripts/check-audit.mjs',
     );
+    expect(auditRunner).toContain("['audit', '--include=dev', '--json']");
+    expect(auditRunner).toContain('classifyAudit(JSON.parse(audit.stdout))');
     expect(ciWorkflow).toContain(
       [
         '- name: Audit all site build dependencies (high and critical)',
