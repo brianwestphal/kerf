@@ -112,7 +112,7 @@ mount(root, () => {
                 h.id === selectedId.value ? 'rs-row rs-row-on' : 'rs-row',
               )}
             >
-              <span class={`rs-dot rs-${h.status}`}></span>
+              <span class={`rs-dot rs-${h.status}`} />
               <span class="rs-name">{h.name}</span>
               <span class="rs-region">{h.region}</span>
               <span class="rs-cpu">{h.cpu}%</span>

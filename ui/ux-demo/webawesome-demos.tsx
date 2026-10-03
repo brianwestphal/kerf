@@ -121,7 +121,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-copy-button
         value="npm i @kerfjs/ui"
         copy-label="Copy install command"
-      ></wa-copy-button>
+      />
     </Row>
   ),
   'wa-dropdown': () => (
@@ -167,7 +167,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       value="#0088ff"
       format="hex"
       with-opacity
-    ></wa-color-picker>
+    />
   ),
   'wa-input': () => (
     <List gap="xs">
@@ -176,8 +176,8 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         value="Component library"
         hint="Visible to collaborators"
         with-clear
-      ></wa-input>
-      <wa-input label="Search" placeholder="Filter components"></wa-input>
+      />
+      <wa-input label="Search" placeholder="Filter components" />
     </List>
   ),
   'wa-known-date': () => (
@@ -185,7 +185,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       label="Release date"
       value="2026-09-11"
       hint="Enter the date you already know."
-    ></wa-known-date>
+    />
   ),
   'wa-number-input': () => (
     <wa-number-input
@@ -194,7 +194,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       min="1"
       max="50"
       hint="Between 1 and 50"
-    ></wa-number-input>
+    />
   ),
   'wa-option': () => (
     <wa-select label="Option states" value="selected">
@@ -211,7 +211,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       value="274816"
       format="### ###"
       hint="Six-digit code"
-    ></wa-otp-input>
+    />
   ),
   'wa-radio': () => (
     <div role="group" aria-label="Radio states">
@@ -233,9 +233,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-radio value="roomy">Roomy</wa-radio>
     </wa-radio-group>
   ),
-  'wa-rating': () => (
-    <wa-rating label="Component quality" value="4"></wa-rating>
-  ),
+  'wa-rating': () => <wa-rating label="Component quality" value="4" />,
   'wa-select': () => (
     <wa-select label="Priority" value="high" hint="Used to order the queue">
       <wa-option value="normal">Normal</wa-option>
@@ -244,12 +242,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </wa-select>
   ),
   'wa-slider': () => (
-    <wa-slider
-      label="Completion"
-      value="68"
-      with-markers
-      with-tooltip
-    ></wa-slider>
+    <wa-slider label="Completion" value="68" with-markers with-tooltip />
   ),
   'wa-switch': () => (
     <List gap="xs">
@@ -264,7 +257,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       rows="4"
       value="Every free component has a focused catalog route."
       hint="Markdown is supported."
-    ></wa-textarea>
+    />
   ),
   'wa-time-input': () => (
     <wa-time-input
@@ -272,7 +265,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       value="14:30"
       hour-format="24"
       with-now
-    ></wa-time-input>
+    />
   ),
 
   'wa-accordion': () => (
@@ -369,7 +362,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           12 components
         </Text>
       </Row>
-      <wa-divider></wa-divider>
+      <wa-divider />
       <Row vAlign="middle" hAlign="space-between">
         <strong>Needs review</strong>
         <Text variant="span" tone="quiet" size="compact">
@@ -462,7 +455,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       with-edges
       with-summary
       label="Component results"
-    ></wa-pagination>
+    />
   ),
   'wa-tab': () => (
     <wa-tab-group active="focused">
@@ -587,7 +580,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-progress-bar value="72" label="Build progress">
         72%
       </wa-progress-bar>
-      <wa-progress-bar label="Checking dependencies"></wa-progress-bar>
+      <wa-progress-bar label="Checking dependencies" />
     </List>
   ),
   'wa-progress-ring': () => (
@@ -595,17 +588,17 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-progress-ring value="72" label="Build progress">
         72%
       </wa-progress-ring>
-      <wa-progress-ring label="Loading"></wa-progress-ring>
+      <wa-progress-ring label="Loading" />
     </Row>
   ),
   'wa-skeleton': () => (
     <List gap="xs">
-      <wa-skeleton effect="sheen"></wa-skeleton>
-      <wa-skeleton effect="sheen"></wa-skeleton>
-      <wa-skeleton effect="sheen"></wa-skeleton>
+      <wa-skeleton effect="sheen" />
+      <wa-skeleton effect="sheen" />
+      <wa-skeleton effect="sheen" />
     </List>
   ),
-  'wa-spinner': () => <wa-spinner aria-label="Loading"></wa-spinner>,
+  'wa-spinner': () => <wa-spinner aria-label="Loading" />,
   'wa-tag': () => (
     <List hAlign="center" gap="xs">
       <Text variant="span">Tags · rounded rectangle</Text>
@@ -632,7 +625,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         The notification uses Web Awesome's programmatic stack API. Hot Sheet 2
         currently renders its own app-level toast.
       </Text>
-      <wa-toast id="catalog-wa-toast" placement="top-end"></wa-toast>
+      <wa-toast id="catalog-wa-toast" placement="top-end" />
     </List>
   ),
   'wa-toast-item': () => (
@@ -661,17 +654,14 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
 
   'wa-animated-image': () => (
     <SunkenPanel ariaLabel="Animated image example">
-      <wa-animated-image
-        src={demoImage}
-        alt="Blue geometric Kerf preview"
-      ></wa-animated-image>
+      <wa-animated-image src={demoImage} alt="Blue geometric Kerf preview" />
     </SunkenPanel>
   ),
   'wa-avatar': () => (
     <Row hAlign="center" vAlign="middle" wrap>
-      <wa-avatar initials="KW" label="Kerf workspace"></wa-avatar>
-      <wa-avatar initials="UI" label="UI team"></wa-avatar>
-      <wa-avatar label="Fallback icon"></wa-avatar>
+      <wa-avatar initials="KW" label="Kerf workspace" />
+      <wa-avatar initials="UI" label="UI team" />
+      <wa-avatar label="Fallback icon" />
     </Row>
   ),
   'wa-carousel': () => (
@@ -709,9 +699,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-icon': () => (
     <Row hAlign="center" vAlign="middle" wrap>
-      <wa-icon name="circle-question" library="system" label="Help"></wa-icon>
-      <wa-icon name="chevron-right" library="system" label="Next"></wa-icon>
-      <wa-icon name="play-circle" library="system" label="Play"></wa-icon>
+      <wa-icon name="circle-question" library="system" label="Help" />
+      <wa-icon name="chevron-right" library="system" label="Next" />
+      <wa-icon name="play-circle" library="system" label="Play" />
     </Row>
   ),
   'wa-markdown': () => (
@@ -726,19 +716,11 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </List>
   ),
   'wa-qr-code': () => (
-    <wa-qr-code
-      value="https://kerfjs.dev"
-      label="Kerf website"
-      size="160"
-    ></wa-qr-code>
+    <wa-qr-code value="https://kerfjs.dev" label="Kerf website" size="160" />
   ),
   'wa-zoomable-frame': () => (
     <SunkenPanel ariaLabel="Zoomable frame example">
-      <wa-zoomable-frame
-        srcdoc={demoFrame}
-        zoom="1"
-        loading="eager"
-      ></wa-zoomable-frame>
+      <wa-zoomable-frame srcdoc={demoFrame} zoom="1" loading="eager" />
     </SunkenPanel>
   ),
 
@@ -835,17 +817,11 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     <ValueTable label="Byte formatting examples">
       <ValueTableRow
         label="Binary"
-        value={<wa-format-bytes value="10485760"></wa-format-bytes>}
+        value={<wa-format-bytes value="10485760" />}
       />
       <ValueTableRow
         label="Decimal"
-        value={
-          <wa-format-bytes
-            value="10485760"
-            unit="bit"
-            display="long"
-          ></wa-format-bytes>
-        }
+        value={<wa-format-bytes value="10485760" unit="bit" display="long" />}
       />
     </ValueTable>
   ),
@@ -860,7 +836,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
             day="numeric"
             year="numeric"
             time-zone="UTC"
-          ></wa-format-date>
+          />
         }
       />
       <ValueTableRow
@@ -871,32 +847,21 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
             hour="numeric"
             minute="2-digit"
             time-zone="UTC"
-          ></wa-format-date>
+          />
         }
       />
     </ValueTable>
   ),
   'wa-format-number': () => (
     <ValueTable label="Number formatting examples">
-      <ValueTableRow
-        label="Number"
-        value={<wa-format-number value="1284"></wa-format-number>}
-      />
+      <ValueTableRow label="Number" value={<wa-format-number value="1284" />} />
       <ValueTableRow
         label="Percent"
-        value={
-          <wa-format-number value="0.72" type="percent"></wa-format-number>
-        }
+        value={<wa-format-number value="0.72" type="percent" />}
       />
       <ValueTableRow
         label="Currency"
-        value={
-          <wa-format-number
-            value="49"
-            type="currency"
-            currency="USD"
-          ></wa-format-number>
-        }
+        value={<wa-format-number value="49" type="currency" currency="USD" />}
       />
     </ValueTable>
   ),
@@ -907,7 +872,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           Included from a local template fragment.
         </wa-callout>
       </template>
-      <wa-include src="#catalog-include-source"></wa-include>
+      <wa-include src="#catalog-include-source" />
     </div>
   ),
   'wa-intersection-observer': () => (
@@ -1003,10 +968,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     <Row vAlign="middle" hAlign="space-between">
       <span>Last updated</span>
       <strong>
-        <wa-relative-time
-          date="2026-09-10T12:00:00Z"
-          format="long"
-        ></wa-relative-time>
+        <wa-relative-time date="2026-09-10T12:00:00Z" format="long" />
       </strong>
     </Row>
   ),

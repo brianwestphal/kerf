@@ -124,7 +124,7 @@ function entryKey(entry: PopupMenuEntry): string {
 
 function renderEntry(entry: PopupMenuEntry, nested = false) {
   if (entry.kind === 'divider')
-    return <wa-divider slot={nested ? 'submenu' : undefined}></wa-divider>;
+    return <wa-divider slot={nested ? 'submenu' : undefined} />;
   // A group title styled like the Select's group title. It is not a slotted
   // h1-h6, whose Web Awesome group-label metrics are !important.
   if (entry.kind === 'heading')
@@ -159,7 +159,7 @@ function renderEntry(entry: PopupMenuEntry, nested = false) {
           {entry.details}
         </span>
       ) : entry.submenu ? (
-        <span slot="details"></span>
+        <span slot="details" />
       ) : null}
       {entry.submenu?.map((child) => renderEntry(child, true))}
     </wa-dropdown-item>
@@ -239,7 +239,7 @@ export function PopupMenu({
           aria-label={label}
           aria-hidden="true"
           tabindex={-1}
-        ></button>
+        />
       ) : (
         <wa-button
           slot="trigger"

@@ -39,7 +39,7 @@ export function TokenSearchFieldDemo() {
             hint="Name this saved view."
             required
             value="Open procurement"
-          ></wa-input>
+          />
           <TokenSearchField
             id="saved-view-query"
             label="Search query"

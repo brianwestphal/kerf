@@ -139,7 +139,7 @@ export type SelectProps<Value extends string = string> =
 function SelectChevron() {
   return (
     <svg viewBox="0 0 448 512" aria-hidden="true">
-      <path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+      <path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
     </svg>
   );
 }
@@ -250,7 +250,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
           orientation="horizontal"
           role="separator"
           aria-orientation="horizontal"
-        ></wa-divider>
+        />
       )}
       <wa-option
         value={choice.value}
@@ -313,7 +313,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
               @kerfjs/ui/select/register writes into the summary. */}
           <span slot="label" data-key={`${name}:trigger-label`}>
             {label || ariaLabel}
-            <span class="kui-select__name-summary" data-morph-skip></span>
+            <span class="kui-select__name-summary" data-morph-skip />
           </span>
           <span
             data-key={`${name}:trigger-icon`}

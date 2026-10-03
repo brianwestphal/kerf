@@ -356,6 +356,7 @@ Rule of thumb: if the ticket's value is in **coverage and recall**, tag it `Fabl
 ## Conventions
 
 - ESM modules (`"type": "module"`).
+- In TSX, write elements with no children as self-closing tags (`<span />`), including custom elements and non-void HTML elements. The JSX runtime emits the appropriate closing HTML tag.
 - Import paths use `.js` extension (TypeScript convention for ESM resolution).
 - **Dependencies are scoped by side.** The browser runtime (`src/` → `dist/`, everything an app bundle inherits) depends on `@preact/signals-core` and nothing else. The Node-only `kerfjs setup` CLI (`setup/`) may also use `minimatch` and `yaml`; it never reaches a browser bundle. `tests/unit/dependency-contract.test.ts` pins both allowlists and requires `package.json` `dependencies` to equal their union — adding a package means naming which side needs it there.
 - Public API is documented in `docs/8-api-reference.md`.

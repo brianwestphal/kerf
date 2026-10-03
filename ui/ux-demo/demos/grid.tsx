@@ -16,8 +16,8 @@ export function GridDemo() {
         note="Related form fields divide the available width evenly with the standard homogeneous-group gap."
       >
         <Grid columns={2} gap="m">
-          <wa-input label="Quantity" value="12"></wa-input>
-          <wa-input label="Unit" value="pieces"></wa-input>
+          <wa-input label="Quantity" value="12" />
+          <wa-input label="Unit" value="pieces" />
         </Grid>
       </CatalogExample>
       <CatalogExample
@@ -36,11 +36,8 @@ export function GridDemo() {
         viewport={{ width: 'wide' }}
       >
         <Grid minColumnWidth={px(376)} gap="m">
-          <wa-input label="Provider name" value="Example provider"></wa-input>
-          <wa-input
-            label="API endpoint"
-            value="https://example.test"
-          ></wa-input>
+          <wa-input label="Provider name" value="Example provider" />
+          <wa-input label="API endpoint" value="https://example.test" />
         </Grid>
       </CatalogExample>
       <CatalogExample

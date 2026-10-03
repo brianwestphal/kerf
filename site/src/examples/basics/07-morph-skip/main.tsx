@@ -23,7 +23,7 @@ mount(root, () => (
         width="320"
         height="80"
         style="display: block;"
-      ></canvas>
+      />
     </div>
     <p class="kerf-helper-text">
       The canvas keeps animating no matter how often the surrounding tree

@@ -186,7 +186,7 @@ describe('production UI primitives', () => {
     const popup = asHtml(
       PopupSurface({
         inset: 'list-zero',
-        children: <wa-dropdown aria-label="Views"></wa-dropdown>,
+        children: <wa-dropdown aria-label="Views" />,
       }),
     );
     expect(popup).toContain(

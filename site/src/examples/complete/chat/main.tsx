@@ -67,7 +67,7 @@ mount(root, () => (
         <div>kerf chat</div>
       </div>
       <div class="status">
-        <span class={`dot ${busy.value ? 'busy' : ''}`}></span>
+        <span class={`dot ${busy.value ? 'busy' : ''}`} />
         {busy.value ? 'Thinking…' : 'Connected'}
       </div>
     </header>
@@ -80,7 +80,7 @@ mount(root, () => (
             <div>
               <div class="bubble">
                 {m.text}
-                {m.streaming ? <span class="caret"></span> : null}
+                {m.streaming ? <span class="caret" /> : null}
               </div>
               {m.role === 'bot' && !m.streaming ? (
                 <div class="meta">
@@ -133,7 +133,7 @@ mount(root, () => (
           data-morph-skip
           placeholder="Ask anything…  (Enter to send, Shift+Enter for newline)"
           rows={1}
-        ></textarea>
+        />
         <button type="submit" disabled={busy.value}>
           Send
         </button>

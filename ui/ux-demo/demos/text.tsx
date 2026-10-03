@@ -68,7 +68,7 @@ export function TextDemo() {
           <ContentItem>October 16, 2026</ContentItem>
         </div>
         <ListInsetControl sides="trl">
-          <wa-input label="Needed by" value="October 16, 2026"></wa-input>
+          <wa-input label="Needed by" value="October 16, 2026" />
         </ListInsetControl>
       </CatalogExample>
       <CatalogExample label="Flush dialog copy" align="glyph">

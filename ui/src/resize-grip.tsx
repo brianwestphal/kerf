@@ -17,13 +17,13 @@ export function ResizeGrip({ axis }: { axis: ResizableRegionAxis }) {
     >
       {axis === 'horizontal' ? (
         <>
-          <path d="M9 6v12"></path>
-          <path d="M15 6v12"></path>
+          <path d="M9 6v12" />
+          <path d="M15 6v12" />
         </>
       ) : (
         <>
-          <path d="M6 9h12"></path>
-          <path d="M6 15h12"></path>
+          <path d="M6 9h12" />
+          <path d="M6 15h12" />
         </>
       )}
     </svg>

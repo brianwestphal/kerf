@@ -71,7 +71,7 @@ export function Badge(props: BadgeProps) {
         aria-label={label || undefined}
         aria-hidden={label ? undefined : 'true'}
         slot={slot}
-      ></span>
+      />
     );
   }
   const {

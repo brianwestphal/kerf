@@ -305,9 +305,7 @@ export function SplitViewDemo() {
             },
           }}
           list={messageList('open-split-view-message')}
-          detail={
-            compactSelection ? messageDetail(compactSelection) : <div></div>
-          }
+          detail={compactSelection ? messageDetail(compactSelection) : <div />}
         />
       </CatalogExample>
     </CatalogExampleStack>

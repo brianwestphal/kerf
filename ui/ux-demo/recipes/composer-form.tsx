@@ -100,7 +100,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             hint="Summarize the outcome in one line."
             required
             value={title.value}
-          ></wa-input>
+          />
           <wa-textarea
             name="recipe-body"
             label="Details"
@@ -109,7 +109,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             maxlength="400"
             with-count
             value={body.value}
-          ></wa-textarea>
+          />
           <Select<string>
             name="recipe-audience"
             value={audience.value}

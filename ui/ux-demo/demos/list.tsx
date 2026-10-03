@@ -194,10 +194,7 @@ export function ListDemo() {
         <wa-card appearance="sunken">
           <List gap="xs" textInsets="l" controlInsets="rb">
             <wa-tag>Text-aligned left edge</wa-tag>
-            <wa-input
-              label="Inset list control"
-              value="Control edge"
-            ></wa-input>
+            <wa-input label="Inset list control" value="Control edge" />
             <List textInsets="t">
               <wa-tag>Nested text-aligned top edge</wa-tag>
             </List>

@@ -53,7 +53,7 @@ export function Spacer({
       aria-hidden="true"
       style={style || undefined}
       slot={slot}
-    ></div>
+    />
   );
 }
 

@@ -149,7 +149,7 @@ function createScaffold(): Element {
         <span className="demo-tag">
           defineStore • multi-consumer • resetAllStores()
         </span>
-        <span className="demo-cart-badge-slot" data-region="badge"></span>
+        <span className="demo-cart-badge-slot" data-region="badge" />
       </h2>
 
       <div className="demo-row demo-cart-add-row">
@@ -179,8 +179,8 @@ function createScaffold(): Element {
         </button>
       </div>
 
-      <div data-region="list"></div>
-      <div data-region="footer"></div>
+      <div data-region="list" />
+      <div data-region="footer" />
 
       <p className="demo-note">
         Three independent regions (badge, list, footer) subscribe via separate

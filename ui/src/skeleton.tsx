@@ -72,7 +72,7 @@ export function Skeleton({
               height,
               radius,
             )}
-          ></span>
+          />
         ))}
       </span>
     );
@@ -85,6 +85,6 @@ export function Skeleton({
       style={blockStyle(width, height, radius)}
       {...a11y}
       slot={slot}
-    ></span>
+    />
   );
 }

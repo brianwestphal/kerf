@@ -49,7 +49,7 @@ mount(root, () => (
       <span class="up">{upPct.value}% up</span>
       {/* Library-owned canvas: morph-skipped so the rAF loop draws uninterrupted */}
       <div class="chart-host" data-morph-skip>
-        <canvas id="chart" width="240" height="40"></canvas>
+        <canvas id="chart" width="240" height="40" />
       </div>
     </header>
     <table class="tickers">

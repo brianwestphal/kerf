@@ -41,7 +41,7 @@ export function ListInsetControlDemo() {
             <wa-input
               label="Filter records"
               placeholder="An input that owns its border and padding"
-            ></wa-input>
+            />
           </ListInsetControl>
         </DemoListInsetPane>
       </CatalogExample>
@@ -56,7 +56,7 @@ export function ListInsetControlDemo() {
             <wa-input
               label="Filter selected sides"
               placeholder="Right and bottom inset"
-            ></wa-input>
+            />
           </ListInsetControl>
         </DemoListInsetPane>
       </CatalogExample>
@@ -80,7 +80,7 @@ export function ListInsetControlDemo() {
             />
           </ListInsetControl>
           <ListInsetControl sides="trl">
-            <wa-input label="Assignee" placeholder="Search people"></wa-input>
+            <wa-input label="Assignee" placeholder="Search people" />
           </ListInsetControl>
           <ListInsetControl>
             <wa-button appearance="outlined">Assign</wa-button>

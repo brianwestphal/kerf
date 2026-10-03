@@ -195,10 +195,10 @@ mount(root, () => (
                   <span
                     className="glyphicon glyphicon-remove"
                     aria-hidden="true"
-                  ></span>
+                  />
                 </a>
               </td>
-              <td className="col-md-6"></td>
+              <td className="col-md-6" />
             </tr>
           ),
           // No cacheKey: the fine-grained `class` binding drives selection now,
@@ -209,7 +209,7 @@ mount(root, () => (
     <span
       className="preloadicon glyphicon glyphicon-remove"
       aria-hidden="true"
-    ></span>
+    />
   </div>
 ));
 

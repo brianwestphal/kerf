@@ -156,9 +156,9 @@ mount(app, () => (
           updates live as you navigate, making the URL-driven story visible. */}
       <div class="rt-chrome">
         <div class="rt-dots">
-          <i class="r"></i>
-          <i class="y"></i>
-          <i class="g"></i>
+          <i class="r" />
+          <i class="y" />
+          <i class="g" />
         </div>
         <div class="rt-navbtns">
           <button

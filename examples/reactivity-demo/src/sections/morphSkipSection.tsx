@@ -54,11 +54,7 @@ export function mountMorphSkip(root: HTMLElement): void {
         <strong>{tick.value}</strong>
       </p>
 
-      <div
-        id="morph-skip-mount"
-        className="demo-skip-mount"
-        data-morph-skip
-      ></div>
+      <div id="morph-skip-mount" className="demo-skip-mount" data-morph-skip />
 
       <div className="demo-row">
         <button type="button" {...BUMP.attrs} className="demo-btn">

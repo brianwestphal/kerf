@@ -92,8 +92,8 @@ function CloseIcon() {
       stroke-width="2.25"
       stroke-linecap="round"
     >
-      <path d="m7 7 10 10"></path>
-      <path d="M17 7 7 17"></path>
+      <path d="m7 7 10 10" />
+      <path d="M17 7 7 17" />
     </svg>
   );
 }
