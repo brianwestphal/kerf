@@ -760,7 +760,8 @@ const scope = createScope();
 window.addEventListener('resize', update, { signal: scope.signal });
 scope.add(() => observer.disconnect());
 // …later:
-scope.dispose(); // runs registered disposers newest first, then aborts the signal
+const teardown = scope.dispose; // safe to store or return without a wrapper
+teardown(); // runs registered disposers newest first, then aborts the signal
 // The same handle can now collect another generation of listeners.
 ```
 

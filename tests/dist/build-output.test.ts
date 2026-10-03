@@ -7,6 +7,14 @@ import { describe, expect, it } from 'vitest';
 const DIST = resolve(import.meta.dirname, '../../dist');
 
 describe('published JavaScript output', () => {
+  it('publishes createScope dispose as a detachable function property', async () => {
+    const declaration = await readFile(resolve(DIST, 'scope.d.ts'), 'utf8');
+    const disposerScope = declaration.match(
+      /interface DisposerScope \{([\s\S]*?)\n\}/,
+    )?.[1];
+    expect(disposerScope).toContain('readonly dispose: () => void;');
+  });
+
   it('has no bare chunk imports or duplicate source-map directives', async () => {
     const files = (await readdir(DIST)).filter((file) => file.endsWith('.js'));
 

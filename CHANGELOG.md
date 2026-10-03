@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`createScope().dispose` is typed as a bound function property.** Consumers
+  can store or return it as a teardown without a wrapper or an unbound-method
+  lint suppression.
+
 - **ToolbarControlGroup grow sizing keeps its basis in wide toolbars.** An
   expanded grow search now contributes its minimum width to the trailing zone's
   intrinsic size, keeping sibling groups beside it instead of wrapping early.

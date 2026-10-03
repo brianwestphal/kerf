@@ -36,7 +36,7 @@ export interface DisposerScope {
   /** Register a disposer in the current generation and return it. */
   add(dispose: () => void): () => void;
   /** Run the current generation newest first, then abort its signal. */
-  dispose(): void;
+  readonly dispose: () => void;
   /** Signal for native listeners in the current generation. */
   readonly signal: AbortSignal;
   /** Number of registered disposers in the current generation. */
