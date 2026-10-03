@@ -1052,6 +1052,55 @@ test(
 );
 
 test(
+  'the doctor protects dynamic BEM classes through selectors and DOM writes',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-bem-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"bem-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          implicitComponentOwnership: true,
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/row.css'),
+        '.ticket-row { color: blue; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/row.tsx'),
+        "import './row.css'; export const Row = ({ layout }) => <div class='ticket-row' data-layout={layout} />;\n",
+      );
+      await writeFile(
+        resolve(root, 'src/other.css'),
+        '.ticket-row--list { color: red; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/other.tsx'),
+        "import './other.css'; element.classList.add('ticket-row__error');\n",
+      );
+      const broken = await doctor(root);
+      expect(broken.status).toBe(1);
+      expect(
+        broken.report.diagnostics
+          .map((item: { id: string }) => item.id)
+          .filter((id: string) => ['KUI-L019', 'KUI-L023'].includes(id)),
+      ).toEqual(['KUI-L019', 'KUI-L023']);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor reports a directly rendered Discouraged Web Awesome element, then passes once the Kerf wrapper replaces it',
   async () => {
     const root = await mkdtemp(

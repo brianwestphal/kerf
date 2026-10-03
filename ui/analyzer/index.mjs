@@ -20,6 +20,7 @@ import {
   componentOwnershipFacts,
   contextualComponents,
   configurationFor,
+  ownsClassBlock,
   privateVariableOwner,
   reportGap,
   restyledComponents,
@@ -448,6 +449,7 @@ function catalogFacts(entries) {
   const publicTokens = new Set();
   const publicParts = new Map();
   const classEntries = new Map();
+  const blockEntries = new Map();
   const exportEntries = new Map();
   const addExport = (name, entry) => {
     const candidates = exportEntries.get(name) ?? [];
@@ -460,11 +462,20 @@ function catalogFacts(entries) {
       const name = typeof item === 'string' ? item : item.name;
       if (isComponentExport(name)) addExport(name, entry);
     }
-    for (const className of entry.boundaries?.publicClasses ?? []) {
+    for (const className of new Set(
+      [
+        entry.boundaries?.rootClass,
+        ...(entry.boundaries?.publicClasses ?? []),
+      ].filter(Boolean),
+    )) {
       publicClasses.add(className);
       const owners = classEntries.get(className) ?? [];
       owners.push(entry);
       classEntries.set(className, owners);
+      const block = bemBlock(className);
+      const blockOwners = blockEntries.get(block) ?? [];
+      if (!blockOwners.includes(entry)) blockOwners.push(entry);
+      blockEntries.set(block, blockOwners);
     }
     for (const token of entry.boundaries?.publicTokens ?? [])
       publicTokens.add(token);
@@ -480,6 +491,7 @@ function catalogFacts(entries) {
     publicTokens,
     publicParts,
     classEntries,
+    blockEntries,
     exportEntries,
     ownership: componentOwnershipFacts(entries),
   };
@@ -1315,6 +1327,7 @@ function inspectTsx(
   isForeign = () => true,
   packageDirectory,
   compilerOptions,
+  componentMode = false,
 ) {
   const source = ts.createSourceFile(
     file,
@@ -1375,7 +1388,13 @@ function inspectTsx(
   const inspectBorrowedMarkup = !isTestModule(file);
   const borrowed = (className, node, via) => {
     if (!inspectBorrowedMarkup) return;
-    for (const owner of facts.classEntries.get(className) ?? []) {
+    const owners =
+      facts.classEntries.get(className) ??
+      (componentMode && bemBlock(className) !== className
+        ? facts.blockEntries.get(bemBlock(className))
+        : undefined) ??
+      [];
+    for (const owner of owners) {
       if (
         !isForeign(owner, className) ||
         owner.boundaries?.placeableClasses?.includes(className)
@@ -1420,7 +1439,7 @@ function inspectTsx(
       );
       const classes = literalClasses(classAttribute);
       const at = location(file, opening, source);
-      if (!entry && /^[a-z]/.test(tag))
+      if ((!entry && /^[a-z]/.test(tag)) || (componentMode && entry))
         borrowedValues(
           classAttribute?.initializer &&
             ts.isJsxExpression(classAttribute.initializer)
@@ -1441,7 +1460,8 @@ function inspectTsx(
         );
       if (entry && isForeign(entry))
         for (const className of classes.values) {
-          if (facts.ownership.classOwners.has(className)) continue;
+          if (ownsClassBlock(facts.ownership, className, componentMode))
+            continue;
           const styled = cssFacts.get(className)?.styled;
           if (!styled) continue;
           diagnostics.push(
@@ -1886,6 +1906,7 @@ export async function analyzeUiProject({
       await foreignTo(file, context.facts),
       own?.directory,
       compilerOptionsFor(file, root, compilerOptions),
+      ownership === 'component',
     );
     recordDiagnostics(fileDiagnostics, context);
   }

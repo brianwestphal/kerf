@@ -789,6 +789,98 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
     ).toEqual(['KUI-L023 src/c.tsx:1', 'KUI-L023 src/c.tsx:1']);
   });
 
+  it('owns dynamically built BEM element and modifier classes throughout the block', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [
+          {
+            key: 'app:ticket-row',
+            package: 'app',
+            id: 'ticket-row',
+            name: 'TicketRow',
+            kind: 'component',
+            source: 'application',
+            boundaries: {
+              rootClass: 'ticket-list-row',
+              publicClasses: ['ticket-list-row'],
+              publicTokens: [],
+            },
+          },
+          {
+            key: 'app:other',
+            package: 'app',
+            id: 'other',
+            name: 'Other',
+            kind: 'component',
+            source: 'application',
+            boundaries: { rootClass: 'other', publicClasses: ['other'] },
+          },
+        ],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          {
+            id: 'ticket-row',
+            source: 'src/ticket-row.tsx',
+            styleSources: ['src/ticket-row.css'],
+          },
+          {
+            id: 'other',
+            source: 'src/other.tsx',
+            styleSources: ['src/other.css'],
+          },
+        ],
+      }),
+      'src/ticket-row.css':
+        '.ticket-list-row { color: blue; }\n.ticket-list-row--list { color: blue; }\n',
+      'src/ticket-row.tsx':
+        'export const TicketRow = ({ layout }) => <div className={`ticket-list-row ticket-list-row--${layout}`} />;\n',
+      'src/other.css': '.other { color: blue; }\n',
+      'src/other.tsx': "export const Other = () => <div class='other' />;\n",
+      'src/foreign.css':
+        '.ticket-list-row--list { color: red; }\n.ticket-list-row__error { color: red; }\n.ticket-list-row-extra { color: red; }\n.ticket-list-row__error .local { color: red; }\n',
+      'src/foreign.tsx': [
+        "import './foreign.css';",
+        "import { Other } from './other.js';",
+        "export const View = () => <Other className='ticket-list-row__error' />;",
+        "element.classList.add('ticket-list-row--list');",
+        "element.className = 'ticket-list-row__error';",
+        '',
+      ].join('\n'),
+    });
+    const report = await analyzeUiProject({
+      root,
+      ownership: 'component',
+      ownershipContext: 'any',
+    });
+    expect(
+      ids(report).filter((item) => /KUI-L019|KUI-L023/.test(item)),
+    ).toEqual([
+      'KUI-L019 src/foreign.css:1',
+      'KUI-L019 src/foreign.css:2',
+      'KUI-L019 src/foreign.css:4',
+      'KUI-L023 src/foreign.tsx:3',
+      'KUI-L023 src/foreign.tsx:4',
+      'KUI-L023 src/foreign.tsx:5',
+    ]);
+  });
+
   it('rejects application CSS that restyles, overrides, or hooks a component', async () => {
     const root = await project({
       'src/app.css': [

@@ -25,6 +25,22 @@ import { resolve } from 'node:path';
 
 const kebab = (value) =>
   value.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+const bemBlock = (name) => name.split(/__|--/, 1)[0];
+
+export function classOwnerFor(facts, className, componentMode = false) {
+  if (facts.classOwners.has(className)) return facts.classOwners.get(className);
+  if (!componentMode || bemBlock(className) === className) return undefined;
+  return facts.blockOwners.get(bemBlock(className));
+}
+
+export function ownsClassBlock(facts, className, componentMode = false) {
+  return (
+    facts.classOwners.has(className) ||
+    (componentMode &&
+      bemBlock(className) !== className &&
+      facts.blockOwners.has(bemBlock(className)))
+  );
+}
 
 function isWebAwesomeTagEntry(entry) {
   return entry.source === 'webawesome' && /^wa-[a-z0-9-]+$/.test(entry.id);
@@ -38,6 +54,7 @@ function isWebAwesomeTagEntry(entry) {
  */
 export function componentOwnershipFacts(entries) {
   const classOwners = new Map();
+  const blockOwners = new Map();
   const dataComponentOwners = new Map();
   const tagOwners = new Map();
   const privatePrefixes = [];
@@ -63,13 +80,22 @@ export function componentOwnershipFacts(entries) {
   };
   for (const entry of entries) {
     const boundaries = entry.boundaries ?? {};
-    for (const className of boundaries.publicClasses ?? []) {
+    for (const className of new Set(
+      [boundaries.rootClass, ...(boundaries.publicClasses ?? [])].filter(
+        Boolean,
+      ),
+    )) {
       const previous = classOwners.get(className);
       if (!classOwners.has(className)) classOwners.set(className, entry);
       else if (previous && sharesStylesheet(previous, entry))
         // The class is co-owned. A selector cannot attribute it to one
         // component without depending on catalog order.
         classOwners.set(className, null);
+      const block = bemBlock(className);
+      const previousBlock = blockOwners.get(block);
+      if (!blockOwners.has(block)) blockOwners.set(block, entry);
+      else if (previousBlock && sharesStylesheet(previousBlock, entry))
+        blockOwners.set(block, null);
       if (
         className.startsWith('kui-') &&
         !className.includes('__') &&
@@ -103,6 +129,7 @@ export function componentOwnershipFacts(entries) {
   privatePrefixes.sort((a, b) => b.prefix.length - a.prefix.length);
   return {
     classOwners,
+    blockOwners,
     dataComponentOwners,
     tagOwners,
     privatePrefixes,
@@ -145,7 +172,11 @@ export function restyledComponents(
     const bare = withoutRelationalArguments(subject);
     const subjectClasses = classNames(bare);
     for (const className of classNames(bare))
-      add(facts.classOwners.get(className), 'class', `.${className}`);
+      add(
+        classOwnerFor(facts, className, componentMode),
+        'class',
+        `.${className}`,
+      );
     for (const value of dataComponents(bare))
       add(
         facts.dataComponentOwners.get(value),
@@ -154,7 +185,10 @@ export function restyledComponents(
       );
     // An application class on the subject scopes a Web Awesome tag to the
     // application's own element; a component package never places one there.
-    if (subjectClasses.some((name) => !facts.classOwners.has(name))) continue;
+    if (
+      subjectClasses.some((name) => !ownsClassBlock(facts, name, componentMode))
+    )
+      continue;
     for (const type of subjectTypes(subject) ?? [])
       add(facts.tagOwners.get(type), 'tag', type);
     // A raw descendant of a component's cataloged anatomy is still inside
@@ -184,19 +218,27 @@ export function restyledComponents(
         add(hooks.get(hook), 'descendant', `.${hook}`);
         break;
       }
-      if (classes.some((name) => !facts.classOwners.has(name))) break;
+      if (classes.some((name) => !ownsClassBlock(facts, name, componentMode)))
+        break;
       const anatomy = classes.find(
-        (name) => name.includes('__') && facts.classOwners.has(name),
+        (name) =>
+          name.includes('__') && ownsClassBlock(facts, name, componentMode),
       );
       if (anatomy) {
-        add(facts.classOwners.get(anatomy), 'descendant', `.${anatomy}`);
+        add(
+          classOwnerFor(facts, anatomy, componentMode),
+          'descendant',
+          `.${anatomy}`,
+        );
         break;
       }
       if (componentMode) {
-        const root = classes.find((name) => facts.classOwners.has(name));
+        const root = classes.find((name) =>
+          ownsClassBlock(facts, name, componentMode),
+        );
         if (root) {
-          const entry = facts.classOwners.get(root);
-          if (entry.package === ownPackage)
+          const entry = classOwnerFor(facts, root, componentMode);
+          if (entry?.package === ownPackage)
             add(entry, 'descendant', `.${root}`);
           break;
         }
@@ -220,7 +262,7 @@ export function contextualComponents(
     for (const [index, part] of parts.entries()) {
       const compound = part.compound;
       for (const name of selectorClasses(compound)) {
-        const entry = facts.classOwners.get(name);
+        const entry = classOwnerFor(facts, name, true);
         if (!entry || entry.package !== ownPackage || !isForeign(entry))
           continue;
         const pseudo = ['has', 'is', 'where', 'not'].find((candidate) =>

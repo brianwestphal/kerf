@@ -212,7 +212,10 @@ even without a composition entry. Each entry owns its declared `styleSources`
 for CSS and its selection `source` module for JSX; when `styleSources` is absent,
 direct relative CSS imports from that source are used. The analyzer also derives
 literal JSX `class` and `className` values whose BEM block is styled in those
-stylesheets, including element and modifier classes. Modules that share a
+stylesheets. A root or styled literal establishes ownership of the whole BEM
+block: `block`, `block__*`, and `block--*`, including dynamically constructed
+element and modifier names. The boundary applies to selectors and markup class
+writes, including a class prop on an imported component. Modules that share a
 stylesheet co-own its classes, whether the stylesheet was declared or directly
 imported; a source that imports none of an owner's stylesheets remains foreign.
 When several entries infer the same class from a shared stylesheet, the
