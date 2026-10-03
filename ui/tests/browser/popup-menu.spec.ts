@@ -280,11 +280,20 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   ).toBeLessThanOrEqual(2);
   if (browserName === 'chromium')
     await page.screenshot({ path: 'test-results/popup-menu-button-wide.png' });
+  // Web Awesome clears `open` before its hide animation and focus handoff
+  // finish. Wait for the completed hide before exercising keyboard reopening.
+  await context.evaluate((element) => {
+    element.addEventListener(
+      'wa-after-hide',
+      () => element.setAttribute('data-test-hide-complete', ''),
+      { once: true },
+    );
+  });
   await page.keyboard.press('Escape');
   await expect(context).not.toHaveAttribute('open', '');
+  await expect(context).toHaveAttribute('data-test-hide-complete', '');
 
-  await contextButton.focus();
-  await page.keyboard.press('Enter');
+  await contextButton.press('Enter');
   await expect(context).toHaveAttribute('open', '');
   const keyboardOpen = context.getByRole('menuitem', { name: 'Open' });
   await keyboardOpen.focus();
