@@ -335,6 +335,10 @@
               "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
               "description": "The intrinsic element the component renders at its root. It identifies composed child roots for ownership checks; a placeableClasses class on a plain element of this tag recreates the component, while the class stays placeable on another carrier."
             },
+            "descendantElements": {
+              "$ref": "#/$defs/stringList",
+              "description": "Intrinsic element tags that can appear below the component root."
+            },
             "publicTokens": { "$ref": "#/$defs/stringList" },
             "publicParts": { "$ref": "#/$defs/stringList" }
           },
