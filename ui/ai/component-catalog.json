@@ -1492,7 +1492,8 @@
       "description": "Leading, centered, and trailing toolbar composition.",
       "uses": [
         "toolbar-text",
-        "toolbar-control-group"
+        "toolbar-control-group",
+        "wa-button"
       ],
       "purpose": "Leading, centered, and trailing toolbar composition.",
       "publicExports": [
@@ -1520,7 +1521,7 @@
         "content-driven wrap that keeps a heading title whole",
         "center priority for an expanded center control",
         "trailing priority for an expanded trailing control at compact or narrow widths",
-        "trailing groups wrap instead of clipping",
+        "trailing groups and a standalone primary wa-button wrap instead of clipping",
         "outer inset independently configurable from zone gap",
         "app bar or bottom bar claiming its screen edges (safeAreaEdges)"
       ],

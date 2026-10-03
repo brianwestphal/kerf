@@ -385,14 +385,17 @@ A `FloatingToolbar` accepts `ToolbarControlGroup` directly as its children in
 both floating and inline placement. Name the toolbar with `label`; group its
 controls as you would in a `Toolbar` zone.
 
-A `Toolbar` has three zones — `leading`, `center`, and `trailing`. In almost
-every case the only things that go **directly** in a zone are `ToolbarText`
-(identity/title text) and `ToolbarControlGroup` (any control or cluster of
-controls). Do not drop bare buttons, inputs, links, or arbitrary markup straight
+A `Toolbar` has three zones — `leading`, `center`, and `trailing`. The direct
+zone children are `ToolbarText` (identity/title text) and `ToolbarControlGroup`
+(a control or cluster of controls). The `trailing` zone also accepts one
+standalone `wa-button` for the application's primary action. It keeps its own
+Web Awesome brand, danger, size, and hover chrome, while Toolbar aligns it in
+the control band and wraps it with other trailing items when space is tight.
+Do not drop other bare buttons, inputs, links, or arbitrary markup straight
 into a zone; wrap controls in a `ToolbarControlGroup` so they get the shared
 toolbar geometry, hover/pressed treatment, and grouping. `SegmentedControl`,
-`Select`, a collapsible `TokenSearchField`, and Web Awesome controls all live
-**inside** a `ToolbarControlGroup`, not loose in the zone. For a page, panel, or
+`Select`, a collapsible `TokenSearchField`, and other Web Awesome controls live
+**inside** a `ToolbarControlGroup`. For a page, panel, or
 dialog heading, put an extra-large `ToolbarText` directly in the leading zone,
 optionally preceded by a grouped icon, and group trailing actions. Keep supporting
 copy below as app-owned content. Size the title to its track: a narrow
@@ -427,14 +430,15 @@ For a long-running icon action, set `busy` on its single-control
 the control's dimensions, shows `LoadingSpinner` in its icon slot, sets
 `aria-busy`, and makes the control inert until the app clears `busy`.
 
-| Want                          | Put in the zone                                                                        | Notes                                                                                                             |
-| ----------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Identity or title text        | `<ToolbarText text="…" size="large" />` (or `xlarge` for a page/panel title that fits) | Wrap in a `single` borderless group only when it must align with adjacent control pills                           |
-| One or more icon/text buttons | `<ToolbarControlGroup>{buttons}</ToolbarControlGroup>`                                 | Use `buttonAppearance="push"` for toggle buttons with `aria-pressed`; `single` for a lone control                 |
-| An exclusive view switch      | `<ToolbarControlGroup><SegmentedControl … /></ToolbarControlGroup>`                    | Not `TabBar`, which switches tabpanels                                                                            |
-| A value list                  | `<ToolbarControlGroup><Select … /></ToolbarControlGroup>`                              | Register `@kerfjs/ui/select/register` once; use `focusRingOwner="group"` so focus follows the group's geometry    |
-| A command menu                | `<ToolbarControlGroup single nestedDropdown><PopupMenu … /></ToolbarControlGroup>`     | Register `@kerfjs/ui/popup-menu/register` once; set `menuInset` on the group                                      |
-| A collapsible search box      | `<ToolbarControlGroup single><TokenSearchField collapsible … /></ToolbarControlGroup>` | The group animates the iconic ↔ expanded states; `wireTokenSearchFields` manages expand/collapse/focus by default |
+| Want                           | Put in the zone                                                                        | Notes                                                                                                             |
+| ------------------------------ | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Identity or title text         | `<ToolbarText text="…" size="large" />` (or `xlarge` for a page/panel title that fits) | Wrap in a `single` borderless group only when it must align with adjacent control pills                           |
+| One or more icon/text buttons  | `<ToolbarControlGroup>{buttons}</ToolbarControlGroup>`                                 | Use `buttonAppearance="push"` for toggle buttons with `aria-pressed`; `single` for a lone control                 |
+| One primary application action | `trailing={<wa-button variant="brand">New ticket…</wa-button>}`                        | The standalone button keeps its Web Awesome chrome; use `variant="danger"` when the action is destructive         |
+| An exclusive view switch       | `<ToolbarControlGroup><SegmentedControl … /></ToolbarControlGroup>`                    | Not `TabBar`, which switches tabpanels                                                                            |
+| A value list                   | `<ToolbarControlGroup><Select … /></ToolbarControlGroup>`                              | Register `@kerfjs/ui/select/register` once; use `focusRingOwner="group"` so focus follows the group's geometry    |
+| A command menu                 | `<ToolbarControlGroup single nestedDropdown><PopupMenu … /></ToolbarControlGroup>`     | Register `@kerfjs/ui/popup-menu/register` once; set `menuInset` on the group                                      |
+| A collapsible search box       | `<ToolbarControlGroup single><TokenSearchField collapsible … /></ToolbarControlGroup>` | The group animates the iconic ↔ expanded states; `wireTokenSearchFields` manages expand/collapse/focus by default |
 
 ### Popup menu migration
 

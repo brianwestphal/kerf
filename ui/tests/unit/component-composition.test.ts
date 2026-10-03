@@ -163,13 +163,18 @@ describe('component composition catalog contract', () => {
       ]),
       children: {
         mode: 'listed',
-        concepts: ['toolbar-text', 'toolbar-control-group'],
+        concepts: ['toolbar-text', 'toolbar-control-group', 'wa-button'],
       },
       provenance: {
         composition: 'docs/component-selection.md#toolbar-composition',
       },
     });
     expect(toolbar.diagnostics[0].id).toBe('KUI-C101');
+    expect(
+      toolbar.zones.find((zone) => zone.id === 'trailing')?.accepts,
+    ).toEqual(['toolbar-text', 'toolbar-control-group', 'wa-button']);
+    for (const zone of toolbar.zones.filter((zone) => zone.id !== 'trailing'))
+      expect(zone.accepts).not.toContain('wa-button');
     expect(
       composition.entries.find((entry) => entry.id === 'toolbar-control-group')
         ?.parents,

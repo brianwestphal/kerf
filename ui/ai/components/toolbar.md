@@ -35,7 +35,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - content-driven wrap that keeps a heading title whole
 - center priority for an expanded center control
 - trailing priority for an expanded trailing control at compact or narrow widths
-- trailing groups wrap instead of clipping
+- trailing groups and a standalone primary wa-button wrap instead of clipping
 - outer inset independently configurable from zone gap
 - app bar or bottom bar claiming its screen edges (safeAreaEdges)
 
@@ -43,14 +43,14 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 
 - Parents: any.
 - Contexts: `application-chrome`, `page-header`, `panel-header`, `dialog-header`.
-- Children: only [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md).
-- Built from: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md).
+- Children: only [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
+- Built from: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
 
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
 - `leading` — JSX prop `leading`; accepts [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md); any number.
 - `center` — JSX prop `center`; accepts [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md); any number.
-- `trailing` — JSX prop `trailing`; accepts [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md); any number.
+- `trailing` — JSX prop `trailing`; accepts [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md); any number.
 
 ## State and wiring
 
@@ -88,10 +88,10 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Diagnostics
 
-- `KUI-C101` (error) when a direct zone child is neither ToolbarText nor ToolbarControlGroup: Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup are direct zone children.
+- `KUI-C101` (error) when a direct zone child is neither ToolbarText nor ToolbarControlGroup nor a standalone wa-button in trailing: Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup, plus one standalone primary wa-button in trailing, are direct zone children.
 
 ## Related
 
-- Components: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md).
+- Components: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#ambiguous-choices`](../../docs/component-selection.md#ambiguous-choices).
 - UX catalog route: `?component=toolbar`.

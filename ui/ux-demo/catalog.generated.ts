@@ -191,7 +191,8 @@ export const generatedKerfCatalog = [
     "description": "Leading, centered, and trailing toolbar composition.",
     "uses": [
       "toolbar-text",
-      "toolbar-control-group"
+      "toolbar-control-group",
+      "wa-button"
     ],
     "demoSource": "ui/ux-demo/demos/toolbar.tsx",
     "componentSource": "ui/src/toolbar.tsx",

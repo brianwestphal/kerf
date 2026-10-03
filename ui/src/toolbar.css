@@ -161,7 +161,8 @@
    compact group's own smaller group size never redefines it.
    `--_kui-toolbar-band` is context the toolbar provides: a ToolbarControlGroup
    and a ToolbarText each center themselves in it from their own stylesheets
-   (toolbar-control-group.css, toolbar-text.css). */
+   (toolbar-control-group.css, toolbar-text.css). A direct primary wa-button in
+   trailing is centered here without altering its Web Awesome chrome. */
 .kui-toolbar {
   --_kui-toolbar-band: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
 }
@@ -235,6 +236,14 @@
      every group, the next group moves to a new trailing-aligned row instead of
      overflowing the toolbar. */
   flex-wrap: wrap;
+}
+
+.kui-toolbar__trailing > wa-button {
+  margin-block-start: max(
+    0px,
+    calc((var(--_kui-toolbar-band) - var(--wa-form-control-height)) / 2)
+  );
+  flex: 0 0 auto;
 }
 
 /* An expanded trailing search gets a complete second row while the leading

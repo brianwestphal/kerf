@@ -1412,14 +1412,14 @@
         {
           "id": "trailing",
           "jsx": { "prop": "trailing" },
-          "accepts": ["toolbar-text", "toolbar-control-group"],
+          "accepts": ["toolbar-text", "toolbar-control-group", "wa-button"],
           "cardinality": { "min": 0, "max": "unbounded" },
           "exclusiveWith": []
         }
       ],
       "children": {
         "mode": "listed",
-        "concepts": ["toolbar-text", "toolbar-control-group"],
+        "concepts": ["toolbar-text", "toolbar-control-group", "wa-button"],
         "requiredConcepts": []
       },
       "state": [
@@ -1505,8 +1505,8 @@
         {
           "id": "KUI-C101",
           "severity": "error",
-          "when": "a direct zone child is neither ToolbarText nor ToolbarControlGroup",
-          "message": "Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup are direct zone children."
+          "when": "a direct zone child is neither ToolbarText nor ToolbarControlGroup nor a standalone wa-button in trailing",
+          "message": "Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup, plus one standalone primary wa-button in trailing, are direct zone children."
         }
       ],
       "provenance": {

@@ -593,8 +593,9 @@ The enclosing `Toolbar` owns zone alignment and responsive topology: use
 choose `responsive="stack"` with `responsiveAt="compact" | "narrow"`,
 `responsive="wrap"` for a heading whose title must stay whole, or
 `responsive="center-priority"` instead of selecting its zone classes from a
-parent stylesheet. No policy clips an action: the trailing zone, and a stacked
-center zone, wrap whole groups onto another row. The center zone never
+parent stylesheet. No policy clips an action: the trailing zone wraps whole
+groups and its standalone primary `wa-button` onto another row; a stacked
+center zone wraps its groups. The center zone never
 compresses below its content width, so when the leading identity, center, and
 trailing zones share a row that is too narrow, the leading title is what gives
 way: it truncates with an ellipsis (as a platform toolbar's title does) instead

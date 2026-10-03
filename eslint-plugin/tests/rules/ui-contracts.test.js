@@ -417,6 +417,10 @@ tester.run('ui-composition', composition, {
       settings: shippedUiSettings,
     },
     {
+      code: "import { Toolbar } from '@kerfjs/ui'; <Toolbar trailing={<wa-button variant='brand'>New ticket</wa-button>} />;",
+      settings: shippedUiSettings,
+    },
+    {
       code: "import * as UI from '@kerfjs/ui'; <UI.Toolbar trailing={<UI.ToolbarControlGroup><UI.ToolbarActionLink href='/report' label='Report' /></UI.ToolbarControlGroup>} />;",
       settings: shippedUiSettings,
     },
@@ -486,6 +490,11 @@ tester.run('ui-composition', composition, {
     {
       code: "import { Toolbar } from '@kerfjs/ui'; <Toolbar leading={<button>Save</button>} />;",
       settings,
+      errors: [{ messageId: 'zone' }],
+    },
+    {
+      code: "import { Toolbar } from '@kerfjs/ui'; <Toolbar leading={<wa-button variant='brand'>New ticket</wa-button>} />;",
+      settings: shippedUiSettings,
       errors: [{ messageId: 'zone' }],
     },
     {

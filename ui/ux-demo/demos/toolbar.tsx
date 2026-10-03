@@ -76,6 +76,30 @@ export function ToolbarDemo() {
           }
         />
       </CatalogExample>
+      <CatalogExample
+        label="Standalone primary action in trailing"
+        note="A primary Web Awesome button keeps its brand pill while the toolbar aligns it beside grouped actions."
+        viewport={{ width: 'medium', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-toolbar-primary-action': '' }}
+      >
+        <Toolbar
+          label="Project heading"
+          responsive="wrap"
+          leading={<ToolbarText text="Project tickets" size="large" />}
+          trailing={
+            <>
+              <ToolbarControlGroup label="Other actions" single>
+                <button type="button" aria-label="Refresh tickets">
+                  <LucideIcon icon={RefreshCw} name="refresh-cw" />
+                </button>
+              </ToolbarControlGroup>
+              <wa-button variant="brand" data-action="log-add">
+                New ticket…
+              </wa-button>
+            </>
+          }
+        />
+      </CatalogExample>
       <CatalogExample viewport={{ width: 'wide', frame: 'solid' }}>
         <List gap="xs">
           <Toolbar
