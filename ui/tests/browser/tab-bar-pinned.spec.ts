@@ -193,19 +193,23 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     await expect(buttons.first()).toBeFocused();
     await buttons.first().press('ArrowRight');
     await expect(buttons.nth(1)).toBeFocused();
-    const visiblePeer = await bar.evaluate((element) => {
-      const pinnedTab = element.querySelector<HTMLElement>(
-        '[data-pinned="true"]',
-      )!;
-      const peer = element.querySelector<HTMLElement>(
-        '[data-tab-id="pinned-claude-1"]',
-      )!;
-      return (
-        peer.getBoundingClientRect().left -
-        pinnedTab.getBoundingClientRect().right
-      );
-    });
-    expect(visiblePeer).toBeGreaterThanOrEqual(-1.5);
+    // WebKit can finish the strip's snap after the keyboard event resolves.
+    await expect
+      .poll(async () =>
+        bar.evaluate((element) => {
+          const pinnedTab = element.querySelector<HTMLElement>(
+            '[data-pinned="true"]',
+          )!;
+          const peer = element.querySelector<HTMLElement>(
+            '[data-tab-id="pinned-claude-1"]',
+          )!;
+          return (
+            peer.getBoundingClientRect().left -
+            pinnedTab.getBoundingClientRect().right
+          );
+        }),
+      )
+      .toBeGreaterThanOrEqual(-1.5);
   }
 });
 
