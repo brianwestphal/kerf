@@ -70,6 +70,12 @@ every consumer catalog a `.kerf-ui-profile.json` declares, whatever the class
 prefix. `create-kerf-component` packages declare the same fields in
 `kerf.components.json`.
 
+`descendantRootAttribute` optionally names a `data-*` attribute on a
+cataloged `rootElement`. It anchors ownership of arbitrary unclassed child
+element selectors below that exact root, as `LucideIcon` does with
+`svg[data-lucide]`. Without the attribute in a selector, the analyzer uses
+only cataloged `descendantElements` and composed JSX evidence.
+
 An entry's optional `cssValueProps` makes CSS-adjacent prop grammar equally
 machine-evaluable. Each path records the property grammar, finite shorthands,
 canonical versus exceptional spacing choices, standalone and expression-only

@@ -159,6 +159,7 @@
           "polyline",
           "rect"
         ],
+        "descendantRootAttribute": "data-lucide",
         "publicTokens": []
       },
       "diagnostics": [],

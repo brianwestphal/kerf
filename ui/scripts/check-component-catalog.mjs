@@ -334,6 +334,13 @@ for (const entry of artifact.entries) {
     fail(
       `${entry.id}: composition descendantElements must equal the selection catalog's`,
     );
+  const projectedRootAttribute = composition.entries.find(
+    ({ id }) => id === entry.id,
+  )?.boundaries.descendantRootAttribute;
+  if (projectedRootAttribute !== entry.descendantRootAttribute)
+    fail(
+      `${entry.id}: composition descendantRootAttribute must equal the selection catalog's`,
+    );
   if (entry.rootElement && !rendersComponent)
     fail(
       `${entry.id}: rootElement names the element a component renders; drop it from an entry with no component`,

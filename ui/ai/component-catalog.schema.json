@@ -61,6 +61,7 @@
         "publicClasses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "placeableClasses": { "description": "Public classes an application may place on its own elements (layout utilities, a document root, or item geometry on a non-div carrier). Every other public class is component anatomy: render the component instead.", "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "rootElement": { "description": "The intrinsic element the component renders at its root. Required when a component renders placeableClasses; also enables classless child-root ownership checks.", "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" },
+        "descendantRootAttribute": { "description": "A root data attribute that anchors ownership checks for arbitrary unclassed descendant tags; requires rootElement.", "type": "string", "pattern": "^data-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" },
         "descendantElements": { "description": "Intrinsic element tags the component can render below its root, for composed-child selector ownership checks.", "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" }, "uniqueItems": true },
         "publicTokens": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "cssValueProps": { "type": "array", "items": { "$ref": "#/$defs/cssValueProp" }, "uniqueItems": true },

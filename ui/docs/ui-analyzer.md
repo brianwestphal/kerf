@@ -138,7 +138,13 @@ which element a selector styles.
   `descendantElements` below an own wrapper. `LucideIcon` publishes `svg` and
   its Lucide SVG child tags, so `.wrapper > svg`, `.wrapper svg`, and
   `.wrapper path` can name the composed icon. Ambiguous evidence from multiple
-  different child components is discarded. The scan follows returned JSX from
+  different child components is discarded. For arbitrary custom `IconNode`
+  child tags outside the cataloged SVG tag list, a selector rooted at
+  `svg[data-lucide]` identifies the descendant as
+  LucideIcon-owned (for example `svg[data-lucide] filter`). Without that root
+  marker, an unknown tag beneath a wrapper remains ambiguous and is not
+  attributed to LucideIcon or to unrelated HTML.
+  The scan follows returned JSX from
   same-module function and arrow-function components at their call sites,
   recursively with a cycle guard; their intrinsic elements remain app-owned.
   The finding names the composing

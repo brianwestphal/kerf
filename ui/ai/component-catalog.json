@@ -188,6 +188,7 @@
       "wiring": [],
       "publicClasses": [],
       "rootElement": "svg",
+      "descendantRootAttribute": "data-lucide",
       "descendantElements": [
         "circle",
         "ellipse",

@@ -1003,14 +1003,22 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
         '.nested path { fill: red; }',
         '.own svg { width: 12px; }',
         '.ambiguous svg { width: 12px; }',
+        '.direct svg[data-lucide] filter { width: 12px; }',
+        '.direct svg filter { width: 12px; }',
+        '.direct div filter { width: 12px; }',
+        '.direct svg[data-lucide] .own-filter { width: 12px; }',
+        '.own svg filter { width: 12px; }',
+        '.direct svg:not([data-lucide]) filter { width: 12px; }',
+        '.direct svg:has([data-lucide]) filter { width: 12px; }',
         '',
       ].join('\n'),
       'src/view.tsx': [
         "import './view.css';",
         "import { LucideIcon } from '@kerfjs/ui/lucide-icon';",
         "import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';",
+        "const CustomNode = [['filter', {}]];",
         'export const View = () => <>',
-        '  <div class="direct"><LucideIcon icon={Star} name="star" /></div>',
+        '  <div class="direct"><LucideIcon icon={CustomNode} name="custom" /></div>',
         '  <div class="nested"><span><LucideIcon icon={Star} name="star" /></span></div>',
         '  <div class="own"><svg /></div>',
         '  <div class="ambiguous"><LucideIcon icon={Star} name="star" /><LoadingSpinner /></div>',
@@ -1028,12 +1036,13 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
       'KUI-L019 src/view.css:2',
       'KUI-L019 src/view.css:3',
       'KUI-L019 src/view.css:4',
+      'KUI-L019 src/view.css:7',
     ]);
     expect(
       report.diagnostics
         .filter((item) => item.ruleId === 'KUI-L019')
         .map((item) => (item.evidence as { component: string }).component),
-    ).toEqual(Array(4).fill('@kerfjs/ui:lucide-icon'));
+    ).toEqual(Array(5).fill('@kerfjs/ui:lucide-icon'));
   });
 
   it('follows same-module function components without treating their intrinsic markup as foreign', async () => {

@@ -338,16 +338,21 @@ describe('component composition catalog contract', () => {
     );
     expect(lucide?.boundaries.rootElement).toBe('svg');
     expect(lucide?.boundaries.descendantElements).toContain('path');
+    expect(lucide?.boundaries.descendantRootAttribute).toBe('data-lucide');
     const { LoadingSpinner } = await import('../../src/loading-spinner.js');
     expect(LoadingSpinner({}).toString()).toMatch(/^<svg[\s>]/);
     const item = composition.entries.find(
       (entry) => entry.id === 'content-item',
     )!;
     item.boundaries.rootElement = 'Div';
+    if (lucide) lucide.boundaries.descendantRootAttribute = 'class';
     expect(validateComposition(composition)).toEqual(
       expect.arrayContaining([
         expect.stringContaining(
           'rootElement must be a lowercase element tag name',
+        ),
+        expect.stringContaining(
+          'descendantRootAttribute requires a rootElement and a data-* attribute name',
         ),
       ]),
     );

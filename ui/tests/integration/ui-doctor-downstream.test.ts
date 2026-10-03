@@ -1079,6 +1079,65 @@ test(
 );
 
 test(
+  'the doctor attributes unknown SVG child tags only through the LucideIcon root marker',
+  async () => {
+    const root = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-custom-icon-'),
+    );
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"custom-icon-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          implicitComponentOwnership: true,
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/icon.tsx'),
+        [
+          "import './icon.css';",
+          "import { LucideIcon } from '@kerfjs/ui/lucide-icon';",
+          "const CustomNode = [['filter', {}]];",
+          'export const Icon = () => <div class="icon"><LucideIcon icon={CustomNode} name="custom" /></div>;',
+          '',
+        ].join('\n'),
+      );
+      await writeFile(
+        resolve(root, 'src/icon.css'),
+        [
+          '.icon svg[data-lucide] filter { width: 12px; }',
+          '.icon svg filter { width: 12px; }',
+          '.icon div filter { width: 12px; }',
+          '',
+        ].join('\n'),
+      );
+      const report = await doctor(root);
+      expect(report.status).toBe(1);
+      expect(
+        report.report.diagnostics
+          .filter((item: { id: string }) => item.id === 'KUI-L019')
+          .map(
+            (item: {
+              location: { line: number };
+              evidence: { component: string };
+            }) => `${item.location.line}:${item.evidence.component}`,
+          ),
+      ).toEqual(['1:@kerfjs/ui:lucide-icon']);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor enforces a shell stylesheet ownership group across modules',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-groups-'));

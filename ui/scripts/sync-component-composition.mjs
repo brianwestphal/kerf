@@ -92,6 +92,9 @@ function defaultEntry(entry) {
       ...(entry.descendantElements?.length
         ? { descendantElements: entry.descendantElements }
         : {}),
+      ...(entry.descendantRootAttribute
+        ? { descendantRootAttribute: entry.descendantRootAttribute }
+        : {}),
       publicTokens: entry.publicTokens ?? [],
     },
     diagnostics: [],

@@ -57,6 +57,7 @@ export function componentOwnershipFacts(entries) {
   const blockOwners = new Map();
   const dataComponentOwners = new Map();
   const tagOwners = new Map();
+  const descendantRootAttributeOwners = [];
   const privatePrefixes = [];
   const typedTokens = new Map();
   const setOnce = (map, key, entry) => {
@@ -80,6 +81,8 @@ export function componentOwnershipFacts(entries) {
   };
   for (const entry of entries) {
     const boundaries = entry.boundaries ?? {};
+    if (boundaries.rootElement && boundaries.descendantRootAttribute)
+      descendantRootAttributeOwners.push(entry);
     for (const className of new Set(
       [boundaries.rootClass, ...(boundaries.publicClasses ?? [])].filter(
         Boolean,
@@ -132,6 +135,7 @@ export function componentOwnershipFacts(entries) {
     blockOwners,
     dataComponentOwners,
     tagOwners,
+    descendantRootAttributeOwners,
     privatePrefixes,
     typedTokens,
   };
@@ -196,6 +200,28 @@ export function restyledComponents(
     // that component. Do not infer ownership through its root, where an app
     // may place its own children, or through an app-named intermediate node.
     if (subjectClasses.length || parts.length < 2) continue;
+    if (componentMode)
+      for (const ancestor of parts.slice(0, -1))
+        for (const entry of facts.descendantRootAttributeOwners) {
+          const { rootElement, descendantRootAttribute } = entry.boundaries;
+          if (
+            (subjectTypes(subject) ?? []).some((type) =>
+              entry.boundaries.descendantElements?.includes(type),
+            )
+          )
+            continue;
+          if (
+            subjectTypes(ancestor.compound)?.includes(rootElement) &&
+            new RegExp(
+              `\\[\\s*${descendantRootAttribute}(?=\\s|\\]|[~|^$*]?=)`,
+            ).test(withoutRelationalArguments(ancestor.compound))
+          )
+            add(
+              entry,
+              'descendant',
+              `${rootElement}[${descendantRootAttribute}]`,
+            );
+        }
     if (componentMode && parts.at(-1).combinator === '>') {
       const types = subjectTypes(subject) ?? [];
       for (const name of classNames(

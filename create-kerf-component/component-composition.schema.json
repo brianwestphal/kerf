@@ -339,6 +339,11 @@
               "$ref": "#/$defs/stringList",
               "description": "Intrinsic element tags that can appear below the component root."
             },
+            "descendantRootAttribute": {
+              "type": "string",
+              "pattern": "^data-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "description": "Root data attribute anchoring ownership of arbitrary unclassed descendants."
+            },
             "publicTokens": { "$ref": "#/$defs/stringList" },
             "publicParts": { "$ref": "#/$defs/stringList" }
           },

@@ -51,6 +51,9 @@ around `LucideIcon` cannot size its `svg` or `path` with an element selector;
 use the icon's props or style an app-owned element. The same check follows
 local function components returned from the owner module and treats their
 intrinsic markup as app-owned.
+Unknown custom `IconNode` tags are identified when a selector explicitly
+passes through the icon's `svg[data-lucide]` root; unrelated HTML descendants
+without that marker remain app-owned.
 The analyzer resolves a cataloged application component imported through an
 exact or wildcard TypeScript `paths` alias from the nearest consumer tsconfig,
 so the same root hook-class check applies in those files.
