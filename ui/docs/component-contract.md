@@ -705,6 +705,8 @@ tab's trailing edge while peer tabs scroll beneath it, including in RTL.
 With `snapTabs`, `wireTabBars` measures the pinned tab and settles peers at
 whole-tab starts after scroll and selection changes, reserving end room so the
 last peer can align there. The application still owns selection and tab order.
+ResizeObserver notifications coalesce snap measurements into the next animation
+frame, so inset writes cannot resize the observed strip during observer delivery.
 
 CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side

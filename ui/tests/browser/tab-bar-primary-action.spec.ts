@@ -64,3 +64,51 @@ test('standalone tab bar actions stay visible while the tabs scroll', async ({
       path: testInfo.outputPath('tab-bar-action-narrow.png'),
     });
 });
+
+test('snap tabs settle without a ResizeObserver loop error', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const errors: string[] = [];
+    Object.assign(window, { __snapResizeErrors: errors });
+    window.addEventListener('error', (event) => {
+      if (event.message.includes('ResizeObserver loop'))
+        errors.push(event.message);
+    });
+  });
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto('/?component=tab-bar');
+  const bar = page.locator('[data-tab-bar-id="pinned-tab-bar"]');
+  const strip = bar.locator('[data-kui-tab-list]');
+  await expect(strip).toBeVisible();
+  await bar.evaluate((element) => {
+    element.style.width = '300px';
+  });
+  await expect
+    .poll(() =>
+      strip.evaluate(
+        (element) =>
+          Number.parseFloat(
+            (element as HTMLElement).style.getPropertyValue(
+              '--kui-tab-bar-snap-end-extra',
+            ),
+          ) || 0,
+      ),
+    )
+    .toBeGreaterThan(0);
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        window.requestAnimationFrame(() =>
+          window.requestAnimationFrame(() => resolve()),
+        ),
+      ),
+  );
+  expect(
+    await page.evaluate(
+      () =>
+        (window as Window & { __snapResizeErrors?: string[] })
+          .__snapResizeErrors,
+    ),
+  ).toEqual([]);
+});

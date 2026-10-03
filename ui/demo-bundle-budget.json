@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 321400,
+  "totalJavaScriptGzip": 321500,
   "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 321355,
+  "measuredTotalJavaScriptGzip": 321406,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2563,6 +2563,22 @@
         "measuredTotalJavaScriptGzip": 321355,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 321400
+      }
+    },
+    {
+      "at": "2026-10-03T09:42:15.235Z",
+      "reason": "Coalesce TabBar snap geometry updates outside ResizeObserver delivery",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 321355,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 321406,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321500
       }
     }
   ]

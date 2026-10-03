@@ -699,6 +699,14 @@ describe('TabBar wiring', () => {
 
   describe('revealing an application-driven selection', () => {
     it('updates snap geometry after resize and releases observers when a strip is removed', async () => {
+      let frame: FrameRequestCallback | undefined;
+      const requestFrame = vi
+        .spyOn(window, 'requestAnimationFrame')
+        .mockImplementation((callback) => {
+          frame = callback;
+          return 42;
+        });
+      const cancelFrame = vi.spyOn(window, 'cancelAnimationFrame');
       const observed: Element[] = [];
       const unobserved: Element[] = [];
       const disconnected = vi.fn();
@@ -747,6 +755,12 @@ describe('TabBar wiring', () => {
       );
       lastLeft = 200;
       resized?.();
+      resized?.();
+      expect(requestFrame).toHaveBeenCalledOnce();
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
+        '40px',
+      );
+      frame?.(0);
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
         '60px',
       );
@@ -757,7 +771,9 @@ describe('TabBar wiring', () => {
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
         '',
       );
+      resized?.();
       stop();
+      expect(cancelFrame).toHaveBeenCalledWith(42);
       expect(disconnected).toHaveBeenCalledOnce();
     });
 

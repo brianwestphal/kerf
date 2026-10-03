@@ -165,8 +165,16 @@ export function wireTabBars(
   const snapExtras = new WeakMap<HTMLElement, number>();
   const snapStrips = new Set<HTMLElement>();
   const snapObserved = new Set<HTMLElement>();
+  let snapFrame: number | undefined;
+  const scheduleSnapSync = () => {
+    if (disposed || snapFrame !== undefined) return;
+    snapFrame = view.requestAnimationFrame(() => {
+      snapFrame = undefined;
+      if (!disposed) syncSnapInRoot();
+    });
+  };
   const snapResizeObserver = view.ResizeObserver
-    ? new view.ResizeObserver(() => syncSnapInRoot())
+    ? new view.ResizeObserver(scheduleSnapSync)
     : undefined;
   const observeSnap = (element: HTMLElement) => {
     if (snapObserved.has(element)) return;
@@ -641,6 +649,7 @@ export function wireTabBars(
 
   return () => {
     disposed = true;
+    if (snapFrame !== undefined) view.cancelAnimationFrame(snapFrame);
     selectionObserver.disconnect();
     snapResizeObserver?.disconnect();
     for (const strip of snapStrips) {
