@@ -1042,6 +1042,27 @@ function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
       true,
       ts.ScriptKind.TSX,
     );
+    const localComponents = new Map();
+    for (const statement of source.statements) {
+      if (
+        ts.isFunctionDeclaration(statement) &&
+        statement.name &&
+        statement.body
+      )
+        localComponents.set(statement.name.text, statement.body);
+      if (!ts.isVariableStatement(statement)) continue;
+      for (const declaration of statement.declarationList.declarations)
+        if (
+          ts.isIdentifier(declaration.name) &&
+          declaration.initializer &&
+          (ts.isArrowFunction(declaration.initializer) ||
+            ts.isFunctionExpression(declaration.initializer))
+        )
+          localComponents.set(
+            declaration.name.text,
+            declaration.initializer.body,
+          );
+    }
     const imports = new Map();
     const namespaces = new Map();
     const compilerOptions = compilerOptionsFor(file, root, compilerCache);
@@ -1105,7 +1126,33 @@ function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
             ['class', 'className'].includes(item.name.getText(source)),
         ),
       ).values;
-    const composedBelow = (node, found) => {
+    const returnedJsx = (body) => {
+      if (!ts.isBlock(body)) return [body];
+      const expressions = [];
+      const visitReturns = (node) => {
+        if (ts.isReturnStatement(node)) {
+          if (node.expression) expressions.push(node.expression);
+          return;
+        }
+        if (
+          node !== body &&
+          (ts.isFunctionDeclaration(node) ||
+            ts.isFunctionExpression(node) ||
+            ts.isArrowFunction(node))
+        )
+          return;
+        ts.forEachChild(node, visitReturns);
+      };
+      visitReturns(body);
+      return expressions;
+    };
+    const localReturns = (opening, seen) => {
+      const name = opening.tagName.getText(source);
+      const body = localComponents.get(name);
+      if (!body || seen.has(name)) return undefined;
+      return { name, expressions: returnedJsx(body) };
+    };
+    const composedBelow = (node, found, seen = new Set()) => {
       if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
         const opening = openingOf(node);
         const entry = entryFor(opening);
@@ -1121,15 +1168,39 @@ function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
           }
           return;
         }
+        const local = localReturns(opening, seen);
+        if (local) {
+          const next = new Set([...seen, local.name]);
+          for (const expression of local.expressions)
+            composedBelow(expression, found, next);
+          return;
+        }
         if (ts.isJsxElement(node))
-          for (const child of node.children) composedBelow(child, found);
+          for (const child of node.children) composedBelow(child, found, seen);
         return;
       }
       if (ts.isJsxFragment(node)) {
-        for (const child of node.children) composedBelow(child, found);
+        for (const child of node.children) composedBelow(child, found, seen);
         return;
       }
-      ts.forEachChild(node, (child) => composedBelow(child, found));
+      ts.forEachChild(node, (child) => composedBelow(child, found, seen));
+    };
+    const expandedRoots = (node, seen = new Set()) => {
+      if (ts.isJsxFragment(node))
+        return node.children.flatMap((child) => expandedRoots(child, seen));
+      if (!ts.isJsxElement(node) && !ts.isJsxSelfClosingElement(node)) {
+        const roots = [];
+        ts.forEachChild(node, (child) =>
+          roots.push(...expandedRoots(child, seen)),
+        );
+        return roots;
+      }
+      const local = localReturns(openingOf(node), seen);
+      if (!local) return [node];
+      const next = new Set([...seen, local.name]);
+      return local.expressions.flatMap((expression) =>
+        expandedRoots(expression, next),
+      );
     };
     const visit = (node) => {
       if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
@@ -1160,17 +1231,19 @@ function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
             if (ts.isJsxExpression(child) && child.expression) dynamic = true;
             if (!ts.isJsxElement(child) && !ts.isJsxSelfClosingElement(child))
               continue;
-            const childOpening = openingOf(child);
-            const childEntry = entryFor(childOpening);
-            const type =
-              childEntry?.boundaries?.rootElement ??
-              (childEntry
-                ? undefined
-                : childOpening.tagName.getText(source).toLowerCase());
-            if (!type) continue;
-            const candidates = possible.get(type) ?? [];
-            candidates.push(childEntry);
-            possible.set(type, candidates);
+            for (const root of expandedRoots(child)) {
+              const childOpening = openingOf(root);
+              const childEntry = entryFor(childOpening);
+              const type =
+                childEntry?.boundaries?.rootElement ??
+                (childEntry
+                  ? undefined
+                  : childOpening.tagName.getText(source).toLowerCase());
+              if (!type) continue;
+              const candidates = possible.get(type) ?? [];
+              candidates.push(childEntry);
+              possible.set(type, candidates);
+            }
           }
           if (!dynamic)
             for (const [type, candidates] of possible)

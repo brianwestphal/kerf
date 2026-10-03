@@ -138,7 +138,10 @@ which element a selector styles.
   `descendantElements` below an own wrapper. `LucideIcon` publishes `svg` and
   its Lucide SVG child tags, so `.wrapper > svg`, `.wrapper svg`, and
   `.wrapper path` can name the composed icon. Ambiguous evidence from multiple
-  different child components is discarded. The finding names the composing
+  different child components is discarded. The scan follows returned JSX from
+  same-module function and arrow-function components at their call sites,
+  recursively with a cycle guard; their intrinsic elements remain app-owned.
+  The finding names the composing
   class and component. A `::part()` subject is left to
   `KUI-L011`; a rule that only sets custom properties is configuration, judged
   by the token rules. Forcing a component's dimensions is one such restyle

@@ -924,6 +924,45 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
     ).toEqual(Array(4).fill('@kerfjs/ui:lucide-icon'));
   });
 
+  it('follows same-module function components without treating their intrinsic markup as foreign', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/view.css': [
+        '.local svg { width: 12px; }',
+        '.local > button { padding: 0; }',
+        '.local > svg { width: 12px; }',
+        '.direct-local > svg { width: 12px; }',
+        '.own-local svg { width: 12px; }',
+        '',
+      ].join('\n'),
+      'src/view.tsx': [
+        "import './view.css';",
+        "import { LucideIcon } from '@kerfjs/ui/lucide-icon';",
+        'function RecoveryActions() { return <button><LucideIcon icon={Star} name="star" /></button>; }',
+        'const Nested = () => <RecoveryActions />;',
+        'const DirectIcon = () => <LucideIcon icon={Star} name="star" />;',
+        'function CycleA() { return <CycleB />; }',
+        'function CycleB() { return <CycleA />; }',
+        'const Own = () => <svg />;',
+        'export const View = () => <>',
+        '  <div class="local"><Nested /><CycleA /></div>',
+        '  <div class="direct-local"><DirectIcon /></div>',
+        '  <div class="own-local"><Own /></div>',
+        '</>;',
+        '',
+      ].join('\n'),
+    });
+    const report = await analyzeUiProject({
+      root,
+      ownership: 'component',
+      implicitComponentOwnership: true,
+    });
+    expect(ids(report).filter((item) => item.startsWith('KUI-L019'))).toEqual([
+      'KUI-L019 src/view.css:1',
+      'KUI-L019 src/view.css:4',
+    ]);
+  });
+
   it('rejects application CSS that restyles, overrides, or hooks a component', async () => {
     const root = await project({
       'src/app.css': [

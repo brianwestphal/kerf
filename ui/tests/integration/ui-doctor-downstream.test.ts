@@ -1140,6 +1140,45 @@ test(
 );
 
 test(
+  'the doctor sees a composed icon through a local function component',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-local-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"local-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          implicitComponentOwnership: true,
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/view.css'),
+        '.actions svg { width: 12px; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/view.tsx'),
+        "import './view.css'; import { LucideIcon } from '@kerfjs/ui/lucide-icon'; function Actions() { return <button><LucideIcon icon={Star} name='star' /></button>; } export const View = () => <div class='actions'><Actions /></div>;\n",
+      );
+      const report = await doctor(root);
+      expect(report.status).toBe(1);
+      expect(
+        report.report.diagnostics.map((item: { id: string }) => item.id),
+      ).toEqual(['KUI-L019']);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor reports a directly rendered Discouraged Web Awesome element, then passes once the Kerf wrapper replaces it',
   async () => {
     const root = await mkdtemp(

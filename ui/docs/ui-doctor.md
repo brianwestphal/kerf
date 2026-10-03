@@ -47,7 +47,9 @@ component-gap report instead of an override (see
 In component mode, `KUI-L019` also follows an owned wrapper to a composed
 child's cataloged root and descendant element types. For example, a wrapper
 around `LucideIcon` cannot size its `svg` or `path` with an element selector;
-use the icon's props or style an app-owned element.
+use the icon's props or style an app-owned element. The same check follows
+local function components returned from the owner module and treats their
+intrinsic markup as app-owned.
 The analyzer resolves a cataloged application component imported through an
 exact or wildcard TypeScript `paths` alias from the nearest consumer tsconfig,
 so the same root hook-class check applies in those files.
