@@ -871,6 +871,9 @@ const stopActions = delegateActions(app, 'click', {
   'log-add': () => {
     actionLog.value = 'Add action requested';
   },
+  'edit-toolbar-title': () => {
+    actionLog.value = 'Edit toolbar title requested';
+  },
   'log-inbox': () => {
     actionLog.value = 'Inbox selected';
   },

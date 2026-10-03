@@ -1760,6 +1760,11 @@
           "id": "responsive priority",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "the delegated action handler and display-to-input editing swap",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -1775,7 +1780,8 @@
       },
       "accessibility": {
         "obligations": [
-          "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title."
+          "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
+          "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap."
         ]
       },
       "cssValueProps": [],

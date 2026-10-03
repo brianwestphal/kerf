@@ -391,6 +391,11 @@ zone children are `ToolbarText` (identity/title text) and `ToolbarControlGroup`
 standalone `wa-button` for the application's primary action. It keeps its own
 Web Awesome brand, danger, size, and hover chrome, while Toolbar aligns it in
 the control band and wraps it with other trailing items when space is tight.
+For a title that opens an editor, set `action` on a direct `ToolbarText`: it
+renders a native button that keeps its content width when possible and
+ellipsizes before an adjacent status chip when the leading zone narrows. The
+application handles the delegated action and replaces it with its own input
+while editing. Use a separate heading landmark if the view needs one.
 Do not drop other bare buttons, inputs, links, or arbitrary markup straight
 into a zone; wrap controls in a `ToolbarControlGroup` so they get the shared
 toolbar geometry, hover/pressed treatment, and grouping. `SegmentedControl`,

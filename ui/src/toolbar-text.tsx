@@ -14,14 +14,6 @@ interface ToolbarTextBaseProps {
   /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
   id?: string;
   /**
-   * Expose heading semantics (`role="heading"` + `aria-level`) so the text acts as
-   * a heading landmark — e.g. a page's primary title. Omit to keep the plain span
-   * (the default), which suits a dialog title referenced via `aria-labelledby`.
-   */
-  headingLevel?: HeadingLevel;
-  /** Render the text as an unanimated loading skeleton instead of its value. */
-  placeholder?: boolean;
-  /**
    * Show a trailing ellipsis (…) where the text is truncated — on the single line
    * (default), or at the `maxLines` boundary when wrapping. Set false to hard-clip
    * instead. Default true.
@@ -49,7 +41,24 @@ type ToolbarTextWrappingProps =
     }
   | { wrap?: false; maxLines?: never };
 
-export type ToolbarTextProps = ToolbarTextBaseProps & ToolbarTextWrappingProps;
+export type ToolbarTextProps = ToolbarTextBaseProps &
+  (
+    | ({
+        action?: never;
+        /** Expose `role="heading"` and `aria-level` on read-only text. */
+        headingLevel?: HeadingLevel;
+        /** Render an unanimated loading skeleton instead of the text. */
+        placeholder?: boolean;
+      } & ToolbarTextWrappingProps)
+    | {
+        /** Render a native button with this delegated action; the app owns editing. */
+        action: string;
+        headingLevel?: never;
+        placeholder?: never;
+        wrap?: never;
+        maxLines?: never;
+      }
+  );
 
 export function ToolbarText({
   text,
@@ -63,8 +72,25 @@ export function ToolbarText({
   maxLines = null,
   fill = false,
   slot,
+  action,
 }: ToolbarTextProps) {
   const capped = wrap && maxLines != null && maxLines > 0;
+  if (action !== undefined)
+    return (
+      <button
+        type="button"
+        class={`kui-toolbar-text ${className}`.trim()}
+        data-component="toolbar-text"
+        data-size={size}
+        data-fill={fill ? 'true' : undefined}
+        data-ellipsis={ellipsis ? undefined : 'false'}
+        data-action={action}
+        id={id}
+        slot={slot}
+      >
+        <span class="kui-toolbar-text__text">{text}</span>
+      </button>
+    );
   return (
     <span
       class={`kui-toolbar-text ${className}`.trim()}

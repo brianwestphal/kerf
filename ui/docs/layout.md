@@ -309,6 +309,10 @@ zone holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; actions belong in a trailing group. Omit empty groups. Supporting
 copy is app-owned content below the toolbar and aligns with the intended content
 edge.
+When the title itself opens editing, set `ToolbarText action="edit-title"` and
+render it directly in the leading zone beside any status chip. The button
+shrinks and ellipsizes at the space left by its siblings without filling unused
+space; the app swaps its own input into the edit state.
 
 ## Spacing scale
 

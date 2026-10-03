@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 321500,
-  "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 321406,
+  "totalJavaScriptGzip": 321700,
+  "measuredLargestJavaScriptGzip": 126043,
+  "measuredTotalJavaScriptGzip": 321613,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2579,6 +2579,38 @@
         "measuredTotalJavaScriptGzip": 321406,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 321500
+      }
+    },
+    {
+      "at": "2026-10-03T11:02:28.643Z",
+      "reason": "Actionable toolbar title demo and native button variant",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 321406,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 321645,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321700
+      }
+    },
+    {
+      "at": "2026-10-03T11:07:52.909Z",
+      "reason": "Actionable toolbar title demo and native button variant",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 321645,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 321613,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321700
       }
     }
   ]

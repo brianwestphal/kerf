@@ -533,6 +533,87 @@ test('every ToolbarText size renders in the UI sans stack, never a monospace fal
   for (const { family } of small) expect(family).toBe(list.sans);
 });
 
+test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by pointer or keyboard', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto('/?component=toolbar-text');
+  const example = page.locator('[data-demo-toolbar-text-action]');
+  const toolbar = example.locator('.kui-toolbar');
+  const title = example.getByRole('button', {
+    name: 'Annual maintenance procurement plan',
+  });
+  const chip = example.locator('.kui-chip');
+  const geometry = () =>
+    example.evaluate((root) => {
+      const button = root.querySelector<HTMLButtonElement>(
+        'button.kui-toolbar-text',
+      )!;
+      const label = button.querySelector<HTMLElement>(
+        '.kui-toolbar-text__text',
+      )!;
+      const chip = root.querySelector<HTMLElement>('.kui-chip')!;
+      const buttonRect = button.getBoundingClientRect();
+      const chipRect = chip.getBoundingClientRect();
+      const toolbarRect = root
+        .querySelector('.kui-toolbar')!
+        .getBoundingClientRect();
+      const chipLabel = chip.querySelector<HTMLElement>('.kui-chip__label')!;
+      return {
+        buttonWidth: buttonRect.width,
+        gap: chipRect.left - buttonRect.right,
+        sameRow: Math.abs(chipRect.top - buttonRect.top) < 12,
+        truncated: label.scrollWidth > label.clientWidth + 1,
+        chipTruncated: chipLabel.scrollWidth > chipLabel.clientWidth + 1,
+        overflow:
+          root.querySelector('.kui-toolbar')!.scrollWidth >
+          toolbarRect.width + 1,
+      };
+    });
+
+  await toolbar.evaluate(
+    (node) => ((node as HTMLElement).style.width = '850px'),
+  );
+  const roomy = await geometry();
+  expect(roomy.sameRow).toBe(true);
+  expect(roomy.gap).toBeGreaterThanOrEqual(0);
+  expect(roomy.gap).toBeLessThan(20);
+  expect(roomy.truncated).toBe(false);
+  expect(roomy.chipTruncated).toBe(false);
+  if (browserName === 'chromium')
+    await toolbar.screenshot({
+      path: 'test-results/actionable-toolbar-title-wide.png',
+    });
+
+  await toolbar.evaluate(
+    (node) => ((node as HTMLElement).style.width = '550px'),
+  );
+  const narrow = await geometry();
+  expect(narrow.buttonWidth).toBeLessThan(roomy.buttonWidth);
+  expect(narrow.sameRow).toBe(true);
+  expect(narrow.gap).toBeGreaterThanOrEqual(0);
+  expect(narrow.gap).toBeLessThan(20);
+  expect(narrow.truncated).toBe(true);
+  expect(narrow.chipTruncated).toBe(false);
+  expect(narrow.overflow).toBe(false);
+  await expect(chip).toBeVisible();
+  if (browserName === 'chromium')
+    await toolbar.screenshot({
+      path: 'test-results/actionable-toolbar-title-narrow.png',
+    });
+
+  await title.click();
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'Edit toolbar title requested',
+  );
+  await title.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'Edit toolbar title requested',
+  );
+});
+
 test('fixed extra-large ToolbarText keeps the font-l step across viewport widths', async ({
   page,
 }, testInfo) => {

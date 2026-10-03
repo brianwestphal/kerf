@@ -1899,7 +1899,8 @@
         "ToolbarText"
       ],
       "useWhen": [
-        "Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics."
+        "Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics.",
+        "Use action for an editable toolbar title: it renders a native button that shrinks and ellipsizes beside sibling status chips."
       ],
       "avoidWhen": [
         "Do not omit headingLevel when the text is the page or section heading.",
@@ -1919,7 +1920,8 @@
       ],
       "appOwns": [
         "text",
-        "responsive priority"
+        "responsive priority",
+        "the delegated action handler and display-to-input editing swap"
       ],
       "variants": [
         "xlarge",
@@ -1931,7 +1933,8 @@
         "placeholder (loading)"
       ],
       "accessibility": [
-        "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title."
+        "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
+        "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap."
       ],
       "geometry": {
         "margin": "none",

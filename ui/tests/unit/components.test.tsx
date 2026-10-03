@@ -1944,6 +1944,34 @@ describe('production UI primitives', () => {
       'data-fill="true"',
     );
 
+    const actionable = asHtml(
+      ToolbarText({
+        text: 'Edit this title',
+        size: 'large',
+        action: 'edit-title',
+      }),
+    );
+    expect(actionable).toContain('<button type="button"');
+    expect(actionable).toContain('data-action="edit-title"');
+    expect(actionable).toContain('class="kui-toolbar-text__text"');
+    expect(actionable).not.toContain('data-fill');
+    expect(actionable).not.toContain('role="heading"');
+    expect(actionable).toContain('</button>');
+    const fillingAction = asHtml(
+      ToolbarText({
+        text: 'Edit',
+        action: 'edit-title',
+        fill: true,
+        ellipsis: false,
+        id: 'editable-title',
+        slot: 'title',
+      }),
+    );
+    expect(fillingAction).toContain('data-fill="true"');
+    expect(fillingAction).toContain('data-ellipsis="false"');
+    expect(fillingAction).toContain('id="editable-title"');
+    expect(fillingAction).toContain('slot="title"');
+
     // ellipsis: false emits the hard-clip hook; wrap: true emits the wrap hook.
     expect(asHtml(ToolbarText({ text: 'Clip me', ellipsis: false }))).toContain(
       'data-ellipsis="false"',

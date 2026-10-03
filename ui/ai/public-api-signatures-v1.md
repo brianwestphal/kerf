@@ -223,14 +223,6 @@ interface ToolbarTextBaseProps {
     /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
     id?: string;
     /**
-     * Expose heading semantics (`role="heading"` + `aria-level`) so the text acts as
-     * a heading landmark — e.g. a page's primary title. Omit to keep the plain span
-     * (the default), which suits a dialog title referenced via `aria-labelledby`.
-     */
-    headingLevel?: HeadingLevel;
-    /** Render the text as an unanimated loading skeleton instead of its value. */
-    placeholder?: boolean;
-    /**
      * Show a trailing ellipsis (…) where the text is truncated — on the single line
      * (default), or at the `maxLines` boundary when wrapping. Set false to hard-clip
      * instead. Default true.
@@ -253,8 +245,21 @@ type ToolbarTextWrappingProps = {
     wrap?: false;
     maxLines?: never;
 };
-type ToolbarTextProps = ToolbarTextBaseProps & ToolbarTextWrappingProps;
-declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, }: ToolbarTextProps): kerfjs.SafeHtml;
+type ToolbarTextProps = ToolbarTextBaseProps & (({
+    action?: never;
+    /** Expose `role="heading"` and `aria-level` on read-only text. */
+    headingLevel?: HeadingLevel;
+    /** Render an unanimated loading skeleton instead of the text. */
+    placeholder?: boolean;
+} & ToolbarTextWrappingProps) | {
+    /** Render a native button with this delegated action; the app owns editing. */
+    action: string;
+    headingLevel?: never;
+    placeholder?: never;
+    wrap?: never;
+    maxLines?: never;
+});
+declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
 ```

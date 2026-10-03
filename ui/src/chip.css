@@ -22,6 +22,12 @@
   white-space: nowrap;
 }
 
+/* A normal status chip stays readable beside a shrinkable toolbar title.
+   Only the explicit truncate variant gives up its label width. */
+.kui-chip:not([data-truncate]) {
+  flex-shrink: 0;
+}
+
 .kui-chip[data-tone="brand"] {
   --_kui-chip-fill-quiet: var(--kui-color-brand-fill-quiet);
   --_kui-chip-fill-solid: var(--kui-color-brand-on-fill);

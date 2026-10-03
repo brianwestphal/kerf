@@ -622,6 +622,12 @@ zone holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; app actions belong in a trailing `ToolbarControlGroup`. Omit the
 icon group when it has no content. Supporting copy is app-owned content below
 the toolbar so it cannot pull the icon or actions out of alignment.
+For an editable title, `ToolbarText action="edit-title"` renders a native button
+directly in the leading zone. It keeps content width when there is room, shrinks
+and ellipsizes beside a status chip when space is tight, and emits the delegated
+action on click or keyboard activation. The application owns the editing control
+and the swap between display and edit states. An actionable title is a button,
+so place any required heading landmark on another element in the view.
 
 `ValueTable` composes typed `ValueTableRow` entries. A row owns its `dt`/`dd`
 semantics and may receive a leading `SafeHtml` icon. Every row keeps 8px of

@@ -12,6 +12,26 @@
   align-items: center;
 }
 
+button.kui-toolbar-text {
+  appearance: none;
+  border: 0;
+  border-radius: remify(6px);
+  background: transparent;
+  font-family: inherit;
+  text-align: start;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+button.kui-toolbar-text:hover {
+  background: var(--kui-color-neutral-fill-normal);
+}
+
+button.kui-toolbar-text:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: remify(2px);
+}
+
 /* In a Toolbar zone, a title fills the toolbar's control band (the
    `--_kui-toolbar-band` the Toolbar provides) and centers its first line in
    it; further lines of a wrapped title continue below the band. These rules

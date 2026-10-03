@@ -322,6 +322,11 @@ role/level pair used throughout Kerf UI. Keep the levels meaningful and
 non-skipping within a view. Pass trailing
 controls as a labeled `ToolbarControlGroup` when that group needs an accessible
 name. Keep supporting copy as app-owned content below the toolbar.
+An editable title can use `ToolbarText action="edit-title"`; it renders a native
+button whose full text remains its accessible name even when visually truncated.
+Click, Enter, and Space activate the delegated action. The app owns the input
+shown while editing and its focus lifecycle. Because the button cannot also be
+a heading landmark, expose a heading elsewhere when the view needs one.
 
 ## FloatingToolbar
 

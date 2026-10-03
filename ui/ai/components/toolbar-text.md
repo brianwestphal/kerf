@@ -9,6 +9,7 @@
 Extra-large through extra-small toolbar identity text.
 
 - Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics.
+- Use action for an editable toolbar title: it renders a native button that shrinks and ellipsizes beside sibling status chips.
 
 **Not when:**
 
@@ -48,7 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures
 
 ## State and wiring
 
-**The app owns:** text; responsive priority.
+**The app owns:** text; responsive priority; the delegated action handler and display-to-input editing swap.
 
 No wiring helper.
 
@@ -59,6 +60,7 @@ Margin: none · border: none · padding: none (layout role: structure). `self` m
 ## Accessibility
 
 - Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.
+- Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.
 
 ## Styling boundary
 
