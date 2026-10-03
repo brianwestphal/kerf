@@ -726,7 +726,7 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   const demo = page.locator('[data-demo="lucide-icon"]');
   await expect(demo).toHaveClass(/kui-catalog-example-stack/);
   const examples = demo.locator('.kui-catalog-example');
-  await expect(examples).toHaveCount(3);
+  await expect(examples).toHaveCount(4);
   // Each example is a ListHeader label + a note with aligned left edges.
   await expect(examples.nth(0).locator('.kui-list-header')).toHaveText(
     /Decorative/,
@@ -737,7 +737,10 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   await expect(examples.nth(2).locator('.kui-list-header')).toHaveText(
     /Icon sizes/,
   );
-  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(3);
+  await expect(examples.nth(3).locator('.kui-list-header')).toHaveText(
+    /Outline and solid/,
+  );
+  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(4);
   const alignedLeftEdges = await examples.evaluateAll((nodes) =>
     nodes.map((example) => {
       const contentLeft = (selector: string) => {
@@ -772,6 +775,10 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
     .locator('svg[data-lucide]')
     .evaluateAll((nodes) => nodes.map((node) => node.innerHTML));
   expect(glyphs[0]).toBe(glyphs[1]);
+  const appearances = examples.nth(3).locator('svg[data-lucide]');
+  await expect(appearances).toHaveCount(2);
+  await expect(appearances.nth(0)).toHaveAttribute('fill', 'none');
+  await expect(appearances.nth(1)).toHaveAttribute('fill', 'currentColor');
 });
 
 test('insets a self-bordered control and bare text so their edges line up in a content region', async ({
@@ -1007,13 +1014,13 @@ test('computes component geometry overlays from live CSS and leaves composition 
     .evaluate((style) => style.remove());
 
   // The overlay marks the demoed SPECIMEN, not the example's ListHeader label or
-  // note. The two mode specimens and the size specimen each get a bound and no
-  // margin; the labels must not be marked.
+  // note. The two semantic modes, size, and appearance specimens each get a
+  // bound and no margin; the labels must not be marked.
   await page.goto('/?component=lucide-icon');
   await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
   await expect
     .poll(() => overlay.locator('.kui-catalog__geometry-bound').count())
-    .toBe(3);
+    .toBe(4);
   await expect
     .poll(() => overlay.locator('.kui-catalog__geometry-margin').count())
     .toBe(0);
