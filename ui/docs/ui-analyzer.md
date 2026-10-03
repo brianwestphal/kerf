@@ -168,6 +168,9 @@ which element a selector styles.
   component mode also protects sibling modules through `componentSource`.
   A component's own source and its `placeableClasses` remain allowed. Findings
   name the class, owner, write site, and configuration route. This diagnostic
+  scans raw HTML in plain strings and the static segments of interpolated
+  template literals. When a substitution interrupts a class value, only
+  complete literal tokens are reported; split tokens are not guessed. It
   skips test modules (`*.test.*`, `*.spec.*`, and files under `__tests__/`),
   where HTML literals commonly assert on output rather than render markup.
 

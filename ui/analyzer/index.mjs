@@ -1530,6 +1530,22 @@ function inspectTsx(
   const borrowedValues = (values, node, via) => {
     for (const className of new Set(values)) borrowed(className, node, via);
   };
+  const templateGap = '\uE000';
+  const rawHtmlClasses = (value) => {
+    const classes = [];
+    for (const match of value.matchAll(
+      /<[a-z][^>]*\sclass\s*=\s*["']([^"']+)["']/gi,
+    )) {
+      const pieces = match[1].split(templateGap);
+      for (const [index, piece] of pieces.entries()) {
+        const words = piece.split(/\s+/).filter(Boolean);
+        if (index > 0 && !/^\s/.test(piece)) words.shift();
+        if (index < pieces.length - 1 && !/\s$/.test(piece)) words.pop();
+        classes.push(...words);
+      }
+    }
+    return classes;
+  };
   const visit = (node) => {
     if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
       const opening = ts.isJsxElement(node) ? node.openingElement : node;
@@ -1729,11 +1745,15 @@ function inspectTsx(
         node.right,
         'className assignment',
       );
-    if (ts.isStringLiteralLike(node) && node.text.includes('<')) {
-      for (const match of node.text.matchAll(
-        /<[a-z][^>]*\sclass\s*=\s*["']([^"']+)["']/gi,
-      ))
-        borrowedValues(match[1].split(/\s+/).filter(Boolean), node, 'raw HTML');
+    if (ts.isStringLiteralLike(node) && node.text.includes('<'))
+      borrowedValues(rawHtmlClasses(node.text), node, 'raw HTML');
+    if (ts.isTemplateExpression(node)) {
+      const staticHtml = [
+        node.head.text,
+        ...node.templateSpans.map((span) => span.literal.text),
+      ].join(templateGap);
+      if (staticHtml.includes('<'))
+        borrowedValues(rawHtmlClasses(staticHtml), node, 'raw HTML');
     }
     ts.forEachChild(node, visit);
   };

@@ -1179,6 +1179,39 @@ test(
 );
 
 test(
+  'the doctor finds borrowed classes in interpolated raw HTML',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-html-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"html-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/render.ts'),
+        'const html = `<header class="kui-toolbar">${title}<div class="kui-toolbar__leading">x</div></header>`;\n',
+      );
+      const report = await doctor(root);
+      expect(report.status).toBe(1);
+      expect(
+        report.report.diagnostics.map((item: { id: string }) => item.id),
+      ).toEqual(['KUI-L023', 'KUI-L023']);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor reports a directly rendered Discouraged Web Awesome element, then passes once the Kerf wrapper replaces it',
   async () => {
     const root = await mkdtemp(

@@ -323,6 +323,37 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
     ]);
   });
 
+  it('reads complete raw HTML class tokens across template substitutions', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/render.ts': [
+        'const html = `<div class="kui-toolbar">${title}<span class="kui-toolbar__leading">x</span></div>`;',
+        'const spaced = `<div class="kui-toolbar ${tone} kui-toolbar__trailing"></div>`;',
+        'const split = `<div class="kui-tool${part}bar"></div>`;',
+        'const attribute = `<div cla${part}ss="kui-toolbar"></div>`;',
+        'const partial = `<div class="kui-toolbar${suffix} kui-toolbar__center"></div>`;',
+        'const plain = `<div class="kui-toolbar"></div>`;',
+        '',
+      ].join('\n'),
+    });
+    const report = await analyzeUiProject({ root });
+    expect(
+      report.diagnostics
+        .filter((item) => item.ruleId === 'KUI-L023')
+        .map(
+          (item) =>
+            `${item.location.line} ${(item.evidence as { className: string }).className}`,
+        ),
+    ).toEqual([
+      '1 kui-toolbar',
+      '1 kui-toolbar__leading',
+      '2 kui-toolbar',
+      '2 kui-toolbar__trailing',
+      '5 kui-toolbar__center',
+      '6 kui-toolbar',
+    ]);
+  });
+
   it('ignores borrowed markup in test modules while checking adjacent source', async () => {
     const root = await project({
       'package.json': JSON.stringify({ name: 'app' }),
