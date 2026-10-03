@@ -681,7 +681,7 @@ function inspectComponentOwnership(
         'KUI-L019',
         location(file, rule),
         via === 'descendant'
-          ? `\`${name}\` reaches an unclassed descendant inside ${componentLabel(entry)} (${properties.join(', ')}); components own their styles. Configure it through ${configurationFor(entry)}. To place your own content in its context, style your own element. ${reportGap(entry)}`
+          ? `\`${name}\` reaches an unclassed descendant inside ${componentLabel(entry)} (${properties.join(', ')}); components own their styles. Use a child combinator or an own class to target your element, or configure the child through ${configurationFor(entry)}. ${reportGap(entry)}`
           : `\`${name}\` makes ${componentLabel(entry)} the subject of an application rule (${properties.join(', ')}); components own their styles. Configure it through ${configurationFor(entry)}. To place your own content in its context, style your own element (\`${name} > .your-element\`). ${reportGap(entry)}`,
         {
           selector: rule.selector,
@@ -1014,8 +1014,10 @@ function literalClassValues(expression) {
 function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
   const hooks = new Map();
   const composedChildren = new Map();
+  const composedDescendants = new Map();
   const ambiguousHooks = new Set();
   const ambiguousChildren = new Set();
+  const ambiguousDescendants = new Set();
   const record = (map, ambiguous, key, entry) => {
     if (ambiguous.has(key)) return;
     if (map.has(key) && map.get(key).key !== entry.key) {
@@ -1103,6 +1105,32 @@ function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
             ['class', 'className'].includes(item.name.getText(source)),
         ),
       ).values;
+    const composedBelow = (node, found) => {
+      if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
+        const opening = openingOf(node);
+        const entry = entryFor(opening);
+        if (entry) {
+          for (const type of [
+            entry.boundaries?.rootElement,
+            ...(entry.boundaries?.descendantElements ?? []),
+          ]) {
+            if (!type) continue;
+            const entries = found.get(type) ?? new Set();
+            entries.add(entry);
+            found.set(type, entries);
+          }
+          return;
+        }
+        if (ts.isJsxElement(node))
+          for (const child of node.children) composedBelow(child, found);
+        return;
+      }
+      if (ts.isJsxFragment(node)) {
+        for (const child of node.children) composedBelow(child, found);
+        return;
+      }
+      ts.forEachChild(node, (child) => composedBelow(child, found));
+    };
     const visit = (node) => {
       if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
         const opening = openingOf(node);
@@ -1112,6 +1140,20 @@ function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
             record(hooks, ambiguousHooks, name, entry);
         if (ts.isJsxElement(node)) {
           const parentClasses = classesOf(opening);
+          if (parentClasses.length) {
+            const descendants = new Map();
+            for (const child of node.children)
+              composedBelow(child, descendants);
+            for (const [type, entries] of descendants)
+              for (const entry of entries)
+                for (const name of parentClasses)
+                  record(
+                    composedDescendants,
+                    ambiguousDescendants,
+                    `${name}|${type}`,
+                    entry,
+                  );
+          }
           const possible = new Map();
           let dynamic = false;
           for (const child of node.children) {
@@ -1152,7 +1194,7 @@ function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
     };
     visit(source);
   }
-  return { componentMode: true, hooks, composedChildren };
+  return { componentMode: true, hooks, composedChildren, composedDescendants };
 }
 
 function cssPreferred(contract) {

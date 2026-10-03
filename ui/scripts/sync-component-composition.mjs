@@ -89,6 +89,9 @@ function defaultEntry(entry) {
         ? { placeableClasses: entry.placeableClasses }
         : {}),
       ...(entry.rootElement ? { rootElement: entry.rootElement } : {}),
+      ...(entry.descendantElements?.length
+        ? { descendantElements: entry.descendantElements }
+        : {}),
       publicTokens: entry.publicTokens ?? [],
     },
     diagnostics: [],

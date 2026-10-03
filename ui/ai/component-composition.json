@@ -148,6 +148,17 @@
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
+        "rootElement": "svg",
+        "descendantElements": [
+          "circle",
+          "ellipse",
+          "g",
+          "line",
+          "path",
+          "polygon",
+          "polyline",
+          "rect"
+        ],
         "publicTokens": []
       },
       "diagnostics": [],

@@ -187,6 +187,17 @@
       },
       "wiring": [],
       "publicClasses": [],
+      "rootElement": "svg",
+      "descendantElements": [
+        "circle",
+        "ellipse",
+        "g",
+        "line",
+        "path",
+        "polygon",
+        "polyline",
+        "rect"
+      ],
       "publicTokens": [],
       "links": {
         "catalogRoute": "?component=lucide-icon",

@@ -274,6 +274,19 @@ export function validateComposition(catalog, options = {}) {
         !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(entry.boundaries.rootElement))
     )
       fail(`${at} rootElement must be a lowercase element tag name`);
+    if ('descendantElements' in (entry?.boundaries ?? {})) {
+      const elements = entry.boundaries.descendantElements;
+      if (
+        !Array.isArray(elements) ||
+        new Set(elements).size !== elements.length ||
+        elements.some(
+          (element) =>
+            typeof element !== 'string' ||
+            !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(element),
+        )
+      )
+        fail(`${at} descendantElements must be a unique lowercase tag list`);
+    }
     if ('cssValueProps' in (entry ?? {}) && !Array.isArray(entry.cssValueProps))
       fail(`${at} cssValueProps must be an array when present`);
     const cssPaths = new Set();

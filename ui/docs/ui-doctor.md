@@ -44,6 +44,10 @@ stage's `ui-component-ownership` rule reports
 component's configuration, and its message routes a need with no prop to a
 component-gap report instead of an override (see
 [the analyzer rule](./ui-analyzer.md#component-ownership-kui-l019kui-l023)).
+In component mode, `KUI-L019` also follows an owned wrapper to a composed
+child's cataloged root and descendant element types. For example, a wrapper
+around `LucideIcon` cannot size its `svg` or `path` with an element selector;
+use the icon's props or style an app-owned element.
 The analyzer resolves a cataloged application component imported through an
 exact or wildcard TypeScript `paths` alias from the nearest consumer tsconfig,
 so the same root hook-class check applies in those files.

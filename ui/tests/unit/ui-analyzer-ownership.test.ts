@@ -881,6 +881,49 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
     ]);
   });
 
+  it('reports direct and descendant element selectors over composed LucideIcon markup', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/view.css': [
+        '.direct > svg { width: 12px; }',
+        '.direct svg { width: 12px; }',
+        '.nested svg { width: 12px; }',
+        '.nested path { fill: red; }',
+        '.own svg { width: 12px; }',
+        '.ambiguous svg { width: 12px; }',
+        '',
+      ].join('\n'),
+      'src/view.tsx': [
+        "import './view.css';",
+        "import { LucideIcon } from '@kerfjs/ui/lucide-icon';",
+        "import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';",
+        'export const View = () => <>',
+        '  <div class="direct"><LucideIcon icon={Star} name="star" /></div>',
+        '  <div class="nested"><span><LucideIcon icon={Star} name="star" /></span></div>',
+        '  <div class="own"><svg /></div>',
+        '  <div class="ambiguous"><LucideIcon icon={Star} name="star" /><LoadingSpinner /></div>',
+        '</>;',
+        '',
+      ].join('\n'),
+    });
+    const report = await analyzeUiProject({
+      root,
+      ownership: 'component',
+      implicitComponentOwnership: true,
+    });
+    expect(ids(report).filter((item) => item.startsWith('KUI-L019'))).toEqual([
+      'KUI-L019 src/view.css:1',
+      'KUI-L019 src/view.css:2',
+      'KUI-L019 src/view.css:3',
+      'KUI-L019 src/view.css:4',
+    ]);
+    expect(
+      report.diagnostics
+        .filter((item) => item.ruleId === 'KUI-L019')
+        .map((item) => (item.evidence as { component: string }).component),
+    ).toEqual(Array(4).fill('@kerfjs/ui:lucide-icon'));
+  });
+
   it('rejects application CSS that restyles, overrides, or hooks a component', async () => {
     const root = await project({
       'src/app.css': [

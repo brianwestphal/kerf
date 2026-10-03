@@ -134,7 +134,12 @@ which element a selector styles.
   are also reported below a hook class placed on an imported component, below
   another entry's root in the same package, or at a direct child root whose
   JSX parent composes only a component with that cataloged `rootElement` type.
-  The finding names the composing class and component. A `::part()` subject is left to
+  Descendant selectors also see a composed child's cataloged root and
+  `descendantElements` below an own wrapper. `LucideIcon` publishes `svg` and
+  its Lucide SVG child tags, so `.wrapper > svg`, `.wrapper svg`, and
+  `.wrapper path` can name the composed icon. Ambiguous evidence from multiple
+  different child components is discarded. The finding names the composing
+  class and component. A `::part()` subject is left to
   `KUI-L011`; a rule that only sets custom properties is configuration, judged
   by the token rules. Forcing a component's dimensions is one such restyle
   and reports here once: `.kui-pane { width: 300px }`.

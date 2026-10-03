@@ -333,6 +333,11 @@ describe('component composition catalog contract', () => {
       (entry) => entry.id === 'loading-spinner',
     );
     expect(spinner?.boundaries.rootElement).toBe('svg');
+    const lucide = composition.entries.find(
+      (entry) => entry.id === 'lucide-icon',
+    );
+    expect(lucide?.boundaries.rootElement).toBe('svg');
+    expect(lucide?.boundaries.descendantElements).toContain('path');
     const { LoadingSpinner } = await import('../../src/loading-spinner.js');
     expect(LoadingSpinner({}).toString()).toMatch(/^<svg[\s>]/);
     const item = composition.entries.find(

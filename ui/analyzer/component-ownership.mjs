@@ -155,6 +155,7 @@ export function restyledComponents(
     ownPackage,
     hooks = new Map(),
     composedChildren = new Map(),
+    composedDescendants = new Map(),
   } = {},
 ) {
   const found = [];
@@ -211,6 +212,14 @@ export function restyledComponents(
       const classes = classNames(
         withoutRelationalArguments(parts[index].compound),
       );
+      if (componentMode && parts.at(-1).combinator !== '>')
+        for (const name of classes)
+          for (const type of subjectTypes(subject) ?? [])
+            add(
+              composedDescendants.get(`${name}|${type}`),
+              'descendant',
+              `.${name}`,
+            );
       const hook = componentMode
         ? classes.find((name) => hooks.has(name))
         : undefined;
