@@ -237,6 +237,10 @@ stylesheet co-own its classes, whether the stylesheet was declared or directly
 imported; a source that imports none of an owner's stylesheets remains foreign.
 When several entries infer the same class from a shared stylesheet, the
 analyzer does not arbitrarily assign that class to one of them for `KUI-L019`.
+It reports one `KUI-L019` for a rule whose subject is that class or a dynamic
+member of its BEM block when the stylesheet is foreign to every co-owner. The
+finding names the co-owner set in `evidence.components`; their shared
+stylesheet remains allowed.
 Other sibling files are foreign.
 Paths are relative to the entry's package root. Set
 `implicitComponentOwnership: true` to apply the same source and stylesheet

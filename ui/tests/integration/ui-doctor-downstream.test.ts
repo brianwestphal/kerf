@@ -1223,8 +1223,12 @@ test(
         "import './row.css'; export const Row = ({ layout }) => <div class='ticket-row' data-layout={layout} />;\n",
       );
       await writeFile(
+        resolve(root, 'src/row-peer.tsx'),
+        "import './row.css'; export const RowPeer = () => <div class='ticket-row' />;\n",
+      );
+      await writeFile(
         resolve(root, 'src/other.css'),
-        '.ticket-row--list { color: red; }\n',
+        '.ticket-row--list { color: red; }\n.ticket-row--column { color: red; }\n',
       );
       await writeFile(
         resolve(root, 'src/other.tsx'),
@@ -1236,7 +1240,24 @@ test(
         broken.report.diagnostics
           .map((item: { id: string }) => item.id)
           .filter((id: string) => ['KUI-L019', 'KUI-L023'].includes(id)),
-      ).toEqual(['KUI-L019', 'KUI-L023']);
+      ).toEqual(['KUI-L019', 'KUI-L019', 'KUI-L023', 'KUI-L023']);
+      expect(
+        broken.report.diagnostics
+          .filter((item: { id: string }) => item.id === 'KUI-L019')
+          .map(
+            (item: { evidence: { components: string[] } }) =>
+              item.evidence.components,
+          ),
+      ).toEqual([
+        [
+          'bem-consumer:module:src/row-peer.tsx',
+          'bem-consumer:module:src/row.tsx',
+        ],
+        [
+          'bem-consumer:module:src/row-peer.tsx',
+          'bem-consumer:module:src/row.tsx',
+        ],
+      ]);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

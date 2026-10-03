@@ -715,17 +715,21 @@ function inspectComponentOwnership(
     isForeign,
     ownershipEvidence,
   );
-  for (const { entry, via, name } of restyled)
+  for (const { entry, coOwners, via, name } of restyled)
     diagnostics.push(
       diagnostic(
         'KUI-L019',
         location(file, rule),
-        via === 'descendant'
-          ? `\`${name}\` reaches an unclassed descendant inside ${componentLabel(entry)} (${properties.join(', ')}); components own their styles. Use a child combinator or an own class to target your element, or configure the child through ${configurationFor(entry)}. ${reportGap(entry)}`
-          : `\`${name}\` makes ${componentLabel(entry)} the subject of an application rule (${properties.join(', ')}); components own their styles. Configure it through ${configurationFor(entry)}. To place your own content in its context, style your own element (\`${name} > .your-element\`). ${reportGap(entry)}`,
+        coOwners
+          ? `\`${name}\` makes a class co-owned by ${coOwners.map((owner) => componentLabel(owner)).join(', ')} the subject of an application rule (${properties.join(', ')}); those components own their styles. Configure an owning component or style your own element instead.`
+          : via === 'descendant'
+            ? `\`${name}\` reaches an unclassed descendant inside ${componentLabel(entry)} (${properties.join(', ')}); components own their styles. Use a child combinator or an own class to target your element, or configure the child through ${configurationFor(entry)}. ${reportGap(entry)}`
+            : `\`${name}\` makes ${componentLabel(entry)} the subject of an application rule (${properties.join(', ')}); components own their styles. Configure it through ${configurationFor(entry)}. To place your own content in its context, style your own element (\`${name} > .your-element\`). ${reportGap(entry)}`,
         {
           selector: rule.selector,
-          component: entry.key,
+          ...(coOwners
+            ? { components: coOwners.map((owner) => owner.key) }
+            : { component: entry.key }),
           via,
           target: name,
           properties,

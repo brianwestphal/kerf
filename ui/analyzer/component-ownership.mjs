@@ -55,6 +55,8 @@ function isWebAwesomeTagEntry(entry) {
 export function componentOwnershipFacts(entries) {
   const classOwners = new Map();
   const blockOwners = new Map();
+  const classCoOwners = new Map();
+  const blockCoOwners = new Map();
   const dataComponentOwners = new Map();
   const tagOwners = new Map();
   const descendantRootAttributeOwners = [];
@@ -79,6 +81,23 @@ export function componentOwnershipFacts(entries) {
       styles.has(resolve(right.catalogDirectory, path)),
     );
   };
+  const recordOwner = (owners, coOwners, key, entry) => {
+    const previous = owners.get(key);
+    if (!owners.has(key)) owners.set(key, entry);
+    else if (
+      previous?.key !== entry.key &&
+      previous &&
+      sharesStylesheet(previous, entry)
+    ) {
+      owners.set(key, null);
+      coOwners.set(key, [previous, entry]);
+    } else if (
+      previous === null &&
+      coOwners.get(key).some((owner) => sharesStylesheet(owner, entry)) &&
+      !coOwners.get(key).some((owner) => owner.key === entry.key)
+    )
+      coOwners.get(key).push(entry);
+  };
   for (const entry of entries) {
     const boundaries = entry.boundaries ?? {};
     if (boundaries.rootElement && boundaries.descendantRootAttribute)
@@ -88,17 +107,9 @@ export function componentOwnershipFacts(entries) {
         Boolean,
       ),
     )) {
-      const previous = classOwners.get(className);
-      if (!classOwners.has(className)) classOwners.set(className, entry);
-      else if (previous && sharesStylesheet(previous, entry))
-        // The class is co-owned. A selector cannot attribute it to one
-        // component without depending on catalog order.
-        classOwners.set(className, null);
+      recordOwner(classOwners, classCoOwners, className, entry);
       const block = bemBlock(className);
-      const previousBlock = blockOwners.get(block);
-      if (!blockOwners.has(block)) blockOwners.set(block, entry);
-      else if (previousBlock && sharesStylesheet(previousBlock, entry))
-        blockOwners.set(block, null);
+      recordOwner(blockOwners, blockCoOwners, block, entry);
       if (
         className.startsWith('kui-') &&
         !className.includes('__') &&
@@ -133,6 +144,8 @@ export function componentOwnershipFacts(entries) {
   return {
     classOwners,
     blockOwners,
+    classCoOwners,
+    blockCoOwners,
     dataComponentOwners,
     tagOwners,
     descendantRootAttributeOwners,
@@ -147,8 +160,8 @@ export function componentOwnershipFacts(entries) {
  * cataloged anatomy class. `:has()` / `:not()` arguments are removed because
  * keying on or excluding a component does not style it. A subject that is a
  * `::part()` is left to the shadow-part rule (`KUI-L011`).
- * Returns `{ entry, via, name }` records; `isForeign(entry)` decides which
- * entries the stylesheet does not own.
+ * Returns `{ entry, via, name }` records, or `{ coOwners, via, name }` for a
+ * shared class. `isForeign(entry)` decides which owners the stylesheet lacks.
  */
 export function restyledComponents(
   selectorList,
@@ -171,17 +184,32 @@ export function restyledComponents(
     seen.add(key);
     found.push({ entry, via, name });
   };
+  const addCoOwners = (className) => {
+    if (classOwnerFor(facts, className, componentMode) !== null) return;
+    const owners =
+      facts.classCoOwners.get(className) ??
+      (componentMode
+        ? facts.blockCoOwners.get(bemBlock(className))
+        : undefined);
+    if (!owners || !owners.every((entry) => isForeign(entry))) return;
+    const name = `.${className}`;
+    if (seen.has(`co-owned|class|${name}`)) return;
+    seen.add(`co-owned|class|${name}`);
+    found.push({ coOwners: owners, via: 'class', name });
+  };
   for (const parts of complexSelectorParts(selectorList)) {
     const subject = parts.at(-1)?.compound;
     if (!subject || /::part\(/i.test(subject)) continue;
     const bare = withoutRelationalArguments(subject);
     const subjectClasses = classNames(bare);
-    for (const className of classNames(bare))
+    for (const className of subjectClasses) {
       add(
         classOwnerFor(facts, className, componentMode),
         'class',
         `.${className}`,
       );
+      addCoOwners(className);
+    }
     for (const value of dataComponents(bare))
       add(
         facts.dataComponentOwners.get(value),

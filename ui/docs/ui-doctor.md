@@ -67,7 +67,9 @@ block. An owned root or styled literal owns its whole `block__*` and `block--*`
 family, including dynamic names and classes placed on imported components.
 Modules sharing one of those stylesheets co-own its classes, so their
 own markup does not borrow from one another. A class inferred by several
-co-owners has no arbitrary single owner for CSS subject diagnostics.
+co-owners has no arbitrary single owner for CSS subject diagnostics. A
+stylesheet foreign to all co-owners receives one `KUI-L019` per subject rule,
+including dynamic BEM modifiers; `evidence.components` names the co-owner set.
 Set `"implicitComponentOwnership": true` to include uncataloged modules
 that directly import CSS. Component mode reports sibling CSS and hook-class
 restyles while allowing a component's own stylesheet and module.

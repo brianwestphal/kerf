@@ -829,8 +829,14 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
       'KUI-L023 src/c.tsx:1',
     ]);
     expect(findings.filter((item) => item.startsWith('KUI-L019'))).toEqual([
+      'KUI-L019 src/c.css:1',
       'KUI-L019 src/c.css:2',
     ]);
+    expect(
+      report.diagnostics.find(
+        (item) => item.ruleId === 'KUI-L019' && item.location.line === 1,
+      )?.evidence,
+    ).toMatchObject({ components: ['app:a', 'app:b'], target: '.shared' });
   });
 
   it('co-owns classes inferred from a direct CSS import without catalog entries', async () => {
@@ -852,6 +858,53 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
         }),
       ),
     ).toEqual(['KUI-L023 src/c.tsx:1', 'KUI-L023 src/c.tsx:1']);
+  });
+
+  it('reports foreign BEM modifiers of a co-owned block once per rule', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/shared.css':
+        '.ticket-row { color: blue; }\n.ticket-row--own { color: blue; }\n',
+      'src/a.tsx':
+        "import './shared.css'; export const A = () => <div class='ticket-row' />;\n",
+      'src/b.tsx':
+        "import './shared.css'; export const B = () => <div class='ticket-row' />;\n",
+      'src/c.tsx':
+        "import './shared.css'; export const C = () => <div class='ticket-row' />;\n",
+      'src/foreign.css':
+        '.ticket-row--list { color: red; }\n.ticket-row--column { color: red; }\n',
+    });
+    const report = await analyzeUiProject({
+      root,
+      ownership: 'component',
+      implicitComponentOwnership: true,
+    });
+    expect(ids(report).filter((item) => item.startsWith('KUI-L019'))).toEqual([
+      'KUI-L019 src/foreign.css:1',
+      'KUI-L019 src/foreign.css:2',
+    ]);
+    expect(
+      report.diagnostics
+        .filter((item) => item.ruleId === 'KUI-L019')
+        .map((item) => item.evidence),
+    ).toEqual([
+      expect.objectContaining({
+        components: [
+          'app:module:src/a.tsx',
+          'app:module:src/b.tsx',
+          'app:module:src/c.tsx',
+        ],
+        target: '.ticket-row--list',
+      }),
+      expect.objectContaining({
+        components: [
+          'app:module:src/a.tsx',
+          'app:module:src/b.tsx',
+          'app:module:src/c.tsx',
+        ],
+        target: '.ticket-row--column',
+      }),
+    ]);
   });
 
   it('protects shell stylesheet classes across exact and directory group sources', async () => {
