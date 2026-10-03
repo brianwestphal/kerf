@@ -734,12 +734,13 @@ function inspectComponentOwnership(
         adoption,
       ),
     );
-  if (ownershipContext !== 'any' || !ownershipEvidence?.ownPackage) return;
+  if (ownershipContext === 'subject' || !ownershipEvidence?.ownPackage) return;
   for (const { entry, name, position } of contextualComponents(
     rule.selector,
     facts.ownership,
     isForeign,
     ownershipEvidence.ownPackage,
+    ownershipContext === 'any-package',
   )) {
     if (position === 'subject') continue;
     if (
@@ -752,7 +753,7 @@ function inspectComponentOwnership(
       diagnostic(
         'KUI-L019',
         location(file, rule),
-        `\`${name}\` uses ${componentLabel(entry)} as ${position} selector context (${properties.join(', ')}); in strict component ownership, sibling classes cannot key this stylesheet. Configure the component through ${configurationFor(entry)}. ${reportGap(entry)}`,
+        `\`${name}\` uses ${componentLabel(entry)} as ${position} selector context (${properties.join(', ')}); foreign component handles cannot key this stylesheet in this ownership mode. Configure the component through ${configurationFor(entry)}. ${reportGap(entry)}`,
         {
           selector: rule.selector,
           component: entry.key,

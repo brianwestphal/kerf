@@ -77,7 +77,9 @@ directory subtree; other paths match exactly.
 Set `"ownershipContext": "any"` to also report a same-package sibling's class
 used as ancestor or sibling context or within `:has()`, `:is()`, `:where()`, or
 `:not()`. The default `"subject"` keeps subject-only context policy; classes
-from another package may still provide context.
+from another package may still provide context. Set
+`"ownershipContext": "any-package"` to include cross-package component
+classes and `[data-component]` roots in the same selector-context checks.
 
 The browser evaluator is different: it runs the application and is disabled by default. It only runs when configuration supplies `browser.url` or the command receives `--browser-url`. Start and authorize the target application separately.
 

@@ -10,7 +10,7 @@
     "mode": { "enum": ["full", "changed"] },
     "package": { "type": "string", "minLength": 1 },
     "ownership": { "enum": ["package", "component"] },
-    "ownershipContext": { "enum": ["subject", "any"] },
+    "ownershipContext": { "enum": ["subject", "any", "any-package"] },
     "implicitComponentOwnership": { "type": "boolean" },
     "ownershipGroups": {
       "type": "array",

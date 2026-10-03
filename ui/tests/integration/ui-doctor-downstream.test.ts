@@ -550,7 +550,7 @@ test(
         'src/rail.tsx':
           "import './rail.css';\nimport { LoadingSpinner } from '@kerfjs/ui/loading-spinner';\nexport const Rail = () => <div class=\"active-claim-spinner kui-toolbar\"><LoadingSpinner /></div>;\n",
         'src/rail.css':
-          '.active-claim-spinner > svg { color: red; }\n.ticket-search-field svg { color: red; }\n.ticket-search-field .rail { color: red; }\n',
+          '.active-claim-spinner > svg { color: red; }\n.ticket-search-field svg { color: red; }\n.ticket-search-field .rail { color: red; }\n.kui-toolbar .rail { color: red; }\n[data-component="toolbar"] .rail { color: red; }\n',
         'src/search.tsx':
           'import \'./search.css\';\nexport const Search = () => <div class="ticket-search-field" />;\n',
         'src/search.css': '.ticket-search-field { color: blue; }\n',
@@ -596,6 +596,33 @@ test(
               `${item.location.line}:${item.evidence.position ?? 'subject'}`,
           ),
       ).toEqual(['1:subject', '2:subject', '3:ancestor']);
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          ownershipContext: 'any-package',
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      const crossPackage = await doctor(root);
+      expect(
+        crossPackage.report.diagnostics
+          .filter((item: { id: string }) => item.id === 'KUI-L019')
+          .map(
+            (item: {
+              location: { line: number };
+              evidence: { position?: string; via?: string };
+            }) =>
+              `${item.location.line}:${item.evidence.position ?? 'subject'}:${item.evidence.via ?? 'subject'}`,
+          ),
+      ).toEqual([
+        '1:subject:descendant',
+        '2:subject:descendant',
+        '3:ancestor:context',
+        '4:ancestor:context',
+        '5:ancestor:context',
+      ]);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

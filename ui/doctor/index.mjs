@@ -164,9 +164,12 @@ export function validateUiDoctorConfig(
     add('$.ownership', 'ownership must be package or component.');
   if (
     config.ownershipContext !== undefined &&
-    !['subject', 'any'].includes(config.ownershipContext)
+    !['subject', 'any', 'any-package'].includes(config.ownershipContext)
   )
-    add('$.ownershipContext', 'ownershipContext must be subject or any.');
+    add(
+      '$.ownershipContext',
+      'ownershipContext must be subject, any, or any-package.',
+    );
   if (
     config.implicitComponentOwnership !== undefined &&
     typeof config.implicitComponentOwnership !== 'boolean'

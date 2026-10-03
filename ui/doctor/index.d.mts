@@ -23,7 +23,7 @@ export interface UiDoctorConfig {
   mode?: 'full' | 'changed';
   package?: string;
   ownership?: 'package' | 'component';
-  ownershipContext?: 'subject' | 'any';
+  ownershipContext?: 'subject' | 'any' | 'any-package';
   implicitComponentOwnership?: boolean;
   ownershipGroups?: Array<{ styleSources: string[]; sources: string[] }>;
   stages?: Partial<

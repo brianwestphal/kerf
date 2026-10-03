@@ -479,6 +479,12 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
         ':where(.ticket-row) .header { color: red; }',
         '.header:not(.ticket-row) { color: red; }',
         '.kui-toolbar .header { color: red; }',
+        '[data-component="toolbar"] .header { color: red; }',
+        '[data-component="toolbar"] + .header { color: red; }',
+        '.header:has([data-component="toolbar"]) { color: red; }',
+        ':is([data-component="toolbar"]) .header { color: red; }',
+        ':where([data-component="toolbar"]) .header { color: red; }',
+        '.header:not([data-component="toolbar"]) { color: red; }',
         '',
       ].join('\n'),
     });
@@ -506,6 +512,34 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
       'src/header.css:6 is',
       'src/header.css:7 where',
       'src/header.css:8 not',
+    ]);
+    const crossPackage = await analyzeUiProject({
+      root,
+      ownership: 'component',
+      ownershipContext: 'any-package',
+    });
+    expect(
+      crossPackage.diagnostics
+        .filter((item) => item.ruleId === 'KUI-L019')
+        .map(
+          (item) =>
+            `${item.location.line}:${(item.evidence as { position?: string }).position ?? 'subject'}`,
+        ),
+    ).toEqual([
+      '1:subject',
+      '3:ancestor',
+      '4:sibling',
+      '5:has',
+      '6:is',
+      '7:where',
+      '8:not',
+      '9:ancestor',
+      '10:ancestor',
+      '11:sibling',
+      '12:has',
+      '13:is',
+      '14:where',
+      '15:not',
     ]);
   });
 

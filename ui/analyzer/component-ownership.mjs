@@ -257,12 +257,13 @@ export function restyledComponents(
   return found;
 }
 
-/** Same-package classes used to key another component's selector. */
+/** Foreign component handles used to key another component's selector. */
 export function contextualComponents(
   selectorList,
   facts,
   isForeign,
   ownPackage,
+  anyPackage = false,
 ) {
   const found = [];
   const seen = new Set();
@@ -270,13 +271,28 @@ export function contextualComponents(
   for (const parts of complexSelectorParts(selectorList)) {
     for (const [index, part] of parts.entries()) {
       const compound = part.compound;
-      for (const name of selectorClasses(compound)) {
-        const entry = classOwnerFor(facts, name, true);
-        if (!entry || entry.package !== ownPackage || !isForeign(entry))
+      const handles = [
+        ...selectorClasses(compound).map((name) => ({
+          entry: classOwnerFor(facts, name, true),
+          name: `.${name}`,
+          inArgument: (argument) => selectorClasses(argument).includes(name),
+        })),
+        ...(anyPackage ? dataComponents(compound) : []).map((value) => ({
+          entry: facts.dataComponentOwners.get(value),
+          name: `[data-component="${value}"]`,
+          inArgument: (argument) => dataComponents(argument).includes(value),
+        })),
+      ];
+      for (const { entry, name, inArgument } of handles) {
+        if (
+          !entry ||
+          (!anyPackage && entry.package !== ownPackage) ||
+          !isForeign(entry)
+        )
           continue;
         const pseudo = ['has', 'is', 'where', 'not'].find((candidate) =>
           pseudoArguments(compound, candidate).some((argument) =>
-            selectorClasses(argument).includes(name),
+            inArgument(argument),
           ),
         );
         const position = pseudo
@@ -291,7 +307,7 @@ export function contextualComponents(
         seen.add(key);
         found.push({
           entry,
-          name: `.${name}`,
+          name,
           position,
         });
       }

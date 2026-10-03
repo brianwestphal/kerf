@@ -247,8 +247,10 @@ Set `ownershipContext: 'any'` alongside component ownership when one sibling
 component must not mention another sibling's class anywhere in a CSS selector.
 The default, `'subject'`, checks the styled subject. Strict findings use
 `KUI-L019` with `evidence.via: 'context'` and a `position` of `ancestor`,
-`sibling`, `has`, `is`, `where`, or `not`. Context from another package remains
-allowed.
+`sibling`, `has`, `is`, `where`, or `not`. Set
+`ownershipContext: 'any-package'` to apply the same context rule to components
+from other packages, including their public classes and `[data-component]`
+roots. The `'any'` mode continues to allow cross-package context.
 
 ### Retired: `KUI-L005` (forced component dimension)
 
