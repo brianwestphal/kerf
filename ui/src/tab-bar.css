@@ -45,6 +45,14 @@
   scroll-padding-inline: var(--kui-tab-bar-strip-scroll-padding-inline, 0);
   overscroll-behavior-inline: contain;
 }
+.kui-tab-bar__tabs[data-snap-tabs="true"] {
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline-start: var(--kui-tab-bar-snap-inset, 0px);
+  padding-inline-end: calc(
+    var(--kui-tab-bar-strip-padding, 1px) +
+      var(--kui-tab-bar-snap-end-extra, 0px)
+  );
+}
 .kui-tab-bar[data-icon-only-at] .kui-tab-bar__tabs {
   container: kui-tab-bar-tabs / inline-size;
 }

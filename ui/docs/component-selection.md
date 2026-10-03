@@ -274,7 +274,14 @@ strip. Each zone accepts one `ToolbarControlGroup` or one standalone
 `wa-button` for a primary action with its own chrome. Avoid wrappers and
 application flex overrides.
 Set `pinned` on the first `AppTab` when that tab must remain visible as peers
-scroll. It stays inside the tablist and keyboard order. Set the public
+scroll. It stays inside the tablist and keyboard order. Set the `TabBar`
+`snapTabs` prop when scrolling peers should settle at whole-tab starts
+beside that pinned tab. `wireTabBars` measures the pinned inset and provides
+enough end scroll room for the last peer to align there; a partial peer can
+still appear at the trailing edge as an overflow cue. This mode also aligns a
+newly selected tab at the pinned edge in LTR and RTL. Set the prop on the bar,
+without styling its strip or tab internals.
+Set the public
 `--kui-app-tab-pinned-background` token if the surrounding surface differs from
 the default; the pinned tab must cover peers as they scroll beneath it. Its
 background also covers the strip's inline padding and border so scrolled labels cannot

@@ -7,12 +7,13 @@ import { reorderTabs, wireTabBars } from '../../src/wire-tab-bars.js';
 const roots: HTMLElement[] = [];
 let originalScrollIntoView: typeof Element.prototype.scrollIntoView;
 
-function bar(id = 'documents') {
+function bar(id = 'documents', snapTabs = false) {
   const root = document.createElement('div');
   root.innerHTML = String(
     TabBar({
       id,
       label: 'Documents',
+      snapTabs,
       children: [
         AppTab({
           id: 'one',
@@ -48,6 +49,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   Element.prototype.scrollIntoView = originalScrollIntoView;
   for (const root of roots.splice(0)) root.remove();
 });
@@ -696,6 +698,208 @@ describe('TabBar wiring', () => {
   });
 
   describe('revealing an application-driven selection', () => {
+    it('updates snap geometry after resize and releases observers when a strip is removed', async () => {
+      const observed: Element[] = [];
+      const unobserved: Element[] = [];
+      const disconnected = vi.fn();
+      let resized: (() => void) | undefined;
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(callback: () => void) {
+            resized = callback;
+          }
+          observe(element: Element) {
+            observed.push(element);
+          }
+          unobserve(element: Element) {
+            unobserved.push(element);
+          }
+          disconnect() {
+            disconnected();
+          }
+        },
+      );
+      const root = bar('resizing', true);
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const tabs = [...strip.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      tabs[0]!.dataset.pinned = 'true';
+      Object.defineProperty(strip, 'scrollWidth', {
+        get: () =>
+          260 +
+          (Number.parseFloat(
+            strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra'),
+          ) || 0),
+      });
+      Object.defineProperty(strip, 'clientWidth', { value: 180 });
+      const rect = (left: number, right: number) =>
+        ({ left, right }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
+      vi.spyOn(tabs[0]!, 'getBoundingClientRect').mockReturnValue(rect(0, 60));
+      let lastLeft = 180;
+      vi.spyOn(tabs[2]!, 'getBoundingClientRect').mockImplementation(() =>
+        rect(lastLeft, lastLeft + 80),
+      );
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      expect(observed).toEqual([strip, ...tabs]);
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
+        '40px',
+      );
+      lastLeft = 200;
+      resized?.();
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
+        '60px',
+      );
+      strip.remove();
+      await Promise.resolve();
+      expect(unobserved).toEqual([strip, ...tabs]);
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe('');
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
+        '',
+      );
+      stop();
+      expect(disconnected).toHaveBeenCalledOnce();
+    });
+
+    it('aligns RTL snap peers and handles empty and unpinned strips', async () => {
+      const root = bar('rtl-snap', true);
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const tabs = [...strip.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      const buttons = root.querySelectorAll<HTMLElement>('[role="tab"]');
+      strip.style.direction = 'rtl';
+      Object.defineProperty(strip, 'scrollWidth', { value: 220 });
+      Object.defineProperty(strip, 'clientWidth', { value: 180 });
+      const rect = (left: number, right: number) =>
+        ({ left, right }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
+      tabs[0]!.dataset.pinned = 'true';
+      vi.spyOn(tabs[0]!, 'getBoundingClientRect').mockReturnValue(
+        rect(120, 180),
+      );
+      vi.spyOn(tabs[1]!, 'getBoundingClientRect').mockImplementation(() =>
+        rect(40 - strip.scrollLeft, 120 - strip.scrollLeft),
+      );
+      vi.spyOn(tabs[2]!, 'getBoundingClientRect').mockImplementation(() =>
+        rect(-40 - strip.scrollLeft, 40 - strip.scrollLeft),
+      );
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe(
+        '60px',
+      );
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
+        '40px',
+      );
+      buttons[0]!.setAttribute('aria-selected', 'false');
+      buttons[2]!.setAttribute('aria-selected', 'true');
+      await Promise.resolve();
+      expect(strip.scrollLeft).toBe(-80);
+      strip.scrollLeft = -47;
+      strip.dispatchEvent(new Event('scrollend'));
+      expect(strip.scrollLeft).toBe(-80);
+      strip.scrollLeft = 0;
+      strip.dispatchEvent(new Event('scrollend'));
+      expect(strip.scrollLeft).toBe(0);
+      tabs[0]!.removeAttribute('data-pinned');
+      await Promise.resolve();
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe(
+        '0px',
+      );
+      buttons[2]!.setAttribute('aria-selected', 'false');
+      buttons[1]!.setAttribute('aria-selected', 'true');
+      await Promise.resolve();
+      buttons[1]!.setAttribute('aria-selected', 'false');
+      buttons[2]!.setAttribute('aria-selected', 'true');
+      await Promise.resolve();
+      strip.scrollLeft = -10;
+      strip.dispatchEvent(new Event('scrollend'));
+      strip.replaceChildren();
+      await Promise.resolve();
+      strip.dispatchEvent(new Event('scrollend'));
+      stop();
+    });
+
+    it('snaps unpinned LTR peers without a ResizeObserver', async () => {
+      vi.stubGlobal('ResizeObserver', undefined);
+      const root = bar('no-resize-observer', true);
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const tabs = [...strip.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      Object.defineProperty(strip, 'scrollWidth', { value: 260 });
+      Object.defineProperty(strip, 'clientWidth', { value: 180 });
+      const rect = (left: number, right: number) =>
+        ({ left, right }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
+      vi.spyOn(tabs[2]!, 'getBoundingClientRect').mockImplementation(() =>
+        rect(180 - strip.scrollLeft, 260 - strip.scrollLeft),
+      );
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe(
+        '0px',
+      );
+      const buttons = root.querySelectorAll<HTMLElement>('[role="tab"]');
+      buttons[0]!.setAttribute('aria-selected', 'false');
+      buttons[2]!.setAttribute('aria-selected', 'true');
+      await Promise.resolve();
+      expect(strip.scrollLeft).toBe(180);
+      strip.dispatchEvent(new Event('scrollend'));
+      stop();
+    });
+
+    it('reserves end room and aligns a selected peer beside a pinned tab in snap mode', async () => {
+      const root = bar('snap', true);
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const tabs = [...root.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      tabs[0]!.dataset.pinned = 'true';
+      Object.defineProperty(strip, 'scrollWidth', {
+        get: () =>
+          220 +
+            Number.parseFloat(
+              strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra'),
+            ) || 220,
+      });
+      Object.defineProperty(strip, 'clientWidth', { value: 180 });
+      const rect = (left: number, width: number) =>
+        ({ left, right: left + width, width }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
+      vi.spyOn(tabs[0]!, 'getBoundingClientRect').mockReturnValue(rect(0, 60));
+      vi.spyOn(tabs[1]!, 'getBoundingClientRect').mockImplementation(() =>
+        rect(60 - strip.scrollLeft, 80),
+      );
+      vi.spyOn(tabs[2]!, 'getBoundingClientRect').mockImplementation(() =>
+        rect(140 - strip.scrollLeft, 80),
+      );
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe(
+        '60px',
+      );
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
+        '40px',
+      );
+      const buttons = root.querySelectorAll<HTMLElement>('[role="tab"]');
+      buttons[0]!.setAttribute('aria-selected', 'false');
+      buttons[2]!.setAttribute('aria-selected', 'true');
+      await Promise.resolve();
+      expect(strip.scrollLeft).toBe(80);
+      buttons[2]!.setAttribute('aria-selected', 'false');
+      buttons[0]!.setAttribute('aria-selected', 'true');
+      await Promise.resolve();
+      expect(strip.scrollLeft).toBe(80);
+      strip.scrollLeft = 47;
+      strip.dispatchEvent(new Event('scrollend'));
+      expect(strip.scrollLeft).toBe(80);
+      strip.removeAttribute('data-snap-tabs');
+      await Promise.resolve();
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe('');
+      strip.setAttribute('data-snap-tabs', 'true');
+      await Promise.resolve();
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
+        '40px',
+      );
+      stop();
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe('');
+      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
+        '',
+      );
+    });
     /** Lay the strip out 100px wide with 80px tabs side by side. */
     function layout(root: HTMLElement) {
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;

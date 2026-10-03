@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **TabBar can settle overflowing peers at whole-tab starts.** Opt into
+  `snapTabs` beside a pinned leading AppTab; selection and scroll gestures
+  align peers after the pin in LTR and RTL, with enough end room for the final
+  tab instead of leaving a clipped sliver at rest.
+
 - **The pre-push check no longer adds timing metadata to Hot Sheet tickets.**
   It still runs the repository gate or skips an identical verified clean tree;
   historical timing notes remain readable through `ticket:timing summary`.

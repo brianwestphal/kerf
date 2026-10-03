@@ -1110,11 +1110,13 @@ interface TabBarProps {
     iconOnlyAt?: TabBarIconOnlyAt;
     /** Keep a trailing action beside the final tab or at the far edge of the bar. */
     trailingPlacement?: TabBarTrailingPlacement;
+    /** Settle scrolling peers at whole-tab starts; wireTabBars measures a pinned leading tab's inset. */
+    snapTabs?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, iconOnlyAt, trailingPlacement, slot, }: TabBarProps): kerfjs.SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, iconOnlyAt, trailingPlacement, snapTabs, slot, }: TabBarProps): kerfjs.SafeHtml;
 
 export { type TabActivation, TabBar, type TabBarAllocation, type TabBarIconOnlyAt, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
 ```

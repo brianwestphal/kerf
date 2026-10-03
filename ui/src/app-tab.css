@@ -38,6 +38,10 @@
     var(--_kui-app-tab-pinned-default-background, var(--kui-color-surface))
   );
 }
+.kui-tab-bar__tabs[data-snap-tabs="true"]
+  > .kui-app-tab:not([data-pinned="true"]) {
+  scroll-snap-align: start;
+}
 .kui-app-tab[data-pinned="true"]::before {
   content: "";
   position: absolute;

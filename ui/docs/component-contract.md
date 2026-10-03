@@ -698,6 +698,9 @@ separate action pinned to the far edge. Applications own the action content,
 but must not restyle TabBar descendants to recreate that allocation.
 When a leading AppTab is pinned, the leading scroll divider appears at that
 tab's trailing edge while peer tabs scroll beneath it, including in RTL.
+With `snapTabs`, `wireTabBars` measures the pinned tab and settles peers at
+whole-tab starts after scroll and selection changes, reserving end room so the
+last peer can align there. The application still owns selection and tab order.
 
 CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side

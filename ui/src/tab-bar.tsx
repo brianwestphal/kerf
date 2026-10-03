@@ -36,6 +36,8 @@ export interface TabBarProps {
   iconOnlyAt?: TabBarIconOnlyAt;
   /** Keep a trailing action beside the final tab or at the far edge of the bar. */
   trailingPlacement?: TabBarTrailingPlacement;
+  /** Settle scrolling peers at whole-tab starts; wireTabBars measures a pinned leading tab's inset. */
+  snapTabs?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
@@ -54,6 +56,7 @@ export function TabBar({
   presentation = 'rail',
   iconOnlyAt,
   trailingPlacement = 'separate',
+  snapTabs = false,
   slot,
 }: TabBarProps) {
   return (
@@ -75,6 +78,7 @@ export function TabBar({
         role="tablist"
         aria-label={label}
         data-kui-tab-list
+        data-snap-tabs={snapTabs ? 'true' : undefined}
       >
         {children}
       </div>

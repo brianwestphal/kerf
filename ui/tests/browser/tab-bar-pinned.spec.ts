@@ -1,5 +1,97 @@
 import { expect, test } from '@playwright/test';
 
+test('whole-tab snapping keeps scrolling peers clear of the pinned tab', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  for (const direction of ['ltr', 'rtl']) {
+    await page.goto('/?component=tab-bar');
+    const bar = page.locator('[data-tab-bar-id="pinned-tab-bar"]');
+    await bar.scrollIntoViewIfNeeded();
+    await bar.evaluate(
+      (element, dir) => element.setAttribute('dir', dir),
+      direction,
+    );
+    const strip = bar.locator('.kui-tab-bar__tabs');
+    await expect(strip).toHaveAttribute('data-snap-tabs', 'true');
+    const tabs = strip.getByRole('tab');
+    const last = tabs.last();
+    await bar.evaluate((element) => {
+      const buttons = element.querySelectorAll<HTMLElement>('[role="tab"]');
+      buttons.forEach((button, index) =>
+        button.setAttribute(
+          'aria-selected',
+          String(index === buttons.length - 1),
+        ),
+      );
+    });
+    const geometry = () =>
+      bar.evaluate((element) => {
+        const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
+        const pinned = element.querySelector<HTMLElement>(
+          '[data-pinned="true"]',
+        )!;
+        const peers = [
+          ...strip.querySelectorAll<HTMLElement>(
+            ':scope > .kui-app-tab:not([data-pinned="true"])',
+          ),
+        ];
+        const pinnedBox = pinned.getBoundingClientRect();
+        const peerBoxes = peers.map((peer) => peer.getBoundingClientRect());
+        const rtl = window.getComputedStyle(strip).direction === 'rtl';
+        const edge = rtl ? pinnedBox.left : pinnedBox.right;
+        const slivers = peerBoxes.filter(
+          (box) => box.left < edge - 1 && box.right > edge + 1,
+        );
+        return {
+          aligned: Math.abs(
+            rtl
+              ? peerBoxes.at(-1)!.right - edge
+              : peerBoxes.at(-1)!.left - edge,
+          ),
+          leadingAlignment: Math.min(
+            ...peerBoxes.map((box) =>
+              Math.abs(rtl ? box.right - edge : box.left - edge),
+            ),
+          ),
+          slivers: slivers.length,
+          scrollLeft: strip.scrollLeft,
+          scrollWidth: strip.scrollWidth,
+          clientWidth: strip.clientWidth,
+        };
+      });
+    expect((await geometry()).scrollWidth).toBeGreaterThan(
+      (await geometry()).clientWidth,
+    );
+    await expect.poll(async () => (await geometry()).aligned).toBeLessThan(2);
+    expect((await geometry()).slivers).toBe(0);
+    await bar.screenshot({
+      path: testInfo.outputPath(`snap-last-${direction}.png`),
+    });
+    await tabs.first().evaluate((button) => {
+      const strip = button.closest<HTMLElement>('[data-kui-tab-list]')!;
+      strip
+        .querySelectorAll<HTMLElement>('[role="tab"]')
+        .forEach((tab) =>
+          tab.setAttribute('aria-selected', String(tab === button)),
+        );
+    });
+    expect((await geometry()).slivers).toBe(0);
+    const beforeSwipe = (await geometry()).scrollLeft;
+    await strip.evaluate((element, dir) => {
+      element.scrollBy({ left: dir === 'rtl' ? 45 : -45, behavior: 'smooth' });
+    }, direction);
+    await expect
+      .poll(async () => (await geometry()).scrollLeft, { timeout: 3000 })
+      .not.toBe(beforeSwipe);
+    await expect
+      .poll(async () => (await geometry()).leadingAlignment)
+      .toBeLessThan(2);
+    await expect.poll(async () => (await geometry()).slivers).toBe(0);
+    await expect(last).toBeVisible();
+  }
+});
+
 test('pinned leading tab stays in the tablist and visible while peers scroll', async ({
   page,
 }, testInfo) => {
