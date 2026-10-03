@@ -696,6 +696,8 @@ the only shrinking, horizontally scrolling region; `leading`, `trailing`, and
 trailing action belongs immediately after the final tab and use `end` for a
 separate action pinned to the far edge. Applications own the action content,
 but must not restyle TabBar descendants to recreate that allocation.
+When a leading AppTab is pinned, the leading scroll divider appears at that
+tab's trailing edge while peer tabs scroll beneath it, including in RTL.
 
 CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side

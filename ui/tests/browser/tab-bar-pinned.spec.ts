@@ -73,6 +73,25 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     expect(position.position).toBe('sticky');
     expect(position.backingStart).toBeLessThanOrEqual(position.stripLeft + 1);
     expect(position.topmostTabId).toBe('project-grid');
+    await expect(strip).toHaveAttribute('data-scroll-overflow', /l/);
+    const divider = await bar.evaluate((element) => {
+      const tab = element.querySelector<HTMLElement>('[data-pinned="true"]')!;
+      const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
+      const tabBox = tab.getBoundingClientRect();
+      const backing = window.getComputedStyle(tab, '::before');
+      return {
+        position: tabBox.right - Number.parseFloat(backing.right),
+        tabRight: tabBox.right,
+        color: backing.borderRightColor,
+        stripColor: window.getComputedStyle(strip).borderLeftColor,
+        barColor: window.getComputedStyle(element, '::before').backgroundColor,
+      };
+    });
+    expect(divider.position).toBeGreaterThanOrEqual(divider.tabRight);
+    expect(divider.position).toBeLessThanOrEqual(divider.tabRight + 2);
+    expect(divider.color).not.toBe('rgba(0, 0, 0, 0)');
+    expect(divider.stripColor).toBe('rgba(0, 0, 0, 0)');
+    expect(divider.barColor).toBe('rgba(0, 0, 0, 0)');
     await bar.screenshot({
       path: testInfo.outputPath(`pinned-tab-${width}.png`),
     });
@@ -106,8 +125,7 @@ test('pinned tab stays at the inline start in a right-to-left strip', async ({
   const bar = page.locator('[data-tab-bar-id="pinned-tab-bar"]');
   await bar.scrollIntoViewIfNeeded();
   await bar.evaluate((element) => {
-    const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
-    strip.dir = 'rtl';
+    element.setAttribute('dir', 'rtl');
   });
   const maxScroll = await bar.evaluate((element) => {
     const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
@@ -161,6 +179,22 @@ test('pinned tab stays at the inline start in a right-to-left strip', async ({
   expect(geometry.pinnedRight).toBeLessThanOrEqual(geometry.stripRight + 1);
   expect(geometry.pinnedRight).toBeGreaterThanOrEqual(geometry.stripRight - 6);
   expect(geometry.backingEnd).toBeGreaterThanOrEqual(geometry.stripRight - 1);
+  const strip = bar.locator('.kui-tab-bar__tabs');
+  await expect(strip).toHaveAttribute('data-scroll-overflow', /r/);
+  const divider = await bar.evaluate((element) => {
+    const tab = element.querySelector<HTMLElement>('[data-pinned="true"]')!;
+    const backing = window.getComputedStyle(tab, '::before');
+    return {
+      color: backing.borderLeftColor,
+      stripColor: window.getComputedStyle(
+        element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!,
+      ).borderRightColor,
+      barColor: window.getComputedStyle(element, '::before').backgroundColor,
+    };
+  });
+  expect(divider.color).not.toBe('rgba(0, 0, 0, 0)');
+  expect(divider.stripColor).toBe('rgba(0, 0, 0, 0)');
+  expect(divider.barColor).toBe('rgba(0, 0, 0, 0)');
   await bar.screenshot({ path: testInfo.outputPath('pinned-rtl-390.png') });
   const buttons = bar.getByRole('tab');
   // A controlled render may replace the inline correction while keeping the

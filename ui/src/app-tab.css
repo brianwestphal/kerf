@@ -56,6 +56,17 @@
     var(--_kui-app-tab-pinned-default-background, var(--kui-color-surface))
   );
 }
+/* The leading overflow line belongs after the pinned tab, where its scrolling
+   peers disappear. Reuse the opaque backing so drag indicators can still use
+   ::after. */
+.kui-tab-bar__tabs:dir(ltr)[data-scroll-overflow*="l"]
+  > .kui-app-tab[data-pinned="true"]::before,
+.kui-tab-bar__tabs:dir(rtl)[data-scroll-overflow*="r"]
+  > .kui-app-tab[data-pinned="true"]::before {
+  inset-inline-end: -1px;
+  border-inline-end: 1px solid
+    var(--kui-tab-bar-divider-color, var(--kui-color-neutral-border-normal));
+}
 .kui-tab-bar[data-presentation="segmented"] .kui-app-tab[data-pinned="true"],
 .kui-tab-bar[data-presentation="inspector"] .kui-app-tab[data-pinned="true"] {
   --_kui-app-tab-pinned-default-background: var(

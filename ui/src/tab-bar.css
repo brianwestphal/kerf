@@ -136,12 +136,12 @@
   margin-inline-start: calc(-1px - var(--kui-toolbar-gap, remify(8px)));
 }
 
-.kui-tab-bar[data-presentation="rail"]:dir(ltr):has(
-    > .kui-tab-bar__tabs[data-scroll-overflow*="l"]
-  )::before,
-.kui-tab-bar[data-presentation="rail"]:dir(rtl):has(
-    > .kui-tab-bar__tabs[data-scroll-overflow*="r"]
-  )::before,
+.kui-tab-bar[data-presentation="rail"]:dir(ltr):not(
+    :has(> .kui-tab-bar__tabs > .kui-app-tab[data-pinned="true"])
+  ):has(> .kui-tab-bar__tabs[data-scroll-overflow*="l"])::before,
+.kui-tab-bar[data-presentation="rail"]:dir(rtl):not(
+    :has(> .kui-tab-bar__tabs > .kui-app-tab[data-pinned="true"])
+  ):has(> .kui-tab-bar__tabs[data-scroll-overflow*="r"])::before,
 .kui-tab-bar[data-presentation="rail"]:dir(ltr):has(
     > .kui-tab-bar__tabs[data-scroll-overflow*="r"]
   )::after,
@@ -155,7 +155,9 @@
 }
 
 .kui-tab-bar:not([data-presentation="rail"])
-  > .kui-tab-bar__tabs[data-scroll-overflow*="l"] {
+  > .kui-tab-bar__tabs[data-scroll-overflow*="l"]:not(
+    :dir(ltr):has(> .kui-app-tab[data-pinned="true"])
+  ) {
   border-left-color: var(
     --kui-tab-bar-divider-color,
     var(--kui-color-neutral-border-normal)
@@ -163,7 +165,9 @@
 }
 
 .kui-tab-bar:not([data-presentation="rail"])
-  > .kui-tab-bar__tabs[data-scroll-overflow*="r"] {
+  > .kui-tab-bar__tabs[data-scroll-overflow*="r"]:not(
+    :dir(rtl):has(> .kui-app-tab[data-pinned="true"])
+  ) {
   border-right-color: var(
     --kui-tab-bar-divider-color,
     var(--kui-color-neutral-border-normal)
