@@ -68,6 +68,12 @@ co-owners has no arbitrary single owner for CSS subject diagnostics.
 Set `"implicitComponentOwnership": true` to include uncataloged modules
 that directly import CSS. Component mode reports sibling CSS and hook-class
 restyles while allowing a component's own stylesheet and module.
+For an entry stylesheet shared by modules without direct CSS imports, configure
+`"ownershipGroups": [{ "styleSources": ["src/style.css"], "sources": ["src/main.tsx", "src/app/"] }]`.
+These package-relative paths define one owner: its stylesheet and every listed
+source file or directory prefix. Doctor reports sibling CSS restyles and markup
+class use as `KUI-L019` and `KUI-L023`. Source paths ending in `/` match a
+directory subtree; other paths match exactly.
 Set `"ownershipContext": "any"` to also report a same-package sibling's class
 used as ancestor or sibling context or within `:has()`, `:is()`, `:where()`, or
 `:not()`. The default `"subject"` keeps subject-only context policy; classes

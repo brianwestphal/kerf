@@ -134,6 +134,7 @@ export function validateUiDoctorConfig(
     'ownership',
     'ownershipContext',
     'implicitComponentOwnership',
+    'ownershipGroups',
     'stages',
     'browser',
     'cache',
@@ -174,6 +175,40 @@ export function validateUiDoctorConfig(
       '$.implicitComponentOwnership',
       'implicitComponentOwnership must be a boolean.',
     );
+  if (config.ownershipGroups !== undefined) {
+    if (!Array.isArray(config.ownershipGroups))
+      add('$.ownershipGroups', 'ownershipGroups must be an array.');
+    else
+      config.ownershipGroups.forEach((group, index) => {
+        const path = `$.ownershipGroups[${index}]`;
+        if (!group || typeof group !== 'object' || Array.isArray(group)) {
+          add(path, 'Ownership group must be an object.');
+          return;
+        }
+        for (const key of Object.keys(group))
+          if (!['styleSources', 'sources'].includes(key))
+            add(`${path}.${key}`, 'Unknown ownership group property.');
+        for (const key of ['styleSources', 'sources']) {
+          const paths = group[key];
+          if (
+            !Array.isArray(paths) ||
+            !paths.length ||
+            paths.some(
+              (item) =>
+                typeof item !== 'string' ||
+                !item ||
+                item.startsWith('/') ||
+                /(^|\/)\.\.(\/|$)|[?*]/.test(item),
+            ) ||
+            new Set(paths).size !== paths.length
+          )
+            add(
+              `${path}.${key}`,
+              `${key} must be a non-empty array of unique, relative paths without traversal or globs.`,
+            );
+        }
+      });
+  }
   if (config.stages !== undefined) {
     if (
       !config.stages ||
@@ -1164,6 +1199,7 @@ export async function runUiDoctor({
                 ownershipContext: config.ownershipContext ?? 'subject',
                 implicitComponentOwnership:
                   config.implicitComponentOwnership ?? false,
+                ownershipGroups: config.ownershipGroups ?? [],
                 signal,
               })
             : (async () => ({
@@ -1175,6 +1211,7 @@ export async function runUiDoctor({
                     ownershipContext: config.ownershipContext ?? 'subject',
                     implicitComponentOwnership:
                       config.implicitComponentOwnership ?? false,
+                    ownershipGroups: config.ownershipGroups ?? [],
                     knownRules: [...registeredRuleIds, ...eslintRuleIds],
                   }),
                 ),

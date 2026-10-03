@@ -572,6 +572,46 @@ function inferOwnedClasses(entries, contents, imports) {
   });
 }
 
+async function ownershipGroupEntries(groups, root, contents) {
+  if (!groups?.length) return [];
+  const manifest = JSON.parse(
+    await readFile(resolve(root, 'package.json'), 'utf8'),
+  );
+  return Promise.all(
+    groups.map(async (group, index) => {
+      const classes = new Set();
+      for (const style of group.styleSources) {
+        const file = resolve(root, style);
+        let css = contents.get(file);
+        if (css === undefined)
+          try {
+            css = await readFile(file, 'utf8');
+          } catch {
+            // A missing configured file owns no classes.
+          }
+        if (!css) continue;
+        try {
+          postcss.parse(css, { from: file }).walkRules((rule) => {
+            for (const name of subjectClasses(rule.selector)) classes.add(name);
+          });
+        } catch {
+          // The normal stylesheet pass reports malformed CSS.
+        }
+      }
+      return {
+        key: `${manifest.name}:ownership-group-${index + 1}`,
+        package: manifest.name,
+        id: `ownership-group-${index + 1}`,
+        name: `Ownership group ${index + 1}`,
+        catalogDirectory: root,
+        styleSources: group.styleSources,
+        ownershipGroupSources: group.sources,
+        boundaries: { publicClasses: [...classes] },
+      };
+    }),
+  );
+}
+
 async function implicitOwnershipEntries(files, imports, root) {
   const found = [];
   const packages = new Map();
@@ -1768,6 +1808,7 @@ export async function analyzeUiProject({
   ownership = 'package',
   ownershipContext = 'subject',
   implicitComponentOwnership = false,
+  ownershipGroups = [],
   profile: packageProfile = resolve(
     import.meta.dirname,
     '../ai/application-ui-profile.defaults.json',
@@ -1810,6 +1851,10 @@ export async function analyzeUiProject({
     ownership === 'component' && implicitComponentOwnership
       ? await implicitOwnershipEntries(files, imports, root)
       : [];
+  const groupEntries =
+    ownership === 'component'
+      ? await ownershipGroupEntries(ownershipGroups, root, contents)
+      : [];
   const profileContexts = new Map();
   const loadContext = async (file) => {
     const startDirectory = file === root ? root : dirname(file);
@@ -1833,6 +1878,7 @@ export async function analyzeUiProject({
           );
           const ownershipEntries = [
             ...entries,
+            ...groupEntries,
             ...implicitEntries.filter(
               (entry) =>
                 !catalogedSources.has(
@@ -1927,6 +1973,19 @@ export async function analyzeUiProject({
     return (entry, className) => {
       if (entry.package !== own?.name) return true;
       if (ownership !== 'component') return false;
+      if (entry.ownershipGroupSources) {
+        const relativeFile = relative(entry.catalogDirectory, file).replaceAll(
+          '\\',
+          '/',
+        );
+        if (file.endsWith('.css'))
+          return !entry.styleSources?.includes(relativeFile);
+        return !entry.ownershipGroupSources.some((path) =>
+          path.endsWith('/')
+            ? relativeFile.startsWith(path)
+            : relativeFile === path,
+        );
+      }
       if (
         !file.endsWith('.css') &&
         className &&

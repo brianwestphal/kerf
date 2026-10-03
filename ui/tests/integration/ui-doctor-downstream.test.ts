@@ -1052,6 +1052,63 @@ test(
 );
 
 test(
+  'the doctor enforces a shell stylesheet ownership group across modules',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-groups-'));
+    try {
+      await mkdir(resolve(root, 'src/app'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"group-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          ownershipGroups: [
+            {
+              styleSources: ['src/style.css'],
+              sources: ['src/main.tsx', 'src/app/'],
+            },
+          ],
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/style.css'),
+        '.ticket-page-more { color: blue; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/main.tsx'),
+        "import './style.css'; export const Main = () => <div class='ticket-page-more' />;\n",
+      );
+      await writeFile(
+        resolve(root, 'src/app/runtime.tsx'),
+        "export const Runtime = () => <div class='ticket-page-more' />;\n",
+      );
+      expect((await doctor(root)).report.diagnostics).toEqual([]);
+      await writeFile(
+        resolve(root, 'src/other.tsx'),
+        "export const Other = () => <div class='ticket-page-more' />;\n",
+      );
+      await writeFile(
+        resolve(root, 'src/other.css'),
+        '.ticket-page-more { color: red; }\n',
+      );
+      const broken = await doctor(root);
+      expect(broken.status).toBe(1);
+      expect(
+        broken.report.diagnostics.map((item: { id: string }) => item.id),
+      ).toEqual(['KUI-L019', 'KUI-L023']);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor protects dynamic BEM classes through selectors and DOM writes',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-bem-'));

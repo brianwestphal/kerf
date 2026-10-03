@@ -235,6 +235,14 @@ Other sibling files are foreign.
 Paths are relative to the entry's package root. Set
 `implicitComponentOwnership: true` to apply the same source and stylesheet
 inference to modules with direct CSS imports that have no catalog entry.
+For a shell stylesheet imported once but used by style-less modules, pass
+`ownershipGroups: [{ styleSources: ['src/style.css'], sources: ['src/main.tsx', 'src/app/'] }]`.
+The paths are relative to the analyzed package root. A source ending in `/`
+matches every module below that directory; other source paths match exactly.
+Each group owns the subject classes in its stylesheets for `KUI-L019` and
+`KUI-L023`. Its stylesheet and listed source modules share one owner, while
+sibling stylesheets and modules remain foreign. This option applies only with
+`ownership: 'component'`.
 Set `ownershipContext: 'any'` alongside component ownership when one sibling
 component must not mention another sibling's class anywhere in a CSS selector.
 The default, `'subject'`, checks the styled subject. Strict findings use

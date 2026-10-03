@@ -89,6 +89,12 @@ describe('Kerf UI doctor', () => {
       ownership: 'component' as const,
       ownershipContext: 'any' as const,
       implicitComponentOwnership: true,
+      ownershipGroups: [
+        {
+          styleSources: ['src/style.css'],
+          sources: ['src/main.tsx', 'src/app/'],
+        },
+      ],
       failOn: 'warning' as const,
       stages: disabled,
       suppressions: [
@@ -139,6 +145,23 @@ describe('Kerf UI doctor', () => {
         '$.suppressions[0].rules',
         '$.suppressions[0].target',
         '$.suppressions[0].rationale',
+      ]),
+    );
+  });
+
+  it('rejects malformed ownership groups and paths outside the package', () => {
+    const result = validateUiDoctorConfig({
+      schemaVersion: 1,
+      ownershipGroups: [
+        { styleSources: ['../outside.css'], sources: [] },
+        { styleSources: ['src/style.css'], sources: ['src/app/'], extra: true },
+      ],
+    });
+    expect(result.map((item) => item.location?.path)).toEqual(
+      expect.arrayContaining([
+        '$.ownershipGroups[0].styleSources',
+        '$.ownershipGroups[0].sources',
+        '$.ownershipGroups[1].extra',
       ]),
     );
   });

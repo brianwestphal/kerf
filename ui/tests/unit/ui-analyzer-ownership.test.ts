@@ -820,6 +820,53 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
     ).toEqual(['KUI-L023 src/c.tsx:1', 'KUI-L023 src/c.tsx:1']);
   });
 
+  it('protects shell stylesheet classes across exact and directory group sources', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/style.css': '.ticket-page-more { color: blue; }\n',
+      'src/main.tsx':
+        "import './style.css'; export const Main = () => <div class='ticket-page-more' />;\n",
+      'src/app/runtime.tsx':
+        "export const Runtime = () => <div class='ticket-page-more' />;\n",
+      'src/app/nested/view.tsx':
+        "export const View = () => <div class='ticket-page-more' />;\n",
+      'src/app/sibling.tsx':
+        "export const Sibling = () => <div class='ticket-page-more' />;\n",
+      'src/other.tsx':
+        "export const Other = () => <div class='ticket-page-more' />;\n",
+      'src/other.css': '.ticket-page-more { color: red; }\n',
+    });
+    const groups = [
+      {
+        styleSources: ['src/style.css'],
+        sources: ['src/main.tsx', 'src/app/'],
+      },
+    ];
+    const report = await analyzeUiProject({
+      root,
+      ownership: 'component',
+      ownershipGroups: groups,
+    });
+    expect(
+      ids(report).filter((item) => /KUI-L019|KUI-L023/.test(item)),
+    ).toEqual(['KUI-L019 src/other.css:1', 'KUI-L023 src/other.tsx:1']);
+    const changed = await analyzeUiProject({
+      root,
+      paths: ['src/other.css', 'src/other.tsx'],
+      ownership: 'component',
+      ownershipGroups: groups,
+    });
+    expect(ids(changed)).toEqual([
+      'KUI-L019 src/other.css:1',
+      'KUI-L023 src/other.tsx:1',
+    ]);
+    expect(
+      ids(await analyzeUiProject({ root, ownership: 'component' })).filter(
+        (item) => /KUI-L019|KUI-L023/.test(item),
+      ),
+    ).toEqual([]);
+  });
+
   it('owns dynamically built BEM element and modifier classes throughout the block', async () => {
     const root = await project({
       'package.json': JSON.stringify({ name: 'app' }),

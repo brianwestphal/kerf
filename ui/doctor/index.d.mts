@@ -25,6 +25,7 @@ export interface UiDoctorConfig {
   ownership?: 'package' | 'component';
   ownershipContext?: 'subject' | 'any';
   implicitComponentOwnership?: boolean;
+  ownershipGroups?: Array<{ styleSources: string[]; sources: string[] }>;
   stages?: Partial<
     Record<
       'catalog' | 'typescript' | 'eslint' | 'analyzer' | 'browser',
