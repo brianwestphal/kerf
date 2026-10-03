@@ -323,6 +323,27 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
     ]);
   });
 
+  it('ignores borrowed markup in test modules while checking adjacent source', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/render.ts':
+        'export const markup = \'<div class="kui-toolbar"></div>\';\n',
+      'src/render.test.ts':
+        'expect(markup).toContain(\'<div class="kui-toolbar"></div>\');\n',
+      'src/render.spec.mjs': 'element.classList.add("kui-toolbar");\n',
+      'src/__tests__/fixture.tsx':
+        'export const Fixture = () => <div class="kui-toolbar" />;\n',
+      'src/__tests__/nested/helper.ts':
+        'export const expected = \'<div class="kui-toolbar"></div>\';\n',
+    });
+    const report = await analyzeUiProject({ root });
+    expect(
+      report.diagnostics
+        .filter((item) => item.ruleId === 'KUI-L023')
+        .map((item) => `${item.location.file}:${item.location.line}`),
+    ).toEqual(['src/render.ts:1']);
+  });
+
   it('finds foreign element subjects using the stylesheet owner JSX', async () => {
     const root = await project({
       'package.json': JSON.stringify({ name: 'app' }),

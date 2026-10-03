@@ -37,6 +37,59 @@ export const App = () => <div class="chat-composer"><div class="chat-input" /></
     expect(report.diagnostics).toEqual([]);
   });
 
+  it('ignores test markup assertions but still reports production markup borrowing', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-tests-cli-'));
+    await mkdir(join(root, 'src/__tests__'), { recursive: true });
+    await writeFile(
+      join(root, 'package.json'),
+      '{"name":"consumer-app","private":true}',
+    );
+    await writeFile(
+      join(root, 'src/widget.test.ts'),
+      'expect(markup).toContain(\'<div class="kui-toolbar"></div>\');\n',
+    );
+    await writeFile(
+      join(root, 'src/widget.spec.mjs'),
+      'expect(markup).toContain(\'<div class="kui-toolbar"></div>\');\n',
+    );
+    await writeFile(
+      join(root, 'src/__tests__/fixture.tsx'),
+      'export const Fixture = () => <div class="kui-toolbar" />;\n',
+    );
+    const cli = resolve(import.meta.dirname, '../../analyzer/cli.mjs');
+    const run = () =>
+      execFileAsync(process.execPath, [
+        cli,
+        '--root',
+        root,
+        '--format',
+        'json',
+        '--output',
+        'report.json',
+      ]);
+
+    await expect(run()).resolves.toBeDefined();
+    expect(
+      JSON.parse(await readFile(join(root, 'report.json'), 'utf8')),
+    ).toMatchObject({
+      summary: { errors: 0 },
+    });
+
+    await writeFile(
+      join(root, 'src/widget.tsx'),
+      'export const Widget = () => <div class="kui-toolbar" />;\n',
+    );
+    await expect(run()).rejects.toMatchObject({ code: 1 });
+    const report = JSON.parse(
+      await readFile(join(root, 'report.json'), 'utf8'),
+    );
+    expect(
+      report.diagnostics
+        .filter((item: { ruleId: string }) => item.ruleId === 'KUI-L023')
+        .map((item: { location: { file: string } }) => item.location.file),
+    ).toEqual(['src/widget.tsx']);
+  });
+
   it('writes versioned JSON and fails on definite integration errors', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-cli-'));
     await mkdir(join(root, 'src'));

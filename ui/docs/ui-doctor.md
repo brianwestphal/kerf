@@ -37,7 +37,9 @@ application or third-party CSS that restyles another package's component
 token a typed prop sets (`KUI-L021`), or styles it through a hook class on its
 root (`KUI-L022`). It also reports source modules that render another
 component's public classes as their own markup (`KUI-L023`), including raw HTML
-and DOM class writes. The ESLint stage's `ui-component-ownership` rule reports
+and DOM class writes. `KUI-L023` skips `*.test.*`, `*.spec.*`, and `__tests__/`
+modules so output assertions are not mistaken for rendered markup. The ESLint
+stage's `ui-component-ownership` rule reports
 `KUI-L020` / `KUI-L021` in script. Each finding's `action` points at the
 component's configuration, and its message routes a need with no prop to a
 component-gap report instead of an override (see

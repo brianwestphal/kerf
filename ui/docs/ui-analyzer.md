@@ -159,7 +159,9 @@ which element a selector styles.
   component's public class. The package boundary applies by default;
   component mode also protects sibling modules through `componentSource`.
   A component's own source and its `placeableClasses` remain allowed. Findings
-  name the class, owner, write site, and configuration route.
+  name the class, owner, write site, and configuration route. This diagnostic
+  skips test modules (`*.test.*`, `*.spec.*`, and files under `__tests__/`),
+  where HTML literals commonly assert on output rather than render markup.
 
 Every message names the configuration to use (the component's typed props,
 public tokens, and variants from its catalog entry) and ends with the same

@@ -114,6 +114,13 @@ const adoptionRules = new Set([
 ]);
 
 const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx']);
+function isTestModule(file) {
+  const path = file.replaceAll('\\', '/');
+  return (
+    /(?:^|\/)__tests__\//.test(path) ||
+    /\.(?:test|spec)\.(?:js|jsx|mjs|ts|tsx)$/.test(path)
+  );
+}
 const spacingProperties = /^(?:margin|padding|gap|inset)(?:-|$)/;
 const approvedSpacing = new Set([0, 4, 8, 16, 24]);
 async function collectFiles(root, paths) {
@@ -1365,7 +1372,9 @@ function inspectTsx(
     }
   }
   const stack = [];
+  const inspectBorrowedMarkup = !isTestModule(file);
   const borrowed = (className, node, via) => {
+    if (!inspectBorrowedMarkup) return;
     for (const owner of facts.classEntries.get(className) ?? []) {
       if (
         !isForeign(owner) ||
