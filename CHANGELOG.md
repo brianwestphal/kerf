@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **The pinned TabBar catalog example scrolls with native momentum.** It no
+  longer reserves a long blank strip after the final tab; applications can
+  still opt into whole-tab settling with `snapTabs`.
+
 - **Doctor reports foreign CSS restyles of co-owned classes.** A stylesheet
   outside every co-owner now receives one `KUI-L019` per subject rule, including
   inferred BEM modifiers, with the co-owner set in the diagnostic evidence.

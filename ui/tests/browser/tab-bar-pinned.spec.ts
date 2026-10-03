@@ -13,6 +13,11 @@ test('whole-tab snapping keeps scrolling peers clear of the pinned tab', async (
       direction,
     );
     const strip = bar.locator('.kui-tab-bar__tabs');
+    // Exercise the opt-in snap mode separately from the catalog's native-scroll
+    // pinned specimen.
+    await strip.evaluate((element) => {
+      element.dataset.snapTabs = 'true';
+    });
     await expect(strip).toHaveAttribute('data-snap-tabs', 'true');
     const tabs = strip.getByRole('tab');
     const last = tabs.last();
@@ -111,8 +116,10 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     const before = await strip.evaluate((element) => ({
       scrollWidth: element.scrollWidth,
       clientWidth: element.clientWidth,
+      snapType: window.getComputedStyle(element).scrollSnapType,
     }));
     expect(before.scrollWidth).toBeGreaterThan(before.clientWidth);
+    expect(before.snapType).toBe('none');
     for (const offset of [0, 32, 64, 96, 128, before.scrollWidth]) {
       await strip.evaluate((element, next) => {
         element.scrollLeft = next;
@@ -159,6 +166,8 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
           )
           ?.closest('[data-component="app-tab"]')
           ?.getAttribute('data-tab-id'),
+        lastRight: scroller.lastElementChild!.getBoundingClientRect().right,
+        stripRight: stripBox.right,
       };
     });
     expect(position.scrollLeft).toBeGreaterThan(0);
@@ -169,6 +178,7 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     expect(position.backingStart).toBeLessThanOrEqual(position.stripLeft + 1);
     expect(position.backingRadius).toBe(position.radius);
     expect(position.topmostTabId).toBe('project-grid');
+    expect(Math.abs(position.stripRight - position.lastRight)).toBeLessThan(8);
     await expect(strip).toHaveAttribute('data-scroll-overflow', /l/);
     const divider = await bar.evaluate((element) => {
       const tab = element.querySelector<HTMLElement>('[data-pinned="true"]')!;

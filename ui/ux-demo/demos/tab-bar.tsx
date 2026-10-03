@@ -228,7 +228,7 @@ export function TabBarDemo() {
           },
         }}
       >
-        <TabBar id="pinned-tab-bar" label="Pinned project tabs" snapTabs>
+        <TabBar id="pinned-tab-bar" label="Pinned project tabs">
           <AppTab
             id="project-grid"
             name="Project grid"
