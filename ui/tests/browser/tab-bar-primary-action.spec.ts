@@ -81,6 +81,10 @@ test('snap tabs settle without a ResizeObserver loop error', async ({
   const bar = page.locator('[data-tab-bar-id="pinned-tab-bar"]');
   const strip = bar.locator('[data-kui-tab-list]');
   await expect(strip).toBeVisible();
+  await strip.evaluate((element) => {
+    element.dataset.snapTabs = 'true';
+  });
+  await expect(strip).toHaveAttribute('data-snap-tabs', 'true');
   await bar.evaluate((element) => {
     element.style.width = '300px';
   });
