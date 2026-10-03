@@ -545,6 +545,12 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
     name: 'Annual maintenance procurement plan',
   });
   const chip = example.locator('.kui-chip');
+  // The catalog stack caps examples at 736px. Lift that cap so the roomy
+  // toolbar really receives the 850px requested below on every platform.
+  await example.evaluate((root) => {
+    const stack = root.closest<HTMLElement>('.kui-catalog-example-stack')!;
+    stack.style.maxWidth = '864px';
+  });
   const geometry = () =>
     example.evaluate((root) => {
       const button = root.querySelector<HTMLButtonElement>(
@@ -561,6 +567,7 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
         .getBoundingClientRect();
       const chipLabel = chip.querySelector<HTMLElement>('.kui-chip__label')!;
       return {
+        toolbarWidth: toolbarRect.width,
         buttonWidth: buttonRect.width,
         gap: chipRect.left - buttonRect.right,
         sameRow: Math.abs(chipRect.top - buttonRect.top) < 12,
@@ -576,6 +583,7 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
     (node) => ((node as HTMLElement).style.width = '850px'),
   );
   const roomy = await geometry();
+  expect(roomy.toolbarWidth).toBeGreaterThanOrEqual(840);
   expect(roomy.sameRow).toBe(true);
   expect(roomy.gap).toBeGreaterThanOrEqual(0);
   expect(roomy.gap).toBeLessThan(20);
@@ -590,6 +598,7 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
     (node) => ((node as HTMLElement).style.width = '550px'),
   );
   const narrow = await geometry();
+  expect(narrow.toolbarWidth).toBeCloseTo(550, 0);
   expect(narrow.buttonWidth).toBeLessThan(roomy.buttonWidth);
   expect(narrow.sameRow).toBe(true);
   expect(narrow.gap).toBeGreaterThanOrEqual(0);
