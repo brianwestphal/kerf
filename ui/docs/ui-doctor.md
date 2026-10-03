@@ -76,7 +76,11 @@ For an entry stylesheet shared by modules without direct CSS imports, configure
 These package-relative paths define one owner: its stylesheet and every listed
 source file or directory prefix. Doctor reports sibling CSS restyles and markup
 class use as `KUI-L019` and `KUI-L023`. Source paths ending in `/` match a
-directory subtree; other paths match exactly.
+directory subtree; other paths match exactly. When implicit ownership is also
+enabled, the group takes precedence over listed source modules and any direct
+import of its stylesheet. An unrelated importer still borrows the group's
+classes; its other stylesheets can retain their own implicit ownership.
+
 Set `"ownershipContext": "any"` to also report a same-package sibling's class
 used as ancestor or sibling context or within `:has()`, `:is()`, `:where()`, or
 `:not()`. The default `"subject"` keeps subject-only context policy; classes

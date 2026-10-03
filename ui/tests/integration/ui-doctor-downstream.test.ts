@@ -1152,6 +1152,7 @@ test(
         JSON.stringify({
           schemaVersion: 1,
           ownership: 'component',
+          implicitComponentOwnership: true,
           ownershipGroups: [
             {
               styleSources: ['src/style.css'],

@@ -901,6 +901,34 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
     ).toEqual([]);
   });
 
+  it('gives a group precedence over implicit importers of its stylesheet', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/style.css': '.shell { color: blue; }\n',
+      'src/other.css': '.other { color: blue; }\n',
+      'src/main.tsx':
+        "import './style.css'; export const Main = () => <div class='shell' />;\n",
+      'src/app/view.tsx': "export const View = () => <div class='shell' />;\n",
+      'src/outsider.tsx':
+        "import './style.css'; import './other.css'; export const Outsider = () => <div class='other shell' />;\n",
+      'src/foreign.css': '.shell { color: red; }\n',
+    });
+    const report = await analyzeUiProject({
+      root,
+      ownership: 'component',
+      implicitComponentOwnership: true,
+      ownershipGroups: [
+        {
+          styleSources: ['src/style.css'],
+          sources: ['src/main.tsx', 'src/app/'],
+        },
+      ],
+    });
+    expect(
+      ids(report).filter((item) => /KUI-L019|KUI-L023/.test(item)),
+    ).toEqual(['KUI-L019 src/foreign.css:1', 'KUI-L023 src/outsider.tsx:1']);
+  });
+
   it('owns dynamically built BEM element and modifier classes throughout the block', async () => {
     const root = await project({
       'package.json': JSON.stringify({ name: 'app' }),

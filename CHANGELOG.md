@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Doctor respects explicit ownership groups with implicit ownership enabled.**
+  A group's stylesheet remains owned by the group even when one of its source
+  modules, or an unrelated module, imports that CSS directly.
+
 - **LucideIcon supports filled glyphs.** Pass `appearance="solid"` to use the
   icon's current text color as its fill; outline remains the default.
 

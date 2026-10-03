@@ -1856,6 +1856,11 @@ export async function analyzeUiProject({
     ownership === 'component'
       ? await ownershipGroupEntries(ownershipGroups, root, contents)
       : [];
+  const groupStyles = new Set(
+    groupEntries.flatMap((entry) =>
+      entry.styleSources.map((style) => resolve(entry.catalogDirectory, style)),
+    ),
+  );
   const profileContexts = new Map();
   const loadContext = async (file) => {
     const startDirectory = file === root ? root : dirname(file);
@@ -1880,12 +1885,32 @@ export async function analyzeUiProject({
           const ownershipEntries = [
             ...entries,
             ...groupEntries,
-            ...implicitEntries.filter(
-              (entry) =>
-                !catalogedSources.has(
-                  resolve(entry.catalogDirectory, entry.componentSource),
-                ),
-            ),
+            ...implicitEntries.flatMap((entry) => {
+              const source = resolve(
+                entry.catalogDirectory,
+                entry.componentSource,
+              );
+              if (catalogedSources.has(source)) return [];
+              if (
+                groupEntries.some((group) => {
+                  const relativeSource = relative(
+                    group.catalogDirectory,
+                    source,
+                  ).replaceAll('\\', '/');
+                  return group.ownershipGroupSources.some((path) =>
+                    path.endsWith('/')
+                      ? relativeSource.startsWith(path)
+                      : relativeSource === path,
+                  );
+                })
+              )
+                return [];
+              const styleSources = entry.styleSources.filter(
+                (style) =>
+                  !groupStyles.has(resolve(entry.catalogDirectory, style)),
+              );
+              return styleSources.length ? [{ ...entry, styleSources }] : [];
+            }),
           ];
           return {
             profileResult,
