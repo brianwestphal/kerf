@@ -149,6 +149,9 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
         backingStart:
           tabBox.left +
           Number.parseFloat(window.getComputedStyle(tab, '::before').left),
+        radius: window.getComputedStyle(tab).borderTopRightRadius,
+        backingRadius: window.getComputedStyle(tab, '::before')
+          .borderTopRightRadius,
         topmostTabId: document
           .elementFromPoint(
             tabBox.left + tabBox.width / 2,
@@ -164,6 +167,7 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     expect(position.background).not.toBe('rgba(0, 0, 0, 0)');
     expect(position.position).toBe('sticky');
     expect(position.backingStart).toBeLessThanOrEqual(position.stripLeft + 1);
+    expect(position.backingRadius).toBe(position.radius);
     expect(position.topmostTabId).toBe('project-grid');
     await expect(strip).toHaveAttribute('data-scroll-overflow', /l/);
     const divider = await bar.evaluate((element) => {
@@ -269,12 +273,16 @@ test('pinned tab stays at the inline start in a right-to-left strip', async ({
       backingEnd:
         pinned.getBoundingClientRect().right -
         Number.parseFloat(window.getComputedStyle(pinned, '::before').right),
+      radius: window.getComputedStyle(pinned).borderTopLeftRadius,
+      backingRadius: window.getComputedStyle(pinned, '::before')
+        .borderTopLeftRadius,
     };
   });
   expect(geometry.scrollLeft).toBeLessThan(0);
   expect(geometry.pinnedRight).toBeLessThanOrEqual(geometry.stripRight + 1);
   expect(geometry.pinnedRight).toBeGreaterThanOrEqual(geometry.stripRight - 6);
   expect(geometry.backingEnd).toBeGreaterThanOrEqual(geometry.stripRight - 1);
+  expect(geometry.backingRadius).toBe(geometry.radius);
   const strip = bar.locator('.kui-tab-bar__tabs');
   await expect(strip).toHaveAttribute('data-scroll-overflow', /r/);
   const divider = await bar.evaluate((element) => {

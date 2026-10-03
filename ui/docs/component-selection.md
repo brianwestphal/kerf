@@ -284,8 +284,10 @@ without styling its strip or tab internals.
 Set the public
 `--kui-app-tab-pinned-background` token if the surrounding surface differs from
 the default; the pinned tab must cover peers as they scroll beneath it. Its
-background also covers the strip's inline padding and border so scrolled labels cannot
-paint beside the pinned edge, including in right-to-left strips. Call
+background also covers the strip's inline padding and border so scrolled labels
+cannot paint beside the pinned edge, including in right-to-left strips. The
+backing follows the tab's pill radius, keeping a selected pinned tab's corners
+and shadow whole beside the overflow divider. Call
 `wireTabBars` for keyboard selection and reorder behavior and its WebKit RTL
 scroll correction.
 

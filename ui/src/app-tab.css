@@ -55,6 +55,9 @@
       )
   );
   inset-inline-end: 0;
+  /* Keep the opaque scroll backing inside the tab's pill silhouette so it
+     cannot square off a selected tab's trailing corner and shadow. */
+  border-radius: inherit;
   background: var(
     --kui-app-tab-pinned-background,
     var(--_kui-app-tab-pinned-default-background, var(--kui-color-surface))
