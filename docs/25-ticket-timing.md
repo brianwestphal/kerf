@@ -3,9 +3,10 @@
 Created-to-completed wall time is not implementation time. Repository work can
 wait in the queue, move through several verification attempts, spend time in a
 push hook or CI, and then wait for an external package or site to propagate.
-The `ticket:timing` command writes small structured activity notes to the Hot
-Sheet ticket so those phases remain distinguishable without retaining command
-output, machine paths, or secrets.
+The `ticket:timing` command can read historical structured activity notes and
+still supports explicit recording for one-off analysis. Routine ticket work and
+the pre-push hook no longer add timing notes. Existing notes remain available
+for summaries without retaining command output, machine paths, or secrets.
 
 ## Phase model
 
@@ -20,13 +21,13 @@ output, machine paths, or secrets.
 Queue delay is derived from the ticket's `created_at` timestamp and the first
 recorded `active` interval.
 
-## Active time: claim and release through the wrapper
+## Historical active-time recording
 
 Hot Sheet leases are owned by the external `hotsheet-cli`, which retains no
 historical lease intervals and exposes no hook kerf could attach to, so kerf
-cannot observe a bare `hotsheet-cli claim` or `release`. Instead, claim and
-release **through** `ticket:timing`, which performs the Hot Sheet call and
-records the active session around it:
+cannot observe a bare `hotsheet-cli claim` or `release`. For historical or
+deliberate timing studies, the wrapper performs the Hot Sheet call and records
+the active session around it. Routine work uses `hotsheet-cli` directly:
 
 ```bash
 npm run ticket:timing -- claim KF-ABC123 --worker agent-1   # hotsheet-cli claim + active start
@@ -48,22 +49,10 @@ npm run ticket:timing -- finish KF-ABC123 --session "$session"
 
 ## Push hook and local gates
 
-The pre-push hook derives ticket slugs from commits that are actually outgoing
-to the named remote and records `root:check` automatically. A tag-only push of
-an already-pushed commit therefore records no historical subjects. Set
-`KERF_TICKET_TIMING_TICKETS` to a comma- or space-separated list when a push
-must be attributed to explicit tickets despite having no outgoing commit (for
-example, `KERF_TICKET_TIMING_TICKETS=KF-ABC123 git push origin <tag>`).
-
-The hook applies the same 25-ticket coherence bound as `import-ci` and the
-cross-ticket summary (`MAX_COHERENT_TICKETS`) at write time. When the outgoing
-commits name more than 25 tickets — a first push of a long history, a
-force-push, a rebased branch — it does not fan the interval out per ticket: it
-prints a notice and records the interval only against the explicit
-`KERF_TICKET_TIMING_TICKETS` list, or records nothing when that list is empty.
-The gate itself still runs and its exit status is unchanged. An explicit list is
-honored as given, because it is a deliberate attribution rather than a derived
-one.
+The pre-push hook checks the outgoing tree and runs `npm run check` unless the
+same clean tree passed it locally. It does not write ticket timing notes,
+including when `KERF_TICKET_TIMING_TICKETS` is set. The gate's exit status is
+unchanged. Historical push-hook notes remain readable by `summary`.
 
 Time a local gate while preserving its exit status with `run`:
 
@@ -90,8 +79,8 @@ prints a step-duration table at the end. The chain may only join commands with
 split would change. When `KERF_CHECK_STEP_LOG` names a file, the runner writes
 each step's low-cardinality identifier (`lint`, `test`, `build`,
 `vitest:dist`, `tsc:jsx-typing`, …), duration, and outcome there after every
-step. `pre-push` and `run` set it automatically, so their interval records gain
-an ordered `"steps": { "<step>": <ms>, … }` map and, on failure, the
+step. The explicit `run` command sets it automatically, so its interval records
+gain an ordered `"steps": { "<step>": <ms>, … }` map and, on failure, the
 `"failed_step"` — including a partial map for a chain that failed or was
 interrupted part-way. Only identifiers and milliseconds are stored.
 
@@ -185,9 +174,9 @@ The first push after the pre-push hook started recording (2026-09-23T11:33Z)
 treated a long stretch of already-published history as outgoing and attached
 one ~55 s `root:check` interval to 374 historical tickets. That single push was
 374 of the 424 `push_hook` records at the time — noise that swamped every
-per-ticket figure. The pre-push hook now refuses to write that shape (see
-"Push hook and local gates"), and the summary detects it in notes written before
-that bound existed instead of rewriting them: an interval whose identity is attached to **more than 25 tickets** (the
+per-ticket figure. The pre-push hook no longer writes timing notes. The summary
+detects the historical backfill without rewriting stored notes: an interval
+whose identity is attached to **more than 25 tickets** (the
 same bound `import-ci` uses for a coherent batch; `--backfill-threshold <n>`
 overrides it) is reported as backfill with its ticket count and excluded from
 every statistic. `--include-backfill` keeps it, still counted once. The legit
@@ -211,8 +200,9 @@ verification:
    worktree was clean (no tracked changes and no untracked, non-ignored files)
    both when the run began and when it ended, with the same `HEAD` tree and the
    same runtime and install fingerprint.
-2. The hook runs `ticket-timing.mjs pre-push --skip-if-verified`. It skips the
-   gate only when every one of these holds: `KERF_FORCE_CHECK` is unset (or
+2. The hook runs `ticket-timing.mjs pre-push --skip-if-verified` without writing
+   ticket notes. It skips the gate only when every one of these holds:
+   `KERF_FORCE_CHECK` is unset (or
    `0`); a record exists; the worktree is clean; `HEAD`'s tree equals the
    recorded tree; the Node.js version, `process.platform`, and `process.arch`
    equal the recorded ones; the install fingerprint equals the recorded one;

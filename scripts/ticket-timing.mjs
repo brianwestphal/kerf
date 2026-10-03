@@ -23,9 +23,7 @@ import {
   assertTicket,
   formatTimingRecord,
   isoTime,
-  MAX_COHERENT_TICKETS,
   parseTimingRecords,
-  pushTimingTickets,
   summarizeTicketTiming,
   ticketSlugsFromSubjects,
 } from './lib/ticket-timing.mjs';
@@ -292,48 +290,12 @@ async function summary(ticket, json) {
     console.log(`In progress: ${result.in_progress.length} session(s)`);
 }
 
-async function hasRemoteTrackingRefs(remoteName) {
-  if (!remoteName) return false;
-  const { stdout } = await execFileAsync('git', [
-    'for-each-ref',
-    '--format=%(refname)',
-    `refs/remotes/${remoteName}`,
-  ]);
-  return stdout.trim().length > 0;
-}
-
 function pushedLocalShas(input) {
   return input
     .trim()
     .split('\n')
     .map((line) => line.split(/\s+/)[1])
     .filter((sha) => sha && !/^0+$/.test(sha));
-}
-
-async function subjectsFromPushInput(input, remoteName) {
-  const subjects = [];
-  const remoteTracksCommits = await hasRemoteTrackingRefs(remoteName);
-  for (const line of input.trim().split('\n')) {
-    if (!line) continue;
-    const [, localSha, , remoteSha] = line.split(/\s+/);
-    if (!localSha || /^0+$/.test(localSha)) continue;
-    const logArgs = ['log', '--format=%s'];
-    if (remoteSha && !/^0+$/.test(remoteSha))
-      logArgs.push(`${remoteSha}..${localSha}`);
-    else {
-      logArgs.push(localSha);
-      if (remoteTracksCommits) logArgs.push('--not', `--remotes=${remoteName}`);
-    }
-    const { stdout } = await execFileAsync('git', logArgs);
-    subjects.push(...stdout.trim().split('\n').filter(Boolean));
-  }
-  return subjects;
-}
-
-function explicitlySuppliedTickets() {
-  return ticketSlugsFromSubjects([
-    process.env.KERF_TICKET_TIMING_TICKETS ?? '',
-  ]);
 }
 
 async function checkSkipDecision(input) {
@@ -366,50 +328,15 @@ async function prePush(args) {
     .includes('--skip-if-verified');
   let input = '';
   for await (const chunk of process.stdin) input += chunk;
-  const { tickets, capped, outgoing } = pushTimingTickets(
-    ticketSlugsFromSubjects(await subjectsFromPushInput(input, args[0])),
-    explicitlySuppliedTickets(),
-  );
-  if (capped)
-    console.warn(
-      `[ticket-timing] ${outgoing} outgoing tickets exceeds ${MAX_COHERENT_TICKETS}; not a coherent push, so ${tickets.length ? `recording only KERF_TICKET_TIMING_TICKETS (${tickets.join(', ')})` : 'recording no push-hook timing (set KERF_TICKET_TIMING_TICKETS to attribute it)'}`,
-    );
   const decision = skipIfVerified
     ? await checkSkipDecision(input)
     : { skip: false };
-  const startedAt = new Date().toISOString();
   let result = { code: 0, signal: null };
-  let fields = {};
   if (decision.skip)
     console.log(
       `[pre-push] Skipping \`${command.join(' ')}\`: this exact tree already passed it locally. Set KERF_FORCE_CHECK=1 to run it anyway.`,
     );
-  else ({ result, fields } = await runWithSteps(command));
-  const finishedAt = new Date().toISOString();
-  const { outcome, failure_category } = decision.skip
-    ? { outcome: 'skipped' }
-    : commandOutcome(result);
-  for (const ticket of tickets) {
-    try {
-      await recordInterval(
-        ticket,
-        {
-          phase: 'push_hook',
-          gate: 'root:check',
-          started_at: startedAt,
-          finished_at: finishedAt,
-          ...(failure_category ? { failure_category } : {}),
-          ...(decision.skip ? { skip_reason: decision.reason } : {}),
-        },
-        outcome,
-        fields,
-      );
-    } catch (error) {
-      console.warn(
-        `[ticket-timing] Could not record ${ticket}: ${error.message}`,
-      );
-    }
-  }
+  else result = await runCommand(command[0], command.slice(1));
   process.exitCode = decision.skip ? 0 : exitStatus(result);
 }
 

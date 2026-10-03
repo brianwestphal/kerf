@@ -97,7 +97,7 @@ describe('step-timed check chain', { timeout: 30_000 }, () => {
     });
   });
 
-  it('attaches per-step durations and the failed step to the push-hook record', async () => {
+  it('preserves a failed pre-push gate without writing a timing note', async () => {
     const dir = await scratch('kerf-check-steps-push-');
     const repo = join(dir.root, 'repo');
     await mkdir(repo);
@@ -127,15 +127,7 @@ describe('step-timed check chain', { timeout: 30_000 }, () => {
       },
     );
     expect(await done).toBe(2);
-    const [record] = await dir.records();
-    expect(record).toMatchObject({
-      phase: 'push_hook',
-      gate: 'root:check',
-      outcome: 'failed',
-      failure_category: 'command_exit',
-      failed_step: 'node',
-    });
-    expect(Object.keys(record.steps)).toEqual(['ok', 'node']);
+    expect(await readFile(dir.log, 'utf8')).toBe('');
   });
 
   it('records an interrupted attempt when the wrapped gate is stopped', async () => {

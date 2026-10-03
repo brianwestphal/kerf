@@ -227,11 +227,11 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
       pushInput,
     );
     expect(explicit).toEqual({ code: 0, stderr: '' });
-    expect(await readFile(log, 'utf8')).toContain('edit KF-RELEASE36');
+    expect(await readFile(log, 'utf8')).toBe('');
     expect(await readFile(log, 'utf8')).not.toContain('KF-OLD111');
   });
 
-  it('records a push of more outgoing tickets than a coherent batch only against explicit tickets', async () => {
+  it('never adds timing notes during a push, including explicit ticket overrides', async () => {
     const repo = await fixtureRepo('kerf-ticket-timing-fanout-');
     for (let index = 0; index < 25; index += 1)
       await repo.git(['commit', '--allow-empty', '-m', `KF-HIST${index} old`]);
@@ -254,9 +254,6 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
 
     const bare = await prePush(repo.env);
     expect(bare.code).toBe(0);
-    expect(bare.stderr).toContain(
-      '26 outgoing tickets exceeds 25; not a coherent push, so recording no push-hook timing',
-    );
     expect(await readFile(repo.log, 'utf8')).toBe('');
 
     const explicit = await prePush({
@@ -264,12 +261,7 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
       KERF_TICKET_TIMING_TICKETS: 'KF-FIRST1',
     });
     expect(explicit.code).toBe(0);
-    expect(explicit.stderr).toContain(
-      'recording only KERF_TICKET_TIMING_TICKETS (KF-FIRST1)',
-    );
-    const notes = (await readFile(repo.log, 'utf8')).trim().split('\n');
-    expect(notes).toHaveLength(1);
-    expect(notes[0]).toMatch(/^edit KF-FIRST1 /);
+    expect(await readFile(repo.log, 'utf8')).toBe('');
   });
 
   it('skips the pre-push check only for the exact clean tree that already passed', async () => {
@@ -313,10 +305,7 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
     );
     expect((await prePush()).code).toBe(0);
     expect(await runs()).toBe(1);
-    const notes = await readFile(repo.log, 'utf8');
-    expect(notes).toContain('"outcome":"skipped"');
-    expect(notes).toContain('"skip_reason":"tree_already_verified"');
-    expect(notes).toContain('edit KF-NEW111');
+    expect(await readFile(repo.log, 'utf8')).toBe('');
 
     // The explicit override always runs the gate.
     expect((await prePush({ ...repo.env, KERF_FORCE_CHECK: '1' })).code).toBe(

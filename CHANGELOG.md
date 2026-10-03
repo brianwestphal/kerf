@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **The pre-push check no longer adds timing metadata to Hot Sheet tickets.**
+  It still runs the repository gate or skips an identical verified clean tree;
+  historical timing notes remain readable through `ticket:timing summary`.
+
 - **Wrapping catalog resource groups align with the toolbar control band.** A
   single row centers in the band, while multiple rows start at its top.
 
