@@ -53,7 +53,10 @@ boundary between a consumer package's own cataloged components. The default is
 `styleSources` (relative to its package root), or its direct relative CSS
 imports when that list is absent, and its selection catalog `source` module.
 Literal rendered BEM classes are inferred when those stylesheets style their
-block. Set `"implicitComponentOwnership": true` to include uncataloged modules
+block. Modules sharing one of those stylesheets co-own its classes, so their
+own markup does not borrow from one another. A class inferred by several
+co-owners has no arbitrary single owner for CSS subject diagnostics.
+Set `"implicitComponentOwnership": true` to include uncataloged modules
 that directly import CSS. Component mode reports sibling CSS and hook-class
 restyles while allowing a component's own stylesheet and module.
 Set `"ownershipContext": "any"` to also report a same-package sibling's class

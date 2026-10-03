@@ -21,6 +21,7 @@ import {
   subjectTypes,
   withoutRelationalArguments,
 } from './selectors.mjs';
+import { resolve } from 'node:path';
 
 const kebab = (value) =>
   value.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
@@ -44,10 +45,31 @@ export function componentOwnershipFacts(entries) {
   const setOnce = (map, key, entry) => {
     if (!map.has(key)) map.set(key, entry);
   };
+  const sharesStylesheet = (left, right) => {
+    if (
+      left.package !== right.package ||
+      !left.catalogDirectory ||
+      !right.catalogDirectory
+    )
+      return false;
+    const styles = new Set(
+      (left.styleSources ?? []).map((path) =>
+        resolve(left.catalogDirectory, path),
+      ),
+    );
+    return (right.styleSources ?? []).some((path) =>
+      styles.has(resolve(right.catalogDirectory, path)),
+    );
+  };
   for (const entry of entries) {
     const boundaries = entry.boundaries ?? {};
     for (const className of boundaries.publicClasses ?? []) {
-      setOnce(classOwners, className, entry);
+      const previous = classOwners.get(className);
+      if (!classOwners.has(className)) classOwners.set(className, entry);
+      else if (previous && sharesStylesheet(previous, entry))
+        // The class is co-owned. A selector cannot attribute it to one
+        // component without depending on catalog order.
+        classOwners.set(className, null);
       if (
         className.startsWith('kui-') &&
         !className.includes('__') &&

@@ -1001,6 +1001,57 @@ test(
 );
 
 test(
+  'the doctor accepts co-owned markup from shared stylesheet importers',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-coowners-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"coowner-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          implicitComponentOwnership: true,
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/shared.css'),
+        '.shared { color: blue; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/a.tsx'),
+        "import './shared.css'; export const A = () => <div class='shared' />;\n",
+      );
+      await writeFile(
+        resolve(root, 'src/b.tsx'),
+        "import './shared.css'; export const B = () => <div class='shared' />;\n",
+      );
+      const clean = await doctor(root);
+      expect(clean.status).toBe(0);
+      expect(clean.report.diagnostics).toEqual([]);
+
+      await writeFile(
+        resolve(root, 'src/outsider.tsx'),
+        "export const Outsider = () => <div class='shared' />;\n",
+      );
+      const borrowed = await doctor(root);
+      expect(borrowed.status).toBe(1);
+      expect(
+        borrowed.report.diagnostics.map((item: { id: string }) => item.id),
+      ).toEqual(['KUI-L023', 'KUI-L023']);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor reports a directly rendered Discouraged Web Awesome element, then passes once the Kerf wrapper replaces it',
   async () => {
     const root = await mkdtemp(

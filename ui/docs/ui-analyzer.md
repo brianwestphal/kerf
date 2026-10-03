@@ -212,7 +212,12 @@ even without a composition entry. Each entry owns its declared `styleSources`
 for CSS and its selection `source` module for JSX; when `styleSources` is absent,
 direct relative CSS imports from that source are used. The analyzer also derives
 literal JSX `class` and `className` values whose BEM block is styled in those
-stylesheets, including element and modifier classes. Sibling files are foreign.
+stylesheets, including element and modifier classes. Modules that share a
+stylesheet co-own its classes, whether the stylesheet was declared or directly
+imported; a source that imports none of an owner's stylesheets remains foreign.
+When several entries infer the same class from a shared stylesheet, the
+analyzer does not arbitrarily assign that class to one of them for `KUI-L019`.
+Other sibling files are foreign.
 Paths are relative to the entry's package root. Set
 `implicitComponentOwnership: true` to apply the same source and stylesheet
 inference to modules with direct CSS imports that have no catalog entry.

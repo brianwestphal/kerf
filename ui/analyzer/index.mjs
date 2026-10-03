@@ -1377,7 +1377,7 @@ function inspectTsx(
     if (!inspectBorrowedMarkup) return;
     for (const owner of facts.classEntries.get(className) ?? []) {
       if (
-        !isForeign(owner) ||
+        !isForeign(owner, className) ||
         owner.boundaries?.placeableClasses?.includes(className)
       )
         continue;
@@ -1735,12 +1735,56 @@ export async function analyzeUiProject({
       );
     return packages.get(directory);
   };
-  const foreignTo = async (file) => {
+  const styledBlocksByFile = new Map();
+  const styledBlocksIn = (style) => {
+    if (!styledBlocksByFile.has(style)) {
+      const blocks = new Set();
+      const css = contents.get(style);
+      if (css)
+        try {
+          postcss.parse(css, { from: style }).walkRules((rule) => {
+            for (const name of subjectClasses(rule.selector))
+              blocks.add(bemBlock(name));
+          });
+        } catch {
+          // Malformed CSS is reported by the normal inspection pass.
+        }
+      styledBlocksByFile.set(style, blocks);
+    }
+    return styledBlocksByFile.get(style);
+  };
+  const foreignTo = async (file, facts) => {
     const own = await packageOf(dirname(file));
     const source = own && relative(own.directory, file).replaceAll('\\', '/');
-    return (entry) => {
+    const ownedStyles = new Set(imports.get(file) ?? []);
+    if (ownership === 'component' && !file.endsWith('.css'))
+      for (const entry of facts.entries) {
+        if (
+          entry.package !== own?.name ||
+          !entry.componentSource ||
+          !entry.catalogDirectory ||
+          resolve(entry.catalogDirectory, entry.componentSource) !== file
+        )
+          continue;
+        for (const style of entry.styleSources ?? [])
+          ownedStyles.add(resolve(entry.catalogDirectory, style));
+      }
+    return (entry, className) => {
       if (entry.package !== own?.name) return true;
       if (ownership !== 'component') return false;
+      if (
+        !file.endsWith('.css') &&
+        className &&
+        entry.catalogDirectory &&
+        entry.styleSources?.some((style) => {
+          const path = resolve(entry.catalogDirectory, style);
+          return (
+            ownedStyles.has(path) &&
+            styledBlocksIn(path).has(bemBlock(className))
+          );
+        })
+      )
+        return false;
       const ownedSources = file.endsWith('.css')
         ? entry.styleSources
         : [entry.componentSource];
@@ -1839,7 +1883,7 @@ export async function analyzeUiProject({
       reachableStyleFacts(file, imports, styleFacts),
       fileDiagnostics,
       adoption,
-      await foreignTo(file),
+      await foreignTo(file, context.facts),
       own?.directory,
       compilerOptionsFor(file, root, compilerOptions),
     );
@@ -1860,7 +1904,7 @@ export async function analyzeUiProject({
         new Map(),
         adoption,
         siblingOnLoud(file),
-        await foreignTo(file),
+        await foreignTo(file, context.facts),
         ownership === 'component'
           ? {
               ...jsxOwnershipEvidence(

@@ -706,6 +706,89 @@ describe('kerf-ui-analyze component ownership diagnostics', () => {
     ).toEqual(['KUI-L022 src/header.tsx:3', 'KUI-L019 src/search.css:2']);
   });
 
+  it('treats importers of one stylesheet as co-owners of its classes', async () => {
+    const entry = (id: string) => ({
+      key: `app:${id}`,
+      package: 'app',
+      id,
+      name: id,
+      kind: 'component',
+      source: 'application',
+      boundaries: { rootClass: id, publicClasses: [id], publicTokens: [] },
+    });
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [entry('a'), entry('b')],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          { id: 'a', source: 'src/a.tsx', styleSources: ['src/shared.css'] },
+          {
+            id: 'b',
+            source: 'src/b.tsx',
+            styleSources: ['src/shared.css', 'src/unique.css'],
+          },
+        ],
+      }),
+      'src/shared.css': '.shared { color: blue; }\n.single { color: blue; }\n',
+      'src/unique.css': '.unique { color: blue; }\n',
+      'src/a.tsx':
+        "import './shared.css'; export const A = () => <div class='shared single unique' />;\n",
+      'src/b.tsx':
+        "import './shared.css'; import './unique.css'; export const B = () => <div class='shared unique' />;\n",
+      'src/c.css': '.shared { color: red; }\n.single { color: red; }\n',
+      'src/c.tsx':
+        "import './c.css'; export const C = () => <div class='shared' />;\n",
+    });
+    const report = await analyzeUiProject({ root, ownership: 'component' });
+    const findings = ids(report);
+    expect(findings.filter((item) => item.startsWith('KUI-L023'))).toEqual([
+      'KUI-L023 src/a.tsx:1',
+      'KUI-L023 src/c.tsx:1',
+      'KUI-L023 src/c.tsx:1',
+    ]);
+    expect(findings.filter((item) => item.startsWith('KUI-L019'))).toEqual([
+      'KUI-L019 src/c.css:2',
+    ]);
+  });
+
+  it('co-owns classes inferred from a direct CSS import without catalog entries', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/shared.css': '.shared { color: blue; }\n',
+      'src/a.tsx':
+        "import './shared.css'; export const A = () => <div class='shared' />;\n",
+      'src/b.tsx':
+        "import './shared.css'; export const B = () => <div class='shared' />;\n",
+      'src/c.tsx': "export const C = () => <div class='shared' />;\n",
+    });
+    expect(
+      ids(
+        await analyzeUiProject({
+          root,
+          ownership: 'component',
+          implicitComponentOwnership: true,
+        }),
+      ),
+    ).toEqual(['KUI-L023 src/c.tsx:1', 'KUI-L023 src/c.tsx:1']);
+  });
+
   it('rejects application CSS that restyles, overrides, or hooks a component', async () => {
     const root = await project({
       'src/app.css': [
