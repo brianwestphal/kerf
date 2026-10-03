@@ -33,6 +33,12 @@ export function restyledComponents(
   selectorList: string,
   facts: ComponentOwnershipFacts,
   isForeign: (entry: OwnershipCatalogEntry) => boolean,
+  options?: {
+    componentMode?: boolean;
+    ownPackage?: string;
+    hooks?: Map<string, OwnershipCatalogEntry>;
+    composedChildren?: Map<string, OwnershipCatalogEntry>;
+  },
 ): RestyledComponent[];
 export function privateVariableOwner(
   property: string,

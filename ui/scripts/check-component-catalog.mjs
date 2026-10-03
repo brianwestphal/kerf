@@ -324,9 +324,9 @@ for (const entry of artifact.entries) {
     fail(
       `${entry.id}: composition rootElement must equal the selection catalog's`,
     );
-  if (entry.rootElement && (!rendersComponent || placeable.length === 0))
+  if (entry.rootElement && !rendersComponent)
     fail(
-      `${entry.id}: rootElement names the element a component renders around its placeableClasses; drop it from an entry with no component or no placeableClasses`,
+      `${entry.id}: rootElement names the element a component renders; drop it from an entry with no component`,
     );
   if (rendersComponent && placeable.length && !entry.rootElement)
     fail(

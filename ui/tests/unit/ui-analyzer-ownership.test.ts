@@ -84,6 +84,61 @@ describe('downstream component ownership rules', () => {
     ).toEqual([]);
   });
 
+  it('uses component-mode evidence for hooks, sibling roots, and composed child roots', () => {
+    const search = {
+      key: 'app:search',
+      package: 'app',
+      id: 'search',
+      name: 'Search',
+      boundaries: {
+        rootClass: 'ticket-search-field',
+        publicClasses: ['ticket-search-field'],
+      },
+    };
+    const spinner = composition.entries.find(
+      (entry) => entry.key === '@kerfjs/ui:loading-spinner',
+    )!;
+    const local = componentOwnershipFacts([search, spinner]);
+    const options = {
+      componentMode: true,
+      ownPackage: 'app',
+      hooks: new Map([['view-select', spinner]]),
+      composedChildren: new Map([['active-claim-spinner|svg', spinner]]),
+    };
+    expect(
+      restyledComponents('.view-select svg', local, foreign, options).map(
+        ({ entry, name }) => `${entry.key} ${name}`,
+      ),
+    ).toEqual(['@kerfjs/ui:loading-spinner .view-select']);
+    expect(
+      restyledComponents('.ticket-search-field svg', local, foreign, options),
+    ).toMatchObject([{ entry: { key: 'app:search' }, via: 'descendant' }]);
+    expect(
+      restyledComponents(
+        '.active-claim-spinner > svg',
+        local,
+        foreign,
+        options,
+      ),
+    ).toMatchObject([
+      { entry: { key: '@kerfjs/ui:loading-spinner' }, via: 'descendant' },
+    ]);
+    expect(
+      restyledComponents(
+        '.ticket-search-field .my-icon',
+        local,
+        foreign,
+        options,
+      ),
+    ).toEqual([]);
+    expect(
+      restyledComponents('.ticket-search-field svg', local, foreign),
+    ).toEqual([]);
+    expect(
+      restyledComponents('.kui-loading-spinner path', local, foreign, options),
+    ).toEqual([]);
+  });
+
   it('never reports a component the stylesheet itself owns', () => {
     expect(restyledComponents('.kui-toolbar', facts, () => false)).toHaveLength(
       0,
@@ -150,6 +205,67 @@ const ids = (report: Awaited<ReturnType<typeof analyzeUiProject>>) =>
   );
 
 describe('kerf-ui-analyze component ownership diagnostics', () => {
+  it('finds foreign element subjects using the stylesheet owner JSX', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          { id: 'rail', name: 'Rail', source: 'src/rail.tsx' },
+          { id: 'search', name: 'Search', source: 'src/search.tsx' },
+        ],
+      }),
+      'src/rail.tsx': [
+        "import './rail.css';",
+        "import { Select } from '@kerfjs/ui/select';",
+        "import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';",
+        'export const Rail = () => <div class="rail"><Select className="view-select" /><div class="active-claim-spinner"><LoadingSpinner /></div><div class="mixed"><LoadingSpinner /><svg /></div></div>;',
+        '',
+      ].join('\n'),
+      'src/rail.css': [
+        '.view-select svg { color: red; }',
+        '.ticket-search-field svg { color: red; }',
+        '.active-claim-spinner > svg { color: red; }',
+        '.rail > .app-icon { color: red; }',
+        '.mixed > svg { color: red; }',
+        '',
+      ].join('\n'),
+      'src/search.tsx':
+        'import \'./search.css\';\nexport const Search = () => <div class="ticket-search-field" />;\n',
+      'src/search.css': '.ticket-search-field { color: blue; }\n',
+    });
+    const report = await analyzeUiProject({ root, ownership: 'component' });
+    expect(
+      report.diagnostics
+        .filter((item) => item.ruleId === 'KUI-L019')
+        .map(
+          (item) =>
+            `${item.location.file}:${item.location.line} ${(item.evidence as { component: string }).component}`,
+        ),
+    ).toEqual([
+      'src/rail.css:1 @kerfjs/ui:select',
+      'src/rail.css:2 app:search',
+      'src/rail.css:3 @kerfjs/ui:loading-spinner',
+    ]);
+  });
+
   it('derives selection-only BEM ownership from rendered classes and own styles', async () => {
     const root = await project({
       'package.json': JSON.stringify({ name: 'app' }),

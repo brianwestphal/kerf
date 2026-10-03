@@ -511,6 +511,70 @@ test(
 );
 
 test(
+  'doctor reports a composed SVG child and sibling root from selection sources',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-elements-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      const files: Record<string, string> = {
+        'package.json': JSON.stringify({ name: 'app' }),
+        '.kerf-ui-doctor.json': JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+        '.kerf-ui-profile.json': JSON.stringify({
+          schemaVersion: 1,
+          scope: 'workspace',
+          catalogs: [
+            {
+              package: 'app',
+              composition: { path: './composition.json', schemaVersion: 2 },
+              selection: { path: './selection.json', schemaVersion: 1 },
+            },
+          ],
+        }),
+        'composition.json': JSON.stringify({
+          schemaVersion: 2,
+          package: 'app',
+          entries: [],
+        }),
+        'selection.json': JSON.stringify({
+          schemaVersion: 1,
+          package: 'app',
+          entries: [
+            { id: 'rail', name: 'Rail', source: 'src/rail.tsx' },
+            { id: 'search', name: 'Search', source: 'src/search.tsx' },
+          ],
+        }),
+        'src/rail.tsx':
+          "import './rail.css';\nimport { LoadingSpinner } from '@kerfjs/ui/loading-spinner';\nexport const Rail = () => <div class=\"active-claim-spinner\"><LoadingSpinner /></div>;\n",
+        'src/rail.css':
+          '.active-claim-spinner > svg { color: red; }\n.ticket-search-field svg { color: red; }\n',
+        'src/search.tsx':
+          'import \'./search.css\';\nexport const Search = () => <div class="ticket-search-field" />;\n',
+        'src/search.css': '.ticket-search-field { color: blue; }\n',
+      };
+      for (const [path, value] of Object.entries(files))
+        await writeFile(resolve(root, path), value);
+      const result = await doctor(root);
+      expect(result.status).toBe(1);
+      expect(
+        result.report.diagnostics
+          .filter((item: { id: string }) => item.id === 'KUI-L019')
+          .map(
+            (item: { location: { file: string; line: number } }) =>
+              `${item.location.file}:${item.location.line}`,
+          ),
+      ).toEqual(['src/rail.css:1', 'src/rail.css:2']);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'doctor surfaces catalog-driven CSS value diagnostics for downstream JSX',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-values-'));

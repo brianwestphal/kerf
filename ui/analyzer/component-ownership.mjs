@@ -96,7 +96,17 @@ export function componentOwnershipFacts(entries) {
  * Returns `{ entry, via, name }` records; `isForeign(entry)` decides which
  * entries the stylesheet does not own.
  */
-export function restyledComponents(selectorList, facts, isForeign) {
+export function restyledComponents(
+  selectorList,
+  facts,
+  isForeign,
+  {
+    componentMode = false,
+    ownPackage,
+    hooks = new Map(),
+    composedChildren = new Map(),
+  } = {},
+) {
   const found = [];
   const seen = new Set();
   const add = (entry, via, name) => {
@@ -128,10 +138,29 @@ export function restyledComponents(selectorList, facts, isForeign) {
     // that component. Do not infer ownership through its root, where an app
     // may place its own children, or through an app-named intermediate node.
     if (subjectClasses.length || parts.length < 2) continue;
+    if (componentMode && parts.at(-1).combinator === '>') {
+      const types = subjectTypes(subject) ?? [];
+      for (const name of classNames(
+        withoutRelationalArguments(parts.at(-2).compound),
+      ))
+        for (const type of types)
+          add(
+            composedChildren.get(`${name}|${type}`),
+            'descendant',
+            `.${name}`,
+          );
+    }
     for (let index = parts.length - 2; index >= 0; index -= 1) {
       const classes = classNames(
         withoutRelationalArguments(parts[index].compound),
       );
+      const hook = componentMode
+        ? classes.find((name) => hooks.has(name))
+        : undefined;
+      if (hook) {
+        add(hooks.get(hook), 'descendant', `.${hook}`);
+        break;
+      }
       if (classes.some((name) => !facts.classOwners.has(name))) break;
       const anatomy = classes.find(
         (name) => name.includes('__') && facts.classOwners.has(name),
@@ -139,6 +168,15 @@ export function restyledComponents(selectorList, facts, isForeign) {
       if (anatomy) {
         add(facts.classOwners.get(anatomy), 'descendant', `.${anatomy}`);
         break;
+      }
+      if (componentMode) {
+        const root = classes.find((name) => facts.classOwners.has(name));
+        if (root) {
+          const entry = facts.classOwners.get(root);
+          if (entry.package === ownPackage)
+            add(entry, 'descendant', `.${root}`);
+          break;
+        }
       }
     }
   }

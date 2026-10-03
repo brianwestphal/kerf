@@ -293,7 +293,10 @@ async function loadCatalogs(profileResult, ownership) {
           styleSources: selected.styleSources,
           moduleImports: selected.moduleImports,
           publicExports: selected.publicExports,
-          boundaries: { publicClasses: selected.publicClasses ?? [] },
+          boundaries: {
+            publicClasses: selected.publicClasses ?? [],
+            rootElement: selected.rootElement,
+          },
           catalogDirectory: dirname(owner),
         });
       }
@@ -328,6 +331,7 @@ async function loadSelectionFacts(owner, catalog) {
       kind: entry.kind,
       publicExports: entry.publicExports,
       publicClasses: entry.publicClasses,
+      rootElement: entry.rootElement,
       componentSource: entry.source,
       styleSources: entry.styleSources,
       moduleImports: [delivery.browserImport, delivery.moduleImport].filter(
@@ -457,6 +461,7 @@ function catalogFacts(entries) {
     }
   }
   return {
+    entries,
     publicClasses,
     publicTokens,
     publicParts,
@@ -631,6 +636,7 @@ function inspectComponentOwnership(
   diagnostics,
   adoption,
   isForeign,
+  ownershipEvidence,
 ) {
   if (inKeyframes(rule)) return;
   const restyling = restylingDeclarations(rule);
@@ -640,6 +646,7 @@ function inspectComponentOwnership(
     rule.selector,
     facts.ownership,
     isForeign,
+    ownershipEvidence,
   ))
     diagnostics.push(
       diagnostic(
@@ -728,6 +735,7 @@ async function inspectCss(
   adoption = false,
   siblingOnLoud = [],
   isForeign = () => true,
+  ownershipEvidence,
 ) {
   let root;
   try {
@@ -760,6 +768,7 @@ async function inspectCss(
       diagnostics,
       adoption,
       isForeign,
+      ownershipEvidence,
     );
     if (!inKeyframes(rule) && restylingDeclarations(rule).length > 0)
       for (const className of subjects) {
@@ -924,6 +933,150 @@ function literalClasses(attribute) {
       dynamic: false,
     };
   return { values: [], dynamic: true };
+}
+
+function jsxOwnershipEvidence(style, facts, contents, root, compilerCache) {
+  const hooks = new Map();
+  const composedChildren = new Map();
+  const ambiguousHooks = new Set();
+  const ambiguousChildren = new Set();
+  const record = (map, ambiguous, key, entry) => {
+    if (ambiguous.has(key)) return;
+    if (map.has(key) && map.get(key).key !== entry.key) {
+      map.delete(key);
+      ambiguous.add(key);
+    } else map.set(key, entry);
+  };
+  for (const owner of facts.entries) {
+    if (!owner.componentSource || !owner.catalogDirectory) continue;
+    const relativeStyle = relative(owner.catalogDirectory, style).replaceAll(
+      '\\',
+      '/',
+    );
+    if (!owner.styleSources?.includes(relativeStyle)) continue;
+    const file = resolve(owner.catalogDirectory, owner.componentSource);
+    const sourceText = contents.get(file);
+    if (!sourceText) continue;
+    const source = ts.createSourceFile(
+      file,
+      sourceText,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    const imports = new Map();
+    const namespaces = new Map();
+    const compilerOptions = compilerOptionsFor(file, root, compilerCache);
+    const aliasSource = (module) =>
+      module && !module.startsWith('.') && compilerOptions?.paths
+        ? ts.resolveModuleName(module, file, compilerOptions, ts.sys)
+            .resolvedModule?.resolvedFileName
+        : undefined;
+    for (const statement of source.statements) {
+      if (
+        !ts.isImportDeclaration(statement) ||
+        !ts.isStringLiteral(statement.moduleSpecifier)
+      )
+        continue;
+      const module = statement.moduleSpecifier.text;
+      const bindings = statement.importClause?.namedBindings;
+      if (bindings && ts.isNamespaceImport(bindings)) {
+        namespaces.set(bindings.name.text, module);
+        continue;
+      }
+      if (!bindings || !ts.isNamedImports(bindings)) continue;
+      for (const item of bindings.elements) {
+        const exported = item.propertyName?.text ?? item.name.text;
+        const entry = resolveExportEntry(
+          facts.exportEntries.get(exported),
+          exported,
+          module,
+          file,
+          owner.catalogDirectory,
+          aliasSource(module),
+        );
+        if (entry) imports.set(item.name.text, entry);
+      }
+    }
+    const openingOf = (node) =>
+      ts.isJsxElement(node) ? node.openingElement : node;
+    const entryFor = (opening) => {
+      const tag = opening.tagName.getText(source);
+      if (imports.has(tag)) return imports.get(tag);
+      if (
+        ts.isPropertyAccessExpression(opening.tagName) &&
+        ts.isIdentifier(opening.tagName.expression)
+      ) {
+        const module = namespaces.get(opening.tagName.expression.text);
+        return resolveExportEntry(
+          facts.exportEntries.get(opening.tagName.name.text),
+          opening.tagName.name.text,
+          module,
+          file,
+          owner.catalogDirectory,
+          aliasSource(module),
+        );
+      }
+      return undefined;
+    };
+    const classesOf = (opening) =>
+      literalClasses(
+        opening.attributes.properties.find(
+          (item) =>
+            ts.isJsxAttribute(item) &&
+            ['class', 'className'].includes(item.name.getText(source)),
+        ),
+      ).values;
+    const visit = (node) => {
+      if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
+        const opening = openingOf(node);
+        const entry = entryFor(opening);
+        if (entry)
+          for (const name of classesOf(opening))
+            record(hooks, ambiguousHooks, name, entry);
+        if (ts.isJsxElement(node)) {
+          const parentClasses = classesOf(opening);
+          const possible = new Map();
+          let dynamic = false;
+          for (const child of node.children) {
+            if (ts.isJsxExpression(child) && child.expression) dynamic = true;
+            if (!ts.isJsxElement(child) && !ts.isJsxSelfClosingElement(child))
+              continue;
+            const childOpening = openingOf(child);
+            const childEntry = entryFor(childOpening);
+            const type =
+              childEntry?.boundaries?.rootElement ??
+              (childEntry
+                ? undefined
+                : childOpening.tagName.getText(source).toLowerCase());
+            if (!type) continue;
+            const candidates = possible.get(type) ?? [];
+            candidates.push(childEntry);
+            possible.set(type, candidates);
+          }
+          if (!dynamic)
+            for (const [type, candidates] of possible)
+              if (
+                candidates.length > 0 &&
+                candidates.every(
+                  (candidate) => candidate?.key === candidates[0]?.key,
+                ) &&
+                candidates[0]
+              )
+                for (const name of parentClasses)
+                  record(
+                    composedChildren,
+                    ambiguousChildren,
+                    `${name}|${type}`,
+                    candidates[0],
+                  );
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(source);
+  }
+  return { componentMode: true, hooks, composedChildren };
 }
 
 function cssPreferred(contract) {
@@ -1551,6 +1704,7 @@ export async function analyzeUiProject({
       : new Set([contexts.get(file)]);
     for (const context of applicableContexts) {
       const fileDiagnostics = [];
+      const own = await packageOf(dirname(file));
       await inspectCss(
         file,
         contents.get(file),
@@ -1560,6 +1714,18 @@ export async function analyzeUiProject({
         adoption,
         siblingOnLoud(file),
         await foreignTo(file),
+        ownership === 'component'
+          ? {
+              ...jsxOwnershipEvidence(
+                file,
+                context.facts,
+                contents,
+                root,
+                compilerOptions,
+              ),
+              ownPackage: own?.name,
+            }
+          : undefined,
       );
       recordDiagnostics(fileDiagnostics, context);
     }

@@ -314,7 +314,7 @@ describe('component composition catalog contract', () => {
     );
     const roots = Object.fromEntries(
       composition.entries
-        .filter((entry) => entry.boundaries.rootElement)
+        .filter((entry) => entry.boundaries.placeableClasses?.length)
         .map((entry) => [entry.id, entry.boundaries.rootElement]),
     );
     // A plain <div class="kui-content-item"> is exactly ContentItem, so
@@ -324,6 +324,12 @@ describe('component composition catalog contract', () => {
     expect(ContentItem({}).toString()).toMatch(
       new RegExp(`^<${roots['content-item']}[\\s>]`),
     );
+    const spinner = composition.entries.find(
+      (entry) => entry.id === 'loading-spinner',
+    );
+    expect(spinner?.boundaries.rootElement).toBe('svg');
+    const { LoadingSpinner } = await import('../../src/loading-spinner.js');
+    expect(LoadingSpinner({}).toString()).toMatch(/^<svg[\s>]/);
     const item = composition.entries.find(
       (entry) => entry.id === 'content-item',
     )!;

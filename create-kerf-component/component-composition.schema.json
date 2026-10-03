@@ -333,7 +333,7 @@
             "rootElement": {
               "type": "string",
               "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
-              "description": "The intrinsic element the component renders at its root. A placeableClasses class on a plain element of this tag recreates the component; the class stays placeable on any other carrier element."
+              "description": "The intrinsic element the component renders at its root. It identifies composed child roots for ownership checks; a placeableClasses class on a plain element of this tag recreates the component, while the class stays placeable on another carrier."
             },
             "publicTokens": { "$ref": "#/$defs/stringList" },
             "publicParts": { "$ref": "#/$defs/stringList" }

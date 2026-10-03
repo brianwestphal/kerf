@@ -129,7 +129,11 @@ which element a selector styles.
   cataloged component anatomy, such as `.kui-app-tab__select > svg`, even when
   the component class is not the final compound. A component root used only as
   context (`.kui-toolbar > .my-widget`) and app-named descendants remain
-  available for app-owned content. A `::part()` subject is left to
+  available for app-owned content. In component mode, classless element subjects
+  are also reported below a hook class placed on an imported component, below
+  another entry's root in the same package, or at a direct child root whose
+  JSX parent composes only a component with that cataloged `rootElement` type.
+  The finding names the composing class and component. A `::part()` subject is left to
   `KUI-L011`; a rule that only sets custom properties is configuration, judged
   by the token rules. Forcing a component's dimensions is one such restyle
   and reports here once: `.kui-pane { width: 300px }`.

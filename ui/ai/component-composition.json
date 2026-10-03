@@ -3873,6 +3873,7 @@
       "boundaries": {
         "rootClass": "kui-loading-spinner",
         "publicClasses": ["kui-loading-spinner"],
+        "rootElement": "svg",
         "publicTokens": []
       },
       "diagnostics": [],
