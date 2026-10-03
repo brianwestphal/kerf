@@ -1,5 +1,66 @@
 import { expect, test } from '@playwright/test';
 
+test('grow keeps its basis beside siblings in a wide non-stacked toolbar', async ({
+  page,
+}) => {
+  await page.goto('/?component=toolbar-control-group');
+  await page.evaluate(() => {
+    const specimen = document.querySelector<HTMLElement>(
+      '[data-demo-section="toolbar-group-sizing"] .kui-toolbar',
+    )!;
+    const host = document.createElement('div');
+    host.dataset.toolbarGrowWideFixture = 'true';
+    host.style.width = '1072px';
+    const toolbar = specimen.cloneNode(true) as HTMLElement;
+    toolbar.dataset.responsiveAt = 'compact';
+    const leading = toolbar.querySelector<HTMLElement>(
+      '.kui-toolbar__leading',
+    )!;
+    leading.style.minWidth = '420px';
+    leading.textContent = 'Workspace';
+    const trailing = toolbar.querySelector<HTMLElement>(
+      '.kui-toolbar__trailing',
+    )!;
+    const siblings = [
+      ...trailing.querySelectorAll<HTMLElement>(
+        ':scope > .kui-toolbar-control-group:not([data-sizing="grow"])',
+      ),
+    ];
+    trailing.append(...siblings.map((group) => group.cloneNode(true)));
+    host.append(toolbar);
+    document.body.append(host);
+  });
+  const host = page.locator('[data-toolbar-grow-wide-fixture]');
+  const geometry = await host.evaluate((node) => {
+    const toolbar = node.querySelector<HTMLElement>('.kui-toolbar')!;
+    const trailing = toolbar.querySelector<HTMLElement>(
+      '.kui-toolbar__trailing',
+    )!;
+    const grow = trailing.querySelector<HTMLElement>('[data-sizing="grow"]')!;
+    const siblings = [
+      ...trailing.querySelectorAll<HTMLElement>(
+        ':scope > .kui-toolbar-control-group:not([data-sizing="grow"])',
+      ),
+    ];
+    return {
+      toolbarHeight: toolbar.getBoundingClientRect().height,
+      growWidth: grow.getBoundingClientRect().width,
+      growTop: grow.getBoundingClientRect().top,
+      siblingTops: siblings.map((group) => group.getBoundingClientRect().top),
+      trailingWidth: trailing.getBoundingClientRect().width,
+      stacked:
+        window.getComputedStyle(toolbar).gridTemplateColumns.split(' ')
+          .length !== 2,
+    };
+  });
+  expect(geometry.stacked).toBe(false);
+  expect(geometry.growWidth).toBeGreaterThanOrEqual(304);
+  expect(geometry.siblingTops).toEqual(Array(4).fill(geometry.growTop));
+  expect(geometry.trailingWidth).toBeGreaterThan(480);
+  expect(geometry.toolbarHeight).toBeLessThan(70);
+  await host.screenshot({ path: 'test-results/toolbar-group-grow-wide.png' });
+});
+
 test('grow, fill, and tiny collapsed visibility follow toolbar container width', async ({
   page,
 }) => {

@@ -211,7 +211,7 @@
 .kui-toolbar-control-group[data-sizing="grow"][data-expanded="true"] {
   --_kui-toolbar-group-grow-search-width: 100%;
   width: auto;
-  min-width: min(100%, var(--kui-toolbar-group-grow-basis, remify(304px)));
+  min-width: var(--kui-toolbar-group-grow-basis, remify(304px));
   flex: 1 1 var(--kui-toolbar-group-grow-basis, remify(304px));
 }
 .kui-toolbar-control-group[data-sizing="fill"] {

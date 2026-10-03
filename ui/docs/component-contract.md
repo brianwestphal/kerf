@@ -526,7 +526,9 @@ group that replaces wider toolbar controls below the Toolbar's compact container
 breakpoint; do not hide the group with an application class.
 Use `sizing="grow"` on an expanded search group in a wrapping zone: it grows from
 `growBasis` (19rem by default) into available row space, then takes a whole
-row at 480px container width or less. The collapsed search stays icon-sized.
+row at 480px container width or less. The basis remains its intrinsic minimum
+in a wider, non-stacked Toolbar, so sibling trailing groups can share the
+row. The collapsed search stays icon-sized.
 Use `sizing="fill"` for a group, including a non-search segmented control,
 that spans its wrapping row. Set `visibility="hide-collapsed-tiny"` on a
 collapsible group to omit its closed icon at 224px or less; expanded content

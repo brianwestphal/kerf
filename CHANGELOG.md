@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **ToolbarControlGroup grow sizing keeps its basis in wide toolbars.** An
+  expanded grow search now contributes its minimum width to the trailing zone's
+  intrinsic size, keeping sibling groups beside it instead of wrapping early.
+
 - **TabBar can settle overflowing peers at whole-tab starts.** Opt into
   `snapTabs` beside a pinned leading AppTab; selection and scroll gestures
   align peers after the pin in LTR and RTL, with enough end room for the final
