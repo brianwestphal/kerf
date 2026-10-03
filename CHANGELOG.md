@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Doctor component ownership recognizes source evidence.** Selection-only
+  components and literal BEM classes rendered by a component are protected
+  when its stylesheet styles their block. CSS imports can supply the owned
+  stylesheet, and uncataloged modules can opt into the same inference.
+
 - **`createScope().dispose` is typed as a bound function property.** Consumers
   can store or return it as a teardown without a wrapper or an unbound-method
   lint suppression.

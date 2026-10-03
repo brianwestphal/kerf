@@ -9,8 +9,9 @@
  * application's stylesheet), but it never makes another package's component
  * the subject of a rule, writes that component's private variables, overrides
  * a token its typed prop configures, or restyles it through a hook class on
- * its root. Every fact here comes from the loaded composition catalogs, so
- * third-party component packages get the same protection as `@kerfjs/ui`.
+ * its root. Facts come from composition and selection catalogs, plus optional
+ * source inference, so third-party packages get the same protection as
+ * `@kerfjs/ui`.
  */
 import {
   classNames,

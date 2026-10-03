@@ -23,6 +23,7 @@ export interface UiDoctorConfig {
   mode?: 'full' | 'changed';
   package?: string;
   ownership?: 'package' | 'component';
+  implicitComponentOwnership?: boolean;
   stages?: Partial<
     Record<
       'catalog' | 'typescript' | 'eslint' | 'analyzer' | 'browser',

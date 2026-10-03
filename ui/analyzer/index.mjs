@@ -243,7 +243,7 @@ function reachableStyleFiles(file, imports, styleFacts) {
   return visited;
 }
 
-async function loadCatalogs(profileResult) {
+async function loadCatalogs(profileResult, ownership) {
   const entries = [];
   for (const catalog of profileResult.profile?.catalogs ?? []) {
     const owner = profileResult.provenance[`$catalogs.${catalog.package}`];
@@ -256,8 +256,10 @@ async function loadCatalogs(profileResult) {
         ),
       );
       const selection = await loadSelectionFacts(owner, catalog);
+      const joined = new Set();
       for (const entry of artifact.entries ?? []) {
         const selected = selection.get(entry.key);
+        joined.add(entry.key);
         const componentSource =
           selected?.componentSource ??
           (/\.[cm]?[jt]sx?$/.test(entry.source) ? entry.source : undefined);
@@ -269,9 +271,31 @@ async function loadCatalogs(profileResult) {
                 moduleImports: selected.moduleImports,
                 componentSource,
                 styleSources: entry.styleSources ?? selected.styleSources,
+                catalogDirectory: dirname(owner),
               }
-            : { ...entry, componentSource },
+            : { ...entry, componentSource, catalogDirectory: dirname(owner) },
         );
+      }
+      for (const [key, selected] of selection) {
+        if (
+          ownership !== 'component' ||
+          joined.has(key) ||
+          !selected.componentSource
+        )
+          continue;
+        entries.push({
+          key,
+          package: catalog.package,
+          id: selected.id,
+          name: selected.name,
+          kind: selected.kind,
+          componentSource: selected.componentSource,
+          styleSources: selected.styleSources,
+          moduleImports: selected.moduleImports,
+          publicExports: selected.publicExports,
+          boundaries: { publicClasses: selected.publicClasses ?? [] },
+          catalogDirectory: dirname(owner),
+        });
       }
     } catch {
       // Profile validation reports the precise catalog load failure.
@@ -299,7 +323,11 @@ async function loadSelectionFacts(owner, catalog) {
   for (const entry of artifact.entries ?? []) {
     const delivery = entry.delivery ?? {};
     facts.set(`${packageName}:${entry.id}`, {
+      id: entry.id,
+      name: entry.name,
+      kind: entry.kind,
       publicExports: entry.publicExports,
+      publicClasses: entry.publicClasses,
       componentSource: entry.source,
       styleSources: entry.styleSources,
       moduleImports: [delivery.browserImport, delivery.moduleImport].filter(
@@ -436,6 +464,129 @@ function catalogFacts(entries) {
     exportEntries,
     ownership: componentOwnershipFacts(entries),
   };
+}
+
+const bemBlock = (name) => name.split(/__|--/, 1)[0];
+
+function renderedLiteralClasses(file, source) {
+  const names = new Set();
+  const parsed = ts.createSourceFile(
+    file,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.JSX,
+  );
+  const visit = (node) => {
+    if (
+      ts.isJsxAttribute(node) &&
+      ['class', 'className'].includes(node.name.text)
+    ) {
+      const value =
+        node.initializer && ts.isStringLiteral(node.initializer)
+          ? node.initializer.text
+          : node.initializer &&
+              ts.isJsxExpression(node.initializer) &&
+              node.initializer.expression &&
+              ts.isStringLiteral(node.initializer.expression)
+            ? node.initializer.expression.text
+            : undefined;
+      for (const name of value?.split(/\s+/) ?? []) if (name) names.add(name);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(parsed);
+  return names;
+}
+
+function inferOwnedClasses(entries, contents, imports) {
+  return entries.map((entry) => {
+    if (!entry.componentSource || !entry.catalogDirectory) return entry;
+    const sourceFile = resolve(entry.catalogDirectory, entry.componentSource);
+    const source = contents.get(sourceFile);
+    if (!source) return entry;
+    const styleFiles = entry.styleSources?.length
+      ? entry.styleSources.map((path) => resolve(entry.catalogDirectory, path))
+      : [...(imports.get(sourceFile) ?? [])];
+    const styleSources = styleFiles.map((file) =>
+      relative(entry.catalogDirectory, file).replaceAll('\\', '/'),
+    );
+    const styledBlocks = new Set();
+    for (const style of styleFiles) {
+      const css = contents.get(style);
+      if (!css) continue;
+      try {
+        postcss.parse(css, { from: style }).walkRules((rule) => {
+          for (const name of subjectClasses(rule.selector))
+            styledBlocks.add(bemBlock(name));
+        });
+      } catch {
+        // The stylesheet parser reports malformed CSS in the normal pass.
+      }
+    }
+    const inferred = [...renderedLiteralClasses(sourceFile, source)].filter(
+      (name) => styledBlocks.has(bemBlock(name)),
+    );
+    if (!inferred.length) return { ...entry, styleSources };
+    return {
+      ...entry,
+      styleSources,
+      boundaries: {
+        ...entry.boundaries,
+        publicClasses: [
+          ...new Set([...(entry.boundaries?.publicClasses ?? []), ...inferred]),
+        ],
+      },
+    };
+  });
+}
+
+async function implicitOwnershipEntries(files, imports, root) {
+  const found = [];
+  const packages = new Map();
+  const packageAt = async (directory) => {
+    if (packages.has(directory)) return packages.get(directory);
+    let result;
+    try {
+      const manifest = JSON.parse(
+        await readFile(resolve(directory, 'package.json'), 'utf8'),
+      );
+      if (typeof manifest.name === 'string')
+        result = { name: manifest.name, directory };
+    } catch {
+      // Search the containing directory for a package manifest.
+    }
+    if (!result && directory !== root) {
+      const parent = dirname(directory);
+      if (!relative(root, parent).startsWith('..'))
+        result = await packageAt(parent);
+    }
+    packages.set(directory, result);
+    return result;
+  };
+  for (const file of files) {
+    if (!sourceExtensions.has(extname(file))) continue;
+    const styles = (imports.get(file) ?? []).filter((path) =>
+      files.includes(path),
+    );
+    if (!styles.length) continue;
+    const owner = await packageAt(dirname(file));
+    if (!owner) continue;
+    const source = relative(owner.directory, file).replaceAll('\\', '/');
+    const id = `module:${source}`;
+    found.push({
+      key: `${owner.name}:${id}`,
+      package: owner.name,
+      id,
+      name: basename(file).replace(/\.[^.]+$/, ''),
+      componentSource: source,
+      catalogDirectory: owner.directory,
+      styleSources: styles.map((style) =>
+        relative(owner.directory, style).replaceAll('\\', '/'),
+      ),
+    });
+  }
+  return found;
 }
 
 function spacingValues(value) {
@@ -1161,6 +1312,7 @@ export async function analyzeUiProject({
   knownRules = [],
   adoption = false,
   ownership = 'package',
+  implicitComponentOwnership = false,
   profile: packageProfile = resolve(
     import.meta.dirname,
     '../ai/application-ui-profile.defaults.json',
@@ -1196,6 +1348,13 @@ export async function analyzeUiProject({
     }
   }
   files.sort();
+  const imports = new Map(
+    files.map((file) => [file, relativeStyleImports(file, contents.get(file))]),
+  );
+  const implicitEntries =
+    ownership === 'component' && implicitComponentOwnership
+      ? await implicitOwnershipEntries(files, imports, root)
+      : [];
   const profileContexts = new Map();
   const loadContext = async (file) => {
     const startDirectory = file === root ? root : dirname(file);
@@ -1209,10 +1368,30 @@ export async function analyzeUiProject({
             packageProfile,
             knownRules: [...Object.keys(UI_ANALYSIS_RULES), ...knownRules],
           });
-          const entries = await loadCatalogs(profileResult);
+          const entries = await loadCatalogs(profileResult, ownership);
+          const catalogedSources = new Set(
+            entries
+              .filter((entry) => entry.componentSource)
+              .map((entry) =>
+                resolve(entry.catalogDirectory, entry.componentSource),
+              ),
+          );
+          const ownershipEntries = [
+            ...entries,
+            ...implicitEntries.filter(
+              (entry) =>
+                !catalogedSources.has(
+                  resolve(entry.catalogDirectory, entry.componentSource),
+                ),
+            ),
+          ];
           return {
             profileResult,
-            facts: catalogFacts(entries),
+            facts: catalogFacts(
+              ownership === 'component'
+                ? inferOwnedClasses(ownershipEntries, contents, imports)
+                : entries,
+            ),
             startDirectory,
           };
         })(),
@@ -1225,9 +1404,6 @@ export async function analyzeUiProject({
     ),
   );
   if (!files.length) await loadContext(root);
-  const imports = new Map(
-    files.map((file) => [file, relativeStyleImports(file, contents.get(file))]),
-  );
   // A stylesheet or source file belongs to the package whose manifest is
   // nearest it; entries of every other catalog package are foreign to it.
   const packages = new Map();

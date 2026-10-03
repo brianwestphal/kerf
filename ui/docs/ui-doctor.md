@@ -45,10 +45,13 @@ exact or wildcard TypeScript `paths` alias from the nearest consumer tsconfig,
 so the same root hook-class check applies in those files.
 Set `"ownership": "component"` in `.kerf-ui-doctor.json` to enforce the same
 boundary between a consumer package's own cataloged components. The default is
-`"package"`. Each local catalog entry then owns only its declared
-`styleSources` (relative to its package root) and its selection catalog
-`source` module. The component mode reports sibling CSS and hook-class
-restyles while still allowing a component's own stylesheet and module.
+`"package"`. Selection-only entries participate too. A component owns its
+`styleSources` (relative to its package root), or its direct relative CSS
+imports when that list is absent, and its selection catalog `source` module.
+Literal rendered BEM classes are inferred when those stylesheets style their
+block. Set `"implicitComponentOwnership": true` to include uncataloged modules
+that directly import CSS. Component mode reports sibling CSS and hook-class
+restyles while allowing a component's own stylesheet and module.
 
 The browser evaluator is different: it runs the application and is disabled by default. It only runs when configuration supplies `browser.url` or the command receives `--browser-url`. Start and authorize the target application separately.
 

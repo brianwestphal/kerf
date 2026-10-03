@@ -10,6 +10,7 @@
     "mode": { "enum": ["full", "changed"] },
     "package": { "type": "string", "minLength": 1 },
     "ownership": { "enum": ["package", "component"] },
+    "implicitComponentOwnership": { "type": "boolean" },
     "stages": {
       "type": "object",
       "properties": {

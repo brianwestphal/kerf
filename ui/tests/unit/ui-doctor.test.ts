@@ -86,6 +86,8 @@ describe('Kerf UI doctor', () => {
     const root = await fixture();
     const config = {
       schemaVersion: 1 as const,
+      ownership: 'component' as const,
+      implicitComponentOwnership: true,
       failOn: 'warning' as const,
       stages: disabled,
       suppressions: [

@@ -488,6 +488,15 @@ An application may opt into component ownership with Doctor's
 `"ownership": "component"` setting or the analyzer API option. Cataloged
 `styleSources` and the entry's source module then define which files may style
 that component; sibling files in the same package receive ownership findings.
+Selection catalog entries with a source also participate without a composition
+entry. The analyzer derives their owned BEM root, element, and modifier classes
+from literal JSX `class`/`className` values in that source when its own
+stylesheet styles the block. If `styleSources` is absent, direct relative CSS
+imports from the source define its stylesheets. Dynamically constructed class
+names still require an explicit catalog boundary.
+Consumers may opt into the same inference for uncataloged source modules that
+directly import CSS with `"implicitComponentOwnership": true` in Doctor or
+the analyzer API option.
 Package ownership remains the default.
 Each source resolves its own parent-to-child directory profile and only receives
 facts from its reachable relative CSS import graph, so sibling monorepo apps do

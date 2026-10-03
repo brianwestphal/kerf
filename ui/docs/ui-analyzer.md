@@ -193,12 +193,15 @@ findings. `eslint-plugin-kerfjs`'s `ui-component-ownership` rule reports
 objects, and `style.setProperty()`), where this analyzer reads only CSS.
 
 Pass `ownership: 'component'` to `analyzeUiProject` to enforce the boundary
-between components in one package. In that mode each catalog entry owns only
-its declared `styleSources` for CSS and its selection catalog `source` module
-for JSX; sibling files are foreign. Paths are relative to that entry's package
-root. Declare `styleSources` on the selection catalog extension entry or
-composition entry. Entries without those paths own no files in component mode,
-so add them before adopting it.
+between components in one package. Selection entries with `source` participate
+even without a composition entry. Each entry owns its declared `styleSources`
+for CSS and its selection `source` module for JSX; when `styleSources` is absent,
+direct relative CSS imports from that source are used. The analyzer also derives
+literal JSX `class` and `className` values whose BEM block is styled in those
+stylesheets, including element and modifier classes. Sibling files are foreign.
+Paths are relative to the entry's package root. Set
+`implicitComponentOwnership: true` to apply the same source and stylesheet
+inference to modules with direct CSS imports that have no catalog entry.
 
 ### Retired: `KUI-L005` (forced component dimension)
 

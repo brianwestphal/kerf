@@ -150,6 +150,125 @@ const ids = (report: Awaited<ReturnType<typeof analyzeUiProject>>) =>
   );
 
 describe('kerf-ui-analyze component ownership diagnostics', () => {
+  it('derives selection-only BEM ownership from rendered classes and own styles', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          {
+            id: 'ticket-row',
+            name: 'TicketRow',
+            source: 'src/ticket-row.tsx',
+          },
+        ],
+      }),
+      'src/ticket-row.tsx':
+        'import \'./ticket-row.css\';\nexport const TicketRow = () => <article class="ticket-row ticket-row__title" />;\n',
+      'src/ticket-row.css': '.ticket-row { color: blue; }\n',
+      'src/header.css':
+        '.ticket-row__title { color: red; }\n.unrelated__title { color: red; }\n',
+    });
+    expect(ids(await analyzeUiProject({ root }))).toEqual([]);
+    expect(
+      ids(await analyzeUiProject({ root, ownership: 'component' })),
+    ).toEqual(['KUI-L019 src/header.css:1']);
+  });
+
+  it('can opt in to source modules as implicit owners without a catalog entry', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      'src/shell.tsx':
+        'import \'./shell.css\';\nexport const Shell = () => <main class="app-shell app-shell__pane" />;\n',
+      'src/shell.css': '.app-shell { color: blue; }\n',
+      'src/other.css': '.app-shell__pane { color: red; }\n',
+    });
+    expect(
+      ids(await analyzeUiProject({ root, ownership: 'component' })),
+    ).toEqual([]);
+    expect(
+      ids(
+        await analyzeUiProject({
+          root,
+          ownership: 'component',
+          implicitComponentOwnership: true,
+        }),
+      ),
+    ).toEqual(['KUI-L019 src/other.css:1']);
+  });
+
+  it('extends a composition entry beyond its enumerated root class', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [
+          {
+            key: 'app:ticket-row',
+            package: 'app',
+            id: 'ticket-row',
+            name: 'TicketRow',
+            kind: 'component',
+            source: 'application',
+            boundaries: {
+              rootClass: 'ticket-row',
+              publicClasses: ['ticket-row'],
+              publicTokens: [],
+            },
+          },
+        ],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          {
+            id: 'ticket-row',
+            source: 'src/ticket-row.tsx',
+            styleSources: ['src/ticket-row.css'],
+          },
+        ],
+      }),
+      'src/ticket-row.tsx':
+        'export const TicketRow = () => <article className="ticket-row ticket-row__title ticket-row--selected" />;\n',
+      'src/ticket-row.css': '.ticket-row { color: blue; }\n',
+      'src/other.css':
+        '.ticket-row__title { color: red; }\n.ticket-row--selected { color: red; }\n',
+    });
+    expect(
+      ids(await analyzeUiProject({ root, ownership: 'component' })),
+    ).toEqual(['KUI-L019 src/other.css:1', 'KUI-L019 src/other.css:2']);
+  });
+
   it('resolves exact and wildcard TypeScript path aliases to cataloged component sources', async () => {
     const root = await project({
       'package.json': JSON.stringify({ name: 'app' }),
