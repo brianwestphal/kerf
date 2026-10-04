@@ -267,6 +267,34 @@ describe('AI-facing component markdown', { timeout: 30_000 }, () => {
     expect(index).toContain('../public-api-signatures-v1.md');
   });
 
+  it('uses the CSS value subpath for helpers in shipped component pages', async () => {
+    const [catalog, composition, publicApiSignatures] = await Promise.all([
+      read('ai/component-catalog.json').then(JSON.parse),
+      read('ai/component-composition.json').then(JSON.parse),
+      read('ai/public-api-signatures-v1.md'),
+    ]);
+    const pages = await renderComponentDocs({
+      catalog,
+      composition,
+      publicApiSignatures,
+    });
+    const imports = (name: string) =>
+      pages.get(name)!.split('## Imports\n\n')[1]!.split('\n\n## Props')[0]!;
+
+    expect(imports('select.md')).toContain(
+      'JavaScript: `@kerfjs/ui/select` — exports `Select`.',
+    );
+    expect(imports('select.md')).toContain(
+      'JavaScript: `@kerfjs/ui/css-values` — exports `uiColor`, `colorVar`, `foregroundColorVar`, `foregroundColor`.',
+    );
+    expect(imports('list.md')).toContain(
+      'JavaScript: `@kerfjs/ui/list` — exports `List`.',
+    );
+    expect(imports('list.md')).toContain(
+      'JavaScript: `@kerfjs/ui/css-values` — exports `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `plus`, `calc`, `flex`.',
+    );
+  });
+
   it('refuses a catalog entry that has no composition contract', async () => {
     await expect(
       renderComponentDocs({

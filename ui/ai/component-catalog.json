@@ -2713,6 +2713,17 @@
         "calc",
         "flex"
       ],
+      "publicExportImports": {
+        "px": "@kerfjs/ui/css-values",
+        "rem": "@kerfjs/ui/css-values",
+        "em": "@kerfjs/ui/css-values",
+        "pct": "@kerfjs/ui/css-values",
+        "space": "@kerfjs/ui/css-values",
+        "lengthVar": "@kerfjs/ui/css-values",
+        "plus": "@kerfjs/ui/css-values",
+        "calc": "@kerfjs/ui/css-values",
+        "flex": "@kerfjs/ui/css-values"
+      },
       "cssValueProps": [
         {
           "path": "gap",
@@ -4180,6 +4191,12 @@
         "foregroundColorVar",
         "foregroundColor"
       ],
+      "publicExportImports": {
+        "uiColor": "@kerfjs/ui/css-values",
+        "colorVar": "@kerfjs/ui/css-values",
+        "foregroundColorVar": "@kerfjs/ui/css-values",
+        "foregroundColor": "@kerfjs/ui/css-values"
+      },
       "cssValueProps": [
         {
           "path": "choices[].color",

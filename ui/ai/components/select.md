@@ -25,14 +25,15 @@ Choose one or more controlled values, keep unavailable choices visible, and opti
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/select` — exports `Select`, `uiColor`, `colorVar`, `foregroundColorVar`, `foregroundColor`.
+- JavaScript: `@kerfjs/ui/select` — exports `Select`.
+- JavaScript: `@kerfjs/ui/css-values` — exports `uiColor`, `colorVar`, `foregroundColorVar`, `foregroundColor`.
 - CSS: the browser build of `@kerfjs/ui/select` pulls its CSS automatically; import `@kerfjs/ui/select.css` manually only without the `browser` export condition.
 - Registration: import `@kerfjs/ui/select/register` once (a side effect).
 - Declared side effects: custom-element-registration.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/select`](../public-api-signatures-v1.md#kerfjsuiselect) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/select`](../public-api-signatures-v1.md#kerfjsuiselect), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 

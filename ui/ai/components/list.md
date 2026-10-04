@@ -26,14 +26,15 @@ Standardize vertical component layout, optional physical-side text/control inset
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/list` — exports `List`, `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `plus`, `calc`, `flex`.
+- JavaScript: `@kerfjs/ui/list` — exports `List`.
+- JavaScript: `@kerfjs/ui/css-values` — exports `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `plus`, `calc`, `flex`.
 - CSS: the browser build of `@kerfjs/ui/list` pulls its CSS automatically; import `@kerfjs/ui/list.css` manually only without the `browser` export condition.
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#kerfjsuilist), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#kerfjsuilist), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
