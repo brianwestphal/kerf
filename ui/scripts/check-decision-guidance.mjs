@@ -183,7 +183,7 @@ const catalogSource = (
 ).join('\n');
 const catalogRows =
   catalogSource.match(
-    /<ListItem\s+action=\{selectAction\}[^>]+multiline\s*\/>/g,
+    /<ListItem\b(?=[^>]*\baction=\{selectAction\})(?=[^>]*\bmultiline\b)[^>]*\/>/g,
   ) ?? [];
 if (catalogRows.length !== 1)
   fail(
