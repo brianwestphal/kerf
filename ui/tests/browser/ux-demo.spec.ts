@@ -1079,14 +1079,15 @@ test('computes component geometry overlays from live CSS and leaves composition 
       '[data-demo="list-header"] [data-catalog-example] > [data-component="list-header"] { margin-left: 24px !important; border-left: 5px solid red !important; }';
     document.head.append(style);
   });
-  const firstMargin = overlay.locator(
-    '[data-catalog-geometry-specimen="0"][data-catalog-geometry-side="left"]',
+  // The size gallery's List is specimen 0; the first standalone ListHeader is 1.
+  const featuredMargin = overlay.locator(
+    '[data-catalog-geometry-specimen="1"][data-catalog-geometry-side="left"]',
   );
-  const firstBorder = overlay.locator(
-    '.kui-catalog__geometry-border[data-catalog-geometry-specimen="0"]',
+  const featuredBorder = overlay.locator(
+    '.kui-catalog__geometry-border[data-catalog-geometry-specimen="1"]',
   );
-  await expect(firstMargin).toHaveCSS('width', '24px');
-  await expect(firstBorder).toHaveCSS('border-left-width', '5px');
+  await expect(featuredMargin).toHaveCSS('width', '24px');
+  await expect(featuredBorder).toHaveCSS('border-left-width', '5px');
   if (browserName === 'chromium')
     await canvas.screenshot({
       path: 'test-results/component-demo-computed-border-overlay.png',
@@ -1097,8 +1098,8 @@ test('computes component geometry overlays from live CSS and leaves composition 
     )!.textContent =
       '[data-demo="list-header"] [data-catalog-example] > [data-component="list-header"] { margin-left: 36px !important; border-left: 7px solid red !important; }';
   });
-  await expect(firstMargin).toHaveCSS('width', '36px');
-  await expect(firstBorder).toHaveCSS('border-left-width', '7px');
+  await expect(featuredMargin).toHaveCSS('width', '36px');
+  await expect(featuredBorder).toHaveCSS('border-left-width', '7px');
   await page
     .locator('#geometry-overlay-live-css')
     .evaluate((style) => style.remove());
@@ -4933,7 +4934,9 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=list-header');
   const demo = page.locator('[data-demo="list-header"]');
-  const headers = demo.locator('.kui-list-header[data-inline="false"]');
+  const headers = demo.locator(
+    '.kui-list-header[data-inline="false"]:not([data-catalog-example-label])',
+  );
   const attachments = demo.locator('.kui-list-header').filter({
     has: page.getByRole('heading', { name: 'Attachments, 12 attachments' }),
   });
