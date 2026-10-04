@@ -110,8 +110,13 @@ declare function colorVar(name: `--${string}`, fallback?: CssColor): CssColor;
  * accepts only {@link CssForegroundColor}, such as `SelectChoice.color`.
  */
 declare function foregroundColorVar(name: `--${string}`, fallback?: CssForegroundColor): CssForegroundColor;
+/**
+ * Use an application-chosen CSS color for foreground content. The browser
+ * resolves the color syntax; this checks only that it is one declaration value.
+ */
+declare function foregroundColor(value: string): CssForegroundColor;
 
-export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiSpaceName, calc, colorVar, em, flex, foregroundColorVar, lengthVar, pct, plus, px, rem, remify, space, uiColor };
+export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiSpaceName, calc, colorVar, em, flex, foregroundColor, foregroundColorVar, lengthVar, pct, plus, px, rem, remify, space, uiColor };
 ```
 
 ## `@kerfjs/ui/disclosure-arrow`
@@ -2871,6 +2876,7 @@ export { EmptyState, type EmptyStateProps };
 import * as kerfjs from 'kerfjs';
 import { LucideIconSize } from './lucide-icon.js';
 import 'lucide';
+import './css-values.js';
 
 type LoadingSpinnerSize = LucideIconSize;
 interface LoadingSpinnerProps {
@@ -3262,6 +3268,7 @@ export { Chip, type ChipProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { IconNode } from 'lucide';
+import { CssForegroundColor } from './css-values.js';
 
 type LucideNode = IconNode;
 type LucideIconSize = 'xs' | 's' | 'm' | 'l' | 'xl' | number;
@@ -3271,6 +3278,8 @@ interface LucideIconProps {
     /** Outline by default; solid fills compatible glyphs with the current text color. */
     appearance?: 'outline' | 'solid';
     className?: string;
+    /** Foreground color; omit to inherit the surrounding text color. */
+    color?: CssForegroundColor;
     label?: string;
     /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
     size?: LucideIconSize;
@@ -3278,7 +3287,7 @@ interface LucideIconProps {
     slot?: string;
 }
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-declare function LucideIcon({ icon, name, appearance, className, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
+declare function LucideIcon({ icon, name, appearance, className, color, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
 
 export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
 ```

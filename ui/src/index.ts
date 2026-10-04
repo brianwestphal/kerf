@@ -38,6 +38,7 @@ export {
   type CssValue,
   em,
   flex,
+  foregroundColor,
   foregroundColorVar,
   lengthVar,
   pct,

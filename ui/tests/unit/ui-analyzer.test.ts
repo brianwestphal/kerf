@@ -347,7 +347,7 @@ ui.Select({ choices: [{ label: 'C', value: 'c', color: ui.colorVar('--app-color'
           ruleId === 'KUI-L014' && location.file === 'src/barrel.tsx',
       )?.message,
     ).toBe(
-      '`colorVar()` has the wrong grammar for `Select.choices[].color`; use `uiColor()` or `foregroundColorVar()`.',
+      '`colorVar()` has the wrong grammar for `Select.choices[].color`; use `uiColor()` or `foregroundColorVar()` or `foregroundColor()`.',
     );
   });
 

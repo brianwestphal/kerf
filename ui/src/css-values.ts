@@ -295,3 +295,14 @@ export function foregroundColorVar(
   validateCustomPropertyName(name, 'foregroundColorVar', '--app-icon-color');
   return `var(${name}${fallback === undefined ? '' : `, ${fallback}`})` as CssForegroundColor;
 }
+
+/**
+ * Use an application-chosen CSS color for foreground content. The browser
+ * resolves the color syntax; this checks only that it is one declaration value.
+ */
+export function foregroundColor(value: string): CssForegroundColor {
+  const color = value.trim();
+  if (!color || /[;{}<>]|\p{Cc}/u.test(color))
+    throw new TypeError('foregroundColor() requires one CSS color value.');
+  return color as CssForegroundColor;
+}

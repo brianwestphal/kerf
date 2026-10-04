@@ -5,6 +5,7 @@ import {
   colorVar,
   em,
   flex,
+  foregroundColor,
   foregroundColorVar,
   lengthVar,
   pct,
@@ -80,6 +81,13 @@ describe('typed CSS values', () => {
     expect(
       foregroundColorVar('--app-icon-color', uiColor('neutral-on-quiet')),
     ).toBe('var(--app-icon-color, var(--kui-color-neutral-on-quiet))');
+    expect(foregroundColor('  rgb(20 40 60 / 0.8)  ')).toBe(
+      'rgb(20 40 60 / 0.8)',
+    );
+    expect(foregroundColor('rebeccapurple')).toBe('rebeccapurple');
+    expect(foregroundColor('#905ace')).toBe('#905ace');
+    expect(() => foregroundColor('red; background:blue')).toThrow(TypeError);
+    expect(() => foregroundColor('  ')).toThrow(TypeError);
   });
 
   it('rejects invalid flex factors and semantic color names', () => {

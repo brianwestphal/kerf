@@ -204,8 +204,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   shorthand (`gap="xs"`, `gap="m"`) or a complete `CssLength` from the CSS-free
   `@kerfjs/ui/css-values` builders; raw CSS strings are rejected. Use `flex()`
   for List flex, typed lengths for Skeleton geometry, and
-  foreground colors for choice icons: `uiColor()` with an `*-on-*`/text token
-  or `foregroundColorVar()`; fill tokens such as `uiColor('success-fill-quiet')` do not
+  foreground colors for choice icons and `LucideIcon.color`: `uiColor()` with an `*-on-*`/text token,
+  `foregroundColorVar()`, or `foregroundColor()` for a custom CSS color; fill tokens such as `uiColor('success-fill-quiet')` do not
   type-check. These brands are intentionally
   not interchangeable; rows use classes/tokens/props rather than raw `style`.
 - **Use `Grid` for equal-width columns.** Set a fixed positive `columns` count

@@ -126,7 +126,12 @@
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         { "id": "icon choice", "owner": "application", "required": false },
-        { "id": "meaningful label", "owner": "application", "required": false }
+        { "id": "meaningful label", "owner": "application", "required": false },
+        {
+          "id": "optional foreground color",
+          "owner": "application",
+          "required": false
+        }
       ],
       "wiring": {
         "required": false,
@@ -3494,14 +3499,15 @@
         {
           "path": "choices[].color",
           "grammar": "color",
-          "helpers": ["uiColor", "foregroundColorVar"],
+          "helpers": ["uiColor", "foregroundColorVar", "foregroundColor"],
           "shorthands": [],
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
           "examples": [
             "color: uiColor(\"success-on-quiet\")",
-            "color: foregroundColorVar(\"--app-choice-color\")"
+            "color: foregroundColorVar(\"--app-choice-color\")",
+            "color: foregroundColor(\"rebeccapurple\")"
           ]
         }
       ],

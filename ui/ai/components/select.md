@@ -11,7 +11,7 @@ Controlled Web Awesome select with typed single or multiple values, disabled cho
 Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.
 
 - Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices.
-- Color an optional choice icon with a CssForegroundColor: uiColor() with a foreground token such as success-on-quiet, or foregroundColorVar() for an app-owned property. Fill tokens such as success are backgrounds that leave the icon nearly invisible, so they, lengths, raw color strings, and unqualified colorVar() values are rejected.
+- Color an optional choice icon with a CssForegroundColor: uiColor() with a foreground token such as success-on-quiet, foregroundColorVar() for an app-owned property, or foregroundColor() for a direct custom CSS color. Fill tokens such as success are backgrounds that leave the icon nearly invisible, so they, lengths, raw color strings, and unqualified colorVar() values are rejected.
 
 **Not when:**
 
@@ -25,7 +25,7 @@ Choose one or more controlled values, keep unavailable choices visible, and opti
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/select` — exports `Select`, `uiColor`, `colorVar`, `foregroundColorVar`.
+- JavaScript: `@kerfjs/ui/select` — exports `Select`, `uiColor`, `colorVar`, `foregroundColorVar`, `foregroundColor`.
 - CSS: the browser build of `@kerfjs/ui/select` pulls its CSS automatically; import `@kerfjs/ui/select.css` manually only without the `browser` export condition.
 - Registration: import `@kerfjs/ui/select/register` once (a side effect).
 - Declared side effects: custom-element-registration.
@@ -58,7 +58,7 @@ Exact prop names and types: [`@kerfjs/ui/select`](../public-api-signatures-v1.md
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
-- `choices[].color`: color grammar; raw values: forbid; helpers `uiColor`, `foregroundColorVar` — e.g. `color: uiColor("success-on-quiet")`
+- `choices[].color`: color grammar; raw values: forbid; helpers `uiColor`, `foregroundColorVar`, `foregroundColor` — e.g. `color: uiColor("success-on-quiet")`
 
 ## Composition
 

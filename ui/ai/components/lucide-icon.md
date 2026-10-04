@@ -43,7 +43,7 @@ Exact prop names and types: [`@kerfjs/ui/lucide-icon`](../public-api-signatures-
 
 ## State and wiring
 
-**The app owns:** icon choice; meaningful label.
+**The app owns:** icon choice; meaningful label; optional foreground color.
 
 No wiring helper.
 
@@ -63,6 +63,14 @@ The solid appearance fills a compatible Lucide glyph with currentColor while ret
 
 ```tsx
 <LucideIcon icon={Star} name="star" appearance="solid" />
+```
+
+### Semantic icon color
+
+Set an icon foreground with a semantic color token; omit color to inherit from surrounding text. Use foregroundColor() for a custom CSS color or foregroundColorVar() for an app variable.
+
+```tsx
+<LucideIcon icon={Bell} name="alert" color={uiColor('warning-on-quiet')} />
 ```
 
 ## Styling boundary

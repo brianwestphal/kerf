@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { Bell, Star } from 'lucide';
@@ -53,6 +54,26 @@ export function LucideIconDemo() {
         <Row gap="m" rootAttributes={{ 'data-demo-icon-appearance': '' }}>
           <LucideIcon icon={Star} name="star-outline" />
           <LucideIcon icon={Star} name="star-solid" appearance="solid" />
+        </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Icon colors"
+        note="Use a semantic foreground token, or a custom CSS color for a specific application meaning. Omit color to inherit surrounding text."
+        align="glyph"
+      >
+        <Row gap="m" rootAttributes={{ 'data-demo-icon-colors': '' }}>
+          <LucideIcon icon={Bell} name="bell-inherited" />
+          <LucideIcon
+            icon={Bell}
+            name="bell-warning"
+            color={uiColor('warning-on-quiet')}
+          />
+          <LucideIcon
+            icon={Star}
+            name="star-custom"
+            appearance="solid"
+            color={foregroundColor('rebeccapurple')}
+          />
         </Row>
       </CatalogExample>
     </CatalogExampleStack>

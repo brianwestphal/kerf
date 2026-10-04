@@ -54,3 +54,37 @@ test('LucideIcon solid appearance fills the glyph with currentColor', async ({
     path: testInfo.outputPath('lucide-icon-appearance.png'),
   });
 });
+
+test('LucideIcon color supports inherited, semantic, and custom foregrounds', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=lucide-icon');
+  const row = page.locator('[data-demo-icon-colors]');
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    const inherited = row.locator('[data-lucide="bell-inherited"]');
+    const token = row.locator('[data-lucide="bell-warning"]');
+    const custom = row.locator('[data-lucide="star-custom"]');
+    await expect(inherited).not.toHaveAttribute('style', /color:/);
+    await expect(token).toHaveAttribute(
+      'style',
+      /color:var\(--kui-color-warning-on-quiet\)/,
+    );
+    const tokenColor = await token.evaluate(
+      (element) => globalThis.getComputedStyle(element).color,
+    );
+    expect(tokenColor).not.toBe(
+      await inherited.evaluate(
+        (element) => globalThis.getComputedStyle(element).color,
+      ),
+    );
+    await expect(custom).toHaveCSS('color', 'rgb(102, 51, 153)');
+    await expect(custom).toHaveCSS('fill', 'rgb(102, 51, 153)');
+    await row.screenshot({
+      path: testInfo.outputPath(`lucide-icon-colors-${width}.png`),
+    });
+    await page.screenshot({
+      path: testInfo.outputPath(`lucide-icon-colors-context-${width}.png`),
+    });
+  }
+});

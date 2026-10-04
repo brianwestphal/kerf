@@ -283,6 +283,24 @@ Select({
 });
 const filterIcon = UI.LucideIcon({ icon: [], name: 'funnel' });
 UI.LucideIcon({ icon: [], name: 'star', appearance: 'solid' });
+UI.LucideIcon({
+  icon: [],
+  name: 'alert',
+  color: UI.uiColor('warning-on-quiet'),
+});
+UI.LucideIcon({
+  icon: [],
+  name: 'custom',
+  color: UI.foregroundColor('rgba(20, 40, 60, 0.8)'),
+});
+UI.LucideIcon({
+  icon: [],
+  name: 'pale',
+  // @ts-expect-error Icon colors require a foreground token or explicit custom-color builder.
+  color: UI.uiColor('warning-fill-quiet'),
+});
+// @ts-expect-error Raw color strings do not bypass the typed color contract.
+UI.LucideIcon({ icon: [], name: 'raw', color: 'red' });
 // @ts-expect-error LucideIcon appearance accepts only outline or solid.
 UI.LucideIcon({ icon: [], name: 'star', appearance: 'filled' });
 // A multiple icon-only trigger (a toolbar filter menu) shows a fixed icon.

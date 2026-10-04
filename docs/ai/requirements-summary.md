@@ -324,7 +324,7 @@ Grid also accepts a typed `minColumnWidth` instead of fixed `columns`, fitting
 equal tracks to its container and collapsing to one when another minimum-width
 track plus the gap does not fit.
 `CssFlex`, `CssSize`, and `CssForegroundColor` (a `CssColor` subtype minted
-only from foreground tokens or `foregroundColorVar()`) extend the same
+from foreground tokens, `foregroundColorVar()`, or `foregroundColor()` for custom CSS colors) extend the same
 property-specific rule to Row/Grid/List flex, Skeleton geometry, and Select
 choice icons. Row declaration-string
 props are removed before 5.0 stable in favor of classes, public tokens, and

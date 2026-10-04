@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 322400,
+  "totalJavaScriptGzip": 322600,
   "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 322350,
+  "measuredTotalJavaScriptGzip": 322560,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2643,6 +2643,22 @@
         "measuredTotalJavaScriptGzip": 322350,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 322400
+      }
+    },
+    {
+      "at": "2026-10-04T23:03:27.623Z",
+      "reason": "LucideIcon semantic and custom color catalog examples",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322350,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 322400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322560,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 322600
       }
     }
   ]

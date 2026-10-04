@@ -155,7 +155,8 @@
       ],
       "appOwns": [
         "icon choice",
-        "meaningful label"
+        "meaningful label",
+        "optional foreground color"
       ],
       "variants": [
         "decorative",
@@ -168,6 +169,11 @@
           "title": "Solid selected glyph",
           "description": "The solid appearance fills a compatible Lucide glyph with currentColor while retaining its stroke and accessible name policy.",
           "code": "<LucideIcon icon={Star} name=\"star\" appearance=\"solid\" />"
+        },
+        {
+          "title": "Semantic icon color",
+          "description": "Set an icon foreground with a semantic color token; omit color to inherit from surrounding text. Use foregroundColor() for a custom CSS color or foregroundColorVar() for an app variable.",
+          "code": "<LucideIcon icon={Bell} name=\"alert\" color={uiColor('warning-on-quiet')} />"
         }
       ],
       "accessibility": [
@@ -4171,7 +4177,8 @@
         "Select",
         "uiColor",
         "colorVar",
-        "foregroundColorVar"
+        "foregroundColorVar",
+        "foregroundColor"
       ],
       "cssValueProps": [
         {
@@ -4179,7 +4186,8 @@
           "grammar": "color",
           "helpers": [
             "uiColor",
-            "foregroundColorVar"
+            "foregroundColorVar",
+            "foregroundColor"
           ],
           "shorthands": [],
           "canonicalShorthands": [],
@@ -4187,13 +4195,14 @@
           "rawPolicy": "forbid",
           "examples": [
             "color: uiColor(\"success-on-quiet\")",
-            "color: foregroundColorVar(\"--app-choice-color\")"
+            "color: foregroundColorVar(\"--app-choice-color\")",
+            "color: foregroundColor(\"rebeccapurple\")"
           ]
         }
       ],
       "useWhen": [
         "Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices.",
-        "Color an optional choice icon with a CssForegroundColor: uiColor() with a foreground token such as success-on-quiet, or foregroundColorVar() for an app-owned property. Fill tokens such as success are backgrounds that leave the icon nearly invisible, so they, lengths, raw color strings, and unqualified colorVar() values are rejected."
+        "Color an optional choice icon with a CssForegroundColor: uiColor() with a foreground token such as success-on-quiet, foregroundColorVar() for an app-owned property, or foregroundColor() for a direct custom CSS color. Fill tokens such as success are backgrounds that leave the icon nearly invisible, so they, lengths, raw color strings, and unqualified colorVar() values are rejected."
       ],
       "avoidWhen": [
         "Do not use for commands or a small choice set that should stay visible."

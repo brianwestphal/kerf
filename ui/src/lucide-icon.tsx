@@ -1,6 +1,7 @@
 import { jsx } from 'kerfjs/jsx-runtime';
 import type { IconNode } from 'lucide';
 
+import type { CssForegroundColor } from './css-values.js';
 import { remify } from './css-values.js';
 
 export type LucideNode = IconNode;
@@ -20,6 +21,8 @@ export interface LucideIconProps {
   /** Outline by default; solid fills compatible glyphs with the current text color. */
   appearance?: 'outline' | 'solid';
   className?: string;
+  /** Foreground color; omit to inherit the surrounding text color. */
+  color?: CssForegroundColor;
   label?: string;
   /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
   size?: LucideIconSize;
@@ -33,6 +36,7 @@ export function LucideIcon({
   name,
   appearance = 'outline',
   className,
+  color,
   label,
   size,
   slot,
@@ -62,9 +66,14 @@ export function LucideIcon({
       stroke-linecap="round"
       stroke-linejoin="round"
       style={
-        pixels === undefined
-          ? undefined
-          : `--_kui-lucide-size:${remify(pixels)}`
+        [
+          pixels === undefined
+            ? undefined
+            : `--_kui-lucide-size:${remify(pixels)}`,
+          color === undefined ? undefined : `color:${color}`,
+        ]
+          .filter(Boolean)
+          .join(';') || undefined
       }
     >
       {icon.map(([tag, attrs]) => jsx(tag, attrs))}

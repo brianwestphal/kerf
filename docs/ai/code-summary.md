@@ -548,6 +548,7 @@ the single-root `CollapsiblePanelToggle` remains covered.
 `ui/src/loading-spinner.tsx` shares LucideIcon's named and positive numeric
 `size` contract; its CSS keeps the omitted size at 1em and applies supplied
 sizes through a private property.
+`ui/src/lucide-icon.tsx` accepts an optional typed foreground color for both outline stroke and solid fill; `ui/src/css-values.ts` mints semantic, variable, and custom CSS foregrounds.
 
 The optional `ui/src/webawesome.css` bridge gives filled badges a contrast-safe
 quiet-fill/normal-text pair with two public override tokens, and maps Dialog
