@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 321700,
-  "measuredLargestJavaScriptGzip": 126043,
-  "measuredTotalJavaScriptGzip": 321613,
+  "totalJavaScriptGzip": 321800,
+  "measuredLargestJavaScriptGzip": 126044,
+  "measuredTotalJavaScriptGzip": 321710,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2611,6 +2611,22 @@
         "measuredTotalJavaScriptGzip": 321613,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 321700
+      }
+    },
+    {
+      "at": "2026-10-03T23:59:25.893Z",
+      "reason": "ListHeader size options add a five-variant catalog gallery",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 321613,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 321710,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321800
       }
     }
   ]

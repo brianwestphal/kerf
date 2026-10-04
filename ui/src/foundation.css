@@ -22,6 +22,7 @@
   --kui-font-s: var(--wa-font-size-s, 14px);
   --kui-font-m: var(--wa-font-size-m, 16px);
   --kui-font-l: var(--wa-font-size-l, 20px);
+  --kui-font-xl: var(--wa-font-size-xl, 25px);
   --kui-font-2xl: var(--wa-font-size-2xl, 32px);
   --kui-font-weight-semibold: var(--wa-font-weight-semibold, 650);
   /* Official spacing scale (see docs/layout.md "Spacing scale"). Five canonical

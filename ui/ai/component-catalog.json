@@ -342,6 +342,7 @@
         "--kui-font-s",
         "--kui-font-m",
         "--kui-font-l",
+        "--kui-font-xl",
         "--kui-font-2xl",
         "--kui-font-weight-semibold",
         "--kui-space-none",
@@ -2869,7 +2870,7 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Configurable section headings with full-width or shrink-wrapped inline presentation, semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
+      "description": "Configurable section headings with five independent label sizes, full-width or shrink-wrapped inline presentation, semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
       "uses": [
         "badge",
         "lucide-icon",
@@ -2904,6 +2905,7 @@
       ],
       "variants": [
         "heading",
+        "label sizes xs, sm (default), m, l, xl",
         "count",
         "badge",
         "action",

@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
@@ -10,6 +11,15 @@ import { DemoListPopover } from './demo-list-popover.js';
 export function ListHeaderDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'list-header' }}>
+      <CatalogExample label="Label sizes" align="none">
+        <List gap="xs" rootAttributes={{ 'data-demo-list-header-sizes': '' }}>
+          <ListHeader label="Extra small" size="xs" headingLevel={3} />
+          <ListHeader label="Small" size="sm" headingLevel={3} />
+          <ListHeader label="Medium" size="m" headingLevel={3} />
+          <ListHeader label="Large" size="l" headingLevel={3} />
+          <ListHeader label="Extra large" size="xl" headingLevel={3} />
+        </List>
+      </CatalogExample>
       <CatalogExample align="none">
         <ListHeader
           label="Featured"

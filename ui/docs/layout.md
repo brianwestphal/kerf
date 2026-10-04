@@ -386,6 +386,13 @@ carries the extra-large title, its header names the pane with the default size,
 because extra-large would truncate there ("Inspector" becomes "Ins…" in a 160px
 rail) and pane identity should stay quiet.
 
+`ListHeader.size` controls its label's visual scale independently of
+`headingLevel`: `sm` is the current compact uppercase style and remains the
+default; `xs` uses the 2xs font with capitalized words; `m`, `l`, and `xl` match
+the themed h5, h4, and h3 typography. Pick `headingLevel` from the document
+outline even when a different size suits the layout. `FieldLabel` stays at the
+small uppercase style of the default ListHeader.
+
 Presentation is independent of the native element: use `tone="quiet"` for
 supporting copy, `tone="danger"` for error or validation copy, `size="compact"`
 for compact metadata, `size="large"` for prominent copy, `size="xlarge"` for

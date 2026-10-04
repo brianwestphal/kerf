@@ -253,6 +253,8 @@ Use `--kui-resizable-region-background` for a region surface and `contentOverflo
 
 Use `ListItem density="spacious"` for larger option rows, `multiline` plus `multilineIconAlign="center"` when its icon should center on wrapped copy, `divider` for row separators, and `state="drag-target"` for the drop target treatment. Public `--kui-list-item-*` tokens adjust row, icon, label, and trailing geometry and color; ListHeader height, title padding, and border tokens adjust section density.
 
+Set `ListHeader.size` to `xs`, `sm`, `m`, `l`, or `xl` for label scale. The default `sm` remains the small uppercase style shared with `FieldLabel`; `xs` is 2xs and capitalized, while `m`/`l`/`xl` match themed h5/h4/h3 typography. Choose `headingLevel` separately from the document outline.
+
 For a filled command list, scope `--kui-list-item-background`, `--kui-list-item-color`, `--kui-list-item-border`, `--kui-list-item-hover-background`, `--kui-list-item-hover-border`, `--kui-list-item-selected-background`, `--kui-list-item-selected-color`, and `--kui-list-item-selected-border` at the List or ListItem boundary. Keep global neutral and brand border colors semantic.
 
 Use `Toolbar responsive="trailing-priority"` when an expanded trailing search needs a full second row below its heading at `responsiveAt`. Configure a leading minimum width, trailing gap and justification, or zone inline padding with the public `--kui-toolbar-*` tokens rather than selectors into toolbar zones.

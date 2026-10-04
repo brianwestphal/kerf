@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **ListHeader has five label sizes.** `size="xs|sm|m|l|xl"` controls visual
+  scale separately from the semantic heading level; `sm` preserves the existing
+  uppercase treatment and `FieldLabel` remains unchanged.
+
 - **The pinned TabBar catalog example scrolls with native momentum.** It no
   longer reserves a long blank strip after the final tab; applications can
   still opt into whole-tab settling with `snapTabs`.

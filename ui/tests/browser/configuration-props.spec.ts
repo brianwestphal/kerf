@@ -108,6 +108,92 @@ for (const { name, width, height } of [
       });
     });
 
+    test('ListHeader sizes preserve heading semantics and match the heading scale', async ({
+      page,
+    }) => {
+      await page.goto('/?component=list-header');
+      const gallery = page.locator('[data-demo-list-header-sizes]');
+      const labels = [
+        {
+          size: 'xs',
+          name: 'Extra small',
+          fontSize: 11,
+          transform: 'capitalize',
+        },
+        { size: 'sm', name: 'Small', fontSize: 12, transform: 'uppercase' },
+        { size: 'm', name: 'Medium', fontSize: 16, transform: 'none' },
+        { size: 'l', name: 'Large', fontSize: 20, transform: 'none' },
+        { size: 'xl', name: 'Extra large', fontSize: 25, transform: 'none' },
+      ] as const;
+      for (const { size, name, fontSize, transform } of labels) {
+        const header = gallery.locator(`[data-size="${size}"]`);
+        await expect(header).toHaveCount(1);
+        const heading = header.getByRole('heading', { level: 3, name });
+        await expect(heading).toBeVisible();
+        await expect(heading).toHaveCSS('font-size', `${fontSize}px`);
+        await expect(heading).toHaveCSS('text-transform', transform);
+        if (size === 'm' || size === 'l' || size === 'xl') {
+          const typography = (element: Element) => {
+            const style = globalThis.getComputedStyle(element);
+            return {
+              fontFamily: style.fontFamily,
+              fontSize: style.fontSize,
+              fontWeight: style.fontWeight,
+              letterSpacing: style.letterSpacing,
+              lineHeight: style.lineHeight,
+              textTransform: style.textTransform,
+            };
+          };
+          const expected = await page.evaluate((tag) => {
+            const reference = document.createElement(tag);
+            document.body.append(reference);
+            const style = globalThis.getComputedStyle(reference);
+            const result = {
+              fontFamily: style.fontFamily,
+              fontSize: style.fontSize,
+              fontWeight: style.fontWeight,
+              letterSpacing: style.letterSpacing,
+              lineHeight: style.lineHeight,
+              textTransform: style.textTransform,
+            };
+            reference.remove();
+            return result;
+          }, { m: 'h5', l: 'h4', xl: 'h3' }[size]);
+          expect(await heading.evaluate(typography)).toEqual(expected);
+        }
+      }
+      const sm = await gallery
+        .locator('[data-size="sm"] .kui-text')
+        .evaluate((element) => {
+          const style = globalThis.getComputedStyle(element);
+          return {
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            letterSpacing: style.letterSpacing,
+            textTransform: style.textTransform,
+          };
+        });
+      await expect(gallery).toBeVisible();
+      expect(await noHorizontalOverflow(page)).toBe(true);
+      await gallery.screenshot({
+        path: `test-results/configuration-props-list-header-sizes-${name}.png`,
+      });
+
+      await page.goto('/?component=text');
+      const fieldLabel = await page
+        .locator('#needed-by-label')
+        .evaluate((element) => {
+          const style = globalThis.getComputedStyle(element);
+          return {
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            letterSpacing: style.letterSpacing,
+            textTransform: style.textTransform,
+          };
+        });
+      expect(fieldLabel).toEqual(sm);
+    });
+
     test('TokenSearchField clearIcon replaces the clear glyph', async ({
       page,
     }) => {

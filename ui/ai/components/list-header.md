@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:list-header` · Kerf UI · component · Navigation
 
-Configurable section headings with full-width or shrink-wrapped inline presentation, semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.
+Configurable section headings with five independent label sizes, full-width or shrink-wrapped inline presentation, semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.
 
 ## When to use
 
@@ -34,6 +34,7 @@ Exact prop names and types: [`@kerfjs/ui/list-header`](../public-api-signatures-
 **Variants (configure, do not restyle):**
 
 - heading
+- label sizes xs, sm (default), m, l, xl
 - count
 - badge
 - action

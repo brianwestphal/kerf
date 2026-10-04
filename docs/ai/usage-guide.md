@@ -138,6 +138,9 @@ For counted navigation sections, pass `ListHeader` both a non-negative safe-
 integer `count` and the localized full spoken `countLabel`, for example
 `count={3} countLabel="3 notes"`. Do not concatenate the number into `label` or
 put numeric content in the legacy `badge` SafeHtml slot.
+Choose its label scale with `size="xs|sm|m|l|xl"` (`sm` is the default), separate
+from the semantic `headingLevel`; the larger three sizes match themed h5, h4,
+and h3 typography. `FieldLabel` keeps the default small uppercase treatment.
 When `ListHeader` is a real disclosure, pass controlled `toggle` and `expanded`
 and reveal matching content. Omitting `actionIcon` supplies the production 18px
 `DisclosureArrow`; a custom icon replaces it. Do not put disclosure chevrons on

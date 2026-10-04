@@ -527,6 +527,7 @@ type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-has-badge'?: never;
     'data-has-count'?: never;
     'data-density'?: never;
+    'data-size'?: never;
     'data-divider'?: never;
     'data-inline'?: never;
     'data-width'?: never;
@@ -543,6 +544,8 @@ type ListHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | un
 }>;
 interface ListHeaderBaseProps {
     label: string;
+    /** Visual label size, independent of the native heading level. Default `sm`. */
+    size?: 'xs' | 'sm' | 'm' | 'l' | 'xl';
     density?: 'standard' | 'compact';
     divider?: 'none' | 'before' | 'after' | 'both';
     /** Shrink-wrap the header without its default outer margin, border, or padding. */
@@ -614,7 +617,7 @@ type ListHeaderIndicatorProps = {
     status?: SafeHtml;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, headingLevel, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```

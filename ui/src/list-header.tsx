@@ -17,6 +17,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-has-badge',
   'data-has-count',
   'data-density',
+  'data-size',
   'data-divider',
   'data-inline',
   'data-width',
@@ -35,6 +36,7 @@ type ListHeaderRootAttributes = Readonly<
     'data-has-badge'?: never;
     'data-has-count'?: never;
     'data-density'?: never;
+    'data-size'?: never;
     'data-divider'?: never;
     'data-inline'?: never;
     'data-width'?: never;
@@ -56,6 +58,8 @@ type ListHeaderTriggerAttributes = Readonly<
 
 interface ListHeaderBaseProps {
   label: string;
+  /** Visual label size, independent of the native heading level. Default `sm`. */
+  size?: 'xs' | 'sm' | 'm' | 'l' | 'xl';
   density?: 'standard' | 'compact';
   divider?: 'none' | 'before' | 'after' | 'both';
   /** Shrink-wrap the header without its default outer margin, border, or padding. */
@@ -126,6 +130,7 @@ export type ListHeaderProps = ListHeaderBaseProps &
 
 export function ListHeader({
   label,
+  size = 'sm',
   headingLevel = 2,
   count,
   countLabel,
@@ -204,6 +209,7 @@ export function ListHeader({
         data-has-badge={String(Boolean(renderedBadge))}
         data-has-count={String(normalizedCount !== undefined)}
         data-density={density}
+        data-size={size}
         data-divider={divider}
         data-inline={String(inline)}
         data-width={width}
@@ -243,6 +249,7 @@ export function ListHeader({
       data-has-badge={String(Boolean(renderedBadge))}
       data-has-count={String(normalizedCount !== undefined)}
       data-density={density}
+      data-size={size}
       data-divider={divider}
       data-inline={String(inline)}
       data-width={width}

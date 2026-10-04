@@ -321,6 +321,12 @@ export const COMPONENTS = {
             countLabel: '12 open tickets',
           }),
       },
+      ...['xs', 'm', 'l', 'xl'].map((size) => ({
+        id: `size-${size}`,
+        label: `Label size ${size}`,
+        height: 52,
+        render: () => ListHeader({ label: 'Team members', size }),
+      })),
       {
         id: 'inline-action',
         label: 'Inline label with an action',

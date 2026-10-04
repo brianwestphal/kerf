@@ -282,6 +282,7 @@
           "--kui-font-s",
           "--kui-font-m",
           "--kui-font-l",
+          "--kui-font-xl",
           "--kui-font-2xl",
           "--kui-font-weight-semibold",
           "--kui-space-none",

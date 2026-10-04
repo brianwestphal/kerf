@@ -110,3 +110,30 @@ span.kui-text {
   text-transform: uppercase;
   white-space: nowrap;
 }
+
+.kui-list-header[data-size="xs"] .kui-list-header__title > .kui-text {
+  font-size: var(--kui-font-2xs);
+  text-transform: capitalize;
+}
+
+.kui-list-header:is([data-size="m"], [data-size="l"], [data-size="xl"])
+  .kui-list-header__title
+  > .kui-text {
+  font-family: var(--wa-font-family-heading, var(--kui-font-sans));
+  font-weight: var(--wa-font-weight-heading, 600);
+  letter-spacing: normal;
+  line-height: var(--wa-line-height-condensed, 1.2);
+  text-transform: none;
+}
+
+.kui-list-header[data-size="m"] .kui-list-header__title > .kui-text {
+  font-size: var(--kui-font-m);
+}
+
+.kui-list-header[data-size="l"] .kui-list-header__title > .kui-text {
+  font-size: var(--kui-font-l);
+}
+
+.kui-list-header[data-size="xl"] .kui-list-header__title > .kui-text {
+  font-size: var(--kui-font-xl);
+}

@@ -181,7 +181,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `multilineIconAlign="center"` when the icon should center on the whole copy.
   `divider` owns row separators and `state="drag-target"` paints the drop
   target. Public ListItem tokens set row, icon, label, and trailing geometry;
-  ListHeader height, title padding, and border tokens tune section density.
+  ListHeader `size="xs|sm|m|l|xl"` sets label scale independently of
+  `headingLevel` (`sm` keeps the current FieldLabel-sized uppercase style;
+  `m`/`l`/`xl` match themed h5/h4/h3). Its height, title padding, and border
+  tokens tune section density.
   For a filled command list, scope `--kui-list-item-background`,
   `--kui-list-item-color`, `--kui-list-item-border`,
   `--kui-list-item-hover-background`, `--kui-list-item-hover-border`,

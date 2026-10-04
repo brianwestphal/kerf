@@ -73,6 +73,39 @@ describe('props that replace raw token overrides', () => {
     expect(toggle).not.toMatch(/<h[1-6]/);
   });
 
+  it('keeps ListHeader visual size independent of heading and toggle semantics', () => {
+    for (const size of ['xs', 'sm', 'm', 'l', 'xl'] as const) {
+      const heading = asHtml(
+        ListHeader({ label: 'Recent', size, headingLevel: 3 }),
+      );
+      expect(heading).toContain(`data-size="${size}"`);
+      expect(heading).toMatch(/<h3 class="kui-text"[^>]*>Recent<\/h3>/);
+      const toggle = asHtml(
+        ListHeader({
+          label: 'Recent',
+          size,
+          toggle: true,
+          action: 'toggle-recent',
+          expanded: false,
+        }),
+      );
+      expect(toggle).toContain(`data-size="${size}"`);
+      expect(toggle).not.toMatch(/<h[1-6]/);
+    }
+    expect(asHtml(ListHeader({ label: 'Recent' }))).toContain('data-size="sm"');
+    expect(
+      asHtml(
+        ListHeader({
+          label: 'Recent',
+          rootAttributes: {
+            // @ts-expect-error ListHeader owns its visual size marker.
+            'data-size': 'xl',
+          },
+        }),
+      ),
+    ).toContain('data-size="sm"');
+  });
+
   it('rejects headingLevel on a toggle header at compile time', () => {
     const html = asHtml(
       ListHeader({
