@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Catalog sidebars filter by item or heading name.** The shared catalog
+  shell now searches primary and ecosystem sections as you type, including
+  collapsed groups, and keeps the query when the active preview changes.
+
 - **ListHeader has five label sizes.** `size="xs|sm|m|l|xl"` controls visual
   scale separately from the semantic heading level; `sm` preserves the existing
   uppercase treatment and `FieldLabel` remains unchanged.

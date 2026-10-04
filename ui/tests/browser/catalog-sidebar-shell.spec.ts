@@ -163,3 +163,49 @@ test('at phone width the catalog sidebar overlays the stage, one tap from the en
     ),
   ).toBeLessThanOrEqual(1);
 });
+
+test('filters shared catalog entries and headings, including collapsed ecosystem items', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 820 });
+  await page.goto('/?component=badge');
+  const sidebar = page.locator('#kui-catalog-left-rail');
+  const filter = sidebar.getByRole('searchbox', { name: 'Filter catalog' });
+  await filter.fill('tOoLbAr');
+  await expect(sidebar.locator('[data-item-id="toolbar"]')).toBeVisible();
+  await expect(sidebar.locator('[data-item-id="badge"]')).toBeHidden();
+  await filter.fill('Controls');
+  await expect(
+    sidebar.locator('[data-catalog-section="Controls"]'),
+  ).toBeVisible();
+  await expect(
+    sidebar.locator('[data-catalog-section="Foundation"]'),
+  ).toBeHidden();
+  await filter.fill('Input');
+  await expect(sidebar.locator('[data-item-id="wa-input"]')).toBeVisible();
+  await expect(
+    sidebar.getByRole('button', { name: 'Web Awesome' }),
+  ).toHaveAttribute('aria-expanded', 'true');
+  await filter.fill('no matching component');
+  await expect(sidebar.getByText('No matching items')).toBeVisible();
+  await filter.fill('Toolbar');
+  await sidebar.locator('[data-item-id="toolbar"]').click();
+  await expect(page).toHaveURL(/component=toolbar/);
+  await expect(filter).toHaveValue('Toolbar');
+  await expect(sidebar.locator('[data-item-id="toolbar"]')).toBeVisible();
+  if (browserName === 'chromium')
+    await sidebar.screenshot({ path: 'test-results/catalog-filter-wide.png' });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
+  await expect(filter).toHaveValue('Toolbar');
+  await filter.fill('');
+  await expect(sidebar.locator('[data-item-id="badge"]')).toBeVisible();
+  await expect(sidebar.locator('[data-catalog-secondary]')).toBeHidden();
+  await expect(sidebar.getByText('No matching items')).toBeHidden();
+  if (browserName === 'chromium')
+    await sidebar.screenshot({
+      path: 'test-results/catalog-filter-narrow.png',
+    });
+});

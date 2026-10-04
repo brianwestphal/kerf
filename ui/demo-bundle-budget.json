@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 321800,
+  "totalJavaScriptGzip": 322400,
   "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 321710,
+  "measuredTotalJavaScriptGzip": 322350,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2627,6 +2627,22 @@
         "measuredTotalJavaScriptGzip": 321710,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 321800
+      }
+    },
+    {
+      "at": "2026-10-04T00:23:00.058Z",
+      "reason": "Shared Catalog sidebar filter adds name matching, empty state, and reusable wiring",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 321710,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 321800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322350,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 322400
       }
     }
   ]

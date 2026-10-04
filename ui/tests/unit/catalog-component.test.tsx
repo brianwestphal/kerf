@@ -264,7 +264,7 @@ describe('Catalog', () => {
     );
     // The group label is a disclosure toggle when collapsible.
     expect(open).toContain('data-action="catalog-toggle-secondary"');
-    // Collapsed hides the entries but keeps the toggle.
+    // Collapsed keeps its entries in the DOM so the shared filter can search them.
     const collapsed = asHtml(
       Catalog({
         brand: { title: 'X' },
@@ -274,7 +274,7 @@ describe('Catalog', () => {
         secondarySections: { ...secondarySections, expanded: false },
       }),
     );
-    expect(collapsed).not.toContain('data-catalog-secondary');
+    expect(collapsed).toContain('data-catalog-secondary-collapsed="true"');
     expect(collapsed).toContain('data-action="catalog-toggle-secondary"');
   });
 
@@ -524,6 +524,135 @@ describe('wireCatalog', () => {
     document.body.append(root);
     return root;
   }
+
+  it('filters entry and heading names across groups, then restores the query after a rerender', async () => {
+    const props = {
+      brand: { title: 'Acme' },
+      sections,
+      active: 'button',
+      content: raw('<b/>'),
+      secondarySections: {
+        label: 'Ecosystem',
+        collapsible: true,
+        expanded: false,
+        sections: [
+          { category: 'Forms', entries: [{ id: 'wa-input', name: 'Input' }] },
+        ],
+      },
+    };
+    const root = mountShell(String(Catalog(props)));
+    const dispose = wireCatalog(root, { onSelect: () => {} });
+    const input = () =>
+      root.querySelector<HTMLInputElement>('[data-catalog-filter]')!;
+    const visible = () =>
+      Array.from(
+        root.querySelectorAll<HTMLElement>('[data-catalog-entry-name]'),
+      )
+        .filter((entry) => !entry.hidden)
+        .map((entry) => entry.dataset.catalogEntryName);
+    const type = (value: string) => {
+      input().value = value;
+      input().dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    type('bUt');
+    expect(visible()).toEqual(['Button']);
+    expect(
+      root.querySelector('[data-catalog-section="Feedback"]'),
+    ).toHaveProperty('hidden', true);
+    type('controls');
+    expect(visible()).toEqual(['Button', 'Select']);
+    type('ecosystem');
+    expect(visible()).toEqual(['Input']);
+    expect(root.querySelector('[data-catalog-secondary-group]')).toHaveProperty(
+      'hidden',
+      false,
+    );
+    expect(
+      root
+        .querySelector('[data-catalog-secondary-group] [aria-expanded]')
+        ?.getAttribute('aria-expanded'),
+    ).toBe('true');
+    expect(
+      root
+        .querySelector(
+          '[data-catalog-secondary-group] [data-component="disclosure-arrow"]',
+        )
+        ?.getAttribute('data-open'),
+    ).toBe('true');
+    type('nothing');
+    expect(visible()).toEqual([]);
+    expect(
+      root
+        .querySelector('[data-catalog-filter-empty]')
+        ?.getAttribute('data-visible'),
+    ).toBe('true');
+    root.innerHTML = String(Catalog(props));
+    await vi.waitFor(() => expect(input().value).toBe('nothing'));
+    expect(visible()).toEqual([]);
+    type('');
+    expect(visible()).toEqual(['Button', 'Select', 'Banner', 'Input']);
+    expect(
+      root
+        .querySelector('[data-catalog-secondary-collapsed]')
+        ?.getAttribute('data-catalog-secondary-collapsed'),
+    ).toBe('true');
+    expect(
+      root
+        .querySelector(
+          '[data-catalog-secondary-group] [data-component="disclosure-arrow"]',
+        )
+        ?.getAttribute('data-open'),
+    ).toBe('false');
+    expect(
+      root
+        .querySelector('[data-catalog-filter-empty]')
+        ?.getAttribute('data-visible'),
+    ).toBe('false');
+    const unrelated = document.createElement('input');
+    root.append(unrelated);
+    unrelated.dispatchEvent(new Event('input', { bubbles: true }));
+    root.innerHTML = String(Catalog(props));
+    await Promise.resolve();
+    expect(input().value).toBe('');
+    dispose();
+  });
+
+  it('filters an always-open secondary group without a disclosure control', () => {
+    const root = mountShell(
+      String(
+        Catalog({
+          brand: { title: 'Other package' },
+          sections: [],
+          active: 'item',
+          content: raw('<b/>'),
+          secondarySections: {
+            label: 'More',
+            sections: [
+              {
+                category: 'Utilities',
+                entries: [{ id: 'item', name: 'Item' }],
+              },
+            ],
+          },
+        }),
+      ),
+    );
+    const dispose = wireCatalog(root, { onSelect: () => {} });
+    const input = root.querySelector<HTMLInputElement>(
+      '[data-catalog-filter]',
+    )!;
+    input.value = 'item';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(root.querySelector('[data-item-id="item"]')).toHaveProperty(
+      'hidden',
+      false,
+    );
+    expect(root.querySelector('[data-catalog-secondary-group]')).toHaveProperty(
+      'hidden',
+      false,
+    );
+    dispose();
+  });
 
   function stubAnimationFrames(): {
     run: (id: number) => void;

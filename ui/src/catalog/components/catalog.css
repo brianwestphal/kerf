@@ -10,3 +10,41 @@
   width: remify(34px);
   height: remify(34px);
 }
+
+.kui-catalog__filter {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: remify(8px) remify(10px);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-layout-rounded-radius);
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  font: inherit;
+}
+
+.kui-catalog__filter:focus-visible {
+  outline: 2px solid var(--kui-color-focus);
+  outline-offset: 2px;
+}
+
+.kui-catalog [data-catalog-filter-empty],
+.kui-catalog [data-catalog-section][hidden],
+.kui-catalog [data-catalog-entry-name][hidden],
+.kui-catalog [data-catalog-secondary-group][hidden] {
+  display: none;
+}
+
+.kui-catalog [data-catalog-filter-empty][data-visible="true"] {
+  display: block;
+}
+
+.kui-catalog [data-catalog-secondary-collapsed="true"] {
+  display: none;
+}
+
+.kui-catalog
+  [data-catalog-filter-active="true"]
+  [data-catalog-secondary-collapsed="true"] {
+  display: flex;
+}

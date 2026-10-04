@@ -4525,10 +4525,12 @@ test('catalog routes every production component family and supports its stateful
   test.setTimeout(90_000);
   await page.goto('/');
   await expect(
-    page.locator('#kui-catalog-left-rail [data-component="list-header"]'),
+    page.locator(
+      '#kui-catalog-left-rail [data-component="list-header"]:visible',
+    ),
   ).toHaveCount(catalogSections.length + 1);
   await expect(
-    page.locator('#kui-catalog-left-rail [data-component="list-item"]'),
+    page.locator('#kui-catalog-left-rail [data-component="list-item"]:visible'),
   ).toHaveCount(kerfCatalog.length);
   const ecosystemToggle = page.getByRole('button', {
     name: 'Web Awesome',
@@ -4538,7 +4540,7 @@ test('catalog routes every production component family and supports its stateful
   await ecosystemToggle.click();
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'true');
   await expect(
-    page.locator('#kui-catalog-left-rail [data-component="list-item"]'),
+    page.locator('#kui-catalog-left-rail [data-component="list-item"]:visible'),
   ).toHaveCount(catalog.length);
   await expect(
     page.locator(
@@ -4554,7 +4556,7 @@ test('catalog routes every production component family and supports its stateful
     'Helpers',
   ]);
   await ecosystemToggle.click();
-  await expect(page.locator('[data-catalog-secondary]')).toHaveCount(0);
+  await expect(page.locator('[data-catalog-secondary]')).toBeHidden();
   await expect(page.locator('[data-demo="badge"]')).toBeVisible();
   for (const entry of catalog) {
     await page.goto(`/?component=${entry.id}`);

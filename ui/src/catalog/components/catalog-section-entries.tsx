@@ -26,6 +26,7 @@ export function CatalogSectionEntries({
             selected={active === entry.id}
             title={entry.description}
             multiline
+            rootAttributes={{ 'data-catalog-entry-name': entry.name }}
           />
         ))}
       </List>

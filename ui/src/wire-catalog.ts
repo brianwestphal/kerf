@@ -63,6 +63,94 @@ export interface CatalogRevealOptions {
 // The Workbench keeps the sidebar inline above its `narrow` breakpoint (704px).
 const catalogDesktopMedia = '(min-width: 44.01rem)';
 
+/** Keep the sidebar filter local to the shared Catalog, including across controlled rerenders. */
+function wireCatalogFilter(root: HTMLElement): () => void {
+  const view = root.ownerDocument.defaultView!;
+  let filterValue = '';
+  let query = '';
+  const matches = (name: string) => name.toLocaleLowerCase().includes(query);
+  const apply = () => {
+    const input = root.querySelector<HTMLInputElement>('[data-catalog-filter]');
+    const nav = input?.closest<HTMLElement>('nav');
+    if (!input || !nav) return;
+    if (input.value !== filterValue) input.value = filterValue;
+    nav.dataset.catalogFilterActive = String(Boolean(query));
+    let visibleEntries = 0;
+    for (const section of nav.querySelectorAll<HTMLElement>(
+      '[data-catalog-section]',
+    )) {
+      const group = section.closest<HTMLElement>(
+        '[data-catalog-secondary-group]',
+      );
+      const headingMatches =
+        matches(section.dataset.catalogSection!) ||
+        (group !== null && matches(group.dataset.catalogSecondaryGroup!));
+      let sectionEntries = 0;
+      for (const entry of section.querySelectorAll<HTMLElement>(
+        '[data-catalog-entry-name]',
+      )) {
+        const visible =
+          !query || headingMatches || matches(entry.dataset.catalogEntryName!);
+        entry.hidden = !visible;
+        if (visible) sectionEntries++;
+      }
+      section.hidden = Boolean(query) && sectionEntries === 0;
+      visibleEntries += sectionEntries;
+    }
+    for (const group of nav.querySelectorAll<HTMLElement>(
+      '[data-catalog-secondary-group]',
+    )) {
+      group.hidden =
+        Boolean(query) &&
+        !Array.from(
+          group.querySelectorAll<HTMLElement>('[data-catalog-section]'),
+        ).some((section) => !section.hidden);
+      const toggle = group.querySelector<HTMLElement>('[aria-expanded]');
+      const content = group.querySelector<HTMLElement>(
+        '[data-catalog-secondary-collapsed]',
+      );
+      if (toggle && content) {
+        const expanded = query
+          ? !group.hidden
+          : content.dataset.catalogSecondaryCollapsed !== 'true';
+        toggle.setAttribute('aria-expanded', String(expanded));
+        const arrow = toggle.querySelector<HTMLElement>(
+          '[data-component="disclosure-arrow"]',
+        );
+        if (arrow) {
+          arrow.dataset.open = String(expanded);
+          arrow.dataset.direction = expanded ? 'down' : 'right';
+          arrow.style.setProperty(
+            '--_kui-disclosure-arrow-rotation',
+            expanded ? '90deg' : '0deg',
+          );
+        }
+      }
+    }
+    const empty = nav.querySelector<HTMLElement>(
+      '[data-catalog-filter-empty]',
+    )!;
+    empty.dataset.visible = String(Boolean(query) && visibleEntries === 0);
+  };
+  const onInput = (event: Event) => {
+    const target = event.target as HTMLInputElement | null;
+    if (!target?.matches('[data-catalog-filter]')) return;
+    filterValue = target.value;
+    query = filterValue.trim().toLocaleLowerCase();
+    apply();
+  };
+  root.addEventListener('input', onInput);
+  const observer = new view.MutationObserver(() => {
+    if (query) apply();
+  });
+  observer.observe(root, { childList: true, subtree: true });
+  apply();
+  return () => {
+    root.removeEventListener('input', onInput);
+    observer.disconnect();
+  };
+}
+
 /**
  * Reveal one Catalog sidebar entry after the controlled render settles without
  * moving focus. Returns a cancellation function for rapid selection changes.
@@ -383,6 +471,7 @@ export function wireCatalog(
 
   const disposers: Array<() => void> = [
     wireScrollDividers(root),
+    wireCatalogFilter(root),
     // Sidebar items AND the footer's related-entry popup-menu items both carry
     // `data-action={selectAction}` + `data-item-id`, so one delegated click covers both.
     delegate(

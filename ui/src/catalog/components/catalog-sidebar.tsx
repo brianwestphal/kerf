@@ -40,6 +40,16 @@ export function CatalogSidebar({
             </Text>
           </ListInsetText>
         ) : null}
+        <ListInsetText sides="rl">
+          <input
+            class="kui-catalog__filter"
+            type="search"
+            aria-label="Filter catalog"
+            placeholder="Filter items or headings"
+            autocomplete="off"
+            data-catalog-filter
+          />
+        </ListInsetText>
         <CatalogSectionList
           sections={sections}
           active={active}
@@ -53,6 +63,14 @@ export function CatalogSidebar({
             toggleAction={toggleSecondaryAction}
           />
         ) : null}
+        <ListInsetText
+          sides="rl"
+          rootAttributes={{ 'data-catalog-filter-empty': '' }}
+        >
+          <Text variant="span" tone="quiet">
+            No matching items
+          </Text>
+        </ListInsetText>
         {footer}
       </List>
     </nav>

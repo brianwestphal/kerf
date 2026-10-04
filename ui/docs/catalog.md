@@ -24,9 +24,10 @@ npm install @kerfjs/ui # kerfjs is a peer; @kerfjs/ui/select/register is needed 
   `theme` signals and computes the preview `content` from `active` in its own
   `mount()` render.
 - `wireCatalog(root, options)` wires the interactions (sidebar selection, the
-  related-entry popup menu, and the collapse/theme toggles) with one delegated
-  listener set and returns a disposer; it can also mirror the active id into the
-  URL and reveal the active sidebar row after a controlled render.
+  related-entry popup menu, the built-in sidebar filter, and the collapse/theme
+  toggles) with one delegated listener set and returns a disposer; it can also
+  mirror the active id into the URL and reveal the active sidebar row after a
+  controlled render.
 
 ## What you supply
 
@@ -43,6 +44,15 @@ expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
   `expanded` (the app owns it; wire it with `wireCatalog`'s `onToggleSecondary`).
 - Optional slots: `headerActions` (extra header controls), `sidebarFooter` (extra
   sidebar content), and `status` (a footer status line).
+
+The sidebar includes a search field automatically for every Catalog consumer.
+`wireCatalog` filters entry names and section headings as text is typed,
+ignoring case. A heading match shows all its entries; a matching secondary
+group heading searches its sections too, even while that group is collapsed.
+Empty sections disappear and an empty-result message appears when nothing
+matches. The query survives controlled Catalog rerenders and clears through the
+search field's native clear control. Filtering does not change the selected
+entry or its preview.
 
 Per-entry `resources` render as "open in new tab" links in the footer, and
 `related` renders a "Related entries" `PopupMenu` in a `single`

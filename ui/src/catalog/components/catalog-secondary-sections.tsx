@@ -19,7 +19,11 @@ export function CatalogSecondarySections({
 }: CatalogSecondarySectionsProps) {
   const open = !group.collapsible || Boolean(group.expanded);
   return (
-    <List dividerSides="t" controlInsets="t">
+    <List
+      dividerSides="t"
+      controlInsets="t"
+      rootAttributes={{ 'data-catalog-secondary-group': group.label }}
+    >
       {group.collapsible ? (
         <ListHeader
           label={group.label}
@@ -30,17 +34,21 @@ export function CatalogSecondarySections({
       ) : (
         <ListHeader label={group.label} />
       )}
-      {open ? (
-        <List gap="m" rootAttributes={{ 'data-catalog-secondary': '' }}>
-          {group.sections.map((section) => (
-            <CatalogSectionEntries
-              section={section}
-              active={active}
-              selectAction={selectAction}
-            />
-          ))}
-        </List>
-      ) : null}
+      <List
+        gap="m"
+        rootAttributes={{
+          'data-catalog-secondary': '',
+          'data-catalog-secondary-collapsed': String(!open),
+        }}
+      >
+        {group.sections.map((section) => (
+          <CatalogSectionEntries
+            section={section}
+            active={active}
+            selectAction={selectAction}
+          />
+        ))}
+      </List>
     </List>
   );
 }
