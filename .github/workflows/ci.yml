@@ -155,7 +155,21 @@ jobs:
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run build
       - run: npm run check
-      - run: npm run test:e2e
+      - name: Run UI browser tests
+        id: ui_browser
+        run: npm run test:e2e
+      - name: Upload failed UI browser evidence
+        if: ${{ !cancelled() && steps.ui_browser.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ui-browser-failure-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ui/playwright-report/
+            ui/test-results/**/trace.zip
+            ui/test-results/**/test-failed-*.png
+            ui/test-results/**/error-context.md
+          if-no-files-found: warn
+          retention-days: 14
 
   # KF-MCM28T / KF-V4C43T: re-render every design template in the browser and
   # fail on visual drift (a component changed but its template was not

@@ -37,6 +37,9 @@ back to the root or component-local support code placed in the wrong folder.
 Browser verification always builds current source: both `npm run test:e2e`
 and direct focused Playwright commands run the catalog/conformance preflights
 and production build before preview. See the [UX catalog contract](./docs/ux-demo.md).
+Failed Playwright tests retain traces and screenshots alongside an HTML report.
+The CI `ui` job uploads the report and per-test failure evidence for 14 days when
+the browser suite fails; the artifact is named `ui-browser-failure-<run>-<attempt>`.
 
 When authoring a component gallery, follow the single
 [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)

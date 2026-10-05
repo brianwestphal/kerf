@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
+import { parse } from 'yaml';
 
 type AuditedAction = {
   sha: string;
@@ -117,5 +118,61 @@ describe('GitHub Actions inventory', () => {
     }
 
     expect([...seen].sort()).toEqual(Object.keys(AUDITED_ACTIONS).sort());
+  });
+});
+
+describe('UI browser failure evidence', () => {
+  it('uploads only scoped Playwright failure files after a failed browser step', () => {
+    const workflow = parse(
+      readFileSync(join(workflowDirectory, 'ci.yml'), 'utf8'),
+    ) as {
+      jobs: {
+        ui: {
+          steps: Array<{
+            id?: string;
+            if?: string;
+            run?: string;
+            uses?: string;
+            with?: Record<string, unknown>;
+          }>;
+        };
+      };
+    };
+    const steps = workflow.jobs.ui.steps;
+    const browserStep = steps.find((step) => step.id === 'ui_browser');
+    const uploadStep = steps.find((step) =>
+      step.uses?.startsWith('actions/upload-artifact@'),
+    );
+
+    expect(browserStep?.run).toBe('npm run test:e2e');
+    expect(uploadStep).toBeDefined();
+    expect(steps.indexOf(uploadStep!)).toBeGreaterThan(
+      steps.indexOf(browserStep!),
+    );
+    expect(uploadStep?.if).toBe(
+      "${{ !cancelled() && steps.ui_browser.outcome == 'failure' }}",
+    );
+    expect(uploadStep?.with).toMatchObject({
+      'if-no-files-found': 'warn',
+      'retention-days': 14,
+    });
+    expect(uploadStep?.with?.path).toBe(
+      [
+        'ui/playwright-report/',
+        'ui/test-results/**/trace.zip',
+        'ui/test-results/**/test-failed-*.png',
+        'ui/test-results/**/error-context.md',
+      ].join('\n') + '\n',
+    );
+  });
+
+  it('creates a browsable report and retains screenshots and traces on failure', () => {
+    const config = readFileSync(
+      resolve(workflowDirectory, '../../ui/playwright.config.ts'),
+      'utf8',
+    );
+    expect(config).toContain("['html', { open: 'never' }]");
+    expect(config).toContain("screenshot: 'only-on-failure'");
+    expect(config).toContain("trace: 'retain-on-failure'");
   });
 });
