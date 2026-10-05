@@ -86,6 +86,8 @@ keywords for width/height); and `SelectChoice.color` takes a
 role, or a `*-text` alias), from `foregroundColorVar()`, or from `foregroundColor()` via the `foregroundColor` helper for an application-chosen CSS color. `LucideIcon.color` accepts the same foreground type and otherwise inherits surrounding text color. The bare `success`,
 `warning`, `danger`, `pop`, and `accent` tokens are quiet fills, not
 foregrounds, and are rejected there; `colorVar()` returns a plain `CssColor`.
+`LucideIcon` is block-level by default; set `inline` to let it flow inside
+`Text` or other prose without changing its size or accessibility semantics.
 Do not substitute one brand for another. Row components
 have no declaration-string `style` prop; use `className`, documented public
 tokens, and semantic component props. Catalog media queries remain strings and

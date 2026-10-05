@@ -161,6 +161,7 @@
       "variants": [
         "decorative",
         "labeled",
+        "inline text flow",
         "outline (default appearance)",
         "solid (appearance=solid)"
       ],
@@ -174,6 +175,11 @@
           "title": "Semantic icon color",
           "description": "Set an icon foreground with a semantic color token; omit color to inherit from surrounding text. Use foregroundColor() for a custom CSS color or foregroundColorVar() for an app variable.",
           "code": "<LucideIcon icon={Bell} name=\"alert\" color={uiColor('warning-on-quiet')} />"
+        },
+        {
+          "title": "Inline with text",
+          "description": "Let a decorative icon flow inside Text or other prose while preserving its inherited 1em size.",
+          "code": "<Text>Ready <LucideIcon icon={Bell} name=\"notification\" inline /> now.</Text>"
         }
       ],
       "accessibility": [

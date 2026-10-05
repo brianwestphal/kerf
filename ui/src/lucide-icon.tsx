@@ -23,6 +23,8 @@ export interface LucideIconProps {
   className?: string;
   /** Foreground color; omit to inherit the surrounding text color. */
   color?: CssForegroundColor;
+  /** Flow with surrounding text instead of occupying a block. */
+  inline?: boolean;
   label?: string;
   /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
   size?: LucideIconSize;
@@ -37,6 +39,7 @@ export function LucideIcon({
   appearance = 'outline',
   className,
   color,
+  inline = false,
   label,
   size,
   slot,
@@ -55,6 +58,7 @@ export function LucideIcon({
       {...slotAttribute}
       class={className}
       data-lucide={name}
+      data-inline={inline ? 'true' : undefined}
       data-size={size === undefined ? undefined : String(size)}
       role={label ? 'img' : undefined}
       aria-label={label}

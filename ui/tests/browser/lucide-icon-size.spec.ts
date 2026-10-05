@@ -88,3 +88,38 @@ test('LucideIcon color supports inherited, semantic, and custom foregrounds', as
     });
   }
 });
+
+test('LucideIcon inline flows inside Text at wide and narrow widths', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=lucide-icon');
+  const text = page.locator('[data-demo-icon-inline]');
+  const icon = text.locator('[data-lucide="bell-inline"]');
+  await expect(page.locator('[data-lucide="bell"]')).toHaveCSS(
+    'display',
+    'block',
+  );
+  await expect(text).toHaveText(/Notifications.*are ready\./);
+  await expect(icon).toHaveCSS('display', 'inline-block');
+  await expect(icon).toHaveAttribute('aria-hidden', 'true');
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    const sharesLine = await icon.evaluate((element) => {
+      const leadingText = element.previousSibling;
+      if (!leadingText) return false;
+      const range = document.createRange();
+      range.selectNodeContents(leadingText);
+      const textRect = range.getBoundingClientRect();
+      const iconRect = element.getBoundingClientRect();
+      return Math.abs(textRect.top - iconRect.top) < 10;
+    });
+    expect(sharesLine).toBe(true);
+    await text.screenshot({
+      path: testInfo.outputPath(`lucide-icon-inline-${width}.png`),
+    });
+    await page.screenshot({
+      path: testInfo.outputPath(`lucide-icon-inline-context-${width}.png`),
+      fullPage: true,
+    });
+  }
+});

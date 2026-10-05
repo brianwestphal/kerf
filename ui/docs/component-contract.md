@@ -746,6 +746,9 @@ triangle. The SVG uses `fill="currentColor"`, so fill follows the icon's text
 color without styling its internal SVG from the application. Choose a Lucide
 node whose geometry supports a solid fill; the prop does not replace an icon
 node's own fill attributes.
+The SVG is block-level by default. Pass `inline` when it belongs inside a
+sentence or `Text`: the SVG becomes `inline-block`, keeps its inherited 1em
+size unless `size` is supplied, and stays decorative unless `label` is set.
 
 `LoadingSpinner` accepts the same `size` steps as `LucideIcon`: `xs`, `s`, `m`,
 `l`, `xl` (12/16/20/24/32px at a 16px root) or a positive finite pixel

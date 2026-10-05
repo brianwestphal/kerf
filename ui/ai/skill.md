@@ -310,6 +310,7 @@ For prominent content text, use `Text size="large"`; use `size="xlarge"` for dis
 For removable tags use `Chip`, with `removeAction` for delegated handling and a specific `removeLabel` for the native button. `itemId` identifies the tag; the app owns removal. `size="compact"` and `disabled` replace app styling of raw `wa-tag` internals. Use `Badge` for non-interactive metadata.
 
 For an icon with a specific meaning, set `LucideIcon.color` using `uiColor('warning-on-quiet')` or another foreground token. Use `foregroundColorVar('--app-icon-color')` for an app-owned property or `foregroundColor('#8b5cf6')` for a direct custom CSS color. Omit the prop to inherit text color. Outline stroke and solid fill both follow the chosen color; size, appearance, label, and slot remain separate props. Avoid pale fill tokens as foregrounds.
+Set `LucideIcon.inline` when an icon belongs within `Text` or another sentence; the SVG flows as `inline-block` instead of its default block layout. It retains its inherited 1em size unless you set `size`.
 
 For `Select`, mark an unavailable choice with `disabled` and optionally `disabledReason`. In a multiple Select, `selectAllLabel` and `clearLabel` opt in to localized footer actions that select enabled choices or clear the selection through normal input/change events; the app still owns the controlled `value`.
 

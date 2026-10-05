@@ -32,6 +32,7 @@ Exact prop names and types: [`@kerfjs/ui/lucide-icon`](../public-api-signatures-
 
 - decorative
 - labeled
+- inline text flow
 - outline (default appearance)
 - solid (appearance=solid)
 
@@ -71,6 +72,16 @@ Set an icon foreground with a semantic color token; omit color to inherit from s
 
 ```tsx
 <LucideIcon icon={Bell} name="alert" color={uiColor('warning-on-quiet')} />
+```
+
+### Inline with text
+
+Let a decorative icon flow inside Text or other prose while preserving its inherited 1em size.
+
+```tsx
+<Text>
+  Ready <LucideIcon icon={Bell} name="notification" inline /> now.
+</Text>
 ```
 
 ## Styling boundary

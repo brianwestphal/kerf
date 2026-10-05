@@ -21,7 +21,15 @@ describe('LucideIcon size', () => {
     const html = String(LucideIcon(props));
     expect(html).toContain('data-lucide="circle" aria-hidden="true"');
     expect(html).not.toContain('data-size');
+    expect(html).not.toContain('data-inline');
     expect(html).not.toContain('--_kui-lucide-size');
+  });
+
+  it('opts into inline layout without changing icon size or semantics', () => {
+    const html = String(LucideIcon({ ...props, inline: true }));
+    expect(html).toContain('data-inline="true"');
+    expect(html).toContain('aria-hidden="true"');
+    expect(html).not.toContain('data-size');
   });
 
   it('sets an optional foreground color without changing size or appearance', () => {

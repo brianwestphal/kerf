@@ -3280,6 +3280,8 @@ interface LucideIconProps {
     className?: string;
     /** Foreground color; omit to inherit the surrounding text color. */
     color?: CssForegroundColor;
+    /** Flow with surrounding text instead of occupying a block. */
+    inline?: boolean;
     label?: string;
     /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
     size?: LucideIconSize;
@@ -3287,7 +3289,7 @@ interface LucideIconProps {
     slot?: string;
 }
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-declare function LucideIcon({ icon, name, appearance, className, color, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
+declare function LucideIcon({ icon, name, appearance, className, color, inline, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
 
 export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
 ```

@@ -2,6 +2,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
+import { Text } from '@kerfjs/ui/text';
 import { Bell, Star } from 'lucide';
 
 export function LucideIconDemo() {
@@ -75,6 +76,16 @@ export function LucideIconDemo() {
             color={foregroundColor('rebeccapurple')}
           />
         </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Inline with text"
+        note="Set inline when an icon belongs in a sentence; it keeps the inherited 1em size and flows with the text."
+        align="glyph"
+      >
+        <Text data-demo-icon-inline="">
+          Notifications <LucideIcon icon={Bell} name="bell-inline" inline /> are
+          ready.
+        </Text>
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -208,6 +208,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `foregroundColorVar()`, or `foregroundColor()` for a custom CSS color; fill tokens such as `uiColor('success-fill-quiet')` do not
   type-check. These brands are intentionally
   not interchangeable; rows use classes/tokens/props rather than raw `style`.
+  Set `LucideIcon.inline` for an icon in `Text` or prose; it changes the SVG
+  from block to inline-block without changing its inherited 1em size.
 - **Use `Grid` for equal-width columns.** Set a fixed positive `columns` count
   or typed `minColumnWidth` for automatic container-width collapse, never both.
   The app owns the outer width and child semantics; use custom CSS grid for

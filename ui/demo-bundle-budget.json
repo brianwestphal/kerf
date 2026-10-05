@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 322600,
+  "totalJavaScriptGzip": 322700,
   "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 322560,
+  "measuredTotalJavaScriptGzip": 322655,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2659,6 +2659,22 @@
         "measuredTotalJavaScriptGzip": 322560,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 322600
+      }
+    },
+    {
+      "at": "2026-10-05T01:38:05.438Z",
+      "reason": "Add LucideIcon inline text-flow option and catalog example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322560,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 322600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322655,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 322700
       }
     }
   ]
