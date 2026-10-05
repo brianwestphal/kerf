@@ -151,14 +151,16 @@ const FORWARDED_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGHUP'];
 // to record the attempt as `interrupted`: the signal is forwarded to the child
 // instead of killing the wrapper before it can write the timing note.
 async function runCommand(command, args, env = process.env) {
-  const child = spawn(command, args, { stdio: 'inherit', env });
+  let child;
   let interrupted = null;
   const forward = (signal) => {
     interrupted = signal;
-    child.kill(signal);
+    child?.kill(signal);
   };
   for (const signal of FORWARDED_SIGNALS) process.on(signal, forward);
   try {
+    child = spawn(command, args, { stdio: 'inherit', env });
+    if (interrupted) child.kill(interrupted);
     return await new Promise((resolve) => {
       child.once('error', () => resolve({ code: 1, signal: null }));
       child.once('exit', (code, signal) =>

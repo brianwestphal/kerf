@@ -65,9 +65,10 @@ npm run ticket:timing -- run KF-ABC123 \
 Every attempt is recorded, not only passes: a non-zero exit records `failed`
 with `failure_category: "command_exit"`, and a gate stopped by Ctrl-C or a
 termination signal records `interrupted` with `failure_category: "signal"`.
-The wrapper forwards `SIGINT`/`SIGTERM`/`SIGHUP` to the gate instead of dying
-first, so the note is still written; an interrupted wrapper exits 130 on
-`SIGINT` (1 for other signals).
+The wrapper installs signal handlers before starting the gate and forwards
+`SIGINT`/`SIGTERM`/`SIGHUP` instead of dying first, so the note is still written
+even if interrupted during startup. It exits 130 on `SIGINT` (1 for other
+signals).
 
 ### Per-step check durations
 
