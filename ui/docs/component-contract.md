@@ -336,9 +336,10 @@ elements keyed on a child's state, naming the child by class inside `:has()`
 holds compact tabs), and it keeps styling raw native and raw Web
 Awesome children no kerf component owns, excluding kerf children by class
 (`wa-dropdown:not(.kui-popup-menu)`). `npm run check:css-ownership` enforces
-this in every component stylesheet (a `src/*.css` with a same-basename
-component), deriving the component names, the Web Awesome tags each component
-renders, and its composed children from `src/*.tsx`:
+this in every component stylesheet (a same-basename `.css` and `.tsx` pair
+under `src/components/<family>/<component>/`), deriving the component names,
+the Web Awesome tags each component renders, and its composed children from the
+colocated component source:
 
 - **Foreign classes.** Another component's class or `[data-component]` may
   appear only in an ancestor compound or inside `:has()` / `:not()`; the

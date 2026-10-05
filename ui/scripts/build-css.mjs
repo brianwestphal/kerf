@@ -1,5 +1,5 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import postcss from 'postcss';
@@ -35,10 +35,17 @@ await Promise.all(
     const source = new URL(file, sourceDirectory);
     const output = new URL(file, outputDirectory);
     await mkdir(dirname(fileURLToPath(output)), { recursive: true });
+    const facade = await readFile(source, 'utf8');
+    const implementation = facade.match(
+      /^\/\* Public stylesheet entry; implementation is colocated with the component\. \*\/\s+@import ["']([^"']+)["'];\s*$/,
+    );
+    const input = implementation
+      ? resolve(dirname(fileURLToPath(source)), implementation[1])
+      : fileURLToPath(source);
     const result = await postcss([remifyCss()]).process(
-      await readFile(source, 'utf8'),
+      implementation ? await readFile(input, 'utf8') : facade,
       {
-        from: fileURLToPath(source),
+        from: input,
         to: fileURLToPath(output),
         map: false,
       },

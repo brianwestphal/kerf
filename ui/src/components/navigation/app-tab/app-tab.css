@@ -1,0 +1,376 @@
+.kui-app-tab {
+  --kui-app-tab-color: var(--kui-color-neutral-on-quiet);
+  --kui-app-tab-hover-background: color-mix(
+    in srgb,
+    var(--kui-color-surface) 72%,
+    transparent
+  );
+  --kui-app-tab-selected-color: var(--kui-color-brand-on-quiet);
+  --kui-app-tab-selected-background: var(--kui-color-surface);
+  --kui-app-tab-selected-border: color-mix(
+    in srgb,
+    var(--kui-color-neutral-border-normal) 80%,
+    transparent
+  );
+  --kui-app-tab-drop-indicator: var(--kui-color-brand-border-normal);
+  --kui-app-tab-drop-target-background: var(--kui-color-brand-fill-quiet);
+  --kui-app-tab-drop-target-ring: var(--kui-color-brand-border-normal);
+  --kui-app-tab-drop-target-color: var(--kui-color-brand-on-quiet);
+  position: relative;
+  display: flex;
+  width: max-content;
+  min-width: max-content;
+  height: remify(40px);
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
+  color: var(--kui-app-tab-color);
+  background: transparent;
+  align-items: center;
+  flex: none;
+}
+.kui-app-tab[data-pinned="true"] {
+  position: sticky;
+  z-index: 1;
+  inset-inline-start: 0;
+  background: var(
+    --kui-app-tab-pinned-background,
+    var(--_kui-app-tab-pinned-default-background, var(--kui-color-surface))
+  );
+}
+.kui-tab-bar__tabs[data-snap-tabs="true"]
+  > .kui-app-tab:not([data-pinned="true"]) {
+  scroll-snap-align: start;
+}
+.kui-app-tab[data-pinned="true"]::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  inset-inline-start: calc(
+    -1 *
+      (
+        var(--kui-tab-bar-strip-padding, 1px) +
+          var(--kui-tab-bar-strip-border-width, 1px)
+      )
+  );
+  inset-inline-end: 0;
+  /* Keep the opaque scroll backing inside the tab's pill silhouette so it
+     cannot square off a selected tab's trailing corner and shadow. */
+  border-radius: inherit;
+  background: var(
+    --kui-app-tab-pinned-background,
+    var(--_kui-app-tab-pinned-default-background, var(--kui-color-surface))
+  );
+}
+/* The leading overflow line belongs after the pinned tab, where its scrolling
+   peers disappear. Reuse the opaque backing so drag indicators can still use
+   ::after. */
+.kui-tab-bar__tabs:dir(ltr)[data-scroll-overflow*="l"]
+  > .kui-app-tab[data-pinned="true"]::before,
+.kui-tab-bar__tabs:dir(rtl)[data-scroll-overflow*="r"]
+  > .kui-app-tab[data-pinned="true"]::before {
+  inset-inline-end: -1px;
+  border-inline-end: 1px solid
+    var(--kui-tab-bar-divider-color, var(--kui-color-neutral-border-normal));
+}
+.kui-tab-bar[data-presentation="segmented"] .kui-app-tab[data-pinned="true"],
+.kui-tab-bar[data-presentation="inspector"] .kui-app-tab[data-pinned="true"] {
+  --_kui-app-tab-pinned-default-background: var(
+    --kui-tab-bar-strip-background,
+    var(--kui-color-neutral-fill-quiet)
+  );
+}
+.kui-app-tab[data-pinned="true"]:not([data-selected="true"]):hover {
+  background: var(
+    --kui-app-tab-pinned-hover-background,
+    var(--kui-color-neutral-fill-quiet)
+  );
+}
+.kui-app-tab[data-size="compact"] {
+  height: remify(32px);
+}
+.kui-app-tab[data-presentation="segmented"] {
+  border-radius: var(--kui-radius-s);
+  box-shadow: none;
+}
+.kui-app-tab:hover {
+  border-color: var(--kui-color-neutral-border-normal);
+  background: var(--kui-app-tab-hover-background);
+}
+.kui-app-tab[data-selected="true"] {
+  border-color: var(--kui-app-tab-selected-border);
+  color: var(--kui-app-tab-selected-color);
+  background: var(--kui-app-tab-selected-background);
+  box-shadow: var(--kui-shadow-s);
+}
+.kui-app-tab[data-drop-target="true"] {
+  color: var(--kui-app-tab-drop-target-color);
+  background: var(--kui-app-tab-drop-target-background);
+  box-shadow: inset 0 0 0 2px var(--kui-app-tab-drop-target-ring);
+}
+.kui-app-tab[data-tab-dragging="true"] {
+  opacity: 0.55;
+}
+.kui-app-tab[data-tab-drop-position]::after {
+  position: absolute;
+  z-index: 2;
+  top: remify(3.2px);
+  bottom: remify(3.2px);
+  width: 2px;
+  border-radius: var(--kui-radius-pill);
+  background: var(--kui-app-tab-drop-indicator);
+  content: "";
+  pointer-events: none;
+}
+.kui-app-tab[data-tab-drop-position="before"]::after {
+  inset-inline-start: calc(var(--kui-space-2xs) * -1);
+}
+.kui-app-tab[data-tab-drop-position="after"]::after {
+  inset-inline-end: calc(var(--kui-space-2xs) * -1);
+}
+.kui-app-tab__select {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--kui-layout-item-padding, remify(8px));
+  border: 0;
+  appearance: none;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  align-items: center;
+  gap: var(--kui-layout-item-gap, remify(8px));
+  text-align: start;
+}
+.kui-app-tab:has(.kui-app-tab__close) .kui-app-tab__select {
+  padding-inline-start: var(--kui-layout-item-padding, remify(8px));
+}
+.kui-app-tab:has(.kui-app-tab__select:focus-visible) {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+.kui-app-tab__select:focus-visible {
+  outline: none;
+}
+.kui-app-tab__close:focus-visible {
+  border-radius: var(--kui-radius-pill);
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+.kui-app-tab__select > svg {
+  width: remify(16px);
+  height: remify(16px);
+  flex: none;
+}
+.kui-app-tab__name {
+  max-width: var(--kui-app-tab-label-max-width, none);
+  overflow: hidden;
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kui-app-tab[data-name-overflow="visible"] .kui-app-tab__name {
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+}
+.kui-app-tab[data-attention="true"] .kui-app-tab__name {
+  color: var(--kui-app-tab-attention-color, var(--kui-color-warning-on-quiet));
+}
+.kui-app-tab[data-presentation="icon-only"] .kui-app-tab__select {
+  width: 100%;
+  justify-content: center;
+}
+.kui-app-tab[data-presentation="icon-only"] .kui-app-tab__name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+.kui-app-tab[data-presentation="icon-only"] {
+  width: remify(32px);
+  min-width: remify(32px);
+}
+/* TabBar owns the tablist width query; AppTab owns its own responsive
+   geometry and visually hidden name. The name remains in the accessibility
+   tree, so the tab keeps its accessible name without a rerender. */
+@container kui-tab-bar-tabs (max-width: remify(832px)) {
+  .kui-tab-bar[data-icon-only-at="wide"]
+    .kui-tab-bar__tabs
+    > .kui-app-tab[data-presentation="segmented"] {
+    width: remify(32px);
+    min-width: remify(32px);
+    flex: none;
+  }
+  .kui-tab-bar[data-icon-only-at="wide"]
+    .kui-app-tab[data-presentation="segmented"]
+    .kui-app-tab__select {
+    width: 100%;
+    justify-content: center;
+  }
+  .kui-tab-bar[data-icon-only-at="wide"]
+    .kui-app-tab[data-presentation="segmented"]
+    .kui-app-tab__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+}
+@container kui-tab-bar-tabs (max-width: remify(704px)) {
+  .kui-tab-bar[data-icon-only-at="narrow"]
+    .kui-tab-bar__tabs
+    > .kui-app-tab[data-presentation="segmented"] {
+    width: remify(32px);
+    min-width: remify(32px);
+    flex: none;
+  }
+  .kui-tab-bar[data-icon-only-at="narrow"]
+    .kui-app-tab[data-presentation="segmented"]
+    .kui-app-tab__select {
+    width: 100%;
+    justify-content: center;
+  }
+  .kui-tab-bar[data-icon-only-at="narrow"]
+    .kui-app-tab[data-presentation="segmented"]
+    .kui-app-tab__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+}
+@container kui-tab-bar-tabs (max-width: remify(448px)) {
+  .kui-tab-bar[data-icon-only-at="compact"]
+    .kui-tab-bar__tabs
+    > .kui-app-tab[data-presentation="segmented"] {
+    width: remify(32px);
+    min-width: remify(32px);
+    flex: none;
+  }
+  .kui-tab-bar[data-icon-only-at="compact"]
+    .kui-app-tab[data-presentation="segmented"]
+    .kui-app-tab__select {
+    width: 100%;
+    justify-content: center;
+  }
+  .kui-tab-bar[data-icon-only-at="compact"]
+    .kui-app-tab[data-presentation="segmented"]
+    .kui-app-tab__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+}
+/* In a TabBar, the tab styles itself in the context of its parent strip. A
+   segmented strip's outer ends follow the pill track: the first tab's leading
+   corners, and a filled strip's last tab's trailing corners, are pill-rounded
+   so each end is concentric with the track (TabBar insets a compact strip's
+   tabs to match). Only fill allocation carries the last tab to the track's
+   trailing end; an intrinsic strip's last tab stops short of it and keeps the
+   segment radius, as do the corners between tabs. */
+.kui-tab-bar[data-presentation="segmented"]
+  .kui-tab-bar__tabs
+  > .kui-app-tab:first-child {
+  border-start-start-radius: var(--kui-radius-pill);
+  border-end-start-radius: var(--kui-radius-pill);
+}
+.kui-tab-bar[data-presentation="segmented"][data-allocation="fill"]
+  .kui-tab-bar__tabs
+  > .kui-app-tab:last-child {
+  border-start-end-radius: var(--kui-radius-pill);
+  border-end-end-radius: var(--kui-radius-pill);
+}
+/* Fill allocation shares the strip equally and centers each tab's content. */
+.kui-tab-bar[data-allocation="fill"] .kui-tab-bar__tabs > .kui-app-tab {
+  min-width: 0;
+  flex: 1 1 0;
+}
+.kui-tab-bar[data-allocation="fill"]
+  .kui-tab-bar__tabs
+  > .kui-app-tab
+  > .kui-app-tab__select {
+  width: 100%;
+  justify-content: center;
+}
+.kui-app-tab__trailing {
+  display: grid;
+  min-width: remify(20.4px);
+  min-height: remify(20.4px);
+  flex: none;
+  place-items: center;
+}
+.kui-app-tab__close {
+  display: grid;
+  width: remify(20.4px);
+  height: remify(20.4px);
+  margin-inline-start: var(--kui-space-xs);
+  padding: 0;
+  border: 0;
+  appearance: none;
+  color: var(--kui-color-neutral-on-quiet);
+  background: transparent;
+  cursor: pointer;
+  flex: none;
+  place-items: center;
+}
+.kui-app-tab__close:hover {
+  color: var(--kui-color-text);
+}
+/* A dormant tab keeps its close button's space, so it matches the live tab's
+   geometry, but never shows a control it has disabled. */
+.kui-app-tab:is([data-placeholder="true"], [data-pending="true"])
+  .kui-app-tab__close {
+  visibility: hidden;
+}
+.kui-app-tab[data-pending="true"] .kui-app-tab__name {
+  color: var(--kui-color-text-quiet);
+}
+.kui-app-tab__close-icon {
+  display: grid;
+  width: remify(10.2px);
+  height: remify(10.2px);
+  pointer-events: none;
+  place-items: center;
+}
+.kui-app-tab__close-icon > svg {
+  width: 100%;
+  height: 100%;
+}
+@media (hover: hover) and (pointer: fine) {
+  .kui-app-tab__close {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+  }
+  .kui-app-tab:hover .kui-app-tab__close,
+  .kui-app-tab:focus-within .kui-app-tab__close {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kui-app-tab__close {
+    transition: none;
+  }
+}

@@ -545,10 +545,10 @@ Kerf UI's stable single-root visual components explicitly forward native
 The multi-root `ResizableRegion` and `CollapsiblePanel` intentionally omit it;
 the single-root `CollapsiblePanelToggle` remains covered.
 
-`ui/src/loading-spinner.tsx` shares LucideIcon's named and positive numeric
+`ui/src/components/feedback/loading-spinner/loading-spinner.tsx` shares LucideIcon's named and positive numeric
 `size` contract; its CSS keeps the omitted size at 1em and applies supplied
 sizes through a private property.
-`ui/src/lucide-icon.tsx` accepts an optional typed foreground color for both outline stroke and solid fill; `ui/src/css-values.ts` mints semantic, variable, and custom CSS foregrounds.
+`ui/src/components/media/lucide-icon/lucide-icon.tsx` accepts an optional typed foreground color for both outline stroke and solid fill; `ui/src/shared/styles/css-values.ts` mints semantic, variable, and custom CSS foregrounds.
 `LucideIcon.inline` marks its SVG for inline-block layout so it can flow inside `Text` without changing size or accessible naming.
 
 The optional `ui/src/webawesome.css` bridge gives filled badges a contrast-safe
@@ -827,7 +827,7 @@ bar/tab identity after automatic keyboard activation synchronously rerenders a s
 Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
 `ui/tests/browser/tab-bar-controlled-focus.spec.ts` cover repeated Arrow/Home/End
 transitions and duplicate tab IDs in independent bars.
-`ui/src/wire-scroll-dividers.ts` (`@kerfjs/ui/wire-scroll-dividers`,
+`ui/src/wiring/wire-scroll-dividers.ts` (`@kerfjs/ui/wire-scroll-dividers`,
 `wireScrollDividers(root, { targets? })`) makes the divider between pinned chrome
 and scrolling content scroll state: it pairs every `.kui-pane` content slot with
 its header/footer, each `NavStack`'s top chrome / bottom toolbar and each
@@ -855,7 +855,7 @@ repeated mixed-token Select All deletion and refill in real browsers at wide and
 narrow widths. Deletion capture covers native beforeinput and synthetic shortcut
 input, protects replacement blur, and observes the controlled replacement at its
 mutation checkpoint before later user input. The adoption demo persists both query and token edits.
-`ui/src/token-search-model.ts` calls rule `suggest(input, state)` with the
+`ui/src/components/forms/token-search-field/model/token-search-model.ts` calls rule `suggest(input, state)` with the
 current committed tokens on initial load and after each state change. The
 grammar demo and browser test exercise suppression of already selected tags.
 The same model exposes `commit(value)` for an application helper to resolve the
@@ -864,14 +864,15 @@ are no-ops. The catalog's release-tag helper exercises this path in browsers.
 `TokenSearchModel.replace(value)` publishes parsed state and increments
 `editorRevision` so a programmatic saved query rebuilds DOM-owned text without
 a token change; the grammar demo exercises repeated saved-search replacement.
-`ui/src/popup-menu.tsx` accepts the full `PopupMenuEntry` union in nested
+`ui/src/components/actions/popup-menu/popup-menu.tsx` accepts the full `PopupMenuEntry` union in nested
 submenus and assigns the native submenu slot to headings and dividers as well
 as items. Browser coverage verifies the nested group structure and actions.
-`ui/src/chip.tsx` renders a self-styled tag with an optional native remove
+`ui/src/components/feedback/chip/chip.tsx` renders a self-styled tag with an optional native remove
 button. It exposes delegated action and item identity, semantic appearance,
 compact geometry, and a disabled state.
-`ui/src/select.tsx` renders disabled choices and opt-in multiple-select action
-buttons. `ui/src/install-select-actions.ts` applies select-all or clear through
+`ui/src/components/forms/select/select.tsx` renders disabled choices and opt-in multiple-select action
+buttons. `ui/src/components/forms/select/internal/install-select-actions.ts`
+applies select-all or clear through
 the registered Web Awesome selection path and publishes normal input/change
 events for changed values.
 Safe areas: `ui/src/foundation.css` defines the `--kui-safe-area-*` device insets
@@ -962,11 +963,13 @@ restore the rendered props), both disconnected by the disposer; it also sets
 the CSS uses to move the handle and its focus ring inside the region
 (`ui/tests/browser/resizable-region-clamp.spec.ts`,
 `ui/tests/unit/wire-resizable-regions.test.ts`). That wiring lives in the
-internal `ui/src/resize-wiring.ts` (`wireResizeHandles(root, options,
+internal
+`ui/src/components/layout/resizable-region/internal/resize-wiring.ts`
+(`wireResizeHandles(root, options,
 regionSelector, limit?)`, which only drives a handle that is a direct child of
 its region; the optional `limit` tightens a region's maximum for its
 composition); `wireResizableRegions` passes the `ResizableRegion` selector and
-`ui/src/wire-workbench.ts` (`wireWorkbench`, the `@kerfjs/ui/wire-workbench`
+`ui/src/components/layout/workbench/wiring/wire-workbench.ts` (`wireWorkbench`, the `@kerfjs/ui/wire-workbench`
 subpath) passes selectors for its own opt-in `resizable` `Workbench` panels plus
 a work-area limit that stops a rail where the center would drop below the
 Workbench's `mainMinSize` (`data-main-min-size`, default 320px) and the drawer
@@ -974,7 +977,9 @@ where the work area would drop below its `mainMinHeight`
 (`data-main-min-height`, default 120px), committing to
 app-owned size signals with optional `storageKey` persistence and `deviceClass`
 compact suspension. For panels given a `collapsed` signal it also calls the
-internal `ui/src/workbench-overlays.ts` (`wireWorkbenchOverlays`,
+internal
+`ui/src/components/layout/workbench/internal/workbench-overlays.ts`
+(`wireWorkbenchOverlays`,
 `dismissOverlays` on by default): a panel collapses when its
 `responsiveOverlayAt` breakpoint begins to apply (a `ResizeObserver` on the
 Workbench plus a `MutationObserver` for late renders and presentation changes;
@@ -1000,23 +1005,24 @@ component); only `catalog.css`, `catalog-stage.css`, `catalog-example.css`, and
 `catalog-example-stack.css` remain (`ui/tests/unit/catalog-component.test.tsx`,
 `ui/tests/browser/catalog-sidebar-shell.spec.ts`).
 `ui/scripts/lib/css-ownership.mjs` holds the package-stylesheet ownership rules
-`check:css-ownership` applies to every component stylesheet (a `src/*.css` with
-a same-basename `.tsx`): foreign classes / `[data-component]` only as ancestor
+`check:css-ownership` applies to every colocated component stylesheet under
+`ui/src/components/<family>/<component>/` (a same-basename `.css` and `.tsx`
+pair): foreign classes / `[data-component]` only as ancestor
 context or inside `:has()`/`:not()`, no `wa-*` tag another component renders
 unless scoped to or excluded from it by class, only the stylesheet's own
 `--_kui-<self>-*` privates and no other component's read public token, no
 custom properties written onto any child, and no hook class placed on a
 composed child's root. Component names, rendered Web Awesome tags, and
-composed children are derived from `ui/src/*.tsx`; its documented exception
+composed children are derived from the nested component sources; its documented exception
 list fails when an entry goes stale (`ui/tests/unit/css-ownership.test.ts`).
-`ui/src/panel-toolbar.tsx` holds the shared panel-toolbar roles (`PanelToolbar`: title, leading/center/trailing zones, and the standard toggle), the per-side toggle icon, and the composition/relocation helpers both `Workbench` and `CollapsiblePanel` (with `CollapsiblePanelRelocated`) use (`ui/tests/unit/collapsible-panel-toolbar.test.tsx`, `ui/tests/browser/collapsible-panel-relocation.spec.ts`). `ui/src/panel-toolbar-group.ts` recognizes `ToolbarControlGroup`s marked `relocateOnCollapse`.
-`ui/src/workbench-toolbars.tsx` composes a panel's `toolbar` (title,
+`ui/src/shared/panels/panel-toolbar.tsx` holds the shared panel-toolbar roles (`PanelToolbar`: title, leading/center/trailing zones, and the standard toggle), the per-side toggle icon, and the composition/relocation helpers both `Workbench` and `CollapsiblePanel` (with `CollapsiblePanelRelocated`) use (`ui/tests/unit/collapsible-panel-toolbar.test.tsx`, `ui/tests/browser/collapsible-panel-relocation.spec.ts`). `ui/src/shared/panels/panel-toolbar-group.ts` recognizes `ToolbarControlGroup`s marked `relocateOnCollapse`.
+`ui/src/components/layout/workbench/internal/workbench-toolbars.tsx` composes a panel's `toolbar` (title,
 zone groups, the standard keyed toggle) and the work area's
 `mainToolbar` / `mainBottomToolbar`, moving a closed panel's marked groups
 and toggle into the work area or a corner `FloatingToolbar`
 (`ui/tests/unit/workbench-toolbars.test.tsx`).
-`ui/src/workbench-resize.ts` holds the shared panel
-region-id convention, default limits, and default work-area minimums, and `ui/src/resize-grip.tsx` the
+`ui/src/components/layout/workbench/internal/workbench-resize.ts` holds the shared panel
+region-id convention, default limits, and default work-area minimums, and `ui/src/components/layout/resizable-region/internal/resize-grip.tsx` the
 separator grip both handles render (`ui/tests/unit/wire-workbench.test.ts`,
 `ui/tests/unit/workbench.test.tsx`, `ui/tests/browser/workbench-catalog.spec.ts`).
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
@@ -1024,12 +1030,12 @@ same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies
 catalog-owned finite specimen constraints so focused demos do not need local
 CSS, inline styles, or styling-only classes.
-`ui/src/content-item.tsx` (`@kerfjs/ui/content-item`) renders one
+`ui/src/components/surfaces/content-item/content-item.tsx` (`@kerfjs/ui/content-item`) renders one
 self-contained `.kui-content` child: 8px inline margin, a reserved 1px border,
 8px padding, with typed `frame` (`none`/`framed`) and `shape` (`rounded`/`pill`)
 props mapped onto the public `.kui-content-item--framed`/`--pill` modifiers.
 Its CSS lives in `ui/src/content-item.css`, which `layout.css` imports.
-`ui/src/spacer.tsx` is the decorative layout-gap primitive: `width` and `height`
+`ui/src/components/layout/spacer/spacer.tsx` is the decorative layout-gap primitive: `width` and `height`
 accept finite `UiSpaceName` shorthands or branded `CssLength` values, fixed gaps
 do not shrink, and `flex` consumes remaining space along a flex main axis.
 `ui/docs/catalog.md#catalog-demo-authoring-contract` is the single authoring
@@ -1046,13 +1052,14 @@ Heading recipes compose `Toolbar`, direct `ToolbarText`, and optional
 supporting copy on a separate row. Page and section titles opt into heading
 semantics through `ToolbarText.headingLevel`.
 Ordinary UI headings, paragraphs, and inline secondary copy use `Text`
-(`ui/src/text.tsx`), whose default `p`, optional `h1`–`h6`, and inline `span`
+(`ui/src/components/typography/text/text.tsx`), whose default `p`, optional `h1`–`h6`, and inline `span`
 variants render native semantics. Its companion CSS adds the standard
 transparent border and item padding to block variants while leaving `span`
 without box geometry. Its
 independent `tone`, `size`, and `font` unions expose quiet/danger, compact, and
 monospace roles through stable data attributes and semantic foundation tokens.
-`FieldLabel` lives in `ui/src/field-label.tsx` and remains exported through the
+`FieldLabel` lives in
+`ui/src/components/forms/field-label/field-label.tsx` and remains exported through the
 `text` entry for consumers. It is a plain preview heading whose typography and
 inline inset mirror a themed Web Awesome form-control label;
 applications connect its id to a preview group with `aria-labelledby`.

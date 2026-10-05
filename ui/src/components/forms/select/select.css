@@ -1,0 +1,454 @@
+.kui-select::part(combobox) {
+  min-height: remify(44px);
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  gap: 0;
+}
+.kui-select--label-hidden::part(form-control-label) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.kui-select::part(display-input) {
+  min-width: 0;
+  max-width: var(--kui-select-label-max-width, none);
+  overflow: hidden;
+  padding: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* A multiple Select summarizes its choices in the display text (installed by
+   select/register) instead of drawing a removable tag per choice. */
+.kui-select[multiple]::part(tags) {
+  display: none;
+}
+.kui-select[data-size="compact"]::part(combobox) {
+  min-height: remify(32px);
+}
+.kui-select[data-presentation="toolbar-borderless"]::part(combobox) {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.kui-select[data-presentation="navigation"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select[data-presentation="title"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select[data-presentation="title"]::part(combobox) {
+  width: max-content;
+  min-height: remify(36px);
+  padding-inline: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  font-size: var(--kui-font-l, remify(20px));
+  font-weight: 700;
+}
+.kui-select[data-presentation="title"]::part(display-input) {
+  field-sizing: content;
+  flex: 0 0 auto;
+}
+.kui-select[data-presentation="title"]::part(expand-icon) {
+  margin-inline-start: 0;
+}
+/* A Toolbar has an 8px inset; ListItem text starts at 17px after its own
+   margin, border, and padding. The group contributes 3px, so the title
+   Select advances 6px to share the list's text edge. */
+.kui-toolbar-control-group > .kui-select[data-presentation="title"] {
+  margin-inline-start: remify(6px);
+}
+.kui-select[data-presentation="inline"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select[data-presentation="inline"]::part(combobox) {
+  width: max-content;
+  min-height: 0;
+  padding: 0;
+  border-width: 0;
+  background: transparent;
+}
+.kui-select--custom-selected[data-presentation="inline"]::part(start) {
+  flex: 0 0 auto;
+}
+.kui-select--custom-selected[data-presentation="inline"]
+  .kui-select__custom-selected {
+  margin-inline-end: 0 !important;
+}
+.kui-select--custom-selected[data-presentation="inline"]
+  .kui-select__custom-selected-content {
+  display: flex;
+}
+.kui-select[data-focus-ring-owner="group"]:focus-within::part(combobox) {
+  outline: none;
+  box-shadow: none;
+}
+/* An icon-only trigger shows the selected icon and the disclosure caret as one
+   pill, the same control family as a toolbar popup-menu dropdown (an icon +
+   caret wa-button): symmetric 8px inline padding, 12px from the icon to the
+   caret's 20px box, the caret glyph size, and the control height, so the icon
+   sits left of center to balance the caret. Inside a ToolbarControlGroup the
+   trigger takes the control-slot height, overlap, and radius the group
+   provides (`--_kui-toolbar-control-group-slot-*`) so it is inset evenly on
+   every side, the group sizes to the trigger (wider than tall), and the
+   group-owned focus ring stays concentric with it. */
+.kui-select[data-selected-presentation="icon-only"] {
+  --_kui-select-height: remify(44px);
+  width: max-content;
+}
+.kui-select[data-selected-presentation="icon-only"][data-size="compact"] {
+  --_kui-select-height: remify(32px);
+}
+.kui-select[data-selected-presentation="icon-only"]::part(combobox) {
+  min-height: var(
+    --_kui-toolbar-control-group-slot-height,
+    var(--_kui-select-height)
+  );
+  padding-inline: remify(8px);
+  border-radius: var(
+    --kui-toolbar-item-radius,
+    var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+  );
+}
+/* Only a lone trigger takes the group's slot overlap and radius; beside
+   sibling controls it keeps the group's gap, end insets, and item radius, as
+   they do. */
+.kui-select[data-selected-presentation="icon-only"]:only-child {
+  margin-inline: calc(var(--_kui-toolbar-control-group-slot-overlap, 0px) * -1);
+}
+.kui-select[data-selected-presentation="icon-only"]:only-child::part(combobox) {
+  border-radius: var(
+    --_kui-toolbar-control-group-slot-radius,
+    var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+  );
+}
+/* In a ToolbarControlGroup, a Select beside other controls highlights its own
+   pill on hover, like its button and dropdown siblings; a lone Select instead
+   lifts the whole group (toolbar-control-group.css). */
+.kui-toolbar-control-group:not([data-single="true"])
+  > .kui-select:not(:only-child):hover::part(combobox) {
+  border-color: var(--kui-toolbar-control-border);
+  background: var(--kui-toolbar-control-hover-background);
+}
+/* With the group's per-control rings, a composed Select paints its own ring
+   even when it was told the group owns it: nothing else would show focus. It
+   matches the sibling controls' ring and offset. While its listbox is open the
+   popup shows focus instead, so the trigger ring stays off, as a PopupMenu
+   trigger's does. */
+.kui-toolbar-control-group[data-focus-ring="control"]
+  > .kui-select:not([open]):focus-within::part(combobox) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-select[data-focus-ring-inset="true"][data-focus-ring-owner="select"]:focus-within:not(
+    [open]
+  )::part(combobox) {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+/* The popup-menu wa-button draws the same chevron glyph at 0.875em inside a
+   20px box; match its box, spacing, and glyph size rather than the smaller
+   form-field disclosure scale. */
+.kui-select[data-selected-presentation="icon-only"]::part(expand-icon) {
+  margin-inline-start: remify(12px);
+  transform: scale(0.875);
+}
+.kui-select[data-caret="false"]::part(expand-icon) {
+  display: none;
+}
+.kui-select[data-selected-presentation="icon-only"][data-caret="false"]::part(
+    combobox
+  ) {
+  width: var(
+    --_kui-toolbar-control-group-slot-height,
+    var(--_kui-select-height)
+  );
+  justify-content: center;
+}
+.kui-select[data-caret="false"] .kui-select__placeholder-chevron {
+  display: none;
+}
+.kui-select[data-selected-presentation="icon-only"]::part(display-input) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.kui-select[data-selected-presentation="icon-only"]
+  .kui-select__icon[slot="start"] {
+  margin-inline-end: 0 !important;
+}
+.kui-select::part(start),
+.kui-select::part(end),
+.kui-select::part(expand-icon) {
+  margin: 0;
+}
+.kui-select::part(expand-icon) {
+  transform: scale(var(--kui-disclosure-icon-scale, 0.5));
+}
+.kui-select::part(expand-icon) {
+  transition: var(--_kui-popup-caret-transition);
+}
+.kui-select[open]::part(expand-icon) {
+  rotate: var(--_kui-popup-caret-open-rotation);
+}
+/* The open listbox already shows where focus is (its current option), so the
+   trigger drops its focus ring while the popup is visible, as a PopupMenu
+   trigger does; the ring returns when the popup closes with focus still on
+   the control. */
+.kui-select[open]::part(combobox) {
+  outline-color: transparent;
+}
+.kui-select::part(listbox) {
+  padding: var(--_kui-popup-inset);
+  width: max-content;
+  min-width: 100%;
+  max-width: min(remify(320px), calc(100vw - remify(20px)));
+}
+.kui-select--fit-menu::part(listbox) {
+  width: 100%;
+}
+.kui-select wa-option::part(base) {
+  align-items: center;
+}
+.kui-select wa-option {
+  --wa-form-control-activated-color: var(--_kui-popup-row-current-background);
+  --current-text-color: var(--_kui-popup-row-current-color);
+  padding: var(--_kui-popup-row-padding-block)
+    var(--_kui-popup-row-padding-inline-end) var(--_kui-popup-row-padding-block)
+    var(--_kui-popup-row-padding-inline-start);
+}
+.kui-select wa-option::part(start) {
+  align-self: center;
+  margin-inline-end: var(--_kui-popup-row-icon-gap);
+  margin-top: 0;
+}
+.kui-select wa-option::part(label) {
+  min-width: 0;
+  padding-block: var(--_kui-popup-row-label-padding-block);
+  line-height: var(--_kui-popup-row-label-line-height);
+  overflow-wrap: normal;
+  word-break: normal;
+  white-space: normal;
+}
+.kui-select__icon {
+  display: inline-flex;
+  width: var(--_kui-popup-row-icon-size);
+  height: var(--_kui-popup-row-icon-size);
+  flex: none;
+}
+.kui-select > .kui-select__icon[slot="start"] {
+  margin-inline-end: remify(8px) !important;
+}
+.kui-select__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.kui-select__custom-selected {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  overflow: hidden;
+  color: var(--kui-select-selected-color, inherit);
+  font-size: var(--kui-select-selected-font-size, inherit);
+  font-weight: var(--kui-select-selected-font-weight, inherit);
+}
+.kui-select__custom-selected-content {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kui-select--custom-selected::part(start) {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+/* A label can use the free start-slot width to truncate, but a caret-free
+   icon must keep its intrinsic width so the combobox can center the glyph. */
+.kui-select--custom-selected[data-selected-presentation="icon-only"][data-caret="false"]::part(
+    start
+  ) {
+  flex: 0 0 auto;
+}
+.kui-select--custom-selected[data-selected-presentation="icon-only"][data-caret="false"]
+  .kui-select__custom-selected {
+  margin-inline-end: 0 !important;
+}
+.kui-select--custom-selected::part(display-input) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.kui-select__group {
+  display: grid;
+  padding: remify(4px) 0;
+}
+.kui-select__group--separated {
+  margin-block-start: remify(4px);
+  padding-block-start: remify(8px);
+  border-block-start: 1px solid var(--kui-color-neutral-border-quiet);
+}
+.kui-select__group-title {
+  padding: var(--_kui-popup-group-title-padding);
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-2xs);
+  font-weight: var(--_kui-popup-group-title-font-weight);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kui-select__actions {
+  display: flex;
+  gap: remify(4px);
+  margin-block-start: remify(4px);
+  padding-block-start: remify(8px);
+  border-block-start: 1px solid var(--kui-color-neutral-border-quiet);
+}
+
+.kui-select__action {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: remify(36px);
+  padding-inline: remify(8px);
+  border: 0;
+  border-radius: var(--kui-radius-s);
+  color: var(--kui-color-neutral-on-quiet);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.kui-select__action:hover {
+  background: var(--kui-color-neutral-fill-quiet);
+}
+
+.kui-select__action:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+
+/* Loading placeholder: a static box that mirrors the closed combobox (label
+   above, a value skeleton and a dormant chevron inside a 44px control box).
+   Rendered instead of the interactive wa-select, so it needs no registration. */
+.kui-select--placeholder {
+  display: block;
+  width: 100%;
+}
+.kui-select__placeholder-label {
+  /* The live field's top label (see webawesome.css): a ListHeader-style label,
+     inset by the field's border + inline padding so it lines up with the value. */
+  display: block;
+  margin-block-end: remify(6px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.kui-select__placeholder-box {
+  display: flex;
+  min-height: remify(44px);
+  align-items: center;
+  justify-content: space-between;
+  gap: remify(8px);
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  background: var(--kui-color-surface);
+}
+.kui-select--placeholder[data-size="compact"] .kui-select__placeholder-box {
+  min-height: remify(32px);
+}
+.kui-select--placeholder[data-presentation="toolbar-borderless"]
+  .kui-select__placeholder-box {
+  border-color: transparent;
+  background: transparent;
+}
+.kui-select--placeholder[data-presentation="navigation"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select--placeholder[data-presentation="title"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select--placeholder[data-presentation="title"]
+  .kui-select__placeholder-box {
+  min-height: remify(36px);
+  padding-inline: 0;
+  border-color: transparent;
+  background: transparent;
+  font-size: var(--kui-font-l, remify(20px));
+  font-weight: 700;
+}
+.kui-select--placeholder[data-presentation="inline"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select--placeholder[data-presentation="inline"]
+  .kui-select__placeholder-box {
+  min-height: 0;
+  padding: 0;
+  border-width: 0;
+  background: transparent;
+}
+.kui-select__placeholder-hint {
+  /* The live wa-select hint part: small body text at Web Awesome's form-control
+     hint metrics (1.6 line height, 7px below the box), inset like the value. */
+  display: block;
+  margin-block-start: remify(7px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+  line-height: 1.6;
+}
+.kui-select__placeholder-chevron {
+  /* The live control's expand-icon box and scale, with the same glyph. */
+  display: grid;
+  width: remify(20px);
+  height: remify(16px);
+  flex: none;
+  place-items: center;
+  color: var(--kui-color-neutral-on-quiet);
+  transform: scale(var(--kui-disclosure-icon-scale, 0.5));
+}
+.kui-select__placeholder-chevron svg {
+  display: block;
+  width: auto;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* Explicit width policy applies to both the live control and its loading
+   placeholder; the presentation keeps its existing width when omitted. */
+.kui-select[data-trigger-width="fill"] {
+  width: 100%;
+  max-width: var(--kui-select-trigger-max-width, 100%);
+}
+.kui-select[data-trigger-width="fit-content"] {
+  width: fit-content;
+  max-width: var(--kui-select-trigger-max-width, 100%);
+}
+.kui-select[data-trigger-width="max-content"] {
+  width: max-content;
+  max-width: var(--kui-select-trigger-max-width, 100%);
+}

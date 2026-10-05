@@ -8,13 +8,19 @@ import {
   PanelRightOpen,
 } from 'lucide';
 
-import { List, type ListConfig } from './list.js';
-import { LucideIcon } from './lucide-icon.js';
-import { Pane, type PaneConfig } from './pane.js';
+import {
+  Toolbar,
+  type ToolbarConfig,
+} from '../../components/actions/toolbar/toolbar.js';
+import { ToolbarControlGroup } from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
+import {
+  List,
+  type ListConfig,
+} from '../../components/collections/list/list.js';
+import { Pane, type PaneConfig } from '../../components/layout/pane/pane.js';
+import { LucideIcon } from '../../components/media/lucide-icon/lucide-icon.js';
+import type { KerfUiContent } from '../content/semantic-content.js';
 import { isRelocatableGroup } from './panel-toolbar-group.js';
-import type { KerfUiContent } from './semantic-content.js';
-import { Toolbar, type ToolbarConfig } from './toolbar.js';
-import { ToolbarControlGroup } from './toolbar-control-group.js';
 
 /** Which edge a collapsible panel docks to. */
 export type PanelSide = 'left' | 'right' | 'bottom';

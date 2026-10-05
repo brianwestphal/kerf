@@ -1,7 +1,7 @@
 import { raw } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
-import { SplitView } from '../../src/split-view.js';
+import { SplitView } from '../../src/components/layout/split-view/split-view.js';
 
 const list = raw('<ul class="list">rows</ul>');
 const detail = raw('<section class="detail">detail</section>');

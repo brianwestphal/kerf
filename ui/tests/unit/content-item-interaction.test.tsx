@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { ContentItem } from '../../src/content-item.js';
-import { Grid } from '../../src/grid.js';
+import { Grid } from '../../src/components/layout/grid/grid.js';
+import { ContentItem } from '../../src/components/surfaces/content-item/content-item.js';
 import {
   isContentItemActivation,
   wireContentItems,
-} from '../../src/wire-content-items.js';
+} from '../../src/components/surfaces/content-item/wiring/wire-content-items.js';
 
 describe('interactive ContentItem', () => {
   it('renders flush geometry and native title on static and interactive items', () => {

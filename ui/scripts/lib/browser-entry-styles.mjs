@@ -78,6 +78,17 @@ export function relativeValueDependencies(moduleName, source) {
  * loads the same rules twice.
  */
 async function ownStyles(moduleName, sourceRoot) {
+  const publicName = posix.basename(moduleName);
+  if (publicName !== moduleName) {
+    const publicUrl = new URL(`${publicName}.css`, sourceRoot);
+    if (await exists(publicUrl)) {
+      const publicCss = await readFile(publicUrl, 'utf8');
+      const target = publicCss.match(
+        /@import\s+["']\.\/([^"']+)\.css["']/,
+      )?.[1];
+      if (target === moduleName) return [publicName];
+    }
+  }
   const url = new URL(`${moduleName}.css`, sourceRoot);
   if (!(await exists(url))) return [];
   const css = (await readFile(url, 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '');

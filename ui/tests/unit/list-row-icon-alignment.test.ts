@@ -1,14 +1,12 @@
 import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
 
 import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
+import { componentStylesheet } from './helpers/component-stylesheet.js';
+
 async function declarationsFor(file: string, selector: string) {
-  const css = await readFile(
-    resolve(import.meta.dirname, `../../src/${file}`),
-    'utf8',
-  );
+  const css = await readFile(await componentStylesheet(file), 'utf8');
   const root = postcss.parse(css, { from: file });
   const rule = root.nodes.find(
     (node) => node.type === 'rule' && node.selector === selector,

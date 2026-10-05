@@ -5,7 +5,8 @@ import { raw } from 'kerfjs';
 import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
-import { Workbench } from '../../src/workbench.js';
+import { Workbench } from '../../src/components/layout/workbench/workbench.js';
+import { componentStylesheet } from './helpers/component-stylesheet.js';
 
 const main = raw('<div class="editor">editor</div>');
 const panel = (label: string) => raw(`<div>${label}</div>`);
@@ -234,7 +235,10 @@ describe('Workbench', () => {
   });
 
   it('bottom-anchors drawer content so both motion directions share one origin', async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const declarations = (selector: string) => {
       const rule = root.nodes.find(
@@ -531,7 +535,10 @@ describe('Workbench', () => {
   });
 
   it('lets inline rails and the drawer give way around the work-area minimum', async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = (selector: string) => {
       const found = css.nodes.find(
@@ -640,7 +647,10 @@ describe('Workbench', () => {
   });
 
   it('presents opted-in rails as overlays below their Workbench container breakpoint', async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const normalize = (selector: string) =>
       selector.replace(/\s+/g, ' ').replace(/\( /g, '(').replace(/ \)/g, ')');
@@ -733,7 +743,10 @@ describe('Workbench', () => {
   });
 
   it('limits edge-context matching to region and known component roots', async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const selectors: string[] = [];
     css.walkRules((rule) => {
@@ -756,7 +769,7 @@ describe('Workbench', () => {
       'tab-scaffold',
     ]) {
       const own = await readFile(
-        resolve(import.meta.dirname, `../../src/${component}.css`),
+        await componentStylesheet(`${component}.css`),
         'utf8',
       );
       expect(own).toContain(`> [data-component="${component}"]:only-child`);
@@ -765,7 +778,10 @@ describe('Workbench', () => {
   });
 
   it('sizes a static overlay rail to exactly its extent, border included', async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const decls = (selector: string) => {
       const rule = css.nodes.find(
@@ -805,7 +821,10 @@ describe('Workbench', () => {
   });
 
   it("floats a collapsed rail's restore control above an expanded inline drawer, scoped to the Workbench", async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rules: Array<{ selector: string; decls: Record<string, string> }> =
       [];
@@ -874,7 +893,7 @@ describe('Workbench', () => {
 
   it('anchors restore controls to the Workbench, inset once even around a FloatingToolbar', async () => {
     const parse = async (name: string) => {
-      const file = resolve(import.meta.dirname, `../../src/${name}`);
+      const file = await componentStylesheet(name);
       return postcss.parse(await readFile(file, 'utf8'), { from: file });
     };
     const declsIn = (
@@ -967,7 +986,7 @@ describe('Workbench', () => {
 
   it("lets a region's sole Pane or layout fill it from its own stylesheet", async () => {
     const fills = async (file: string) => {
-      const path = resolve(import.meta.dirname, `../../src/${file}`);
+      const path = await componentStylesheet(file);
       const css = postcss.parse(await readFile(path, 'utf8'), { from: path });
       const selectors: string[] = [];
       css.walkRules((rule) => {
@@ -1001,7 +1020,7 @@ describe('Workbench', () => {
       ]);
     // The layouts never size the Pane from their own stylesheets.
     for (const component of ['nav-stack', 'tab-scaffold']) {
-      const path = resolve(import.meta.dirname, `../../src/${component}.css`);
+      const path = await componentStylesheet(`${component}.css`);
       const css = postcss.parse(await readFile(path, 'utf8'), { from: path });
       css.walkRules((rule) => {
         if (/\[data-component="pane"\]:only-child\s*$/.test(rule.selector))
@@ -1033,7 +1052,10 @@ describe('Workbench', () => {
   });
 
   it('gives a static overlay drawer an explicit height instead of collapsing to its border', async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const decls = (selector: string) => {
       const rule = css.nodes.find(
@@ -1069,7 +1091,10 @@ describe('Workbench', () => {
   });
 
   it('stacks overlay rails above an overlay drawer, and both above restore controls', async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const normalize = (selector: string) => selector.replace(/\s+/g, ' ');
     /** The z-index of every rule for `selector`, static or in a query. */
@@ -1114,7 +1139,10 @@ describe('Workbench', () => {
   });
 
   it('drops a collapsed static overlay rail surface so it covers nothing', async () => {
-    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/layout/workbench/workbench.css',
+    );
     const css = await readFile(file, 'utf8');
     const root = postcss.parse(css, { from: file });
     const rule = root.nodes.find(

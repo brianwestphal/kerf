@@ -1,0 +1,183 @@
+.kui-tab-bar {
+  --kui-tab-bar-background: transparent;
+  --kui-tab-bar-border: transparent;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: calc(
+    var(--kui-toolbar-group-size, calc(2px + remify(42px))) +
+      (2 * var(--kui-toolbar-gap, remify(8px)))
+  );
+  padding: var(--kui-toolbar-gap, remify(8px));
+  box-sizing: border-box;
+  background: transparent;
+  align-items: center;
+  gap: var(--kui-toolbar-gap, remify(8px));
+}
+
+.kui-tab-bar__tabs {
+  display: flex;
+  min-width: 0;
+  min-height: var(
+    --kui-tab-bar-strip-min-height,
+    var(--kui-toolbar-group-size, calc(2px + remify(42px)))
+  );
+  margin-block: var(--kui-tab-bar-strip-margin-block, 0);
+  padding: var(--kui-tab-bar-strip-padding, 1px);
+  /* Scroll along the strip only: overflow-x alone computes overflow-y to auto,
+     so any vertical excess would let the strip scroll vertically on touch. */
+  overflow: auto var(--kui-tab-bar-strip-overflow-block, hidden);
+  box-sizing: border-box;
+  border: var(--kui-tab-bar-strip-border-width, 1px) solid
+    var(--kui-tab-bar-border);
+  border-radius: var(
+    --kui-tab-bar-strip-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
+  background: var(
+    --kui-tab-bar-strip-background,
+    var(--kui-tab-bar-background)
+  );
+  scrollbar-width: none;
+  align-items: center;
+  flex: var(--kui-tab-bar-strip-flex, 1 1 auto);
+  gap: var(--kui-tab-bar-strip-gap, 0);
+  scroll-padding-inline: var(--kui-tab-bar-strip-scroll-padding-inline, 0);
+  overscroll-behavior-inline: contain;
+}
+.kui-tab-bar__tabs[data-snap-tabs="true"] {
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline-start: var(--kui-tab-bar-snap-inset, 0px);
+  padding-inline-end: calc(
+    var(--kui-tab-bar-strip-padding, 1px) +
+      var(--kui-tab-bar-snap-end-extra, 0px)
+  );
+}
+.kui-tab-bar[data-icon-only-at] .kui-tab-bar__tabs {
+  container: kui-tab-bar-tabs / inline-size;
+}
+.kui-tab-bar[data-presentation="segmented"],
+.kui-tab-bar[data-presentation="inspector"] {
+  --kui-tab-bar-background: var(--kui-color-neutral-fill-quiet);
+  --kui-tab-bar-border: var(--kui-color-neutral-border-quiet);
+}
+/* A segmented strip's outer ends follow the pill track: a compact tab is inset
+   from the track's ends by the same distance as from its top and bottom, so
+   each end is concentric with the track. AppTab rounds its own outer corners
+   to match in this context (see app-tab.css); TabBar never styles AppTab. */
+.kui-tab-bar[data-presentation="segmented"]
+  .kui-tab-bar__tabs:has(> .kui-app-tab[data-size="compact"]) {
+  padding-inline: calc(
+    (var(--kui-toolbar-group-size, calc(2px + remify(42px))) - remify(32px)) /
+      2 - 1px
+  );
+}
+.kui-tab-bar[data-presentation="inspector"] {
+  min-height: remify(34px);
+  padding: 0;
+}
+.kui-tab-bar[data-presentation="inspector"] .kui-tab-bar__tabs {
+  min-height: var(--kui-tab-bar-strip-min-height, remify(34px));
+  border-radius: var(--kui-tab-bar-strip-radius, var(--kui-radius-s));
+}
+.kui-tab-bar[data-trailing-placement="adjacent"] .kui-tab-bar__tabs {
+  flex: 0 1 auto;
+}
+
+.kui-tab-bar__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.kui-tab-bar__leading,
+.kui-tab-bar__trailing,
+.kui-tab-bar__end {
+  display: flex;
+  min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  align-items: center;
+  flex: none;
+}
+.kui-tab-bar__trailing {
+  flex: var(--kui-tab-bar-trailing-flex, none);
+}
+
+.kui-tab-bar__end {
+  margin-inline-start: auto;
+}
+
+/* Overflow dividers: a line on each side of the tab strip beyond which tabs
+   are scrolled out of view, as `wireScrollDividers` reports through the
+   strip's `data-scroll-overflow` (physical sides). A rail strip has no
+   visible track, so the bar draws the line with its own pseudo-elements,
+   ordered onto the strip's edges: `::before` between the leading zone and the
+   strip, `::after` between the strip and the trailing zone. Each is 1px wide
+   and gives back its width and one gap through a negative margin, so it
+   overlaps the strip's edge and never moves a tab or an action; hidden, it is
+   transparent. A segmented or inspector strip already draws a bordered track,
+   so its overflowing side takes the divider color on that border instead of
+   a straight line across its rounded end. */
+.kui-tab-bar > .kui-tab-bar__leading {
+  order: -2;
+}
+
+.kui-tab-bar > :is(.kui-tab-bar__trailing, .kui-tab-bar__end) {
+  order: 1;
+}
+
+.kui-tab-bar::before,
+.kui-tab-bar::after {
+  content: "";
+  position: relative;
+  z-index: 1;
+  width: 1px;
+  background: transparent;
+  pointer-events: none;
+  align-self: stretch;
+  flex: none;
+}
+
+.kui-tab-bar::before {
+  order: -1;
+  margin-inline-end: calc(-1px - var(--kui-toolbar-gap, remify(8px)));
+}
+
+.kui-tab-bar::after {
+  margin-inline-start: calc(-1px - var(--kui-toolbar-gap, remify(8px)));
+}
+
+.kui-tab-bar[data-presentation="rail"]:dir(ltr):not(
+    :has(> .kui-tab-bar__tabs > .kui-app-tab[data-pinned="true"])
+  ):has(> .kui-tab-bar__tabs[data-scroll-overflow*="l"])::before,
+.kui-tab-bar[data-presentation="rail"]:dir(rtl):not(
+    :has(> .kui-tab-bar__tabs > .kui-app-tab[data-pinned="true"])
+  ):has(> .kui-tab-bar__tabs[data-scroll-overflow*="r"])::before,
+.kui-tab-bar[data-presentation="rail"]:dir(ltr):has(
+    > .kui-tab-bar__tabs[data-scroll-overflow*="r"]
+  )::after,
+.kui-tab-bar[data-presentation="rail"]:dir(rtl):has(
+    > .kui-tab-bar__tabs[data-scroll-overflow*="l"]
+  )::after {
+  background: var(
+    --kui-tab-bar-divider-color,
+    var(--kui-color-neutral-border-normal)
+  );
+}
+
+.kui-tab-bar:not([data-presentation="rail"])
+  > .kui-tab-bar__tabs[data-scroll-overflow*="l"]:not(
+    :dir(ltr):has(> .kui-app-tab[data-pinned="true"])
+  ) {
+  border-left-color: var(
+    --kui-tab-bar-divider-color,
+    var(--kui-color-neutral-border-normal)
+  );
+}
+
+.kui-tab-bar:not([data-presentation="rail"])
+  > .kui-tab-bar__tabs[data-scroll-overflow*="r"]:not(
+    :dir(rtl):has(> .kui-app-tab[data-pinned="true"])
+  ) {
+  border-right-color: var(
+    --kui-tab-bar-divider-color,
+    var(--kui-color-neutral-border-normal)
+  );
+}

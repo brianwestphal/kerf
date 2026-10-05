@@ -4,8 +4,13 @@ import { resolve } from 'node:path';
 import postcss, { type AtRule, type Root, type Rule } from 'postcss';
 import { describe, expect, it } from 'vitest';
 
+import { componentStylesheet } from './helpers/component-stylesheet.js';
+
 async function cssRoot(file: string): Promise<Root> {
-  const path = resolve(import.meta.dirname, `../../src/${file}`);
+  const path =
+    file === 'foundation.css'
+      ? resolve(import.meta.dirname, '../../src/foundation.css')
+      : await componentStylesheet(file);
   return postcss.parse(await readFile(path, 'utf8'), { from: path });
 }
 

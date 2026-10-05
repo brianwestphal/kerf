@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   installPopupMenuSubmenuPlacement,
   phoneSubmenuPosition,
-} from '../../src/install-popup-menu-submenu-placement.js';
+} from '../../src/components/actions/popup-menu/internal/install-popup-menu-submenu-placement.js';
 
 const rect = (left: number, top: number, width: number, height: number) =>
   new DOMRect(left, top, width, height);

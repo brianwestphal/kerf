@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Pane } from '../../src/pane.js';
+import { Pane } from '../../src/components/layout/pane/pane.js';
 
 describe('Pane', () => {
   it('renders one scrolling vertical content owner with separators off by default', () => {

@@ -1,11 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { animateSelectPopup } from '../../src/animate-select-popup.js';
-import { installSelectLifecycle } from '../../src/install-select-lifecycle.js';
+import { animateSelectPopup } from '../../src/components/forms/select/internal/animate-select-popup.js';
+import { installSelectLifecycle } from '../../src/components/forms/select/internal/install-select-lifecycle.js';
 
-vi.mock('../../src/animate-select-popup.js', () => ({
-  animateSelectPopup: vi.fn(),
-}));
+vi.mock(
+  '../../src/components/forms/select/internal/animate-select-popup.js',
+  () => ({
+    animateSelectPopup: vi.fn(),
+  }),
+);
 
 function host() {
   const element = Object.assign(document.createElement('div'), {

@@ -1,8 +1,11 @@
 import { raw } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { NavStack, type NavStackView } from '../../src/nav-stack.js';
-import { wireNavStack } from '../../src/wire-nav-stack.js';
+import {
+  NavStack,
+  type NavStackView,
+} from '../../src/components/navigation/nav-stack/nav-stack.js';
+import { wireNavStack } from '../../src/components/navigation/nav-stack/wiring/wire-nav-stack.js';
 
 const view = (
   key: string,

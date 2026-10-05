@@ -44,6 +44,10 @@ export const uiChangeSyncSteps = () => [
 export function uiChangeGateSteps({ updateBundleBudget = false, reason } = {}) {
   return [
     {
+      label: 'validate source organization',
+      command: 'npm run check:source-organization',
+    },
+    {
       label: 'validate catalog and integration projections',
       command: 'npm run check:catalog',
     },

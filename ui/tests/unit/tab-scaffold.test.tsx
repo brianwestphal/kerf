@@ -1,8 +1,11 @@
 import { raw } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { TabScaffold, type TabScaffoldTab } from '../../src/tab-scaffold.js';
-import { wireTabScaffold } from '../../src/wire-tab-scaffold.js';
+import {
+  TabScaffold,
+  type TabScaffoldTab,
+} from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
+import { wireTabScaffold } from '../../src/components/navigation/tab-scaffold/wiring/wire-tab-scaffold.js';
 
 const tabs: TabScaffoldTab[] = [
   {

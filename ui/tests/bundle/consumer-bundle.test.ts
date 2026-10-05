@@ -656,10 +656,22 @@ describe('consumer bundle boundaries', () => {
             .trim() === ''
             ? aggregated
             : [module];
-        for (const style of required)
-          expect(shipped, `${subpath} wrapper misses ${style}.css`).toContain(
-            style,
-          );
+        for (const style of required) {
+          const publicName = posix.basename(style);
+          const publicStylesheet = new URL(`${publicName}.css`, src);
+          const deliveredStyle =
+            publicName !== style &&
+            existsSync(publicStylesheet) &&
+            (await readFile(publicStylesheet, 'utf8')).includes(
+              `./${style}.css`,
+            )
+              ? publicName
+              : style;
+          expect(
+            shipped,
+            `${subpath} wrapper misses ${deliveredStyle}.css`,
+          ).toContain(deliveredStyle);
+        }
       }
     }
   });
@@ -834,7 +846,10 @@ describe('consumer bundle boundaries', () => {
 
   it('publishes compiled rem CSS without the authoring function', async () => {
     const source = await readFile(
-      new URL('../../src/toolbar-control-group.css', import.meta.url),
+      new URL(
+        '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
+        import.meta.url,
+      ),
       'utf8',
     );
     const built = await readFile(
@@ -842,7 +857,10 @@ describe('consumer bundle boundaries', () => {
       'utf8',
     );
     const disclosureSource = await readFile(
-      new URL('../../src/disclosure-arrow.css', import.meta.url),
+      new URL(
+        '../../src/components/navigation/disclosure-arrow/disclosure-arrow.css',
+        import.meta.url,
+      ),
       'utf8',
     );
     const disclosureBuilt = await readFile(
@@ -850,7 +868,10 @@ describe('consumer bundle boundaries', () => {
       'utf8',
     );
     const menuHeaderSource = await readFile(
-      new URL('../../src/list-header.css', import.meta.url),
+      new URL(
+        '../../src/components/collections/list-header/list-header.css',
+        import.meta.url,
+      ),
       'utf8',
     );
     const menuHeaderBuilt = await readFile(
@@ -862,7 +883,10 @@ describe('consumer bundle boundaries', () => {
       'utf8',
     );
     const valueTableSource = await readFile(
-      new URL('../../src/value-table.css', import.meta.url),
+      new URL(
+        '../../src/components/data-display/value-table/value-table.css',
+        import.meta.url,
+      ),
       'utf8',
     );
     const valueTableBuilt = await readFile(

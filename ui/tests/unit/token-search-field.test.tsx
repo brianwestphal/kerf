@@ -5,14 +5,14 @@ import { mount, signal } from 'kerfjs';
 import { CircleHelp } from 'lucide';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { LucideIcon } from '../../src/lucide-icon.js';
+import { ToolbarControlGroup } from '../../src/components/actions/toolbar-control-group/toolbar-control-group.js';
 import {
   placeTokenSearchCaret,
   readTokenSearchField,
   TokenSearchField,
   type TokenSearchToken,
-} from '../../src/token-search-field.js';
-import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
+} from '../../src/components/forms/token-search-field/token-search-field.js';
+import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 
 const asHtml = (value: unknown) => String(value);
 
@@ -220,7 +220,10 @@ describe('TokenSearchField', () => {
 
   it('pins leading, first-line, clear, and trailing content to one fixed alignment slot', async () => {
     const css = await readFile(
-      resolve(import.meta.dirname, '../../src/token-search-field.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/forms/token-search-field/token-search-field.css',
+      ),
       'utf8',
     );
     expect(css).toContain('--kui-token-search-line-size: remify(34px)');
@@ -303,11 +306,17 @@ describe('TokenSearchField', () => {
     expect(populated).toContain('role="searchbox"');
 
     const fieldCss = await readFile(
-      resolve(import.meta.dirname, '../../src/token-search-field.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/forms/token-search-field/token-search-field.css',
+      ),
       'utf8',
     );
     const groupCss = await readFile(
-      resolve(import.meta.dirname, '../../src/toolbar-control-group.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
+      ),
       'utf8',
     );
     expect(fieldCss).toMatch(

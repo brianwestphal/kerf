@@ -4,12 +4,12 @@ import { resolve } from 'node:path';
 import { Circle } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
-import { px, remify, space } from '../../src/css-values.js';
-import { DisclosureArrow } from '../../src/disclosure-arrow.js';
-import { FloatingToolbar } from '../../src/floating-toolbar.js';
-import { ListHeader } from '../../src/list-header.js';
-import { LucideIcon } from '../../src/lucide-icon.js';
-import { TokenSearchField } from '../../src/token-search-field.js';
+import { FloatingToolbar } from '../../src/components/actions/floating-toolbar/floating-toolbar.js';
+import { ListHeader } from '../../src/components/collections/list-header/list-header.js';
+import { TokenSearchField } from '../../src/components/forms/token-search-field/token-search-field.js';
+import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
+import { DisclosureArrow } from '../../src/components/navigation/disclosure-arrow/disclosure-arrow.js';
+import { px, remify, space } from '../../src/shared/styles/css-values.js';
 
 const asHtml = (value: unknown) => String(value);
 const icon = LucideIcon({ icon: Circle, name: 'circle' });
@@ -155,7 +155,10 @@ describe('props that replace raw token overrides', () => {
 
   it('frames a content item with the neutral border without changing geometry', () => {
     const css = readFileSync(
-      resolve(import.meta.dirname, '../../src/content-item.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/surfaces/content-item/content-item.css',
+      ),
       'utf8',
     );
     expect(css).toMatch(

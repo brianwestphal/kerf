@@ -53,7 +53,7 @@ describe('ToolbarControlGroup avatar image ownership', () => {
   it('uses contain fitting on the single group and multi-button selection', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/toolbar-control-group.css',
+      '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const base = declarations(
@@ -84,7 +84,7 @@ describe('ToolbarControlGroup avatar image ownership', () => {
   it('changes only the group color on hover so avatar fitting stays stable', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/toolbar-control-group.css',
+      '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     for (const selector of [
@@ -106,7 +106,7 @@ describe('ToolbarControlGroup compact mixed selection', () => {
   it('keeps standard padding and overlays the outer border without a separator', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/toolbar-control-group.css',
+      '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const compact = declarations(

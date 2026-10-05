@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AppTab } from '../../src/app-tab.js';
-import { TabBar } from '../../src/tab-bar.js';
-import { reorderTabs, wireTabBars } from '../../src/wire-tab-bars.js';
+import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
+import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
+import {
+  reorderTabs,
+  wireTabBars,
+} from '../../src/components/navigation/tab-bar/wiring/wire-tab-bars.js';
 
 const roots: HTMLElement[] = [];
 let originalScrollIntoView: typeof Element.prototype.scrollIntoView;

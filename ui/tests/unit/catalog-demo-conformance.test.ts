@@ -287,7 +287,7 @@ describe('Recipe conformance analysis', () => {
     const failures = analyze(`
       import { Pane } from '@kerfjs/ui/src/pane';
       import { Hidden } from '@kerfjs/ui/not-exported';
-      import { Private } from '../../src/pane.js';
+      import { Private } from '../../src/components/layout/pane/pane.js';
       export const render = () => <Pane>
     `);
     expect(failures.map((failure) => failure.rule)).toEqual(

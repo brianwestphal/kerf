@@ -147,9 +147,9 @@ export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { PaneSeparatorSide } from './pane.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as Sides } from './sides-BPSWde0A.js';
+import { PaneSeparatorSide } from './pane.js';
 
 type ToolbarPosition = 'header' | 'footer';
 interface ToolbarProps {
@@ -363,8 +363,8 @@ export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, ty
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { CssLength } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
 
 /** Where a {@link FloatingToolbar} floats within its positioned container. */
 type FloatingToolbarPosition = 'bottom' | 'bottom-start' | 'bottom-end' | 'top' | 'top-start' | 'top-end';
@@ -631,11 +631,11 @@ export { ListHeader, type ListHeaderProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as Sides } from './sides-BPSWde0A.js';
+import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 
 type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -1265,10 +1265,10 @@ export { type ScrollDividerTarget, type WireScrollDividersOptions, wireScrollDiv
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { PaneAppearance } from './pane.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { ToolbarConfig } from './toolbar.js';
 import { ToolbarTextSize, HeadingLevel } from './toolbar-text.js';
+import { PaneAppearance } from './pane.js';
 import './sides-BPSWde0A.js';
 
 /**
@@ -1387,12 +1387,12 @@ export { type WireNavStackOptions, wireNavStack };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { NavStackProps, NavStackView } from './nav-stack.js';
 import { ResizableRegionProps } from './resizable-region.js';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import './pane.js';
 import './toolbar.js';
 import './sides-BPSWde0A.js';
+import './pane.js';
 import './toolbar-text.js';
 import './css-values.js';
 
@@ -1579,16 +1579,16 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { ListConfig } from './list.js';
 import { NavStackProps } from './nav-stack.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-CL9tYOkh.js';
 import { ToolbarConfig } from './toolbar.js';
-import { a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-DDKh4uKd.js';
-import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
+import './css-values.js';
 import './toolbar-text.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -1973,18 +1973,18 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { P as PanelSide, a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-CL9tYOkh.js';
+export { e as collapsiblePanelToggleIcon } from './panel-toolbar-CL9tYOkh.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
-import { P as PanelSide, a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-DDKh4uKd.js';
-export { e as collapsiblePanelToggleIcon } from './panel-toolbar-DDKh4uKd.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import './css-values.js';
-import './flex-alignment-4ms8ZbV8.js';
+import './toolbar.js';
 import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
-import './toolbar.js';
+import './css-values.js';
+import './flex-alignment-4ms8ZbV8.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 type CollapsiblePanelSide = PanelSide;
@@ -2179,8 +2179,8 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { PaneAppearance } from './pane.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { PaneAppearance } from './pane.js';
 
 interface TabScaffoldTabBase<Id extends string> {
     id: Id;
@@ -2280,8 +2280,8 @@ export { type WireTabScaffoldOptions, wireTabScaffold };
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { CssLength } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
 
 type ResizableRegionAxis = 'horizontal' | 'vertical';
 type ResizableRegionEdge = 'start' | 'end';
@@ -2426,20 +2426,20 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-BuHELdXR.js';
-export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-BuHELdXR.js';
+import { a as CatalogProps } from './types-C9BubXfz.js';
+export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-C9BubXfz.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
-import './pane.js';
 import './sides-BPSWde0A.js';
+import './pane.js';
 import './workbench.js';
 import './list.js';
-import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './css-values.js';
 import './nav-stack.js';
 import './toolbar-text.js';
 import './resizable-region.js';
-import './panel-toolbar-DDKh4uKd.js';
+import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
 import 'lucide';
 
@@ -2521,20 +2521,20 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-BuHELdXR.js';
-import './semantic-content-BbzjvSu9.js';
-import 'kerfjs';
+import { C as CatalogResource } from './types-C9BubXfz.js';
 import './toolbar.js';
-import './pane.js';
+import 'kerfjs';
+import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
+import './pane.js';
 import './workbench.js';
 import './list.js';
-import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './css-values.js';
 import './nav-stack.js';
 import './toolbar-text.js';
 import './resizable-region.js';
-import './panel-toolbar-DDKh4uKd.js';
+import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
 import 'lucide';
 
@@ -2700,9 +2700,9 @@ export { SegmentedControl, type SegmentedControlAppearance, type SegmentedContro
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssForegroundColor } from './css-values.js';
 import { LucideNode } from './lucide-icon.js';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import 'lucide';
 
 interface SelectChoice<Value extends string = string> {
@@ -2946,8 +2946,8 @@ export { Skeleton, type SkeletonProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { CssFlexKeyword, CssFlex } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssFlexKeyword, CssFlex } from './css-values.js';
 
 type SunkenPanelShape = 'rounded' | 'square';
 interface SunkenPanelProps {
@@ -2977,16 +2977,16 @@ export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ## `@kerfjs/ui/token-search-field`
 
 ```ts
+export { T as TokenSearchEditorAttributes, a as TokenSearchField, b as TokenSearchFieldProps, c as TokenSearchFieldValue, j as TokenSearchToken, k as TokenSearchTrailingAction, p as placeTokenSearchCaret, r as readTokenSearchField } from './token-search-model-DTcTXWMS.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
-export { T as TokenSearchEditorAttributes, a as TokenSearchField, b as TokenSearchFieldProps, c as TokenSearchFieldValue, j as TokenSearchToken, k as TokenSearchTrailingAction, p as placeTokenSearchCaret, r as readTokenSearchField } from './token-search-field-CVGwDn2y.js';
 ```
 
 ## `@kerfjs/ui/wire-token-search-fields`
 
 ```ts
 import { Signal } from 'kerfjs';
-import { d as TokenSearchModel } from './token-search-field-CVGwDn2y.js';
+import { d as TokenSearchModel } from './token-search-model-DTcTXWMS.js';
 import './semantic-content-BbzjvSu9.js';
 
 interface TokenSearchSubmit {
@@ -3347,8 +3347,8 @@ export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps,
 ```ts
 import * as kerfjs from 'kerfjs';
 import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
-import { CssForegroundColor } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssForegroundColor } from './css-values.js';
 
 type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     children: string;
@@ -3411,10 +3411,10 @@ export { FieldLabel, type FieldLabelProps, Text, type TextBorder, type TextConte
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
-import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { S as Sides } from './sides-BPSWde0A.js';
+import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 
 type RowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -3464,8 +3464,8 @@ export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowP
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 
 type GridRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -3541,7 +3541,7 @@ export { CssLength, Spacer, type SpacerProps, UiSpaceName };
 ## `@kerfjs/ui/token-search-model`
 
 ```ts
+export { d as TokenSearchModel, e as TokenSearchModelOptions, f as TokenSearchResolvedToken, g as TokenSearchRule, h as TokenSearchState, i as TokenSearchSuggestion, l as createTokenSearchModel } from './token-search-model-DTcTXWMS.js';
 import 'kerfjs';
-export { d as TokenSearchModel, e as TokenSearchModelOptions, f as TokenSearchResolvedToken, g as TokenSearchRule, h as TokenSearchState, i as TokenSearchSuggestion, l as createTokenSearchModel } from './token-search-field-CVGwDn2y.js';
 import './semantic-content-BbzjvSu9.js';
 ```

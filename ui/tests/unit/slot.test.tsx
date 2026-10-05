@@ -7,7 +7,11 @@ import {
   CatalogExample,
   CatalogExampleStack,
 } from '../../src/catalog.js';
-import { CollapsiblePanelToggle } from '../../src/collapsible-panel.js';
+import { CollapsiblePanelToggle } from '../../src/components/layout/collapsible-panel/collapsible-panel.js';
+import { SplitView } from '../../src/components/layout/split-view/split-view.js';
+import { Workbench } from '../../src/components/layout/workbench/workbench.js';
+import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
+import { TabScaffold } from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
 import {
   AppTab,
   Badge,
@@ -44,10 +48,6 @@ import {
   ValueTable,
   ValueTableRow,
 } from '../../src/index.js';
-import { NavStack } from '../../src/nav-stack.js';
-import { SplitView } from '../../src/split-view.js';
-import { TabScaffold } from '../../src/tab-scaffold.js';
-import { Workbench } from '../../src/workbench.js';
 
 type SlotCase = {
   name: string;

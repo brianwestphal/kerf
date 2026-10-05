@@ -1,0 +1,207 @@
+.kui-tab-scaffold {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  flex-direction: column;
+  background: var(--kui-color-surface);
+  /* Safe areas: the scenes and the bar paint through unsafe areas; the bar
+     compensates for the bottom and inline edges, and the scenes for the top
+     and inline edges (see pane.css for the `--kui-edge-inset-*` context). */
+  --_kui-tab-scaffold-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-tab-scaffold-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-tab-scaffold-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-tab-scaffold-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
+}
+
+.kui-tab-scaffold__scenes {
+  --kui-edge-inset-block-start: var(--_kui-tab-scaffold-safe-block-start);
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: var(--_kui-tab-scaffold-safe-inline-start);
+  --kui-edge-inset-inline-end: var(--_kui-tab-scaffold-safe-inline-end);
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Every tab stays mounted (its NavStack keeps its stack and scroll); only the
+   active scene is shown. */
+.kui-tab-scaffold__scene {
+  position: absolute;
+  overflow: auto;
+  inset: 0;
+}
+
+.kui-tab-scaffold__scene[data-appearance="sunken"] {
+  background: var(
+    --kui-sunken-panel-background,
+    var(--kui-color-surface-lowered)
+  );
+}
+
+/* A scene is its region's scroll owner, so its top inset is padding inside
+   the scroller. A scene whose only child is a Pane or layout (usually a
+   NavStack) lets that child own the insets instead. */
+.kui-tab-scaffold__scene:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+) {
+  padding-block-start: var(--kui-edge-inset-block-start);
+  padding-inline: var(--kui-edge-inset-inline-start)
+    var(--kui-edge-inset-inline-end);
+  scroll-padding-block-start: var(--kui-edge-inset-block-start);
+}
+
+.kui-tab-scaffold__scene
+  > :not(
+    :is(
+      [data-component="pane"],
+      [data-component="nav-stack"],
+      [data-component="split-view"],
+      [data-component="workbench"],
+      [data-component="tab-scaffold"]
+    ):only-child
+  ) {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
+}
+
+.kui-tab-scaffold__scene[data-active="false"] {
+  visibility: hidden;
+}
+
+.kui-tab-scaffold__bar {
+  display: flex;
+  flex: 0 0 auto;
+  padding-block-start: var(--kui-space-2xs);
+  /* Respect the home-indicator safe area on iOS-class devices. */
+  padding-block-end: calc(
+    var(--kui-space-2xs) + var(--_kui-tab-scaffold-safe-block-end)
+  );
+  padding-inline: var(--_kui-tab-scaffold-safe-inline-start)
+    var(--_kui-tab-scaffold-safe-inline-end);
+  /* Chrome divider: with `chromeDividers="scroll"` (the default, no
+     attribute) the bar's 1px top border shows only while the active scene's
+     content continues below it — never at the scroll end or when the content
+     fits. `wireScrollDividers` reports that state through
+     `data-scroll-divider`; `always` shows it without the wiring, and `none`
+     never. The border is always there and only its color changes, so
+     showing it never moves the bar or a tab. */
+  border-block-start: 1px solid
+    var(--_kui-tab-scaffold-bar-divider, transparent);
+  background: var(--kui-color-surface);
+}
+
+.kui-tab-scaffold:not([data-chrome-dividers])
+  > .kui-tab-scaffold__bar[data-scroll-divider*="t"],
+.kui-tab-scaffold[data-chrome-dividers="always"] > .kui-tab-scaffold__bar {
+  --_kui-tab-scaffold-bar-divider: var(--kui-color-neutral-border-normal);
+}
+
+.kui-tab-scaffold__tab {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: remify(44px);
+  padding: var(--kui-space-2xs) var(--kui-space-xs);
+  border: 0;
+  color: var(--kui-color-text-quiet);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: remify(2px);
+}
+
+.kui-tab-scaffold__tab[aria-selected="true"] {
+  color: var(--kui-color-brand-on-quiet);
+}
+
+.kui-tab-scaffold__tab:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+
+.kui-tab-scaffold__tab-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+/* The iOS tab-bar badge: over the icon's top-trailing corner, its leading
+   edge just past the icon's center line so a longer count grows outward. The
+   Badge keeps its own geometry; only this anchor is positioned. Without an
+   icon the badge stays in flow above the label. */
+.kui-tab-scaffold__tab-badge {
+  display: flex;
+  pointer-events: none;
+}
+
+.kui-tab-scaffold__tab-icon > .kui-tab-scaffold__tab-badge {
+  position: absolute;
+  inset-block-start: remify(-7px);
+  inset-inline-start: calc(50% + remify(3px));
+}
+
+/* The text-free dot never grows, so it centers on the icon's top-trailing
+   corner instead: half over the glyph, half outside it. */
+.kui-tab-scaffold__tab-icon
+  > .kui-tab-scaffold__tab-badge[data-badge-kind="dot"] {
+  inset-block-start: remify(-2px);
+  inset-inline-start: calc(100% - remify(5px));
+}
+
+.kui-tab-scaffold__tab-icon svg {
+  width: remify(22px);
+  height: remify(22px);
+}
+
+.kui-tab-scaffold__tab-label {
+  flex: none;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--kui-font-2xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* As the only child of a Workbench region (its main area or a panel's
+   content, which the Workbench marks with `data-workbench-main` /
+   `data-workbench-panel-content`), a TabScaffold fills the region, so a
+   composed toolbar's footer (or the app's own) sits at the region's bottom
+   edge rather than under short content. */
+:is([data-workbench-main], [data-workbench-panel-content])
+  > [data-component="tab-scaffold"]:only-child {
+  height: 100%;
+  --kui-edge-inset-block-start: var(--_kui-workbench-content-edge-block-start);
+  --kui-edge-inset-block-end: var(--_kui-workbench-content-edge-block-end);
+  --kui-edge-inset-inline-start: var(
+    --_kui-workbench-content-edge-inline-start
+  );
+  --kui-edge-inset-inline-end: var(--_kui-workbench-content-edge-inline-end);
+}

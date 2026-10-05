@@ -1,6 +1,6 @@
-import type { KerfUiContent } from '../semantic-content.js';
-import type { ToolbarConfig } from '../toolbar.js';
-import type { WorkbenchPanel } from '../workbench.js';
+import type { ToolbarConfig } from '../components/actions/toolbar/toolbar.js';
+import type { WorkbenchPanel } from '../components/layout/workbench/workbench.js';
+import type { KerfUiContent } from '../shared/content/semantic-content.js';
 
 /** A reference link shown in the detail footer for the active entry. */
 export interface CatalogResource {

@@ -1,8 +1,8 @@
 import { Circle } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
-import { LucideIcon } from '../../src/lucide-icon.js';
-import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
+import { ToolbarControlGroup } from '../../src/components/actions/toolbar-control-group/toolbar-control-group.js';
+import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 
 const button = (
   <button type="button" aria-label="Run check" data-action="run-check">

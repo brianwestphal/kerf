@@ -14,7 +14,7 @@ import {
   revealCatalogEntry,
   wireCatalog,
   wireCatalogGeometryOverlay,
-} from '../../src/wire-catalog.js';
+} from '../../src/catalog/wiring/wire-catalog.js';
 
 const asHtml = (value: unknown) => String(value);
 

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { animateSelectPopup } from '../../src/animate-select-popup.js';
+import { animateSelectPopup } from '../../src/components/forms/select/internal/animate-select-popup.js';
 
 describe('Select animation completion', () => {
   let frames: FrameRequestCallback[];

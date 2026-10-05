@@ -10,6 +10,20 @@ const generatedUrl = new URL(
   import.meta.url,
 );
 const catalog = JSON.parse(await readFile(catalogUrl, 'utf8'));
+const implementationSources = new Map();
+for (const entry of catalog.entries) {
+  if (entry.source !== 'kerf' || entry.kind !== 'component') continue;
+  const module = (
+    entry.delivery.browserImport ?? entry.delivery.moduleImport
+  ).slice('@kerfjs/ui/'.length);
+  const facade = await readFile(
+    new URL(`../src/${module}.tsx`, import.meta.url),
+    'utf8',
+  );
+  const target =
+    /export \* from '[.]\/([^']+)[.]js';/.exec(facade)?.[1] ?? module;
+  implementationSources.set(module, `ui/src/${target}.tsx`);
+}
 
 // A component with a committed SVG design template (docs/design/templates/<id>.svg,
 // keyed by the same slug as the catalog entry id). Kept in sync with the design
@@ -29,10 +43,13 @@ const demoSource = (entry) => {
   return `ui/ux-demo/demos/${entry.id}.tsx`;
 };
 
-const componentSource = (entry) =>
-  entry.source === 'kerf' && entry.kind === 'component'
-    ? `ui/src/${(entry.delivery.browserImport ?? entry.delivery.moduleImport).slice('@kerfjs/ui/'.length)}.tsx`
-    : undefined;
+const componentSource = (entry) => {
+  if (entry.source !== 'kerf' || entry.kind !== 'component') return undefined;
+  const module = (
+    entry.delivery.browserImport ?? entry.delivery.moduleImport
+  ).slice('@kerfjs/ui/'.length);
+  return implementationSources.get(module);
+};
 
 const projection = {
   demoSource,

@@ -1,11 +1,11 @@
 import { mount, raw, signal } from 'kerfjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { wireWorkbench } from '../../src/wire-workbench.js';
+import { wireWorkbench } from '../../src/components/layout/workbench/wiring/wire-workbench.js';
 import {
   Workbench,
   type WorkbenchResponsiveOverlayAt,
-} from '../../src/workbench.js';
+} from '../../src/components/layout/workbench/workbench.js';
 
 const roots: HTMLElement[] = [];
 const disposers: Array<() => void> = [];

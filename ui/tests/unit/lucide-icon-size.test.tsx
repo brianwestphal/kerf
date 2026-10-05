@@ -1,8 +1,14 @@
 import { Circle, Star } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
-import { foregroundColor, uiColor } from '../../src/css-values.js';
-import { LucideIcon, type LucideIconProps } from '../../src/lucide-icon.js';
+import {
+  LucideIcon,
+  type LucideIconProps,
+} from '../../src/components/media/lucide-icon/lucide-icon.js';
+import {
+  foregroundColor,
+  uiColor,
+} from '../../src/shared/styles/css-values.js';
 
 const props = { icon: Circle, name: 'circle' };
 

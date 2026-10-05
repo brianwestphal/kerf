@@ -325,7 +325,8 @@ describe('component composition catalog contract', () => {
     // A plain <div class="kui-content-item"> is exactly ContentItem, so
     // KUI-L103 reports it there while a <ul> or <footer> carrier keeps it.
     expect(roots).toEqual({ 'content-item': 'div' });
-    const { ContentItem } = await import('../../src/content-item.js');
+    const { ContentItem } =
+      await import('../../src/components/surfaces/content-item/content-item.js');
     expect(ContentItem({}).toString()).toMatch(
       new RegExp(`^<${roots['content-item']}[\\s>]`),
     );
@@ -339,7 +340,8 @@ describe('component composition catalog contract', () => {
     expect(lucide?.boundaries.rootElement).toBe('svg');
     expect(lucide?.boundaries.descendantElements).toContain('path');
     expect(lucide?.boundaries.descendantRootAttribute).toBe('data-lucide');
-    const { LoadingSpinner } = await import('../../src/loading-spinner.js');
+    const { LoadingSpinner } =
+      await import('../../src/components/feedback/loading-spinner/loading-spinner.js');
     expect(LoadingSpinner({}).toString()).toMatch(/^<svg[\s>]/);
     const item = composition.entries.find(
       (entry) => entry.id === 'content-item',

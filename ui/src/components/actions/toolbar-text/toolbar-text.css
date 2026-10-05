@@ -1,0 +1,153 @@
+.kui-toolbar-text {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  height: remify(40px);
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  overflow: hidden;
+  box-sizing: border-box;
+  color: var(--kui-color-neutral-on-quiet);
+  font-weight: 650;
+  line-height: 1;
+  align-items: center;
+}
+
+button.kui-toolbar-text {
+  appearance: none;
+  border: 0;
+  border-radius: remify(6px);
+  background: transparent;
+  font-family: inherit;
+  text-align: start;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+button.kui-toolbar-text:hover {
+  background: var(--kui-color-neutral-fill-normal);
+}
+
+button.kui-toolbar-text:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: remify(2px);
+}
+
+/* In a Toolbar zone, a title fills the toolbar's control band (the
+   `--_kui-toolbar-band` the Toolbar provides) and centers its first line in
+   it; further lines of a wrapped title continue below the band. These rules
+   precede the size and wrap rules below, which keep their own minimum
+   heights. */
+:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+  > .kui-toolbar-text {
+  height: auto;
+  min-height: var(--_kui-toolbar-band);
+}
+
+:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+  > .kui-toolbar-text[data-wrap="true"] {
+  padding-block: max(0px, calc((var(--_kui-toolbar-band) - 1.25em) / 2));
+}
+
+/* A filling title grows into its row's free space and truncates there. */
+.kui-toolbar-text[data-fill="true"] {
+  flex: 1 1 auto;
+}
+
+/* The text lives in a block child, not directly in the flex box, so
+   `text-overflow: ellipsis` actually applies (it is a no-op on a flex item). */
+.kui-toolbar-text__text {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  /* Keep the line box larger than the font's em square. Glyph ink can extend
+     below a 1em line box, so clipping for ellipsis must not also shave off
+     descenders such as g, j, p, q, and y. */
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.kui-toolbar-text:is([data-size="xlarge"], [data-size="xlarge-fixed"]) {
+  /* Both title sizes keep page/panel title color and geometry. Height grows to
+     their text instead of clipping ascenders in the default 40px box. */
+  height: auto;
+  min-height: remify(44px);
+  color: var(--kui-color-text);
+  letter-spacing: -0.025em;
+}
+
+.kui-toolbar-text[data-size="xlarge"] {
+  font-size: clamp(var(--kui-font-l), 2.3vw, var(--kui-font-2xl));
+}
+
+.kui-toolbar-text[data-size="xlarge-fixed"] {
+  font-size: var(--kui-font-l);
+}
+
+.kui-toolbar-text[data-size="large"] {
+  font-size: var(--kui-font-m);
+  letter-spacing: -0.015em;
+}
+
+.kui-toolbar-text[data-size="default"] {
+  font-size: var(--kui-font-s);
+}
+
+/* Every size keeps the inherited UI sans stack: compact identity text is a
+   label, not code. (A monospace role here resolved through Web Awesome's
+   `ui-monospace, monospace` code stack; Chromium does not
+   recognize `ui-monospace`, so small labels fell back to generic monospace.) */
+.kui-toolbar-text[data-size="small"] {
+  font-size: var(--kui-font-xs);
+}
+
+.kui-toolbar-text[data-size="xsmall"] {
+  font-size: var(--kui-font-2xs);
+}
+
+/* Single line, no ellipsis: hard-clip the overflow instead of showing …. */
+.kui-toolbar-text[data-ellipsis="false"] .kui-toolbar-text__text {
+  text-overflow: clip;
+}
+
+/* Wrap onto multiple lines. The box grows to fit and switches from the centered
+   single-line row to a top-aligned block with readable leading; a min-height keeps
+   a one-line label at the toolbar row height. */
+.kui-toolbar-text[data-wrap="true"] {
+  align-items: flex-start;
+  height: auto;
+  min-height: remify(40px);
+}
+
+.kui-toolbar-text:is(
+    [data-size="xlarge"],
+    [data-size="xlarge-fixed"]
+  )[data-wrap="true"] {
+  min-height: remify(44px);
+}
+
+.kui-toolbar-text[data-wrap="true"] .kui-toolbar-text__text {
+  white-space: normal;
+  line-height: 1.25;
+}
+
+/* Wrap capped to N lines with an ellipsis at the cut. `-webkit-line-clamp` needs
+   the box display and emits the … itself; the unprefixed `line-clamp` follows for
+   engines that ship it. */
+.kui-toolbar-text[data-wrap="true"][data-max-lines] .kui-toolbar-text__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--kui-toolbar-text-max-lines);
+  line-clamp: var(--kui-toolbar-text-max-lines);
+  overflow: hidden;
+}
+
+/* Wrap capped to N lines without an ellipsis: clip at a max-height instead of
+   line-clamp (which always ellipsizes). */
+.kui-toolbar-text[data-wrap="true"][data-max-lines][data-ellipsis="false"]
+  .kui-toolbar-text__text {
+  display: block;
+  -webkit-line-clamp: none;
+  line-clamp: none;
+  max-height: calc(var(--kui-toolbar-text-max-lines) * 1.25em);
+}

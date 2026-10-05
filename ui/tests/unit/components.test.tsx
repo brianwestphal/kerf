@@ -4,43 +4,58 @@ import { resolve } from 'node:path';
 import { Check, Circle, Folder, Plus } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
-import { AppTab } from '../../src/app-tab.js';
-import { Badge } from '../../src/badge.js';
-import { Chip } from '../../src/chip.js';
-import { ContentItem } from '../../src/content-item.js';
-import { flex, px, rem, uiColor } from '../../src/css-values.js';
-import { DisclosureArrow } from '../../src/disclosure-arrow.js';
-import { EmptyState } from '../../src/empty-state.js';
-import { FloatingToolbar } from '../../src/floating-toolbar.js';
-import { Grid } from '../../src/grid.js';
-import { List } from '../../src/list.js';
-import { ListActionRow } from '../../src/list-action-row.js';
-import { ListHeader, type ListHeaderProps } from '../../src/list-header.js';
-import { ListInsetControl } from '../../src/list-inset-control.js';
-import { ListInsetText } from '../../src/list-inset-text.js';
-import { ListItem, ListItemLink } from '../../src/list-item.js';
-import { LoadingSpinner } from '../../src/loading-spinner.js';
-import { LucideIcon } from '../../src/lucide-icon.js';
+import { FloatingToolbar } from '../../src/components/actions/floating-toolbar/floating-toolbar.js';
+import { Toolbar } from '../../src/components/actions/toolbar/toolbar.js';
+import {
+  ToolbarActionLink,
+  ToolbarControlGroup,
+} from '../../src/components/actions/toolbar-control-group/toolbar-control-group.js';
+import { ToolbarText } from '../../src/components/actions/toolbar-text/toolbar-text.js';
+import { List } from '../../src/components/collections/list/list.js';
+import { ListActionRow } from '../../src/components/collections/list-action-row/list-action-row.js';
+import {
+  ListHeader,
+  type ListHeaderProps,
+} from '../../src/components/collections/list-header/list-header.js';
+import { ListInsetControl } from '../../src/components/collections/list-inset-control/list-inset-control.js';
+import { ListInsetText } from '../../src/components/collections/list-inset-text/list-inset-text.js';
+import {
+  ListItem,
+  ListItemLink,
+} from '../../src/components/collections/list-item/list-item.js';
+import {
+  ValueTable,
+  ValueTableRow,
+} from '../../src/components/data-display/value-table/value-table.js';
+import { Badge } from '../../src/components/feedback/badge/badge.js';
+import { Chip } from '../../src/components/feedback/chip/chip.js';
+import { EmptyState } from '../../src/components/feedback/empty-state/empty-state.js';
+import { LoadingSpinner } from '../../src/components/feedback/loading-spinner/loading-spinner.js';
+import { StateBanner } from '../../src/components/feedback/state-banner/state-banner.js';
+import { SegmentedControl } from '../../src/components/forms/segmented-control/segmented-control.js';
+import {
+  Select,
+  type SelectChoice,
+} from '../../src/components/forms/select/select.js';
+import { Grid } from '../../src/components/layout/grid/grid.js';
 import {
   clampRegionSize,
   ResizableRegion,
   resizeRegionFromPointer,
-} from '../../src/resizable-region.js';
-import { Row } from '../../src/row.js';
-import { SegmentedControl } from '../../src/segmented-control.js';
-import { Select, type SelectChoice } from '../../src/select.js';
-import { Spacer } from '../../src/spacer.js';
-import { StateBanner } from '../../src/state-banner.js';
-import { DialogSurface, PopupSurface } from '../../src/surface-scaffold.js';
-import { TabBar } from '../../src/tab-bar.js';
-import { Text } from '../../src/text.js';
-import { Toolbar } from '../../src/toolbar.js';
+} from '../../src/components/layout/resizable-region/resizable-region.js';
+import { Row } from '../../src/components/layout/row/row.js';
+import { Spacer } from '../../src/components/layout/spacer/spacer.js';
+import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
+import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
+import { DisclosureArrow } from '../../src/components/navigation/disclosure-arrow/disclosure-arrow.js';
+import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
+import { ContentItem } from '../../src/components/surfaces/content-item/content-item.js';
 import {
-  ToolbarActionLink,
-  ToolbarControlGroup,
-} from '../../src/toolbar-control-group.js';
-import { ToolbarText } from '../../src/toolbar-text.js';
-import { ValueTable, ValueTableRow } from '../../src/value-table.js';
+  DialogSurface,
+  PopupSurface,
+} from '../../src/components/surfaces/surface-scaffold/surface-scaffold.js';
+import { Text } from '../../src/components/typography/text/text.js';
+import { flex, px, rem, uiColor } from '../../src/shared/styles/css-values.js';
 
 const asHtml = (value: unknown) => String(value);
 const icon = LucideIcon({ icon: Circle, name: 'circle' });
@@ -331,7 +346,10 @@ describe('production UI primitives', () => {
     expect(balanced).toContain('class="kui-toolbar__leading"');
     expect(
       readFileSync(
-        resolve(import.meta.dirname, '../../src/toolbar.css'),
+        resolve(
+          import.meta.dirname,
+          '../../src/components/actions/toolbar/toolbar.css',
+        ),
         'utf8',
       ),
     ).toMatch(
@@ -466,7 +484,10 @@ describe('production UI primitives', () => {
       ),
     ).toContain('data-responsive="wrap"');
     const toolbarCss = readFileSync(
-      resolve(import.meta.dirname, '../../src/toolbar.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/actions/toolbar/toolbar.css',
+      ),
       'utf8',
     );
     // The trailing zone wraps under every policy, so its track floors at one group.
@@ -556,9 +577,13 @@ describe('production UI primitives', () => {
     ])
       expect(markup).not.toContain('data-fill');
 
-    for (const name of ['list', 'row', 'grid']) {
+    for (const [name, source] of [
+      ['list', 'components/collections/list/list'],
+      ['row', 'components/layout/row/row'],
+      ['grid', 'components/layout/grid/grid'],
+    ]) {
       const css = readFileSync(
-        resolve(import.meta.dirname, `../../src/${name}.css`),
+        resolve(import.meta.dirname, `../../src/${source}.css`),
         'utf8',
       );
       expect(css).toMatch(
@@ -2671,7 +2696,10 @@ describe('production UI primitives', () => {
 
   it('clamps fixed-size overlay content to the responsive panel bounds', () => {
     const resizableRegionCss = readFileSync(
-      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/layout/resizable-region/resizable-region.css',
+      ),
       'utf8',
     );
     expect(resizableRegionCss).toMatch(
@@ -2690,11 +2718,17 @@ describe('production UI primitives', () => {
 
   it('releases both clipping ancestors for an open dropdown without changing props', () => {
     const region = readFileSync(
-      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/layout/resizable-region/resizable-region.css',
+      ),
       'utf8',
     ).replace(/\s+/g, ' ');
     const workbench = readFileSync(
-      resolve(import.meta.dirname, '../../src/workbench.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/layout/workbench/workbench.css',
+      ),
       'utf8',
     ).replace(/\s+/g, ' ');
     expect(region).toContain(
@@ -2717,7 +2751,10 @@ describe('production UI primitives', () => {
 
   it('anchors the restore control to the region container, inset once even around a FloatingToolbar', () => {
     const css = readFileSync(
-      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/layout/resizable-region/resizable-region.css',
+      ),
       'utf8',
     ).replace(/\s+/g, ' ');
     const rule = (selector: string) => {
@@ -2748,7 +2785,10 @@ describe('production UI primitives', () => {
 
   it('stacks the region restore control beneath open overlays, tied to the overlay z-index', () => {
     const css = readFileSync(
-      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/layout/resizable-region/resizable-region.css',
+      ),
       'utf8',
     ).replace(/\s+/g, ' ');
     const rule = (selector: string) => {
@@ -2774,8 +2814,20 @@ describe('production UI primitives', () => {
   });
 
   it('hides floating controls under an open side overlay in every layout', () => {
+    const componentStyles: Record<string, string> = {
+      'workbench.css': 'components/layout/workbench/workbench.css',
+      'collapsible-panel.css':
+        'components/layout/collapsible-panel/collapsible-panel.css',
+      'resizable-region.css':
+        'components/layout/resizable-region/resizable-region.css',
+      'floating-toolbar.css':
+        'components/actions/floating-toolbar/floating-toolbar.css',
+    };
     const source = (file: string) =>
-      readFileSync(resolve(import.meta.dirname, `../../src/${file}`), 'utf8')
+      readFileSync(
+        resolve(import.meta.dirname, `../../src/${componentStyles[file]}`),
+        'utf8',
+      )
         .replace(/\/\*[\s\S]*?\*\//g, '')
         .replace(/\s+/g, ' ');
     // The rules that raise a layout's covered context, by the selector text
@@ -2884,7 +2936,10 @@ describe('production UI primitives', () => {
 
   it('lifts the region restore corner above an expanded bottom drawer beside it, scoped to the container', () => {
     const css = readFileSync(
-      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/layout/resizable-region/resizable-region.css',
+      ),
       'utf8',
     ).replace(/\s+/g, ' ');
     const rule = (selector: string) => {

@@ -9,6 +9,21 @@ When adding a first-party public component, follow the
 entry drives one validator across package, build, barrel, CSS, demo, route, and
 AI signature projections, with a non-mutating dry-run report.
 
+## Source organization
+
+The flat files directly under `src/` are stable package entry facades. Keep
+component implementation and CSS together under
+`src/components/<family>/<component>/`. Put support code used by one component
+in its `internal/`, `model/`, `register/`, or `wiring/` folder. Shared types and
+utilities live under `src/shared/`; wiring that spans several components lives
+under `src/wiring/`; Web Awesome integration code lives under
+`src/integrations/`. Catalog-only implementation remains under `src/catalog/`.
+
+Choose an existing family by the component role, and add a family only when no
+current one fits. Public JavaScript and CSS subpaths remain flat through their
+root facades. `npm run check:source-organization` rejects implementation added
+back to the root or component-local support code placed in the wrong folder.
+
 Browser verification always builds current source: both `npm run test:e2e`
 and direct focused Playwright commands run the catalog/conformance preflights
 and production build before preview. See the [UX catalog contract](./docs/ux-demo.md).

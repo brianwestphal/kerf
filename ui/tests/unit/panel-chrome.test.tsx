@@ -1,8 +1,8 @@
 import { raw } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
-import { CollapsiblePanel } from '../../src/collapsible-panel.js';
-import { Workbench } from '../../src/workbench.js';
+import { CollapsiblePanel } from '../../src/components/layout/collapsible-panel/collapsible-panel.js';
+import { Workbench } from '../../src/components/layout/workbench/workbench.js';
 
 const chrome = (name: string) => raw(`<p data-chrome="${name}">${name}</p>`);
 const panel = {

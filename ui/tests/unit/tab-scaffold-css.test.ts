@@ -6,7 +6,10 @@ import { describe, expect, it } from 'vitest';
 
 describe('TabScaffold label geometry', () => {
   it('keeps the complete label line box from shrinking below its text', async () => {
-    const file = resolve(import.meta.dirname, '../../src/tab-scaffold.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/navigation/tab-scaffold/tab-scaffold.css',
+    );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const label = root.nodes.find(
       (node) =>

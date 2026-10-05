@@ -4,8 +4,8 @@ import { resolve } from 'node:path';
 import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
-import { flex } from '../../src/css-values.js';
-import { SunkenPanel } from '../../src/sunken-panel.js';
+import { SunkenPanel } from '../../src/components/surfaces/sunken-panel/sunken-panel.js';
+import { flex } from '../../src/shared/styles/css-values.js';
 
 describe('SunkenPanel', () => {
   it('renders an unnamed vertical application surface by default', () => {
@@ -51,7 +51,10 @@ describe('SunkenPanel', () => {
     expect(String(SunkenPanel({ flex: flex(2) }))).toContain(
       'style="--_kui-sunken-panel-flex:2 1 auto"',
     );
-    const css = readFileSync(resolve('src/sunken-panel.css'), 'utf8');
+    const css = readFileSync(
+      resolve('src/components/surfaces/sunken-panel/sunken-panel.css'),
+      'utf8',
+    );
     expect(css).toContain('flex: var(--_kui-sunken-panel-flex, initial)');
     expect(css).toContain('.kui-sunken-panel[data-fill="true"]');
     expect(css).toContain('height: 100%');
@@ -61,8 +64,14 @@ describe('SunkenPanel', () => {
     const prototype = postcss.parse(
       readFileSync(resolve('ux-demo/sunken-prototype.css'), 'utf8'),
     );
-    const component = readFileSync(resolve('src/sunken-panel.css'), 'utf8');
-    const pane = readFileSync(resolve('src/pane.css'), 'utf8');
+    const component = readFileSync(
+      resolve('src/components/surfaces/sunken-panel/sunken-panel.css'),
+      'utf8',
+    );
+    const pane = readFileSync(
+      resolve('src/components/layout/pane/pane.css'),
+      'utf8',
+    );
     const webAwesome = readFileSync(resolve('src/webawesome.css'), 'utf8');
     for (const depth of ['first', 'second', 'third']) {
       const rule = prototype.nodes.find(

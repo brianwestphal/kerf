@@ -1,4 +1,4 @@
-import type { ResizableRegionAxis } from './resizable-region.js';
+import type { ResizableRegionAxis } from '../resizable-region.js';
 
 /**
  * The dormant two-line grip a resize separator shows on hover and focus. Shared

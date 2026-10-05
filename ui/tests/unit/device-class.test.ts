@@ -4,7 +4,7 @@ import {
   classifyViewport,
   DEFAULT_BREAKPOINTS,
   deviceClass,
-} from '../../src/device-class.js';
+} from '../../src/shared/environment/device-class.js';
 
 function setViewport(width: number, height: number): void {
   Object.defineProperty(window, 'innerWidth', {

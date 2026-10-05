@@ -1,0 +1,673 @@
+import type { TabActivation } from '../tab-bar.js';
+
+export type TabReorderSource = 'pointer' | 'keyboard';
+export type TabDropPosition = 'before' | 'after';
+
+export interface TabReorder {
+  barId: string;
+  sourceId: string;
+  targetId: string;
+  position: TabDropPosition;
+  source: TabReorderSource;
+}
+
+export type { TabActivation } from '../tab-bar.js';
+
+export interface WireTabBarsOptions {
+  onReorder: (change: TabReorder) => void;
+  /**
+   * How arrow / Home / End keys activate tabs (default `'automatic'`):
+   * - `'automatic'` moves roving focus **and** selects the focused tab (clicks it).
+   * - `'manual'` moves roving focus only; the user selects with Enter / Space / click
+   *   (the ARIA Tabs manual-activation pattern). Use this when activation is a heavy or
+   *   side-effecting action (e.g. a tab that loads a project) so arrowing through the
+   *   strip doesn't trigger it on every tab.
+   *
+   * A per-bar `data-tab-activation="manual" | "automatic"` attribute (see the `TabBar`
+   * `activation` prop) overrides this option for that strip.
+   */
+  activation?: TabActivation;
+}
+
+type TabRoot = HTMLElement;
+type TabBarRoot = HTMLElement;
+
+const AUTO_SCROLL_EDGE_PX = 56;
+const AUTO_SCROLL_MIN_PX_PER_SECOND = 180;
+const AUTO_SCROLL_MAX_PX_PER_SECOND = 900;
+
+export function reorderTabs<T>(
+  items: readonly T[],
+  getId: (item: T) => string,
+  sourceId: string,
+  targetId: string,
+  position: TabDropPosition,
+): T[] {
+  if (sourceId === targetId) return [...items];
+  const source = items.find((item) => getId(item) === sourceId);
+  if (!source || !items.some((item) => getId(item) === targetId))
+    return [...items];
+  const remaining = items.filter((item) => getId(item) !== sourceId);
+  const targetIndex = remaining.findIndex((item) => getId(item) === targetId);
+  remaining.splice(targetIndex + (position === 'after' ? 1 : 0), 0, source);
+  return remaining;
+}
+
+function tabRoot(target: EventTarget | null): TabRoot | undefined {
+  return target instanceof Element
+    ? (target.closest<TabRoot>('[data-component="app-tab"]') ?? undefined)
+    : undefined;
+}
+
+function tabBar(tab: TabRoot): TabBarRoot | undefined {
+  return tab.closest<TabBarRoot>('[data-component="tab-bar"]') ?? undefined;
+}
+
+function tabId(tab: TabRoot): string | undefined {
+  return tab.dataset.tabId || undefined;
+}
+
+function barId(bar: TabBarRoot): string | undefined {
+  return bar.dataset.tabBarId || undefined;
+}
+
+function positionFor(event: DragEvent, tab: TabRoot): TabDropPosition {
+  const bounds = tab.getBoundingClientRect();
+  return event.clientX < bounds.left + bounds.width / 2 ? 'before' : 'after';
+}
+
+function tabsIn(bar: TabBarRoot): HTMLButtonElement[] {
+  return [
+    ...bar.querySelectorAll<HTMLButtonElement>(
+      '[data-kui-tab-list] [role="tab"]',
+    ),
+  ];
+}
+
+function reveal(tab: HTMLElement | null | undefined): void {
+  tab?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  if (
+    tab
+      ?.closest('[data-kui-tab-list]')
+      ?.querySelector(':scope > .kui-app-tab[data-pinned="true"]')
+  )
+    revealInStrip(tab);
+}
+
+/**
+ * Scroll a tab's own strip, and nothing else, so the tab is fully visible.
+ * Used for selection changes the application makes without focus (adding and
+ * selecting a tab): unlike `scrollIntoView`, it never scrolls the page to a
+ * bar that is out of view.
+ */
+function revealInStrip(tab: HTMLElement): void {
+  const strip = tab.closest<HTMLElement>('[data-kui-tab-list]');
+  if (!strip || strip.scrollWidth <= strip.clientWidth) return;
+  const bounds = strip.getBoundingClientRect();
+  const snap = strip.dataset.snapTabs === 'true';
+  const box = snap
+    ? (tab.closest<HTMLElement>('.kui-app-tab')?.getBoundingClientRect() ??
+      tab.getBoundingClientRect())
+    : tab.getBoundingClientRect();
+  const pinned = strip.querySelector<HTMLElement>(
+    ':scope > .kui-app-tab[data-pinned="true"]',
+  );
+  if (pinned?.contains(tab)) return;
+  const pinnedBox = pinned?.getBoundingClientRect();
+  if (
+    strip.ownerDocument.defaultView?.getComputedStyle(strip).direction === 'rtl'
+  ) {
+    const right = pinnedBox
+      ? Math.min(bounds.right, pinnedBox.left)
+      : bounds.right;
+    if (snap) strip.scrollLeft += box.right - right;
+    else if (box.right > right) strip.scrollLeft += box.right - right;
+    else if (box.left < bounds.left)
+      strip.scrollLeft -= Math.min(bounds.left - box.left, right - box.right);
+    return;
+  }
+  const left = pinnedBox ? Math.max(bounds.left, pinnedBox.right) : bounds.left;
+  if (snap) strip.scrollLeft += box.left - left;
+  else if (box.left < left) strip.scrollLeft -= left - box.left;
+  else if (box.right > bounds.right)
+    strip.scrollLeft += Math.min(box.right - bounds.right, box.left - left);
+}
+
+/** The selected tab button of every bar below root, keyed by bar. */
+function selectedTabs(root: HTMLElement | Document) {
+  const selected = new Map<TabBarRoot, HTMLElement>();
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-kui-tab-list] [role="tab"][aria-selected="true"]',
+    )
+    .forEach((button) => {
+      const tab = tabRoot(button);
+      const bar = tab && tabBar(tab);
+      if (bar && !selected.has(bar)) selected.set(bar, button);
+    });
+  return selected;
+}
+
+/** Wire reordering and keyboard navigation while leaving controlled state in the application. */
+export function wireTabBars(
+  root: HTMLElement | Document,
+  { onReorder, activation = 'automatic' }: WireTabBarsOptions,
+): () => void {
+  const ownerDocument = (
+    root.nodeType === 9 ? (root as Document) : root.ownerDocument
+  )!;
+  const view = ownerDocument.defaultView!;
+  // WebKit positions an RTL sticky flex child as though the negative scroll
+  // offset were added to its inline-start inset. Measure the actual pinned
+  // edge and correct only the displacement; Chromium and Firefox stay at 0.
+  const pinnedOffsets = new WeakMap<HTMLElement, number>();
+  const adjustedPinned = new Set<HTMLElement>();
+  const snapExtras = new WeakMap<HTMLElement, number>();
+  const snapStrips = new Set<HTMLElement>();
+  const snapObserved = new Set<HTMLElement>();
+  let snapFrame: number | undefined;
+  const scheduleSnapSync = () => {
+    if (disposed || snapFrame !== undefined) return;
+    snapFrame = view.requestAnimationFrame(() => {
+      snapFrame = undefined;
+      if (!disposed) syncSnapInRoot();
+    });
+  };
+  const snapResizeObserver = view.ResizeObserver
+    ? new view.ResizeObserver(scheduleSnapSync)
+    : undefined;
+  const observeSnap = (element: HTMLElement) => {
+    if (snapObserved.has(element)) return;
+    snapObserved.add(element);
+    snapResizeObserver?.observe(element);
+  };
+  const syncSnap = (strip: HTMLElement) => {
+    const previousExtra = snapExtras.get(strip) ?? 0;
+    if (strip.dataset.snapTabs !== 'true') {
+      strip.style.removeProperty('--kui-tab-bar-snap-inset');
+      strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
+      snapExtras.delete(strip);
+      snapStrips.delete(strip);
+      return;
+    }
+    snapStrips.add(strip);
+    observeSnap(strip);
+    const tabs = [
+      ...strip.querySelectorAll<HTMLElement>(':scope > .kui-app-tab'),
+    ];
+    tabs.forEach(observeSnap);
+    const pinned = tabs.find(
+      (candidate) => candidate.dataset.pinned === 'true',
+    );
+    const last = tabs.at(-1);
+    const bounds = strip.getBoundingClientRect();
+    const pinnedBox = pinned?.getBoundingClientRect();
+    const rtl = view.getComputedStyle(strip).direction === 'rtl';
+    const inset = pinnedBox
+      ? rtl
+        ? bounds.right - pinnedBox.left
+        : pinnedBox.right - bounds.left
+      : 0;
+    strip.style.setProperty(
+      '--kui-tab-bar-snap-inset',
+      `${Math.max(0, inset)}px`,
+    );
+    const baseMaximum = Math.max(
+      0,
+      strip.scrollWidth - strip.clientWidth - previousExtra,
+    );
+    let extra = 0;
+    if (baseMaximum > 0 && last && last !== pinned) {
+      const lastBox = last.getBoundingClientRect();
+      const desired = rtl
+        ? -(
+            strip.scrollLeft +
+            lastBox.right -
+            (pinnedBox?.left ?? bounds.right)
+          )
+        : strip.scrollLeft + lastBox.left - (pinnedBox?.right ?? bounds.left);
+      extra = Math.max(0, desired - baseMaximum);
+    }
+    if (Math.abs(extra - previousExtra) >= 0.5) {
+      strip.style.setProperty('--kui-tab-bar-snap-end-extra', `${extra}px`);
+      snapExtras.set(strip, extra);
+    }
+  };
+  const syncSnapInRoot = () => {
+    for (const element of snapObserved)
+      if (!root.contains(element)) {
+        snapResizeObserver?.unobserve(element);
+        snapObserved.delete(element);
+      }
+    for (const strip of snapStrips)
+      if (!root.contains(strip)) {
+        strip.style.removeProperty('--kui-tab-bar-snap-inset');
+        strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
+        snapStrips.delete(strip);
+      }
+    root.querySelectorAll<HTMLElement>('[data-kui-tab-list]').forEach(syncSnap);
+  };
+  const syncPinned = (strip: HTMLElement) => {
+    const pinned = strip.querySelector<HTMLElement>(
+      ':scope > .kui-app-tab[data-pinned="true"]',
+    );
+    if (!pinned) return;
+    const previous = pinned.style.translate
+      ? (pinnedOffsets.get(pinned) ?? 0)
+      : 0;
+    const style = view.getComputedStyle(strip);
+    if (style.direction !== 'rtl' || strip.scrollWidth <= strip.clientWidth) {
+      if (previous !== 0) pinned.style.translate = '';
+      pinnedOffsets.set(pinned, 0);
+      return;
+    }
+    const targetRight =
+      strip.getBoundingClientRect().right -
+      (Number.parseFloat(style.borderRightWidth) || 0) -
+      (Number.parseFloat(style.paddingRight) || 0);
+    const rawRight = pinned.getBoundingClientRect().right - previous;
+    const delta = targetRight - rawRight;
+    const next = Math.abs(delta) < 0.5 ? 0 : delta;
+    if (next !== previous) pinned.style.translate = next ? `${next}px 0` : '';
+    pinnedOffsets.set(pinned, next);
+    adjustedPinned.add(pinned);
+  };
+  const syncPinnedInRoot = () =>
+    root
+      .querySelectorAll<HTMLElement>('[data-kui-tab-list]')
+      .forEach(syncPinned);
+  const onStripScroll = (event: Event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.matches('[data-kui-tab-list]'))
+      syncPinned(target);
+  };
+  // CSS snap settles direct gestures in most engines. WebKit can leave a
+  // programmatic smooth scroll between snap points, so normalize its final
+  // position to the nearest whole peer at the pinned inset.
+  const onStripScrollEnd = (event: Event) => {
+    const strip = event.target;
+    if (
+      !(strip instanceof HTMLElement) ||
+      !strip.matches('[data-kui-tab-list][data-snap-tabs="true"]') ||
+      Math.abs(strip.scrollLeft) < 0.5
+    )
+      return;
+    const peers = [
+      ...strip.querySelectorAll<HTMLElement>(
+        ':scope > .kui-app-tab:not([data-pinned="true"])',
+      ),
+    ];
+    if (!peers.length) return;
+    const bounds = strip.getBoundingClientRect();
+    const pinned = strip.querySelector<HTMLElement>(
+      ':scope > .kui-app-tab[data-pinned="true"]',
+    );
+    const pinnedBox = pinned?.getBoundingClientRect();
+    const rtl = view.getComputedStyle(strip).direction === 'rtl';
+    const edge = rtl
+      ? (pinnedBox?.left ?? bounds.right)
+      : (pinnedBox?.right ?? bounds.left);
+    const distances = peers.map((peer) => {
+      const box = peer.getBoundingClientRect();
+      return rtl ? box.right - edge : box.left - edge;
+    });
+    const closest = distances.reduce((best, distance) =>
+      Math.abs(distance) < Math.abs(best) ? distance : best,
+    );
+    if (Math.abs(closest) > 0.5) strip.scrollLeft += closest;
+  };
+  let autoScroll:
+    | {
+        strip: HTMLElement;
+        velocity: number;
+        frame: number | undefined;
+        previousTime: number | undefined;
+      }
+    | undefined;
+  const stopAutoScroll = () => {
+    if (!autoScroll) return;
+    if (autoScroll.frame !== undefined)
+      view.cancelAnimationFrame(autoScroll.frame);
+    delete autoScroll.strip.dataset.tabAutoscroll;
+    autoScroll = undefined;
+  };
+  const runAutoScroll = (time: number) => {
+    const current = autoScroll;
+    if (!current) return;
+    current.frame = undefined;
+    const elapsed =
+      current.previousTime === undefined
+        ? 1000 / 60
+        : Math.min(40, Math.max(1, time - current.previousTime));
+    current.previousTime = time;
+    const maximum = Math.max(
+      0,
+      current.strip.scrollWidth - current.strip.clientWidth,
+    );
+    const previous = current.strip.scrollLeft;
+    current.strip.scrollLeft = Math.max(
+      0,
+      Math.min(maximum, previous + (current.velocity * elapsed) / 1000),
+    );
+    if (current.strip.scrollLeft === previous) {
+      stopAutoScroll();
+      return;
+    }
+    current.frame = view.requestAnimationFrame(runAutoScroll);
+  };
+  const updateAutoScroll = (event: DragEvent, strip: HTMLElement) => {
+    if (strip.scrollWidth <= strip.clientWidth) {
+      stopAutoScroll();
+      return;
+    }
+    const bounds = strip.getBoundingClientRect();
+    const edge = Math.min(AUTO_SCROLL_EDGE_PX, bounds.width / 3);
+    const startDistance = event.clientX - bounds.left;
+    const endDistance = bounds.right - event.clientX;
+    let direction = 0;
+    let strength = 0;
+    if (startDistance >= 0 && startDistance < edge) {
+      direction = -1;
+      strength = 1 - startDistance / edge;
+    } else if (endDistance >= 0 && endDistance < edge) {
+      direction = 1;
+      strength = 1 - endDistance / edge;
+    }
+    if (direction === 0) {
+      stopAutoScroll();
+      return;
+    }
+    const maximum = Math.max(0, strip.scrollWidth - strip.clientWidth);
+    if (
+      (direction < 0 && strip.scrollLeft <= 0) ||
+      (direction > 0 && strip.scrollLeft >= maximum)
+    ) {
+      stopAutoScroll();
+      return;
+    }
+    const speed =
+      AUTO_SCROLL_MIN_PX_PER_SECOND +
+      (AUTO_SCROLL_MAX_PX_PER_SECOND - AUTO_SCROLL_MIN_PX_PER_SECOND) *
+        strength *
+        strength;
+    if (autoScroll?.strip !== strip) stopAutoScroll();
+    autoScroll ??= {
+      strip,
+      velocity: 0,
+      frame: undefined,
+      previousTime: undefined,
+    };
+    autoScroll.velocity = direction * speed;
+    strip.dataset.tabAutoscroll = direction < 0 ? 'start' : 'end';
+    autoScroll.frame ??= view.requestAnimationFrame(runAutoScroll);
+  };
+  let dragged: { barId: string; tabId: string } | undefined;
+  const clearDropPositions = () =>
+    root
+      .querySelectorAll<HTMLElement>('[data-tab-drop-position]')
+      .forEach((tab) => delete tab.dataset.tabDropPosition);
+  const clear = () => {
+    stopAutoScroll();
+    dragged = undefined;
+    root
+      .querySelectorAll<HTMLElement>(
+        '[data-tab-dragging], [data-tab-drop-position]',
+      )
+      .forEach((tab) => {
+        delete tab.dataset.tabDragging;
+        delete tab.dataset.tabDropPosition;
+      });
+  };
+  let disposed = false;
+  const afterControlledRender = (sourceBarId: string, sourceTabId: string) =>
+    globalThis.queueMicrotask(() => {
+      if (disposed) return;
+      const tab = [
+        ...root.querySelectorAll<TabRoot>('[data-component="app-tab"]'),
+      ].find((candidate) => {
+        const candidateBar = tabBar(candidate);
+        return (
+          tabId(candidate) === sourceTabId &&
+          candidateBar !== undefined &&
+          barId(candidateBar) === sourceBarId
+        );
+      });
+      const button = tab?.querySelector<HTMLButtonElement>('[role="tab"]');
+      button?.focus();
+      reveal(button);
+    });
+
+  const onDragStart = (event: Event) => {
+    const dragEvent = event as DragEvent;
+    const tab = tabRoot(event.target);
+    const bar = tab && tabBar(tab);
+    const sourceId = tab && tabId(tab);
+    const sourceBarId = bar && barId(bar);
+    if (
+      !tab ||
+      tab.getAttribute('draggable') !== 'true' ||
+      !sourceId ||
+      !sourceBarId
+    )
+      return;
+    dragged = { barId: sourceBarId, tabId: sourceId };
+    tab.dataset.tabDragging = 'true';
+    if (dragEvent.dataTransfer) {
+      dragEvent.dataTransfer.effectAllowed = 'move';
+      dragEvent.dataTransfer.setData(
+        'application/x-kerf-tab',
+        `${sourceBarId}:${sourceId}`,
+      );
+    }
+  };
+  const onDragOver = (event: Event) => {
+    const dragEvent = event as DragEvent;
+    const tab = tabRoot(event.target);
+    const bar =
+      event.target instanceof Element
+        ? (event.target.closest<TabBarRoot>('[data-component="tab-bar"]') ??
+          undefined)
+        : undefined;
+    const targetId = tab && tabId(tab);
+    const targetBarId = bar && barId(bar);
+    if (!dragged || !bar || targetBarId !== dragged.barId) {
+      stopAutoScroll();
+      clearDropPositions();
+      return;
+    }
+    dragEvent.preventDefault();
+    const strip = bar.querySelector<HTMLElement>('[data-kui-tab-list]');
+    if (strip) updateAutoScroll(dragEvent, strip);
+    else stopAutoScroll();
+    clearDropPositions();
+    if (!tab || !targetId || targetId === dragged.tabId) return;
+    tab.dataset.tabDropPosition = positionFor(dragEvent, tab);
+    if (dragEvent.dataTransfer) dragEvent.dataTransfer.dropEffect = 'move';
+  };
+  const onDrop = (event: Event) => {
+    const dragEvent = event as DragEvent;
+    const tab = tabRoot(event.target);
+    const bar = tab && tabBar(tab);
+    const targetId = tab && tabId(tab);
+    const targetBarId = bar && barId(bar);
+    if (
+      !dragged ||
+      !tab ||
+      !targetId ||
+      targetId === dragged.tabId ||
+      targetBarId !== dragged.barId
+    ) {
+      clear();
+      return;
+    }
+    dragEvent.preventDefault();
+    const change: TabReorder = {
+      barId: dragged.barId,
+      sourceId: dragged.tabId,
+      targetId,
+      position: positionFor(dragEvent, tab),
+      source: 'pointer',
+    };
+    clear();
+    onReorder(change);
+    afterControlledRender(change.barId, change.sourceId);
+  };
+  const onKeyDown = (event: Event) => {
+    const keyboardEvent = event as KeyboardEvent;
+    const button =
+      event.target instanceof Element
+        ? event.target.closest<HTMLButtonElement>('[role="tab"]')
+        : null;
+    const tab = button && tabRoot(button);
+    const bar = tab && tabBar(tab);
+    if (!button || !tab || !bar) return;
+    if (keyboardEvent.key === 'Delete' || keyboardEvent.key === 'Backspace') {
+      const close = tab.querySelector<HTMLButtonElement>('.kui-app-tab__close');
+      if (!close) return;
+      keyboardEvent.preventDefault();
+      close.click();
+      return;
+    }
+    const tabs = tabsIn(bar);
+    const current = tabs.indexOf(button);
+    if (current < 0) return;
+    if (
+      keyboardEvent.altKey &&
+      keyboardEvent.shiftKey &&
+      (keyboardEvent.key === 'ArrowLeft' || keyboardEvent.key === 'ArrowRight')
+    ) {
+      const target =
+        tabs[current + (keyboardEvent.key === 'ArrowLeft' ? -1 : 1)];
+      const sourceId = tabId(tab);
+      const targetRoot = target && tabRoot(target);
+      const targetId = targetRoot && tabId(targetRoot);
+      const sourceBarId = barId(bar);
+      if (
+        !target ||
+        !sourceId ||
+        !targetId ||
+        !sourceBarId ||
+        tab.getAttribute('draggable') !== 'true'
+      )
+        return;
+      keyboardEvent.preventDefault();
+      onReorder({
+        barId: sourceBarId,
+        sourceId,
+        targetId,
+        position: keyboardEvent.key === 'ArrowLeft' ? 'before' : 'after',
+        source: 'keyboard',
+      });
+      afterControlledRender(sourceBarId, sourceId);
+      return;
+    }
+    let next: number | undefined;
+    if (keyboardEvent.key === 'ArrowRight') next = (current + 1) % tabs.length;
+    else if (keyboardEvent.key === 'ArrowLeft')
+      next = (current - 1 + tabs.length) % tabs.length;
+    else if (keyboardEvent.key === 'Home') next = 0;
+    else if (keyboardEvent.key === 'End') next = tabs.length - 1;
+    if (next === undefined) return;
+    keyboardEvent.preventDefault();
+    // A per-bar data-tab-activation attribute overrides the wireTabBars option.
+    const perBar = bar.dataset.tabActivation;
+    const mode: TabActivation =
+      perBar === 'manual' || perBar === 'automatic' ? perBar : activation;
+    const target = tabs[next]!;
+    target.focus();
+    // Manual activation moves roving focus only; the user selects with Enter / Space
+    // (native on the tab <button>) or click. Automatic also selects the focused tab.
+    if (mode === 'automatic') {
+      target.click();
+      // Activation can synchronously replace the controlled strip. Resolve the
+      // logical tab again after rendering instead of leaving focus on a dead node.
+      if (!target.isConnected)
+        afterControlledRender(
+          bar.dataset.tabBarId!,
+          tabRoot(target)!.dataset.tabId!,
+        );
+    }
+    reveal(target);
+  };
+  const onFocusIn = (event: Event) => {
+    const tab =
+      event.target instanceof HTMLElement &&
+      event.target.matches('[role="tab"]')
+        ? event.target
+        : undefined;
+    reveal(tab);
+  };
+
+  root.addEventListener('dragstart', onDragStart);
+  root.addEventListener('dragover', onDragOver);
+  root.addEventListener('drop', onDrop);
+  root.addEventListener('dragend', clear);
+  root.addEventListener('keydown', onKeyDown);
+  root.addEventListener('focusin', onFocusIn);
+  root.addEventListener('scroll', onStripScroll, true);
+  root.addEventListener('scrollend', onStripScrollEnd, true);
+  syncSnapInRoot();
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-kui-tab-list] [role="tab"][aria-selected="true"]',
+    )
+    .forEach(reveal);
+
+  // Reveal a tab the application selects without focus (for example a tab it
+  // adds and selects) once its controlled render lands. Only a change of a
+  // bar's selected tab reveals, so a re-render that keeps the selection never
+  // pulls a strip the user scrolled back to it.
+  const selectedIds = new Map<string, string>();
+  const recordSelection = () => {
+    const changed: HTMLElement[] = [];
+    for (const [bar, button] of selectedTabs(root)) {
+      const id = barId(bar);
+      const tab = tabRoot(button);
+      const selectedId = tab && tabId(tab);
+      if (!id || !selectedId) continue;
+      if (selectedIds.has(id) && selectedIds.get(id) !== selectedId)
+        changed.push(button);
+      selectedIds.set(id, selectedId);
+    }
+    return changed;
+  };
+  recordSelection();
+  syncPinnedInRoot();
+  const selectionObserver = new view.MutationObserver(() => {
+    if (disposed) return;
+    syncSnapInRoot();
+    for (const button of recordSelection())
+      if (ownerDocument.activeElement !== button) revealInStrip(button);
+    syncPinnedInRoot();
+  });
+  selectionObserver.observe(root, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['aria-selected', 'dir', 'data-snap-tabs', 'data-pinned'],
+  });
+
+  return () => {
+    disposed = true;
+    if (snapFrame !== undefined) view.cancelAnimationFrame(snapFrame);
+    selectionObserver.disconnect();
+    snapResizeObserver?.disconnect();
+    for (const strip of snapStrips) {
+      strip.style.removeProperty('--kui-tab-bar-snap-inset');
+      strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
+    }
+    snapStrips.clear();
+    snapObserved.clear();
+    clear();
+    root.removeEventListener('dragstart', onDragStart);
+    root.removeEventListener('dragover', onDragOver);
+    root.removeEventListener('drop', onDrop);
+    root.removeEventListener('dragend', clear);
+    root.removeEventListener('keydown', onKeyDown);
+    root.removeEventListener('focusin', onFocusIn);
+    root.removeEventListener('scroll', onStripScroll, true);
+    root.removeEventListener('scrollend', onStripScrollEnd, true);
+    for (const pinned of adjustedPinned) pinned.style.translate = '';
+    adjustedPinned.clear();
+  };
+}

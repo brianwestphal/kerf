@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ResizableRegion } from '../../src/resizable-region.js';
-import { wireResizableRegions } from '../../src/wire-resizable-regions.js';
+import { ResizableRegion } from '../../src/components/layout/resizable-region/resizable-region.js';
+import { wireResizableRegions } from '../../src/components/layout/resizable-region/wiring/wire-resizable-regions.js';
 
 const roots: HTMLElement[] = [];
 

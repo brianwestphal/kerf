@@ -1,12 +1,12 @@
 import { Moon, Sun } from 'lucide';
 
-import { List } from '../../list.js';
-import { ListInsetText } from '../../list-inset-text.js';
-import { LucideIcon } from '../../lucide-icon.js';
-import { Text } from '../../text.js';
-import { ToolbarControlGroup } from '../../toolbar-control-group.js';
-import { ToolbarText } from '../../toolbar-text.js';
-import { Workbench } from '../../workbench.js';
+import { ToolbarControlGroup } from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
+import { ToolbarText } from '../../components/actions/toolbar-text/toolbar-text.js';
+import { List } from '../../components/collections/list/list.js';
+import { ListInsetText } from '../../components/collections/list-inset-text/list-inset-text.js';
+import { Workbench } from '../../components/layout/workbench/workbench.js';
+import { LucideIcon } from '../../components/media/lucide-icon/lucide-icon.js';
+import { Text } from '../../components/typography/text/text.js';
 import type { CatalogEntry, CatalogProps, CatalogSection } from '../types.js';
 import { CatalogResourceFooter } from './catalog-resource-footer.js';
 import { CatalogSidebar } from './catalog-sidebar.js';

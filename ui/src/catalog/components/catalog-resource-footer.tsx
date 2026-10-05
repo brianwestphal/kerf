@@ -1,14 +1,20 @@
 import { ExternalLink, Waypoints } from 'lucide';
 
-import { LucideIcon } from '../../lucide-icon.js';
-import { PopupMenu, type PopupMenuEntry } from '../../popup-menu.js';
-import { Row } from '../../row.js';
-import type { KerfUiContent } from '../../semantic-content.js';
-import { Toolbar, type ToolbarConfig } from '../../toolbar.js';
+import {
+  PopupMenu,
+  type PopupMenuEntry,
+} from '../../components/actions/popup-menu/popup-menu.js';
+import {
+  Toolbar,
+  type ToolbarConfig,
+} from '../../components/actions/toolbar/toolbar.js';
 import {
   ToolbarActionLink,
   ToolbarControlGroup,
-} from '../../toolbar-control-group.js';
+} from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
+import { Row } from '../../components/layout/row/row.js';
+import { LucideIcon } from '../../components/media/lucide-icon/lucide-icon.js';
+import type { KerfUiContent } from '../../shared/content/semantic-content.js';
 import type { CatalogRelated, CatalogResource } from '../types.js';
 
 interface CatalogResourceFooterProps {

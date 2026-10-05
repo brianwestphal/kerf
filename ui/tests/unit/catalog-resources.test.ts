@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import {
   type CatalogResourceKind,
   catalogResources,
-} from '../../src/catalog-resources.js';
+} from '../../src/catalog/resources/catalog-resources.js';
 
 describe('catalog resources', () => {
   it('builds the standard first-party footer in canonical order', () => {

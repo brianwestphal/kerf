@@ -1,7 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
-import { em } from './css-values.js';
-import { Skeleton } from './skeleton.js';
+import { em } from '../../../../shared/styles/css-values.js';
+import { Skeleton } from '../../../feedback/skeleton/skeleton.js';
 
 export interface ValueTableRowProps {
   label: string | SafeHtml;

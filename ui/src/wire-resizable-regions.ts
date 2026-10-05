@@ -1,19 +1,2 @@
-import {
-  type ResizeCommit,
-  type WireResizableRegionsOptions,
-  wireResizeHandles,
-} from './resize-wiring.js';
-
-export type { ResizeCommit, WireResizableRegionsOptions };
-
-/** Wire pointer and separator-keyboard behavior for every ResizableRegion below root. */
-export function wireResizableRegions(
-  root: HTMLElement,
-  options: WireResizableRegionsOptions,
-) {
-  return wireResizeHandles(
-    root,
-    options,
-    '[data-component="resizable-region"]',
-  );
-}
+// Public package entry; implementation is grouped by component ownership.
+export * from './components/layout/resizable-region/wiring/wire-resizable-regions.js';

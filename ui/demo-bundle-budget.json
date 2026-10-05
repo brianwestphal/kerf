@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 323100,
-  "measuredLargestJavaScriptGzip": 126043,
-  "measuredTotalJavaScriptGzip": 323041,
+  "totalJavaScriptGzip": 323300,
+  "measuredLargestJavaScriptGzip": 126044,
+  "measuredTotalJavaScriptGzip": 323204,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2723,6 +2723,22 @@
         "measuredTotalJavaScriptGzip": 323041,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 323100
+      }
+    },
+    {
+      "at": "2026-10-05T04:30:14.718Z",
+      "reason": "Reorganize UI source modules under component ownership while preserving public entrypoints",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 323041,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 323204,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323300
       }
     }
   ]

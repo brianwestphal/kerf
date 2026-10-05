@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { installDropdownShowFocus } from '../../src/install-dropdown-show-focus.js';
+import { installDropdownShowFocus } from '../../src/components/actions/popup-menu/internal/install-dropdown-show-focus.js';
 
 type TestItem = HTMLElement & { active: boolean };
 

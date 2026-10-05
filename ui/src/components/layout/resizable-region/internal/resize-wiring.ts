@@ -5,7 +5,7 @@ import {
   type ResizableRegionAxis,
   type ResizableRegionEdge,
   resizeRegionFromPointer,
-} from './resizable-region.js';
+} from '../resizable-region.js';
 
 export interface ResizeCommit {
   id: string;

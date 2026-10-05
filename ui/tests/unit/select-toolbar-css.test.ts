@@ -18,14 +18,20 @@ function declarations(root: postcss.Root, selector: string) {
 
 describe('Select toolbar composition CSS', () => {
   it('does not restyle the nested Skeleton component', async () => {
-    const file = resolve(import.meta.dirname, '../../src/select.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/forms/select/select.css',
+    );
     const css = await readFile(file, 'utf8');
 
     expect(css).not.toContain('.kui-skeleton');
   });
 
   it('puts option spacing on the Web Awesome start part', async () => {
-    const file = resolve(import.meta.dirname, '../../src/select.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/forms/select/select.css',
+    );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
 
     expect(
@@ -57,7 +63,7 @@ describe('Select toolbar composition CSS', () => {
   it('paints delegated Select focus on the toolbar group', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/toolbar-control-group.css',
+      '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(

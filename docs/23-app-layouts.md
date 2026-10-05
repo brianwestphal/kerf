@@ -279,7 +279,7 @@ showLabel?, hideLabel? }`) and the work area a `mainToolbar` /
   `responsiveAt`, `safeAreaEdges` — KF-A29R9B: the dividers were hard-coded,
   leaving CSS as the only way to drop one; since KF-YK36YF no toolbar draws a
   divider by default and the Panes draw scroll dividers, §3.7); the Workbench composes each as a
-  `Toolbar` over a `Pane` (`ui/src/workbench-toolbars.tsx`). Those `Pane`s and
+  `Toolbar` over a `Pane` (`ui/src/components/layout/workbench/internal/workbench-toolbars.tsx`). Those `Pane`s and
   the work area's header/footer `List`s forward configuration the same way
   (KF-SEQV4K: they were hard-coded, so a navigator rail could not make its
   scrolling slot a `nav` landmark without restyling): a panel's `pane` and the
@@ -435,7 +435,8 @@ anchor(--kui-restore-drawer top, <safe-area fallback>))` with
     catalog's inspector overlay covered its own editor-toolbar toggle; each
     catalog rail now carries its own close control in its `Pane` header, and
     closing from there must not strand focus in the hidden rail). Internal
-    module `ui/src/workbench-overlays.ts`. A panel already open at wire-up
+    module `ui/src/components/layout/workbench/internal/workbench-overlays.ts`.
+    A panel already open at wire-up
     has no recorded opener (KF-WR9B71: closing it from its own header
     dropped focus to `<body>`), so after the opener and the restore control
     the focus fallback is a focusable control outside the panel whose
@@ -656,7 +657,7 @@ NavStack.
 ### 3.5 Standalone collapsible panel — `CollapsiblePanel` + `wireSidebar` (`@kerfjs/ui/collapsible-panel`, `@kerfjs/ui/wire-sidebar`)
 
 **Panel toolbars (KF-7MD6HT).** A `CollapsiblePanel` takes the same `toolbar`
-roles as a Workbench panel (shared through `ui/src/panel-toolbar.tsx`) and
+roles as a Workbench panel (shared through `ui/src/shared/panels/panel-toolbar.tsx`) and
 composes its own toolbar over a `Pane`; because a standalone panel does not own
 the work area, the app renders `CollapsiblePanelRelocated` in its work-area
 toolbar to hold the collapsed panel's marked groups and toggle, and

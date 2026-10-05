@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { installSelectMultiple } from '../../src/install-select-multiple.js';
+import { installSelectMultiple } from '../../src/components/forms/select/internal/install-select-multiple.js';
 
 // Fakes of the Web Awesome members the multiple boundary adapts. The browser
 // suite (tests/browser/select-multiple.spec.ts) covers the real elements.

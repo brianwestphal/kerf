@@ -1,15 +1,2 @@
-[data-lucide] {
-  display: block;
-  width: 1em;
-  height: 1em;
-  flex: none;
-}
-
-[data-lucide][data-inline="true"] {
-  display: inline-block;
-}
-
-[data-lucide][data-size] {
-  width: var(--_kui-lucide-size);
-  height: var(--_kui-lucide-size);
-}
+/* Public stylesheet entry; implementation is colocated with the component. */
+@import "./components/media/lucide-icon/lucide-icon.css";

@@ -166,14 +166,17 @@ function ownedAppMarkupClasses(source) {
   return owned;
 }
 
-const packageStyles = (await cssFiles(resolve(root, 'src'))).filter(
-  (file) => !relative(file).startsWith('src/catalog/components/'),
-);
-const componentSources = (
-  await readdir(resolve(root, 'src'), { withFileTypes: true })
-)
-  .filter((entry) => entry.isFile() && /\.tsx?$/.test(entry.name))
-  .map((entry) => entry.name);
+const packageStyles = [];
+for (const file of await cssFiles(resolve(root, 'src'))) {
+  if (relative(file).startsWith('src/catalog/components/')) continue;
+  const source = await readFile(file, 'utf8');
+  if (source.includes('Public stylesheet entry; implementation is colocated'))
+    continue;
+  packageStyles.push(file);
+}
+const componentSources = (await sourceFiles(resolve(root, 'src')))
+  .filter((file) => !relative(file).startsWith('src/catalog/components/'))
+  .map((file) => relative(file).replace(/^src\//, ''));
 const ownershipModel = buildOwnershipModel({
   stylesheets: await Promise.all(
     packageStyles.map(async (file) => ({

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { installPopupMenuSubmenuFocus } from '../../src/install-popup-menu-submenu-focus.js';
+import { installPopupMenuSubmenuFocus } from '../../src/components/actions/popup-menu/internal/install-popup-menu-submenu-focus.js';
 
 class TestParent extends HTMLElement {
   submenuElement?: HTMLElement;

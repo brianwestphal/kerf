@@ -16,7 +16,7 @@ import {
   uiColor,
   type UiColorName,
   type UiSpaceName,
-} from '../../src/css-values.js';
+} from '../../src/shared/styles/css-values.js';
 
 describe('typed CSS values', () => {
   it('serializes each supported dimension deterministically', () => {

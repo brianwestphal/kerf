@@ -1,9 +1,9 @@
 import { raw } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
-import { ListActionRow } from '../../src/list-action-row.js';
-import { ListItem } from '../../src/list-item.js';
-import { withWordBreaks } from '../../src/word-breaks.js';
+import { ListActionRow } from '../../src/components/collections/list-action-row/list-action-row.js';
+import { ListItem } from '../../src/components/collections/list-item/list-item.js';
+import { withWordBreaks } from '../../src/shared/text/word-breaks.js';
 
 const html = (value: unknown) => String(value);
 

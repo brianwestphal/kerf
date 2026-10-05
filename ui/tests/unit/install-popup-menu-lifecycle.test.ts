@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { installPopupMenuLifecycle } from '../../src/install-popup-menu-lifecycle.js';
+import { installPopupMenuLifecycle } from '../../src/components/actions/popup-menu/internal/install-popup-menu-lifecycle.js';
 
 class TestDropdown extends HTMLElement {
   open = true;

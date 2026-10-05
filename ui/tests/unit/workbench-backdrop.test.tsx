@@ -1,7 +1,7 @@
 import { raw } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
-import { Workbench } from '../../src/workbench.js';
+import { Workbench } from '../../src/components/layout/workbench/workbench.js';
 
 const content = raw('<p>Content</p>');
 const base = { id: 'wb', label: 'Workspace', main: content };

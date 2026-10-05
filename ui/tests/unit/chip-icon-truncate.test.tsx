@@ -1,8 +1,11 @@
 import { Trophy } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
-import { Chip, type ChipProps } from '../../src/chip.js';
-import { LucideIcon } from '../../src/lucide-icon.js';
+import {
+  Chip,
+  type ChipProps,
+} from '../../src/components/feedback/chip/chip.js';
+import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 
 describe('Chip icon and truncation', () => {
   it('renders a decorative leading icon and retains the full label as a title', () => {

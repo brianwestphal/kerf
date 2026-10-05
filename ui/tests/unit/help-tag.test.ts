@@ -5,7 +5,7 @@ import {
   HELP_TAG_VIEWPORT_MARGIN,
   HELP_TAG_WARM_WINDOW,
   installHelpTags,
-} from '../../src/install-help-tag.js';
+} from '../../src/integrations/webawesome/help-tags/install-help-tag.js';
 
 // Fakes of the Web Awesome members the help-tag boundary drives: a tooltip with
 // `open` / `anchor` / `updateComplete`, and Select / Dropdown hosts with an
@@ -705,7 +705,7 @@ describe('focus-visible default', () => {
   it('reads :focus-visible and treats an unsupported selector as not visible', async () => {
     vi.resetModules();
     const { installHelpTags: install } =
-      await import('../../src/install-help-tag.js');
+      await import('../../src/integrations/webawesome/help-tags/install-help-tag.js');
     const doc = document.implementation.createHTMLDocument('help');
     install(doc);
     const host = doc.createElement('wa-dropdown');

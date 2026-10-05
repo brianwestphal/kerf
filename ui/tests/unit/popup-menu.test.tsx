@@ -2,15 +2,15 @@ import { mount, signal } from 'kerfjs';
 import { ArrowDownAZ, Copy } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
-import { installPopupMenuKeyboard } from '../../src/install-popup-menu-keyboard.js';
-import { LucideIcon } from '../../src/lucide-icon.js';
+import { installPopupMenuKeyboard } from '../../src/components/actions/popup-menu/internal/install-popup-menu-keyboard.js';
 import {
   closePopupMenu,
   openPopupMenuAt,
   PopupMenu,
   type PopupMenuElement,
   type PopupMenuEntry,
-} from '../../src/popup-menu.js';
+} from '../../src/components/actions/popup-menu/popup-menu.js';
+import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 
 const asHtml = (value: unknown) => String(value);
 

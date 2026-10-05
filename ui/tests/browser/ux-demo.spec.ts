@@ -1213,7 +1213,7 @@ test('links catalog details to their first-party source and existing guidance', 
       'toolbar',
       'Toolbar',
       'ui/ux-demo/demos/toolbar.tsx',
-      'ui/src/toolbar.tsx',
+      'ui/src/components/actions/toolbar/toolbar.tsx',
       'ui/docs/component-selection.md',
       'Guidance',
       'ui/docs/design/templates/toolbar.svg',
@@ -4043,7 +4043,7 @@ test('disclosure and breadcrumb chevrons match the Kerf Select scale', async ({
             }
           : null;
       }, specimen.part);
-    expect(geometry?.token).toBe('.5');
+    expect(Number(geometry?.token)).toBe(0.5);
     expect(geometry?.transform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
     if (browserName === 'chromium')
       await page.screenshot({

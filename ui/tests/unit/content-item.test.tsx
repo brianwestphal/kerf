@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ContentItem } from '../../src/content-item.js';
+import { ContentItem } from '../../src/components/surfaces/content-item/content-item.js';
 
 describe('ContentItem', () => {
   it('renders an unframed rounded content item by default', () => {

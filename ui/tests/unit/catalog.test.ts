@@ -119,7 +119,10 @@ describe('UX catalog metadata', () => {
     ).toEqual(foundationTokens);
     const workbench = artifact.entries.find(({ id }) => id === 'workbench');
     const workbenchCss = await readFile(
-      resolve(import.meta.dirname, '../../src/workbench.css'),
+      resolve(
+        import.meta.dirname,
+        '../../src/components/layout/workbench/workbench.css',
+      ),
       'utf8',
     );
     expect(workbench).toMatchObject({
@@ -176,6 +179,7 @@ describe('UX catalog metadata', () => {
     const appLayouts = [
       {
         id: 'nav-stack',
+        source: 'components/navigation/nav-stack/nav-stack',
         exports: [
           'NavStackView',
           'NavStackToolbarConfig',
@@ -185,6 +189,7 @@ describe('UX catalog metadata', () => {
       },
       {
         id: 'split-view',
+        source: 'components/layout/split-view/split-view',
         exports: [
           'SplitView',
           'SplitViewProps',
@@ -195,10 +200,12 @@ describe('UX catalog metadata', () => {
       },
       {
         id: 'tab-scaffold',
+        source: 'components/navigation/tab-scaffold/tab-scaffold',
         exports: ['TabScaffoldTab', 'TabScaffoldProps', 'TabScaffold'],
       },
       {
         id: 'workbench',
+        source: 'components/layout/workbench/workbench',
         exports: [
           'Workbench',
           'WorkbenchChromePlacement',
@@ -217,6 +224,7 @@ describe('UX catalog metadata', () => {
       },
       {
         id: 'collapsible-panel',
+        source: 'components/layout/collapsible-panel/collapsible-panel',
         exports: [
           'CollapsiblePanelSide',
           'collapsiblePanelToggleIcon',
@@ -234,7 +242,7 @@ describe('UX catalog metadata', () => {
     for (const layout of appLayouts) {
       const entry = artifact.entries.find(({ id }) => id === layout.id);
       const css = await readFile(
-        resolve(import.meta.dirname, `../../src/${layout.id}.css`),
+        resolve(import.meta.dirname, `../../src/${layout.source}.css`),
         'utf8',
       );
       expect(entry).toMatchObject({
@@ -394,7 +402,7 @@ describe('UX catalog metadata', () => {
   it('projects deploy-safe source and guidance links for every catalog route', async () => {
     expect(findCatalogEntry('toolbar')).toMatchObject({
       demoSource: 'ui/ux-demo/demos/toolbar.tsx',
-      componentSource: 'ui/src/toolbar.tsx',
+      componentSource: 'ui/src/components/actions/toolbar/toolbar.tsx',
       documentation: 'ui/docs/component-selection.md',
     });
     expect(findCatalogEntry('recipe-app-shell')).toMatchObject({

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   createTokenSearchModel,
   type TokenSearchState,
-} from '../../src/token-search-model.js';
+} from '../../src/components/forms/token-search-field/model/token-search-model.js';
 
 const rules = [
   {

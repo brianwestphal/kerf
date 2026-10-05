@@ -12,6 +12,18 @@ two goals everything serves:
    primitives, their props, and their tokens should already read well. Reaching for
    custom CSS is the exception, not the rhythm.
 
+## Keep source ownership visible
+
+Files directly under `src/` are stable public package facades and global style
+entries. Put component implementation and CSS in
+`src/components/<family>/<component>/`; put support code used by one component
+in that component's `internal/`, `model/`, `register/`, or `wiring/` folder.
+Reusable utilities belong in `src/shared/`, cross-component wiring in
+`src/wiring/`, external integration code in `src/integrations/`, and catalog
+implementation in `src/catalog/`. Preserve the flat published subpaths through
+the root facades. Run `npm run check:source-organization` when moving or adding
+source files.
+
 ## The one rule: don't fight the components
 
 Almost every layout mistake in this package's history was **adding chrome or

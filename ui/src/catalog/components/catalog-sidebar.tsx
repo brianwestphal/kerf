@@ -1,7 +1,7 @@
-import { List } from '../../list.js';
-import { ListInsetText } from '../../list-inset-text.js';
-import type { KerfUiContent } from '../../semantic-content.js';
-import { Text } from '../../text.js';
+import { List } from '../../components/collections/list/list.js';
+import { ListInsetText } from '../../components/collections/list-inset-text/list-inset-text.js';
+import { Text } from '../../components/typography/text/text.js';
+import type { KerfUiContent } from '../../shared/content/semantic-content.js';
 import type {
   CatalogBrand,
   CatalogSecondaryGroup,

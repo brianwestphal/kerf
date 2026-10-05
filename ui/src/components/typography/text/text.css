@@ -1,0 +1,139 @@
+.kui-text {
+  padding: var(--kui-layout-item-padding, remify(8px));
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  margin: 0;
+  white-space: normal;
+  overflow-wrap: normal;
+}
+
+/* Match the themed Web Awesome form-control label without introducing a
+   native <label> that would falsely point at a non-form preview. */
+.kui-text__field-label {
+  box-sizing: border-box;
+  min-width: 0;
+  padding-inline: calc(
+    var(--wa-form-control-border-width, 1px) +
+      var(--wa-form-control-padding-inline, remify(8px))
+  );
+  margin: 0 0 0.5em;
+  color: var(--kui-color-neutral-on-quiet, var(--wa-color-text-quiet));
+  font-size: var(--kui-font-xs, var(--wa-font-size-xs));
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: var(--wa-line-height-condensed);
+  text-transform: uppercase;
+}
+
+.kui-text[data-wrap="anywhere"] {
+  overflow-wrap: anywhere;
+}
+
+.kui-text[data-wrap="nowrap"] {
+  white-space: nowrap;
+}
+
+.kui-text[data-wrap="truncate"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+span.kui-text[data-wrap="truncate"] {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.kui-text__clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--_kui-text-max-lines);
+}
+
+.kui-text[data-tone="quiet"] {
+  color: var(--kui-color-text-quiet);
+}
+
+.kui-text[data-tone="danger"] {
+  color: var(--kui-color-danger-on-quiet);
+}
+
+.kui-text[data-size="compact"] {
+  font-size: var(--kui-font-xs);
+}
+
+.kui-text[data-size="large"] {
+  font-size: var(--kui-font-l);
+}
+
+.kui-text[data-size="xlarge"] {
+  font-size: var(--kui-font-2xl);
+}
+
+.kui-text[data-font="monospace"] {
+  font-family: var(--kui-font-mono);
+}
+
+.kui-text[data-border="none"] {
+  border: 0;
+}
+
+.kui-text[data-flush="true"] {
+  padding: 0;
+  border: 0;
+}
+
+.kui-text[data-line-height="tight"] {
+  line-height: 1.2;
+}
+
+span.kui-text {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+/* A ListHeader's label: the title's single text child, set as a compact,
+   uppercase, single-line label that truncates with an ellipsis. The title is
+   a div around a heading or, for a toggle header, the toggle button around
+   an inline span. */
+.kui-list-header__title > .kui-text {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.kui-list-header[data-size="xs"] .kui-list-header__title > .kui-text {
+  font-size: var(--kui-font-2xs);
+  text-transform: capitalize;
+}
+
+.kui-list-header:is([data-size="m"], [data-size="l"], [data-size="xl"])
+  .kui-list-header__title
+  > .kui-text {
+  font-family: var(--wa-font-family-heading, var(--kui-font-sans));
+  font-weight: var(--wa-font-weight-heading, 600);
+  letter-spacing: normal;
+  line-height: var(--wa-line-height-condensed, 1.2);
+  text-transform: none;
+}
+
+.kui-list-header[data-size="m"] .kui-list-header__title > .kui-text {
+  font-size: var(--kui-font-m);
+}
+
+.kui-list-header[data-size="l"] .kui-list-header__title > .kui-text {
+  font-size: var(--kui-font-l);
+}
+
+.kui-list-header[data-size="xl"] .kui-list-header__title > .kui-text {
+  font-size: var(--kui-font-xl);
+}

@@ -1,0 +1,575 @@
+/* A standalone collapsible rail / drawer. Collapsing snaps the panel's own size
+   to zero (one reflow, no per-frame width/height animation) while the fixed-size
+   content slides out via transform (composited, clipped by overflow). The same
+   technique as Workbench and the catalog sidebar (docs/18). */
+/* Safe areas: the panel docks to one screen edge, so its surface grows by
+   that edge's unsafe inset and its content compensates for every edge the
+   panel still touches, never its interior edge. An expanded inline panel also
+   takes its edge away from its direct siblings; collapsing it hands the edge
+   back. A panel wrapped in an app-owned grid cell cannot see its siblings, so
+   that app routes `--kui-edge-inset-*` itself (docs/app-layouts.md). */
+.kui-collapsible-panel {
+  --_kui-collapsible-panel-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-collapsible-panel-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-collapsible-panel-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-collapsible-panel-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
+  /* The content keeps its fixed expanded size (collapsing slides it rather
+     than squeezing it), so a flex parent must never shrink the track below
+     that size: a shrunk track only clips the content's trailing edge (a
+     rail's row badges, a drawer's last row). The panel holds its size and
+     the sibling work area gives way. */
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--kui-color-surface);
+}
+
+.kui-collapsible-panel--left,
+.kui-collapsible-panel--right {
+  width: var(--_kui-collapsible-panel-extent);
+  min-width: 0;
+  height: 100%;
+}
+
+.kui-collapsible-panel--left {
+  --_kui-collapsible-panel-extent: calc(
+    var(--kui-collapsible-panel-width, remify(280px)) +
+      var(--_kui-collapsible-panel-safe-inline-start)
+  );
+  border-inline-end: 1px solid var(--kui-color-neutral-border-normal);
+}
+
+.kui-collapsible-panel--right {
+  --_kui-collapsible-panel-extent: calc(
+    var(--kui-collapsible-panel-width, remify(280px)) +
+      var(--_kui-collapsible-panel-safe-inline-end)
+  );
+  border-inline-start: 1px solid var(--kui-color-neutral-border-normal);
+}
+
+.kui-collapsible-panel--bottom {
+  --_kui-collapsible-panel-extent: calc(
+    var(--kui-collapsible-panel-height, remify(220px)) +
+      var(--_kui-collapsible-panel-safe-block-end)
+  );
+  position: relative;
+  width: 100%;
+  height: var(--_kui-collapsible-panel-extent);
+  min-height: 0;
+  border-block-start: 1px solid var(--kui-color-neutral-border-normal);
+}
+
+/* The panel's content sees the edges it touches; its interior edge is clear. */
+.kui-collapsible-panel > .kui-collapsible-panel__content {
+  --kui-edge-inset-block-start: var(--_kui-collapsible-panel-safe-block-start);
+  --kui-edge-inset-block-end: var(--_kui-collapsible-panel-safe-block-end);
+  --kui-edge-inset-inline-start: var(
+    --_kui-collapsible-panel-safe-inline-start
+  );
+  --kui-edge-inset-inline-end: var(--_kui-collapsible-panel-safe-inline-end);
+}
+
+.kui-collapsible-panel--left > .kui-collapsible-panel__content {
+  --kui-edge-inset-inline-end: 0px;
+}
+
+.kui-collapsible-panel--right > .kui-collapsible-panel__content {
+  --kui-edge-inset-inline-start: 0px;
+}
+
+.kui-collapsible-panel--bottom > .kui-collapsible-panel__content {
+  --kui-edge-inset-block-start: 0px;
+}
+
+/* Content whose only child is a Pane or layout lets that child own the insets;
+   anything else is padded here and sees a cleared context. */
+.kui-collapsible-panel__content:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+) {
+  padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
+  padding-inline: var(--kui-edge-inset-inline-start)
+    var(--kui-edge-inset-inline-end);
+}
+
+.kui-collapsible-panel__content
+  > :not(
+    :is(
+      [data-component="pane"],
+      [data-component="nav-stack"],
+      [data-component="split-view"],
+      [data-component="workbench"],
+      [data-component="tab-scaffold"]
+    ):only-child
+  ) {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
+}
+
+/* An expanded inline panel is the region at its edge, so its direct siblings
+   no longer reach that edge. The container flags the edge it has handed to a
+   panel in a non-inheriting property, and a style query zeroes that edge on
+   the container's children only; the panel that owns the edge (the first
+   left, the last right or bottom) inherits the container's value back.
+   Selecting the siblings themselves (`:has(~ panel)`, `panel ~ *`) makes
+   every element a sibling-rule candidate, so in Chromium each insertion into
+   a long list restyles the list's other rows. The flag is set by a keyed
+   `:has(> panel)` on the container and read by a parent style lookup, so a
+   list without a panel in it pays nothing. */
+@property --_kui-collapsible-panel-owns-inline-start {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_kui-collapsible-panel-owns-inline-end {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_kui-collapsible-panel-owns-block-end {
+  syntax: "*";
+  inherits: false;
+}
+
+:where(
+  :has(
+    > .kui-collapsible-panel--left[data-presentation="inline"]:not(
+        [data-collapsed="true"],
+        [data-collapsible-overlay="true"] *,
+        [data-collapsible-responsive="hidden"] *
+      )
+  )
+) {
+  --_kui-collapsible-panel-owns-inline-start: true;
+}
+
+:where(
+  :has(
+    > .kui-collapsible-panel--right[data-presentation="inline"]:not(
+        [data-collapsed="true"],
+        [data-collapsible-overlay="true"] *,
+        [data-collapsible-responsive="hidden"] *
+      )
+  )
+) {
+  --_kui-collapsible-panel-owns-inline-end: true;
+}
+
+:where(
+  :has(
+    > .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+        [data-collapsed="true"],
+        [data-collapsible-overlay="true"] *,
+        [data-collapsible-responsive="hidden"] *
+      )
+  )
+) {
+  --_kui-collapsible-panel-owns-block-end: true;
+}
+
+@container style(--_kui-collapsible-panel-owns-inline-start: true) {
+  :where(*) {
+    --kui-edge-inset-inline-start: 0px;
+  }
+}
+
+@container style(--_kui-collapsible-panel-owns-inline-end: true) {
+  :where(*) {
+    --kui-edge-inset-inline-end: 0px;
+  }
+}
+
+@container style(--_kui-collapsible-panel-owns-block-end: true) {
+  :where(*) {
+    --kui-edge-inset-block-end: 0px;
+  }
+}
+
+:where(
+  .kui-collapsible-panel--left[data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-collapsible-overlay="true"] *,
+      [data-collapsible-responsive="hidden"] *,
+      .kui-collapsible-panel--left[data-presentation="inline"]:not(
+          [data-collapsed="true"],
+          [data-collapsible-overlay="true"] *,
+          [data-collapsible-responsive="hidden"] *
+        )
+        ~ *
+    )
+) {
+  --kui-edge-inset-inline-start: inherit;
+}
+
+:where(
+  .kui-collapsible-panel--right[data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-collapsible-overlay="true"] *,
+      [data-collapsible-responsive="hidden"] *,
+      :has(
+        ~ .kui-collapsible-panel--right[data-presentation="inline"]:not(
+            [data-collapsed="true"],
+            [data-collapsible-overlay="true"] *,
+            [data-collapsible-responsive="hidden"] *
+          )
+      )
+    )
+) {
+  --kui-edge-inset-inline-end: inherit;
+}
+
+:where(
+  .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-collapsible-overlay="true"] *,
+      [data-collapsible-responsive="hidden"] *,
+      :has(
+        ~ .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+            [data-collapsed="true"],
+            [data-collapsible-overlay="true"] *,
+            [data-collapsible-responsive="hidden"] *
+          )
+      )
+    )
+) {
+  --kui-edge-inset-block-end: inherit;
+}
+
+.kui-collapsible-panel[data-collapsed="true"] {
+  border: 0;
+}
+
+.kui-collapsible-panel[data-separator="hidden"] {
+  border-color: transparent;
+}
+
+.kui-collapsible-panel[data-content-overflow="auto"] {
+  overflow: auto;
+}
+
+.kui-collapsible-panel[data-content-overflow="visible"] {
+  z-index: var(--kui-collapsible-panel-popup-z, 5);
+  overflow: visible;
+}
+
+.kui-collapsible-panel--left[data-collapsed="true"],
+.kui-collapsible-panel--right[data-collapsed="true"] {
+  width: 0;
+}
+
+.kui-collapsible-panel--bottom[data-collapsed="true"] {
+  height: 0;
+}
+
+/* The fixed-size sliding content keeps a definite size so the transform reads
+   as a slide, not a squeeze. */
+.kui-collapsible-panel__content {
+  height: 100%;
+  transition: transform 200ms ease;
+}
+
+.kui-collapsible-panel--left .kui-collapsible-panel__content,
+.kui-collapsible-panel--right .kui-collapsible-panel__content {
+  width: var(--_kui-collapsible-panel-extent);
+}
+
+.kui-collapsible-panel--bottom .kui-collapsible-panel__content {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  width: 100%;
+  height: var(--_kui-collapsible-panel-extent);
+}
+
+.kui-collapsible-panel[data-collapse-motion="none"]
+  .kui-collapsible-panel__content {
+  transition: none;
+}
+
+.kui-collapsible-panel[data-collapse-motion="fade-slide"][data-collapsed="true"]
+  .kui-collapsible-panel__content {
+  opacity: 0;
+}
+
+.kui-collapsible-panel--left[data-collapsed="true"]
+  .kui-collapsible-panel__content {
+  transform: translateX(-100%);
+}
+
+.kui-collapsible-panel--right[data-collapsed="true"]
+  .kui-collapsible-panel__content {
+  transform: translateX(100%);
+}
+
+.kui-collapsible-panel--bottom[data-collapsed="true"]
+  .kui-collapsible-panel__content {
+  transform: translateY(100%);
+}
+
+/* Compact presentation: wireSidebar marks the host so the panel floats over the
+   content as an overlay with a dismissable backdrop instead of taking layout
+   space. The panel is fixed to its edge and slides in from off-screen. */
+[data-collapsible-overlay="true"] .kui-collapsible-panel,
+.kui-collapsible-panel[data-presentation="overlay"] {
+  position: fixed;
+  z-index: var(--kui-collapsible-panel-overlay-z, 40);
+  box-shadow: var(--kui-shadow-l);
+}
+
+[data-collapsible-overlay="true"] .kui-collapsible-panel--left,
+.kui-collapsible-panel--left[data-presentation="overlay"] {
+  inset-block: 0;
+  inset-inline-start: 0;
+}
+
+[data-collapsible-overlay="true"] .kui-collapsible-panel--right,
+.kui-collapsible-panel--right[data-presentation="overlay"] {
+  inset-block: 0;
+  inset-inline-end: 0;
+}
+
+[data-collapsible-overlay="true"] .kui-collapsible-panel--bottom,
+.kui-collapsible-panel--bottom[data-presentation="overlay"] {
+  inset-inline: 0;
+  inset-block-end: 0;
+}
+
+.kui-collapsible-panel[data-presentation="overlay"][data-collapsed="true"] {
+  pointer-events: none;
+}
+
+.kui-collapsible-panel[data-presentation="hidden"] {
+  display: none;
+}
+
+[data-collapsible-responsive="hidden"] .kui-collapsible-panel {
+  display: none;
+}
+
+/* A collapsed panel's restore control floats in a corner of the panel's own
+   container, never of the viewport, so a panel embedded in a page cannot float
+   it over page content outside that container. The container becomes the
+   corner's containing block and isolates its stacking only while a restore
+   control is shown, at zero specificity so an app's own positioning of that
+   container wins. The corner is inset from the container's edges plus the
+   unsafe area of each edge it reaches. The control belongs to the layer
+   beneath open overlays, two below the overlay z-index and so below the
+   compact overlay's backdrop: an open overlay covers it as it covers the rest
+   of the page, the Workbench rule. A collapsed overlay passes pointer events
+   through, so the control is usable again as soon as the overlay closes. */
+:where(:has(> .kui-collapsible-panel__restore)) {
+  position: relative;
+  isolation: isolate;
+  anchor-scope: --kui-restore-drawer;
+}
+
+/* An expanded bottom drawer beside the collapsed panel — a direct child of
+   that container or of one of its direct children (the app's work-area
+   column) — owns the container's bottom, so the corner floats above the
+   drawer's top edge instead of over it. The drawer publishes that edge as an
+   anchor only there, beside a CollapsiblePanel or ResizableRegion restore
+   control (matched by their restore attributes); a drawer nested deeper,
+   inside the work area's own content, belongs to another layout and
+   publishes nothing. The selector ends on the drawer, not on a universal
+   `> * > * > *` scope below the container: a universal selector after a
+   :has() container restyles every child of every ancestor of a DOM change in
+   Chromium. Without anchor positioning the corner keeps the container's
+   bottom edge. */
+:where(
+    :has(> [data-panel-restore], > [data-region-restore]),
+    :has(> [data-panel-restore], > [data-region-restore]) > *
+  )
+  > .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+    [data-collapsed="true"],
+    [data-collapsible-overlay="true"] *,
+    [data-collapsible-responsive="hidden"] *
+  ) {
+  anchor-name: --kui-restore-drawer;
+}
+
+.kui-collapsible-panel__restore {
+  --_kui-collapsible-panel-restore-inset: var(
+    --kui-collapsible-panel-restore-inset,
+    remify(16px)
+  );
+  position: absolute;
+  /* Hidden while an open side overlay covers the content (see below). */
+  visibility: var(
+    --_kui-workbench-covered,
+    var(
+      --_kui-collapsible-panel-covered,
+      var(--_kui-resizable-region-covered, inherit)
+    )
+  );
+  z-index: var(
+    --kui-collapsible-panel-restore-z,
+    calc(var(--kui-collapsible-panel-overlay-z, 40) - 2)
+  );
+  position-visibility: always;
+  inset-block-end: calc(
+    var(--_kui-collapsible-panel-restore-inset) +
+      var(
+        --kui-edge-inset-block-end,
+        var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+      )
+  );
+  /* Above an expanded drawer's top edge when one is in scope (see above). */
+  inset-block-end: calc(
+    var(--_kui-collapsible-panel-restore-inset) +
+      anchor(
+        --kui-restore-drawer top,
+        var(
+          --kui-edge-inset-block-end,
+          var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+        )
+      )
+  );
+}
+
+.kui-collapsible-panel__restore[data-position="bottom-start"] {
+  inset-inline-start: calc(
+    var(--_kui-collapsible-panel-restore-inset) +
+      var(
+        --kui-edge-inset-inline-start,
+        var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+      )
+  );
+}
+
+.kui-collapsible-panel__restore[data-position="bottom-end"] {
+  inset-inline-end: calc(
+    var(--_kui-collapsible-panel-restore-inset) +
+      var(
+        --kui-edge-inset-inline-end,
+        var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+      )
+  );
+}
+
+/* An open side overlay — the wireSidebar compact overlay or a static
+   `presentation="overlay"` panel — covers the content beside it, so that
+   content's floating controls (a FloatingToolbar, another panel's restore
+   corner) are hidden, not merely stacked beneath it: they never paint over
+   the overlay whatever stacking context an app puts them in, and hidden they
+   leave the tab order and the accessibility tree. They come back as the
+   overlay closes. The CollapsiblePanel's own covered context,
+   `--_kui-collapsible-panel-covered`, is read by FloatingToolbar and the
+   layouts' restore corners; the overlay panels themselves are exempt, so
+   their own floating controls stay. */
+[data-collapsible-overlay="true"]:has(
+  .kui-collapsible-panel:is(
+      .kui-collapsible-panel--left,
+      .kui-collapsible-panel--right
+    ):not([data-collapsed="true"])
+) {
+  --_kui-collapsible-panel-covered: hidden;
+}
+
+[data-collapsible-overlay="true"] .kui-collapsible-panel {
+  --_kui-collapsible-panel-covered: initial;
+}
+
+/* A static overlay panel sets the flag on its container and clears it again
+   on the overlay panels in it, so it reaches the overlay's siblings only —
+   never through a universal selector below the :has() container
+   (`:has(…) > :not(…)`), which in Chromium restyles every child of every
+   ancestor of a DOM change. */
+:where(
+  :has(
+    > .kui-collapsible-panel:is(
+        .kui-collapsible-panel--left,
+        .kui-collapsible-panel--right
+      )[data-presentation="overlay"]:not([data-collapsed="true"])
+  )
+) {
+  --_kui-collapsible-panel-covered: hidden;
+}
+
+:where(
+    :has(
+      > .kui-collapsible-panel:is(
+          .kui-collapsible-panel--left,
+          .kui-collapsible-panel--right
+        )[data-presentation="overlay"]:not([data-collapsed="true"])
+    )
+  )
+  > .kui-collapsible-panel[data-presentation="overlay"] {
+  --_kui-collapsible-panel-covered: initial;
+}
+
+/* A button does not stretch between its insets the way a div does, so the
+   backdrop sizes itself to its containing block explicitly. It sits one below
+   the overlay z-index, so an app that moves the overlay moves the backdrop
+   with it, and the restore controls stay beneath both. */
+.kui-collapsible-panel__backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(
+    --kui-collapsible-panel-backdrop-z,
+    calc(var(--kui-collapsible-panel-overlay-z, 40) - 1)
+  );
+  border: 0;
+  padding: 0;
+  background: var(--kui-color-scrim, rgb(0 0 0 / 32%));
+  cursor: pointer;
+}
+
+/* The standard toggle affordance: a plain icon button carrying the per-side
+   collapse/expand glyph. */
+.kui-collapsible-panel__toggle {
+  display: grid;
+  width: remify(40px);
+  height: remify(40px);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  place-items: center;
+}
+
+.kui-collapsible-panel__toggle:hover {
+  border-color: var(--kui-color-neutral-border-normal);
+  background: var(--kui-color-neutral-fill-normal);
+}
+
+.kui-collapsible-panel__toggle:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-collapsible-panel__toggle svg {
+  display: block;
+  width: remify(18px);
+  height: remify(18px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-collapsible-panel__content {
+    transition: none;
+  }
+}

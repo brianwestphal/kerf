@@ -1,6 +1,6 @@
-import { List } from '../../list.js';
-import { ListHeader } from '../../list-header.js';
-import { ListItem } from '../../list-item.js';
+import { List } from '../../components/collections/list/list.js';
+import { ListHeader } from '../../components/collections/list-header/list-header.js';
+import { ListItem } from '../../components/collections/list-item/list-item.js';
 import type { CatalogEntry, CatalogSection } from '../types.js';
 
 /** One labeled section of catalog entries. */

@@ -1,18 +1,18 @@
 import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
 
 import { raw } from 'kerfjs';
 import postcss from 'postcss';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { AppTab } from '../../src/app-tab.js';
-import { NavStack } from '../../src/nav-stack.js';
-import { Pane } from '../../src/pane.js';
-import { SplitView } from '../../src/split-view.js';
-import { TabBar } from '../../src/tab-bar.js';
-import { TabScaffold } from '../../src/tab-scaffold.js';
-import { Toolbar } from '../../src/toolbar.js';
-import { wireScrollDividers } from '../../src/wire-scroll-dividers.js';
+import { Toolbar } from '../../src/components/actions/toolbar/toolbar.js';
+import { Pane } from '../../src/components/layout/pane/pane.js';
+import { SplitView } from '../../src/components/layout/split-view/split-view.js';
+import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
+import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
+import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
+import { TabScaffold } from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
+import { wireScrollDividers } from '../../src/wiring/wire-scroll-dividers.js';
+import { componentStylesheet } from './helpers/component-stylesheet.js';
 
 /** Scroll geometry happy-dom does not lay out, set per element. */
 interface Geometry {
@@ -264,7 +264,7 @@ describe('NavStack and TabScaffold chromeDividers', () => {
 
   it('draws the scroll state only without the attribute, and always without the wiring', async () => {
     const drawing = async (file: string, marker: RegExp) => {
-      const path = resolve(import.meta.dirname, `../../src/${file}`);
+      const path = await componentStylesheet(file);
       const css = postcss.parse(await readFile(path, 'utf8'), { from: path });
       const selectors: string[] = [];
       css.walkRules((rule) => {

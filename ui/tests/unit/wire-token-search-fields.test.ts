@@ -1,17 +1,17 @@
 import { batch, mount, type Signal, signal } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createTokenSearchModel } from '../../src/components/forms/token-search-field/model/token-search-model.js';
 import {
   readTokenSearchField,
   TokenSearchField,
   type TokenSearchToken,
-} from '../../src/token-search-field.js';
-import { createTokenSearchModel } from '../../src/token-search-model.js';
+} from '../../src/components/forms/token-search-field/token-search-field.js';
 import {
   type TokenSearchCollapsibleOptions,
   type TokenSearchKeyboardOptions,
   wireTokenSearchFields,
-} from '../../src/wire-token-search-fields.js';
+} from '../../src/components/forms/token-search-field/wiring/wire-token-search-fields.js';
 
 function focusAt(editor: HTMLElement, node: Node, offset: number) {
   const selection = document.getSelection()!;

@@ -6,7 +6,10 @@ import { describe, expect, it } from 'vitest';
 
 describe('ListItem tone tokens', () => {
   it('reads list-scoped colors with fallbacks instead of shadowing them on each row', async () => {
-    const file = resolve(import.meta.dirname, '../../src/list-item.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/collections/list-item/list-item.css',
+    );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = (selector: string) => {
       const found = root.nodes.find(

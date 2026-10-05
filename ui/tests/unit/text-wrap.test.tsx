@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { FieldLabel } from '../../src/field-label.js';
+import { FieldLabel } from '../../src/components/forms/field-label/field-label.js';
 import {
   FieldLabel as TextFieldLabel,
   Text,
   type TextProps,
-} from '../../src/text.js';
+} from '../../src/components/typography/text/text.js';
 
 describe('FieldLabel', () => {
   it('remains available through the text module', () => {

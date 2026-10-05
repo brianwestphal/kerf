@@ -1,0 +1,92 @@
+.kui-skeleton {
+  --kui-skeleton-radius: var(--kui-radius-s);
+
+  display: inline-block;
+  width: 100%;
+  max-width: 100%;
+  height: 1em;
+  border-radius: var(--kui-skeleton-radius);
+  /* Deliberately unanimated: a flat, subtle fill that reads as "not yet loaded"
+     without drawing the eye or implying progress. On a host with its own
+     solid fill (a solid Badge) the skeleton derives `--_kui-skeleton-fill`
+     from the host's foreground, since a text-color tint vanishes on a
+     saturated fill. */
+  background: var(
+    --_kui-skeleton-fill,
+    color-mix(in srgb, var(--kui-color-text) 12%, transparent)
+  );
+  vertical-align: middle;
+}
+
+/* A placeholder's skeleton inside a solid badge: the generic text-color tint is
+   nearly invisible on the saturated fill, so derive it from the on-solid
+   foreground the badge provides, which contrasts with the fill in every tone
+   and color scheme. Quiet and outline badges sit on a pale fill and keep the
+   generic tint. */
+.kui-badge[data-appearance="solid"] .kui-skeleton {
+  --_kui-skeleton-fill: color-mix(
+    in srgb,
+    var(--_kui-badge-on-solid) 45%,
+    transparent
+  );
+}
+
+.kui-skeleton[data-block="true"] {
+  display: block;
+}
+
+.kui-skeleton-lines {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-skeleton-lines .kui-skeleton {
+  height: 0.8em;
+}
+
+/* Placeholder mode. A component's `placeholder` keeps its controls `disabled` so
+   they stay inert and out of the keyboard order, but a placeholder is loading,
+   not unavailable: it must look exactly like the live component except for its
+   skeleton values. Neutralize generic disabled chrome, including Web Awesome's
+   layered native `button:disabled { opacity: 0.5; cursor: not-allowed }`.
+   Opacity carries zero specificity so a component's own opacity rules (a
+   hover-revealed control that is invisible until interaction) still win;
+   components exclude placeholders from their own disabled tone. The cursor is
+   the non-interactive default, never `not-allowed`.
+
+   A control the author disabled carries `data-kui-disabled="true"` (set from
+   the component's own disabled prop, independent of placeholder). It is
+   unavailable once loaded, so its placeholder keeps the live disabled tone:
+   the reset skips it, and components key their disabled tone on the marker. */
+:where(
+  [data-placeholder="true"]:disabled:not([data-kui-disabled="true"]),
+  [data-placeholder="true"] :disabled:not([data-kui-disabled="true"])
+) {
+  opacity: 1;
+}
+
+[data-placeholder="true"]:disabled,
+[data-placeholder="true"] :disabled {
+  cursor: default;
+}
+
+@media (forced-colors: active) {
+  .kui-skeleton {
+    background: GrayText;
+  }
+}
+
+/* A placeholder StateBanner's badge holds this skeleton instead of text. With
+   no text, the skeleton's baseline would be synthesized from its bottom edge,
+   sitting the badge higher than the live one by a font-dependent amount. A
+   zero-width character gives it a text baseline in the badge's own font and
+   line height, exactly where the live badge's text baseline falls on every
+   platform. */
+.kui-state-banner[data-placeholder="true"]
+  .kui-state-banner__copy
+  > .kui-badge
+  > .kui-skeleton::before {
+  content: "\200b";
+}

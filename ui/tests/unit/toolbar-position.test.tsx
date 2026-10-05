@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Toolbar } from '../../src/toolbar.js';
+import { Toolbar } from '../../src/components/actions/toolbar/toolbar.js';
 
 describe('Toolbar position semantics', () => {
   it('uses header by default and footer on request with identical zones', () => {

@@ -1,0 +1,215 @@
+import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import type { StateBannerTone } from '../../feedback/state-banner/state-banner.js';
+
+/** Base surface treatment or semantic status colors. */
+export type ContentItemAppearance = 'transparent' | 'surface' | StateBannerTone;
+
+/** Whether the item's always-reserved 1px border is transparent or visible. */
+export type ContentItemFrame = 'none' | 'framed';
+
+/** Corner shape: the 12px rounded rectangle or the 22px pill. */
+export type ContentItemShape = 'rounded' | 'pill';
+/** `single` uses an option; `multiple` uses a grid row; `toggle` uses a pressed button. */
+export type ContentItemSelectionMode =
+  'none' | 'single' | 'multiple' | 'toggle';
+
+const contentItemProtectedAttributes = new Set([
+  'data-component',
+  'data-appearance',
+]);
+const interactiveProtectedAttributes = new Set([
+  'data-component',
+  'data-appearance',
+  'data-action',
+  'data-item-id',
+  'data-interactive',
+  'data-selected',
+  'data-disabled',
+  'data-selection-mode',
+  'data-kui-pressed',
+]);
+
+type ContentItemRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-appearance'?: never;
+  }
+>;
+
+type ContentItemInteractiveRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-appearance'?: never;
+    'data-action'?: never;
+    'data-item-id'?: never;
+    'data-interactive'?: never;
+    'data-selected'?: never;
+    'data-disabled'?: never;
+    'data-selection-mode'?: never;
+    'data-kui-pressed'?: never;
+  }
+>;
+
+interface ContentItemBaseProps {
+  /**
+   * Coordinated background, border, and foreground colors. `transparent`
+   * preserves the surrounding surface; `surface` paints the base surface;
+   * semantic values match StateBanner. Defaults to `transparent`.
+   */
+  appearance?: ContentItemAppearance;
+  /** Item content; a plain string is allowed for bare copy. */
+  children?: KerfUiContent | string;
+  /**
+   * `framed` paints the standard neutral border in the 1px the item always
+   * reserves, so framing never changes geometry. Frame only an item that
+   * marks a real distinction. Defaults to `none` (transparent border).
+   */
+  frame?: ContentItemFrame;
+  /** Remove block padding and block borders while retaining inline geometry. */
+  flush?: boolean;
+  /** Corner shape. Defaults to `rounded`. */
+  shape?: ContentItemShape;
+  /** Native hover tooltip. */
+  title?: string;
+  /**
+   * Names the item as a distinct region (`role="region"`). Omit it for an
+   * ordinary item, which stays a non-landmark grouping.
+   */
+  ariaLabel?: string;
+  /**
+   * Makes the item a programmatic focus target (`tabindex="-1"`, never a tab
+   * stop), for example the preferred initial focus of a NavStack view when
+   * combined with `data-nav-focus` in `rootAttributes`.
+   */
+  focusTarget?: boolean;
+  className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
+}
+
+export type ContentItemProps = ContentItemBaseProps &
+  (
+    | {
+        interactive?: false;
+        action?: never;
+        itemId?: never;
+        selectionMode?: never;
+        selected?: never;
+        disabled?: never;
+        /** Existing static `data-*` metadata remains available. */
+        rootAttributes?: ContentItemRootAttributes;
+      }
+    | {
+        /** Enable a keyboard reachable card; wire `wireContentItems` once on its containing root. */
+        interactive: true;
+        /** Delegated action dispatched by pointer, Enter, or Space. */
+        action: string;
+        itemId?: string;
+        selectionMode?: ContentItemSelectionMode;
+        selected?: boolean;
+        disabled?: boolean;
+        /** Safe app metadata; interaction attributes are component-owned. */
+        rootAttributes?: ContentItemInteractiveRootAttributes;
+      }
+  );
+
+/**
+ * One self-contained `.kui-content` child: an 8px inline margin, a real 1px
+ * border (transparent unless `framed`), 8px padding, and a rounded or pill
+ * radius. It owns that whole geometry, so wrappers must not add more.
+ */
+export function ContentItem({
+  appearance = 'transparent',
+  children,
+  frame = 'none',
+  flush = false,
+  shape = 'rounded',
+  title,
+  ariaLabel,
+  focusTarget = false,
+  interactive = false,
+  action,
+  itemId,
+  selectionMode = 'none',
+  selected = false,
+  disabled = false,
+  className = '',
+  rootAttributes = {},
+  slot,
+}: ContentItemProps) {
+  const safeRootAttributes = filterDataAttributes(
+    rootAttributes,
+    interactive
+      ? interactiveProtectedAttributes
+      : contentItemProtectedAttributes,
+  );
+  if (interactive && !action) {
+    throw new Error('Interactive ContentItem requires an action');
+  }
+  if (interactive && selected && selectionMode === 'none') {
+    throw new Error('Selected ContentItem requires a selectionMode');
+  }
+  const cls = [
+    'kui-content-item',
+    shape === 'pill' ? 'kui-content-item--pill' : '',
+    frame === 'framed' ? 'kui-content-item--framed' : '',
+    flush ? 'kui-content-item--flush' : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const interactiveAttributes = interactive
+    ? {
+        'data-interactive': 'true',
+        'data-action': disabled ? undefined : action,
+        'data-item-id': itemId,
+        'data-selection-mode': selectionMode,
+        'data-selected':
+          selectionMode === 'none' ? undefined : String(selected),
+        'data-disabled': disabled ? 'true' : undefined,
+      }
+    : {};
+  return (
+    <div
+      {...safeRootAttributes}
+      {...interactiveAttributes}
+      class={cls}
+      title={title}
+      data-component="content-item"
+      data-appearance={appearance}
+      role={
+        interactive
+          ? selectionMode === 'single'
+            ? 'option'
+            : selectionMode === 'multiple'
+              ? 'row'
+              : 'button'
+          : ariaLabel
+            ? 'region'
+            : undefined
+      }
+      aria-label={ariaLabel}
+      aria-selected={
+        interactive &&
+        (selectionMode === 'single' || selectionMode === 'multiple')
+          ? String(selected)
+          : undefined
+      }
+      aria-pressed={
+        interactive && selectionMode === 'toggle' ? String(selected) : undefined
+      }
+      aria-disabled={interactive && disabled ? 'true' : undefined}
+      tabindex={
+        interactive ? (disabled ? '-1' : '0') : focusTarget ? '-1' : undefined
+      }
+      slot={slot}
+    >
+      {interactive && selectionMode === 'multiple' ? (
+        <div role="gridcell">{children}</div>
+      ) : (
+        children
+      )}
+    </div>
+  );
+}

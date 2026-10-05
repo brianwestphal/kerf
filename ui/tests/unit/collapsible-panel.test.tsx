@@ -9,7 +9,7 @@ import {
   CollapsiblePanel,
   CollapsiblePanelToggle,
   collapsiblePanelToggleIcon,
-} from '../../src/collapsible-panel.js';
+} from '../../src/components/layout/collapsible-panel/collapsible-panel.js';
 
 const html = (value: unknown) => String(value);
 
@@ -105,7 +105,7 @@ describe('CollapsiblePanel', () => {
   it('anchors the restore control to the panel container, inset once even around a FloatingToolbar', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/collapsible-panel.css',
+      '../../src/components/layout/collapsible-panel/collapsible-panel.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const declarations = (selector: string): Record<string, string> => {
@@ -166,7 +166,7 @@ describe('CollapsiblePanel', () => {
   it('stacks the restore control beneath an open overlay and its backdrop, tied to the overlay z-index', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/collapsible-panel.css',
+      '../../src/components/layout/collapsible-panel/collapsible-panel.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const zIndex = (selector: string): string => {
@@ -201,7 +201,7 @@ describe('CollapsiblePanel', () => {
   it('lifts the restore corner above an expanded drawer beside the panel, but not one nested in the work area', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/collapsible-panel.css',
+      '../../src/components/layout/collapsible-panel/collapsible-panel.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = (selector: string) => {
@@ -244,7 +244,7 @@ describe('CollapsiblePanel', () => {
   it('bottom-anchors drawer content so the slide has one stable motion origin', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/collapsible-panel.css',
+      '../../src/components/layout/collapsible-panel/collapsible-panel.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const declarations = (selector: string) => {

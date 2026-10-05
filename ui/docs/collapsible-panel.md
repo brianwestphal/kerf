@@ -343,7 +343,7 @@ covers. See [Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
 - A whole Xcode-like workspace (left rail + right rail + bottom drawer + work area
   in one shell) → **[`Workbench`](workbench.md)**, which owns the layout and the same
   collapse animation.
-- Drag-to-resize a panel → compose **[`ResizableRegion`](../src/resizable-region.tsx)**
+- Drag-to-resize a panel → compose **[`ResizableRegion`](../src/components/layout/resizable-region/resizable-region.tsx)**
   / `wireResizableRegions`; the app owns the size signal.
 
 The app still owns everything domain-specific — which panels exist, their order,

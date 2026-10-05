@@ -1,13 +1,16 @@
 import { mount, raw, signal } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { classifyViewport, type DeviceClass } from '../../src/device-class.js';
-import { ResizableRegion } from '../../src/resizable-region.js';
+import { ResizableRegion } from '../../src/components/layout/resizable-region/resizable-region.js';
 import {
   wireWorkbench,
   type WorkbenchStorage,
-} from '../../src/wire-workbench.js';
-import { Workbench } from '../../src/workbench.js';
+} from '../../src/components/layout/workbench/wiring/wire-workbench.js';
+import { Workbench } from '../../src/components/layout/workbench/workbench.js';
+import {
+  classifyViewport,
+  type DeviceClass,
+} from '../../src/shared/environment/device-class.js';
 
 const roots: HTMLElement[] = [];
 const disposers: Array<() => void> = [];

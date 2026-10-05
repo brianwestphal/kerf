@@ -1,12 +1,12 @@
 import { raw } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
+import { ToolbarControlGroup } from '../../src/components/actions/toolbar-control-group/toolbar-control-group.js';
 import {
   CollapsiblePanel,
   CollapsiblePanelRelocated,
   type CollapsiblePanelToolbar,
-} from '../../src/collapsible-panel.js';
-import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
+} from '../../src/components/layout/collapsible-panel/collapsible-panel.js';
 
 const group = (name: string, relocateOnCollapse = false) => (
   <ToolbarControlGroup relocateOnCollapse={relocateOnCollapse}>

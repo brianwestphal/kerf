@@ -1,12 +1,12 @@
 import { raw } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
-import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
+import { ToolbarControlGroup } from '../../src/components/actions/toolbar-control-group/toolbar-control-group.js';
 import {
   Workbench,
   type WorkbenchPanel,
   type WorkbenchStaticPanel,
-} from '../../src/workbench.js';
+} from '../../src/components/layout/workbench/workbench.js';
 
 const group = (name: string, relocateOnCollapse = false) => (
   <ToolbarControlGroup relocateOnCollapse={relocateOnCollapse}>

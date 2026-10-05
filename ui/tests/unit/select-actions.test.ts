@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   installSelectActions,
   runSelectAction,
-} from '../../src/install-select-actions.js';
+} from '../../src/components/forms/select/internal/install-select-actions.js';
 
 type Host = Parameters<typeof runSelectAction>[0];
 type Option = ReturnType<Host['getAllOptions']>[number];

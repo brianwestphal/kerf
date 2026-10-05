@@ -8,7 +8,7 @@ describe('SegmentedControl corner geometry', () => {
   it('uses a stronger unselected text role on filled tracks while outlined stays quiet', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/segmented-control.css',
+      '../../src/components/forms/segmented-control/segmented-control.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const foreground = (selector: string) => {
@@ -32,7 +32,7 @@ describe('SegmentedControl corner geometry', () => {
   it('subtracts the shared full inset from the item radius', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/segmented-control.css',
+      '../../src/components/forms/segmented-control/segmented-control.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const control = root.nodes.find(
@@ -60,11 +60,11 @@ describe('SegmentedControl corner geometry', () => {
   it('shares the toolbar group highlight radius with nested choices', async () => {
     const segmentedFile = resolve(
       import.meta.dirname,
-      '../../src/segmented-control.css',
+      '../../src/components/forms/segmented-control/segmented-control.css',
     );
     const toolbarFile = resolve(
       import.meta.dirname,
-      '../../src/toolbar-control-group.css',
+      '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
     );
     const segmented = postcss.parse(await readFile(segmentedFile, 'utf8'), {
       from: segmentedFile,
@@ -109,7 +109,7 @@ describe('SegmentedControl corner geometry', () => {
   it('shares the toolbar group highlight radius with a collapsible search', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/token-search-field.css',
+      '../../src/components/forms/token-search-field/token-search-field.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
@@ -133,7 +133,7 @@ describe('SegmentedControl corner geometry', () => {
   it('lets nested dropdown shadow bases own intrinsic label, icon, and caret width', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/toolbar-control-group.css',
+      '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
@@ -189,7 +189,10 @@ describe('SegmentedControl corner geometry', () => {
     // A mixed group's raw wa-buttons keep a normal text line height in the
     // group's stylesheet; a composed PopupMenu's trigger gets the same value
     // from popup-menu.css, since the group never styles another component.
-    const popupFile = resolve(import.meta.dirname, '../../src/popup-menu.css');
+    const popupFile = resolve(
+      import.meta.dirname,
+      '../../src/components/actions/popup-menu/popup-menu.css',
+    );
     const popupRoot = postcss.parse(await readFile(popupFile, 'utf8'), {
       from: popupFile,
     });

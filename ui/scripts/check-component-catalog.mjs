@@ -1,5 +1,5 @@
 import { access, readFile } from 'node:fs/promises';
-import { extname, resolve } from 'node:path';
+import { dirname, extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import ts from 'typescript';
@@ -36,7 +36,9 @@ const [
   readFile(resolve(root, 'ai/component-catalog.schema.json'), 'utf8'),
   readFile(resolve(root, 'package.json'), 'utf8'),
   readFile(resolve(root, 'src/index.ts'), 'utf8'),
-  readFile(resolve(root, 'src/webawesome.ts'), 'utf8'),
+  readTypeScriptImplementation(resolve(root, 'src/webawesome.ts')).then(
+    ({ source }) => source,
+  ),
   readFile(
     resolve(
       root,
@@ -85,6 +87,51 @@ const consumerCompositionExample = JSON.parse(consumerCompositionExampleSource);
 const compileTimeContracts = JSON.parse(compileTimeContractsSource);
 const compileTimeContractsSchema = JSON.parse(compileTimeContractsSchemaSource);
 const failures = [];
+
+async function readTypeScriptImplementation(sourcePath) {
+  const facade = await readFile(sourcePath, 'utf8');
+  const reexport = facade.match(
+    /^\/\/ Public package entry; implementation is grouped by component ownership\.\s+export \* from '([^']+)\.js';\s*$/,
+  );
+  if (!reexport) return { sourcePath, source: facade };
+
+  const target = resolve(dirname(sourcePath), reexport[1]);
+  for (const extension of ['.ts', '.tsx']) {
+    const implementationPath = `${target}${extension}`;
+    try {
+      return {
+        sourcePath: implementationPath,
+        source: await readFile(implementationPath, 'utf8'),
+      };
+    } catch {}
+  }
+  throw new Error(`Public source facade ${sourcePath} has no implementation`);
+}
+
+async function readCssImplementation(sourcePath) {
+  const facade = await readFile(sourcePath, 'utf8');
+  const imported = facade.match(
+    /^\/\* Public stylesheet entry; implementation is colocated with the component\. \*\/\s+@import ["']([^"']+)["'];\s*$/,
+  );
+  if (!imported) return { sourcePath, source: facade };
+  const implementationPath = resolve(dirname(sourcePath), imported[1]);
+  return {
+    sourcePath: implementationPath,
+    source: await readFile(implementationPath, 'utf8'),
+  };
+}
+
+async function readCssTree(sourcePath, seen = new Set()) {
+  if (seen.has(sourcePath)) return '';
+  seen.add(sourcePath);
+  const source = await readFile(sourcePath, 'utf8');
+  const imported = await Promise.all(
+    [...source.matchAll(/@import\s+["'](\.\/[^"']+\.css)["']/g)].map((match) =>
+      readCssTree(resolve(dirname(sourcePath), match[1]), seen),
+    ),
+  );
+  return [source, ...imported].join('\n');
+}
 
 function fail(message) {
   failures.push(message);
@@ -179,9 +226,8 @@ for (const provider of artifact.wiringProviders ?? []) {
     fail(
       `wiring provider ${provider.export} import ${provider.import} is not exported`,
     );
-  const source = await readFile(
+  const { source } = await readTypeScriptImplementation(
     resolve(root, `src/${provider.import.slice('@kerfjs/ui/'.length)}.ts`),
-    'utf8',
   );
   for (const helper of provider.provides) {
     if (!catalogWiring.has(helper))
@@ -257,8 +303,10 @@ for (const entry of artifact.entries) {
       continue;
     const file = `src/${item.import.slice('@kerfjs/ui/'.length)}.ts`;
     let source;
+    let implementationPath;
     try {
-      source = await readFile(resolve(root, file), 'utf8');
+      ({ source, sourcePath: implementationPath } =
+        await readTypeScriptImplementation(resolve(root, file)));
     } catch {
       fail(`${entry.id}: ${item.export} source ${file} is missing`);
       continue;
@@ -267,13 +315,14 @@ for (const entry of artifact.entries) {
     // resize wiring behind wireResizableRegions and wireWorkbench); what that
     // module writes is what the wire writes.
     for (const [, module] of source.matchAll(
-      /^import\s+\{[^}]*\}\s+from\s+'\.\/([a-z0-9-]+)\.js';/gm,
-    ))
-      if (!module.startsWith('wire-'))
-        source += await readFile(
-          resolve(root, `src/${module}.ts`),
-          'utf8',
-        ).catch(() => '');
+      /^import\s+\{[^}]*\}\s+from\s+'(\.\.?\/[^']+)\.js';/gm,
+    )) {
+      if (module.split('/').at(-1).startsWith('wire-')) continue;
+      const target = resolve(dirname(implementationPath), module);
+      source += await readFile(`${target}.ts`, 'utf8').catch(() =>
+        readFile(`${target}.tsx`, 'utf8').catch(() => ''),
+      );
+    }
     const written = writtenDataAttributes(source);
     const declared = new Set(
       (item.stateAttributes ?? []).map(({ name }) => name),
@@ -589,14 +638,15 @@ for (const entry of entries.filter(({ delivery }) => delivery.moduleImport)) {
   const target = packageJson.exports[subpath];
   if (!target || typeof target !== 'object' || !target.import)
     fail(`${entry.id} has stale module import ${specifier}`);
-  const sourcePath = resolve(
+  const facadePath = resolve(
     root,
     'src',
     `${specifier.slice('@kerfjs/ui/'.length)}.tsx`,
   );
   let source;
+  let sourcePath;
   try {
-    source = await readFile(sourcePath, 'utf8');
+    ({ source, sourcePath } = await readTypeScriptImplementation(facadePath));
   } catch {
     fail(
       `${entry.id} module import has no source src/${specifier.slice('@kerfjs/ui/'.length)}.tsx`,
@@ -860,18 +910,13 @@ for (const entry of entries.filter(
   const file = cssImport.slice('@kerfjs/ui/'.length);
   if (target !== `./dist/styles/${file}`)
     fail(`${entry.id} has stale generated CSS export ${String(target)}`);
-  const css = await readFile(resolve(root, 'src', file), 'utf8');
+  const { source: css, sourcePath: cssPath } = await readCssImplementation(
+    resolve(root, 'src', file),
+  );
   // An aggregate stylesheet (layout.css imports pane.css and content-item.css)
   // still delivers the shared tokens its imports consume, so presence checks
   // follow local `@import`s; the exact-match check below stays per file.
-  const deliveredCss = [
-    css,
-    ...(await Promise.all(
-      [...css.matchAll(/@import\s+["']\.\/([a-z0-9-]+\.css)["']/g)].map(
-        (match) => readFile(resolve(root, 'src', match[1]), 'utf8'),
-      ),
-    )),
-  ].join('\n');
+  const deliveredCss = await readCssTree(cssPath);
   for (const className of entry.publicClasses ?? []) {
     if (!css.includes(`.${className}`))
       fail(`${entry.id} names missing public class ${className}`);

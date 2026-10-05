@@ -1,0 +1,15 @@
+[data-lucide] {
+  display: block;
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+[data-lucide][data-inline="true"] {
+  display: inline-block;
+}
+
+[data-lucide][data-size] {
+  width: var(--_kui-lucide-size);
+  height: var(--_kui-lucide-size);
+}

@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
 
 import postcss, { type Rule } from 'postcss';
 import { describe, expect, it } from 'vitest';
+
+import { componentStylesheet } from './helpers/component-stylesheet.js';
 
 const components = ['list-header', 'list-item', 'list-action-row'];
 
@@ -11,10 +12,7 @@ describe('shared list divider token', () => {
     '%s reads an inherited token with the old fallback',
     async (name) => {
       const css = postcss.parse(
-        await readFile(
-          resolve(import.meta.dirname, `../../src/${name}.css`),
-          'utf8',
-        ),
+        await readFile(await componentStylesheet(`${name}.css`), 'utf8'),
       );
       const root = css.nodes.find(
         (node): node is Rule =>

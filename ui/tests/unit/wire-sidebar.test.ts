@@ -4,9 +4,15 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   CollapsiblePanel,
   CollapsiblePanelToggle,
-} from '../../src/collapsible-panel.js';
-import { classifyViewport, type DeviceClass } from '../../src/device-class.js';
-import { type SidebarStorage, wireSidebar } from '../../src/wire-sidebar.js';
+} from '../../src/components/layout/collapsible-panel/collapsible-panel.js';
+import {
+  type SidebarStorage,
+  wireSidebar,
+} from '../../src/components/layout/collapsible-panel/wiring/wire-sidebar.js';
+import {
+  classifyViewport,
+  type DeviceClass,
+} from '../../src/shared/environment/device-class.js';
 
 const roots: HTMLElement[] = [];
 

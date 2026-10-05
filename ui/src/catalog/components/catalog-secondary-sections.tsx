@@ -1,5 +1,5 @@
-import { List } from '../../list.js';
-import { ListHeader } from '../../list-header.js';
+import { List } from '../../components/collections/list/list.js';
+import { ListHeader } from '../../components/collections/list-header/list-header.js';
 import type { CatalogSecondaryGroup } from '../types.js';
 import { CatalogSectionEntries } from './catalog-section-entries.js';
 

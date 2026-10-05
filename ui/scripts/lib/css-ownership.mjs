@@ -76,35 +76,35 @@ const EDGE_INSET_CONTEXT =
  */
 export const ownershipExceptions = [
   {
-    file: 'collapsible-panel.css',
+    file: 'components/layout/collapsible-panel/collapsible-panel.css',
     rule: 'context-on-child',
     selector: '.kui-collapsible-panel__content > :not(',
     property: '--kui-edge-inset-',
     reason: EDGE_INSET_CONTEXT,
   },
   {
-    file: 'nav-stack.css',
+    file: 'components/navigation/nav-stack/nav-stack.css',
     rule: 'context-on-child',
     selector: '.kui-nav-stack__view > :not(',
     property: '--kui-edge-inset-',
     reason: EDGE_INSET_CONTEXT,
   },
   {
-    file: 'split-view.css',
+    file: 'components/layout/split-view/split-view.css',
     rule: 'context-on-child',
     selector: '.kui-split-view__list > :not(',
     property: '--kui-edge-inset-',
     reason: EDGE_INSET_CONTEXT,
   },
   {
-    file: 'tab-scaffold.css',
+    file: 'components/navigation/tab-scaffold/tab-scaffold.css',
     rule: 'context-on-child',
     selector: '.kui-tab-scaffold__scene > :not(',
     property: '--kui-edge-inset-',
     reason: EDGE_INSET_CONTEXT,
   },
   {
-    file: 'toolbar.css',
+    file: 'components/actions/toolbar/toolbar.css',
     rule: 'context-on-child',
     selector: '.kui-toolbar > *',
     property: '--kui-edge-inset-',
@@ -115,6 +115,8 @@ export const ownershipExceptions = [
 
 function componentName(filename) {
   return filename
+    .split('/')
+    .at(-1)
     .replace(/\.css$/, '')
     .split('-')
     .map((part) => part[0].toUpperCase() + part.slice(1))
@@ -176,7 +178,9 @@ export function buildOwnershipModel({ stylesheets, sources }) {
   const sheets = new Map();
   for (const { filename, source: css } of stylesheets) {
     const stem = filename.replace(/\.css$/, '');
-    const roots = packageClassRoots.get(filename) ?? [`kui-${stem}`];
+    const basename = filename.split('/').at(-1);
+    const componentId = basename.replace(/\.css$/, '');
+    const roots = packageClassRoots.get(basename) ?? [`kui-${componentId}`];
     const tsx = sourceByStem.get(stem);
     sheets.set(filename, {
       filename,
@@ -185,12 +189,12 @@ export function buildOwnershipModel({ stylesheets, sources }) {
       roots,
       namespaces: [
         ...roots.map((root) => root.replace(/^kui-/, '')),
-        ...(tokenNamespaceAliases.get(filename) ?? []),
+        ...(tokenNamespaceAliases.get(basename) ?? []),
       ],
       // A component stylesheet pairs with a same-basename TSX component.
       component: Boolean(tsx?.filename.endsWith('.tsx')),
       source: tsx?.filename.endsWith('.tsx') ? tsx.source : '',
-      dataComponents: new Set([stem]),
+      dataComponents: new Set([componentId]),
       hostTags: new Set(),
       internalTags: new Set(),
       hookClasses: new Map(),
@@ -220,7 +224,11 @@ export function buildOwnershipModel({ stylesheets, sources }) {
     for (const value of sheet.dataComponents)
       if (
         !dataComponentOwners.has(value) ||
-        value === sheet.filename.replace(/\.css$/, '')
+        value ===
+          sheet.filename
+            .split('/')
+            .at(-1)
+            .replace(/\.css$/, '')
       )
         dataComponentOwners.set(value, sheet.filename);
 
@@ -255,7 +263,7 @@ export function buildOwnershipModel({ stylesheets, sources }) {
     const { source } = sheet;
     const composed = new Set();
     for (const match of source.matchAll(
-      /import\s*\{([\s\S]*?)\}\s*from\s*['"]\.\/([a-z0-9-]+)\.js['"]/g,
+      /import\s*\{([\s\S]*?)\}\s*from\s*['"]\.\.?\/[^'"]+\.js['"]/g,
     )) {
       for (const binding of match[1].split(',')) {
         const name = binding

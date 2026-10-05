@@ -1,5 +1,5 @@
-import { filterDataAttributes } from '../../extension-attributes.js';
-import type { KerfUiContent } from '../../semantic-content.js';
+import type { KerfUiContent } from '../../shared/content/semantic-content.js';
+import { filterDataAttributes } from '../../shared/dom/extension-attributes.js';
 
 const protectedAttributes = new Set([
   'data-catalog-example',
