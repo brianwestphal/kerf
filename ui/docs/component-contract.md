@@ -271,11 +271,11 @@ against the combined Kerf and consumer catalogs; do not duplicate a Kerf id.
 For Doctor's opt-in component ownership mode, add `styleSources` with the CSS
 paths each entry owns, relative to the consumer package root.
 
-- Components own semantic markup, stable anatomy, documented variants, ARIA projection, and package CSS hooks.
+- Components own semantic markup, stable anatomy, documented variants, ARIA projection, and package CSS hooks. They may render and style raw HTML or Web Awesome implementation elements they create and control. A nested Kerf or application component remains its own owner even when the parent renders it.
 - Applications own signals/stores, product copy, domain-state mapping, persistence, routing, permissions, and transport.
 - Actions are `data-action` strings. Wire them at a stable root with `delegate()` or `delegateActions()` and retain the disposer.
 - A reusable component never owns per-instance mutable module state.
-- Consumers configure presentation through component props and documented `--kui-*` semantic tokens. Foundation tokens provide opinionated neutral, brand/info, non-status pop, success, warning, and danger fill/border/foreground roles. Application stylesheets must not select package component classes or descendants. If genuinely new structure needs CSS, encapsulate that structure and its stylesheet in an application-owned component; configure any nested Kerf components through their public APIs.
+- Consumers configure presentation through component props and documented `--kui-*` semantic tokens. Foundation tokens provide opinionated neutral, brand/info, non-status pop, success, warning, and danger fill/border/foreground roles. Application stylesheets must not select package component classes or descendants. If genuinely new structure needs CSS, encapsulate that structure and its stylesheet in an application-owned component; configure any nested Kerf components through their public APIs. A thin composition that only connects other components should normally have no stylesheet. It may style only raw elements or layout it owns, never its component children.
 
 `ListItem.rootAttributes`, `ListActionRow.rootAttributes`,
 `ListHeader.rootAttributes`, `AppTab.rootAttributes`,

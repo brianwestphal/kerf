@@ -74,6 +74,13 @@ including dynamic BEM modifiers; `evidence.components` names the co-owner set.
 Set `"implicitComponentOwnership": true` to include uncataloged modules
 that directly import CSS. Component mode reports sibling CSS and hook-class
 restyles while allowing a component's own stylesheet and module.
+For an application with reusable or app-level components, the recommended
+policy is `"ownership": "component"`, `"implicitComponentOwnership": true`,
+and `"ownershipContext": "any-package"`. This lets components style raw HTML
+and Web Awesome elements they own while blocking overrides of nested Kerf and
+application components. Thin glue compositions should normally omit CSS; when
+they own wrapper markup or layout, Doctor permits that own CSS and reports any
+selector that crosses into a child component.
 For an entry stylesheet shared by modules without direct CSS imports, configure
 `"ownershipGroups": [{ "styleSources": ["src/style.css"], "sources": ["src/main.tsx", "src/app/"] }]`.
 These package-relative paths define one owner: its stylesheet and every listed
@@ -118,6 +125,8 @@ Place `.kerf-ui-doctor.json` at the workspace root:
   "schemaVersion": 1,
   "mode": "full",
   "ownership": "component",
+  "ownershipContext": "any-package",
+  "implicitComponentOwnership": true,
   "stages": { "browser": false },
   "cache": true,
   "failOn": "warning",

@@ -33,6 +33,11 @@ component packages built on Kerf UI must follow it too:
   selects a `.kui-*` class, a `[data-component]` root, a `wa-*` element a Kerf
   component renders, or its `::part()`s, and no hook class added to a
   component's root so that it can be restyled.
+- **Owned implementation details are available.** A component may render raw
+  HTML or Web Awesome elements and style those elements when it creates them,
+  controls their state, and keeps the selectors in its own stylesheet. That
+  permission stops at every nested Kerf or application component boundary;
+  ownership follows the child component, even when the parent rendered it.
 - **Configuration, not overrides.** Do not write another component's private
   `--_kui-*` variables or reach for its `--kui-*` tokens to change layout,
   size, padding, or framing when a prop exists. Theme tokens are for theming
@@ -49,6 +54,11 @@ wa-dropdown.kui-popup-menu { … }` lives with PopupMenu). A parent may key its
   you need, report it (open an upstream feature request) instead of
   overriding. Your own components follow the same rule: expose configuration,
   and let each component own its styles.
+- **Thin compositions usually need no CSS.** A component that only chooses and
+  connects other components should configure their props and slots without a
+  stylesheet. Add CSS only for raw elements or layout that the composition
+  itself owns; never use a composition stylesheet to normalize or override its
+  children.
 
 `kerf-ui-analyze` and `kerf-ui-doctor` enforce this downstream: `KUI-L019`
 (a rule whose subject is a cataloged component), `KUI-L020` (another
@@ -62,9 +72,12 @@ when none exists, report the component gap rather than suppressing the finding.
 For compact known activity, give `LoadingSpinner` its `size` prop (`xs` through
 `xl`, or a positive pixel number) instead of styling its SVG; omitted size is
 1em.
-For an application's own cataloged components, opt into Doctor's
-`"ownership": "component"` and declare each entry's `styleSources` so sibling
-components cannot style one another; package ownership remains the default.
+For an application's own components, configure Doctor with
+`"ownership": "component"`, `"implicitComponentOwnership": true`, and
+`"ownershipContext": "any-package"`; declare each catalog entry's
+`styleSources` so sibling components cannot style one another. Package
+ownership remains the compatibility default and does not establish those
+application-level boundaries.
 
 Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
 shared theme tokens. When overriding a loud fill

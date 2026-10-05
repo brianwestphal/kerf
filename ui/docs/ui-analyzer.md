@@ -121,6 +121,15 @@ applications and component packages; the selector parsing is the same module
 (`analyzer/selectors.mjs`), so the package rule and the consumer rule agree on
 which element a selector styles.
 
+A component may freely style raw HTML and Web Awesome elements it renders and
+controls in its own stylesheet. A nested Kerf or application component remains
+a separate owner. A thin composition that only connects children should
+normally have no stylesheet; if it owns raw wrapper markup or layout, its CSS
+may style that markup while these diagnostics continue to reject child
+overrides. “Thin composition” is architectural guidance rather than a static
+classification, so Doctor reports concrete ownership violations instead of
+rejecting every stylesheet attached to a `kind: composition` catalog entry.
+
 - **`KUI-L019` — a rule restyles a cataloged component.** The rule's subject
   (the rightmost compound of each selector, ignoring `:has()` and `:not()`
   arguments) names a public class of a cataloged component (`.kui-toolbar`,
