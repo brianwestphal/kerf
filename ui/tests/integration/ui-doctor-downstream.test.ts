@@ -16,6 +16,64 @@ const repositoryRoot = resolve(uiRoot, '..');
 // ~28s against the old 30s budget, so it flaked. 60s keeps a real ceiling.
 const DOCTOR_TEST_TIMEOUT = 60_000;
 
+test(
+  'doctor CLI reports component style names and clears after repair',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-styles-'));
+    try {
+      await mkdir(resolve(root, 'src'));
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"styles-app","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: {
+            catalog: false,
+            typescript: false,
+            eslint: false,
+            analyzer: true,
+            browser: false,
+          },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/workspace-header.tsx'),
+        'export function WorkspaceHeader() { return <header class="other">Header</header>; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/workspace-header.css'),
+        '.other { color: red; }\n.view-mode-switcher__content { color: blue; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/workspace-controls.tsx'),
+        'export function ViewModeSwitcher() { return <button class="view-mode-switcher">Mode</button>; }\n',
+      );
+      const broken = await doctor(root);
+      expect(broken.status).toBe(1);
+      expect(
+        broken.report.diagnostics.map((item: { id: string }) => item.id),
+      ).toEqual(expect.arrayContaining(['KUI-D030', 'KUI-D032']));
+      await writeFile(
+        resolve(root, 'src/workspace-header.tsx'),
+        'export function WorkspaceHeader() { return <header class="workspace-header">Header</header>; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/workspace-header.css'),
+        '.workspace-header { color: red; }\n',
+      );
+      const repaired = await doctor(root);
+      expect(repaired.status).toBe(0);
+      expect(repaired.report.diagnostics).toEqual([]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
 async function link(directory: string, name: string, target: string) {
   const path = resolve(directory, 'node_modules', ...name.split('/'));
   await mkdir(dirname(path), { recursive: true });
@@ -405,7 +463,7 @@ test(
 
       await writeFile(
         resolve(root, 'src/header.tsx'),
-        "import './header.css';\nimport { Search } from '@app/components/search';\nexport const Header = () => <div class=\"hook\"><Search /></div>;\n",
+        "import './header.css';\nimport { Search } from '@app/components/search';\nexport const Header = () => <div class=\"header hook\"><Search /></div>;\n",
       );
       const clean = await doctor(root);
       expect(clean.status).toBe(0);
@@ -1007,11 +1065,11 @@ test(
       // Configure the component and style an application-owned wrapper.
       await writeFile(
         resolve(root, 'src/app.css'),
-        '.header > .title-slot { margin-inline-start: auto; }\n.header { background: red; }\n',
+        '.app > .title-slot { margin-inline-start: auto; }\n.app { background: red; }\n',
       );
       await writeFile(
         resolve(root, 'src/app.tsx'),
-        "import './app.css';\nimport { List } from '@kerfjs/ui/list';\nimport { Toolbar } from '@kerfjs/ui/toolbar';\nexport const App = () => <div class=\"header\"><Toolbar /><List gap=\"xs\" /></div>;\n",
+        "import './app.css';\nimport { List } from '@kerfjs/ui/list';\nimport { Toolbar } from '@kerfjs/ui/toolbar';\nexport const App = () => <div class=\"app\"><Toolbar /><List gap=\"xs\" /></div>;\n",
       );
       const clean = await doctor(root);
       expect(
@@ -1285,7 +1343,7 @@ test(
       expect(broken.status).toBe(1);
       expect(
         broken.report.diagnostics.map((item: { id: string }) => item.id),
-      ).toEqual(['KUI-L019', 'KUI-L023']);
+      ).toEqual(['KUI-L019', 'KUI-D030', 'KUI-L023']);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
@@ -1394,7 +1452,7 @@ test(
       expect(report.status).toBe(1);
       expect(
         report.report.diagnostics.map((item: { id: string }) => item.id),
-      ).toEqual(['KUI-L019', 'KUI-L019']);
+      ).toEqual(['KUI-L019', 'KUI-L019', 'KUI-D030']);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
@@ -1433,7 +1491,7 @@ test(
       expect(report.status).toBe(1);
       expect(
         report.report.diagnostics.map((item: { id: string }) => item.id),
-      ).toEqual(['KUI-L019']);
+      ).toEqual(['KUI-L019', 'KUI-D030']);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

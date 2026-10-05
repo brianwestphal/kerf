@@ -58,6 +58,29 @@ without that marker remain app-owned.
 The analyzer resolves a cataloged application component imported through an
 exact or wildcard TypeScript `paths` alias from the nearest consumer tsconfig,
 so the same root hook-class check applies in those files.
+
+## Component style naming
+
+The analyzer stage also checks colocated JSX/TSX components and stylesheets.
+When a stylesheet has a same-basename component module, or exactly one
+component module imports it, Doctor checks that the stylesheet filename is
+the component's kebab-case name (`KUI-D031`). A component that renders its own
+HTML element must put that kebab-case class on rendered markup (`KUI-D030`).
+For example, `WorkspaceHeader` pairs with `workspace-header.css` and renders
+`.workspace-header`. Thin components that only compose other components need
+no root class. Shared stylesheets declared in `ownershipGroups` are exempt
+from the naming check.
+
+Doctor reports `KUI-D032` when a paired stylesheet selects another local
+component's kebab-case class or its BEM descendants or modifiers. Move that
+rule to the owning component's stylesheet or use the component's public
+configuration. This check uses source declarations and CSS selectors; it does
+not execute component code. In changed mode, it reads other component sources
+to resolve ownership but reports only pairs containing a selected path. For
+broader cross-component ownership, including
+cataloged package components and hook classes, enable `ownership: "component"`
+with `implicitComponentOwnership: true` as described above.
+
 Set `"ownership": "component"` in `.kerf-ui-doctor.json` to enforce the same
 boundary between a consumer package's own cataloged components. The default is
 `"package"`. Selection-only entries participate too. A component owns its

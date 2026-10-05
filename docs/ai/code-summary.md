@@ -637,8 +637,10 @@ cover the CLI formats, the doctor repair loop, and a `create-kerf-component`
 scaffold that passes its own `check:styles` while an app restyling its Counter
 is reported.
 
-`ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. Its
-ESLint stage runs an isolated Kerf preset, projects each file's applicable
+`ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. The
+`component-style-checks.mjs` pass checks paired JSX/TSX component root classes,
+stylesheet filenames, and foreign component selectors (`KUI-D030`–`KUI-D032`).
+Its ESLint stage runs an isolated Kerf preset, projects each file's applicable
 consumer core rules and `linterOptions`, discards only missing-definition
 diagnostics for consumer-owned plugin directives, and retains unknown
 `kerfjs/*` directives and all substantive lint findings. Its full-project pass

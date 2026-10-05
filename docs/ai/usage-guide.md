@@ -444,6 +444,8 @@ shipped with `@kerfjs/ui`.
 Before accepting a UI integration, run `kerf-ui-doctor --full`. Its one
 versioned repair report joins profile/catalog validation, TypeScript, the Kerf
 UI ESLint preset, and static analysis without executing application modules.
+Its static pass also checks that a paired component's root class and stylesheet
+use its kebab-case name and flags selectors into another local component.
 The doctor ESLint stage is an isolated Kerf pass: it preserves failures for
 unknown `kerfjs/*` directives but ignores unresolved directives owned by the
 consumer's other plugins. Run the application's normal ESLint command as the

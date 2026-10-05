@@ -27,6 +27,7 @@ import {
   UI_ANALYSIS_RULES,
 } from '../analyzer/index.mjs';
 import { evaluateUi, UI_EVALUATION_RULES } from '../evaluator/index.mjs';
+import { checkComponentStyles } from './component-style-checks.mjs';
 import {
   isForeignRuleDefinitionDiagnostic,
   projectConsumerCoreConfig,
@@ -52,6 +53,18 @@ export const UI_DOCTOR_RULES = Object.freeze({
   'KUI-D020': {
     severity: 'error',
     title: 'Local component catalog is stale or invalid',
+  },
+  'KUI-D030': {
+    severity: 'error',
+    title: 'Component root class does not match its name',
+  },
+  'KUI-D031': {
+    severity: 'error',
+    title: 'Component stylesheet does not match its name',
+  },
+  'KUI-D032': {
+    severity: 'error',
+    title: 'Stylesheet selects another component class',
   },
 });
 
@@ -480,7 +493,7 @@ async function installedPackageVersion(root, name) {
 }
 
 async function cacheKey(root, packageRoot, mode, paths, config) {
-  const files = await collectInputs(packageRoot, paths);
+  const files = await collectInputs(packageRoot);
   for (const directory of new Set([root, packageRoot])) {
     for (const name of [
       'package.json',
@@ -521,6 +534,14 @@ async function cacheKey(root, packageRoot, mode, paths, config) {
       }),
     )
     .update(await readFile(fileURLToPath(import.meta.url)));
+  hash.update(
+    await readFile(
+      resolve(
+        dirname(fileURLToPath(import.meta.url)),
+        'component-style-checks.mjs',
+      ),
+    ),
+  );
   for (const file of files)
     hash.update(portablePath(root, file)).update(await readFile(file));
   return hash.digest('hex');
@@ -1215,18 +1236,26 @@ export async function runUiDoctor({
                 signal,
               })
             : (async () => ({
-                diagnostics: normalizeAnalyzer(
-                  await analyzeUiProject({
-                    root: packageRoot,
-                    paths: selectedPaths,
-                    ownership: config.ownership ?? 'package',
-                    ownershipContext: config.ownershipContext ?? 'subject',
-                    implicitComponentOwnership:
-                      config.implicitComponentOwnership ?? false,
-                    ownershipGroups: config.ownershipGroups ?? [],
-                    knownRules: [...registeredRuleIds, ...eslintRuleIds],
-                  }),
-                ),
+                diagnostics: [
+                  ...normalizeAnalyzer(
+                    await analyzeUiProject({
+                      root: packageRoot,
+                      paths: selectedPaths,
+                      ownership: config.ownership ?? 'package',
+                      ownershipContext: config.ownershipContext ?? 'subject',
+                      implicitComponentOwnership:
+                        config.implicitComponentOwnership ?? false,
+                      ownershipGroups: config.ownershipGroups ?? [],
+                      knownRules: [...registeredRuleIds, ...eslintRuleIds],
+                    }),
+                  ),
+                  ...(await checkComponentStyles(
+                    packageRoot,
+                    await collectInputs(packageRoot),
+                    config.ownershipGroups ?? [],
+                    selectedPaths,
+                  )),
+                ],
               }))(),
         signal,
       ),
