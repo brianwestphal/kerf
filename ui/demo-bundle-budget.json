@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 322800,
+  "totalJavaScriptGzip": 323000,
   "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 322729,
+  "measuredTotalJavaScriptGzip": 322904,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2691,6 +2691,22 @@
         "measuredTotalJavaScriptGzip": 322729,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 322800
+      }
+    },
+    {
+      "at": "2026-10-05T03:22:37.384Z",
+      "reason": "Add typed Text foreground colors and catalog examples",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322729,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 322800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322904,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323000
       }
     }
   ]

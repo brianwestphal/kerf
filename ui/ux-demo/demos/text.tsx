@@ -2,6 +2,7 @@ import '@awesome.me/webawesome/dist/components/input/input.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
+import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { Row } from '@kerfjs/ui/row';
 import { FieldLabel, Text } from '@kerfjs/ui/text';
@@ -29,6 +30,21 @@ export function TextDemo() {
         >
           Paragraph text keeps native semantics and accepts ordinary global,
           data, and ARIA attributes.
+        </Text>
+      </CatalogExample>
+      <CatalogExample
+        label="Text colors"
+        note="Use a semantic foreground token or an application color. Omit color to keep tone or inherited text color; an explicit color wins over tone."
+        align="inline-control"
+        rootAttributes={{ 'data-demo-section': 'text-colors' }}
+      >
+        <Text>Inherited foreground</Text>
+        <Text color={uiColor('warning-on-quiet')}>Warning foreground</Text>
+        <Text color={foregroundColor('rebeccapurple')}>
+          Application foreground
+        </Text>
+        <Text tone="danger" color={uiColor('text-quiet')}>
+          Explicit color overrides tone
         </Text>
       </CatalogExample>
       <CatalogExample

@@ -74,10 +74,12 @@ complete values or direct finite `UiSpaceName` shorthands, replacing its former
 unrestricted CSS string while keeping boolean component-default spacing.
 Property grammars remain distinct: `flex()` returns `CssFlex` for `List.flex`;
 `Skeleton` sizes accept typed lengths plus finite intrinsic keywords;
-choice icons and `LucideIcon.color` take a `CssForegroundColor` from `uiColor()` with a foreground
+choice icons, `LucideIcon.color`, `LoadingSpinner.color`, and `Text.color` take a `CssForegroundColor` from `uiColor()` with a foreground
 token (`*-on-*`, a text role, or a `*-text` alias) or from
 `foregroundColorVar()`; `foregroundColor()` accepts an application-chosen CSS color such as `#8b5cf6`, `rgb(20 40 60 / 0.8)`, or `rebeccapurple`. The latter checks that the string is a single declaration value; the browser validates the color syntax. `LucideIcon` inherits its surrounding text color when the prop is absent, and both outline stroke and solid fill follow the chosen color. `*-fill-*` tokens and plain `colorVar()` values are rejected. List rows use
 classes, public tokens, and props rather than declaration-string `style` slots.
+`Text.color` paints the element inline when supplied and overrides its semantic
+`tone`; without it, the existing tone or inherited foreground applies.
 
 Public visual components with one stable conceptual root accept an explicit
 native `slot?: string` prop and forward it on every render branch. This supports

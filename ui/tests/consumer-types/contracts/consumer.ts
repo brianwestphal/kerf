@@ -47,6 +47,7 @@ import {
   type CssLengthExpression,
   type CssSize,
   flex,
+  foregroundColor,
   foregroundColorVar,
   lengthVar,
   pct,
@@ -135,6 +136,12 @@ Text({
   children: 'Section',
 });
 Text({ children: 'Paragraph by default' });
+Text({ children: 'Warning', color: uiColor('warning-on-quiet') });
+Text({ children: 'Custom', color: foregroundColor('rebeccapurple') });
+// @ts-expect-error Text colors require a foreground token or explicit custom-color builder.
+Text({ children: 'Invalid', color: uiColor('warning-fill-quiet') });
+// @ts-expect-error Raw color strings do not bypass the typed color contract.
+Text({ children: 'Invalid', color: 'red' });
 Text({ variant: inlineTextVariant, children: 'Inline metadata' });
 // @ts-expect-error Text variants are limited to native headings, paragraphs, and spans.
 Text({ variant: 'div', children: 'Invalid' });

@@ -1,5 +1,6 @@
 import type { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 
+import type { CssForegroundColor } from './css-values.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 export { FieldLabel, type FieldLabelProps } from './field-label.js';
@@ -24,6 +25,8 @@ type TextCommonProps = Omit<
   variant?: TextVariant;
   /** Semantic foreground treatment. Defaults to the inherited foreground. */
   tone?: TextTone;
+  /** Foreground color; overrides tone when supplied, or inherits when omitted. */
+  color?: CssForegroundColor;
   /** Text sizing independent of the native semantic element. */
   size?: TextSize;
   /** Font family independent of the native semantic element. */
@@ -62,6 +65,7 @@ export type TextProps = TextCommonProps &
 export function Text({
   variant: Variant = 'p',
   tone = 'default',
+  color,
   size = 'default',
   font = 'default',
   border = 'transparent',
@@ -72,6 +76,7 @@ export function Text({
   children,
   class: classValue = '',
   className = '',
+  style,
   ...attributes
 }: TextProps) {
   if (
@@ -98,6 +103,11 @@ export function Text({
       data-line-height={lineHeight === 'tight' ? 'tight' : undefined}
       data-wrap={wrap === 'normal' ? undefined : wrap}
       data-max-lines={maxLines === undefined ? undefined : String(maxLines)}
+      style={
+        color === undefined
+          ? style
+          : `${style === undefined || style === null ? '' : `${style};`}color:${color}`
+      }
     >
       {maxLines === undefined ? (
         children

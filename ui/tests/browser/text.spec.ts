@@ -1,5 +1,38 @@
 import { expect, test } from '@playwright/test';
 
+test('Text colors inherit, use foreground tokens, and override tone', async ({
+  page,
+}) => {
+  await page.goto('/?component=text');
+  const texts = page.locator('[data-demo-section="text-colors"] > .kui-text');
+  await expect(texts).toHaveCount(4);
+  await expect(texts.nth(0)).not.toHaveAttribute('style', /color:/);
+  expect(
+    await texts
+      .nth(0)
+      .evaluate(
+        (element) =>
+          window.getComputedStyle(element).color ===
+          window.getComputedStyle(element.parentElement!).color,
+      ),
+  ).toBe(true);
+  await expect(texts.nth(1)).toHaveAttribute(
+    'style',
+    /color:var\(--kui-color-warning-on-quiet\)/,
+  );
+  await expect(texts.nth(2)).toHaveCSS('color', 'rgb(102, 51, 153)');
+  await expect(texts.nth(3)).toHaveAttribute('data-tone', 'danger');
+  const quiet = page
+    .locator(
+      '[data-demo-section="presentation-roles"] > .kui-text[data-tone="quiet"]',
+    )
+    .first();
+  await expect(texts.nth(3)).toHaveCSS(
+    'color',
+    await quiet.evaluate((element) => window.getComputedStyle(element).color),
+  );
+});
+
 test('FieldLabel matches the live form label and names a preview', async ({
   page,
 }, testInfo) => {

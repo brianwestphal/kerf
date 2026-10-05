@@ -870,6 +870,22 @@ describe('production UI primitives', () => {
       '<p class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="transparent"><span>Body</span></p>',
     );
     expect(
+      asHtml(Text({ children: 'Warning', color: uiColor('warning-on-quiet') })),
+    ).toContain('style="color:var(--kui-color-warning-on-quiet)"');
+    expect(
+      asHtml(
+        Text({
+          children: 'Override',
+          tone: 'danger',
+          style: 'font-weight:700',
+          color: uiColor('text-quiet'),
+        }),
+      ),
+    ).toContain('style="font-weight:700;color:var(--kui-color-text-quiet)"');
+    expect(
+      asHtml(Text({ children: 'Styled', style: 'font-weight:700' })),
+    ).toContain('style="font-weight:700"');
+    expect(
       asHtml(
         Text({
           variant: 'span',

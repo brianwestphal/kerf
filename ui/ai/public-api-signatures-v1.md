@@ -3336,6 +3336,7 @@ export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps,
 ```ts
 import * as kerfjs from 'kerfjs';
 import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
+import { CssForegroundColor } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
@@ -3359,6 +3360,8 @@ type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> &
     variant?: TextVariant;
     /** Semantic foreground treatment. Defaults to the inherited foreground. */
     tone?: TextTone;
+    /** Foreground color; overrides tone when supplied, or inherits when omitted. */
+    color?: CssForegroundColor;
     /** Text sizing independent of the native semantic element. */
     size?: TextSize;
     /** Font family independent of the native semantic element. */
@@ -3388,7 +3391,7 @@ type TextProps = TextCommonProps & ({
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, size, font, border, flush, lineHeight, wrap, maxLines, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, color, size, font, border, flush, lineHeight, wrap, maxLines, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
 
 export { FieldLabel, type FieldLabelProps, Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextVariant, type TextWrap };
 ```
