@@ -806,3 +806,7 @@ For tools that read project-level config files, the kerf repo ships two pre-bake
 - [`kerf.claude-skill.md`](../../kerf.claude-skill.md) — copy into `~/.claude/skills/kerf-app/SKILL.md` (or `your-project/.claude/skills/kerf-app/SKILL.md`); Claude Code activates the skill whenever it spots a `kerfjs` import.
 
 Both mirror the hard rules + canonical patterns + common errors from this guide. Refresh them after API changes by re-summarizing this document.
+
+UI metadata, feedback, and content appearances share the exported `SemanticTone`
+type: `neutral | info | pop | success | warning | danger`. Badge and Chip use
+`info` in place of the former `brand` tone.

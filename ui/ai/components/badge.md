@@ -29,7 +29,7 @@ Exact prop names and types: [`@kerfjs/ui/badge`](../public-api-signatures-v1.md#
 
 **Variants (configure, do not restyle):**
 
-- neutral, brand, pop, success, warning, or danger tone
+- neutral, info, pop, success, warning, or danger tone
 - quiet, solid, or outline appearance
 - pill or rounded shape
 - compact or default size, or a text-free dot (size: 'dot')

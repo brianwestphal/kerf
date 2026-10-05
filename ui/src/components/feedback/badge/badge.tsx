@@ -1,14 +1,17 @@
 import type { SafeHtml } from 'kerfjs';
 
-export type BadgeTone =
-  'neutral' | 'brand' | 'pop' | 'success' | 'warning' | 'danger';
+import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+
+export type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+/** @deprecated Use SemanticTone. */
+export type BadgeTone = SemanticTone;
 export type BadgeAppearance = 'quiet' | 'solid' | 'outline';
 export type BadgeShape = 'pill' | 'rounded';
 /** Size of a text badge. A text-free dot is the separate `size: 'dot'` form. */
 export type BadgeSize = 'compact' | 'default';
 
 interface BadgeCommonProps {
-  tone?: BadgeTone;
+  tone?: SemanticTone;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;

@@ -329,7 +329,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
             {triggerIcon}
           </span>
           {chosenCount > 0 && (
-            <Badge slot="end" tone="brand" size="compact" ariaHidden>
+            <Badge slot="end" tone="info" size="compact" ariaHidden>
               {chosenCount}
             </Badge>
           )}

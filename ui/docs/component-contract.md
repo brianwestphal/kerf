@@ -2,6 +2,16 @@
 
 `@kerfjs/ui` components are plain functions that return Kerf `SafeHtml`. They have no component instance or lifecycle.
 
+### Shared semantic tones
+
+`SemanticTone` is the shared color-role type for `Badge`, `Chip`, `StateBanner`,
+and semantic `ContentItem` appearances: `neutral`, `info`, `pop`, `success`,
+`warning`, and `danger`. Import it as a type from `@kerfjs/ui`,
+`@kerfjs/ui/badge`, `@kerfjs/ui/state-banner`, or `@kerfjs/ui/content-item`.
+Use `info` for the role backed by the existing `--kui-color-brand-*` tokens.
+Migrate Badge/Chip `tone="brand"` to `tone="info"`; `BadgeTone` and
+`StateBannerTone` remain deprecated aliases of `SemanticTone`.
+
 ## Selection boundary
 
 Begin with the [need-first component matrix](./component-selection.md). Reuse a

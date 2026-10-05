@@ -28,7 +28,7 @@
   flex-shrink: 0;
 }
 
-.kui-chip[data-tone="brand"] {
+.kui-chip[data-tone="info"] {
   --_kui-chip-fill-quiet: var(--kui-color-brand-fill-quiet);
   --_kui-chip-fill-solid: var(--kui-color-brand-on-fill);
   --_kui-chip-border: var(--kui-color-brand-border-normal);

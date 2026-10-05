@@ -95,7 +95,7 @@ function measureToneContrast(page: Page) {
       skeleton.remove();
       const probe = document.createElement('span');
       probe.className = 'kui-badge';
-      probe.dataset.tone = tone === 'info' ? 'brand' : tone;
+      probe.dataset.tone = tone;
       probe.textContent = '1';
       banner.after(probe);
       const quiet = ratio(

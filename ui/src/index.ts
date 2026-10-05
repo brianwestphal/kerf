@@ -89,6 +89,7 @@ export {
   type BadgeSize,
   type BadgeTextProps,
   type BadgeTone,
+  type SemanticTone,
 } from './components/feedback/badge/badge.js';
 export { Chip, type ChipProps } from './components/feedback/chip/chip.js';
 export {

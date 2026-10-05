@@ -1,9 +1,11 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
-import type { StateBannerTone } from '../../feedback/state-banner/state-banner.js';
+import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+
+export type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 
 /** Base surface treatment or semantic status colors. */
-export type ContentItemAppearance = 'transparent' | 'surface' | StateBannerTone;
+export type ContentItemAppearance = 'transparent' | 'surface' | SemanticTone;
 
 /** Whether the item's always-reserved 1px border is transparent or visible. */
 export type ContentItemFrame = 'none' | 'framed';

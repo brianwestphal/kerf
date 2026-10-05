@@ -25,6 +25,16 @@ Kerf or Web Awesome component from that stylesheet. See
 [`design-philosophy.md`](./design-philosophy.md) "Reach for the primitive, not for
 CSS".
 
+### Shared semantic tones
+
+`SemanticTone` is the shared color-role type for `Badge`, `Chip`, `StateBanner`,
+and semantic `ContentItem` appearances: `neutral`, `info`, `pop`, `success`,
+`warning`, and `danger`. Import it as a type from `@kerfjs/ui`,
+`@kerfjs/ui/badge`, `@kerfjs/ui/state-banner`, or `@kerfjs/ui/content-item`.
+Use `info` for the role backed by the existing `--kui-color-brand-*` tokens.
+Migrate Badge/Chip `tone="brand"` to `tone="info"`; `BadgeTone` and
+`StateBannerTone` remain deprecated aliases of `SemanticTone`.
+
 ## Foundation tokens
 
 Import the opt-in `@kerfjs/ui/document.css` baseline when the application wants
@@ -597,7 +607,7 @@ requires a string label so the title cannot lose text hidden inside markup.
 ```tsx
 <Chip
   size="compact"
-  tone="brand"
+  tone="info"
   itemId={tag.id}
   removeAction="remove-tag"
   removeLabel={`Remove ${tag.name} tag`}

@@ -1,16 +1,12 @@
 import type { SafeHtml } from 'kerfjs';
 
-import type {
-  BadgeAppearance,
-  BadgeShape,
-  BadgeSize,
-  BadgeTone,
-} from '../badge/badge.js';
+import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+import type { BadgeAppearance, BadgeShape, BadgeSize } from '../badge/badge.js';
 
 interface ChipCommonProps {
   /** Decorative leading icon, normally an unsized LucideIcon. */
   icon?: SafeHtml;
-  tone?: BadgeTone;
+  tone?: SemanticTone;
   appearance?: BadgeAppearance;
   shape?: BadgeShape;
   size?: BadgeSize;

@@ -23,7 +23,7 @@ export const TONES = [
   'danger',
 ] as const;
 
-const bannerTone = (tone: (typeof TONES)[number]) =>
+const semanticTone = (tone: (typeof TONES)[number]) =>
   tone === 'brand' ? 'info' : tone;
 
 const host = document.querySelector('[data-tone-text-cases]')!;
@@ -48,7 +48,7 @@ host.innerHTML = String(
     ))}
     {TONES.map((tone) => (
       <StateBanner
-        tone={bannerTone(tone)}
+        tone={semanticTone(tone)}
         title={`${tone} banner`}
         badge="3"
         detail="Supporting detail"
@@ -56,9 +56,9 @@ host.innerHTML = String(
     ))}
     <p class="kui-text">
       {TONES.flatMap((tone) => [
-        <Badge tone={tone}>quiet</Badge>,
+        <Badge tone={semanticTone(tone)}>quiet</Badge>,
         ' ',
-        <Badge tone={tone} appearance="solid">
+        <Badge tone={semanticTone(tone)} appearance="solid">
           solid
         </Badge>,
         ' ',

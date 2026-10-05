@@ -898,10 +898,10 @@ export { ListInsetText, type ListInsetTextProps, Sides };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { StateBannerTone } from './state-banner.js';
+import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 
 /** Base surface treatment or semantic status colors. */
-type ContentItemAppearance = 'transparent' | 'surface' | StateBannerTone;
+type ContentItemAppearance = 'transparent' | 'surface' | SemanticTone;
 /** Whether the item's always-reserved 1px border is transparent or visible. */
 type ContentItemFrame = 'none' | 'framed';
 /** Corner shape: the 12px rounded rectangle or the 22px pill. */
@@ -987,7 +987,7 @@ type ContentItemProps = ContentItemBaseProps & ({
  */
 declare function ContentItem({ appearance, children, frame, flush, shape, title, ariaLabel, focusTarget, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
-export { ContentItem, type ContentItemAppearance, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape };
+export { ContentItem, type ContentItemAppearance, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape, SemanticTone };
 ```
 
 ## `@kerfjs/ui/value-table`
@@ -2831,8 +2831,10 @@ export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectMultip
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 
-type StateBannerTone = 'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger';
+/** @deprecated Use SemanticTone. */
+type StateBannerTone = SemanticTone;
 type StateBannerUrgency = 'status' | 'alert';
 type StateBannerCopyLayout = 'inline' | 'stacked';
 type StateBannerActionPlacement = 'trailing' | 'below';
@@ -2843,7 +2845,7 @@ interface StateBannerProps {
     badge?: string;
     icon?: SafeHtml;
     action?: KerfUiContent;
-    tone?: StateBannerTone;
+    tone?: SemanticTone;
     urgency?: StateBannerUrgency;
     /** Keep the detail beside the title, or give it its own line. */
     copyLayout?: StateBannerCopyLayout;
@@ -2857,7 +2859,7 @@ interface StateBannerProps {
 }
 declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, copyLayout, actionPlacement, className, placeholder, slot, }: StateBannerProps): SafeHtml;
 
-export { StateBanner, type StateBannerActionPlacement, type StateBannerCopyLayout, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
+export { SemanticTone, StateBanner, type StateBannerActionPlacement, type StateBannerCopyLayout, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
 ```
 
 ## `@kerfjs/ui/empty-state`
@@ -3183,14 +3185,16 @@ export { type ActionHandler, type DelegateActionsOptions, action, delegateAction
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 
-type BadgeTone = 'neutral' | 'brand' | 'pop' | 'success' | 'warning' | 'danger';
+/** @deprecated Use SemanticTone. */
+type BadgeTone = SemanticTone;
 type BadgeAppearance = 'quiet' | 'solid' | 'outline';
 type BadgeShape = 'pill' | 'rounded';
 /** Size of a text badge. A text-free dot is the separate `size: 'dot'` form. */
 type BadgeSize = 'compact' | 'default';
 interface BadgeCommonProps {
-    tone?: BadgeTone;
+    tone?: SemanticTone;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -3233,19 +3237,20 @@ type BadgeProps = BadgeTextProps | BadgeDotProps;
 /** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
 declare function Badge(props: BadgeProps): SafeHtml;
 
-export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgeProps, type BadgeShape, type BadgeSize, type BadgeTextProps, type BadgeTone };
+export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgeProps, type BadgeShape, type BadgeSize, type BadgeTextProps, type BadgeTone, SemanticTone };
 ```
 
 ## `@kerfjs/ui/chip`
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { BadgeTone, BadgeAppearance, BadgeShape, BadgeSize } from './badge.js';
+import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
+import { BadgeAppearance, BadgeShape, BadgeSize } from './badge.js';
 
 interface ChipCommonProps {
     /** Decorative leading icon, normally an unsized LucideIcon. */
     icon?: SafeHtml;
-    tone?: BadgeTone;
+    tone?: SemanticTone;
     appearance?: BadgeAppearance;
     shape?: BadgeShape;
     size?: BadgeSize;

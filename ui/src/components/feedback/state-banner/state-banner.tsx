@@ -2,11 +2,13 @@ import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { em } from '../../../shared/styles/css-values.js';
+import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 import { Badge } from '../badge/badge.js';
 import { Skeleton } from '../skeleton/skeleton.js';
 
-export type StateBannerTone =
-  'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger';
+export type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+/** @deprecated Use SemanticTone. */
+export type StateBannerTone = SemanticTone;
 export type StateBannerUrgency = 'status' | 'alert';
 export type StateBannerCopyLayout = 'inline' | 'stacked';
 export type StateBannerActionPlacement = 'trailing' | 'below';
@@ -18,7 +20,7 @@ export interface StateBannerProps {
   badge?: string;
   icon?: SafeHtml;
   action?: KerfUiContent;
-  tone?: StateBannerTone;
+  tone?: SemanticTone;
   urgency?: StateBannerUrgency;
   /** Keep the detail beside the title, or give it its own line. */
   copyLayout?: StateBannerCopyLayout;
@@ -45,7 +47,6 @@ export function StateBanner({
   placeholder = false,
   slot,
 }: StateBannerProps) {
-  const badgeTone = tone === 'info' ? 'brand' : tone;
   return (
     <section
       class={`kui-state-banner ${className}`.trim()}
@@ -63,7 +64,7 @@ export function StateBanner({
       <div class="kui-state-banner__copy">
         <strong>{placeholder ? <Skeleton width={em(10)} /> : title}</strong>
         {badge && (
-          <Badge appearance="solid" size="compact" tone={badgeTone}>
+          <Badge appearance="solid" size="compact" tone={tone}>
             {placeholder ? <Skeleton width={em(1.75)} /> : badge}
           </Badge>
         )}

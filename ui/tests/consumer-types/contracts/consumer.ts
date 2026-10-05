@@ -7,6 +7,7 @@ import type {
   SelectPresentation,
   SelectSelectedPresentation,
   SelectSize,
+  SemanticTone,
   TabBarAllocation,
   TabBarPresentation,
   TabBarTrailingPlacement,
@@ -22,6 +23,7 @@ import type {
 } from '@kerfjs/ui';
 import { type CssValue, em, px } from '@kerfjs/ui';
 import * as UI from '@kerfjs/ui';
+import { Badge, type BadgeTone } from '@kerfjs/ui/badge';
 import {
   Catalog,
   CatalogExample,
@@ -839,6 +841,25 @@ wireTokenSearchFields(document.body, {
 const activation: TabActivation = 'manual';
 const urgency: StateBannerUrgency = 'alert';
 const stateBannerTone: StateBannerTone = 'pop';
+const semanticTones: SemanticTone[] = [
+  'neutral',
+  'info',
+  'pop',
+  'success',
+  'warning',
+  'danger',
+];
+for (const semanticTone of semanticTones) {
+  const badgeTone: BadgeTone = semanticTone;
+  Badge({ children: 'Status', tone: badgeTone });
+  Chip({ children: 'Tag', tone: semanticTone });
+  StateBanner({ title: 'Status', tone: semanticTone });
+  ContentItem({ appearance: semanticTone });
+}
+// @ts-expect-error Semantic component tones use info; brand names the underlying color tokens.
+Badge({ children: 'Status', tone: 'brand' });
+// @ts-expect-error Chip shares the finite semantic tone vocabulary.
+Chip({ children: 'Tag', tone: 'brand' });
 const appearance: ToolbarControlGroupAppearance = 'borderless';
 const tone: ToolbarControlGroupTone = 'dark';
 const buttonAppearance: ToolbarControlGroupButtonAppearance = 'push';

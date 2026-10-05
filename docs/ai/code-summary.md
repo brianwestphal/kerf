@@ -1130,3 +1130,7 @@ Update this doc whenever you:
 5. Add a test directory, fixture, helper, browser app, suite convention, or coverage gate.
 6. Add or change a repository script or any gate wired into `npm run check` / `check:full`.
 7. Add, remove, or rename a site route, migrating page, complete example app, deploy/build input, or benchmark-data consumer.
+
+The UI shared type `SemanticTone` lives in `ui/src/shared/styles/semantic-tone.ts`.
+Badge, Chip, StateBanner, and ContentItem use its six roles (`info` maps to brand
+color tokens); `BadgeTone` and `StateBannerTone` are deprecated aliases.

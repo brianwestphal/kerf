@@ -539,7 +539,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     // empty. Composite each skeleton over its badge fill and measure the
     // WCAG contrast between the two.
     const contrasts = await page.evaluate(() => {
-      const tones = ['neutral', 'brand', 'pop', 'success', 'warning', 'danger'];
+      const tones = ['neutral', 'info', 'pop', 'success', 'warning', 'danger'];
       const host = document.createElement('div');
       host.innerHTML = tones
         .map(

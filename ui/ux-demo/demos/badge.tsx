@@ -13,7 +13,7 @@ export function BadgeDemo() {
       </CatalogExample>
       <CatalogExample label="Count" align="inline-control">
         <Badge
-          tone="brand"
+          tone="info"
           appearance="solid"
           size="compact"
           label="12 unread items"

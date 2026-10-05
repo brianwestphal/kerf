@@ -11,7 +11,7 @@ test('Chip delegates removal, sizes its compact control, and disables unavailabl
   const removeUrgent = urgent.getByRole('button', {
     name: 'Remove Urgent tag',
   });
-  await expect(urgent).toHaveAttribute('data-tone', 'brand');
+  await expect(urgent).toHaveAttribute('data-tone', 'info');
   await expect(removeUrgent).toHaveAttribute('data-action', 'log-chip-remove');
   await removeUrgent.click();
   await expect(page.locator('.catalog-log')).toHaveText('Remove tag: urgent');

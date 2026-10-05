@@ -5,8 +5,9 @@ import {
   filterDataAttributes,
 } from '../../../shared/dom/extension-attributes.js';
 import { em } from '../../../shared/styles/css-values.js';
+import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 import type { HeadingLevel } from '../../actions/toolbar-text/toolbar-text.js';
-import { Badge, type BadgeTone } from '../../feedback/badge/badge.js';
+import { Badge } from '../../feedback/badge/badge.js';
 import { Skeleton } from '../../feedback/skeleton/skeleton.js';
 import { DisclosureArrow } from '../../navigation/disclosure-arrow/disclosure-arrow.js';
 import { Text } from '../../typography/text/text.js';
@@ -180,8 +181,8 @@ export function ListHeader({
     normalizedCount === undefined
       ? undefined
       : `${label}, ${normalizedCountLabel}`;
-  const badgeTone: BadgeTone =
-    indicatorTone === 'accent' ? 'brand' : indicatorTone;
+  const badgeTone: SemanticTone =
+    indicatorTone === 'accent' ? 'info' : indicatorTone;
   const indicator = placeholder ? (
     (normalizedCount !== undefined || renderedBadge) && (
       <Badge size="compact" tone={badgeTone}>

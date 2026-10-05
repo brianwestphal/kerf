@@ -23,7 +23,7 @@
   white-space: nowrap;
 }
 
-.kui-badge[data-tone="brand"] {
+.kui-badge[data-tone="info"] {
   --_kui-badge-fill-quiet: var(--kui-color-brand-fill-quiet);
   --_kui-badge-fill-solid: var(--kui-color-brand-on-fill);
   --_kui-badge-border: var(--kui-color-brand-border-normal);

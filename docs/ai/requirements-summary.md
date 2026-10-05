@@ -493,3 +493,7 @@ Update this doc whenever you:
 2. Implement a previously-design-only feature.
 3. Defer / supersede a doc.
 4. Add a significant feature to an existing doc.
+
+UI metadata, feedback, and content appearances share the exported `SemanticTone`
+type: `neutral | info | pop | success | warning | danger`. Badge and Chip use
+`info` in place of the former `brand` tone.

@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **UI components share `SemanticTone`.** Badge, Chip, StateBanner, and ContentItem
+  use `neutral`, `info`, `pop`, `success`, `warning`, and `danger`. Replace
+  Badge/Chip `tone="brand"` with `tone="info"`; the existing brand color tokens
+  still supply its palette. `BadgeTone` and `StateBannerTone` are deprecated aliases.
+
 - **Catalog sidebars filter by item or heading name.** The shared catalog
   shell now searches primary and ecosystem sections as you type, including
   collapsed groups, and keeps the query when the active preview changes.

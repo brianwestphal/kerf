@@ -29,7 +29,7 @@ Exact prop names and types: [`@kerfjs/ui/chip`](../public-api-signatures-v1.md#k
 
 **Variants (configure, do not restyle):**
 
-- neutral, brand, pop, success, warning, or danger tone
+- neutral, info, pop, success, warning, or danger tone
 - quiet, solid, or outline appearance
 - pill or rounded shape
 - compact or default size

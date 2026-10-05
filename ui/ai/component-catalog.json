@@ -37,7 +37,7 @@
         "accessible label for abbreviated content"
       ],
       "variants": [
-        "neutral, brand, pop, success, warning, or danger tone",
+        "neutral, info, pop, success, warning, or danger tone",
         "quiet, solid, or outline appearance",
         "pill or rounded shape",
         "compact or default size, or a text-free dot (size: 'dot')",
@@ -96,7 +96,7 @@
         "disabled policy"
       ],
       "variants": [
-        "neutral, brand, pop, success, warning, or danger tone",
+        "neutral, info, pop, success, warning, or danger tone",
         "quiet, solid, or outline appearance",
         "pill or rounded shape",
         "compact or default size",

@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.50.0
+kerf-ui-skill-version: 1.51.0
 ---
 
 # Building with @kerfjs/ui
@@ -20,6 +20,16 @@ Treat each `KUI-T###` contract as an exact declaration guarantee, including its
 documented dynamic-data widening. Do not extend those diagnostics to child
 markup, live DOM relationships, disposer invocation, or other conditions that
 TypeScript cannot prove from one call.
+
+### Shared semantic tones
+
+`SemanticTone` is the shared color-role type for `Badge`, `Chip`, `StateBanner`,
+and semantic `ContentItem` appearances: `neutral`, `info`, `pop`, `success`,
+`warning`, and `danger`. Import it as a type from `@kerfjs/ui`,
+`@kerfjs/ui/badge`, `@kerfjs/ui/state-banner`, or `@kerfjs/ui/content-item`.
+Use `info` for the role backed by the existing `--kui-color-brand-*` tokens.
+Migrate Badge/Chip `tone="brand"` to `tone="info"`; `BadgeTone` and
+`StateBannerTone` remain deprecated aliases of `SemanticTone`.
 
 ## Components own their styles; configure, never override
 

@@ -61,6 +61,30 @@ const asHtml = (value: unknown) => String(value);
 const icon = LucideIcon({ icon: Circle, name: 'circle' });
 
 describe('production UI primitives', () => {
+  it.each(['neutral', 'info', 'pop', 'success', 'warning', 'danger'] as const)(
+    'shares the %s semantic tone across metadata, feedback, and content',
+    (tone) => {
+      const host = document.createElement('div');
+      host.innerHTML = [
+        Badge({ children: 'Badge', tone }),
+        Chip({ children: 'Chip', tone }),
+        StateBanner({ title: 'Banner', badge: '3', tone }),
+        ContentItem({ children: 'Content', appearance: tone }),
+      ]
+        .map(String)
+        .join('');
+      expect(
+        [...host.querySelectorAll('[data-tone]')].map((el) =>
+          el.getAttribute('data-tone'),
+        ),
+      ).toEqual([tone, tone, tone, tone]);
+      expect(
+        host
+          .querySelector('[data-component="content-item"]')
+          ?.getAttribute('data-appearance'),
+      ).toBe(tone);
+    },
+  );
   it('renders a named delegated remove action and native disabled state for Chip', () => {
     const removable = asHtml(
       Chip({
@@ -109,7 +133,7 @@ describe('production UI primitives', () => {
       Badge({
         children: '12',
         label: '12 unread items',
-        tone: 'brand',
+        tone: 'info',
         appearance: 'solid',
         shape: 'rounded',
         size: 'compact',
@@ -118,7 +142,7 @@ describe('production UI primitives', () => {
     );
     expect(badge).toContain('class="kui-badge metadata"');
     expect(badge).toContain('data-component="badge"');
-    expect(badge).toContain('data-tone="brand"');
+    expect(badge).toContain('data-tone="info"');
     expect(badge).toContain('data-appearance="solid"');
     expect(badge).toContain('data-shape="rounded"');
     expect(badge).toContain('data-size="compact"');

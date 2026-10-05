@@ -17,6 +17,16 @@ component per source file and one owned stylesheet per visual component. Keep it
 compatibility entrypoints implementation-free: JavaScript/TypeScript only re-exports
 the folder modules, and CSS only imports their owner stylesheets.
 
+### Shared semantic tones
+
+`SemanticTone` is the shared color-role type for `Badge`, `Chip`, `StateBanner`,
+and semantic `ContentItem` appearances: `neutral`, `info`, `pop`, `success`,
+`warning`, and `danger`. Import it as a type from `@kerfjs/ui`,
+`@kerfjs/ui/badge`, `@kerfjs/ui/state-banner`, or `@kerfjs/ui/content-item`.
+Use `info` for the role backed by the existing `--kui-color-brand-*` tokens.
+Migrate Badge/Chip `tone="brand"` to `tone="info"`; `BadgeTone` and
+`StateBannerTone` remain deprecated aliases of `SemanticTone`.
+
 ## The rule: components own their styles
 
 Configure components through their typed props (size, density, inset,

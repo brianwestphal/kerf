@@ -14,7 +14,7 @@ export function ChipDemo() {
         align="inline-control"
       >
         <Chip
-          tone="brand"
+          tone="info"
           itemId="urgent"
           removeAction="log-chip-remove"
           removeLabel="Remove Urgent tag"

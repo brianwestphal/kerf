@@ -9,6 +9,16 @@ When adding a first-party public component, follow the
 entry drives one validator across package, build, barrel, CSS, demo, route, and
 AI signature projections, with a non-mutating dry-run report.
 
+### Shared semantic tones
+
+`SemanticTone` is the shared color-role type for `Badge`, `Chip`, `StateBanner`,
+and semantic `ContentItem` appearances: `neutral`, `info`, `pop`, `success`,
+`warning`, and `danger`. Import it as a type from `@kerfjs/ui`,
+`@kerfjs/ui/badge`, `@kerfjs/ui/state-banner`, or `@kerfjs/ui/content-item`.
+Use `info` for the role backed by the existing `--kui-color-brand-*` tokens.
+Migrate Badge/Chip `tone="brand"` to `tone="info"`; `BadgeTone` and
+`StateBannerTone` remain deprecated aliases of `SemanticTone`.
+
 ## Source organization
 
 The flat files directly under `src/` are stable package entry facades. Keep
