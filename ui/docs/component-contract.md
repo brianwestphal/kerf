@@ -886,7 +886,9 @@ helper follows resizes, theme/token/font changes, inserted items, nested toolbar
 and relocated groups. Invalid, unresolved, negative, or contradictory thresholds
 leave the item visible under this width policy. Server-rendered content is visible
 until wiring runs; without browser observers, initial wiring and window resize
-still update it. Dispose to remove measurement probes and restore prior markers.
+still update it. Probe context and lengths are reconciled only when their CSSOM
+values change, so unrelated DOM observers can redraw without feeding an ongoing
+mutation loop. Dispose to remove measurement probes and restore prior markers.
 
 Hidden controls leave layout and keyboard navigation. A hidden busy group also
 hides only its own adjacent busy status. Keep primary actions always available;

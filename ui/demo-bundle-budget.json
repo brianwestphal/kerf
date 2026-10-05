@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 326100,
+  "totalJavaScriptGzip": 326200,
   "measuredLargestJavaScriptGzip": 124532,
-  "measuredTotalJavaScriptGzip": 326023,
+  "measuredTotalJavaScriptGzip": 326148,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2867,6 +2867,22 @@
         "measuredTotalJavaScriptGzip": 326023,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 326100
+      }
+    },
+    {
+      "at": "2026-10-05T12:36:02.578Z",
+      "reason": "KF-JVWC92: normalize and reconcile toolbar probe styles idempotently to stop observer feedback",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124532,
+        "measuredTotalJavaScriptGzip": 326023,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 326100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124532,
+        "measuredTotalJavaScriptGzip": 326148,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 326200
       }
     }
   ]

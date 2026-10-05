@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Toolbar visibility probes stop rewriting unchanged styles, allowing catalog geometry overlays and responsive controls to settle after updates (`KF-JVWC92`).
+
 - Busy toolbar groups preserve their relocation annotation, so the inert action and live status remain available when a panel closes.
 
 - Navigation stacks now visibly slide pushed views over the previous screen and cross-fade both header and footer across repeated or interrupted push/pop transitions.

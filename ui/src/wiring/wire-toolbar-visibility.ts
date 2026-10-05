@@ -49,6 +49,22 @@ function createController(document: Document) {
   const observed = new Set<Element>();
   let disposed = false;
   let refreshing = false;
+  const normalizedStyle = document.createElement('div').style;
+
+  function setStyle(element: HTMLElement, property: string, value: string) {
+    // CSSOM can normalize computed font/token values on assignment. Compare
+    // that serialization, preserving meaningful blank custom-property tokens.
+    normalizedStyle.removeProperty(property);
+    normalizedStyle.setProperty(property, value);
+    const normalized = normalizedStyle.getPropertyValue(property);
+    if (
+      element.style.getPropertyValue(property) === normalized &&
+      element.style.getPropertyPriority(property) === ''
+    )
+      return;
+    if (normalized === '') element.style.removeProperty(property);
+    else element.style.setProperty(property, normalized);
+  }
 
   function write(element: HTMLElement, hidden: boolean) {
     let previous = written.get(element);
@@ -108,7 +124,7 @@ function createController(document: Document) {
     if (value === null) return null;
     // The typed private property uses -1px as its invalid/unresolved sentinel.
     // Absolute left's used-value CSSOM alone turns invalid auto into 0px.
-    probe.style.setProperty(LENGTH, value);
+    setStyle(probe, LENGTH, value);
     const left = view!.getComputedStyle(probe).left;
     if (!/^-?(?:\d+(?:\.\d+)?|\.\d+)px$/.test(left)) return null;
     const pixels = parseFloat(left);
@@ -122,7 +138,7 @@ function createController(document: Document) {
   ) {
     const style = view!.getComputedStyle(item);
     const { box } = measurement;
-    box.style.width = `${width}px`;
+    setStyle(box, 'width', `${width}px`);
     for (const property of [
       'font-size',
       'font-family',
@@ -136,17 +152,20 @@ function createController(document: Document) {
       'font-kerning',
       'line-height',
     ])
-      box.style.setProperty(property, style.getPropertyValue(property));
+      setStyle(box, property, style.getPropertyValue(property));
     // The box remains outside a hidden item, but resolves tokens from that
     // item, including tokens declared on its root rather than the toolbar.
-    for (let index = box.style.length - 1; index >= 0; index--) {
-      const name = box.style.item(index);
-      if (name.startsWith('--')) box.style.removeProperty(name);
-    }
+    const properties = new Set<string>();
     for (let index = 0; index < style.length; index++) {
       const name = style.item(index);
-      if (name.startsWith('--'))
-        box.style.setProperty(name, style.getPropertyValue(name));
+      if (!name.startsWith('--')) continue;
+      properties.add(name);
+      setStyle(box, name, style.getPropertyValue(name));
+    }
+    for (let index = box.style.length - 1; index >= 0; index--) {
+      const name = box.style.item(index);
+      if (name.startsWith('--') && !properties.has(name))
+        box.style.removeProperty(name);
     }
   }
 

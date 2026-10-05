@@ -97,7 +97,8 @@ beforeEach(() => {
             const name = source.item(index);
             if (
               name.startsWith('--') ||
-              name === 'font-size' ||
+              name.startsWith('font-') ||
+              name === 'line-height' ||
               name === 'display'
             )
               context.setProperty(name, source.getPropertyValue(name));
@@ -132,6 +133,85 @@ function fixture(width = 400) {
 }
 
 describe('toolbar width visibility wiring', () => {
+  it('settles with a second observer that redraws an unrelated layer after probe mutations', async () => {
+    const { app, toolbar, text } = fixture();
+    text.dataset.hideBelow = 'var(--cutoff)';
+    text.style.setProperty('--cutoff', '500px');
+    const layer = document.createElement('aside');
+    app.append(layer);
+    dispose = wireToolbarVisibility(app);
+    await mutations();
+    let redraws = 0;
+    const observer = new MutationObserver((records) => {
+      if (
+        records.some(({ target }) =>
+          (target as Element).closest?.('[data-toolbar-visibility-probe]'),
+        ) &&
+        redraws < 8
+      ) {
+        redraws++;
+        layer.replaceChildren(document.createElement('span'));
+      }
+    });
+    observer.observe(app, { subtree: true, attributes: true, childList: true });
+    try {
+      layer.replaceChildren(document.createElement('span'));
+      for (let index = 0; index < 3; index++) await mutations();
+      expect(redraws).toBe(0);
+      expect(hidden(text)).toBe(true);
+      text.style.setProperty('--cutoff', '300px');
+      for (let index = 0; index < 3; index++) await mutations();
+      expect(hidden(text)).toBe(false);
+      expect(redraws).toBe(1);
+      toolbar.style.width = '250px';
+      resize();
+      for (let index = 0; index < 3; index++) await mutations();
+      expect(hidden(text)).toBe(true);
+      expect(redraws).toBe(2);
+      text.style.removeProperty('--cutoff');
+      for (let index = 0; index < 3; index++) await mutations();
+      expect(hidden(text)).toBe(false);
+      expect(
+        toolbar
+          .querySelector<HTMLElement>('[data-toolbar-visibility-probe]')!
+          .style.getPropertyValue('--cutoff'),
+      ).toBe('');
+      expect(redraws).toBe(3);
+    } finally {
+      observer.disconnect();
+    }
+  });
+
+  it('compares CSSOM-normalized context without losing quoted token whitespace', async () => {
+    const { app, toolbar, text } = fixture();
+    text.style.setProperty('--quoted', '"two  spaces"');
+    text.style.fontFamily = 'Arial, sans-serif';
+    dispose = wireToolbarVisibility(app);
+    await mutations();
+    const box = toolbar.querySelector<HTMLElement>(
+      '[data-toolbar-visibility-probe]',
+    )!;
+    expect(box.style.getPropertyValue('--quoted')).toBe('"two  spaces"');
+    const mutationsSeen: MutationRecord[] = [];
+    const observer = new MutationObserver((records) =>
+      mutationsSeen.push(...records),
+    );
+    observer.observe(box, { attributes: true, subtree: true });
+    try {
+      for (let index = 0; index < 3; index++) resize();
+      await mutations();
+      expect(mutationsSeen).toHaveLength(0);
+      box.style.setProperty('font-size', '99px', 'important');
+      box.style.setProperty('font-kerning', 'auto');
+      resize();
+      expect(box.style.getPropertyPriority('font-size')).toBe('');
+      expect(box.style.fontSize).toBe('16px');
+      expect(box.style.fontKerning).toBe('');
+    } finally {
+      observer.disconnect();
+    }
+  });
+
   it('serializes typed thresholds on plain text, actionable text and busy groups', () => {
     for (const content of [
       ToolbarText({
