@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 323700,
-  "measuredLargestJavaScriptGzip": 124532,
-  "measuredTotalJavaScriptGzip": 323692,
+  "totalJavaScriptGzip": 323800,
+  "measuredLargestJavaScriptGzip": 124534,
+  "measuredTotalJavaScriptGzip": 323791,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2787,6 +2787,22 @@
         "measuredTotalJavaScriptGzip": 323692,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 323700
+      }
+    },
+    {
+      "at": "2026-10-05T10:25:52.273Z",
+      "reason": "Integrate NavStack transition continuity and cancellation",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124532,
+        "measuredTotalJavaScriptGzip": 323692,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124534,
+        "measuredTotalJavaScriptGzip": 323791,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323800
       }
     }
   ]

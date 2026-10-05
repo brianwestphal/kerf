@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- Navigation stacks now visibly slide pushed views over the previous screen and cross-fade both header and footer across repeated or interrupted push/pop transitions.
+
 ### Added
 
 - ToolbarText supports `tone="dark"` for filenames, headings, and actionable titles on loud toolbar surfaces.

@@ -164,7 +164,11 @@ unsafe area but can always be scrolled clear. A view whose only child is a
 `wireNavStack(root, { onBack, duration? })` observes the rendered stack and
 animates each change: a pushed view slides in from the trailing edge; a popped
 view slides back off it over the revealed view; and snapshots of the previous
-top and bottom chrome cross-fade into the active view's chrome. Focus moves to
+top and bottom chrome cross-fade into the active view's chrome. The preserved
+underlying view remains visible during a push, while remaining inaccessible.
+Starting transforms and opacity apply instantly before the transition begins.
+A new navigation settles the previous transition and cancels its pending frames
+and cleanup timers; disposal removes temporary copies and exiting views. Focus moves to
 the new top view independently of animation duration. It returns a disposer.
 The animation honors `prefers-reduced-motion` (transitions collapse to instant)
 and `duration: 0` disables it. Applicable at every device size and inside

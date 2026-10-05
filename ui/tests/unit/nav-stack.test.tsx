@@ -380,6 +380,108 @@ describe('wireNavStack', () => {
     ).toBe('77ms');
   });
 
+  it('keeps snapshots clean and cancels interrupted push/pop and dispose frames', async () => {
+    const callbacks = new Map<number, FrameRequestCallback>();
+    let frameId = 0;
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      callbacks.set(++frameId, callback);
+      return frameId;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) => {
+      callbacks.delete(id);
+    });
+    const root = mountStack([view('home', 'Home')], {
+      bottomToolbar: raw('<nav>Home status</nav>'),
+    });
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const home = viewport.firstElementChild as HTMLElement;
+    const dispose = wireNavStack(root, { duration: 200 });
+    const push = async (key: string) => {
+      home.dataset.navActive = 'false';
+      const next = document.createElement('article');
+      next.className = 'kui-nav-stack__view';
+      next.dataset.navKey = key;
+      root.querySelector('.kui-toolbar-text__text')!.textContent = key;
+      viewport.append(next);
+      await tick();
+      return next;
+    };
+    const detail = await push('detail');
+    expect(home.dataset.navRevealed).toBe('true');
+    expect(callbacks.size).toBe(2);
+    detail.remove();
+    home.dataset.navActive = 'true';
+    await tick();
+    expect(detail.classList.contains('kui-nav-stack__view--entering')).toBe(
+      false,
+    );
+    expect(home.dataset.navRevealed).toBeUndefined();
+    expect(root.querySelectorAll('[data-nav-chrome-copy]')).toHaveLength(2);
+    expect(
+      [...root.querySelectorAll('[data-nav-chrome-copy]')].every(
+        (copy) => !copy.classList.contains('kui-nav-stack__chrome--entering'),
+      ),
+    ).toBe(true);
+    // A controlled render can reuse the still-connected exit node for a
+    // same-key push: no child-list addition occurs, only active attributes.
+    delete detail.dataset.navExiting;
+    detail.className = 'kui-nav-stack__view';
+    detail.dataset.navActive = 'true';
+    home.dataset.navActive = 'false';
+    await tick();
+    expect(detail.classList.contains('kui-nav-stack__view--entering')).toBe(
+      true,
+    );
+    expect(callbacks.size).toBe(2);
+    // Pop callbacks must not run after the next push replaces their transition.
+    const next = await push('next');
+    expect(detail.isConnected).toBe(true);
+    expect(callbacks.size).toBe(2);
+    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(true);
+    dispose();
+    expect(callbacks.size).toBe(0);
+    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(
+      false,
+    );
+    expect(
+      root.querySelectorAll('[data-nav-chrome-copy], [data-nav-revealed]'),
+    ).toHaveLength(0);
+    await delay(220);
+    expect(viewport.children).toHaveLength(3);
+  });
+
+  it('keeps nested stack transition nodes outside its cleanup ownership', async () => {
+    const root = mountStack([view('home', 'Home')]);
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const home = viewport.firstElementChild!;
+    const nested = document.createElement('section');
+    nested.innerHTML = String(
+      NavStack({
+        id: 'nested',
+        label: 'Nested',
+        views: [view('child', 'Child')],
+      }),
+    );
+    home.append(nested);
+    const nestedStack = nested.firstElementChild!;
+    const copy = document.createElement('div');
+    copy.dataset.navChromeCopy = '';
+    nestedStack.append(copy);
+    const child = nested.querySelector<HTMLElement>('.kui-nav-stack__view')!;
+    child.dataset.navExiting = 'true';
+    const dispose = wireNavStack(root, { duration: 0 });
+    const detail = document.createElement('article');
+    detail.className = 'kui-nav-stack__view';
+    detail.dataset.navKey = 'detail';
+    viewport.append(detail);
+    await tick();
+    expect(copy.isConnected).toBe(true);
+    expect(child.isConnected).toBe(true);
+    dispose();
+    expect(copy.isConnected).toBe(true);
+    expect(child.isConnected).toBe(true);
+  });
+
   it('finalizes a pushed view instantly when animation is disabled', async () => {
     const root = mountStack([view('home', 'Home')]);
     const dispose = wireNavStack(root, { duration: 0 });

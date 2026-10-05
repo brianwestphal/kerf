@@ -67,6 +67,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 
 - `data-nav-chrome-transition` on `kui-nav-stack` (`wireNavStack`): "true" while the chrome cross-fades between the outgoing and incoming view.
 - `data-nav-chrome-copy` on `kui-nav-stack__chrome-copy` (`wireNavStack`): Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade.
+- `data-nav-revealed` on `kui-nav-stack__view` (`wireNavStack`): "true" on the preserved, aria-hidden previous view while an incoming view slides over it.
 - `data-nav-exiting` on `kui-nav-stack__view` (`wireNavStack`): "true" on a popped view the helper briefly re-inserts to slide it out.
 - `data-scroll-overflow` on `the active kui-nav-stack__view, or the kui-pane__content of a sole Pane in it` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
 - `data-scroll-divider` on `kui-nav-stack__chrome and kui-nav-stack__bottom` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.

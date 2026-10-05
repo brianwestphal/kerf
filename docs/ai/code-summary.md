@@ -1088,6 +1088,8 @@ border. Nested Web Awesome dropdown triggers size from their shadow base's
 max-content icon/text/caret geometry rather than fixed host widths. Single avatar
 hover changes only the color layer so its contained image fit remains stable.
 
+NavStack transition regression coverage: `ui/tests/browser/nav-stack-animation.spec.ts` checks actual intermediate transforms and live/snapshot opacity through repeated push/pop at wide and narrow widths. The wiring cancels stale animation frames/timers and removes transient copies on interruption/disposal; entering CSS establishes the start state without transitioning toward it.
+
 Inset hover and selection surfaces use the foundation
 `--kui-layout-highlight-inset` contract: component CSS subtracts the full inset
 from the owning outer radius, and nested toolbar SegmentedControl choices use

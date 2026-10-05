@@ -40,7 +40,7 @@ function reducedMotion(view: Window): boolean {
 function chromeOf(section: HTMLElement): HTMLElement[] {
   return Array.from(
     section.querySelectorAll<HTMLElement>(
-      ':scope > [data-nav-stack-chrome], :scope > [data-nav-stack-bottom]',
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]), :scope > [data-nav-stack-bottom]:not([data-nav-chrome-copy])',
     ),
   );
 }
@@ -90,6 +90,34 @@ export function wireNavStack(
 
   let activeKey = topView(viewport)?.dataset.navKey;
   const timers = new Set<number>();
+  const frames = new Set<number>();
+  const frame = (fn: () => void): void => {
+    const id = view.requestAnimationFrame(() => {
+      frames.delete(id);
+      fn();
+    });
+    frames.add(id);
+  };
+  const finishTransition = (): void => {
+    for (const id of frames) view.cancelAnimationFrame(id);
+    frames.clear();
+    for (const id of timers) view.clearTimeout(id);
+    timers.clear();
+    section
+      .querySelectorAll<HTMLElement>(':scope > [data-nav-chrome-copy]')
+      .forEach((element) => element.remove());
+    chromeOf(section).forEach((element) =>
+      element.classList.remove('kui-nav-stack__chrome--entering'),
+    );
+    viewsOf(viewport).forEach((element) => {
+      if (element.dataset.navExiting === 'true') element.remove();
+      else {
+        element.classList.remove('kui-nav-stack__view--entering');
+        delete element.dataset.navRevealed;
+      }
+    });
+    delete section.dataset.navChromeTransition;
+  };
   const rememberedFocus = new Map<string, HTMLElement>();
   const generatedFallbacks = new Map<HTMLElement, string | null>();
   let chromeSnapshots = chromeOf(section).map((element) =>
@@ -117,18 +145,14 @@ export function wireNavStack(
       if (animated) {
         // Force a reflow so the starting transform applies before we clear it.
         void el.offsetWidth;
-        view.requestAnimationFrame(() =>
-          el.classList.remove('kui-nav-stack__view--entering'),
-        );
+        frame(() => el.classList.remove('kui-nav-stack__view--entering'));
       } else {
         el.classList.remove('kui-nav-stack__view--entering');
       }
     } else if (animated) {
       // Pop: the outgoing view is at rest; add the off-edge class on the next
       // frame so it slides OUT (translateX(0) → 100%), not in.
-      view.requestAnimationFrame(() =>
-        el.classList.add('kui-nav-stack__view--exiting'),
-      );
+      frame(() => el.classList.add('kui-nav-stack__view--exiting'));
     } else {
       el.classList.add('kui-nav-stack__view--exiting');
     }
@@ -206,7 +230,7 @@ export function wireNavStack(
       element.classList.add('kui-nav-stack__chrome--entering'),
     );
     void section.offsetWidth;
-    view.requestAnimationFrame(() => {
+    frame(() => {
       current.forEach((element) =>
         element.classList.remove('kui-nav-stack__chrome--entering'),
       );
@@ -218,15 +242,17 @@ export function wireNavStack(
       copies.forEach((copy) => copy.remove());
       delete section.dataset.navChromeTransition;
     });
-    chromeSnapshots = current.map((element) =>
-      element.cloneNode(true),
-    ) as HTMLElement[];
+    chromeSnapshots = current.map((element) => {
+      const snapshot = element.cloneNode(true) as HTMLElement;
+      snapshot.classList.remove('kui-nav-stack__chrome--entering');
+      return snapshot;
+    });
   };
 
   const observer = new MutationObserver((records) => {
     const removed: HTMLElement[] = [];
-    let added = false;
     for (const record of records) {
+      if (record.target !== viewport) continue;
       record.removedNodes.forEach((node) => {
         if (
           node instanceof HTMLElement &&
@@ -235,13 +261,6 @@ export function wireNavStack(
         )
           removed.push(node);
       });
-      record.addedNodes.forEach((node) => {
-        if (
-          node instanceof HTMLElement &&
-          node.classList.contains('kui-nav-stack__view')
-        )
-          added = true;
-      });
     }
 
     const top = topView(viewport);
@@ -249,15 +268,29 @@ export function wireNavStack(
     const poppedTop = removed.find((node) => node.dataset.navKey === activeKey);
 
     if (poppedTop && currentKey !== activeKey) {
+      finishTransition();
       // Pop: bring the removed node back briefly to slide it out over the revealed view.
+      poppedTop.classList.remove(
+        'kui-nav-stack__view--entering',
+        'kui-nav-stack__view--exiting',
+      );
       poppedTop.dataset.navExiting = 'true';
       poppedTop.setAttribute('aria-hidden', 'true');
       viewport.append(poppedTop);
+      void poppedTop.offsetWidth;
       play(poppedTop, 'exiting');
       crossFadeChrome();
       if (top) focusInto(top);
       settle(() => poppedTop.remove());
-    } else if (added && currentKey !== activeKey && top) {
+    } else if (currentKey !== activeKey && top) {
+      finishTransition();
+      const previous = viewsOf(viewport).find(
+        (element) => element.dataset.navKey === activeKey,
+      );
+      if (previous) {
+        previous.dataset.navRevealed = 'true';
+        settle(() => delete previous.dataset.navRevealed);
+      }
       // Push: slide the new top in.
       rememberFocusedView(section.ownerDocument.activeElement);
       play(top, 'entering');
@@ -267,18 +300,18 @@ export function wireNavStack(
 
     activeKey = currentKey;
   });
-  observer.observe(viewport, { childList: true });
+  observer.observe(viewport, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['data-nav-key', 'data-nav-active'],
+  });
 
   return () => {
     disposeBack();
     section.removeEventListener('focusin', onFocusIn);
     observer.disconnect();
-    for (const timer of timers) view.clearTimeout(timer);
-    timers.clear();
-    section
-      .querySelectorAll<HTMLElement>('[data-nav-chrome-copy]')
-      .forEach((copy) => copy.remove());
-    delete section.dataset.navChromeTransition;
+    finishTransition();
     for (const [element, previousTabIndex] of generatedFallbacks) {
       if (!element.isConnected || element.tabIndex !== -1) continue;
       if (previousTabIndex === null) element.removeAttribute('tabindex');

@@ -539,3 +539,5 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [README.md](./README.md): package overview and the component subpath table.
 
 Neutral lowered surfaces and decorative neutral fills/borders are translucent theme colors; compose nested public components directly. Default/raised canvases, foregrounds, focus indicators, and loud contrast-bearing fills remain opaque. Do not assign depth-specific component tokens in demo wrappers.
+
+Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.

@@ -356,3 +356,5 @@ Neutral lowered surfaces and decorative neutral fills/borders are translucent th
 Use `ToolbarText tone="dark"` on a loud or photo-backed toolbar surface to
 match dark control groups. It applies to read-only headings and actionable
 titles at every size; default tone retains existing identity and heading colors.
+
+Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.

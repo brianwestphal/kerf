@@ -326,7 +326,9 @@ control when DOM order is not sufficient. Use the component-level
 chrome. The top chrome is a real `Toolbar`: give a view `leading` / `center` /
 `toolbar` (trailing) groups, and configure the bar with `toolbarConfig`
 (`ToolbarConfig` plus `label`, `titleSize`, `headingLevel`) and
-`backIcon` / `backText` rather than CSS.
+`backIcon` / `backText` rather than CSS. The previous screen stays
+visible beneath a push; interrupted navigation settles the old transition,
+and disposal cancels its pending frames and cleanup timers.
 `@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
 Web Awesome’s internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, also with custom selected content. See

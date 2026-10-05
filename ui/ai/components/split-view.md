@@ -70,6 +70,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 - `data-resizing` on `kui-resizable-region` (`wireResizableRegions`): "true" during an active pointer drag of the handle.
 - `data-nav-chrome-transition` on `kui-nav-stack` (`wireNavStack`): "true" while the chrome cross-fades between the outgoing and incoming view.
 - `data-nav-chrome-copy` on `kui-nav-stack__chrome-copy` (`wireNavStack`): Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade.
+- `data-nav-revealed` on `kui-nav-stack__view` (`wireNavStack`): "true" on the preserved, aria-hidden previous view while an incoming view slides over it.
 - `data-nav-exiting` on `kui-nav-stack__view` (`wireNavStack`): "true" on a popped view the helper briefly re-inserts to slide it out.
 
 ## Geometry

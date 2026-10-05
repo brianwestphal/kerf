@@ -37,7 +37,9 @@
   transition: opacity var(--kui-nav-stack-transition-duration, 200ms) ease;
 }
 
+/* Establish the starting opacity instantly; only the release animates. */
 .kui-nav-stack__chrome--entering {
+  transition: none;
   opacity: 0;
 }
 
@@ -156,6 +158,10 @@
   visibility: hidden;
 }
 
+.kui-nav-stack__view[data-nav-revealed="true"] {
+  visibility: visible;
+}
+
 .kui-nav-stack__view[data-nav-exiting="true"] {
   z-index: 1;
   visibility: visible;
@@ -163,6 +169,11 @@
 
 /* Push: the incoming view starts off the trailing edge and slides to rest.
    Pop: the outgoing view starts at rest and slides off the trailing edge. */
+/* Establish the offscreen start without first transitioning toward it. */
+.kui-nav-stack__view--entering {
+  transition: none;
+}
+
 .kui-nav-stack__view--entering,
 .kui-nav-stack__view--exiting {
   transform: translateX(100%);

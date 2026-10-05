@@ -755,6 +755,12 @@
             "meaning": "Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade."
           },
           {
+            "name": "data-nav-revealed",
+            "on": "kui-nav-stack__view",
+            "helper": "wireNavStack",
+            "meaning": "\"true\" on the preserved, aria-hidden previous view while an incoming view slides over it."
+          },
+          {
             "name": "data-nav-exiting",
             "on": "kui-nav-stack__view",
             "helper": "wireNavStack",
@@ -907,6 +913,12 @@
             "on": "kui-nav-stack__chrome-copy",
             "helper": "wireNavStack",
             "meaning": "Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade."
+          },
+          {
+            "name": "data-nav-revealed",
+            "on": "kui-nav-stack__view",
+            "helper": "wireNavStack",
+            "meaning": "\"true\" on the preserved, aria-hidden previous view while an incoming view slides over it."
           },
           {
             "name": "data-nav-exiting",
