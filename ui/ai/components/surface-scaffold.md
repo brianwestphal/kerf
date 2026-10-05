@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:surface-scaffold` · Kerf UI · component · Structure
 
-Typed Web Awesome dialog and popup surface sizing, presentation, and inset composition.
+Typed Web Awesome dialog sizing, modal viewport bounds, presentation, and popup inset composition.
 
 ## When to use
 
@@ -12,6 +12,7 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 
 - A Web Awesome dialog or dropdown needs a standard size, presentation, body/footer inset, or list-compatible menu inset.
 - A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText.
+- A modal needs a typed viewport gutter or a dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.
 
 **Not when:**
 
@@ -22,7 +23,8 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 
 - JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `PopupSurface`.
 - CSS: the browser build of `@kerfjs/ui/surface-scaffold` pulls its CSS automatically; import `@kerfjs/ui/surface-scaffold.css` manually only without the `browser` export condition.
-- Declared side effects: browser-condition-css.
+- Registration: import `@kerfjs/ui/surface-scaffold/register` once (a side effect).
+- Declared side effects: browser-condition-css, custom-element-registration.
 
 ## Props
 
@@ -32,8 +34,14 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 
 - small, medium, or large dialog
 - modal, side-sheet, or fullscreen dialog
+- typed modal viewport gutter and maximum height, including viewport cap
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
+
+**CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
+
+- `viewportGutter`: length grammar; raw values: forbid; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `viewportGutter={remify(8)}`
+- `maxHeight`: length grammar; raw values: forbid; shorthands `viewport`; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `maxHeight="viewport"`
 
 ## Composition
 

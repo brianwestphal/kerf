@@ -1,3 +1,4 @@
+import '@kerfjs/ui/surface-scaffold/register';
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/split-view.css';
@@ -5,6 +6,7 @@ import '@kerfjs/ui/webawesome.css';
 import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/dialog/dialog.js';
 
+import { remify } from '@kerfjs/ui/css-values';
 import { deviceClass } from '@kerfjs/ui/device-class';
 import { List } from '@kerfjs/ui/list';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -184,6 +186,8 @@ export const createRecipe: RecipeFactory = (announce) => {
           <DialogSurface
             size="large"
             presentation={compact ? 'fullscreen' : 'modal'}
+            viewportGutter={remify(16)}
+            maxHeight="viewport"
             bodyInset="none"
             footerInset="comfortable"
           >

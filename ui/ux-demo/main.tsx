@@ -1,3 +1,4 @@
+import '@kerfjs/ui/surface-scaffold/register';
 import '@kerfjs/ui/document.css';
 import '@kerfjs/ui/help-tags/register';
 import '@kerfjs/ui/popup-menu/register';
@@ -553,17 +554,17 @@ const stopActions = delegateActions(app, 'click', {
       ? 'Recipe notes shown'
       : 'Recipe notes hidden';
   },
-  'show-wa-dialog': () => {
+  'show-wa-dialog': (_event, target) => {
     actionLog.value = 'Dialog opened';
     const dialog = document.querySelector<HTMLElement & { open: boolean }>(
-      '#catalog-wa-dialog',
+      `#${target.getAttribute('data-dialog-id') ?? 'catalog-wa-dialog'}`,
     );
     if (dialog) dialog.open = true;
   },
-  'hide-wa-dialog': () => {
+  'hide-wa-dialog': (_event, target) => {
     actionLog.value = 'Dialog closed';
     const dialog = document.querySelector<HTMLElement & { open: boolean }>(
-      '#catalog-wa-dialog',
+      `#${target.getAttribute('data-dialog-id') ?? 'catalog-wa-dialog'}`,
     );
     if (dialog) dialog.open = false;
   },

@@ -40,7 +40,8 @@
     "./dist/browser/*.js",
     "./dist/select-register.js",
     "./dist/popup-menu-register.js",
-    "./dist/help-tags-register.js"
+    "./dist/help-tags-register.js",
+    "./dist/surface-scaffold-register.js"
   ],
   "exports": {
     ".": {
@@ -89,6 +90,10 @@
       "types": "./dist/surface-scaffold.d.ts",
       "browser": "./dist/browser/surface-scaffold.js",
       "import": "./dist/surface-scaffold.js"
+    },
+    "./surface-scaffold/register": {
+      "types": "./dist/surface-scaffold-register.d.ts",
+      "import": "./dist/surface-scaffold-register.js"
     },
     "./floating-toolbar": {
       "types": "./dist/floating-toolbar.d.ts",

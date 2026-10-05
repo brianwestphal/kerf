@@ -375,3 +375,7 @@ group. See `docs/component-contract.md` "Toolbar width visibility" for lifecycle
 details.
 
 Select menus use native viewport shifting with 10px gutters: default menus grow to content (up to 20rem), while `fitMenu` matches trigger width and long labels wrap. Keep popup sizing and position repairs out of consumer CSS.
+
+Modal `DialogSurface` bounds use typed `viewportGutter` and `maxHeight` (`CssLength` or `"viewport"`); explicit caps stay within the dynamic viewport minus both gutters. Omitted props preserve Web Awesome defaults. Application render state chooses responsive values, and preview layout remains application-owned.
+
+Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog` and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.

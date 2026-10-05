@@ -1742,7 +1742,48 @@
           "Use popup surfaces only for real dropdown menus with named triggers."
         ]
       },
-      "cssValueProps": [],
+      "cssValueProps": [
+        {
+          "path": "viewportGutter",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "remify",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["viewportGutter={remify(8)}"]
+        },
+        {
+          "path": "maxHeight",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "remify",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["viewport"],
+          "canonicalShorthands": ["viewport"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["maxHeight=\"viewport\"", "maxHeight={remify(640)}"]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-dialog-surface",
         "publicClasses": ["kui-dialog-surface", "kui-popup-surface"],

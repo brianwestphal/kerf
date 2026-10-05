@@ -10,6 +10,7 @@ const entries = [
   'toolbar',
   'toolbar-control-group',
   'surface-scaffold',
+  'surface-scaffold-register',
   'popup-menu',
   'popup-menu-register',
   'toolbar-text',
@@ -66,7 +67,7 @@ const entries = [
 export default defineConfig({
   entry: entries.map(
     (entry) =>
-      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry === 'select-register' || entry === 'popup-menu-register' || entry === 'help-tags-register' || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'token-search-model' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
+      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'token-search-model' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
   ),
   format: ['esm'],
   outDir: 'dist',

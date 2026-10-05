@@ -690,6 +690,7 @@ describe('consumer bundle boundaries', () => {
       './dist/select-register.js',
       './dist/popup-menu-register.js',
       './dist/help-tags-register.js',
+      './dist/surface-scaffold-register.js',
     ]);
     expect(pkg.exports['.']).toMatchObject({ import: './dist/index.js' });
     expect(pkg.exports['./toolbar']).toMatchObject({
@@ -713,6 +714,10 @@ describe('consumer bundle boundaries', () => {
       import: './dist/webawesome.js',
     });
     expect(pkg.exports['./select/register']).toBeDefined();
+    expect(pkg.exports['./surface-scaffold/register']).toMatchObject({
+      types: './dist/surface-scaffold-register.d.ts',
+      import: './dist/surface-scaffold-register.js',
+    });
     expect(pkg.exports['./help-tags/register']).toMatchObject({
       types: './dist/help-tags-register.d.ts',
       import: './dist/help-tags-register.js',

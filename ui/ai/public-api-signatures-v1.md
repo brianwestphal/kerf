@@ -3358,22 +3358,28 @@ export { wireToolbarVisibility };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
 
 type DialogSurfaceSize = 'small' | 'medium' | 'large';
 type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen';
 type SurfaceInset = 'none' | 'compact' | 'comfortable';
+type DialogSurfaceMaxHeight = CssLength | 'viewport';
 interface DialogSurfaceProps {
     children: KerfUiContent;
     size?: DialogSurfaceSize;
     presentation?: DialogSurfacePresentation;
     bodyInset?: SurfaceInset;
     footerInset?: SurfaceInset;
+    /** Modal edge clearance. Omit to retain Web Awesome's default viewport cap. */
+    viewportGutter?: CssLength;
+    /** Modal height cap, bounded by the dynamic viewport minus both gutters. */
+    maxHeight?: DialogSurfaceMaxHeight;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
-declare function DialogSurface({ children, size, presentation, bodyInset, footerInset, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ children, size, presentation, bodyInset, footerInset, viewportGutter, maxHeight, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
 interface PopupSurfaceProps {
     children: KerfUiContent;
@@ -3385,7 +3391,7 @@ interface PopupSurfaceProps {
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
-export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceSize, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
+export { DialogSurface, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceSize, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
 ```
 
 ## `@kerfjs/ui/text`

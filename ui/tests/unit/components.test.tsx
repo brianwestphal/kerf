@@ -190,6 +190,44 @@ describe('production UI primitives', () => {
     expect(hiddenWins).not.toContain('aria-label');
   });
 
+  it('serializes optional modal bounds without changing omitted defaults', () => {
+    const defaults = asHtml(
+      DialogSurface({ children: <wa-dialog label="Edit">Body</wa-dialog> }),
+    );
+    expect(defaults).not.toContain('data-viewport-gutter');
+    expect(defaults).not.toContain('data-max-height');
+    expect(defaults).not.toContain('style=');
+    const viewport = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        viewportGutter: px(8),
+        maxHeight: 'viewport',
+      }),
+    );
+    expect(viewport).toContain('data-viewport-gutter=""');
+    expect(viewport).toContain('data-max-height=""');
+    expect(viewport).toContain('--_kui-dialog-surface-gutter:8px');
+    expect(viewport).not.toContain('--_kui-dialog-surface-max-height:');
+    const capped = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        maxHeight: px(360),
+      }),
+    );
+    expect(capped).toContain('--_kui-dialog-surface-max-height:360px');
+    expect(capped).not.toContain('data-viewport-gutter');
+    const both = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        viewportGutter: px(0),
+        maxHeight: px(2000),
+      }),
+    );
+    expect(both).toContain(
+      '--_kui-dialog-surface-gutter:0px;--_kui-dialog-surface-max-height:2000px',
+    );
+  });
+
   it('configures dialog and popup surface geometry without changing native behavior', () => {
     const dialog = asHtml(
       DialogSurface({

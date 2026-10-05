@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Configure modal `DialogSurface` viewport gutters and typed maximum heights, including a dynamic viewport cap, without application shadow-part overrides.
+
 ### Fixed
+
+- Restore accessible native dialog names through `@kerfjs/ui/surface-scaffold/register`, preserving live title slots and headerless labels.
 
 - Validate remote CI freshness through newer-run searches and exact-run details before warning about a failed main build (`KF-X4PTHF`).
 

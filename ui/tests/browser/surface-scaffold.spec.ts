@@ -1,5 +1,213 @@
 import { expect, test } from '@playwright/test';
 
+test('registered dialog names survive slotted labels, header changes and repeated opens', async ({
+  page,
+}) => {
+  await page.goto('/?component=surface-scaffold');
+  const dialog = page.locator('#catalog-bounded-dialog');
+  await page.getByRole('button', { name: 'Open bounded dialog' }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Close workspace', exact: true }),
+  ).toBeVisible();
+  for (const name of [
+    'First explicit workspace',
+    'Second explicit workspace',
+  ]) {
+    await dialog.evaluate(
+      (element, value) => element.setAttribute('aria-label', value),
+      name,
+    );
+    await expect(page.getByRole('dialog', { name, exact: true })).toBeVisible();
+  }
+  await dialog.evaluate((element) => element.removeAttribute('aria-label'));
+  await expect(
+    page.getByRole('dialog', { name: 'Close workspace', exact: true }),
+  ).toBeVisible();
+  await dialog.evaluate((element) => {
+    const title = document.createElement('span');
+    title.slot = 'label';
+    title.textContent = 'Review running tasks';
+    element.append(title);
+  });
+  await expect(
+    page.getByRole('dialog', { name: 'Review running tasks', exact: true }),
+  ).toBeVisible();
+  await dialog
+    .locator('[slot="label"]')
+    .evaluate((element) => (element.textContent = 'Review stopped tasks'));
+  await expect(
+    page.getByRole('dialog', { name: 'Review stopped tasks', exact: true }),
+  ).toBeVisible();
+  await dialog.evaluate((element) => {
+    element.setAttribute('without-header', '');
+    element.setAttribute('label', 'Headerless workspace');
+  });
+  await expect(
+    page.getByRole('dialog', { name: 'Headerless workspace', exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toHaveAttribute('open', '');
+  await page.getByRole('button', { name: 'Open bounded dialog' }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Headerless workspace', exact: true }),
+  ).toBeVisible();
+  await dialog.evaluate((element) => {
+    element.removeAttribute('without-header');
+    element.querySelector('[slot="label"]')!.remove();
+    element.setAttribute('label', 'Restored workspace');
+  });
+  await expect(
+    page.getByRole('dialog', { name: 'Restored workspace', exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toHaveAttribute('open', '');
+});
+
+test('modal viewport bounds retain actions and native focus across resize and reopen', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await page.goto('/?component=surface-scaffold');
+  const trigger = page.getByRole('button', { name: 'Open bounded dialog' });
+  await trigger.click();
+  const dialog = page.locator('#catalog-bounded-dialog');
+  await expect(
+    page.getByRole('dialog', { name: 'Close workspace', exact: true }),
+  ).toBeVisible();
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) =>
+        element
+          .shadowRoot!.querySelector('[part~="dialog"]')!
+          .classList.contains('show'),
+      ),
+    )
+    .toBe(false);
+  for (const viewport of [
+    { width: 1100, height: 850 },
+    { width: 390, height: 844 },
+    { width: 320, height: 480 },
+    { width: 390, height: 520 },
+    { width: 1100, height: 850 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(dialog).toHaveAttribute('open', '');
+    await expect
+      .poll(() =>
+        dialog.evaluate(
+          (element) =>
+            element
+              .shadowRoot!.querySelector('[part~="dialog"]')!
+              .getBoundingClientRect().width,
+        ),
+      )
+      .toBeCloseTo(Math.min(800, viewport.width - 16), 0);
+    const geometry = await dialog.evaluate((element) => {
+      const panel = element.shadowRoot!.querySelector('[part~="dialog"]')!;
+      const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+      const rect = panel.getBoundingClientRect();
+      return {
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+        width: rect.width,
+        maxHeight: parseFloat(window.getComputedStyle(panel).maxHeight),
+        bodyOverflow: body.scrollHeight - body.clientHeight,
+        pageOverflow: document.body.scrollWidth - window.innerWidth,
+      };
+    });
+    expect(geometry.left).toBeGreaterThanOrEqual(7.5);
+    expect(geometry.right).toBeLessThanOrEqual(viewport.width - 7.5);
+    expect(geometry.top).toBeGreaterThanOrEqual(7.5);
+    expect(geometry.bottom).toBeLessThanOrEqual(viewport.height - 7.5);
+    expect(geometry.width).toBeCloseTo(Math.min(800, viewport.width - 16), 0);
+    expect(geometry.maxHeight).toBeCloseTo(viewport.height - 16, 0);
+    expect(geometry.bodyOverflow).toBeLessThanOrEqual(1);
+    expect(geometry.pageOverflow).toBeLessThanOrEqual(1);
+    for (const name of ['Keep working', 'Stop and close']) {
+      const action = dialog.getByRole('button', { name, exact: true });
+      await expect(action).toBeVisible();
+      const rect = await action.boundingBox();
+      expect(rect!.y + rect!.height).toBeLessThanOrEqual(viewport.height - 8);
+    }
+    await page.screenshot({
+      path: testInfo.outputPath(
+        `bounded-modal-${viewport.width}x${viewport.height}.png`,
+      ),
+    });
+  }
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.press('Tab');
+    expect(
+      await dialog.evaluate(
+        (element) =>
+          document.activeElement === element ||
+          document.activeElement === document.body ||
+          element.contains(document.activeElement),
+      ),
+    ).toBe(true);
+  }
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toHaveAttribute('open', '');
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await dialog.getByRole('button', { name: 'Keep working' }).click();
+  await expect(dialog).not.toHaveAttribute('open', '');
+});
+
+test('typed modal cap keeps its footer reachable when the body scrolls', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 520 });
+  await page.goto('/?component=surface-scaffold');
+  await page.getByRole('button', { name: 'Open capped dialog' }).click();
+  const dialog = page.locator('#catalog-capped-dialog');
+  await expect(dialog).toHaveAttribute('open', '');
+  await expect(dialog.getByRole('dialog')).toBeVisible();
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) =>
+        element
+          .shadowRoot!.querySelector('[part~="dialog"]')!
+          .classList.contains('show'),
+      ),
+    )
+    .toBe(false);
+  const geometry = await dialog.evaluate((element) => {
+    const panel = element.shadowRoot!.querySelector('[part~="dialog"]')!;
+    const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+    return {
+      height: panel.getBoundingClientRect().height,
+      maxHeight: window.getComputedStyle(panel).maxHeight,
+      overflow: body.scrollHeight - body.clientHeight,
+    };
+  });
+  expect(geometry.height).toBeLessThanOrEqual(360.5);
+  expect(geometry.maxHeight).toBe('360px');
+  expect(geometry.overflow).toBeGreaterThan(0);
+  await page.setViewportSize({ width: 390, height: 240 });
+  await expect
+    .poll(() =>
+      dialog.evaluate(
+        (element) =>
+          window.getComputedStyle(
+            element.shadowRoot!.querySelector('[part~="dialog"]')!,
+          ).maxHeight,
+      ),
+    )
+    .toBe('224px');
+  await expect(
+    dialog.getByRole('button', { name: 'Cancel review' }),
+  ).toBeInViewport();
+  await page.setViewportSize({ width: 390, height: 520 });
+  await page.screenshot({
+    path: testInfo.outputPath('capped-modal-phone.png'),
+  });
+  await dialog.getByRole('button', { name: 'Cancel review' }).click();
+  await expect(dialog).not.toHaveAttribute('open', '');
+});
+
 test('applies typed dialog and popup surface geometry', async ({
   page,
 }, testInfo) => {
@@ -88,6 +296,8 @@ test('applies typed dialog and popup surface geometry', async ({
     };
   });
   expect(narrowGeometry.textLeft).toBeGreaterThan(narrowGeometry.panelLeft);
+  expect(narrowGeometry.panelLeft).toBe(20);
+  expect(narrowGeometry.panelRight).toBe(370);
   expect(narrowGeometry.textRight).toBeLessThan(narrowGeometry.panelRight);
   expect(narrowGeometry.bodyScrollWidth).toBeLessThanOrEqual(
     narrowGeometry.viewportWidth,

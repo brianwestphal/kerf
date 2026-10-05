@@ -88,7 +88,11 @@ its label still names the modal — and the close button uses
 `data-dialog="close"`. Web Awesome keeps modal focus and Escape, and the thin
 recipe adapter restores the invoking control after the hide event.
 `DialogSurface` chooses the large modal with no body inset, because the panes
-own their geometry. On compact devices the dialog becomes a full-screen sheet
+own their geometry. Its explicit 16px `viewportGutter` and `maxHeight="viewport"`
+bound the roomy modal to the dynamic viewport; the compact fullscreen
+presentation retains its existing geometry. Application render state chooses
+the presentation and can likewise choose gutter/cap values for a compact modal.
+On compact devices the dialog becomes a full-screen sheet
 with its own labeled header and footer actions, and `SplitView` becomes a
 `NavStack` drill-down whose back control the application pops. The
 application owns open state, selection, the pushed detail, dismissal policy,

@@ -485,6 +485,21 @@ CollapsiblePanelToggle({
   slot: 'named',
 });
 UI.DialogSurface({ children: slottedContent, slot: 'named' });
+UI.DialogSurface({
+  children: slottedContent,
+  viewportGutter: px(8),
+  maxHeight: 'viewport',
+});
+UI.DialogSurface({ children: slottedContent, maxHeight: px(360) });
+// @ts-expect-error Modal gutters use branded lengths, not raw CSS strings.
+UI.DialogSurface({ children: slottedContent, viewportGutter: '8px' });
+UI.DialogSurface({
+  children: slottedContent,
+  // @ts-expect-error Modal caps use branded lengths or the viewport policy.
+  maxHeight: 'calc(100dvh - 16px)',
+});
+// @ts-expect-error Flex shorthands cannot configure a modal dimension.
+UI.DialogSurface({ children: slottedContent, maxHeight: flex(1) });
 UI.DisclosureArrow({ open: false, slot: 'named' });
 UI.EmptyState({ title: 'Empty', slot: 'named' });
 UI.FloatingToolbar({ children: slottedContent, label: 'Tools', slot: 'named' });

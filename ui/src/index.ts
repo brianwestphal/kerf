@@ -248,6 +248,7 @@ export {
 } from './components/surfaces/sunken-panel/sunken-panel.js';
 export {
   DialogSurface,
+  type DialogSurfaceMaxHeight,
   type DialogSurfacePresentation,
   type DialogSurfaceProps,
   type DialogSurfaceSize,

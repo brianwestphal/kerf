@@ -1,11 +1,56 @@
 .kui-dialog-surface > wa-dialog {
+  --_kui-dialog-surface-width: remify(560px);
+  --_kui-dialog-surface-resolved-gutter: max(
+    0px,
+    var(--_kui-dialog-surface-gutter, remify(16px))
+  );
   --width: min(remify(560px), calc(100vw - remify(32px)));
 }
 .kui-dialog-surface[data-size="small"] > wa-dialog {
+  --_kui-dialog-surface-width: remify(400px);
   --width: min(remify(400px), calc(100vw - remify(32px)));
 }
 .kui-dialog-surface[data-size="large"] > wa-dialog {
+  --_kui-dialog-surface-width: remify(800px);
   --width: min(remify(800px), calc(100vw - remify(32px)));
+}
+.kui-dialog-surface[data-presentation="modal"][data-viewport-gutter]
+  > wa-dialog {
+  --width: min(
+    var(--_kui-dialog-surface-width),
+    max(
+      0px,
+      calc(
+        100vw - var(--_kui-dialog-surface-resolved-gutter) -
+          var(--_kui-dialog-surface-resolved-gutter)
+      )
+    )
+  );
+}
+/* Web Awesome has a separate max-width clamp; setting --width alone cannot
+   provide an 8px phone gutter. Omitted props retain its legacy geometry. */
+.kui-dialog-surface[data-presentation="modal"][data-viewport-gutter]
+  > wa-dialog::part(dialog) {
+  max-width: max(
+    0px,
+    calc(
+      100vw - var(--_kui-dialog-surface-resolved-gutter) -
+        var(--_kui-dialog-surface-resolved-gutter)
+    )
+  );
+}
+.kui-dialog-surface[data-presentation="modal"][data-max-height]
+  > wa-dialog::part(dialog) {
+  max-height: max(
+    0px,
+    min(
+      var(--_kui-dialog-surface-max-height, 100dvh),
+      calc(
+        100dvh - var(--_kui-dialog-surface-resolved-gutter) -
+          var(--_kui-dialog-surface-resolved-gutter)
+      )
+    )
+  );
 }
 .kui-dialog-surface[data-body-inset="none"] > wa-dialog::part(body),
 .kui-dialog-surface[data-footer-inset="none"] > wa-dialog::part(footer) {
