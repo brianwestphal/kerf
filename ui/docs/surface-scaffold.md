@@ -12,6 +12,12 @@ Wrap one `wa-dialog` with `DialogSurface`. Choose `size` (`small`, `medium`, or
 `bodyInset` / `footerInset` (`none`, `compact`, or `comfortable`). The defaults
 match Kerf's medium modal, 8px body, and 16px footer rhythm.
 
+The modal size presets have preferred widths of 400px, 560px, and 800px,
+respectively, before the viewport width cap. They cannot preserve a different
+desktop width exactly. A migration that requires exact shell-width parity needs
+an explicit preferred-width capability; changing resource tracks or preview
+aspect sizing inside the dialog does not change that outer-width requirement.
+
 ### Modal viewport bounds
 
 `viewportGutter` accepts a branded `CssLength` from `@kerfjs/ui/css-values`.
