@@ -10,6 +10,8 @@ export interface DialogSurfaceProps {
   children: KerfUiContent;
   size?: DialogSurfaceSize;
   presentation?: DialogSurfacePresentation;
+  /** Modal preferred width. Takes precedence over size, within the viewport cap. */
+  preferredWidth?: CssLength;
   bodyInset?: SurfaceInset;
   footerInset?: SurfaceInset;
   /** Modal edge clearance. Omit to retain Web Awesome's default viewport cap. */
@@ -26,6 +28,7 @@ export function DialogSurface({
   children,
   size = 'medium',
   presentation = 'modal',
+  preferredWidth,
   bodyInset = 'compact',
   footerInset = 'comfortable',
   viewportGutter,
@@ -34,6 +37,9 @@ export function DialogSurface({
   slot,
 }: DialogSurfaceProps) {
   const style = [
+    preferredWidth === undefined
+      ? ''
+      : `--_kui-dialog-surface-preferred-width:${preferredWidth}`,
     viewportGutter === undefined
       ? ''
       : `--_kui-dialog-surface-gutter:${viewportGutter}`,
@@ -49,6 +55,7 @@ export function DialogSurface({
       data-component="dialog-surface"
       data-size={size}
       data-presentation={presentation}
+      data-preferred-width={preferredWidth === undefined ? undefined : ''}
       data-body-inset={bodyInset}
       data-footer-inset={footerInset}
       data-viewport-gutter={viewportGutter === undefined ? undefined : ''}

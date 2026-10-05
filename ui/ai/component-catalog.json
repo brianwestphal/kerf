@@ -1875,7 +1875,7 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Typed Web Awesome dialog sizing, modal viewport bounds, presentation, and popup inset composition.",
+      "description": "Typed Web Awesome dialog preferred widths and viewport bounds, presentation, and popup inset composition.",
       "uses": [
         "wa-dialog",
         "wa-dropdown",
@@ -1889,7 +1889,7 @@
       "useWhen": [
         "A Web Awesome dialog or dropdown needs a standard size, presentation, body/footer inset, or list-compatible menu inset.",
         "A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText.",
-        "A modal needs a typed viewport gutter or a dynamic viewport-bounded height cap while retaining native body scrolling and footer actions."
+        "A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions."
       ],
       "avoidWhen": [
         "Do not use it as a generic layout wrapper or to replace application-owned modal state and focus lifecycle.",
@@ -1906,7 +1906,7 @@
       "variants": [
         "small, medium, or large dialog",
         "modal, side-sheet, or fullscreen dialog",
-        "typed modal viewport gutter and maximum height, including viewport cap",
+        "typed modal preferred width, viewport gutter, and maximum height, including viewport cap",
         "none, compact, or comfortable body and footer inset",
         "standard, compact, or zero-inset popup menu"
       ],
@@ -1944,6 +1944,30 @@
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       },
       "cssValueProps": [
+        {
+          "path": "preferredWidth",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "remify",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "preferredWidth={remify(832)}"
+          ]
+        },
         {
           "path": "viewportGutter",
           "grammar": "length",

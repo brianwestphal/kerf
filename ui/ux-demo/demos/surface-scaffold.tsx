@@ -40,11 +40,12 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Viewport-bounded modal"
-        note="An 8px gutter and viewport height cap keep a modal on phones; the application still owns its content layout."
+        note="An 832px preferred width overrides the large preset; an 8px gutter and viewport height cap keep it on phones."
         align="inline-control"
       >
         <DialogSurface
           size="large"
+          preferredWidth={remify(832)}
           viewportGutter={remify(8)}
           maxHeight="viewport"
           bodyInset="none"
@@ -86,10 +87,11 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Capped modal"
-        note="A typed 360px maximum stays bounded by the dynamic viewport and leaves footer actions outside the scrolling body."
+        note="A 480px preferred width and typed 360px maximum stay viewport-bounded while the footer remains outside the scrolling body."
         align="inline-control"
       >
         <DialogSurface
+          preferredWidth={remify(480)}
           viewportGutter={remify(8)}
           maxHeight={remify(360)}
           bodyInset="none"

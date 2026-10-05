@@ -491,6 +491,15 @@ UI.DialogSurface({
   maxHeight: 'viewport',
 });
 UI.DialogSurface({ children: slottedContent, maxHeight: px(360) });
+UI.DialogSurface({
+  children: slottedContent,
+  size: 'large',
+  preferredWidth: px(832),
+});
+// @ts-expect-error Modal preferred widths use branded lengths, not raw CSS strings.
+UI.DialogSurface({ children: slottedContent, preferredWidth: '832px' });
+// @ts-expect-error Flex shorthands cannot configure a modal preferred width.
+UI.DialogSurface({ children: slottedContent, preferredWidth: flex(1) });
 // @ts-expect-error Modal gutters use branded lengths, not raw CSS strings.
 UI.DialogSurface({ children: slottedContent, viewportGutter: '8px' });
 UI.DialogSurface({

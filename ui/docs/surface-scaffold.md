@@ -13,16 +13,17 @@ Wrap one `wa-dialog` with `DialogSurface`. Choose `size` (`small`, `medium`, or
 match Kerf's medium modal, 8px body, and 16px footer rhythm.
 
 The modal size presets have preferred widths of 400px, 560px, and 800px,
-respectively, before the viewport width cap. They cannot preserve a different
-desktop width exactly. A migration that requires exact shell-width parity needs
-an explicit preferred-width capability; changing resource tracks or preview
-aspect sizing inside the dialog does not change that outer-width requirement.
+respectively, before the viewport width cap. Set `preferredWidth` to a branded
+`CssLength` when the desktop shell needs another width. It takes precedence over
+`size`, while the viewport cap still applies. For example, 832px and 480px
+desktop preferences can share the same responsive dialog without changing its
+resource tracks or preview aspect sizing.
 
 ### Modal viewport bounds
 
 `viewportGutter` accepts a branded `CssLength` from `@kerfjs/ui/css-values`.
-It sets the minimum horizontal clearance, while `size` remains the preferred
-width. `maxHeight` accepts a branded length or `"viewport"`; explicit caps are
+It sets the minimum horizontal clearance; `preferredWidth` overrides the `size`
+preset when supplied. `maxHeight` accepts a branded length or `"viewport"`; explicit caps are
 clamped to the dynamic viewport height minus twice the gutter (16px per edge
 when the gutter is omitted). Negative gutters/caps clamp to zero. Omitting
 both options preserves Web Awesome's existing width and phone height caps.
@@ -34,12 +35,12 @@ import '@kerfjs/ui/surface-scaffold/register';
 import { remify } from '@kerfjs/ui/css-values';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 
-<DialogSurface viewportGutter={remify(8)} maxHeight="viewport" bodyInset="none">
+<DialogSurface preferredWidth={remify(832)} viewportGutter={remify(8)} maxHeight="viewport" bodyInset="none">
   <wa-dialog label="Close workspace">{/* Application-owned content and footer */}</wa-dialog>
 </DialogSurface>;
 ```
 
-This gives a phone modal an 8px edge gutter and a `calc(100dvh - 16px)` height
+This gives a desktop modal an 832px preferred width and a phone modal an 8px edge gutter with a `calc(100dvh - 16px)` height
 cap without application selectors on Kerf roots or Web Awesome parts. A cap
 is not a fixed height: short content stays naturally sized, and taller content
 scrolls in Web Awesome's body while its header/footer remain outside that

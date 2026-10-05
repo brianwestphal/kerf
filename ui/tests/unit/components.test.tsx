@@ -196,6 +196,7 @@ describe('production UI primitives', () => {
     );
     expect(defaults).not.toContain('data-viewport-gutter');
     expect(defaults).not.toContain('data-max-height');
+    expect(defaults).not.toContain('data-preferred-width');
     expect(defaults).not.toContain('style=');
     const viewport = asHtml(
       DialogSurface({
@@ -225,6 +226,19 @@ describe('production UI primitives', () => {
     );
     expect(both).toContain(
       '--_kui-dialog-surface-gutter:0px;--_kui-dialog-surface-max-height:2000px',
+    );
+    const preferred = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        size: 'large',
+        preferredWidth: px(832),
+        viewportGutter: px(8),
+      }),
+    );
+    expect(preferred).toContain('data-size="large"');
+    expect(preferred).toContain('data-preferred-width=""');
+    expect(preferred).toContain(
+      '--_kui-dialog-surface-preferred-width:832px;--_kui-dialog-surface-gutter:8px',
     );
   });
 

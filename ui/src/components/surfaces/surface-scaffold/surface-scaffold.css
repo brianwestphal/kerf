@@ -14,10 +14,20 @@
   --_kui-dialog-surface-width: remify(800px);
   --width: min(remify(800px), calc(100vw - remify(32px)));
 }
+.kui-dialog-surface[data-presentation="modal"][data-preferred-width]
+  > wa-dialog {
+  --width: min(
+    var(--_kui-dialog-surface-preferred-width),
+    calc(100vw - remify(32px))
+  );
+}
 .kui-dialog-surface[data-presentation="modal"][data-viewport-gutter]
   > wa-dialog {
   --width: min(
-    var(--_kui-dialog-surface-width),
+    var(
+      --_kui-dialog-surface-preferred-width,
+      var(--_kui-dialog-surface-width)
+    ),
     max(
       0px,
       calc(

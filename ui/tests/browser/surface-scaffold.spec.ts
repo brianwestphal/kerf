@@ -101,7 +101,7 @@ test('modal viewport bounds retain actions and native focus across resize and re
               .getBoundingClientRect().width,
         ),
       )
-      .toBeCloseTo(Math.min(800, viewport.width - 16), 0);
+      .toBeCloseTo(Math.min(832, viewport.width - 16), 0);
     const geometry = await dialog.evaluate((element) => {
       const panel = element.shadowRoot!.querySelector('[part~="dialog"]')!;
       const body = element.shadowRoot!.querySelector('[part~="body"]')!;
@@ -121,7 +121,7 @@ test('modal viewport bounds retain actions and native focus across resize and re
     expect(geometry.right).toBeLessThanOrEqual(viewport.width - 7.5);
     expect(geometry.top).toBeGreaterThanOrEqual(7.5);
     expect(geometry.bottom).toBeLessThanOrEqual(viewport.height - 7.5);
-    expect(geometry.width).toBeCloseTo(Math.min(800, viewport.width - 16), 0);
+    expect(geometry.width).toBeCloseTo(Math.min(832, viewport.width - 16), 0);
     expect(geometry.maxHeight).toBeCloseTo(viewport.height - 16, 0);
     expect(geometry.bodyOverflow).toBeLessThanOrEqual(1);
     expect(geometry.pageOverflow).toBeLessThanOrEqual(1);
@@ -206,6 +206,57 @@ test('typed modal cap keeps its footer reachable when the body scrolls', async (
   });
   await dialog.getByRole('button', { name: 'Cancel review' }).click();
   await expect(dialog).not.toHaveAttribute('open', '');
+});
+
+test('preferred modal widths override presets without changing side-sheet or fullscreen geometry', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await page.goto('/?component=surface-scaffold');
+  const bounded = page.locator('#catalog-bounded-dialog');
+  await page.getByRole('button', { name: 'Open bounded dialog' }).click();
+  await expect(bounded).toHaveAttribute('open', '');
+  const panelWidth = (selector: string) =>
+    page
+      .locator(selector)
+      .evaluate(
+        (element) =>
+          element
+            .shadowRoot!.querySelector('[part~="dialog"]')!
+            .getBoundingClientRect().width,
+      );
+  await expect
+    .poll(() => panelWidth('#catalog-bounded-dialog'))
+    .toBeCloseTo(832, 0);
+  const surface = bounded.locator('xpath=..');
+  await surface.evaluate((element) =>
+    element.removeAttribute('data-viewport-gutter'),
+  );
+  await expect
+    .poll(() => panelWidth('#catalog-bounded-dialog'))
+    .toBeCloseTo(832, 0);
+  await surface.evaluate((element) =>
+    element.setAttribute('data-presentation', 'side-sheet'),
+  );
+  await expect
+    .poll(() => panelWidth('#catalog-bounded-dialog'))
+    .toBeCloseTo(480, 0);
+  await surface.evaluate((element) =>
+    element.setAttribute('data-presentation', 'fullscreen'),
+  );
+  await expect
+    .poll(() => panelWidth('#catalog-bounded-dialog'))
+    .toBeCloseTo(1100, 0);
+  await page.keyboard.press('Escape');
+
+  await page.getByRole('button', { name: 'Open capped dialog' }).click();
+  await expect(page.locator('#catalog-capped-dialog')).toHaveAttribute(
+    'open',
+    '',
+  );
+  await expect
+    .poll(() => panelWidth('#catalog-capped-dialog'))
+    .toBeCloseTo(480, 0);
 });
 
 test('applies typed dialog and popup surface geometry', async ({

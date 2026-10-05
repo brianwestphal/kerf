@@ -1768,6 +1768,26 @@
       },
       "cssValueProps": [
         {
+          "path": "preferredWidth",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "remify",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["preferredWidth={remify(832)}"]
+        },
+        {
           "path": "viewportGutter",
           "grammar": "length",
           "helpers": [

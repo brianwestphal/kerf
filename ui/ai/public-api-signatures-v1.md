@@ -3368,6 +3368,8 @@ interface DialogSurfaceProps {
     children: KerfUiContent;
     size?: DialogSurfaceSize;
     presentation?: DialogSurfacePresentation;
+    /** Modal preferred width. Takes precedence over size, within the viewport cap. */
+    preferredWidth?: CssLength;
     bodyInset?: SurfaceInset;
     footerInset?: SurfaceInset;
     /** Modal edge clearance. Omit to retain Web Awesome's default viewport cap. */
@@ -3379,7 +3381,7 @@ interface DialogSurfaceProps {
     slot?: string;
 }
 /** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
-declare function DialogSurface({ children, size, presentation, bodyInset, footerInset, viewportGutter, maxHeight, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
 interface PopupSurfaceProps {
     children: KerfUiContent;
