@@ -3778,71 +3778,73 @@ test('content surfaces share an overridable outer margin and own their inner pad
   ] as const;
 
   for (const specimen of specimens) {
-    await page.setViewportSize({ width: 1100, height: 820 });
-    await page.goto(`/?component=${specimen.route}`);
-    const host = page.locator(specimen.host).first();
-    await expect(host).toBeVisible();
-    await expect
-      .poll(() =>
-        host.evaluate(
-          (element) => window.getComputedStyle(element).marginInlineStart,
-        ),
-      )
-      .toBe('8px');
-    await expect
-      .poll(() =>
-        host.evaluate(
-          (element) => window.getComputedStyle(element).marginInlineEnd,
-        ),
-      )
-      .toBe('8px');
+    await test.step(`${specimen.route}: default/overridden insets and narrow containment`, async () => {
+      await page.setViewportSize({ width: 1100, height: 820 });
+      await page.goto(`/?component=${specimen.route}`);
+      const host = page.locator(specimen.host).first();
+      await expect(host).toBeVisible();
+      await expect
+        .poll(() =>
+          host.evaluate(
+            (element) => window.getComputedStyle(element).marginInlineStart,
+          ),
+        )
+        .toBe('8px');
+      await expect
+        .poll(() =>
+          host.evaluate(
+            (element) => window.getComputedStyle(element).marginInlineEnd,
+          ),
+        )
+        .toBe('8px');
 
-    const inset = await page
-      .locator(specimen.inner)
-      .first()
-      .evaluate((element, part) => {
-        const target = part
-          ? (element.shadowRoot!.querySelector(
-              `[part~="${part}"]`,
-            ) as HTMLElement)
-          : element;
-        return window.getComputedStyle(target).paddingInlineStart;
-      }, specimen.part);
-    expect(inset).toBe(specimen.inset);
+      const inset = await page
+        .locator(specimen.inner)
+        .first()
+        .evaluate((element, part) => {
+          const target = part
+            ? (element.shadowRoot!.querySelector(
+                `[part~="${part}"]`,
+              ) as HTMLElement)
+            : element;
+          return window.getComputedStyle(target).paddingInlineStart;
+        }, specimen.part);
+      expect(inset).toBe(specimen.inset);
 
-    await page.locator('[data-catalog-example]').evaluate((element) => {
-      const specimen = element as HTMLElement;
-      specimen.style.setProperty('--kui-wa-surface-margin', '12px');
-      specimen.style.setProperty('--kui-wa-surface-inset', '12px');
+      await page.locator('[data-catalog-example]').evaluate((element) => {
+        const specimen = element as HTMLElement;
+        specimen.style.setProperty('--kui-wa-surface-margin', '12px');
+        specimen.style.setProperty('--kui-wa-surface-inset', '12px');
+      });
+      await expect
+        .poll(() =>
+          host.evaluate(
+            (element) => window.getComputedStyle(element).marginInlineStart,
+          ),
+        )
+        .toBe('12px');
+      const overriddenInset = await page
+        .locator(specimen.inner)
+        .first()
+        .evaluate((element, part) => {
+          const target = part
+            ? (element.shadowRoot!.querySelector(
+                `[part~="${part}"]`,
+              ) as HTMLElement)
+            : element;
+          return window.getComputedStyle(target).paddingInlineStart;
+        }, specimen.part);
+      expect(overriddenInset).toBe(specimen.overriddenInset);
+
+      await page.setViewportSize({ width: 390, height: 844 });
+      expect(
+        await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth -
+            document.documentElement.clientWidth,
+        ),
+      ).toBeLessThanOrEqual(1);
     });
-    await expect
-      .poll(() =>
-        host.evaluate(
-          (element) => window.getComputedStyle(element).marginInlineStart,
-        ),
-      )
-      .toBe('12px');
-    const overriddenInset = await page
-      .locator(specimen.inner)
-      .first()
-      .evaluate((element, part) => {
-        const target = part
-          ? (element.shadowRoot!.querySelector(
-              `[part~="${part}"]`,
-            ) as HTMLElement)
-          : element;
-        return window.getComputedStyle(target).paddingInlineStart;
-      }, specimen.part);
-    expect(overriddenInset).toBe(specimen.overriddenInset);
-
-    await page.setViewportSize({ width: 390, height: 844 });
-    expect(
-      await page.evaluate(
-        () =>
-          document.documentElement.scrollWidth -
-          document.documentElement.clientWidth,
-      ),
-    ).toBeLessThanOrEqual(1);
   }
 
   await page.goto('/?component=wa-accordion');
