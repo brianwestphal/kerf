@@ -36,7 +36,7 @@ export function LucideIconDemo() {
       <CatalogExample
         label="Icon sizes"
         note="Named xs/s/m/l/xl steps use 12/16/20/24/32px at a 16px root; a positive numeric pixel size converts to rem. The default remains 1em."
-        align="none"
+        align="glyph"
       >
         <Row gap="m" rootAttributes={{ 'data-demo-icon-sizes': '' }}>
           <LucideIcon icon={Bell} name="bell-xs" size="xs" />
@@ -80,7 +80,7 @@ export function LucideIconDemo() {
       <CatalogExample
         label="Inline with text"
         note="Set inline when an icon belongs in a sentence; it keeps the inherited 1em size and flows with the text."
-        align="glyph"
+        align="inline-control"
       >
         <Text data-demo-icon-inline="">
           Notifications <LucideIcon icon={Bell} name="bell-inline" inline /> are

@@ -57,7 +57,7 @@ export function ChipDemo() {
       <CatalogExample
         label="Icon and truncated label"
         note="Chip sizes a decorative leading icon and clips a long label inside its own width. The adjacent price stays whole. Hover the label for the full native title."
-        align="none"
+        align="inline-control"
         viewport={{ width: 'medium' }}
       >
         <Row gap="xs" rootAttributes={{ 'data-demo-chip-offer': '' }}>
