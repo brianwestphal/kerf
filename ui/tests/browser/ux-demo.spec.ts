@@ -1108,13 +1108,13 @@ test('computes component geometry overlays from live CSS and leaves composition 
     .evaluate((style) => style.remove());
 
   // The overlay marks the demoed SPECIMEN, not the example's ListHeader label or
-  // note. The two semantic modes, size, and appearance specimens each get a
+  // note. The two semantic modes, size, appearance, and color specimens each get a
   // bound and no margin; the labels must not be marked.
   await page.goto('/?component=lucide-icon');
   await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
   await expect
     .poll(() => overlay.locator('.kui-catalog__geometry-bound').count())
-    .toBe(4);
+    .toBe(5);
   await expect
     .poll(() => overlay.locator('.kui-catalog__geometry-margin').count())
     .toBe(0);

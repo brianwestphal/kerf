@@ -541,6 +541,9 @@ test('submenu recovers from an interrupted close and a stale hidden open', async
   await expect(approve).toBeVisible();
 
   await page.mouse.move(0, 0);
+  await expect
+    .poll(() => parent.evaluate((element) => element.matches(':hover')))
+    .toBe(false);
   await parent.evaluate((element) => {
     const item = element as HTMLElement & {
       submenuElement?: HTMLElement;
@@ -552,20 +555,62 @@ test('submenu recovers from an interrupted close and a stale hidden open', async
   await parent.hover();
   await expect(approve).toBeVisible();
 
-  await page.keyboard.press('Escape');
+  // The keyboard scenario starts with a fresh dropdown so the preceding
+  // hover and interrupted-close transitions cannot leave a navigation stack.
+  await page.reload();
   await trigger.click();
+  // Let the parent dropdown finish its own focus handoff before exercising
+  // the independent stale-submenu keyboard path.
+  await expect
+    .poll(() =>
+      nested.evaluate((element) =>
+        (
+          element as HTMLElement & { menu?: HTMLElement }
+        ).menu?.classList.contains('show'),
+      ),
+    )
+    .toBe(false);
+  await parent.evaluate((element) => {
+    (element as HTMLElement & { submenuOpen: boolean }).submenuOpen = true;
+  });
+  await expect(approve).toBeVisible();
+  await expect
+    .poll(() =>
+      parent.evaluate(
+        (element) =>
+          !(
+            element as HTMLElement & { submenuElement?: HTMLElement }
+          ).submenuElement?.classList.contains('show'),
+      ),
+    )
+    .toBe(true);
+  await page.mouse.move(0, 0);
+  await expect
+    .poll(() => parent.evaluate((element) => element.matches(':hover')))
+    .toBe(false);
   await parent.evaluate((element) => {
     const item = element as HTMLElement & {
       submenuElement?: HTMLElement;
       submenuOpen: boolean;
       active: boolean;
     };
-    item.submenuOpen = true;
+    const dropdown = item.closest('wa-dropdown') as unknown as HTMLElement & {
+      openSubmenuStack: HTMLElement[];
+    };
+    // Construct the stale state and key event in one task so Web Awesome's
+    // queued focus/stack updates cannot turn this into a different transition.
+    dropdown.openSubmenuStack = [];
     item.active = true;
     if (item.submenuElement) item.submenuElement.hidden = true;
     item.focus();
+    item.dispatchEvent(
+      new globalThis.KeyboardEvent('keydown', {
+        key: 'ArrowRight',
+        bubbles: true,
+        composed: true,
+      }),
+    );
   });
-  await parent.press('ArrowRight');
   await expect(approve).toBeVisible();
   await expect(approve).toBeFocused();
   if (browserName === 'chromium')
