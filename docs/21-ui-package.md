@@ -227,7 +227,9 @@ follows its rendered columns with Left/Right/Up/Down and Home/End.
 
 `LoadingSpinner.size` shares `LucideIcon`'s `xs`/`s`/`m`/`l`/`xl` steps and
 positive numeric pixel sizing (converted to rem). Omit it for the existing
-inherited 1em size.
+inherited 1em size. `LoadingSpinner.color` accepts the same typed foreground
+colors as `LucideIcon.color`, paints the SVG inline, and inherits the surrounding
+text color when omitted.
 
 Catalog demos follow the single
 [`ui/docs/catalog.md` authoring contract](../ui/docs/catalog.md#catalog-demo-authoring-contract).

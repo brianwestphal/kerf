@@ -477,6 +477,12 @@ UI.ListItemLink({ label: 'Item', href: '/item', action: 'open' });
 // @ts-expect-error pressed applies to button actions, not links
 UI.ListItemLink({ label: 'Item', href: '/item', pressed: true });
 UI.LoadingSpinner({ slot: 'named' });
+UI.LoadingSpinner({ color: UI.uiColor('warning-on-quiet') });
+UI.LoadingSpinner({ color: UI.foregroundColor('rebeccapurple') });
+// @ts-expect-error Spinner colors require a foreground token or explicit custom-color builder.
+UI.LoadingSpinner({ color: UI.uiColor('warning-fill-quiet') });
+// @ts-expect-error Raw color strings do not bypass the typed color contract.
+UI.LoadingSpinner({ color: 'red' });
 UI.LucideIcon({ icon: [], name: 'empty', slot: 'named' });
 NavStack({
   id: 'stack',

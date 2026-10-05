@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 322700,
+  "totalJavaScriptGzip": 322800,
   "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 322655,
+  "measuredTotalJavaScriptGzip": 322729,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2675,6 +2675,22 @@
         "measuredTotalJavaScriptGzip": 322655,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 322700
+      }
+    },
+    {
+      "at": "2026-10-05T03:17:15.385Z",
+      "reason": "Add typed spinner foreground colors and catalog examples",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322655,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 322700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322729,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 322800
       }
     }
   ]

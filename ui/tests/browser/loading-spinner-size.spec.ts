@@ -68,3 +68,26 @@ test('LoadingSpinner sizes match the icon scale at wide and narrow widths', asyn
       path: 'test-results/loading-spinner-page-narrow.png',
     });
 });
+
+test('LoadingSpinner colors inherit or paint the SVG inline', async ({
+  page,
+}) => {
+  await page.goto('/?component=loading-spinner');
+  const spinners = page.locator('[data-demo-spinner-colors] svg');
+  await expect(spinners).toHaveCount(3);
+  await expect(spinners.nth(0)).not.toHaveAttribute('style', /color:/);
+  await expect(spinners.nth(1)).toHaveAttribute(
+    'style',
+    /color:var\(--kui-color-warning-on-quiet\)/,
+  );
+  await expect(spinners.nth(2)).toHaveCSS('color', 'rgb(102, 51, 153)');
+  expect(
+    await spinners
+      .nth(0)
+      .evaluate(
+        (spinner) =>
+          window.getComputedStyle(spinner).color ===
+          window.getComputedStyle(spinner.parentElement!).color,
+      ),
+  ).toBe(true);
+});

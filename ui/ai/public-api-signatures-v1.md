@@ -2874,13 +2874,15 @@ export { EmptyState, type EmptyStateProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { CssForegroundColor } from './css-values.js';
 import { LucideIconSize } from './lucide-icon.js';
 import 'lucide';
-import './css-values.js';
 
 type LoadingSpinnerSize = LucideIconSize;
 interface LoadingSpinnerProps {
     className?: string;
+    /** Foreground color; omit to inherit the surrounding text color. */
+    color?: CssForegroundColor;
     label?: string;
     /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
     size?: LoadingSpinnerSize;
@@ -2888,7 +2890,7 @@ interface LoadingSpinnerProps {
     slot?: string;
 }
 /** Stable viewBox-centered progress ring based on svg-spinners' MIT-licensed 180-ring. */
-declare function LoadingSpinner({ className, label, size, slot, }: LoadingSpinnerProps): kerfjs.SafeHtml;
+declare function LoadingSpinner({ className, color, label, size, slot, }: LoadingSpinnerProps): kerfjs.SafeHtml;
 
 export { LoadingSpinner, type LoadingSpinnerProps, type LoadingSpinnerSize };
 ```

@@ -2011,6 +2011,15 @@ describe('production UI primitives', () => {
     expect(asHtml(LoadingSpinner({ size: 16.8 }))).toContain(
       '--_kui-loading-spinner-size:1.05rem',
     );
+    expect(asHtml(LoadingSpinner({}))).not.toContain('style=');
+    expect(
+      asHtml(LoadingSpinner({ color: uiColor('warning-on-quiet') })),
+    ).toContain('style="color:var(--kui-color-warning-on-quiet)"');
+    expect(
+      asHtml(LoadingSpinner({ size: 's', color: uiColor('text-quiet') })),
+    ).toContain(
+      'style="--_kui-loading-spinner-size:1rem;color:var(--kui-color-text-quiet)"',
+    );
     expect(() => LoadingSpinner({ size: 0 })).toThrow(RangeError);
     expect(() => LoadingSpinner({ size: Number.POSITIVE_INFINITY })).toThrow(
       RangeError,

@@ -339,6 +339,7 @@ default. The analyzer resolves cataloged application components imported
 through direct relative paths or TypeScript `paths` aliases for `KUI-L022`.
 `LoadingSpinner` also accepts LucideIcon's named size steps or a positive
 numeric pixel size while retaining 1em when omitted.
+Its optional typed foreground color paints the SVG inline and otherwise inherits text color.
 `LucideIcon.inline` opts its normally block-level SVG into inline-block text flow while retaining its 1em default and accessibility behavior.
 The optional `@kerfjs/ui/document.css` baseline gives native table cells and form controls inherited font family, size, and line height while retaining table-header emphasis; it stays out of component imports and the aggregate stylesheet.
 The catalog resource footer uses whole-action wrapping to keep source and

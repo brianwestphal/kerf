@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { Row } from '@kerfjs/ui/row';
 
@@ -31,6 +32,17 @@ export function LoadingSpinnerDemo() {
           <LoadingSpinner size="l" />
           <LoadingSpinner size="xl" />
           <LoadingSpinner size={30} />
+        </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Spinner colors"
+        note="Use a semantic foreground token or an application color. Omit color to inherit surrounding text."
+        align="glyph"
+      >
+        <Row gap="m" rootAttributes={{ 'data-demo-spinner-colors': '' }}>
+          <LoadingSpinner size="s" />
+          <LoadingSpinner size="s" color={uiColor('warning-on-quiet')} />
+          <LoadingSpinner size="s" color={foregroundColor('rebeccapurple')} />
         </Row>
       </CatalogExample>
     </CatalogExampleStack>
