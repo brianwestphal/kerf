@@ -36,6 +36,7 @@ import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
+import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
 import {
   batch,
@@ -510,6 +511,12 @@ if (findCatalogEntry(initialDemo)?.source === 'webawesome')
   revealCatalogEntry(app, initialDemo, { block: 'center' });
 
 const stopActions = delegateActions(app, 'click', {
+  'width-refresh': () => {
+    actionLog.value = 'Workspace refreshed';
+  },
+  'width-filter': () => {
+    actionLog.value = 'Workspace filter requested';
+  },
   'toggle-disclosure': () => {
     disclosureOpen.value = !disclosureOpen.value;
     actionLog.value = disclosureOpen.value
@@ -1408,6 +1415,7 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
     },
   },
 });
+const stopToolbarWidthVisibility = wireToolbarVisibility(app);
 // The opt-in chip keyboard + onEdit are demonstrated ONLY on the adoption-knobs
 // field, so wire a second helper scoped to that field's container (the app-wide
 // helper above stays keyboard-free, leaving the other token-search demos on their
@@ -1648,6 +1656,7 @@ window.addEventListener(
     stopTokenSearch();
     stopToolbarFind();
     stopTokenSearchSubmits();
+    stopToolbarWidthVisibility();
     stopAdoptionKeyboard?.();
     stopAdoptionKeyboardEffect();
     stopFloatingToolbarReset();

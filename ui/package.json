@@ -215,6 +215,10 @@
       "types": "./dist/wire-scroll-dividers.d.ts",
       "import": "./dist/wire-scroll-dividers.js"
     },
+    "./wire-toolbar-visibility": {
+      "types": "./dist/wire-toolbar-visibility.d.ts",
+      "import": "./dist/wire-toolbar-visibility.js"
+    },
     "./nav-stack": {
       "types": "./dist/nav-stack.d.ts",
       "browser": "./dist/browser/nav-stack.js",

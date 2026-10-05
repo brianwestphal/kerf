@@ -17,6 +17,7 @@ Provide complete toolbar action geometry through configuration, including semant
 - In a Workbench or CollapsiblePanel toolbar, mark a group relocateOnCollapse to keep it available in the work-area toolbar when the panel closes; place it directly or in an array in any toolbar zone.
 - Use tileTone for a contained single group containing only a direct decorative SVG icon; interactive or mixed groups retain their existing control chrome.
 - Set expandedOverflow=visible on an expanded search to anchor application suggestions, date pickers, or help below the group without overriding its geometry.
+- Use typed hideBelow/showBelow lengths with wireToolbarVisibility(root) for per-item toolbar priority; keep primary actions available and provide a showBelow overflow alternative.
 
 **Not when:**
 
@@ -32,11 +33,12 @@ Provide complete toolbar action geometry through configuration, including semant
 
 - JavaScript: `@kerfjs/ui/toolbar-control-group` — exports `ToolbarActionLink`, `ToolbarControlGroup`.
 - CSS: the browser build of `@kerfjs/ui/toolbar-control-group` pulls its CSS automatically; import `@kerfjs/ui/toolbar-control-group.css` manually only without the `browser` export condition.
+- Wiring: `wireToolbarVisibility` from `@kerfjs/ui/wire-toolbar-visibility` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-signatures-v1.md#kerfjsuitoolbar-control-group) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-signatures-v1.md#kerfjsuitoolbar-control-group), [`@kerfjs/ui/wire-toolbar-visibility`](../public-api-signatures-v1.md#kerfjsuiwire-toolbar-visibility) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -58,6 +60,12 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-s
 - contained avatar background on a single group or selected multi-button highlight
 - neutral, brand, success, warning, or danger quiet icon tile tone
 - clip or visible app-owned overflow while a search is expanded
+- typed hideBelow/showBelow thresholds at the nearest Toolbar content width
+
+**CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
+
+- `hideBelow`: length grammar; raw values: forbid; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `hideBelow={px(416)}`
+- `showBelow`: length grammar; raw values: forbid; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `showBelow={px(416)}`
 
 ## Composition
 
@@ -74,7 +82,12 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 **The app owns:** actions; link destination and copy; pressed state; expanded state; avatar image URL.
 
-No wiring helper.
+**Wiring:** `wireToolbarVisibility` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-toolbar-width-hidden` on `ToolbarText, ToolbarControlGroup and its paired busy status` (`wireToolbarVisibility`): True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers.
+- `data-toolbar-visibility-probe` on `private aria-hidden measurement boxes under Toolbar` (`wireToolbarVisibility`): Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility.
 
 ## Geometry
 

@@ -217,6 +217,7 @@ export { Sides, Toolbar, type ToolbarConfig, type ToolbarPosition, type ToolbarP
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { CssLength } from './css-values.js';
 
 type ToolbarTextSize = 'xlarge' | 'xlarge-fixed' | 'large' | 'default' | 'small' | 'xsmall';
 type ToolbarTextTone = 'default' | 'dark';
@@ -227,6 +228,10 @@ interface ToolbarTextBaseProps {
     size?: ToolbarTextSize;
     /** Use dark-toolbar foregrounds on a dark or photo-backed toolbar. */
     tone?: ToolbarTextTone;
+    /** Hide below this Toolbar content width; requires wireToolbarVisibility. */
+    hideBelow?: CssLength;
+    /** Show only below this Toolbar content width; requires wireToolbarVisibility. */
+    showBelow?: CssLength;
     className?: string;
     /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
     id?: string;
@@ -267,7 +272,7 @@ type ToolbarTextProps = ToolbarTextBaseProps & (({
     wrap?: never;
     maxLines?: never;
 });
-declare function ToolbarText({ text, size, tone, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, tone, hideBelow, showBelow, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize, type ToolbarTextTone };
 ```
@@ -277,6 +282,7 @@ export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarText
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
 
 type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 type ToolbarControlGroupTone = 'default' | 'dark';
@@ -342,6 +348,10 @@ interface ToolbarControlGroupProps {
     expandedOverflow?: ToolbarControlGroupExpandedOverflow;
     /** Responsive visibility owned by the enclosing Toolbar container. */
     visibility?: ToolbarControlGroupVisibility;
+    /** Hide below this Toolbar content width; requires wireToolbarVisibility. */
+    hideBelow?: CssLength;
+    /** Show only below this Toolbar content width; requires wireToolbarVisibility. */
+    showBelow?: CssLength;
     /** Intrinsic (default), grow from a basis, or occupy a full wrapping row. */
     sizing?: ToolbarControlGroupSizing;
     /** Place this group at the end of its flex row in a wrapping Toolbar zone. */
@@ -364,7 +374,7 @@ interface ToolbarControlGroupProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, tileTone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, expandedOverflow, visibility, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, tileTone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, expandedOverflow, visibility, hideBelow, showBelow, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
 export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupExpandedOverflow, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupPlacement, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTileTone, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
@@ -535,6 +545,7 @@ export { PopupMenu, type PopupMenuDivider, type PopupMenuElement, type PopupMenu
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { HeadingLevel } from './toolbar-text.js';
+import './css-values.js';
 
 type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -1280,6 +1291,7 @@ import { ToolbarConfig } from './toolbar.js';
 import { ToolbarTextSize, HeadingLevel } from './toolbar-text.js';
 import { PaneAppearance } from './pane.js';
 import './sides-BPSWde0A.js';
+import './css-values.js';
 
 /**
  * One entry in a {@link NavStack}. The app owns the stack as an array (usually a
@@ -3320,6 +3332,24 @@ interface LucideIconProps {
 declare function LucideIcon({ icon, name, appearance, className, color, inline, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
 
 export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
+```
+
+## `@kerfjs/ui/wire-toolbar-visibility`
+
+```ts
+type Root = HTMLElement | Document;
+/**
+ * Wire ToolbarText and ToolbarControlGroup width thresholds below root.
+ * Below is strict: hideBelow hides at width < threshold; showBelow hides at
+ * width >= threshold. Percentages use the closest Toolbar's content box;
+ * em and custom properties use the item's own inherited context. Invalid,
+ * negative, unresolved, or contradictory thresholds leave the item visible.
+ * This helper changes only a component-owned visibility marker. Existing
+ * CSS visibility policies still apply. Dispose with the owning application.
+ */
+declare function wireToolbarVisibility(root: Root): () => void;
+
+export { wireToolbarVisibility };
 ```
 
 ## `@kerfjs/ui/surface-scaffold`

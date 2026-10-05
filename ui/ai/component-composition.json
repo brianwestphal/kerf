@@ -1472,7 +1472,7 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": ["wireScrollDividers"],
+        "helpers": ["wireScrollDividers", "wireToolbarVisibility"],
         "obligations": [],
         "stateAttributes": [
           {
@@ -1486,6 +1486,18 @@
             "on": "a Toolbar named as targets chrome",
             "helper": "wireScrollDividers",
             "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-toolbar-width-hidden",
+            "on": "ToolbarText, ToolbarControlGroup and its paired busy status",
+            "helper": "wireToolbarVisibility",
+            "meaning": "True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers."
+          },
+          {
+            "name": "data-toolbar-visibility-probe",
+            "on": "private aria-hidden measurement boxes under Toolbar",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
           }
         ]
       },
@@ -1582,9 +1594,22 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireToolbarVisibility"],
         "obligations": [],
-        "stateAttributes": []
+        "stateAttributes": [
+          {
+            "name": "data-toolbar-width-hidden",
+            "on": "ToolbarText, ToolbarControlGroup and its paired busy status",
+            "helper": "wireToolbarVisibility",
+            "meaning": "True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers."
+          },
+          {
+            "name": "data-toolbar-visibility-probe",
+            "on": "private aria-hidden measurement boxes under Toolbar",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -1597,7 +1622,30 @@
           "Name an icon-only button or link with aria-label, not title. Once any help-tag installer is imported (select/register, popup-menu/register, or help-tags/register), it shows an aria-hidden Web Awesome help tag repeating that name after a 500ms hover and at once on keyboard focus, hidden on a press and on Escape, and never joins aria-labelledby. A native title keeps the browser tooltip and gets no second tag."
         ]
       },
-      "cssValueProps": [],
+      "cssValueProps": [
+        {
+          "path": "hideBelow",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["hideBelow={px(416)}"]
+        },
+        {
+          "path": "showBelow",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["showBelow={px(416)}"]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-toolbar-control-group",
         "publicClasses": [
@@ -1800,9 +1848,22 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireToolbarVisibility"],
         "obligations": [],
-        "stateAttributes": []
+        "stateAttributes": [
+          {
+            "name": "data-toolbar-width-hidden",
+            "on": "ToolbarText, ToolbarControlGroup and its paired busy status",
+            "helper": "wireToolbarVisibility",
+            "meaning": "True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers."
+          },
+          {
+            "name": "data-toolbar-visibility-probe",
+            "on": "private aria-hidden measurement boxes under Toolbar",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -1815,7 +1876,30 @@
           "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap."
         ]
       },
-      "cssValueProps": [],
+      "cssValueProps": [
+        {
+          "path": "hideBelow",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["hideBelow={px(416)}"]
+        },
+        {
+          "path": "showBelow",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["showBelow={px(416)}"]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-toolbar-text",
         "publicClasses": ["kui-toolbar-text"],

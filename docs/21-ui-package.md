@@ -656,3 +656,14 @@ package into a tarball (`npm pack --ignore-scripts`), and transfers only that
 tarball as an artifact. The token-holding job checks out no repository code,
 runs no dependency install or build, and publishes the downloaded tarball with
 `npm publish --ignore-scripts`. Beta versions are applied ephemerally.
+
+`ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`
+lengths (for example `px(416)`). Wire `wireToolbarVisibility(root)` from
+`@kerfjs/ui/wire-toolbar-visibility` and dispose on unmount. Thresholds use the
+nearest Toolbar content-box width: hideBelow hides strictly below, showBelow
+shows strictly below, with complementary behavior at equality. Percentages use
+that content width; em and custom properties use the item's own context. Invalid,
+negative, unresolved, or contradictory values leave the item visible under this
+width policy. Keep primary actions visible and offer a complementary overflow
+group. See `docs/component-contract.md` "Toolbar width visibility" for lifecycle
+details.

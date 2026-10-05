@@ -390,3 +390,35 @@
     display: none;
   }
 }
+.kui-toolbar > [data-toolbar-visibility-probe] {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+  contain: layout paint;
+}
+
+.kui-toolbar > [data-toolbar-visibility-probe] > div {
+  position: absolute;
+  top: 0;
+  height: 0;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+/* A typed sentinel distinguishes invalid/unresolved input from a valid zero. */
+@property --kui-toolbar-visibility-length {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: -1px;
+}
+.kui-toolbar > [data-toolbar-visibility-probe] > div {
+  left: var(--kui-toolbar-visibility-length);
+  width: var(--kui-toolbar-visibility-length);
+}

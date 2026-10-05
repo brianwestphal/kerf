@@ -35,6 +35,7 @@ const entries = [
   'tab-bar',
   'wire-tab-bars',
   'wire-scroll-dividers',
+  'wire-toolbar-visibility',
   'nav-stack',
   'wire-nav-stack',
   'wire-content-items',

@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.54.0
+kerf-ui-skill-version: 1.55.0
 ---
 
 # Building with @kerfjs/ui
@@ -362,3 +362,14 @@ titles at every size; default tone retains existing identity and heading colors.
 Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.
 
 Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-token-search-keep-open` or `collapsible.keepOpenOn` for focus.
+
+`ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`
+lengths (for example `px(416)`). Wire `wireToolbarVisibility(root)` from
+`@kerfjs/ui/wire-toolbar-visibility` and dispose on unmount. Thresholds use the
+nearest Toolbar content-box width: hideBelow hides strictly below, showBelow
+shows strictly below, with complementary behavior at equality. Percentages use
+that content width; em and custom properties use the item's own context. Invalid,
+negative, unresolved, or contradictory values leave the item visible under this
+width policy. Keep primary actions visible and offer a complementary overflow
+group. See `docs/component-contract.md` "Toolbar width visibility" for lifecycle
+details.

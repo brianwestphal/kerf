@@ -1528,14 +1528,17 @@
       "uses": [
         "toolbar-text",
         "toolbar-control-group",
-        "wa-button"
+        "wa-button",
+        "popup-menu"
       ],
       "purpose": "Leading, centered, and trailing toolbar composition.",
       "publicExports": [
-        "Toolbar"
+        "Toolbar",
+        "wireToolbarVisibility"
       ],
       "useWhen": [
-        "Compose application chrome or a page, panel, or dialog heading with leading, center, and trailing regions."
+        "Compose application chrome or a page, panel, or dialog heading with leading, center, and trailing regions.",
+        "Use typed hideBelow/showBelow lengths with wireToolbarVisibility(root) for per-item toolbar priority; keep primary actions available and provide a showBelow overflow alternative."
       ],
       "avoidWhen": [
         "Do not use it as a generic wrapper when no toolbar or heading relationship exists."
@@ -1558,7 +1561,8 @@
         "trailing priority for an expanded trailing control at compact or narrow widths",
         "trailing groups and a standalone primary wa-button wrap instead of clipping",
         "outer inset independently configurable from zone gap",
-        "app bar or bottom bar claiming its screen edges (safeAreaEdges)"
+        "app bar or bottom bar claiming its screen edges (safeAreaEdges)",
+        "typed hideBelow/showBelow thresholds at the nearest Toolbar content width"
       ],
       "accessibility": [
         "Supply a label when the toolbar needs an accessible name."
@@ -1596,6 +1600,23 @@
               "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
             }
           ]
+        },
+        {
+          "export": "wireToolbarVisibility",
+          "import": "@kerfjs/ui/wire-toolbar-visibility",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-toolbar-width-hidden",
+              "on": "ToolbarText, ToolbarControlGroup and its paired busy status",
+              "meaning": "True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers."
+            },
+            {
+              "name": "data-toolbar-visibility-probe",
+              "on": "private aria-hidden measurement boxes under Toolbar",
+              "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
+            }
+          ]
         }
       ],
       "publicClasses": [
@@ -1622,6 +1643,9 @@
         "catalogRoute": "?component=toolbar",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#ambiguous-choices"
+      },
+      "publicExportImports": {
+        "wireToolbarVisibility": "@kerfjs/ui/wire-toolbar-visibility"
       }
     },
     {
@@ -1647,7 +1671,8 @@
         "For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight.",
         "In a Workbench or CollapsiblePanel toolbar, mark a group relocateOnCollapse to keep it available in the work-area toolbar when the panel closes; place it directly or in an array in any toolbar zone.",
         "Use tileTone for a contained single group containing only a direct decorative SVG icon; interactive or mixed groups retain their existing control chrome.",
-        "Set expandedOverflow=visible on an expanded search to anchor application suggestions, date pickers, or help below the group without overriding its geometry."
+        "Set expandedOverflow=visible on an expanded search to anchor application suggestions, date pickers, or help below the group without overriding its geometry.",
+        "Use typed hideBelow/showBelow lengths with wireToolbarVisibility(root) for per-item toolbar priority; keep primary actions available and provide a showBelow overflow alternative."
       ],
       "avoidWhen": [
         "Do not use merely to align unrelated buttons or to imitate an exclusive choice.",
@@ -1688,7 +1713,8 @@
         "avatar scrim",
         "contained avatar background on a single group or selected multi-button highlight",
         "neutral, brand, success, warning, or danger quiet icon tile tone",
-        "clip or visible app-owned overflow while a search is expanded"
+        "clip or visible app-owned overflow while a search is expanded",
+        "typed hideBelow/showBelow thresholds at the nearest Toolbar content width"
       ],
       "accessibility": [
         "Name the group when its relationship is not evident from context.",
@@ -1706,7 +1732,25 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireToolbarVisibility",
+          "import": "@kerfjs/ui/wire-toolbar-visibility",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-toolbar-width-hidden",
+              "on": "ToolbarText, ToolbarControlGroup and its paired busy status",
+              "meaning": "True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers."
+            },
+            {
+              "name": "data-toolbar-visibility-probe",
+              "on": "private aria-hidden measurement boxes under Toolbar",
+              "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
+            }
+          ]
+        }
+      ],
       "publicClasses": [
         "kui-toolbar-action-link",
         "kui-toolbar-control-group"
@@ -1755,7 +1799,55 @@
         "catalogRoute": "?component=toolbar-control-group",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
-      }
+      },
+      "cssValueProps": [
+        {
+          "path": "hideBelow",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "hideBelow={px(416)}"
+          ]
+        },
+        {
+          "path": "showBelow",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "showBelow={px(416)}"
+          ]
+        }
+      ]
     },
     {
       "id": "surface-scaffold",
@@ -1941,7 +2033,8 @@
       "useWhen": [
         "Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics.",
         "Use action for an editable toolbar title: it renders a native button that shrinks and ellipsizes beside sibling status chips.",
-        "Use tone=dark for title or filename text on a loud toolbar surface, matching dark ToolbarControlGroups."
+        "Use tone=dark for title or filename text on a loud toolbar surface, matching dark ToolbarControlGroups.",
+        "Use typed hideBelow/showBelow lengths with wireToolbarVisibility(root) for per-item toolbar priority; keep primary actions available and provide a showBelow overflow alternative."
       ],
       "avoidWhen": [
         "Do not omit headingLevel when the text is the page or section heading.",
@@ -1972,7 +2065,8 @@
         "small",
         "xsmall",
         "placeholder (loading)",
-        "dark (loud-surface foreground)"
+        "dark (loud-surface foreground)",
+        "typed hideBelow/showBelow thresholds at the nearest Toolbar content width"
       ],
       "accessibility": [
         "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
@@ -1990,7 +2084,25 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireToolbarVisibility",
+          "import": "@kerfjs/ui/wire-toolbar-visibility",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-toolbar-width-hidden",
+              "on": "ToolbarText, ToolbarControlGroup and its paired busy status",
+              "meaning": "True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers."
+            },
+            {
+              "name": "data-toolbar-visibility-probe",
+              "on": "private aria-hidden measurement boxes under Toolbar",
+              "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
+            }
+          ]
+        }
+      ],
       "publicClasses": [
         "kui-toolbar-text"
       ],
@@ -2009,7 +2121,55 @@
         "catalogRoute": "?component=toolbar-text",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
-      }
+      },
+      "cssValueProps": [
+        {
+          "path": "hideBelow",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "hideBelow={px(416)}"
+          ]
+        },
+        {
+          "path": "showBelow",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "showBelow={px(416)}"
+          ]
+        }
+      ]
     },
     {
       "id": "text",

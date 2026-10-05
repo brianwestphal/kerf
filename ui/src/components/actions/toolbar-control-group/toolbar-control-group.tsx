@@ -1,5 +1,6 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { markRelocatableGroup } from '../../../shared/panels/panel-toolbar-group.js';
+import type { CssLength } from '../../../shared/styles/css-values.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
 
 export type ToolbarControlGroupAppearance = 'contained' | 'borderless';
@@ -103,6 +104,10 @@ export interface ToolbarControlGroupProps {
   expandedOverflow?: ToolbarControlGroupExpandedOverflow;
   /** Responsive visibility owned by the enclosing Toolbar container. */
   visibility?: ToolbarControlGroupVisibility;
+  /** Hide below this Toolbar content width; requires wireToolbarVisibility. */
+  hideBelow?: CssLength;
+  /** Show only below this Toolbar content width; requires wireToolbarVisibility. */
+  showBelow?: CssLength;
   /** Intrinsic (default), grow from a basis, or occupy a full wrapping row. */
   sizing?: ToolbarControlGroupSizing;
   /** Place this group at the end of its flex row in a wrapping Toolbar zone. */
@@ -148,6 +153,8 @@ export function ToolbarControlGroup({
   overflow = 'visible',
   expandedOverflow = 'clip',
   visibility = 'always',
+  hideBelow,
+  showBelow,
   sizing = 'content',
   placement = 'start',
   growBasis,
@@ -190,6 +197,8 @@ export function ToolbarControlGroup({
         expandedOverflow === 'visible' ? 'visible' : undefined
       }
       data-visibility={visibility}
+      data-hide-below={hideBelow}
+      data-show-below={showBelow}
       data-sizing={sizing}
       data-placement={placement}
       data-scrim={String(scrim)}

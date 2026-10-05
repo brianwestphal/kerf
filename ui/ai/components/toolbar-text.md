@@ -11,6 +11,7 @@ Extra-large through extra-small toolbar identity text.
 - Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics.
 - Use action for an editable toolbar title: it renders a native button that shrinks and ellipsizes beside sibling status chips.
 - Use tone=dark for title or filename text on a loud toolbar surface, matching dark ToolbarControlGroups.
+- Use typed hideBelow/showBelow lengths with wireToolbarVisibility(root) for per-item toolbar priority; keep primary actions available and provide a showBelow overflow alternative.
 
 **Not when:**
 
@@ -26,11 +27,12 @@ Extra-large through extra-small toolbar identity text.
 
 - JavaScript: `@kerfjs/ui/toolbar-text` — exports `ToolbarText`.
 - CSS: the browser build of `@kerfjs/ui/toolbar-text` pulls its CSS automatically; import `@kerfjs/ui/toolbar-text.css` manually only without the `browser` export condition.
+- Wiring: `wireToolbarVisibility` from `@kerfjs/ui/wire-toolbar-visibility` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures-v1.md#kerfjsuitoolbar-text) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures-v1.md#kerfjsuitoolbar-text), [`@kerfjs/ui/wire-toolbar-visibility`](../public-api-signatures-v1.md#kerfjsuiwire-toolbar-visibility) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -42,6 +44,12 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures
 - xsmall
 - placeholder (loading)
 - dark (loud-surface foreground)
+- typed hideBelow/showBelow thresholds at the nearest Toolbar content width
+
+**CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
+
+- `hideBelow`: length grammar; raw values: forbid; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `hideBelow={px(416)}`
+- `showBelow`: length grammar; raw values: forbid; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `showBelow={px(416)}`
 
 ## Composition
 
@@ -53,7 +61,12 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures
 
 **The app owns:** text; responsive priority; the delegated action handler and display-to-input editing swap.
 
-No wiring helper.
+**Wiring:** `wireToolbarVisibility` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-toolbar-width-hidden` on `ToolbarText, ToolbarControlGroup and its paired busy status` (`wireToolbarVisibility`): True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers.
+- `data-toolbar-visibility-probe` on `private aria-hidden measurement boxes under Toolbar` (`wireToolbarVisibility`): Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility.
 
 ## Geometry
 

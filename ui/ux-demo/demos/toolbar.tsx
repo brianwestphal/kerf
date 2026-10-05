@@ -1,6 +1,8 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { px } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -25,6 +27,66 @@ export function ToolbarDemo() {
     toolbarFindOpen.value || toolbarFindQuery.value.length > 0;
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'toolbar' }}>
+      <CatalogExample
+        label="Container width visibility"
+        note="Secondary controls yield to the overflow action as this toolbar narrows. Resize the specimen to see the identity and utility actions return."
+        viewport={{ width: 'wide', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-toolbar-width-visibility': '' }}
+      >
+        <Toolbar
+          label="Workspace width visibility"
+          leading={<ToolbarText text="Workspace" hideBelow={px(176)} />}
+          trailing={
+            <>
+              <ToolbarControlGroup label="Refresh workspace" single>
+                <button
+                  type="button"
+                  aria-label="Refresh workspace"
+                  data-action="width-refresh"
+                >
+                  <LucideIcon icon={RefreshCw} name="refresh-cw" />
+                </button>
+              </ToolbarControlGroup>
+              <ToolbarControlGroup
+                label="Workspace utilities"
+                hideBelow={px(416)}
+              >
+                <button
+                  type="button"
+                  aria-label="Filter workspace"
+                  data-action="width-filter"
+                >
+                  <LucideIcon icon={Filter} name="filter" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Workspace settings"
+                  data-action="log-settings"
+                >
+                  <LucideIcon icon={Settings} name="settings" />
+                </button>
+              </ToolbarControlGroup>
+              <ToolbarControlGroup
+                label="More workspace actions"
+                single
+                nestedDropdown
+                showBelow={px(416)}
+              >
+                <PopupMenu
+                  label="More workspace actions"
+                  icon={
+                    <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+                  }
+                  items={[
+                    { label: 'Filter workspace', action: 'width-filter' },
+                    { label: 'Workspace settings', action: 'log-settings' },
+                  ]}
+                />
+              </ToolbarControlGroup>
+            </>
+          }
+        />
+      </CatalogExample>
       <CatalogExample
         label="Focus rings across toolbar zones"
         note="Keyboard focus stays visible on leading, center, and trailing controls, including beside a shrinking title."

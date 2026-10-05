@@ -136,3 +136,5 @@ ListItem templates retain the shared 18px leading icon and 44px row target;
 regenerate both themes and library sheets when that geometry changes. The browser
 pane/sidebar geometry checks cover the resulting 43px icon-label offset from the
 section edge (17px content inset + 18px icon + 8px gap).
+
+For a focused update, pass component names: `npm run design-templates:build -- toolbar`. Omit them to capture all components. Toolbar width variants use the real `wireToolbarVisibility` helper after rendering typed props.

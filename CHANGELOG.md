@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Add typed toolbar item `hideBelow`/`showBelow` lengths and `wireToolbarVisibility`, including complementary container-width overflow and dynamic font/token updates (`KF-MXE9YV`).
+
 - Expanded grouped search supports `expandedOverflow="visible"` for application-owned surfaces below its positioning anchor.
 
 - `@kerfjs/ui` ToolbarControlGroup adds `tileTone` quiet semantic palettes for non-interactive heading icon tiles.

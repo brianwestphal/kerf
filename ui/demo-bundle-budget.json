@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 324200,
-  "measuredLargestJavaScriptGzip": 124534,
-  "measuredTotalJavaScriptGzip": 324104,
+  "totalJavaScriptGzip": 326100,
+  "measuredLargestJavaScriptGzip": 124532,
+  "measuredTotalJavaScriptGzip": 326023,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2851,6 +2851,22 @@
         "measuredTotalJavaScriptGzip": 324104,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 324200
+      }
+    },
+    {
+      "at": "2026-10-05T11:25:23.751Z",
+      "reason": "KF-MXE9YV: public toolbar width resolver and functional responsive overflow specimen intentionally add runtime wiring and demo controls",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124534,
+        "measuredTotalJavaScriptGzip": 324104,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 324200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124532,
+        "measuredTotalJavaScriptGzip": 326023,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 326100
       }
     }
   ]

@@ -1,4 +1,4 @@
-import { em } from '../../../shared/styles/css-values.js';
+import { type CssLength, em } from '../../../shared/styles/css-values.js';
 import { Skeleton } from '../../feedback/skeleton/skeleton.js';
 
 export type ToolbarTextSize =
@@ -14,6 +14,10 @@ interface ToolbarTextBaseProps {
   size?: ToolbarTextSize;
   /** Use dark-toolbar foregrounds on a dark or photo-backed toolbar. */
   tone?: ToolbarTextTone;
+  /** Hide below this Toolbar content width; requires wireToolbarVisibility. */
+  hideBelow?: CssLength;
+  /** Show only below this Toolbar content width; requires wireToolbarVisibility. */
+  showBelow?: CssLength;
   className?: string;
   /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
   id?: string;
@@ -68,6 +72,8 @@ export function ToolbarText({
   text,
   size = 'default',
   tone = 'default',
+  hideBelow,
+  showBelow,
   className = '',
   id,
   headingLevel,
@@ -87,6 +93,8 @@ export function ToolbarText({
         class={`kui-toolbar-text ${className}`.trim()}
         data-component="toolbar-text"
         data-size={size}
+        data-hide-below={hideBelow}
+        data-show-below={showBelow}
         data-tone={tone === 'default' ? undefined : tone}
         data-fill={fill ? 'true' : undefined}
         data-ellipsis={ellipsis ? undefined : 'false'}
@@ -102,6 +110,8 @@ export function ToolbarText({
       class={`kui-toolbar-text ${className}`.trim()}
       data-component="toolbar-text"
       data-size={size}
+      data-hide-below={hideBelow}
+      data-show-below={showBelow}
       data-tone={tone === 'default' ? undefined : tone}
       data-fill={fill ? 'true' : undefined}
       data-wrap={wrap ? 'true' : undefined}

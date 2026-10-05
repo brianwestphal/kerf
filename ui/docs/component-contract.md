@@ -866,3 +866,28 @@ Keep product adapters outside the package: connection-state maps, ticket empty-s
 ## Testing contract
 
 Each behavior has focused unit coverage and a real-browser flow through the production-backed catalog. Consumer bundle tests enforce subpath CSS reachability, transitive component styles, root/SSR isolation, optional registration boundaries, and the CSS-only Web Awesome theme boundary. `npm run check:css-ownership` rejects application selectors into Kerf or Web Awesome components, a non-minimal catalog compatibility stylesheet, or a return of the shared recipe stylesheet. Visual evidence supplements—never replaces—keyboard, focus, state, and event assertions.
+
+### Toolbar width visibility
+
+`ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow` and
+`showBelow` CSS lengths. Call `wireToolbarVisibility(root)` from
+`@kerfjs/ui/wire-toolbar-visibility` after mounting, and call its disposer when
+the application unmounts. The nearest Toolbar's **content-box width**, excluding
+padding, borders, and safe-area insets, determines visibility. `hideBelow={px(416)}`
+hides strictly below 416px; `showBelow={px(416)}` shows strictly below 416px. At
+416px the first is visible and the second hidden. Together they define the visible
+interval `[hideBelow, showBelow)`. Width rules intersect existing visibility and
+expanded-state rules; they never force a CSS-hidden group visible.
+
+Use `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, or `calc`/`plus` to construct
+lengths. Percentages resolve against that content box, `em` uses the child item's
+font size, and custom properties use its inherited and own token context. The
+helper follows resizes, theme/token/font changes, inserted items, nested toolbars,
+and relocated groups. Invalid, unresolved, negative, or contradictory thresholds
+leave the item visible under this width policy. Server-rendered content is visible
+until wiring runs; without browser observers, initial wiring and window resize
+still update it. Dispose to remove measurement probes and restore prior markers.
+
+Hidden controls leave layout and keyboard navigation. A hidden busy group also
+hides only its own adjacent busy status. Keep primary actions always available;
+show a complementary overflow group for secondary actions at narrow widths.

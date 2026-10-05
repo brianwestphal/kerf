@@ -824,3 +824,5 @@ Neutral lowered surfaces and decorative neutral fills/borders are translucent th
 
 `ToolbarText.tone="dark"` uses the loud-surface foreground at every size,
 including actionable titles, to match dark control groups.
+
+For per-item toolbar priorities, use typed `ToolbarText`/`ToolbarControlGroup` `hideBelow` and `showBelow` lengths and call `wireToolbarVisibility(root)` from `@kerfjs/ui/wire-toolbar-visibility`. The nearest toolbar content width determines strict below comparisons; retain a primary action and offer a complementary overflow group. Dispose the helper when unmounting. See `ui/docs/component-contract.md` "Toolbar width visibility".

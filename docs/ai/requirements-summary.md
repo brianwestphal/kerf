@@ -509,3 +509,5 @@ type: `neutral | info | pop | success | warning | danger`. Badge and Chip use
 `info` in place of the former `brand` tone.
 
 UI neutral decorative colors composite naturally through nested surfaces in both schemes, while opaque canvas and contrast anchors remain explicit.
+
+Toolbar width visibility (`KF-MXE9YV`): ToolbarText and ToolbarControlGroup accept typed hideBelow/showBelow CSS lengths, wired by `wireToolbarVisibility`. The nearest Toolbar content box determines strict complementary boundaries; invalid lengths remain visible, token/font changes and relocated items remeasure, and hidden busy groups hide their own status.

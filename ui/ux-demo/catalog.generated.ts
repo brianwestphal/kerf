@@ -192,7 +192,8 @@ export const generatedKerfCatalog = [
     "uses": [
       "toolbar-text",
       "toolbar-control-group",
-      "wa-button"
+      "wa-button",
+      "popup-menu"
     ],
     "demoSource": "ui/ux-demo/demos/toolbar.tsx",
     "componentSource": "ui/src/components/actions/toolbar/toolbar.tsx",

@@ -243,6 +243,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `TabBar`                                                            | `@kerfjs/ui/tab-bar`                    | `@kerfjs/ui/tab-bar.css`               |
 | `wireTabBars`, `reorderTabs`                                        | `@kerfjs/ui/wire-tab-bars`              | —                                      |
 | `wireScrollDividers`                                                | `@kerfjs/ui/wire-scroll-dividers`       | —                                      |
+| `wireToolbarVisibility`                                             | `@kerfjs/ui/wire-toolbar-visibility`    | —                                      |
 | `LoadingSpinner`                                                    | `@kerfjs/ui/loading-spinner`            | `@kerfjs/ui/loading-spinner.css`       |
 | `Skeleton`                                                          | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`              |
 | `SunkenPanel`                                                       | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`          |
@@ -794,3 +795,14 @@ explicit. `npm run build` emits standard CSS to `dist/styles`; `npm run dev`
 applies the same transform directly to source styles and hot-reloads edits.
 
 Lowered surfaces and decorative neutral fills/borders use translucent shared theme colors. Nested surfaces compound naturally; demos compose public components without per-depth overrides. See [contextual transparency](docs/webawesome-theme.md#contextual-transparency).
+
+`ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`
+lengths (for example `px(416)`). Wire `wireToolbarVisibility(root)` from
+`@kerfjs/ui/wire-toolbar-visibility` and dispose on unmount. Thresholds use the
+nearest Toolbar content-box width: hideBelow hides strictly below, showBelow
+shows strictly below, with complementary behavior at equality. Percentages use
+that content width; em and custom properties use the item's own context. Invalid,
+negative, unresolved, or contradictory values leave the item visible under this
+width policy. Keep primary actions visible and offer a complementary overflow
+group. See `docs/component-contract.md` "Toolbar width visibility" for lifecycle
+details.

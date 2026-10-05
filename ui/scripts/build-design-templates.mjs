@@ -30,6 +30,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
+import { build } from 'esbuild';
 import { raw } from 'kerfjs';
 import {
   Bell,
@@ -731,6 +732,44 @@ export const COMPONENTS = {
             }),
           }),
       },
+      ...[600, 320].map((width) => ({
+        id: `width-visibility-${width}`,
+        label: `Width visibility (${width}px)`,
+        height: 64,
+        wireToolbarVisibility: true,
+        render: () =>
+          raw(
+            `<div style="width:${width}px">${html(
+              Toolbar({
+                label: 'Workspace',
+                leading: ToolbarText({ text: 'Workspace', hideBelow: px(176) }),
+                trailing: [
+                  ToolbarControlGroup({
+                    single: true,
+                    label: 'Refresh',
+                    children: raw(iconButton(Rocket, 'rocket', 'Refresh')),
+                  }),
+                  ToolbarControlGroup({
+                    hideBelow: px(416),
+                    label: 'Utilities',
+                    children: raw(
+                      iconButton(Filter, 'filter', 'Filter') +
+                        iconButton(Settings, 'settings', 'Settings'),
+                    ),
+                  }),
+                  ToolbarControlGroup({
+                    showBelow: px(416),
+                    single: true,
+                    label: 'More',
+                    children: raw(
+                      iconButton(Columns3, 'columns-3', 'More actions'),
+                    ),
+                  }),
+                ],
+              }),
+            )}</div>`,
+          ),
+      })),
     ],
   },
   'toolbar-text': {
@@ -922,7 +961,10 @@ async function buildComponent(domotion, name, spec) {
   for (const variant of spec.variants) {
     const themed = {};
     for (const theme of THEMES) {
-      const page = `<!doctype html><html><head><meta charset="utf-8"><style>${frameCss(theme)}${cssText}${captureCss}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div></body></html>`;
+      const wiring = variant.wireToolbarVisibility
+        ? `<script>${(await build({ stdin: { contents: "import { wireToolbarVisibility } from './ui/dist/wire-toolbar-visibility.js'; wireToolbarVisibility(document);", resolveDir: resolve(root, '..') }, bundle: true, format: 'iife', write: false })).outputFiles[0].text}</script>`
+        : '';
+      const page = `<!doctype html><html><head><meta charset="utf-8"><style>${frameCss(theme)}${cssText}${captureCss}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div>${wiring}</body></html>`;
       const pagePath = resolve(dir, `${variant.id}${theme.suffix}.html`);
       const svgPath = resolve(dir, `${variant.id}${theme.suffix}.svg`);
       await writeFile(pagePath, page);
@@ -1009,7 +1051,11 @@ if (
 ) {
   const domotion = await resolveDomotion();
   await mkdir(outRoot, { recursive: true });
+  const selected = process.argv.slice(2);
+  for (const name of selected)
+    if (!COMPONENTS[name]) throw new Error(`Unknown component: ${name}`);
   for (const [name, spec] of Object.entries(COMPONENTS)) {
+    if (selected.length && !selected.includes(name)) continue;
     console.log(`Building ${name} design template…`);
     await buildComponent(domotion, name, spec);
   }

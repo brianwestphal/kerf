@@ -835,3 +835,7 @@
   border-color: var(--kui-color-danger-border-quiet);
   color: var(--kui-color-danger-on-quiet);
 }
+.kui-toolbar-control-group[data-toolbar-width-hidden="true"],
+.kui-toolbar-control-group__busy-status[data-toolbar-width-hidden="true"] {
+  display: none;
+}

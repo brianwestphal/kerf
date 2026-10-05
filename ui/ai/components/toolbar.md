@@ -9,6 +9,7 @@
 Leading, centered, and trailing toolbar composition.
 
 - Compose application chrome or a page, panel, or dialog heading with leading, center, and trailing regions.
+- Use typed hideBelow/showBelow lengths with wireToolbarVisibility(root) for per-item toolbar priority; keep primary actions available and provide a showBelow overflow alternative.
 
 **Not when:**
 
@@ -17,13 +18,15 @@ Leading, centered, and trailing toolbar composition.
 ## Imports
 
 - JavaScript: `@kerfjs/ui/toolbar` — exports `Toolbar`.
+- JavaScript: `@kerfjs/ui/wire-toolbar-visibility` — exports `wireToolbarVisibility`.
 - CSS: the browser build of `@kerfjs/ui/toolbar` pulls its CSS automatically; import `@kerfjs/ui/toolbar.css` manually only without the `browser` export condition.
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
+- Wiring: `wireToolbarVisibility` from `@kerfjs/ui/wire-toolbar-visibility` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.md#kerfjsuitoolbar), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.md#kerfjsuitoolbar), [`@kerfjs/ui/wire-toolbar-visibility`](../public-api-signatures-v1.md#kerfjsuiwire-toolbar-visibility), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -38,13 +41,14 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - trailing groups and a standalone primary wa-button wrap instead of clipping
 - outer inset independently configurable from zone gap
 - app bar or bottom bar claiming its screen edges (safeAreaEdges)
+- typed hideBelow/showBelow thresholds at the nearest Toolbar content width
 
 ## Composition
 
 - Parents: any.
 - Contexts: `application-chrome`, `page-header`, `panel-header`, `dialog-header`.
 - Children: only [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
-- Built from: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
+- Built from: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md), [PopupMenu](./popup-menu.md).
 
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
@@ -56,12 +60,14 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 **The app owns:** actions; command availability; responsive relocation; which screen edges an app bar or bottom bar outside a Pane header or footer claims for device safe areas (safeAreaEdges).
 
-**Wiring:** `wireScrollDividers` is optional.
+**Wiring:** `wireScrollDividers`, `wireToolbarVisibility` is optional.
 
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 
 - `data-scroll-overflow` on `the targets scroller` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
 - `data-scroll-divider` on `a Toolbar named as targets chrome` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
+- `data-toolbar-width-hidden` on `ToolbarText, ToolbarControlGroup and its paired busy status` (`wireToolbarVisibility`): True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers.
+- `data-toolbar-visibility-probe` on `private aria-hidden measurement boxes under Toolbar` (`wireToolbarVisibility`): Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility.
 
 ## Geometry
 
@@ -92,6 +98,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
+- Components: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md), [PopupMenu](./popup-menu.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#ambiguous-choices`](../../docs/component-selection.md#ambiguous-choices).
 - UX catalog route: `?component=toolbar`.

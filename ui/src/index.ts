@@ -300,3 +300,4 @@ export {
   wireScrollDividers,
   type WireScrollDividersOptions,
 } from './wiring/wire-scroll-dividers.js';
+export { wireToolbarVisibility } from './wiring/wire-toolbar-visibility.js';

@@ -110,6 +110,7 @@ import {
   wireScrollDividers,
 } from '@kerfjs/ui/wire-scroll-dividers';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
+import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { Workbench } from '@kerfjs/ui/workbench';
 
 const icon = ToolbarText({ text: 'Icon' });
@@ -974,6 +975,19 @@ const stopScrollDividers: () => void = wireScrollDividers(
 );
 stopScrollDividers();
 wireScrollDividers(document);
+const stopToolbarVisibility: () => void = wireToolbarVisibility(document);
+stopToolbarVisibility();
+UI.wireToolbarVisibility(document.createElement('div'));
+ToolbarText({ text: 'Identity', hideBelow: px(176), showBelow: rem(32) });
+UI.ToolbarControlGroup({
+  children: icon,
+  hideBelow: lengthVar('--utility-width', px(416)),
+  showBelow: calc(plus(rem(20), px(16))),
+});
+// @ts-expect-error Thresholds require branded CSS lengths, not raw strings.
+ToolbarText({ text: 'Identity', hideBelow: '176px' });
+// @ts-expect-error Thresholds require branded CSS lengths, not numbers.
+UI.ToolbarControlGroup({ children: icon, showBelow: 416 });
 // @ts-expect-error A target needs the id of its scrolling element.
 wireScrollDividers(document, { targets: [{ top: 'header' }] });
 // @ts-expect-error Target sides are physical: top, right, bottom, left.
