@@ -122,7 +122,7 @@
   "scripts": {
     "build": "tsup && node scripts/clean-dist-output.mjs dist",
     "dev": "tsup --watch",
-    "test": "vitest run --coverage",
+    "test": "vitest run --coverage --maxWorkers=4",
     "test:watch": "vitest",
     "test:unit": "vitest run tests/unit --coverage",
     "test:integration": "vitest run tests/integration --coverage",
