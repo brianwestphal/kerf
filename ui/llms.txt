@@ -19,6 +19,10 @@ the folder modules, and CSS only imports their owner stylesheets.
 
 ### Shared semantic tones
 
+Use `ToolbarText tone="dark"` on a loud or photo-backed toolbar surface to
+match dark control groups. It applies to read-only headings and actionable
+titles at every size; default tone retains existing identity and heading colors.
+
 `SemanticTone` is the shared color-role type for `Badge`, `Chip`, `StateBanner`,
 and semantic `ContentItem` appearances: `neutral`, `info`, `pop`, `success`,
 `warning`, and `danger`. Import it as a type from `@kerfjs/ui`,

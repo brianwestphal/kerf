@@ -219,11 +219,14 @@ export { Sides, Toolbar, type ToolbarConfig, type ToolbarPosition, type ToolbarP
 import * as kerfjs from 'kerfjs';
 
 type ToolbarTextSize = 'xlarge' | 'xlarge-fixed' | 'large' | 'default' | 'small' | 'xsmall';
+type ToolbarTextTone = 'default' | 'dark';
 /** ARIA heading level for a title exposed as a heading landmark. */
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 interface ToolbarTextBaseProps {
     text: string;
     size?: ToolbarTextSize;
+    /** Use dark-toolbar foregrounds on a dark or photo-backed toolbar. */
+    tone?: ToolbarTextTone;
     className?: string;
     /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
     id?: string;
@@ -264,9 +267,9 @@ type ToolbarTextProps = ToolbarTextBaseProps & (({
     wrap?: never;
     maxLines?: never;
 });
-declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, tone, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, }: ToolbarTextProps): kerfjs.SafeHtml;
 
-export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
+export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize, type ToolbarTextTone };
 ```
 
 ## `@kerfjs/ui/toolbar-control-group`

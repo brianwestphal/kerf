@@ -105,6 +105,14 @@ button.kui-toolbar-text:focus-visible {
   font-size: var(--kui-font-2xs);
 }
 
+.kui-toolbar-text[data-tone="dark"] {
+  color: var(--kui-color-neutral-on-loud);
+}
+
+button.kui-toolbar-text[data-tone="dark"]:hover {
+  background: color-mix(in srgb, var(--kui-color-surface) 28%, transparent);
+}
+
 /* Single line, no ellipsis: hard-clip the overflow instead of showing …. */
 .kui-toolbar-text[data-ellipsis="false"] .kui-toolbar-text__text {
   text-overflow: clip;

@@ -44,6 +44,7 @@ export {
   ToolbarText,
   type ToolbarTextProps,
   type ToolbarTextSize,
+  type ToolbarTextTone,
 } from './components/actions/toolbar-text/toolbar-text.js';
 export {
   List,

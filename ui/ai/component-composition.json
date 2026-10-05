@@ -1802,7 +1802,8 @@
           "--kui-font-l",
           "--kui-font-m",
           "--kui-font-s",
-          "--kui-font-xs"
+          "--kui-font-xs",
+          "--kui-color-neutral-on-loud"
         ]
       },
       "diagnostics": [],

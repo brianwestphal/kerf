@@ -4,12 +4,16 @@ import { Skeleton } from '../../feedback/skeleton/skeleton.js';
 export type ToolbarTextSize =
   'xlarge' | 'xlarge-fixed' | 'large' | 'default' | 'small' | 'xsmall';
 
+export type ToolbarTextTone = 'default' | 'dark';
+
 /** ARIA heading level for a title exposed as a heading landmark. */
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 interface ToolbarTextBaseProps {
   text: string;
   size?: ToolbarTextSize;
+  /** Use dark-toolbar foregrounds on a dark or photo-backed toolbar. */
+  tone?: ToolbarTextTone;
   className?: string;
   /** Optional id, e.g. so a dialog can reference the title via aria-labelledby. */
   id?: string;
@@ -63,6 +67,7 @@ export type ToolbarTextProps = ToolbarTextBaseProps &
 export function ToolbarText({
   text,
   size = 'default',
+  tone = 'default',
   className = '',
   id,
   headingLevel,
@@ -82,6 +87,7 @@ export function ToolbarText({
         class={`kui-toolbar-text ${className}`.trim()}
         data-component="toolbar-text"
         data-size={size}
+        data-tone={tone === 'default' ? undefined : tone}
         data-fill={fill ? 'true' : undefined}
         data-ellipsis={ellipsis ? undefined : 'false'}
         data-action={action}
@@ -96,6 +102,7 @@ export function ToolbarText({
       class={`kui-toolbar-text ${className}`.trim()}
       data-component="toolbar-text"
       data-size={size}
+      data-tone={tone === 'default' ? undefined : tone}
       data-fill={fill ? 'true' : undefined}
       data-wrap={wrap ? 'true' : undefined}
       data-ellipsis={ellipsis ? undefined : 'false'}

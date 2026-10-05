@@ -33,6 +33,32 @@ export function ToolbarTextDemo() {
         <ToolbarText text="rail heading" size="xsmall" />
       </CatalogExample>
       <CatalogExample
+        label="Dark toolbar"
+        note="Use dark tone for a filename or title on a loud surface, matching dark control groups."
+        viewport={{
+          width: 'wide',
+          surface: 'default',
+          tokens: {
+            '--kui-color-surface': 'var(--kui-color-neutral-fill-loud)',
+          },
+        }}
+        rootAttributes={{ 'data-demo-toolbar-text-dark': '' }}
+      >
+        <Toolbar
+          label="Attachment gallery"
+          leading={<ToolbarText text="Quarterly report.pdf" tone="dark" />}
+          trailing={
+            <ToolbarControlGroup tone="dark" single content="text">
+              <ToolbarText
+                text="Rename file"
+                tone="dark"
+                action="edit-toolbar-title"
+              />
+            </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
+      <CatalogExample
         label="Actionable title beside status"
         note="Click or press Enter to request editing. The title keeps its content width until the center search needs space, then ellipsizes beside the chip."
         viewport={{ width: 'wide', frame: 'solid' }}

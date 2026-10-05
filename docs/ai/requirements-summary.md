@@ -280,6 +280,9 @@ icon `ToolbarControlGroup`, a direct extra-large `ToolbarText`, and grouped
 trailing controls. Supporting copy is app-owned content below the toolbar. The
 application links title/supporting-copy ids to the owning dialog or panel and
 sets `headingLevel` on `ToolbarText` when the title should be a heading landmark.
+`ToolbarText.tone="dark"` uses the loud-surface foreground at every size,
+including actionable titles, to match dark control groups.
+
 Avatar toolbar controls use `ToolbarControlGroup`'s `content="avatar"` and
 `avatarImage` contract instead of nested images: a single control paints the
 group, while a multi-button control paints the pressed selection highlight.

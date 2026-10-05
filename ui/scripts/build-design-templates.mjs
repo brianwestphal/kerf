@@ -727,6 +727,15 @@ export const COMPONENTS = {
     frameWidth: 'max-content',
     variants: [
       {
+        id: 'dark-tone',
+        label: 'Dark toolbar tone',
+        height: 40,
+        render: () =>
+          raw(
+            `<div style="background:var(--kui-color-neutral-fill-loud)">${html(ToolbarText({ text: 'Quarterly report.pdf', tone: 'dark' }))}</div>`,
+          ),
+      },
+      {
         id: 'large',
         label: 'Large (title)',
         height: 40,

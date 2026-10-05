@@ -1059,6 +1059,9 @@ Heading recipes compose `Toolbar`, direct `ToolbarText`, and optional
 `ToolbarControlGroup` icon/action zones through public subpaths, with app-owned
 supporting copy on a separate row. Page and section titles opt into heading
 semantics through `ToolbarText.headingLevel`.
+`ToolbarText.tone="dark"` uses the loud-surface foreground at every size,
+including actionable titles, to match dark control groups.
+
 Ordinary UI headings, paragraphs, and inline secondary copy use `Text`
 (`ui/src/components/typography/text/text.tsx`), whose default `p`, optional `h1`–`h6`, and inline `span`
 variants render native semantics. Its companion CSS adds the standard

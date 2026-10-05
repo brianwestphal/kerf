@@ -1913,11 +1913,12 @@
       ],
       "useWhen": [
         "Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics.",
-        "Use action for an editable toolbar title: it renders a native button that shrinks and ellipsizes beside sibling status chips."
+        "Use action for an editable toolbar title: it renders a native button that shrinks and ellipsizes beside sibling status chips.",
+        "Use tone=dark for title or filename text on a loud toolbar surface, matching dark ToolbarControlGroups."
       ],
       "avoidWhen": [
         "Do not omit headingLevel when the text is the page or section heading.",
-        "Large, default, and small are intentionally quiet toolbar identity text and have no tone option. Use xlarge-fixed for a normal-color toolbar heading at the fixed font-l step; use Text with an h2-h6 variant for a content subsection title, or ListHeader for a list or menu section."
+        "Large, default, and small are intentionally quiet toolbar identity text in default tone. Use xlarge-fixed for a normal-color toolbar heading at the fixed font-l step; use Text with an h2-h6 variant for a content subsection title, or ListHeader for a list or menu section."
       ],
       "alternatives": [
         {
@@ -1943,7 +1944,8 @@
         "default",
         "small",
         "xsmall",
-        "placeholder (loading)"
+        "placeholder (loading)",
+        "dark (loud-surface foreground)"
       ],
       "accessibility": [
         "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
@@ -1973,7 +1975,8 @@
         "--kui-font-l",
         "--kui-font-m",
         "--kui-font-s",
-        "--kui-font-xs"
+        "--kui-font-xs",
+        "--kui-color-neutral-on-loud"
       ],
       "links": {
         "catalogRoute": "?component=toolbar-text",

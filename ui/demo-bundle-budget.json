@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 323400,
+  "totalJavaScriptGzip": 323500,
   "measuredLargestJavaScriptGzip": 124533,
-  "measuredTotalJavaScriptGzip": 323313,
+  "measuredTotalJavaScriptGzip": 323458,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2755,6 +2755,22 @@
         "measuredTotalJavaScriptGzip": 323313,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 323400
+      }
+    },
+    {
+      "at": "2026-10-05T10:00:31.775Z",
+      "reason": "Add dark ToolbarText tone and its loud-surface catalog example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124533,
+        "measuredTotalJavaScriptGzip": 323313,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124533,
+        "measuredTotalJavaScriptGzip": 323458,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323500
       }
     }
   ]

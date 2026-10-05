@@ -10,11 +10,12 @@ Extra-large through extra-small toolbar identity text.
 
 - Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics.
 - Use action for an editable toolbar title: it renders a native button that shrinks and ellipsizes beside sibling status chips.
+- Use tone=dark for title or filename text on a loud toolbar surface, matching dark ToolbarControlGroups.
 
 **Not when:**
 
 - Do not omit headingLevel when the text is the page or section heading.
-- Large, default, and small are intentionally quiet toolbar identity text and have no tone option. Use xlarge-fixed for a normal-color toolbar heading at the fixed font-l step; use Text with an h2-h6 variant for a content subsection title, or ListHeader for a list or menu section.
+- Large, default, and small are intentionally quiet toolbar identity text in default tone. Use xlarge-fixed for a normal-color toolbar heading at the fixed font-l step; use Text with an h2-h6 variant for a content subsection title, or ListHeader for a list or menu section.
 
 **Alternatives:**
 
@@ -40,6 +41,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures
 - small
 - xsmall
 - placeholder (loading)
+- dark (loud-surface foreground)
 
 ## Composition
 
@@ -70,7 +72,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-toolbar-text` on an element you write; render `ToolbarText` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-neutral-on-quiet`, `--kui-color-text`, `--kui-font-2xs`, `--kui-font-2xl`, `--kui-font-l`, `--kui-font-m`, `--kui-font-s`, `--kui-font-xs`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-on-quiet`, `--kui-color-text`, `--kui-font-2xs`, `--kui-font-2xl`, `--kui-font-l`, `--kui-font-m`, `--kui-font-s`, `--kui-font-xs`, `--kui-color-neutral-on-loud`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 
