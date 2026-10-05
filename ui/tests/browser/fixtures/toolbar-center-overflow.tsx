@@ -93,12 +93,18 @@ function render() {
           label="Projects"
           backText="Library"
           views={[
-            { key: 'library', title: 'Library', content: <div /> },
+            {
+              key: 'library',
+              toolbar: { title: 'Library' },
+              content: <div />,
+            },
             {
               key: 'atlas',
-              title: 'Project Atlas roadmap',
-              center: center(),
-              toolbar: trailing(),
+              toolbar: {
+                title: 'Project Atlas roadmap',
+                center: center(),
+                trailing: trailing(),
+              },
               content: <div />,
             },
           ]}

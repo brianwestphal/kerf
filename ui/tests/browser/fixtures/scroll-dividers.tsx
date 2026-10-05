@@ -122,21 +122,14 @@ const tabBar = (
   );
 };
 
-const bottomBar = (text: string) => (
-  <Toolbar
-    label={`${text} actions`}
-    leading={<ToolbarText text={text} size="small" />}
-  />
-);
-
 const LIST_VIEW: NavStackView = {
   key: 'list',
-  title: 'Inbox',
+  toolbar: { title: 'Inbox' },
   content: <>{items(24)}</>,
 };
 const DETAIL_VIEW: NavStackView = {
   key: 'detail',
-  title: 'Message',
+  toolbar: { title: 'Message' },
   content: <>{items(1)}</>,
 };
 const stackViews = signal<NavStackView[]>([LIST_VIEW]);
@@ -175,7 +168,7 @@ mount(root, () => (
         id="stack"
         label="Stack"
         views={stackViews.value}
-        bottomToolbar={bottomBar('Stack')}
+        bottomToolbar={{ label: 'Stack' }}
       />
     </div>
     <div data-case="nav-stack-pane" style="height: 360px; display: grid">
@@ -185,22 +178,16 @@ mount(root, () => (
         views={[
           {
             key: 'pane',
-            title: 'Pane view',
-            content: (
-              <Pane
-                header={
-                  <Toolbar
-                    label="Pane view header"
-                    leading={<ToolbarText text="Filters" size="small" />}
-                  />
-                }
-              >
-                {items(24)}
-              </Pane>
-            ),
+            toolbar: { title: 'Pane view' },
+            header: <ToolbarText text="Filters" size="small" />,
+            headerList: { gap: 'xs', textInsets: 'rl' },
+            footer: <ToolbarText text="24 items" size="small" />,
+            footerList: { textInsets: 'rl' },
+            pane: { contentElement: 'main', contentLabel: 'Pane items' },
+            content: items(24),
           },
         ]}
-        bottomToolbar={bottomBar('Pane stack')}
+        bottomToolbar={{ label: 'Pane stack' }}
       />
     </div>
     <div data-case="tab-scaffold" style="height: 420px; display: grid">
@@ -217,7 +204,11 @@ mount(root, () => (
                 id="feed-stack"
                 label="Feed"
                 views={[
-                  { key: 'feed', title: 'Feed', content: <>{items(24)}</> },
+                  {
+                    key: 'feed',
+                    toolbar: { title: 'Feed' },
+                    content: <>{items(24)}</>,
+                  },
                 ]}
               />
             ),
@@ -263,12 +254,12 @@ mount(root, () => (
           views={[
             {
               key: 'root',
-              title: 'Root',
+              toolbar: { title: 'Root' },
               // `always` fits (a line with nothing scrolled), `none` overflows.
               content: <>{items(chromeDividers === 'always' ? 1 : 24)}</>,
             },
           ]}
-          bottomToolbar={bottomBar(`Stack ${chromeDividers}`)}
+          bottomToolbar={{ label: `Stack ${chromeDividers}` }}
         />
       </div>
     ))}

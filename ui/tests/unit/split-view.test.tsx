@@ -178,13 +178,25 @@ describe('SplitView', () => {
           backIcon: raw('<svg class="back-glyph"></svg>'),
           backText: 'Threads',
           toolbarConfig: { dividerSides: 'b', headingLevel: 2 },
-          bottomToolbar: raw('<nav class="fallback">fallback</nav>'),
-          list: { toolbar: raw('<div class="list-actions">compose</div>') },
+          bottomToolbar: {
+            label: 'Fallback',
+            leading: raw('<nav class="fallback">fallback</nav>'),
+          },
+          list: {
+            toolbar: {
+              trailing: raw('<div class="list-actions">compose</div>'),
+            },
+          },
           detail: {
-            leading: raw('<div class="detail-lead">lead</div>'),
-            center: raw('<div class="detail-center">center</div>'),
-            toolbar: raw('<div class="detail-actions">reply</div>'),
-            bottomToolbar: raw('<nav class="detail-bottom">move</nav>'),
+            toolbar: {
+              leading: raw('<div class="detail-lead">lead</div>'),
+              center: raw('<div class="detail-center">center</div>'),
+              trailing: raw('<div class="detail-actions">reply</div>'),
+            },
+            bottomToolbar: {
+              label: 'Detail tools',
+              leading: raw('<nav class="detail-bottom">move</nav>'),
+            },
           },
         },
       }),
@@ -230,9 +242,20 @@ describe('SplitView', () => {
         listTitle: 'Threads',
         compactStack: {
           hideToolbar: false,
-          bottomToolbar: raw('<nav class="fallback">fallback</nav>'),
-          list: { toolbar: raw('<div class="list-actions">compose</div>') },
-          detail: { toolbar: raw('<div class="detail-actions">reply</div>') },
+          bottomToolbar: {
+            label: 'Fallback',
+            leading: raw('<nav class="fallback">fallback</nav>'),
+          },
+          list: {
+            toolbar: {
+              trailing: raw('<div class="list-actions">compose</div>'),
+            },
+          },
+          detail: {
+            toolbar: {
+              trailing: raw('<div class="detail-actions">reply</div>'),
+            },
+          },
         },
       }),
     );

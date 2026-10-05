@@ -330,15 +330,13 @@ test('NavStack chrome, views, and bottom toolbar split the edges without double 
     left: 0,
     right: 1180,
   });
-  expect(await padding(page, bottom)).toEqual([
-    0,
-    INSETS.right,
-    INSETS.bottom,
-    INSETS.left,
-  ]);
-  // The bottom toolbar sits inside its padded footer, so it adds no inset.
+  expect(await padding(page, bottom)).toEqual([0, 0, 0, 0]);
+  // The structured bottom Toolbar claims the edges, matching the top Toolbar.
   expect(await padding(page, `${bottom} [data-component="toolbar"]`)).toEqual([
-    8, 8, 8, 8,
+    8,
+    8 + INSETS.right,
+    8 + INSETS.bottom,
+    8 + INSETS.left,
   ]);
 });
 

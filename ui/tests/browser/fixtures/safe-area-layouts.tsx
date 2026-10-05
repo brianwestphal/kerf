@@ -149,9 +149,9 @@ function render() {
           views={[
             {
               key: 'root',
-              title: 'Messages',
+              toolbar: { title: 'Messages' },
               content: items('Messages'),
-              bottomToolbar: toolbar('Messages bottom', ''),
+              bottomToolbar: { label: 'Messages bottom', dividerSides: '' },
             },
           ]}
         />
@@ -164,7 +164,11 @@ function render() {
           id="safe-nav-stack"
           label="Safe stack"
           views={[
-            { key: 'root', title: 'Messages', content: pane('Messages') },
+            {
+              key: 'root',
+              toolbar: { title: 'Messages' },
+              content: pane('Messages'),
+            },
           ]}
         />
       );

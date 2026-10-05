@@ -167,8 +167,9 @@ into `.kui-resizable-region__content`.
 
 A panel with `navStack` hosts a controlled `NavStack` in place of the static
 `content` and `Pane` slots. Give it a `toolbar` with a `toggle`; each
-`navStack.views` entry then supplies its own title, leading/center/trailing
-groups, fixed `header`, and scrolling `content`. The active view's toolbar is
+`navStack.views` entry then supplies its own structured `toolbar` with a title
+and leading/center/trailing groups, optional `header` / `footer` and `pane`
+configuration, and scrolling `content`. The active view's toolbar is
 the panel's only toolbar row, with the standard toggle always last. On
 collapse, marked groups from the active view and the toggle relocate to the
 work-area toolbar; the view stack stays mounted. The app owns the view array

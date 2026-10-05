@@ -326,8 +326,12 @@ focus into the new top view and restores the revealed view's last focused
 descendant on pop; add `data-nav-focus` to a preferred initial heading or
 control when DOM order is not sufficient. Use the component-level
 `bottomToolbar` only as a persistent fallback for views without their own bottom
-chrome. The top chrome is a real `Toolbar`: give a view `leading` / `center` /
-`toolbar` (trailing) groups, and configure the bar with `toolbarConfig`
+chrome. The top chrome is a real `Toolbar`: give each view a structured
+`toolbar` with `title`, `leading`, `center`, and `trailing` groups. Its fields
+override the stack's `toolbarConfig` defaults. `bottomToolbar` is also a
+structured Toolbar configuration with a required accessible label. A view can
+add `header` / `footer` and `headerList` / `footerList` plus `pane` configuration;
+those slots render in a per-view Pane and slide with it. Configure the bar with `toolbarConfig`
 (`ToolbarConfig` plus `label`, `titleSize`, `headingLevel`) and
 `backIcon` / `backText` rather than CSS. The previous screen stays
 visible beneath a push; interrupted navigation settles the old transition,

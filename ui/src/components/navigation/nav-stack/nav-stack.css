@@ -71,10 +71,6 @@
   background: var(--kui-color-surface);
 }
 
-.kui-nav-stack__header {
-  min-width: 0;
-}
-
 .kui-nav-stack__viewport {
   --kui-edge-inset-block-start: var(--_kui-nav-stack-safe-block-start);
   --kui-edge-inset-block-end: var(--_kui-nav-stack-safe-block-end);
@@ -106,11 +102,9 @@
   inset: 0;
 }
 
-.kui-nav-stack__view[data-appearance="sunken"] {
-  background: var(
-    --kui-sunken-panel-background,
-    var(--kui-color-surface-lowered)
-  );
+.kui-nav-stack__view:has(> [data-component="pane"]) {
+  display: grid;
+  overflow: hidden;
 }
 
 /* Each view is its region's scroll owner: block insets become padding inside
@@ -180,9 +174,9 @@
 }
 
 .kui-nav-stack__bottom {
-  padding-block-end: var(--_kui-nav-stack-safe-block-end);
-  padding-inline: var(--_kui-nav-stack-safe-inline-start)
-    var(--_kui-nav-stack-safe-inline-end);
+  --kui-edge-inset-block-end: var(--_kui-nav-stack-safe-block-end);
+  --kui-edge-inset-inline-start: var(--_kui-nav-stack-safe-inline-start);
+  --kui-edge-inset-inline-end: var(--_kui-nav-stack-safe-inline-end);
   border-block-start: 1px solid
     var(--_kui-nav-stack-bottom-divider, transparent);
   background: var(--kui-color-surface);

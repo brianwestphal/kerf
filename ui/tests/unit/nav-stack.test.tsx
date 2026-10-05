@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   NavStack,
   type NavStackView,
+  type NavStackViewToolbar,
 } from '../../src/components/navigation/nav-stack/nav-stack.js';
 import { wireNavStack } from '../../src/components/navigation/nav-stack/wiring/wire-nav-stack.js';
 
@@ -14,10 +15,17 @@ const view = (
   bottomToolbar?: unknown,
 ): NavStackView => ({
   key,
-  title,
   content: raw(`<p class="body">${key}</p>`),
-  toolbar: toolbar as NavStackView['toolbar'],
-  bottomToolbar: bottomToolbar as NavStackView['bottomToolbar'],
+  toolbar: {
+    title,
+    trailing: toolbar as NavStackViewToolbar['trailing'],
+  },
+  bottomToolbar: bottomToolbar
+    ? {
+        label: 'View actions',
+        leading: bottomToolbar as NavStackView['content'],
+      }
+    : undefined,
 });
 
 const tick = () => new Promise((resolve) => window.setTimeout(resolve, 0));
@@ -47,10 +55,10 @@ describe('NavStack markup', () => {
       NavStack({
         id: 'nav',
         label: 'Flow',
-        views: [{ ...view('home', 'Home'), appearance: 'sunken' }],
+        views: [{ ...view('home', 'Home'), pane: { appearance: 'sunken' } }],
       }),
     );
-    expect(html).toContain('data-nav-active="true" data-appearance="sunken"');
+    expect(html).toContain('data-appearance="sunken"');
   });
   it('renders a single view with no back control', () => {
     const html = String(
@@ -95,7 +103,7 @@ describe('NavStack markup', () => {
           view('home'),
           view('detail', 'Detail', raw('<button>Edit</button>')),
         ],
-        bottomToolbar: raw('<nav>tabs</nav>'),
+        bottomToolbar: { label: 'Tabs', leading: raw('<nav>tabs</nav>') },
       }),
     );
     expect(html).toContain('aria-label="Go back"');
@@ -174,8 +182,12 @@ describe('NavStack markup', () => {
       view('home', 'Home'),
       {
         ...view('detail', 'Detail', raw('<button>Edit</button>')),
-        leading: raw('<div class="lead-group">Lead</div>'),
-        center: raw('<div class="center-group">Center</div>'),
+        toolbar: {
+          title: 'Detail',
+          leading: raw('<div class="lead-group">Lead</div>'),
+          center: raw('<div class="center-group">Center</div>'),
+          trailing: raw('<button>Edit</button>'),
+        },
       },
     ]);
     const toolbar = root.querySelector<HTMLElement>(
@@ -195,7 +207,7 @@ describe('NavStack markup', () => {
     ).not.toBeNull();
   });
 
-  it('keeps the active view header fixed below its toolbar and a panel toggle last', () => {
+  it('keeps each view header in its Pane and a panel toggle last', () => {
     const root = mountStack(
       [
         {
@@ -210,18 +222,85 @@ describe('NavStack markup', () => {
       { panelToggle: raw('<button data-toggle>Toggle</button>') },
     );
     const chrome = root.querySelector('[data-nav-stack-chrome]')!;
-    expect(chrome.querySelector('[data-nav-stack-header]')?.textContent).toBe(
-      'Ticket header',
-    );
-    expect(chrome.textContent).not.toContain('Collection header');
+    expect(chrome.querySelector('[data-nav-stack-header]')).toBeNull();
+    expect(
+      root.querySelector(
+        '.kui-nav-stack__view[data-nav-active="true"] [data-nav-stack-header]',
+      )?.textContent,
+    ).toBe('Ticket header');
     expect(
       Array.from(chrome.querySelectorAll('.kui-toolbar__trailing button')).map(
         (button) => button.textContent,
       ),
     ).toEqual(['Actions', 'Toggle']);
+    expect(root.querySelectorAll('[data-nav-stack-header]')).toHaveLength(2);
+  });
+
+  it('forwards each view’s toolbar, Pane, header and footer list configuration', () => {
+    const root = mountStack(
+      [
+        {
+          key: 'home',
+          content: raw('<p>Home content</p>'),
+          toolbar: {
+            title: 'Home',
+            label: 'Home actions',
+            centerAlign: 'stretch',
+            headingLevel: 2,
+            trailing: raw('<button>Save</button>'),
+          },
+          header: raw('<p>Filters</p>'),
+          headerList: { gap: 'm', textInsets: 'rl' },
+          footer: raw('<p>Status</p>'),
+          footerList: { gap: 'xs', textInsets: 'rl' },
+          pane: {
+            contentElement: 'main',
+            contentLabel: 'Home content',
+            appearance: 'sunken',
+            chromeDividers: 'always',
+          },
+          bottomToolbar: {
+            label: 'Bottom actions',
+            centerAlign: 'stretch',
+            leading: raw('<button>Refresh</button>'),
+          },
+        },
+      ],
+      { toolbarConfig: { centerAlign: 'center', headingLevel: 1 } },
+    );
+    const toolbar = root.querySelector<HTMLElement>(
+      '[data-nav-stack-chrome] > [data-component="toolbar"]',
+    )!;
+    expect(toolbar.getAttribute('aria-label')).toBe('Home actions');
+    expect(toolbar.dataset.centerAlign).toBe('stretch');
+    expect(toolbar.querySelector('[aria-level="2"]')?.textContent).toBe('Home');
     expect(
-      root.querySelector('[data-nav-stack-viewport] [data-nav-stack-header]'),
-    ).toBeNull();
+      toolbar.querySelector('.kui-toolbar__trailing button')?.textContent,
+    ).toBe('Save');
+    const pane = root.querySelector<HTMLElement>(
+      '.kui-nav-stack__view > [data-component="pane"]',
+    )!;
+    expect(pane.dataset.appearance).toBe('sunken');
+    expect(pane.dataset.chromeDividers).toBe('always');
+    expect(
+      pane.querySelector('main[aria-label="Home content"]')?.textContent,
+    ).toBe('Home content');
+    expect(
+      pane
+        .querySelector('[data-nav-stack-header] [data-component="list"]')
+        ?.getAttribute('data-gap'),
+    ).toBe('true');
+    expect(
+      pane
+        .querySelector('[data-nav-stack-footer] [data-component="list"]')
+        ?.getAttribute('data-gap'),
+    ).toBe('true');
+    const bottom = root.querySelector<HTMLElement>(
+      '[data-nav-stack-bottom] [data-component="toolbar"]',
+    )!;
+    expect(bottom.getAttribute('aria-label')).toBe('Bottom actions');
+    expect(bottom.dataset.centerAlign).toBe('stretch');
+    expect(bottom.querySelector('button')?.textContent).toBe('Refresh');
   });
 
   it('accepts a custom back icon and visible back text', () => {
@@ -250,7 +329,10 @@ describe('NavStack markup', () => {
           view('home', 'Home'),
           view('detail', 'Detail', undefined, raw('<nav>detail tools</nav>')),
         ],
-        bottomToolbar: raw('<nav>fallback tools</nav>'),
+        bottomToolbar: {
+          label: 'Fallback tools',
+          leading: raw('<nav>fallback tools</nav>'),
+        },
       }),
     );
     expect(html).toContain('<nav>detail tools</nav>');
@@ -320,7 +402,10 @@ describe('wireNavStack', () => {
 
   it('cross-fades snapshots of the top and bottom chrome across a push', async () => {
     const root = mountStack([view('home', 'Home')], {
-      bottomToolbar: raw('<nav>Root status</nav>'),
+      bottomToolbar: {
+        label: 'Root status',
+        leading: raw('<nav>Root status</nav>'),
+      },
     });
     const dispose = wireNavStack(root, { duration: 10 });
     root.querySelector('.kui-toolbar-text__text')!.textContent = 'Detail';
@@ -356,7 +441,10 @@ describe('wireNavStack', () => {
 
   it('removes in-flight chrome copies and restores an existing duration on dispose', async () => {
     const root = mountStack([view('home', 'Home')], {
-      bottomToolbar: raw('<nav>Root status</nav>'),
+      bottomToolbar: {
+        label: 'Root status',
+        leading: raw('<nav>Root status</nav>'),
+      },
     });
     root.style.setProperty('--kui-nav-stack-transition-duration', '77ms');
     const dispose = wireNavStack(root, { duration: 10 });
@@ -391,7 +479,10 @@ describe('wireNavStack', () => {
       callbacks.delete(id);
     });
     const root = mountStack([view('home', 'Home')], {
-      bottomToolbar: raw('<nav>Home status</nav>'),
+      bottomToolbar: {
+        label: 'Home status',
+        leading: raw('<nav>Home status</nav>'),
+      },
     });
     const viewport = root.querySelector('[data-nav-stack-viewport]')!;
     const home = viewport.firstElementChild as HTMLElement;

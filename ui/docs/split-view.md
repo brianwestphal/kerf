@@ -86,15 +86,18 @@ resizable={{
 
 `compactStack` configures the compact `NavStack`: `toolbarConfig`, `backIcon`,
 `backText`, `hideToolbar`, the persistent `bottomToolbar`, and `chromeDividers`
-forward to the stack, and `list` / `detail` give each view its own top-toolbar groups
-(`leading`, `center`, trailing `toolbar`) and `bottomToolbar`:
+forward to the stack, and `list` / `detail` give each view its own structured
+top `toolbar` (`leading`, `center`, `trailing`) and `bottomToolbar`:
 
 ```tsx
 compactStack={{
   backText: "Threads",
   toolbarConfig: { headingLevel: 1 },
-  list: { toolbar: <ComposeGroup /> },
-  detail: { toolbar: <ReplyGroup />, bottomToolbar: <MessageActions /> },
+  list: { toolbar: { trailing: <ComposeGroup /> } },
+  detail: {
+    toolbar: { trailing: <ReplyGroup /> },
+    bottomToolbar: { label: "Message actions", leading: <MessageActions /> },
+  },
 }}
 ```
 

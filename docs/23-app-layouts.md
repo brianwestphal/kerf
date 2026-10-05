@@ -144,8 +144,9 @@ slides** (the pattern already used on several `~/Documents/hotsheet2` dialogs).
   itself animated. Bottom toolbar is optional.
 - The top toolbar is a real `Toolbar`: the back control (a borderless
   `ToolbarControlGroup`) and the title (`ToolbarText`) lead, followed by the
-  active view's `leading` groups; the view's `center` and trailing `toolbar`
-  fill the other zones. `toolbarConfig` forwards the `ToolbarConfig`
+  active view's `toolbar.leading` groups; the view's `toolbar.center` and
+  `toolbar.trailing` fill the other zones. `toolbarConfig` supplies defaults
+  for the `ToolbarConfig`
   (`dividerSides`, `centerAlign`, `responsive`, `responsiveAt`,
   `safeAreaEdges`) plus `label`, `titleSize`, and `headingLevel`; `backIcon`
   and visible `backText` configure the back control. Defaults keep the original
@@ -157,6 +158,14 @@ slides** (the pattern already used on several `~/Documents/hotsheet2` dialogs).
 - Applicable at every device size and inside dialogs of every size.
 - Honors reduced motion (cross-fade/slide collapse to instant) and restores
   focus into the new top view after a push/pop.
+- A view's `toolbar` and `bottomToolbar` are structured Toolbar configurations.
+  `toolbar` can override stack-wide `toolbarConfig` defaults. Views share the
+  `NavPane` content/chrome contract with static Workbench panels: `header` and
+  `footer` with `headerList` / `footerList` configuration, plus `pane`
+  (`PaneConfig`). When any of these pane fields is present, the view renders a
+  Pane with pinned header/footer around its scroll area; that chrome slides
+  with the view. A plain view keeps a direct scroll area. Top and bottom
+  toolbars still cross-fade separately.
 
 **Ratified rendering model (declarative + wire).** Consistent with every other
 `@kerfjs/ui` component, the app owns the stack as a `signal<NavStackView[]>`;
@@ -170,10 +179,10 @@ delegated control; the app's `onBack` pops its own signal. This replaces the
 earlier imperative `navStack({ root }).push()` sketch.
 
 ```ts
-const views = signal<NavStackView[]>([{ key: 'home', content: <HomeView/> }]);
+const views = signal<NavStackView[]>([{ key: 'home', toolbar: { title: 'Home' }, content: <HomeView/> }]);
 // render: <NavStack id="nav" label="Detail flow" views={views.value} />
 // once: const dispose = wireNavStack(root, { onBack: () => views.value = views.value.slice(0, -1) });
-// push: views.value = [...views.value, { key: id, title: 'Detail', content: <DetailView id={id}/> }];
+// push: views.value = [...views.value, { key: id, toolbar: { title: 'Detail' }, content: <DetailView id={id}/> }];
 ```
 
 **Implementation:** ticket **NavStack layout**.
@@ -234,8 +243,8 @@ option defaulting to the component's own default:
 - `compactStack` (`SplitViewCompactStack`) forwards the compact `NavStack`'s
   `toolbarConfig`, `backIcon`, `backText`, `hideToolbar`, and persistent
   `bottomToolbar`, and `chromeDividers`, and its `list` / `detail` entries
-  (`SplitViewCompactViewToolbars`) give each view `leading`, `center`,
-  trailing `toolbar`, and `bottomToolbar` content.
+  (`SplitViewCompactViewToolbars`) give each view a structured `toolbar`
+  (`leading`, `center`, `trailing`) and `bottomToolbar`.
 
 **Implementation:** ticket **SplitView (list-detail) layout**. Depends on
 NavStack (it reuses it on compact classes).

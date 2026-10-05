@@ -19,7 +19,6 @@ import { List } from '@kerfjs/ui/list';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SplitView } from '@kerfjs/ui/split-view';
-import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { mount, signal } from 'kerfjs';
@@ -108,17 +107,17 @@ function render() {
       compactStack={{
         backText: 'Inbox',
         toolbarConfig: { dividerSides: 'b', headingLevel: 1 },
-        list: { toolbar: iconButton('Compose', SquarePen, 'square-pen') },
+        list: {
+          toolbar: { trailing: iconButton('Compose', SquarePen, 'square-pen') },
+        },
         detail: {
-          toolbar: iconButton('Reply', Reply, 'reply'),
-          bottomToolbar: (
-            <Toolbar
-              label="Message actions"
-              dividerSides=""
-              leading={<ToolbarText text="Updated just now" size="small" />}
-              trailing={iconButton('Archive', Archive, 'archive')}
-            />
-          ),
+          toolbar: { trailing: iconButton('Reply', Reply, 'reply') },
+          bottomToolbar: {
+            label: 'Message actions',
+            dividerSides: '',
+            leading: <ToolbarText text="Updated just now" size="small" />,
+            trailing: iconButton('Archive', Archive, 'archive'),
+          },
         },
       }}
     />

@@ -1285,101 +1285,19 @@ export { type ScrollDividerTarget, type WireScrollDividersOptions, wireScrollDiv
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-import * as kerfjs from 'kerfjs';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { ToolbarConfig } from './toolbar.js';
-import { ToolbarTextSize, HeadingLevel } from './toolbar-text.js';
-import { PaneAppearance } from './pane.js';
+export { c as NavStack, N as NavStackProps, d as NavStackToolbarConfig, a as NavStackView, e as NavStackViewBottomToolbar, f as NavStackViewToolbar } from './nav-stack-B1Qc2e5q.js';
+import 'kerfjs';
+import './semantic-content-BbzjvSu9.js';
+import './list.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
 import './css-values.js';
-
-/**
- * One entry in a {@link NavStack}. The app owns the stack as an array (usually a
- * signal); `NavStack` renders it and `wireNavStack` animates the transitions.
- */
-interface NavStackView {
-    /** Stable identity for keyed reconcile and transition direction. */
-    key: string;
-    content: KerfUiContent;
-    /** Background of this view's scrolling work surface. */
-    appearance?: PaneAppearance;
-    /** Title shown in the top toolbar for this view. */
-    title?: string;
-    /** Leading groups for this view's top toolbar, after the back control and before the title. */
-    leading?: KerfUiContent;
-    /** Center content for this view's top toolbar (placed per `toolbarConfig.centerAlign`). */
-    center?: KerfUiContent;
-    /** Trailing actions for this view's top toolbar. */
-    toolbar?: KerfUiContent;
-    /** Fixed chrome below this view's toolbar, above its scrolling content. */
-    header?: KerfUiContent;
-    /** Bottom toolbar for this view. Cross-fades with the top chrome on navigation. */
-    bottomToolbar?: KerfUiContent;
-}
-/**
- * The top toolbar's configuration. Its `ToolbarConfig` forwards to the real
- * `Toolbar` the stack renders; by default that toolbar draws no divider and
- * claims the top and side safe-area edges the stack still touches.
- */
-interface NavStackToolbarConfig extends ToolbarConfig {
-    /** Accessible name of the top toolbar (default: none). */
-    label?: string;
-    /** Size of the view title's `ToolbarText` (default `large`). */
-    titleSize?: ToolbarTextSize;
-    /** Expose the view title as a heading at this level (default: a plain span). */
-    headingLevel?: HeadingLevel;
-}
-interface NavStackProps {
-    id: string;
-    /** Accessible name for the stack region. */
-    label: string;
-    /** The stack, root first; the last entry is the active top view. */
-    views: NavStackView[];
-    /** Accessible label for the icon-only back control (default "Back"). */
-    backLabel?: string;
-    /** The back control's icon (default a chevron-left `LucideIcon`). */
-    backIcon?: KerfUiContent;
-    /**
-     * Visible text beside the back icon, such as the previous view's title
-     * (default: icon only). When set, the text names the control and
-     * `backLabel` is not used.
-     */
-    backText?: string;
-    /** The top toolbar's configuration, forwarded to its `Toolbar`. */
-    toolbarConfig?: NavStackToolbarConfig;
-    /** Persistent last group in every view's top toolbar, supplied by a hosting panel. */
-    panelToggle?: KerfUiContent;
-    /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
-    hideToolbar?: boolean;
-    /** Optional persistent bottom toolbar used when the active view does not provide one. */
-    bottomToolbar?: KerfUiContent;
-    /**
-     * The line under the top chrome and over the bottom toolbar, where they
-     * meet the active view. `scroll` (default) shows the chrome's line only
-     * while the view's content is scrolled beneath it, and the bottom
-     * toolbar's only while more content lies below — never when the content
-     * fits — once `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is
-     * wired above the stack; unwired, neither shows. `always` shows both
-     * without the wiring; `none` neither, even when wired. The line is drawn
-     * inside the chrome, so no state moves the chrome or the content. A
-     * `toolbarConfig.dividerSides` edge is the Toolbar's own and is unaffected.
-     */
-    chromeDividers?: 'scroll' | 'always' | 'none';
-    className?: string;
-    /** Native named-slot assignment when composed inside a web component. */
-    slot?: string;
-}
-/**
- * A navigation stack (iOS-style push/pop). Renders every entry stacked, the last
- * one active; `@kerfjs/ui/wire-nav-stack`'s `wireNavStack` slides the content and
- * cross-fades the chrome across a change. Its top chrome is a real `Toolbar`: the
- * back control and title lead, the active view's `leading` / `center` / `toolbar`
- * content fills the zones, and `toolbarConfig` configures it. A single-pane
- * layout is a `NavStack` with one entry. See `docs/23-app-layouts.md` §3.1.
- */
-declare function NavStack({ id, label, views, backLabel, backIcon, backText, toolbarConfig, panelToggle, hideToolbar, bottomToolbar, chromeDividers, className, slot, }: NavStackProps): kerfjs.SafeHtml;
-
-export { NavStack, type NavStackProps, type NavStackToolbarConfig, type NavStackView };
+import './pane.js';
+import './panel-toolbar-CL9tYOkh.js';
+import './toolbar.js';
+import './lucide-icon.js';
+import 'lucide';
+import './toolbar-text.js';
 ```
 
 ## `@kerfjs/ui/wire-nav-stack`
@@ -1410,13 +1328,18 @@ export { type WireNavStackOptions, wireNavStack };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { NavStackProps, NavStackView } from './nav-stack.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-B1Qc2e5q.js';
 import { ResizableRegionProps } from './resizable-region.js';
-import './toolbar.js';
+import './list.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
-import './pane.js';
-import './toolbar-text.js';
 import './css-values.js';
+import './pane.js';
+import './panel-toolbar-CL9tYOkh.js';
+import './toolbar.js';
+import './lucide-icon.js';
+import 'lucide';
+import './toolbar-text.js';
 
 /**
  * The roomy list pane's `ResizableRegion`: its committed `size` and `min` /
@@ -1431,7 +1354,7 @@ interface SplitViewResizable extends Pick<ResizableRegionProps, 'separator' | 'h
     max: number;
 }
 /** One compact view's top- and bottom-toolbar content (see `NavStackView`). */
-type SplitViewCompactViewToolbars = Pick<NavStackView, 'leading' | 'center' | 'toolbar' | 'bottomToolbar'>;
+type SplitViewCompactViewToolbars = Pick<NavStackView, 'toolbar' | 'bottomToolbar'>;
 /**
  * The compact `NavStack`'s configuration: its toolbar configuration, back
  * control, persistent bottom toolbar, and chrome dividers forward to the
@@ -1602,16 +1525,16 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-B1Qc2e5q.js';
 import { ListConfig } from './list.js';
-import { NavStackProps } from './nav-stack.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
-import { a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-CL9tYOkh.js';
+import { a as PanelToolbar, c as PanelBottomToolbar, b as PanelChromePlacement, d as PanelToggle } from './panel-toolbar-CL9tYOkh.js';
 import { ToolbarConfig } from './toolbar.js';
+import './toolbar-text.js';
+import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
-import './css-values.js';
-import './toolbar-text.js';
 import './lucide-icon.js';
 import 'lucide';
 
@@ -1733,19 +1656,11 @@ interface WorkbenchPanelBase {
     restorePosition?: ResizableRegionRestorePosition;
 }
 /** The original static panel body: one toolbar, optional fixed chrome, and one Pane. */
-interface WorkbenchStaticPanel extends WorkbenchPanelBase {
-    content: KerfUiContent;
+interface WorkbenchStaticPanel extends WorkbenchPanelBase, NavPane<WorkbenchPanelToolbar, WorkbenchPanelBottomToolbar> {
     /** The composed toolbar; marked groups and its toggle relocate on collapse. */
     toolbar?: WorkbenchPanelToolbar;
-    header?: KerfUiContent;
-    headerList?: ListConfig;
     headerPlacement?: WorkbenchChromePlacement;
-    footer?: KerfUiContent;
-    footerList?: ListConfig;
-    bottomToolbar?: WorkbenchPanelBottomToolbar;
     footerPlacement?: WorkbenchChromePlacement;
-    /** Configuration for the static toolbar panel's Pane. */
-    pane?: PaneConfig;
     navStack?: never;
 }
 /** A panel whose active NavStack view supplies the toolbar, fixed header, and scroll body. */
@@ -2455,15 +2370,15 @@ import './toolbar.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './workbench.js';
+import './nav-stack-B1Qc2e5q.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './css-values.js';
-import './nav-stack.js';
-import './toolbar-text.js';
-import './resizable-region.js';
 import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
 import 'lucide';
+import './toolbar-text.js';
+import './resizable-region.js';
 
 /**
  * Controlled, stateless component-catalog shell: a `Workbench` whose left rail
@@ -2550,15 +2465,15 @@ import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './workbench.js';
+import './nav-stack-B1Qc2e5q.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './css-values.js';
-import './nav-stack.js';
-import './toolbar-text.js';
-import './resizable-region.js';
 import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
 import 'lucide';
+import './toolbar-text.js';
+import './resizable-region.js';
 
 /**
  * Standard resource labels for a Kerf catalog detail footer. Keep these labels

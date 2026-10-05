@@ -12,7 +12,6 @@ import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
-import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
@@ -48,18 +47,18 @@ const PROJECTS: Project[] = [
   },
 ];
 
-const footer = (text: string) => (
-  <Toolbar
-    label="View status"
-    leading={<ToolbarText text={text} size="small" />}
-  />
-);
+const footer = (text: string) => ({
+  label: 'View status',
+  leading: <ToolbarText text={text} size="small" />,
+});
 
 const rootView = (): NavStackView => ({
   key: 'library',
-  appearance: 'sunken',
-  title: 'Library',
-  toolbar: <ToolbarText text="Projects" size="small" />,
+  pane: { appearance: 'sunken' },
+  toolbar: {
+    title: 'Library',
+    trailing: <ToolbarText text="Projects" size="small" />,
+  },
   bottomToolbar: footer('2 saved projects'),
   content: (
     <List>
@@ -87,8 +86,10 @@ const rootView = (): NavStackView => ({
 
 const detailView = (project: Project): NavStackView => ({
   key: `project-${project.id}`,
-  title: project.label,
-  toolbar: <ToolbarText text="Detail" size="small" />,
+  toolbar: {
+    title: project.label,
+    trailing: <ToolbarText text="Detail" size="small" />,
+  },
   bottomToolbar: footer('Updated just now'),
   content: (
     <List>
@@ -123,18 +124,20 @@ const iconButton = (
 
 const configuredRootView = (): NavStackView => ({
   key: 'library',
-  title: 'Library',
-  leading: (
-    <ToolbarControlGroup label="Sidebar" appearance="borderless" single>
-      {iconButton('Show sidebar', PanelLeft, 'panel-left')}
-    </ToolbarControlGroup>
-  ),
-  center: (
-    <ToolbarControlGroup label="Project layout">
-      {iconButton('List layout', ListIcon, 'list', true)}
-      {iconButton('Grid layout', LayoutGrid, 'layout-grid', false)}
-    </ToolbarControlGroup>
-  ),
+  toolbar: {
+    title: 'Library',
+    leading: (
+      <ToolbarControlGroup label="Sidebar" appearance="borderless" single>
+        {iconButton('Show sidebar', PanelLeft, 'panel-left')}
+      </ToolbarControlGroup>
+    ),
+    center: (
+      <ToolbarControlGroup label="Project layout">
+        {iconButton('List layout', ListIcon, 'list', true)}
+        {iconButton('Grid layout', LayoutGrid, 'layout-grid', false)}
+      </ToolbarControlGroup>
+    ),
+  },
   content: (
     <List>
       {PROJECTS.map((project) => (
@@ -152,12 +155,14 @@ const configuredRootView = (): NavStackView => ({
 
 const configuredDetailView = (project: Project): NavStackView => ({
   key: `project-${project.id}`,
-  title: project.label,
-  toolbar: (
-    <ToolbarControlGroup label="Share" appearance="borderless" single>
-      {iconButton('Share project', Share, 'share')}
-    </ToolbarControlGroup>
-  ),
+  toolbar: {
+    title: project.label,
+    trailing: (
+      <ToolbarControlGroup label="Share" appearance="borderless" single>
+        {iconButton('Share project', Share, 'share')}
+      </ToolbarControlGroup>
+    ),
+  },
   content: (
     <List>
       <DemoContentItem
@@ -233,7 +238,7 @@ export function NavStackDemo() {
           id="catalog-nav-stack-configured"
           label="Configured project library"
           views={configuredViews.value}
-          backText={configuredViews.value.at(-2)?.title}
+          backText={configuredViews.value.at(-2)?.toolbar?.title}
           toolbarConfig={{ headingLevel: 2, dividerSides: 'b' }}
         />
       </CatalogExample>

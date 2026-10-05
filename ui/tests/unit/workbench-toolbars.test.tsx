@@ -70,14 +70,16 @@ describe('Workbench panel toolbars', () => {
     const views = [
       {
         key: 'collection',
-        title: 'Tickets',
+        toolbar: { title: 'Tickets' },
         header: raw('<h2>Collection header</h2>'),
         content: raw('<p>Collection content</p>'),
       },
       {
         key: 'detail',
-        title: 'T-42',
-        toolbar: group('detail-share', true),
+        toolbar: {
+          title: 'T-42',
+          trailing: group('detail-share', true),
+        },
         header: raw('<h2>Detail header</h2>'),
         content: raw('<p>Detail content</p>'),
       },
@@ -109,9 +111,11 @@ describe('Workbench panel toolbars', () => {
       rootRail.querySelectorAll('[data-component="toolbar"]'),
     ).toHaveLength(1);
     expect(rootRail.querySelector('[data-nav-back]')).toBeNull();
-    expect(rootRail.querySelector('[data-nav-stack-header]')?.textContent).toBe(
-      'Collection header',
-    );
+    expect(
+      rootRail.querySelector(
+        '.kui-nav-stack__view[data-nav-active="true"] [data-nav-stack-header]',
+      )?.textContent,
+    ).toBe('Collection header');
     expect(rootRail.querySelectorAll('.kui-nav-stack__view')).toHaveLength(1);
 
     const detail = render(props(2));
@@ -121,7 +125,9 @@ describe('Workbench panel toolbars', () => {
     ).toHaveLength(1);
     expect(detailRail.querySelector('[data-nav-back]')).not.toBeNull();
     expect(
-      detailRail.querySelector('[data-nav-stack-header]')?.textContent,
+      detailRail.querySelector(
+        '.kui-nav-stack__view[data-nav-active="true"] [data-nav-stack-header]',
+      )?.textContent,
     ).toBe('Detail header');
     expect(order(detailRail.querySelector('.kui-toolbar__trailing'))).toEqual([
       'detail-share',

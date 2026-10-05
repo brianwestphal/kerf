@@ -394,7 +394,7 @@ test.describe('scroll dividers', () => {
     ).toEqual(['relative', 'absolute']);
   });
 
-  test('a NavStack view that is a Pane is filled by it, so the Pane content scrolls under a pinned header', async ({
+  test('a NavStack view composes pinned header and footer around its Pane scroller', async ({
     page,
   }) => {
     await mountFixture(page);
@@ -405,10 +405,12 @@ test.describe('scroll dividers', () => {
     const pane = view.locator(':scope > [data-component="pane"]');
     const content = pane.locator(':scope > .kui-pane__content');
     const header = pane.locator(':scope > .kui-pane__header');
+    const footer = pane.locator(':scope > .kui-pane__footer');
     const parts = [
       ':scope > .kui-nav-stack__chrome',
       '[data-nav-key="pane"] > [data-component="pane"] > .kui-pane__header',
       '[data-nav-key="pane"] > [data-component="pane"] > .kui-pane__content',
+      '[data-nav-key="pane"] > [data-component="pane"] > .kui-pane__footer',
       ':scope > .kui-nav-stack__bottom',
     ];
 
@@ -425,21 +427,28 @@ test.describe('scroll dividers', () => {
     expect(paneBox).toEqual(viewBox);
     await expect(view).not.toHaveAttribute('data-scroll-overflow');
     await expect(content).toHaveAttribute('data-scroll-overflow', 'b');
-    expect(await edge(bottom)).toBe(true);
+    await expect(content).toHaveAttribute('aria-label', 'Pane items');
+    expect(await edge(bottom)).toBe(false);
     expect(await shows(header)).toBe(false);
+    expect(await shows(footer)).toBe(true);
     const geometry = await rects(stack, parts);
 
     // Scrolling the content keeps the header pinned: the header draws the
     // line under itself, the stack's chrome does not double it, and the
-    // bottom toolbar keys on the Pane's content.
+    // Pane footer draws the lower line, so the stack does not double it.
     await scroll(content, 'middle');
     expect(await shows(header)).toBe(true);
     expect(await shows(chrome, '::after')).toBe(false);
-    expect(await edge(bottom)).toBe(true);
+    expect(await edge(bottom)).toBe(false);
+    expect(await shows(footer)).toBe(true);
     expect(await rects(stack, parts)).toEqual(geometry);
     await scroll(content, 'end');
     expect(await edge(bottom)).toBe(false);
+    expect(await shows(footer)).toBe(false);
     expect(await rects(stack, parts)).toEqual(geometry);
+    await stack.screenshot({ path: 'test-results/nav-pane-wide.png' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await stack.screenshot({ path: 'test-results/nav-pane-narrow.png' });
   });
 
   test('a TabScaffold scene that is a Pane is filled by it, so the bar keys on the Pane content under a pinned header', async ({

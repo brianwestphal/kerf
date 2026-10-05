@@ -292,16 +292,18 @@ export function SplitViewDemo() {
           backLabel="Back to inbox"
           compactStack={{
             toolbarConfig: { headingLevel: 2, dividerSides: 'b' },
-            list: { toolbar: iconGroup('Compose', SquarePen, 'square-pen') },
+            list: {
+              toolbar: {
+                trailing: iconGroup('Compose', SquarePen, 'square-pen'),
+              },
+            },
             detail: {
-              toolbar: iconGroup('Reply', Reply, 'reply'),
-              bottomToolbar: (
-                <Toolbar
-                  label="Message actions"
-                  leading={<ToolbarText text="Received today" size="small" />}
-                  trailing={iconGroup('Archive', Archive, 'archive')}
-                />
-              ),
+              toolbar: { trailing: iconGroup('Reply', Reply, 'reply') },
+              bottomToolbar: {
+                label: 'Message actions',
+                leading: <ToolbarText text="Received today" size="small" />,
+                trailing: iconGroup('Archive', Archive, 'archive'),
+              },
             },
           }}
           list={messageList('open-split-view-message')}

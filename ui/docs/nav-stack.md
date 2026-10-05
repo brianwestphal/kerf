@@ -15,7 +15,7 @@ import { wireNavStack } from "@kerfjs/ui/wire-nav-stack";
 In a browser bundler that honors the `browser` export condition (Vite, esbuild, and
 webpack do by default), the import above also
 loads NavStack's stylesheet and those of the components it renders internally
-(`Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `LucideIcon`). Without that condition, import the manual stylesheets instead:
+(`Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `Pane`, `List`, `LucideIcon`). Without that condition, import the manual stylesheets instead:
 `@kerfjs/ui/nav-stack.css` plus those components' CSS, or `@kerfjs/ui/styles.css`.
 
 ## State lives in the app
@@ -28,9 +28,12 @@ stack as a `signal<NavStackView[]>`, `NavStack({ views })` renders it, and
 const views = signal<NavStackView[]>([
   {
     key: "inbox",
-    title: "Inbox",
+    toolbar: { title: "Inbox" },
     content: <InboxView />,
-    bottomToolbar: <InboxStatus />,
+    bottomToolbar: {
+      label: "Inbox status",
+      leading: <InboxStatus />,
+    },
   },
 ]);
 
@@ -47,35 +50,39 @@ const dispose = wireNavStack(root, {
 // push / pop by editing the signal:
 views.value = [
   ...views.value,
-  { key: id, title: "Message", content: <MessageView id={id} /> },
+  { key: id, toolbar: { title: "Message" }, content: <MessageView id={id} /> },
 ];
 ```
 
 `NavStack` renders every entry stacked, the last one active and the rest kept
 mounted (so their DOM state survives) but hidden. Each entry carries a
-`key` (stable identity), `content`, an optional `title`, optional per-view
-`leading`, `center`, and trailing `toolbar` groups for the top toolbar, and an
-optional per-view `bottomToolbar`. The component-level
+`key` (stable identity), `content`, an optional `toolbar` object with `title`,
+`leading`, `center`, and `trailing` groups, and an optional structured
+`bottomToolbar`. The component-level structured
 `bottomToolbar` remains a persistent fallback for views that do not provide one.
-Each view can also provide `header`, pinned below its top toolbar and above
-that view's single scroll area. A fixed heading, notice, or section selector
-can therefore change with the active screen without adding another scroller.
+Each view can also provide `header`, `footer`, `headerList`, `footerList`, and
+`pane` configuration, as a `WorkbenchStaticPanel` does. With any of these,
+the view renders a `Pane`: its header and footer stay pinned around the view's
+scrolling content, and slide with that view during navigation. The header and
+footer list configuration forwards to their `List`s; `pane` forwards
+`contentElement`, `contentLabel`, `separators`, `safeAreaEdges`,
+`chromeDividers`, and `appearance` to the Pane. Without those fields, the view
+keeps its simple direct scroll area. Use `pane: { appearance: "sunken" }` for a
+lowered scrolling work surface.
 The back control appears automatically once the stack has more than one entry;
 `wireNavStack`'s `onBack` is where the app pops its own signal.
 
-Set a view's `appearance: "sunken"` to paint its scroll viewport with the
-shared lowered-surface color, including space after short content. When the
-view holds a `Pane` as its only child, set the appearance on the Pane instead
-if its content owns scrolling. See [Lowered work surfaces](layout.md#lowered-work-surfaces).
+See [Lowered work surfaces](layout.md#lowered-work-surfaces) for nested Pane
+and layout content.
 
 ## The top toolbar
 
 The top chrome is a real `Toolbar`, so it follows the same zone,
 group, and responsive rules as every other toolbar. Its leading zone holds the
 back control (a borderless `ToolbarControlGroup`, shown once the stack has
-depth), then the active view's `leading` groups, then the view's `title` as a
-`ToolbarText`. The view's `center` fills the center zone and its `toolbar`
-fills the trailing zone. Give each zone `ToolbarControlGroup`s or `ToolbarText`,
+depth), then `toolbar.leading`, then `toolbar.title` as a `ToolbarText`.
+`toolbar.center` fills the center zone and `toolbar.trailing` fills the
+trailing zone. Give each zone `ToolbarControlGroup`s or `ToolbarText`,
 as in any toolbar.
 
 Configure the toolbar with `toolbarConfig` instead of styling it:
@@ -95,7 +102,12 @@ Configure the toolbar with `toolbarConfig` instead of styling it:
 />
 ```
 
-- `toolbarConfig` forwards the `Toolbar` configuration (`dividerSides`,
+- Each view's `toolbar` can forward the `Toolbar` configuration (`dividerSides`,
+  `centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`) and its `label`,
+  `titleSize`, and `headingLevel`. A view value overrides the corresponding
+  `toolbarConfig` default. Its `bottomToolbar` forwards the same `Toolbar`
+  configuration and has a required accessible `label`.
+- `toolbarConfig` supplies stack-wide defaults (`dividerSides`,
   `centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`) and adds
   `label` (the toolbar's accessible name), `titleSize` (the title's
   `ToolbarText` size, default `large`), and `headingLevel` (expose the title as

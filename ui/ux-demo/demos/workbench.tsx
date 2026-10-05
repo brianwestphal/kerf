@@ -87,8 +87,10 @@ const ticketIds = ['T-42', 'T-43', 'T-44'];
 function ticketCollectionView(): NavStackView {
   return {
     key: 'collection',
-    title: 'Tickets',
-    leading: iconGroup('Choose project', Search, 'search'),
+    toolbar: {
+      title: 'Tickets',
+      leading: iconGroup('Choose project', Search, 'search'),
+    },
     header: (
       <List gap="2xs" textInsets="rl">
         <ToolbarText text="Ticket queue" headingLevel={3} />
@@ -124,8 +126,10 @@ function ticketCollectionView(): NavStackView {
 function ticketDetailView(id: string): NavStackView {
   return {
     key: id,
-    title: id,
-    toolbar: iconGroup('Ticket action', FilePlus, 'file-plus'),
+    toolbar: {
+      title: id,
+      trailing: iconGroup('Ticket action', FilePlus, 'file-plus'),
+    },
     header: (
       <List gap="2xs" textInsets="rl" controlInsets="rl">
         <ToolbarText text="Workspace rail detail" headingLevel={3} />

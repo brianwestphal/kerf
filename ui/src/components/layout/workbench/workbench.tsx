@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import type { NavPane } from '../../../shared/panels/nav-pane.js';
 import type { ListConfig } from '../../collections/list/list.js';
 import type { NavStackProps } from '../../navigation/nav-stack/nav-stack.js';
 import type { PaneConfig } from '../pane/pane.js';
@@ -116,19 +117,14 @@ interface WorkbenchPanelBase {
 }
 
 /** The original static panel body: one toolbar, optional fixed chrome, and one Pane. */
-export interface WorkbenchStaticPanel extends WorkbenchPanelBase {
-  content: KerfUiContent;
+export interface WorkbenchStaticPanel
+  extends
+    WorkbenchPanelBase,
+    NavPane<WorkbenchPanelToolbar, WorkbenchPanelBottomToolbar> {
   /** The composed toolbar; marked groups and its toggle relocate on collapse. */
   toolbar?: WorkbenchPanelToolbar;
-  header?: KerfUiContent;
-  headerList?: ListConfig;
   headerPlacement?: WorkbenchChromePlacement;
-  footer?: KerfUiContent;
-  footerList?: ListConfig;
-  bottomToolbar?: WorkbenchPanelBottomToolbar;
   footerPlacement?: WorkbenchChromePlacement;
-  /** Configuration for the static toolbar panel's Pane. */
-  pane?: PaneConfig;
   navStack?: never;
 }
 

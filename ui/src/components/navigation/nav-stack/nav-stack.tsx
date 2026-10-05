@@ -1,6 +1,8 @@
 import { ChevronLeft } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import type { NavPane } from '../../../shared/panels/nav-pane.js';
+import type { PanelBottomToolbar } from '../../../shared/panels/panel-toolbar.js';
 import { Toolbar, type ToolbarConfig } from '../../actions/toolbar/toolbar.js';
 import { ToolbarControlGroup } from '../../actions/toolbar-control-group/toolbar-control-group.js';
 import {
@@ -8,32 +10,32 @@ import {
   ToolbarText,
   type ToolbarTextSize,
 } from '../../actions/toolbar-text/toolbar-text.js';
-import type { PaneAppearance } from '../../layout/pane/pane.js';
+import { List, type ListConfig } from '../../collections/list/list.js';
+import { Pane } from '../../layout/pane/pane.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 
 /**
  * One entry in a {@link NavStack}. The app owns the stack as an array (usually a
  * signal); `NavStack` renders it and `wireNavStack` animates the transitions.
  */
-export interface NavStackView {
+export interface NavStackView extends NavPane<
+  NavStackViewToolbar,
+  PanelBottomToolbar
+> {
   /** Stable identity for keyed reconcile and transition direction. */
   key: string;
-  content: KerfUiContent;
-  /** Background of this view's scrolling work surface. */
-  appearance?: PaneAppearance;
-  /** Title shown in the top toolbar for this view. */
-  title?: string;
-  /** Leading groups for this view's top toolbar, after the back control and before the title. */
-  leading?: KerfUiContent;
-  /** Center content for this view's top toolbar (placed per `toolbarConfig.centerAlign`). */
-  center?: KerfUiContent;
-  /** Trailing actions for this view's top toolbar. */
-  toolbar?: KerfUiContent;
-  /** Fixed chrome below this view's toolbar, above its scrolling content. */
-  header?: KerfUiContent;
-  /** Bottom toolbar for this view. Cross-fades with the top chrome on navigation. */
-  bottomToolbar?: KerfUiContent;
 }
+
+/** Per-view top toolbar. The stack supplies its back control before `leading`. */
+export interface NavStackViewToolbar extends NavStackToolbarConfig {
+  title?: string;
+  leading?: KerfUiContent;
+  center?: KerfUiContent;
+  trailing?: KerfUiContent;
+}
+
+/** A view's structured bottom toolbar; it cross-fades on navigation. */
+export type NavStackViewBottomToolbar = PanelBottomToolbar;
 
 /**
  * The top toolbar's configuration. Its `ToolbarConfig` forwards to the real
@@ -72,7 +74,7 @@ export interface NavStackProps {
   /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
   hideToolbar?: boolean;
   /** Optional persistent bottom toolbar used when the active view does not provide one. */
-  bottomToolbar?: KerfUiContent;
+  bottomToolbar?: NavStackViewBottomToolbar;
   /**
    * The line under the top chrome and over the bottom toolbar, where they
    * meet the active view. `scroll` (default) shows the chrome's line only
@@ -96,12 +98,33 @@ const DEFAULT_SAFE_AREA_EDGES = [
   'inline-end',
 ] as const;
 
+const DEFAULT_BOTTOM_SAFE_AREA_EDGES = [
+  'block-end',
+  'inline-start',
+  'inline-end',
+] as const;
+
+function chromeList(content: KerfUiContent, config?: ListConfig) {
+  return (
+    <List
+      dividerSides={config?.dividerSides}
+      gap={config?.gap}
+      hAlign={config?.hAlign}
+      vAlign={config?.vAlign}
+      textInsets={config?.textInsets}
+      controlInsets={config?.controlInsets}
+    >
+      {content}
+    </List>
+  );
+}
+
 /**
  * A navigation stack (iOS-style push/pop). Renders every entry stacked, the last
  * one active; `@kerfjs/ui/wire-nav-stack`'s `wireNavStack` slides the content and
  * cross-fades the chrome across a change. Its top chrome is a real `Toolbar`: the
- * back control and title lead, the active view's `leading` / `center` / `toolbar`
- * content fills the zones, and `toolbarConfig` configures it. A single-pane
+ * back control and title lead, the active view's `toolbar` fills the zones,
+ * and `toolbarConfig` supplies defaults. A single-pane
  * layout is a `NavStack` with one entry. See `docs/23-app-layouts.md` §3.1.
  */
 export function NavStack({
@@ -121,6 +144,8 @@ export function NavStack({
 }: NavStackProps) {
   const topIndex = views.length - 1;
   const top = views[topIndex];
+  const topToolbar = top?.toolbar;
+  const bottom = top?.bottomToolbar ?? bottomToolbar;
   const canPop = views.length > 1;
   return (
     <section
@@ -140,13 +165,19 @@ export function NavStack({
       {!hideToolbar && (
         <div class="kui-nav-stack__chrome" data-nav-stack-chrome>
           <Toolbar
-            label={toolbarConfig.label}
-            dividerSides={toolbarConfig.dividerSides}
-            centerAlign={toolbarConfig.centerAlign}
-            responsive={toolbarConfig.responsive}
-            responsiveAt={toolbarConfig.responsiveAt}
+            label={topToolbar?.label ?? toolbarConfig.label}
+            dividerSides={
+              topToolbar?.dividerSides ?? toolbarConfig.dividerSides
+            }
+            centerAlign={topToolbar?.centerAlign ?? toolbarConfig.centerAlign}
+            responsive={topToolbar?.responsive ?? toolbarConfig.responsive}
+            responsiveAt={
+              topToolbar?.responsiveAt ?? toolbarConfig.responsiveAt
+            }
             safeAreaEdges={
-              toolbarConfig.safeAreaEdges ?? DEFAULT_SAFE_AREA_EDGES
+              topToolbar?.safeAreaEdges ??
+              toolbarConfig.safeAreaEdges ??
+              DEFAULT_SAFE_AREA_EDGES
             }
             leading={
               <>
@@ -174,28 +205,27 @@ export function NavStack({
                     </button>
                   </ToolbarControlGroup>
                 )}
-                {top?.leading}
+                {topToolbar?.leading}
                 <ToolbarText
-                  text={top?.title ?? ''}
-                  size={toolbarConfig.titleSize ?? 'large'}
-                  headingLevel={toolbarConfig.headingLevel}
+                  text={topToolbar?.title ?? ''}
+                  size={
+                    topToolbar?.titleSize ?? toolbarConfig.titleSize ?? 'large'
+                  }
+                  headingLevel={
+                    topToolbar?.headingLevel ?? toolbarConfig.headingLevel
+                  }
                   fill
                 />
               </>
             }
-            center={top?.center}
+            center={topToolbar?.center}
             trailing={
               <>
-                {top?.toolbar}
+                {topToolbar?.trailing}
                 {panelToggle}
               </>
             }
           />
-          {top?.header && (
-            <div class="kui-nav-stack__header" data-nav-stack-header>
-              {top.header}
-            </div>
-          )}
         </div>
       )}
       <div class="kui-nav-stack__viewport" data-nav-stack-viewport>
@@ -205,18 +235,57 @@ export function NavStack({
             data-key={view.key}
             data-nav-key={view.key}
             data-nav-active={String(index === topIndex)}
-            data-appearance={
-              view.appearance === 'sunken' ? 'sunken' : undefined
-            }
             aria-hidden={String(index !== topIndex)}
           >
-            {view.content}
+            {view.pane ||
+            view.header !== undefined ||
+            view.footer !== undefined ? (
+              <Pane
+                appearance={view.pane?.appearance}
+                contentElement={view.pane?.contentElement}
+                contentLabel={view.pane?.contentLabel}
+                separators={view.pane?.separators}
+                safeAreaEdges={view.pane?.safeAreaEdges}
+                chromeDividers={view.pane?.chromeDividers}
+                header={
+                  view.header === undefined ? undefined : (
+                    <div data-nav-stack-header>
+                      {chromeList(view.header, view.headerList)}
+                    </div>
+                  )
+                }
+                footer={
+                  view.footer === undefined ? undefined : (
+                    <div data-nav-stack-footer>
+                      {chromeList(view.footer, view.footerList)}
+                    </div>
+                  )
+                }
+              >
+                {view.content}
+              </Pane>
+            ) : (
+              view.content
+            )}
           </article>
         ))}
       </div>
-      {(top?.bottomToolbar ?? bottomToolbar) && (
+      {bottom && (
         <footer class="kui-nav-stack__bottom" data-nav-stack-bottom>
-          {top?.bottomToolbar ?? bottomToolbar}
+          <Toolbar
+            position="footer"
+            label={bottom.label}
+            dividerSides={bottom.dividerSides}
+            centerAlign={bottom.centerAlign}
+            responsive={bottom.responsive}
+            responsiveAt={bottom.responsiveAt}
+            safeAreaEdges={
+              bottom.safeAreaEdges ?? DEFAULT_BOTTOM_SAFE_AREA_EDGES
+            }
+            leading={bottom.leading}
+            center={bottom.center}
+            trailing={bottom.trailing}
+          />
         </footer>
       )}
     </section>

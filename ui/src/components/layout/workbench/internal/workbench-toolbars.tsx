@@ -127,9 +127,9 @@ export function relocatedGroups(
     active && panel?.toolbar
       ? {
           ...panel.toolbar,
-          leading: active.leading,
-          center: active.center,
-          trailing: active.toolbar,
+          leading: active.toolbar?.leading,
+          center: active.toolbar?.center,
+          trailing: active.toolbar?.trailing,
         }
       : panel?.toolbar;
   return relocatedPanelGroups(

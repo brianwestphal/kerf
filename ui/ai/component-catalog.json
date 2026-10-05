@@ -761,13 +761,13 @@
       ],
       "appOwns": [
         "ordered view stack and stable keys",
-        "view content and titles",
+        "view content and structured top and bottom toolbar configurations",
         "push and pop actions",
         "preferred initial focus targets when DOM order is insufficient",
-        "per-view bottom toolbar content or a persistent fallback",
+        "per-view bottom toolbar or a persistent structured fallback",
         "per-view leading, center, and trailing top-toolbar groups",
-        "per-view fixed header content above the active view's scroll area",
-        "top-toolbar configuration, title size, and heading level",
+        "per-view header and footer with List and Pane configuration",
+        "top-toolbar defaults, title size, and heading level",
         "whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers)"
       ],
       "variants": [
@@ -859,7 +859,6 @@
         "kui-nav-stack__chrome-copy",
         "kui-nav-stack__chrome-copy--bottom",
         "kui-nav-stack__chrome-copy--exiting",
-        "kui-nav-stack__header",
         "kui-nav-stack__viewport",
         "kui-nav-stack__view",
         "kui-nav-stack__view--entering",

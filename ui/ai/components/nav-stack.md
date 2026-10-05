@@ -57,7 +57,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 
 ## State and wiring
 
-**The app owns:** ordered view stack and stable keys; view content and titles; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar content or a persistent fallback; per-view leading, center, and trailing top-toolbar groups; per-view fixed header content above the active view's scroll area; top-toolbar configuration, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers).
+**The app owns:** ordered view stack and stable keys; view content and structured top and bottom toolbar configurations; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar or a persistent structured fallback; per-view leading, center, and trailing top-toolbar groups; per-view header and footer with List and Pane configuration; top-toolbar defaults, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers).
 
 **Wiring:** `wireNavStack`, `wireScrollDividers` is required.
 
@@ -90,9 +90,9 @@ Margin: none · border: conditional · padding: child (layout role: structure). 
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-nav-stack`, `kui-nav-stack__chrome`, `kui-nav-stack__bottom`, `kui-nav-stack__chrome--entering`, `kui-nav-stack__chrome-copy`, `kui-nav-stack__chrome-copy--bottom`, `kui-nav-stack__chrome-copy--exiting`, `kui-nav-stack__header`, `kui-nav-stack__viewport`, `kui-nav-stack__view`, `kui-nav-stack__view--entering`, `kui-nav-stack__view--exiting`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-nav-stack`, `kui-nav-stack__chrome`, `kui-nav-stack__bottom`, `kui-nav-stack__chrome--entering`, `kui-nav-stack__chrome-copy`, `kui-nav-stack__chrome-copy--bottom`, `kui-nav-stack__chrome-copy--exiting`, `kui-nav-stack__viewport`, `kui-nav-stack__view`, `kui-nav-stack__view--entering`, `kui-nav-stack__view--exiting`.
 
-Never put `kui-nav-stack`, `kui-nav-stack__chrome`, `kui-nav-stack__bottom`, `kui-nav-stack__chrome--entering`, `kui-nav-stack__chrome-copy`, `kui-nav-stack__chrome-copy--bottom`, `kui-nav-stack__chrome-copy--exiting`, `kui-nav-stack__header`, `kui-nav-stack__viewport`, `kui-nav-stack__view`, `kui-nav-stack__view--entering`, `kui-nav-stack__view--exiting` on an element you write; render `NavStack` instead (`KUI-L103`).
+Never put `kui-nav-stack`, `kui-nav-stack__chrome`, `kui-nav-stack__bottom`, `kui-nav-stack__chrome--entering`, `kui-nav-stack__chrome-copy`, `kui-nav-stack__chrome-copy--bottom`, `kui-nav-stack__chrome-copy--exiting`, `kui-nav-stack__viewport`, `kui-nav-stack__view`, `kui-nav-stack__view--entering`, `kui-nav-stack__view--exiting` on an element you write; render `NavStack` instead (`KUI-L103`).
 
 Public tokens it reads: `--kui-nav-stack-transition-duration`. Set a token only where its public contract allows; prefer a prop.
 

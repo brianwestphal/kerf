@@ -58,7 +58,7 @@ const ITEMS: LibraryItem[] = [
 export const createRecipe: RecipeFactory = (announce) => {
   const listView = (): NavStackView => ({
     key: 'library',
-    title: 'Library',
+    toolbar: { title: 'Library' },
     content: (
       <List>
         <section>
@@ -79,7 +79,7 @@ export const createRecipe: RecipeFactory = (announce) => {
 
   const detailView = (item: LibraryItem): NavStackView => ({
     key: item.id,
-    title: item.label,
+    toolbar: { title: item.label },
     content: (
       <List controlInsets="t">
         <ContentItem>

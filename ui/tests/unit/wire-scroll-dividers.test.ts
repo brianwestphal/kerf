@@ -187,8 +187,8 @@ describe('NavStack and TabScaffold chromeDividers', () => {
       NavStack({
         id: 'stack',
         label: 'Stack',
-        views: [{ key: 'root', title: 'Root', content: body }],
-        bottomToolbar: Toolbar({ label: 'Actions' }),
+        views: [{ key: 'root', toolbar: { title: 'Root' }, content: body }],
+        bottomToolbar: { label: 'Actions' },
         chromeDividers,
       }),
     );
@@ -225,7 +225,7 @@ describe('NavStack and TabScaffold chromeDividers', () => {
         NavStack({
           id: 'stack',
           label: 'Stack',
-          views: [{ key: 'root', title: 'Root', content: body }],
+          views: [{ key: 'root', toolbar: { title: 'Root' }, content: body }],
           chromeDividers,
         }),
       );
@@ -236,7 +236,7 @@ describe('NavStack and TabScaffold chromeDividers', () => {
         NavStack({
           id: 'stack',
           label: 'Stack',
-          views: [{ key: 'root', title: 'Root', content: body }],
+          views: [{ key: 'root', toolbar: { title: 'Root' }, content: body }],
           toolbarConfig: { dividerSides: 'b' },
           chromeDividers: 'none',
         }),
@@ -772,11 +772,10 @@ function navStack(
       label: 'Stack',
       views: views.map(({ key, content }) => ({
         key,
-        title: key,
+        toolbar: { title: key },
         content: content ?? body,
       })),
-      bottomToolbar:
-        options.bottom === false ? undefined : Toolbar({ label: 'Bottom' }),
+      bottomToolbar: options.bottom === false ? undefined : { label: 'Bottom' },
       hideToolbar: options.hideToolbar,
     }),
   );

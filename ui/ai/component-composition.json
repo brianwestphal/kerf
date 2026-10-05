@@ -697,7 +697,7 @@
           "required": false
         },
         {
-          "id": "view content and titles",
+          "id": "view content and structured top and bottom toolbar configurations",
           "owner": "application",
           "required": false
         },
@@ -712,7 +712,7 @@
           "required": false
         },
         {
-          "id": "per-view bottom toolbar content or a persistent fallback",
+          "id": "per-view bottom toolbar or a persistent structured fallback",
           "owner": "application",
           "required": false
         },
@@ -722,12 +722,12 @@
           "required": false
         },
         {
-          "id": "per-view fixed header content above the active view's scroll area",
+          "id": "per-view header and footer with List and Pane configuration",
           "owner": "application",
           "required": false
         },
         {
-          "id": "top-toolbar configuration, title size, and heading level",
+          "id": "top-toolbar defaults, title size, and heading level",
           "owner": "application",
           "required": false
         },
@@ -812,7 +812,6 @@
           "kui-nav-stack__chrome-copy",
           "kui-nav-stack__chrome-copy--bottom",
           "kui-nav-stack__chrome-copy--exiting",
-          "kui-nav-stack__header",
           "kui-nav-stack__viewport",
           "kui-nav-stack__view",
           "kui-nav-stack__view--entering",

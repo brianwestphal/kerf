@@ -35,7 +35,7 @@ export interface SplitViewResizable extends Pick<
 /** One compact view's top- and bottom-toolbar content (see `NavStackView`). */
 export type SplitViewCompactViewToolbars = Pick<
   NavStackView,
-  'leading' | 'center' | 'toolbar' | 'bottomToolbar'
+  'toolbar' | 'bottomToolbar'
 >;
 
 /**
@@ -114,7 +114,7 @@ export function SplitView({
     const listView: NavStackView = {
       ...compactStack.list,
       key: 'list',
-      title: listTitle,
+      toolbar: { ...compactStack.list?.toolbar, title: listTitle },
       content: list,
     };
     const views: NavStackView[] = detailActive
@@ -123,7 +123,7 @@ export function SplitView({
           {
             ...compactStack.detail,
             key: 'detail',
-            title: detailTitle,
+            toolbar: { ...compactStack.detail?.toolbar, title: detailTitle },
             content: detail,
           },
         ]

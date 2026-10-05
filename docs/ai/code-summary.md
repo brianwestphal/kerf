@@ -1024,6 +1024,7 @@ composed child's root. Component names, rendered Web Awesome tags, and
 composed children are derived from the nested component sources; its documented exception
 list fails when an entry goes stale (`ui/tests/unit/css-ownership.test.ts`).
 `ui/src/shared/panels/panel-toolbar.tsx` holds the shared panel-toolbar roles (`PanelToolbar`: title, leading/center/trailing zones, and the standard toggle), the per-side toggle icon, and the composition/relocation helpers both `Workbench` and `CollapsiblePanel` (with `CollapsiblePanelRelocated`) use (`ui/tests/unit/collapsible-panel-toolbar.test.tsx`, `ui/tests/browser/collapsible-panel-relocation.spec.ts`). `ui/src/shared/panels/panel-toolbar-group.ts` recognizes `ToolbarControlGroup`s marked `relocateOnCollapse`.
+`ui/src/shared/panels/nav-pane.ts` defines the common content, structured toolbar, header/footer list, and Pane configuration fields of `NavStackView` and `WorkbenchStaticPanel`; NavStack supplies view-specific Toolbar types and renders a Pane only when a view requests pane chrome or configuration.
 `ui/src/components/layout/workbench/internal/workbench-toolbars.tsx` composes a panel's `toolbar` (title,
 zone groups, the standard keyed toggle) and the work area's
 `mainToolbar` / `mainBottomToolbar`, moving a closed panel's marked groups
