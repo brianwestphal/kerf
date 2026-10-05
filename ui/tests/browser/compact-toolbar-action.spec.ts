@@ -36,17 +36,23 @@ test('compact toolbar independent action matches adjacent pill geometry', async 
   if (browserName === 'chromium')
     await recipe.screenshot({ path: 'test-results/compact-toolbar-wide.png' });
 
-  await page.setViewportSize({ width: 390, height: 844 });
-  expect(
-    await page.evaluate(
-      () =>
-        document.documentElement.scrollWidth <=
-        document.documentElement.clientWidth + 1,
-    ),
-  ).toBe(true);
-  await expect(moreGroup).toBeVisible();
+  // Resize completion can precede the app's responsive resize-event handling.
+  // Poll the unchanged no-overflow requirement, including a return to wide.
+  for (const width of [390, 1440, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            document.documentElement.scrollWidth <=
+            document.documentElement.clientWidth + 1,
+        ),
+      )
+      .toBe(true);
+    await expect(moreGroup).toBeVisible();
+  }
   if (browserName === 'chromium')
-    await recipe.screenshot({
+    await recipe.locator('[aria-label="Task workspace controls"]').screenshot({
       path: 'test-results/compact-toolbar-narrow.png',
     });
 });
