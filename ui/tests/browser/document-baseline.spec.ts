@@ -105,3 +105,63 @@ test('the document-baseline route shows kui-app-root filling a definite height',
     expect(geometry.overflow).toBeLessThanOrEqual(1);
   }
 });
+
+test('native table cells and controls inherit document typography', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=document-baseline');
+  await page.evaluate(() => {
+    const fixture = document.createElement('section');
+    fixture.dataset.baselineFontFixture = '';
+    fixture.style.cssText =
+      'display:grid;gap:16px;margin:24px;width:calc(100% - 48px);max-width:480px';
+    fixture.innerHTML = `
+      <table style="border-spacing:8px">
+        <caption>Native table typography</caption>
+        <thead><tr><th scope="col">Item</th><th scope="col">State</th></tr></thead>
+        <tbody><tr><td>Messages</td><td>Ready</td></tr></tbody>
+      </table>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:start">
+        <button type="button">Apply</button>
+        <input aria-label="Filter" value="Filter messages" />
+        <select aria-label="State"><option>Ready</option></select>
+        <textarea aria-label="Notes" rows="1">Notes</textarea>
+      </div>`;
+    document.body.append(fixture);
+  });
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    const fonts = await page.evaluate(() => {
+      const fixture = document.querySelector('[data-baseline-font-fixture]')!;
+      const metrics = (element: Element) => {
+        const style = globalThis.getComputedStyle(element);
+        return {
+          family: style.fontFamily,
+          size: style.fontSize,
+          lineHeight: style.lineHeight,
+          weight: style.fontWeight,
+        };
+      };
+      return {
+        body: metrics(document.body),
+        elements: [
+          ...fixture.querySelectorAll(
+            'th, td, button, input, select, textarea',
+          ),
+        ].map(metrics),
+      };
+    });
+    for (const element of fonts.elements) {
+      expect(element.family).toBe(fonts.body.family);
+      expect(element.size).toBe(fonts.body.size);
+      expect(element.lineHeight).toBe(fonts.body.lineHeight);
+    }
+    expect(Number(fonts.elements[0]!.weight)).toBeGreaterThan(
+      Number(fonts.elements[2]!.weight),
+    );
+    await page.locator('[data-baseline-font-fixture]').screenshot({
+      path: testInfo.outputPath(`document-baseline-fonts-${width}.png`),
+    });
+  }
+});

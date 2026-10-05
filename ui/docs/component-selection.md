@@ -29,7 +29,9 @@ CSS".
 
 Import the opt-in `@kerfjs/ui/document.css` baseline when the application wants
 Kerf UI to own global box sizing, body typography/colors, plain-link color, and
-the definite full-height chain. Put `.kui-app-root` on the one direct mount
+the definite full-height chain. It also lets native table cells and form controls
+inherit the surrounding font metrics without removing table-header emphasis.
+Put `.kui-app-root` on the one direct mount
 container only for a full-height shell; ordinary flowing pages can omit it. See
 [Document baseline](document-baseline.md).
 

@@ -1056,7 +1056,8 @@ The same `text` entry exports `FieldLabel`, a plain preview heading whose
 typography and inline inset mirror a themed Web Awesome form-control label;
 applications connect its id to a preview group with `aria-labelledby`.
 The optional `ui/src/document.css` entry provides global border-box sizing,
-token-backed body/link presentation, and a definite `html` → `body` →
+token-backed body/link presentation, inherited table-cell and native form-control
+font metrics, and a definite `html` → `body` →
 `.kui-app-root` height chain for top-level percentage-height shells. It is an
 explicit `@kerfjs/ui/document.css` import and stays out of the aggregate and
 component browser styles so consumers never receive document globals

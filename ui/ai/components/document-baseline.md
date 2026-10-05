@@ -4,13 +4,13 @@
 
 `@kerfjs/ui:document-baseline` · Kerf UI · CSS composition · Foundation
 
-Opt-in document-level defaults: border-box sizing, body margin/font/surface, link color, and the html → body → .kui-app-root full-height chain.
+Opt-in document-level defaults: border-box sizing, body margin/font/surface, native table-cell and form-control font metrics, link color, and the html → body → .kui-app-root full-height chain.
 
 ## When to use
 
 Let an application opt into Kerf UI-owned document defaults and a definite full-height chain for a percentage-height application shell.
 
-- An application wants Kerf UI to own document-level box sizing, body typography, surface, and link color.
+- An application wants Kerf UI to own document-level box sizing, body typography, native table-cell and form-control font metrics, surface, and link color.
 - A full-height shell (Workbench, SplitView, NavStack, or TabScaffold) mounts into one direct container: put .kui-app-root on that container.
 
 **Not when:**

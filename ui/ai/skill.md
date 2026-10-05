@@ -262,6 +262,7 @@ Use `Toolbar responsive="trailing-priority"` when an expanded trailing search ne
 Set `--kui-toolbar-inset: 0px` on an embedded Toolbar to remove its outer padding while retaining `--kui-toolbar-gap` between zones. The same inset token controls the minimum-height allowance; safe-area padding still applies at claimed edges.
 
 For compact dialog copy, use `Text flush lineHeight="tight"`; for compact metadata, use `ValueTable density="compact"` and its public row columns/padding/gap tokens. `ToolbarText size="xsmall"` fits a dense rail heading. A `TokenSearchField` editor shrinks inside a narrow group by default; set `--kui-token-search-editor-min-width` when a minimum is needed. A full-height shell uses the one `.kui-app-root` mount container documented in `docs/document-baseline.md`.
+When importing the opt-in `@kerfjs/ui/document.css` baseline, native `th`, `td`, `button`, `input`, `select`, and `textarea` inherit the surrounding font family, size, and line height; table headers retain their native emphasis. Load application typography overrides after the baseline.
 
 For a read-only field preview that replaces a Web Awesome input, use `FieldLabel` from `@kerfjs/ui/text` above the preview. Put it in `ListInsetControl sides="trl"` beside a `ContentItem` value; give it an id and use `aria-labelledby` on the preview group. The app owns preview/edit state and hint copy.
 

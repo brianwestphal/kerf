@@ -17,6 +17,10 @@ The opt-in stylesheet applies `border-box` sizing to every element and
 pseudo-element, removes the body margin, and gives the body the foundation
 font, foreground, lowered surface, and `1.45` line height. Plain links use the
 semantic `--kui-color-text-link` token with zero selector specificity.
+Native table cells (`th`, `td`) and form controls (`button`, `input`, `select`,
+`textarea`) inherit the surrounding font family, size, and line height through
+zero-specificity selectors. Table headers keep their native bold weight and
+alignment, and application styles can override the baseline.
 
 `html`, `body`, and `.kui-app-root` form a definite `height: 100%` chain. Add
 `.kui-app-root` to the one direct mount container of a full-height application

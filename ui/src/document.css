@@ -18,6 +18,12 @@ body {
   line-height: 1.45;
 }
 
+:where(button, input, select, textarea, th, td) {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
 :where(a) {
   color: var(--kui-color-text-link);
 }

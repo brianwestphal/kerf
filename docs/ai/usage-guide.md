@@ -77,6 +77,9 @@ styles. The app shell does not maintain a transitive style list. The root barrel
 and `@kerfjs/ui/unstyled` are CSS-free; pair the root with `styles.css` only when
 the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines.
+The opt-in `@kerfjs/ui/document.css` baseline also gives native table cells and
+form controls the surrounding font family, size, and line height while keeping
+table-header emphasis; import it once when Kerf owns document defaults.
 
 **Components own their styles; configure, never override.** Change how a Kerf UI
 component looks or sits through its typed props (size, density, inset,
