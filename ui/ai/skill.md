@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.52.0
+kerf-ui-skill-version: 1.53.0
 ---
 
 # Building with @kerfjs/ui
@@ -291,6 +291,8 @@ For compact dialog copy, use `Text flush lineHeight="tight"`; for compact metada
 When importing the opt-in `@kerfjs/ui/document.css` baseline, native `th`, `td`, `button`, `input`, `select`, and `textarea` inherit the surrounding font family, size, and line height; table headers retain their native emphasis. Load application typography overrides after the baseline.
 
 For a read-only field preview that replaces a Web Awesome input, use `FieldLabel` from `@kerfjs/ui/text` above the preview. Put it in `ListInsetControl sides="trl"` beside a `ContentItem` value; give it an id and use `aria-labelledby` on the preview group. The app owns preview/edit state and hint copy.
+
+`ToolbarControlGroup.tileTone` selects `neutral`, `brand`, `success`, `warning`, or `danger` quiet fill, matching quiet border, and on-quiet foreground for a non-interactive icon tile. Compose a contained `single` group whose only child is a direct decorative LucideIcon (`aria-hidden="true"`). Omission preserves the normal group palette. The prop does not recolor interactive, mixed, multi-control, or borderless groups; keep real actions in controls with their existing focus/hover/pressed treatments.
 
 Common mistakes:
 

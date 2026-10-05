@@ -4,6 +4,9 @@ import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.j
 
 export type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 export type ToolbarControlGroupTone = 'default' | 'dark';
+/** Quiet palette for a contained, single decorative icon tile. */
+export type ToolbarControlGroupTileTone =
+  'neutral' | 'brand' | 'success' | 'warning' | 'danger';
 export type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
 export type ToolbarControlGroupShape = 'pill' | 'rounded';
 export type ToolbarControlGroupSize = 'default' | 'compact';
@@ -77,6 +80,8 @@ export interface ToolbarControlGroupProps {
   single?: boolean;
   appearance?: ToolbarControlGroupAppearance;
   tone?: ToolbarControlGroupTone;
+  /** Quiet fill, matching border and foreground for a contained single group whose only child is a decorative SVG. Ignored for interactive or mixed content. */
+  tileTone?: ToolbarControlGroupTileTone;
   buttonAppearance?: ToolbarControlGroupButtonAppearance;
   /** Corner shape: fully round `pill` (default) or a softer `rounded` rectangle. */
   shape?: ToolbarControlGroupShape;
@@ -126,6 +131,7 @@ export function ToolbarControlGroup({
   single = false,
   appearance = 'contained',
   tone = 'default',
+  tileTone,
   buttonAppearance = 'plain',
   shape = 'pill',
   size = 'default',
@@ -162,6 +168,7 @@ export function ToolbarControlGroup({
       aria-label={label}
       data-appearance={appearance}
       data-tone={tone}
+      data-tile-tone={tileTone}
       data-button-appearance={buttonAppearance}
       data-expanded={String(expanded)}
       data-single={String(single)}

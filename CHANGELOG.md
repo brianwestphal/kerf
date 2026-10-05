@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `@kerfjs/ui` ToolbarControlGroup adds `tileTone` quiet semantic palettes for non-interactive heading icon tiles.
+
 - ToolbarText supports `tone="dark"` for filenames, headings, and actionable titles on loud toolbar surfaces.
 - `@kerfjs/ui` Text accepts `controlMargins` for selected exterior control gutters, avoiding a Row wrapper around isolated text.
 

@@ -3014,3 +3014,44 @@ describe('production UI primitives', () => {
     );
   });
 });
+
+describe('ToolbarControlGroup icon tile tones', () => {
+  it('omits the tile tone by default and projects every finite palette without adding controls', () => {
+    const icon = LucideIcon({ icon: Folder, name: 'folder' });
+    expect(
+      asHtml(ToolbarControlGroup({ single: true, children: icon })),
+    ).not.toContain('data-tile-tone');
+    for (const tileTone of [
+      'neutral',
+      'brand',
+      'success',
+      'warning',
+      'danger',
+    ] as const) {
+      const html = asHtml(
+        ToolbarControlGroup({ single: true, tileTone, children: icon }),
+      );
+      expect(html).toContain(`data-tile-tone="${tileTone}"`);
+      expect(html).toContain('aria-hidden="true"');
+      expect(html).not.toContain('<button');
+    }
+  });
+  it('leaves interactive semantics intact when a tone is supplied to an ineligible composition', () => {
+    const html = asHtml(
+      ToolbarControlGroup({
+        single: true,
+        tileTone: 'danger',
+        children: (
+          <button type="button" data-action="open">
+            Open
+          </button>
+        ),
+      }),
+    );
+    expect(html).toContain(
+      '<button type="button" data-action="open">Open</button>',
+    );
+    expect(html).not.toContain('disabled');
+    expect(html).not.toContain('tabindex');
+  });
+});

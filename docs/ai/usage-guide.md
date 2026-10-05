@@ -234,6 +234,8 @@ Toolbar claims a screen edge.
 
 Text supports `controlMargins` with canonical physical Sides for an exterior 8px control gutter; it preserves border/padding and avoids an isolated Row wrapper. Avoid stacking it with parent insets. Inline spans retain native inline margin behavior.
 
+`ToolbarControlGroup.tileTone` selects `neutral`, `brand`, `success`, `warning`, or `danger` quiet fill, matching quiet border, and on-quiet foreground for a non-interactive icon tile. Compose a contained `single` group whose only child is a direct decorative LucideIcon (`aria-hidden="true"`). Omission preserves the normal group palette. The prop does not recolor interactive, mixed, multi-control, or borderless groups; keep real actions in controls with their existing focus/hover/pressed treatments.
+
 Use `Text` from `@kerfjs/ui/text` for ordinary headings, paragraphs, and inline
 secondary copy outside toolbar title zones. It renders `p` by default; set
 `variant` to `h1`–`h6` only when the document hierarchy calls for a heading, or

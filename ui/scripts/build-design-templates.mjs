@@ -173,6 +173,19 @@ export const COMPONENTS = {
     width: 520,
     frameWidth: 'max-content',
     variants: [
+      ...['neutral', 'brand', 'success', 'warning', 'danger'].map(
+        (tileTone) => ({
+          id: `icon-tile-${tileTone}`,
+          label: `${tileTone} quiet icon tile`,
+          height: 56,
+          render: () =>
+            ToolbarControlGroup({
+              single: true,
+              tileTone,
+              children: glyph(Settings, 'settings'),
+            }),
+        }),
+      ),
       {
         id: 'icon-buttons',
         label: 'Bordered group of icon buttons',

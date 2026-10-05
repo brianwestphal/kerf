@@ -393,6 +393,8 @@ When the expanded toolbar field has focus, its inset surface uses
 `--kui-token-search-background` or the default surface color if that token is
 unset.
 
+`ToolbarControlGroup.tileTone` selects `neutral`, `brand`, `success`, `warning`, or `danger` quiet fill, matching quiet border, and on-quiet foreground for a non-interactive icon tile. Compose a contained `single` group whose only child is a direct decorative LucideIcon (`aria-hidden="true"`). Omission preserves the normal group palette. The prop does not recolor interactive, mixed, multi-control, or borderless groups; keep real actions in controls with their existing focus/hover/pressed treatments.
+
 ## Toolbar composition
 
 Use `ToolbarText tone="dark"` on a loud or photo-backed toolbar surface to

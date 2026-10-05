@@ -15,6 +15,7 @@ Provide complete toolbar action geometry through configuration, including semant
 - Fill it with plain \<button> controls (the group styles > button fully); use wa-button only for a Web Awesome feature. A popup menu is a PopupMenu in a single group with nestedDropdown; it renders its own trigger, so never hand-write wa-dropdown markup. Each control stays whole: an icon sits beside its label on one row and no trigger gets a fixed width. Use overflow=wrap for independent links that should move as whole actions to another row on narrow surfaces.
 - For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight.
 - In a Workbench or CollapsiblePanel toolbar, mark a group relocateOnCollapse to keep it available in the work-area toolbar when the panel closes; place it directly or in an array in any toolbar zone.
+- Use tileTone for a contained single group containing only a direct decorative SVG icon; interactive or mixed groups retain their existing control chrome.
 
 **Not when:**
 
@@ -54,6 +55,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-s
 - relocate on panel collapse
 - avatar scrim
 - contained avatar background on a single group or selected multi-button highlight
+- neutral, brand, success, warning, or danger quiet icon tile tone
 
 ## Composition
 
@@ -91,7 +93,7 @@ Never put `kui-toolbar-action-link` on an element you write; render `ToolbarActi
 
 Never put `kui-toolbar-control-group` on an element you write; render `ToolbarControlGroup` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-brand-on-quiet`, `--kui-color-pop-border-normal`, `--kui-color-pop-fill-normal`, `--kui-color-pop-on-normal`, `--kui-color-pop-on-quiet`, `--kui-color-neutral-border-loud`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-fill-loud`, `--kui-color-neutral-fill-normal`, `--kui-color-neutral-on-loud`, `--kui-color-neutral-on-quiet`, `--kui-color-surface`, `--kui-focus-ring`, `--kui-shadow-s`, `--kui-toolbar-control-background`, `--kui-toolbar-control-border`, `--kui-toolbar-control-color`, `--kui-toolbar-control-dark-border`, `--kui-toolbar-control-hover-background`, `--kui-toolbar-control-pressed-background`, `--kui-toolbar-control-pressed-border`, `--kui-toolbar-control-pressed-color`, `--kui-toolbar-control-selected-background`, `--kui-toolbar-control-selected-color`, `--kui-toolbar-control-selected-shadow`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-brand-on-quiet`, `--kui-color-pop-border-normal`, `--kui-color-pop-fill-normal`, `--kui-color-pop-on-normal`, `--kui-color-pop-on-quiet`, `--kui-color-neutral-border-loud`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-fill-loud`, `--kui-color-neutral-fill-normal`, `--kui-color-neutral-on-loud`, `--kui-color-neutral-on-quiet`, `--kui-color-surface`, `--kui-focus-ring`, `--kui-shadow-s`, `--kui-toolbar-control-background`, `--kui-toolbar-control-border`, `--kui-toolbar-control-color`, `--kui-toolbar-control-dark-border`, `--kui-toolbar-control-hover-background`, `--kui-toolbar-control-pressed-background`, `--kui-toolbar-control-pressed-border`, `--kui-toolbar-control-pressed-color`, `--kui-toolbar-control-selected-background`, `--kui-toolbar-control-selected-color`, `--kui-toolbar-control-selected-shadow`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-border-quiet`, `--kui-color-brand-fill-quiet`, `--kui-color-brand-border-quiet`, `--kui-color-success-fill-quiet`, `--kui-color-success-border-quiet`, `--kui-color-success-on-quiet`, `--kui-color-warning-fill-quiet`, `--kui-color-warning-border-quiet`, `--kui-color-warning-on-quiet`, `--kui-color-danger-fill-quiet`, `--kui-color-danger-border-quiet`, `--kui-color-danger-on-quiet`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

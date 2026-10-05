@@ -317,6 +317,8 @@ Both row components align a leading icon with the first label line when
 `multiline` allows the label to wrap; additional lines extend below that fixed
 visual anchor.
 
+`ToolbarControlGroup.tileTone` selects `neutral`, `brand`, `success`, `warning`, or `danger` quiet fill, matching quiet border, and on-quiet foreground for a non-interactive icon tile. Compose a contained `single` group whose only child is a direct decorative LucideIcon (`aria-hidden="true"`). Omission preserves the normal group palette. The prop does not recolor interactive, mixed, multi-control, or borderless groups; keep real actions in controls with their existing focus/hover/pressed treatments.
+
 ### Public CSS anatomy
 
 The `publicClasses` array on each entry in

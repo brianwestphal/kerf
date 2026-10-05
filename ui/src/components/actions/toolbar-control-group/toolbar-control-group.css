@@ -788,3 +788,46 @@
   background-repeat: no-repeat;
   background-size: contain;
 }
+
+/* Explicit quiet palette only for a lone decorative icon tile. The structural
+   guard keeps interactive, mixed and borderless groups on their existing chrome. */
+
+.kui-toolbar-control-group[data-single="true"][data-appearance="contained"][data-tile-tone="neutral"]:has(
+    > svg[aria-hidden="true"]
+  ):not(:has(> :not(svg[aria-hidden="true"])), :has(> svg ~ svg)) {
+  background: var(--kui-color-neutral-fill-quiet);
+  border-color: var(--kui-color-neutral-border-quiet);
+  color: var(--kui-color-neutral-on-quiet);
+}
+
+.kui-toolbar-control-group[data-single="true"][data-appearance="contained"][data-tile-tone="brand"]:has(
+    > svg[aria-hidden="true"]
+  ):not(:has(> :not(svg[aria-hidden="true"])), :has(> svg ~ svg)) {
+  background: var(--kui-color-brand-fill-quiet);
+  border-color: var(--kui-color-brand-border-quiet);
+  color: var(--kui-color-brand-on-quiet);
+}
+
+.kui-toolbar-control-group[data-single="true"][data-appearance="contained"][data-tile-tone="success"]:has(
+    > svg[aria-hidden="true"]
+  ):not(:has(> :not(svg[aria-hidden="true"])), :has(> svg ~ svg)) {
+  background: var(--kui-color-success-fill-quiet);
+  border-color: var(--kui-color-success-border-quiet);
+  color: var(--kui-color-success-on-quiet);
+}
+
+.kui-toolbar-control-group[data-single="true"][data-appearance="contained"][data-tile-tone="warning"]:has(
+    > svg[aria-hidden="true"]
+  ):not(:has(> :not(svg[aria-hidden="true"])), :has(> svg ~ svg)) {
+  background: var(--kui-color-warning-fill-quiet);
+  border-color: var(--kui-color-warning-border-quiet);
+  color: var(--kui-color-warning-on-quiet);
+}
+
+.kui-toolbar-control-group[data-single="true"][data-appearance="contained"][data-tile-tone="danger"]:has(
+    > svg[aria-hidden="true"]
+  ):not(:has(> :not(svg[aria-hidden="true"])), :has(> svg ~ svg)) {
+  background: var(--kui-color-danger-fill-quiet);
+  border-color: var(--kui-color-danger-border-quiet);
+  color: var(--kui-color-danger-on-quiet);
+}

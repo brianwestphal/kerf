@@ -1,8 +1,10 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
+import { Row } from '@kerfjs/ui/row';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
+import { Text } from '@kerfjs/ui/text';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
@@ -54,6 +56,31 @@ export function ToolbarControlGroupDemo() {
       label="ToolbarControlGroup demo"
       rootAttributes={{ 'data-demo': 'toolbar-control-group' }}
     >
+      <CatalogExample
+        label="Icon tile tones"
+        note="A contained single group with a direct decorative icon can use a quiet semantic tileTone. Interactive groups retain their control chrome."
+        align="inline-control"
+        rootAttributes={{ 'data-demo-section': 'icon-tile-tones' }}
+      >
+        {(['neutral', 'brand', 'success', 'warning', 'danger'] as const).map(
+          (tileTone) => (
+            <Row vAlign="middle">
+              <ToolbarControlGroup
+                single
+                tileTone={tileTone}
+                shape={shape}
+                label={`${tileTone} icon tile`}
+              >
+                <LucideIcon icon={Settings} name="settings" />
+              </ToolbarControlGroup>
+              <Text flush>
+                {tileTone.charAt(0).toUpperCase() + tileTone.slice(1)} heading
+                identity
+              </Text>
+            </Row>
+          ),
+        )}
+      </CatalogExample>
       <CatalogExample
         label="Shape"
         note={

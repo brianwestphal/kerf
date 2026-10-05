@@ -36,6 +36,7 @@ export {
   type ToolbarControlGroupSelectedTone,
   type ToolbarControlGroupShape,
   type ToolbarControlGroupSize,
+  type ToolbarControlGroupTileTone,
   type ToolbarControlGroupTone,
   type ToolbarControlGroupVisibility,
 } from './components/actions/toolbar-control-group/toolbar-control-group.js';

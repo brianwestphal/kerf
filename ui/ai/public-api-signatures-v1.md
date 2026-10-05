@@ -280,6 +280,8 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 type ToolbarControlGroupTone = 'default' | 'dark';
+/** Quiet palette for a contained, single decorative icon tile. */
+type ToolbarControlGroupTileTone = 'neutral' | 'brand' | 'success' | 'warning' | 'danger';
 type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
 type ToolbarControlGroupShape = 'pill' | 'rounded';
 type ToolbarControlGroupSize = 'default' | 'compact';
@@ -317,6 +319,8 @@ interface ToolbarControlGroupProps {
     single?: boolean;
     appearance?: ToolbarControlGroupAppearance;
     tone?: ToolbarControlGroupTone;
+    /** Quiet fill, matching border and foreground for a contained single group whose only child is a decorative SVG. Ignored for interactive or mixed content. */
+    tileTone?: ToolbarControlGroupTileTone;
     buttonAppearance?: ToolbarControlGroupButtonAppearance;
     /** Corner shape: fully round `pill` (default) or a softer `rounded` rectangle. */
     shape?: ToolbarControlGroupShape;
@@ -357,9 +361,9 @@ interface ToolbarControlGroupProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, tileTone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
-export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupPlacement, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
+export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupPlacement, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTileTone, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
 
 ## `@kerfjs/ui/floating-toolbar`

@@ -873,6 +873,10 @@ Badge({ children: 'Status', tone: 'brand' });
 Chip({ children: 'Tag', tone: 'brand' });
 const appearance: ToolbarControlGroupAppearance = 'borderless';
 const tone: ToolbarControlGroupTone = 'dark';
+ToolbarControlGroup({ single: true, tileTone: 'brand', children: icon });
+ToolbarControlGroup({ single: true, tileTone: 'warning', children: icon });
+// @ts-expect-error Tile tones are a finite palette.
+ToolbarControlGroup({ single: true, tileTone: 'pop', children: icon });
 const buttonAppearance: ToolbarControlGroupButtonAppearance = 'push';
 const shape: ToolbarControlGroupShape = 'rounded';
 const sunkenPanelShape: SunkenPanelShape = 'square';
