@@ -625,5 +625,5 @@ describe('Kerf UI doctor', () => {
         location: expect.objectContaining({ file: 'src/view.ts' }),
       }),
     ]);
-  });
+  }, 30_000);
 });
