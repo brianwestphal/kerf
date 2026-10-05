@@ -196,6 +196,10 @@
   ) {
   overflow: visible;
 }
+.kui-toolbar-control-group[data-content="search"][data-expanded="true"][data-expanded-overflow="visible"] {
+  height: auto;
+  overflow: visible;
+}
 .kui-toolbar-control-group[data-content="search"][data-expanded="false"] {
   width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   flex: 0 0 auto;

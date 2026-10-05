@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.53.0
+kerf-ui-skill-version: 1.54.0
 ---
 
 # Building with @kerfjs/ui
@@ -360,3 +360,5 @@ match dark control groups. It applies to read-only headings and actionable
 titles at every size; default tone retains existing identity and heading colors.
 
 Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.
+
+Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-token-search-keep-open` or `collapsible.keepOpenOn` for focus.

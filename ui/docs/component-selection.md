@@ -465,6 +465,29 @@ the control's dimensions, shows `LoadingSpinner` in its icon slot, sets
 | A command menu                 | `<ToolbarControlGroup single nestedDropdown><PopupMenu … /></ToolbarControlGroup>`     | Register `@kerfjs/ui/popup-menu/register` once; set `menuInset` on the group                                      |
 | A collapsible search box       | `<ToolbarControlGroup single><TokenSearchField collapsible … /></ToolbarControlGroup>` | The group animates the iconic ↔ expanded states; `wireTokenSearchFields` manages expand/collapse/focus by default |
 
+### Application surfaces below search
+
+Pass `expandedOverflow="visible"` to `ToolbarControlGroup content="search"`
+when an application-owned suggestion list, date picker, or help surface extends
+below it. The group is the positioning containing block, retains auto height,
+and permits overflow only while `expanded` is true. Omission or `"clip"` keeps
+existing behavior, including Kerf's built-in suggestions. Other content modes
+and collapsed searches keep their existing overflow rules.
+
+```tsx
+<ToolbarControlGroup content="search" expanded={open} expandedOverflow="visible">
+  <TokenSearchField id="ticket-search" label="Search tickets" presentation="toolbar-group" collapsible expanded={open} />
+  {open ? <AppDatePicker data-token-search-keep-open /> : null}
+</ToolbarControlGroup>
+```
+
+The application owns placement (for example absolute positioning below the
+group), stacking, dismissal, and hiding/removing its surface on collapse. Mark
+focusable floating content `data-token-search-keep-open`, or configure
+`collapsible.keepOpenOn`, to keep an empty field open when focus enters it.
+This prop does not escape clipping imposed by an ancestor or create a top-layer
+popover. Do not override the group's position, height, or overflow in app CSS.
+
 ### Popup menu migration
 
 A **popup menu in a toolbar** is a `PopupMenu` (`@kerfjs/ui/popup-menu`) in a

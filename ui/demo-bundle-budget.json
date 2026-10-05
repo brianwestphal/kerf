@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 324000,
-  "measuredLargestJavaScriptGzip": 124532,
-  "measuredTotalJavaScriptGzip": 323959,
+  "totalJavaScriptGzip": 324100,
+  "measuredLargestJavaScriptGzip": 124533,
+  "measuredTotalJavaScriptGzip": 324086,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2819,6 +2819,22 @@
         "measuredTotalJavaScriptGzip": 323959,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 324000
+      }
+    },
+    {
+      "at": "2026-10-05T10:42:55.391Z",
+      "reason": "Add expanded grouped-search application overflow",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124532,
+        "measuredTotalJavaScriptGzip": 323959,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 324000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124533,
+        "measuredTotalJavaScriptGzip": 324086,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 324100
       }
     }
   ]

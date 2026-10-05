@@ -17,6 +17,7 @@ export type ToolbarControlGroupFocusRing = 'control' | 'outline' | 'halo';
 export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 export type ToolbarControlGroupOverflow = 'visible' | 'scroll' | 'wrap';
+export type ToolbarControlGroupExpandedOverflow = 'clip' | 'visible';
 export type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
 export type ToolbarControlGroupVisibility =
   | 'always'
@@ -98,6 +99,8 @@ export interface ToolbarControlGroupProps {
   menuInset?: ToolbarControlGroupMenuInset;
   /** Keep an overlong row inside the available width by scrolling or wrapping. */
   overflow?: ToolbarControlGroupOverflow;
+  /** Let app-owned anchored surfaces extend outside an expanded search group. Collapsed searches retain their clipping. */
+  expandedOverflow?: ToolbarControlGroupExpandedOverflow;
   /** Responsive visibility owned by the enclosing Toolbar container. */
   visibility?: ToolbarControlGroupVisibility;
   /** Intrinsic (default), grow from a basis, or occupy a full wrapping row. */
@@ -143,6 +146,7 @@ export function ToolbarControlGroup({
   nestedDropdown = false,
   menuInset = 'standard',
   overflow = 'visible',
+  expandedOverflow = 'clip',
   visibility = 'always',
   sizing = 'content',
   placement = 'start',
@@ -182,6 +186,9 @@ export function ToolbarControlGroup({
       data-nested-dropdown={String(nestedDropdown)}
       data-menu-inset={menuInset}
       data-overflow={overflow}
+      data-expanded-overflow={
+        expandedOverflow === 'visible' ? 'visible' : undefined
+      }
       data-visibility={visibility}
       data-sizing={sizing}
       data-placement={placement}

@@ -16,6 +16,7 @@ Provide complete toolbar action geometry through configuration, including semant
 - For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight.
 - In a Workbench or CollapsiblePanel toolbar, mark a group relocateOnCollapse to keep it available in the work-area toolbar when the panel closes; place it directly or in an array in any toolbar zone.
 - Use tileTone for a contained single group containing only a direct decorative SVG icon; interactive or mixed groups retain their existing control chrome.
+- Set expandedOverflow=visible on an expanded search to anchor application suggestions, date pickers, or help below the group without overriding its geometry.
 
 **Not when:**
 
@@ -56,6 +57,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-s
 - avatar scrim
 - contained avatar background on a single group or selected multi-button highlight
 - neutral, brand, success, warning, or danger quiet icon tile tone
+- clip or visible app-owned overflow while a search is expanded
 
 ## Composition
 

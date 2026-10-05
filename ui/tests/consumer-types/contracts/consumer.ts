@@ -138,6 +138,21 @@ Text({
   'aria-describedby': 'section-summary',
   children: 'Section',
 });
+ToolbarControlGroup({
+  children: Text({ children: 'Search' }),
+  content: 'search',
+  expanded: true,
+  expandedOverflow: 'visible',
+});
+ToolbarControlGroup({
+  children: Text({ children: 'Search' }),
+  expandedOverflow: 'clip',
+});
+ToolbarControlGroup({
+  children: Text({ children: 'Search' }),
+  // @ts-expect-error expanded search overflow is a finite clip/visible choice.
+  expandedOverflow: 'auto',
+});
 Text({ children: 'Paragraph by default' });
 Text({ children: 'Inset paragraph', controlMargins: 'rl' });
 Text({ variant: 'span', children: 'Inline gutter', controlMargins: 'trbl' });

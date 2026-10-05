@@ -374,7 +374,9 @@ export function ToolbarControlGroupDemo() {
             group; activating it expands the group to reveal the editor, and it
             re-collapses when focus leaves while empty.{' '}
             <code>wireTokenSearchFields</code> manages the
-            expand/collapse/focus.
+            expand/collapse/focus. Set <code>expandedOverflow="visible"</code>
+            when app-owned suggestions, date pickers, or help surfaces must
+            extend below the group; the group remains their positioning anchor.
           </>
         }
         align="inline-control"
@@ -385,6 +387,7 @@ export function ToolbarControlGroupDemo() {
             shape={shape}
             content="search"
             focusRing="halo"
+            expandedOverflow="visible"
             expanded={toolbarGroupSearchOpen.value}
             single={!toolbarGroupSearchOpen.value}
           >

@@ -29,6 +29,7 @@ export {
   type ToolbarControlGroupButtonAppearance,
   type ToolbarControlGroupContent,
   type ToolbarControlGroupDensity,
+  type ToolbarControlGroupExpandedOverflow,
   type ToolbarControlGroupMenuInset,
   type ToolbarControlGroupOverflow,
   type ToolbarControlGroupProps,
