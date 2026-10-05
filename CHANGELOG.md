@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Validate remote CI freshness through newer-run searches and exact-run details before warning about a failed main build (`KF-X4PTHF`).
+
 - Select menus now shift their complete visible surface inside narrow viewport edges while preserving `fitMenu` trigger width (`KF-H4JBQP`).
 
 - Toolbar visibility probes stop rewriting unchanged styles, allowing catalog geometry overlays and responsive controls to settle after updates (`KF-JVWC92`).

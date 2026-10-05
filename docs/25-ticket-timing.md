@@ -87,15 +87,27 @@ interrupted part-way. Only identifiers and milliseconds are stored.
 
 ## CI and publication
 
-The local sibling-package gate's CI advisory queries the latest completed `CI`
-run on `main`, so queued or running builds cannot hide the previous completed
-result. It queries the workflow's Actions API directly, avoiding the stale
-PR-exclusion query used by `gh run list`, with the current timestamp as a creation
-upper bound and no lower age cutoff: an older completed run
-still matters when the branch has been quiet. A non-green result includes its
-commit and run URL. Missing authentication, offline access, or invalid CLI output
-prints an unavailable-status warning without failing the local gate;
-`KERF_SKIP_CI_STATUS=1` explicitly disables the lookup.
+The local sibling-package gate's CI advisory selects the newest **created**
+completed `CI` run on `main`, matching workflow-list ordering. Queued or running
+builds cannot hide the previous completed result. This is not commit-ancestry or
+completion-time ordering: rerunning an older run does not make it newer than a
+subsequently created completed run. Runs created in the same second use the
+higher run ID.
+
+The workflow Actions API can return stale lists even with no-cache headers and a
+moving creation upper bound. The advisory independently searches strictly newer
+creation intervals until an empty result confirms the candidate, then resolves
+same-time runs and reads the selected run directly for its current conclusion.
+Every response must match its main/completed/date bounds. There is no fixed lower
+age cutoff: an older completed run still matters when the branch has been quiet.
+Empty initial lists get a second query with a fresh upper bound; if both are
+empty, the lookup reports unavailable rather than assuming no runs exist.
+
+The whole lookup has an eight-second deadline and at most five newer-run searches.
+If stale, malformed, inconsistent, unavailable, or excessive evidence prevents
+validation, it prints an unavailable-status warning without failing the local
+gate or reporting the unvalidated candidate as red. A validated non-green result
+includes its commit and run URL. `KERF_SKIP_CI_STATUS=1` disables the lookup.
 
 CI and publication systems cannot write to the computer-local ticket store, so
 kerf pulls their timing instead. `import-ci` reads recent workflow runs with

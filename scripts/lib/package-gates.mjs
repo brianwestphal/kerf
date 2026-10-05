@@ -56,9 +56,9 @@ export function selectPackageGates(changedPaths, gates = PACKAGE_GATES) {
 
 /**
  * A warning line when the most recent completed CI run on the default branch
- * failed, or `null`. Input is `gh run list --json status,conclusion,headSha,url`
- * output (newest first); an in-progress newest run falls through to the latest
- * completed one.
+ * failed, or `null`. Input is validated run summaries (newest creation first);
+ * an in-progress newest run falls through to the latest completed one. The
+ * I/O caller establishes remote freshness before passing these summaries.
  *
  * @param {ReadonlyArray<{ status?: string, conclusion?: string, headSha?: string, url?: string }>} runs
  * @returns {string | null}

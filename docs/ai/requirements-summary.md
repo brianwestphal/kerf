@@ -495,6 +495,8 @@ preview/edit transition.
 
 **Shipped, with routine collection retired.** Historical versioned Hot Sheet activity notes distinguish active work, local verification, push hooks, CI, and publication without retaining command output, secrets, or machine paths. `npm run ticket:timing -- summary` reads those notes; explicit `start`/`finish`, `run`, `record`, `claim`/`release`, and `import-ci` commands remain available for deliberate one-off studies. The pre-push hook no longer writes ticket timing notes, including when `KERF_TICKET_TIMING_TICKETS` is set. It still skips `root:check` only when a clean worktree pushes exactly the tree a passing local `npm run check` recorded; any other state, or `KERF_FORCE_CHECK=1`, runs the gate. `summary --all` aggregates historical records per phase/gate/step (median, p90), counting a shared interval once and excluding fan-out backfill without rewriting stored notes.
 
+The local CI advisory validates the globally newest-created completed main run through newer-run searches, same-second ID ordering and exact-run details, preserving the previous completed result while newer runs are active. Unvalidated or unavailable evidence produces an honest non-blocking warning within an eight-second deadline; commit ancestry and rerun finish time do not define its order.
+
 ## Update triggers
 
 Update this doc whenever you:
