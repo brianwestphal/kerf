@@ -34,6 +34,7 @@ import {
 } from '@kerfjs/ui/collapsible-panel';
 import {
   ContentItem,
+  type ContentItemAppearance,
   type ContentItemFrame,
   type ContentItemShape,
 } from '@kerfjs/ui/content-item';
@@ -857,8 +858,10 @@ ToolbarControlGroup({
 });
 SunkenPanel({ shape: sunkenPanelShape });
 const contentItemFrame: ContentItemFrame = 'framed';
+const contentItemAppearance: ContentItemAppearance = 'success';
 const contentItemShape: ContentItemShape = 'pill';
 ContentItem({
+  appearance: contentItemAppearance,
   children: 'Copy',
   frame: contentItemFrame,
   shape: contentItemShape,
@@ -866,6 +869,10 @@ ContentItem({
   focusTarget: true,
   rootAttributes: { 'data-item': 'details' },
 });
+ContentItem({ appearance: 'transparent' });
+ContentItem({ appearance: 'surface' });
+// @ts-expect-error ContentItem appearances are base surfaces or finite semantic tones.
+ContentItem({ appearance: 'primary' });
 ContentItem({
   interactive: true,
   action: 'select-line',

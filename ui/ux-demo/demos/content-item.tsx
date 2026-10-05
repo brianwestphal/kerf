@@ -1,7 +1,10 @@
 import '@awesome.me/webawesome/dist/components/button/button.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import type { ContentItemAppearance } from '@kerfjs/ui/content-item';
 import { ContentItem } from '@kerfjs/ui/content-item';
+import { rem } from '@kerfjs/ui/css-values';
+import { Grid } from '@kerfjs/ui/grid';
 import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
@@ -13,6 +16,17 @@ import {
   contentCardSelected,
   contentCardSelections,
 } from './state.js';
+
+const appearances = [
+  'transparent',
+  'surface',
+  'neutral',
+  'info',
+  'pop',
+  'success',
+  'warning',
+  'danger',
+] as const satisfies readonly ContentItemAppearance[];
 
 function itemCopy(title: string, detail: string) {
   return (
@@ -58,6 +72,30 @@ export function ContentItemDemo() {
             )}
           </ContentItem>
         </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Surface and semantic appearances"
+        note="Transparent preserves the surrounding surface; surface adds the base fill. Semantic appearances coordinate the same status fills, borders, and foregrounds as StateBanner."
+        align="none"
+      >
+        <Grid
+          minColumnWidth={rem(12)}
+          gap="xs"
+          rootAttributes={{ 'data-demo-item-appearances': '' }}
+        >
+          {appearances.map((appearance) => (
+            <ContentItem
+              appearance={appearance}
+              rootAttributes={{
+                'data-demo-item': `appearance-${appearance}`,
+              }}
+            >
+              <Text variant="span">
+                <strong>{appearance}</strong>
+              </Text>
+            </ContentItem>
+          ))}
+        </Grid>
       </CatalogExample>
       <CatalogExample
         label="Flush content and separate card actions"

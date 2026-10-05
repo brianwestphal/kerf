@@ -355,8 +355,10 @@ the same child-owned gutter.
 content-item geometry: `frame="framed"` paints the neutral border in the
 always-reserved 1px and `shape="pill"` selects the 22px radius, so demos,
 recipes, and apps no longer hand-write `.kui-content-item` modifier classes.
-There is deliberately no filled variant; a lowered filled surface is
-`SunkenPanel`.
+`appearance="surface"` paints the base surface; `neutral`, `info`, `pop`,
+`success`, `warning`, and `danger` coordinate quiet semantic fills, borders,
+and foregrounds with `StateBanner`. `transparent` is the default. A lowered
+inset surface around a stack remains `SunkenPanel`.
 
 The root `@kerfjs/ui` declaration barrel re-exports the named AppTab, TabBar,
 ToolbarControlGroup, and Select presentation axes; source and packed-tarball

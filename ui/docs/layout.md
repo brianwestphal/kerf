@@ -194,6 +194,7 @@ import { ContentItem } from "@kerfjs/ui/content-item";
 <Pane label="Inspector">
   <ContentItem>{details}</ContentItem>
   <ContentItem frame="framed">{pendingChanges}</ContentItem>
+  <ContentItem appearance="success">{completedWork}</ContentItem>
   <ContentItem flush>{markdownPreview}</ContentItem>
   <ContentItem shape="pill">{summary}</ContentItem>
 </Pane>;
@@ -203,8 +204,11 @@ import { ContentItem } from "@kerfjs/ui/content-item";
 reserves, so framed and unframed items share the same geometry. Frame an item
 only when it marks a real distinction and must read as visibly bounded; do not
 frame it to make it "look contained". `shape="pill"` selects the 22px pill
-radius expressed as `calc(1px + remify(21px))`. There is deliberately no filled
-variant: a lowered, filled surface is `SunkenPanel`, and bare text that only
+radius expressed as `calc(1px + remify(21px))`. `appearance="surface"` paints
+the base surface. The `neutral`, `info`, `pop`, `success`, `warning`, and
+`danger` appearances coordinate the same quiet status background, border, and
+foreground tokens as `StateBanner`; `transparent` is the default. A lowered,
+inset surface around a content stack is `SunkenPanel`, and bare text that only
 needs to align with neighboring items is `ListInsetText`. Safe `data-*`
 metadata goes in `rootAttributes`. Pass `ariaLabel` only for a distinct named
 region (`role="region"`), and `focusTarget` to make the item a programmatic

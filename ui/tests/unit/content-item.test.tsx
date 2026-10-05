@@ -9,7 +9,7 @@ describe('ContentItem', () => {
     );
 
     expect(html).toContain(
-      'class="kui-content-item details" data-component="content-item"',
+      'class="kui-content-item details" data-component="content-item" data-appearance="transparent"',
     );
     expect(html).not.toContain('kui-content-item--framed');
     expect(html).not.toContain('kui-content-item--pill');
@@ -30,8 +30,23 @@ describe('ContentItem', () => {
       'class="kui-content-item kui-content-item--pill kui-content-item--framed x"',
     );
     expect(String(ContentItem({ frame: 'none', shape: 'rounded' }))).toContain(
-      'class="kui-content-item" data-component="content-item"',
+      'class="kui-content-item" data-component="content-item" data-appearance="transparent"',
     );
+  });
+
+  it('projects base and semantic appearances without modifier classes', () => {
+    for (const appearance of [
+      'surface',
+      'neutral',
+      'info',
+      'pop',
+      'success',
+      'warning',
+      'danger',
+    ] as const)
+      expect(String(ContentItem({ appearance }))).toContain(
+        `data-appearance="${appearance}"`,
+      );
   });
 
   it('becomes a named region and focus target only when asked', () => {
@@ -56,12 +71,14 @@ describe('ContentItem', () => {
         rootAttributes: {
           'data-demo-item': 'plain',
           'data-component': 'spoofed',
+          'data-appearance': 'danger',
           onclick: 'alert(1)',
         } as never,
       }),
     );
     expect(html).toContain('data-demo-item="plain"');
     expect(html).toContain('data-component="content-item"');
+    expect(html).toContain('data-appearance="transparent"');
     expect(html).not.toContain('spoofed');
     expect(html).not.toContain('onclick');
   });

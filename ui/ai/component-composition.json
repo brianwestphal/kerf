@@ -2786,6 +2786,11 @@
           "owner": "application",
           "required": false
         },
+        {
+          "id": "whether the item needs a surface or semantic appearance",
+          "owner": "application",
+          "required": false
+        },
         { "id": "corner shape", "owner": "application", "required": false },
         {
           "id": "region semantics and accessible name",
@@ -2817,7 +2822,7 @@
           "border": "self",
           "padding": "self",
           "notes": [
-            "The 1px border is always reserved and transparent unless frame=\"framed\", so framed and unframed items share the same geometry."
+            "The 1px border is always reserved; transparent items paint it only when frame=\"framed\", while surface and semantic appearances coordinate its color with their background and foreground."
           ]
         }
       },

@@ -89,6 +89,83 @@ test('ContentItem owns the 8/1/8 geometry and frames without moving content', as
   ).toBe(true);
 });
 
+test('ContentItem appearances coordinate surface colors without changing geometry', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=content-item');
+  const grid = page.locator('[data-demo-item-appearances]');
+  const appearances = [
+    'transparent',
+    'surface',
+    'neutral',
+    'info',
+    'pop',
+    'success',
+    'warning',
+    'danger',
+  ] as const;
+
+  const styles = await Promise.all(
+    appearances.map((appearance) =>
+      grid
+        .locator(`[data-demo-item="appearance-${appearance}"]`)
+        .evaluate((element) => {
+          const style = globalThis.getComputedStyle(element);
+          const box = element.getBoundingClientRect();
+          const content = element.firstElementChild!.getBoundingClientRect();
+          return {
+            appearance: element.getAttribute('data-appearance'),
+            background: style.backgroundColor,
+            border: style.borderTopColor,
+            color: style.color,
+            padding: style.paddingTop,
+            borderWidth: style.borderTopWidth,
+            radius: style.borderTopLeftRadius,
+            contentInset: content.left - box.left,
+          };
+        }),
+    ),
+  );
+
+  expect(styles.map(({ appearance }) => appearance)).toEqual(appearances);
+  for (const style of styles) {
+    expect(style).toMatchObject({
+      padding: '8px',
+      borderWidth: '1px',
+      radius: '12px',
+      contentInset: 9,
+    });
+  }
+  expect(styles[0]?.background).toBe('rgba(0, 0, 0, 0)');
+  expect(styles[0]?.border).toBe('rgba(0, 0, 0, 0)');
+  for (const style of styles.slice(1)) {
+    expect(style.background).not.toBe('rgba(0, 0, 0, 0)');
+    expect(style.border).not.toBe('rgba(0, 0, 0, 0)');
+    expect(style.color).not.toBe('rgba(0, 0, 0, 0)');
+  }
+  expect(
+    new Set(styles.slice(2).map(({ background }) => background)).size,
+  ).toBe(6);
+
+  if (browserName === 'chromium')
+    await grid.screenshot({
+      path: 'test-results/content-item-appearances-wide.png',
+    });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(grid).toBeVisible();
+  if (browserName === 'chromium')
+    await grid.screenshot({
+      path: 'test-results/content-item-appearances-narrow.png',
+    });
+  expect(
+    await page
+      .locator('html')
+      .evaluate((element) => element.scrollWidth <= element.clientWidth),
+  ).toBe(true);
+});
+
 test('a rich static card gives its primary and secondary buttons independent actions', async ({
   page,
 }) => {

@@ -38,7 +38,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Spacer](./spacer.md) — Express an intentional empty dimension or consume remaining flex space without application-owned spacer markup or raw CSS lengths.
 - [ListInsetControl](./list-inset-control.md) — Apply the standard 8px outer margin to all physical sides of a self-bordered control by default, or only the sides selected with the canonical Sides contract.
 - [ListInsetText](./list-inset-text.md) — Apply the full 8px margin + 1px transparent border + 8px padding to all physical sides of bare text by default, or only the sides selected with the canonical Sides contract.
-- [ContentItem](./content-item.md) — Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, and radius, with framing and shape chosen by typed props instead of hand-written modifier classes.
+- [ContentItem](./content-item.md) — Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, radius, and optional coordinated surface colors.
 
 ## Kerf UI — Navigation
 

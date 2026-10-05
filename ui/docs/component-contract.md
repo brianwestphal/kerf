@@ -507,7 +507,11 @@ declarations.
 `ContentItem` (`@kerfjs/ui/content-item`, rendering `.kui-content-item`) gives
 one child 8px inline margin, a real 1px border, 8px padding, and 12px corners;
 the border stays transparent unless `frame="framed"`, so framing never changes
-geometry. `shape="pill"` selects the 22px radius.
+geometry. `shape="pill"` selects the 22px radius. `appearance="surface"`
+paints the base surface, while `neutral`, `info`, `pop`, `success`, `warning`,
+and `danger` coordinate the same quiet background, border, and readable
+foreground tokens as `StateBanner`. The default `transparent` appearance
+preserves the surrounding surface.
 `flush` removes block padding and borders while preserving inline geometry;
 `title` passes through as the native tooltip. Interactive hover uses the normal
 neutral fill so it remains visible on a lowered surface. For a card with

@@ -18,6 +18,7 @@ export {
 export { Chip, type ChipProps } from './chip.js';
 export {
   ContentItem,
+  type ContentItemAppearance,
   type ContentItemFrame,
   type ContentItemProps,
   type ContentItemSelectionMode,

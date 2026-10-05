@@ -1,5 +1,9 @@
 import { filterDataAttributes } from './extension-attributes.js';
 import type { KerfUiContent } from './semantic-content.js';
+import type { StateBannerTone } from './state-banner.js';
+
+/** Base surface treatment or semantic status colors. */
+export type ContentItemAppearance = 'transparent' | 'surface' | StateBannerTone;
 
 /** Whether the item's always-reserved 1px border is transparent or visible. */
 export type ContentItemFrame = 'none' | 'framed';
@@ -10,9 +14,13 @@ export type ContentItemShape = 'rounded' | 'pill';
 export type ContentItemSelectionMode =
   'none' | 'single' | 'multiple' | 'toggle';
 
-const contentItemProtectedAttributes = new Set(['data-component']);
+const contentItemProtectedAttributes = new Set([
+  'data-component',
+  'data-appearance',
+]);
 const interactiveProtectedAttributes = new Set([
   'data-component',
+  'data-appearance',
   'data-action',
   'data-item-id',
   'data-interactive',
@@ -25,12 +33,14 @@ const interactiveProtectedAttributes = new Set([
 type ContentItemRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
+    'data-appearance'?: never;
   }
 >;
 
 type ContentItemInteractiveRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
+    'data-appearance'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -42,6 +52,12 @@ type ContentItemInteractiveRootAttributes = Readonly<
 >;
 
 interface ContentItemBaseProps {
+  /**
+   * Coordinated background, border, and foreground colors. `transparent`
+   * preserves the surrounding surface; `surface` paints the base surface;
+   * semantic values match StateBanner. Defaults to `transparent`.
+   */
+  appearance?: ContentItemAppearance;
   /** Item content; a plain string is allowed for bare copy. */
   children?: KerfUiContent | string;
   /**
@@ -104,6 +120,7 @@ export type ContentItemProps = ContentItemBaseProps &
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
 export function ContentItem({
+  appearance = 'transparent',
   children,
   frame = 'none',
   flush = false,
@@ -160,6 +177,7 @@ export function ContentItem({
       class={cls}
       title={title}
       data-component="content-item"
+      data-appearance={appearance}
       role={
         interactive
           ? selectionMode === 'single'

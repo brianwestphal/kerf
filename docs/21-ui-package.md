@@ -110,8 +110,10 @@ toolbar, one scrolling `.kui-pane__content`, and an optional footer.
 (`@kerfjs/ui/content-item`, rendering `.kui-content-item`) owns 8px inline
 margin, a real 1px border, 8px padding, and 12px corners; the border stays
 transparent unless `frame="framed"`, so framing never changes geometry, and
-`shape="pill"` selects 22px corners. There is no filled variant: a lowered
-filled surface is `SunkenPanel`.
+`shape="pill"` selects 22px corners. `appearance="surface"` paints the base
+surface; semantic appearances coordinate quiet status backgrounds, borders,
+and readable foregrounds with `StateBanner`. The default is `transparent`; a
+lowered inset surface remains `SunkenPanel`.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Groups stay 44px outside (`calc(2px + remify(42px))`) with 8px between

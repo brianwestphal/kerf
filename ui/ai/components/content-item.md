@@ -4,14 +4,15 @@
 
 `@kerfjs/ui:content-item` · Kerf UI · component · Structure
 
-One self-contained content child with the shared 8px margin + 1px border + 8px padding geometry, a typed frame, and a rounded or pill shape.
+One self-contained content child with shared geometry plus typed transparent, surface, or semantic appearance, frame, and shape choices.
 
 ## When to use
 
-Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, and radius, with framing and shape chosen by typed props instead of hand-written modifier classes.
+Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, radius, and optional coordinated surface colors.
 
 - An ordinary surface-like child of a Pane or .kui-content stack needs the shared content-item geometry so its content edge lands at the standard 17px inset.
 - A content item marks a real distinction and must read as visibly bounded: pass frame="framed" (the border is always reserved, so geometry does not change).
+- A content item needs the base surface or a coordinated semantic status treatment: pass appearance="surface" or a semantic appearance such as success or danger.
 - A content item should follow a pill control's 22px radius: pass shape="pill".
 - A selectable rich card needs nested controls: use selectionMode="multiple" inside a labeled List multi-select grid.
 
@@ -19,7 +20,7 @@ Render one self-contained .kui-content child that owns its 8px inline margin, re
 
 - Do not wrap a component that already owns content-item geometry (ListItem, ListHeader, StateBanner, Toolbar, ValueTable) or pad around a ContentItem; either double-insets.
 - Do not frame an item only to make it look contained; hierarchy comes from alignment, spacing, and type first.
-- Do not use it as a filled or lowered card; use SunkenPanel for a lowered surface.
+- Do not use its surface appearance for a lowered inset panel around a stack; use SunkenPanel for that structure.
 - Do not use it for bare text alone; use ListInsetText, which adds the same inset without claiming a surface.
 
 **Alternatives:**
@@ -44,6 +45,8 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 - framed rounded item
 - pill item
 - framed pill item
+- base surface item
+- neutral, info, pop, success, warning, or danger semantic item
 - named focus-target region
 - multi-select rich grid row
 
@@ -55,7 +58,7 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 
 ## State and wiring
 
-**The app owns:** the item content; whether the item marks a real distinction that warrants a visible frame; corner shape; region semantics and accessible name; whether the item is a programmatic focus target; the selection set and Shift/Cmd extension for multi-select rich cards.
+**The app owns:** the item content; whether the item marks a real distinction that warrants a visible frame; whether the item needs a surface or semantic appearance; corner shape; region semantics and accessible name; whether the item is a programmatic focus target; the selection set and Shift/Cmd extension for multi-select rich cards.
 
 No wiring helper.
 
@@ -63,7 +66,7 @@ No wiring helper.
 
 Margin: self · border: self · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- The 1px border is always reserved and transparent unless frame="framed", so framed and unframed items share the same geometry.
+- The 1px border is always reserved; transparent items paint it only when frame="framed", while surface and semantic appearances coordinate its color with their background and foreground.
 
 ## Accessibility
 

@@ -432,7 +432,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, and radius, with framing and shape chosen by typed props instead of hand-written modifier classes.",
+    "description": "Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, radius, and optional coordinated surface colors.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/content-item.tsx",
     "componentSource": "ui/src/content-item.tsx",

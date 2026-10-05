@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 323000,
-  "measuredLargestJavaScriptGzip": 126044,
-  "measuredTotalJavaScriptGzip": 322904,
+  "totalJavaScriptGzip": 323100,
+  "measuredLargestJavaScriptGzip": 126043,
+  "measuredTotalJavaScriptGzip": 323041,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2707,6 +2707,22 @@
         "measuredTotalJavaScriptGzip": 322904,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 323000
+      }
+    },
+    {
+      "at": "2026-10-05T04:05:33.645Z",
+      "reason": "Add the ContentItem surface and semantic appearance catalog specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126044,
+        "measuredTotalJavaScriptGzip": 322904,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126043,
+        "measuredTotalJavaScriptGzip": 323041,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323100
       }
     }
   ]

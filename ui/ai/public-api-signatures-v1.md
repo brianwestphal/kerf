@@ -898,7 +898,10 @@ export { ListInsetText, type ListInsetTextProps, Sides };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { StateBannerTone } from './state-banner.js';
 
+/** Base surface treatment or semantic status colors. */
+type ContentItemAppearance = 'transparent' | 'surface' | StateBannerTone;
 /** Whether the item's always-reserved 1px border is transparent or visible. */
 type ContentItemFrame = 'none' | 'framed';
 /** Corner shape: the 12px rounded rectangle or the 22px pill. */
@@ -907,9 +910,11 @@ type ContentItemShape = 'rounded' | 'pill';
 type ContentItemSelectionMode = 'none' | 'single' | 'multiple' | 'toggle';
 type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
+    'data-appearance'?: never;
 }>;
 type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
+    'data-appearance'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -919,6 +924,12 @@ type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, st
     'data-kui-pressed'?: never;
 }>;
 interface ContentItemBaseProps {
+    /**
+     * Coordinated background, border, and foreground colors. `transparent`
+     * preserves the surrounding surface; `surface` paints the base surface;
+     * semantic values match StateBanner. Defaults to `transparent`.
+     */
+    appearance?: ContentItemAppearance;
     /** Item content; a plain string is allowed for bare copy. */
     children?: KerfUiContent | string;
     /**
@@ -974,9 +985,9 @@ type ContentItemProps = ContentItemBaseProps & ({
  * border (transparent unless `framed`), 8px padding, and a rounded or pill
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
-declare function ContentItem({ children, frame, flush, shape, title, ariaLabel, focusTarget, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
+declare function ContentItem({ appearance, children, frame, flush, shape, title, ariaLabel, focusTarget, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
-export { ContentItem, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape };
+export { ContentItem, type ContentItemAppearance, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape };
 ```
 
 ## `@kerfjs/ui/value-table`
