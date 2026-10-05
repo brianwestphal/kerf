@@ -35,7 +35,8 @@ Component ownership is part of the same loop. The analyzer stage reports
 application or third-party CSS that restyles another package's component
 (`KUI-L019`), touches its private `--_*` variables (`KUI-L020`), overrides a
 token a typed prop sets (`KUI-L021`), or styles it through a hook class on its
-root (`KUI-L022`). It also reports source modules that render another
+root (`KUI-L022`), including components nested in JSX prop values and hooks
+owned by the surrounding application. It also reports source modules that render another
 component's public classes as their own markup (`KUI-L023`), including raw HTML
 and DOM class writes. Raw HTML checks include complete static class tokens in
 interpolated template literals. `KUI-L023` skips `*.test.*`, `*.spec.*`, and `__tests__/`

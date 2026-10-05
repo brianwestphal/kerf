@@ -162,7 +162,9 @@ which element a selector styles.
 - **`KUI-L022` — a hook class on a component's root.** A literal class on an
   imported component's JSX (`<Toolbar className="header" />`) is the subject
   of a rule in a stylesheet that file imports, so the application restyles the
-  component through it. The evidence names the stylesheet, line, and selector.
+  component through it. This also checks components nested in JSX prop values
+  (such as `Toolbar.leading`) and application-owned classes placed on another
+  component's root. The evidence names the stylesheet, line, and selector.
   For cataloged application components, the import may be direct and relative
   or use an exact or wildcard TypeScript `paths` alias from the nearest
   `tsconfig.json` inside the analyzed root (including inherited options).

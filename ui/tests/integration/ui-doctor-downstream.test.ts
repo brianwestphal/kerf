@@ -1028,6 +1028,104 @@ test(
 );
 
 test(
+  'the doctor reports an application hook on a component nested in JSX props',
+  async () => {
+    const root = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-nested-hook-'),
+    );
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"app","type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          ownership: 'component',
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'workspace',
+          catalogs: [
+            {
+              package: 'app',
+              composition: { path: './composition.json', schemaVersion: 2 },
+              selection: { path: './selection.json', schemaVersion: 1 },
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'composition.json'),
+        JSON.stringify({
+          schemaVersion: 2,
+          package: 'app',
+          entries: [
+            {
+              key: 'app:popover',
+              package: 'app',
+              id: 'popover',
+              name: 'Popover',
+              kind: 'component',
+              source: 'application',
+              boundaries: {
+                rootClass: 'popover',
+                publicClasses: ['popover'],
+                publicTokens: [],
+              },
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'selection.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          package: 'app',
+          entries: [
+            {
+              id: 'popover',
+              source: 'src/popover.tsx',
+              styleSources: ['src/popover.css'],
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/popover.css'),
+        '.popover { display: grid; }\n.popover[data-state="clean"] .popover__icon { background: red; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/popover.tsx'),
+        'import \'./popover.css\';\nimport { Toolbar } from \'@kerfjs/ui/toolbar\';\nimport { ToolbarControlGroup } from \'@kerfjs/ui/toolbar-control-group\';\nexport const Popover = () => <div class="popover" data-state="clean"><Toolbar leading={<ToolbarControlGroup single className="popover__icon" />} /></div>;\n',
+      );
+      const result = await doctor(root);
+      expect(result.status).toBe(1);
+      expect(result.report.diagnostics).toMatchObject([
+        {
+          id: 'KUI-L022',
+          stage: 'analyzer',
+          evidence: {
+            component: '@kerfjs/ui:toolbar-control-group',
+            className: 'popover__icon',
+            stylesheet: 'src/popover.css',
+          },
+        },
+      ]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor accepts co-owned markup from shared stylesheet importers',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-coowners-'));

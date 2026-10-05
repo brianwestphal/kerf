@@ -1205,6 +1205,79 @@ export const App = () => <Toolbar className="my-toolbar" />;
     expect(JSON.stringify(report)).not.toContain(tmpdir());
   });
 
+  it('reports a state-qualified hook class on a composed ToolbarControlGroup', async () => {
+    const root = await project({
+      'package.json': JSON.stringify({ name: 'app' }),
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: 'app',
+            composition: { path: './composition.json', schemaVersion: 2 },
+            selection: { path: './selection.json', schemaVersion: 1 },
+          },
+        ],
+      }),
+      'composition.json': JSON.stringify({
+        schemaVersion: 2,
+        package: 'app',
+        entries: [
+          {
+            key: 'app:repository-status-popover',
+            package: 'app',
+            id: 'repository-status-popover',
+            name: 'RepositoryStatusPopover',
+            kind: 'component',
+            source: 'application',
+            boundaries: {
+              rootClass: 'repository-status-popover',
+              publicClasses: ['repository-status-popover'],
+              publicTokens: [],
+            },
+          },
+        ],
+      }),
+      'selection.json': JSON.stringify({
+        schemaVersion: 1,
+        package: 'app',
+        entries: [
+          {
+            id: 'repository-status-popover',
+            source: 'src/repository-status-popover.tsx',
+            styleSources: ['src/repository-status-popover.css'],
+          },
+        ],
+      }),
+      'src/repository-status-popover.css': [
+        '.repository-status-popover { display: grid; }',
+        ".repository-status-popover[data-state='clean'] .repository-status-popover__icon { background: var(--wa-color-success-fill-quiet); }",
+        ".repository-status-popover:is([data-state='error'], [data-state='conflicted']) .repository-status-popover__icon { background: var(--wa-color-danger-fill-quiet); }",
+        '',
+      ].join('\n'),
+      'src/repository-status-popover.tsx': [
+        "import './repository-status-popover.css';",
+        "import { Toolbar } from '@kerfjs/ui/toolbar';",
+        "import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';",
+        'export const Popover = () => <div class="repository-status-popover" data-component="repository-status-popover" data-state="clean"><Toolbar leading={<ToolbarControlGroup single className="app-heading__icon repository-status-popover__icon" />} /></div>;',
+        '',
+      ].join('\n'),
+    });
+    const report = await analyzeUiProject({
+      root,
+      ownership: 'component',
+    });
+    expect(ids(report)).toEqual([
+      'KUI-L022 src/repository-status-popover.tsx:4',
+    ]);
+    expect(report.diagnostics[0].evidence).toMatchObject({
+      component: '@kerfjs/ui:toolbar-control-group',
+      className: 'repository-status-popover__icon',
+      stylesheet: 'src/repository-status-popover.css',
+      line: 2,
+    });
+  });
+
   it('reports a downstream override of raw AppTab anatomy in CSS', async () => {
     const root = await project({
       'src/ticket-inspector.css': [

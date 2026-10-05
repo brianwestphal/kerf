@@ -15,6 +15,7 @@ import ts from 'typescript';
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
 import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 import {
+  classOwnerFor,
   componentLabel,
   componentName,
   componentOwnershipFacts,
@@ -1636,7 +1637,13 @@ function inspectTsx(
         );
       if (entry && isForeign(entry))
         for (const className of classes.values) {
-          if (ownsClassBlock(facts.ownership, className, componentMode))
+          // A class owned by the surrounding application is still a hook when
+          // placed on another component's root. Only the component's own
+          // public class is safe to style here.
+          if (
+            classOwnerFor(facts.ownership, className, componentMode)?.key ===
+            entry.key
+          )
             continue;
           const styled = cssFacts.get(className)?.styled;
           if (!styled) continue;
@@ -1717,6 +1724,9 @@ function inspectTsx(
         inset: inset || parent?.inset,
         label: entry?.key ?? tag,
       });
+      // JSX supplied through a prop (for example Toolbar.leading) is still
+      // rendered markup and must be checked like ordinary children.
+      ts.forEachChild(opening.attributes, visit);
       if (ts.isJsxElement(node))
         for (const child of node.children) visit(child);
       stack.pop();
