@@ -141,7 +141,10 @@ import {
   toolbarStackSearchOpen,
 } from './demos/state.js';
 import {
+  popNestedTabScaffoldDemo,
+  pushNestedTabScaffoldDemo,
   resetTabScaffoldDemo,
+  selectNestedTabScaffoldDemo,
   selectTabScaffoldDemo,
 } from './demos/tab-scaffold.js';
 import {
@@ -1009,6 +1012,10 @@ const stopActions = delegateActions(app, 'click', {
     pushConfiguredNavStackDemo(projectId);
     actionLog.value = `Opened ${projectId}`;
   },
+  'open-tab-scaffold-project': () => {
+    pushNestedTabScaffoldDemo();
+    actionLog.value = 'Opened Project Atlas';
+  },
   'open-split-view-message': (_event, element) => {
     const messageId = (element as HTMLElement).dataset.itemId ?? '';
     selectSplitViewMessage(messageId);
@@ -1236,8 +1243,23 @@ const routeWires: Partial<Record<string, RouteWire>> = {
   'tab-scaffold': {
     reset: resetTabScaffoldDemo,
     target: 'canvas',
-    wire: (canvas) =>
-      wireTabScaffold(canvas, { onSelect: selectTabScaffoldDemo }),
+    wire: (canvas) => {
+      const first = canvas.querySelector('#catalog-tab-scaffold');
+      const nested = canvas.querySelector('#catalog-tab-scaffold-nested');
+      const stack = canvas.querySelector('#catalog-tab-scaffold-project-stack');
+      const stops = [
+        first
+          ? wireTabScaffold(first, { onSelect: selectTabScaffoldDemo })
+          : () => {},
+        nested
+          ? wireTabScaffold(nested, { onSelect: selectNestedTabScaffoldDemo })
+          : () => {},
+        stack
+          ? wireNavStack(stack, { onBack: popNestedTabScaffoldDemo })
+          : () => {},
+      ];
+      return () => stops.forEach((stop) => stop());
+    },
   },
   // The resizable example has real persistence (its sizes survive a reload),
   // so it wires on the app root right away: a remembered size is in place

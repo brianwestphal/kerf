@@ -545,6 +545,8 @@ Neutral lowered surfaces and decorative neutral fills/borders are translucent th
 
 Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.
 
+For a tab scene with drill-down, put a `NavStack` directly in `TabScaffoldTab.content`, configure each view's top `toolbar` and `pane`, and omit `bottomToolbar` at both levels so the scaffold bar remains the only bottom chrome. Wire both components on their own roots. The catalog's **NavStack inside a tab** example exercises push and tab switching.
+
 `ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`
 lengths (for example `px(416)`). Wire `wireToolbarVisibility(root)` from
 `@kerfjs/ui/wire-toolbar-visibility` and dispose on unmount. Thresholds use the

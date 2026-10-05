@@ -361,6 +361,8 @@ titles at every size; default tone retains existing identity and heading colors.
 
 Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.
 
+For a tab scene with drill-down, place a `NavStack` directly in `TabScaffoldTab.content`. Give its views structured `toolbar` and `pane` configuration and omit both stack and view `bottomToolbar`; the scaffold bar remains the only bottom chrome. Wire the scaffold and stack on their respective roots. See `docs/tab-scaffold.md` and the catalog's **NavStack inside a tab** example.
+
 Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-token-search-keep-open` or `collapsible.keepOpenOn` for focus.
 
 `ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`

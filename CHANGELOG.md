@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- The TabScaffold catalog now demonstrates a NavStack with a view-owned top toolbar and Pane above the persistent tab bar, including push, tab switch, and return.
+
 - UI Doctor now checks component root class names, stylesheet names, and CSS selectors that reach into another local component.
 
 - Configure modal `DialogSurface` viewport gutters and typed maximum heights, including a dynamic viewport cap, without application shadow-part overrides.

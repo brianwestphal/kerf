@@ -1,5 +1,48 @@
 import { expect, test } from '@playwright/test';
 
+test('a tab scene keeps its own NavStack toolbar and pane above the tab bar', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 820 });
+  await page.goto('/?component=tab-scaffold');
+  const scaffold = page.locator('#catalog-tab-scaffold-nested');
+  const stack = scaffold.locator('#catalog-tab-scaffold-project-stack');
+  await expect(stack).toHaveAttribute('data-depth', '1');
+  await expect(stack.locator(':scope > [data-nav-stack-chrome]')).toBeVisible();
+  await expect(stack.locator('[data-component="pane"]')).toBeVisible();
+  await expect(stack.locator(':scope > [data-nav-stack-bottom]')).toHaveCount(
+    0,
+  );
+  await expect(scaffold.locator('.kui-tab-scaffold__bar')).toBeVisible();
+  if (browserName === 'chromium')
+    await scaffold.screenshot({
+      path: 'test-results/tab-nested-stack-root-wide.png',
+    });
+
+  await stack.getByRole('button', { name: /Project Atlas/ }).click();
+  await expect(stack).toHaveAttribute('data-depth', '2');
+  await expect(stack).not.toHaveAttribute('data-nav-chrome-transition', 'true');
+  await expect(
+    stack.locator(
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-toolbar-text[data-fill="true"]',
+    ),
+  ).toHaveText('Project Atlas');
+  await scaffold.getByRole('tab', { name: 'Search' }).click();
+  await expect(
+    scaffold.locator('[data-tab-scaffold-scene="search"]'),
+  ).toHaveAttribute('data-active', 'true');
+  await scaffold.getByRole('tab', { name: 'Projects' }).click();
+  await expect(stack).toHaveAttribute('data-depth', '2');
+  await page.setViewportSize({ width: 390, height: 844 });
+  if (browserName === 'chromium')
+    await scaffold.screenshot({
+      path: 'test-results/tab-nested-stack-detail-narrow.png',
+    });
+  await stack.getByRole('button', { name: 'Back' }).click();
+  await expect(stack).toHaveAttribute('data-depth', '1');
+});
+
 test('focused app-layout catalog demos expose their real controlled behavior', async ({
   page,
   browserName,
@@ -151,11 +194,12 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
   }
 
   await page.goto('/?component=tab-scaffold');
-  const search = page.getByRole('tab', { name: 'Search' });
+  const originalScaffold = page.locator('#catalog-tab-scaffold');
+  const search = originalScaffold.getByRole('tab', { name: 'Search' });
   await search.click();
   await expect(search).toHaveAttribute('aria-selected', 'true');
   await expect(
-    page.locator('[data-tab-scaffold-scene="search"]'),
+    originalScaffold.locator('[data-tab-scaffold-scene="search"]'),
   ).toHaveAttribute('data-active', 'true');
 
   await page.goto('/?component=collapsible-panel');

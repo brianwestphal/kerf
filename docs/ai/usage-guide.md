@@ -336,6 +336,9 @@ those slots render in a per-view Pane and slide with it. Configure the bar with 
 `backIcon` / `backText` rather than CSS. The previous screen stays
 visible beneath a push; interrupted navigation settles the old transition,
 and disposal cancels its pending frames and cleanup timers.
+Inside a `TabScaffold`, put a `NavStack` directly in a tab's `content`,
+configure each view's `toolbar` and `pane`, and omit `bottomToolbar` so the
+scaffold bar is the only bottom chrome. Wire each component on its own root.
 `@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
 Web Awesome’s internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, also with custom selected content. See

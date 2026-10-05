@@ -59,6 +59,56 @@ truncate horizontally with an ellipsis when a destination name exceeds its
 share of the bar. On larger device classes, promote the tab set to a
 `Workbench` rail or a persistent sidebar instead of a bottom bar.
 
+## A NavStack with a top toolbar and Pane
+
+Put the `NavStack` directly in a tab's `content`. Give each view a structured
+`toolbar` and `pane` configuration. Leave `bottomToolbar` off both the views
+and the stack: the scaffold's tab bar is the only bottom chrome. The view's
+Pane owns scrolling, while the stack keeps its toolbar above it and the
+scaffold keeps the tab bar below it.
+
+```tsx
+import { List } from "@kerfjs/ui/list";
+import { ListItem } from "@kerfjs/ui/list-item";
+import { NavStack, type NavStackView } from "@kerfjs/ui/nav-stack";
+
+const projectViews: NavStackView[] = [
+  {
+    key: "projects",
+    toolbar: { title: "Projects" },
+    pane: { appearance: "sunken" },
+    content: <List><ListItem label="Project Atlas" /></List>,
+  },
+];
+
+<TabScaffold
+  id="app"
+  label="Sections"
+  active={active.value}
+  tabs={[
+    {
+      id: "projects",
+      label: "Projects",
+      content: (
+        <NavStack
+          id="projects-stack"
+          label="Projects navigation"
+          views={projectViews}
+        />
+      ),
+    },
+    { id: "search", label: "Search", content: <SearchScene /> },
+  ]}
+/>;
+```
+
+The app owns each stack's view array and the scaffold's active tab. Call
+`wireTabScaffold` for tab selection and `wireNavStack` for back navigation
+and transitions, each on its own component root. Push a detail by appending
+a view with its own `toolbar` and `pane`; switching tabs keeps that view
+mounted. The catalog's **NavStack inside a tab** example demonstrates the
+push, tab switch, and return flow.
+
 Set a tab's `appearance: "sunken"` when its scene owns scrolling and should
 paint the lowered surface behind short or long content. For a scene whose
 only child is a `Pane` or `NavStack`, set appearance on that child's scroll
