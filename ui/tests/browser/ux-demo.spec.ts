@@ -816,7 +816,7 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   const demo = page.locator('[data-demo="lucide-icon"]');
   await expect(demo).toHaveClass(/kui-catalog-example-stack/);
   const examples = demo.locator('.kui-catalog-example');
-  await expect(examples).toHaveCount(5);
+  await expect(examples).toHaveCount(6);
   // Each example is a ListHeader label + a note with aligned left edges.
   await expect(examples.nth(0).locator('.kui-list-header')).toHaveText(
     /Decorative/,
@@ -833,7 +833,10 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   await expect(examples.nth(4).locator('.kui-list-header')).toHaveText(
     /Icon colors/,
   );
-  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(5);
+  await expect(examples.nth(5).locator('.kui-list-header')).toHaveText(
+    /Inline with text/,
+  );
+  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(6);
   const alignedLeftEdges = await examples.evaluateAll((nodes) =>
     nodes.map((example) => {
       const contentLeft = (selector: string) => {
