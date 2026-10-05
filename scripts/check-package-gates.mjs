@@ -35,26 +35,37 @@ function reportCiStatus() {
   const result = spawnSync(
     'gh',
     [
-      'run',
-      'list',
-      '--branch',
-      'main',
-      '--workflow',
-      'CI',
-      '--limit',
-      '3',
-      '--json',
-      'status,conclusion,headSha,url',
+      'api',
+      // gh run list adds exclude_pull_requests=true, whose cached response
+      // has returned stale runs. Query the workflow directly instead, with
+      // a moving upper bound and no lower age cutoff or PR-exclusion filter.
+      `repos/{owner}/{repo}/actions/workflows/ci.yml/runs?branch=main&status=completed&per_page=1&created=${encodeURIComponent(`<=${new Date().toISOString()}`)}`,
     ],
     { cwd: root, encoding: 'utf8', timeout: 8000 },
   );
-  // No gh, no auth, or offline: the status is advisory, so stay silent.
-  if (result.status !== 0 || !result.stdout) return;
+  // No gh, no auth, or offline: remain non-blocking, but don't imply CI is green.
+  const unavailable = () =>
+    console.warn(
+      '[package-gates] WARNING: CI status on main is unavailable; local checks do not verify remote CI.',
+    );
+  if (result.status !== 0 || !result.stdout) {
+    unavailable();
+    return;
+  }
   try {
-    const warning = ciStatusWarning(JSON.parse(result.stdout));
+    const runs = JSON.parse(result.stdout).workflow_runs;
+    if (!Array.isArray(runs)) throw new Error('Expected a run list');
+    const warning = ciStatusWarning(
+      runs.map((run) => ({
+        status: run.status,
+        conclusion: run.conclusion,
+        headSha: run.head_sha,
+        url: run.html_url,
+      })),
+    );
     if (warning !== null) console.warn(`\n[package-gates] WARNING: ${warning}`);
   } catch {
-    /* unparseable output is treated like an unavailable gh */
+    unavailable();
   }
 }
 

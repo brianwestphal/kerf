@@ -87,6 +87,16 @@ interrupted part-way. Only identifiers and milliseconds are stored.
 
 ## CI and publication
 
+The local sibling-package gate's CI advisory queries the latest completed `CI`
+run on `main`, so queued or running builds cannot hide the previous completed
+result. It queries the workflow's Actions API directly, avoiding the stale
+PR-exclusion query used by `gh run list`, with the current timestamp as a creation
+upper bound and no lower age cutoff: an older completed run
+still matters when the branch has been quiet. A non-green result includes its
+commit and run URL. Missing authentication, offline access, or invalid CLI output
+prints an unavailable-status warning without failing the local gate;
+`KERF_SKIP_CI_STATUS=1` explicitly disables the lookup.
+
 CI and publication systems cannot write to the computer-local ticket store, so
 kerf pulls their timing instead. `import-ci` reads recent workflow runs with
 `gh run list --json …` and records one interval per run on every ticket named

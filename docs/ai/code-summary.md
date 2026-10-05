@@ -67,7 +67,7 @@ through the real CLI with a faithful Hot Sheet command boundary, plus the
 record-pass → skip → force → dirty → reinstall → new-tree → failed-rerun sequence in a
 scratch repository, an over-bound push recorded only against explicit tickets,
 and a read-only `summary --all` over a scratch store.
-`tests/unit/package-gates.test.ts` covers which sibling-package gates (`ui` check, `eslint-plugin` / `create-kerf-component` tests) `scripts/check-package-gates.mjs` selects for a changed-path set, and the red-CI-on-main warning.
+`tests/unit/package-gates.test.ts` covers which sibling-package gates (`ui` check, `eslint-plugin` / `create-kerf-component` tests) `scripts/check-package-gates.mjs` selects for a changed-path set, and the red-CI-on-main warning. Its CLI fixtures verify a fresh creation upper bound with no lower age cutoff, completed-run filtering, and non-blocking unavailable-status warnings.
 The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
 canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,
