@@ -314,16 +314,22 @@ test('sunken Pane paints short and long scroll viewports with fixed and auto chr
   }
 });
 
-test('sunken NavStack view and TabScaffold scene paint their own scroll areas', async ({
+test('sunken NavStack Pane and TabScaffold scene paint their scroll areas', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=nav-stack');
   const view = page.locator('#catalog-nav-stack [data-nav-key="library"]');
-  await expect(view).toHaveAttribute('data-appearance', 'sunken');
-  await expect(view).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  const pane = view.locator(':scope > [data-component="pane"]');
+  await expect(pane).toHaveAttribute('data-appearance', 'sunken');
+  await expect(pane.locator('.kui-pane__content')).not.toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
   await page.goto('/?component=tab-scaffold');
-  const scene = page.locator('[data-tab-scaffold-scene="projects"]');
+  const scene = page.locator(
+    '#catalog-tab-scaffold [data-tab-scaffold-scene="projects"]',
+  );
   await expect(scene).toHaveAttribute('data-appearance', 'sunken');
   await expect(scene).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
 });
