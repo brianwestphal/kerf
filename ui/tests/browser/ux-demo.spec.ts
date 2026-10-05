@@ -6,6 +6,7 @@ import {
   catalogSections,
   kerfCatalog,
 } from '../../ux-demo/catalog.js';
+import { minPaintedTextContrast } from './painted-contrast.js';
 
 async function activateWithKeyboard(page: Page, locator: Locator) {
   await locator.evaluate((element) => (element as HTMLElement).focus());
@@ -3360,38 +3361,11 @@ test('distinguishes pill status badges from rounded-rectangle tags', async ({
   const minBadgeContrast = (
     appearance: 'accent' | 'filled' | 'filled-outlined',
   ) =>
-    page
-      .locator(`[data-demo="wa-badge"] wa-badge[appearance="${appearance}"]`)
-      .evaluateAll((elements) => {
-        const luminance = (color: string): number => {
-          const channels =
-            color
-              .match(/[\d.]+/g)
-              ?.slice(0, 3)
-              .map(Number) ?? [];
-          const normalizedChannels = color.startsWith('color(srgb')
-            ? channels
-            : channels.map((channel) => channel / 255);
-          const [red = 0, green = 0, blue = 0] = normalizedChannels.map(
-            (normalized) =>
-              normalized <= 0.04045
-                ? normalized / 12.92
-                : ((normalized + 0.055) / 1.055) ** 2.4,
-          );
-          return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-        };
-        return Math.min(
-          ...elements.map((element) => {
-            const style = window.getComputedStyle(element);
-            const foreground = luminance(style.color);
-            const background = luminance(style.backgroundColor);
-            return (
-              (Math.max(foreground, background) + 0.05) /
-              (Math.min(foreground, background) + 0.05)
-            );
-          }),
-        );
-      });
+    minPaintedTextContrast(
+      page.locator(
+        `[data-demo="wa-badge"] wa-badge[appearance="${appearance}"]`,
+      ),
+    );
   await expect
     .poll(
       () => minBadgeContrast('filled'),
@@ -6922,9 +6896,20 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
   await expect(handle).toHaveAttribute('aria-label', 'Resize Catalog panel');
   const separator = await handle.evaluate((element) => {
     const style = window.getComputedStyle(element, '::before');
-    return { width: style.width, background: style.backgroundColor };
+    const probe = document.createElement('span');
+    probe.style.backgroundColor = 'var(--kui-color-neutral-border-normal)';
+    element.append(probe);
+    const tokenColor = window.getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return {
+      width: style.width,
+      background: style.backgroundColor,
+      tokenColor,
+    };
   });
-  expect(separator).toEqual({ width: '1px', background: 'rgb(209, 209, 214)' });
+  expect(separator.width).toBe('1px');
+  expect(separator.background).toBe(separator.tokenColor);
+  expect(separator.background).not.toBe('rgba(0, 0, 0, 0)');
   expect(await responsiveGeometry()).toMatchObject({
     committedFitsFooter: true,
     committedInFooter: true,
@@ -7570,76 +7555,8 @@ test('ships semantic banner palettes with scoped overrides', async ({
   // WCAG AA over the tinted banner fills (brand/success/warning-on-quiet resolved
   // to 4.15/4.05/4.39:1 there). Assert every tone's text clears 4.5:1 in both themes.
   expect(styles[1]!.color).toBe('rgb(26, 93, 207)');
-  const minToneContrast = () =>
-    banners.evaluateAll((nodes) => {
-      const context = document.createElement('canvas').getContext('2d');
-      const luminance = (color: string): number => {
-        if (!context) return 0;
-        context.canvas.width = 1;
-        context.canvas.height = 1;
-        context.fillStyle = color;
-        context.fillRect(0, 0, 1, 1);
-        const channels = [
-          ...context.getImageData(0, 0, 1, 1).data.slice(0, 3),
-        ].map((channel) => {
-          const value = channel / 255;
-          return value <= 0.04045
-            ? value / 12.92
-            : ((value + 0.055) / 1.055) ** 2.4;
-        });
-        return (
-          0.2126 * (channels[0] ?? 0) +
-          0.7152 * (channels[1] ?? 0) +
-          0.0722 * (channels[2] ?? 0)
-        );
-      };
-      return Math.min(
-        ...nodes.map((node) => {
-          const styleMap = window.getComputedStyle(node);
-          const foreground = luminance(styleMap.color);
-          const background = luminance(styleMap.backgroundColor);
-          return (
-            (Math.max(foreground, background) + 0.05) /
-            (Math.min(foreground, background) + 0.05)
-          );
-        }),
-      );
-    });
-  const minBadgeContrast = () =>
-    badges.evaluateAll((nodes) => {
-      const context = document.createElement('canvas').getContext('2d');
-      const luminance = (color: string): number => {
-        if (!context) return 0;
-        context.canvas.width = 1;
-        context.canvas.height = 1;
-        context.fillStyle = color;
-        context.fillRect(0, 0, 1, 1);
-        const channels = [
-          ...context.getImageData(0, 0, 1, 1).data.slice(0, 3),
-        ].map((channel) => {
-          const value = channel / 255;
-          return value <= 0.04045
-            ? value / 12.92
-            : ((value + 0.055) / 1.055) ** 2.4;
-        });
-        return (
-          0.2126 * (channels[0] ?? 0) +
-          0.7152 * (channels[1] ?? 0) +
-          0.0722 * (channels[2] ?? 0)
-        );
-      };
-      return Math.min(
-        ...nodes.map((node) => {
-          const styleMap = window.getComputedStyle(node);
-          const foreground = luminance(styleMap.color);
-          const background = luminance(styleMap.backgroundColor);
-          return (
-            (Math.max(foreground, background) + 0.05) /
-            (Math.min(foreground, background) + 0.05)
-          );
-        }),
-      );
-    });
+  const minToneContrast = () => minPaintedTextContrast(banners);
+  const minBadgeContrast = () => minPaintedTextContrast(badges);
   await expect
     .poll(minToneContrast, 'light StateBanner tone contrast (min across tones)')
     .toBeGreaterThanOrEqual(4.5);

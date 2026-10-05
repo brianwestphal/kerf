@@ -565,6 +565,13 @@ bundles `ui/tests/browser/fixtures/tone-text-cases.tsx` with and without the
 bridge and asserts parity for every `--kui-color-*` token it parses from
 `foundation.css` (plus the focus ring) in both schemes, and AA toned text.
 
+UI palette browser checks share `ui/tests/browser/painted-contrast.ts`, which
+composites solid ancestor/component fills and foreground alpha in a browser
+canvas, then uses the evaluator's WCAG contrast math.
+`ui/tests/browser/painted-contrast.spec.ts` guards nested transparency, dark
+backdrop transitions, modern CSS color syntax, shadow hosts, and low-contrast
+rejection. Images, filters, and group opacity require separate visual review.
+
 `ui/ai/components/` holds the generated assistant-facing markdown reference —
 `README.md` (one-line index) plus one `<id>.md` page per catalog entry — rendered
 by `ui/scripts/sync-component-docs.mjs` over `ui/scripts/lib/component-docs.mjs`

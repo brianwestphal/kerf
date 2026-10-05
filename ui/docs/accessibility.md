@@ -568,3 +568,18 @@ pattern). See [`workbench.md`](workbench.md).
 ## Verification matrix
 
 For each changed component, inspect default, hover, focus, disabled, selected/pressed, busy/error, long-content, wide, narrow, light, dark, increased-contrast, reduced-motion, keyboard-only, and 200%-zoom states where applicable. DOM order must match reading and focus order, with no clipping or unreachable action.
+
+Text contrast checks must measure the painted solid-color backdrop, compositing
+translucent fills from the document canvas through every ancestor and the
+component itself before comparing the foreground. Raw RGB channels from an
+`rgba()` value are not the rendered background. The shared browser helper in
+`tests/browser/painted-contrast.ts` resolves CSS color syntax through canvas and
+uses the evaluator's WCAG ratio calculation; its browser regressions cover
+nested fills, transparent foregrounds, shadow-host backdrops, theme changes,
+and genuinely insufficient contrast. Background images (including the catalog
+checkerboard), filters, and group opacity remain separate visual-review concerns;
+this helper measures only the solid CSS color layers.
+
+Separator checks resolve the documented semantic border token in the component's
+context instead of pinning an old opaque palette value, while still verifying
+that the line has its intended width and a visible color.
