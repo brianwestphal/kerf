@@ -1,8 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { FieldLabel, Text, type TextProps } from '../../src/text.js';
+import { FieldLabel } from '../../src/field-label.js';
+import {
+  FieldLabel as TextFieldLabel,
+  Text,
+  type TextProps,
+} from '../../src/text.js';
 
 describe('FieldLabel', () => {
+  it('remains available through the text module', () => {
+    expect(TextFieldLabel).toBe(FieldLabel);
+  });
   it('renders a plain heading that can name a read-only preview group', () => {
     const html = String(
       FieldLabel({

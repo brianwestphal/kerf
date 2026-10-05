@@ -1052,8 +1052,9 @@ transparent border and item padding to block variants while leaving `span`
 without box geometry. Its
 independent `tone`, `size`, and `font` unions expose quiet/danger, compact, and
 monospace roles through stable data attributes and semantic foundation tokens.
-The same `text` entry exports `FieldLabel`, a plain preview heading whose
-typography and inline inset mirror a themed Web Awesome form-control label;
+`FieldLabel` lives in `ui/src/field-label.tsx` and remains exported through the
+`text` entry for consumers. It is a plain preview heading whose typography and
+inline inset mirror a themed Web Awesome form-control label;
 applications connect its id to a preview group with `aria-labelledby`.
 The optional `ui/src/document.css` entry provides global border-box sizing,
 token-backed body/link presentation, inherited table-cell and native form-control

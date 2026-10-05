@@ -58,6 +58,7 @@ export {
   type DisclosureDirection,
 } from './disclosure-arrow.js';
 export { EmptyState, type EmptyStateProps } from './empty-state.js';
+export { FieldLabel, type FieldLabelProps } from './field-label.js';
 export {
   FloatingToolbar,
   type FloatingToolbarPosition,
@@ -184,8 +185,6 @@ export {
   type TabBarTrailingPlacement,
 } from './tab-bar.js';
 export {
-  FieldLabel,
-  type FieldLabelProps,
   Text,
   type TextContent,
   type TextFont,

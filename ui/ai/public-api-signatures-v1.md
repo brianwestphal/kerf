@@ -3336,6 +3336,14 @@ import * as kerfjs from 'kerfjs';
 import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
+type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
+    children: string;
+    class?: string;
+    className?: string;
+};
+/** Visible field heading for a read-only preview; use its id with aria-labelledby on the preview group. */
+declare function FieldLabel({ children, class: classValue, className, ...attributes }: FieldLabelProps): kerfjs.SafeHtml;
+
 type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 type TextTone = 'default' | 'quiet' | 'danger';
 type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
@@ -3344,13 +3352,6 @@ type TextBorder = 'transparent' | 'none';
 type TextLineHeight = 'default' | 'tight';
 type TextWrap = 'normal' | 'anywhere' | 'nowrap' | 'truncate';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
-type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
-    children: string;
-    class?: string;
-    className?: string;
-};
-/** Visible field heading for a read-only preview; use its id with aria-labelledby on the preview group. */
-declare function FieldLabel({ children, class: classValue, className, ...attributes }: FieldLabelProps): kerfjs.SafeHtml;
 type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
     variant?: TextVariant;
