@@ -1,4 +1,11 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  symlink,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 
@@ -560,5 +567,63 @@ describe('Kerf UI doctor', () => {
     expect(report.diagnostics[0].message).toContain(
       'requires at least one explicit --path',
     );
+  });
+
+  it('keeps ambient declaration roots in changed TypeScript checks', async () => {
+    const root = await fixture();
+    await mkdir(resolve(root, 'node_modules'));
+    await symlink(
+      resolve(import.meta.dirname, '../../node_modules/typescript'),
+      resolve(root, 'node_modules/typescript'),
+      'dir',
+    );
+    await writeFile(
+      resolve(root, 'tsconfig.json'),
+      JSON.stringify({
+        compilerOptions: {
+          module: 'esnext',
+          moduleResolution: 'bundler',
+          strict: true,
+          noEmit: true,
+        },
+        include: ['src/**/*'],
+      }),
+    );
+    await writeFile(
+      resolve(root, 'src/globals.d.ts'),
+      'export {};\ndeclare global { interface Window { fixtureFlag: true } }\n',
+    );
+    await writeFile(
+      resolve(root, 'src/model.ts'),
+      'export type FixtureFlag = typeof window.fixtureFlag;\n',
+    );
+    await writeFile(
+      resolve(root, 'src/view.ts'),
+      "import type { FixtureFlag } from './model.js';\n" +
+        'export const augmented: FixtureFlag = window.fixtureFlag;\n' +
+        'export const changedError: string = 1;\n',
+    );
+    await writeFile(
+      resolve(root, 'src/unchanged.ts'),
+      'export const unchangedError: string = 1;\n',
+    );
+
+    const report = await runUiDoctor({
+      root,
+      mode: 'changed',
+      paths: ['src/view.ts'],
+      cache: false,
+      config: {
+        schemaVersion: 1,
+        stages: { ...disabled, typescript: true },
+      },
+    });
+
+    expect(report.diagnostics).toEqual([
+      expect.objectContaining({
+        id: 'TS2322',
+        location: expect.objectContaining({ file: 'src/view.ts' }),
+      }),
+    ]);
   });
 });

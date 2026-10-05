@@ -113,7 +113,7 @@ excluded consistently from TypeScript, the isolated ESLint pass, analyzer
 discovery, and cache inputs, even when one lives below another application
 directory.
 
-TypeScript constructs the selected package's program so compiler options retain their real meaning, while its root inputs are narrowed to changed source files. Use `--full` for release gates.
+TypeScript constructs the selected package's program so compiler options retain their real meaning. In changed mode, its root inputs are narrowed to changed source files plus the tsconfig's declaration roots, so ambient globals still participate; reported source diagnostics stay scoped to the changed files. Use `--full` for release gates.
 
 ## Configuration and suppressions
 

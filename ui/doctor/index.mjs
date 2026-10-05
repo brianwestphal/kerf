@@ -847,13 +847,14 @@ async function runTypeScript({ packageRoot, paths }) {
     { ...ts.default.sys, onUnRecoverableConfigFileDiagnostic: () => {} },
   );
   if (!parsed) throw new Error('TypeScript could not parse tsconfig.json.');
-  parsed.fileNames = parsed.fileNames.filter(
-    (file) => !isUiTraversalExcluded(packageRoot, file),
-  );
-  if (paths?.length) {
-    const selected = new Set(paths.map((path) => resolve(packageRoot, path)));
-    parsed.fileNames = parsed.fileNames.filter((file) => selected.has(file));
-  }
+  const selected = paths?.length
+    ? new Set(paths.map((path) => resolve(packageRoot, path)))
+    : undefined;
+  parsed.fileNames = parsed.fileNames.filter((file) => {
+    if (isUiTraversalExcluded(packageRoot, file)) return false;
+    if (!selected || selected.has(file)) return true;
+    return /\.d\.(?:ts|mts|cts)$/.test(file);
+  });
   const program = ts.default.createProgram(
     parsed.fileNames,
     { ...parsed.options, noEmit: true },
@@ -864,30 +865,38 @@ async function runTypeScript({ packageRoot, paths }) {
   const diagnostics = [
     ...parsed.errors,
     ...ts.default.getPreEmitDiagnostics(program),
-  ].map((item) => {
-    const point =
-      item.file && item.start !== undefined
-        ? item.file.getLineAndCharacterOfPosition(item.start)
-        : undefined;
-    return normalizedDiagnostic({
-      id: `TS${item.code}`,
-      severity:
-        item.category === ts.default.DiagnosticCategory.Error
-          ? 'error'
-          : 'warning',
-      stage: 'typescript',
-      message: ts.default.flattenDiagnosticMessageText(item.messageText, '\n'),
-      location: item.file
-        ? {
-            file: portablePath(packageRoot, item.file.fileName),
-            line: (point?.line ?? 0) + 1,
-            column: (point?.character ?? 0) + 1,
-          }
-        : undefined,
-      action: 'Repair the TypeScript diagnostic at this source location.',
-      meaning: `TypeScript diagnostic TS${item.code}`,
+  ]
+    .filter(
+      (item) =>
+        !selected || !item.file || selected.has(resolve(item.file.fileName)),
+    )
+    .map((item) => {
+      const point =
+        item.file && item.start !== undefined
+          ? item.file.getLineAndCharacterOfPosition(item.start)
+          : undefined;
+      return normalizedDiagnostic({
+        id: `TS${item.code}`,
+        severity:
+          item.category === ts.default.DiagnosticCategory.Error
+            ? 'error'
+            : 'warning',
+        stage: 'typescript',
+        message: ts.default.flattenDiagnosticMessageText(
+          item.messageText,
+          '\n',
+        ),
+        location: item.file
+          ? {
+              file: portablePath(packageRoot, item.file.fileName),
+              line: (point?.line ?? 0) + 1,
+              column: (point?.character ?? 0) + 1,
+            }
+          : undefined,
+        action: 'Repair the TypeScript diagnostic at this source location.',
+        meaning: `TypeScript diagnostic TS${item.code}`,
+      });
     });
-  });
   return { diagnostics };
 }
 
