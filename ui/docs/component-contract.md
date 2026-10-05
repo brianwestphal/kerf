@@ -579,6 +579,8 @@ compact segment never becomes an oval. An icon-only `Select` joins a group as
 one more segment with its siblings' inset, radius, hover, and focus ring; only a
 lone Select grows the group to its icon-and-caret pill.
 
+Select menus use native viewport shifting with 10px gutters: default menus grow to content (up to 20rem), while `fitMenu` matches trigger width and long labels wrap. Keep popup sizing and position repairs out of consumer CSS.
+
 For a rail view heading, use `Select presentation="title"`: its intrinsic
 36px borderless trigger has a bold large label flush with its leading edge and
 a caret beside that label. Set `focusRingInset` when a NavStack or panel clips

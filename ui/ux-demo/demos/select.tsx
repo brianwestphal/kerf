@@ -334,6 +334,39 @@ export function SelectDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
+      <CatalogExample
+        label="Long options within viewport"
+        align="inline-control"
+      >
+        <Row hAlign="right">
+          <ToolbarControlGroup
+            label="Project attention"
+            size="compact"
+            content="icon"
+            single
+          >
+            <Select<string>
+              name="viewport-attention"
+              value={selectedChoice.value}
+              ariaLabel="Project attention"
+              presentation="toolbar-borderless"
+              size="compact"
+              selectedPresentation="icon-only"
+              focusRingOwner="group"
+              choices={[
+                { value: 'quiet', label: 'Quiet', icon: Bell },
+                {
+                  value: 'balanced',
+                  label:
+                    'Attention needed for project configuration and deployment settings',
+                  icon: SlidersHorizontal,
+                },
+                { value: 'explicit', label: 'Explicit', icon: Wrench },
+              ]}
+            />
+          </ToolbarControlGroup>
+        </Row>
+      </CatalogExample>
       <CatalogExample label="Navigation label" align="inline-control">
         <Select<string>
           name="navigation-rendering-balance"

@@ -57,6 +57,7 @@ interface SelectBaseProps<Value extends string = string> {
   /** Supporting text shown below the control and associated with its combobox. */
   hint?: string;
   disabled?: boolean;
+  /** Match menu width to the trigger; default menus grow to content within viewport gutters. */
   fitMenu?: boolean;
   /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
   placeholder?: boolean;

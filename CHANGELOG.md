@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Select menus now shift their complete visible surface inside narrow viewport edges while preserving `fitMenu` trigger width (`KF-H4JBQP`).
+
 - Toolbar visibility probes stop rewriting unchanged styles, allowing catalog geometry overlays and responsive controls to settle after updates (`KF-JVWC92`).
 
 - Busy toolbar groups preserve their relocation annotation, so the inert action and live status remain available when a panel closes.

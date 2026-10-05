@@ -16,7 +16,13 @@ function host() {
     disabled: false,
     updateComplete: Promise.resolve(true),
     listbox: document.createElement('div'),
-    popup: { active: false, popup: document.createElement('div') },
+    popup: {
+      active: false,
+      popup: document.createElement('div'),
+      sync: 'width' as 'width' | undefined,
+      autoSize: 'vertical' as 'vertical' | 'both',
+      shiftPadding: 0,
+    },
     currentOption: undefined as HTMLElement | undefined,
     selectedOptions: [] as HTMLElement[],
     getFirstOption: vi.fn<() => HTMLElement | undefined>(),
@@ -64,6 +70,35 @@ describe('Select lifecycle ownership', () => {
     await select.handleOpenChange();
     expect(original).toHaveBeenCalledOnce();
     expect(animateSelectPopup).not.toHaveBeenCalled();
+  });
+
+  it('uses native viewport containment and preserves fitMenu width on reopen', async () => {
+    vi.mocked(animateSelectPopup).mockResolvedValue();
+    const select = host();
+    installSelectLifecycle(select);
+    select.open = true;
+    await select.handleOpenChange();
+    expect(select.popup).toMatchObject({
+      sync: undefined,
+      autoSize: 'both',
+      shiftPadding: 10,
+    });
+    select.open = false;
+    await select.handleOpenChange();
+    select.classList.add('kui-select--fit-menu');
+    select.open = true;
+    await select.handleOpenChange();
+    expect(select.popup).toMatchObject({
+      sync: 'width',
+      autoSize: 'both',
+      shiftPadding: 10,
+    });
+    select.open = false;
+    await select.handleOpenChange();
+    select.classList.remove('kui-select--fit-menu');
+    select.open = true;
+    await select.handleOpenChange();
+    expect(select.popup.sync).toBeUndefined();
   });
 
   it('ignores old hide/show completions through repeated reversals and preserves the latest close', async () => {

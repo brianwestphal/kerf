@@ -373,3 +373,5 @@ negative, unresolved, or contradictory values leave the item visible under this
 width policy. Keep primary actions visible and offer a complementary overflow
 group. See `docs/component-contract.md` "Toolbar width visibility" for lifecycle
 details.
+
+Select menus use native viewport shifting with 10px gutters: default menus grow to content (up to 20rem), while `fitMenu` matches trigger width and long labels wrap. Keep popup sizing and position repairs out of consumer CSS.

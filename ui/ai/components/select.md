@@ -12,6 +12,7 @@ Choose one or more controlled values, keep unavailable choices visible, and opti
 
 - Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices.
 - Color an optional choice icon with a CssForegroundColor: uiColor() with a foreground token such as success-on-quiet, foregroundColorVar() for an app-owned property, or foregroundColor() for a direct custom CSS color. Fill tokens such as success are backgrounds that leave the icon nearly invisible, so they, lengths, raw color strings, and unqualified colorVar() values are rejected.
+- Use the default content-sized menu for long option labels; native popup shifting keeps it within 10px viewport gutters. fitMenu instead matches trigger width and wraps labels.
 
 **Not when:**
 

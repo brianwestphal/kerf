@@ -15,7 +15,7 @@ interface SelectHost extends Pick<
   | 'disabled'
   | 'isConnected'
   | 'dataset'
-  | 'popup'
+  | 'classList'
   | 'listbox'
   | 'currentOption'
   | 'selectedOptions'
@@ -23,6 +23,10 @@ interface SelectHost extends Pick<
   | 'handleOpenChange'
   | 'updateComplete'
 > {
+  // Native Popup starts with no sync policy; its declaration omits undefined.
+  popup: Omit<WaSelect['popup'], 'sync'> & {
+    sync?: WaSelect['popup']['sync'];
+  };
   getFirstOption(): WaSelect['currentOption'];
   setCurrentOption(option: WaSelect['currentOption']): void;
   addOpenListeners(): void;
@@ -88,6 +92,13 @@ export function installSelectLifecycle(
       if (opening) {
         host.addOpenListeners();
         host.listbox.hidden = false;
+        // Measure the visible menu rather than a trigger-width wrapper. Native
+        // shift/auto-size can then contain the complete surface at either edge.
+        host.popup.sync = host.classList.contains('kui-select--fit-menu')
+          ? 'width'
+          : undefined;
+        host.popup.autoSize = 'both';
+        host.popup.shiftPadding = 10;
         host.popup.active = true;
         window.requestAnimationFrame(() => {
           if (current()) host.setCurrentOption(host.currentOption);

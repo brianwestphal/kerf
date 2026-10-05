@@ -1156,3 +1156,5 @@ color tokens); `BadgeTone` and `StateBannerTone` are deprecated aliases.
 The UI shared theme and foundation define translucent lowered surfaces and neutral decorative fills/borders; the SunkenPanel catalog composes public components directly without prototype CSS.
 
 Toolbar width visibility (`KF-MXE9YV`): `ui/src/wiring/wire-toolbar-visibility.ts` implements disposer-returning nearest-content-box thresholds, exported through `ui/src/wire-toolbar-visibility.ts`. `ui/tests/unit/toolbar-width-visibility.test.ts` covers transitions and cleanup; `ui/tests/browser/toolbar-width-visibility.spec.ts` exercises real CSS resolution, responsive actions, fonts/tokens, rendering and nested relocation across three engines. `KF-JVWC92` makes probe style reconciliation idempotent after CSSOM normalization; `ui/tests/browser/toolbar-visibility-idle.spec.ts` pins idle behavior with the production geometry overlay and real token/width transitions.
+
+Select menus use native viewport shifting with 10px gutters: default menus grow to content (up to 20rem), while `fitMenu` matches trigger width and long labels wrap. Keep popup sizing and position repairs out of consumer CSS.
