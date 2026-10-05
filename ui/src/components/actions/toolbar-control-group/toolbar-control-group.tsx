@@ -210,17 +210,17 @@ export function ToolbarControlGroup({
       ) : null}
     </div>
   );
-  const renderedGroup = relocateOnCollapse
-    ? markRelocatableGroup(group)
-    : group;
-  return busy ? (
+  const renderedGroup = busy ? (
     <>
-      {renderedGroup}
+      {group}
       <span class="kui-toolbar-control-group__busy-status" role="status">
         {busyLabel}
       </span>
     </>
   ) : (
-    renderedGroup
+    group
   );
+  return relocateOnCollapse
+    ? markRelocatableGroup(renderedGroup)
+    : renderedGroup;
 }

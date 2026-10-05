@@ -230,4 +230,56 @@ describe('CollapsiblePanel toolbar', () => {
     );
     expect(bare.querySelector('[data-component="pane"]')).toBeNull();
   });
+  it('relocates busy groups and their status together across every zone and state', () => {
+    for (const busy of [false, true, false, true]) {
+      const named = (name: string, relocateOnCollapse = true) => (
+        <ToolbarControlGroup
+          relocateOnCollapse={relocateOnCollapse}
+          busy={busy}
+          busyLabel={`Working ${name}`}
+        >
+          <button type="button" data-group={name}>
+            {name}
+          </button>
+        </ToolbarControlGroup>
+      );
+      const configured = {
+        label: 'Navigator',
+        leading: [named('leading'), named('local', false)],
+        center: [false, [named('center')]],
+        trailing: named('trailing'),
+      };
+      for (const collapsed of [false, true, false, true]) {
+        const host = html(
+          CollapsiblePanelRelocated({
+            panelId: 'nav',
+            side: 'left',
+            collapsed,
+            toolbar: configured,
+          }),
+        );
+        expect(
+          [...host.querySelectorAll('[data-group]')].map((node) =>
+            node.getAttribute('data-group'),
+          ),
+        ).toEqual(collapsed ? ['leading', 'center', 'trailing'] : []);
+        expect(host.querySelectorAll('[role="status"]')).toHaveLength(
+          collapsed && busy ? 3 : 0,
+        );
+        for (const button of host.querySelectorAll('[data-group]')) {
+          const owner = button.closest('.kui-toolbar-control-group')!;
+          expect(owner.hasAttribute('inert')).toBe(busy);
+          if (busy) {
+            expect(owner.nextElementSibling?.getAttribute('role')).toBe(
+              'status',
+            );
+            expect(owner.nextElementSibling?.textContent).toBe(
+              `Working ${button.getAttribute('data-group')}`,
+            );
+          }
+        }
+        expect(host.querySelector('[data-group="local"]')).toBeNull();
+      }
+    }
+  });
 });

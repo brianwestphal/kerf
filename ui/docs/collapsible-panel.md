@@ -142,6 +142,10 @@ top toolbar over a `Pane`:
   work area when the panel closes; the standard `toggle: { action, name,
 showLabel?, hideLabel? }` is always the final group.
 
+Busy groups keep their inert control, spinner, and adjacent live status together
+when relocated. Clearing `busy` restores the same action in its current toolbar;
+expanding the panel returns both control and status to the panel toolbar.
+
 The panel can also take `header` under its toolbar, `footer` below its content,
 `bottomToolbar` below that, `headerList` / `footerList` for those fixed content
 stacks, and `headerPlacement` / `footerPlacement` (`fixed`, `scroll`, or `auto`).
