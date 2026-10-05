@@ -911,8 +911,9 @@ containing block (`contain: layout`) for screen-fixed chrome, so the compact
 `CollapsiblePanel` overlay and backdrop dock to the frame
 (`ui/tests/browser/collapsible-sidebar-recipe.spec.ts`).
 `ui/tests/browser/layout-fill.spec.ts` pins the fill chain in both recipes.
-Each `List`/`Row`/`Grid` resets its private `--_kui-*-gap`/`--_kui-*-flex`
-variables, so a nested instance never inherits its ancestor's `gap` or `flex`
+Each `List`/`Row`/`Grid` resets its private gap/flex and inset variables, so a
+nested instance never inherits its ancestor's `gap`, `flex`, `textInsets`, or
+`controlInsets`
 (`ui/tests/browser/nested-layout-variables.spec.ts` with
 `ui/tests/browser/fixtures/nested-layout-variables.tsx`).
 `Grid.minColumnWidth` is an exclusive alternative to `columns`; its auto-fit

@@ -4,14 +4,64 @@
      inherits its ancestor's; the inline style overrides them per prop. */
   --_kui-grid-gap: var(--kui-grid-gap);
   --_kui-grid-flex: 0 1 auto;
+  --_kui-grid-inset-top: 0;
+  --_kui-grid-inset-right: 0;
+  --_kui-grid-inset-bottom: 0;
+  --_kui-grid-inset-left: 0;
 
   display: grid;
   min-width: 0;
   min-height: 0;
   box-sizing: border-box;
+  padding: var(--_kui-grid-inset-top, 0) var(--_kui-grid-inset-right, 0)
+    var(--_kui-grid-inset-bottom, 0) var(--_kui-grid-inset-left, 0);
   flex: var(--_kui-grid-flex, initial);
   grid-template-columns: repeat(var(--_kui-grid-columns), minmax(0, 1fr));
   gap: var(--_kui-grid-gap, var(--kui-grid-gap));
+}
+
+.kui-grid[data-control-insets*="t"] {
+  --_kui-grid-inset-top: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-grid[data-control-insets*="r"] {
+  --_kui-grid-inset-right: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-grid[data-control-insets*="b"] {
+  --_kui-grid-inset-bottom: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-grid[data-control-insets*="l"] {
+  --_kui-grid-inset-left: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-grid[data-text-insets*="t"] {
+  --_kui-grid-inset-top: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+}
+
+.kui-grid[data-text-insets*="r"] {
+  --_kui-grid-inset-right: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+}
+
+.kui-grid[data-text-insets*="b"] {
+  --_kui-grid-inset-bottom: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+}
+
+.kui-grid[data-text-insets*="l"] {
+  --_kui-grid-inset-left: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
 }
 
 .kui-grid[data-min-column-width="true"] {

@@ -5,6 +5,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { px } from '@kerfjs/ui/css-values';
 import { Grid } from '@kerfjs/ui/grid';
+import { Text } from '@kerfjs/ui/text';
 
 import { gridTileSelections } from './state.js';
 
@@ -38,6 +39,21 @@ export function GridDemo() {
         <Grid minColumnWidth={px(376)} gap="m">
           <wa-input label="Provider name" value="Example provider" />
           <wa-input label="API endpoint" value="https://example.test" />
+        </Grid>
+      </CatalogExample>
+      <CatalogExample
+        label="Text and control insets"
+        note="Text insets add the full 17px content inset; control insets add 8px. When both select an edge, the text inset wins."
+        rootAttributes={{ 'data-demo-section': 'grid-insets' }}
+      >
+        <Grid
+          columns={2}
+          textInsets="l"
+          controlInsets="rl"
+          rootAttributes={{ 'data-demo-grid-insets': '' }}
+        >
+          <Text flush>Text aligned to the full content inset</Text>
+          <wa-input label="Amount" value="12" />
         </Grid>
       </CatalogExample>
       <CatalogExample

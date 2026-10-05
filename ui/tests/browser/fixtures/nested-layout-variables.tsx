@@ -9,9 +9,9 @@ import { Row } from '@kerfjs/ui/row';
 import { mount } from 'kerfjs';
 
 /**
- * Nested List, Row, and Grid instances where the outer instance sets `gap` and
- * `flex` and the inner one omits both. The inner instance must resolve its own
- * defaults rather than inherit the outer instance's private variables.
+ * Nested List, Row, and Grid instances where the outer instance sets `gap`,
+ * `flex`, and Grid insets while the inner one omits them. The inner instance
+ * must resolve its own defaults rather than inherit private variables.
  */
 const cell = (label: string) => <div data-cell>{label}</div>;
 
@@ -33,6 +33,7 @@ const view = () => (
       columns={1}
       gap="l"
       flex
+      textInsets="trbl"
       rootAttributes={{ 'data-case': 'grid-outer' }}
     >
       <Grid columns={2} rootAttributes={{ 'data-case': 'grid-inner' }}>

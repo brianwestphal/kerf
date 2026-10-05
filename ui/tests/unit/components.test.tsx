@@ -798,6 +798,28 @@ describe('production UI primitives', () => {
     expect(responsive).not.toContain('data-auto-fill');
   });
 
+  it('renders Grid text and control insets as protected physical-side attributes', () => {
+    const html = asHtml(
+      Grid({
+        columns: 2,
+        textInsets: 'tbl',
+        controlInsets: 'rl',
+        rootAttributes: {
+          'data-example': 'form',
+          ...({
+            'data-text-insets': 'r',
+            'data-control-insets': 't',
+          } as object),
+        },
+      }),
+    );
+    expect(html).toContain('data-text-insets="tbl"');
+    expect(html).toContain('data-control-insets="rl"');
+    expect(html).not.toContain('data-text-insets="r"');
+    expect(html).not.toContain('data-control-insets="t"');
+    expect(html).toContain('data-example="form"');
+  });
+
   it('makes a selectable Grid a named multi-select grid while ordinary Grid stays layout-only', () => {
     const plain = asHtml(Grid({ columns: 2, ariaLabel: 'Ignored' }));
     expect(plain).not.toContain('role="grid"');

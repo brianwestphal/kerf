@@ -52,6 +52,7 @@ async function layout(page: Page, name: string) {
       columnGap: style.columnGap,
       blockSpacing: first && second ? second.top - first.bottom : null,
       inlineSpacing: first && second ? second.left - first.right : null,
+      padding: style.padding,
     };
   });
 }
@@ -93,11 +94,13 @@ test('a nested Grid without gap or flex keeps its own defaults', async ({
   const outer = await layout(page, 'grid-outer');
   expect(outer.columnGap).toBe('24px');
   expect(outer.flex).toBe('1 1 auto');
+  expect(outer.padding).toBe('17px');
 
   const inner = await layout(page, 'grid-inner');
   expect(inner.columnGap).toBe('8px');
   expect(inner.inlineSpacing).toBeCloseTo(8, 1);
   expect(inner.flex).toBe('0 1 auto');
+  expect(inner.padding).toBe('0px');
 });
 
 test('a List nested through a Row does not inherit the outer List', async ({

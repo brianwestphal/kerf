@@ -1,5 +1,6 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import type { Sides } from '../../../shared/layout/sides.js';
 import {
   type CssFlex,
   type CssFlexKeyword,
@@ -15,6 +16,8 @@ const gridProtectedAttributes = new Set([
   'data-auto-fill',
   'data-flex',
   'data-fill',
+  'data-text-insets',
+  'data-control-insets',
 ]);
 
 type GridRootAttributes = Readonly<
@@ -25,6 +28,8 @@ type GridRootAttributes = Readonly<
     'data-auto-fill'?: never;
     'data-flex'?: never;
     'data-fill'?: never;
+    'data-text-insets'?: never;
+    'data-control-insets'?: never;
   }
 >;
 
@@ -54,6 +59,10 @@ interface GridCommonProps {
    * flex layout use `flex` instead. Defaults to false.
    */
   fill?: boolean;
+  /** Physical sides that receive the standard 17px text inset. */
+  textInsets?: Sides;
+  /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
+  controlInsets?: Sides;
   className?: string;
   /** Safe `data-*` metadata; Grid-owned structural attributes remain protected. */
   rootAttributes?: GridRootAttributes;
@@ -89,6 +98,8 @@ export function Grid({
   gap = 'xs',
   flex = false,
   fill = false,
+  textInsets = '',
+  controlInsets = '',
   className = '',
   rootAttributes = {},
   slot,
@@ -143,6 +154,8 @@ export function Grid({
       data-auto-fill={autoFill ? 'true' : undefined}
       data-flex={String(Boolean(flex))}
       data-fill={fill ? 'true' : undefined}
+      data-text-insets={textInsets || undefined}
+      data-control-insets={controlInsets || undefined}
       style={style}
       slot={slot}
     >
@@ -151,6 +164,7 @@ export function Grid({
   );
 }
 
+export type { Sides } from '../../../shared/layout/sides.js';
 export type {
   CssFlex,
   CssFlexKeyword,

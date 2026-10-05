@@ -113,6 +113,8 @@ flex parent's main axis. The component is decorative and accepts no children.
 Use `Grid` from `@kerfjs/ui/grid` for equal-width columns: pass fixed `columns`
 or a typed `minColumnWidth` such as `px(376)` for automatic container-width
 collapse, never both. Its `gap`/`flex` values use the shared typed contracts.
+`textInsets` and `controlInsets` apply the standard 17px text and 8px control
+inset to selected physical sides; text wins on overlap.
 The app owns the outer width and child semantics; use application CSS grid for
 asymmetric or intrinsic tracks and `ResizableRegion` for adjustable boundaries.
 

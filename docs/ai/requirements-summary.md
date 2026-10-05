@@ -322,7 +322,9 @@ length instead of unrestricted CSS strings. Source and packed-tarball type
 contracts pin that distinction.
 Grid also accepts a typed `minColumnWidth` instead of fixed `columns`, fitting
 equal tracks to its container and collapsing to one when another minimum-width
-track plus the gap does not fit.
+track plus the gap does not fit. Its `textInsets` and `controlInsets` mirror Row
+and List with physical sides, 17px text / 8px control spacing, and text
+precedence.
 `CssFlex`, `CssSize`, and `CssForegroundColor` (a `CssColor` subtype minted
 from foreground tokens, `foregroundColorVar()`, or `foregroundColor()` for custom CSS colors) extend the same
 property-specific rule to Row/Grid/List flex, Skeleton geometry, and Select

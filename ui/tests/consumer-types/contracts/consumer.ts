@@ -64,7 +64,7 @@ import {
   buildEvaluationContexts,
   type UiEvaluationContext,
 } from '@kerfjs/ui/evaluator';
-import { Grid } from '@kerfjs/ui/grid';
+import { Grid, type Sides as GridSides } from '@kerfjs/ui/grid';
 import { List, type Sides } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
@@ -171,6 +171,11 @@ Row({ gap: responsiveGap });
 Grid({ columns: 3, gap: spacingName });
 Grid({ columns: 3, gap: responsiveGap });
 Grid({ minColumnWidth: px(376), gap: 'm' });
+const gridInsetSides: GridSides = 'trbl';
+Grid({ columns: 2, textInsets: gridInsetSides, controlInsets: 'r' });
+Grid({ columns: 2, textInsets: gridInsetSides });
+// @ts-expect-error Grid inset sides use canonical t/r/b/l order.
+Grid({ columns: 2, textInsets: 'lr' });
 // @ts-expect-error Grid modes cannot combine a fixed count and minimum width.
 Grid({ columns: 2, minColumnWidth: px(376) });
 // @ts-expect-error Grid autoFill is only meaningful with a minimum column width.

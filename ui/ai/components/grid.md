@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:grid` · Kerf UI · component · Structure
 
-Equal-width columns with a fixed count or a minimum-width responsive mode, typed gaps, and optional flex participation.
+Equal-width columns with a fixed count or a minimum-width responsive mode, typed gaps, physical-side text/control insets, and optional flex participation.
 
 ## When to use
 
@@ -45,6 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/grid`](../public-api-signatures-v1.md#k
 - named none/2xs/xs/s/m/l/xl token gap
 - typed CssLength gap
 - boolean, finite-keyword, or typed CssFlex flex
+- top/right/bottom/left text and control inset combinations
 - fill: the layout root fills a definite-height parent
 - rootAttributes: safe data-\* metadata on the root
 - selectionMode=multiple: labeled multi-select grid for ContentItem tiles
@@ -63,14 +64,15 @@ Exact prop names and types: [`@kerfjs/ui/grid`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** child semantics and content; fixed column count or responsive minimum width; typed gap and flex choices.
+**The app owns:** child semantics and content; fixed column count or responsive minimum width; typed gap, flex, and physical-side inset choices.
 
 No wiring helper.
 
 ## Geometry
 
-Margin: none · border: none · padding: none (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
+Margin: none · border: none · padding: conditional (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
+- textInsets adds 17px and controlInsets adds 8px on selected physical sides; text wins on overlap.
 - Fixed tracks use minmax(0, 1fr); responsive tracks use auto-fit with a minimum width capped at 100%, preserving equal distribution without narrow overflow.
 
 ## Accessibility

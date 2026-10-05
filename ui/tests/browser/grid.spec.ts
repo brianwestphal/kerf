@@ -36,7 +36,9 @@ test('Grid keeps fixed equal tracks, typed gaps, and flex participation', async 
   await page.goto('/?component=grid');
 
   const demo = page.locator('[data-demo="grid"]');
-  const two = demo.locator('[data-component="grid"][data-columns="2"]');
+  const two = demo.locator(
+    '[data-component="grid"][data-columns="2"]:not([data-demo-grid-insets])',
+  );
   const four = demo.locator('[data-component="grid"][data-columns="4"]');
   const flexible = demo.locator('[data-component="grid"][data-flex="true"]');
 
@@ -75,6 +77,51 @@ test('Grid keeps fixed equal tracks, typed gaps, and flex participation', async 
     await page.screenshot({
       path: 'test-results/grid-narrow.png',
       fullPage: true,
+    });
+  }
+});
+
+test('Grid text insets take precedence over control insets and keep their geometry on narrow layouts', async ({
+  page,
+  browserName,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=grid');
+  const grid = page.locator('[data-demo-grid-insets]');
+  const example = page.locator('[data-demo-section="grid-insets"]');
+  await expect(grid).toHaveAttribute('data-text-insets', 'l');
+  await expect(grid).toHaveAttribute('data-control-insets', 'rl');
+  await expect(grid).toHaveCSS('padding-left', '17px');
+  await expect(grid).toHaveCSS('padding-right', '8px');
+  await expect(grid).toHaveCSS('padding-top', '0px');
+  await expect(grid).toHaveCSS('padding-bottom', '0px');
+  await grid.evaluate((element) => {
+    element.setAttribute('data-text-insets', 'trbl');
+    element.setAttribute('data-control-insets', 'trbl');
+  });
+  for (const side of ['top', 'right', 'bottom', 'left'])
+    await expect(grid).toHaveCSS(`padding-${side}`, '17px');
+  await grid.evaluate((element) => {
+    element.setAttribute('data-text-insets', 'l');
+    element.setAttribute('data-control-insets', 'rl');
+  });
+
+  if (browserName === 'chromium') {
+    await example.scrollIntoViewIfNeeded();
+    await example.screenshot({
+      path: testInfo.outputPath('grid-insets-wide.png'),
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(
+      await page
+        .locator('html')
+        .evaluate((element) => element.scrollWidth <= element.clientWidth),
+    ).toBe(true);
+    await expect(grid).toHaveCSS('padding-left', '17px');
+    await expect(grid).toHaveCSS('padding-right', '8px');
+    await example.scrollIntoViewIfNeeded();
+    await example.screenshot({
+      path: testInfo.outputPath('grid-insets-narrow.png'),
     });
   }
 });

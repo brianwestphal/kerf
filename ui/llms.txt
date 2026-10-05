@@ -226,6 +226,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   The app owns the outer width and child semantics; use custom CSS grid for
   asymmetric/intrinsic tracks and `ResizableRegion` for adjustable boundaries.
   `Grid.gap` and `Grid.flex` use the same typed grammars as Row.
+  `Grid.textInsets` and `Grid.controlInsets` select physical sides for the
+  standard 17px text and 8px control inset; text wins on overlap.
   For selectable document tiles, use `selectionMode="multiple"` and a required
   `ariaLabel`, with `ContentItem selectionMode="multiple"` children. Wire
   `wireContentItems` for spatial arrow navigation and Enter/Space activation.

@@ -493,6 +493,8 @@ their shared track width rather than expanding across an otherwise empty row.
 It requires `minColumnWidth`; the default `auto-fit` keeps the existing form
 behavior. When Grid is a direct child of a flex-owned `ListInsetControl`, pass
 `flex` so the Grid takes the available row width instead of shrink-wrapping.
+`textInsets` adds the standard 17px physical-side inset and `controlInsets`
+adds 8px on selected sides; text insets take precedence where they overlap.
 Grid is layout-only by default and adds no ARIA grid role. With
 `selectionMode="multiple"` and a required `ariaLabel`, it supplies a labeled
 multi-select grid for `ContentItem selectionMode="multiple"` tiles. Their
@@ -561,14 +563,14 @@ and its safe-area padding keeps an edge-docked rail or drawer from painting
 through the unsafe area. A `Pane` is for a real column with a header, one
 scrolling content region, or a footer.
 
-Both components also accept `textInsets` and `controlInsets` using the shared
+`Row`, `Grid`, and `List` also accept `textInsets` and `controlInsets` using the shared
 physical `Sides` union. Values follow canonical top/right/bottom/left order
 (`t`, `rb`, `tbl`, `trbl`, and so on). A selected control side adds 8px of
 padding. A selected text side adds the complete content-item alignment inset —
 8px outer margin + 1px border + 8px inner padding, represented as 17px of
 container padding. When both props select the same side, the text inset wins.
-Each nested `Row` or `List` resolves its own four inset sides; unselected sides
-reset to zero instead of inheriting a same-type parent's inset selection.
+Each nested `Row`, `Grid`, or `List` resolves its own four inset sides;
+unselected sides reset to zero instead of inheriting a same-type parent's inset selection.
 The same holds for `gap` and `flex` on a nested `List`, `Row`, or `Grid`: an
 omitted prop falls back to that component's own default (no gap for `List`,
 `xs` for `Row` and `Grid`; the CSS initial `flex`) rather than the enclosing

@@ -195,6 +195,8 @@ For selectable document tiles, set `Grid selectionMode="multiple"` and
 `ariaLabel`, render `ContentItem selectionMode="multiple"` children, and wire
 `wireContentItems` for arrows, Home/End, and card activation. The app owns the
 selection set and each tile's nested controls.
+`textInsets` adds the standard 17px physical-side content inset; `controlInsets`
+adds 8px. Text insets win on any overlapping side, matching Row and List.
 
 For a complete shell, sidebar, workspace header, list-detail dialog, composer
 form, list-state lifecycle, or mixed-control toolbar, start from the runnable

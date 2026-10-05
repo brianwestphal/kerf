@@ -3470,6 +3470,7 @@ export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowP
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as Sides } from './sides-BPSWde0A.js';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 
 type GridRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
@@ -3479,6 +3480,8 @@ type GridRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-auto-fill'?: never;
     'data-flex'?: never;
     'data-fill'?: never;
+    'data-text-insets'?: never;
+    'data-control-insets'?: never;
 }>;
 interface GridCommonProps {
     children?: KerfUiContent;
@@ -3496,6 +3499,10 @@ interface GridCommonProps {
      * flex layout use `flex` instead. Defaults to false.
      */
     fill?: boolean;
+    /** Physical sides that receive the standard 17px text inset. */
+    textInsets?: Sides;
+    /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
+    controlInsets?: Sides;
     className?: string;
     /** Safe `data-*` metadata; Grid-owned structural attributes remain protected. */
     rootAttributes?: GridRootAttributes;
@@ -3515,9 +3522,9 @@ type GridProps = GridCommonProps & ({
     autoFill?: boolean;
 });
 /** Render equal tracks with a fixed count or a responsive minimum width. */
-declare function Grid({ children, selectionMode, ariaLabel, columns, minColumnWidth, autoFill, gap, flex, fill, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
+declare function Grid({ children, selectionMode, ariaLabel, columns, minColumnWidth, autoFill, gap, flex, fill, textInsets, controlInsets, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, UiSpaceName };
+export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, Sides, UiSpaceName };
 ```
 
 ## `@kerfjs/ui/spacer`

@@ -2107,7 +2107,7 @@
           "required": false
         },
         {
-          "id": "typed gap and flex choices",
+          "id": "typed gap, flex, and physical-side inset choices",
           "owner": "application",
           "required": false
         }
@@ -2124,8 +2124,9 @@
         "geometry": {
           "margin": "none",
           "border": "none",
-          "padding": "none",
+          "padding": "conditional",
           "notes": [
+            "textInsets adds 17px and controlInsets adds 8px on selected physical sides; text wins on overlap.",
             "Fixed tracks use minmax(0, 1fr); responsive tracks use auto-fit with a minimum width capped at 100%, preserving equal distribution without narrow overflow."
           ]
         }

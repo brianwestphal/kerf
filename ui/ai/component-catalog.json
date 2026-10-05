@@ -2360,7 +2360,7 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Equal-width columns with a fixed count or a minimum-width responsive mode, typed gaps, and optional flex participation.",
+      "description": "Equal-width columns with a fixed count or a minimum-width responsive mode, typed gaps, physical-side text/control insets, and optional flex participation.",
       "uses": [],
       "purpose": "Arrange related siblings in equal-width columns with either a fixed count or automatic container-width collapse.",
       "publicExports": [
@@ -2489,7 +2489,7 @@
       "appOwns": [
         "child semantics and content",
         "fixed column count or responsive minimum width",
-        "typed gap and flex choices"
+        "typed gap, flex, and physical-side inset choices"
       ],
       "variants": [
         "any positive safe-integer equal-track count",
@@ -2497,6 +2497,7 @@
         "named none/2xs/xs/s/m/l/xl token gap",
         "typed CssLength gap",
         "boolean, finite-keyword, or typed CssFlex flex",
+        "top/right/bottom/left text and control inset combinations",
         "fill: the layout root fills a definite-height parent",
         "rootAttributes: safe data-* metadata on the root",
         "selectionMode=multiple: labeled multi-select grid for ContentItem tiles"
@@ -2509,8 +2510,9 @@
       "geometry": {
         "margin": "none",
         "border": "none",
-        "padding": "none",
+        "padding": "conditional",
         "notes": [
+          "textInsets adds 17px and controlInsets adds 8px on selected physical sides; text wins on overlap.",
           "Fixed tracks use minmax(0, 1fr); responsive tracks use auto-fit with a minimum width capped at 100%, preserving equal distribution without narrow overflow."
         ]
       },
