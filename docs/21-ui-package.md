@@ -669,3 +669,5 @@ group. See `docs/component-contract.md` "Toolbar width visibility" for lifecycle
 details.
 
 Dialog scaffolds use explicit `@kerfjs/ui/surface-scaffold/register` to register Web Awesome and repair native accessible names; their geometry-only entry remains registration-free.
+
+Toolbar visibility measurement probes and invisible state children are helper-owned and survive Kerf rerenders through `data-morph-preserve`. Actual CSS visibility stays stable while rendering removes transient parent markers, preventing geometry-driven render feedback and repeated probe recreation. Toolbar replacement, explicit internal-node removal and disposal retain their existing behavior.

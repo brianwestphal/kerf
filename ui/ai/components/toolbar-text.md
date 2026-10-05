@@ -67,6 +67,8 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures
 
 - `data-toolbar-width-hidden` on `ToolbarText, ToolbarControlGroup and its paired busy status` (`wireToolbarVisibility`): True when typed hideBelow/showBelow thresholds hide this item at the nearest Toolbar content width. Re-applied after rendering; disposal restores prior markers.
 - `data-toolbar-visibility-probe` on `private aria-hidden measurement boxes under Toolbar` (`wireToolbarVisibility`): Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility.
+- `data-morph-preserve` on `private aria-hidden measurement boxes and visibility state children` (`wireToolbarVisibility`): Keeps helper-owned geometry and state across Kerf renders; replacement and explicit removal are repaired, and disposal removes them.
+- `data-toolbar-visibility-state` on `private hidden children of width-managed items and paired busy statuses` (`wireToolbarVisibility`): Preserves actual CSS visibility while rendering removes a transient parent marker, preventing geometry-driven render feedback.
 
 ## Geometry
 

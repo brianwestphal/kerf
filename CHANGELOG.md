@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Preserve toolbar visibility and measurement state across app renders to prevent geometry-driven render loops and repeated observer/layout work (`KF-58HBRR`).
+
 - Restore accessible native dialog names through `@kerfjs/ui/surface-scaffold/register`, preserving live title slots and headerless labels.
 
 - Validate remote CI freshness through newer-run searches and exact-run details before warning about a failed main build (`KF-X4PTHF`).

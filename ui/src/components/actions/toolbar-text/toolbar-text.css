@@ -159,6 +159,12 @@ button.kui-toolbar-text[data-tone="dark"]:hover {
   line-clamp: none;
   max-height: calc(var(--kui-toolbar-text-max-lines) * 1.25em);
 }
-.kui-toolbar-text[data-toolbar-width-hidden="true"] {
+.kui-toolbar-text[data-toolbar-width-hidden="true"],
+.kui-toolbar-text:has(
+  > [data-toolbar-visibility-state][data-toolbar-width-hidden="true"]
+) {
+  display: none;
+}
+.kui-toolbar-text > [data-toolbar-visibility-state] {
   display: none;
 }

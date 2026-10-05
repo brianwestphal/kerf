@@ -1,6 +1,8 @@
+import { mount, signal } from 'kerfjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { px } from '../../src/css-values.js';
+import { Toolbar } from '../../src/toolbar.js';
 import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
 import { ToolbarText } from '../../src/toolbar-text.js';
 import { wireToolbarVisibility } from '../../src/wiring/wire-toolbar-visibility.js';
@@ -133,6 +135,60 @@ function fixture(width = 400) {
 }
 
 describe('toolbar width visibility wiring', () => {
+  it('keeps measurement identity across real renders without feeding a render observer', async () => {
+    document.body.innerHTML = '<section id="app"></section>';
+    const app = document.getElementById('app')!;
+    const renders = signal(0);
+    const stop = mount(app, () =>
+      Toolbar({
+        label: 'Updating workspace',
+        leading: ToolbarText({
+          text: `Workspace ${renders.value}`,
+          hideBelow: px(364),
+        }),
+      }),
+    );
+    dispose = wireToolbarVisibility(app);
+    await mutations();
+    const probe = app.querySelector('[data-toolbar-visibility-probe]')!;
+    const state = app.querySelector('[data-toolbar-visibility-state]')!;
+    expect(hidden(state)).toBe(true);
+    let observerRenders = 0;
+    const observer = new MutationObserver((records) => {
+      if (
+        records.some((record) =>
+          [...record.addedNodes, ...record.removedNodes].some(
+            (node) =>
+              node.nodeType === 1 &&
+              (node as Element).hasAttribute('data-toolbar-visibility-probe'),
+          ),
+        ) &&
+        observerRenders < 8
+      ) {
+        observerRenders++;
+        renders.value++;
+      }
+    });
+    observer.observe(app, { subtree: true, childList: true });
+    try {
+      renders.value++;
+      for (let index = 0; index < 4; index++) await mutations();
+      expect(observerRenders).toBe(0);
+      expect(app.querySelector('[data-toolbar-visibility-probe]')).toBe(probe);
+      expect(app.querySelector('[data-toolbar-visibility-state]')).toBe(state);
+      expect(hidden(state)).toBe(true);
+      state.remove();
+      await mutations();
+      expect(app.querySelector('[data-toolbar-visibility-state]')).toBe(state);
+    } finally {
+      observer.disconnect();
+      dispose();
+      dispose = undefined;
+      expect(app.querySelector('[data-toolbar-visibility-state]')).toBeNull();
+      stop();
+    }
+  });
+
   it('settles with a second observer that redraws an unrelated layer after probe mutations', async () => {
     const { app, toolbar, text } = fixture();
     text.dataset.hideBelow = 'var(--cutoff)';

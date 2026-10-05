@@ -890,7 +890,14 @@ leave the item visible under this width policy. Server-rendered content is visib
 until wiring runs; without browser observers, initial wiring and window resize
 still update it. Probe context and lengths are reconciled only when their CSSOM
 values change, so unrelated DOM observers can redraw without feeding an ongoing
-mutation loop. Dispose to remove measurement probes and restore prior markers.
+mutation loop. Probes are helper-owned imperative nodes preserved across Kerf
+rerenders, preventing repeated probe creation and resize/DOM observer churn.
+Invisible preserved state children keep actual CSS visibility stable while a render
+removes transient parent markers, so post-render geometry measurements cannot
+feed a show/hide render loop. These children never enter layout, focus or the
+accessible tree. Toolbar replacement or deliberate internal-node removal is
+still repaired. Dispose to
+remove measurement probes and restore prior markers.
 
 Hidden controls leave layout and keyboard navigation. A hidden busy group also
 hides only its own adjacent busy status. Keep primary actions always available;

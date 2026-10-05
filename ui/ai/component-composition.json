@@ -1498,6 +1498,18 @@
             "on": "private aria-hidden measurement boxes under Toolbar",
             "helper": "wireToolbarVisibility",
             "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
+          },
+          {
+            "name": "data-morph-preserve",
+            "on": "private aria-hidden measurement boxes and visibility state children",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Keeps helper-owned geometry and state across Kerf renders; replacement and explicit removal are repaired, and disposal removes them."
+          },
+          {
+            "name": "data-toolbar-visibility-state",
+            "on": "private hidden children of width-managed items and paired busy statuses",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Preserves actual CSS visibility while rendering removes a transient parent marker, preventing geometry-driven render feedback."
           }
         ]
       },
@@ -1608,6 +1620,18 @@
             "on": "private aria-hidden measurement boxes under Toolbar",
             "helper": "wireToolbarVisibility",
             "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
+          },
+          {
+            "name": "data-morph-preserve",
+            "on": "private aria-hidden measurement boxes and visibility state children",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Keeps helper-owned geometry and state across Kerf renders; replacement and explicit removal are repaired, and disposal removes them."
+          },
+          {
+            "name": "data-toolbar-visibility-state",
+            "on": "private hidden children of width-managed items and paired busy statuses",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Preserves actual CSS visibility while rendering removes a transient parent marker, preventing geometry-driven render feedback."
           }
         ]
       },
@@ -1903,6 +1927,18 @@
             "on": "private aria-hidden measurement boxes under Toolbar",
             "helper": "wireToolbarVisibility",
             "meaning": "Internal out-of-flow CSS length resolver; created and removed by wireToolbarVisibility."
+          },
+          {
+            "name": "data-morph-preserve",
+            "on": "private aria-hidden measurement boxes and visibility state children",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Keeps helper-owned geometry and state across Kerf renders; replacement and explicit removal are repaired, and disposal removes them."
+          },
+          {
+            "name": "data-toolbar-visibility-state",
+            "on": "private hidden children of width-managed items and paired busy statuses",
+            "helper": "wireToolbarVisibility",
+            "meaning": "Preserves actual CSS visibility while rendering removes a transient parent marker, preventing geometry-driven render feedback."
           }
         ]
       },

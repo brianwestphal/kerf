@@ -4,6 +4,7 @@ const HIDE_BELOW = 'data-hide-below';
 const SHOW_BELOW = 'data-show-below';
 const HIDDEN = 'data-toolbar-width-hidden';
 const PROBE = 'data-toolbar-visibility-probe';
+const STATE = 'data-toolbar-visibility-state';
 const LENGTH = '--kui-toolbar-visibility-length';
 const ITEM = `[data-component="toolbar-control-group"][${HIDE_BELOW}], [data-component="toolbar-control-group"][${SHOW_BELOW}], [data-component="toolbar-text"][${HIDE_BELOW}], [data-component="toolbar-text"][${SHOW_BELOW}]`;
 
@@ -17,6 +18,7 @@ interface Measurement {
 interface WrittenAttribute {
   original: string | null;
   value: string | null;
+  state: HTMLSpanElement;
 }
 
 const controllers = new WeakMap<Document, (root: Root) => () => void>();
@@ -69,10 +71,21 @@ function createController(document: Document) {
   function write(element: HTMLElement, hidden: boolean) {
     let previous = written.get(element);
     if (!previous) {
-      previous = { original: element.getAttribute(HIDDEN), value: null };
+      const state = document.createElement('span');
+      state.setAttribute(STATE, '');
+      state.setAttribute('data-morph-preserve', '');
+      state.setAttribute('aria-hidden', 'true');
+      state.hidden = true;
+      previous = { original: element.getAttribute(HIDDEN), value: null, state };
       written.set(element, previous);
     }
+    if (previous.state.parentElement !== element)
+      element.append(previous.state);
     const value = hidden ? 'true' : null;
+    if (previous.state.getAttribute(HIDDEN) !== value) {
+      if (value === null) previous.state.removeAttribute(HIDDEN);
+      else previous.state.setAttribute(HIDDEN, value);
+    }
     if (element.getAttribute(HIDDEN) !== value) {
       if (value === null) element.removeAttribute(HIDDEN);
       else element.setAttribute(HIDDEN, value);
@@ -82,6 +95,7 @@ function createController(document: Document) {
 
   function restore(element: HTMLElement) {
     const previous = written.get(element)!;
+    previous.state.remove();
     if (element.getAttribute(HIDDEN) === previous.value) {
       if (previous.original === null) element.removeAttribute(HIDDEN);
       else element.setAttribute(HIDDEN, previous.original);
@@ -107,6 +121,9 @@ function createController(document: Document) {
   function createMeasurement(toolbar: HTMLElement): Measurement {
     const box = document.createElement('div');
     box.setAttribute(PROBE, '');
+    // Kerf's render template never owns these injected measurements. Keep
+    // them across morphs instead of recreating probes and observers each pass.
+    box.setAttribute('data-morph-preserve', '');
     box.setAttribute('aria-hidden', 'true');
     // An out-of-flow clipped box never participates in the toolbar's grid,
     // intrinsic size or scroll overflow. Its explicit width defines % lengths.
@@ -263,7 +280,8 @@ function createController(document: Document) {
         const internal = (node: Node) =>
           node.nodeType === 1 &&
           ((node as Element).hasAttribute(PROBE) ||
-            Boolean((node as Element).closest(`[${PROBE}]`)));
+            (node as Element).hasAttribute(STATE) ||
+            Boolean((node as Element).closest(`[${PROBE}], [${STATE}]`)));
         if (
           records.some(
             (record) =>
@@ -271,7 +289,8 @@ function createController(document: Document) {
                 [...record.removedNodes].some(
                   (node) =>
                     node.nodeType === 1 &&
-                    (node as Element).hasAttribute(PROBE),
+                    ((node as Element).hasAttribute(PROBE) ||
+                      (node as Element).hasAttribute(STATE)),
                 )) ||
               (!internal(record.target) &&
                 (record.type !== 'childList' ||

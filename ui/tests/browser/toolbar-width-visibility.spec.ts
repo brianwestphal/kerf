@@ -14,6 +14,160 @@ const fixtureBundle = build({
   write: false,
 });
 
+test('measurement probes survive frequent app renders and observer feedback while controls remain responsive', async ({
+  page,
+}, testInfo) => {
+  const bundle = await fixtureBundle;
+  await page.setViewportSize({ width: 800, height: 400 });
+  await page.setContent(
+    '<!doctype html><html><body><div data-fixture-root></div></body></html>',
+  );
+  await page.addStyleTag({
+    content: bundle.outputFiles
+      .find((file) => file.path.endsWith('.css'))!
+      .text.replace(
+        /remify\(([\d.]+)px\)/g,
+        (_, pixels: string) => `${Number(pixels) / 16}rem`,
+      ),
+  });
+  await page.addScriptTag({
+    content: bundle.outputFiles.find((file) => file.path.endsWith('.js'))!.text,
+  });
+  const utility = page.getByRole('group', {
+    name: 'Utilities',
+    includeHidden: true,
+  });
+  await expect(utility).toBeVisible();
+  const feedback = await page.evaluate(async () => {
+    const root = document.querySelector('[data-fixture-root]')!;
+    const render = root.querySelector<HTMLButtonElement>('[data-rerender]')!;
+    const probes = [
+      ...root.querySelectorAll('[data-toolbar-visibility-probe]'),
+    ];
+    let observerRenders = 0;
+    const observer = new MutationObserver((records) => {
+      if (
+        records.some((record) =>
+          [...record.addedNodes, ...record.removedNodes].some(
+            (node) =>
+              node.nodeType === 1 &&
+              (node as Element).hasAttribute('data-toolbar-visibility-probe'),
+          ),
+        ) &&
+        observerRenders < 12
+      ) {
+        observerRenders++;
+        render.click();
+      }
+    });
+    observer.observe(root, { subtree: true, childList: true });
+    try {
+      for (let index = 0; index < 20; index++) {
+        render.click();
+        await new Promise<void>((resolve) =>
+          window.requestAnimationFrame(() => resolve()),
+        );
+      }
+      return {
+        observerRenders,
+        stable: probes.every((probe) => probe.isConnected),
+        count: root.querySelectorAll('[data-toolbar-visibility-probe]').length,
+        originalCount: probes.length,
+      };
+    } finally {
+      observer.disconnect();
+    }
+  });
+  expect(feedback.observerRenders).toBe(0);
+  expect(feedback.stable).toBe(true);
+  expect(feedback.count).toBe(feedback.originalCount);
+  await page.getByRole('button', { name: 'Filter', exact: true }).click();
+  await expect(page.locator('output')).toHaveText('filter');
+  await page.screenshot({
+    path: testInfo.outputPath('toolbar-frequent-renders-wide.png'),
+  });
+  await page
+    .locator('[data-test-toolbar-host]')
+    .evaluate((node) =>
+      node.ownerDocument.documentElement.style.setProperty(
+        '--fixture-width',
+        '300px',
+      ),
+    );
+  await expect(utility).toBeHidden();
+  const immediateVisibility = await page.evaluate(() => {
+    const root = document.querySelector('[data-fixture-root]')!;
+    root.querySelector<HTMLButtonElement>('[data-rerender]')!.click();
+    const group = root.querySelector(
+      '[data-component="toolbar-control-group"][aria-label="Utilities"]',
+    )!;
+    const status = root.querySelector(
+      '.kui-toolbar-control-group__busy-status',
+    )!;
+    return {
+      group: window.getComputedStyle(group).display,
+      status: window.getComputedStyle(status).display,
+    };
+  });
+  expect(immediateVisibility).toEqual({ group: 'none', status: 'none' });
+  const more = page.getByRole('button', { name: 'More', exact: true });
+  await more.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('output')).toHaveText('more');
+  await page.getByRole('button', { name: 'Render again' }).click();
+  await expect(more).toBeVisible();
+  await more.click();
+  await expect(page.locator('output')).toHaveText('more');
+  await page.screenshot({
+    path: testInfo.outputPath('toolbar-frequent-renders-narrow.png'),
+  });
+});
+
+test('invisible visibility state preserves lone-avatar and decorative icon chrome', async ({
+  page,
+}) => {
+  await page.goto('/?component=toolbar-control-group');
+  const avatar = page.getByRole('group', { name: 'Profile', exact: true });
+  await avatar.evaluate((node) => node.setAttribute('data-single', 'false'));
+  const tile = page.getByRole('group', {
+    name: 'brand icon tile',
+    exact: true,
+  });
+  for (const group of [avatar, tile]) {
+    await expect(group).toBeVisible();
+    const before = await group.evaluate((node) => {
+      const style = window.getComputedStyle(node);
+      const control = node.querySelector('button');
+      return {
+        image: style.backgroundImage,
+        background: style.backgroundColor,
+        color: style.color,
+        controlColor: control ? window.getComputedStyle(control).color : null,
+      };
+    });
+    await group.evaluate((node) => {
+      const state = document.createElement('span');
+      state.setAttribute('data-toolbar-visibility-state', '');
+      state.setAttribute('data-morph-preserve', '');
+      state.setAttribute('aria-hidden', 'true');
+      state.hidden = true;
+      node.append(state);
+    });
+    const after = await group.evaluate((node) => {
+      const style = window.getComputedStyle(node);
+      const control = node.querySelector('button');
+      return {
+        image: style.backgroundImage,
+        background: style.backgroundColor,
+        color: style.color,
+        controlColor: control ? window.getComputedStyle(control).color : null,
+      };
+    });
+    expect(after).toEqual(before);
+    await expect(group.locator('[data-toolbar-visibility-state]')).toBeHidden();
+  }
+});
+
 test('container thresholds follow equality, tokens, rendering, relocation and disposal', async ({
   page,
   browserName,
