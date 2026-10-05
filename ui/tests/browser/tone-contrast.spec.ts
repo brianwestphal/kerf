@@ -72,7 +72,16 @@ function measureToneContrast(page: Page) {
       return (light! + 0.05) / (dark! + 0.05);
     };
     const style = (element: Element) => window.getComputedStyle(element);
-    const surface = style(document.body).backgroundColor;
+    const backdrop = (element: Element) => {
+      const layers: [string][] = [];
+      for (
+        let parent = element.parentElement;
+        parent;
+        parent = parent.parentElement
+      )
+        layers.unshift([style(parent).backgroundColor]);
+      return layers;
+    };
     const results: Record<string, ToneContrast> = {};
     const banners = document.querySelectorAll<HTMLElement>(
       '[data-demo="state-banner"] [data-component="state-banner"][data-copy-layout="inline"]',
@@ -81,7 +90,8 @@ function measureToneContrast(page: Page) {
       if (banner.closest('[data-demo-state-banner-override]')) continue;
       if (banner.dataset.placeholder) continue;
       const tone = banner.dataset.tone!;
-      const bannerFill = paint([surface], [style(banner).backgroundColor]);
+      const surface = backdrop(banner);
+      const bannerFill = paint(...surface, [style(banner).backgroundColor]);
       const detail = style(banner.querySelector('.kui-state-banner__detail')!);
       const badge = banner.querySelector<HTMLElement>('.kui-badge')!;
       const badgeFill = paint([style(badge).backgroundColor]);
@@ -100,10 +110,10 @@ function measureToneContrast(page: Page) {
       banner.after(probe);
       const quiet = ratio(
         paint([style(probe).color]),
-        paint([surface], [style(probe).backgroundColor]),
+        paint(...surface, [style(probe).backgroundColor]),
       );
       probe.dataset.appearance = 'outline';
-      const outline = ratio(paint([style(probe).color]), paint([surface]));
+      const outline = ratio(paint([style(probe).color]), paint(...surface));
       probe.remove();
       results[tone] = {
         title: ratio(
@@ -112,7 +122,7 @@ function measureToneContrast(page: Page) {
         ),
         detail: ratio(
           paint(
-            [surface],
+            ...surface,
             [style(banner).backgroundColor],
             [detail.color, Number(detail.opacity)],
           ),
@@ -384,6 +394,10 @@ function measureTonedText(page: Page) {
     context.canvas.height = 1;
     const paint = (color: string) => {
       context.clearRect(0, 0, 1, 1);
+      context.fillStyle = window.getComputedStyle(
+        document.documentElement,
+      ).backgroundColor;
+      context.fillRect(0, 0, 1, 1);
       context.fillStyle = color;
       context.fillRect(0, 0, 1, 1);
       return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];

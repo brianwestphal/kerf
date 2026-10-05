@@ -347,3 +347,5 @@ lifecycle: the latest request wins through open/close reversals, canceled
 transitions, and removal. Native value, keyboard, dismissal, and anchor placement
 remain with Web Awesome. Do not add popup delays, position repairs, or animation
 completion handlers in consumers. Raw `wa-select` elements remain native.
+
+Neutral lowered surfaces and decorative neutral fills/borders are translucent theme colors; compose nested public components directly. Default/raised canvases, foregrounds, focus indicators, and loud contrast-bearing fills remain opaque. Do not assign depth-specific component tokens in demo wrappers.

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Make lowered surfaces and decorative neutral fills/borders translucent, and replace the SunkenPanel prototype with direct component compositions.
+
 - **UI components share `SemanticTone`.** Badge, Chip, StateBanner, and ContentItem
   use `neutral`, `info`, `pop`, `success`, `warning`, and `danger`. Replace
   Badge/Chip `tone="brand"` with `tone="info"`; the existing brand color tokens

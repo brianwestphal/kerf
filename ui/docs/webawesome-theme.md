@@ -140,65 +140,35 @@ tiers:
 
 ## Contextual transparency
 
-Keep the shared `--kui-color-*` semantic fills, foregrounds, and borders opaque
-by default. Their light and dark values mirror the Web Awesome theme, and the
-contrast checks in `tests/browser/tone-contrast.spec.ts` assume known surfaces.
-Compositing those tokens over arbitrary app backgrounds changes text contrast
-and makes the same token mean a different visible color in each container.
+The lowered surface, neutral quiet/normal fills, and neutral borders are
+translucent shared theme colors. The foundation mirrors them when Web Awesome
+is absent. Nested SunkenPanel, Pane, and Web Awesome sunken surfaces therefore
+composite on their actual backdrop without application-owned depth wrappers
+or component-token overrides.
 
-The strongest candidate for transparency is a **component-scoped sunken
-background**, through the existing `--kui-sunken-panel-background` and
-`--kui-wa-sunken-background` overrides. A simple black overlay of 5.5% over
-white approximates `#f1f1f1`, near the current light lowered surface; a second
-nesting level becomes `#e4e4e4`. Matching the current dark lowered surface from
-`#1c1c1e` takes about 39% black, and a second layer becomes near-black
-`#0a0a0b`. An alpha that works for one level therefore needs a separate nesting
-rule or a lighter dark treatment before it can become a default. The existing
-opaque `--kui-color-surface-lowered` remains appropriate for page backgrounds.
+The lowered light tint is `rgb(0 0 98.076923 / 0.05098)` (approximately
+`#f2f2f7` over white); dark is `rgb(228.157895 228.157895 255 / 0.07451)`
+(approximately `#111113` over black). Repeated layers darken in light mode
+and brighten in dark mode. The same value is used at every depth; there is no
+arbitrary third-level cap. Neutral normal fills and borders use alpha values
+chosen to retain their former single-layer appearance over the default surface.
+Their painted result adapts to other backgrounds. Neutral on-quiet text uses
+`#626267` / `#c2c2c6` to retain AA contrast across the tested layered catalog
+surfaces.
 
-| Candidate                             | Finding                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Selected `ListItem` fill and border   | A translucent brand layer would preserve a tinted or textured backdrop. Keep it in the component's existing `--kui-list-item-selected-*` overrides: making the shared brand fill translucent would also affect components that put `--kui-color-brand-on-fill` text on it. A 16% brand overlay gives about 4.35:1 for that text over the light lowered surface and 3.99:1 over a warm `#eee7dc` surface, below the 4.5:1 text target. |
-| `ToolbarControlGroup` fill and border | A light 10% black layer approximates the current fill over white, and a dark 13% white layer approximates it over the dark surface. On a warm `#eee7dc` backdrop, the light layer puts the existing quiet text at about 3.31:1. Its dark tone already uses a translucent fill. Keep default control chrome opaque until a backdrop matrix validates its text, icons, borders, and selected state.                                     |
-| Quiet or disabled text and icons      | Keep normal and quiet text/foreground tokens opaque; alpha changes their contrast with every backdrop. Disabled controls may use component-owned opacity, as they do now, without weakening shared foreground tokens.                                                                                                                                                                                                                 |
-| Dividers and borders                  | Decorative separators can use scoped alpha over a known surface. Control boundaries and focus indicators need reliable contrast; do not replace the shared border or focus tokens with alpha globally.                                                                                                                                                                                                                                |
+Default/raised surfaces remain opaque canvas and overlay anchors. The optional
+document baseline paints an opaque default surface on `html` and one lowered
+layer on `body`. Normal/quiet foregrounds, focus indicators, and loud neutral
+fills remain opaque for legible controls. Colored semantic fill/border tokens
+also remain opaque pending their separate contrast evaluation. Transparency
+is not a guarantee of contrast on an arbitrary photograph or infinitely nested
+surface; applications must verify their actual composition and keep text and
+interactive controls on suitable surfaces.
 
-### Bounded translucent prototype
-
-The opt-in catalog prototype (`SunkenPanel` → Backdrop-aware prototype) uses
-the existing public background overrides on `SunkenPanel`, `Pane`, and Web
-Awesome sunken Card/Details. It does not change shared semantic tokens or
-component defaults. The application assigns a depth class to each
-application-owned wrapper; the component inside inherits its public color
-override:
-
-| Depth            | Light tint  | Dark tint   | Treatment                                       |
-| ---------------- | ----------- | ----------- | ----------------------------------------------- |
-| First            | 5.5% black  | 12% black   | Shows the backdrop through the lowered surface. |
-| Second           | 3.5% black  | 5% black    | Adds a smaller inset step.                      |
-| Third and deeper | transparent | transparent | Caps accumulated darkening.                     |
-
-Over default white, the light levels approximate `#f1f1f1` then `#e9e9e9`;
-over dark default `#1c1c1e`, they approximate `#19191a` then `#171719`.
-The dark lowered backdrop reaches roughly `#0f0f11` then `#0e0e10`, which is
-still visually close to black. Warm and textured backdrops retain their tone
-and pattern; the first and second layers remain discernible in light mode but
-are subtle in dark mode. These values are sRGB estimates; actual rendering
-depends on backdrop and browser.
-
-The browser matrix covers one and two layers on default, lowered, warm, and
-two textured stripe colors in light and dark, across Chromium, Firefox, and
-WebKit. It composites computed text and control colors with each tint and
-requires at least 4.5:1 for panel text, an opaque button, Card text, and
-Details text. It also checks a visible focus outline with forced colors and
-the third layer's transparent cap. Theme colors must finish transitioning
-before contrast is measured. The prototype keeps controls on opaque semantic
-surfaces for predictable contrast.
-
-Keep this treatment opt-in. It needs explicit depth assignment, and the dark
-lowered case has too little separation to replace the opaque default. A
-future default would need a stronger depth and contrast rule for arbitrary
-backdrops, especially dark textures and nested mixed components.
+The catalog demonstrates three directly nested panels, a sunken Pane containing
+a panel, and a Web Awesome card containing details, using public components and
+no demo stylesheet. Browser tests cover repeated layers, actual compositing,
+text contrast, light/dark switching, narrow/wide layouts, and forced colors.
 
 Add `class="hide-actions"` to a `wa-dialog` when the dialog supplies its own
 dismissal affordance and should omit Web Awesome's header action region. The

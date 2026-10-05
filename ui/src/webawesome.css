@@ -26,8 +26,16 @@
     /* Hot Sheet 2's macOS system palette, with a compatible dark appearance. */
     --wa-color-surface-raised: light-dark(#fff, #2c2c2e);
     --wa-color-surface-default: light-dark(#fff, #1c1c1e);
-    --wa-color-surface-lowered: light-dark(#f2f2f7, #111113);
-    --wa-color-surface-border: light-dark(#d1d1d6, #48484a);
+    /* Translucent lowered layers adapt to their backdrop at every nesting depth.
+       Default/raised surfaces stay opaque canvas and overlay anchors. */
+    --wa-color-surface-lowered: light-dark(
+      rgb(0 0 98.076923 / 0.05098),
+      rgb(228.157895 228.157895 255 / 0.07451)
+    );
+    --wa-color-surface-border: light-dark(
+      rgb(0 0 27.717391 / 0.180392),
+      rgb(253 253 255 / 0.195556)
+    );
 
     --wa-color-text-normal: light-dark(#1d1d1f, #f5f5f7);
     --wa-color-text-quiet: light-dark(#6e6e73, #aeaeb2);
@@ -83,12 +91,21 @@
     --wa-color-brand-on-loud: light-dark(#fff, #111113);
 
     --wa-color-neutral-fill-quiet: var(--wa-color-surface-lowered);
-    --wa-color-neutral-fill-normal: light-dark(#e5e5ea, #3a3a3c);
+    --wa-color-neutral-fill-normal: light-dark(
+      rgb(0 0 49.038462 / 0.101961),
+      rgb(253 253 255 / 0.133333)
+    );
     --wa-color-neutral-fill-loud: light-dark(#48484a, #e5e5ea);
-    --wa-color-neutral-border-quiet: light-dark(#e5e5ea, #38383a);
+    --wa-color-neutral-border-quiet: light-dark(
+      rgb(0 0 49.038462 / 0.101961),
+      rgb(253 253 255 / 0.124444)
+    );
     --wa-color-neutral-border-normal: var(--wa-color-surface-border);
-    --wa-color-neutral-border-loud: light-dark(#aeaeb2, #636366);
-    --wa-color-neutral-on-quiet: var(--wa-color-text-quiet);
+    --wa-color-neutral-border-loud: light-dark(
+      rgb(0 0 12.592593 / 0.317647),
+      rgb(249.875 249.875 255 / 0.32)
+    );
+    --wa-color-neutral-on-quiet: light-dark(#626267, #c2c2c6);
     --wa-color-neutral-on-normal: var(--wa-color-text-normal);
     --wa-color-neutral-on-loud: var(--wa-color-surface-default);
 

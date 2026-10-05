@@ -1134,3 +1134,5 @@ Update this doc whenever you:
 The UI shared type `SemanticTone` lives in `ui/src/shared/styles/semantic-tone.ts`.
 Badge, Chip, StateBanner, and ContentItem use its six roles (`info` maps to brand
 color tokens); `BadgeTone` and `StateBannerTone` are deprecated aliases.
+
+The UI shared theme and foundation define translucent lowered surfaces and neutral decorative fills/borders; the SunkenPanel catalog composes public components directly without prototype CSS.

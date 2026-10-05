@@ -10,6 +10,10 @@ body,
   height: 100%;
 }
 
+html {
+  background: var(--kui-color-surface);
+}
+
 body {
   margin: 0;
   color: var(--kui-color-text);

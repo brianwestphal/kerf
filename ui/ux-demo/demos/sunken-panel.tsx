@@ -1,10 +1,12 @@
+import '@awesome.me/webawesome/dist/components/details/details.js';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
+import { Pane } from '@kerfjs/ui/pane';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
+import { Text } from '@kerfjs/ui/text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
-
-import { SunkenPrototype } from '../sunken-prototype.js';
 
 export function SunkenPanelDemo() {
   return (
@@ -26,9 +28,9 @@ export function SunkenPanelDemo() {
         note="Square corners fit a flush or edge-to-edge application area."
       >
         <SunkenPanel shape="square">
-          <strong>Recent activity</strong>
-          <span>Three checks completed.</span>
-          <span>One beta is ready to publish.</span>
+          <Text>Recent activity</Text>
+          <Text>Three checks completed.</Text>
+          <Text>One beta is ready to publish.</Text>
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample
@@ -38,9 +40,9 @@ export function SunkenPanelDemo() {
         viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
       >
         <List fill>
-          <strong>Work area</strong>
+          <Text>Work area</Text>
           <SunkenPanel flex ariaLabel="Growing work surface">
-            <span>Content stays at the top while the surface fills space.</span>
+            <Text>Content stays at the top while the surface fills space.</Text>
           </SunkenPanel>
         </List>
       </CatalogExample>
@@ -51,15 +53,41 @@ export function SunkenPanelDemo() {
         viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
       >
         <SunkenPanel fill ariaLabel="Full-height work surface">
-          <span>Full-height surface</span>
+          <Text>Full-height surface</Text>
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample
-        label="Backdrop-aware prototype"
-        note="Research-only opt-in: lighter second tint and a transparent third layer bound nesting without changing semantic color defaults. Compare the Kerf panel, Pane scroller, and Web Awesome sunken card/details across backdrops and themes."
-        viewport={{ layout: 'grid', width: 'full', height: 'app' }}
+        label="Nested surfaces"
+        note="The shared translucent lowered color composites naturally at every depth. No per-layer styling is needed."
       >
-        <SunkenPrototype />
+        <SunkenPanel ariaLabel="First layer">
+          <Text>First layer</Text>
+          <SunkenPanel ariaLabel="Second layer">
+            <Text>Second layer</Text>
+            <SunkenPanel ariaLabel="Third layer">
+              <Text>Third layer</Text>
+              <wa-button>Focus nested control</wa-button>
+            </SunkenPanel>
+          </SunkenPanel>
+        </SunkenPanel>
+      </CatalogExample>
+      <CatalogExample
+        label="Pane and nested panel"
+        viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
+      >
+        <Pane appearance="sunken" label="Layered pane">
+          <SunkenPanel ariaLabel="Pane content layer">
+            <Text>The same lowered token paints both surfaces.</Text>
+          </SunkenPanel>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample label="Web Awesome nested surfaces">
+        <wa-card appearance="sunken">
+          <Text>Web Awesome card</Text>
+          <wa-details appearance="sunken" summary="Nested details" open>
+            <Text>Shared theme colors compound here too.</Text>
+          </wa-details>
+        </wa-card>
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -838,7 +838,7 @@ alphas, and dark raises them (`--wa-shadow-s` 14% to 50% black, `-m` 11% to
 page.
 Kerf owns the light `brand`, `success`, and `warning` `on-quiet` values in that
 theme layer: each keeps its hue but is dark enough to clear WCAG AA (4.5:1) on
-the lowered page background (`--kui-color-surface-lowered`, `#f2f2f7`), not
+the lowered page background (`--kui-color-surface-lowered`, approximately `#f2f2f7` over white), not
 only on the white surface, so toned text reads on every background a page
 paints. It likewise owns every tone's loud pair: each `on-loud` text color
 clears AA on its `fill-loud` in both schemes. Light brand and danger keep white

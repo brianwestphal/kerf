@@ -497,3 +497,5 @@ Update this doc whenever you:
 UI metadata, feedback, and content appearances share the exported `SemanticTone`
 type: `neutral | info | pop | success | warning | danger`. Badge and Chip use
 `info` in place of the former `brand` tone.
+
+UI neutral decorative colors composite naturally through nested surfaces in both schemes, while opaque canvas and contrast anchors remain explicit.

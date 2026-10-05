@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
 import { SunkenPanel } from '../../src/components/surfaces/sunken-panel/sunken-panel.js';
@@ -60,39 +59,14 @@ describe('SunkenPanel', () => {
     expect(css).toContain('height: 100%');
   });
 
-  it('keeps the bounded translucent prototype opt-in and caps its third layer', () => {
-    const prototype = postcss.parse(
-      readFileSync(resolve('ux-demo/sunken-prototype.css'), 'utf8'),
-    );
-    const component = readFileSync(
-      resolve('src/components/surfaces/sunken-panel/sunken-panel.css'),
+  it('demonstrates nested public components without per-depth CSS overrides', () => {
+    const demo = readFileSync(
+      resolve('ux-demo/demos/sunken-panel.tsx'),
       'utf8',
     );
-    const pane = readFileSync(
-      resolve('src/components/layout/pane/pane.css'),
-      'utf8',
-    );
-    const webAwesome = readFileSync(resolve('src/webawesome.css'), 'utf8');
-    for (const depth of ['first', 'second', 'third']) {
-      const rule = prototype.nodes.find(
-        (node) =>
-          node.type === 'rule' &&
-          node.selector === `.demo-sunken-prototype__${depth}`,
-      );
-      expect(rule, `${depth} opt-in rule`).toBeDefined();
-      const declarations = Object.fromEntries(
-        (rule as postcss.Rule).nodes
-          .filter((node): node is postcss.Declaration => node.type === 'decl')
-          .map((node) => [node.prop, node.value]),
-      );
-      expect(declarations['--kui-sunken-panel-background']).toBeDefined();
-      expect(declarations['--kui-wa-sunken-background']).toBeDefined();
-      if (depth === 'third')
-        expect(declarations['--kui-sunken-panel-background']).toBe(
-          'transparent',
-        );
-    }
-    for (const css of [component, pane, webAwesome])
-      expect(css).not.toContain('demo-sunken-prototype');
+    expect(demo).not.toContain('--kui-');
+    expect(demo).not.toContain('sunken-prototype');
+    expect(demo).toContain('ariaLabel="Third layer"');
+    expect(demo).toContain('appearance="sunken"');
   });
 });

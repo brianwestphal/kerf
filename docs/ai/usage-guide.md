@@ -810,3 +810,5 @@ Both mirror the hard rules + canonical patterns + common errors from this guide.
 UI metadata, feedback, and content appearances share the exported `SemanticTone`
 type: `neutral | info | pop | success | warning | danger`. Badge and Chip use
 `info` in place of the former `brand` tone.
+
+Neutral lowered surfaces and decorative neutral fills/borders are translucent theme colors; compose nested public components directly. Default/raised canvases, foregrounds, focus indicators, and loud contrast-bearing fills remain opaque. Do not assign depth-specific component tokens in demo wrappers.

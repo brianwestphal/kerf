@@ -792,3 +792,5 @@ For dimensions that should scale with the root font size, author pixels with
 baseline. Keep intentional 1px borders in pixels and contextual `em` values
 explicit. `npm run build` emits standard CSS to `dist/styles`; `npm run dev`
 applies the same transform directly to source styles and hot-reloads edits.
+
+Lowered surfaces and decorative neutral fills/borders use translucent shared theme colors. Nested surfaces compound naturally; demos compose public components without per-depth overrides. See [contextual transparency](docs/webawesome-theme.md#contextual-transparency).
