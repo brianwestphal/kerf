@@ -376,6 +376,15 @@ variant owns no margin, border, or padding. Choose heading levels from the
 document outline, not for visual size. Toolbar identity and page-heading
 compositions continue to use `ToolbarText`.
 
+`Text.controlMargins` accepts canonical physical `Sides` (`t`, `r`, `b`, `l`,
+in that order, or empty). Selected edges gain the exterior
+`--kui-layout-inline-margin` gutter (8px by default); the border and padding
+stay unchanged, including with `flush`. Use `controlMargins="rl"` for a
+single text box that needs the control gutter without a Row wrapper. Do not
+combine it with a parent inset on the same edges. Spans remain native inline
+elements: horizontal margins separate inline content, while vertical margins
+do not create line spacing.
+
 `Text` is also the answer for a normal-color subsection title. `ToolbarText`
 below `xlarge` (`large`, `default`, `small`) is deliberately quiet: it labels a
 toolbar's identity — a pane name or a status — and must not compete with the

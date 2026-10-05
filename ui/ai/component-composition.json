@@ -1850,11 +1850,12 @@
       "layout": {
         "roles": ["structure"],
         "geometry": {
-          "margin": "none",
+          "margin": "self",
           "border": "self",
           "padding": "self",
           "notes": [
-            "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap."
+            "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin by default, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap.",
+            "controlMargins adds the shared control gutter outside selected physical edges without changing border or padding; avoid duplicating a parent inset. Spans retain inline display and native inline margin behavior."
           ]
         }
       },

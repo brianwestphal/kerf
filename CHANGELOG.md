@@ -6,7 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
 - ToolbarText supports `tone="dark"` for filenames, headings, and actionable titles on loud toolbar surfaces.
+- `@kerfjs/ui` Text accepts `controlMargins` for selected exterior control gutters, avoiding a Row wrapper around isolated text.
 
 - Make lowered surfaces and decorative neutral fills/borders translucent, and replace the SunkenPanel prototype with direct component compositions.
 

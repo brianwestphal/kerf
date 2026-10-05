@@ -137,3 +137,22 @@ span.kui-text {
 .kui-list-header[data-size="xl"] .kui-list-header__title > .kui-text {
   font-size: var(--kui-font-xl);
 }
+
+/* Exterior control gutters preserve the Text-owned border and padding.
+   These rules follow inline/context resets so an explicit prop also works there. */
+
+.kui-text[data-control-margins*="t"] {
+  margin-top: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-text[data-control-margins*="r"] {
+  margin-right: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-text[data-control-margins*="b"] {
+  margin-bottom: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-text[data-control-margins*="l"] {
+  margin-left: var(--kui-layout-inline-margin, remify(8px));
+}

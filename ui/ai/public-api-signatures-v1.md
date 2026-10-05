@@ -3356,6 +3356,7 @@ export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps,
 import * as kerfjs from 'kerfjs';
 import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as Sides } from './sides-BPSWde0A.js';
 import { CssForegroundColor } from './css-values.js';
 
 type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
@@ -3387,6 +3388,8 @@ type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> &
     font?: TextFont;
     /** Transparent alignment border or no border when embedded in owner chrome. */
     border?: TextBorder;
+    /** Add the shared control gutter outside selected physical edges. */
+    controlMargins?: Sides;
     /** Remove the block variant's item padding and border in compact content. */
     flush?: boolean;
     /** Use compact leading for short dialog or metadata copy. */
@@ -3410,9 +3413,9 @@ type TextProps = TextCommonProps & ({
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, color, size, font, border, flush, lineHeight, wrap, maxLines, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, color, size, font, border, flush, controlMargins, lineHeight, wrap, maxLines, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
 
-export { FieldLabel, type FieldLabelProps, Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextVariant, type TextWrap };
+export { FieldLabel, type FieldLabelProps, Sides, Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextVariant, type TextWrap };
 ```
 
 ## `@kerfjs/ui/row`

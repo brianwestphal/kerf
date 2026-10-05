@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 323500,
-  "measuredLargestJavaScriptGzip": 124533,
-  "measuredTotalJavaScriptGzip": 323458,
+  "totalJavaScriptGzip": 323700,
+  "measuredLargestJavaScriptGzip": 124532,
+  "measuredTotalJavaScriptGzip": 323692,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2771,6 +2771,22 @@
         "measuredTotalJavaScriptGzip": 323458,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 323500
+      }
+    },
+    {
+      "at": "2026-10-05T10:21:34.518Z",
+      "reason": "Integrate Text exterior control margins with dark ToolbarText",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124533,
+        "measuredTotalJavaScriptGzip": 323458,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124532,
+        "measuredTotalJavaScriptGzip": 323692,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 323700
       }
     }
   ]

@@ -362,3 +362,77 @@ test('Text font="monospace" resolves to the Kerf code stack with Web Awesome loa
   expect(fonts.length).toBeGreaterThan(0);
   for (const font of fonts) expect(font.familyName).not.toMatch(/^Courier/);
 });
+
+test('Text control margins add exterior gutters without changing owned padding', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=text');
+  const section = page.locator('[data-demo-section="control-margins"]');
+  const all = section.locator('[data-demo-copy="margin-all"]');
+  const horizontal = section.locator('[data-demo-copy="margin-horizontal"]');
+  const flush = section.locator('[data-demo-copy="margin-flush"]');
+  const inline = section.locator('[data-demo-copy="margin-inline"]');
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    for (const edge of ['top', 'right', 'bottom', 'left'])
+      await expect(all).toHaveCSS(`margin-${edge}`, '8px');
+    await expect(all).toHaveCSS('padding-top', '8px');
+    await expect(all).toHaveCSS('border-top-width', '1px');
+    for (const copy of [horizontal, flush, inline]) {
+      await expect(copy).toHaveCSS('margin-left', '8px');
+      await expect(copy).toHaveCSS('margin-right', '8px');
+      await expect(copy).toHaveCSS('margin-top', '0px');
+    }
+    await expect(flush).toHaveCSS('padding-top', '0px');
+    await expect(inline).toHaveCSS('display', 'inline');
+    expect(
+      await all.evaluate(
+        (el) =>
+          el.getBoundingClientRect().right <=
+          el.parentElement!.getBoundingClientRect().right,
+      ),
+    ).toBe(true);
+    await section.screenshot({
+      path: testInfo.outputPath(`text-control-margins-${width}.png`),
+      style: '[data-catalog-geometry-overlay] { visibility: hidden; }',
+    });
+  }
+  await all.evaluate((el) =>
+    el.setAttribute('style', '--kui-layout-inline-margin:12px'),
+  );
+  await expect(all).toHaveCSS('margin-left', '12px');
+  await expect(horizontal).toHaveCSS('margin-left', '8px');
+  for (const sides of [
+    't',
+    'r',
+    'b',
+    'l',
+    'tr',
+    'tb',
+    'tl',
+    'rb',
+    'rl',
+    'bl',
+    'trb',
+    'trl',
+    'tbl',
+    'rbl',
+    'trbl',
+    '',
+  ]) {
+    await all.evaluate(
+      (el, value) => el.setAttribute('data-control-margins', value),
+      sides,
+    );
+    for (const [edge, letter] of [
+      ['top', 't'],
+      ['right', 'r'],
+      ['bottom', 'b'],
+      ['left', 'l'],
+    ])
+      await expect(all).toHaveCSS(
+        `margin-${edge}`,
+        sides.includes(letter) ? '12px' : '0px',
+      );
+  }
+});

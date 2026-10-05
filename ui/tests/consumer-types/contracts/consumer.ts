@@ -139,6 +139,12 @@ Text({
   children: 'Section',
 });
 Text({ children: 'Paragraph by default' });
+Text({ children: 'Inset paragraph', controlMargins: 'rl' });
+Text({ variant: 'span', children: 'Inline gutter', controlMargins: 'trbl' });
+// @ts-expect-error control margins use canonical physical side order.
+Text({ children: 'Invalid side order', controlMargins: 'lr' });
+// @ts-expect-error control margins use physical sides rather than CSS shorthands.
+Text({ children: 'Invalid shorthand', controlMargins: 'horizontal' });
 Text({ children: 'Warning', color: uiColor('warning-on-quiet') });
 Text({ children: 'Custom', color: foregroundColor('rebeccapurple') });
 // @ts-expect-error Text colors require a foreground token or explicit custom-color builder.

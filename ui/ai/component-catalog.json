@@ -2029,7 +2029,8 @@
         "default, quiet, or danger tone",
         "compact, default, large, or xlarge size",
         "default or monospace font",
-        "flush item geometry and tight line height"
+        "flush item geometry and tight line height",
+        "controlMargins selects exterior 8px gutters with canonical physical Sides"
       ],
       "accessibility": [
         "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance, or span for inline secondary text.",
@@ -2038,11 +2039,12 @@
         "FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby."
       ],
       "geometry": {
-        "margin": "none",
+        "margin": "self",
         "border": "self",
         "padding": "self",
         "notes": [
-          "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap."
+          "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin by default, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap.",
+          "controlMargins adds the shared control gutter outside selected physical edges without changing border or padding; avoid duplicating a parent inset. Spans retain inline display and native inline margin behavior."
         ]
       },
       "delivery": {

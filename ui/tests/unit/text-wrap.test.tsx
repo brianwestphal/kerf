@@ -64,3 +64,50 @@ describe('Text wrapping', () => {
     ).toThrow(RangeError);
   });
 });
+
+describe('Text control margins', () => {
+  it('omits an empty margin selection and projects every canonical side combination', () => {
+    for (const controlMargins of [undefined, ''] as const)
+      expect(String(Text({ children: 'Copy', controlMargins }))).not.toContain(
+        'data-control-margins',
+      );
+    for (const controlMargins of [
+      't',
+      'r',
+      'b',
+      'l',
+      'tr',
+      'tb',
+      'tl',
+      'rb',
+      'rl',
+      'bl',
+      'trb',
+      'trl',
+      'tbl',
+      'rbl',
+      'trbl',
+    ] as const) {
+      const html = String(Text({ children: 'Copy', controlMargins }));
+      expect(html).toContain(`data-control-margins="${controlMargins}"`);
+      expect(html).not.toContain('controlMargins=');
+    }
+  });
+  it('composes margins with flush, inline, native attributes, and wrapping', () => {
+    const html = String(
+      Text({
+        variant: 'span',
+        children: 'Copy',
+        controlMargins: 'rl',
+        flush: true,
+        wrap: 'anywhere',
+        maxLines: 2,
+        id: 'copy',
+      }),
+    );
+    expect(html).toContain('<span id="copy"');
+    expect(html).toContain('data-flush="true"');
+    expect(html).toContain('data-control-margins="rl"');
+    expect(html).toContain('data-max-lines="2"');
+  });
+});

@@ -1061,6 +1061,7 @@ supporting copy on a separate row. Page and section titles opt into heading
 semantics through `ToolbarText.headingLevel`.
 `ToolbarText.tone="dark"` uses the loud-surface foreground at every size,
 including actionable titles, to match dark control groups.
+Text supports `controlMargins` with canonical physical Sides for an exterior 8px control gutter; it preserves border/padding and avoids an isolated Row wrapper. Avoid stacking it with parent insets. Inline spans retain native inline margin behavior.
 
 Ordinary UI headings, paragraphs, and inline secondary copy use `Text`
 (`ui/src/components/typography/text/text.tsx`), whose default `p`, optional `h1`–`h6`, and inline `span`

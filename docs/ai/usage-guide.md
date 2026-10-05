@@ -232,6 +232,8 @@ and its minimum-height allowance while keeping the independent
 `--kui-toolbar-gap` between zones. Safe-area padding still applies where the
 Toolbar claims a screen edge.
 
+Text supports `controlMargins` with canonical physical Sides for an exterior 8px control gutter; it preserves border/padding and avoids an isolated Row wrapper. Avoid stacking it with parent insets. Inline spans retain native inline margin behavior.
+
 Use `Text` from `@kerfjs/ui/text` for ordinary headings, paragraphs, and inline
 secondary copy outside toolbar title zones. It renders `p` by default; set
 `variant` to `h1`–`h6` only when the document hierarchy calls for a heading, or

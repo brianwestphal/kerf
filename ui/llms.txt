@@ -346,6 +346,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   compact, prominent, display, and code roles instead of global utility classes. It passes native attributes
   through; block variants own the standard transparent border plus item padding, while `span` owns none. Keep
   toolbar titles on `ToolbarText` and list-aligned bare prose on `ListInsetText`.
+  Text supports `controlMargins` with canonical physical Sides for an exterior 8px control gutter; it preserves border/padding and avoids an isolated Row wrapper. Avoid stacking it with parent insets. Inline spans retain native inline margin behavior.
+
 - **Space by the five-step scale, by relationship not by eye.** `0`
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
   group), `16px` `--kui-space-m`, `24px` `--kui-space-l` (between major differing

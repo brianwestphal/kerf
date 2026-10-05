@@ -1,6 +1,7 @@
 import type { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import type { Sides } from '../../../shared/layout/sides.js';
 import type { CssForegroundColor } from '../../../shared/styles/css-values.js';
 
 export {
@@ -36,6 +37,8 @@ type TextCommonProps = Omit<
   font?: TextFont;
   /** Transparent alignment border or no border when embedded in owner chrome. */
   border?: TextBorder;
+  /** Add the shared control gutter outside selected physical edges. */
+  controlMargins?: Sides;
   /** Remove the block variant's item padding and border in compact content. */
   flush?: boolean;
   /** Use compact leading for short dialog or metadata copy. */
@@ -73,6 +76,7 @@ export function Text({
   font = 'default',
   border = 'transparent',
   flush = false,
+  controlMargins = '',
   lineHeight = 'default',
   wrap = 'normal',
   maxLines,
@@ -102,6 +106,7 @@ export function Text({
       data-size={size}
       data-font={font}
       data-border={border}
+      data-control-margins={controlMargins || undefined}
       data-flush={flush ? 'true' : undefined}
       data-line-height={lineHeight === 'tight' ? 'tight' : undefined}
       data-wrap={wrap === 'normal' ? undefined : wrap}
@@ -125,3 +130,5 @@ export function Text({
     </Variant>
   );
 }
+
+export type { Sides } from '../../../shared/layout/sides.js';

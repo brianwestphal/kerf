@@ -87,6 +87,34 @@ export function TextDemo() {
           <wa-input label="Needed by" value="October 16, 2026" />
         </ListInsetControl>
       </CatalogExample>
+      <CatalogExample
+        label="Control margins"
+        note="Text adds the shared 8px gutter outside selected sides, keeping its own border and padding. No Row wrapper is needed for an isolated paragraph."
+        align="none"
+        rootAttributes={{ 'data-demo-section': 'control-margins' }}
+      >
+        <Text controlMargins="trbl" data-demo-copy="margin-all">
+          A paragraph aligned with neighboring content items.
+        </Text>
+        <Text controlMargins="rl" data-demo-copy="margin-horizontal">
+          Horizontal margins keep the same text column without a vertical
+          gutter.
+        </Text>
+        <Text controlMargins="rl" flush data-demo-copy="margin-flush">
+          Flush supporting copy retains the exterior control gutter.
+        </Text>
+        <Text>
+          Inline{' '}
+          <Text
+            variant="span"
+            controlMargins="rl"
+            data-demo-copy="margin-inline"
+          >
+            copy
+          </Text>{' '}
+          stays in its sentence.
+        </Text>
+      </CatalogExample>
       <CatalogExample label="Flush dialog copy" align="glyph">
         <Text flush lineHeight="tight" data-demo-copy="flush">
           Compact supporting copy inside a dialog body.

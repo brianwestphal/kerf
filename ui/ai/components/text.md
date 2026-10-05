@@ -40,6 +40,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 - compact, default, large, or xlarge size
 - default or monospace font
 - flush item geometry and tight line height
+- controlMargins selects exterior 8px gutters with canonical physical Sides
 
 ## Composition
 
@@ -55,9 +56,10 @@ No wiring helper.
 
 ## Geometry
 
-Margin: none · border: self · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
+Margin: self · border: self · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap.
+- Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin by default, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap.
+- controlMargins adds the shared control gutter outside selected physical edges without changing border or padding; avoid duplicating a parent inset. Spans retain inline display and native inline margin behavior.
 
 ## Accessibility
 
