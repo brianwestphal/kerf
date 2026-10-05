@@ -346,6 +346,7 @@ export function mainBody({
       safeAreaEdges={mainPane?.safeAreaEdges}
       chromeDividers={mainPane?.chromeDividers}
       appearance={mainPane?.appearance}
+      deepInset={mainPane?.deepInset}
     >
       {scrollHeader || scrollFooter ? (
         // Chrome that scrolls joins the content in one gapless column that

@@ -264,6 +264,7 @@ export function composedPanelBody({
       safeAreaEdges={pane?.safeAreaEdges}
       chromeDividers={pane?.chromeDividers}
       appearance={pane?.appearance}
+      deepInset={pane?.deepInset}
     >
       {scrollHeader ? panelHeader : null}
       {content}

@@ -73,6 +73,23 @@
   scroll-padding-block-start: var(--kui-edge-inset-block-start);
 }
 
+/* A plain scene adds one outer gutter; a sole Pane or layout keeps ownership
+   of its own content and may opt into deepInset there. */
+.kui-tab-scaffold__scene[data-deep-inset="true"]:not(
+    :has(
+      > :is(
+          [data-component="pane"],
+          [data-component="nav-stack"],
+          [data-component="split-view"],
+          [data-component="workbench"],
+          [data-component="tab-scaffold"]
+        ):only-child
+    )
+  ) {
+  padding-inline: calc(var(--kui-edge-inset-inline-start) + var(--kui-space-xs))
+    calc(var(--kui-edge-inset-inline-end) + var(--kui-space-xs));
+}
+
 .kui-tab-scaffold__scene
   > :not(
     :is(

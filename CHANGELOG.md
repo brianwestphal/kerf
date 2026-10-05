@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `Pane` and plain `TabScaffold` scenes accept `deepInset` for a 16px outer content gutter while nested Row, List, and Grid spacing remains at its normal 8px.
+
 - The TabScaffold catalog now demonstrates a NavStack with a view-owned top toolbar and Pane above the persistent tab bar, including push, tab switch, and return.
 
 - UI Doctor now checks component root class names, stylesheet names, and CSS selectors that reach into another local component.

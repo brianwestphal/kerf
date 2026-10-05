@@ -22,6 +22,20 @@ afterEach(() => {
 });
 
 describe('TabScaffold markup', () => {
+  it('marks only opted-in scenes for a deep content inset', () => {
+    const html = String(
+      TabScaffold({
+        id: 'app',
+        label: 'Sections',
+        tabs: [{ ...tabs[0]!, deepInset: true }, tabs[1]!],
+        active: 'home',
+      }),
+    );
+    expect(html).toContain(
+      'data-tab-scaffold-scene="home" data-active="true" data-deep-inset="true"',
+    );
+    expect(html.match(/data-deep-inset=/g)).toHaveLength(1);
+  });
   it('marks a scene for sunken scroll painting', () => {
     const html = String(
       TabScaffold({

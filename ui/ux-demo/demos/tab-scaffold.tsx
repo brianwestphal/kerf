@@ -37,8 +37,9 @@ const tabs: readonly TabScaffoldTab<DemoTabId>[] = [
   {
     id: 'search',
     label: 'Search',
+    deepInset: true,
     icon: <LucideIcon icon={Search} name="search" />,
-    content: scene('Search', 'Selection is controlled by the application.'),
+    content: scene('Search', 'This plain scene uses a deeper content inset.'),
   },
   {
     id: 'settings',

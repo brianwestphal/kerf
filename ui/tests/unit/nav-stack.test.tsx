@@ -257,6 +257,7 @@ describe('NavStack markup', () => {
             contentElement: 'main',
             contentLabel: 'Home content',
             appearance: 'sunken',
+            deepInset: true,
             chromeDividers: 'always',
           },
           bottomToolbar: {
@@ -281,6 +282,7 @@ describe('NavStack markup', () => {
       '.kui-nav-stack__view > [data-component="pane"]',
     )!;
     expect(pane.dataset.appearance).toBe('sunken');
+    expect(pane.dataset.deepInset).toBe('true');
     expect(pane.dataset.chromeDividers).toBe('always');
     expect(
       pane.querySelector('main[aria-label="Home content"]')?.textContent,

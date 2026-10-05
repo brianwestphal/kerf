@@ -85,6 +85,24 @@ describe('Pane', () => {
     expect(forged.match(/data-safe-area-block-start=/g)).toHaveLength(1);
   });
 
+  it('opts into a protected deep content inset without changing the default', () => {
+    expect(String(Pane({ children: <span>Body</span> }))).not.toContain(
+      'data-deep-inset',
+    );
+    const html = String(
+      Pane({
+        children: <span>Body</span>,
+        deepInset: true,
+        rootAttributes: {
+          // @ts-expect-error the Pane owns its deep inset state.
+          'data-deep-inset': 'false',
+        },
+      }),
+    );
+    expect(html).toContain('data-deep-inset="true"');
+    expect(html.match(/data-deep-inset=/g)).toHaveLength(1);
+  });
+
   it('pins its chrome by default and opts into yielding it when short', () => {
     expect(String(Pane({ children: <span>Body</span> }))).not.toContain(
       'data-chrome-placement',

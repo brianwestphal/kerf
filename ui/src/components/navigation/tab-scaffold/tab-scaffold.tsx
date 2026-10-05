@@ -13,6 +13,8 @@ interface TabScaffoldTabBase<Id extends string> {
   content: KerfUiContent;
   /** Background of this scene's scrolling work surface. */
   appearance?: PaneAppearance;
+  /** Add an extra 8px inline gutter to a plain scene's scrolling content. */
+  deepInset?: boolean;
 }
 
 /** A tab with an optional count or short-status badge. */
@@ -112,6 +114,7 @@ export function TabScaffold<Id extends string>({
             data-tab-scaffold-scene={tab.id}
             data-active={String(tab.id === active)}
             data-appearance={tab.appearance === 'sunken' ? 'sunken' : undefined}
+            data-deep-inset={tab.deepInset ? 'true' : undefined}
             aria-hidden={String(tab.id !== active)}
           >
             {tab.content}

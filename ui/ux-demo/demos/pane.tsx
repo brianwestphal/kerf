@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
+import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Pane } from '@kerfjs/ui/pane';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -46,6 +47,32 @@ export function PaneDemo() {
         >
           <ContentItem>First content group</ContentItem>
           <ContentItem frame="framed">Framed content group</ContentItem>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Deep inset content"
+        note="deepInset adds one 8px outer gutter to the Pane's scrolling content. Direct items and items inside a List align at 16px from the pane edge while the List keeps its ordinary internal 8px spacing."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'short',
+          surface: 'default',
+        }}
+      >
+        <Pane
+          label="Deep inset example"
+          deepInset
+          header={
+            <Toolbar
+              label="Deep inset header"
+              leading={<ToolbarText text="Projects" size="large" />}
+            />
+          }
+        >
+          <ContentItem>Direct content item</ContentItem>
+          <List>
+            <ContentItem>Nested List content item</ContentItem>
+          </List>
         </Pane>
       </CatalogExample>
       <CatalogExample

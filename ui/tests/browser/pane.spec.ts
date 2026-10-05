@@ -1,5 +1,82 @@
 import { expect, test } from '@playwright/test';
 
+test('deepInset adds one outer gutter while nested List items keep 8px spacing', async ({
+  page,
+  browserName,
+}) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/?component=pane');
+    const pane = page.locator(
+      '[data-demo="pane"] [data-component="pane"][data-deep-inset="true"]',
+    );
+    await expect(pane).toHaveAttribute('data-deep-inset', 'true');
+    const edges = await pane.evaluate((element) => {
+      const left = element.getBoundingClientRect().left;
+      const item = element.querySelector<HTMLElement>('.kui-content-item')!;
+      const row = element.querySelector<HTMLElement>(
+        '.kui-list > .kui-content-item',
+      )!;
+      return {
+        item: item.getBoundingClientRect().left - left,
+        row: row.getBoundingClientRect().left - left,
+        rowMargin: window.getComputedStyle(row).marginLeft,
+      };
+    });
+    expect(edges.item).toBeCloseTo(16, 0);
+    expect(edges.row).toBeCloseTo(16, 0);
+    expect(edges.rowMargin).toBe('8px');
+    await pane.evaluate((element) => {
+      (element as HTMLElement).style.setProperty(
+        '--kui-edge-inset-inline-start',
+        '12px',
+      );
+    });
+    const safeContentPadding = await pane
+      .locator('.kui-pane__content')
+      .evaluate((element) => window.getComputedStyle(element).paddingLeft);
+    expect(safeContentPadding).toBe('20px');
+    await pane.evaluate((element) => {
+      (element as HTMLElement).style.removeProperty(
+        '--kui-edge-inset-inline-start',
+      );
+    });
+    if (browserName === 'chromium')
+      await pane.screenshot({
+        path: `test-results/pane-deep-inset-${width}.png`,
+      });
+
+    await page.goto('/?component=tab-scaffold');
+    const scaffold = page.locator('#catalog-tab-scaffold');
+    await scaffold.getByRole('tab', { name: 'Search' }).click();
+    const scene = scaffold.locator('[data-tab-scaffold-scene="search"]');
+    await expect(scene).toHaveAttribute('data-deep-inset', 'true');
+    const sceneInset = await scene.evaluate((element) => {
+      const item = element.querySelector<HTMLElement>('.kui-content-item')!;
+      return (
+        item.getBoundingClientRect().left - element.getBoundingClientRect().left
+      );
+    });
+    expect(sceneInset).toBeCloseTo(16, 0);
+    await scene.evaluate((element) => {
+      (element as HTMLElement).style.setProperty(
+        '--kui-edge-inset-inline-start',
+        '12px',
+      );
+    });
+    await expect(scene).toHaveCSS('padding-left', '20px');
+    await scene.evaluate((element) => {
+      (element as HTMLElement).style.removeProperty(
+        '--kui-edge-inset-inline-start',
+      );
+    });
+    if (browserName === 'chromium' && width === 390)
+      await scaffold.screenshot({
+        path: 'test-results/tab-scaffold-deep-inset-narrow.png',
+      });
+  }
+});
+
 test('Pane owns vertical slots, scrolling, and independent separators', async ({
   page,
   browserName,

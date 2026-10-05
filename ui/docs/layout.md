@@ -36,6 +36,26 @@ size) tall, and below that lets the whole pane scroll as one column, header,
 content, and footer together, so the content keeps its natural height. The
 default `fixed` always pins them.
 
+### Deep content inset
+
+Set `deepInset` on a `Pane` to add one 8px inline gutter to its scrolling
+content. A `ContentItem` or `ListItem` that normally sits 8px from the pane
+edge then sits 16px from it. The default is `false`. This extra gutter adds
+to any device safe-area inset, while the pane's header, footer, background,
+and separators still reach their usual edges.
+
+```tsx
+<Pane deepInset>
+  <ContentItem>Project Atlas</ContentItem>
+</Pane>
+```
+
+The pane leaves `--kui-layout-inline-margin` at its normal 8px value. Nested
+`Row`, `List`, and `Grid` therefore keep their usual item spacing; they do
+not inherit a doubled margin. `PaneConfig.deepInset` forwards through
+Workbench `mainPane`, panel `pane`, CollapsiblePanel `pane`, and a
+`NavStackView.pane`.
+
 ### Lowered work surfaces
 
 Set `appearance="sunken"` when the work area itself should use the lowered

@@ -547,6 +547,8 @@ Navigation transition continuity: `wireNavStack` slides the incoming view over t
 
 For a tab scene with drill-down, put a `NavStack` directly in `TabScaffoldTab.content`, configure each view's top `toolbar` and `pane`, and omit `bottomToolbar` at both levels so the scaffold bar remains the only bottom chrome. Wire both components on their own roots. The catalog's **NavStack inside a tab** example exercises push and tab switching.
 
+`Pane.deepInset` (and `PaneConfig.deepInset`) or `TabScaffoldTab.deepInset` on a plain scene adds an 8px outer gutter to the scroll content, so ordinary 8px item margins land 16px from the edge. Nested Row/List/Grid spacing stays at its default. Set a nested scene's Pane option instead of insetting its entire NavStack or toolbar.
+
 `ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`
 lengths (for example `px(416)`). Wire `wireToolbarVisibility(root)` from
 `@kerfjs/ui/wire-toolbar-visibility` and dispose on unmount. Thresholds use the

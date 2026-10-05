@@ -363,6 +363,8 @@ Navigation transition continuity: `wireNavStack` slides the incoming view over t
 
 For a tab scene with drill-down, place a `NavStack` directly in `TabScaffoldTab.content`. Give its views structured `toolbar` and `pane` configuration and omit both stack and view `bottomToolbar`; the scaffold bar remains the only bottom chrome. Wire the scaffold and stack on their respective roots. See `docs/tab-scaffold.md` and the catalog's **NavStack inside a tab** example.
 
+Use `Pane.deepInset` (also in `PaneConfig`) or `TabScaffoldTab.deepInset` for a plain scene when its scrolling content needs a 16px outer gutter. The extra 8px is applied to the scroll surface, while nested Row/List/Grid item margins stay 8px. When a tab scene is a sole Pane or NavStack, configure deep inset on that child's Pane; the tab bar and top toolbar stay full width.
+
 Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-token-search-keep-open` or `collapsible.keepOpenOn` for focus.
 
 `ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`

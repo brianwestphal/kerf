@@ -339,6 +339,9 @@ and disposal cancels its pending frames and cleanup timers.
 Inside a `TabScaffold`, put a `NavStack` directly in a tab's `content`,
 configure each view's `toolbar` and `pane`, and omit `bottomToolbar` so the
 scaffold bar is the only bottom chrome. Wire each component on its own root.
+For a deeper content gutter, set `Pane.deepInset` (or `pane.deepInset` in a
+composite) or `TabScaffoldTab.deepInset` for a plain scene. It adds 8px outside
+normal 8px item margins without changing nested Row/List/Grid spacing.
 `@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
 Web Awesome’s internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, also with custom selected content. See

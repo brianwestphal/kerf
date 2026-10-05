@@ -59,6 +59,13 @@ truncate horizontally with an ellipsis when a destination name exceeds its
 share of the bar. On larger device classes, promote the tab set to a
 `Workbench` rail or a persistent sidebar instead of a bottom bar.
 
+Set `deepInset: true` on a plain tab scene to add an 8px outer inline gutter
+to its scrolling content, giving ordinary content items a 16px edge inset.
+The default is `false`. A scene whose only child is a `Pane` or layout lets
+that child own its content gutter: for a nested `NavStack`, set
+`pane: { deepInset: true }` on its views instead. The scaffold bar and a
+stack's top toolbar remain full width.
+
 ## A NavStack with a top toolbar and Pane
 
 Put the `NavStack` directly in a tab's `content`. Give each view a structured

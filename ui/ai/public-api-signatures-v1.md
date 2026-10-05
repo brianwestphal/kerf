@@ -1435,6 +1435,7 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-chrome-placement'?: never;
     'data-chrome-dividers'?: never;
     'data-appearance'?: never;
+    'data-deep-inset'?: never;
 }>;
 /** How a Pane's header and footer relate to its scrolling content. */
 type PaneChromePlacement = 'fixed' | 'auto';
@@ -1474,6 +1475,8 @@ interface PaneProps {
     chromeDividers?: PaneChromeDividers;
     /** Paint the scrolling work surface with the shared lowered-surface color. */
     appearance?: PaneAppearance;
+    /** Add an extra 8px inline gutter to scrolling content (default: false). */
+    deepInset?: boolean;
     /** Root semantics. Defaults to `div`. */
     element?: PaneElement;
     /** Scrolling content semantics. Defaults to `div`. */
@@ -1508,14 +1511,14 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'appearance'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'appearance' | 'deepInset'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, chromeDividers, appearance, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, chromeDividers, appearance, deepInset, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```
@@ -2128,6 +2131,8 @@ interface TabScaffoldTabBase<Id extends string> {
     content: KerfUiContent;
     /** Background of this scene's scrolling work surface. */
     appearance?: PaneAppearance;
+    /** Add an extra 8px inline gutter to a plain scene's scrolling content. */
+    deepInset?: boolean;
 }
 /** A tab with an optional count or short-status badge. */
 interface TabScaffoldTabCountBadge {

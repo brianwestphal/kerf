@@ -158,6 +158,13 @@
     var(--_kui-pane-content-block-end);
 }
 
+/* Add one outer gutter without changing the inherited item-margin token.
+   Nested Row, List, and Grid therefore keep their own default 8px insets. */
+.kui-pane[data-deep-inset="true"] > .kui-pane__content {
+  padding-inline: calc(var(--_kui-pane-safe-inline-start) + var(--kui-space-xs))
+    calc(var(--_kui-pane-safe-inline-end) + var(--kui-space-xs));
+}
+
 .kui-pane__header ~ .kui-pane__content {
   --_kui-pane-content-block-start: 0px;
 }

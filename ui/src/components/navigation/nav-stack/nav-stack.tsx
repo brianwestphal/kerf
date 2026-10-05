@@ -242,6 +242,7 @@ export function NavStack({
             view.footer !== undefined ? (
               <Pane
                 appearance={view.pane?.appearance}
+                deepInset={view.pane?.deepInset}
                 contentElement={view.pane?.contentElement}
                 contentLabel={view.pane?.contentLabel}
                 separators={view.pane?.separators}

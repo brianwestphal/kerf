@@ -19,6 +19,7 @@ const paneProtectedAttributes = new Set([
   'data-chrome-placement',
   'data-chrome-dividers',
   'data-appearance',
+  'data-deep-inset',
   'data-separator-block-start',
   'data-separator-block-end',
   'data-separator-inline-start',
@@ -50,6 +51,7 @@ type PaneRootAttributes = Readonly<
     'data-chrome-placement'?: never;
     'data-chrome-dividers'?: never;
     'data-appearance'?: never;
+    'data-deep-inset'?: never;
   }
 >;
 
@@ -94,6 +96,8 @@ export interface PaneProps {
   chromeDividers?: PaneChromeDividers;
   /** Paint the scrolling work surface with the shared lowered-surface color. */
   appearance?: PaneAppearance;
+  /** Add an extra 8px inline gutter to scrolling content (default: false). */
+  deepInset?: boolean;
   /** Root semantics. Defaults to `div`. */
   element?: PaneElement;
   /** Scrolling content semantics. Defaults to `div`. */
@@ -137,6 +141,7 @@ export type PaneConfig = Pick<
   | 'safeAreaEdges'
   | 'chromeDividers'
   | 'appearance'
+  | 'deepInset'
 >;
 
 function paneContent(
@@ -169,6 +174,7 @@ export function Pane({
   chromePlacement = 'fixed',
   chromeDividers,
   appearance = 'default',
+  deepInset = false,
   element = 'div',
   contentElement = 'div',
   separators = [],
@@ -218,6 +224,7 @@ export function Pane({
     id,
     'data-component': 'pane',
     'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
+    'data-deep-inset': deepInset ? 'true' : undefined,
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-chrome-dividers':
       resolvedChromeDividers === 'always' || resolvedChromeDividers === 'none'

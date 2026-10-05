@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 326900,
-  "measuredLargestJavaScriptGzip": 124513,
-  "measuredTotalJavaScriptGzip": 326828,
+  "totalJavaScriptGzip": 327200,
+  "measuredLargestJavaScriptGzip": 124514,
+  "measuredTotalJavaScriptGzip": 327106,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2931,6 +2931,22 @@
         "measuredTotalJavaScriptGzip": 326828,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 326900
+      }
+    },
+    {
+      "at": "2026-10-05T23:45:55.662Z",
+      "reason": "Pane and TabScaffold deepInset variants and catalog examples",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 326828,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 326900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124514,
+        "measuredTotalJavaScriptGzip": 327106,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 327200
       }
     }
   ]
