@@ -34,15 +34,28 @@ function expectConcentric(geometry: RadiusGeometry, expectedOuter: number) {
   expect(geometry.outer - geometry.highlight).toBeCloseTo(geometry.inset, 5);
 }
 
-async function screenshotFirstTwoExamples(demo: Locator, path: string) {
+async function screenshotShapeExamples(demo: Locator, path: string) {
   const displays = await demo.evaluate((element) => {
     const rows = element.querySelectorAll<HTMLElement>(
       ':scope > [data-catalog-example]',
     );
-    if (rows.length < 2) throw new Error('Missing radius examples');
-    return Array.from(rows, (row, index) => {
+    const labels = ['Shape', 'Segmented choices'];
+    if (
+      Array.from(rows).filter((row) =>
+        labels.includes(
+          row
+            .querySelector('[data-catalog-example-label]')
+            ?.textContent?.trim() ?? '',
+        ),
+      ).length !== labels.length
+    )
+      throw new Error('Missing radius examples');
+    return Array.from(rows, (row) => {
       const display = row.style.display;
-      if (index > 1) row.style.display = 'none';
+      const label = row
+        .querySelector('[data-catalog-example-label]')
+        ?.textContent?.trim();
+      if (!labels.includes(label ?? '')) row.style.display = 'none';
       return display;
     });
   });
@@ -74,7 +87,7 @@ test('keeps toolbar selections concentric with pill and rounded group shapes', a
   );
   const selectedView = demo
     .locator(':scope > [data-catalog-example]')
-    .nth(1)
+    .filter({ has: page.getByText('Segmented choices', { exact: true }) })
     .getByRole('button', { name: 'List view', exact: true });
   const viewGroup = selectedView.locator(
     'xpath=ancestor::*[@data-component="toolbar-control-group"]',
@@ -83,7 +96,7 @@ test('keeps toolbar selections concentric with pill and rounded group shapes', a
   expectConcentric(await radiusGeometry(shapeGroup, pillChoice), 22);
   expectConcentric(await radiusGeometry(viewGroup, selectedView), 22);
   if (testInfo.project.name === 'chromium')
-    await screenshotFirstTwoExamples(
+    await screenshotShapeExamples(
       demo,
       'test-results/selection-radius-pill-wide.png',
     );
@@ -96,7 +109,7 @@ test('keeps toolbar selections concentric with pill and rounded group shapes', a
   await expect(viewGroup).toBeVisible();
   expectConcentric(await radiusGeometry(viewGroup, selectedView), 12);
   if (testInfo.project.name === 'chromium')
-    await screenshotFirstTwoExamples(
+    await screenshotShapeExamples(
       demo,
       'test-results/selection-radius-rounded-narrow.png',
     );

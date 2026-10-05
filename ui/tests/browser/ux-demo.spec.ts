@@ -478,9 +478,15 @@ test('the ToolbarControlGroup demo shape toggle switches each shape-controlled s
   const roundedGroups = demo.locator(
     '.kui-toolbar-control-group[data-shape="rounded"]',
   );
-  const exampleCount = await demo
+  const shapeControlledGroups = demo
     .locator(':scope > [data-catalog-example]')
-    .count();
+    .filter({
+      hasNot: page
+        .locator('[data-catalog-example-label]')
+        .filter({ hasText: /^(Shape|Wrapping zone sizing)$/ }),
+    })
+    .locator('.kui-toolbar-control-group');
+  const shapeControlledCount = await shapeControlledGroups.count();
   const sampleGroup = demo
     .locator('.kui-toolbar-control-group')
     .filter({ has: page.locator('wa-button[aria-label="Pin view"]') })
@@ -493,12 +499,26 @@ test('the ToolbarControlGroup demo shape toggle switches each shape-controlled s
   // The toggle group and wrapping-zone fixture keep their own shapes.
   await demo.getByRole('button', { name: 'Rounded' }).click();
   await expect(sampleGroup).toHaveCSS('border-radius', '12px');
-  await expect(roundedGroups).toHaveCount(exampleCount - 2);
+  await expect(roundedGroups).toHaveCount(shapeControlledCount);
+  await expect
+    .poll(() =>
+      shapeControlledGroups.evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute('data-shape')),
+      ),
+    )
+    .toEqual(Array<string>(shapeControlledCount).fill('rounded'));
 
   // And back to pill.
   await demo.getByRole('button', { name: 'Pill' }).click();
   await expect(sampleGroup).toHaveCSS('border-radius', '22px');
   await expect(roundedGroups).toHaveCount(0);
+  await expect
+    .poll(() =>
+      shapeControlledGroups.evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute('data-shape')),
+      ),
+    )
+    .toEqual(Array<string>(shapeControlledCount).fill('pill'));
 });
 
 test('every ToolbarText size renders in the UI sans stack, never a monospace fallback', async ({
@@ -6339,6 +6359,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     )
     .toBe(true);
   await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
+    'Icon tile tones',
     'Shape',
     'Segmented choices',
     'Popup menu',
@@ -6359,7 +6380,8 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Wrapping zone sizing',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(23);
+  const expectedGroupCount = 28;
+  await expect(groups).toHaveCount(expectedGroupCount);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
   );
@@ -6513,7 +6535,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       .screenshot({ path: 'test-results/toolbar-control-group-avatar.png' });
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(23);
+  await expect(groups).toHaveCount(expectedGroupCount);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/toolbar-control-groups-narrow.png',
