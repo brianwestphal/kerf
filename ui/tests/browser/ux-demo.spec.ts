@@ -4521,11 +4521,37 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
     });
 });
 
-test('catalog routes every production component family and supports its stateful controls', async ({
+// Keep route coverage in bounded batches: a single full-catalog traversal can
+// approach the test deadline on Firefox CI before the control checks even run.
+const catalogRouteBatchSize = 25;
+for (let start = 0; start < catalog.length; start += catalogRouteBatchSize) {
+  const entries = catalog.slice(start, start + catalogRouteBatchSize);
+  test(`catalog routes production components ${start + 1}-${start + entries.length}`, async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    for (const entry of entries) {
+      await test.step(entry.id, async () => {
+        await page.goto(`/?component=${entry.id}`);
+        const stableRouteMarker =
+          entry.kind === 'recipe' ? 'data-recipe' : 'data-demo';
+        await expect(
+          page.locator(`[${stableRouteMarker}="${entry.id}"]`),
+        ).toBeVisible();
+        if (entry.source === 'webawesome') {
+          await expect(page.locator(entry.id).first()).toBeAttached();
+          await expect(page.locator('[data-catalog-secondary]')).toBeVisible();
+        }
+      });
+    }
+  });
+}
+
+test('catalog supports its stateful controls', async ({
   page,
   browserName,
 }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(60_000);
   await page.goto('/');
   await expect(
     page.locator(
@@ -4561,19 +4587,6 @@ test('catalog routes every production component family and supports its stateful
   await ecosystemToggle.click();
   await expect(page.locator('[data-catalog-secondary]')).toBeHidden();
   await expect(page.locator('[data-demo="badge"]')).toBeVisible();
-  for (const entry of catalog) {
-    await page.goto(`/?component=${entry.id}`);
-    const stableRouteMarker =
-      entry.kind === 'recipe' ? 'data-recipe' : 'data-demo';
-    await expect(
-      page.locator(`[${stableRouteMarker}="${entry.id}"]`),
-    ).toBeVisible();
-    if (entry.source === 'webawesome') {
-      await expect(page.locator(entry.id).first()).toBeAttached();
-      await expect(page.locator('[data-catalog-secondary]')).toBeVisible();
-    }
-  }
-
   await page.locator('#kui-catalog-left-rail [data-item-id="list"]').click();
   await expect(page).toHaveURL(/component=list/);
   await expect(page.locator('[data-demo="list"]')).toBeVisible();
