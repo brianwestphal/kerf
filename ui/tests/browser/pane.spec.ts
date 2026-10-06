@@ -206,7 +206,7 @@ test('deepInset adds one outer gutter while nested List items keep 8px spacing',
     });
     if (browserName === 'chromium')
       await scaffold.screenshot({
-        path: `test-results/tab-scaffold-deep-inset-${width}.png`,
+        path: `test-results/tab-navigator-deep-inset-${width}.png`,
       });
   }
 });

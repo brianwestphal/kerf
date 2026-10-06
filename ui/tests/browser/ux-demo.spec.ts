@@ -4781,7 +4781,7 @@ test('renders self-styled Badge variants without app CSS', async ({
   const demo = page.locator('[data-demo="badge"]');
   const allBadges = demo.locator('[data-component="badge"]');
   // Four text badges plus the text-free dot, whose 8px geometry is covered by
-  // tab-scaffold-badge.spec.ts; the text-badge checks below skip it.
+  // tab-navigator-badge.spec.ts; the text-badge checks below skip it.
   await expect(allBadges).toHaveCount(5);
   await expect(
     demo.locator('[data-component="badge"][data-size="dot"]'),

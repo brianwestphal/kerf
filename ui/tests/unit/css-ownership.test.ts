@@ -52,6 +52,24 @@ function ownedMarkupClasses(source: string) {
 }
 
 describe('CSS ownership gate', { timeout: 30_000 }, () => {
+  it('keeps the TabNavigator source rename paired with its stable DOM class', () => {
+    const filename = 'components/navigation/tab-navigator/tab-navigator.css';
+    const css =
+      '.kui-tab-scaffold__scene { --_kui-tab-scaffold-safe-block-start: 0px; }';
+    const model = buildOwnershipModel({
+      stylesheets: [{ filename, source: css }],
+      sources: [
+        {
+          filename: 'components/navigation/tab-navigator/tab-navigator.tsx',
+          source:
+            'export function TabNavigator() { return <section class="kui-tab-scaffold" data-component="tab-scaffold" />; }',
+        },
+      ],
+    });
+
+    expect(checkPackageStylesheet(model, filename, css)).toEqual([]);
+  });
+
   it('keeps application styles out of package component internals', async () => {
     const script = resolve(
       import.meta.dirname,

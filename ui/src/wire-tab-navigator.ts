@@ -2,4 +2,4 @@
 export {
   wireTabNavigator,
   type WireTabNavigatorOptions,
-} from './components/navigation/tab-scaffold/wiring/wire-tab-scaffold.js';
+} from './components/navigation/tab-navigator/wiring/wire-tab-navigator.js';

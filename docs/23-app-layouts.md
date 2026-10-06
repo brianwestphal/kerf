@@ -921,7 +921,7 @@ scrolls and the Pane's own content is the scroll owner under a pinned header
 included). The Pane's slots then apply the edges the region still reaches — a
 view's bottom and sides (none on top, under the chrome, or at the bottom, over
 a bottom toolbar), a scene's top and sides — which is exactly what the region
-itself would have padded; `nav-stack.css` / `tab-scaffold.css` never size the
+itself would have padded; `nav-stack.css` / `tab-navigator.css` never size the
 Pane. A nested `NavStack` / `TabNavigator` already fills its region with its own
 `height: 100%`. The region's padding
 rule tests that with `region:not(:has(> delegated:only-child))` on the region
@@ -1048,7 +1048,7 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   overlaid on the chrome's bottom edge (whatever the chrome holds never covers
   it; a cross-fade copy stays absolutely positioned), and colors the bottom
   toolbar's existing 1px top border, which stays in place transparent;
-  `tab-scaffold.css` does the same with the bar's 1px top border. Geometry is
+  `tab-navigator.css` does the same with the bar's 1px top border. Geometry is
   therefore identical to the old permanent borders and nothing moves (a
   removed border shifted the TabNavigator tab badges 1px above the bar). The catalog declares the wiring's two state attributes on both
   layouts. Without the wiring these edges draw no line (as a `Pane`'s default
@@ -1061,7 +1061,7 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   exported type). `scroll` (default) renders no attribute and draws from
   `data-scroll-divider` as above; `always` and `none` render
   `data-chrome-dividers` on the layout root. `nav-stack.css` /
-  `tab-scaffold.css` gate every drawing selector on it with a child
+  `tab-navigator.css` gate every drawing selector on it with a child
   combinator — `root:not([data-chrome-dividers]) > chrome[data-scroll-divider*=…]`
   for the scroll state, `root[data-chrome-dividers="always"] > chrome`
   unconditionally — so `always` needs no wiring and `none` ignores what the

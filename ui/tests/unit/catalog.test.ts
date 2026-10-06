@@ -200,7 +200,7 @@ describe('UX catalog metadata', () => {
       },
       {
         id: 'tab-navigator',
-        source: 'components/navigation/tab-scaffold/tab-scaffold',
+        source: 'components/navigation/tab-navigator/tab-navigator',
         exports: ['TabNavigatorTab', 'TabNavigatorProps', 'TabNavigator'],
       },
       {

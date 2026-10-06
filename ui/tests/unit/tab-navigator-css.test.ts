@@ -4,11 +4,11 @@ import { resolve } from 'node:path';
 import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
-describe('TabScaffold label geometry', () => {
+describe('TabNavigator label geometry', () => {
   it('keeps the complete label line box from shrinking below its text', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/components/navigation/tab-scaffold/tab-scaffold.css',
+      '../../src/components/navigation/tab-navigator/tab-navigator.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const label = root.nodes.find(
@@ -18,7 +18,7 @@ describe('TabScaffold label geometry', () => {
     );
 
     if (!label || label.type !== 'rule')
-      throw new Error('Missing TabScaffold label rule');
+      throw new Error('Missing TabNavigator label rule');
 
     const declarations = Object.fromEntries(
       label.nodes

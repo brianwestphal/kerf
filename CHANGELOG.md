@@ -26,6 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Rename the internal TabNavigator implementation folder, files, and focused test files from `tab-scaffold` to `tab-navigator`; public imports and rendered DOM hooks stay stable.
+
 - `deepInset` now adds the same 8px to the top and bottom of Pane and plain TabNavigator scroll content, including scroll padding; Pane header and footer still own their safe-area edges.
 
 - Toolbar composition guidance and catalog metadata now allow direct `KerfUiContent` in every zone; `ToolbarControlGroup` remains the recommended shared chrome for related controls.

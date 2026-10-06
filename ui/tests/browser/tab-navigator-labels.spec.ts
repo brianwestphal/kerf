@@ -18,7 +18,7 @@ async function expectLabelsUnclipped(scaffold: Locator) {
   }
 }
 
-test('TabScaffold labels retain their full line box at wide and narrow widths', async ({
+test('TabNavigator labels retain their full line box at wide and narrow widths', async ({
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -29,7 +29,7 @@ test('TabScaffold labels retain their full line box at wide and narrow widths', 
   await expectLabelsUnclipped(scaffold);
   if (testInfo.project.name === 'chromium')
     await scaffold.screenshot({
-      path: 'test-results/tab-scaffold-labels-wide.png',
+      path: 'test-results/tab-navigator-labels-wide.png',
     });
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -37,6 +37,6 @@ test('TabScaffold labels retain their full line box at wide and narrow widths', 
   await expectLabelsUnclipped(scaffold);
   if (testInfo.project.name === 'chromium')
     await scaffold.screenshot({
-      path: 'test-results/tab-scaffold-labels-narrow.png',
+      path: 'test-results/tab-navigator-labels-narrow.png',
     });
 });

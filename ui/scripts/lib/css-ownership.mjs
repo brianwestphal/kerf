@@ -44,6 +44,8 @@ export const packageClassRoots = new Map([
   ],
   ['skeleton.css', ['kui-skeleton', 'kui-skeleton-lines']],
   ['surface-scaffold.css', ['kui-dialog-surface', 'kui-popup-surface']],
+  // The 5.0 source rename retained TabNavigator's established DOM class hooks.
+  ['tab-navigator.css', ['kui-tab-scaffold']],
   [
     'toolbar-control-group.css',
     ['kui-toolbar-control-group', 'kui-toolbar-action-link'],
@@ -97,7 +99,7 @@ export const ownershipExceptions = [
     reason: EDGE_INSET_CONTEXT,
   },
   {
-    file: 'components/navigation/tab-scaffold/tab-scaffold.css',
+    file: 'components/navigation/tab-navigator/tab-navigator.css',
     rule: 'context-on-child',
     selector: '.kui-tab-scaffold__scene > :not(',
     property: '--kui-edge-inset-',

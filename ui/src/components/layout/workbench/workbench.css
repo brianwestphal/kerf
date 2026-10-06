@@ -209,7 +209,7 @@
    composed toolbar's footer (or the app's own) sits at the region's bottom
    edge rather than under short content. Each of those components fills the
    region from its own stylesheet (pane.css, nav-stack.css, split-view.css,
-   tab-scaffold.css); a nested Workbench fills it here. */
+   tab-navigator.css); a nested Workbench fills it here. */
 :is(.kui-workbench__main, .kui-workbench__panel-content)
   > [data-component="workbench"]:only-child {
   height: 100%;

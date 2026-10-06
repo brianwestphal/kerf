@@ -43,7 +43,7 @@ function expectTopTrailing(
   expect(badge.top).toBeGreaterThanOrEqual(bar.top);
 }
 
-test('TabScaffold tab badge folds into the name and sits top-trailing on the icon', async ({
+test('TabNavigator tab badge folds into the name and sits top-trailing on the icon', async ({
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -57,7 +57,7 @@ test('TabScaffold tab badge folds into the name and sits top-trailing on the ico
   ).toHaveCount(1);
   if (testInfo.project.name === 'chromium')
     await scaffold.screenshot({
-      path: 'test-results/tab-scaffold-badge-wide.png',
+      path: 'test-results/tab-navigator-badge-wide.png',
     });
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -65,13 +65,13 @@ test('TabScaffold tab badge folds into the name and sits top-trailing on the ico
   expectTopTrailing(await badgeGeometry(scaffold));
   if (testInfo.project.name === 'chromium')
     await scaffold.screenshot({
-      path: 'test-results/tab-scaffold-badge-narrow.png',
+      path: 'test-results/tab-navigator-badge-narrow.png',
     });
 
   await page.emulateMedia({ colorScheme: 'dark' });
   if (testInfo.project.name === 'chromium')
     await scaffold.screenshot({
-      path: 'test-results/tab-scaffold-badge-narrow-dark.png',
+      path: 'test-results/tab-navigator-badge-narrow-dark.png',
     });
 });
 
@@ -124,7 +124,7 @@ function expectDotOnCorner(geometry: Awaited<ReturnType<typeof dotGeometry>>) {
   expect(dot.top).toBeGreaterThanOrEqual(bar.top);
 }
 
-test('TabScaffold dot badge is a small circle on the icon corner with its badgeLabel in the name', async ({
+test('TabNavigator dot badge is a small circle on the icon corner with its badgeLabel in the name', async ({
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -139,11 +139,11 @@ test('TabScaffold dot badge is a small circle on the icon corner with its badgeL
 
   if (testInfo.project.name === 'chromium') {
     await scaffold.screenshot({
-      path: 'test-results/tab-scaffold-dot-narrow.png',
+      path: 'test-results/tab-navigator-dot-narrow.png',
     });
     await page.emulateMedia({ colorScheme: 'dark' });
     await scaffold.screenshot({
-      path: 'test-results/tab-scaffold-dot-narrow-dark.png',
+      path: 'test-results/tab-navigator-dot-narrow-dark.png',
     });
   }
 });

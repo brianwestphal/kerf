@@ -813,7 +813,8 @@ CSS; unrelated styles remain unreachable. Composites (`catalog`, `workbench`,
 their internally rendered components (Pane, Toolbar, List, …) bring their styles.
 The 5.0 public surface omits the deprecated `tab-scaffold` and
 `wire-tab-scaffold` JS subpaths and `tab-scaffold.css` export; the internal
-`components/navigation/tab-scaffold/` owner and rendered DOM hooks remain.
+owner now lives in `components/navigation/tab-navigator/`, while rendered DOM
+hooks remain stable.
 `ui/tests/bundle/consumer-bundle.test.ts` fails when a module subpath reaches
 component CSS without a `browser` condition (`wire-*` helpers and the type-only
 `webawesome` are exempt) or when a wrapper misses the stylesheet of any module

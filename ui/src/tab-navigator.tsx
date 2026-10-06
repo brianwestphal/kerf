@@ -3,4 +3,4 @@ export {
   TabNavigator,
   type TabNavigatorProps,
   type TabNavigatorTab,
-} from './components/navigation/tab-scaffold/tab-scaffold.js';
+} from './components/navigation/tab-navigator/tab-navigator.js';

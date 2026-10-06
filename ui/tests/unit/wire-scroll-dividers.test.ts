@@ -10,7 +10,7 @@ import { SplitView } from '../../src/components/layout/split-view/split-view.js'
 import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
 import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
-import { TabNavigator } from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
+import { TabNavigator } from '../../src/components/navigation/tab-navigator/tab-navigator.js';
 import { wireScrollDividers } from '../../src/wiring/wire-scroll-dividers.js';
 import { componentStylesheet } from './helpers/component-stylesheet.js';
 
@@ -290,7 +290,7 @@ describe('NavStack and TabScaffold chromeDividers', () => {
     ]);
     expect(
       await drawing(
-        'tab-scaffold.css',
+        'tab-navigator.css',
         /data-scroll-divider|data-chrome-dividers/,
       ),
     ).toEqual([

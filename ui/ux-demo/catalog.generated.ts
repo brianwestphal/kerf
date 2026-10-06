@@ -139,7 +139,7 @@ export const generatedKerfCatalog = [
       "badge"
     ],
     "demoSource": "ui/ux-demo/demos/tab-navigator.tsx",
-    "componentSource": "ui/src/components/navigation/tab-scaffold/tab-scaffold.tsx",
+    "componentSource": "ui/src/components/navigation/tab-navigator/tab-navigator.tsx",
     "documentation": "ui/docs/tab-navigator.md"
   },
   {

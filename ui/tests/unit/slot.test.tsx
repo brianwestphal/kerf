@@ -11,7 +11,7 @@ import { CollapsiblePanelToggle } from '../../src/components/layout/collapsible-
 import { SplitView } from '../../src/components/layout/split-view/split-view.js';
 import { Workbench } from '../../src/components/layout/workbench/workbench.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
-import { TabNavigator } from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
+import { TabNavigator } from '../../src/components/navigation/tab-navigator/tab-navigator.js';
 import {
   AppTab,
   Badge,

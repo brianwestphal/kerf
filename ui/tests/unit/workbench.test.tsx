@@ -768,8 +768,10 @@ describe('Workbench', () => {
       'split-view',
       'tab-scaffold',
     ]) {
+      const stylesheet =
+        component === 'tab-scaffold' ? 'tab-navigator' : component;
       const own = await readFile(
-        await componentStylesheet(`${component}.css`),
+        await componentStylesheet(`${stylesheet}.css`),
         'utf8',
       );
       expect(own).toContain(`> [data-component="${component}"]:only-child`);
@@ -1006,8 +1008,15 @@ describe('Workbench', () => {
     // Each layout sizes itself in the Workbench region context the Workbench
     // marks on its regions; the Workbench styles only a nested Workbench,
     // never another component's root.
-    for (const component of ['pane', 'nav-stack', 'split-view', 'tab-scaffold'])
-      expect(await fills(`${component}.css`)).toEqual([
+    for (const component of [
+      'pane',
+      'nav-stack',
+      'split-view',
+      'tab-scaffold',
+    ]) {
+      const stylesheet =
+        component === 'tab-scaffold' ? 'tab-navigator' : component;
+      expect(await fills(`${stylesheet}.css`)).toEqual([
         `:is([data-workbench-main], [data-workbench-panel-content]) > [data-component="${component}"]:only-child`,
         // A sole Pane fills a NavStack view or TabScaffold scene the same
         // way, so its content (not the view) owns the scroll and its header
@@ -1018,9 +1027,12 @@ describe('Workbench', () => {
             ]
           : []),
       ]);
+    }
     // The layouts never size the Pane from their own stylesheets.
     for (const component of ['nav-stack', 'tab-scaffold']) {
-      const path = await componentStylesheet(`${component}.css`);
+      const stylesheet =
+        component === 'tab-scaffold' ? 'tab-navigator' : component;
+      const path = await componentStylesheet(`${stylesheet}.css`);
       const css = postcss.parse(await readFile(path, 'utf8'), { from: path });
       css.walkRules((rule) => {
         if (/\[data-component="pane"\]:only-child\s*$/.test(rule.selector))
