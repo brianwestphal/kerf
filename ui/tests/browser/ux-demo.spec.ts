@@ -572,9 +572,9 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
   await expect(example.locator('input')).toHaveCount(0);
   expect(
     await example
-      .getByRole('searchbox', { name: 'Search demands' })
+      .locator('.kui-token-search')
       .evaluate(
-        (editor) => window.getComputedStyle(editor, '::before').content,
+        (field) => window.getComputedStyle(field, '::before').content,
       ),
   ).toBe('"Search demands"');
   // The catalog stack caps examples at 736px. Lift that cap so the roomy
