@@ -524,6 +524,10 @@ and focus deliberately moved to another control; no app-level reopen callback is
 
 `CollapsiblePanel` is a labeled `aside` region that renders `inert` and
 `aria-hidden` while collapsed, straight from the app's `collapsed` flag, so its
+optional `tabIndex={0}` leaves the Tab order while closed. `tabIndex={-1}` permits
+programmatic focus while open; `outlined` keeps the region's focus ring visible
+only while expanded and visible. A toolbar panel's inner `Pane` can take the
+same options through `pane` when that is the intended focus boundary. Its
 controls leave the Tab order and the accessibility tree even while the content
 is still sliding out, and focusing one can never scroll clipped content back into
 view (`aria-hidden` alone left them focusable inside a hidden subtree). Its

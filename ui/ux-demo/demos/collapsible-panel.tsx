@@ -99,6 +99,8 @@ export function CollapsiblePanelDemo() {
           side="left"
           size={280}
           label="Project navigator"
+          tabIndex={0}
+          outlined
         >
           {content(
             'Navigator',
@@ -158,6 +160,8 @@ export function CollapsiblePanelDemo() {
             side="left"
             size={220}
             label="Navigator"
+            tabIndex={0}
+            outlined
             collapsed={relocationRailCollapsed.value}
             toolbar={navigatorToolbar}
             header={<ToolbarText text="Pinned files" size="small" />}

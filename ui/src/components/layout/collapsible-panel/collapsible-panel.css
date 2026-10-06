@@ -35,6 +35,11 @@
   background: var(--kui-color-surface);
 }
 
+.kui-collapsible-panel:is(:focus-visible, [data-outlined="true"]) {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+
 .kui-collapsible-panel--left,
 .kui-collapsible-panel--right {
   width: var(--_kui-collapsible-panel-extent);

@@ -1990,6 +1990,10 @@ interface CollapsiblePanelProps {
     size?: number;
     /** Accessible label for the panel region. */
     label?: string;
+    /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the panel region. */
+    tabIndex?: 0 | -1;
+    /** Keep the standard focus outline visible while the panel is expanded. */
+    outlined?: boolean;
     /** Panel content. */
     children?: KerfUiContent;
     /**
@@ -2041,7 +2045,7 @@ interface CollapsiblePanelProps {
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
-declare function CollapsiblePanel({ id, side, collapsed, size, label, children, toolbar, header, headerList, headerPlacement, footer, footerList, bottomToolbar, footerPlacement, pane, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
+declare function CollapsiblePanel({ id, side, collapsed, size, label, tabIndex, outlined, children, toolbar, header, headerList, headerPlacement, footer, footerList, bottomToolbar, footerPlacement, pane, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
 interface CollapsiblePanelRelocatedProps {
     /** The panel's `id`. */
     panelId: string;

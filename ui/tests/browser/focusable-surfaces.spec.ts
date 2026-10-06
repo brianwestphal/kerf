@@ -68,3 +68,51 @@ test('scene and Workbench focus states respect active and collapsed regions', as
   if (testInfo.project.name === 'chromium')
     await workbench.screenshot({ path: testInfo.outputPath('workbench.png') });
 });
+
+test('CollapsiblePanel root focus and outline follow collapse and overlay state', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/?component=collapsible-panel');
+  const staticRail = page.locator(
+    '[data-collapsible-panel="catalog-panel-left"]',
+  );
+  await expect(staticRail).toHaveAttribute('tabindex', '0');
+  await expectOutlined(staticRail);
+  await staticRail.focus();
+  await expect(staticRail).toBeFocused();
+  await staticRail.evaluate((element) =>
+    element.setAttribute('data-presentation', 'overlay'),
+  );
+  await expect(staticRail).toHaveCSS('position', 'fixed');
+  await expectOutlined(staticRail);
+  await staticRail.evaluate((element) =>
+    element.setAttribute('data-presentation', 'inline'),
+  );
+  if (testInfo.project.name === 'chromium')
+    await staticRail.screenshot({
+      path: testInfo.outputPath('collapsible-panel-outline.png'),
+    });
+
+  const example = page.locator('[data-catalog-panel-relocation-example]');
+  const rail = example.locator(
+    '[data-collapsible-panel="catalog-panel-relocation"]',
+  );
+  const open = example.getByRole('button', { name: 'Show navigator' });
+  await expect(rail).toHaveAttribute('tabindex', '-1');
+  await expect(rail).not.toHaveAttribute('data-outlined');
+  await open.click();
+  await expect(rail).toHaveAttribute('tabindex', '0');
+  await expectOutlined(rail);
+  await rail.getByRole('button', { name: 'Hide navigator' }).click();
+  await expect(rail).toHaveAttribute('tabindex', '-1');
+  await expect(rail).not.toHaveAttribute('data-outlined');
+
+  await page.setViewportSize({ width: 390, height: 850 });
+  await expect(staticRail).toHaveAttribute('tabindex', '0');
+  await expectOutlined(staticRail);
+  if (testInfo.project.name === 'chromium')
+    await staticRail.screenshot({
+      path: testInfo.outputPath('collapsible-panel-outline-narrow.png'),
+    });
+});

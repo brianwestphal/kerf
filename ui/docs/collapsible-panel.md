@@ -17,7 +17,7 @@ and that of the components it renders (`Pane`, `Toolbar`, `ToolbarControlGroup`,
 
 ## The pieces
 
-- **`CollapsiblePanel({ id, side, collapsed?, size?, label?, children })`** — the
+- **`CollapsiblePanel({ id, side, collapsed?, size?, label?, tabIndex?, outlined?, children })`** — the
   docked panel: a `'left'` / `'right'` rail or a `'bottom'` drawer. It owns only
   presentation. Collapsing snaps the panel's own size to zero in one reflow while
   the fixed-size content slides out via `transform` (composited, clipped) — never
@@ -26,6 +26,13 @@ and that of the components it renders (`Pane`, `Toolbar`, `ToolbarControlGroup`,
   through the transform alone instead of transitioning from a changing layout
   origin and snapping at the end. The app owns the `collapsed` signal; `size`
   overrides the CSS default width/height.
+  Set `tabIndex={0}` to place the labeled outer region in the Tab order, or
+  `tabIndex={-1}` for programmatic focus. `outlined` keeps its focus ring visible
+  while open, such as for a drop target. A toolbar panel can instead pass these
+  options through `pane` to focus its inner `Pane`. A collapsed or
+  `presentation="hidden"` region drops the persistent outline and changes an
+  explicit tab index to `-1`; expanding restores the requested value. An open
+  overlay can still be focused. Omitting both options adds no Tab stop.
   A collapsed panel renders `inert` together with `aria-hidden="true"`, straight
   from `collapsed`, so neither Tab, a pointer, nor assistive technology reaches
   content that has slid out of view, and focusing a control can never scroll

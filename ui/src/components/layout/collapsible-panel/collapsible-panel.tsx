@@ -109,6 +109,10 @@ export interface CollapsiblePanelProps {
   size?: number;
   /** Accessible label for the panel region. */
   label?: string;
+  /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the panel region. */
+  tabIndex?: 0 | -1;
+  /** Keep the standard focus outline visible while the panel is expanded. */
+  outlined?: boolean;
   /** Panel content. */
   children?: KerfUiContent;
   /**
@@ -167,6 +171,8 @@ export function CollapsiblePanel({
   collapsed = false,
   size,
   label,
+  tabIndex,
+  outlined = false,
   children,
   toolbar,
   header,
@@ -197,6 +203,11 @@ export function CollapsiblePanel({
         data-collapsible-panel={id}
         data-side={side}
         data-collapsed={String(collapsed)}
+        data-outlined={
+          !collapsed && presentation !== 'hidden' && outlined
+            ? 'true'
+            : undefined
+        }
         data-separator={separator}
         data-collapse-motion={collapseMotion}
         data-content-overflow={contentOverflow}
@@ -204,6 +215,13 @@ export function CollapsiblePanel({
         aria-label={label || undefined}
         aria-hidden={
           collapsed || presentation === 'hidden' ? 'true' : undefined
+        }
+        tabindex={
+          collapsed || presentation === 'hidden'
+            ? tabIndex === undefined
+              ? undefined
+              : -1
+            : tabIndex
         }
         inert={collapsed}
         style={size ? `${sizeVar}: ${size}px` : undefined}

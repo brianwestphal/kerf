@@ -14,6 +14,36 @@ import {
 const html = (value: unknown) => String(value);
 
 describe('CollapsiblePanel', () => {
+  it('offers root focus and outline only while visible and expanded', () => {
+    const render = (
+      options: Partial<Parameters<typeof CollapsiblePanel>[0]> = {},
+    ) =>
+      html(
+        CollapsiblePanel({
+          id: 'focus-panel',
+          side: 'left',
+          tabIndex: 0,
+          outlined: true,
+          ...options,
+        }),
+      );
+    expect(render()).toContain('tabindex="0"');
+    expect(render()).toContain('data-outlined="true"');
+    expect(render({ tabIndex: -1 })).toContain('tabindex="-1"');
+    for (const options of [
+      { collapsed: true },
+      { presentation: 'hidden' as const },
+      { collapsed: true, presentation: 'overlay' as const },
+    ]) {
+      const panel = render(options);
+      expect(panel).toContain('tabindex="-1"');
+      expect(panel).not.toContain('data-outlined=');
+    }
+    const plain = html(CollapsiblePanel({ id: 'plain', side: 'right' }));
+    expect(plain).not.toContain('tabindex=');
+    expect(plain).not.toContain('data-outlined=');
+  });
+
   it('renders a docked panel with side, collapsed, label, and a sliding content wrapper', () => {
     const open = html(
       CollapsiblePanel({
