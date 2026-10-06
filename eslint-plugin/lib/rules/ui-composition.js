@@ -111,6 +111,7 @@ function directParentKey(node, registry, contract) {
     ['JSXExpressionContainer', 'JSXFragment'].includes(parent.type)
   )
     parent = parent.parent;
+  if (parent?.type === 'JSXAttribute') parent = parent.parent?.parent;
   return parent?.type === 'JSXElement'
     ? { key: jsxKey(parent.openingElement.name, registry, contract) }
     : undefined;

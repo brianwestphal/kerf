@@ -421,6 +421,14 @@ tester.run('ui-composition', composition, {
       settings: shippedUiSettings,
     },
     {
+      code: "import { Toolbar } from '@kerfjs/ui'; <Toolbar leading={<button type='button'>Save</button>} center={<input aria-label='Search' />} trailing={<wa-button variant='brand'>New ticket</wa-button>} />;",
+      settings: shippedUiSettings,
+    },
+    {
+      code: "import { Toolbar } from '@kerfjs/ui'; const Action = () => <button />; <Toolbar trailing={<Action />} />;",
+      settings: shippedUiSettings,
+    },
+    {
       code: "import * as UI from '@kerfjs/ui'; <UI.Toolbar trailing={<UI.ToolbarControlGroup><UI.ToolbarActionLink href='/report' label='Report' /></UI.ToolbarControlGroup>} />;",
       settings: shippedUiSettings,
     },
@@ -470,7 +478,7 @@ tester.run('ui-composition', composition, {
     {
       code: "import { Toolbar, ToolbarActionLink } from '@kerfjs/ui'; <Toolbar trailing={<ToolbarActionLink href='/report' label='Report' />} />;",
       settings: shippedUiSettings,
-      errors: [{ messageId: 'zone' }],
+      errors: [{ messageId: 'parent' }],
     },
     {
       code: "import { Toolbar, ToolbarActionLink } from '@kerfjs/ui'; <Toolbar><ToolbarActionLink href='/report' label='Report' /></Toolbar>;",
@@ -490,11 +498,6 @@ tester.run('ui-composition', composition, {
     {
       code: "import { Toolbar } from '@kerfjs/ui'; <Toolbar leading={<button>Save</button>} />;",
       settings,
-      errors: [{ messageId: 'zone' }],
-    },
-    {
-      code: "import { Toolbar } from '@kerfjs/ui'; <Toolbar leading={<wa-button variant='brand'>New ticket</wa-button>} />;",
-      settings: shippedUiSettings,
       errors: [{ messageId: 'zone' }],
     },
     {

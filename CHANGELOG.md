@@ -22,6 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Toolbar composition guidance and catalog metadata now allow direct `KerfUiContent` in every zone; `ToolbarControlGroup` remains the recommended shared chrome for related controls.
 
+- The UI composition lint rule checks component parent requirements for direct content passed through a named zone prop.
+
 - Toolbar zones center direct content by default while keeping ToolbarText, control groups, and standalone primary actions on their established control-band axis.
 
 ### Fixed

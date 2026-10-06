@@ -13,6 +13,8 @@ export const catalog = {
   schemaVersion: 1,
   package: '@kerfjs/ui',
   entries: [
+    // Deliberately constrained synthetic zones exercise the generic L202/L203
+    // rule paths. Tests using shippedUiSettings assert the real Toolbar policy.
     component('toolbar', 'Toolbar', {
       zones: [
         {

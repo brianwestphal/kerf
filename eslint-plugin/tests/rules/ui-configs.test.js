@@ -301,7 +301,7 @@ void disposeNav;
     result.messages
       .filter(({ ruleId }) => ruleId === 'kerfjs/ui-composition')
       .map(({ message }) => message.slice(0, 8)),
-    ['KUI-L202', 'KUI-L203'],
+    ['KUI-L203'],
   );
   assert.equal(
     result.messages.some(({ ruleId }) => ruleId === 'kerfjs/ui-wiring'),
