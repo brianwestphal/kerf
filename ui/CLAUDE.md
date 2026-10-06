@@ -105,9 +105,10 @@ matters, and ask rather than guess when a design brief is ambiguous.**
   recipe's rail and the Workbench catalog's rails do this. Never ship a
   truncated title to satisfy the size rule; check the panel at its minimum
   size.
-- **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never a bare
-  button, input, link, or loose markup in a zone. A title is `ToolbarText`, not an
-  `<h2>`. (Popup menu = a `PopupMenu` in a `single` ToolbarControlGroup with `nestedDropdown`.)
+- **Use the toolbar components for identity and grouped controls.** A title is
+  `ToolbarText`, not an `<h2>`. Wrap related controls in `ToolbarControlGroup`;
+  the trailing zone also accepts a standalone primary `wa-button`. (Popup menu =
+  a `PopupMenu` in a `single` ToolbarControlGroup with `nestedDropdown`.)
 - **Keep each control whole inside a `ToolbarControlGroup`.** An icon sits beside
   its label on one row; the default group stays on one row and the toolbar's
   `responsive` policy relocates whole groups. Set `overflow="wrap"` only for a

@@ -39,6 +39,7 @@ button.kui-toolbar-text:focus-visible {
    heights. */
 :is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
   > .kui-toolbar-text {
+  align-self: flex-start;
   height: auto;
   min-height: var(--_kui-toolbar-band);
 }

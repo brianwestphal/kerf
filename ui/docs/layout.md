@@ -315,10 +315,13 @@ inset. Most interactive rows and toolbar groups are 44px tall.
 Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
 A `Toolbar` lays its zones out against one 44px control band at its top: an
-item no taller than the band is centered in it by its own size, and a taller
-item (a wrapped title, a second trailing row) starts at the band's top and
-grows down, so it never moves the other controls. A wrapped `ToolbarText`
-centers its first line in the band.
+ordinary `ToolbarText`, `ToolbarControlGroup`, or standalone trailing
+`wa-button` no taller than the band is centered in it by its own size, and a
+taller one (a wrapped title, a second trailing row) starts at the band's top
+and grows down, so it never moves the other controls. A wrapped `ToolbarText`
+centers its first line in the band. Other direct zone content centers against
+the zone's full height by default, including when a sibling makes that zone
+taller than the control band.
 The leading zone clips a shrinking title but reserves 4px of paint overflow
 for the focus outline of a control at its edge. Focus rings in all three zones
 remain visible at narrow and wide widths.

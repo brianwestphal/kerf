@@ -1,12 +1,10 @@
 import { expect, type Page, test } from '@playwright/test';
 
 /**
- * A Toolbar reserves one group-height control band at its top. Each zone item
- * no taller than the band is centered in it by its own size, and a taller
- * item (a wrapped title, a second trailing row) starts at the band's top and
- * grows down, so it never moves the other items. Centering the zones in the
- * toolbar row instead dropped every trailing control to the middle of a
- * two-line title.
+ * A Toolbar reserves one group-height control band at its top. ToolbarText,
+ * ToolbarControlGroup, and standalone wa-button keep their first-band axis
+ * even when a taller sibling grows the zone. Other direct content centers in
+ * the zone by default.
  */
 type BandItem = {
   label: string;
@@ -109,4 +107,37 @@ test('a wrapped heading keeps the trailing controls in its first line band', asy
   expect(
     Math.abs(geometry.groupCenter - geometry.firstLineCenter),
   ).toBeLessThan(1.5);
+});
+
+test('direct custom children center in a zone without shifting its control group', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=toolbar');
+  const zone = page
+    .locator('.kui-toolbar__trailing:has(> .kui-toolbar-control-group)')
+    .first();
+  const geometry = await zone.evaluate((element) => {
+    const tall = document.createElement('span');
+    tall.style.cssText = 'display:block; flex:none; width:20px; height:64px';
+    const short = document.createElement('span');
+    short.style.cssText = 'display:block; flex:none; width:20px; height:20px';
+    element.append(tall, short);
+    const bounds = element.getBoundingClientRect();
+    const group = element.querySelector('.kui-toolbar-control-group')!;
+    const center = (node: Element) => {
+      const rect = node.getBoundingClientRect();
+      return rect.top + rect.height / 2 - bounds.top;
+    };
+    return {
+      zoneCenter: bounds.height / 2,
+      tallCenter: center(tall),
+      shortCenter: center(short),
+      groupCenter: center(group),
+      band: parseFloat(window.getComputedStyle(element).minHeight),
+    };
+  });
+  expect(geometry.tallCenter).toBeCloseTo(geometry.zoneCenter, 0);
+  expect(geometry.shortCenter).toBeCloseTo(geometry.zoneCenter, 0);
+  expect(geometry.groupCenter).toBeCloseTo(geometry.band / 2, 0);
 });

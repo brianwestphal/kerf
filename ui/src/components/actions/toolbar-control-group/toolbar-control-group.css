@@ -80,6 +80,7 @@
    top margin, so it centers in the band by its own size. */
 :is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
   > .kui-toolbar-control-group {
+  align-self: flex-start;
   margin-block-start: max(
     0px,
     calc(

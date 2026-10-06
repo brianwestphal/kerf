@@ -150,19 +150,11 @@
   );
 }
 
-/* The control band. Every zone reserves one group-height row at the top of
-   the toolbar, and each item is centered in that band by its own size, not by
-   its siblings: a group or title shorter than the band takes half the
-   difference as a top margin, and anything taller (a wrapped title, a
-   multi-line search, a second trailing row) starts at the band's top and grows
-   down. A growing item therefore never moves the other items or its own top.
-   Centering the zones in the toolbar row instead dropped every control to the
-   middle of a two-line title. The band is resolved here, on the toolbar, so a
-   compact group's own smaller group size never redefines it.
-   `--_kui-toolbar-band` is context the toolbar provides: a ToolbarControlGroup
-   and a ToolbarText each center themselves in it from their own stylesheets
-   (toolbar-control-group.css, toolbar-text.css). A direct primary wa-button in
-   trailing is centered here without altering its Web Awesome chrome. */
+/* Every zone reserves a group-height control band. Direct custom content
+   centers against its zone's height by default. ToolbarText,
+   ToolbarControlGroup, and standalone wa-button keep their own first-band
+   placement, so taller siblings do not move their controls off that axis.
+   `--_kui-toolbar-band` is context those components use for that placement. */
 .kui-toolbar {
   --_kui-toolbar-band: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
 }
@@ -175,7 +167,7 @@
   min-height: var(--_kui-toolbar-band);
   padding-inline: var(--kui-toolbar-zone-padding-inline, 0px);
   box-sizing: border-box;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--kui-toolbar-gap, remify(8px));
 }
 
@@ -243,6 +235,7 @@
     0px,
     calc((var(--_kui-toolbar-band) - var(--wa-form-control-height)) / 2)
   );
+  align-self: flex-start;
   flex: 0 0 auto;
 }
 

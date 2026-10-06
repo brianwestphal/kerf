@@ -18,6 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Configure modal `DialogSurface` viewport gutters and typed maximum heights, including a dynamic viewport cap, without application shadow-part overrides.
 
+### Changed
+
+- Toolbar zones center direct content by default while keeping ToolbarText, control groups, and standalone primary actions on their established control-band axis.
+
 ### Fixed
 
 - Preserve toolbar visibility and measurement state across app renders to prevent geometry-driven render loops and repeated observer/layout work (`KF-58HBRR`).
