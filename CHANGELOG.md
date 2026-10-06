@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- The actionable ToolbarText catalog example uses the standard TokenSearchField toolbar presentation for its search control, and an empty TokenSearchField shows its placeholder.
+
 - Preserve toolbar visibility and measurement state across app renders to prevent geometry-driven render loops and repeated observer/layout work (`KF-58HBRR`).
 
 - Restore accessible native dialog names through `@kerfjs/ui/surface-scaffold/register`, preserving live title slots and headerless labels.

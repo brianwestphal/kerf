@@ -566,6 +566,17 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
     name: 'Annual maintenance procurement plan',
   });
   const chip = example.locator('.kui-chip');
+  await expect(
+    example.getByRole('searchbox', { name: 'Search demands' }),
+  ).toBeVisible();
+  await expect(example.locator('input')).toHaveCount(0);
+  expect(
+    await example
+      .getByRole('searchbox', { name: 'Search demands' })
+      .evaluate(
+        (editor) => window.getComputedStyle(editor, '::before').content,
+      ),
+  ).toBe('"Search demands"');
   // The catalog stack caps examples at 736px. Lift that cap so the roomy
   // toolbar really receives the 850px requested below on every platform.
   await example.evaluate((root) => {
@@ -614,6 +625,10 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
     await toolbar.screenshot({
       path: 'test-results/actionable-toolbar-title-wide.png',
     });
+  if (browserName === 'chromium')
+    await example.screenshot({
+      path: 'test-results/actionable-toolbar-example-wide.png',
+    });
 
   await toolbar.evaluate(
     (node) => ((node as HTMLElement).style.width = '550px'),
@@ -631,6 +646,10 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
   if (browserName === 'chromium')
     await toolbar.screenshot({
       path: 'test-results/actionable-toolbar-title-narrow.png',
+    });
+  if (browserName === 'chromium')
+    await example.screenshot({
+      path: 'test-results/actionable-toolbar-example-narrow.png',
     });
 
   await title.click();

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 327500,
-  "measuredLargestJavaScriptGzip": 124512,
-  "measuredTotalJavaScriptGzip": 327479,
+  "totalJavaScriptGzip": 327600,
+  "measuredLargestJavaScriptGzip": 124513,
+  "measuredTotalJavaScriptGzip": 327510,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2963,6 +2963,22 @@
         "measuredTotalJavaScriptGzip": 327479,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 327500
+      }
+    },
+    {
+      "at": "2026-10-06T03:44:30.047Z",
+      "reason": "KF-8NVT20 uses the standard TokenSearchField in the ToolbarText demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124512,
+        "measuredTotalJavaScriptGzip": 327479,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 327500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 327510,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 327600
       }
     }
   ]

@@ -104,7 +104,9 @@
   }
 }
 
-.kui-token-search__editor:empty::before {
+.kui-token-search__editor:has(
+    > [data-token-search-text]:only-child:empty
+  )::before {
   color: var(--kui-color-text-quiet);
   content: attr(data-placeholder);
   pointer-events: none;

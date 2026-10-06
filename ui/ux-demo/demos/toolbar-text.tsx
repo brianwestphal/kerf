@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
+import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -83,10 +84,12 @@ export function ToolbarTextDemo() {
               sizing="grow"
               expanded
             >
-              <input
-                type="search"
-                aria-label="Search demands"
+              <TokenSearchField
+                id="toolbar-text-demand-search"
+                label="Search demands"
                 placeholder="Search demands"
+                presentation="toolbar-group"
+                fill
               />
             </ToolbarControlGroup>
           }
