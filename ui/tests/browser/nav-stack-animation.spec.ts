@@ -5,22 +5,27 @@ for (const width of [1100, 390]) {
     page,
     browserName,
   }) => {
+    await page.clock.install();
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=nav-stack');
+    await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10_000);
     const stack = page.locator('#catalog-nav-stack');
+    // Keep CSS transitions inspectable even when a busy browser process delays
+    // the next Playwright command; the controlled clock handles JS cleanup.
+    await page.addStyleTag({
+      content:
+        '#catalog-nav-stack { --kui-nav-stack-transition-duration: 5000ms !important; }',
+    });
     const inspect = async (action: 'push' | 'pop') => {
-      const paints = await stack.evaluate(async (root, direction) => {
-        // Automation stability waits must not consume the short transition.
+      await stack.evaluate((root, direction) => {
         (
           root.querySelector(
             direction === 'push' ? 'button[data-action]' : '[data-nav-back]',
           ) as HTMLElement
         ).click();
-        await new Promise<void>((resolve) =>
-          window.requestAnimationFrame(() =>
-            window.requestAnimationFrame(() => resolve()),
-          ),
-        );
+      }, action);
+      await page.clock.runFor(100);
+      const paints = await stack.evaluate((root, direction) => {
         const view = root.querySelector<HTMLElement>(
           direction === 'push'
             ? '[data-nav-key="project-atlas"]'
@@ -39,7 +44,7 @@ for (const width of [1100, 390]) {
         );
         animations.flat().forEach((animation) => {
           animation.pause();
-          animation.currentTime = 100;
+          animation.currentTime = 2500;
         });
         return {
           counts: animations.map((list) => list.length),
@@ -81,6 +86,7 @@ for (const width of [1100, 390]) {
           .getAnimations({ subtree: true })
           .forEach((animation) => animation.play()),
       );
+      await page.clock.runFor(200);
       await expect(stack).not.toHaveAttribute(
         'data-nav-chrome-transition',
         'true',
