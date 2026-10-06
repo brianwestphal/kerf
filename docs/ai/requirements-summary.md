@@ -501,6 +501,11 @@ The Pane content slot publishes `--kui-pane-content-inset-inline-start` and
 edge-to-edge decoration and add them to cell padding for aligned text in both
 `deepInset` modes and safe areas; the UX catalog demonstrates both states.
 
+**Naming proposal, not shipped:** rename the complete `TabScaffold` destination
+navigator to `TabNavigator` with a compatibility alias. `NavTabs` could read as
+only the bar; `TabBar` already names a separate document-tab strip. The public
+API remains `TabScaffold` pending that migration.
+
 ### §24 AI-first project setup
 
 **Shipped.** `npx kerfjs setup` configures an existing core or UI package through a bounded dry run and requires `--write --yes` before mutation. It deterministically discovers workspace packages, requires explicit choices for ambiguous packages and authored-value conflicts, preserves JSONC structure, and records package-scoped managed hashes and retained decisions in `.kerf-ai-setup.json`. Transactional writes reject stale plans and path escapes and restore planned files, lockfiles, and generated catalog output after failed installation. Offline behavior is package-manager aware. The `kerfjs/setup` subpath exposes the pure planner/formatter and transactional applier for automation.

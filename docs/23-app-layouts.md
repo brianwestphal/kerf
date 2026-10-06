@@ -1174,6 +1174,14 @@ bundle/CSS tree-shaking gates extend to cover the new subpaths.
    `@kerfjs/ui/responsive` umbrella can still be introduced later if more
    responsive helpers appear.
 
+**Naming review (KF-YMJH1W: bottom-tab layout name).** `TabScaffold` is a
+complete navigator: it owns persistent scenes and their bottom bar, not a
+template for an app to finish. `TabNavigator` describes that role more clearly
+and remains distinct from `TabBar`, the document-tab strip. `NavTabs` could
+suggest only the bar. The shipped API remains `TabScaffold` until a coordinated
+public migration provides `TabNavigator` plus compatibility aliases
+(KF-PSDCV0: rename the bottom-tab layout with a migration path).
+
 The shipped layouts are represented in the machine-readable component catalog,
 including explicit manual-CSS delivery metadata, focused UX-demo routes, and
 three-engine Playwright coverage.
