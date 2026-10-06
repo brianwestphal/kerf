@@ -145,6 +145,15 @@ jobs:
         working-directory: .
         run: npm run build
       - run: npm ci
+      - name: Cache UI Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-ui-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
+          restore-keys: |
+            playwright-ui-${{ runner.os }}-
+      # `npm run check` also runs evaluator integration tests in all engines.
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run build
       - run: npm run check
 
