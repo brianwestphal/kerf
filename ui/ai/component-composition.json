@@ -3491,6 +3491,12 @@
             "on": "the text span inside kui-token-search__editor",
             "helper": "wireTokenSearchFields",
             "meaning": "\"true\" on that span while it holds no text."
+          },
+          {
+            "name": "data-placeholder-visible",
+            "on": "the kui-token-search root",
+            "helper": "wireTokenSearchFields",
+            "meaning": "Tracks whether the DOM-owned editor is empty so its placeholder stays outside the editable area."
           }
         ]
       },

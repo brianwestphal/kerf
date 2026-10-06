@@ -197,6 +197,10 @@ export function TokenSearchField({
       data-fill={String(fill)}
       data-has-trailing={String(Boolean(trailing || trailingAction))}
       data-presentation={presentation}
+      data-placeholder={tokens.length ? tokenPlaceholder : placeholder}
+      data-placeholder-visible={String(
+        query.length === 0 && tokens.length === 0,
+      )}
       slot={slot}
     >
       {!resolvedExpanded ? (

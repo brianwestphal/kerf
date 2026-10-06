@@ -70,6 +70,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 - `data-token-search-text` on `the text span inside kui-token-search__editor` (`wireTokenSearchFields`): Marks the plain-text span the helper inserts when the editor is emptied.
 - `data-empty` on `the text span inside kui-token-search__editor` (`wireTokenSearchFields`): "true" on that span while it holds no text.
+- `data-placeholder-visible` on `the kui-token-search root` (`wireTokenSearchFields`): Tracks whether the DOM-owned editor is empty so its placeholder stays outside the editable area.
 
 ## Geometry
 

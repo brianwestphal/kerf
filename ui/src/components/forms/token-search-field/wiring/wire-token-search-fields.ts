@@ -642,6 +642,11 @@ export function wireTokenSearchFields(
     const field = editor.closest<HTMLElement>(
       '[data-component="token-search-field"]',
     );
+    if (field)
+      field.dataset.placeholderVisible = String(
+        !editor.querySelector(TOKEN_SELECTOR) &&
+          readTokenSearchField(editor).query.length === 0,
+      );
     const id = field?.dataset.tokenSearchId;
     if (id && field?.dataset.disabled !== 'true') {
       const model = models[id];

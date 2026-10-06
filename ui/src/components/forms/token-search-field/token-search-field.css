@@ -82,6 +82,7 @@
 
 .kui-token-search__editor {
   grid-column: 2;
+  grid-row: 1;
   min-width: var(--kui-token-search-editor-min-width, 0px);
   min-height: var(--kui-token-search-line-size);
   padding-block: calc((var(--kui-token-search-line-size) - 1.35em) / 2) 0;
@@ -104,12 +105,20 @@
   }
 }
 
-.kui-token-search__editor:has(
-    > [data-token-search-text]:only-child:empty
+.kui-token-search[data-placeholder-visible="true"]:has(
+    > .kui-token-search__editor
   )::before {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  padding-block: calc((var(--kui-token-search-line-size) - 1.35em) / 2) 0;
   color: var(--kui-color-text-quiet);
   content: attr(data-placeholder);
+  font-size: var(--kui-font-s);
+  line-height: 1.35;
+  overflow: hidden;
   pointer-events: none;
+  white-space: nowrap;
 }
 
 .kui-token-search__token {

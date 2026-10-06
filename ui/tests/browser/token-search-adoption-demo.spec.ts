@@ -49,8 +49,10 @@ test('select-all deletion keeps a controlled search open before delayed frames a
       await expect(editor).toBeFocused();
       await expect(chips).toHaveCount(0);
       await expect(editor).toHaveText('');
+      await expect(field).toHaveAttribute('data-placeholder-visible', 'true');
       await page.keyboard.type('refilled');
       await expect(editor).toHaveText('refilled');
+      await expect(field).toHaveAttribute('data-placeholder-visible', 'false');
       // Flushing old frames cannot collapse a new select-all range into a caret.
       await editor.press('ControlOrMeta+A');
       await page.evaluate(() => {
