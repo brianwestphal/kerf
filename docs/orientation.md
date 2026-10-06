@@ -22,6 +22,7 @@ kerf is **signals + DOM-string rendering + a morph diff**. There is no virtual D
 - **Opting a subtree out of the diff**: `data-morph-skip` / `data-morph-skip-children` / `data-morph-preserve` on the host. See `docs/4-render.md` §4.3.
 - **No-build authoring**: the `html` tagged template (`kerfjs/html`, `src/html.ts`) — JSX-identical semantics, no transform.
 - **Companion utilities**: `kerfjs/{actions,async,attach,list,overlay,remount,router,scope,timing}` map to the same-named `src/*.ts` files.
+- **Anchored overlays**: `src/overlay-popover.ts` and `src/overlay-tooltip.ts` own their lifecycles; `src/overlay-core.ts` owns shared surface arbitration.
 - **UI components**: `ui/src/` + `docs/21-ui-package.md` — `@kerfjs/ui` and its UX catalog.
 
 ## What surprises React people

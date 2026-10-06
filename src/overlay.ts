@@ -10,11 +10,6 @@ export {
   type OverlayContent,
   type OverlayHandle,
   type OverlayOptions,
-  popover,
-  type PopoverOptions,
-  tooltip,
-  type TooltipContent,
-  type TooltipOptions,
 } from './overlay-core.js';
 export {
   choice,
@@ -34,6 +29,7 @@ export {
   type PromptOptions,
   type PromptRenderSlots,
 } from './overlay-dialogs.js';
+export { popover, type PopoverOptions } from './overlay-popover.js';
 export {
   type AnchorPositionOptions,
   autoReposition,
@@ -47,3 +43,8 @@ export {
   type ToastOptions,
   type ToastVariant,
 } from './overlay-toast.js';
+export {
+  tooltip,
+  type TooltipContent,
+  type TooltipOptions,
+} from './overlay-tooltip.js';

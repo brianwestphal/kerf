@@ -1,13 +1,13 @@
 /**
- * Internal overlay / popover / tooltip lifecycle implementation.
+ * Shared overlay lifecycle and document arbitration implementation.
  *
  * Every real kerf app hand-rolls this: `toElement → body.appendChild → mount →
  * wire dismissal → remove`, plus the fiddly parts (Escape, backdrop / outside
  * click, focus trap, restoring focus on close). `window.confirm` is a no-op in
  * Tauri WKWebViews, so a hand-built overlay is mandatory there. This subpath
- * blesses the pattern as three functions over `mount()` — `overlay()`, and the
- * `confirm()` / `toast()` conveniences built on it. No per-instance framework
- * state: each call owns its DOM + listeners in a closure and returns a handle.
+ * blesses the pattern through `overlay()`, with anchored surfaces and dialog
+ * helpers building on it. No per-instance framework state: each call owns its
+ * DOM + listeners in a closure and returns a handle.
  *
  *   import { overlay, confirm, toast } from 'kerfjs/overlay';
  *
@@ -21,14 +21,8 @@
  */
 import { attach } from './attach.js';
 import { devHooks } from './dev-hooks.js';
-import { jsx, type SafeHtml } from './jsx-runtime.js';
+import type { SafeHtml } from './jsx-runtime.js';
 import { mount, type MountResult } from './mount.js';
-import {
-  type AnchorPositionOptions,
-  autoReposition,
-  type PopoverPlacement,
-  positionAnchored,
-} from './overlay-position.js';
 import { OVERLAY_HOST_SELECTOR } from './utils/overlay-host.js';
 
 /** A user-initiated dismissal trigger. */
@@ -238,7 +232,7 @@ function modalDialogOpen(
 // and `data-morph-skip` + `data-morph-preserve` so the dialog content's own
 // `mount()` neither re-renders nor removes it (`utils/overlay-host.ts` makes
 // the slot a nested-mount boundary).
-function overlayHost(anchor: Element): Element | undefined {
+export function overlayHost(anchor: Element): Element | undefined {
   const arbitration = overlayArbitration(document);
   const dialog = anchor.closest('dialog');
   if (dialog === null || !isOpenModal(dialog, arbitration)) return undefined;
@@ -676,267 +670,4 @@ export function wireDialog<T>(
     if (value === failure) throw failure[0];
     return settle(value);
   });
-}
-
-// The anchored-positioning primitives — `positionAnchored` / `autoReposition`
-// plus their option types — live in `./overlay-position.ts` (KF-511) since they
-// stand alone (any element, no overlay lifecycle). Re-exported here so the
-// `kerfjs/overlay` surface is unchanged; `popover()` / `tooltip()` below build on
-// `autoReposition` (imported above).
-export {
-  type AnchorPositionOptions,
-  autoReposition,
-  type PopoverPlacement,
-  positionAnchored,
-};
-
-/** Options for {@link popover}. */
-export interface PopoverOptions {
-  /**
-   * Where to append the popover wrapper. Default: when `anchor` sits inside an
-   * open modal `<dialog>`, that dialog's `[data-kerf-overlay-host]` element (a
-   * dialog kerf opened gets one automatically), so the popover is part of the
-   * modal subtree and stays interactive; otherwise `document.body`.
-   */
-  container?: Element;
-  /** Class on the wrapper. Default `'kerf-popover'`. */
-  className?: string;
-  /** Preferred side of the anchor. Flips to the other side if it would overflow the viewport. Default `'bottom'`. */
-  placement?: PopoverPlacement;
-  /** Horizontal edge to line up with the anchor: `'start'` (left edges) or `'end'` (right edges). Default `'start'`. */
-  align?: 'start' | 'end';
-  /** Gap in px between the anchor and the popover. Default `4`. */
-  gap?: number;
-  /**
-   * Which user actions dismiss the popover. Default `['outside']` (a click
-   * outside the popover, the anchor exempt). Pass `false` to close only via `close()`.
-   */
-  dismiss?: DismissTrigger | DismissTrigger[] | false;
-  /** Focus behavior on open. Default `false` (non-modal — leave focus alone). */
-  initialFocus?: string | boolean;
-  /** Extra elements (besides the anchor) whose clicks do NOT count as outside. */
-  outsideIgnore?: Element | readonly Element[];
-  /** Called on any user-initiated dismissal. */
-  onDismiss?: () => void;
-  /**
-   * Host the popover in the browser top layer (the Popover API — `[popover]` +
-   * `showPopover()`) where supported, so it stacks above any `z-index` without a
-   * z-index war. Falls back to today's plain `<div>` where unsupported. kerf keeps
-   * owning positioning + its own dismiss wiring; the popover is `popover="manual"`.
-   * See {@link OverlayOptions.native}. Default `false`.
-   */
-  native?: boolean;
-}
-
-/**
- * Anchored, non-modal overlay: positions `content` relative to `anchor` (below by
- * default, flipping above if it would overflow, and clamped horizontally to the
- * viewport) and repositions on scroll / resize while open. A thin wrapper over
- * {@link overlay} with non-modal defaults — `trap: false`, `dismiss: ['outside']`,
- * and the anchor added to `outsideIgnore` so the trigger click doesn't self-close.
- * Returns the same {@link OverlayHandle}; `close()` also drops the reposition
- * listeners. `position: fixed` is set inline (you style everything else).
- */
-export function popover(
-  anchor: Element,
-  content: OverlayContent,
-  options: PopoverOptions = {},
-): OverlayHandle {
-  const {
-    container,
-    className = 'kerf-popover',
-    placement = 'bottom',
-    align = 'start',
-    gap = 4,
-    dismiss = ['outside'],
-    initialFocus = false,
-    outsideIgnore,
-    onDismiss,
-    native = false,
-  } = options;
-
-  const extraIgnore =
-    outsideIgnore === undefined
-      ? []
-      : Array.isArray(outsideIgnore)
-        ? [...outsideIgnore]
-        : [outsideIgnore];
-
-  const handle = overlay(content, {
-    container: container ?? overlayHost(anchor),
-    className,
-    dismiss,
-    trap: false,
-    initialFocus,
-    onDismiss,
-    outsideIgnore: [anchor, ...extraIgnore],
-    native,
-  });
-
-  // Position + keep it glued while open; drop the listeners on close. A throw
-  // while positioning (e.g. an anchor whose geometry read fails) is still part
-  // of construction: close the just-opened overlay before rethrowing.
-  let stopReposition: () => void;
-  try {
-    stopReposition = autoReposition(handle.el, anchor, {
-      placement,
-      align,
-      gap,
-    });
-  } catch (error) {
-    handle.close();
-    throw error;
-  }
-  void handle.result.then(stopReposition);
-
-  // KF-BAVCEV: never outlive the anchor. When it leaves the document (e.g. the
-  // modal holding it closes) close the popover as cleanup — not a user
-  // dismissal, so no `onDismiss`. A move within the document keeps it open.
-  void handle.result.then(attach(anchor, () => handle.close));
-
-  return handle;
-}
-
-/** Content for a {@link tooltip}: text (auto-escaped), `SafeHtml`, or a render function. */
-export type TooltipContent = string | SafeHtml | (() => MountResult);
-
-/** Options for {@link tooltip}. */
-export interface TooltipOptions extends AnchorPositionOptions {
-  /** Where to append the tooltip wrapper. Default: the anchor's modal-dialog host slot (see {@link PopoverOptions.container}), else `document.body`. */
-  container?: Element;
-  /** Class on the wrapper. Default `'kerf-tooltip'`. */
-  className?: string;
-  /** Delay in ms before showing after hover/focus enters. Default `400`. */
-  delay?: number;
-  /** Delay in ms before hiding after hover/focus leaves. Default `100`. */
-  hideDelay?: number;
-  /** ARIA role on the wrapper. Default `'tooltip'`. */
-  role?: string;
-  /** Host the tooltip in the browser top layer (the Popover API) where supported. See {@link OverlayOptions.native}. Default `false`. */
-  native?: boolean;
-}
-
-/**
- * A hover/focus-triggered, non-modal, auto-hiding tooltip anchored to `anchor`.
- * Shows after `delay` on `pointerenter`/`focus`, hides after `hideDelay` on
- * `pointerleave`/`blur`, and positions itself with {@link autoReposition} (above
- * the anchor by default). Unlike {@link popover} there is no click-dismiss model —
- * it follows the pointer/focus. Returns a disposer that removes the anchor
- * listeners and hides any shown tooltip. Structural only (kerf ships no CSS).
- */
-export function tooltip(
-  anchor: Element,
-  content: TooltipContent,
-  options: TooltipOptions = {},
-): () => void {
-  const {
-    container,
-    className = 'kerf-tooltip',
-    delay = 400,
-    hideDelay = 100,
-    role = 'tooltip',
-    placement = 'top',
-    align = 'start',
-    gap = 4,
-    native = false,
-  } = options;
-
-  const body: OverlayContent =
-    typeof content === 'function'
-      ? content
-      : typeof content === 'string'
-        ? jsx('span', { class: `${className}__text`, children: content })
-        : content;
-
-  const timers: {
-    show?: ReturnType<typeof setTimeout>;
-    hide?: ReturnType<typeof setTimeout>;
-  } = {};
-  let current:
-    | { handle: OverlayHandle; stop: () => void; unwatch: () => void }
-    | undefined;
-  let presence = 0;
-
-  // Runs from the `delay` timer, so there is no caller to throw to. A failed
-  // show (a throwing render fn, `native` `showPopover()`, or positioning) is
-  // rolled back before `current` is set — nothing stays on screen and the
-  // next pointerenter / focus schedules a fresh attempt — and the original
-  // error then escapes the timer callback for the host to report as uncaught
-  // (a window `error` event in browsers), the same way kerf's other deferred
-  // callbacks (debounce / throttle timers, attach teardown) surface errors.
-  function show(): void {
-    // The anchor left the document while the show was pending (KF-BAVCEV).
-    if (!anchor.isConnected) return;
-    const handle = overlay(body, {
-      container: container ?? overlayHost(anchor),
-      className,
-      dismiss: false,
-      trap: false,
-      initialFocus: false,
-      native,
-    });
-    handle.el.setAttribute('role', role);
-    let stop: () => void;
-    try {
-      stop = autoReposition(handle.el, anchor, { placement, align, gap });
-    } catch (error) {
-      // Not yet tracked in `current`, so `hide()` could never reach it.
-      handle.close();
-      throw error;
-    }
-    // KF-BAVCEV: an anchor removed from the document (e.g. with the modal that
-    // held it) fires no pointerleave / blur, so hide when it leaves and forget
-    // its presence; a move within the document keeps the tooltip shown.
-    const unwatch = attach(anchor, () => () => {
-      presence = 0;
-      if (timers.hide !== undefined) clearTimeout(timers.hide);
-      hide();
-    });
-    current = { handle, stop, unwatch };
-    // A surface that closed itself (its host slot left the document with the
-    // dialog) must not stay `current`, or the next hover would never show.
-    void handle.result.then(() => {
-      if (current?.handle === handle) hide();
-    });
-  }
-
-  function hide(): void {
-    const shown = current;
-    if (shown === undefined) return;
-    // Cleared first: `unwatch()` runs the anchor teardown, which re-enters here.
-    current = undefined;
-    shown.unwatch();
-    shown.stop();
-    shown.handle.close();
-  }
-
-  const onEnter = (event: Event): void => {
-    presence |= event.type === 'focus' ? 2 : 1;
-    if (timers.hide !== undefined) clearTimeout(timers.hide);
-    if (current !== undefined) return;
-    if (timers.show !== undefined) clearTimeout(timers.show); // debounce: one pending show at a time
-    timers.show = setTimeout(show, delay);
-  };
-  const onLeave = (event: Event): void => {
-    presence &= event.type === 'blur' ? ~2 : ~1;
-    if (presence) return;
-    if (timers.show !== undefined) clearTimeout(timers.show);
-    if (current === undefined) return;
-    timers.hide = setTimeout(hide, hideDelay);
-  };
-
-  anchor.addEventListener('pointerenter', onEnter);
-  anchor.addEventListener('pointerleave', onLeave);
-  anchor.addEventListener('focus', onEnter);
-  anchor.addEventListener('blur', onLeave);
-
-  return () => {
-    anchor.removeEventListener('pointerenter', onEnter);
-    anchor.removeEventListener('pointerleave', onLeave);
-    anchor.removeEventListener('focus', onEnter);
-    anchor.removeEventListener('blur', onLeave);
-    if (timers.show !== undefined) clearTimeout(timers.show);
-    if (timers.hide !== undefined) clearTimeout(timers.hide);
-    hide();
-  };
 }

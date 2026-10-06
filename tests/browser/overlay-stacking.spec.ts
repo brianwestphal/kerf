@@ -66,6 +66,41 @@ for (const native of [false, true]) {
   });
 }
 
+test('popover, tooltip, and modal share dismissal order through the public entry', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    const { overlay, popover, tooltip } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    overlay(
+      raw(
+        '<button id="menu-anchor">menu</button><button id="hint-anchor">hint</button>',
+      ),
+      {
+        className: 'shared-modal',
+        initialFocus: '#menu-anchor',
+      },
+    );
+    popover(document.getElementById('menu-anchor'), raw('<p>choices</p>'), {
+      className: 'shared-popover',
+      dismiss: ['escape'],
+    });
+    tooltip(document.getElementById('hint-anchor'), 'Hint', {
+      delay: 0,
+      hideDelay: 10_000,
+    });
+  });
+
+  await page.locator('#hint-anchor').hover();
+  await expect(page.locator('.kerf-tooltip')).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.shared-popover')).toHaveCount(0);
+  await expect(page.locator('.shared-modal')).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.shared-modal')).toHaveCount(0);
+  await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
+});
+
 test('fallback modal beneath a native <dialog>: one Escape closes only the dialog', async ({
   page,
 }) => {
