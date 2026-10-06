@@ -464,6 +464,10 @@ tester.run('ui-composition', composition, {
       code: "import { TabBar, AppTab } from '@kerfjs/ui'; <TabBar trailing={<wa-button>Add tab</wa-button>} end={<wa-button variant='brand'>New ticket</wa-button>}><AppTab /></TabBar>;",
       settings: shippedUiSettings,
     },
+    {
+      code: "import { TabBar, AppTab, ToolbarControlGroup } from '@kerfjs/ui'; <TabBar leading={<ToolbarControlGroup />} trailing={<ToolbarControlGroup />} end={<ToolbarControlGroup />}><AppTab /></TabBar>;",
+      settings: shippedUiSettings,
+    },
     // Zone validation deliberately stops at a local binding.
     {
       code: "import { TabBar, AppTab } from '@kerfjs/ui'; const actions = <div><wa-button>New ticket</wa-button></div>; <TabBar trailing={actions}><AppTab /></TabBar>;",

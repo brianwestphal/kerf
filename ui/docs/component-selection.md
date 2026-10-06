@@ -422,7 +422,9 @@ For a search or cluster that needs shared toolbar geometry, place
 `SegmentedControl`, `Select`, or `TokenSearchField` inside a
 `ToolbarControlGroup`. The ToolbarText catalog's actionable-title example
 places its status `Chip` directly beside the title while the search uses a
-group. For a page, panel, or
+group. `TabBar` also accepts a `ToolbarControlGroup` in its `leading`,
+`trailing`, or `end` zone, including an application wrapper that renders one.
+For a page, panel, or
 dialog heading, put an extra-large `ToolbarText` directly in the leading zone,
 optionally preceded by a grouped icon, and group trailing actions. Keep supporting
 copy below as app-owned content. Size the title to its track: a narrow

@@ -1596,7 +1596,11 @@
       "source": "kerf",
       "parents": {
         "mode": "listed",
-        "entries": ["@kerfjs/ui:toolbar", "@kerfjs/ui:floating-toolbar"]
+        "entries": [
+          "@kerfjs/ui:toolbar",
+          "@kerfjs/ui:floating-toolbar",
+          "@kerfjs/ui:tab-bar"
+        ]
       },
       "contexts": ["toolbar-zone"],
       "zones": [

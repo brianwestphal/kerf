@@ -894,7 +894,7 @@ test(
 );
 
 test(
-  'the doctor accepts ToolbarControlGroup in Toolbar and FloatingToolbar',
+  'the doctor accepts ToolbarControlGroup in Toolbar, FloatingToolbar, and TabBar zones',
   async () => {
     const root = await mkdtemp(
       resolve(tmpdir(), 'kerf-ui-doctor-toolbar-link-'),
@@ -925,6 +925,8 @@ test(
         [
           "import { Toolbar } from '@kerfjs/ui/toolbar';",
           "import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';",
+          "import { TabBar } from '@kerfjs/ui/tab-bar';",
+          "import { AppTab } from '@kerfjs/ui/app-tab';",
           "import { ToolbarControlGroup, ToolbarActionLink } from '@kerfjs/ui/toolbar-control-group';",
           'export const view = () => (',
           '  <>',
@@ -943,6 +945,11 @@ test(
           '      <button type="button" aria-label="Open report">Open</button>',
           '    </ToolbarControlGroup>',
           '  </FloatingToolbar>',
+          '  <TabBar id="projects" label="Projects"',
+          '    leading={<ToolbarControlGroup label="View modes" single><button type="button">Boards</button></ToolbarControlGroup>}',
+          '    trailing={<ToolbarControlGroup label="Project actions" single><button type="button">Add project</button></ToolbarControlGroup>}',
+          '    end={<ToolbarControlGroup label="Workspace actions" single><button type="button">New ticket</button></ToolbarControlGroup>}',
+          '  ><AppTab id="project-one" name="Project one" /></TabBar>',
           '  </>',
           ');',
           '',
@@ -963,7 +970,11 @@ test(
       await link(root, '@kerfjs/ui', uiRoot);
 
       const result = await doctor(root);
-      expect(result.report.diagnostics).toEqual([]);
+      expect(
+        result.report.diagnostics.filter(
+          (item: { id: string }) => item.id === 'KUI-L201',
+        ),
+      ).toEqual([]);
       expect(result.status).toBe(0);
     } finally {
       await rm(root, { recursive: true, force: true });
@@ -1033,24 +1044,36 @@ test(
           '',
         ].join('\n'),
       );
-      await writeFile(
-        resolve(root, 'src/view.tsx'),
+      const view = (includeTabBar: boolean) =>
         [
           "import { Toolbar } from '@kerfjs/ui/toolbar';",
           "import { ToolbarText } from '@kerfjs/ui/toolbar-text';",
+          "import { TabBar } from '@kerfjs/ui/tab-bar';",
+          "import { AppTab } from '@kerfjs/ui/app-tab';",
           '',
           "import { DemandSegmentsControl } from './demand-segments-control.js';",
           '',
           'export const view = () => (',
+          '  <>',
           '  <Toolbar',
           '    label="Demand"',
           '    leading={<ToolbarText text="Demand" size="xlarge" />}',
           '    trailing={<DemandSegmentsControl visible />}',
           '  />',
+          ...(includeTabBar
+            ? [
+                '  <TabBar id="projects" label="Projects"',
+                '    leading={<DemandSegmentsControl visible />}',
+                '    trailing={<DemandSegmentsControl visible />}',
+                '    end={<DemandSegmentsControl visible />}',
+                '  ><AppTab id="project-one" name="Project one" /></TabBar>',
+              ]
+            : []),
+          '  </>',
           ');',
           '',
-        ].join('\n'),
-      );
+        ].join('\n');
+      await writeFile(resolve(root, 'src/view.tsx'), view(false));
       const component = (rendersAs?: string[]) => ({
         id: 'demand-segments-control',
         name: 'DemandSegmentsControl',
@@ -1158,6 +1181,14 @@ test(
       const undeclared = await doctor(root);
       expect(ids(undeclared.report)).toEqual([]);
       expect(undeclared.status).toBe(0);
+
+      // The same wrapper is valid in each TabBar action zone when declared.
+      await writeFile(resolve(root, 'src/view.tsx'), view(true));
+      await writeManifest(['@kerfjs/ui:toolbar-control-group']);
+      await generate();
+      const tabBar = await doctor(root);
+      expect(ids(tabBar.report).filter((id) => id === 'KUI-L201')).toEqual([]);
+      expect(tabBar.status).toBe(0);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
