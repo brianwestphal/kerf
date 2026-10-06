@@ -38,8 +38,10 @@ Browser verification always builds current source: both `npm run test:e2e`
 and direct focused Playwright commands run the catalog/conformance preflights
 and production build before preview. See the [UX catalog contract](./docs/ux-demo.md).
 Failed Playwright tests retain traces and screenshots alongside an HTML report.
-The CI `ui` job uploads the report and per-test failure evidence for 14 days when
-the browser suite fails; the artifact is named `ui-browser-failure-<run>-<attempt>`.
+CI runs the complete suite in concurrent Chromium, Firefox, and WebKit jobs,
+while the `ui` job checks the package. A failing browser job uploads its report
+and per-test evidence for 14 days as
+`ui-browser-failure-<browser>-<run>-<attempt>`.
 
 When authoring a component gallery, follow the single
 [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
