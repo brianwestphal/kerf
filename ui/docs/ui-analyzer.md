@@ -289,6 +289,11 @@ the id stays in `ai/application-ui-diagnostic-ids-v1.json` (listed under
 `retired`) so a profile exception that already names it still loads. Remove
 such exceptions at your convenience.
 
+`KUI-C101` was likewise retired when Toolbar zones were aligned with their
+`KerfUiContent` props. Direct content is valid; `ToolbarControlGroup` remains a
+presentation choice for shared control chrome. The id stays in the registry so
+existing profile exceptions still load, but new profiles should not use it.
+
 ## Loud fill / on-loud pairing (`KUI-L018`)
 
 The shipped Web Awesome theme pairs every `--wa-color-{tone}-fill-loud` with a

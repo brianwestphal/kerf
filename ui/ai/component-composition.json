@@ -1430,30 +1430,26 @@
         {
           "id": "leading",
           "jsx": { "prop": "leading" },
-          "accepts": ["toolbar-text", "toolbar-control-group"],
+          "accepts": ["KerfUiContent"],
           "cardinality": { "min": 0, "max": "unbounded" },
           "exclusiveWith": []
         },
         {
           "id": "center",
           "jsx": { "prop": "center" },
-          "accepts": ["toolbar-text", "toolbar-control-group"],
+          "accepts": ["KerfUiContent"],
           "cardinality": { "min": 0, "max": "unbounded" },
           "exclusiveWith": []
         },
         {
           "id": "trailing",
           "jsx": { "prop": "trailing" },
-          "accepts": ["toolbar-text", "toolbar-control-group", "wa-button"],
+          "accepts": ["KerfUiContent"],
           "cardinality": { "min": 0, "max": "unbounded" },
           "exclusiveWith": []
         }
       ],
-      "children": {
-        "mode": "listed",
-        "concepts": ["toolbar-text", "toolbar-control-group", "wa-button"],
-        "requiredConcepts": []
-      },
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         { "id": "actions", "owner": "application", "required": false },
         {
@@ -1557,14 +1553,7 @@
           "--kui-toolbar-zone-padding-inline"
         ]
       },
-      "diagnostics": [
-        {
-          "id": "KUI-C101",
-          "severity": "error",
-          "when": "a direct zone child is neither ToolbarText nor ToolbarControlGroup nor a standalone wa-button in trailing",
-          "message": "Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup, plus one standalone primary wa-button in trailing, are direct zone children."
-        }
-      ],
+      "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
         "composition": "docs/component-selection.md#toolbar-composition"

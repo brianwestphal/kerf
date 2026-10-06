@@ -155,10 +155,10 @@ describe('application UI profile policy', () => {
         tokens: { '--kui-color-brand-fill-normal': 'navy' },
         exceptions: [
           {
-            id: 'legacy-grid',
-            rules: ['KUI-C101'],
-            target: 'src/legacy/grid.tsx',
-            rationale: 'The embedded grid owns its isolated toolbar row.',
+            id: 'legacy-list-header',
+            rules: ['KUI-C103'],
+            target: 'src/legacy/list-header.tsx',
+            rationale: 'The legacy list header owns its disclosure state.',
           },
         ],
       }),
@@ -168,9 +168,9 @@ describe('application UI profile policy', () => {
         theme: { density: 'compact' },
         exceptions: [
           {
-            id: 'legacy-grid',
-            rules: ['KUI-C101'],
-            target: 'grid.tsx',
+            id: 'legacy-list-header',
+            rules: ['KUI-C103'],
+            target: 'list-header.tsx',
             rationale: 'The feature-local adapter narrows the same exception.',
           },
         ],
@@ -189,7 +189,7 @@ describe('application UI profile policy', () => {
         density: 'compact',
       },
       tokens: { '--kui-color-brand-fill-normal': 'navy' },
-      exceptions: [expect.objectContaining({ target: 'grid.tsx' })],
+      exceptions: [expect.objectContaining({ target: 'list-header.tsx' })],
     });
     expect(resolved.provenance['$preferences.navigation']).toBe(
       '/workspace/.kerf-ui-profile.json',
@@ -231,7 +231,7 @@ describe('application UI profile policy', () => {
         source: 'apps/example/.kerf-ui-profile.json',
         knownComponents: ['@kerfjs/ui:list-item'],
         knownTokens: ['--kui-color-brand-fill-normal'],
-        knownRules: ['KUI-C101'],
+        knownRules: ['KUI-C103'],
       },
     );
 

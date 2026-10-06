@@ -47,14 +47,14 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 
 - Parents: any.
 - Contexts: `application-chrome`, `page-header`, `panel-header`, `dialog-header`.
-- Children: only [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
+- Children: unrestricted.
 - Built from: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md), [PopupMenu](./popup-menu.md).
 
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
-- `leading` — JSX prop `leading`; accepts [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md); any number.
-- `center` — JSX prop `center`; accepts [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md); any number.
-- `trailing` — JSX prop `trailing`; accepts [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md); any number.
+- `leading` — JSX prop `leading`; accepts `KerfUiContent`; any number.
+- `center` — JSX prop `center`; accepts `KerfUiContent`; any number.
+- `trailing` — JSX prop `trailing`; accepts `KerfUiContent`; any number.
 
 ## State and wiring
 
@@ -93,10 +93,6 @@ Never put `kui-toolbar`, `kui-toolbar__center`, `kui-toolbar__leading`, `kui-too
 Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-font-sans`, `--kui-toolbar-center-padding-inline`, `--kui-toolbar-divider-color`, `--kui-toolbar-inset`, `--kui-toolbar-leading-min-width`, `--kui-toolbar-leading-padding-inline`, `--kui-toolbar-trailing-gap`, `--kui-toolbar-trailing-justify`, `--kui-toolbar-trailing-justify-self`, `--kui-toolbar-trailing-padding-inline`, `--kui-toolbar-zone-padding-inline`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
-
-## Diagnostics
-
-- `KUI-C101` (error) when a direct zone child is neither ToolbarText nor ToolbarControlGroup nor a standalone wa-button in trailing: Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup, plus one standalone primary wa-button in trailing, are direct zone children.
 
 ## Related
 

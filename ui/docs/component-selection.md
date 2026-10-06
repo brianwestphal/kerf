@@ -405,22 +405,24 @@ A `FloatingToolbar` accepts `ToolbarControlGroup` directly as its children in
 both floating and inline placement. Name the toolbar with `label`; group its
 controls as you would in a `Toolbar` zone.
 
-A `Toolbar` has three zones — `leading`, `center`, and `trailing`. The direct
-zone children are `ToolbarText` (identity/title text) and `ToolbarControlGroup`
-(a control or cluster of controls). The `trailing` zone also accepts one
-standalone `wa-button` for the application's primary action. It keeps its own
-Web Awesome brand, danger, size, and hover chrome, while Toolbar aligns it in
-the control band and wraps it with other trailing items when space is tight.
+A `Toolbar` has three zones — `leading`, `center`, and `trailing`. Each accepts
+`KerfUiContent` directly, including a status `Chip`, a native control, or
+application markup. `ToolbarText` is the standard identity/title; use
+`ToolbarControlGroup` when related controls should share its chrome, sizing,
+hover treatment, or overflow behavior. A standalone primary `wa-button` keeps
+its own Web Awesome chrome and fits naturally in the trailing zone. Bare
+controls retain their own styling and accessibility responsibilities; the
+toolbar only positions them within the zone.
 For a title that opens an editor, set `action` on a direct `ToolbarText`: it
 renders a native button that keeps its content width when possible and
 ellipsizes before an adjacent status chip when the leading zone narrows. The
 application handles the delegated action and replaces it with its own input
 while editing. Use a separate heading landmark if the view needs one.
-Do not drop other bare buttons, inputs, links, or arbitrary markup straight
-into a zone; wrap controls in a `ToolbarControlGroup` so they get the shared
-toolbar geometry, hover/pressed treatment, and grouping. `SegmentedControl`,
-`Select`, a collapsible `TokenSearchField`, and other Web Awesome controls live
-**inside** a `ToolbarControlGroup`. For a page, panel, or
+For a search or cluster that needs shared toolbar geometry, place
+`SegmentedControl`, `Select`, or `TokenSearchField` inside a
+`ToolbarControlGroup`. The ToolbarText catalog's actionable-title example
+places its status `Chip` directly beside the title while the search uses a
+group. For a page, panel, or
 dialog heading, put an extra-large `ToolbarText` directly in the leading zone,
 optionally preceded by a grouped icon, and group trailing actions. Keep supporting
 copy below as app-owned content. Size the title to its track: a narrow

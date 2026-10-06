@@ -697,7 +697,7 @@ The plugin's additive `recommended-ui` and `strict-ui` flat presets load the
 installed `@kerfjs/ui` selection/composition catalogs and application profile
 defaults. Their four UI rules enforce public CSS boundaries, cataloged
 parent/Toolbar-zone composition, profile preferences, and required wiring.
-Toolbar accepts/cardinality facts come from the composition catalog; wiring import aliases,
+Toolbar zones accept `KerfUiContent` directly; their cardinality facts come from the composition catalog. Wiring import aliases,
 root/subpath namespaces, and valid helper sources come from the component catalog. The
 ESLint 9/10 matrix also installs packed plugin/UI tarballs into a downstream
 fixture so default asset resolution is tested outside the source tree.

@@ -51,10 +51,10 @@
   },
   "exceptions": [
     {
-      "id": "legacy-report-grid",
-      "rules": ["KUI-C101"],
-      "target": "src/features/legacy-report/report-grid.tsx",
-      "rationale": "The embedded report engine owns this isolated toolbar-compatible control row."
+      "id": "legacy-list-header",
+      "rules": ["KUI-C103"],
+      "target": "src/features/legacy-report/report-list-header.tsx",
+      "rationale": "The legacy report adapter owns disclosure content and its expanded state."
     }
   ]
 }

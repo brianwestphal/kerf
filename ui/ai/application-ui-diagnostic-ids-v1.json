@@ -107,6 +107,7 @@
     "KUI-T011"
   ],
   "retired": {
+    "KUI-C101": "Toolbar zones accept KerfUiContent directly; grouping is a recommended presentation choice, not a composition requirement. Kept in ids so existing profile exceptions still load.",
     "KUI-L005": "Folded into KUI-L019: any application rule whose subject is a cataloged component, forced dimensions included. Kept in ids so existing profile exceptions that name it still load."
   }
 }

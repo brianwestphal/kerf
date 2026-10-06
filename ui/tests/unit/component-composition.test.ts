@@ -161,20 +161,20 @@ describe('component composition catalog contract', () => {
           jsx: { prop: 'leading' },
         }),
       ]),
-      children: {
-        mode: 'listed',
-        concepts: ['toolbar-text', 'toolbar-control-group', 'wa-button'],
-      },
+      children: { mode: 'any', concepts: [] },
       provenance: {
         composition: 'docs/component-selection.md#toolbar-composition',
       },
     });
-    expect(toolbar.diagnostics[0].id).toBe('KUI-C101');
-    expect(
-      toolbar.zones.find((zone) => zone.id === 'trailing')?.accepts,
-    ).toEqual(['toolbar-text', 'toolbar-control-group', 'wa-button']);
-    for (const zone of toolbar.zones.filter((zone) => zone.id !== 'trailing'))
-      expect(zone.accepts).not.toContain('wa-button');
+    expect(toolbar.diagnostics).toEqual([]);
+    for (const zone of toolbar.zones)
+      expect(zone.accepts).toEqual(['KerfUiContent']);
+    const diagnosticIds = await readJson<{
+      ids: string[];
+      retired: Record<string, string>;
+    }>('../../ai/application-ui-diagnostic-ids-v1.json');
+    expect(diagnosticIds.ids).toContain('KUI-C101');
+    expect(diagnosticIds.retired['KUI-C101']).toContain('KerfUiContent');
     expect(
       composition.entries.find((entry) => entry.id === 'toolbar-control-group')
         ?.parents,

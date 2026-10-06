@@ -259,6 +259,10 @@ slot without mixing authoring rules into the per-entry component catalog.
   starts at the band's top and grows down. A wrapped `ToolbarText` title
   centers its first line in the band, so trailing controls stay beside that
   line instead of dropping to the middle of the whole title.
+- Toolbar `leading`, `center`, and `trailing` zones accept `KerfUiContent`
+  directly. Use `ToolbarText` for identity and `ToolbarControlGroup` when
+  controls need shared toolbar chrome; direct custom content keeps its own
+  styling and accessibility responsibilities.
 - `ResizableRegion` renders a focusable ARIA separator with orientation and live
   min/max/current values. Its wiring returns a disposer. `handleIcon` replaces
   dormant decoration only; it does not replace separator semantics or wiring.

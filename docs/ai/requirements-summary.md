@@ -206,8 +206,9 @@ KF-254 investigation outcome: shipping reusable kerf components as npm packages 
 
 **Shipped:** `eslint-plugin-kerfjs` provides additive `recommended-ui` and
 `strict-ui` flat presets for the UI catalog/profile contract. The rules diagnose
-private boundaries, invalid catalog parents and Toolbar zone contents or
-cardinality, discouraged component choices, and missing/unretained wiring.
+private boundaries, invalid catalog parents and bounded zone cardinality,
+discouraged component choices, and missing/unretained wiring. Toolbar zones
+accept `KerfUiContent` directly; `KUI-C101` is retired.
 They resolve installed `@kerfjs/ui` assets by default, delegate synchronous
 profile merge/validation to its shipped contract, reserve `KUI-L090` for
 load/config failures, and derive Toolbar and wiring facts from the catalogs.
