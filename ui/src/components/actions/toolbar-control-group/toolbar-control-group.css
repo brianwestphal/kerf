@@ -765,6 +765,7 @@
    lone control belongs to the outer group surface; in a group of choices the
    image belongs only to the selected highlight. */
 .kui-toolbar-control-group[data-content="avatar"] {
+  background-origin: border-box;
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -811,6 +812,7 @@
   > wa-button[aria-pressed="true"]::part(base) {
   color: transparent;
   background-image: var(--kui-toolbar-avatar-image);
+  background-origin: border-box;
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
