@@ -145,6 +145,7 @@ kerf/
 │   ├── array-signal.ts           ← arraySignal (KF-92) — granular collection signal; lives at the kerfjs/array-signal subpath (KF-95) so non-users shed ~1 KB. `update()` bumps the item's content version (item-version.ts) so a same-ref mutation is visible to the row memo (KF-418). Indexed mutators share finite-integer/range validation before mutation or patch emission.
 │   ├── item-version.ts           ← KF-418 — a shared `WeakMap<item, number>` content version so a same-ref `arraySignal.update()` (which keeps the identity the row memo is keyed on) re-renders the row in EVERY consumer: other lists, other mounts, plain-array filter() views. `bumpItemVersion` (called by array-signal.update), `itemVersion` (read by each() — CacheEntry stores the version, a hit requires it to match). Lives in the MAIN bundle (not on ArraySignal) so each() reads it without importing the subpath (KF-95); an `anyVersioned` flag keeps apps that never mutate in place at zero per-row cost.
 │   ├── store.ts                  ← defineStore + resetAllStores + REGISTRY. Dev-only: `get()` returns a deep read-only Proxy (via `utils/dev-readonly.ts`, reached through the `devHooks.storeReadonly` slot); `set()` unwraps any get()-derived proxies with `storeToRaw`/`toRaw` so the signal stores plain objects. `set()` resolves the narrow-set hook per call and lazily allocates its per-store dedup context, so a store created before dev-hook installation observes it on later actions. Prod returns the bare reference.
+│   ├── testing.ts                ← public `kerfjs/testing` entry re-exporting `clearStoreRegistry()` for test isolation.
 │   ├── mount.ts                  ← mount() — segment-aware render bound to effect(); the effect synchronously coordinates named `renderStaticPhase` (render, call-order recovery, surrounds, bindings) and `reconcileAndCommitListPhase` (list reconciliation, bookkeeping, invariants) helpers while their state remains closure-local. Adopts an inert-document rootEl (defaultView === null) into the live document before first render (KF-243 defense-in-depth for the KF-240 WebKit inert-doc parse bug). The first render is transactional (KF-KGFJP6): a throw from it rethrows the original error after releasing wired binding effects, list bindings, the dev listener observer, and the mounted marker, and restores rootEl's pre-mount child nodes
 │   ├── mount-list-bindings.ts    ← mount()'s list-binding lifecycle, split out of mount.ts so that file holds only render orchestration (KF-141VVP): `bindListsFromMarkers` (primary — turns `<!--kf-list:{id}-->` markers into `ListBinding`s, validates first-render inlined rows against the row contract via `validateInlinedRowMatch` / `rowStructureError`, self-heals bindings whose container the morph rebuilt, wires row bindings) plus `cleanupOrphanBindings`, `collectOwnedItems` (the morph's `ownedItems`), and `anyRebuiltListIsGranular`. Stateless; internal
 │   ├── morph.ts                  ← native general-purpose DOM reconciler (replaces morphdom); exported publicly as morph() (KF-150). Binding-marker aware: its child pairing steps past the wiring-inserted text node a `kfb:`/`kfbr:` marker owns (via bindings.ts `boundTextNodeOf`), so a bound hole mixed with static text siblings survives a morph (KF-374 — the static sibling used to be dropped). Two positional-lookahead recovery steps when a sibling shifts the cursor: 2.5 elements (KF-377 — a later same-tag unkeyed element is MOVED up, not cloned, so list containers/stateful elements survive a preceding removal), and 2.6 `kf-list:` markers (KF-382 — the marker is matched on exact data and moved WITH its row region, with captureFocus/restoreFocus around the move, so an each() binding never detaches and rows keep identity + caret). KF-385: the row region is `afterListRegion()` = marker through LAST owned row (interlopers between rows included, scan bounded by the next list's marker), used BOTH for the 2.6 run and for the cursor advance after a positional marker match — the old contiguous-owned-run reading let a single injected node shrink the region to the bare marker (run) or park the cursor inside the list (advance), either of which wedged a trailing template sibling in among the rows
@@ -209,6 +210,13 @@ kerf/
 │   ├── helpers/
 │   │   └── dev-shape.ts          ← test helpers for switching between installed diagnostics and the production-shaped empty hook registry
 │   ├── unit/
+│   │   ├── guidance-integrity.test.ts ← guard for tracked guidance snapshots and command wrapper.
+│   │   ├── package-gates.test.ts ← package-gate selection and red-CI evidence logic.
+│   │   ├── setup.test.ts ← setup detection, plans, conflicts, and rollback.
+│   │   ├── ticket-timing.test.ts ← phase-note parsing and active-time state transitions.
+│   │   ├── ticket-timing-aggregate.test.ts ← cross-ticket process summaries.
+│   │   ├── ticket-timing-check-pass.test.ts ← verified-tree skip and invalidation.
+│   │   ├── ticket-timing-steps-ci.test.ts ← local step and CI timing plans.
 │   │   ├── array-signal-api.test.ts ← standalone ArraySignal API, validation, reads, and reset/replace behavior
 │   │   ├── array-signal-granular-updates.test.ts ← granular update/remove behavior and row reuse
 │   │   ├── array-signal-inserts-and-moves.test.ts ← granular insertion, bulk insertion, and keyed movement
@@ -364,6 +372,10 @@ kerf/
 │   │   ├── toElement.test.ts
 │   │   └── url-screen-corpus.internal.test.ts ← KF-437 — the dangerous-URL screen's two corpora (must-block AND must-pass) exercised against every screened attribute. The must-pass list is the standing guard against a FALSE POSITIVE, which a suite that only tests attacks is structurally blind to — that is the gap `javascript:void(0)` fell into
 │   ├── integration/
+│   │   ├── guidance-integrity.test.ts ← command-wrapper behavior against repository guidance.
+│   │   ├── setup-downstream.test.ts ← packed setup against a downstream consumer.
+│   │   ├── ticket-timing.test.ts ← timing CLI successful and failing command flows.
+│   │   ├── ticket-timing-steps-ci.test.ts ← real step runner and CI import flow.
 │   │   ├── release-beta-auto.test.ts ← runs the release helper end to end in a temporary git repository and proves stable 4.4.1 plus v5.0.0-beta.23 selects v5.0.0-beta.24
 │   │   ├── dev-row-key-warning.internal.test.ts ← full-pipeline missing-row-key warning wiring across initial, snapshot, granular, and in-place reconciliation; source-only because it installs internal dev hooks directly
 │   │   ├── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
@@ -462,8 +474,10 @@ kerf/
 │   ├── companion-utilities-design.md ← design history for the optional companion subpaths
 │   ├── graphics/                  ← editable logo sources plus the published SVG
 │   ├── technical-changelog/      ← long-form release migration notes
+│   │   └── v0.16.0-v1.0.0.md      ← historical version migration record
 │   └── ai/
 │       ├── code-summary.md       ← THIS FILE
+│       ├── repository-audit-2026-10-06.md ← requirements, hygiene, and quality audit with gate evidence
 │       ├── requirements-summary.md
 │       ├── usage-guide.md        ← consumer-facing cheat sheet for AI assistants writing apps with kerf
 │       ├── test-gap-analysis-kf380.md
@@ -768,7 +782,7 @@ Outputs:
 
 `tsup.config.ts` runs with `splitting: true` (KF-14 / KF-15) — without it, esbuild bundles each entry independently, which both duplicates shared classes (breaking `instanceof` checks across entries) and tree-shakes shared module-level state into broken stubs.
 
-Each entry emits a small shim that re-exports from shared chunks; the bulk of the runtime lives in those chunks. That keeps the cross-bundle brand symbols (`Symbol.for('kerfjs.SafeHtml')`, `Symbol.for('kerfjs.ArraySignal')`) addressing exactly one class identity per kerf copy.
+Entry outputs share chunks where tsup finds common code; some entries also retain substantial entry-local implementation. That keeps the cross-bundle brand symbols (`Symbol.for('kerfjs.SafeHtml')`, `Symbol.for('kerfjs.ArraySignal')`) addressing exactly one class identity per kerf copy.
 
 Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it up from their own `node_modules`.
 
