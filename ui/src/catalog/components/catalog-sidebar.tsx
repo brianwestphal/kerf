@@ -31,7 +31,7 @@ export function CatalogSidebar({
   toggleSecondaryAction,
 }: CatalogSidebarProps) {
   return (
-    <nav aria-label={`${brand.title} components`}>
+    <nav aria-label={`${brand.title} components`} data-catalog-sidebar>
       <List gap="m" controlInsets="b">
         {brand.subtitle ? (
           <ListInsetText sides="rl">
@@ -40,16 +40,6 @@ export function CatalogSidebar({
             </Text>
           </ListInsetText>
         ) : null}
-        <ListInsetText sides="rl">
-          <input
-            class="kui-catalog__filter"
-            type="search"
-            aria-label="Filter catalog"
-            placeholder="Filter items or headings"
-            autocomplete="off"
-            data-catalog-filter
-          />
-        </ListInsetText>
         <CatalogSectionList
           sections={sections}
           active={active}

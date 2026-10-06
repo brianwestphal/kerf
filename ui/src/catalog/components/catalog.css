@@ -12,20 +12,7 @@
 }
 
 .kui-catalog__filter {
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  padding: remify(8px) remify(10px);
-  border: 1px solid var(--kui-color-neutral-border-normal);
   border-radius: var(--kui-layout-rounded-radius);
-  color: var(--kui-color-text);
-  background: var(--kui-color-surface);
-  font: inherit;
-}
-
-.kui-catalog__filter:focus-visible {
-  outline: 2px solid var(--kui-color-focus);
-  outline-offset: 2px;
 }
 
 .kui-catalog [data-catalog-filter-empty],

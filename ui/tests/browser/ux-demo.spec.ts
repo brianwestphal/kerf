@@ -2237,9 +2237,9 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
   await expect(
     sidebar.getByRole('heading', { level: 1, name: 'Kerf' }),
   ).toBeVisible();
-  await expect(
-    sidebar.getByText('UI components', { exact: true }),
-  ).toBeVisible();
+  await expect(sidebar.getByText('UI components', { exact: true })).toHaveCount(
+    0,
+  );
   await expect(
     sidebar.getByText('Production catalog', { exact: true }),
   ).toHaveCount(0);

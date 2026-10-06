@@ -1,9 +1,10 @@
-import { Moon, Sun } from 'lucide';
+import { Moon, Sun, X } from 'lucide';
 
 import { ToolbarControlGroup } from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../../components/actions/toolbar-text/toolbar-text.js';
 import { List } from '../../components/collections/list/list.js';
 import { ListInsetText } from '../../components/collections/list-inset-text/list-inset-text.js';
+import { TokenSearchField } from '../../components/forms/token-search-field/token-search-field.js';
 import { Workbench } from '../../components/layout/workbench/workbench.js';
 import { LucideIcon } from '../../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../../components/typography/text/text.js';
@@ -102,6 +103,22 @@ export function Catalog({
             ),
             toggle: { action: toggleSidebarAction, name: catalogName },
           },
+          header: (
+            <ListInsetText sides="rl">
+              <TokenSearchField
+                id={`${id}-filter`}
+                label="Filter catalog"
+                placeholder="Filter items or headings"
+                className="kui-catalog__filter"
+                editorAttributes={{ 'data-catalog-filter': '' }}
+                trailingAction={{
+                  icon: <LucideIcon icon={X} name="x" />,
+                  label: 'Clear filter',
+                  action: 'catalog-clear-filter',
+                }}
+              />
+            </ListInsetText>
+          ),
           content: (
             <CatalogSidebar
               brand={brand}

@@ -5,7 +5,7 @@ import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
 describe('UX catalog sidebar shell', () => {
-  it('uses the real Kerf logo and keeps the subtitle outside the toolbar identity', async () => {
+  it('uses the real Kerf logo without a sidebar subtitle', async () => {
     const source = await readFile(
       resolve(import.meta.dirname, '../../ux-demo/main.tsx'),
       'utf8',
@@ -16,11 +16,10 @@ describe('UX catalog sidebar shell', () => {
     expect(source).toMatch(
       /const kerfLogoUrl = new URL\(\s*'\.\.\/\.\.\/assets\/logo\.svg\?no-inline',\s*import\.meta\.url,?\s*\)\s*\.href;/,
     );
-    // The shell is the reusable @kerfjs/ui/catalog Catalog; it renders the logo,
-    // title, and subtitle from the brand prop (the subtitle stays outside the
-    // toolbar identity by Catalog's own construction).
+    // The shell is the reusable @kerfjs/ui/catalog Catalog; this demo supplies
+    // the logo and title without a subtitle above the fixed filter.
     expect(source).toMatch(
-      /brand=\{\{\s*title: 'Kerf',\s*subtitle: 'UI components',\s*logoUrl: kerfLogoUrl,?\s*\}\}/,
+      /brand=\{\{\s*title: 'Kerf',\s*logoUrl: kerfLogoUrl,?\s*\}\}/,
     );
     expect(source).not.toContain(
       '<span class="catalog-mark" aria-hidden="true">K</span>',

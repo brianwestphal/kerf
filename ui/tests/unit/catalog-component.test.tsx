@@ -70,7 +70,9 @@ describe('Catalog', () => {
     // The shell is a Workbench whose left rail holds the navigation.
     expect(html).toContain('data-component="workbench"');
     expect(html).toContain('id="kui-catalog-left-rail"');
-    expect(html).toContain('<nav aria-label="Acme UI components">');
+    expect(html).toContain(
+      '<nav aria-label="Acme UI components" data-catalog-sidebar>',
+    );
     expect(html).toContain(
       'data-component="toolbar-text" data-size="large" role="heading" aria-level="1"><span class="kui-toolbar-text__text">Acme UI</span>',
     );
@@ -543,7 +545,9 @@ describe('wireCatalog', () => {
     const root = mountShell(String(Catalog(props)));
     const dispose = wireCatalog(root, { onSelect: () => {} });
     const input = () =>
-      root.querySelector<HTMLInputElement>('[data-catalog-filter]')!;
+      root.querySelector<HTMLElement>('[data-catalog-filter]')!;
+    const clear = () =>
+      root.querySelector<HTMLElement>('[data-action="catalog-clear-filter"]')!;
     const visible = () =>
       Array.from(
         root.querySelectorAll<HTMLElement>('[data-catalog-entry-name]'),
@@ -551,7 +555,7 @@ describe('wireCatalog', () => {
         .filter((entry) => !entry.hidden)
         .map((entry) => entry.dataset.catalogEntryName);
     const type = (value: string) => {
-      input().value = value;
+      input().textContent = value;
       input().dispatchEvent(new Event('input', { bubbles: true }));
     };
     type('bUt');
@@ -581,13 +585,19 @@ describe('wireCatalog', () => {
     ).toBe('true');
     type('nothing');
     expect(visible()).toEqual([]);
+    expect(clear().style.display).toBe('');
     expect(
       root
         .querySelector('[data-catalog-filter-empty]')
         ?.getAttribute('data-visible'),
     ).toBe('true');
+    clear().click();
+    expect(input().textContent).toBe('');
+    expect(clear().style.display).toBe('none');
+    expect(visible()).toEqual(['Button', 'Select', 'Banner', 'Input']);
+    type('nothing');
     root.innerHTML = String(Catalog(props));
-    await vi.waitFor(() => expect(input().value).toBe('nothing'));
+    await vi.waitFor(() => expect(input().textContent).toBe('nothing'));
     expect(visible()).toEqual([]);
     type('');
     expect(visible()).toEqual(['Button', 'Select', 'Banner', 'Input']);
@@ -611,9 +621,10 @@ describe('wireCatalog', () => {
     const unrelated = document.createElement('input');
     root.append(unrelated);
     unrelated.dispatchEvent(new Event('input', { bubbles: true }));
+    unrelated.click();
     root.innerHTML = String(Catalog(props));
     await Promise.resolve();
-    expect(input().value).toBe('');
+    expect(input().textContent).toBe('');
     dispose();
   });
 
@@ -638,10 +649,8 @@ describe('wireCatalog', () => {
       ),
     );
     const dispose = wireCatalog(root, { onSelect: () => {} });
-    const input = root.querySelector<HTMLInputElement>(
-      '[data-catalog-filter]',
-    )!;
-    input.value = 'item';
+    const input = root.querySelector<HTMLElement>('[data-catalog-filter]')!;
+    input.textContent = 'item';
     input.dispatchEvent(new Event('input', { bubbles: true }));
     expect(root.querySelector('[data-item-id="item"]')).toHaveProperty(
       'hidden',

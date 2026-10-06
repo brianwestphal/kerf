@@ -1,5 +1,6 @@
 import { delegate, type Signal } from 'kerfjs';
 
+import { readTokenSearchField } from '../../components/forms/token-search-field/token-search-field.js';
 import { wireWorkbench } from '../../components/layout/workbench/wiring/wire-workbench.js';
 import { wireScrollDividers } from '../../wiring/wire-scroll-dividers.js';
 
@@ -68,12 +69,26 @@ function wireCatalogFilter(root: HTMLElement): () => void {
   const view = root.ownerDocument.defaultView!;
   let filterValue = '';
   let query = '';
+  let currentEditor: HTMLElement | null = null;
   const matches = (name: string) => name.toLocaleLowerCase().includes(query);
   const apply = () => {
-    const input = root.querySelector<HTMLInputElement>('[data-catalog-filter]');
-    const nav = input?.closest<HTMLElement>('nav');
-    if (!input || !nav) return;
-    if (input.value !== filterValue) input.value = filterValue;
+    const editor = root.querySelector<HTMLElement>('[data-catalog-filter]');
+    const nav = root.querySelector<HTMLElement>('[data-catalog-sidebar]');
+    if (!editor || !nav) return;
+    if (editor !== currentEditor) {
+      currentEditor = editor;
+      if (readTokenSearchField(editor).query !== filterValue)
+        editor.textContent = filterValue;
+    }
+    const field = editor.closest<HTMLElement>(
+      '[data-component="token-search-field"]',
+    )!;
+    field.dataset.catalogFilterActive = String(Boolean(query));
+    field.dataset.placeholderVisible = String(!filterValue);
+    const clear = field.querySelector<HTMLElement>(
+      '[data-action="catalog-clear-filter"]',
+    )!;
+    clear.style.display = query ? '' : 'none';
     nav.dataset.catalogFilterActive = String(Boolean(query));
     let visibleEntries = 0;
     for (const section of nav.querySelectorAll<HTMLElement>(
@@ -133,13 +148,25 @@ function wireCatalogFilter(root: HTMLElement): () => void {
     empty.dataset.visible = String(Boolean(query) && visibleEntries === 0);
   };
   const onInput = (event: Event) => {
-    const target = event.target as HTMLInputElement | null;
-    if (!target?.matches('[data-catalog-filter]')) return;
-    filterValue = target.value;
+    const target = event.target as HTMLElement | null;
+    const editor = target?.closest<HTMLElement>('[data-catalog-filter]');
+    if (!editor || !root.contains(editor)) return;
+    filterValue = readTokenSearchField(editor).query;
     query = filterValue.trim().toLocaleLowerCase();
     apply();
   };
+  const onClick = (event: Event) => {
+    const target = event.target as Element;
+    if (!target.closest('[data-action="catalog-clear-filter"]')) return;
+    const editor = root.querySelector<HTMLElement>('[data-catalog-filter]')!;
+    filterValue = '';
+    query = '';
+    editor.textContent = '';
+    apply();
+    editor.focus();
+  };
   root.addEventListener('input', onInput);
+  root.addEventListener('click', onClick);
   const observer = new view.MutationObserver(() => {
     if (query) apply();
   });
@@ -147,6 +174,7 @@ function wireCatalogFilter(root: HTMLElement): () => void {
   apply();
   return () => {
     root.removeEventListener('input', onInput);
+    root.removeEventListener('click', onClick);
     observer.disconnect();
   };
 }

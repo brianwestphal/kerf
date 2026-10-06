@@ -8,9 +8,7 @@ const headerGeometry = async (page: Page) =>
     const title = rect(
       '#kui-catalog-left-rail .kui-pane__header [data-component="toolbar-text"][aria-level="1"]',
     );
-    const subtitle = rect(
-      '#kui-catalog-left-rail nav > [data-component="list"] > [data-component="list-inset-text"]',
-    );
+    const filter = rect('#kui-catalog-left-rail .kui-catalog__filter');
     const contentStart = (selector: string) => {
       const element = document.querySelector<HTMLElement>(selector)!;
       const bounds = element.getBoundingClientRect();
@@ -28,11 +26,9 @@ const headerGeometry = async (page: Page) =>
     return {
       collapseTitleCenterDelta: Math.abs(centerY(collapse) - centerY(title)),
       logoTitleCenterDelta: Math.abs(centerY(logo) - centerY(title)),
-      subtitleBelowTitle: subtitle.top >= title.bottom - 1,
-      subtitlePrecedesTitle:
-        contentStart(
-          '#kui-catalog-left-rail nav > [data-component="list"] > [data-component="list-inset-text"]',
-        ) <
+      filterBelowTitle: filter.top >= title.bottom - 1,
+      filterStartsBeforeTitle:
+        contentStart('#kui-catalog-left-rail .kui-catalog__filter') <
         contentStart(
           '#kui-catalog-left-rail .kui-pane__header [data-component="toolbar-text"][aria-level="1"]',
         ),
@@ -64,8 +60,8 @@ test('uses the Kerf identity and relocates sidebar restore into the detail toolb
   await expect(sidebar.getByText('K', { exact: true })).toHaveCount(0);
   const wideGeometry = await headerGeometry(page);
   expect(wideGeometry).toMatchObject({
-    subtitleBelowTitle: true,
-    subtitlePrecedesTitle: true,
+    filterBelowTitle: true,
+    filterStartsBeforeTitle: true,
   });
   expect(wideGeometry.collapseTitleCenterDelta).toBeLessThanOrEqual(1);
   expect(wideGeometry.logoTitleCenterDelta).toBeLessThanOrEqual(1);
@@ -112,7 +108,7 @@ test('uses the Kerf identity and relocates sidebar restore into the detail toolb
   await detail.getByRole('button', { name: 'Show Kerf catalog' }).click();
   await expect(sidebar).toHaveCSS('position', 'absolute');
   expect(await headerGeometry(page)).toMatchObject({
-    subtitleBelowTitle: true,
+    filterBelowTitle: true,
   });
   await sidebar.getByRole('button', { name: 'Hide Kerf catalog' }).click();
   await expect(
@@ -172,6 +168,19 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await page.goto('/?component=badge');
   const sidebar = page.locator('#kui-catalog-left-rail');
   const filter = sidebar.getByRole('searchbox', { name: 'Filter catalog' });
+  await expect(sidebar.getByText('UI components', { exact: true })).toHaveCount(
+    0,
+  );
+  await expect(filter).toHaveAttribute(
+    'data-token-search-editor',
+    'kui-catalog-filter',
+  );
+  const scroll = sidebar.locator('.kui-pane__content');
+  const filterTop = (await filter.boundingBox())!.y;
+  await scroll.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  expect((await filter.boundingBox())!.y).toBeCloseTo(filterTop, 0);
   await filter.fill('tOoLbAr');
   await expect(sidebar.locator('[data-item-id="toolbar"]')).toBeVisible();
   await expect(sidebar.locator('[data-item-id="badge"]')).toBeHidden();
@@ -192,15 +201,16 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await filter.fill('Toolbar');
   await sidebar.locator('[data-item-id="toolbar"]').click();
   await expect(page).toHaveURL(/component=toolbar/);
-  await expect(filter).toHaveValue('Toolbar');
+  await expect(filter).toHaveText('Toolbar');
   await expect(sidebar.locator('[data-item-id="toolbar"]')).toBeVisible();
   if (browserName === 'chromium')
     await sidebar.screenshot({ path: 'test-results/catalog-filter-wide.png' });
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
-  await expect(filter).toHaveValue('Toolbar');
-  await filter.fill('');
+  await expect(filter).toHaveText('Toolbar');
+  await sidebar.getByRole('button', { name: 'Clear filter' }).click();
+  await expect(filter).toBeEmpty();
   await expect(sidebar.locator('[data-item-id="badge"]')).toBeVisible();
   await expect(sidebar.locator('[data-catalog-secondary]')).toBeHidden();
   await expect(sidebar.getByText('No matching items')).toBeHidden();

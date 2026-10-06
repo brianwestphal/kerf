@@ -45,13 +45,14 @@ expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
 - Optional slots: `headerActions` (extra header controls), `sidebarFooter` (extra
   sidebar content), and `status` (a footer status line).
 
-The sidebar includes a search field automatically for every Catalog consumer.
-`wireCatalog` filters entry names and section headings as text is typed,
+The sidebar includes a `TokenSearchField` in its fixed header for every Catalog
+consumer, so the filter remains visible while the entries scroll. `wireCatalog`
+filters entry names and section headings as text is typed,
 ignoring case. A heading match shows all its entries; a matching secondary
 group heading searches its sections too, even while that group is collapsed.
 Empty sections disappear and an empty-result message appears when nothing
 matches. The query survives controlled Catalog rerenders and clears through the
-search field's native clear control. Filtering does not change the selected
+field's clear action. Filtering does not change the selected
 entry or its preview.
 
 Per-entry `resources` render as "open in new tab" links in the footer, and

@@ -416,7 +416,7 @@ mount(app, () => {
   return (
     <Catalog
       className="demo-catalog"
-      brand={{ title: 'Kerf', subtitle: 'UI components', logoUrl: kerfLogoUrl }}
+      brand={{ title: 'Kerf', logoUrl: kerfLogoUrl }}
       sections={kuiCatalogSections}
       secondarySections={{
         label: 'Web Awesome',
