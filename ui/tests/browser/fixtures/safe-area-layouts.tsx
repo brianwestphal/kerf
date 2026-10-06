@@ -9,7 +9,7 @@ import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/split-view.css';
 import '@kerfjs/ui/resizable-region.css';
 import '@kerfjs/ui/workbench.css';
-import '@kerfjs/ui/tab-scaffold.css';
+import '@kerfjs/ui/tab-navigator.css';
 import '@kerfjs/ui/collapsible-panel.css';
 import '@kerfjs/ui/list.css';
 
@@ -19,7 +19,7 @@ import { List } from '@kerfjs/ui/list';
 import { NavStack } from '@kerfjs/ui/nav-stack';
 import { Pane, type PaneSeparatorSide } from '@kerfjs/ui/pane';
 import { SplitView } from '@kerfjs/ui/split-view';
-import { TabScaffold } from '@kerfjs/ui/tab-scaffold';
+import { TabNavigator } from '@kerfjs/ui/tab-navigator';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -174,7 +174,7 @@ function render() {
       );
     case 'tab-scaffold-pane':
       return (
-        <TabScaffold
+        <TabNavigator
           id="safe-tabs"
           label="Sections"
           active="home"
@@ -183,7 +183,7 @@ function render() {
       );
     case 'tab-scaffold':
       return (
-        <TabScaffold
+        <TabNavigator
           id="safe-tabs"
           label="Sections"
           active="home"

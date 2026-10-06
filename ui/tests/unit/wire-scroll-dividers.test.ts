@@ -10,7 +10,7 @@ import { SplitView } from '../../src/components/layout/split-view/split-view.js'
 import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
 import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
-import { TabScaffold } from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
+import { TabNavigator } from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
 import { wireScrollDividers } from '../../src/wiring/wire-scroll-dividers.js';
 import { componentStylesheet } from './helpers/component-stylesheet.js';
 
@@ -194,7 +194,7 @@ describe('NavStack and TabScaffold chromeDividers', () => {
     );
   const scaffold = (chromeDividers?: 'scroll' | 'always' | 'none') =>
     String(
-      TabScaffold({
+      TabNavigator({
         id: 'tabs',
         label: 'Sections',
         active: 'a',
@@ -960,7 +960,7 @@ describe('wireScrollDividers — TabScaffold bar over the active scene', () => {
   function scaffold(content: (id: string) => string) {
     const root = mountHtml(
       String(
-        TabScaffold({
+        TabNavigator({
           id: `tabs-${String(roots.length)}`,
           label: 'Sections',
           active: 'one',
@@ -1046,7 +1046,7 @@ describe('wireScrollDividers — TabScaffold bar over the active scene', () => {
 
   it('keys an outer NavStack chrome on a nested TabScaffold scene, but not its bar edge', () => {
     const inner = String(
-      TabScaffold({
+      TabNavigator({
         id: 'inner-tabs',
         label: 'Inner',
         active: 'a',

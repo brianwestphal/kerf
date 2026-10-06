@@ -5,9 +5,6 @@ export interface WireTabNavigatorOptions {
   onSelect: (tabId: string) => void;
 }
 
-/** @deprecated Use `WireTabNavigatorOptions`. Kept for the 5.x migration window. */
-export type WireTabScaffoldOptions = WireTabNavigatorOptions;
-
 /**
  * Wire a `TabNavigator`'s bottom tab bar: clicking a tab calls `onSelect` with its
  * id (the app then updates its controlled `active`). Returns a disposer.
@@ -30,6 +27,3 @@ export function wireTabNavigator(
     },
   );
 }
-
-/** @deprecated Use `wireTabNavigator`. Kept for the 5.x migration window. */
-export const wireTabScaffold: typeof wireTabNavigator = wireTabNavigator;

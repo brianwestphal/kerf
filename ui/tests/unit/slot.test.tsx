@@ -11,7 +11,7 @@ import { CollapsiblePanelToggle } from '../../src/components/layout/collapsible-
 import { SplitView } from '../../src/components/layout/split-view/split-view.js';
 import { Workbench } from '../../src/components/layout/workbench/workbench.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
-import { TabScaffold } from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
+import { TabNavigator } from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
 import {
   AppTab,
   Badge,
@@ -259,9 +259,9 @@ const cases: SlotCase[] = [
       TabBar({ id: 'tabs', label: 'Tabs', children: content, slot }),
   },
   {
-    name: 'TabScaffold',
+    name: 'TabNavigator',
     render: (slot) =>
-      TabScaffold({
+      TabNavigator({
         id: 'scaffold',
         label: 'Tabs',
         active: 'one',

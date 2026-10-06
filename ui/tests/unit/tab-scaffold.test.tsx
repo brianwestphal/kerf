@@ -2,9 +2,7 @@ import { raw } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TabNavigator, type TabNavigatorTab } from '../../src/tab-navigator.js';
-import { TabScaffold } from '../../src/tab-scaffold.js';
 import { wireTabNavigator } from '../../src/wire-tab-navigator.js';
-import { wireTabScaffold } from '../../src/wire-tab-scaffold.js';
 
 const tabs: TabNavigatorTab[] = [
   {
@@ -21,10 +19,6 @@ afterEach(() => {
 });
 
 describe('TabNavigator markup', () => {
-  it('keeps the deprecated component and wiring aliases equivalent', () => {
-    expect(TabScaffold).toBe(TabNavigator);
-    expect(wireTabScaffold).toBe(wireTabNavigator);
-  });
   it('marks only opted-in scenes for a deep content inset', () => {
     const html = String(
       TabNavigator({

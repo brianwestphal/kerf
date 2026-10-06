@@ -8,8 +8,8 @@ It is distinct from `TabBar` (document-oriented, reorderable strips).
 
 ## Migration from TabScaffold
 
-The previous `TabScaffold` API remains available throughout 5.x as a deprecated
-alias. Replace names and import paths when updating an app:
+The deprecated `TabScaffold` API was removed in 6.0. Replace names and import
+paths when updating an app:
 
 | Previous                                                                           | Current                                                                                |
 | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -18,8 +18,8 @@ alias. Replace names and import paths when updating an app:
 | `@kerfjs/ui/tab-scaffold.css`                                                      | `@kerfjs/ui/tab-navigator.css`                                                         |
 
 Props, rendered DOM classes, data attributes, and wiring behavior are unchanged.
-The two CSS paths deliver the same styles; import one of them. Alias removal
-will be assessed for the next major version after consumer migration.
+The old JS and CSS subpaths are no longer exported. Import the new CSS path
+when your build does not use the package's `browser` condition.
 
 ```ts
 import { TabNavigator } from "@kerfjs/ui/tab-navigator";

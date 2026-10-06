@@ -12,7 +12,7 @@ import '@kerfjs/ui/tab-bar.css';
 import '@kerfjs/ui/resizable-region.css';
 import '@kerfjs/ui/workbench.css';
 import '@kerfjs/ui/nav-stack.css';
-import '@kerfjs/ui/tab-scaffold.css';
+import '@kerfjs/ui/tab-navigator.css';
 
 import { AppTab, type AppTabPresentation } from '@kerfjs/ui/app-tab';
 import { ContentItem } from '@kerfjs/ui/content-item';
@@ -21,13 +21,13 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
 import { Pane } from '@kerfjs/ui/pane';
 import { TabBar, type TabBarPresentation } from '@kerfjs/ui/tab-bar';
-import { TabScaffold } from '@kerfjs/ui/tab-scaffold';
+import { TabNavigator } from '@kerfjs/ui/tab-navigator';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireScrollDividers } from '@kerfjs/ui/wire-scroll-dividers';
-import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
+import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
 import { Workbench } from '@kerfjs/ui/workbench';
 import { mount, signal } from 'kerfjs';
 import { PanelLeft, Plus } from 'lucide';
@@ -191,7 +191,7 @@ mount(root, () => (
       />
     </div>
     <div data-case="tab-scaffold" style="height: 420px; display: grid">
-      <TabScaffold
+      <TabNavigator
         id="scaffold"
         label="Sections"
         active={scaffoldTab.value}
@@ -218,7 +218,7 @@ mount(root, () => (
       />
     </div>
     <div data-case="tab-scaffold-pane" style="height: 360px; display: grid">
-      <TabScaffold
+      <TabNavigator
         id="scaffold-pane"
         label="Scaffold with a pane"
         active="pane"
@@ -268,7 +268,7 @@ mount(root, () => (
         data-case={`tab-scaffold-${chromeDividers}`}
         style="height: 300px; display: grid"
       >
-        <TabScaffold
+        <TabNavigator
           id={`scaffold-${chromeDividers}`}
           label={`Sections ${chromeDividers}`}
           active="only"
@@ -315,7 +315,7 @@ wireNavStack(root.querySelector<HTMLElement>('#stack')!, {
     stackViews.value = stackViews.value.slice(0, -1);
   },
 });
-wireTabScaffold(root.querySelector<HTMLElement>('#scaffold')!, {
+wireTabNavigator(root.querySelector<HTMLElement>('#scaffold')!, {
   onSelect: (id) => {
     scaffoldTab.value = id as 'feed' | 'about';
   },

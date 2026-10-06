@@ -56,9 +56,6 @@ export type TabNavigatorTab<Id extends string = string> =
   TabNavigatorTabBase<Id> &
     (TabNavigatorTabCountBadge | TabNavigatorTabDotBadge);
 
-/** @deprecated Use `TabNavigatorTab`. Kept for the 5.x migration window. */
-export type TabScaffoldTab<Id extends string = string> = TabNavigatorTab<Id>;
-
 export interface TabNavigatorProps<Id extends string = string> {
   id: string;
   /** Accessible name for the tab bar. */
@@ -80,10 +77,6 @@ export interface TabNavigatorProps<Id extends string = string> {
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
-
-/** @deprecated Use `TabNavigatorProps`. Kept for the 5.x migration window. */
-export type TabScaffoldProps<Id extends string = string> =
-  TabNavigatorProps<Id>;
 
 /**
  * A mobile-first, iOS-like bottom tab navigator: a bottom tab bar that switches
@@ -189,9 +182,6 @@ export function TabNavigator<Id extends string>({
     </section>
   );
 }
-
-/** @deprecated Use `TabNavigator`. Kept for the 5.x migration window. */
-export const TabScaffold: typeof TabNavigator = TabNavigator;
 
 function normalizeBadge(
   badge: string | number | undefined,

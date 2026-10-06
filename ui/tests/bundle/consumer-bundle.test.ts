@@ -586,7 +586,6 @@ describe('consumer bundle boundaries', () => {
       'nav-stack',
       'split-view',
       'tab-navigator',
-      'tab-scaffold',
       'collapsible-panel',
     ]) {
       const result = await nodeBundle(
@@ -790,17 +789,9 @@ describe('consumer bundle boundaries', () => {
       types: './dist/wire-tab-navigator.d.ts',
       import: './dist/wire-tab-navigator.js',
     });
-    expect(pkg.exports['./tab-scaffold']).toMatchObject({
-      types: './dist/tab-scaffold.d.ts',
-      browser: './dist/browser/tab-scaffold.js',
-      import: './dist/tab-scaffold.js',
-    });
-    expect(pkg.exports['./tab-scaffold.css']).toBe(
-      './dist/styles/tab-scaffold.css',
-    );
-    expect(pkg.exports['./wire-tab-scaffold']).toMatchObject({
-      import: './dist/wire-tab-scaffold.js',
-    });
+    expect(pkg.exports).not.toHaveProperty('./tab-scaffold');
+    expect(pkg.exports).not.toHaveProperty('./tab-scaffold.css');
+    expect(pkg.exports).not.toHaveProperty('./wire-tab-scaffold');
     expect(pkg.exports['./wire-workbench']).toMatchObject({
       types: './dist/wire-workbench.d.ts',
       import: './dist/wire-workbench.js',

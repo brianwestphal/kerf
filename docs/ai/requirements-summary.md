@@ -503,8 +503,8 @@ edge-to-edge decoration and add them to cell padding for aligned text in both
 
 **Shipped naming migration:** `TabNavigator` names the complete destination
 layout, while `TabBar` names the separate document-tab strip. The former
-`TabScaffold` component, types, wiring helper, and import paths remain
-deprecated aliases throughout 5.x; see
+`TabScaffold` component, types, wiring helper, and import paths were
+deprecated in 5.x and removed in 6.0; see
 [`ui/docs/tab-navigator.md`](../../ui/docs/tab-navigator.md).
 
 ### §24 AI-first project setup

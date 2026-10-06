@@ -2115,15 +2115,6 @@ declare function wireSidebar(root: HTMLElement, { panels, deviceClass, compactPr
 export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wireSidebar };
 ```
 
-## `@kerfjs/ui/tab-scaffold`
-
-```ts
-export { TabNavigator, TabNavigatorProps, TabNavigatorTab, T as TabScaffold, a as TabScaffoldProps, b as TabScaffoldTab } from './tab-navigator.js';
-import 'kerfjs';
-import './semantic-content-BbzjvSu9.js';
-import './pane.js';
-```
-
 ## `@kerfjs/ui/tab-navigator`
 
 ```ts
@@ -2177,8 +2168,6 @@ interface TabNavigatorTabDotBadge {
 }
 /** One bottom-bar destination: its label, optional icon and badge, and content. */
 type TabNavigatorTab<Id extends string = string> = TabNavigatorTabBase<Id> & (TabNavigatorTabCountBadge | TabNavigatorTabDotBadge);
-/** @deprecated Use `TabNavigatorTab`. Kept for the 5.x migration window. */
-type TabScaffoldTab<Id extends string = string> = TabNavigatorTab<Id>;
 interface TabNavigatorProps<Id extends string = string> {
     id: string;
     /** Accessible name for the tab bar. */
@@ -2200,8 +2189,6 @@ interface TabNavigatorProps<Id extends string = string> {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-/** @deprecated Use `TabNavigatorProps`. Kept for the 5.x migration window. */
-type TabScaffoldProps<Id extends string = string> = TabNavigatorProps<Id>;
 /**
  * A mobile-first, iOS-like bottom tab navigator: a bottom tab bar that switches
  * between major sections, each tab keeping its own content (usually a `NavStack`)
@@ -2211,16 +2198,8 @@ type TabScaffoldProps<Id extends string = string> = TabNavigatorProps<Id>;
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
 declare function TabNavigator<Id extends string>({ id, label, tabs, active, chromeDividers, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
-/** @deprecated Use `TabNavigator`. Kept for the 5.x migration window. */
-declare const TabScaffold: typeof TabNavigator;
 
-export { TabScaffold as T, TabNavigator, type TabNavigatorProps, type TabNavigatorTab, type TabScaffoldProps as a, type TabScaffoldTab as b };
-```
-
-## `@kerfjs/ui/wire-tab-scaffold`
-
-```ts
-export { WireTabNavigatorOptions, W as WireTabScaffoldOptions, wireTabNavigator, w as wireTabScaffold } from './wire-tab-navigator.js';
+export { TabNavigator, type TabNavigatorProps, type TabNavigatorTab };
 ```
 
 ## `@kerfjs/ui/wire-tab-navigator`
@@ -2230,17 +2209,13 @@ interface WireTabNavigatorOptions {
     /** Invoked with the selected tab id when a bottom-bar tab is activated. */
     onSelect: (tabId: string) => void;
 }
-/** @deprecated Use `WireTabNavigatorOptions`. Kept for the 5.x migration window. */
-type WireTabScaffoldOptions = WireTabNavigatorOptions;
 /**
  * Wire a `TabNavigator`'s bottom tab bar: clicking a tab calls `onSelect` with its
  * id (the app then updates its controlled `active`). Returns a disposer.
  */
 declare function wireTabNavigator(root: Element, options: WireTabNavigatorOptions): () => void;
-/** @deprecated Use `wireTabNavigator`. Kept for the 5.x migration window. */
-declare const wireTabScaffold: typeof wireTabNavigator;
 
-export { type WireTabScaffoldOptions as W, type WireTabNavigatorOptions, wireTabScaffold as w, wireTabNavigator };
+export { type WireTabNavigatorOptions, wireTabNavigator };
 ```
 
 ## `@kerfjs/ui/resizable-region`

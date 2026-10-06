@@ -89,7 +89,6 @@ import {
 import { SunkenPanel, type SunkenPanelShape } from '@kerfjs/ui/sunken-panel';
 import { type TabActivation, TabBar } from '@kerfjs/ui/tab-bar';
 import { TabNavigator } from '@kerfjs/ui/tab-navigator';
-import { TabScaffold, type TabScaffoldProps } from '@kerfjs/ui/tab-scaffold';
 import { Text } from '@kerfjs/ui/text';
 import {
   type TokenSearchEditorAttributes,
@@ -111,7 +110,6 @@ import {
   wireScrollDividers,
 } from '@kerfjs/ui/wire-scroll-dividers';
 import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
-import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { Workbench } from '@kerfjs/ui/workbench';
@@ -598,15 +596,7 @@ TabNavigator({
   tabs: [{ id: 'one', label: 'One', content: slottedContent }],
   slot: 'named',
 });
-const legacyTabProps: TabScaffoldProps<'one'> = {
-  id: 'legacy-tabs',
-  label: 'Tabs',
-  active: 'one',
-  tabs: [{ id: 'one', label: 'One', content: slottedContent }],
-};
-TabScaffold(legacyTabProps);
 wireTabNavigator(document.body, { onSelect: () => undefined });
-wireTabScaffold(document.body, { onSelect: () => undefined });
 UI.TokenSearchField({ id: 'search', label: 'Search', slot: 'named' });
 UI.Toolbar({ leading: slottedContent, slot: 'named' });
 UI.ToolbarActionLink({ href: '/', label: 'Home', slot: 'named' });

@@ -692,11 +692,7 @@ for (const entry of entries.filter(({ delivery }) => delivery.moduleImport)) {
 // The `Catalog` shell is package tooling for building a component catalog,
 // not a catalog entry itself, yet it still ships a CSS-aware browser wrapper so
 // the internal components it renders bring their styles.
-const nonCatalogBrowserImports = new Set([
-  '@kerfjs/ui/catalog',
-  // Deprecated 5.x alias of the cataloged TabNavigator component.
-  '@kerfjs/ui/tab-scaffold',
-]);
+const nonCatalogBrowserImports = new Set(['@kerfjs/ui/catalog']);
 const browserImports = Object.entries(packageJson.exports)
   .filter(
     ([, target]) => target && typeof target === 'object' && 'browser' in target,

@@ -1174,10 +1174,10 @@ bundle/CSS tree-shaking gates extend to cover the new subpaths.
    `@kerfjs/ui/responsive` umbrella can still be introduced later if more
    responsive helpers appear.
 
-**Naming review (KF-YMJH1W, KF-PSDCV0).** `TabNavigator` names the complete
+**Naming review (KF-YMJH1W, KF-PSDCV0, KF-CMK0W8).** `TabNavigator` names the complete
 layout: it owns persistent scenes and their bottom bar. `TabBar` names the
-separate document-tab strip. The former `TabScaffold` name and imports remain
-deprecated compatibility aliases throughout 5.x; see
+separate document-tab strip. The former `TabScaffold` names and imports were
+deprecated in 5.x and removed in 6.0; see
 [`ui/docs/tab-navigator.md`](../ui/docs/tab-navigator.md) for the migration.
 
 The shipped layouts are represented in the machine-readable component catalog,

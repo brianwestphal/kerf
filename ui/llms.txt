@@ -381,10 +381,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   with `chromeDividers="scroll"` then draws the line under its header only while content is scrolled beneath
   it and the line over its footer only while more content lies below (never
   when the content fits), every `NavStack`'s top chrome and bottom toolbar and
-  every `TabScaffold` bar do the same around the active view or scene, and
+  every `TabNavigator` bar do the same around the active view or scene, and
   every `TabBar` marks each side of its strip with tabs scrolled out of view. Configure a pane with `chromeDividers`
   (`scroll` for a plain pane by default, `always` for a sunken pane by default,
-  or explicit `scroll`, `always`, `none`), and a `NavStack` or `TabScaffold`
+  or explicit `scroll`, `always`, `none`), and a `NavStack` or `TabNavigator`
   with its own `chromeDividers` (same values; a `SplitView` forwards it through
   `compactStack`); name app-owned chrome in `targets`.
   Never add a border, or a permanent `dividerSides`, to fake one.
@@ -488,7 +488,7 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   consuming component. Use a real button or link for interactive content.
   For new content without a count, use the text-free `size="dot"` form: it
   takes no children, and needs a `label` (announced as an image) or
-  `ariaHidden` when its owner announces it. A `TabScaffold` tab shows the dot
+  `ariaHidden` when its owner announces it. A `TabNavigator` tab shows the dot
   with `badge: true` plus its required `badgeLabel`.
 - **Use `Chip` for removable tags.** Give the native remove button a delegated
   `removeAction` and a specific `removeLabel`; the application updates the tag
@@ -503,13 +503,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `wireScrollDividers` (scroll-state dividers for every `Pane`, `NavStack`,
-`TabScaffold`, and `TabBar`),
+`TabNavigator`, and `TabBar`),
 `ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,
 `LoadingSpinner`, `Skeleton`, `ValueTable`, `ValueTableRow`. Whole-screen layouts (opt-in,
 tree-shakeable, declarative with `wire…` helpers; the browser build of each layout
 subpath loads its CSS and that of the components it renders, and a companion
 CSS subpath remains for pipelines without the `browser` condition):
-`NavStack`, `SplitView`, `Workbench`, `TabScaffold`, driven by `deviceClass()` from
+`NavStack`, `SplitView`, `Workbench`, `TabNavigator`, driven by `deviceClass()` from
 `@kerfjs/ui/device-class`. For a standalone collapsible rail/drawer outside a full
 shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelToggle`)
 
@@ -535,7 +535,7 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [accessibility.md](./docs/accessibility.md): keyboard and ARIA contracts per component.
 - [recipes.md](./docs/recipes.md): production compositions (app shell, list-detail dialog, composer form, …) as copyable references.
 - [workbench.md](./docs/workbench.md): the `Workbench` multi-panel shell, its collapse policies, and opt-in `resizable` panels driven by `wireWorkbench` (`@kerfjs/ui/wire-workbench`: drag, keyboard, min/max, persistence, compact suspension), the `mainMinSize` / `mainMinHeight` work-area minimums (default 320px wide beside any inline rail, 120px tall above the drawer) that resizable panels stop at and inline panels shrink around, and a panel's `responsiveOverlayAt` (`narrow` / `compact`, rails and the bottom drawer) that presents it as an overlay below a Workbench container breakpoint without a device-class check; a panel given its `collapsed` signal is a transient overlay (collapsed on entering the breakpoint, takes focus and keeps Tab inside while open, closed by Escape or an outside press, focus returned; `dismissOverlays`), and overlays are exclusive by default (opening one closes the others; `exclusiveOverlays: false` opts out).
-- [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabScaffold` by data + interaction + device, and dialog presentation, plus the safe-area model (surfaces paint through unsafe areas; content pads only the edges it reaches; `Pane.safeAreaEdges` for app-owned arrangements, `Toolbar.safeAreaEdges` for an app bar or bottom bar at a screen edge).
+- [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabNavigator` by data + interaction + device, and dialog presentation, plus the safe-area model (surfaces paint through unsafe areas; content pads only the edges it reaches; `Pane.safeAreaEdges` for app-owned arrangements, `Toolbar.safeAreaEdges` for an app bar or bottom bar at a screen edge).
 - [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists). The UX sidebar visibly tags superseded and exceptional Web Awesome choices as `Discouraged`; Popup remains an available conditional positioning primitive.
 - [ai/components/README.md](./ai/components/README.md): the generated per-component markdown reference — the assistant entry point over both JSON catalogs.
 - [component-catalog.json](./ai/component-catalog.json) + [component-catalog-extension.schema.json](./ai/component-catalog-extension.schema.json) + [catalog-authoring.json](./ai/catalog-authoring.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable selection facts, a reusable app-component extension contract, Catalog authoring discovery, and exact signatures.
@@ -546,9 +546,9 @@ Neutral lowered surfaces and decorative neutral fills/borders are translucent th
 
 Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.
 
-For a tab scene with drill-down, put a `NavStack` directly in `TabScaffoldTab.content`, configure each view's top `toolbar` and `pane`, and omit `bottomToolbar` at both levels so the scaffold bar remains the only bottom chrome. Wire both components on their own roots. The catalog's **NavStack inside a tab** example exercises push and tab switching.
+For a tab scene with drill-down, put a `NavStack` directly in `TabNavigatorTab.content`, configure each view's top `toolbar` and `pane`, and omit `bottomToolbar` at both levels so the scaffold bar remains the only bottom chrome. Wire both components on their own roots. The catalog's **NavStack inside a tab** example exercises push and tab switching.
 
-`Pane.deepInset` (and `PaneConfig.deepInset`) or `TabScaffoldTab.deepInset` on a plain scene adds an 8px outer gutter to the scroll content, so ordinary 8px item margins land 16px from the edge. Nested Row/List/Grid spacing stays at its default. Set a nested scene's Pane option instead of insetting its entire NavStack or toolbar.
+`Pane.deepInset` (and `PaneConfig.deepInset`) or `TabNavigatorTab.deepInset` on a plain scene adds an 8px outer gutter to the scroll content, so ordinary 8px item margins land 16px from the edge. Nested Row/List/Grid spacing stays at its default. Set a nested scene's Pane option instead of insetting its entire NavStack or toolbar.
 For a child table whose decoration spans the Pane while its text stays aligned, use the Pane content slot's inherited `--kui-pane-content-inset-inline-start` and `--kui-pane-content-inset-inline-end`: negate them for the child's logical margins and add them to cell padding. They include safe areas and `deepInset`; see `docs/app-layouts.md#edge-to-edge-content-inside-a-pane`.
 
 `ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`

@@ -237,8 +237,6 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `SplitView`                                                         | `@kerfjs/ui/split-view`                 | `@kerfjs/ui/split-view.css`            |
 | `TabNavigator`                                                      | `@kerfjs/ui/tab-navigator`              | `@kerfjs/ui/tab-navigator.css`         |
 | `wireTabNavigator`                                                  | `@kerfjs/ui/wire-tab-navigator`         | —                                      |
-| `TabScaffold` (deprecated 5.x alias)                                | `@kerfjs/ui/tab-scaffold`               | `@kerfjs/ui/tab-scaffold.css`          |
-| `wireTabScaffold` (deprecated 5.x alias)                            | `@kerfjs/ui/wire-tab-scaffold`          | —                                      |
 | `Workbench`                                                         | `@kerfjs/ui/workbench`                  | `@kerfjs/ui/workbench.css`             |
 | `wireWorkbench`                                                     | `@kerfjs/ui/wire-workbench`             | —                                      |
 | `CollapsiblePanel`, `CollapsiblePanelToggle`                        | `@kerfjs/ui/collapsible-panel`          | `@kerfjs/ui/collapsible-panel.css`     |
