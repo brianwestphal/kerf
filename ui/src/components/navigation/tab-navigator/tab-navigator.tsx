@@ -13,7 +13,7 @@ interface TabNavigatorTabBase<Id extends string> {
   content: KerfUiContent;
   /** Background of this scene's scrolling work surface. */
   appearance?: PaneAppearance;
-  /** Add an extra 8px inline gutter to a plain scene's scrolling content. */
+  /** Add 8px to every side of a plain scene's scrolling content. */
   deepInset?: boolean;
 }
 

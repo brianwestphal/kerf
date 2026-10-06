@@ -96,7 +96,7 @@ export interface PaneProps {
   chromeDividers?: PaneChromeDividers;
   /** Paint the scrolling work surface with the shared lowered-surface color. */
   appearance?: PaneAppearance;
-  /** Add an extra 8px inline gutter to scrolling content (default: false). */
+  /** Add 8px to every side of scrolling content (default: false). */
   deepInset?: boolean;
   /** Root semantics. Defaults to `div`. */
   element?: PaneElement;
