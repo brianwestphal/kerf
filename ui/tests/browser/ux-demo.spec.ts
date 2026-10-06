@@ -573,9 +573,7 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
   expect(
     await example
       .locator('.kui-token-search')
-      .evaluate(
-        (field) => window.getComputedStyle(field, '::before').content,
-      ),
+      .evaluate((field) => window.getComputedStyle(field, '::before').content),
   ).toBe('"Search demands"');
   // The catalog stack caps examples at 736px. Lift that cap so the roomy
   // toolbar really receives the 850px requested below on every platform.
