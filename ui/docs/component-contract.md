@@ -713,7 +713,7 @@ helpers. Its collapse behavior was _rich and error-prone_ — reveal, focus
 transfer, Escape, empty-blur collapse, focus return — the kind of transient chrome
 apps kept reimplementing inconsistently, so the helper owns it. Everywhere else the
 app's state is **domain or persisted, not transient chrome, and stays app-owned**: a
-`NavStack`'s view stack is navigation history, a `TabBar`/`TabScaffold`'s selection
+`NavStack`'s view stack is navigation history, a `TabBar`/`TabNavigator`'s selection
 and tab order are data, a `ResizableRegion`'s committed size and a
 `Workbench`/`SplitView` rail's `collapsed` flag are persisted layout preferences.
 Each helper already owns only the _ephemeral mechanics_ around that state —

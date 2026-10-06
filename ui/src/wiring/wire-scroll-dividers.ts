@@ -29,7 +29,7 @@ export interface WireScrollDividersOptions {
   /**
    * App-owned scroll arrangements to pair beyond the ones found by structure
    * (every `Pane`'s header and footer around its content, every `NavStack`'s
-   * and `TabScaffold`'s chrome around its active region, and every `TabBar`
+   * and `TabNavigator`'s chrome around its active region, and every `TabBar`
    * strip).
    */
   targets?: readonly ScrollDividerTarget[];
@@ -111,7 +111,7 @@ function activeView(stack: Element): HTMLElement | undefined {
     .at(-1);
 }
 
-/** A TabScaffold's shown scene. */
+/** A TabNavigator's shown scene. */
 function activeScene(scaffold: Element): HTMLElement | undefined {
   const scenes = directChild(scaffold, '.kui-tab-scaffold__scenes');
   return scenes
@@ -121,13 +121,13 @@ function activeScene(scaffold: Element): HTMLElement | undefined {
 
 /**
  * The elements that may scroll against a layout region's `edge` (the top or
- * bottom of a NavStack view or a TabScaffold scene): the region itself, then,
+ * bottom of a NavStack view or a TabNavigator scene): the region itself, then,
  * through a sole child that puts no chrome of its own on that edge, a Pane's
- * content slot or a nested NavStack's or TabScaffold's active region. Every
+ * content slot or a nested NavStack's or TabNavigator's active region. Every
  * candidate is paired with the layout's chrome; one that does not overflow
  * reports nothing, so the chrome keys on whichever element actually scrolls.
  * A sole child with chrome on that edge (a Pane header, a nested NavStack's
- * top chrome, a TabScaffold's bar) stops the walk: that chrome draws its own
+ * top chrome, a TabNavigator's bar) stops the walk: that chrome draws its own
  * divider against its own content.
  */
 function regionScrollers(region: HTMLElement, edge: 't' | 'b'): HTMLElement[] {
@@ -222,11 +222,11 @@ function write(element: Element, name: StateAttribute, value: string) {
  * - every `Pane` with a header or footer: its header shows a bottom divider and
  *   its footer a top divider (drawn by the Pane, per its `chromeDividers`);
  * - every `NavStack`'s top chrome and bottom toolbar around its active view,
- *   and every `TabScaffold`'s bar under its active scene: the chrome shows a
+ *   and every `TabNavigator`'s bar under its active scene: the chrome shows a
  *   bottom (top chrome) or top (bottom toolbar, bar) divider. The scroller is
  *   whichever element actually scrolls there: the view or scene itself, or,
  *   through a sole child with no chrome of its own on that edge, a `Pane`'s
- *   content or a nested `NavStack` / `TabScaffold` region (a Pane's own header
+ *   content or a nested `NavStack` / `TabNavigator` region (a Pane's own header
  *   or footer draws that boundary instead);
  * - every `TabBar` strip: the bar draws a divider on each side of the strip
  *   whose tabs are scrolled out of view;
@@ -443,7 +443,7 @@ function createController(
         subtree: true,
         childList: true,
         attributes: true,
-        // The shown NavStack view and TabScaffold scene change by attribute.
+        // The shown NavStack view and TabNavigator scene change by attribute.
         attributeFilter: [
           SCROLL_OVERFLOW,
           SCROLL_DIVIDER,

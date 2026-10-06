@@ -9,7 +9,7 @@ changes. The layouts:
 - [`NavStack`](nav-stack.md) — push/pop navigation (a single pane is a one-entry stack).
 - [`SplitView`](split-view.md) — list-detail (two panes, collapsing to a stack).
 - [`Workbench`](workbench.md) — the Xcode-like collapsible rails + drawer.
-- [`TabScaffold`](tab-scaffold.md) — the iOS bottom tab bar (each tab a stack).
+- [`TabNavigator`](tab-navigator.md) — the iOS bottom tab bar (each tab a stack).
 - [`CollapsiblePanel` + `wireSidebar`](collapsible-panel.md) — a standalone
   collapsible rail or bottom drawer (with `CollapsiblePanelToggle`), outside a full
   shell: the standard collapse animation, icon convention, and `wireSidebar`
@@ -45,7 +45,7 @@ the layouts handle the insets for you. There is nothing to configure:
 - **No double inset.** Whichever region applies an inset clears it for its
   descendants. A layout region whose only child is a `Pane` or another layout
   lets that child own the insets. That child fills the region — a `Workbench`
-  area or panel, a `NavStack` view, a `TabScaffold` scene — so a sole `Pane`'s
+  area or panel, a `NavStack` view, a `TabNavigator` scene — so a sole `Pane`'s
   header stays pinned while its own content scrolls. A `Pane` header or footer whose only child is
   a `Toolbar` hands the inline insets to the toolbar, so the toolbar's dividers
   still reach the edge.
@@ -131,13 +131,13 @@ states with the same table component.
 
 ## Decision matrix
 
-| Situation                                                                    | Layout                                                                                          | Device threshold                                                                                                                   |
-| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Simple app, a few flat sections                                              | `NavStack` with one entry (single pane); add `TabScaffold` for 2–5 co-equal sections on handset | `TabScaffold` on `compact`; promote its tabs to a `Workbench` rail / sidebar `atLeast('desktop')`                                  |
-| Drill-down browsing (list → item → sub-item)                                 | `NavStack`; upgrade to `SplitView` once list + detail fit together                              | `SplitView` two-pane `atLeast('tablet')` landscape / non-`compact`; `NavStack` form on `compact`                                   |
-| Two related panes, selecting on the left updates the right                   | `SplitView`                                                                                     | two panes when not `compact`; collapses to `NavStack` (list → detail) on `compact`                                                 |
-| Complex tool / editor with peripheral panels (navigator, inspector, console) | `Workbench`                                                                                     | full three-panel `atLeast('desktop')`; on smaller classes present the rails via `NavStack` / overlay drawers, not a shrunken shell |
-| Mobile app with 2–5 top-level destinations, each its own drill-down          | `TabScaffold`, each tab a `NavStack`                                                            | bottom bar on `compact`; promote to a rail / sidebar `atLeast('desktop')`                                                          |
+| Situation                                                                    | Layout                                                                                           | Device threshold                                                                                                                   |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Simple app, a few flat sections                                              | `NavStack` with one entry (single pane); add `TabNavigator` for 2–5 co-equal sections on handset | `TabNavigator` on `compact`; promote its tabs to a `Workbench` rail / sidebar `atLeast('desktop')`                                 |
+| Drill-down browsing (list → item → sub-item)                                 | `NavStack`; upgrade to `SplitView` once list + detail fit together                               | `SplitView` two-pane `atLeast('tablet')` landscape / non-`compact`; `NavStack` form on `compact`                                   |
+| Two related panes, selecting on the left updates the right                   | `SplitView`                                                                                      | two panes when not `compact`; collapses to `NavStack` (list → detail) on `compact`                                                 |
+| Complex tool / editor with peripheral panels (navigator, inspector, console) | `Workbench`                                                                                      | full three-panel `atLeast('desktop')`; on smaller classes present the rails via `NavStack` / overlay drawers, not a shrunken shell |
+| Mobile app with 2–5 top-level destinations, each its own drill-down          | `TabNavigator`, each tab a `NavStack`                                                            | bottom bar on `compact`; promote to a rail / sidebar `atLeast('desktop')`                                                          |
 
 ### Worked examples
 
@@ -162,13 +162,13 @@ states with the same table component.
   default) and shrink in proportion when the window narrows; the bottom drawer
   leaves it `mainMinHeight` (120px by default) and shrinks when the window gets
   shorter.
-- **Social app (tabbed):** `TabScaffold` with Home / Search / Profile tabs, each
+- **Social app (tabbed):** `TabNavigator` with Home / Search / Profile tabs, each
   `content` a `NavStack`. On a tablet/desktop, render the same sections as a
   `Workbench` left rail instead of a bottom bar.
 
 Whatever the layout, call `wireScrollDividers(appRoot)` from
 `@kerfjs/ui/wire-scroll-dividers` once: every `Pane` a layout renders, every
-`NavStack`'s top chrome and bottom toolbar, and every `TabScaffold` bar then
+`NavStack`'s top chrome and bottom toolbar, and every `TabNavigator` bar then
 draw the line between the pinned chrome and the scrolling content only while
 content is scrolled beneath them, and toolbars need no divider of their own. See [Scroll dividers](layout.md#scroll-dividers).
 

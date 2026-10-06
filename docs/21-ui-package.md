@@ -44,7 +44,7 @@ CSS, and CSS for the UI subcomponents reachable from its source imports. The
 package derives this graph during its build, so application roots neither list
 transitive styles nor retain stale ones. Unused component CSS stays out of the
 bundle. Composite subpaths — `catalog`, `workbench`, `nav-stack`, `split-view`,
-`tab-scaffold`, and `collapsible-panel` — carry the same condition, so importing
+`tab-navigator`, and `collapsible-panel` — carry the same condition, so importing
 only `@kerfjs/ui/catalog` or `@kerfjs/ui/workbench` ships the CSS of every
 component they render internally (Pane, Toolbar, List, ListItem,
 ListInsetText, …) without depending on unrelated application imports. The
@@ -227,7 +227,7 @@ follows its rendered columns with Left/Right/Up/Down and Home/End.
 | Feedback                   | `StateBanner`, `EmptyState`, `LoadingSpinner`, `Skeleton`                                                                                      | Status/alert with an optional terse tone-tinted badge, empty/busy, meaningful/decorative progress, and a subtle unanimated loading-placeholder block                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Loading placeholder        | a component's `placeholder` prop                                                                                                               | Value-bearing components (`Select`, `ListHeader`, `ListItem`, `ValueTableRow`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `ListActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup                                                                                                                                                                                                                                                                                         |
 | Component catalog shell    | `Catalog`, `CatalogExample`, `CatalogExampleStack` + `wireCatalog` (`@kerfjs/ui/catalog`), `catalogResources` (`@kerfjs/ui/catalog-resources`) | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — with public preview-layout helpers whose safe `rootAttributes` carry authoring `data-*` metadata; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). `catalogResources()` builds the standard resources-footer group (demo, component, design template, guidance) in canonical order. See `ui/docs/catalog.md`                                                                                                                                |
-| App layouts (subpath-only) | `NavStack`, `SplitView`, `Workbench`, `TabScaffold`, `CollapsiblePanel`, `Pane`, `deviceClass` + their `wire…` helpers                         | Whole-screen and dialog layouts on explicit subpaths with companion CSS imports; see [§23](./23-app-layouts.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| App layouts (subpath-only) | `NavStack`, `SplitView`, `Workbench`, `TabNavigator`, `CollapsiblePanel`, `Pane`, `deviceClass` + their `wire…` helpers                        | Whole-screen and dialog layouts on explicit subpaths with companion CSS imports; see [§23](./23-app-layouts.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 `LoadingSpinner.size` shares `LucideIcon`'s `xs`/`s`/`m`/`l`/`xl` steps and
 positive numeric pixel sizing (converted to rem). Omit it for the existing
@@ -310,9 +310,9 @@ slot without mixing authoring rules into the per-entry component catalog.
   `Toolbar` draws none by default, and `wireScrollDividers`
   (`@kerfjs/ui/wire-scroll-dividers`) reports each scroller's hidden edges so a
   `Pane` draws its header/footer divider, a `NavStack` its chrome / bottom-toolbar
-  dividers and a `TabScaffold` its bar divider around the active view or scene,
+  dividers and a `TabNavigator` its bar divider around the active view or scene,
   and a `TabBar` its overflow dividers, only while content is scrolled beneath
-  or beyond them (`Pane`, `NavStack`, and `TabScaffold` `chromeDividers`:
+  or beyond them (`Pane`, `NavStack`, and `TabNavigator` `chromeDividers`:
   `scroll` default, `always`, `none`). See
   [`23-app-layouts.md`](23-app-layouts.md) §3.7.
 - A `ListItem` is a native button, not an isolated `role="menuitem"`; callers

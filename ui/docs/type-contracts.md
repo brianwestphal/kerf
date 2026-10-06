@@ -20,7 +20,7 @@ public-signature artifact.
 | `KUI-T005` | `expanded`, `expandAction`, and `expandLabel` exist only on `TokenSearchField({ collapsible: true })`.                                                                                                                                                                                                                                                                                                 |
 | `KUI-T006` | `TokenSearchEditorAttributes` accepts application `data-*` metadata but rejects component-owned identity, morph, count, and placeholder attributes.                                                                                                                                                                                                                                                    |
 | `KUI-T007` | `ToolbarText.maxLines` requires `wrap: true`; it is never silently ignored in typed code.                                                                                                                                                                                                                                                                                                              |
-| `KUI-T008` | A literal `TabScaffold.active` id belongs to its literal `tabs`.                                                                                                                                                                                                                                                                                                                                       |
+| `KUI-T008` | A literal `TabNavigator.active` id belongs to its literal `tabs`.                                                                                                                                                                                                                                                                                                                                      |
 | `KUI-T009` | Adjacent-token keyboard removal requires `onRemoveToken`; disabling removal rejects the now-meaningless callback.                                                                                                                                                                                                                                                                                      |
 | `KUI-T010` | Finite public variants have named exported union types, including divider sides, tab activation, banner urgency, and all AppTab, TabBar, ToolbarControlGroup, and Select presentation axes; the convenience root barrel re-exports them.                                                                                                                                                               |
 | `KUI-T011` | Semantic component zones use the recursive `KerfUiContent` type: `SafeHtml`, runtime-empty booleans/nullish values, and readonly nested arrays are valid; arbitrary strings, numbers, and signals are rejected. Explicit text positions such as `ListInsetText` retain their text exception.                                                                                                           |
@@ -51,7 +51,7 @@ When choices or ids arrive at runtime and the state signal is correctly typed as
 ```tsx
 <Select<string> value={loadedValue.value} choices={loadedChoices.value} ... />
 <SegmentedControl<string> value={mode.value} choices={loadedModes.value} ... />
-<TabScaffold<string> active={active.value} tabs={loadedTabs.value} ... />
+<TabNavigator<string> active={active.value} tabs={loadedTabs.value} ... />
 ```
 
 The widening is an honest statement that TypeScript cannot know the runtime
@@ -69,7 +69,7 @@ ordinary source/type gates:
   `FloatingToolbar`, `Pane`, `ResizableRegion`, `SegmentedControl`, `StateBanner`,
   `SunkenPanel`, `ToolbarText`, `CollapsiblePanel`, `Catalog`, and the wire helpers;
 - required controlled-state callbacks on `wireResizableRegions`, `wireTabBars`,
-  and `wireTabScaffold`, and the required app-owned size signals on
+  and `wireTabNavigator`, and the required app-owned size signals on
   `wireWorkbench`;
 - mutually exclusive count/badge metadata on `ListHeader`; and
 - protected application metadata boundaries on `AppTab`, `ListItem`,

@@ -1,13 +1,12 @@
 import { raw } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  TabScaffold,
-  type TabScaffoldTab,
-} from '../../src/components/navigation/tab-scaffold/tab-scaffold.js';
-import { wireTabScaffold } from '../../src/components/navigation/tab-scaffold/wiring/wire-tab-scaffold.js';
+import { TabNavigator, type TabNavigatorTab } from '../../src/tab-navigator.js';
+import { TabScaffold } from '../../src/tab-scaffold.js';
+import { wireTabNavigator } from '../../src/wire-tab-navigator.js';
+import { wireTabScaffold } from '../../src/wire-tab-scaffold.js';
 
-const tabs: TabScaffoldTab[] = [
+const tabs: TabNavigatorTab[] = [
   {
     id: 'home',
     label: 'Home',
@@ -21,10 +20,14 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('TabScaffold markup', () => {
+describe('TabNavigator markup', () => {
+  it('keeps the deprecated component and wiring aliases equivalent', () => {
+    expect(TabScaffold).toBe(TabNavigator);
+    expect(wireTabScaffold).toBe(wireTabNavigator);
+  });
   it('marks only opted-in scenes for a deep content inset', () => {
     const html = String(
-      TabScaffold({
+      TabNavigator({
         id: 'app',
         label: 'Sections',
         tabs: [{ ...tabs[0]!, deepInset: true }, tabs[1]!],
@@ -38,7 +41,7 @@ describe('TabScaffold markup', () => {
   });
   it('marks a scene for sunken scroll painting', () => {
     const html = String(
-      TabScaffold({
+      TabNavigator({
         id: 'app',
         label: 'Sections',
         tabs: [{ ...tabs[0]!, appearance: 'sunken' }, tabs[1]!],
@@ -51,7 +54,7 @@ describe('TabScaffold markup', () => {
   });
   it('renders a scene and a bottom-bar tab per entry, marking the active one', () => {
     const html = String(
-      TabScaffold({ id: 'app', label: 'Sections', tabs, active: 'home' }),
+      TabNavigator({ id: 'app', label: 'Sections', tabs, active: 'home' }),
     );
     expect(html).toContain('data-component="tab-scaffold"');
     expect(html).toContain('data-tab-scaffold-scene="home" data-active="true"');
@@ -69,7 +72,7 @@ describe('TabScaffold markup', () => {
 
   it('renders a tab icon only when provided', () => {
     const html = String(
-      TabScaffold({ id: 'app', label: 'Sections', tabs, active: 'search' }),
+      TabNavigator({ id: 'app', label: 'Sections', tabs, active: 'search' }),
     );
     expect(html).toContain('kui-tab-scaffold__tab-icon');
     // Exactly one icon (home has one, search does not).
@@ -78,7 +81,7 @@ describe('TabScaffold markup', () => {
 
   it('renders no badge and no extra accessible name by default', () => {
     const html = String(
-      TabScaffold({ id: 'app', label: 'Sections', tabs, active: 'home' }),
+      TabNavigator({ id: 'app', label: 'Sections', tabs, active: 'home' }),
     );
     expect(html).not.toContain('kui-tab-scaffold__tab-badge');
     expect(html).not.toContain('data-has-badge');
@@ -87,7 +90,7 @@ describe('TabScaffold markup', () => {
 
   it('renders a decorative danger badge over the icon and folds badgeLabel into the tab name', () => {
     document.body.innerHTML = String(
-      TabScaffold({
+      TabNavigator({
         id: 'app',
         label: 'Sections',
         active: 'home',
@@ -116,7 +119,7 @@ describe('TabScaffold markup', () => {
 
   it('defaults the accessible badge phrase to the badge text and trims badgeLabel', () => {
     document.body.innerHTML = String(
-      TabScaffold({
+      TabNavigator({
         id: 'app',
         label: 'Sections',
         active: 'home',
@@ -142,7 +145,7 @@ describe('TabScaffold markup', () => {
   it('renders 0 but ignores empty, whitespace-only, and non-finite badges', () => {
     const render = (badge: string | number) =>
       String(
-        TabScaffold({
+        TabNavigator({
           id: 'app',
           label: 'Sections',
           active: 'home',
@@ -159,7 +162,7 @@ describe('TabScaffold markup', () => {
 
   it('renders the dot badge form over the icon with the required badgeLabel in the tab name', () => {
     document.body.innerHTML = String(
-      TabScaffold({
+      TabNavigator({
         id: 'app',
         label: 'Sections',
         active: 'search',
@@ -190,7 +193,7 @@ describe('TabScaffold markup', () => {
     // A text badge's anchor is marked as the text kind.
     expect(
       String(
-        TabScaffold({
+        TabNavigator({
           id: 'app',
           label: 'Sections',
           active: 'home',
@@ -202,7 +205,7 @@ describe('TabScaffold markup', () => {
 
   it('keeps the plain tab name for an untyped dot without a usable badgeLabel', () => {
     const html = String(
-      TabScaffold({
+      TabNavigator({
         id: 'app',
         label: 'Sections',
         active: 'home',
@@ -216,7 +219,7 @@ describe('TabScaffold markup', () => {
   it('applies a custom className', () => {
     expect(
       String(
-        TabScaffold({
+        TabNavigator({
           id: 'app',
           label: 'Sections',
           tabs,
@@ -228,13 +231,13 @@ describe('TabScaffold markup', () => {
   });
 });
 
-describe('wireTabScaffold', () => {
+describe('wireTabNavigator', () => {
   it('reports the selected tab id on click', () => {
     document.body.innerHTML = String(
-      TabScaffold({ id: 'app', label: 'Sections', tabs, active: 'home' }),
+      TabNavigator({ id: 'app', label: 'Sections', tabs, active: 'home' }),
     );
     const onSelect = vi.fn();
-    const dispose = wireTabScaffold(document.body, { onSelect });
+    const dispose = wireTabNavigator(document.body, { onSelect });
     document.body
       .querySelector<HTMLButtonElement>('[data-tab-scaffold-tab="search"]')!
       .click();
@@ -248,6 +251,6 @@ describe('wireTabScaffold', () => {
 
   it('returns a no-op disposer when no scaffold is present', () => {
     const root = document.createElement('div');
-    expect(() => wireTabScaffold(root, { onSelect: vi.fn() })()).not.toThrow();
+    expect(() => wireTabNavigator(root, { onSelect: vi.fn() })()).not.toThrow();
   });
 });

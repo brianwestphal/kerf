@@ -36,7 +36,7 @@ import { StateBannerDemo } from './state-banner.js';
 import { SunkenPanelDemo } from './sunken-panel.js';
 import { SurfaceScaffoldDemo } from './surface-scaffold.js';
 import { TabBarDemo } from './tab-bar.js';
-import { TabScaffoldDemo } from './tab-scaffold.js';
+import { TabNavigatorDemo } from './tab-navigator.js';
 import { TabsDemo } from './tabs.js';
 import { TextDemo } from './text.js';
 import { TokenSearchFieldDemo } from './token-search-field.js';
@@ -78,7 +78,7 @@ export const demos = {
   pane: PaneDemo,
   'nav-stack': NavStackDemo,
   'split-view': SplitViewDemo,
-  'tab-scaffold': TabScaffoldDemo,
+  'tab-navigator': TabNavigatorDemo,
   workbench: WorkbenchDemo,
   'collapsible-panel': CollapsiblePanelDemo,
   'value-table': ValueTableDemo,

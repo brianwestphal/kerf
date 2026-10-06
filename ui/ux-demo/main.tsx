@@ -35,7 +35,7 @@ import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
-import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
+import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
@@ -141,12 +141,12 @@ import {
   toolbarStackSearchOpen,
 } from './demos/state.js';
 import {
-  popNestedTabScaffoldDemo,
-  pushNestedTabScaffoldDemo,
-  resetTabScaffoldDemo,
-  selectNestedTabScaffoldDemo,
-  selectTabScaffoldDemo,
-} from './demos/tab-scaffold.js';
+  popNestedTabNavigatorDemo,
+  pushNestedTabNavigatorDemo,
+  resetTabNavigatorDemo,
+  selectNestedTabNavigatorDemo,
+  selectTabNavigatorDemo,
+} from './demos/tab-navigator.js';
 import {
   COLLAPSED_WORKBENCH_ID,
   NAVIGATION_STACK_ID,
@@ -1013,7 +1013,7 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = `Opened ${projectId}`;
   },
   'open-tab-scaffold-project': () => {
-    pushNestedTabScaffoldDemo();
+    pushNestedTabNavigatorDemo();
     actionLog.value = 'Opened Project Atlas';
   },
   'open-split-view-message': (_event, element) => {
@@ -1240,8 +1240,8 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     target: 'canvas',
     wire: (canvas) => wireNavStack(canvas, { onBack: clearSplitViewSelection }),
   },
-  'tab-scaffold': {
-    reset: resetTabScaffoldDemo,
+  'tab-navigator': {
+    reset: resetTabNavigatorDemo,
     target: 'canvas',
     wire: (canvas) => {
       const first = canvas.querySelector('#catalog-tab-scaffold');
@@ -1249,13 +1249,13 @@ const routeWires: Partial<Record<string, RouteWire>> = {
       const stack = canvas.querySelector('#catalog-tab-scaffold-project-stack');
       const stops = [
         first
-          ? wireTabScaffold(first, { onSelect: selectTabScaffoldDemo })
+          ? wireTabNavigator(first, { onSelect: selectTabNavigatorDemo })
           : () => {},
         nested
-          ? wireTabScaffold(nested, { onSelect: selectNestedTabScaffoldDemo })
+          ? wireTabNavigator(nested, { onSelect: selectNestedTabNavigatorDemo })
           : () => {},
         stack
-          ? wireNavStack(stack, { onBack: popNestedTabScaffoldDemo })
+          ? wireNavStack(stack, { onBack: popNestedTabNavigatorDemo })
           : () => {},
       ];
       return () => stops.forEach((stop) => stop());

@@ -1,17 +1,20 @@
 import { delegate } from 'kerfjs';
 
-export interface WireTabScaffoldOptions {
+export interface WireTabNavigatorOptions {
   /** Invoked with the selected tab id when a bottom-bar tab is activated. */
   onSelect: (tabId: string) => void;
 }
 
+/** @deprecated Use `WireTabNavigatorOptions`. Kept for the 5.x migration window. */
+export type WireTabScaffoldOptions = WireTabNavigatorOptions;
+
 /**
- * Wire a `TabScaffold`'s bottom tab bar: clicking a tab calls `onSelect` with its
+ * Wire a `TabNavigator`'s bottom tab bar: clicking a tab calls `onSelect` with its
  * id (the app then updates its controlled `active`). Returns a disposer.
  */
-export function wireTabScaffold(
+export function wireTabNavigator(
   root: Element,
-  options: WireTabScaffoldOptions,
+  options: WireTabNavigatorOptions,
 ): () => void {
   const section = root.matches('[data-component="tab-scaffold"]')
     ? root
@@ -27,3 +30,6 @@ export function wireTabScaffold(
     },
   );
 }
+
+/** @deprecated Use `wireTabNavigator`. Kept for the 5.x migration window. */
+export const wireTabScaffold: typeof wireTabNavigator = wireTabNavigator;

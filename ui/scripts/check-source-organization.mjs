@@ -30,7 +30,7 @@ for (const entry of rootEntries) {
   const source = await readFile(path, 'utf8');
   if (/\.tsx?$/.test(entry.name) && !specialRootSources.has(entry.name)) {
     const match =
-      /^\/\/ Public package entry; implementation is grouped by component ownership\.\nexport \* from '([^']+\.js)';\n$/.exec(
+      /^\/\/ Public package entry; implementation is grouped by component ownership\.\nexport (?:\*|\{[\s\S]*?\}) from '([^']+\.js)';\n$/.exec(
         source,
       );
     if (!match) {

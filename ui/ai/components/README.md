@@ -21,7 +21,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Pane](./pane.md) — Organize a sidebar, main area, inspector, or dialog column into fixed vertical header/footer chrome around one scrolling content owner.
 - [NavStack](./nav-stack.md) — Present a single linear or drill-down flow while preserving each prior view's state, scroll position, and place in the stack.
 - [SplitView](./split-view.md) — Present a selectable list and its detail together when space permits, with a one-pane drill-down replacement on compact devices.
-- [TabScaffold](./tab-scaffold.md) — Switch among two to five co-equal top-level destinations on compact devices while preserving each destination's independent content state.
+- [TabNavigator](./tab-navigator.md) — Switch among two to five co-equal top-level destinations on compact devices while preserving each destination's independent content state.
 - [Workbench](./workbench.md) — Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.
 - [CollapsiblePanel](./collapsible-panel.md) — Add one independently collapsible peripheral panel without adopting the complete multi-panel Workbench shell.
 - [SunkenPanel](./sunken-panel.md) — Group a vertical list of application content on a visually lowered surface with one owned 8px inset and an explicit rounded or square-corner shape.

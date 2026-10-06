@@ -1,4 +1,4 @@
-import '@kerfjs/ui/tab-scaffold.css';
+import '@kerfjs/ui/tab-navigator.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/list.css';
 import '@kerfjs/ui/list-item.css';
@@ -10,7 +10,7 @@ import { List } from '@kerfjs/ui/list';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
-import { TabScaffold, type TabScaffoldTab } from '@kerfjs/ui/tab-scaffold';
+import { TabNavigator, type TabNavigatorTab } from '@kerfjs/ui/tab-navigator';
 import { signal } from 'kerfjs';
 import { ChevronRight, FolderKanban, Search, Settings } from 'lucide';
 
@@ -24,7 +24,7 @@ const scene = (title: string, detail: string) => (
   </div>
 );
 
-const tabs: readonly TabScaffoldTab<DemoTabId>[] = [
+const tabs: readonly TabNavigatorTab<DemoTabId>[] = [
   {
     id: 'projects',
     appearance: 'sunken',
@@ -92,43 +92,43 @@ const projectDetail = (): NavStackView => ({
 
 const nestedViews = signal<NavStackView[]>([projectRoot()]);
 
-export function resetTabScaffoldDemo(): void {
+export function resetTabNavigatorDemo(): void {
   activeTab.value = 'projects';
   nestedActiveTab.value = 'projects';
   nestedViews.value = [projectRoot()];
 }
 
-export function selectTabScaffoldDemo(id: string): void {
+export function selectTabNavigatorDemo(id: string): void {
   if (id === 'projects' || id === 'search' || id === 'settings')
     activeTab.value = id;
 }
 
-export function selectNestedTabScaffoldDemo(id: string): void {
+export function selectNestedTabNavigatorDemo(id: string): void {
   if (id === 'projects' || id === 'search') nestedActiveTab.value = id;
 }
 
-export function pushNestedTabScaffoldDemo(): void {
+export function pushNestedTabNavigatorDemo(): void {
   if (nestedViews.value.length === 1)
     nestedViews.value = [...nestedViews.value, projectDetail()];
 }
 
-export function popNestedTabScaffoldDemo(): void {
+export function popNestedTabNavigatorDemo(): void {
   if (nestedViews.value.length > 1)
     nestedViews.value = nestedViews.value.slice(0, -1);
 }
 
-export function TabScaffoldDemo() {
+export function TabNavigatorDemo() {
   return (
     <CatalogExampleStack
       label="Compact application tabs"
-      rootAttributes={{ 'data-demo': 'tab-scaffold' }}
+      rootAttributes={{ 'data-demo': 'tab-navigator' }}
     >
       <CatalogExample
         label="Persistent tab scenes"
         note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive. A count badge or a text-free dot sits at the icon's top-trailing corner, and its badgeLabel joins the tab's accessible name."
         viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
       >
-        <TabScaffold
+        <TabNavigator
           id="catalog-tab-scaffold"
           label="Application sections"
           tabs={tabs}
@@ -140,7 +140,7 @@ export function TabScaffoldDemo() {
         note="The Projects tab owns a NavStack with its own top toolbar and Pane. Open the project, switch to Search, then return: the detail stays mounted. The stack has no bottom toolbar, so the scaffold bar remains the only bottom chrome."
         viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
       >
-        <TabScaffold
+        <TabNavigator
           id="catalog-tab-scaffold-nested"
           label="Project sections"
           active={nestedActiveTab.value}

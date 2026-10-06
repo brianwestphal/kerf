@@ -4,7 +4,7 @@ import type { KerfUiContent } from '../../../shared/content/semantic-content.js'
 import { Badge } from '../../feedback/badge/badge.js';
 import type { PaneAppearance } from '../../layout/pane/pane.js';
 
-interface TabScaffoldTabBase<Id extends string> {
+interface TabNavigatorTabBase<Id extends string> {
   id: Id;
   label: string;
   /** Decorative icon shown above the label in the bottom bar. */
@@ -18,7 +18,7 @@ interface TabScaffoldTabBase<Id extends string> {
 }
 
 /** A tab with an optional count or short-status badge. */
-interface TabScaffoldTabCountBadge {
+interface TabNavigatorTabCountBadge {
   /**
    * Optional count or short status shown as a solid danger `Badge` at the
    * top-trailing corner of the tab icon (the iOS tab-bar badge). Omitted, `''`,
@@ -37,7 +37,7 @@ interface TabScaffoldTabCountBadge {
 }
 
 /** A tab with the text-free dot badge (new content without a count). */
-interface TabScaffoldTabDotBadge {
+interface TabNavigatorTabDotBadge {
   /**
    * `true` shows a solid danger dot `Badge` at the top-trailing corner of the
    * tab icon — the iOS tab-bar dot for new content without a count.
@@ -52,14 +52,18 @@ interface TabScaffoldTabDotBadge {
 }
 
 /** One bottom-bar destination: its label, optional icon and badge, and content. */
-export type TabScaffoldTab<Id extends string = string> =
-  TabScaffoldTabBase<Id> & (TabScaffoldTabCountBadge | TabScaffoldTabDotBadge);
+export type TabNavigatorTab<Id extends string = string> =
+  TabNavigatorTabBase<Id> &
+    (TabNavigatorTabCountBadge | TabNavigatorTabDotBadge);
 
-export interface TabScaffoldProps<Id extends string = string> {
+/** @deprecated Use `TabNavigatorTab`. Kept for the 5.x migration window. */
+export type TabScaffoldTab<Id extends string = string> = TabNavigatorTab<Id>;
+
+export interface TabNavigatorProps<Id extends string = string> {
   id: string;
   /** Accessible name for the tab bar. */
   label: string;
-  tabs: readonly TabScaffoldTab<Id>[];
+  tabs: readonly TabNavigatorTab<Id>[];
   /** The controlled active tab id (the app owns selection). */
   active: NoInfer<Id>;
   /**
@@ -77,15 +81,19 @@ export interface TabScaffoldProps<Id extends string = string> {
   slot?: string;
 }
 
+/** @deprecated Use `TabNavigatorProps`. Kept for the 5.x migration window. */
+export type TabScaffoldProps<Id extends string = string> =
+  TabNavigatorProps<Id>;
+
 /**
- * A mobile-first, iOS-like bottom tab scaffold: a bottom tab bar that switches
+ * A mobile-first, iOS-like bottom tab navigator: a bottom tab bar that switches
  * between major sections, each tab keeping its own content (usually a `NavStack`)
  * mounted so its stack and scroll survive a switch. Controlled — the app owns
- * `active`; wire selection with `@kerfjs/ui/wire-tab-scaffold`'s `wireTabScaffold`.
+ * `active`; wire selection with `@kerfjs/ui/wire-tab-navigator`'s `wireTabNavigator`.
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-export function TabScaffold<Id extends string>({
+export function TabNavigator<Id extends string>({
   id,
   label,
   tabs,
@@ -93,7 +101,7 @@ export function TabScaffold<Id extends string>({
   chromeDividers = 'scroll',
   className = '',
   slot,
-}: TabScaffoldProps<Id>) {
+}: TabNavigatorProps<Id>) {
   return (
     <section
       class={`kui-tab-scaffold ${className}`.trim()}
@@ -181,6 +189,9 @@ export function TabScaffold<Id extends string>({
     </section>
   );
 }
+
+/** @deprecated Use `TabNavigator`. Kept for the 5.x migration window. */
+export const TabScaffold: typeof TabNavigator = TabNavigator;
 
 function normalizeBadge(
   badge: string | number | undefined,

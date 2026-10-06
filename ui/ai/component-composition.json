@@ -966,10 +966,10 @@
       }
     },
     {
-      "key": "@kerfjs/ui:tab-scaffold",
+      "key": "@kerfjs/ui:tab-navigator",
       "package": "@kerfjs/ui",
-      "id": "tab-scaffold",
-      "name": "TabScaffold",
+      "id": "tab-navigator",
+      "name": "TabNavigator",
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
@@ -1010,8 +1010,8 @@
       ],
       "wiring": {
         "required": true,
-        "helpers": ["wireTabScaffold", "wireScrollDividers"],
-        "obligations": ["Use wireTabScaffold as documented."],
+        "helpers": ["wireTabNavigator", "wireScrollDividers"],
+        "obligations": ["Use wireTabNavigator as documented."],
         "stateAttributes": [
           {
             "name": "data-scroll-overflow",
@@ -1035,7 +1035,7 @@
           "border": "conditional",
           "padding": "self",
           "notes": [
-            "The scaffold owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.",
+            "The navigator owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.",
             "The bar's top line is scroll state (wireScrollDividers): it shows only while the active scene's content continues below the bar, by coloring the bar's always-present 1px top border."
           ]
         }

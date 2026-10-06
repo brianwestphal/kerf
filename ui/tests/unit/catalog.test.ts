@@ -199,9 +199,9 @@ describe('UX catalog metadata', () => {
         ],
       },
       {
-        id: 'tab-scaffold',
+        id: 'tab-navigator',
         source: 'components/navigation/tab-scaffold/tab-scaffold',
-        exports: ['TabScaffoldTab', 'TabScaffoldProps', 'TabScaffold'],
+        exports: ['TabNavigatorTab', 'TabNavigatorProps', 'TabNavigator'],
       },
       {
         id: 'workbench',
@@ -502,7 +502,7 @@ describe('UX catalog metadata', () => {
       'Pane',
       'NavStack',
       'SplitView',
-      'TabScaffold',
+      'TabNavigator',
       'Workbench',
       'CollapsiblePanel',
       'SunkenPanel',

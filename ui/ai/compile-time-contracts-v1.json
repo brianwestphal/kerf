@@ -62,10 +62,10 @@
     },
     {
       "id": "KUI-T008",
-      "publicImport": "@kerfjs/ui/tab-scaffold",
-      "symbols": ["TabScaffoldTab", "TabScaffoldProps"],
+      "publicImport": "@kerfjs/ui/tab-navigator",
+      "symbols": ["TabNavigatorTab", "TabNavigatorProps"],
       "kind": "literal-identity",
-      "summary": "Literal TabScaffold active ids are constrained to the declared tab ids; dynamic integrations may widen the generic to string."
+      "summary": "Literal TabNavigator active ids are constrained to the declared tab ids; dynamic integrations may widen the generic to string."
     },
     {
       "id": "KUI-T009",

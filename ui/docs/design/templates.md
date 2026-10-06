@@ -19,7 +19,7 @@ picture): `Select` renders a Web Awesome custom element that needs its runtime
 registered, so it has no faithful static capture; `LucideIcon` and
 `DisclosureArrow` are decorative primitives best seen inside the components that
 use them; `ResizableRegion` and the whole-screen layouts (`NavStack`,
-`SplitView`, `Workbench`, `TabScaffold`) and the `Catalog` shell are
+`SplitView`, `Workbench`, `TabNavigator`) and the `Catalog` shell are
 interaction-/viewport-driven screens rather than component cards — the live UX
 catalog and the app-layouts docs cover those.
 

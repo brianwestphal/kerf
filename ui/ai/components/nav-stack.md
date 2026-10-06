@@ -16,12 +16,12 @@ Present a single linear or drill-down flow while preserving each prior view's st
 **Not when:**
 
 - Do not use NavStack when a list and detail should remain visible together; use SplitView.
-- Do not use it for co-equal top-level destinations on compact devices; wrap one stack per destination in TabScaffold.
+- Do not use it for co-equal top-level destinations on compact devices; wrap one stack per destination in TabNavigator.
 
 **Alternatives:**
 
 - [SplitView](./split-view.md) (roomy-alternative) — Promote a list-to-detail stack to SplitView once both regions fit together.
-- [TabScaffold](./tab-scaffold.md) (composes-with) — Use one NavStack as each TabScaffold tab's persistent content.
+- [TabNavigator](./tab-navigator.md) (composes-with) — Use one NavStack as each TabNavigator tab's persistent content.
 
 ## Imports
 
@@ -100,6 +100,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Toolbar](./toolbar.md), [ToolbarControlGroup](./toolbar-control-group.md), [ToolbarText](./toolbar-text.md), [SplitView](./split-view.md), [TabScaffold](./tab-scaffold.md).
+- Components: [Toolbar](./toolbar.md), [ToolbarControlGroup](./toolbar-control-group.md), [ToolbarText](./toolbar-text.md), [SplitView](./split-view.md), [TabNavigator](./tab-navigator.md).
 - Docs: [`docs/nav-stack.md`](../../docs/nav-stack.md), [`docs/app-layouts.md#decision-matrix`](../../docs/app-layouts.md#decision-matrix).
 - UX catalog route: `?component=nav-stack`.

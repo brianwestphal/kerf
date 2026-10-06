@@ -118,7 +118,7 @@ test('deepInset adds one outer gutter while nested List items keep 8px spacing',
         path: `test-results/pane-deep-inset-${width}.png`,
       });
 
-    await page.goto('/?component=tab-scaffold');
+    await page.goto('/?component=tab-navigator');
     const scaffold = page.locator('#catalog-tab-scaffold');
     await scaffold.getByRole('tab', { name: 'Search' }).click();
     const scene = scaffold.locator('[data-tab-scaffold-scene="search"]');
@@ -398,7 +398,7 @@ test('sunken NavStack Pane and TabScaffold scene paint their scroll areas', asyn
     'background-color',
     'rgba(0, 0, 0, 0)',
   );
-  await page.goto('/?component=tab-scaffold');
+  await page.goto('/?component=tab-navigator');
   const scene = page.locator(
     '#catalog-tab-scaffold [data-tab-scaffold-scene="projects"]',
   );

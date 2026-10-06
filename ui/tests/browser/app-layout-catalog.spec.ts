@@ -5,7 +5,7 @@ test('a tab scene keeps its own NavStack toolbar and pane above the tab bar', as
   browserName,
 }) => {
   await page.setViewportSize({ width: 1100, height: 820 });
-  await page.goto('/?component=tab-scaffold');
+  await page.goto('/?component=tab-navigator');
   const scaffold = page.locator('#catalog-tab-scaffold-nested');
   const stack = scaffold.locator('#catalog-tab-scaffold-project-stack');
   await expect(stack).toHaveAttribute('data-depth', '1');
@@ -193,7 +193,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     });
   }
 
-  await page.goto('/?component=tab-scaffold');
+  await page.goto('/?component=tab-navigator');
   const originalScaffold = page.locator('#catalog-tab-scaffold');
   const search = originalScaffold.getByRole('tab', { name: 'Search' });
   await search.click();
@@ -223,7 +223,7 @@ test('app-layout catalog routes remain usable at compact width', async ({
   for (const id of [
     'nav-stack',
     'split-view',
-    'tab-scaffold',
+    'tab-navigator',
     'workbench',
     'collapsible-panel',
   ]) {

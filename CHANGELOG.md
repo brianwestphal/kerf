@@ -8,11 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `TabNavigator`, `TabNavigatorTab`, `TabNavigatorProps`, and `wireTabNavigator` name the complete persistent bottom-tab layout. The matching module, wiring, and CSS subpaths are available; former `TabScaffold` names and paths remain deprecated aliases throughout 5.x.
+
 - `Pane` exposes its resolved logical inline content insets to child CSS, so a table can paint edge to edge while its cell text stays aligned, with or without `deepInset`.
 
-- `Pane` and plain `TabScaffold` scenes accept `deepInset` for a 16px outer content gutter while nested Row, List, and Grid spacing remains at its normal 8px.
+- `Pane` and plain `TabNavigator` scenes accept `deepInset` for a 16px outer content gutter while nested Row, List, and Grid spacing remains at its normal 8px.
 
-- The TabScaffold catalog now demonstrates a NavStack with a view-owned top toolbar and Pane above the persistent tab bar, including push, tab switch, and return.
+- The TabNavigator catalog now demonstrates a NavStack with a view-owned top toolbar and Pane above the persistent tab bar, including push, tab switch, and return.
 
 - UI Doctor now checks component root class names, stylesheet names, and CSS selectors that reach into another local component.
 

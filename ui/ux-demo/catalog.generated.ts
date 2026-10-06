@@ -129,8 +129,8 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/split-view.md"
   },
   {
-    "id": "tab-scaffold",
-    "name": "TabScaffold",
+    "id": "tab-navigator",
+    "name": "TabNavigator",
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
@@ -138,9 +138,9 @@ export const generatedKerfCatalog = [
     "uses": [
       "badge"
     ],
-    "demoSource": "ui/ux-demo/demos/tab-scaffold.tsx",
+    "demoSource": "ui/ux-demo/demos/tab-navigator.tsx",
     "componentSource": "ui/src/components/navigation/tab-scaffold/tab-scaffold.tsx",
-    "documentation": "ui/docs/tab-scaffold.md"
+    "documentation": "ui/docs/tab-navigator.md"
   },
   {
     "id": "workbench",

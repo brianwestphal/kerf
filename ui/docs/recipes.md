@@ -150,7 +150,7 @@ pushes/pops it, `NavStack` renders it, and `wireNavStack` slides the content and
 settles the chrome (reduced motion collapses the slide to instant). See the
 layout guide
 [`app-layouts.md`](app-layouts.md) for choosing among `NavStack`, `SplitView`,
-`Workbench`, and `TabScaffold`.
+`Workbench`, and `TabNavigator`.
 
 ## Loading inspector
 

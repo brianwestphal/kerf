@@ -585,6 +585,7 @@ describe('consumer bundle boundaries', () => {
       'workbench',
       'nav-stack',
       'split-view',
+      'tab-navigator',
       'tab-scaffold',
       'collapsible-panel',
     ]) {
@@ -777,6 +778,18 @@ describe('consumer bundle boundaries', () => {
       import: './dist/workbench.js',
     });
     expect(pkg.exports['./workbench.css']).toBe('./dist/styles/workbench.css');
+    expect(pkg.exports['./tab-navigator']).toMatchObject({
+      types: './dist/tab-navigator.d.ts',
+      browser: './dist/browser/tab-navigator.js',
+      import: './dist/tab-navigator.js',
+    });
+    expect(pkg.exports['./tab-navigator.css']).toBe(
+      './dist/styles/tab-navigator.css',
+    );
+    expect(pkg.exports['./wire-tab-navigator']).toMatchObject({
+      types: './dist/wire-tab-navigator.d.ts',
+      import: './dist/wire-tab-navigator.js',
+    });
     expect(pkg.exports['./tab-scaffold']).toMatchObject({
       types: './dist/tab-scaffold.d.ts',
       browser: './dist/browser/tab-scaffold.js',

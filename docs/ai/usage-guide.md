@@ -297,7 +297,7 @@ state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
 return disposers. Tab dragging automatically scrolls toward a nearby horizontal
 edge to expose earlier or later drop targets. Toolbars draw no divider by
 default; `wireScrollDividers(root)` (`@kerfjs/ui/wire-scroll-dividers`) makes
-each `Pane` draw its header/footer divider, each `NavStack` / `TabScaffold` its
+each `Pane` draw its header/footer divider, each `NavStack` / `TabNavigator` its
 chrome and bottom-bar dividers around the active view or scene (each layout,
 like a `Pane`, takes `chromeDividers: 'scroll' | 'always' | 'none'`), and each
 `TabBar` its overflow dividers, only while content is scrolled beneath or
@@ -336,11 +336,11 @@ those slots render in a per-view Pane and slide with it. Configure the bar with 
 `backIcon` / `backText` rather than CSS. The previous screen stays
 visible beneath a push; interrupted navigation settles the old transition,
 and disposal cancels its pending frames and cleanup timers.
-Inside a `TabScaffold`, put a `NavStack` directly in a tab's `content`,
+Inside a `TabNavigator`, put a `NavStack` directly in a tab's `content`,
 configure each view's `toolbar` and `pane`, and omit `bottomToolbar` so the
 scaffold bar is the only bottom chrome. Wire each component on its own root.
 For a deeper content gutter, set `Pane.deepInset` (or `pane.deepInset` in a
-composite) or `TabScaffoldTab.deepInset` for a plain scene. It adds 8px outside
+composite) or `TabNavigatorTab.deepInset` for a plain scene. It adds 8px outside
 normal 8px item margins without changing nested Row/List/Grid spacing.
 For an edge-to-edge child surface inside `Pane`, read the inherited
 `--kui-pane-content-inset-inline-start` and `-end` values: negate them for the

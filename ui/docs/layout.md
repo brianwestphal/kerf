@@ -80,7 +80,7 @@ on the Pane; it defaults to `--kui-color-surface`.
 `PaneConfig.appearance` forwards through Workbench `mainPane`, panel `pane`,
 and CollapsiblePanel `pane`. Workbench also applies that choice to its main or
 panel region when it renders no Pane chrome. Set `appearance: "sunken"` on a
-`NavStackView` or `TabScaffoldTab` when its view or scene owns scrolling.
+`NavStackView` or `TabNavigatorTab` when its view or scene owns scrolling.
 For a `SplitView`, put a `Pane` in the list or detail region and set its
 appearance; SplitView only arranges the regions and does not own their scroll.
 Choose the innermost owner when composing layouts.
@@ -122,7 +122,7 @@ and the footer's top line, whatever the chrome holds — a `Toolbar`, a
 whose tabs are scrolled out of view). That includes the panes a `Workbench`,
 `CollapsiblePanel`, or `Catalog` renders; `wireCatalog` installs it for its
 own root. It also covers every `NavStack` (the top chrome's bottom line and the
-bottom toolbar's top line, around the active view) and every `TabScaffold`
+bottom toolbar's top line, around the active view) and every `TabNavigator`
 (the bar's top line, over the active scene). The layout keys on whichever
 element actually scrolls there: the view or scene itself, or, through a sole
 child with no chrome of its own on that edge, a `Pane`'s content or a nested
@@ -140,7 +140,7 @@ for a root already has scroll dividers there and does not need another call.
 The wiring only reports state; every component draws its own line. It writes
 `data-scroll-overflow` (the edges with content hidden beyond them, in canonical
 `t`/`r`/`b`/`l` order) on each scroller and `data-scroll-divider` (the sides to
-draw) on each piece of chrome, and the Pane, NavStack, TabScaffold, TabBar,
+draw) on each piece of chrome, and the Pane, NavStack, TabNavigator, TabBar,
 Toolbar, and List stylesheets draw from those. The line is an inset shadow or a pseudo-element
 inside the component, so no state ever moves the chrome, the content, or a tab.
 Never write a border onto a component to show one.
@@ -150,7 +150,7 @@ the scroll state and draws nothing until the wiring runs; `always` (the sunken
 pane default) keeps both lines; `none` drops them. Explicit values override
 either default. Layouts forward it through `PaneConfig`
 (`mainPane.chromeDividers`, a panel's `pane.chromeDividers`). A `NavStack` and a
-`TabScaffold` take the same `chromeDividers` for their own chrome (the stack's
+`TabNavigator` take the same `chromeDividers` for their own chrome (the stack's
 top chrome and bottom toolbar, the scaffold's bar), and a `SplitView` forwards
 it to its compact stack through `compactStack`.
 

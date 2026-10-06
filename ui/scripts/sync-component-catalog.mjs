@@ -20,8 +20,7 @@ for (const entry of catalog.entries) {
     new URL(`../src/${module}.tsx`, import.meta.url),
     'utf8',
   );
-  const target =
-    /export \* from '[.]\/([^']+)[.]js';/.exec(facade)?.[1] ?? module;
+  const target = /from '[.]\/([^']+)[.]js';/.exec(facade)?.[1] ?? module;
   implementationSources.set(module, `ui/src/${target}.tsx`);
 }
 

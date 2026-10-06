@@ -1,7 +1,7 @@
 # 23. App and dialog layouts
 
 **Status: Shipped.** The device-class foundation and all four layouts
-(`NavStack`, `SplitView`, `Workbench`, `TabScaffold`) plus the AI
+(`NavStack`, `SplitView`, `Workbench`, `TabNavigator`) plus the AI
 layout-selection guidance are implemented as opt-in `@kerfjs/ui` subpaths. This
 document remains the design source of truth; the ratified public names and the
 declarative + wire model below match what shipped. The consumer-facing decision
@@ -615,13 +615,13 @@ Shipped shape:
 
 **Implementation:** ticket **Workbench (multi-panel) layout**.
 
-### 3.4 Bottom tab scaffold — `TabScaffold` (`@kerfjs/ui/tab-scaffold`)
+### 3.4 Bottom tab scaffold — `TabNavigator` (`@kerfjs/ui/tab-navigator`)
 
 A mobile-first, iOS-like **bottom tab bar** switching between major app sections,
 where each tab's content — typically its own `NavStack` — stays mounted, so
 switching tabs preserves each tab's stack and scroll. Distinct from the existing
 document-oriented, reorderable `TabBar`. The bottom bar is rendered by
-`TabScaffold` itself (a `role="tablist"` `<nav>`); there is no separate exported
+`TabNavigator` itself (a `role="tablist"` `<nav>`); there is no separate exported
 sub-part component.
 
 - Bottom tab bar respects safe-area insets and reduced motion.
@@ -637,17 +637,17 @@ sub-part component.
 - The text-free dot form (new content without a count) is `badge: true`,
   rendered as an 8px solid `danger` `Badge` with `size="dot"` centered on the
   icon's top-trailing corner. A dot has no text, so the types require its
-  `badgeLabel` (`TabScaffoldTab` is a discriminated union: a count/text badge
+  `badgeLabel` (`TabNavigatorTab` is a discriminated union: a count/text badge
   with an optional phrase, or `badge: true` with a required phrase).
 
 Shipped shape — controlled; the app owns `active`, and
-`wireTabScaffold(root, { onSelect })` (`@kerfjs/ui/wire-tab-scaffold`) delegates
+`wireTabNavigator(root, { onSelect })` (`@kerfjs/ui/wire-tab-navigator`) delegates
 tab clicks to `onSelect(tabId)` and returns a disposer:
 
 ```tsx
 const active = signal<"home" | "search">("home");
 // render:
-<TabScaffold
+<TabNavigator
   id="app-tabs"
   label="Sections"
   active={active.value}
@@ -657,10 +657,10 @@ const active = signal<"home" | "search">("home");
     { id: "inbox", label: "Inbox", icon: inboxIcon, badge: 3, badgeLabel: "3 unread", content: <InboxStack /> },
   ]}
 />;
-// once: const dispose = wireTabScaffold(root, { onSelect: (id) => (active.value = id as "home" | "search") });
+// once: const dispose = wireTabNavigator(root, { onSelect: (id) => (active.value = id as "home" | "search") });
 ```
 
-**Implementation:** ticket **TabScaffold (bottom tabs) layout**. Depends on
+**Implementation:** ticket **TabNavigator (bottom tabs) layout**. Depends on
 NavStack.
 
 ### 3.5 Standalone collapsible panel — `CollapsiblePanel` + `wireSidebar` (`@kerfjs/ui/collapsible-panel`, `@kerfjs/ui/wire-sidebar`)
@@ -886,7 +886,7 @@ insets structurally, with no per-app configuration. The consumer summary is the
   Layout CSS routes it: each region sets `0px` for edges it does not reach
   (`:has()` and sibling selectors track expanded/collapsed rails, a present
   chrome/bottom toolbar, and an expanded drawer). Consumers (Pane slots,
-  NavStack chrome/views/bottom, TabScaffold scenes/bar, Workbench main and panel
+  NavStack chrome/views/bottom, TabNavigator scenes/bar, Workbench main and panel
   content, CollapsiblePanel content, SplitView list/detail) pad from it and
   reset it to `0px` for their children.
 
@@ -903,13 +903,13 @@ recipe and both-mode demo are in [`ui/docs/app-layouts.md`](../ui/docs/app-layou
 and `ui/ux-demo/demos/pane.tsx`.
 
 A layout region whose only child is a `Pane`, `NavStack`, `SplitView`,
-`Workbench`, or `TabScaffold` delegates to that child instead of padding, so the
+`Workbench`, or `TabNavigator` delegates to that child instead of padding, so the
 child can paint through and own scroll-through padding. Such a child also fills a Workbench region (`height: 100%`) from its own
 stylesheet, keyed on the region markers the Workbench renders
 (`[data-workbench-main]`, `[data-workbench-panel-content]`); `workbench.css`
 fills only a nested Workbench (KF-KSJ7PY: it used to size the other layouts'
 roots itself). A sole `Pane` likewise fills a `NavStack` view or a
-`TabScaffold` scene (`.kui-nav-stack__view` / `.kui-tab-scaffold__scene >
+`TabNavigator` scene (`.kui-nav-stack__view` / `.kui-tab-scaffold__scene >
 [data-component="pane"]:only-child`, in `pane.css`), so the view or scene never
 scrolls and the Pane's own content is the scroll owner under a pinned header
 (KF-FVHC15: the Pane sized to its content and the view scrolled it, header
@@ -917,7 +917,7 @@ included). The Pane's slots then apply the edges the region still reaches — a
 view's bottom and sides (none on top, under the chrome, or at the bottom, over
 a bottom toolbar), a scene's top and sides — which is exactly what the region
 itself would have padded; `nav-stack.css` / `tab-scaffold.css` never size the
-Pane. A nested `NavStack` / `TabScaffold` already fills its region with its own
+Pane. A nested `NavStack` / `TabNavigator` already fills its region with its own
 `height: 100%`. The region's padding
 rule tests that with `region:not(:has(> delegated:only-child))` on the region
 itself, but the reset for its children is written on the child,
@@ -973,7 +973,7 @@ edge-to-edge surfaces and separators, touched-side padding, scroll-through
 padding, the center regaining an edge when a rail collapses, an app bar and a
 bottom bar claiming their screen edges with `Toolbar.safeAreaEdges`, and no
 interior or nested inset, including a sole Pane filling a `NavStack` view and a
-`TabScaffold` scene. `ui/tests/unit/workbench.test.tsx` asserts that the fill
+`TabNavigator` scene. `ui/tests/unit/workbench.test.tsx` asserts that the fill
 rules live in the filled component's own stylesheet.
 
 ### 3.7 Scroll dividers — `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`)
@@ -1018,8 +1018,8 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   physical, so a right-to-left scroller (negative `scrollLeft`) reports the
   same sides. A 1px tolerance absorbs the rounding between whole-pixel
   `scrollWidth` / `scrollHeight` and fractional scroll positions.
-- **NavStack and TabScaffold (KF-YYYKGH: their chrome kept permanent lines —
-  the NavStack bottom toolbar's and the TabScaffold bar's top borders).** The
+- **NavStack and TabNavigator (KF-YYYKGH: their chrome kept permanent lines —
+  the NavStack bottom toolbar's and the TabNavigator bar's top borders).** The
   wiring pairs, by structure, each `.kui-nav-stack`'s live top chrome
   (`.kui-nav-stack__chrome`) and bottom toolbar (`.kui-nav-stack__bottom`,
   never a `data-nav-chrome-copy` cross-fade snapshot) with its active view (the
@@ -1027,14 +1027,14 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   `.kui-tab-scaffold__bar` with its active scene. **Scroll owner:** the wiring
   pairs every element that may scroll against that edge — the view or scene
   itself, then, through a sole child that puts no chrome of its own on that
-  edge, a `Pane`'s content slot or a nested `NavStack`'s / `TabScaffold`'s
+  edge, a `Pane`'s content slot or a nested `NavStack`'s / `TabNavigator`'s
   active region (repeatedly). An element that does not overflow reports
   nothing, so the chrome keys on whichever actually scrolls. A sole `Pane`
   fills the view or scene (§3.6), so its content scrolls under its pinned
   header; the walk through the view itself still covers a Pane an app sizes
   to its content by other means. A sole child with chrome on that edge (a
   `Pane` header or footer, a nested `NavStack`'s top chrome or bottom toolbar,
-  a nested `TabScaffold`'s bar) stops the walk, because that chrome draws its
+  a nested `TabNavigator`'s bar) stops the walk, because that chrome draws its
   own divider against its own content — the layout's chrome never doubles it.
   A push or pop and a tab switch change `data-nav-active` / `data-active`,
   which the `MutationObserver` now watches, so the pairing follows the active
@@ -1045,11 +1045,11 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   toolbar's existing 1px top border, which stays in place transparent;
   `tab-scaffold.css` does the same with the bar's 1px top border. Geometry is
   therefore identical to the old permanent borders and nothing moves (a
-  removed border shifted the TabScaffold tab badges 1px above the bar). The catalog declares the wiring's two state attributes on both
+  removed border shifted the TabNavigator tab badges 1px above the bar). The catalog declares the wiring's two state attributes on both
   layouts. Without the wiring these edges draw no line (as a `Pane`'s default
   does); an explicit `toolbarConfig.dividerSides` still draws a permanent
   Toolbar edge.
-- **`chromeDividers` on NavStack and TabScaffold (KF-985SV1: without the
+- **`chromeDividers` on NavStack and TabNavigator (KF-985SV1: without the
   wiring those edges could never show a line, and nothing could suppress
   one).** Both layouts take `chromeDividers?: 'scroll' | 'always' | 'none'`
   with `Pane.chromeDividers` semantics exactly (an inline union, so no new
@@ -1063,7 +1063,7 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   wiring still reports (the wiring is unchanged, as for a Pane), and a nested
   layout keeps its own setting. It governs the NavStack top chrome's overlaid
   line and bottom toolbar's top border (including a cross-fade copy, which is
-  a child of the same root) and the TabScaffold bar's top border; the top
+  a child of the same root) and the TabNavigator bar's top border; the top
   `Toolbar`'s own `toolbarConfig.dividerSides` is unaffected. `SplitView`
   forwards it through `compactStack.chromeDividers`.
 - **TabBar.** A rail strip has no visible track, so the bar draws a 1px line
@@ -1091,15 +1091,15 @@ right-to-left strips, app-owned targets including shared chrome and a
 scroller that is also chrome, re-render restoration, added / removed panes,
 disposal, a Document root without observers, NavStack chrome through fits →
 middle → end → start, push and pop swapping the scroller while a view slides
-out, a sole Pane with and without chrome, cross-fade copies, and a TabScaffold
+out, a sole Pane with and without chrome, cross-fade copies, and a TabNavigator
 bar across tab switches and nested NavStacks), plus the NavStack /
-TabScaffold / SplitView `chromeDividers` attribute, its CSS gating, and the
+TabNavigator / SplitView `chromeDividers` attribute, its CSS gating, and the
 wiring still reporting under `none`.
 `ui/tests/browser/scroll-dividers.spec.ts` asserts the drawn lines by computed
 style and unchanged geometry across Pane, Workbench, all three TabBar
 presentations, right-to-left, NavStack (push / pop, and a sole Pane that
-fills the view with its header pinned), TabScaffold (tab switches over a
-nested NavStack, and a scene that is a sole Pane), NavStack and TabScaffold
+fills the view with its header pinned), TabNavigator (tab switches over a
+nested NavStack, and a scene that is a sole Pane), NavStack and TabNavigator
 `chromeDividers` (`always` with fitting content and after the wiring is
 disposed, `none` with the wiring reporting dividers), and targets in Chromium,
 Firefox, and WebKit.
@@ -1114,7 +1114,7 @@ tablet — "one pane at a time"):
 | `NavStack`            | stack                              | stack                           | stack                                      | stack (or one column of a larger shell) |
 | `SplitView`           | → NavStack                         | → NavStack (full-screen detail) | two panes (detail may not be full-screen)  | two panes, resizable                    |
 | `Workbench`           | not recommended → NavStack/overlay | rails as overlay drawers        | left rail inline; right/bottom as overlays | full three-panel, opt-in resizable      |
-| `TabScaffold`         | bottom tabs + per-tab stacks       | bottom tabs                     | promote tabs to rail                       | promote tabs to sidebar/`Workbench`     |
+| `TabNavigator`        | bottom tabs + per-tab stacks       | bottom tabs                     | promote tabs to rail                       | promote tabs to sidebar/`Workbench`     |
 | Dialog w/ `SplitView` | full-screen modal                  | full-screen modal               | large partial-cover modal                  | inline two-pane dialog                  |
 
 Dialogs integrate with `kerfjs/overlay` and its native top-layer backing
@@ -1127,7 +1127,7 @@ The AI guidance (`ui/ai/skill.md`, `ui/llms.txt`, the decision-guidance data,
 and the consumer docs) must map a situation to a layout. The decision axis:
 
 - **Simple app / few flat sections, any device →** single pane = `NavStack` with
-  one entry; add `TabScaffold` if there are 2–5 co-equal major sections on
+  one entry; add `TabNavigator` if there are 2–5 co-equal major sections on
   handset.
 - **Drill-down browsing (list → item → sub-item), any device →** `NavStack`;
   `SplitView` once there is room to show list and detail together (tablet
@@ -1137,7 +1137,7 @@ and the consumer docs) must map a situation to a layout. The decision axis:
 - **Complex tool / editor with peripheral panels (navigator, inspector, console)
   on desktop →** `Workbench`; degrade to `NavStack`/overlays on small classes.
 - **Mobile app with 2–5 top-level destinations, each its own drill-down →**
-  `TabScaffold`; promote to a rail/sidebar on desktop.
+  `TabNavigator`; promote to a rail/sidebar on desktop.
 - **Dialogs:** pick the same layout by complexity, then apply the dialog
   presentation column of §4 for the device class.
 
@@ -1166,7 +1166,7 @@ bundle/CSS tree-shaking gates extend to cover the new subpaths.
 ## 7. Resolved decisions
 
 1. **`Workbench`** — shipped as the multi-panel/IDE layout name.
-2. **`TabScaffold`** — shipped as the bottom-tab container name, kept distinct
+2. **`TabNavigator`** — shipped as the bottom-tab container name, kept distinct
    from `TabBar`.
 3. **Default breakpoints** — shipped as proposed in §2.1 (mobile 360, tablet 720,
    desktop 1024, xl-desktop 1440), tunable per reader and mirrored as `--kui-bp-*`.
@@ -1174,13 +1174,11 @@ bundle/CSS tree-shaking gates extend to cover the new subpaths.
    `@kerfjs/ui/responsive` umbrella can still be introduced later if more
    responsive helpers appear.
 
-**Naming review (KF-YMJH1W: bottom-tab layout name).** `TabScaffold` is a
-complete navigator: it owns persistent scenes and their bottom bar, not a
-template for an app to finish. `TabNavigator` describes that role more clearly
-and remains distinct from `TabBar`, the document-tab strip. `NavTabs` could
-suggest only the bar. The shipped API remains `TabScaffold` until a coordinated
-public migration provides `TabNavigator` plus compatibility aliases
-(KF-PSDCV0: rename the bottom-tab layout with a migration path).
+**Naming review (KF-YMJH1W, KF-PSDCV0).** `TabNavigator` names the complete
+layout: it owns persistent scenes and their bottom bar. `TabBar` names the
+separate document-tab strip. The former `TabScaffold` name and imports remain
+deprecated compatibility aliases throughout 5.x; see
+[`ui/docs/tab-navigator.md`](../ui/docs/tab-navigator.md) for the migration.
 
 The shipped layouts are represented in the machine-readable component catalog,
 including explicit manual-CSS delivery metadata, focused UX-demo routes, and
@@ -1200,7 +1198,7 @@ unit and three-engine Playwright coverage, a UX-demo recipe, consumer docs
 3. **SplitView / list-detail layout** (§3.2).
 4. **Workbench / multi-panel layout** (§3.3); generalizes the KF-7QKJRK sidebar
    animation.
-5. **TabScaffold / bottom-tabs layout** (§3.4).
+5. **TabNavigator / bottom-tabs layout** (§3.4).
 6. **AI layout-selection guidance** (§5) — decision matrix into `ui/ai/skill.md`,
    `ui/llms.txt`, decision-guidance, and consumer docs.
 

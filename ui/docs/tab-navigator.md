@@ -1,36 +1,47 @@
-# Tab scaffold
+# Tab navigator
 
-> Deprecated in 5.x: use [`TabNavigator`](tab-navigator.md). The old component,
-> types, wiring helper, and import paths remain compatible during the 5.x
-> migration window.
-
-`@kerfjs/ui/tab-scaffold` is a mobile-first, iOS-like bottom tab bar that switches
+`@kerfjs/ui/tab-navigator` is a mobile-first, iOS-like bottom tab bar that switches
 between major app sections, where **each tab keeps its own content mounted** —
 usually a `NavStack`, so each tab's stack and scroll survive a switch. One of the
 opt-in app layouts (see [`../../docs/23-app-layouts.md`](../../docs/23-app-layouts.md)).
 It is distinct from `TabBar` (document-oriented, reorderable strips).
 
+## Migration from TabScaffold
+
+The previous `TabScaffold` API remains available throughout 5.x as a deprecated
+alias. Replace names and import paths when updating an app:
+
+| Previous                                                                           | Current                                                                                |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `TabScaffold`, `TabScaffoldTab`, `TabScaffoldProps` from `@kerfjs/ui/tab-scaffold` | `TabNavigator`, `TabNavigatorTab`, `TabNavigatorProps` from `@kerfjs/ui/tab-navigator` |
+| `wireTabScaffold`, `WireTabScaffoldOptions` from `@kerfjs/ui/wire-tab-scaffold`    | `wireTabNavigator`, `WireTabNavigatorOptions` from `@kerfjs/ui/wire-tab-navigator`     |
+| `@kerfjs/ui/tab-scaffold.css`                                                      | `@kerfjs/ui/tab-navigator.css`                                                         |
+
+Props, rendered DOM classes, data attributes, and wiring behavior are unchanged.
+The two CSS paths deliver the same styles; import one of them. Alias removal
+will be assessed for the next major version after consumer migration.
+
 ```ts
-import { TabScaffold } from "@kerfjs/ui/tab-scaffold";
-import { wireTabScaffold } from "@kerfjs/ui/wire-tab-scaffold";
+import { TabNavigator } from "@kerfjs/ui/tab-navigator";
+import { wireTabNavigator } from "@kerfjs/ui/wire-tab-navigator";
 ```
 
 In a browser bundler that honors the `browser` export condition (Vite, esbuild, and
 webpack do by default), the import above also
-loads TabScaffold's stylesheet and those of the components it renders internally
+loads TabNavigator's stylesheet and those of the components it renders internally
 (the tab `Badge`). Without that condition, import the manual stylesheets instead:
-`@kerfjs/ui/tab-scaffold.css` plus those components' CSS, or `@kerfjs/ui/styles.css`.
+`@kerfjs/ui/tab-navigator.css` plus those components' CSS, or `@kerfjs/ui/styles.css`.
 
 ## Controlled selection
 
-The app owns the active tab (a signal); `TabScaffold` renders every tab's scene
-(only the active one visible) plus the bottom bar, and `wireTabScaffold` reports
+The app owns the active tab (a signal); `TabNavigator` renders every tab's scene
+(only the active one visible) plus the bottom bar, and `wireTabNavigator` reports
 clicks.
 
 ```tsx
 const active = signal("home");
 
-<TabScaffold
+<TabNavigator
   id="app"
   label="Sections"
   active={active.value}
@@ -46,14 +57,14 @@ const active = signal("home");
 />;
 
 // once, after first render:
-const dispose = wireTabScaffold(root, {
+const dispose = wireTabNavigator(root, {
   onSelect: (id) => {
     active.value = id;
   },
 });
 ```
 
-Each `TabScaffoldTab` has an `id`, `label`, optional `icon`, optional `badge`
+Each `TabNavigatorTab` has an `id`, `label`, optional `icon`, optional `badge`
 and `badgeLabel` (see [Tab badges](#tab-badges)), and `content`. The
 bottom bar paints through the home-indicator safe area and pads for it and for
 the side insets, while each scene pads for the top and side insets (a scene
@@ -67,16 +78,16 @@ Set `deepInset: true` on a plain tab scene to add an 8px outer inline gutter
 to its scrolling content, giving ordinary content items a 16px edge inset.
 The default is `false`. A scene whose only child is a `Pane` or layout lets
 that child own its content gutter: for a nested `NavStack`, set
-`pane: { deepInset: true }` on its views instead. The scaffold bar and a
+`pane: { deepInset: true }` on its views instead. The navigator bar and a
 stack's top toolbar remain full width.
 
 ## A NavStack with a top toolbar and Pane
 
 Put the `NavStack` directly in a tab's `content`. Give each view a structured
 `toolbar` and `pane` configuration. Leave `bottomToolbar` off both the views
-and the stack: the scaffold's tab bar is the only bottom chrome. The view's
+and the stack: the navigator's tab bar is the only bottom chrome. The view's
 Pane owns scrolling, while the stack keeps its toolbar above it and the
-scaffold keeps the tab bar below it.
+navigator keeps the tab bar below it.
 
 ```tsx
 import { List } from "@kerfjs/ui/list";
@@ -92,7 +103,7 @@ const projectViews: NavStackView[] = [
   },
 ];
 
-<TabScaffold
+<TabNavigator
   id="app"
   label="Sections"
   active={active.value}
@@ -113,8 +124,8 @@ const projectViews: NavStackView[] = [
 />;
 ```
 
-The app owns each stack's view array and the scaffold's active tab. Call
-`wireTabScaffold` for tab selection and `wireNavStack` for back navigation
+The app owns each stack's view array and the navigator's active tab. Call
+`wireTabNavigator` for tab selection and `wireNavStack` for back navigation
 and transitions, each on its own component root. Push a detail by appending
 a view with its own `toolbar` and `pane`; switching tabs keeps that view
 mounted. The catalog's **NavStack inside a tab** example demonstrates the

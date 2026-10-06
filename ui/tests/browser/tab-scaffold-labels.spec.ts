@@ -22,7 +22,7 @@ test('TabScaffold labels retain their full line box at wide and narrow widths', 
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/?component=tab-scaffold');
+  await page.goto('/?component=tab-navigator');
 
   const scaffold = page.locator('#catalog-tab-scaffold');
   await expect(scaffold).toBeVisible();

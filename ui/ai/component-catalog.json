@@ -478,7 +478,7 @@
       "publicExports": [],
       "useWhen": [
         "An application wants Kerf UI to own document-level box sizing, body typography, native table-cell and form-control font metrics, surface, and link color.",
-        "A full-height shell (Workbench, SplitView, NavStack, or TabScaffold) mounts into one direct container: put .kui-app-root on that container."
+        "A full-height shell (Workbench, SplitView, NavStack, or TabNavigator) mounts into one direct container: put .kui-app-root on that container."
       ],
       "avoidWhen": [
         "Do not put .kui-app-root on several sibling containers; each requests the full available document height.",
@@ -749,7 +749,7 @@
       ],
       "avoidWhen": [
         "Do not use NavStack when a list and detail should remain visible together; use SplitView.",
-        "Do not use it for co-equal top-level destinations on compact devices; wrap one stack per destination in TabScaffold."
+        "Do not use it for co-equal top-level destinations on compact devices; wrap one stack per destination in TabNavigator."
       ],
       "alternatives": [
         {
@@ -758,9 +758,9 @@
           "when": "Promote a list-to-detail stack to SplitView once both regions fit together."
         },
         {
-          "id": "tab-scaffold",
+          "id": "tab-navigator",
           "relationship": "composes-with",
-          "when": "Use one NavStack as each TabScaffold tab's persistent content."
+          "when": "Use one NavStack as each TabNavigator tab's persistent content."
         }
       ],
       "appOwns": [
@@ -1015,27 +1015,27 @@
       }
     },
     {
-      "id": "tab-scaffold",
-      "name": "TabScaffold",
+      "id": "tab-navigator",
+      "name": "TabNavigator",
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "A controlled compact-device bottom tab scaffold that keeps every tab scene mounted so its navigation and scroll state survive selection changes.",
+      "description": "A controlled compact-device bottom tab navigator that keeps every destination scene mounted so its navigation and scroll state survive selection changes.",
       "uses": [
         "badge"
       ],
       "purpose": "Switch among two to five co-equal top-level destinations on compact devices while preserving each destination's independent content state.",
       "publicExports": [
-        "TabScaffoldTab",
-        "TabScaffoldProps",
-        "TabScaffold"
+        "TabNavigatorTab",
+        "TabNavigatorProps",
+        "TabNavigator"
       ],
       "useWhen": [
         "A handset or portrait-tablet app has two to five co-equal top-level destinations.",
         "Each destination must stay mounted so its NavStack and scroll position survive tab switches."
       ],
       "avoidWhen": [
-        "Do not use TabScaffold for document tabs or reorderable work items; use TabBar.",
+        "Do not use TabNavigator for document tabs or reorderable work items; use TabBar.",
         "Do not retain the bottom bar on desktop when the same destinations should be promoted to a Workbench rail or sidebar."
       ],
       "alternatives": [
@@ -1076,22 +1076,22 @@
         "border": "conditional",
         "padding": "self",
         "notes": [
-          "The scaffold owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.",
+          "The navigator owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.",
           "The bar's top line is scroll state (wireScrollDividers): it shows only while the active scene's content continues below the bar, by coloring the bar's always-present 1px top border."
         ]
       },
       "delivery": {
-        "moduleImport": "@kerfjs/ui/tab-scaffold",
-        "browserImport": "@kerfjs/ui/tab-scaffold",
-        "manualCssImport": "@kerfjs/ui/tab-scaffold.css",
+        "moduleImport": "@kerfjs/ui/tab-navigator",
+        "browserImport": "@kerfjs/ui/tab-navigator",
+        "manualCssImport": "@kerfjs/ui/tab-navigator.css",
         "sideEffects": [
           "browser-condition-css"
         ]
       },
       "wiring": [
         {
-          "export": "wireTabScaffold",
-          "import": "@kerfjs/ui/wire-tab-scaffold",
+          "export": "wireTabNavigator",
+          "import": "@kerfjs/ui/wire-tab-navigator",
           "required": true
         },
         {
@@ -1124,8 +1124,8 @@
       ],
       "publicTokens": [],
       "links": {
-        "catalogRoute": "?component=tab-scaffold",
-        "documentation": "docs/tab-scaffold.md",
+        "catalogRoute": "?component=tab-navigator",
+        "documentation": "docs/tab-navigator.md",
         "recipe": "docs/app-layouts.md#decision-matrix"
       }
     },

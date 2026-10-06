@@ -233,8 +233,10 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `NavStack`                                                          | `@kerfjs/ui/nav-stack`                  | `@kerfjs/ui/nav-stack.css`             |
 | `wireNavStack`                                                      | `@kerfjs/ui/wire-nav-stack`             | —                                      |
 | `SplitView`                                                         | `@kerfjs/ui/split-view`                 | `@kerfjs/ui/split-view.css`            |
-| `TabScaffold`                                                       | `@kerfjs/ui/tab-scaffold`               | `@kerfjs/ui/tab-scaffold.css`          |
-| `wireTabScaffold`                                                   | `@kerfjs/ui/wire-tab-scaffold`          | —                                      |
+| `TabNavigator`                                                      | `@kerfjs/ui/tab-navigator`              | `@kerfjs/ui/tab-navigator.css`         |
+| `wireTabNavigator`                                                  | `@kerfjs/ui/wire-tab-navigator`         | —                                      |
+| `TabScaffold` (deprecated 5.x alias)                                | `@kerfjs/ui/tab-scaffold`               | `@kerfjs/ui/tab-scaffold.css`          |
+| `wireTabScaffold` (deprecated 5.x alias)                            | `@kerfjs/ui/wire-tab-scaffold`          | —                                      |
 | `Workbench`                                                         | `@kerfjs/ui/workbench`                  | `@kerfjs/ui/workbench.css`             |
 | `wireWorkbench`                                                     | `@kerfjs/ui/wire-workbench`             | —                                      |
 | `CollapsiblePanel`, `CollapsiblePanelToggle`                        | `@kerfjs/ui/collapsible-panel`          | `@kerfjs/ui/collapsible-panel.css`     |
@@ -263,11 +265,11 @@ Application layouts are separate component subpaths. Browser-condition imports
 include their reachable CSS; use the matching manual CSS export when your
 bundler does not select the browser condition. Add a wire subpath when the
 layout has interactive behavior. The catalog
-entries for `nav-stack`, `split-view`, `tab-scaffold`, `workbench`, and
+entries for `nav-stack`, `split-view`, `tab-navigator`, `workbench`, and
 `collapsible-panel` document their selection rules, ownership boundaries,
 public classes, tokens, and focused demos. See
 [`docs/app-layouts.md`](./docs/app-layouts.md) for the layout decision matrix.
-`NavStack` and `TabScaffold` expose `chromeDividers="scroll" | "always" |
+`NavStack` and `TabNavigator` expose `chromeDividers="scroll" | "always" |
 "none"` for their chrome lines; `SplitView` forwards the setting to its
 compact stack. A sole `Pane` in a view or scene fills it, keeping the Pane's
 header in place while its own content scrolls.

@@ -88,7 +88,8 @@ import {
 } from '@kerfjs/ui/state-banner';
 import { SunkenPanel, type SunkenPanelShape } from '@kerfjs/ui/sunken-panel';
 import { type TabActivation, TabBar } from '@kerfjs/ui/tab-bar';
-import { TabScaffold } from '@kerfjs/ui/tab-scaffold';
+import { TabNavigator } from '@kerfjs/ui/tab-navigator';
+import { TabScaffold, type TabScaffoldProps } from '@kerfjs/ui/tab-scaffold';
 import { Text } from '@kerfjs/ui/text';
 import {
   type TokenSearchEditorAttributes,
@@ -109,6 +110,8 @@ import {
   type ScrollDividerTarget,
   wireScrollDividers,
 } from '@kerfjs/ui/wire-scroll-dividers';
+import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
+import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { Workbench } from '@kerfjs/ui/workbench';
@@ -588,13 +591,22 @@ UI.TabBar({
   trailingPlacement: 'adjacent',
   slot: 'named',
 });
-TabScaffold({
+TabNavigator({
   id: 'scaffold',
   label: 'Tabs',
   active: 'one',
   tabs: [{ id: 'one', label: 'One', content: slottedContent }],
   slot: 'named',
 });
+const legacyTabProps: TabScaffoldProps<'one'> = {
+  id: 'legacy-tabs',
+  label: 'Tabs',
+  active: 'one',
+  tabs: [{ id: 'one', label: 'One', content: slottedContent }],
+};
+TabScaffold(legacyTabProps);
+wireTabNavigator(document.body, { onSelect: () => undefined });
+wireTabScaffold(document.body, { onSelect: () => undefined });
 UI.TokenSearchField({ id: 'search', label: 'Search', slot: 'named' });
 UI.Toolbar({ leading: slottedContent, slot: 'named' });
 UI.ToolbarActionLink({ href: '/', label: 'Home', slot: 'named' });
@@ -800,7 +812,7 @@ ToolbarText({ text: 'Long title', wrap: true, maxLines: 2 });
 ToolbarText({ text: 'Long title', maxLines: 2 });
 
 // KUI-T008 positive: a literal active tab names a declared tab.
-TabScaffold({
+TabNavigator({
   id: 'app',
   label: 'Sections',
   active: 'home',
@@ -810,7 +822,7 @@ TabScaffold({
   ],
 });
 // A tab badge is a count or short string with an optional localized phrase.
-TabScaffold({
+TabNavigator({
   id: 'app',
   label: 'Sections',
   active: 'inbox',
@@ -826,7 +838,7 @@ TabScaffold({
   ],
 });
 // The dot form (new content without a count) requires its localized phrase.
-TabScaffold({
+TabNavigator({
   id: 'app',
   label: 'Sections',
   active: 'feed',
@@ -840,28 +852,28 @@ TabScaffold({
     },
   ],
 });
-TabScaffold({
+TabNavigator({
   id: 'app',
   label: 'Sections',
   active: 'inbox',
   // @ts-expect-error a dot badge has no text, so badgeLabel is required.
   tabs: [{ id: 'inbox', label: 'Inbox', content: icon, badge: true }],
 });
-TabScaffold({
+TabNavigator({
   id: 'app',
   label: 'Sections',
   active: 'inbox',
   // @ts-expect-error a tab badge is text, a number, or the `true` dot — not false.
   tabs: [{ id: 'inbox', label: 'Inbox', content: icon, badge: false }],
 });
-TabScaffold({
+TabNavigator({
   id: 'app',
   label: 'Sections',
   active: 'inbox',
   // @ts-expect-error a tab badge is text, a number, or the dot — not markup.
   tabs: [{ id: 'inbox', label: 'Inbox', content: icon, badge: icon }],
 });
-TabScaffold({
+TabNavigator({
   id: 'app',
   label: 'Sections',
   // @ts-expect-error KUI-T008 a literal active id must name a declared tab.

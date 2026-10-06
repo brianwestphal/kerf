@@ -47,7 +47,7 @@ test('TabScaffold tab badge folds into the name and sits top-trailing on the ico
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/?component=tab-scaffold');
+  await page.goto('/?component=tab-navigator');
   const scaffold = page.locator('#catalog-tab-scaffold');
   await expect(scaffold).toBeVisible();
   expectTopTrailing(await badgeGeometry(scaffold));
@@ -128,7 +128,7 @@ test('TabScaffold dot badge is a small circle on the icon corner with its badgeL
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/?component=tab-scaffold');
+  await page.goto('/?component=tab-navigator');
   const scaffold = page.locator('#catalog-tab-scaffold');
   await expect(scaffold).toBeVisible();
   expectDotOnCorner(await dotGeometry(scaffold));

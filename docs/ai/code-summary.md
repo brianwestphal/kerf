@@ -807,7 +807,7 @@ which walks value imports and re-exports, parent-relative ones included, and exp
 pure `@import` aggregates such as `catalog.css`). A browser component
 subpath imports the foundation, its own compiled CSS, and reachable subcomponent
 CSS; unrelated styles remain unreachable. Composites (`catalog`, `workbench`,
-`nav-stack`, `split-view`, `tab-scaffold`, `collapsible-panel`) get wrappers too, so
+`nav-stack`, `split-view`, `tab-navigator`, `collapsible-panel`) get wrappers too, so
 their internally rendered components (Pane, Toolbar, List, …) bring their styles.
 `ui/tests/bundle/consumer-bundle.test.ts` fails when a module subpath reaches
 component CSS without a `browser` condition (`wire-*` helpers and the type-only
@@ -866,11 +866,11 @@ transitions and duplicate tab IDs in independent bars.
 `wireScrollDividers(root, { targets? })`) makes the divider between pinned chrome
 and scrolling content scroll state: it pairs every `.kui-pane` content slot with
 its header/footer, each `NavStack`'s top chrome / bottom toolbar and each
-`TabScaffold` bar with whatever scrolls in the active view or scene (the region,
+`TabNavigator` bar with whatever scrolls in the active view or scene (the region,
 or through a chrome-free sole child a `Pane` content / nested layout region),
 every `TabBar` strip, and app-owned id `targets`, and writes
 only `data-scroll-overflow` (scroller) / `data-scroll-divider` (chrome); `Pane`
-(`chromeDividers`: `scroll`/`always`/`none`), `NavStack` and `TabScaffold`
+(`chromeDividers`: `scroll`/`always`/`none`), `NavStack` and `TabNavigator`
 (the same `chromeDividers`, rendered as `data-chrome-dividers` on the layout
 root; `SplitView` forwards it via `compactStack`), `TabBar`, `Toolbar`, and `List` draw from them in their own CSS. `Toolbar.dividerSides` defaults to `''`, and the
 Workbench / CollapsiblePanel / Catalog toolbars place no dividers of their own;
