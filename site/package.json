@@ -31,7 +31,7 @@
     "dompurify": "^3.4.15",
     "kerfjs": "file:..",
     "marked": "^15.0.0",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
