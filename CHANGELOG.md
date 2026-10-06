@@ -8,11 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Removed
 
-- **Breaking (`@kerfjs/ui`, 6.0):** remove the deprecated `TabScaffold` component and type aliases, `wireTabScaffold` and `WireTabScaffoldOptions`, and the `tab-scaffold`, `wire-tab-scaffold`, and `tab-scaffold.css` package subpaths. Use `TabNavigator`, `TabNavigatorTab`, `TabNavigatorProps`, `wireTabNavigator`, and their corresponding subpaths. The rendered DOM classes and data attributes remain stable. See `ui/docs/tab-navigator.md` for migration steps (`KF-CMK0W8`).
+- **Breaking (`@kerfjs/ui`, 5.0 beta):** remove the deprecated `TabScaffold` component and type aliases, `wireTabScaffold` and `WireTabScaffoldOptions`, and the `tab-scaffold`, `wire-tab-scaffold`, and `tab-scaffold.css` package subpaths. Use `TabNavigator`, `TabNavigatorTab`, `TabNavigatorProps`, `wireTabNavigator`, and their corresponding subpaths. The rendered DOM classes and data attributes remain stable. See `ui/docs/tab-navigator.md` for migration steps (`KF-CMK0W8`).
 
 ### Added
 
-- `TabNavigator`, `TabNavigatorTab`, `TabNavigatorProps`, and `wireTabNavigator` name the complete persistent bottom-tab layout. The matching module, wiring, and CSS subpaths are available; former `TabScaffold` names and paths were deprecated aliases in 5.x.
+- `TabNavigator`, `TabNavigatorTab`, `TabNavigatorProps`, and `wireTabNavigator` name the complete persistent bottom-tab layout. The matching module, wiring, and CSS subpaths are available; former `TabScaffold` names and paths were deprecated aliases in earlier 5.0 betas.
 
 - `Pane` exposes its resolved logical inline content insets to child CSS, so a table can paint edge to edge while its cell text stays aligned, with or without `deepInset`.
 

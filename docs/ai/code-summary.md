@@ -809,7 +809,7 @@ subpath imports the foundation, its own compiled CSS, and reachable subcomponent
 CSS; unrelated styles remain unreachable. Composites (`catalog`, `workbench`,
 `nav-stack`, `split-view`, `tab-navigator`, `collapsible-panel`) get wrappers too, so
 their internally rendered components (Pane, Toolbar, List, …) bring their styles.
-The 6.0 public surface omits the deprecated `tab-scaffold` and
+The 5.0 public surface omits the deprecated `tab-scaffold` and
 `wire-tab-scaffold` JS subpaths and `tab-scaffold.css` export; the internal
 `components/navigation/tab-scaffold/` owner and rendered DOM hooks remain.
 `ui/tests/bundle/consumer-bundle.test.ts` fails when a module subpath reaches

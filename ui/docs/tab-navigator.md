@@ -8,7 +8,7 @@ It is distinct from `TabBar` (document-oriented, reorderable strips).
 
 ## Migration from TabScaffold
 
-The deprecated `TabScaffold` API was removed in 6.0. Replace names and import
+The deprecated `TabScaffold` API was removed during the 5.0 beta series. Replace names and import
 paths when updating an app:
 
 | Previous                                                                           | Current                                                                                |
