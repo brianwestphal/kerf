@@ -53,7 +53,7 @@ export function PaneDemo() {
       </CatalogExample>
       <CatalogExample
         label="Deep inset content"
-        note="deepInset adds one 8px outer gutter to the Pane's scrolling content. Direct items and items inside a List align at 16px from the pane edge while the List keeps its ordinary internal 8px spacing."
+        note="deepInset adds 8px on all sides of the Pane's scrolling content. Direct items and items inside a List align at 16px from the inline edge while the List keeps its ordinary internal 8px spacing."
         viewport={{
           layout: 'grid',
           width: 'medium',

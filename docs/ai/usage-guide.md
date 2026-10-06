@@ -340,8 +340,9 @@ Inside a `TabNavigator`, put a `NavStack` directly in a tab's `content`,
 configure each view's `toolbar` and `pane`, and omit `bottomToolbar` so the
 scaffold bar is the only bottom chrome. Wire each component on its own root.
 For a deeper content gutter, set `Pane.deepInset` (or `pane.deepInset` in a
-composite) or `TabNavigatorTab.deepInset` for a plain scene. It adds 8px outside
-normal 8px item margins without changing nested Row/List/Grid spacing.
+composite) or `TabNavigatorTab.deepInset` for a plain scene. It adds 8px to all
+four sides of the scroll content, outside normal 8px item margins, without
+changing nested Row/List/Grid spacing.
 For an edge-to-edge child surface inside `Pane`, read the inherited
 `--kui-pane-content-inset-inline-start` and `-end` values: negate them for the
 child's logical margins, then add them to its internal text padding. They

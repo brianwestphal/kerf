@@ -643,7 +643,8 @@
           "notes": [
             "The pane is unpadded; separators are independently opt-in on logical edges and default off.",
             "Safe areas: the root and separators paint through unsafe areas while header, content, and footer pad the sides the pane still reaches (routed by --kui-edge-inset-*); content block insets are scroll padding.",
-            "The scrolling content exposes its resolved logical inline padding to descendants as --kui-pane-content-inset-inline-start/end, including safe areas and deepInset."
+            "The scrolling content exposes its resolved logical inline padding to descendants as --kui-pane-content-inset-inline-start/end, including safe areas and deepInset.",
+            "deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge."
           ]
         }
       },

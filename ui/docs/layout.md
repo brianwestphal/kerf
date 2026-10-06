@@ -38,11 +38,12 @@ default `fixed` always pins them.
 
 ### Deep content inset
 
-Set `deepInset` on a `Pane` to add one 8px inline gutter to its scrolling
-content. A `ContentItem` or `ListItem` that normally sits 8px from the pane
-edge then sits 16px from it. The default is `false`. This extra gutter adds
-to any device safe-area inset, while the pane's header, footer, background,
-and separators still reach their usual edges.
+Set `deepInset` on a `Pane` to add 8px of padding on every side of its scrolling
+content. A `ContentItem` or `ListItem` that normally sits 8px from the pane's
+inline edge then sits 16px from it. The default is `false`. This extra padding
+adds to any device safe-area inset; a header or footer still owns the safe-area
+padding at its edge while the content keeps its extra 8px. The pane's header,
+footer, background, and separators still reach their usual edges.
 
 ```tsx
 <Pane deepInset>

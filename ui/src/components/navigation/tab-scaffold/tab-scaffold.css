@@ -86,8 +86,16 @@
         ):only-child
     )
   ) {
+  padding-block-start: calc(
+    var(--kui-edge-inset-block-start) + var(--kui-space-xs)
+  );
+  padding-block-end: var(--kui-space-xs);
   padding-inline: calc(var(--kui-edge-inset-inline-start) + var(--kui-space-xs))
     calc(var(--kui-edge-inset-inline-end) + var(--kui-space-xs));
+  scroll-padding-block: calc(
+      var(--kui-edge-inset-block-start) + var(--kui-space-xs)
+    )
+    var(--kui-space-xs);
 }
 
 .kui-tab-scaffold__scene

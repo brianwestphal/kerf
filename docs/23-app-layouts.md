@@ -890,6 +890,11 @@ insets structurally, with no per-app configuration. The consumer summary is the
   content, CollapsiblePanel content, SplitView list/detail) pad from it and
   reset it to `0px` for their children.
 
+`Pane.deepInset` and a plain `TabNavigatorTab.deepInset` add `--kui-space-xs`
+to all four sides of their scrolling content and its block scroll padding.
+For a Pane with header or footer chrome, that chrome still owns the safe-area
+inset at its edge; the content keeps the extra `--kui-space-xs` there.
+
 **Pane children with edge-to-edge decoration.** The Pane scrolling slot
 publishes its actual inline padding as inherited
 `--kui-pane-content-inset-inline-start` and

@@ -16,6 +16,8 @@ delegation, form/dialog forwarding, resize commits, and idempotent disposal.
 app-owned Pane specimen: the table bleeds decorative rows through either
 `deepInset` mode while its text follows the Pane content axis. The focused
 `demos/pane.tsx` route composes it without owning a local stylesheet.
+Pane and plain TabNavigator scroll surfaces apply the deep inset on all four
+sides, including block scroll padding.
 `ui/ux-demo/demo-theme.ts` derives the effective operating-system light/dark
 appearance and applies the catalog's mutually exclusive explicit theme
 overrides.

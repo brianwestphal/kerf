@@ -21,6 +21,14 @@ test('edge-to-edge table bleeds to both Pane edges while cell text tracks conten
             '--kui-edge-inset-inline-end',
             '18px',
           );
+          (element as HTMLElement).style.setProperty(
+            '--kui-edge-inset-block-start',
+            '6px',
+          );
+          (element as HTMLElement).style.setProperty(
+            '--kui-edge-inset-block-end',
+            '10px',
+          );
         }, direction);
         const geometry = await pane.evaluate((element) => {
           const content =
@@ -52,6 +60,10 @@ test('edge-to-edge table bleeds to both Pane edges while cell text tracks conten
               : referenceRect.right - cellTextRect.right,
             contentStartPadding: parseFloat(contentStyle.paddingInlineStart),
             contentEndPadding: parseFloat(contentStyle.paddingInlineEnd),
+            contentTopPadding: parseFloat(contentStyle.paddingBlockStart),
+            contentBottomPadding: parseFloat(contentStyle.paddingBlockEnd),
+            scrollTopPadding: parseFloat(contentStyle.scrollPaddingBlockStart),
+            scrollBottomPadding: parseFloat(contentStyle.scrollPaddingBlockEnd),
             overflow: content.scrollWidth - content.clientWidth,
           };
         });
@@ -60,6 +72,12 @@ test('edge-to-edge table bleeds to both Pane edges while cell text tracks conten
         expect(geometry.textAxis).toBeCloseTo(0, 0);
         expect(geometry.contentStartPadding).toBe(deepInset ? 20 : 12);
         expect(geometry.contentEndPadding).toBe(deepInset ? 26 : 18);
+        expect(geometry.contentTopPadding).toBe(deepInset ? 14 : 6);
+        expect(geometry.contentBottomPadding).toBe(deepInset ? 18 : 10);
+        expect(geometry.scrollTopPadding).toBe(geometry.contentTopPadding);
+        expect(geometry.scrollBottomPadding).toBe(
+          geometry.contentBottomPadding,
+        );
         expect(geometry.overflow).toBeLessThanOrEqual(1);
         if (testInfo.project.name === 'chromium')
           await pane.screenshot({
@@ -98,6 +116,38 @@ test('deepInset adds one outer gutter while nested List items keep 8px spacing',
     expect(edges.item).toBeCloseTo(16, 0);
     expect(edges.row).toBeCloseTo(16, 0);
     expect(edges.rowMargin).toBe('8px');
+    const content = pane.locator('.kui-pane__content');
+    await expect(content).toHaveCSS('padding-top', '8px');
+    await expect(content).toHaveCSS('padding-bottom', '8px');
+    await expect(content).toHaveCSS('scroll-padding-top', '8px');
+    await expect(content).toHaveCSS('scroll-padding-bottom', '8px');
+    await pane.evaluate((element) => {
+      const paneElement = element as HTMLElement;
+      paneElement.style.setProperty('--kui-edge-inset-block-start', '12px');
+      paneElement.style.setProperty('--kui-edge-inset-block-end', '14px');
+    });
+    await expect(pane.locator('.kui-pane__header')).toHaveCSS(
+      'padding-top',
+      '12px',
+    );
+    await expect(content).toHaveCSS('padding-top', '8px');
+    await expect(content).toHaveCSS('padding-bottom', '22px');
+    await pane.evaluate((element) => {
+      const footer = document.createElement('div');
+      footer.className = 'kui-pane__footer';
+      element.appendChild(footer);
+    });
+    await expect(content).toHaveCSS('padding-bottom', '8px');
+    await expect(pane.locator('.kui-pane__footer')).toHaveCSS(
+      'padding-bottom',
+      '14px',
+    );
+    await pane.evaluate((element) => {
+      const paneElement = element as HTMLElement;
+      paneElement.querySelector('.kui-pane__footer')?.remove();
+      paneElement.style.removeProperty('--kui-edge-inset-block-start');
+      paneElement.style.removeProperty('--kui-edge-inset-block-end');
+    });
     await pane.evaluate((element) => {
       (element as HTMLElement).style.setProperty(
         '--kui-edge-inset-inline-start',
@@ -123,6 +173,10 @@ test('deepInset adds one outer gutter while nested List items keep 8px spacing',
     await scaffold.getByRole('tab', { name: 'Search' }).click();
     const scene = scaffold.locator('[data-tab-scaffold-scene="search"]');
     await expect(scene).toHaveAttribute('data-deep-inset', 'true');
+    await expect(scene).toHaveCSS('padding-top', '8px');
+    await expect(scene).toHaveCSS('padding-bottom', '8px');
+    await expect(scene).toHaveCSS('scroll-padding-top', '8px');
+    await expect(scene).toHaveCSS('scroll-padding-bottom', '8px');
     const sceneInset = await scene.evaluate((element) => {
       const item = element.querySelector<HTMLElement>('.kui-content-item')!;
       return (
@@ -138,13 +192,21 @@ test('deepInset adds one outer gutter while nested List items keep 8px spacing',
     });
     await expect(scene).toHaveCSS('padding-left', '20px');
     await scene.evaluate((element) => {
+      (element as HTMLElement).style.setProperty(
+        '--kui-edge-inset-block-start',
+        '12px',
+      );
+    });
+    await expect(scene).toHaveCSS('padding-top', '20px');
+    await expect(scene).toHaveCSS('scroll-padding-top', '20px');
+    await scene.evaluate((element) => {
       (element as HTMLElement).style.removeProperty(
         '--kui-edge-inset-inline-start',
       );
     });
-    if (browserName === 'chromium' && width === 390)
+    if (browserName === 'chromium')
       await scaffold.screenshot({
-        path: 'test-results/tab-scaffold-deep-inset-narrow.png',
+        path: `test-results/tab-scaffold-deep-inset-${width}.png`,
       });
   }
 });

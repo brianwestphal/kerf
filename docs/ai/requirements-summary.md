@@ -500,6 +500,9 @@ The Pane content slot publishes `--kui-pane-content-inset-inline-start` and
 `-end` as its resolved inline padding. Child tables can negate those values for
 edge-to-edge decoration and add them to cell padding for aligned text in both
 `deepInset` modes and safe areas; the UX catalog demonstrates both states.
+`deepInset` also adds 8px to the top and bottom of Pane and plain TabNavigator
+scroll content and their block scroll padding; Pane header/footer chrome keeps
+ownership of safe-area insets at its edge.
 
 **Shipped naming migration:** `TabNavigator` names the complete destination
 layout, while `TabBar` names the separate document-tab strip. The former
