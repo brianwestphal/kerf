@@ -202,7 +202,10 @@
     /* Geometry stays aligned with the compact Kerf primitives. */
     --wa-border-radius-pill: 999px;
     --wa-form-control-border-color: var(--wa-color-neutral-border-normal);
-    --wa-form-control-border-radius: var(--wa-border-radius-m);
+    --wa-form-control-border-radius: var(
+      --kui-layout-rounded-radius,
+      calc(1px + remify(11px))
+    );
     --wa-form-control-activated-color: var(--wa-color-brand-fill-loud);
     /* Field inset: a 1px border with 8px inside it, the same content-item
        geometry the Kerf primitives use (docs/layout.md). WA's defaults are a

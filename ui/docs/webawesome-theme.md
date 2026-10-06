@@ -67,7 +67,10 @@ Form fields carry the same content-item inset as the Kerf primitives: a 1px
 border with 8px inside it (`--wa-form-control-border-width`,
 `--wa-form-control-padding-block`, and `--wa-form-control-padding-inline` are set
 to the `--kui-layout-item-border-width` / `--kui-layout-item-padding` values), so
-the value sits 9px in from the field edge. Default-size single-line controls
+the value sits 9px in from the field edge. Native buttons and fields, plus Web
+Awesome buttons and fields, use the 12px `--kui-layout-rounded-radius` through
+`--wa-form-control-border-radius`; explicit pill and circular shapes retain
+their own radius. Default-size single-line controls
 share Kerf's 44px control height — the height of a Kerf `Select`, a toolbar
 group, and a list row — so a `wa-input` or `wa-button` sits flush beside a Kerf
 `Select`. The theme sets `--wa-form-control-height` to `2.75em` (44px at the
