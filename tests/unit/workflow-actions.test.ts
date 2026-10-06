@@ -128,6 +128,10 @@ describe('UI browser failure evidence', () => {
     ) as {
       jobs: {
         ui: {
+          steps: Array<{ run?: string }>;
+        };
+        'ui-browser': {
+          strategy: { matrix: { browser: string[] }; 'fail-fast': boolean };
           steps: Array<{
             id?: string;
             if?: string;
@@ -138,13 +142,24 @@ describe('UI browser failure evidence', () => {
         };
       };
     };
-    const steps = workflow.jobs.ui.steps;
+    expect(
+      workflow.jobs.ui.steps.some((step) => step.run === 'npm run check'),
+    ).toBe(true);
+    expect(workflow.jobs['ui-browser'].strategy.matrix.browser).toEqual([
+      'chromium',
+      'firefox',
+      'webkit',
+    ]);
+    expect(workflow.jobs['ui-browser'].strategy['fail-fast']).toBe(false);
+    const steps = workflow.jobs['ui-browser'].steps;
     const browserStep = steps.find((step) => step.id === 'ui_browser');
     const uploadStep = steps.find((step) =>
       step.uses?.startsWith('actions/upload-artifact@'),
     );
 
-    expect(browserStep?.run).toBe('npm run test:e2e');
+    expect(browserStep?.run).toBe(
+      'npm run test:e2e -- --project=${{ matrix.browser }}',
+    );
     expect(uploadStep).toBeDefined();
     expect(steps.indexOf(uploadStep!)).toBeGreaterThan(
       steps.indexOf(browserStep!),
@@ -153,6 +168,7 @@ describe('UI browser failure evidence', () => {
       "${{ !cancelled() && steps.ui_browser.outcome == 'failure' }}",
     );
     expect(uploadStep?.with).toMatchObject({
+      name: 'ui-browser-failure-${{ matrix.browser }}-${{ github.run_id }}-${{ github.run_attempt }}',
       'if-no-files-found': 'warn',
       'retention-days': 14,
     });

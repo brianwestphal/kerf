@@ -83,6 +83,10 @@ describe('package metadata', () => {
     );
     const ciUiJob = ciWorkflow.slice(
       ciWorkflow.indexOf('  ui:\n'),
+      ciWorkflow.indexOf('  ui-browser:\n'),
+    );
+    const ciBrowserJob = ciWorkflow.slice(
+      ciWorkflow.indexOf('  ui-browser:\n'),
       ciWorkflow.indexOf('  browser:\n'),
     );
     const releaseValidationJob = releaseWorkflow.slice(
@@ -92,9 +96,14 @@ describe('package metadata', () => {
 
     expectOrderedRunSteps(workflowRunSteps(ciUiJob), [
       { run: 'npm ci' },
-      { run: 'npx playwright install --with-deps chromium firefox webkit' },
       { run: 'npm run build' },
       { run: 'npm run check' },
+    ]);
+    expectOrderedRunSteps(workflowRunSteps(ciBrowserJob), [
+      { run: 'npm ci' },
+      { run: 'npx playwright install --with-deps ${{ matrix.browser }}' },
+      { run: 'npm run build' },
+      { run: 'npm run test:e2e -- --project=${{ matrix.browser }}' },
     ]);
     expectOrderedRunSteps(workflowRunSteps(releaseValidationJob), [
       { run: 'npm ci', workingDirectory: 'ui' },
