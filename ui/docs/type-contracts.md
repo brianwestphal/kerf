@@ -71,7 +71,8 @@ ordinary source/type gates:
 - required controlled-state callbacks on `wireResizableRegions`, `wireTabBars`,
   and `wireTabNavigator`, and the required app-owned size signals on
   `wireWorkbench`;
-- mutually exclusive count/badge metadata on `ListHeader`; and
+- a `ListHeader` count requires `countLabel` and excludes badge/status, while
+  badge and status can appear together or be explicitly `undefined`; and
 - protected application metadata boundaries on `AppTab`, `ListItem`,
   `ListActionRow`, `ListHeader`, `Pane`, `CatalogExample`, and
   `CatalogExampleStack`.

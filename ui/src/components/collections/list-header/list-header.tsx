@@ -122,8 +122,12 @@ type ListHeaderModeProps =
 
 type ListHeaderIndicatorProps =
   | { count: number; countLabel: string; badge?: never; status?: never }
-  | { count?: never; countLabel?: never; badge: SafeHtml; status?: never }
-  | { count?: never; countLabel?: never; badge?: never; status?: SafeHtml };
+  | {
+      count?: never;
+      countLabel?: never;
+      badge?: SafeHtml | undefined;
+      status?: SafeHtml | undefined;
+    };
 
 export type ListHeaderProps = ListHeaderBaseProps &
   ListHeaderIndicatorProps &
@@ -172,8 +176,9 @@ export function ListHeader({
       : typeof countLabel === 'string' && countLabel.trim()
         ? countLabel
         : String(normalizedCount);
-  const renderedBadge =
-    normalizedCount === undefined ? (status ?? badge) : undefined;
+  const renderedBadge = normalizedCount === undefined ? badge : undefined;
+  const renderedStatus = normalizedCount === undefined ? status : undefined;
+  const hasBadge = Boolean(renderedBadge || renderedStatus);
   const renderedActionIcon =
     actionIcon ??
     (toggle ? <DisclosureArrow open={Boolean(expanded)} /> : undefined);
@@ -183,23 +188,25 @@ export function ListHeader({
       : `${label}, ${normalizedCountLabel}`;
   const badgeTone: SemanticTone =
     indicatorTone === 'accent' ? 'info' : indicatorTone;
-  const indicator = placeholder ? (
-    (normalizedCount !== undefined || renderedBadge) && (
-      <Badge size="compact" tone={badgeTone}>
-        <Skeleton width={em(1.75)} />
+  const indicator =
+    normalizedCount !== undefined ? (
+      <Badge size="compact" tone={badgeTone} ariaHidden={!placeholder}>
+        {placeholder ? <Skeleton width={em(1.75)} /> : normalizedCount}
       </Badge>
-    )
-  ) : normalizedCount === undefined ? (
-    renderedBadge && (
-      <Badge size="compact" tone={badgeTone}>
-        {renderedBadge}
-      </Badge>
-    )
-  ) : (
-    <Badge size="compact" tone={badgeTone} ariaHidden>
-      {normalizedCount}
-    </Badge>
-  );
+    ) : (
+      <>
+        {renderedBadge && (
+          <Badge size="compact" tone={badgeTone}>
+            {placeholder ? <Skeleton width={em(1.75)} /> : renderedBadge}
+          </Badge>
+        )}
+        {renderedStatus && (
+          <Badge size="compact" tone={badgeTone}>
+            {placeholder ? <Skeleton width={em(1.75)} /> : renderedStatus}
+          </Badge>
+        )}
+      </>
+    );
   const busy = placeholder ? ('true' as const) : undefined;
   if (toggle) {
     return (
@@ -207,7 +214,7 @@ export function ListHeader({
         {...extensionRootAttributes}
         class="kui-list-header"
         data-component="list-header"
-        data-has-badge={String(Boolean(renderedBadge))}
+        data-has-badge={String(hasBadge)}
         data-has-count={String(normalizedCount !== undefined)}
         data-density={density}
         data-size={size}
@@ -247,7 +254,7 @@ export function ListHeader({
       {...extensionRootAttributes}
       class="kui-list-header"
       data-component="list-header"
-      data-has-badge={String(Boolean(renderedBadge))}
+      data-has-badge={String(hasBadge)}
       data-has-count={String(normalizedCount !== undefined)}
       data-density={density}
       data-size={size}

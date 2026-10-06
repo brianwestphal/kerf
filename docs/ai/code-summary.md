@@ -1143,11 +1143,13 @@ the group's derived highlight radius so pill and rounded corners stay concentric
 at `--kui-disclosure-icon-scale: .5`. Configurable directions animate over the
 shortest path; a 180-degree closed-to-open tie uses counterclockwise rotation.
 
-`ListHeader` exposes mutually exclusive semantic count and legacy badge
-contracts. A non-negative safe-integer `count` requires a localized
+`ListHeader` keeps a semantic count separate from badge/status content. A
+non-negative safe-integer `count` requires a localized
 `countLabel`, renders as the standard neutral pill (including zero), and joins
 the semantic heading or disclosure-button accessible name. Runtime-invalid
-counts are omitted; a widened valid count takes precedence over `badge`.
+counts are omitted; a widened valid count takes precedence over badge and
+status. Badge and status can render together and accept explicit `undefined`
+for conditional app state.
 Toggle mode imports and renders one production `DisclosureArrow` by default,
 tracks its direction from `expanded`, and preserves `actionIcon` as a complete
 replacement. The header fills its available inline width and keeps a separate

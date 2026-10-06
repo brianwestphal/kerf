@@ -651,7 +651,7 @@ consistent across every surface.
 4. Keep one scrolling content owner per pane. Toolbar and footer siblings stay
    fixed while the content scrolls.
 5. A split item keeps dormant and interactive regions separate. For example,
-   `ListHeader` renders its title/count-or-badge cluster separately from its optional
+   `ListHeader` renders its title/indicator cluster separately from its optional
    logical-end 44px action. The header fills the available inline width and its
    action glyph defaults to 18px; disclosure mode makes the title cluster itself
    the button and supplies the production `DisclosureArrow` unless `actionIcon`

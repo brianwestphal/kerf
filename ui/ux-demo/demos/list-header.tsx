@@ -9,6 +9,7 @@ import { Plus } from 'lucide';
 import { DemoListPopover } from './demo-list-popover.js';
 
 export function ListHeaderDemo() {
+  const unpricedCount = 3;
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'list-header' }}>
       <CatalogExample label="Label sizes" align="none">
@@ -56,6 +57,23 @@ export function ListHeaderDemo() {
           density="compact"
           divider="before"
           headingLevel={3}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Badge and status together"
+        note="Both indicators can be shown together. Either prop can be undefined while app state changes."
+        align="none"
+        rootAttributes={{ 'data-demo-list-header-combined': '' }}
+      >
+        <ListHeader
+          label="Purchases"
+          badge={
+            unpricedCount > 0 ? (
+              <span>{`${unpricedCount} lines unpriced`}</span>
+            ) : undefined
+          }
+          status={<span>Needs review</span>}
+          indicatorTone="danger"
         />
       </CatalogExample>
       <CatalogExample align="none">

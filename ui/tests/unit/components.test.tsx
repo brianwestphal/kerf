@@ -1308,6 +1308,41 @@ describe('production UI primitives', () => {
     expect(status).toContain('data-divider="before"');
     expect(status).toContain('data-indicator-tone="danger"');
     expect(status).toContain('class="kui-badge"');
+    const combined = asHtml(
+      ListHeader({
+        label: 'Purchases',
+        badge: <span>New</span>,
+        status: <span>3 unpriced</span>,
+      }),
+    );
+    expect(combined.match(/data-component="badge"/g)).toHaveLength(2);
+    expect(combined.indexOf('New')).toBeLessThan(
+      combined.indexOf('3 unpriced'),
+    );
+    expect(combined).toContain('data-has-badge="true" data-has-count="false"');
+    for (const [badge, status, expected] of [
+      [undefined, <span>Ready</span>, 'Ready'],
+      [<span>New</span>, undefined, 'New'],
+      [undefined, undefined, undefined],
+    ] as const) {
+      const html = asHtml(ListHeader({ label: 'Optional', badge, status }));
+      expect(html.match(/data-component="badge"/g)?.length ?? 0).toBe(
+        expected === undefined ? 0 : 1,
+      );
+      if (expected) expect(html).toContain(expected);
+    }
+    const toggleWithBoth = asHtml(
+      ListHeader({
+        label: 'Purchases',
+        toggle: true,
+        action: 'toggle-purchases',
+        expanded: false,
+        badge: <span>New</span>,
+        status: <span>3 unpriced</span>,
+      }),
+    );
+    expect(toggleWithBoth.match(/data-component="badge"/g)).toHaveLength(2);
+    expect(toggleWithBoth).toContain('aria-expanded="false"');
     expect(
       asHtml(
         ListHeader({
@@ -1400,6 +1435,14 @@ describe('production UI primitives', () => {
       label: 'Competing status',
       count: 2,
       countLabel: '2 items',
+      status: <span>Blocked</span>,
+    });
+    // @ts-expect-error Count metadata cannot be combined with both indicators.
+    ListHeader({
+      label: 'Competing pair',
+      count: 2,
+      countLabel: '2 items',
+      badge: <span>New</span>,
       status: <span>Blocked</span>,
     });
     ListHeader({

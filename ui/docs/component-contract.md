@@ -626,11 +626,13 @@ trailing zones share a row that is too narrow, the leading title is what gives
 way: it truncates with an ellipsis (as a platform toolbar's title does) instead
 of the center group painting over it. When everything fits, the center group
 keeps its place, centered in the track between the leading and trailing zones.
-`ListHeader` similarly separates its dormant title and
-optional count or badge from its optional 44px action. Use the mutually
-exclusive `count`/`countLabel` pair for non-negative safe-integer section
-quantities; reserve `badge` for non-count `SafeHtml`. Do not concatenate counts
-into the section label. Set `width="content"` to shrink-wrap while retaining
+`ListHeader` similarly separates its dormant title and optional indicators
+from its optional 44px action. Use the `count`/`countLabel` pair for a sole
+non-negative safe-integer section quantity; it excludes `badge` and `status`.
+`badge` and `status` may appear together, and either may be explicitly
+`undefined` as app state changes. Give a contextual quantity in a badge a full
+spoken phrase, such as "3 lines unpriced". Do not concatenate counts into the
+section label. Set `width="content"` to shrink-wrap while retaining
 normal header geometry; `inline` is the separate zero-outer-geometry mode. Do
 not add padding to pane shells,
 double child-owned geometry with wrapper insets, or create competing scroll

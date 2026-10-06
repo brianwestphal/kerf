@@ -634,13 +634,8 @@ type ListHeaderIndicatorProps = {
 } | {
     count?: never;
     countLabel?: never;
-    badge: SafeHtml;
-    status?: never;
-} | {
-    count?: never;
-    countLabel?: never;
-    badge?: never;
-    status?: SafeHtml;
+    badge?: SafeHtml | undefined;
+    status?: SafeHtml | undefined;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
 declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;

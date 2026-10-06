@@ -313,6 +313,20 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('kui-skeleton');
   });
 
+  it('ListHeader placeholders reserve both badge and status indicators', () => {
+    const html = asHtml(
+      ListHeader({
+        label: 'Purchases',
+        badge: <span>New</span>,
+        status: <span>3 unpriced</span>,
+        placeholder: true,
+      }),
+    );
+    expect(html.match(/data-component="badge"/g)).toHaveLength(2);
+    expect(html.match(/kui-skeleton/g)).toHaveLength(2);
+    expect(html).not.toContain('3 unpriced');
+  });
+
   it('AppTab skeletons the name, disables its buttons, and is not draggable', () => {
     const html = asHtml(
       AppTab({

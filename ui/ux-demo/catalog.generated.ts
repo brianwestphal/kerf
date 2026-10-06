@@ -359,7 +359,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and mutually exclusive semantic count or badge from an optional logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.",
+    "description": "Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and optional count or combined badge/status indicators from a logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.",
     "uses": [
       "badge",
       "lucide-icon",

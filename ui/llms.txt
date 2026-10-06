@@ -199,7 +199,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   ListHeader `size="xs|sm|m|l|xl"` sets label scale independently of
   `headingLevel` (`sm` keeps the current FieldLabel-sized uppercase style;
   `m`/`l`/`xl` match themed h5/h4/h3). Its height, title padding, and border
-  tokens tune section density.
+  tokens tune section density. A semantic `count` requires `countLabel` and
+  excludes other indicators; `badge` and `status` may render together, and
+  either may be explicitly `undefined` in conditional app state.
   For a filled command list, scope `--kui-list-item-background`,
   `--kui-list-item-color`, `--kui-list-item-border`,
   `--kui-list-item-hover-background`, `--kui-list-item-hover-border`,

@@ -8,13 +8,13 @@ Configurable section headings with five independent label sizes, full-width or s
 
 ## When to use
 
-Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and mutually exclusive semantic count or badge from an optional logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.
+Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and optional count or combined badge/status indicators from a logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.
 
-- Label a navigation section with an optional semantic count, non-count badge, action, or disclosure state; toggle mode supplies an 18px DisclosureArrow unless actionIcon replaces it.
+- Label a navigation section with an optional semantic count or simultaneous badge and status indicators, plus an action or disclosure state; toggle mode supplies an 18px DisclosureArrow unless actionIcon replaces it.
 
 **Not when:**
 
-- Do not concatenate a section count into label or pass numeric content through badge; use count with its required localized countLabel.
+- Do not concatenate a section count into label or pass a bare number through badge; use count with its required localized countLabel for a sole section quantity.
 - Do not use as a page or dialog title.
 
 **Alternatives:**
@@ -37,6 +37,7 @@ Exact prop names and types: [`@kerfjs/ui/list-header`](../public-api-signatures-
 - label sizes xs, sm (default), m, l, xl
 - count
 - badge
+- badge and status together
 - action
 - toggle
 - placeholder (loading)
