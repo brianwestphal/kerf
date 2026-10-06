@@ -380,6 +380,12 @@ nested `.claude/worktrees`) from diagnostics, TypeScript, ESLint, and doctor
 cache inputs; generated contents are not part of the containing application
 contract.
 
+Doctor's component-style naming checks recognize statically guaranteed root
+classes in dynamic expressions, catalog-declared class and stylesheet aliases,
+and same-module helper ownership. Opaque class expressions do not produce a
+missing-root error; distinct findings under one rule keep a stable diagnostic
+meaning without spurious `KUI-D003` conflicts.
+
 Filled Web Awesome badges use each semantic variant's quiet fill with normal
 text by default, with a documented two-token override pair, so compact badge
 copy stays WCAG-AA readable without application host selectors. Web Awesome

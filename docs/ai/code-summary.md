@@ -660,6 +660,12 @@ is reported.
 `ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. The
 `component-style-checks.mjs` pass checks paired JSX/TSX component root classes,
 stylesheet filenames, and foreign component selectors (`KUI-D030`–`KUI-D032`).
+It resolves guaranteed base classes through templates, concatenation, local
+constants, conditional branches, and joined class arrays; reads local catalog
+`boundaries.rootClass`/`publicClasses` plus `styleSources` for declared aliases;
+and treats same-module helpers as co-owners. Opaque class expressions remain
+unclassified. Each finding carries a stable rule meaning so different source
+messages do not create false `KUI-D003` identifier conflicts.
 Its ESLint stage runs an isolated Kerf preset, projects each file's applicable
 consumer core rules and `linterOptions`, discards only missing-definition
 diagnostics for consumer-owned plugin directives, and retains unknown

@@ -81,7 +81,7 @@ test('matching component class and stylesheet stay clean after repair', async ()
   }
 });
 
-test('a stylesheet cannot select a sibling component in the same module', async () => {
+test('same-module helpers share the owning stylesheet', async () => {
   const root = await mkdtemp(
     resolve(tmpdir(), 'kerf-doctor-component-styles-'),
   );
@@ -93,11 +93,105 @@ test('a stylesheet cannot select a sibling component in the same module', async 
       'export const WorkspaceHeader = () => <header class="workspace-header" />; export const ViewModeSwitcher = () => <button class="view-mode-switcher" />;',
     );
     await writeFile(style, '.view-mode-switcher__content { color: red; }');
-    expect(
-      (await checkComponentStyles(root, [component, style])).map(
-        (item: { id: string }) => item.id,
-      ),
-    ).toEqual(['KUI-D032']);
+    expect(await checkComponentStyles(root, [component, style])).toEqual([]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('dynamic classes prove only stable base tokens', async () => {
+  const root = await mkdtemp(resolve(tmpdir(), 'kerf-doctor-dynamic-styles-'));
+  try {
+    const style = resolve(root, 'widget.css');
+    const component = resolve(root, 'widget.tsx');
+    await writeFile(style, '.widget { color: red; }');
+    for (const expression of [
+      '`widget widget--${state}`',
+      "`${active ? 'widget widget--active' : 'widget'}${compact ? ' widget--compact' : ''}`",
+      "'widget ' + state",
+      "active ? 'widget on' : 'widget off'",
+    ]) {
+      await writeFile(
+        component,
+        `export const Widget = () => <section class={${expression}} />;`,
+      );
+      expect(await checkComponentStyles(root, [component, style])).toEqual([]);
+    }
+    for (const expression of [
+      '`widget--${state}`',
+      "active ? 'widget' : 'other'",
+    ]) {
+      await writeFile(
+        component,
+        `export const Widget = () => <section class={${expression}} />;`,
+      );
+      expect(
+        (await checkComponentStyles(root, [component, style])).map(
+          (item: { id: string }) => item.id,
+        ),
+      ).toEqual(['KUI-D030']);
+    }
+    await writeFile(
+      component,
+      'export const Widget = ({ className }) => <section class={className} />;',
+    );
+    expect(await checkComponentStyles(root, [component, style])).toEqual([]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('nested intrinsic markup in a composed component does not imply an owned root', async () => {
+  const root = await mkdtemp(resolve(tmpdir(), 'kerf-doctor-composed-styles-'));
+  try {
+    const component = resolve(root, 'widget.tsx');
+    const style = resolve(root, 'widget.css');
+    await writeFile(
+      component,
+      'export const Widget = () => <Panel><span class="detail" /></Panel>;',
+    );
+    await writeFile(style, '.detail { color: red; }');
+    expect(await checkComponentStyles(root, [component, style])).toEqual([]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('a local class constant supplies the root without nested callbacks changing ownership', async () => {
+  const root = await mkdtemp(resolve(tmpdir(), 'kerf-doctor-local-class-'));
+  try {
+    const component = resolve(root, 'widget.tsx');
+    const style = resolve(root, 'widget.css');
+    await writeFile(
+      component,
+      `export function Widget() {
+      const className = \`widget widget--\${state}\`;
+      const children = items.map(() => { return <span class="detail" />; });
+      return <section class={className}>{children}</section>;
+    }`,
+    );
+    await writeFile(style, '.widget { color: red; }');
+    expect(await checkComponentStyles(root, [component, style])).toEqual([]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('a joined class array supplies a stable root class', async () => {
+  const root = await mkdtemp(resolve(tmpdir(), 'kerf-doctor-class-array-'));
+  try {
+    const component = resolve(root, 'widget.tsx');
+    const style = resolve(root, 'widget.css');
+    await writeFile(
+      component,
+      `export function Widget({ active }) {
+      const classes = ['widget'];
+      if (active) classes.push('widget--active');
+      return <div class={classes.join(' ')} />;
+    }`,
+    );
+    await writeFile(style, '.widget { color: red; }');
+    expect(await checkComponentStyles(root, [component, style])).toEqual([]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

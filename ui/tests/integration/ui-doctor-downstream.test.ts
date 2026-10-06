@@ -51,11 +51,24 @@ test(
         resolve(root, 'src/workspace-controls.tsx'),
         'export function ViewModeSwitcher() { return <button class="view-mode-switcher">Mode</button>; }\n',
       );
+      await writeFile(
+        resolve(root, 'src/note-card.tsx'),
+        'export const NoteCard = () => <article class="other">Note</article>;\n',
+      );
+      await writeFile(
+        resolve(root, 'src/note-card.css'),
+        '.other { color: red; }\n',
+      );
       const broken = await doctor(root);
       expect(broken.status).toBe(1);
       expect(
         broken.report.diagnostics.map((item: { id: string }) => item.id),
       ).toEqual(expect.arrayContaining(['KUI-D030', 'KUI-D032']));
+      expect(
+        broken.report.diagnostics.some(
+          (item: { id: string }) => item.id === 'KUI-D003',
+        ),
+      ).toBe(false);
       await writeFile(
         resolve(root, 'src/workspace-header.tsx'),
         'export function WorkspaceHeader() { return <header class="workspace-header">Header</header>; }\n',
@@ -64,9 +77,141 @@ test(
         resolve(root, 'src/workspace-header.css'),
         '.workspace-header { color: red; }\n',
       );
+      await writeFile(
+        resolve(root, 'src/note-card.tsx'),
+        'export const NoteCard = () => <article class="note-card">Note</article>;\n',
+      );
+      await writeFile(
+        resolve(root, 'src/note-card.css'),
+        '.note-card { color: red; }\n',
+      );
       const repaired = await doctor(root);
       expect(repaired.status).toBe(0);
       expect(repaired.report.diagnostics).toEqual([]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
+  'doctor accepts a catalog-declared root alias without ID conflicts',
+  async () => {
+    const root = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-catalog-alias-'),
+    );
+    try {
+      await mkdir(resolve(root, 'src'));
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"alias-app","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: {
+            catalog: false,
+            typescript: false,
+            eslint: false,
+            analyzer: true,
+            browser: false,
+          },
+        }),
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'workspace',
+          catalogs: [
+            {
+              package: 'alias-app',
+              selection: { path: './selection.json', schemaVersion: 1 },
+              composition: { path: './composition.json', schemaVersion: 2 },
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'selection.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          package: 'alias-app',
+          entries: [
+            {
+              id: 'widget',
+              name: 'Widget',
+              kind: 'component',
+              source: 'src/widget.tsx',
+              styleSources: ['src/legacy-widget.css'],
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'composition.json'),
+        JSON.stringify({
+          schemaVersion: 2,
+          package: 'alias-app',
+          entries: [
+            {
+              key: 'alias-app:widget',
+              package: 'alias-app',
+              id: 'widget',
+              name: 'Widget',
+              kind: 'component',
+              source: 'application',
+              boundaries: {
+                rootClass: 'legacy-widget',
+                publicClasses: ['legacy-widget'],
+                publicTokens: [],
+              },
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/widget.tsx'),
+        "import './legacy-widget.css'; export const Widget = ({ state }) => <section class={`legacy-widget legacy-widget--${state}`} />;",
+      );
+      await writeFile(
+        resolve(root, 'src/legacy-widget.css'),
+        '.legacy-widget { color: red; }',
+      );
+      const report = await doctor(root);
+      expect(report.status).toBe(0);
+      expect(
+        report.report.diagnostics.map((item: { id: string }) => item.id),
+      ).toEqual(['KUI-L008']);
+      await writeFile(
+        resolve(root, 'composition.json'),
+        JSON.stringify({
+          schemaVersion: 2,
+          package: 'alias-app',
+          entries: [
+            {
+              key: 'alias-app:widget',
+              package: 'alias-app',
+              id: 'widget',
+              name: 'Widget',
+              kind: 'component',
+              source: 'application',
+              boundaries: {
+                rootClass: null,
+                publicClasses: ['legacy-widget'],
+                publicTokens: [],
+              },
+            },
+          ],
+        }),
+      );
+      const publicAlias = await doctor(root);
+      expect(publicAlias.status).toBe(0);
+      expect(
+        publicAlias.report.diagnostics.map((item: { id: string }) => item.id),
+      ).toEqual(['KUI-L008']);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

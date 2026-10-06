@@ -64,15 +64,25 @@ so the same root hook-class check applies in those files.
 The analyzer stage also checks colocated JSX/TSX components and stylesheets.
 When a stylesheet has a same-basename component module, or exactly one
 component module imports it, Doctor checks that the stylesheet filename is
-the component's kebab-case name (`KUI-D031`). A component that renders its own
-HTML element must put that kebab-case class on rendered markup (`KUI-D030`).
+the component's kebab-case name (`KUI-D031`). A component whose returned root
+is its own HTML element must put that kebab-case class on rendered markup
+(`KUI-D030`). Static base tokens in template, concatenated, and conditional
+class expressions count only when every path contains the token.
+An opaque class expression stays unclassified instead of producing a missing
+root-class error.
 For example, `WorkspaceHeader` pairs with `workspace-header.css` and renders
-`.workspace-header`. Thin components that only compose other components need
-no root class. Shared stylesheets declared in `ownershipGroups` are exempt
-from the naming check.
+`.workspace-header`. A local composition catalog can explicitly declare a
+different `boundaries.rootClass` or `publicClasses` and list its stylesheet
+under the selection entry's `styleSources`; Doctor honors that declared alias
+for both checks. The catalog stage remains responsible for validating the
+metadata. Thin components that return another component need no root class,
+even when they render nested HTML as children. Helpers declared in the same
+module share that module's CSS ownership; a module exporting several visual
+components can use a shared stylesheet name. Shared stylesheets declared in
+`ownershipGroups` are exempt from the naming check.
 
-Doctor reports `KUI-D032` when a paired stylesheet selects another local
-component's kebab-case class or its BEM descendants or modifiers. Move that
+Doctor reports `KUI-D032` when a paired stylesheet selects another module's
+local component class or its BEM descendants or modifiers. Move that
 rule to the owning component's stylesheet or use the component's public
 configuration. This check uses source declarations and CSS selectors; it does
 not execute component code. In changed mode, it reads other component sources

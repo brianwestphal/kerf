@@ -457,6 +457,9 @@ versioned repair report joins profile/catalog validation, TypeScript, the Kerf
 UI ESLint preset, and static analysis without executing application modules.
 Its static pass also checks that a paired component's root class and stylesheet
 use its kebab-case name and flags selectors into another local component.
+Catalog-declared root/public class and stylesheet aliases are accepted, as are
+base classes guaranteed by template, concatenated, conditional, local-constant,
+or joined-array expressions. Opaque class expressions stay unclassified.
 The doctor ESLint stage is an isolated Kerf pass: it preserves failures for
 unknown `kerfjs/*` directives but ignores unresolved directives owned by the
 consumer's other plugins. Run the application's normal ESLint command as the

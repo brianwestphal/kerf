@@ -458,7 +458,7 @@
     "test:unit": "vitest run tests/unit --coverage",
     "test:bundle": "npm run build && vitest run tests/bundle",
     "test:analyzer": "vitest run tests/integration/ui-analyzer-downstream.test.ts",
-    "test:doctor": "vitest run tests/unit/ui-doctor.test.ts tests/integration/ui-doctor-downstream.test.ts",
+    "test:doctor": "vitest run tests/unit/ui-doctor.test.ts tests/unit/ui-doctor-component-styles.test.ts tests/integration/ui-doctor-downstream.test.ts",
     "test:evaluator": "vitest run tests/unit/ui-evaluator.test.ts tests/integration/ui-evaluator-downstream.test.ts",
     "test:ai-regressions": "vitest run tests/integration/ai-regressions-v3.test.ts",
     "test:contract-types:source": "node node_modules/typescript7/bin/tsc -p tests/consumer-types/contracts/tsconfig.source.json",

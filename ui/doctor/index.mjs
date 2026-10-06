@@ -1254,6 +1254,7 @@ export async function runUiDoctor({
                     await collectInputs(packageRoot),
                     config.ownershipGroups ?? [],
                     selectedPaths,
+                    root,
                   )),
                 ],
               }))(),
