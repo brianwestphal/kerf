@@ -1,7 +1,7 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, type Locator, test } from '@playwright/test';
 
-async function badgeGeometry(page: Page) {
-  const tab = page.getByRole('tab', { name: 'Projects, 3 updated' });
+async function badgeGeometry(scaffold: Locator) {
+  const tab = scaffold.getByRole('tab', { name: 'Projects, 3 updated' });
   await expect(tab).toBeVisible();
   return tab.evaluate((button) => {
     const rect = (element: Element | null) => {
@@ -50,10 +50,10 @@ test('TabScaffold tab badge folds into the name and sits top-trailing on the ico
   await page.goto('/?component=tab-scaffold');
   const scaffold = page.locator('#catalog-tab-scaffold');
   await expect(scaffold).toBeVisible();
-  expectTopTrailing(await badgeGeometry(page));
+  expectTopTrailing(await badgeGeometry(scaffold));
   // A tab without a badge keeps its plain label as its name.
   await expect(
-    page.getByRole('tab', { name: 'Search', exact: true }),
+    scaffold.getByRole('tab', { name: 'Search', exact: true }),
   ).toHaveCount(1);
   if (testInfo.project.name === 'chromium')
     await scaffold.screenshot({
@@ -62,7 +62,7 @@ test('TabScaffold tab badge folds into the name and sits top-trailing on the ico
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(scaffold).toBeVisible();
-  expectTopTrailing(await badgeGeometry(page));
+  expectTopTrailing(await badgeGeometry(scaffold));
   if (testInfo.project.name === 'chromium')
     await scaffold.screenshot({
       path: 'test-results/tab-scaffold-badge-narrow.png',
@@ -75,8 +75,8 @@ test('TabScaffold tab badge folds into the name and sits top-trailing on the ico
     });
 });
 
-async function dotGeometry(page: Page) {
-  const tab = page.getByRole('tab', { name: 'Settings, Update available' });
+async function dotGeometry(scaffold: Locator) {
+  const tab = scaffold.getByRole('tab', { name: 'Settings, Update available' });
   await expect(tab).toBeVisible();
   return tab.evaluate((button) => {
     const rect = (element: Element | null) => {
@@ -131,11 +131,11 @@ test('TabScaffold dot badge is a small circle on the icon corner with its badgeL
   await page.goto('/?component=tab-scaffold');
   const scaffold = page.locator('#catalog-tab-scaffold');
   await expect(scaffold).toBeVisible();
-  expectDotOnCorner(await dotGeometry(page));
+  expectDotOnCorner(await dotGeometry(scaffold));
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(scaffold).toBeVisible();
-  expectDotOnCorner(await dotGeometry(page));
+  expectDotOnCorner(await dotGeometry(scaffold));
 
   if (testInfo.project.name === 'chromium') {
     await scaffold.screenshot({

@@ -10,12 +10,17 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
     const workbench = specimen.locator('#catalog-workbench-navigation');
     const rail = workbench.locator('[data-workbench-rail="right"]');
     const stack = rail.locator('#catalog-workbench-ticket-stack');
+    const activeView = stack.locator(
+      '.kui-nav-stack__view[data-nav-active="true"]',
+    );
+    const activeHeader = activeView.locator('[data-nav-stack-header]');
+    const activeScroller = activeView.locator(
+      ':scope > [data-component="pane"] > .kui-pane__content',
+    );
     const show = workbench.getByRole('button', { name: 'Show tickets' });
     if (await show.isVisible()) await show.click();
 
-    await expect(stack.locator('[data-nav-stack-header]')).toContainText(
-      'Ticket queue',
-    );
+    await expect(activeHeader).toContainText('Ticket queue');
     await expect(rail.locator('[data-component="toolbar"]')).toHaveCount(1);
     await specimen.screenshot({
       path: `test-results/workbench-navigation-root-${width}.png`,
@@ -24,9 +29,7 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
     await rail.getByRole('button', { name: 'Open ticket T-42' }).click();
     await expect(stack).toHaveAttribute('data-depth', '2');
     await expect(stack.locator('[data-nav-chrome-copy]')).toHaveCount(0);
-    await expect(stack.locator('[data-nav-stack-header]')).toContainText(
-      'Workspace rail detail',
-    );
+    await expect(activeHeader).toContainText('Workspace rail detail');
     await expect(rail.locator('[data-component="toolbar"]')).toHaveCount(1);
     await expect(stack.getByRole('button', { name: 'Back' })).toBeVisible();
     const trailing = stack.locator('.kui-toolbar__trailing');
@@ -35,10 +38,8 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
       'Hide tickets',
     );
 
-    const header = stack.locator('[data-nav-stack-header]');
-    const view = stack.locator('.kui-nav-stack__view[data-nav-active="true"]');
-    const headerTop = (await header.boundingBox())!.y;
-    const scroll = await view.evaluate((element) => {
+    const headerTop = (await activeHeader.boundingBox())!.y;
+    const scroll = await activeScroller.evaluate((element) => {
       element.scrollTop = element.scrollHeight;
       return {
         top: element.scrollTop,
@@ -47,9 +48,9 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
     });
     expect(scroll.top).toBeGreaterThan(0);
     expect(scroll.overflow).toBe('auto');
-    expect((await header.boundingBox())!.y).toBeCloseTo(headerTop, 0);
+    expect((await activeHeader.boundingBox())!.y).toBeCloseTo(headerTop, 0);
     await stack.getByRole('button', { name: 'Activity' }).click();
-    await expect(view).toContainText('Event 1');
+    await expect(activeView).toContainText('Event 1');
     await specimen.screenshot({
       path: `test-results/workbench-navigation-detail-${width}.png`,
     });
@@ -74,8 +75,6 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
     await stack.getByRole('button', { name: 'Back' }).click();
     await expect(stack).toHaveAttribute('data-depth', '1');
     await expect(stack.locator('[data-nav-chrome-copy]')).toHaveCount(0);
-    await expect(stack.locator('[data-nav-stack-header]')).toContainText(
-      'Ticket queue',
-    );
+    await expect(activeHeader).toContainText('Ticket queue');
   }
 });
