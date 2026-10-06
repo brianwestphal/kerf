@@ -973,7 +973,7 @@ test(
 );
 
 test(
-  'the doctor accepts an app wrapper that declares the cataloged root it renders',
+  'the doctor accepts an app wrapper in an open Toolbar zone with or without a declared root',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-renders-as-'));
     try {
@@ -1152,12 +1152,12 @@ test(
       expect(ids(declared.report)).toEqual([]);
       expect(declared.status).toBe(0);
 
-      // Undeclared: the same wrapper is an unknown child of trailing.
+      // Undeclared: Toolbar trailing accepts direct app content too.
       await writeManifest();
       await generate();
       const undeclared = await doctor(root);
-      expect(ids(undeclared.report)).toEqual(['KUI-L202']);
-      expect(undeclared.status).toBe(1);
+      expect(ids(undeclared.report)).toEqual([]);
+      expect(undeclared.status).toBe(0);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
