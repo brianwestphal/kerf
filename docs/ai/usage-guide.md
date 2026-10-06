@@ -342,6 +342,11 @@ scaffold bar is the only bottom chrome. Wire each component on its own root.
 For a deeper content gutter, set `Pane.deepInset` (or `pane.deepInset` in a
 composite) or `TabScaffoldTab.deepInset` for a plain scene. It adds 8px outside
 normal 8px item margins without changing nested Row/List/Grid spacing.
+For an edge-to-edge child surface inside `Pane`, read the inherited
+`--kui-pane-content-inset-inline-start` and `-end` values: negate them for the
+child's logical margins, then add them to its internal text padding. They
+include both safe-area padding and the optional `deepInset` gutter; see the
+[`Pane` recipe](../../ui/docs/app-layouts.md#edge-to-edge-content-inside-a-pane).
 `@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
 Web Awesome’s internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, also with custom selected content. See

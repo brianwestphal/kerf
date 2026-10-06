@@ -142,6 +142,10 @@
    its first and last items can always be scrolled clear of it. A header or
    footer already owns that edge. */
 .kui-pane__content {
+  /* Descendants can use these resolved insets to bleed decoration to the
+     pane edge while keeping their own content aligned with ordinary items. */
+  --kui-pane-content-inset-inline-start: var(--_kui-pane-safe-inline-start);
+  --kui-pane-content-inset-inline-end: var(--_kui-pane-safe-inline-end);
   --_kui-pane-content-block-start: var(--_kui-pane-safe-block-start);
   --_kui-pane-content-block-end: var(--_kui-pane-safe-block-end);
   min-width: 0;
@@ -154,6 +158,8 @@
 }
 
 .kui-pane > .kui-pane__content {
+  padding-inline: var(--kui-pane-content-inset-inline-start)
+    var(--kui-pane-content-inset-inline-end);
   padding-block: var(--_kui-pane-content-block-start)
     var(--_kui-pane-content-block-end);
 }
@@ -161,8 +167,12 @@
 /* Add one outer gutter without changing the inherited item-margin token.
    Nested Row, List, and Grid therefore keep their own default 8px insets. */
 .kui-pane[data-deep-inset="true"] > .kui-pane__content {
-  padding-inline: calc(var(--_kui-pane-safe-inline-start) + var(--kui-space-xs))
-    calc(var(--_kui-pane-safe-inline-end) + var(--kui-space-xs));
+  --kui-pane-content-inset-inline-start: calc(
+    var(--_kui-pane-safe-inline-start) + var(--kui-space-xs)
+  );
+  --kui-pane-content-inset-inline-end: calc(
+    var(--_kui-pane-safe-inline-end) + var(--kui-space-xs)
+  );
 }
 
 .kui-pane__header ~ .kui-pane__content {

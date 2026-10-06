@@ -96,6 +96,39 @@ The device insets come from `--kui-safe-area-block-start`, `-block-end`,
 Override them on `:root` to reserve room for app-owned chrome or to simulate a
 device in tests.
 
+### Edge-to-edge content inside a Pane
+
+The Pane's scrolling slot publishes its resolved horizontal padding as
+`--kui-pane-content-inset-inline-start` and
+`--kui-pane-content-inset-inline-end`. Both inherited values include the safe
+area on the corresponding side, plus the extra 8px when `deepInset` is true.
+An app component can use them to let a row background or divider reach the
+Pane edge while its text stays on the ordinary content axis:
+
+```css
+.orders-table {
+  margin-inline-start: calc(-1 * var(--kui-pane-content-inset-inline-start));
+  margin-inline-end: calc(-1 * var(--kui-pane-content-inset-inline-end));
+}
+
+.orders-table th:first-child,
+.orders-table td:first-child {
+  padding-inline-start: calc(var(--kui-pane-content-inset-inline-start) + 17px);
+}
+
+.orders-table th:last-child,
+.orders-table td:last-child {
+  padding-inline-end: calc(var(--kui-pane-content-inset-inline-end) + 17px);
+}
+```
+
+Here 17px is the app's chosen text offset from the content slot: a default
+`ContentItem` uses 8px outer margin, 1px border, and 8px inner padding. Adjust
+that offset to match the neighboring content. Keep the table inside the Pane's
+single scrolling slot; the negative margins change only its inline reach. The
+[`Pane` UX catalog example](../ux-demo/demos/pane.tsx) shows both `deepInset`
+states with the same table component.
+
 ## Decision matrix
 
 | Situation                                                                    | Layout                                                                                          | Device threshold                                                                                                                   |

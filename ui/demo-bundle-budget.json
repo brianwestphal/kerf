@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 327200,
-  "measuredLargestJavaScriptGzip": 124514,
-  "measuredTotalJavaScriptGzip": 327106,
+  "totalJavaScriptGzip": 327500,
+  "measuredLargestJavaScriptGzip": 124512,
+  "measuredTotalJavaScriptGzip": 327479,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2947,6 +2947,22 @@
         "measuredTotalJavaScriptGzip": 327106,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 327200
+      }
+    },
+    {
+      "at": "2026-10-06T01:30:32.317Z",
+      "reason": "KF-E00XE9: demonstrate Pane edge-to-edge table in both deepInset modes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124514,
+        "measuredTotalJavaScriptGzip": 327106,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 327200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124512,
+        "measuredTotalJavaScriptGzip": 327479,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 327500
       }
     }
   ]

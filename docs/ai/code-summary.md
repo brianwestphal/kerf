@@ -12,6 +12,10 @@ catalog-only `presentation` (its `CatalogExample` viewport and ownership note). 
 toolbar title/supporting-copy hierarchy, shared 8px field/action gutters, and a
 conditional StateBanner as its only nested semantic surface. The copyable `mount-recipe.ts` adapter owns stable-root
 delegation, form/dialog forwarding, resize commits, and idempotent disposal.
+`ui/ux-demo/components/edge-to-edge-table.tsx` and its paired CSS are an
+app-owned Pane specimen: the table bleeds decorative rows through either
+`deepInset` mode while its text follows the Pane content axis. The focused
+`demos/pane.tsx` route composes it without owning a local stylesheet.
 `ui/ux-demo/demo-theme.ts` derives the effective operating-system light/dark
 appearance and applies the catalog's mutually exclusive explicit theme
 overrides.

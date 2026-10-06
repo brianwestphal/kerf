@@ -548,6 +548,7 @@ Navigation transition continuity: `wireNavStack` slides the incoming view over t
 For a tab scene with drill-down, put a `NavStack` directly in `TabScaffoldTab.content`, configure each view's top `toolbar` and `pane`, and omit `bottomToolbar` at both levels so the scaffold bar remains the only bottom chrome. Wire both components on their own roots. The catalog's **NavStack inside a tab** example exercises push and tab switching.
 
 `Pane.deepInset` (and `PaneConfig.deepInset`) or `TabScaffoldTab.deepInset` on a plain scene adds an 8px outer gutter to the scroll content, so ordinary 8px item margins land 16px from the edge. Nested Row/List/Grid spacing stays at its default. Set a nested scene's Pane option instead of insetting its entire NavStack or toolbar.
+For a child table whose decoration spans the Pane while its text stays aligned, use the Pane content slot's inherited `--kui-pane-content-inset-inline-start` and `--kui-pane-content-inset-inline-end`: negate them for the child's logical margins and add them to cell padding. They include safe areas and `deepInset`; see `docs/app-layouts.md#edge-to-edge-content-inside-a-pane`.
 
 `ToolbarText` and `ToolbarControlGroup` accept typed `hideBelow`/`showBelow`
 lengths (for example `px(416)`). Wire `wireToolbarVisibility(root)` from

@@ -1,5 +1,77 @@
 import { expect, test } from '@playwright/test';
 
+test('edge-to-edge table bleeds to both Pane edges while cell text tracks content', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/?component=pane');
+    for (const direction of ['ltr', 'rtl'] as const) {
+      for (const deepInset of [false, true]) {
+        const pane = page.locator(
+          `[data-demo="pane"] [data-edge-table="${deepInset ? 'deep' : 'plain'}"]`,
+        );
+        await pane.evaluate((element, dir) => {
+          element.setAttribute('dir', dir);
+          (element as HTMLElement).style.setProperty(
+            '--kui-edge-inset-inline-start',
+            '12px',
+          );
+          (element as HTMLElement).style.setProperty(
+            '--kui-edge-inset-inline-end',
+            '18px',
+          );
+        }, direction);
+        const geometry = await pane.evaluate((element) => {
+          const content =
+            element.querySelector<HTMLElement>('.kui-pane__content')!;
+          const table = element.querySelector<HTMLElement>(
+            '[data-edge-table-bleed] table',
+          )!;
+          const reference = element.querySelector<HTMLElement>(
+            '[data-edge-table-reference]',
+          )!;
+          const cell = table.querySelector('tbody td')!;
+          const range = document.createRange();
+          range.selectNodeContents(cell);
+          const paneRect = element.getBoundingClientRect();
+          const tableRect = table.getBoundingClientRect();
+          const referenceRect = reference.getBoundingClientRect();
+          const cellTextRect = range.getBoundingClientRect();
+          const contentStyle = window.getComputedStyle(content);
+          const startIsLeft = contentStyle.direction === 'ltr';
+          return {
+            tableStart: startIsLeft
+              ? tableRect.left - paneRect.left
+              : paneRect.right - tableRect.right,
+            tableEnd: startIsLeft
+              ? paneRect.right - tableRect.right
+              : tableRect.left - paneRect.left,
+            textAxis: startIsLeft
+              ? cellTextRect.left - referenceRect.left
+              : referenceRect.right - cellTextRect.right,
+            contentStartPadding: parseFloat(contentStyle.paddingInlineStart),
+            contentEndPadding: parseFloat(contentStyle.paddingInlineEnd),
+            overflow: content.scrollWidth - content.clientWidth,
+          };
+        });
+        expect(geometry.tableStart).toBeCloseTo(0, 0);
+        expect(geometry.tableEnd).toBeCloseTo(0, 0);
+        expect(geometry.textAxis).toBeCloseTo(0, 0);
+        expect(geometry.contentStartPadding).toBe(deepInset ? 20 : 12);
+        expect(geometry.contentEndPadding).toBe(deepInset ? 26 : 18);
+        expect(geometry.overflow).toBeLessThanOrEqual(1);
+        if (testInfo.project.name === 'chromium')
+          await pane.screenshot({
+            path: testInfo.outputPath(
+              `pane-edge-table-${width}-${direction}-${deepInset ? 'deep' : 'plain'}.png`,
+            ),
+          });
+      }
+    }
+  }
+});
+
 test('deepInset adds one outer gutter while nested List items keep 8px spacing', async ({
   page,
   browserName,
@@ -8,7 +80,7 @@ test('deepInset adds one outer gutter while nested List items keep 8px spacing',
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=pane');
     const pane = page.locator(
-      '[data-demo="pane"] [data-component="pane"][data-deep-inset="true"]',
+      '[data-demo="pane"] [data-component="pane"][aria-label="Deep inset example"]',
     );
     await expect(pane).toHaveAttribute('data-deep-inset', 'true');
     const edges = await pane.evaluate((element) => {

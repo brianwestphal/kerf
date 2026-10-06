@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `Pane` exposes its resolved logical inline content insets to child CSS, so a table can paint edge to edge while its cell text stays aligned, with or without `deepInset`.
+
 - `Pane` and plain `TabScaffold` scenes accept `deepInset` for a 16px outer content gutter while nested Row, List, and Grid spacing remains at its normal 8px.
 
 - The TabScaffold catalog now demonstrates a NavStack with a view-owned top toolbar and Pane above the persistent tab bar, including push, tab switch, and return.

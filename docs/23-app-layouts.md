@@ -890,6 +890,18 @@ insets structurally, with no per-app configuration. The consumer summary is the
   content, CollapsiblePanel content, SplitView list/detail) pad from it and
   reset it to `0px` for their children.
 
+**Pane children with edge-to-edge decoration.** The Pane scrolling slot
+publishes its actual inline padding as inherited
+`--kui-pane-content-inset-inline-start` and
+`--kui-pane-content-inset-inline-end`. Each value includes its routed safe-area
+inset plus the `deepInset` 8px gutter when enabled. A child table or similar
+component can use negative logical margins of those values to extend its
+background and rules to the Pane edges, then add the values to its cell padding
+so text stays on the same axis as nearby content. These are resolved outputs
+for Pane children, not overrides for the Pane's edge routing. The consumer
+recipe and both-mode demo are in [`ui/docs/app-layouts.md`](../ui/docs/app-layouts.md)
+and `ui/ux-demo/demos/pane.tsx`.
+
 A layout region whose only child is a `Pane`, `NavStack`, `SplitView`,
 `Workbench`, or `TabScaffold` delegates to that child instead of padding, so the
 child can paint through and own scroll-through padding. Such a child also fills a Workbench region (`height: 100%`) from its own

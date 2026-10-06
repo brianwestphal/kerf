@@ -7,6 +7,8 @@ import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
 
+import { EdgeToEdgeTable } from '../components/edge-to-edge-table.js';
+
 export function PaneDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'pane' }}>
@@ -74,6 +76,30 @@ export function PaneDemo() {
             <ContentItem>Nested List content item</ContentItem>
           </List>
         </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Edge-to-edge table, regular content inset"
+        note="The table's tinted rows and rules reach both Pane edges. Its cell text follows the ordinary content-item text axis."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <EdgeToEdgeTable deepInset={false} />
+      </CatalogExample>
+      <CatalogExample
+        label="Edge-to-edge table, deep inset"
+        note="The same table reads the Pane's resolved inline inset variables, including deepInset and safe-area padding."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <EdgeToEdgeTable deepInset />
       </CatalogExample>
       <CatalogExample
         label="Scroll dividers"

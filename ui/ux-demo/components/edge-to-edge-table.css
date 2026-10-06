@@ -1,0 +1,48 @@
+/* App-owned Pane child: bleed table chrome through the scroll slot's inline
+   padding, then restore that padding plus the ContentItem text inset in cells.
+   The Pane variables include safe areas and deepInset. */
+.edge-to-edge-table {
+  min-width: 0;
+  margin-inline-start: calc(-1 * var(--kui-pane-content-inset-inline-start));
+  margin-inline-end: calc(-1 * var(--kui-pane-content-inset-inline-end));
+}
+
+.edge-to-edge-table table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font: inherit;
+}
+
+.edge-to-edge-table :is(th, td) {
+  padding-block: 0.625rem;
+  border-block-end: 1px solid var(--kui-color-neutral-border-normal);
+}
+
+.edge-to-edge-table :is(th, td):first-child {
+  padding-inline-start: calc(
+    var(--kui-pane-content-inset-inline-start) +
+      var(--kui-layout-inline-margin, 0.5rem) +
+      var(--kui-layout-item-border-width, 1px) +
+      var(--kui-layout-item-padding, 0.5rem)
+  );
+  text-align: start;
+}
+
+.edge-to-edge-table :is(th, td):last-child {
+  padding-inline-end: calc(
+    var(--kui-pane-content-inset-inline-end) +
+      var(--kui-layout-inline-margin, 0.5rem) +
+      var(--kui-layout-item-border-width, 1px) +
+      var(--kui-layout-item-padding, 0.5rem)
+  );
+  text-align: end;
+}
+
+.edge-to-edge-table thead {
+  background: var(--kui-color-neutral-fill-quiet);
+}
+
+.edge-to-edge-table tbody tr:nth-child(even) {
+  background: var(--kui-color-surface-lowered);
+}
