@@ -19,6 +19,39 @@ afterEach(() => {
 });
 
 describe('TabNavigator markup', () => {
+  it('keeps only the active scene in the requested tab order and outline state', () => {
+    const focusTabs = tabs.map((tab) => ({
+      ...tab,
+      tabIndex: 0 as const,
+      outlined: true,
+    }));
+    const render = (active: string) => {
+      const host = document.createElement('div');
+      host.innerHTML = String(
+        TabNavigator({ id: 'app', label: 'Sections', tabs: focusTabs, active }),
+      );
+      return [...host.querySelectorAll('[data-tab-scaffold-scene]')];
+    };
+    for (const active of ['home', 'search']) {
+      const scenes = render(active);
+      expect(scenes).toHaveLength(2);
+      for (const scene of scenes) {
+        expect(scene.getAttribute('role')).toBe('tabpanel');
+        expect(scene.getAttribute('aria-label')).toBe(
+          scene.getAttribute('data-tab-scaffold-scene') === 'home'
+            ? 'Home'
+            : 'Search',
+        );
+        const selected =
+          scene.getAttribute('data-tab-scaffold-scene') === active;
+        expect(scene.getAttribute('tabindex')).toBe(selected ? '0' : '-1');
+        expect(scene.getAttribute('data-outlined')).toBe(
+          selected ? 'true' : null,
+        );
+      }
+    }
+  });
+
   it('marks only opted-in scenes for a deep content inset', () => {
     const html = String(
       TabNavigator({

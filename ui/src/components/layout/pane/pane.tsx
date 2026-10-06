@@ -20,6 +20,7 @@ const paneProtectedAttributes = new Set([
   'data-chrome-dividers',
   'data-appearance',
   'data-deep-inset',
+  'data-outlined',
   'data-separator-block-start',
   'data-separator-block-end',
   'data-separator-inline-start',
@@ -52,6 +53,7 @@ type PaneRootAttributes = Readonly<
     'data-chrome-dividers'?: never;
     'data-appearance'?: never;
     'data-deep-inset'?: never;
+    'data-outlined'?: never;
   }
 >;
 
@@ -98,6 +100,10 @@ export interface PaneProps {
   appearance?: PaneAppearance;
   /** Add 8px to every side of scrolling content (default: false). */
   deepInset?: boolean;
+  /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root. */
+  tabIndex?: 0 | -1;
+  /** Keep the standard focus outline visible, such as for a drop target. */
+  outlined?: boolean;
   /** Root semantics. Defaults to `div`. */
   element?: PaneElement;
   /** Scrolling content semantics. Defaults to `div`. */
@@ -142,6 +148,8 @@ export type PaneConfig = Pick<
   | 'chromeDividers'
   | 'appearance'
   | 'deepInset'
+  | 'tabIndex'
+  | 'outlined'
 >;
 
 function paneContent(
@@ -175,6 +183,8 @@ export function Pane({
   chromeDividers,
   appearance = 'default',
   deepInset = false,
+  tabIndex,
+  outlined = false,
   element = 'div',
   contentElement = 'div',
   separators = [],
@@ -225,6 +235,7 @@ export function Pane({
     'data-component': 'pane',
     'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
     'data-deep-inset': deepInset ? 'true' : undefined,
+    'data-outlined': outlined ? 'true' : undefined,
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-chrome-dividers':
       resolvedChromeDividers === 'always' || resolvedChromeDividers === 'none'
@@ -241,6 +252,7 @@ export function Pane({
     ),
     'data-safe-area-inline-end': String(safeAreaEdges.includes('inline-end')),
     'aria-label': label,
+    tabindex: tabIndex,
     slot,
   };
 

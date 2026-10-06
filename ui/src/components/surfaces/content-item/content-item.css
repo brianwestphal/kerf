@@ -108,7 +108,7 @@
   --kui-content-item-foreground: var(--kui-color-brand-on-fill);
 }
 
-.kui-content-item[data-interactive="true"]:focus-visible {
+.kui-content-item:is(:focus-visible, [data-outlined="true"]) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }

@@ -36,6 +36,18 @@ describe('SunkenPanel', () => {
     ).toContain('role="region" aria-label="Release workspace"');
   });
 
+  it('opts into root focus and a persistent outline independently', () => {
+    const plain = String(SunkenPanel({}));
+    expect(plain).not.toContain('tabindex=');
+    expect(plain).not.toContain('data-outlined=');
+    const focused = String(SunkenPanel({ tabIndex: 0 }));
+    expect(focused).toContain('tabindex="0"');
+    expect(focused).not.toContain('data-outlined=');
+    const outlined = String(SunkenPanel({ tabIndex: -1, outlined: true }));
+    expect(outlined).toContain('tabindex="-1"');
+    expect(outlined).toContain('data-outlined="true"');
+  });
+
   it('renders the explicit square-corner shape', () => {
     expect(String(SunkenPanel({ shape: 'square' }))).toContain(
       'data-shape="square"',

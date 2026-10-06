@@ -103,6 +103,28 @@ describe('Pane', () => {
     expect(html.match(/data-deep-inset=/g)).toHaveLength(1);
   });
 
+  it('opts into root focus and a protected persistent outline independently', () => {
+    const plain = String(Pane({ children: <span>Body</span> }));
+    expect(plain).not.toContain('tabindex=');
+    expect(plain).not.toContain('data-outlined=');
+
+    const html = String(
+      Pane({
+        children: <span>Body</span>,
+        tabIndex: 0,
+        outlined: true,
+        rootAttributes: {
+          // @ts-expect-error outline state belongs to Pane.
+          'data-outlined': 'false',
+        },
+      }),
+    );
+    expect(html).toContain('tabindex="0"');
+    expect(html).toContain('data-outlined="true"');
+    expect(html.match(/data-outlined=/g)).toHaveLength(1);
+    expect(String(Pane({ tabIndex: -1 }))).toContain('tabindex="-1"');
+  });
+
   it('pins its chrome by default and opts into yielding it when short', () => {
     expect(String(Pane({ children: <span>Body</span> }))).not.toContain(
       'data-chrome-placement',

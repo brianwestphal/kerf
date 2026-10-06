@@ -347,6 +347,8 @@ export function mainBody({
       chromeDividers={mainPane?.chromeDividers}
       appearance={mainPane?.appearance}
       deepInset={mainPane?.deepInset}
+      tabIndex={mainPane?.tabIndex}
+      outlined={mainPane?.outlined}
     >
       {scrollHeader || scrollFooter ? (
         // Chrome that scrolls joins the content in one gapless column that

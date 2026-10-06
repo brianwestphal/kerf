@@ -27,3 +27,8 @@
 .kui-sunken-panel[data-shape="square"] {
   border-radius: 0;
 }
+
+.kui-sunken-panel:is(:focus-visible, [data-outlined="true"]) {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}

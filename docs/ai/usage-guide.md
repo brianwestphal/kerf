@@ -343,6 +343,12 @@ For a deeper content gutter, set `Pane.deepInset` (or `pane.deepInset` in a
 composite) or `TabNavigatorTab.deepInset` for a plain scene. It adds 8px to all
 four sides of the scroll content, outside normal 8px item margins, without
 changing nested Row/List/Grid spacing.
+To focus a whole work surface, use `tabIndex={0}` for a Tab stop or `-1` for
+programmatic focus on `Pane`, `SunkenPanel`, a static `ContentItem`, a plain
+`TabNavigatorTab` scene, or a `Workbench` region (`mainTabIndex` for its center).
+Use `outlined` (`mainOutlined` for the Workbench center) to hold the standard
+focus ring for an app state such as a drop target. Inactive scenes and
+collapsed Workbench panels suppress their focus stop and outline.
 For an edge-to-edge child surface inside `Pane`, read the inherited
 `--kui-pane-content-inset-inline-start` and `-end` values: negate them for the
 child's logical margins, then add them to its internal text padding. They

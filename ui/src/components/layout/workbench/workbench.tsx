@@ -86,6 +86,10 @@ interface WorkbenchPanelBase {
   resizable?: boolean | WorkbenchPanelResizable;
   /** Accessible name for the panel region. */
   label?: string;
+  /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the panel region. */
+  tabIndex?: 0 | -1;
+  /** Keep the standard focus outline visible while this panel is expanded. */
+  outlined?: boolean;
   separator?: ResizableRegionSeparator;
   collapseMotion?: ResizableRegionCollapseMotion;
   contentOverflow?: ResizableRegionContentOverflow;
@@ -203,6 +207,12 @@ export interface WorkbenchProps {
    * the `Pane` defaults.
    */
   mainPane?: PaneConfig;
+  /** Accessible name for the central region when it needs its own landmark. */
+  mainLabel?: string;
+  /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the central region. */
+  mainTabIndex?: 0 | -1;
+  /** Keep the standard focus outline visible on the central region. */
+  mainOutlined?: boolean;
   /**
    * Configuration for the `List` that holds `mainHeader` (`gap`, `hAlign`,
    * `vAlign`, `dividerSides`, `textInsets`, `controlInsets`). Omitted or
@@ -402,6 +412,11 @@ function Rail({
           : undefined
       }
       data-collapsed={String(panel.collapsed ?? false)}
+      data-outlined={
+        !panel.collapsed && panel.presentation !== 'hidden' && panel.outlined
+          ? 'true'
+          : undefined
+      }
       data-separator={panel.separator ?? 'auto'}
       data-collapse-motion={panel.collapseMotion ?? 'slide'}
       data-content-overflow={panel.contentOverflow ?? 'clip'}
@@ -413,6 +428,13 @@ function Rail({
       {...resizeAttributes(resize)}
       aria-label={panel.label || undefined}
       aria-hidden={hiddenFromAccessibility(panel)}
+      tabindex={
+        panel.collapsed || panel.presentation === 'hidden'
+          ? panel.tabIndex === undefined
+            ? undefined
+            : -1
+          : panel.tabIndex
+      }
       inert={Boolean(panel.collapsed)}
       style={panelStyle(panel, resize, '--kui-workbench-rail-width')}
     >
@@ -447,6 +469,11 @@ function Drawer({ id, panel }: { id: string; panel: WorkbenchPanel }) {
           : undefined
       }
       data-collapsed={String(panel.collapsed ?? false)}
+      data-outlined={
+        !panel.collapsed && panel.presentation !== 'hidden' && panel.outlined
+          ? 'true'
+          : undefined
+      }
       data-separator={panel.separator ?? 'auto'}
       data-collapse-motion={panel.collapseMotion ?? 'slide'}
       data-content-overflow={panel.contentOverflow ?? 'clip'}
@@ -455,6 +482,13 @@ function Drawer({ id, panel }: { id: string; panel: WorkbenchPanel }) {
       {...resizeAttributes(resize)}
       aria-label={panel.label || undefined}
       aria-hidden={hiddenFromAccessibility(panel)}
+      tabindex={
+        panel.collapsed || panel.presentation === 'hidden'
+          ? panel.tabIndex === undefined
+            ? undefined
+            : -1
+          : panel.tabIndex
+      }
       inert={Boolean(panel.collapsed)}
       style={panelStyle(panel, resize, '--kui-workbench-drawer-height')}
     >
@@ -524,6 +558,9 @@ export function Workbench({
   mainHeaderPlacement,
   mainFooterPlacement,
   mainPane,
+  mainLabel,
+  mainTabIndex,
+  mainOutlined = false,
   mainHeaderList,
   mainFooterList,
   mainMinSize = WORKBENCH_MAIN_MIN_SIZE,
@@ -615,6 +652,10 @@ export function Workbench({
         <div
           class="kui-workbench__main"
           data-workbench-main
+          data-outlined={mainOutlined ? 'true' : undefined}
+          role={mainLabel ? 'region' : undefined}
+          aria-label={mainLabel}
+          tabindex={mainTabIndex}
           data-drawer-inline-expanded={
             inline(bottomDrawer) && expanded(bottomDrawer) ? 'true' : undefined
           }

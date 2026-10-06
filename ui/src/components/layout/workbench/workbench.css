@@ -105,6 +105,14 @@
   overflow: auto;
 }
 
+:is(.kui-workbench__main, .kui-workbench__rail, .kui-workbench__drawer):is(
+  :focus-visible,
+  [data-outlined="true"]
+) {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+
 /* When no Pane chrome is composed, the Workbench region owns its scroll.
    A resizable auto-overflow panel instead scrolls its content box so its
    separator handle remains fixed. Paint only that owner. */

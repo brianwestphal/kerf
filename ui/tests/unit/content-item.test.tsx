@@ -59,6 +59,35 @@ describe('ContentItem', () => {
     expect(String(ContentItem({}))).not.toContain('tabindex');
   });
 
+  it('supports keyboard focus and persistent outline without changing action tab order', () => {
+    const item = String(ContentItem({ tabIndex: 0, outlined: true }));
+    expect(item).toContain('tabindex="0"');
+    expect(item).toContain('data-outlined="true"');
+    expect(String(ContentItem({ tabIndex: -1 }))).toContain('tabindex="-1"');
+    expect(String(ContentItem({ focusTarget: true, tabIndex: 0 }))).toContain(
+      'tabindex="0"',
+    );
+    expect(
+      String(
+        ContentItem({
+          interactive: true,
+          action: 'open',
+          outlined: true,
+        }),
+      ),
+    ).toContain('tabindex="0"');
+    expect(
+      String(
+        ContentItem({
+          interactive: true,
+          action: 'open',
+          disabled: true,
+          outlined: true,
+        }),
+      ),
+    ).toContain('tabindex="-1"');
+  });
+
   it('renders bare string copy and escapes it', () => {
     expect(String(ContentItem({ children: 'A < B' }))).toContain(
       '>A &lt; B</div>',

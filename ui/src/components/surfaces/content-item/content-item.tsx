@@ -19,10 +19,12 @@ export type ContentItemSelectionMode =
 const contentItemProtectedAttributes = new Set([
   'data-component',
   'data-appearance',
+  'data-outlined',
 ]);
 const interactiveProtectedAttributes = new Set([
   'data-component',
   'data-appearance',
+  'data-outlined',
   'data-action',
   'data-item-id',
   'data-interactive',
@@ -36,6 +38,7 @@ type ContentItemRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-appearance'?: never;
+    'data-outlined'?: never;
   }
 >;
 
@@ -43,6 +46,7 @@ type ContentItemInteractiveRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-appearance'?: never;
+    'data-outlined'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -85,6 +89,8 @@ interface ContentItemBaseProps {
    * combined with `data-nav-focus` in `rootAttributes`.
    */
   focusTarget?: boolean;
+  /** Keep the standard focus outline visible, such as for a drop target. */
+  outlined?: boolean;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -99,6 +105,8 @@ export type ContentItemProps = ContentItemBaseProps &
         selectionMode?: never;
         selected?: never;
         disabled?: never;
+        /** Opt into keyboard (`0`) or programmatic (`-1`) focus. */
+        tabIndex?: 0 | -1;
         /** Existing static `data-*` metadata remains available. */
         rootAttributes?: ContentItemRootAttributes;
       }
@@ -111,6 +119,7 @@ export type ContentItemProps = ContentItemBaseProps &
         selectionMode?: ContentItemSelectionMode;
         selected?: boolean;
         disabled?: boolean;
+        tabIndex?: never;
         /** Safe app metadata; interaction attributes are component-owned. */
         rootAttributes?: ContentItemInteractiveRootAttributes;
       }
@@ -130,6 +139,8 @@ export function ContentItem({
   title,
   ariaLabel,
   focusTarget = false,
+  outlined = false,
+  tabIndex,
   interactive = false,
   action,
   itemId,
@@ -180,6 +191,7 @@ export function ContentItem({
       title={title}
       data-component="content-item"
       data-appearance={appearance}
+      data-outlined={outlined ? 'true' : undefined}
       role={
         interactive
           ? selectionMode === 'single'
@@ -203,7 +215,11 @@ export function ContentItem({
       }
       aria-disabled={interactive && disabled ? 'true' : undefined}
       tabindex={
-        interactive ? (disabled ? '-1' : '0') : focusTarget ? '-1' : undefined
+        interactive
+          ? disabled
+            ? '-1'
+            : '0'
+          : (tabIndex ?? (focusTarget ? '-1' : undefined))
       }
       slot={slot}
     >

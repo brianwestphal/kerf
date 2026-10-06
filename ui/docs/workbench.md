@@ -71,6 +71,18 @@ const navCollapsed = signal(false);
 />;
 ```
 
+## Focusable regions
+
+Set `mainTabIndex={0}` for a Tab stop on the central work area, or `-1` to
+focus it from application code. `mainOutlined` keeps the standard focus ring
+visible as an application-controlled state, such as a drop target. Keyboard
+focus shows the same ring. Each rail or drawer accepts its own `tabIndex` and
+`outlined`; a collapsed or hidden panel cannot become a Tab stop and its
+outline is hidden until it expands. `mainPane` and a panel's `pane` forward the
+same options to an inner Pane when that is the intended focus owner. Give
+the central region `mainLabel` when it needs its own named landmark; panel
+regions use their `label`.
+
 Each static `WorkbenchPanel` takes `content`, an optional `toolbar` and `footer` (see
 [Panel toolbars](#panel-toolbars)), an optional `collapsed`, an optional
 `size` (rail width or drawer height in px, overriding the CSS default —

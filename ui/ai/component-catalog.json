@@ -646,7 +646,8 @@
         "which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges)",
         "responsive placement and visibility",
         "whether the chrome dividers follow the scroll, always show, or never show (chromeDividers)",
-        "default or sunken scrolling work surface (appearance)"
+        "default or sunken scrolling work surface (appearance)",
+        "optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined)"
       ],
       "variants": [
         "content only",
@@ -1057,7 +1058,8 @@
         "tab badge counts or dots and their localized badgeLabel phrases",
         "routing and persistence",
         "responsive replacement on larger device classes",
-        "whether the bar divider follows the scroll, always shows, or never shows (chromeDividers)"
+        "whether the bar divider follows the scroll, always shows, or never shows (chromeDividers)",
+        "optional active-scene focus (tabIndex) and persistent outline (outlined)"
       ],
       "variants": [
         "text-only tabs",
@@ -1070,6 +1072,7 @@
       "accessibility": [
         "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
         "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.",
+        "A focusable scene is a tabpanel named by its tab label; optional scene tabIndex applies only while active.",
         "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required."
       ],
       "geometry": {
@@ -1174,11 +1177,13 @@
       ],
       "appOwns": [
         "panel presence and content",
+        "optional accessible name for the central region (mainLabel)",
         "collapsed state",
         "panel sizes",
         "navigation panel view stack and push/pop actions when navStack is supplied",
         "responsive replacement below desktop",
-        "collapse controls and focus policy"
+        "collapse controls and focus policy",
+        "optional main and panel focus stops and persistent outlines"
       ],
       "variants": [
         "main only",
@@ -1202,6 +1207,7 @@
       ],
       "accessibility": [
         "Give the Workbench and each meaningful rail or drawer an accessible label.",
+        "Give the central region mainLabel when it needs its own named landmark.",
         "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control.",
         "A resizable panel's separator is a focusable role=\"separator\" with its size in aria-valuenow and limits in aria-valuemin/aria-valuemax; arrow keys resize by 16px, Shift+arrow by 64px, and Home/End jump to the limits. It leaves the tab order while its panel is collapsed or not inline.",
         "Given a panel's collapsed signal, wireWorkbench closes an open overlay panel on Escape or an outside press and, however the panel closed, returns focus stranded inside it to the control that opened it, else to its restore control.",
@@ -1479,7 +1485,8 @@
         "region semantics and accessible name",
         "corner shape",
         "scroll ownership",
-        "child ordering and content"
+        "child ordering and content",
+        "optional keyboard or programmatic focus (tabIndex) and persistent outline (outlined)"
       ],
       "variants": [
         "rounded surface",
@@ -3733,6 +3740,7 @@
         "corner shape",
         "region semantics and accessible name",
         "whether the item is a programmatic focus target",
+        "optional static-item Tab stop and persistent focus outline",
         "the selection set and Shift/Cmd extension for multi-select rich cards"
       ],
       "variants": [

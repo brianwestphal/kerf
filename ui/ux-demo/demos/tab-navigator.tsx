@@ -38,6 +38,8 @@ const tabs: readonly TabNavigatorTab<DemoTabId>[] = [
     id: 'search',
     label: 'Search',
     deepInset: true,
+    tabIndex: 0,
+    outlined: true,
     icon: <LucideIcon icon={Search} name="search" />,
     content: scene('Search', 'This plain scene uses a deeper content inset.'),
   },
@@ -125,7 +127,7 @@ export function TabNavigatorDemo() {
     >
       <CatalogExample
         label="Persistent tab scenes"
-        note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive. A count badge or a text-free dot sits at the icon's top-trailing corner, and its badgeLabel joins the tab's accessible name."
+        note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive. Search demonstrates a focusable scene with a persistent outline. A count badge or a text-free dot sits at the icon's top-trailing corner, and its badgeLabel joins the tab's accessible name."
         viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
       >
         <TabNavigator

@@ -243,6 +243,8 @@ export function NavStack({
               <Pane
                 appearance={view.pane?.appearance}
                 deepInset={view.pane?.deepInset}
+                tabIndex={view.pane?.tabIndex}
+                outlined={view.pane?.outlined}
                 contentElement={view.pane?.contentElement}
                 contentLabel={view.pane?.contentLabel}
                 separators={view.pane?.separators}

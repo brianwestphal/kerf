@@ -56,6 +56,12 @@ Use `ariaLabel` only when the surface is a distinct region people need to find
 by name. With a label, the root receives `role="region"`; without one it remains
 a non-landmark grouping.
 
+Set `tabIndex={0}` to include the whole panel in the Tab order, or
+`tabIndex={-1}` for a programmatic focus target. Keyboard focus draws the
+standard focus ring. `outlined` keeps the same ring visible independently of
+focus, for example while the panel is a drop target. Give a focusable work area
+an `ariaLabel` when it is a distinct named region.
+
 Do not use `SunkenPanel` merely to add padding, as a substitute for pane
 header/content/footer anatomy, or around a child that already owns the same
 outer surface.

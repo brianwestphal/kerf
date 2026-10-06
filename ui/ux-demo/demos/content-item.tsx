@@ -74,6 +74,21 @@ export function ContentItemDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
+        label="Focusable item and outlined drop target"
+        note="A static item may enter the tab order without becoming an action. outlined keeps the same ring visible for a drop target."
+        align="none"
+      >
+        <Pane label="Drop target items">
+          <ContentItem
+            tabIndex={0}
+            outlined
+            rootAttributes={{ 'data-demo-item': 'outlined' }}
+          >
+            {itemCopy('Drop target', 'Drop a file here or focus this item.')}
+          </ContentItem>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
         label="Surface and semantic appearances"
         note="Transparent preserves the surrounding surface; surface adds the base fill. Semantic appearances coordinate the same status fills, borders, and foregrounds as StateBanner."
         align="none"

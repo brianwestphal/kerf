@@ -53,7 +53,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 
 ## State and wiring
 
-**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers).
+**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers); optional active-scene focus (tabIndex) and persistent outline (outlined).
 
 **Wiring:** `wireTabNavigator`, `wireScrollDividers` is required.
 
@@ -75,6 +75,7 @@ Margin: none · border: conditional · padding: self (layout role: structure). `
 
 - Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.
 - Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.
+- A focusable scene is a tabpanel named by its tab label; optional scene tabIndex applies only while active.
 - A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes "\<label>, \<badgeLabel>" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required.
 
 ## Styling boundary

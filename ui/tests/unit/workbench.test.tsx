@@ -20,6 +20,82 @@ describe('Workbench', () => {
     expect(html).not.toContain('data-workbench-drawer');
   });
 
+  it('focuses and outlines requested regions while collapsed panels leave tab order', () => {
+    const render = (collapsed: boolean, presentation: 'inline' | 'hidden') => {
+      const host = document.createElement('div');
+      host.innerHTML = String(
+        Workbench({
+          id: 'wb',
+          label: 'Studio',
+          main,
+          mainLabel: 'Editor',
+          mainTabIndex: 0,
+          mainOutlined: true,
+          leftRail: {
+            content: panel('Files'),
+            label: 'Files',
+            tabIndex: 0,
+            outlined: true,
+            collapsed,
+            presentation,
+          },
+          bottomDrawer: {
+            content: panel('Console'),
+            tabIndex: -1,
+            outlined: true,
+            collapsed,
+            presentation,
+          },
+        }),
+      );
+      return host;
+    };
+    const open = render(false, 'inline');
+    expect(
+      open.querySelector('[data-workbench-main]')?.getAttribute('tabindex'),
+    ).toBe('0');
+    expect(
+      open.querySelector('[data-workbench-main]')?.getAttribute('aria-label'),
+    ).toBe('Editor');
+    expect(
+      open.querySelector('[data-workbench-main]')?.getAttribute('role'),
+    ).toBe('region');
+    expect(
+      open
+        .querySelector('[data-workbench-main]')
+        ?.getAttribute('data-outlined'),
+    ).toBe('true');
+    expect(
+      open.querySelector('[data-workbench-rail]')?.getAttribute('tabindex'),
+    ).toBe('0');
+    expect(
+      open
+        .querySelector('[data-workbench-rail]')
+        ?.getAttribute('data-outlined'),
+    ).toBe('true');
+    expect(
+      open.querySelector('[data-workbench-drawer]')?.getAttribute('tabindex'),
+    ).toBe('-1');
+
+    for (const [collapsed, presentation] of [
+      [true, 'inline'],
+      [false, 'hidden'],
+    ] as const) {
+      const closed = render(collapsed, presentation);
+      for (const selector of [
+        '[data-workbench-rail]',
+        '[data-workbench-drawer]',
+      ]) {
+        expect(closed.querySelector(selector)?.getAttribute('tabindex')).toBe(
+          '-1',
+        );
+        expect(
+          closed.querySelector(selector)?.hasAttribute('data-outlined'),
+        ).toBe(false);
+      }
+    }
+  });
+
   it('puts the sunken choice on uncomposed Workbench scroll regions', () => {
     const host = document.createElement('div');
     host.innerHTML = String(

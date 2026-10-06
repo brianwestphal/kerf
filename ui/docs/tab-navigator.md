@@ -81,6 +81,14 @@ that child own its content gutter: for a nested `NavStack`, set
 `pane: { deepInset: true }` on its views instead. The navigator bar and a
 stack's top toolbar remain full width.
 
+A plain scene can opt into `tabIndex: 0` to become a Tab stop or `tabIndex: -1`
+to accept programmatic focus. `outlined: true` keeps the standard focus ring
+visible independently of focus, for example for a drop target. Keyboard focus
+also draws that ring. Only the active scene receives the requested tab index or
+outline; inactive scenes stay out of the Tab order and hide the outline. A
+scene containing a `Pane` or another layout should put these options on its
+inner focus owner instead. A focusable scene is a tabpanel named by its tab label.
+
 ## A NavStack with a top toolbar and Pane
 
 Put the `NavStack` directly in a tab's `content`. Give each view a structured

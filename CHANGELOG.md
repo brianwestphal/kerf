@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `Pane`, `SunkenPanel`, plain `TabNavigator` scenes, `Workbench` regions, and static `ContentItem` surfaces can opt into keyboard or programmatic focus; `outlined` holds the standard focus ring for application states such as drop targets. Inactive scenes and collapsed panels suppress their focus stop and outline.
+
 - `TabNavigator`, `TabNavigatorTab`, `TabNavigatorProps`, and `wireTabNavigator` name the complete persistent bottom-tab layout. The matching module, wiring, and CSS subpaths are available; former `TabScaffold` names and paths were deprecated aliases in earlier 5.0 betas.
 
 - `Pane` exposes its resolved logical inline content insets to child CSS, so a table can paint edge to edge while its cell text stays aligned, with or without `deepInset`.

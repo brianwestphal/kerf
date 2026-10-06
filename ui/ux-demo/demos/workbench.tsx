@@ -276,7 +276,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Full desktop workspace"
-        note="The shell owns panel tracks and separators; each region owns its content and scroll behavior."
+        note="The shell owns panel tracks and separators; each region owns its content and scroll behavior. The center keeps a selected outline, while the right rail is a keyboard focus target."
         align="none"
         compactFallback="Workbench is a desktop-class shell. Use focused navigation and overlays instead at this viewport width."
         viewport={{
@@ -291,6 +291,9 @@ export function WorkbenchDemo() {
         <Workbench
           id="catalog-workbench-full"
           label="Project workbench"
+          mainLabel="Editor"
+          mainTabIndex={0}
+          mainOutlined
           leftRail={{
             label: 'Navigator',
             content: region('Navigator', 'Files and symbols'),
@@ -301,6 +304,7 @@ export function WorkbenchDemo() {
           )}
           rightRail={{
             label: 'Inspector',
+            tabIndex: 0,
             content: region('Inspector', 'Selection details'),
           }}
           bottomDrawer={{

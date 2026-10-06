@@ -72,7 +72,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** panel presence and content; collapsed state; panel sizes; navigation panel view stack and push/pop actions when navStack is supplied; responsive replacement below desktop; collapse controls and focus policy.
+**The app owns:** panel presence and content; optional accessible name for the central region (mainLabel); collapsed state; panel sizes; navigation panel view stack and push/pop actions when navStack is supplied; responsive replacement below desktop; collapse controls and focus policy; optional main and panel focus stops and persistent outlines.
 
 **Wiring:** `wireWorkbench`, `wireScrollDividers` is optional.
 
@@ -94,6 +94,7 @@ Margin: none · border: self · padding: child (layout role: structure). `self` 
 ## Accessibility
 
 - Give the Workbench and each meaningful rail or drawer an accessible label.
+- Give the central region mainLabel when it needs its own named landmark.
 - Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control.
 - A resizable panel's separator is a focusable role="separator" with its size in aria-valuenow and limits in aria-valuemin/aria-valuemax; arrow keys resize by 16px, Shift+arrow by 64px, and Home/End jump to the limits. It leaves the tab order while its panel is collapsed or not inline.
 - Given a panel's collapsed signal, wireWorkbench closes an open overlay panel on Escape or an outside press and, however the panel closed, returns focus stranded inside it to the control that opened it, else to its restore control.

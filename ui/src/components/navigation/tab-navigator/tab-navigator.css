@@ -46,6 +46,11 @@
   inset: 0;
 }
 
+.kui-tab-scaffold__scene:is(:focus-visible, [data-outlined="true"]) {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+
 .kui-tab-scaffold__scene[data-appearance="sunken"] {
   background: var(
     --kui-sunken-panel-background,

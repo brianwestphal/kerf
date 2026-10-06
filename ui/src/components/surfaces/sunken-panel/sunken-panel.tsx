@@ -16,6 +16,10 @@ export interface SunkenPanelProps {
   flex?: boolean | CssFlexKeyword | CssFlex;
   /** Fill a parent with a definite height; use flex inside a flex layout. */
   fill?: boolean;
+  /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the panel. */
+  tabIndex?: 0 | -1;
+  /** Keep the standard focus outline visible, such as for a drop target. */
+  outlined?: boolean;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -32,6 +36,8 @@ export function SunkenPanel({
   shape = 'rounded',
   flex = false,
   fill = false,
+  tabIndex,
+  outlined = false,
   className = '',
   slot,
 }: SunkenPanelProps) {
@@ -43,9 +49,11 @@ export function SunkenPanel({
       data-shape={shape}
       data-flex={String(Boolean(flex))}
       data-fill={fill ? 'true' : undefined}
+      data-outlined={outlined ? 'true' : undefined}
       style={flexValue ? `--_kui-sunken-panel-flex:${flexValue}` : undefined}
       role={ariaLabel ? 'region' : undefined}
       aria-label={ariaLabel}
+      tabindex={tabIndex}
       slot={slot}
     >
       {children}

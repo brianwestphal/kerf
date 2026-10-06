@@ -58,7 +58,7 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 
 ## State and wiring
 
-**The app owns:** the item content; whether the item marks a real distinction that warrants a visible frame; whether the item needs a surface or semantic appearance; corner shape; region semantics and accessible name; whether the item is a programmatic focus target; the selection set and Shift/Cmd extension for multi-select rich cards.
+**The app owns:** the item content; whether the item marks a real distinction that warrants a visible frame; whether the item needs a surface or semantic appearance; corner shape; region semantics and accessible name; whether the item is a programmatic focus target; optional static-item Tab stop and persistent focus outline; the selection set and Shift/Cmd extension for multi-select rich cards.
 
 No wiring helper.
 

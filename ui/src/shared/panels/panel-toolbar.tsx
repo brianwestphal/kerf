@@ -265,6 +265,8 @@ export function composedPanelBody({
       chromeDividers={pane?.chromeDividers}
       appearance={pane?.appearance}
       deepInset={pane?.deepInset}
+      tabIndex={pane?.tabIndex}
+      outlined={pane?.outlined}
     >
       {scrollHeader ? panelHeader : null}
       {content}

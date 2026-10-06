@@ -52,6 +52,21 @@ export function PaneDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
+        label="Focusable pane and persistent outline"
+        note="tabIndex makes the pane reachable by keyboard; outlined keeps its focus ring visible while it marks a drop target."
+        viewport={{ layout: 'grid', width: 'medium', height: 'short' }}
+      >
+        <Pane
+          element="section"
+          label="Drop target pane"
+          tabIndex={0}
+          outlined
+          rootAttributes={{ 'data-demo-focus-pane': '' }}
+        >
+          <ContentItem>Drop a project here.</ContentItem>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
         label="Deep inset content"
         note="deepInset adds 8px on all sides of the Pane's scrolling content. Direct items and items inside a List align at 16px from the inline edge while the List keeps its ordinary internal 8px spacing."
         viewport={{

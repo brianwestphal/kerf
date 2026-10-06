@@ -46,7 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/sunken-panel`](../public-api-signatures
 
 ## State and wiring
 
-**The app owns:** region semantics and accessible name; corner shape; scroll ownership; child ordering and content.
+**The app owns:** region semantics and accessible name; corner shape; scroll ownership; child ordering and content; optional keyboard or programmatic focus (tabIndex) and persistent outline (outlined).
 
 No wiring helper.
 

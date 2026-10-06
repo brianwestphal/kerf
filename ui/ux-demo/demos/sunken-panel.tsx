@@ -24,6 +24,14 @@ export function SunkenPanelDemo() {
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample
+        label="Focusable outlined surface"
+        note="tabIndex makes the surface a keyboard stop; outlined can keep its ring visible for a selected or drop-target state."
+      >
+        <SunkenPanel ariaLabel="Selected work surface" tabIndex={0} outlined>
+          <Text>Selected work surface</Text>
+        </SunkenPanel>
+      </CatalogExample>
+      <CatalogExample
         label="Square-corner content stack"
         note="Square corners fit a flush or edge-to-edge application area."
       >

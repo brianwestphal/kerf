@@ -932,10 +932,12 @@ type ContentItemSelectionMode = 'none' | 'single' | 'multiple' | 'toggle';
 type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-appearance'?: never;
+    'data-outlined'?: never;
 }>;
 type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-appearance'?: never;
+    'data-outlined'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -976,6 +978,8 @@ interface ContentItemBaseProps {
      * combined with `data-nav-focus` in `rootAttributes`.
      */
     focusTarget?: boolean;
+    /** Keep the standard focus outline visible, such as for a drop target. */
+    outlined?: boolean;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -987,6 +991,8 @@ type ContentItemProps = ContentItemBaseProps & ({
     selectionMode?: never;
     selected?: never;
     disabled?: never;
+    /** Opt into keyboard (`0`) or programmatic (`-1`) focus. */
+    tabIndex?: 0 | -1;
     /** Existing static `data-*` metadata remains available. */
     rootAttributes?: ContentItemRootAttributes;
 } | {
@@ -998,6 +1004,7 @@ type ContentItemProps = ContentItemBaseProps & ({
     selectionMode?: ContentItemSelectionMode;
     selected?: boolean;
     disabled?: boolean;
+    tabIndex?: never;
     /** Safe app metadata; interaction attributes are component-owned. */
     rootAttributes?: ContentItemInteractiveRootAttributes;
 });
@@ -1006,7 +1013,7 @@ type ContentItemProps = ContentItemBaseProps & ({
  * border (transparent unless `framed`), 8px padding, and a rounded or pill
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
-declare function ContentItem({ appearance, children, frame, flush, shape, title, ariaLabel, focusTarget, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
+declare function ContentItem({ appearance, children, frame, flush, shape, title, ariaLabel, focusTarget, outlined, tabIndex, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
 export { ContentItem, type ContentItemAppearance, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape, SemanticTone };
 ```
@@ -1436,6 +1443,7 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-chrome-dividers'?: never;
     'data-appearance'?: never;
     'data-deep-inset'?: never;
+    'data-outlined'?: never;
 }>;
 /** How a Pane's header and footer relate to its scrolling content. */
 type PaneChromePlacement = 'fixed' | 'auto';
@@ -1475,8 +1483,12 @@ interface PaneProps {
     chromeDividers?: PaneChromeDividers;
     /** Paint the scrolling work surface with the shared lowered-surface color. */
     appearance?: PaneAppearance;
-    /** Add an extra 8px inline gutter to scrolling content (default: false). */
+    /** Add 8px to every side of scrolling content (default: false). */
     deepInset?: boolean;
+    /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root. */
+    tabIndex?: 0 | -1;
+    /** Keep the standard focus outline visible, such as for a drop target. */
+    outlined?: boolean;
     /** Root semantics. Defaults to `div`. */
     element?: PaneElement;
     /** Scrolling content semantics. Defaults to `div`. */
@@ -1511,14 +1523,14 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'appearance' | 'deepInset'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'appearance' | 'deepInset' | 'tabIndex' | 'outlined'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, chromeDividers, appearance, deepInset, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, chromeDividers, appearance, deepInset, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```
@@ -1629,6 +1641,10 @@ interface WorkbenchPanelBase {
     resizable?: boolean | WorkbenchPanelResizable;
     /** Accessible name for the panel region. */
     label?: string;
+    /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the panel region. */
+    tabIndex?: 0 | -1;
+    /** Keep the standard focus outline visible while this panel is expanded. */
+    outlined?: boolean;
     separator?: ResizableRegionSeparator;
     collapseMotion?: ResizableRegionCollapseMotion;
     contentOverflow?: ResizableRegionContentOverflow;
@@ -1733,6 +1749,12 @@ interface WorkbenchProps {
      * the `Pane` defaults.
      */
     mainPane?: PaneConfig;
+    /** Accessible name for the central region when it needs its own landmark. */
+    mainLabel?: string;
+    /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the central region. */
+    mainTabIndex?: 0 | -1;
+    /** Keep the standard focus outline visible on the central region. */
+    mainOutlined?: boolean;
     /**
      * Configuration for the `List` that holds `mainHeader` (`gap`, `hAlign`,
      * `vAlign`, `dividerSides`, `textInsets`, `controlInsets`). Omitted or
@@ -1783,7 +1805,7 @@ interface WorkbenchProps {
  * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, overlayBackdrop, className, slot, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainLabel, mainTabIndex, mainOutlined, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, overlayBackdrop, className, slot, }: WorkbenchProps): SafeHtml;
 
 export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchNavigationPanel, type WorkbenchPanel, type WorkbenchPanelBottomToolbar, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt, type WorkbenchStaticPanel };
 ```
@@ -2131,8 +2153,12 @@ interface TabNavigatorTabBase<Id extends string> {
     content: KerfUiContent;
     /** Background of this scene's scrolling work surface. */
     appearance?: PaneAppearance;
-    /** Add an extra 8px inline gutter to a plain scene's scrolling content. */
+    /** Add 8px to every side of a plain scene's scrolling content. */
     deepInset?: boolean;
+    /** Opt into keyboard (`0`) or programmatic (`-1`) focus on this scene. */
+    tabIndex?: 0 | -1;
+    /** Keep the standard focus outline visible while this scene is active. */
+    outlined?: boolean;
 }
 /** A tab with an optional count or short-status badge. */
 interface TabNavigatorTabCountBadge {
@@ -2905,6 +2931,10 @@ interface SunkenPanelProps {
     flex?: boolean | CssFlexKeyword | CssFlex;
     /** Fill a parent with a definite height; use flex inside a flex layout. */
     fill?: boolean;
+    /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the panel. */
+    tabIndex?: 0 | -1;
+    /** Keep the standard focus outline visible, such as for a drop target. */
+    outlined?: boolean;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -2914,7 +2944,7 @@ interface SunkenPanelProps {
  * stack. The panel owns its background and padding; children own their own
  * borders and internal geometry.
  */
-declare function SunkenPanel({ children, ariaLabel, shape, flex, fill, className, slot, }: SunkenPanelProps): kerfjs.SafeHtml;
+declare function SunkenPanel({ children, ariaLabel, shape, flex, fill, tabIndex, outlined, className, slot, }: SunkenPanelProps): kerfjs.SafeHtml;
 
 export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ```

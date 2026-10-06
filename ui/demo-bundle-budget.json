@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 327600,
-  "measuredLargestJavaScriptGzip": 124513,
-  "measuredTotalJavaScriptGzip": 327510,
+  "totalJavaScriptGzip": 328300,
+  "measuredLargestJavaScriptGzip": 124515,
+  "measuredTotalJavaScriptGzip": 328203,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -2979,6 +2979,22 @@
         "measuredTotalJavaScriptGzip": 327510,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 327600
+      }
+    },
+    {
+      "at": "2026-10-06T09:02:45.103Z",
+      "reason": "Focus surface catalog examples add five public component states",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 327510,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 327600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124515,
+        "measuredTotalJavaScriptGzip": 328203,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 328300
       }
     }
   ]

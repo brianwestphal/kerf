@@ -503,6 +503,11 @@ edge-to-edge decoration and add them to cell padding for aligned text in both
 `deepInset` also adds 8px to the top and bottom of Pane and plain TabNavigator
 scroll content and their block scroll padding; Pane header/footer chrome keeps
 ownership of safe-area insets at its edge.
+Pane, SunkenPanel, static ContentItem, plain TabNavigator scenes, and Workbench
+regions accept opt-in keyboard or programmatic focus and an independent
+application-controlled focus outline. An inactive scene or collapsed panel
+does not add a Tab stop or show its outline; existing interactive ContentItem
+selection and disabled rules remain intact.
 
 **Shipped naming migration:** `TabNavigator` names the complete destination
 layout, while `TabBar` names the separate document-tab strip. The former

@@ -57,6 +57,15 @@ not inherit a doubled margin. `PaneConfig.deepInset` forwards through
 Workbench `mainPane`, panel `pane`, CollapsiblePanel `pane`, and a
 `NavStackView.pane`.
 
+### Focusable pane
+
+Set `tabIndex={0}` to put the whole Pane in the Tab order, or `tabIndex={-1}`
+when application code should focus it without adding a Tab stop. Keyboard focus
+draws the standard focus ring. Set `outlined` to keep that ring visible as an
+application-controlled state, such as a drop target, whether or not the Pane is
+focused. `PaneConfig` forwards both options through layouts that render a Pane.
+Give a focusable Pane a useful `label` when it represents a distinct region.
+
 ### Lowered work surfaces
 
 Set `appearance="sunken"` when the work area itself should use the lowered
@@ -238,6 +247,12 @@ target. `flush` removes block padding and both block borders while retaining
 the inline margin, padding, and border. Use it for content such as a markdown
 preview that must reach the item's top and bottom edges. `title` passes through
 to the root element as a native tooltip.
+
+For a static item that needs focus, set `tabIndex={0}` for a Tab stop or
+`tabIndex={-1}` for programmatic focus. Set `outlined` for a persistent focus
+ring, such as a drop target, on static or interactive items. Interactive items
+retain their own Tab stop, keyboard activation, selection, and disabled behavior;
+`focusTarget` remains the shorthand for a static programmatic target.
 
 For a selectable card, set `interactive`, a delegated `action`, and an optional
 `itemId`. Wire `wireContentItems(root)` once on the containing app root; it

@@ -15,6 +15,10 @@ interface TabNavigatorTabBase<Id extends string> {
   appearance?: PaneAppearance;
   /** Add 8px to every side of a plain scene's scrolling content. */
   deepInset?: boolean;
+  /** Opt into keyboard (`0`) or programmatic (`-1`) focus on this scene. */
+  tabIndex?: 0 | -1;
+  /** Keep the standard focus outline visible while this scene is active. */
+  outlined?: boolean;
 }
 
 /** A tab with an optional count or short-status badge. */
@@ -116,7 +120,19 @@ export function TabNavigator<Id extends string>({
             data-active={String(tab.id === active)}
             data-appearance={tab.appearance === 'sunken' ? 'sunken' : undefined}
             data-deep-inset={tab.deepInset ? 'true' : undefined}
+            data-outlined={
+              tab.id === active && tab.outlined ? 'true' : undefined
+            }
+            role={tab.tabIndex === undefined ? undefined : 'tabpanel'}
+            aria-label={tab.tabIndex === undefined ? undefined : tab.label}
             aria-hidden={String(tab.id !== active)}
+            tabindex={
+              tab.id === active
+                ? tab.tabIndex
+                : tab.tabIndex === undefined
+                  ? undefined
+                  : -1
+            }
           >
             {tab.content}
           </div>

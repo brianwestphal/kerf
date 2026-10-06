@@ -612,6 +612,11 @@
           "id": "default or sunken scrolling work surface (appearance)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -1007,6 +1012,11 @@
           "id": "whether the bar divider follows the scroll, always shows, or never shows (chromeDividers)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "optional active-scene focus (tabIndex) and persistent outline (outlined)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -1045,6 +1055,7 @@
         "obligations": [
           "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
           "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.",
+          "A focusable scene is a tabpanel named by its tab label; optional scene tabIndex applies only while active.",
           "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required."
         ]
       },
@@ -1112,6 +1123,11 @@
           "owner": "application",
           "required": false
         },
+        {
+          "id": "optional accessible name for the central region (mainLabel)",
+          "owner": "application",
+          "required": false
+        },
         { "id": "collapsed state", "owner": "application", "required": false },
         { "id": "panel sizes", "owner": "application", "required": false },
         {
@@ -1126,6 +1142,11 @@
         },
         {
           "id": "collapse controls and focus policy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "optional main and panel focus stops and persistent outlines",
           "owner": "application",
           "required": false
         }
@@ -1188,6 +1209,7 @@
       "accessibility": {
         "obligations": [
           "Give the Workbench and each meaningful rail or drawer an accessible label.",
+          "Give the central region mainLabel when it needs its own named landmark.",
           "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control.",
           "A resizable panel's separator is a focusable role=\"separator\" with its size in aria-valuenow and limits in aria-valuemin/aria-valuemax; arrow keys resize by 16px, Shift+arrow by 64px, and Home/End jump to the limits. It leaves the tab order while its panel is collapsed or not inline.",
           "Given a panel's collapsed signal, wireWorkbench closes an open overlay panel on Escape or an outside press and, however the panel closed, returns focus stranded inside it to the control that opened it, else to its restore control.",
@@ -1368,6 +1390,11 @@
         { "id": "scroll ownership", "owner": "application", "required": false },
         {
           "id": "child ordering and content",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "optional keyboard or programmatic focus (tabIndex) and persistent outline (outlined)",
           "owner": "application",
           "required": false
         }
@@ -3000,6 +3027,11 @@
         },
         {
           "id": "whether the item is a programmatic focus target",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "optional static-item Tab stop and persistent focus outline",
           "owner": "application",
           "required": false
         },
