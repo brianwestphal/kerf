@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - The UX catalog remembers its background, light or dark theme, contrast, and reduced-motion choices across reloads.
 
-- The UX catalog can show a layout guide background with two one-pixel vertical rules at 23px and 32px.
+- The UX catalog can show a layout guide background with three one-pixel vertical rules at 15px, 23px, and 32px.
 
 - `Row`, `Grid`, and `List` accept `gap={{ column, row }}` with independent typed spacing values, while their existing single-value gaps continue to apply to both axes (`KF-8HJFWC`).
 

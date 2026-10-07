@@ -1,5 +1,6 @@
 import '@awesome.me/webawesome/dist/components/details/details.js';
 
+import { ContentItem } from '@kerfjs/ui';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
@@ -45,10 +46,18 @@ export function SunkenPanelDemo() {
         label="Panel fills a work area"
         note="fill takes the height of a definite-height frame; flex takes the remaining space in a flex column. Neither creates another scroller."
         align="none"
-        viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'app',
+          frame: 'dashed',
+        }}
       >
-        <List fill>
-          <Text>Work area</Text>
+        <List flex>
+          <ContentItem appearance="info">
+            <Text>Work area</Text>
+          </ContentItem>
+
           <SunkenPanel flex ariaLabel="Growing work surface">
             <Text>Content stays at the top while the surface fills space.</Text>
           </SunkenPanel>

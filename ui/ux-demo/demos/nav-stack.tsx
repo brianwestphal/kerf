@@ -220,7 +220,12 @@ export function NavStackDemo() {
       <CatalogExample
         label="Interactive push and pop"
         note="Choose a project to push its detail. The content slides while the view-owned title, actions, and bottom status cross-fade; Back pops to the preserved list."
-        viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
+        viewport={{
+          layout: 'grid',
+          width: 'compact',
+          height: 'tall',
+          frame: 'solid',
+        }}
       >
         <NavStack
           id="catalog-nav-stack"
@@ -232,7 +237,12 @@ export function NavStackDemo() {
       <CatalogExample
         label="Configured toolbar"
         note="toolbarConfig exposes the title as a level-2 heading with a bottom divider. The library view adds leading and center groups, the pushed project a trailing group, and backText names the previous view beside the back chevron."
-        viewport={{ layout: 'grid', width: 'compact', height: 'short' }}
+        viewport={{
+          layout: 'grid',
+          width: 'compact',
+          height: 'short',
+          frame: 'solid',
+        }}
       >
         <NavStack
           id="catalog-nav-stack-configured"

@@ -128,7 +128,12 @@ export function TabNavigatorDemo() {
       <CatalogExample
         label="Persistent tab scenes"
         note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive. Search demonstrates a focusable scene with a persistent outline. A count badge or a text-free dot sits at the icon's top-trailing corner, and its badgeLabel joins the tab's accessible name."
-        viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
+        viewport={{
+          layout: 'grid',
+          width: 'compact',
+          height: 'tall',
+          frame: 'solid',
+        }}
       >
         <TabNavigator
           id="catalog-tab-scaffold"
@@ -140,7 +145,12 @@ export function TabNavigatorDemo() {
       <CatalogExample
         label="NavStack inside a tab"
         note="The Projects tab owns a NavStack with its own top toolbar and Pane. Open the project, switch to Search, then return: the detail stays mounted. The stack has no bottom toolbar, so the scaffold bar remains the only bottom chrome."
-        viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
+        viewport={{
+          layout: 'grid',
+          width: 'compact',
+          height: 'tall',
+          frame: 'solid',
+        }}
       >
         <TabNavigator
           id="catalog-tab-scaffold-nested"

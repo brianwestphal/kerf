@@ -6,7 +6,6 @@
   background-color: transparent;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238e8e93' fill-opacity='.12' d='M0 0h8v8H0zM8 8h8v8H8z'/%3E%3C/svg%3E");
   background-size: remify(16px) remify(16px);
-  padding: var(--kui-space-xs);
 }
 
 .kui-catalog__stage[data-background-style="vertical-stripes"] {
@@ -17,7 +16,9 @@
 .kui-catalog__stage[data-background-style="layout-guide"] {
   background-image: linear-gradient(
     to right,
-    transparent 23px,
+    transparent 15px,
+    rgb(142 142 147 / 12%) 15px 16px,
+    transparent 16px 23px,
     rgb(142 142 147 / 12%) 23px 24px,
     transparent 24px 32px,
     rgb(142 142 147 / 12%) 32px 33px,
@@ -46,7 +47,7 @@
   width: min(100%, remify(1120px));
   min-width: 0;
   min-height: 100%;
-  padding: var(--kui-layout-content-gap);
+  padding: var(--kui-space-m);
   box-sizing: border-box;
   place-items: start;
 }

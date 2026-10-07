@@ -97,7 +97,6 @@
 
 .kui-catalog-example__viewport[data-frame] {
   border: 1px solid var(--kui-color-neutral-border-normal);
-  border-radius: var(--kui-radius-m);
 }
 
 .kui-catalog-example__viewport[data-frame="dashed"] {

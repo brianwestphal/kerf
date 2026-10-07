@@ -40,7 +40,7 @@ description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
 - **`backgroundStyle`** — the preview stage backdrop: `checkerboard` (default,
   8px squares),
   `vertical-stripes` (alternating 8px bands), `layout-guide` (single-pixel
-  vertical rules at 23px and 32px from the stage edge), `surface`, or `sunken`. The
+  vertical rules at 15px, 23px, and 32px from the stage edge), `surface`, or `sunken`. The
   patterned choices share the main Pane's sunken surface and reveal transparent
   specimen edges; `surface` paints an
   opaque backdrop. `sunken` leaves the stage

@@ -1975,8 +1975,9 @@ test('insets the catalog canvas inside a sunken work pane', async ({
     const canvasBox = await canvas.boundingBox();
     expect(stageBox).not.toBeNull();
     expect(canvasBox).not.toBeNull();
-    expect(Math.abs(canvasBox!.x - stageBox!.x - 8)).toBeLessThanOrEqual(1);
-    await expect(stage).toHaveCSS('padding-left', '8px');
+    expect(Math.abs(canvasBox!.x - stageBox!.x)).toBeLessThanOrEqual(1);
+    await expect(stage).toHaveCSS('padding-left', '0px');
+    await expect(canvas).toHaveCSS('padding-left', '16px');
     await expect(canvas).toHaveCSS('justify-items', 'start');
     if (browserName === 'chromium')
       await pane.locator('.kui-pane__content').screenshot({
@@ -2059,6 +2060,9 @@ test('switches catalog background patterns and surfaces across entries and theme
     );
     expect(image === 'none').toBe(!patterned);
     if (value === 'layout-guide') {
+      expect(image).toMatch(
+        /rgba\(142, 142, 147, 0\.12\) 15px, rgba\(142, 142, 147, 0\.12\) 16px/,
+      );
       expect(image).toMatch(
         /rgba\(142, 142, 147, 0\.12\) 23px, rgba\(142, 142, 147, 0\.12\) 24px/,
       );
