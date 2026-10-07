@@ -178,6 +178,10 @@ import {
   workbenchOutputCollapsed,
   workbenchTicketRailCollapsed,
 } from './demos/workbench.js';
+import {
+  readDemoDisplayPreferences,
+  writeDemoDisplayPreferences,
+} from './display-preferences.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController, RecipePresentation } from './recipes/types.js';
 
@@ -215,14 +219,39 @@ let nextDemoTabNumber = tabBarTabs.value.length + 1;
 /** How long a newly added application tab stays pending in the demo. */
 const DEMO_TAB_LOAD_MS = 1200;
 const actionLog = signal('Catalog ready');
+let displayStorage: Storage | null = null;
+try {
+  displayStorage = window.localStorage;
+} catch {
+  // The demo remains usable when browser storage is unavailable.
+}
+const savedDisplay = readDemoDisplayPreferences(displayStorage);
 const systemDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const effectiveTheme = signal<DemoTheme>(
-  preferredDemoTheme(systemDarkTheme.matches),
+  savedDisplay.theme ?? preferredDemoTheme(systemDarkTheme.matches),
 );
-let explicitTheme: DemoTheme | undefined;
-const increasedContrast = signal(false);
-const reducedMotion = signal(false);
-const backgroundStyle = signal<CatalogBackgroundStyle>('checkerboard');
+let explicitTheme = savedDisplay.theme;
+const increasedContrast = signal(savedDisplay.increasedContrast ?? false);
+const reducedMotion = signal(savedDisplay.reducedMotion ?? false);
+const backgroundStyle = signal<CatalogBackgroundStyle>(
+  savedDisplay.backgroundStyle ?? 'checkerboard',
+);
+if (explicitTheme) applyDemoTheme(document.documentElement, explicitTheme);
+document.documentElement.classList.toggle(
+  'demo-contrast',
+  increasedContrast.value,
+);
+document.documentElement.classList.toggle(
+  'demo-reduced-motion',
+  reducedMotion.value,
+);
+const saveDisplay = () =>
+  writeDemoDisplayPreferences(displayStorage, {
+    theme: explicitTheme,
+    backgroundStyle: backgroundStyle.peek(),
+    increasedContrast: increasedContrast.peek(),
+    reducedMotion: reducedMotion.peek(),
+  });
 const backgroundChoices = [
   { value: 'checkerboard', label: 'Checkerboard' },
   { value: 'vertical-stripes', label: 'Vertical stripes' },
@@ -889,6 +918,7 @@ const stopActions = delegateActions(app, 'click', {
       'demo-contrast',
       increasedContrast.value,
     );
+    saveDisplay();
     actionLog.value = increasedContrast.value
       ? 'Increased contrast on'
       : 'Increased contrast off';
@@ -899,6 +929,7 @@ const stopActions = delegateActions(app, 'click', {
       'demo-reduced-motion',
       reducedMotion.value,
     );
+    saveDisplay();
     actionLog.value = reducedMotion.value
       ? 'Reduced motion on'
       : 'Reduced motion off';
@@ -908,6 +939,7 @@ const stopActions = delegateActions(app, 'click', {
     const selected = backgroundChoices.find(({ value }) => value === choice);
     if (!selected) return;
     backgroundStyle.value = selected.value;
+    saveDisplay();
     actionLog.value = `Background: ${selected.label}`;
   },
   'log-add': () => {
@@ -1143,6 +1175,7 @@ const stopCatalog = wireCatalog(app, {
     explicitTheme = oppositeDemoTheme(effectiveTheme.value);
     applyDemoTheme(document.documentElement, explicitTheme);
     effectiveTheme.value = explicitTheme;
+    saveDisplay();
     actionLog.value = `${explicitTheme === 'dark' ? 'Dark' : 'Light'} theme on`;
   },
   onToggleSecondary: () => {

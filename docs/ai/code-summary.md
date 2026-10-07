@@ -23,7 +23,8 @@ focus outline (`outlined`); Workbench names its central-region props
 `mainTabIndex` and `mainOutlined`.
 `ui/ux-demo/demo-theme.ts` derives the effective operating-system light/dark
 appearance and applies the catalog's mutually exclusive explicit theme
-overrides.
+overrides. `ui/ux-demo/display-preferences.ts` validates and stores the demo's
+theme, background, contrast, and motion choices across reloads.
 The published `setup/` entry (`kerfjs/setup` from `setup/index.mjs` +
 `index.d.mts`, and the `kerfjs setup` bin in `setup/cli.mjs`)
 contains the pure AI-first project planner, bounded/redacted plan formatter,

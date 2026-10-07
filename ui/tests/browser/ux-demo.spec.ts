@@ -75,9 +75,9 @@ test('theme action follows the effective OS appearance and explicitly switches e
     .toBe(lightBackground);
 
   await page.reload();
-  await expect(themeButton).toHaveAttribute('data-theme-preview', 'dark');
-  await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
-  await expect(page.locator('html')).not.toHaveClass(/demo-(?:light|dark)/);
+  await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
+  await expect(page.locator('html')).toHaveClass(/demo-light/);
 
   await page.emulateMedia({ colorScheme: 'light' });
   await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
@@ -116,6 +116,62 @@ test('theme action follows the effective OS appearance and explicitly switches e
       fullPage: true,
     });
   }
+});
+
+test('restores display choices across reloads and keeps them independent', async ({
+  page,
+  browserName,
+}) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/?component=badge');
+  const stage = page.locator('[data-catalog-stage]');
+  const menu = page.locator('[data-catalog-background-menu]');
+  const contrast = page.locator('[data-action="toggle-contrast"]');
+  const motion = page.locator('[data-action="toggle-motion"]');
+  const theme = page.locator('[data-action="toggle-theme"]');
+
+  await menu.locator('[slot="trigger"]').click();
+  await menu.locator('[data-background-choice="layout-guide"]').click();
+  await contrast.click();
+  await motion.click();
+  await theme.click();
+  await page.reload();
+
+  await expect(stage).toHaveAttribute('data-background-style', 'layout-guide');
+  await expect(contrast).toHaveAttribute('aria-pressed', 'true');
+  await expect(motion).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('html')).toHaveClass(/demo-contrast/);
+  await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
+  await expect(page.locator('html')).toHaveClass(/demo-dark/);
+  await expect(theme).toHaveAttribute('aria-label', 'Use light theme');
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-saved-display-wide.png',
+    });
+
+  await page.locator('[data-catalog-sidebar] [data-item-id="chip"]').click();
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(stage).toHaveAttribute('data-background-style', 'layout-guide');
+  await expect(page.locator('html')).toHaveClass(/demo-dark/);
+  await page.setViewportSize({ width: 390, height: 844 });
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-saved-display-narrow.png',
+    });
+
+  await contrast.click();
+  await motion.click();
+  await theme.click();
+  await menu.locator('[slot="trigger"]').click();
+  await menu.locator('[data-background-choice="checkerboard"]').click();
+  await page.reload();
+  await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
+  await expect(contrast).toHaveAttribute('aria-pressed', 'false');
+  await expect(motion).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('html')).not.toHaveClass(/demo-contrast/);
+  await expect(page.locator('html')).not.toHaveClass(/demo-reduced-motion/);
+  await expect(page.locator('html')).toHaveClass(/demo-light/);
 });
 
 test('omits the removed command-palette recipe and safely falls back from its stale route', async ({
@@ -2025,15 +2081,9 @@ test('switches catalog background patterns and surfaces across entries and theme
   await trigger.click();
   await menu.locator('[data-background-choice="layout-guide"]').click();
   await page.locator('[data-catalog-sidebar] [data-item-id="chip"]').click();
-  await expect(stage).toHaveAttribute(
-    'data-background-style',
-    'layout-guide',
-  );
+  await expect(stage).toHaveAttribute('data-background-style', 'layout-guide');
   await page.locator('[data-action="toggle-theme"]').click();
-  await expect(stage).toHaveAttribute(
-    'data-background-style',
-    'layout-guide',
-  );
+  await expect(stage).toHaveAttribute('data-background-style', 'layout-guide');
   await page.setViewportSize({ width: 390, height: 844 });
   await trigger.click();
   await expect(
@@ -2053,7 +2103,7 @@ test('switches catalog background patterns and surfaces across entries and theme
     });
   }
   await page.reload();
-  await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
+  await expect(stage).toHaveAttribute('data-background-style', 'layout-guide');
 });
 
 test('uses one sunken surface under the transparent Catalog stage in both themes', async ({
