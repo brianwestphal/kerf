@@ -87,6 +87,11 @@ test('pop stays attractive and readable across themes, contrast, and typed surfa
   await expect(popGroup).toBeVisible();
   await expect(popGroup.locator('button[aria-pressed="true"]')).toHaveCSS(
     'color',
+    'rgb(232, 165, 255)',
+  );
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(popGroup.locator('button[aria-pressed="true"]')).toHaveCSS(
+    'color',
     'rgb(121, 36, 152)',
   );
 });

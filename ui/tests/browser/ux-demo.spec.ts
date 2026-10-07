@@ -1989,9 +1989,13 @@ test('keeps Catalog display controls fully visible and usable across widths', as
   page,
   browserName,
 }) => {
+  let contrastOn = false;
   for (const width of [1440, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=badge');
+    await expect(
+      page.locator('[data-action="toggle-contrast"]'),
+    ).toHaveAttribute('aria-pressed', String(contrastOn));
     const controls = page.locator(
       '[data-component="toolbar-control-group"][aria-label="Catalog display settings"]',
     );
@@ -2011,9 +2015,10 @@ test('keeps Catalog display controls fully visible and usable across widths', as
         path: `test-results/catalog-display-controls-${width}.png`,
       });
     await page.locator('[data-action="toggle-contrast"]').click();
+    contrastOn = !contrastOn;
     await expect(
       page.locator('[data-action="toggle-contrast"]'),
-    ).toHaveAttribute('aria-pressed', 'true');
+    ).toHaveAttribute('aria-pressed', String(contrastOn));
     await page
       .locator('[data-catalog-background-menu] [slot="trigger"]')
       .click();
