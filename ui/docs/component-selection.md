@@ -558,6 +558,15 @@ menu. Call `closePopupMenu` for programmatic dismissal. The pointer anchor
 retains Web Awesome's collision placement, focus management, submenu keyboard
 navigation, and outside/Escape dismissal.
 
+The dropdown's popup flips and shifts at viewport edges, limits its height to
+the available space, and uses the browser top layer where supported. The app
+supplies pointer coordinates and command policy; it does not need to calculate
+menu offsets. For other anchored content, use Web Awesome `wa-tooltip` or
+`wa-popover` when its interaction fits, and `wa-popup` when only placement is
+needed. `kerfjs/overlay` provides a structural popover or tooltip with its own
+lifecycle for applications that do not use Web Awesome. These are distinct
+interaction contracts: a command menu still uses `PopupMenu`.
+
 ## Configuring recurring list rows
 
 Configure the List family instead of selecting its descendant classes. Use
