@@ -1983,6 +1983,7 @@ test('switches catalog background patterns and surfaces across entries and theme
 
   const choices = [
     ['vertical-stripes', 'Vertical stripes', '16px 16px', true],
+    ['layout-guide', 'Layout guide', 'auto', true],
     ['surface', 'Surface', 'auto', false],
     ['sunken', 'Sunken', 'auto', false],
     ['checkerboard', 'Checkerboard', '16px 16px', true],
@@ -1996,6 +1997,15 @@ test('switches catalog background patterns and surfaces across entries and theme
       (element) => window.getComputedStyle(element).backgroundImage,
     );
     expect(image === 'none').toBe(!patterned);
+    if (value === 'layout-guide') {
+      expect(image).toMatch(
+        /rgba\(142, 142, 147, 0\.12\) 23px, rgba\(142, 142, 147, 0\.12\) 24px/,
+      );
+      expect(image).toMatch(
+        /rgba\(142, 142, 147, 0\.12\) 32px, rgba\(142, 142, 147, 0\.12\) 33px/,
+      );
+      await expect(stage).toHaveCSS('background-repeat', 'no-repeat');
+    }
     await expect(page.locator('.catalog-log')).toHaveText(
       `Background: ${label}`,
     );
@@ -2013,30 +2023,33 @@ test('switches catalog background patterns and surfaces across entries and theme
   }
 
   await trigger.click();
-  await menu.locator('[data-background-choice="vertical-stripes"]').click();
+  await menu.locator('[data-background-choice="layout-guide"]').click();
   await page.locator('[data-catalog-sidebar] [data-item-id="chip"]').click();
   await expect(stage).toHaveAttribute(
     'data-background-style',
-    'vertical-stripes',
+    'layout-guide',
   );
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(stage).toHaveAttribute(
     'data-background-style',
-    'vertical-stripes',
+    'layout-guide',
   );
   await page.setViewportSize({ width: 390, height: 844 });
   await trigger.click();
   await expect(
-    menu.locator('[data-background-choice="vertical-stripes"]'),
+    menu.locator('[data-background-choice="layout-guide"]'),
   ).toBeVisible();
   const menuBounds = await menu.boundingBox();
   expect(menuBounds).not.toBeNull();
   expect(menuBounds!.x).toBeGreaterThanOrEqual(0);
   expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(390);
+  await menu.evaluate((element: HTMLElement & { open: boolean }) => {
+    element.open = false;
+  });
   if (browserName === 'chromium') {
     await page.waitForTimeout(300);
     await page.screenshot({
-      path: 'test-results/catalog-background-narrow-dark.png',
+      path: 'test-results/catalog-background-layout-guide-narrow-dark.png',
     });
   }
   await page.reload();

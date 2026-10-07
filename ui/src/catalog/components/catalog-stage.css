@@ -14,6 +14,19 @@
   background-size: remify(16px) remify(16px);
 }
 
+.kui-catalog__stage[data-background-style="layout-guide"] {
+  background-image: linear-gradient(
+    to right,
+    transparent 23px,
+    rgb(142 142 147 / 12%) 23px 24px,
+    transparent 24px 32px,
+    rgb(142 142 147 / 12%) 32px 33px,
+    transparent 33px
+  );
+  background-size: auto;
+  background-repeat: no-repeat;
+}
+
 .kui-catalog__stage[data-background-style="surface"] {
   background-color: var(--kui-color-surface);
   background-image: none;

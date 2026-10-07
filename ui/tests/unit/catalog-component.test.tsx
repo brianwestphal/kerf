@@ -179,6 +179,7 @@ describe('Catalog', () => {
   it('renders each selected preview background without allowing metadata to override it', () => {
     for (const backgroundStyle of [
       'vertical-stripes',
+      'layout-guide',
       'surface',
       'sunken',
     ] as const) {

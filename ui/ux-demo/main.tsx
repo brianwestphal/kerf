@@ -226,6 +226,7 @@ const backgroundStyle = signal<CatalogBackgroundStyle>('checkerboard');
 const backgroundChoices = [
   { value: 'checkerboard', label: 'Checkerboard' },
   { value: 'vertical-stripes', label: 'Vertical stripes' },
+  { value: 'layout-guide', label: 'Layout guide' },
   { value: 'surface', label: 'Surface' },
   { value: 'sunken', label: 'Sunken' },
 ] as const;

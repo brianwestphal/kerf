@@ -2408,8 +2408,8 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-CXrh9Wyx.js';
-export { b as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogStageRootAttributes } from './types-CXrh9Wyx.js';
+import { a as CatalogProps } from './types-Bn-dXLcs.js';
+export { b as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogStageRootAttributes } from './types-Bn-dXLcs.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
 import './sides-BPSWde0A.js';
@@ -2503,7 +2503,7 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-CXrh9Wyx.js';
+import { C as CatalogResource } from './types-Bn-dXLcs.js';
 import './toolbar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';

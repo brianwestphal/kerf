@@ -57,7 +57,7 @@ export type CatalogStageRootAttributes = Readonly<
 
 /** Background used behind catalog specimens. */
 export type CatalogBackgroundStyle =
-  'checkerboard' | 'vertical-stripes' | 'surface' | 'sunken';
+  'checkerboard' | 'vertical-stripes' | 'layout-guide' | 'surface' | 'sunken';
 
 /**
  * The Catalog sidebar's configuration, forwarded to its Workbench left rail.

@@ -39,7 +39,8 @@ description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
 () => SafeHtml` in your app and call `renderers[active]()` in your render.
 - **`backgroundStyle`** — the preview stage backdrop: `checkerboard` (default,
   8px squares),
-  `vertical-stripes` (alternating 8px bands), `surface`, or `sunken`. The two
+  `vertical-stripes` (alternating 8px bands), `layout-guide` (single-pixel
+  vertical rules at 23px and 32px from the stage edge), `surface`, or `sunken`. The
   patterned choices share the main Pane's sunken surface and reveal transparent
   specimen edges; `surface` paints an
   opaque backdrop. `sunken` leaves the stage
