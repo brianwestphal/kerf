@@ -398,6 +398,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   or explicit `scroll`, `always`, `none`), and a `NavStack` or `TabNavigator`
   with its own `chromeDividers` (same values; a `SplitView` forwards it through
   `compactStack`); name app-owned chrome in `targets`.
+  A `TabNavigator` also takes `separator="auto" | "hidden"`: auto draws the
+  bar's top edge beside a sunken active scene or nested Pane even when content
+  fits; hidden suppresses that edge, including scroll dividers.
   Never add a border, or a permanent `dividerSides`, to fake one.
   While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
   overlay, an overlay `CollapsiblePanel` or horizontal `ResizableRegion`), the

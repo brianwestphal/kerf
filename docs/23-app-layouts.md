@@ -617,6 +617,11 @@ Shipped shape:
 
 ### 3.4 Bottom tab scaffold — `TabNavigator` (`@kerfjs/ui/tab-navigator`)
 
+The bar's reserved top edge separates the active sunken scene from the bar by
+default, including a sole sunken `Pane` or the active sunken `Pane` view of a
+sole `NavStack`. `separator="hidden"` suppresses that line; otherwise flat
+scenes retain the `chromeDividers` scroll-divider behavior described in §3.6.
+
 A mobile-first, iOS-like **bottom tab bar** switching between major app sections,
 where each tab's content — typically its own `NavStack` — stays mounted, so
 switching tabs preserves each tab's stack and scroll. Distinct from the existing
@@ -1051,8 +1056,9 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   `tab-navigator.css` does the same with the bar's 1px top border. Geometry is
   therefore identical to the old permanent borders and nothing moves (a
   removed border shifted the TabNavigator tab badges 1px above the bar). The catalog declares the wiring's two state attributes on both
-  layouts. Without the wiring these edges draw no line (as a `Pane`'s default
-  does); an explicit `toolbarConfig.dividerSides` still draws a permanent
+  layouts. Without the wiring these scroll edges draw no line (as a `Pane`'s default
+  does), although TabNavigator's automatic separator still marks a sunken
+  active surface; an explicit `toolbarConfig.dividerSides` still draws a permanent
   Toolbar edge.
 - **`chromeDividers` on NavStack and TabNavigator (KF-985SV1: without the
   wiring those edges could never show a line, and nothing could suppress

@@ -588,6 +588,39 @@ test.describe('scroll dividers', () => {
     expect(await edge(bar('none'))).toBe(false);
   });
 
+  test('a hidden TabNavigator separator suppresses sunken and always-on lines', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const scaffold = page.locator('[data-case="tab-scaffold-hidden"]');
+    const bar = scaffold.locator('.kui-tab-scaffold__bar');
+    await expect(scaffold.locator('.kui-tab-scaffold__scene')).toHaveAttribute(
+      'data-appearance',
+      'sunken',
+    );
+    await expect(scaffold.locator('.kui-tab-scaffold')).toHaveAttribute(
+      'data-chrome-dividers',
+      'always',
+    );
+    expect(await edge(bar)).toBe(false);
+    await bar.screenshot({ path: 'test-results/tab-navigator-hidden-bar.png' });
+  });
+
+  test('an automatic separator follows a sole sunken Pane even when its content fits', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const scaffold = page.locator('[data-case="tab-scaffold-sunken-pane"]');
+    await expect(scaffold.locator('[data-component="pane"]')).toHaveAttribute(
+      'data-appearance',
+      'sunken',
+    );
+    await expect(
+      scaffold.locator('[data-component="pane"]'),
+    ).not.toHaveAttribute('data-scroll-overflow');
+    expect(await edge(scaffold.locator('.kui-tab-scaffold__bar'))).toBe(true);
+  });
+
   test('app-owned targets let a Toolbar and a List draw their facing divider, and disposal clears it', async ({
     page,
   }) => {

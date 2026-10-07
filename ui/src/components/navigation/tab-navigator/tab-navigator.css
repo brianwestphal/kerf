@@ -133,21 +133,37 @@
   );
   padding-inline: var(--_kui-tab-scaffold-safe-inline-start)
     var(--_kui-tab-scaffold-safe-inline-end);
-  /* Chrome divider: with `chromeDividers="scroll"` (the default, no
-     attribute) the bar's 1px top border shows only while the active scene's
-     content continues below it — never at the scroll end or when the content
-     fits. `wireScrollDividers` reports that state through
-     `data-scroll-divider`; `always` shows it without the wiring, and `none`
-     never. The border is always there and only its color changes, so
-     showing it never moves the bar or a tab. */
+  /* The reserved 1px edge serves both the sunken-surface separator and the
+     scroll divider. Changing its color never moves the bar or a tab. */
   border-block-start: 1px solid
     var(--_kui-tab-scaffold-bar-divider, transparent);
   background: var(--kui-color-surface);
 }
 
-.kui-tab-scaffold:not([data-chrome-dividers])
+.kui-tab-scaffold[data-separator="auto"]:has(
+    > .kui-tab-scaffold__scenes
+      > .kui-tab-scaffold__scene[data-active="true"][data-appearance="sunken"]
+  )
+  > .kui-tab-scaffold__bar,
+.kui-tab-scaffold[data-separator="auto"]:has(
+    > .kui-tab-scaffold__scenes
+      > .kui-tab-scaffold__scene[data-active="true"]
+      > [data-component="pane"][data-appearance="sunken"]:only-child
+  )
+  > .kui-tab-scaffold__bar,
+.kui-tab-scaffold[data-separator="auto"]:has(
+    > .kui-tab-scaffold__scenes
+      > .kui-tab-scaffold__scene[data-active="true"]
+      > [data-component="nav-stack"]:only-child
+      > [data-nav-stack-viewport]
+      > [data-nav-active="true"]
+      > [data-component="pane"][data-appearance="sunken"]
+  )
+  > .kui-tab-scaffold__bar,
+.kui-tab-scaffold[data-separator="auto"]:not([data-chrome-dividers])
   > .kui-tab-scaffold__bar[data-scroll-divider*="t"],
-.kui-tab-scaffold[data-chrome-dividers="always"] > .kui-tab-scaffold__bar {
+.kui-tab-scaffold[data-separator="auto"][data-chrome-dividers="always"]
+  > .kui-tab-scaffold__bar {
   --_kui-tab-scaffold-bar-divider: var(--kui-color-neutral-border-normal);
 }
 

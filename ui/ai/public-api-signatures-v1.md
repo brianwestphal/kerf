@@ -2201,13 +2201,20 @@ interface TabNavigatorProps<Id extends string = string> {
     /** The controlled active tab id (the app owns selection). */
     active: NoInfer<Id>;
     /**
+     * The bar's top separator. `auto` (default) draws it against a sunken active
+     * work surface and otherwise follows `chromeDividers`; `hidden` suppresses
+     * the line, including a scroll divider.
+     */
+    separator?: 'auto' | 'hidden';
+    /**
      * The line over the tab bar, where it meets the active scene. `scroll`
      * (default) shows it only while more of the scene's content lies below —
      * never at the scroll end or when the content fits — once
      * `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above
      * the scaffold; unwired, it does not show. `always` shows it without the
-     * wiring; `none` never, even when wired. The line is the bar's own 1px top
-     * border, so no state moves the bar or a tab.
+     * wiring; `none` suppresses that scroll divider. A sunken active work
+     * surface still draws the separator unless `separator="hidden"`. The line
+     * is the bar's own 1px top border, so no state moves the bar or a tab.
      */
     chromeDividers?: 'scroll' | 'always' | 'none';
     className?: string;
@@ -2222,7 +2229,7 @@ interface TabNavigatorProps<Id extends string = string> {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabNavigator<Id extends string>({ id, label, tabs, active, chromeDividers, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
+declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
 
 export { TabNavigator, type TabNavigatorProps, type TabNavigatorTab };
 ```

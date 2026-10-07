@@ -276,7 +276,8 @@ describe('NavStack and TabScaffold chromeDividers', () => {
     };
     // Every selector that draws a layout chrome divider is gated on the
     // layout root's chromeDividers: the scroll state only for the default,
-    // `always` unconditionally, and never for `none`.
+    // `always` unconditionally, and never for `none`. TabNavigator also
+    // requires its separator to remain enabled.
     expect(
       await drawing(
         'nav-stack.css',
@@ -294,8 +295,8 @@ describe('NavStack and TabScaffold chromeDividers', () => {
         /data-scroll-divider|data-chrome-dividers/,
       ),
     ).toEqual([
-      '.kui-tab-scaffold:not([data-chrome-dividers]) > .kui-tab-scaffold__bar[data-scroll-divider*="t"]',
-      '.kui-tab-scaffold[data-chrome-dividers="always"] > .kui-tab-scaffold__bar',
+      '.kui-tab-scaffold[data-separator="auto"]:not([data-chrome-dividers]) > .kui-tab-scaffold__bar[data-scroll-divider*="t"]',
+      '.kui-tab-scaffold[data-separator="auto"][data-chrome-dividers="always"] > .kui-tab-scaffold__bar',
     ]);
   });
 

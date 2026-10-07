@@ -40,3 +40,60 @@ test('TabNavigator labels retain their full line box at wide and narrow widths',
       path: 'test-results/tab-navigator-labels-narrow.png',
     });
 });
+
+test('TabNavigator separates a sunken active scene and nested Pane at wide and narrow widths', async ({
+  page,
+}, testInfo) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/?component=tab-navigator');
+    for (const id of ['catalog-tab-scaffold', 'catalog-tab-scaffold-nested']) {
+      const scaffold = page.locator(`#${id}`);
+      const bar = scaffold.locator('.kui-tab-scaffold__bar');
+      const edge = () =>
+        bar.evaluate(
+          (element) =>
+            window.getComputedStyle(element).borderTopColor !==
+            'rgba(0, 0, 0, 0)',
+        );
+      await expect(scaffold).toBeVisible();
+      expect(await edge()).toBe(true);
+      const geometry = () =>
+        bar.evaluate((element) => {
+          const barBox = element.getBoundingClientRect();
+          const scaffoldBox = element
+            .closest('.kui-tab-scaffold')!
+            .getBoundingClientRect();
+          return {
+            top: Math.round(barBox.top - scaffoldBox.top),
+            width: barBox.width,
+            height: barBox.height,
+          };
+        });
+      const before = await geometry();
+      if (testInfo.project.name === 'chromium')
+        await scaffold.screenshot({
+          path: `test-results/tab-navigator-sunken-${id}-${viewport.width}.png`,
+        });
+      await bar.locator('[data-tab-scaffold-tab="search"]').click();
+      await expect(
+        scaffold.locator('[data-tab-scaffold-scene="search"]'),
+      ).toHaveAttribute('data-active', 'true');
+      expect(await edge()).toBe(false);
+      expect(await geometry()).toEqual(before);
+      if (testInfo.project.name === 'chromium')
+        await scaffold.screenshot({
+          path: `test-results/tab-navigator-separator-${id}-${viewport.width}.png`,
+        });
+      await bar.locator('[data-tab-scaffold-tab="projects"]').click();
+      await expect(
+        scaffold.locator('[data-tab-scaffold-scene="projects"]'),
+      ).toHaveAttribute('data-active', 'true');
+      expect(await edge()).toBe(true);
+      expect(await geometry()).toEqual(before);
+    }
+  }
+});

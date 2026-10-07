@@ -263,6 +263,40 @@ mount(root, () => (
         />
       </div>
     ))}
+    <div data-case="tab-scaffold-hidden" style="height: 300px; display: grid">
+      <TabNavigator
+        id="scaffold-hidden"
+        label="Hidden separator"
+        active="only"
+        separator="hidden"
+        chromeDividers="always"
+        tabs={[
+          {
+            id: 'only',
+            label: 'Only',
+            appearance: 'sunken',
+            content: <>{items(24)}</>,
+          },
+        ]}
+      />
+    </div>
+    <div
+      data-case="tab-scaffold-sunken-pane"
+      style="height: 300px; display: grid"
+    >
+      <TabNavigator
+        id="scaffold-sunken-pane"
+        label="Sunken Pane scene"
+        active="only"
+        tabs={[
+          {
+            id: 'only',
+            label: 'Only',
+            content: <Pane appearance="sunken">{items(1)}</Pane>,
+          },
+        ]}
+      />
+    </div>
     {(['always', 'none'] as const).map((chromeDividers) => (
       <div
         data-case={`tab-scaffold-${chromeDividers}`}

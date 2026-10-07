@@ -1014,6 +1014,11 @@
           "required": false
         },
         {
+          "id": "whether the bar's top separator follows a sunken active surface or stays hidden (separator)",
+          "owner": "application",
+          "required": false
+        },
+        {
           "id": "optional active-scene focus (tabIndex) and persistent outline (outlined)",
           "owner": "application",
           "required": false
@@ -1047,7 +1052,7 @@
           "padding": "self",
           "notes": [
             "The navigator owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.",
-            "The bar's top line is scroll state (wireScrollDividers): it shows only while the active scene's content continues below the bar, by coloring the bar's always-present 1px top border."
+            "The bar's reserved 1px top edge separates a sunken active scene or nested Pane by default; on flat surfaces it follows scroll state (wireScrollDividers). separator=hidden suppresses it."
           ]
         }
       },

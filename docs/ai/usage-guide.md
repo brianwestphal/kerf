@@ -312,6 +312,9 @@ like a `Pane`, takes `chromeDividers: 'scroll' | 'always' | 'none'`), and each
 `TabBar` its overflow dividers, only while content is scrolled beneath or
 beyond them. Overlapping calls share one writer and keep independent
 disposers; `wireCatalog` already provides the scroll wiring for its root.
+`TabNavigator.separator` defaults to `auto`, which also keeps the bar's top
+edge visible against a sunken active scene or nested Pane; `hidden` suppresses
+that edge even when scroll wiring reports overflow.
 Apply tab reorder reports with
 `reorderTabs()`. For a tab-local action immediately after the strip plus a
 workspace action at the far edge, set `trailingPlacement="adjacent"`, put the

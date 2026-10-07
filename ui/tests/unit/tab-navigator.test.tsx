@@ -79,6 +79,27 @@ describe('TabNavigator markup', () => {
       'data-tab-scaffold-scene="home" data-active="true" data-appearance="sunken"',
     );
   });
+  it('defaults to an automatic bar separator and accepts hidden independently of scroll dividers', () => {
+    const render = (separator?: 'auto' | 'hidden') => {
+      const host = document.createElement('div');
+      host.innerHTML = String(
+        TabNavigator({
+          id: 'app',
+          label: 'Sections',
+          tabs,
+          active: 'home',
+          separator,
+          chromeDividers: 'always',
+        }),
+      );
+      return host.firstElementChild!;
+    };
+    expect(render().getAttribute('data-separator')).toBe('auto');
+    expect(render('hidden').getAttribute('data-separator')).toBe('hidden');
+    expect(render('hidden').getAttribute('data-chrome-dividers')).toBe(
+      'always',
+    );
+  });
   it('renders a scene and a bottom-bar tab per entry, marking the active one', () => {
     const html = String(
       TabNavigator({ id: 'app', label: 'Sections', tabs, active: 'home' }),

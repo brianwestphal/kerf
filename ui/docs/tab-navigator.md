@@ -144,9 +144,16 @@ paint the lowered surface behind short or long content. For a scene whose
 only child is a `Pane` or `NavStack`, set appearance on that child's scroll
 owner. See [Lowered work surfaces](layout.md#lowered-work-surfaces).
 
-## Scroll divider
+## Bar separator and scroll divider
 
-The bar has no permanent top border. With `wireScrollDividers(appRoot)`
+`separator="auto"` (the default) draws the bar's top edge when the active scene
+has `appearance: "sunken"`. It also follows the sunken appearance of a sole
+`Pane`, or the active `Pane` view of a sole `NavStack`, inside that scene. The
+edge stays visible when the content fits and as the active tab or nested view
+changes. `separator="hidden"` suppresses the top line, including any scroll
+divider or `chromeDividers="always"` line.
+
+For a flat active scene, the bar has no permanent top line. With `wireScrollDividers(appRoot)`
 installed (see [Layout › Scroll dividers](layout.md#scroll-dividers)), it shows
 a line along its top edge only while the active scene's content continues below
 it — not at the scroll end and not when the content fits. The line keys on
@@ -156,10 +163,11 @@ own bottom toolbar sits between them, so that toolbar's line applies instead.
 The line is the bar's always-present 1px top border, colored only while shown,
 so it never moves the bar or a tab.
 
-`chromeDividers` configures it, with the same values as a `Pane`'s: `scroll`
+`chromeDividers` configures the scroll divider, with the same values as a `Pane`'s: `scroll`
 (the default) follows the scroll state and draws nothing until the wiring runs;
 `always` keeps the line, with or without the wiring; `none` drops it even when
-the wiring reports content below.
+the wiring reports content below. It does not suppress the sunken-surface
+separator; use `separator="hidden"` for that.
 
 ## Tab badges
 

@@ -43,6 +43,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 - one NavStack per tab
 - bar divider only while the active scene continues below it (wired by wireScrollDividers)
 - permanent or no bar divider (chromeDividers always or none)
+- sunken active-scene separator (separator auto or hidden)
 
 ## Composition
 
@@ -53,7 +54,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 
 ## State and wiring
 
-**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers); optional active-scene focus (tabIndex) and persistent outline (outlined).
+**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers); whether the bar's top separator follows a sunken active surface or stays hidden (separator); optional active-scene focus (tabIndex) and persistent outline (outlined).
 
 **Wiring:** `wireTabNavigator`, `wireScrollDividers` is required.
 
@@ -69,7 +70,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 Margin: none · border: conditional · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
 - The navigator owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.
-- The bar's top line is scroll state (wireScrollDividers): it shows only while the active scene's content continues below the bar, by coloring the bar's always-present 1px top border.
+- The bar's reserved 1px top edge separates a sunken active scene or nested Pane by default; on flat surfaces it follows scroll state (wireScrollDividers). separator=hidden suppresses it.
 
 ## Accessibility
 
