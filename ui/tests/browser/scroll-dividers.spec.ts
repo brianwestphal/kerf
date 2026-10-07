@@ -451,6 +451,80 @@ test.describe('scroll dividers', () => {
     await stack.screenshot({ path: 'test-results/nav-pane-narrow.png' });
   });
 
+  test('NavStack automatic separators follow the active sunken Pane and hidden suppresses both edges', async ({
+    page,
+  }) => {
+    for (const width of [1100, 390]) {
+      await mountFixture(page, width);
+      const stack = page.locator(
+        '[data-case="nav-stack-separator"] .kui-nav-stack',
+      );
+      const chrome = stack.locator(':scope > .kui-nav-stack__chrome');
+      const bottom = stack.locator(':scope > .kui-nav-stack__bottom');
+      const parts = [
+        ':scope > .kui-nav-stack__chrome',
+        ':scope > .kui-nav-stack__viewport',
+        ':scope > .kui-nav-stack__bottom',
+      ];
+      const layout = async () => {
+        const boxes = await rects(stack, parts);
+        return boxes.map(([x, y, width, height]) => [
+          x,
+          y - boxes[0][1],
+          width,
+          height,
+        ]);
+      };
+      const geometry = await layout();
+      await expect(stack).toHaveAttribute('data-separator', 'auto');
+      expect(await shows(chrome, '::after')).toBe(false);
+      expect(await edge(bottom)).toBe(false);
+
+      await page.evaluate(() =>
+        (
+          window as unknown as { pushSunkenSeparatorView: () => void }
+        ).pushSunkenSeparatorView(),
+      );
+      await expect(stack.locator('[data-nav-key="sunken"]')).toHaveAttribute(
+        'data-nav-active',
+        'true',
+      );
+      await expect(
+        stack.locator('[data-nav-key="sunken"] > [data-component="pane"]'),
+      ).toHaveAttribute('data-appearance', 'sunken');
+      expect(await shows(chrome, '::after')).toBe(true);
+      expect(await edge(bottom)).toBe(true);
+      expect(await layout()).toEqual(geometry);
+      await stack.screenshot({
+        path: `test-results/nav-stack-separator-sunken-${width}.png`,
+      });
+
+      await stack.locator('[data-nav-back]').click();
+      await expect(stack.locator('[data-nav-key="sunken"]')).toHaveCount(0);
+      expect(await shows(chrome, '::after')).toBe(false);
+      expect(await edge(bottom)).toBe(false);
+      expect(await layout()).toEqual(geometry);
+
+      const hidden = page.locator(
+        '[data-case="nav-stack-separator-hidden"] .kui-nav-stack',
+      );
+      await expect(hidden).toHaveAttribute('data-separator', 'hidden');
+      expect(
+        await shows(
+          hidden.locator(':scope > .kui-nav-stack__chrome'),
+          '::after',
+        ),
+      ).toBe(false);
+      expect(
+        await edge(hidden.locator(':scope > .kui-nav-stack__bottom')),
+      ).toBe(false);
+      if (width === 390)
+        await hidden.screenshot({
+          path: 'test-results/nav-stack-separator-hidden-390.png',
+        });
+    }
+  });
+
   test('a TabScaffold scene that is a Pane is filled by it, so the bar keys on the Pane content under a pinned header', async ({
     page,
   }) => {

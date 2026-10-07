@@ -197,10 +197,19 @@
    neither, whatever it reports. The chrome's line is an overlaid 1px pseudo-element
    (whatever the chrome holds never covers it) and the bottom's border is
    always there, so showing either never moves the chrome, the toolbar, or
-   the content. A cross-fading chrome copy keeps the line its snapshot had. */
-.kui-nav-stack:not([data-chrome-dividers])
+   the content. A cross-fading chrome copy keeps the line its snapshot had.
+   With `separator="auto"`, an active sunken Pane also colors both available
+   edges; `hidden` suppresses the stack-owned lines. */
+.kui-nav-stack[data-separator="auto"]:has(
+    > .kui-nav-stack__viewport
+      > .kui-nav-stack__view[data-nav-active="true"]
+      > [data-component="pane"][data-appearance="sunken"]
+  )
+  > .kui-nav-stack__chrome::after,
+.kui-nav-stack[data-separator="auto"]:not([data-chrome-dividers])
   > .kui-nav-stack__chrome[data-scroll-divider*="b"]::after,
-.kui-nav-stack[data-chrome-dividers="always"] > .kui-nav-stack__chrome::after {
+.kui-nav-stack[data-separator="auto"][data-chrome-dividers="always"]
+  > .kui-nav-stack__chrome::after {
   position: absolute;
   block-size: 1px;
   background: var(--kui-color-neutral-border-normal);
@@ -210,9 +219,16 @@
   pointer-events: none;
 }
 
-.kui-nav-stack:not([data-chrome-dividers])
+.kui-nav-stack[data-separator="auto"]:has(
+    > .kui-nav-stack__viewport
+      > .kui-nav-stack__view[data-nav-active="true"]
+      > [data-component="pane"][data-appearance="sunken"]
+  )
+  > .kui-nav-stack__bottom,
+.kui-nav-stack[data-separator="auto"]:not([data-chrome-dividers])
   > .kui-nav-stack__bottom[data-scroll-divider*="t"],
-.kui-nav-stack[data-chrome-dividers="always"] > .kui-nav-stack__bottom {
+.kui-nav-stack[data-separator="auto"][data-chrome-dividers="always"]
+  > .kui-nav-stack__bottom {
   --_kui-nav-stack-bottom-divider: var(--kui-color-neutral-border-normal);
 }
 

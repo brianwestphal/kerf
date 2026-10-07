@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- NavStack now has `separator="auto" | "hidden"`. Automatic separators frame a sunken active Pane at the top chrome and optional bottom toolbar; hidden suppresses stack-owned lines (`KF-1XRSRW`).
+
 - The UX catalog remembers its background, light or dark theme, contrast, and reduced-motion choices across reloads.
 
 - The UX catalog can show a layout guide background with three one-pixel vertical rules at 15px, 23px, and 32px.

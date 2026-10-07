@@ -76,6 +76,12 @@ export interface NavStackProps {
   /** Optional persistent bottom toolbar used when the active view does not provide one. */
   bottomToolbar?: NavStackViewBottomToolbar;
   /**
+   * Stack chrome separator. `auto` (default) draws both available edges
+   * against a sunken active Pane and otherwise follows `chromeDividers`;
+   * `hidden` suppresses the stack-owned edges.
+   */
+  separator?: 'auto' | 'hidden';
+  /**
    * The line under the top chrome and over the bottom toolbar, where they
    * meet the active view. `scroll` (default) shows the chrome's line only
    * while the view's content is scrolled beneath it, and the bottom
@@ -84,7 +90,9 @@ export interface NavStackProps {
    * wired above the stack; unwired, neither shows. `always` shows both
    * without the wiring; `none` neither, even when wired. The line is drawn
    * inside the chrome, so no state moves the chrome or the content. A
-   * `toolbarConfig.dividerSides` edge is the Toolbar's own and is unaffected.
+   * A sunken active Pane still draws the separator unless
+   * `separator="hidden"`. A `toolbarConfig.dividerSides` edge is the Toolbar's
+   * own and is unaffected.
    */
   chromeDividers?: 'scroll' | 'always' | 'none';
   className?: string;
@@ -138,6 +146,7 @@ export function NavStack({
   panelToggle,
   hideToolbar = false,
   bottomToolbar,
+  separator = 'auto',
   chromeDividers = 'scroll',
   className = '',
   slot,
@@ -154,6 +163,7 @@ export function NavStack({
       data-component="nav-stack"
       data-nav-stack-id={id}
       data-depth={String(views.length)}
+      data-separator={separator}
       data-chrome-dividers={
         chromeDividers === 'always' || chromeDividers === 'none'
           ? chromeDividers

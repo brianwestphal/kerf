@@ -138,9 +138,17 @@ When a remembered control was removed during the controlled rerender, the same
 fallback order applies. Disposing the helper stops future transitions and
 cleans up any temporary fallback `tabindex` it added.
 
-## Scroll dividers
+## Separators and scroll dividers
 
-The stack draws no permanent line between its chrome and the view. With
+`separator="auto"` (the default) draws a line under the top chrome and above
+the optional bottom toolbar when the active view's Pane has
+`appearance="sunken"`, even if its content fits and no scroll wiring runs. The
+line follows the active view on push and pop. Set `separator="hidden"` to hide
+both stack-owned edges, including lines requested by `chromeDividers`. The
+existing 1px edges change color without moving the content. A view's own Pane
+header and footer separators remain controlled by that Pane.
+
+For a flat active view, the stack draws no permanent line. With
 `wireScrollDividers(appRoot)` installed (see
 [Layout › Scroll dividers](layout.md#scroll-dividers)), the top chrome shows a
 line along its bottom edge only while the active view's content is scrolled
@@ -153,10 +161,11 @@ the line keys on whichever actually scrolls — the view, or the Pane's content 
 and a Pane header or footer draws its own boundary instead. An explicit
 `toolbarConfig.dividerSides` still draws a permanent Toolbar edge.
 
-`chromeDividers` configures both lines, with the same values as a `Pane`'s:
+`chromeDividers` configures both lines for flat views, with the same values as a `Pane`'s:
 `scroll` (the default) follows the scroll state above and draws nothing until
 the wiring runs; `always` keeps both lines, with or without the wiring; `none`
-drops them even when the wiring reports scroll state. It does not change the
+drops them even when the wiring reports scroll state. A sunken active Pane still
+shows the separator unless `separator="hidden"`. This option does not change the
 top Toolbar's own `dividerSides`.
 
 ```tsx

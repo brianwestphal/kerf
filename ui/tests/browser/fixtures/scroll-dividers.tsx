@@ -133,6 +133,18 @@ const DETAIL_VIEW: NavStackView = {
   content: <>{items(1)}</>,
 };
 const stackViews = signal<NavStackView[]>([LIST_VIEW]);
+const FLAT_SEPARATOR_VIEW: NavStackView = {
+  key: 'flat',
+  toolbar: { title: 'Flat view' },
+  content: items(1),
+};
+const SUNKEN_SEPARATOR_VIEW: NavStackView = {
+  key: 'sunken',
+  toolbar: { title: 'Sunken view' },
+  pane: { appearance: 'sunken' },
+  content: items(1),
+};
+const separatorStackViews = signal<NavStackView[]>([FLAT_SEPARATOR_VIEW]);
 const scaffoldTab = signal<'feed' | 'about'>('feed');
 
 const root = document.querySelector<HTMLElement>('[data-fixture-root]')!;
@@ -188,6 +200,27 @@ mount(root, () => (
           },
         ]}
         bottomToolbar={{ label: 'Pane stack' }}
+      />
+    </div>
+    <div data-case="nav-stack-separator" style="height: 300px; display: grid">
+      <NavStack
+        id="stack-separator"
+        label="Automatic separator"
+        views={separatorStackViews.value}
+        bottomToolbar={{ label: 'Status' }}
+      />
+    </div>
+    <div
+      data-case="nav-stack-separator-hidden"
+      style="height: 300px; display: grid"
+    >
+      <NavStack
+        id="stack-separator-hidden"
+        label="Hidden separator"
+        views={[SUNKEN_SEPARATOR_VIEW]}
+        separator="hidden"
+        chromeDividers="always"
+        bottomToolbar={{ label: 'Status' }}
       />
     </div>
     <div data-case="tab-scaffold" style="height: 420px; display: grid">
@@ -349,6 +382,12 @@ wireNavStack(root.querySelector<HTMLElement>('#stack')!, {
     stackViews.value = stackViews.value.slice(0, -1);
   },
 });
+wireNavStack(root.querySelector<HTMLElement>('#stack-separator')!, {
+  duration: 0,
+  onBack: () => {
+    separatorStackViews.value = [FLAT_SEPARATOR_VIEW];
+  },
+});
 wireTabNavigator(root.querySelector<HTMLElement>('#scaffold')!, {
   onSelect: (id) => {
     scaffoldTab.value = id as 'feed' | 'about';
@@ -357,6 +396,9 @@ wireTabNavigator(root.querySelector<HTMLElement>('#scaffold')!, {
 Object.assign(window, {
   pushDetail: () => {
     stackViews.value = [LIST_VIEW, DETAIL_VIEW];
+  },
+  pushSunkenSeparatorView: () => {
+    separatorStackViews.value = [FLAT_SEPARATOR_VIEW, SUNKEN_SEPARATOR_VIEW];
   },
 });
 

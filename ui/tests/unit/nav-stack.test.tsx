@@ -50,6 +50,21 @@ afterEach(() => {
 });
 
 describe('NavStack markup', () => {
+  it('defaults to automatic separators and accepts the hidden override', () => {
+    const views = [
+      { ...view('home', 'Home'), pane: { appearance: 'sunken' as const } },
+    ];
+    const automatic = mountStack(views, { bottomToolbar: { label: 'Status' } });
+    expect(automatic.dataset.separator).toBe('auto');
+    expect(automatic.querySelector('[data-nav-stack-bottom]')).not.toBeNull();
+    const hidden = mountStack(views, {
+      separator: 'hidden',
+      chromeDividers: 'always',
+    });
+    expect(hidden.dataset.separator).toBe('hidden');
+    expect(hidden.dataset.chromeDividers).toBe('always');
+  });
+
   it('marks a selected view for sunken scroll painting', () => {
     const html = String(
       NavStack({

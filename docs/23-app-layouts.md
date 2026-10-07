@@ -1057,7 +1057,7 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   therefore identical to the old permanent borders and nothing moves (a
   removed border shifted the TabNavigator tab badges 1px above the bar). The catalog declares the wiring's two state attributes on both
   layouts. Without the wiring these scroll edges draw no line (as a `Pane`'s default
-  does), although TabNavigator's automatic separator still marks a sunken
+  does), although NavStack and TabNavigator automatic separators still mark a sunken
   active surface; an explicit `toolbarConfig.dividerSides` still draws a permanent
   Toolbar edge.
 - **`chromeDividers` on NavStack and TabNavigator (KF-985SV1: without the
@@ -1067,7 +1067,7 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   exported type). `scroll` (default) renders no attribute and draws from
   `data-scroll-divider` as above; `always` and `none` render
   `data-chrome-dividers` on the layout root. `nav-stack.css` /
-  `tab-navigator.css` gate every drawing selector on it with a child
+  `tab-navigator.css` gate scroll-driven drawing with a child
   combinator — `root:not([data-chrome-dividers]) > chrome[data-scroll-divider*=…]`
   for the scroll state, `root[data-chrome-dividers="always"] > chrome`
   unconditionally — so `always` needs no wiring and `none` ignores what the
@@ -1077,6 +1077,14 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   a child of the same root) and the TabNavigator bar's top border; the top
   `Toolbar`'s own `toolbarConfig.dividerSides` is unaffected. `SplitView`
   forwards it through `compactStack.chromeDividers`.
+- **NavStack separator (KF-1XRSRW).** `separator="auto"` (default) colors the
+  reserved line below the top chrome and above an optional bottom toolbar when
+  the active view contains a sunken Pane, even with no scroll overflow or
+  wiring. The line tracks the active view on push and pop. `hidden` suppresses
+  both stack-owned edges, including `chromeDividers="always"` and scroll-state
+  lines; a Pane's own header and footer boundaries remain independent. The
+  selectors target direct stack children, so a nested stack keeps its own
+  setting. No separator state changes box dimensions.
 - **TabBar.** A rail strip has no visible track, so the bar draws a 1px line
   on each overflowing side with its own `::before` / `::after`, ordered onto
   the strip's edges and cancelled out of the flex gap by a negative margin (no
