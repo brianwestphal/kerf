@@ -178,14 +178,15 @@ test('Grid autoFill keeps sparse tracks at wide and phone widths', async ({
   for (const width of [1100, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     const geometry = await sparse.evaluate((element) => {
-      const tracks = window
-        .getComputedStyle(element)
-        .gridTemplateColumns.split(' ')
+      const style = window.getComputedStyle(element);
+      const tracks = style.gridTemplateColumns
+        .split(' ')
         .map(Number.parseFloat);
       const tile = element.firstElementChild!;
       const tileStyle = window.getComputedStyle(tile);
       return {
         width: element.getBoundingClientRect().width,
+        gap: Number.parseFloat(style.columnGap),
         tracks,
         tileWidth: tile.getBoundingClientRect().width,
         tileOuterWidth:
@@ -196,16 +197,19 @@ test('Grid autoFill keeps sparse tracks at wide and phone widths', async ({
       };
     });
     expect(geometry.overflows).toBe(false);
-    // The catalog's inset leaves one 326px track at 390px; auto-fill grows
-    // back to several tracks when the available specimen width allows it.
-    if (width <= 390) {
-      expect(geometry.tracks).toHaveLength(1);
-    } else {
-      expect(geometry.tracks.length).toBeGreaterThan(1);
+    expect(geometry.gap).toBe(16);
+    // The catalog's canvas padding can change without changing Grid's
+    // contract: auto-fill retains every 160px track that actually fits.
+    const expectedTracks = Math.max(
+      1,
+      Math.floor((geometry.width + geometry.gap) / (160 + geometry.gap)),
+    );
+    expect(geometry.tracks).toHaveLength(expectedTracks);
+    expect(geometry.tracks.every((track) => track >= 160)).toBe(true);
+    if (expectedTracks > 1)
       expect(geometry.tileWidth).toBeLessThan(geometry.width / 2);
-    }
     expect(geometry.tileOuterWidth).toBeCloseTo(geometry.tracks[0]!, 0);
-    if (browserName === 'chromium' && width !== 320)
+    if (browserName === 'chromium')
       await sparse.screenshot({
         path: testInfo.outputPath(`sparse-grid-${width}.png`),
       });
