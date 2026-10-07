@@ -80,7 +80,10 @@ describe('Catalog', () => {
       'data-component="text" data-tone="quiet" data-size="compact"',
     );
     expect(html).toContain('Design system</span>');
-    expect(html).toContain('src="/logo.svg"');
+    expect(html).toContain('data-content="avatar"');
+    expect(html).toContain(
+      '--kui-toolbar-avatar-image:url(&quot;/logo.svg&quot;)',
+    );
     // Category groups + items (ListHeader per section, ListItem per entry)
     expect(html).toContain('data-component="list-header"');
     expect(html).toContain(
@@ -138,7 +141,7 @@ describe('Catalog', () => {
     );
     expect(html).not.toContain('catalog-toggle-theme');
     expect(html).not.toContain('data-tone="quiet" data-size="compact"');
-    expect(html).not.toContain('kui-catalog__mark');
+    expect(html).not.toContain('--kui-toolbar-avatar-image');
     expect(html).not.toContain('kui-catalog__resource"');
     expect(html).not.toContain('data-catalog-related');
   });

@@ -95,8 +95,14 @@ export function Catalog({
             title: (
               <>
                 {brand.logoUrl ? (
-                  <ToolbarControlGroup appearance="borderless" single>
-                    <img class="kui-catalog__mark" src={brand.logoUrl} alt="" />
+                  <ToolbarControlGroup
+                    appearance="borderless"
+                    content="avatar"
+                    shape="rounded"
+                    single
+                    avatarImage={brand.logoUrl}
+                  >
+                    {null}
                   </ToolbarControlGroup>
                 ) : null}
                 <ToolbarText text={brand.title} size="large" headingLevel={1} />
@@ -110,7 +116,6 @@ export function Catalog({
                 id={`${id}-filter`}
                 label="Filter catalog"
                 placeholder="Filter items or headings"
-                className="kui-catalog__filter"
                 editorAttributes={{ 'data-catalog-filter': '' }}
                 trailingAction={{
                   icon: <LucideIcon icon={X} name="x" />,

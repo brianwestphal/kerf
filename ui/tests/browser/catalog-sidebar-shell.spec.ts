@@ -4,11 +4,15 @@ const headerGeometry = async (page: Page) =>
   page.evaluate(() => {
     const rect = (selector: string) =>
       document.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
-    const logo = rect('.kui-catalog__mark');
+    const logo = rect(
+      '#kui-catalog-left-rail .kui-pane__header [data-component="toolbar-control-group"][data-content="avatar"]',
+    );
     const title = rect(
       '#kui-catalog-left-rail .kui-pane__header [data-component="toolbar-text"][aria-level="1"]',
     );
-    const filter = rect('#kui-catalog-left-rail .kui-catalog__filter');
+    const filter = rect(
+      '#kui-catalog-left-rail [data-component="token-search-field"]',
+    );
     const contentStart = (selector: string) => {
       const element = document.querySelector<HTMLElement>(selector)!;
       const bounds = element.getBoundingClientRect();
@@ -28,7 +32,9 @@ const headerGeometry = async (page: Page) =>
       logoTitleCenterDelta: Math.abs(centerY(logo) - centerY(title)),
       filterBelowTitle: filter.top >= title.bottom - 1,
       filterStartsBeforeTitle:
-        contentStart('#kui-catalog-left-rail .kui-catalog__filter') <
+        contentStart(
+          '#kui-catalog-left-rail [data-component="token-search-field"]',
+        ) <
         contentStart(
           '#kui-catalog-left-rail .kui-pane__header [data-component="toolbar-text"][aria-level="1"]',
         ),
@@ -46,17 +52,15 @@ test('uses the Kerf identity and relocates sidebar restore into the detail toolb
   const detail = page.locator(
     '#kui-catalog > .kui-workbench__center > [data-workbench-main]',
   );
-  const logo = sidebar.locator('.kui-catalog__mark');
+  const logo = sidebar.locator(
+    '.kui-pane__header [data-component="toolbar-control-group"][data-content="avatar"]',
+  );
 
-  await expect(logo).toHaveAttribute('src', /assets\/logo(?:-[^/]+)?\.svg/);
-  await expect(logo).toHaveAttribute('alt', '');
-  await expect
-    .poll(() =>
-      logo.evaluate(
-        (image: HTMLImageElement) => image.complete && image.naturalWidth > 0,
-      ),
-    )
-    .toBe(true);
+  await expect(logo).toHaveCSS(
+    'background-image',
+    /assets\/logo(?:-[^/]+)?\.svg/,
+  );
+  await expect(logo).toHaveAttribute('data-shape', 'rounded');
   await expect(sidebar.getByText('K', { exact: true })).toHaveCount(0);
   const wideGeometry = await headerGeometry(page);
   expect(wideGeometry).toMatchObject({
@@ -203,8 +207,9 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await expect(page).toHaveURL(/component=toolbar/);
   await expect(filter).toHaveText('Toolbar');
   await expect(sidebar.locator('[data-item-id="toolbar"]')).toBeVisible();
-  if (browserName === 'chromium')
-    await sidebar.screenshot({ path: 'test-results/catalog-filter-wide.png' });
+  await sidebar.screenshot({
+    path: `test-results/catalog-filter-wide-${browserName}.png`,
+  });
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
@@ -214,8 +219,7 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await expect(sidebar.locator('[data-item-id="badge"]')).toBeVisible();
   await expect(sidebar.locator('[data-catalog-secondary]')).toBeHidden();
   await expect(sidebar.getByText('No matching items')).toBeHidden();
-  if (browserName === 'chromium')
-    await sidebar.screenshot({
-      path: 'test-results/catalog-filter-narrow.png',
-    });
+  await sidebar.screenshot({
+    path: `test-results/catalog-filter-narrow-${browserName}.png`,
+  });
 });

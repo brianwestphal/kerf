@@ -37,7 +37,8 @@ description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
   the row's quiet status treatment for decision metadata such as `Discouraged`.
 - **`content`** — the rendered preview for the active entry. Keep a map of `id →
 () => SafeHtml` in your app and call `renderers[active]()` in your render.
-- **`brand`** — `{ title, subtitle?, logoUrl? }` for the sidebar header.
+- **`brand`** — `{ title, subtitle?, logoUrl? }` for the sidebar header. The
+  optional logo paints through `ToolbarControlGroup.avatarImage`.
 - **`secondarySections`** — an optional secondary "ecosystem" group shown below the
   primary sections with a quieter treatment: `{ label, sections, collapsible?,
 expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
