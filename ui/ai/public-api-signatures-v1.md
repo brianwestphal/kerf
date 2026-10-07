@@ -2400,8 +2400,8 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-C9BubXfz.js';
-export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-C9BubXfz.js';
+import { a as CatalogProps } from './types-BYPKhTPH.js';
+export { b as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogStageRootAttributes } from './types-BYPKhTPH.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
 import './sides-BPSWde0A.js';
@@ -2424,7 +2424,7 @@ import './resizable-region.js';
  * standard toggle moves into the entry toolbar while it is collapsed, and on
  * a small screen the sidebar overlays the stage like any Workbench rail.
  */
-declare function Catalog({ id, brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
+declare function Catalog({ id, brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, backgroundStyle, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'text-trigger' | 'none';
@@ -2495,7 +2495,7 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-C9BubXfz.js';
+import { C as CatalogResource } from './types-BYPKhTPH.js';
 import './toolbar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';

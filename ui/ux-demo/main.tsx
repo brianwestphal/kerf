@@ -14,6 +14,7 @@ import {
 } from '@kerfjs/ui/anchored-surface';
 import {
   Catalog,
+  type CatalogBackgroundStyle,
   CatalogExample,
   CatalogExampleStack,
   type CatalogRelated,
@@ -22,7 +23,11 @@ import {
 import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { openPopupMenuAt, type PopupMenuElement } from '@kerfjs/ui/popup-menu';
+import {
+  openPopupMenuAt,
+  PopupMenu,
+  type PopupMenuElement,
+} from '@kerfjs/ui/popup-menu';
 import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -221,6 +226,13 @@ const effectiveTheme = signal<DemoTheme>(
 let explicitTheme: DemoTheme | undefined;
 const increasedContrast = signal(false);
 const reducedMotion = signal(false);
+const backgroundStyle = signal<CatalogBackgroundStyle>('checkerboard');
+const backgroundChoices = [
+  { value: 'checkerboard', label: 'Checkerboard' },
+  { value: 'vertical-stripes', label: 'Vertical stripes' },
+  { value: 'surface', label: 'Surface' },
+  { value: 'sunken', label: 'Sunken' },
+] as const;
 const webAwesomeReady = signal(false);
 let webAwesomeDemos:
   | Record<WebAwesomeCatalogId, () => ReturnType<typeof ToolbarControlGroup>>
@@ -480,6 +492,16 @@ mount(app, () => {
               <LucideIcon icon={ZapOff} name="zap-off" />
               <span>Reduce motion</span>
             </button>
+            <PopupMenu
+              text="Background"
+              rootAttributes={{ 'data-catalog-background-menu': '' }}
+              items={backgroundChoices.map(({ value, label }) => ({
+                label,
+                action: 'set-catalog-background',
+                checked: backgroundStyle.value === value,
+                attributes: { 'data-background-choice': value },
+              }))}
+            />
           </ToolbarControlGroup>
         </>
       }
@@ -502,6 +524,7 @@ mount(app, () => {
         </>
       }
       geometryOverlay={selected.kind === 'component'}
+      backgroundStyle={backgroundStyle.value}
       stageRootAttributes={{
         'data-demo-stage-inner': '',
         'data-demo-mode':
@@ -882,6 +905,13 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = reducedMotion.value
       ? 'Reduced motion on'
       : 'Reduced motion off';
+  },
+  'set-catalog-background': (_event, element) => {
+    const choice = element.getAttribute('data-background-choice');
+    const selected = backgroundChoices.find(({ value }) => value === choice);
+    if (!selected) return;
+    backgroundStyle.value = selected.value;
+    actionLog.value = `Background: ${selected.label}`;
   },
   'log-add': () => {
     actionLog.value = 'Add action requested';

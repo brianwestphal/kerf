@@ -113,6 +113,7 @@ describe('Catalog', () => {
     expect(html).toContain('A value list.');
     // Stage renders the app-provided content
     expect(html).toContain('class="preview">Select preview');
+    expect(html).toContain('data-background-style="checkerboard"');
     // Footer resource link + related popup menu (a wa-dropdown, grouped by `group`)
     expect(html).toContain('data-component="toolbar-action-link"');
     expect(html).toContain('data-overflow="wrap"');
@@ -169,6 +170,34 @@ describe('Catalog', () => {
     expect(html).toContain(
       'data-demo-mode="component" data-review-state="ready" class="kui-catalog__stage" data-catalog-stage',
     );
+  });
+
+  it('renders each selected preview background without allowing metadata to override it', () => {
+    for (const backgroundStyle of [
+      'vertical-stripes',
+      'surface',
+      'sunken',
+    ] as const) {
+      const html = asHtml(
+        Catalog({
+          brand: { title: 'Backgrounds' },
+          sections,
+          active: 'button',
+          content: raw('<span>Preview</span>'),
+          backgroundStyle,
+          stageRootAttributes: {
+            'data-background-style': 'checkerboard',
+          } as unknown as Record<`data-${string}`, string>,
+        }),
+      );
+      const host = document.createElement('div');
+      host.innerHTML = html;
+      expect(
+        host
+          .querySelector('[data-catalog-stage]')
+          ?.getAttribute('data-background-style'),
+      ).toBe(backgroundStyle);
+    }
   });
 
   it('shows the expand affordance and reflects collapse state', () => {

@@ -1993,6 +1993,79 @@ test('left aligns the catalog canvas inside a sunken, deep inset work pane', asy
   }
 });
 
+test('switches catalog background patterns and surfaces across entries and themes', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=badge');
+  const stage = page.locator('[data-catalog-stage]');
+  const menu = page.locator('[data-catalog-background-menu]');
+  const trigger = menu.locator('[slot="trigger"]');
+  await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
+  await expect(stage).toHaveCSS('background-size', '24px 24px');
+
+  const choices = [
+    ['vertical-stripes', 'Vertical stripes', '16px 16px', true],
+    ['surface', 'Surface', 'auto', false],
+    ['sunken', 'Sunken', 'auto', false],
+    ['checkerboard', 'Checkerboard', '24px 24px', true],
+  ] as const;
+  for (const [value, label, size, patterned] of choices) {
+    await trigger.click();
+    await menu.locator(`[data-background-choice="${value}"]`).click();
+    await expect(stage).toHaveAttribute('data-background-style', value);
+    await expect(stage).toHaveCSS('background-size', size);
+    const image = await stage.evaluate(
+      (element) => window.getComputedStyle(element).backgroundImage,
+    );
+    expect(image === 'none').toBe(!patterned);
+    await expect(page.locator('.catalog-log')).toHaveText(
+      `Background: ${label}`,
+    );
+    await trigger.click();
+    await expect(
+      menu.locator(`[data-background-choice="${value}"]`),
+    ).toHaveAttribute('checked', '');
+    await menu.evaluate((element: HTMLElement & { open: boolean }) => {
+      element.open = false;
+    });
+    if (browserName === 'chromium')
+      await page.screenshot({
+        path: `test-results/catalog-background-${value}.png`,
+      });
+  }
+
+  await trigger.click();
+  await menu.locator('[data-background-choice="vertical-stripes"]').click();
+  await page.locator('[data-catalog-sidebar] [data-item-id="chip"]').click();
+  await expect(stage).toHaveAttribute(
+    'data-background-style',
+    'vertical-stripes',
+  );
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(stage).toHaveAttribute(
+    'data-background-style',
+    'vertical-stripes',
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await trigger.click();
+  await expect(
+    menu.locator('[data-background-choice="vertical-stripes"]'),
+  ).toBeVisible();
+  const menuBounds = await menu.boundingBox();
+  expect(menuBounds).not.toBeNull();
+  expect(menuBounds!.x).toBeGreaterThanOrEqual(0);
+  expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(390);
+  if (browserName === 'chromium') {
+    await page.waitForTimeout(300);
+    await page.screenshot({
+      path: 'test-results/catalog-background-narrow-dark.png',
+    });
+  }
+  await page.reload();
+  await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
+});
+
 test('tiles the catalog checkerboard through below-fold preview content', async ({
   page,
   browserName,

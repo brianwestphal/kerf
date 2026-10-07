@@ -11,6 +11,7 @@ export {
   type CatalogExampleStackProps,
 } from './catalog/components/catalog-example-stack.js';
 export type {
+  CatalogBackgroundStyle,
   CatalogBrand,
   CatalogEntry,
   CatalogProps,

@@ -51,8 +51,13 @@ export interface CatalogBrand {
 export type CatalogStageRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-catalog-stage'?: never;
+    'data-background-style'?: never;
   }
 >;
+
+/** Background used behind catalog specimens. */
+export type CatalogBackgroundStyle =
+  'checkerboard' | 'vertical-stripes' | 'surface' | 'sunken';
 
 /**
  * The Catalog sidebar's configuration, forwarded to its Workbench left rail.
@@ -94,6 +99,8 @@ export interface CatalogProps {
   sidebarFooter?: KerfUiContent;
   status?: KerfUiContent;
   geometryOverlay?: boolean;
+  /** Preview background (default `checkerboard`). */
+  backgroundStyle?: CatalogBackgroundStyle;
   /** Consumer-owned data attributes applied to the preview stage. */
   stageRootAttributes?: CatalogStageRootAttributes;
   selectAction?: string;

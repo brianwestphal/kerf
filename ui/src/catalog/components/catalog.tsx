@@ -44,6 +44,7 @@ export function Catalog({
   sidebarFooter,
   status,
   geometryOverlay,
+  backgroundStyle,
   stageRootAttributes,
   selectAction = 'catalog-select',
   toggleSidebarAction = 'catalog-toggle-sidebar',
@@ -200,6 +201,7 @@ export function Catalog({
               name={name}
               content={content}
               geometryOverlay={geometryOverlay}
+              backgroundStyle={backgroundStyle}
               rootAttributes={stageRootAttributes}
             />
           </List>
