@@ -1898,7 +1898,7 @@ test('scrolls the complete catalog sidebar and detail at wide and narrow sizes',
     });
 });
 
-test('left aligns the catalog canvas inside a sunken, deep inset work pane', async ({
+test('insets the catalog canvas inside a sunken work pane', async ({
   page,
   browserName,
 }) => {
@@ -1912,18 +1912,19 @@ test('left aligns the catalog canvas inside a sunken, deep inset work pane', asy
       '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"]',
     );
     await expect(pane).toHaveAttribute('data-appearance', 'sunken');
-    await expect(pane).toHaveAttribute('data-deep-inset', 'true');
+    await expect(pane).not.toHaveAttribute('data-deep-inset', 'true');
     const stage = page.locator('.kui-catalog__stage');
     const canvas = page.locator('.kui-catalog__canvas');
     const stageBox = await stage.boundingBox();
     const canvasBox = await canvas.boundingBox();
     expect(stageBox).not.toBeNull();
     expect(canvasBox).not.toBeNull();
-    expect(Math.abs(canvasBox!.x - stageBox!.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(canvasBox!.x - stageBox!.x - 8)).toBeLessThanOrEqual(1);
+    await expect(stage).toHaveCSS('padding-left', '8px');
     await expect(canvas).toHaveCSS('justify-items', 'start');
     if (browserName === 'chromium')
-      await page.screenshot({
-        path: `test-results/catalog-left-aligned-${viewport.width}.png`,
+      await pane.locator('.kui-pane__content').screenshot({
+        path: `test-results/catalog-stage-inset-${viewport.width}.png`,
       });
   }
 });
@@ -2046,7 +2047,7 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
     Math.abs(wideGeometry.stageHeight - wideGeometry.stageContentHeight),
   ).toBeLessThanOrEqual(1);
   // The scroller holds the stage (and the entry description only when it is
-  // not pinned), plus the main Pane's deep inset after the stage. Both heights round a
+  // not pinned), plus any main Pane end padding after the stage. Both heights round a
   // fractional layout height independently (Firefox on Linux measured 1791
   // vs 1792), so allow the same 1px as the stage check.
   expect(

@@ -75,7 +75,12 @@ describe('Catalog', () => {
       '.kui-workbench__main [data-component="pane"]',
     );
     expect(mainPane?.getAttribute('data-appearance')).toBe('sunken');
-    expect(mainPane?.getAttribute('data-deep-inset')).toBe('true');
+    expect(mainPane?.hasAttribute('data-deep-inset')).toBe(false);
+    expect(
+      mainPane?.querySelector(
+        ':scope > .kui-pane__content > .kui-catalog__stage',
+      ),
+    ).not.toBeNull();
     expect(html).toContain(
       '<nav aria-label="Acme UI components" data-catalog-sidebar>',
     );

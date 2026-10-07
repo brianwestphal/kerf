@@ -2,7 +2,6 @@ import { Moon, Sun, X } from 'lucide';
 
 import { ToolbarControlGroup } from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../../components/actions/toolbar-text/toolbar-text.js';
-import { List } from '../../components/collections/list/list.js';
 import { ListInsetControl } from '../../components/collections/list-inset-control/list-inset-control.js';
 import { ListInsetText } from '../../components/collections/list-inset-text/list-inset-text.js';
 import { TokenSearchField } from '../../components/forms/token-search-field/token-search-field.js';
@@ -168,7 +167,7 @@ export function Catalog({
             </>
           ),
         }}
-        mainPane={{ appearance: 'sunken', deepInset: true }}
+        mainPane={{ appearance: 'sunken' }}
         mainFooter={
           <CatalogResourceFooter
             name={name}
@@ -192,14 +191,12 @@ export function Catalog({
         mainHeaderPlacement={headerPlacement}
         mainFooterPlacement={footerPlacement}
         main={
-          <List flex>
-            <CatalogStage
-              name={name}
-              content={content}
-              backgroundStyle={backgroundStyle}
-              rootAttributes={stageRootAttributes}
-            />
-          </List>
+          <CatalogStage
+            name={name}
+            content={content}
+            backgroundStyle={backgroundStyle}
+            rootAttributes={stageRootAttributes}
+          />
         }
       />
     </main>
