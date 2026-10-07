@@ -130,10 +130,10 @@ export function RowDemo() {
       >
         <wa-card appearance="sunken">
           <List gap="xs" flex>
-            <Row flex vAlign="middle">
+            <Row flex vAlign="middle" wrap>
               {chips('Growing')}
             </Row>
-            <Row flex="none" vAlign="middle">
+            <Row flex="none" vAlign="middle" wrap>
               {chips('Fixed')}
             </Row>
           </List>

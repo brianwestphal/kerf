@@ -1979,6 +1979,7 @@ test('switches catalog background patterns and surfaces across entries and theme
   const trigger = menu.locator('[slot="trigger"]');
   await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
   await expect(stage).toHaveCSS('background-size', '16px 16px');
+  await expect(stage).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
 
   const choices = [
     ['vertical-stripes', 'Vertical stripes', '16px 16px', true],

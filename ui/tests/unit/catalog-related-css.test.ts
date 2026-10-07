@@ -50,6 +50,7 @@ describe('Catalog related selector CSS', () => {
     expect(declarations['background-image']).not.toContain('linear-gradient');
     expect(declarations).toMatchObject({
       flex: '1 0 auto',
+      'background-color': 'transparent',
       'background-size': 'remify(16px) remify(16px)',
     });
   });

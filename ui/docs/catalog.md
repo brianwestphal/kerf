@@ -40,7 +40,8 @@ description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
 - **`backgroundStyle`** — the preview stage backdrop: `checkerboard` (default,
   8px squares),
   `vertical-stripes` (alternating 8px bands), `surface`, or `sunken`. The two
-  patterned choices reveal transparent specimen edges; `surface` paints an
+  patterned choices share the main Pane's sunken surface and reveal transparent
+  specimen edges; `surface` paints an
   opaque backdrop. `sunken` leaves the stage
   transparent so the main Pane's semitransparent sunken surface paints only once.
   A controlled app may pass its current choice on each render.

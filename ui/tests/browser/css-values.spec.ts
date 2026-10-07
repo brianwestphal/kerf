@@ -10,10 +10,11 @@ test('applies property-specific CSS values in a real browser', async ({
   const content = page.locator(
     '[data-demo="list"] .kui-pane__content > .kui-list',
   );
-  await expect(content).toHaveCSS('gap', '24px');
+  await expect(content).toHaveCSS('column-gap', '0px');
+  await expect(content).toHaveCSS('row-gap', '24px');
   await expect(content).toHaveAttribute(
     'style',
-    '--_kui-list-gap:var(--kui-space-l);--_kui-list-flex:1 1 auto',
+    '--_kui-list-column-gap:var(--kui-space-none);--_kui-list-row-gap:var(--kui-space-l);--_kui-list-flex:1 1 auto',
   );
   await expect(content).toHaveCSS('flex', '1 1 auto');
   // The standalone list card has no neighboring region, so the scrolling
@@ -64,7 +65,8 @@ test('applies property-specific CSS values in a real browser', async ({
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect(content).toHaveCSS('gap', '24px');
+    await expect(content).toHaveCSS('column-gap', '0px');
+    await expect(content).toHaveCSS('row-gap', '24px');
     await expect(tools).toHaveCSS('gap', '8px');
     await expect
       .poll(() =>

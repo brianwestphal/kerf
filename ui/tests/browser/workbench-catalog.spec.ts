@@ -1012,6 +1012,10 @@ test.describe('resizable Workbench panels', () => {
     for (const panel of [left, right, drawer])
       await expect(panel).toHaveCSS('position', 'absolute');
 
+    // The catalog can place this tall specimen low in the document. Bring the
+    // bottom overlap into the viewport before using elementFromPoint.
+    await drawer.scrollIntoViewIfNeeded();
+
     const owner = (x: number, y: number) =>
       page.evaluate(
         ([px, py]) => {
@@ -1030,7 +1034,10 @@ test.describe('resizable Workbench panels', () => {
     const drawerBox = (await drawer.boundingBox())!;
     const leftBox = (await left.boundingBox())!;
     const rightBox = (await right.boundingBox())!;
-    const bottom = drawerBox.y + drawerBox.height - 12;
+    const bottom = Math.min(
+      drawerBox.y + drawerBox.height - 12,
+      page.viewportSize()!.height - 12,
+    );
     // Each rail covers the drawer where they meet in a bottom corner.
     expect(await owner(leftBox.x + 12, bottom)).toBe('rail-left');
     expect(await owner(rightBox.x + rightBox.width - 12, bottom)).toBe(

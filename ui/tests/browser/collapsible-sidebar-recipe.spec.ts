@@ -195,14 +195,14 @@ test('presents a compact overlay dismissed by Escape and the backdrop', async ({
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
   await expect(backdrop(page)).toHaveCount(0);
 
-  // Re-open, then dismiss by clicking the backdrop. Click the exposed right
-  // portion of the backdrop — its center sits under the rail, which is on top.
+  // Re-open, then dismiss by clicking the exposed right portion near its top.
+  // The frame can extend below the viewport at phone width.
   await revealToggle(page).click();
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
   await expect(backdrop(page)).toHaveCount(1);
   const box = await backdrop(page).boundingBox();
   if (!box) throw new Error('backdrop has no box');
-  await page.mouse.click(box.x + box.width - 24, box.y + box.height / 2);
+  await page.mouse.click(box.x + box.width - 24, box.y + 64);
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
 });
 

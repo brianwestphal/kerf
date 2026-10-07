@@ -196,7 +196,9 @@ test('Grid autoFill keeps sparse tracks at wide and phone widths', async ({
       };
     });
     expect(geometry.overflows).toBe(false);
-    if (width === 320) {
+    // The catalog's inset leaves one 326px track at 390px; auto-fill grows
+    // back to several tracks when the available specimen width allows it.
+    if (width <= 390) {
       expect(geometry.tracks).toHaveLength(1);
     } else {
       expect(geometry.tracks.length).toBeGreaterThan(1);
