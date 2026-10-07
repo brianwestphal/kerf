@@ -3,7 +3,7 @@ name: hotsheet
 description: Plan and work through the complete Hot Sheet Up Next queue using priority, overlap, dependencies, and safe parallelism. Works headless, with or without a server.
 ---
 
-<!-- hotsheet-skill-version: 55 -->
+<!-- hotsheet-skill-version: 58 -->
 
 Work the project's complete Hot Sheet Up Next queue. An invocation normally drains every
 actionable Up Next ticket; completing one ticket is not a stopping condition.
@@ -22,6 +22,10 @@ actionable Up Next ticket; completing one ticket is not a stopping condition.
    ticket status, verification, and publishing. A stopped, completed, interrupted, or
    otherwise idle delegated worker does not make its claimed ticket non-actionable: the
    primary agent must inspect and resume that handoff until the ticket is completed and committed.
+   A delegated worker's commits in a git worktree or side branch are not integrated until the
+   primary agent merges or cherry-picks them onto the branch this project ships from and
+   confirms they are reachable there (`git branch --contains <sha>`); never complete a ticket
+   whose work exists only in a worktree, a side branch, or a sub-agent's report.
 3. **Work each ticket end to end under an exact claim lease.** Choose one stable,
    session-specific worker id: the value of `HOTSHEET_WORKER_ID` when your environment sets
    it (Hot Sheet then releases that id's claims when your session ends), otherwise your
@@ -43,6 +47,9 @@ actionable Up Next ticket; completing one ticket is not a stopping condition.
    verify scope, run the completion checklist, and mark completed with a result and
    verification note. Delegated workers claim their own exact assigned ticket and use a
    distinct worker id; the primary agent remains responsible for integration.
+   For git-backed Started tickets, keep `started_phase` current as work moves through
+   analyzing, planning, working, initial_testing, integrating, and final_testing;
+   use `hotsheet-cli edit <id> --started-phase <phase>` or the equivalent MCP update.
 4. **Create every follow-up immediately, without asking.** As soon as you identify an
    unfinished step, open question, known gap, out-of-scope task, or designed-but-unbuilt
    behavior, create its ticket. Do not ask permission, wait, promise to file it later, or
@@ -59,14 +66,21 @@ actionable Up Next ticket; completing one ticket is not a stopping condition.
    its own push, PR, and review conventions (for example per ticket, in coherent
    batches, or through review) as its instructions state. This skill neither requires
    nor forbids pushing on its own.
+   A final remote CI run may continue after a locally green, integrated commit has been
+   pushed. Set the Started phase to `final_testing`, note the commit and CI run, release
+   the claim, and take another ready ticket. Claim-next skips such waiting tickets; reclaim
+   the exact ticket when CI resolves and finish it. Repair a failure caused by the ticket's
+   own change before completion; for an independent failure, create a prioritized follow-up
+   bug and cite it in the completing note. Do not defer local gates or integration to CI.
 6. **Re-read the queue after every completion.** Concurrent work and new findings can
    change the plan. Continue until no actionable Up Next ticket remains.
 
 **Completion checklist:** finish and verify scope; update required tests, coverage, and
 docs; scan for placeholders, TODO/FIXME comments, stubs/mock returns, documented-but-
 unimplemented behavior, open questions, and known gaps; immediately create tickets for
-every incomplete item; include result, verification, and all follow-up slugs in the
-completing note.
+every incomplete item; confirm work done in a git worktree, side branch, or delegated
+agent is integrated into the branch this project ships from (name the commits); include
+result, verification, and all follow-up slugs in the completing note.
 
 **Preliminary thoughts:** for a ticket that is not trivially simple, add a short `regular`
 note headed `## Preliminary thoughts` after your initial analysis and before implementing:
@@ -90,6 +104,13 @@ system; 70-89 verified with minor assumptions; 40-69 partially verified or an am
 ask; below 40 largely unverified — name the gaps. A bare number without the factor lines
 is non-compliant. Example:
 `hotsheet-cli edit <slug> --status completed --note-file done.md --note-confidence 82`.
+
+**Actor identity:** identify yourself as the AI actor on every ticket write. Sessions Hot
+Sheet launches already set `HOTSHEET_ACTOR_ROLE=ai` (with `HOTSHEET_ACTOR_ID`), and
+generated MCP configs declare it for the `hotsheet-mcp` shim; otherwise pass
+`--actor-role ai --actor-id <worker>` on CLI writes (MCP `actor_role: "ai"`, `actor_id`).
+An AI completion without a confidence score is rejected with `confidence_required` and
+changes nothing; retry the same call with the score.
 
 Format AI-authored notes for human scanning. Lead with the outcome or decision, not a
 chronological transcript. For a substantial note, use short Markdown sections such as

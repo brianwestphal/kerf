@@ -7,6 +7,9 @@
         "--path",
         "/Users/westphal/Documents/kerf.hs2"
       ],
+      "environment": {
+        "HOTSHEET_ACTOR_ROLE": "ai"
+      },
       "type": "local"
     }
   }

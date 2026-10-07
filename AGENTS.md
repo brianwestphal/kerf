@@ -13,7 +13,7 @@
 
 <!-- BEGIN hotsheet:agents-md -->
 <!-- hotsheet-shared-section: antigravity, codex, opencode -->
-<!-- hotsheet-instructions-version: 54 -->
+<!-- hotsheet-instructions-version: 57 -->
 
 ## Hot Sheet — ticket workflow
 
@@ -48,6 +48,9 @@ lookups, a single-line fix, or a git commit. When in doubt, create the ticket.
   `--eta <duration>` (for example `--eta 45m`; MCP `eta`) with your honest estimate of when
   you will finish. If `renew` reports that the ETA has passed, renew again with a new `--eta`.
 - `hotsheet-cli edit <slug> --status completed --note "what you did"` when done.
+- On git-backed Started tickets, keep `started_phase` current with
+  `hotsheet-cli edit <slug> --started-phase <analyzing|planning|working|initial_testing|integrating|final_testing>`.
+  The phase is durable progress; only the live claim signals active work.
 - Or the MCP tools: `hotsheet_claim_next` / `hotsheet_renew` / `hotsheet_release` for the lease,
   and `hotsheet_update` (it takes a `note`) / `hotsheet_close`.
 - Create work with `hotsheet-cli new --title "…" --category <bug|feature|task>` or
@@ -77,6 +80,21 @@ blocker on the *current* ticket that needs a user decision or unavailable extern
 leave that ticket `started`, name the blocker, and release its lease (`hotsheet-cli release`).
 It does not replace follow-ups for independently describable work.
 
+**Integrate worktree and background-agent work before you complete its ticket.** Work done in a
+git worktree, on a side branch, or by a sub-agent or background worker is not done until it is
+on the branch this project ships from. Before marking the ticket `completed`:
+1. Merge, rebase, or cherry-pick that work into the main checkout's branch, or open the
+   project's pull request when that is its convention.
+2. Confirm the commit is reachable there (`git branch --contains <sha>`), pushed wherever this
+   repository pushes, and that the gates pass on the integrated result.
+3. Name the integrated commit(s) in the completing note, then remove the finished worktree.
+
+A delegated worker's report that it "completed" a ticket is not completion: the agent that owns
+the ticket verifies the integration itself. If integration fails or needs a decision, leave the
+ticket `started` with a note naming the branch, worktree path, and commit instead of completing
+it. When other agents share your checkout, stage and commit only your own files (explicit
+paths, never a directory-wide `git add`), and check the staged diff for changes you did not make.
+
 **Share preliminary thoughts on non-trivial tickets.** After your initial analysis of a
 ticket that is not trivially simple, and before you implement, add a short `regular` note
 headed `## Preliminary thoughts`: your understanding of the problem (or likely root cause),
@@ -94,6 +112,11 @@ known gaps deferred to follow-ups. Pass the same integer in that same update as
 bands: **90-100** fully verified end to end against the real system; **70-89** verified with
 minor assumptions; **40-69** partially verified or an ambiguous ask; **below 40** largely
 unverified — name the gaps. A bare number without the factor lines is non-compliant.
+Identify yourself as the AI actor: sessions Hot Sheet launches already set
+`HOTSHEET_ACTOR_ROLE=ai`, and generated MCP configs declare it for `hotsheet-mcp`;
+otherwise pass `--actor-role ai --actor-id <your-id>` (MCP `actor_role: "ai"`,
+`actor_id`). An AI completion without a score is rejected with
+`confidence_required` and changes nothing; retry the same call with the score.
 
 **Format AI-authored notes for human scanning.** Lead with the outcome or decision, not a
 chronological transcript. For a substantial note, use short Markdown sections such as
@@ -148,6 +171,14 @@ Keep the repo in a known-good state.
    one commit only when their changes overlap so strongly that separating them would be unsafe
    or misleading.
 4. Get the worktree clean before starting the next ticket.
+
+**Final remote CI exception:** after local gates pass and the integrated commit is
+pushed, a Started ticket may enter `final_testing` while its remote CI run continues.
+Record the commit and run in a ticket note, release the claim, and work another ready
+ticket; automatic claim-next skips final-testing tickets. Reclaim the exact ticket
+when CI resolves and complete it after a green result. Repair failures caused by that
+ticket's own change before completion; create a prioritized follow-up bug for an
+independent failure. This does not defer local gates, integration, or pushing.
 
 **Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
 already uses; this default guidance does not require or forbid pushing on its own.
