@@ -470,6 +470,7 @@ mount(app, () => {
             buttonAppearance="push"
             content="mixed"
             size="compact"
+            overflow="wrap"
             label="Catalog display settings"
           >
             <button

@@ -1929,6 +1929,46 @@ test('insets the catalog canvas inside a sunken work pane', async ({
   }
 });
 
+test('keeps Catalog display controls fully visible and usable across widths', async ({
+  page,
+  browserName,
+}) => {
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/?component=badge');
+    const controls = page.locator(
+      '[data-component="toolbar-control-group"][aria-label="Catalog display settings"]',
+    );
+    await expect(controls).toHaveAttribute('data-overflow', 'wrap');
+    for (const locator of [
+      page.locator('[data-action="toggle-contrast"]'),
+      page.locator('[data-action="toggle-motion"]'),
+      page.locator('[data-catalog-background-menu]'),
+    ]) {
+      const box = await locator.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+    }
+    if (browserName === 'chromium')
+      await page.screenshot({
+        path: `test-results/catalog-display-controls-${width}.png`,
+      });
+    await page.locator('[data-action="toggle-contrast"]').click();
+    await expect(
+      page.locator('[data-action="toggle-contrast"]'),
+    ).toHaveAttribute('aria-pressed', 'true');
+    await page
+      .locator('[data-catalog-background-menu] [slot="trigger"]')
+      .click();
+    await expect(
+      page.locator(
+        '[data-catalog-background-menu] [data-background-choice="surface"]',
+      ),
+    ).toBeVisible();
+  }
+});
+
 test('switches catalog background patterns and surfaces across entries and themes', async ({
   page,
   browserName,
