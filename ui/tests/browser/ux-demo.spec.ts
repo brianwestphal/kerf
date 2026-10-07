@@ -919,7 +919,11 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   page,
 }) => {
   await page.goto('/?component=list-inset-control');
-  const control = page.locator('[data-component="list-inset-control"]').first();
+  const control = page
+    .locator(
+      '[data-demo="list-inset-control"] [data-component="list-inset-control"]',
+    )
+    .first();
   await expect(control).toBeVisible();
   // The wrapper is a stretch flex row; its child control fills the row width.
   await expect(control).toHaveCSS('display', 'flex');
@@ -938,7 +942,7 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   // The first specimen, not an example note (itself a ListInsetText).
   const text = page
     .locator(
-      '[data-demo] [data-component="list-inset-text"]:not([data-catalog-example-note])',
+      '[data-demo="list-inset-text"] [data-component="list-inset-text"]:not([data-catalog-example-note])',
     )
     .first();
   await expect(text).toBeVisible();
@@ -949,7 +953,11 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   await expect(text).toHaveAttribute('data-sides', 'trbl');
 
   // sides="rl" keeps the horizontal inset but drops the vertical box space.
-  const tight = page.locator('.kui-list-inset-text[data-sides="rl"]').first();
+  const tight = page
+    .locator(
+      '[data-demo="list-inset-text"] .kui-list-inset-text[data-sides="rl"]',
+    )
+    .first();
   await expect(tight).toBeVisible();
   await expect(tight).toHaveCSS('padding-left', '8px');
   await expect(tight).toHaveCSS('border-left-width', '1px');
