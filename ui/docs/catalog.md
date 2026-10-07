@@ -37,7 +37,8 @@ description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
   the row's quiet status treatment for decision metadata such as `Discouraged`.
 - **`content`** — the rendered preview for the active entry. Keep a map of `id →
 () => SafeHtml` in your app and call `renderers[active]()` in your render.
-- **`backgroundStyle`** — the preview stage backdrop: `checkerboard` (default),
+- **`backgroundStyle`** — the preview stage backdrop: `checkerboard` (default,
+  8px squares),
   `vertical-stripes` (alternating 8px bands), `surface`, or `sunken`. The two
   patterned choices reveal transparent specimen edges; the solid choices let
   you compare the specimen against system surfaces. A controlled app may pass

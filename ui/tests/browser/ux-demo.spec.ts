@@ -1938,13 +1938,13 @@ test('switches catalog background patterns and surfaces across entries and theme
   const menu = page.locator('[data-catalog-background-menu]');
   const trigger = menu.locator('[slot="trigger"]');
   await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
-  await expect(stage).toHaveCSS('background-size', '24px 24px');
+  await expect(stage).toHaveCSS('background-size', '16px 16px');
 
   const choices = [
     ['vertical-stripes', 'Vertical stripes', '16px 16px', true],
     ['surface', 'Surface', 'auto', false],
     ['sunken', 'Sunken', 'auto', false],
-    ['checkerboard', 'Checkerboard', '24px 24px', true],
+    ['checkerboard', 'Checkerboard', '16px 16px', true],
   ] as const;
   for (const [value, label, size, patterned] of choices) {
     await trigger.click();
@@ -2098,19 +2098,19 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
     clip: { x: widePixelX, y: widePixelY, width: 1, height: 1 },
   });
   const wideDarkTile = await page.screenshot({
-    clip: { x: widePixelX + 12, y: widePixelY, width: 1, height: 1 },
+    clip: { x: widePixelX + 8, y: widePixelY, width: 1, height: 1 },
   });
   expect(wideLightTile.equals(wideDarkTile)).toBe(false);
 
   if (browserName === 'chromium')
-    await page.screenshot({
-      path: 'test-results/catalog-checkerboard-below-fold-wide.png',
+    await detailScroll.screenshot({
+      path: 'test-results/catalog-checkerboard-8px-wide.png',
     });
 
   // The checkerboard rides on the stage, which grows with the content.
   const stage = page.locator('.kui-catalog__stage');
   await expect(stage).toHaveCSS('background-repeat', 'repeat');
-  await expect(stage).toHaveCSS('background-size', '24px 24px');
+  await expect(stage).toHaveCSS('background-size', '16px 16px');
   const backgroundImage = await stage.evaluate(
     (element) => window.getComputedStyle(element).backgroundImage,
   );
@@ -2135,13 +2135,13 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
     clip: { x: narrowStage.x + 6, y: narrowPixelY, width: 1, height: 1 },
   });
   const narrowDarkTile = await page.screenshot({
-    clip: { x: narrowStage.x + 18, y: narrowPixelY, width: 1, height: 1 },
+    clip: { x: narrowStage.x + 14, y: narrowPixelY, width: 1, height: 1 },
   });
   expect(narrowLightTile.equals(narrowDarkTile)).toBe(false);
 
   if (browserName === 'chromium')
-    await page.screenshot({
-      path: 'test-results/catalog-checkerboard-below-fold-narrow.png',
+    await detailScroll.screenshot({
+      path: 'test-results/catalog-checkerboard-8px-narrow.png',
     });
 });
 
