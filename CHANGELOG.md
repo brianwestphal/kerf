@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Deep-inset Pane content supports `--kui-pane-scrollbar-gutter: stable` for opaque edge-to-edge content, and Pane/Workbench focus rings paint above such scrollers without blocking their controls (`KF-9NVNGT`).
+
 - NavStack now has `separator="auto" | "hidden"`. Automatic separators frame a sunken active Pane at the top chrome and optional bottom toolbar; hidden suppresses stack-owned lines (`KF-1XRSRW`).
 
 - The UX catalog remembers its background, light or dark theme, contrast, and reduced-motion choices across reloads.

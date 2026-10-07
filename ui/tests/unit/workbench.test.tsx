@@ -834,7 +834,9 @@ describe('Workbench', () => {
     expect(
       selectors.filter(
         (selector) =>
-          selector.includes(':has(') && selector.includes(':only-child'),
+          selector.includes('.kui-workbench__main:not(') &&
+          selector.includes(':has(') &&
+          selector.includes(':only-child'),
       ),
     ).toHaveLength(1);
     expect(selectors.join('\n')).toContain('[data-component="workbench"]');

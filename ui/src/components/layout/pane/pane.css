@@ -4,6 +4,7 @@
   --kui-pane-separator-inline-start-width: 0;
   --kui-pane-separator-inline-end-width: 0;
 
+  position: relative;
   display: grid;
   min-width: 0;
   min-height: 0;
@@ -25,6 +26,18 @@
 .kui-pane:is(:focus-visible, [data-outlined="true"]) {
   outline: var(--kui-focus-ring);
   outline-offset: -3px;
+}
+
+/* A bleeding child can establish its own paint layer above the Pane outline.
+   Repeat the ring as an overlay after the content, without intercepting input. */
+.kui-pane:is(:focus-visible, [data-outlined="true"])::after {
+  position: absolute;
+  z-index: 1;
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+  content: "";
+  inset: 0;
+  pointer-events: none;
 }
 
 /* Paint the active scroll owner once, so alpha lowered colors do not stack.
@@ -180,6 +193,8 @@
 /* Add one outer gutter without changing the inherited item-margin token.
    Nested Row, List, and Grid therefore keep their own default 8px insets. */
 .kui-pane[data-deep-inset="true"] > .kui-pane__content {
+  /* Reserve a vertical scrollbar gutter when the host uses opaque edge-to-edge content. */
+  scrollbar-gutter: var(--kui-pane-scrollbar-gutter, auto);
   --_kui-pane-deep-block-inset: var(--kui-space-xs);
   --kui-pane-content-inset-inline-start: calc(
     var(--_kui-pane-safe-inline-start) + var(--kui-space-xs)

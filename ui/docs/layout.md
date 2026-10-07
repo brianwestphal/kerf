@@ -44,6 +44,10 @@ inline edge then sits 16px from it. The default is `false`. This extra padding
 adds to any device safe-area inset; a header or footer still owns the safe-area
 padding at its edge while the content keeps its extra 8px. The pane's header,
 footer, background, and separators still reach their usual edges.
+For opaque edge-to-edge content, set `--kui-pane-scrollbar-gutter: stable` on the
+Pane or an ancestor. This reserves a vertical scrollbar gutter so a child that
+bleeds through the inline padding stops before the scroll indicator. The default
+is `auto`; the optional gutter is outside the published content inset values.
 
 ```tsx
 <Pane deepInset>
@@ -65,6 +69,8 @@ draws the standard focus ring. Set `outlined` to keep that ring visible as an
 application-controlled state, such as a drop target, whether or not the Pane is
 focused. `PaneConfig` forwards both options through layouts that render a Pane.
 Give a focusable Pane a useful `label` when it represents a distinct region.
+The ring paints above edge-to-edge child surfaces without intercepting their
+buttons, selects, or nested scrolling.
 
 ### Lowered work surfaces
 

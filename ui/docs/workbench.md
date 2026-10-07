@@ -82,6 +82,8 @@ outline is hidden until it expands. `mainPane` and a panel's `pane` forward the
 same options to an inner Pane when that is the intended focus owner. Give
 the central region `mainLabel` when it needs its own named landmark; panel
 regions use their `label`.
+When a sole Pane fills the main region, the Workbench ring paints above opaque
+edge-to-edge Pane content without blocking pointer input in that content.
 
 Each static `WorkbenchPanel` takes `content`, an optional `toolbar` and `footer` (see
 [Panel toolbars](#panel-toolbars)), an optional `collapsed`, an optional

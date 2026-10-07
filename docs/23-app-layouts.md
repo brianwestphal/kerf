@@ -911,6 +911,11 @@ so text stays on the same axis as nearby content. These are resolved outputs
 for Pane children, not overrides for the Pane's edge routing. The consumer
 recipe and both-mode demo are in [`ui/docs/app-layouts.md`](../ui/docs/app-layouts.md)
 and `ui/ux-demo/demos/pane.tsx`.
+For opaque edge-to-edge children, `--kui-pane-scrollbar-gutter: stable` reserves
+a vertical scrollbar gutter outside these published inset values. The default
+is `auto`. Pane and sole-Workbench-main focus rings paint above opaque
+edge-to-edge children with pointer-transparent overlays, so nested horizontal
+scrollers and their controls remain interactive.
 
 A layout region whose only child is a `Pane`, `NavStack`, `SplitView`,
 `Workbench`, or `TabNavigator` delegates to that child instead of padding, so the

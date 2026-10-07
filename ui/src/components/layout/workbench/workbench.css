@@ -100,6 +100,7 @@
 }
 
 .kui-workbench__main {
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -111,6 +112,22 @@
 ) {
   outline: var(--kui-focus-ring);
   outline-offset: -3px;
+}
+
+/* A sole Pane can host an opaque full-width scroller above the main outline.
+   Keep the selected work-area ring in the final paint layer, without blocking
+   controls in that Pane. Other main compositions retain their own outline. */
+.kui-workbench__main:has(> [data-component="pane"]:only-child):is(
+    :focus-visible,
+    [data-outlined="true"]
+  )::after {
+  position: absolute;
+  z-index: 1;
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+  content: "";
+  inset: 0;
+  pointer-events: none;
 }
 
 /* When no Pane chrome is composed, the Workbench region owns its scroll.
