@@ -229,6 +229,12 @@ follows its rendered columns with Left/Right/Up/Down and Home/End.
 | Component catalog shell    | `Catalog`, `CatalogExample`, `CatalogExampleStack` + `wireCatalog` (`@kerfjs/ui/catalog`), `catalogResources` (`@kerfjs/ui/catalog-resources`) | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — with public preview-layout helpers whose safe `rootAttributes` carry authoring `data-*` metadata; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). `catalogResources()` builds the standard resources-footer group (demo, component, design template, guidance) in canonical order. See `ui/docs/catalog.md`                                                                                                                                |
 | App layouts (subpath-only) | `NavStack`, `SplitView`, `Workbench`, `TabNavigator`, `CollapsiblePanel`, `Pane`, `deviceClass` + their `wire…` helpers                        | Whole-screen and dialog layouts on explicit subpaths with companion CSS imports; see [§23](./23-app-layouts.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
+For arbitrary interactive help or popup content, `openAnchoredSurface` and
+`openAnchoredSurfaceAt` (`@kerfjs/ui/anchored-surface`) add a named, non-modal
+Kerf UI surface around `kerfjs/overlay`'s placement, top-layer/modal hosting,
+focus, and dismissal lifecycle. The app supplies content and action policy.
+See [`ui/docs/anchored-surface.md`](../ui/docs/anchored-surface.md).
+
 `LoadingSpinner.size` shares `LucideIcon`'s `xs`/`s`/`m`/`l`/`xl` steps and
 positive numeric pixel sizing (converted to rem). Omit it for the existing
 inherited 1em size. `LoadingSpinner.color` accepts the same typed foreground

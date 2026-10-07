@@ -3558,3 +3558,38 @@ export { d as TokenSearchModel, e as TokenSearchModelOptions, f as TokenSearchRe
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 ```
+
+## `@kerfjs/ui/anchored-surface`
+
+```ts
+import { PopoverOptions, OverlayContent, OverlayHandle } from 'kerfjs/overlay';
+
+/** App-facing options for a non-modal, arbitrary-content help surface. */
+interface AnchoredSurfaceOptions extends Pick<PopoverOptions, 'placement' | 'align' | 'gap' | 'dismiss' | 'initialFocus' | 'onDismiss' | 'outsideIgnore'> {
+    /** Accessible name for the non-modal dialog. */
+    label: string;
+}
+/** A viewport pointer location; `context` is the element under the pointer. */
+interface AnchoredSurfacePoint {
+    x: number;
+    y: number;
+    /** Pass the event target when opening from inside a modal dialog. */
+    context?: Element;
+}
+/**
+ * Open app-owned content beside an element. The surface owns its Kerf UI chrome;
+ * kerfjs/overlay owns positioning, top-layer/modal hosting, focus, and dismissal.
+ * The caller owns content, action policy, and calling `close()` when an action
+ * completes. `initialFocus` defaults to the first focusable descendant; set it
+ * to `false` for read-only help that should leave focus on its trigger.
+ */
+declare function openAnchoredSurface(anchor: Element, content: OverlayContent, options: AnchoredSurfaceOptions): OverlayHandle;
+/**
+ * Open the same surface at pointer coordinates. The temporary anchor has no
+ * layout or hit target. `context` keeps a surface opened inside a modal dialog
+ * in that dialog's interactive host slot; it is removed on close or failure.
+ */
+declare function openAnchoredSurfaceAt(point: AnchoredSurfacePoint, content: OverlayContent, options: AnchoredSurfaceOptions): OverlayHandle;
+
+export { type AnchoredSurfaceOptions, type AnchoredSurfacePoint, openAnchoredSurface, openAnchoredSurfaceAt };
+```

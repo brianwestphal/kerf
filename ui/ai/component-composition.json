@@ -3798,6 +3798,61 @@
       }
     },
     {
+      "key": "@kerfjs/ui:anchored-surface",
+      "package": "@kerfjs/ui",
+      "id": "anchored-surface",
+      "name": "AnchoredSurface",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "content and action policy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "opening trigger and programmatic close after an action",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "accessible name", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "The non-modal surface has role dialog and the required label. Focus moves to the first focusable descendant by default and returns to the opener on close; initialFocus: false leaves focus on the trigger. Escape and outside press dismiss by default."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": [
+          "--kui-anchored-surface-inset",
+          "--kui-anchored-surface-radius"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:popup-menu",
       "package": "@kerfjs/ui",
       "id": "popup-menu",

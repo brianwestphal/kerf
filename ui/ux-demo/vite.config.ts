@@ -91,6 +91,12 @@ export default defineConfig({
   resolve: {
     alias: [
       {
+        find: /^kerfjs\/overlay$/,
+        replacement: fileURLToPath(
+          new URL('../../src/overlay.ts', import.meta.url),
+        ),
+      },
+      {
         find: /^kerfjs\/actions$/,
         replacement: fileURLToPath(
           new URL('../../src/actions.ts', import.meta.url),

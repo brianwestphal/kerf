@@ -317,6 +317,11 @@
       "browser": "./dist/browser/popup-menu.js",
       "import": "./dist/popup-menu.js"
     },
+    "./anchored-surface": {
+      "types": "./dist/anchored-surface.d.ts",
+      "browser": "./dist/browser/anchored-surface.js",
+      "import": "./dist/anchored-surface.js"
+    },
     "./popup-menu/register": {
       "types": "./dist/popup-menu-register.d.ts",
       "import": "./dist/popup-menu-register.js"
@@ -390,6 +395,7 @@
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",
     "./popup-menu.css": "./dist/styles/popup-menu.css",
+    "./anchored-surface.css": "./dist/styles/anchored-surface.css",
     "./skeleton.css": "./dist/styles/skeleton.css",
     "./sunken-panel.css": "./dist/styles/sunken-panel.css",
     "./segmented-control.css": "./dist/styles/segmented-control.css",

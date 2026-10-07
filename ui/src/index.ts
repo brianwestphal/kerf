@@ -84,6 +84,12 @@ export {
   type ValueTableRowProps,
 } from './components/data-display/value-table/value-table.js';
 export {
+  type AnchoredSurfaceOptions,
+  type AnchoredSurfacePoint,
+  openAnchoredSurface,
+  openAnchoredSurfaceAt,
+} from './components/feedback/anchored-surface/anchored-surface.js';
+export {
   Badge,
   type BadgeAppearance,
   type BadgeDotProps,

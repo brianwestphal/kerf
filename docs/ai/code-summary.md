@@ -911,6 +911,13 @@ a token change; the grammar demo exercises repeated saved-search replacement.
 `ui/src/components/actions/popup-menu/popup-menu.tsx` accepts the full `PopupMenuEntry` union in nested
 submenus and assigns the native submenu slot to headings and dividers as well
 as items. Browser coverage verifies the nested group structure and actions.
+`ui/src/components/feedback/anchored-surface/anchored-surface.tsx` exposes
+`openAnchoredSurface` and `openAnchoredSurfaceAt` at the
+`@kerfjs/ui/anchored-surface` subpath. It delegates positioning, focus,
+dismissal, and modal host selection to `kerfjs/overlay`, adds Kerf UI surface
+styling and a named non-modal dialog role, and cleans up a pointer anchor on
+close. The catalog demo and three-engine browser tests cover wide, narrow,
+pointer, and modal states.
 `ui/src/components/feedback/chip/chip.tsx` renders a self-styled tag with an optional native remove
 button. It exposes delegated action and item identity, semantic appearance,
 compact geometry, and a disabled state.

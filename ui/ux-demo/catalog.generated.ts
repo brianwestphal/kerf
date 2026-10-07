@@ -549,6 +549,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "anchored-surface",
+    "name": "AnchoredSurface",
+    "category": "Feedback",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Present arbitrary app-owned content next to an element or pointer with Kerf UI surface styling and kerfjs/overlay lifecycle.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/anchored-surface.tsx",
+    "componentSource": "ui/src/components/feedback/anchored-surface/anchored-surface.tsx",
+    "documentation": "ui/docs/anchored-surface.md"
+  },
+  {
     "id": "popup-menu",
     "name": "PopupMenu",
     "category": "Controls",

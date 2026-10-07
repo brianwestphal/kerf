@@ -24,6 +24,7 @@
 @import "./skeleton.css";
 @import "./select.css";
 @import "./popup-menu.css";
+@import "./anchored-surface.css";
 @import "./segmented-control.css";
 @import "./token-search-field.css";
 @import "./state-banner.css";

@@ -9,6 +9,10 @@ import '@kerfjs/ui/webawesome.css';
 import './style.css';
 
 import {
+  openAnchoredSurface,
+  openAnchoredSurfaceAt,
+} from '@kerfjs/ui/anchored-surface';
+import {
   Catalog,
   CatalogExample,
   CatalogExampleStack,
@@ -1540,6 +1544,71 @@ const stopPopupMenuContextDemo = delegate(
       );
   },
 );
+const stopAnchoredSurfaceDemo = delegate(
+  app,
+  'click',
+  '[data-anchored-surface-trigger]',
+  (event, element) => {
+    const trigger = element as HTMLElement;
+    const point = trigger.dataset.anchoredSurfaceTrigger === 'pointer';
+    const content = () => (
+      <div>
+        <Text>Choose how to use this field in your workspace.</Text>
+        <button type="button" data-anchored-surface-action>
+          Got it
+        </button>
+      </div>
+    );
+    const options = { label: 'Field help' };
+    const handle = point
+      ? openAnchoredSurfaceAt(
+          {
+            x: (event as MouseEvent).clientX,
+            y: (event as MouseEvent).clientY,
+            context: trigger,
+          },
+          content,
+          options,
+        )
+      : openAnchoredSurface(trigger, content, options);
+    handle.el
+      .querySelector('[data-anchored-surface-action]')
+      ?.addEventListener('click', () => handle.close());
+  },
+);
+const stopAnchoredSurfaceContextDemo = delegate(
+  app,
+  'contextmenu',
+  '[data-anchored-surface-trigger="pointer"]',
+  (event, element) => {
+    event.preventDefault();
+    const mouse = event as MouseEvent;
+    const handle = openAnchoredSurfaceAt(
+      { x: mouse.clientX, y: mouse.clientY, context: element },
+      () => <Text>Right-click help at this location.</Text>,
+      { label: 'Pointer help', initialFocus: false },
+    );
+    void handle.result;
+  },
+);
+const stopAnchoredSurfaceOpenModal = delegate(
+  app,
+  'click',
+  '[data-anchored-surface-open-modal]',
+  () =>
+    app
+      .querySelector<HTMLDialogElement>('[data-anchored-surface-modal]')
+      ?.showModal(),
+);
+const stopAnchoredSurfaceCloseModal = delegate(
+  app,
+  'click',
+  '[data-anchored-surface-close-modal]',
+  () =>
+    app
+      .querySelector<HTMLDialogElement>('[data-anchored-surface-modal]')
+      ?.close(),
+);
 const updateAnimationSetting = (element: Element): void => {
   const demo = animationDemoFrom(element);
   if (!demo) return;
@@ -1688,6 +1757,10 @@ window.addEventListener(
     stopListActionRowDoubleClick();
     stopListActionRowContextMenu();
     stopPopupMenuContextDemo();
+    stopAnchoredSurfaceDemo();
+    stopAnchoredSurfaceContextDemo();
+    stopAnchoredSurfaceOpenModal();
+    stopAnchoredSurfaceCloseModal();
     stopAnimationSelects();
     stopAnimationRanges();
     stopAnimationEvents.forEach((dispose) => dispose());

@@ -21,6 +21,7 @@
     "paths": {
       "kerfjs": ["../src/index.ts"],
       "kerfjs/actions": ["../src/actions.ts"],
+      "kerfjs/overlay": ["../src/overlay.ts"],
       "kerfjs/jsx-runtime": ["../src/jsx-runtime.ts"],
       "@kerfjs/ui": ["./src/index.ts"],
       "@kerfjs/ui/select/register": ["./src/select-register.ts"],

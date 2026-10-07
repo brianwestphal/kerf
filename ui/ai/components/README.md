@@ -60,6 +60,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 ## Kerf UI — Feedback
 
+- [AnchoredSurface](./anchored-surface.md) — Present arbitrary app-owned content next to an element or pointer with Kerf UI surface styling and kerfjs/overlay lifecycle.
 - [Feedback](./feedback.md) — Banners, empty states, and labeled progress.
 - [StateBanner](./state-banner.md) — Present persistent inline feedback or attractive non-status emphasis with a named semantic tone.
 - [EmptyState](./empty-state.md) — Actionable empty and busy content states.

@@ -12,6 +12,9 @@ npm install kerfjs @kerfjs/ui # kerfjs is a peer; Web Awesome is an optional pee
 Import each component from its own subpath (`@kerfjs/ui/list-item`, `@kerfjs/ui/toolbar`,
 …); the browser build pulls that component's reachable CSS automatically, so do not
 maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
+For arbitrary interactive help or popup content, use `openAnchoredSurface` or
+`openAnchoredSurfaceAt` from `@kerfjs/ui/anchored-surface`; see
+[AnchoredSurface](./docs/anchored-surface.md). The app owns content and actions.
 For a public subpath containing several visual components, use a folder with one
 component per source file and one owned stylesheet per visual component. Keep its
 compatibility entrypoints implementation-free: JavaScript/TypeScript only re-exports

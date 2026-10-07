@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 328600,
-  "measuredLargestJavaScriptGzip": 124512,
-  "measuredTotalJavaScriptGzip": 328521,
+  "totalJavaScriptGzip": 332200,
+  "measuredLargestJavaScriptGzip": 124513,
+  "measuredTotalJavaScriptGzip": 332195,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3027,6 +3027,38 @@
         "measuredTotalJavaScriptGzip": 328521,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 328600
+      }
+    },
+    {
+      "at": "2026-10-07T01:36:51.771Z",
+      "reason": "KF-FB14DD adds shared overlay lifecycle to the anchored-surface catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124512,
+        "measuredTotalJavaScriptGzip": 328521,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 328600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124516,
+        "measuredTotalJavaScriptGzip": 341579,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 341600
+      }
+    },
+    {
+      "at": "2026-10-07T01:49:40.800Z",
+      "reason": "KF-FB14DD shares the worktree kerfjs overlay source in the catalog build",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124516,
+        "measuredTotalJavaScriptGzip": 341579,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 341600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 332195,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 332200
       }
     }
   ]

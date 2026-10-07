@@ -1,0 +1,15 @@
+.kui-anchored-surface {
+  box-sizing: border-box;
+  inset: auto;
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--kui-space-xs, 8px));
+  max-height: calc(100dvh - 2 * var(--kui-space-xs, 8px));
+  overflow: auto;
+  padding: var(--kui-anchored-surface-inset, var(--kui-space-xs, 8px));
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-anchored-surface-radius, var(--kui-radius-m));
+  color: var(--kui-color-text, inherit);
+  background: var(--kui-color-surface-raised);
+  box-shadow: var(--kui-shadow-l);
+  font: inherit;
+}

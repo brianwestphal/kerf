@@ -4658,6 +4658,72 @@
       }
     },
     {
+      "id": "anchored-surface",
+      "name": "AnchoredSurface",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A styled non-modal surface for app-owned interactive help or popup content, anchored to an element or pointer.",
+      "uses": [],
+      "purpose": "Present arbitrary app-owned content next to an element or pointer with Kerf UI surface styling and kerfjs/overlay lifecycle.",
+      "publicExports": [
+        "openAnchoredSurface",
+        "openAnchoredSurfaceAt"
+      ],
+      "useWhen": [
+        "Show interactive help or other arbitrary content near a control or pointer, including inside a modal dialog."
+      ],
+      "avoidWhen": [
+        "Use PopupMenu for a typed action menu, Select for a choice, and a modal dialog for a task that must block the page."
+      ],
+      "alternatives": [
+        { "id": "popup-menu", "relationship": "nearest" },
+        { "id": "wa-popup", "relationship": "prefer-over" }
+      ],
+      "appOwns": [
+        "content and action policy",
+        "opening trigger and programmatic close after an action",
+        "accessible name"
+      ],
+      "variants": [
+        "element anchor",
+        "pointer anchor",
+        "top or bottom placement",
+        "modal-dialog host"
+      ],
+      "usageExamples": [
+        {
+          "title": "Interactive help",
+          "description": "The trigger owns when to open; the returned handle closes when an action completes.",
+          "code": "const handle = openAnchoredSurface(button, () => <HelpPanel />, { label: 'Field help' });\n// Close from the app's action handler: handle.close();"
+        }
+      ],
+      "accessibility": [
+        "The non-modal surface has role dialog and the required label. Focus moves to the first focusable descendant by default and returns to the opener on close; initialFocus: false leaves focus on the trigger. Escape and outside press dismiss by default."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/anchored-surface",
+        "manualCssImport": "@kerfjs/ui/anchored-surface.css",
+        "sideEffects": ["browser-condition-css"]
+      },
+      "wiring": [],
+      "publicClasses": [],
+      "publicTokens": [
+        "--kui-anchored-surface-inset",
+        "--kui-anchored-surface-radius"
+      ],
+      "links": {
+        "catalogRoute": "?component=anchored-surface",
+        "documentation": "docs/anchored-surface.md",
+        "recipe": "docs/anchored-surface.md"
+      }
+    },
+    {
       "id": "popup-menu",
       "name": "PopupMenu",
       "category": "Controls",

@@ -459,6 +459,11 @@ state and advances the editor revision, so an unchanged chip set cannot leave
 stale DOM-owned query text visible.
 PopupMenu nested menus accept action items, headings, and dividers; the latter
 two separate groups visually while keyboard navigation remains on commands.
+AnchoredSurface is shipped for app-owned interactive help or arbitrary popup
+content near an element or pointer. It provides Kerf UI surface tokens and
+delegates viewport placement, top-layer/modal hosting, focus, and dismissal to
+`kerfjs/overlay`; the app owns content and actions. The catalog and unit plus
+three-engine browser tests cover wide, narrow, and modal use.
 Chip presents a short tag with an optional named remove button and delegated
 action. It supports semantic tone, appearance, shape, compact size, and disabled
 state without consumer rules on Web Awesome internals.

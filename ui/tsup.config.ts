@@ -12,6 +12,7 @@ const entries = [
   'surface-scaffold',
   'surface-scaffold-register',
   'popup-menu',
+  'anchored-surface',
   'popup-menu-register',
   'toolbar-text',
   'text',

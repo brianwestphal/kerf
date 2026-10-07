@@ -1,5 +1,6 @@
 import type { KerfCatalogId } from '../catalog.js';
 import type { RecipeId } from '../recipes/loaders.js';
+import { AnchoredSurfaceDemo } from './anchored-surface.js';
 import { ApplicationTabsDemo } from './application-tabs.js';
 import { BadgeDemo } from './badge.js';
 import { ChipDemo } from './chip.js';
@@ -47,6 +48,7 @@ import { ValueTableDemo } from './value-table.js';
 import { WorkbenchDemo } from './workbench.js';
 
 export const demos = {
+  'anchored-surface': AnchoredSurfaceDemo,
   badge: BadgeDemo,
   chip: ChipDemo,
   'lucide-icon': LucideIconDemo,
