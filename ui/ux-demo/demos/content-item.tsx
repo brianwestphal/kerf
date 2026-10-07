@@ -78,7 +78,7 @@ export function ContentItemDemo() {
         note="A static item may enter the tab order without becoming an action. outlined keeps the same ring visible for a drop target."
         align="none"
       >
-        <Pane label="Drop target items">
+        <Pane label="Drop target items" deepInset>
           <ContentItem
             tabIndex={0}
             outlined

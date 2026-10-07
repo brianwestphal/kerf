@@ -3,6 +3,7 @@ import { Moon, Sun, X } from 'lucide';
 import { ToolbarControlGroup } from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../../components/actions/toolbar-text/toolbar-text.js';
 import { List } from '../../components/collections/list/list.js';
+import { ListInsetControl } from '../../components/collections/list-inset-control/list-inset-control.js';
 import { ListInsetText } from '../../components/collections/list-inset-text/list-inset-text.js';
 import { TokenSearchField } from '../../components/forms/token-search-field/token-search-field.js';
 import { Workbench } from '../../components/layout/workbench/workbench.js';
@@ -104,7 +105,7 @@ export function Catalog({
             toggle: { action: toggleSidebarAction, name: catalogName },
           },
           header: (
-            <ListInsetText sides="rl">
+            <ListInsetControl sides="rbl">
               <TokenSearchField
                 id={`${id}-filter`}
                 label="Filter catalog"
@@ -117,7 +118,7 @@ export function Catalog({
                   action: 'catalog-clear-filter',
                 }}
               />
-            </ListInsetText>
+            </ListInsetControl>
           ),
           content: (
             <CatalogSidebar
