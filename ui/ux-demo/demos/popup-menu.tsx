@@ -180,6 +180,10 @@ export function PopupMenuDemo() {
           rootAttributes={{ 'data-popup-context-menu': '' }}
           items={[
             { label: 'Open', action: 'log-context-open' },
+            {
+              label: 'More actions',
+              submenu: [{ label: 'Copy reference', action: 'log-more' }],
+            },
             { label: 'Archive', action: 'log-more', tone: 'danger' },
           ]}
         />

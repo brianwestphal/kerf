@@ -96,9 +96,11 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await expectDemoTriggerAlignment(page, 'Nested decisions');
   await page.setViewportSize({ width: 1100, height: 800 });
   const demo = page.locator('[data-demo="popup-menu"]');
-  const nested = demo.locator('[data-component="popup-menu"]').filter({
-    has: page.locator('wa-dropdown-item[slot="submenu"]'),
-  });
+  const nested = demo
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .filter({
+      has: page.locator('wa-dropdown-item[slot="submenu"]'),
+    });
   const trigger = nested.getByRole('button', { name: 'Decide' });
   await page.evaluate(() => {
     document.body.dataset.testSelectCount = '0';
@@ -413,9 +415,11 @@ test('submenu arrows keep the chosen item focused after opening', async ({
   browserName,
 }) => {
   await page.goto('/?component=popup-menu');
-  const nested = page.locator('[data-component="popup-menu"]').filter({
-    has: page.locator('wa-dropdown-item[slot="submenu"]'),
-  });
+  const nested = page
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .filter({
+      has: page.locator('wa-dropdown-item[slot="submenu"]'),
+    });
   const trigger = nested.getByRole('button', { name: 'Decide' });
   const parent = nested.locator(
     'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
@@ -510,9 +514,11 @@ test('submenu recovers from an interrupted close and a stale hidden open', async
   browserName,
 }) => {
   await page.goto('/?component=popup-menu');
-  const nested = page.locator('[data-component="popup-menu"]').filter({
-    has: page.locator('wa-dropdown-item[slot="submenu"]'),
-  });
+  const nested = page
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .filter({
+      has: page.locator('wa-dropdown-item[slot="submenu"]'),
+    });
   const trigger = nested.getByRole('button', { name: 'Decide' });
   const parent = nested.locator(
     'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
@@ -645,5 +651,99 @@ test('context PopupMenu dismisses when clicking outside after either opening pat
       await page.screenshot({
         path: `test-results/popup-menu-dismissed-${width}.png`,
       });
+  }
+});
+
+test('context menu and nested commands stay within each viewport corner', async ({
+  page,
+  browserName,
+}) => {
+  for (const { width, height } of [
+    { width: 390, height: 844 },
+    { width: 1100, height: 800 },
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/?component=popup-menu');
+    const row = page.locator('[data-popup-menu-context-target]');
+    const context = page.locator('[data-popup-context-menu]');
+    await expect(context).toBeAttached();
+    for (const [x, y] of [
+      [5, 5],
+      [width - 5, 5],
+      [5, height - 5],
+      [width - 5, height - 5],
+    ]) {
+      await row.evaluate(
+        (target, point) =>
+          target.dispatchEvent(
+            new MouseEvent('contextmenu', {
+              bubbles: true,
+              cancelable: true,
+              clientX: point[0],
+              clientY: point[1],
+            }),
+          ),
+        [x, y],
+      );
+      await expect(context).toHaveAttribute('open', '');
+      await expect
+        .poll(() =>
+          context.evaluate((menu) => {
+            const surface = menu.shadowRoot
+              ?.querySelector('wa-popup')
+              ?.shadowRoot?.querySelector('[part="popup"]');
+            if (!surface) return false;
+            const bounds = surface.getBoundingClientRect();
+            return (
+              bounds.width > 0 &&
+              bounds.height > 0 &&
+              bounds.left >= -1 &&
+              bounds.top >= -1 &&
+              bounds.right <= window.innerWidth + 1 &&
+              bounds.bottom <= window.innerHeight + 1
+            );
+          }),
+        )
+        .toBe(true);
+
+      if (x === width - 5 && y === height - 5) {
+        const parent = context.locator('wa-dropdown-item', {
+          hasText: 'More actions',
+        });
+        await parent.hover();
+        await expect(parent).toHaveJSProperty('submenuOpen', true);
+        await expect
+          .poll(() =>
+            parent.evaluate((item) => {
+              const surface =
+                item.shadowRoot?.querySelector('[part~="submenu"]');
+              if (!surface) return false;
+              const bounds = surface.getBoundingClientRect();
+              return (
+                bounds.width > 0 &&
+                bounds.height > 0 &&
+                bounds.left >= -1 &&
+                bounds.top >= -1 &&
+                bounds.right <= window.innerWidth + 1 &&
+                bounds.bottom <= window.innerHeight + 1
+              );
+            }),
+          )
+          .toBe(true);
+        if (browserName === 'chromium')
+          await page.screenshot({
+            path: `test-results/popup-menu-context-corner-${width}.png`,
+          });
+      }
+      await context.evaluate(async (menu) => {
+        const hidden = new Promise<void>((resolve) =>
+          menu.addEventListener('wa-after-hide', () => resolve(), {
+            once: true,
+          }),
+        );
+        (menu as HTMLElement & { open: boolean }).open = false;
+        await hidden;
+      });
+    }
   }
 });
