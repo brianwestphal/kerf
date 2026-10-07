@@ -3,6 +3,8 @@
   /* Private per-instance values are reset on every Grid so a nested Grid never
      inherits its ancestor's; the inline style overrides them per prop. */
   --_kui-grid-gap: var(--kui-grid-gap);
+  --_kui-grid-column-gap: var(--_kui-grid-gap);
+  --_kui-grid-row-gap: var(--_kui-grid-gap);
   --_kui-grid-flex: 0 1 auto;
   --_kui-grid-inset-top: 0;
   --_kui-grid-inset-right: 0;
@@ -17,7 +19,8 @@
     var(--_kui-grid-inset-bottom, 0) var(--_kui-grid-inset-left, 0);
   flex: var(--_kui-grid-flex, initial);
   grid-template-columns: repeat(var(--_kui-grid-columns), minmax(0, 1fr));
-  gap: var(--_kui-grid-gap, var(--kui-grid-gap));
+  column-gap: var(--_kui-grid-column-gap);
+  row-gap: var(--_kui-grid-row-gap);
 }
 
 .kui-grid[data-control-insets*="t"] {

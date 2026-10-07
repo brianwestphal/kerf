@@ -1,12 +1,12 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import { gapLength } from '../../../shared/layout/gap.js';
 import type { Sides } from '../../../shared/layout/sides.js';
 import {
   type CssFlex,
   type CssFlexKeyword,
   type CssLength,
-  space,
-  type UiSpaceName,
+  type UiGap,
 } from '../../../shared/styles/css-values.js';
 
 const gridProtectedAttributes = new Set([
@@ -33,24 +33,14 @@ type GridRootAttributes = Readonly<
   }
 >;
 
-const spaceNames: readonly UiSpaceName[] = [
-  'none',
-  '2xs',
-  'xs',
-  's',
-  'm',
-  'l',
-  'xl',
-];
-
 interface GridCommonProps {
   children?: KerfUiContent;
   /** Make this a labeled multi-select grid for `ContentItem selectionMode="multiple"` tiles. */
   selectionMode?: 'multiple';
   /** Accessible name for the multi-select grid. */
   ariaLabel?: string;
-  /** A named UI spacing token or typed CSS length. Defaults to xs. */
-  gap?: UiSpaceName | CssLength;
+  /** One spacing value or separate column and row values. Defaults to xs. */
+  gap?: UiGap;
   /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
   flex?: boolean | CssFlexKeyword | CssFlex;
   /**
@@ -126,16 +116,17 @@ export function Grid({
     rootAttributes,
     gridProtectedAttributes,
   );
-  const gapValue = spaceNames.includes(gap as UiSpaceName)
-    ? space(gap as UiSpaceName)
-    : gap;
+  const gapStyle =
+    typeof gap === 'string'
+      ? `--_kui-grid-gap:${gapLength(gap)}`
+      : `--_kui-grid-column-gap:${gapLength(gap.column)};--_kui-grid-row-gap:${gapLength(gap.row)}`;
   const flexValue = flex === true ? '1 1 auto' : flex || undefined;
   const style = [
     columns === undefined ? '' : `--_kui-grid-columns:${columns}`,
     minColumnWidth === undefined
       ? ''
       : `--_kui-grid-min-column-width:${minColumnWidth}`,
-    `--_kui-grid-gap:${gapValue}`,
+    gapStyle,
     flexValue ? `--_kui-grid-flex:${flexValue}` : '',
   ]
     .filter(Boolean)
@@ -169,5 +160,7 @@ export type {
   CssFlex,
   CssFlexKeyword,
   CssLength,
+  UiGap,
+  UiGapValue,
   UiSpaceName,
 } from '../../../shared/styles/css-values.js';

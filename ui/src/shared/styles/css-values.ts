@@ -147,6 +147,13 @@ export type UiForegroundColorName = Extract<
 /** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */
 export type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
 
+/** A token or complete typed length for one gap axis. */
+export type UiGapValue = UiSpaceName | CssLength;
+
+/** A shared gap or independent column and row gaps. */
+export type UiGap =
+  UiGapValue | Readonly<{ column: UiGapValue; row: UiGapValue }>;
+
 const spaceVariables = {
   none: '--kui-space-none',
   '2xs': '--kui-space-2xs',

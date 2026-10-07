@@ -66,6 +66,13 @@ type UiColorName = (typeof uiColorNames)[number];
 type UiForegroundColorName = Extract<UiColorName, `${string}-on-${string}` | 'text' | 'text-quiet' | 'text-link'>;
 /** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */
 type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
+/** A token or complete typed length for one gap axis. */
+type UiGapValue = UiSpaceName | CssLength;
+/** A shared gap or independent column and row gaps. */
+type UiGap = UiGapValue | Readonly<{
+    column: UiGapValue;
+    row: UiGapValue;
+}>;
 /** Create a complete pixel length. */
 declare function px(value: number): CssLength;
 /** Create a complete root-font-relative length. */
@@ -116,7 +123,7 @@ declare function foregroundColorVar(name: `--${string}`, fallback?: CssForegroun
  */
 declare function foregroundColor(value: string): CssForegroundColor;
 
-export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiSpaceName, calc, colorVar, em, flex, foregroundColor, foregroundColorVar, lengthVar, pct, plus, px, rem, remify, space, uiColor };
+export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiGap, type UiGapValue, type UiSpaceName, calc, colorVar, em, flex, foregroundColor, foregroundColorVar, lengthVar, pct, plus, px, rem, remify, space, uiColor };
 ```
 
 ## `@kerfjs/ui/disclosure-arrow`
@@ -651,7 +658,8 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { S as Sides } from './sides-BPSWde0A.js';
-import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
+import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
+export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
 
 type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -670,8 +678,8 @@ interface ListProps {
     selectionMode?: 'multiple';
     /** Accessible name for the multi-select grid. */
     ariaLabel?: string;
-    /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
-    gap?: boolean | UiSpaceName | CssLength;
+    /** Standard gap (`true`), one spacing value, or separate column and row values. Defaults to no gap. */
+    gap?: boolean | UiGap;
     /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
     flex?: boolean | CssFlexKeyword | CssFlex;
     /**
@@ -708,7 +716,7 @@ type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' |
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
 declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
+export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, type ListProps, ListVerticalAlignment, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -3419,7 +3427,8 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { S as Sides } from './sides-BPSWde0A.js';
-import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
+import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
+export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
 
 type RowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -3437,8 +3446,8 @@ interface RowProps {
     hAlign?: HorizontalAlignment;
     /** Vertical alignment and wrapped-line distribution. Defaults to full. */
     vAlign?: VerticalAlignment;
-    /** A named UI spacing token or typed CSS length. Defaults to xs. */
-    gap?: UiSpaceName | CssLength;
+    /** One spacing value or separate column and row values. Defaults to xs. */
+    gap?: UiGap;
     /** Allow this row to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
     flex?: boolean | CssFlexKeyword | CssFlex;
     /**
@@ -3462,7 +3471,7 @@ interface RowProps {
 /** A horizontal flex row with explicit physical-axis alignment and spacing. */
 declare function Row({ children, hAlign, vAlign, gap, flex, fill, wrap, textInsets, controlInsets, className, rootAttributes, slot, }: RowProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowProps, Sides, UiSpaceName, VerticalAlignment };
+export { CssFlex, CssFlexKeyword, HorizontalAlignment, Row, type RowProps, Sides, UiGap, VerticalAlignment };
 ```
 
 ## `@kerfjs/ui/grid`
@@ -3471,7 +3480,8 @@ export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowP
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as Sides } from './sides-BPSWde0A.js';
-import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
+import { UiGap, CssFlexKeyword, CssFlex, CssLength } from './css-values.js';
+export { UiGapValue, UiSpaceName } from './css-values.js';
 
 type GridRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -3489,8 +3499,8 @@ interface GridCommonProps {
     selectionMode?: 'multiple';
     /** Accessible name for the multi-select grid. */
     ariaLabel?: string;
-    /** A named UI spacing token or typed CSS length. Defaults to xs. */
-    gap?: UiSpaceName | CssLength;
+    /** One spacing value or separate column and row values. Defaults to xs. */
+    gap?: UiGap;
     /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
     flex?: boolean | CssFlexKeyword | CssFlex;
     /**
@@ -3524,7 +3534,7 @@ type GridProps = GridCommonProps & ({
 /** Render equal tracks with a fixed count or a responsive minimum width. */
 declare function Grid({ children, selectionMode, ariaLabel, columns, minColumnWidth, autoFill, gap, flex, fill, textInsets, controlInsets, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, Sides, UiSpaceName };
+export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/spacer`

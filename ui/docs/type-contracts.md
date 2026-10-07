@@ -121,6 +121,8 @@ move errors into casts without making the integration safer.
 - Replace raw `List.gap` strings with a direct spacing shorthand (`"xs"`,
   `"m"`) or a complete value from `@kerfjs/ui/css-values`. Replace
   `gap="0.25rem"` with `gap={rem(0.25)}` and wrap sums with `calc(plus(...))`.
+  `Row`, `Grid`, and `List` also accept `gap={{ column: 'none', row: 'm' }}`;
+  each axis uses the same typed value contract.
 - Replace raw `List.flex` shorthands with `flex(grow, shrink, basis)` or a finite
   keyword; replace raw Skeleton dimensions with `px`/`rem`/`em`/`pct` builders;
   and replace raw choice colors with a foreground token such as

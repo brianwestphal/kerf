@@ -61,6 +61,8 @@ Use `Row`, `Grid`, or `List` spacing shorthands for repeated sibling spacing: `g
 `gap="m"`, and the other `UiSpaceName` values resolve to their matching
 `--kui-space-*` token. Use `Spacer` for one deliberate empty width or height, or
 pass `flex` to consume the remaining space along a flex parent's main axis.
+Pass `gap={{ column: 'none', row: 'm' }}` when the axes need different values;
+each axis accepts the same token or complete typed length as the scalar form.
 The canonical rhythm is `none`, `2xs`, `xs`, `m`, and `l`; use `s` and `xl`
 only as deliberate exceptions.
 
@@ -78,6 +80,7 @@ import { Row } from "@kerfjs/ui/row";
 
 <List gap="xs">...</List>;
 <Grid columns={3} gap="m">...</Grid>;
+<Grid columns={3} gap={{ column: 'none', row: 'm' }}>...</Grid>;
 <Row hAlign="full" vAlign="middle" gap="m">...</Row>;
 <List gap={space("m")}>...</List>;
 <List gap={calc(plus(rem(0.25), pct(10)))}>...</List>;

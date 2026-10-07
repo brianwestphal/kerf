@@ -3,6 +3,8 @@
   /* Private per-instance values are reset on every Row so a nested Row never
      inherits its ancestor's; the inline style overrides them per prop. */
   --_kui-row-gap: var(--kui-row-gap);
+  --_kui-row-column-gap: var(--_kui-row-gap);
+  --_kui-row-row-gap: var(--_kui-row-gap);
   --_kui-row-flex: 0 1 auto;
   --_kui-row-inset-top: 0;
   --_kui-row-inset-right: 0;
@@ -21,7 +23,8 @@
   align-items: stretch;
   align-content: space-between;
   justify-content: flex-start;
-  gap: var(--_kui-row-gap, var(--kui-row-gap));
+  column-gap: var(--_kui-row-column-gap);
+  row-gap: var(--_kui-row-row-gap);
 }
 
 .kui-row[data-control-insets*="t"] {

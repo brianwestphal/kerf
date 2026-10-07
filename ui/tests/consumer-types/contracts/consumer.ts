@@ -189,10 +189,13 @@ List({ gap: responsiveGap });
 List({ gap: space('m') });
 List({ gap: lengthVar('--app-gap', px(4)) });
 List({ gap: em(0.5) });
+List({ gap: { column: 'none', row: responsiveGap } });
 Row({ gap: spacingName });
 Row({ gap: responsiveGap });
+Row({ gap: { column: 'none', row: 'm' } });
 Grid({ columns: 3, gap: spacingName });
 Grid({ columns: 3, gap: responsiveGap });
+Grid({ columns: 3, gap: { column: rem(0.5), row: 'm' } });
 Grid({ minColumnWidth: px(376), gap: 'm' });
 const gridInsetSides: GridSides = 'trbl';
 Grid({ columns: 2, textInsets: gridInsetSides, controlInsets: 'r' });
@@ -216,6 +219,12 @@ List({ gap: '0.25rem' });
 Row({ gap: '0.25rem' });
 // @ts-expect-error KUI-T012 Grid uses the same typed gap contract.
 Grid({ columns: 2, gap: '0.25rem' });
+// @ts-expect-error KUI-T012 each axis still requires a typed spacing value.
+Row({ gap: { column: '4px', row: 'm' } });
+// @ts-expect-error KUI-T012 the two-axis form requires both axes.
+Grid({ columns: 2, gap: { row: 'm' } });
+// @ts-expect-error KUI-T012 incomplete expressions are invalid in either axis.
+List({ gap: { column: 'none', row: expression } });
 // @ts-expect-error KUI-T012 Spacer dimensions use the same typed length contract.
 Spacer({ width: '0.25rem' });
 // @ts-expect-error KUI-T012 spacing shorthands are a finite vocabulary.

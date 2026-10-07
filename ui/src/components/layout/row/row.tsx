@@ -6,13 +6,12 @@ import {
   type VerticalAlignment,
   verticalAlignment,
 } from '../../../shared/layout/flex-alignment.js';
+import { gapLength } from '../../../shared/layout/gap.js';
 import type { Sides } from '../../../shared/layout/sides.js';
 import {
   type CssFlex,
   type CssFlexKeyword,
-  type CssLength,
-  space,
-  type UiSpaceName,
+  type UiGap,
 } from '../../../shared/styles/css-values.js';
 
 const rowProtectedAttributes = new Set([
@@ -39,24 +38,14 @@ type RowRootAttributes = Readonly<
   }
 >;
 
-const spaceNames: readonly UiSpaceName[] = [
-  'none',
-  '2xs',
-  'xs',
-  's',
-  'm',
-  'l',
-  'xl',
-];
-
 export interface RowProps {
   children?: KerfUiContent;
   /** Horizontal distribution. Defaults to left. */
   hAlign?: HorizontalAlignment;
   /** Vertical alignment and wrapped-line distribution. Defaults to full. */
   vAlign?: VerticalAlignment;
-  /** A named UI spacing token or typed CSS length. Defaults to xs. */
-  gap?: UiSpaceName | CssLength;
+  /** One spacing value or separate column and row values. Defaults to xs. */
+  gap?: UiGap;
   /** Allow this row to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
   flex?: boolean | CssFlexKeyword | CssFlex;
   /**
@@ -97,14 +86,12 @@ export function Row({
     rootAttributes,
     rowProtectedAttributes,
   );
-  const gapValue = spaceNames.includes(gap as UiSpaceName)
-    ? space(gap as UiSpaceName)
-    : gap;
+  const gapStyle =
+    typeof gap === 'string'
+      ? `--_kui-row-gap:${gapLength(gap)}`
+      : `--_kui-row-column-gap:${gapLength(gap.column)};--_kui-row-row-gap:${gapLength(gap.row)}`;
   const flexValue = flex === true ? '1 1 auto' : flex || undefined;
-  const style = [
-    `--_kui-row-gap:${gapValue}`,
-    flexValue ? `--_kui-row-flex:${flexValue}` : '',
-  ]
+  const style = [gapStyle, flexValue ? `--_kui-row-flex:${flexValue}` : '']
     .filter(Boolean)
     .join(';');
 
@@ -137,5 +124,7 @@ export type {
   CssFlex,
   CssFlexKeyword,
   CssLength,
+  UiGap,
+  UiGapValue,
   UiSpaceName,
 } from '../../../shared/styles/css-values.js';

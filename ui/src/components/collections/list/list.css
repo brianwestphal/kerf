@@ -5,6 +5,8 @@
      omits `gap` or `flex` never inherits its ancestor's; the component's inline
      style overrides these defaults for the props it does set. */
   --_kui-list-gap: 0;
+  --_kui-list-column-gap: var(--_kui-list-gap);
+  --_kui-list-row-gap: var(--_kui-list-gap);
   --_kui-list-flex: 0 1 auto;
   --_kui-list-inset-top: 0;
   --_kui-list-inset-right: 0;
@@ -26,7 +28,8 @@
   align-items: stretch;
   align-content: space-between;
   justify-content: flex-start;
-  gap: var(--_kui-list-gap, 0);
+  column-gap: var(--_kui-list-column-gap);
+  row-gap: var(--_kui-list-row-gap);
   box-shadow:
     inset 0 1px var(--_kui-list-divider-top),
     inset -1px 0 var(--_kui-list-divider-right),

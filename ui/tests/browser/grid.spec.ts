@@ -37,7 +37,7 @@ test('Grid keeps fixed equal tracks, typed gaps, and flex participation', async 
 
   const demo = page.locator('[data-demo="grid"]');
   const two = demo.locator(
-    '[data-component="grid"][data-columns="2"]:not([data-demo-grid-insets])',
+    '[data-component="grid"][data-columns="2"]:not([data-demo-grid-insets]):not([data-demo-grid-gap-axes])',
   );
   const four = demo.locator('[data-component="grid"][data-columns="4"]');
   const flexible = demo.locator('[data-component="grid"][data-flex="true"]');

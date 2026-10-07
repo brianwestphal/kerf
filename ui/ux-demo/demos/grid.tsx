@@ -32,6 +32,20 @@ export function GridDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
+        label="Independent gaps"
+        note="Column tracks touch while rows use the m spacing token."
+      >
+        <Grid
+          columns={2}
+          gap={{ column: 'none', row: 'm' }}
+          rootAttributes={{ 'data-demo-grid-gap-axes': '' }}
+        >
+          {['Plan', 'Build', 'Review', 'Ship'].map((label) => (
+            <wa-card appearance="outlined">{label}</wa-card>
+          ))}
+        </Grid>
+      </CatalogExample>
+      <CatalogExample
         label="Responsive form columns"
         note="Equal tracks stay at least 376px wide, then collapse to one when a second track no longer fits."
         viewport={{ width: 'wide' }}

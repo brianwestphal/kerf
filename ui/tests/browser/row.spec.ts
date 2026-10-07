@@ -136,6 +136,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
     ...horizontal.map(([label]) => `${label} distribution`),
     ...vertical.map(([label]) => `${label} alignment`),
     'Wrapped row',
+    'Independent gaps',
   ];
   for (const label of framedLabels) {
     const rowExample = example(label);

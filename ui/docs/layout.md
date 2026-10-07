@@ -376,8 +376,12 @@ The two relationships that get confused most are 8px vs 24px: 8px is _inside_ a
 group, 24px is _between_ major, differing regions. 16px sits between them for
 same-kind groups.
 
-For `Row.gap`, `Grid.gap`, and `List.gap`, pass these token names directly (`gap="xs"`, `gap="m"`) or use
-`space('xs')` from `@kerfjs/ui/css-values` when composing a value in JavaScript.
+For `Row.gap`, `Grid.gap`, and `List.gap`, pass one token name (`gap="xs"`,
+`gap="m"`) to use it on both axes, or pass
+`gap={{ column: 'none', row: 'm' }}` to set each axis independently. Each axis
+also accepts a complete typed `CssLength`, including `space('xs')` from
+`@kerfjs/ui/css-values`. A List is a single vertical column, so its row gap
+separates items; its column gap is exposed for the same CSS axis contract.
 Use `rem`, `em`, `px`, `pct`, `lengthVar`, and `calc(plus(...))` only when a
 named spacing relationship does not express the requirement; do not pass raw
 CSS strings.
@@ -521,6 +525,13 @@ import { px } from "@kerfjs/ui/css-values";
 <Grid columns={2} gap="m">
   <label>Quantity <input /></label>
   <label>Unit <input /></label>
+</Grid>;
+
+<Grid columns={2} gap={{ column: 'none', row: 'm' }}>
+  <DocumentTile />
+  <DocumentTile />
+  <DocumentTile />
+  <DocumentTile />
 </Grid>;
 
 <Grid minColumnWidth={px(376)} gap="m">

@@ -2294,6 +2294,7 @@
           "rawPolicy": "forbid",
           "examples": [
             "gap=\"xs\"",
+            "gap={{ column: \"none\", row: \"m\" }}",
             "gap={space(\"m\")}",
             "gap={calc(plus(rem(0.25), pct(10)))}"
           ]
@@ -2397,6 +2398,7 @@
           "rawPolicy": "forbid",
           "examples": [
             "gap=\"m\"",
+            "gap={{ column: \"none\", row: \"m\" }}",
             "gap={space(\"m\")}",
             "gap={calc(plus(rem(0.25), pct(10)))}"
           ]
@@ -2596,6 +2598,7 @@
           "rawPolicy": "forbid",
           "examples": [
             "gap=\"xs\"",
+            "gap={{ column: \"none\", row: \"m\" }}",
             "gap={rem(0.25)}",
             "gap={calc(plus(rem(0.25), pct(10)))}"
           ]

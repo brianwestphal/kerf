@@ -3,7 +3,7 @@ import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/tag/tag.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { flex, space } from '@kerfjs/ui/css-values';
+import { flex } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
@@ -86,7 +86,7 @@ export function ListDemo() {
               />
             }
           >
-            <List gap={space('l')} flex={flex(1)} scrollable>
+            <List gap={{ column: 'none', row: 'l' }} flex={flex(1)} scrollable>
               <section>
                 <List>
                   {workspaceHeading !== undefined ? (

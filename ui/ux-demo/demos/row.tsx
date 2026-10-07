@@ -101,6 +101,30 @@ export function RowDemo() {
         </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
+        label="Independent gaps"
+        viewport={{ width: 'compact' }}
+        note="Wrapping can keep columns touching while separating rows by the m spacing token."
+      >
+        <DemoFrameShell>
+          <Row wrap vAlign="top" gap={{ column: 'none', row: 'm' }}>
+            {[
+              'One',
+              'Two',
+              'Three',
+              'Four',
+              'Five',
+              'Six',
+              'Seven',
+              'Eight',
+              'Nine',
+              'Ten',
+            ].map((label) => (
+              <DemoChip label={label} size="wide" />
+            ))}
+          </Row>
+        </DemoFrameShell>
+      </CatalogExample>
+      <CatalogExample
         label="Flex participation"
         note="Row accepts the same boolean, finite-keyword, and typed flex grammar as List when it participates in a parent flex layout."
       >
@@ -130,7 +154,11 @@ export function RowDemo() {
         note="A nested Row owns its own insets: the outer row keeps its left text inset while the nested row adds only an 8px bottom control inset."
       >
         <DemoFrameShell>
-          <Row textInsets="l" vAlign="middle">
+          <Row
+            textInsets="l"
+            vAlign="middle"
+            gap={{ column: 'none', row: 'm' }}
+          >
             <DemoChip label="Outer" />
             <Row controlInsets="b" vAlign="middle">
               <DemoChip label="Nested one" />

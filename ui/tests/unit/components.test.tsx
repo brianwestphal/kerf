@@ -719,6 +719,23 @@ describe('production UI primitives', () => {
     );
   });
 
+  it('resolves independent column and row gap values for each layout', () => {
+    const axes = { column: 'none', row: 'm' } as const;
+    expect(asHtml(Row({ gap: axes }))).toContain(
+      'style="--_kui-row-column-gap:var(--kui-space-none);--_kui-row-row-gap:var(--kui-space-m)"',
+    );
+    expect(asHtml(Grid({ columns: 2, gap: axes }))).toContain(
+      '--_kui-grid-column-gap:var(--kui-space-none);--_kui-grid-row-gap:var(--kui-space-m)',
+    );
+    expect(asHtml(List({ gap: axes }))).toContain(
+      'style="--_kui-list-column-gap:var(--kui-space-none);--_kui-list-row-gap:var(--kui-space-m)"',
+    );
+    expect(asHtml(List({ gap: axes }))).toContain('data-gap="true"');
+    expect(asHtml(Row({ gap: { column: rem(0.5), row: 'xs' } }))).toContain(
+      '--_kui-row-column-gap:0.5rem;--_kui-row-row-gap:var(--kui-space-xs)',
+    );
+  });
+
   it('normalizes physical alignment aliases for rows and lists', () => {
     const defaults = asHtml(Row({ children: <span>Default</span> }));
     expect(defaults).toContain('class="kui-row" data-component="row"');

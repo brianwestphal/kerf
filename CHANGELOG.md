@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `Row`, `Grid`, and `List` accept `gap={{ column, row }}` with independent typed spacing values, while their existing single-value gaps continue to apply to both axes (`KF-8HJFWC`).
+
 - `ListHeader` accepts `badge` and `status` together, including explicit `undefined` for either when app state changes; a semantic `count` remains separate.
 
 - `Pane`, `SunkenPanel`, plain `TabNavigator` scenes, `Workbench` regions, and static `ContentItem` surfaces can opt into keyboard or programmatic focus; `outlined` holds the standard focus ring for application states such as drop targets. Inactive scenes and collapsed panels suppress their focus stop and outline.

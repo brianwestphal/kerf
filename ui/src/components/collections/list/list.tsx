@@ -6,13 +6,12 @@ import {
   type ListVerticalAlignment,
   verticalAlignment,
 } from '../../../shared/layout/flex-alignment.js';
+import { gapLength } from '../../../shared/layout/gap.js';
 import type { Sides } from '../../../shared/layout/sides.js';
 import {
   type CssFlex,
   type CssFlexKeyword,
-  type CssLength,
-  space,
-  type UiSpaceName,
+  type UiGap,
 } from '../../../shared/styles/css-values.js';
 
 const listProtectedAttributes = new Set([
@@ -41,24 +40,14 @@ type ListRootAttributes = Readonly<
   }
 >;
 
-const spaceNames: readonly UiSpaceName[] = [
-  'none',
-  '2xs',
-  'xs',
-  's',
-  'm',
-  'l',
-  'xl',
-];
-
 export interface ListProps {
   children?: KerfUiContent;
   /** Make this list a labeled multi-select grid for `ContentItem selectionMode="multiple"` rows. */
   selectionMode?: 'multiple';
   /** Accessible name for the multi-select grid. */
   ariaLabel?: string;
-  /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
-  gap?: boolean | UiSpaceName | CssLength;
+  /** Standard gap (`true`), one spacing value, or separate column and row values. Defaults to no gap. */
+  gap?: boolean | UiGap;
   /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
   flex?: boolean | CssFlexKeyword | CssFlex;
   /**
@@ -122,17 +111,16 @@ export function List({
     rootAttributes,
     listProtectedAttributes,
   );
-  const gapValue =
+  const gapStyle =
     gap === true
-      ? 'var(--kui-list-gap)'
-      : spaceNames.includes(gap as UiSpaceName)
-        ? space(gap as UiSpaceName)
-        : gap || undefined;
+      ? '--_kui-list-gap:var(--kui-list-gap)'
+      : gap === false
+        ? ''
+        : typeof gap === 'string'
+          ? `--_kui-list-gap:${gapLength(gap)}`
+          : `--_kui-list-column-gap:${gapLength(gap.column)};--_kui-list-row-gap:${gapLength(gap.row)}`;
   const flexValue = flex === true ? '1 1 auto' : flex || undefined;
-  const style = [
-    gapValue ? `--_kui-list-gap:${gapValue}` : '',
-    flexValue ? `--_kui-list-flex:${flexValue}` : '',
-  ]
+  const style = [gapStyle, flexValue ? `--_kui-list-flex:${flexValue}` : '']
     .filter(Boolean)
     .join(';');
 
@@ -171,5 +159,7 @@ export type {
   CssFlex,
   CssFlexKeyword,
   CssLength,
+  UiGap,
+  UiGapValue,
   UiSpaceName,
 } from '../../../shared/styles/css-values.js';
