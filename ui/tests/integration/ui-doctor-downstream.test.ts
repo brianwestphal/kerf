@@ -257,6 +257,48 @@ async function lintTypeScriptFixture(root: string) {
 }
 
 test(
+  'doctor accepts the documented Pane scrollbar gutter token in consumer CSS',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-pane-token-'));
+    try {
+      await mkdir(resolve(root, 'src'));
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"pane-token-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: {
+            catalog: false,
+            typescript: false,
+            eslint: false,
+            analyzer: true,
+            browser: false,
+          },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/quotes.css'),
+        '.quotes-pane { --kui-pane-scrollbar-gutter: stable; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/quotes.tsx'),
+        "import './quotes.css';\nimport { Pane } from '@kerfjs/ui/pane';\nexport const Quotes = () => <Pane class=\"quotes-pane\">Quotes</Pane>;\n",
+      );
+      await link(root, '@kerfjs/ui', uiRoot);
+      const result = await doctor(root);
+      expect(result.status).toBe(0);
+      expect(result.report.diagnostics).toEqual([]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'a downstream app moves from broken to clean using the supported doctor loop',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-downstream-'));

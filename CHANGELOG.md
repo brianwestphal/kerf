@@ -54,6 +54,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Catalog Pane's documented `--kui-pane-scrollbar-gutter` token so downstream doctor and ESLint checks accept the supported setting (`KF-W5VXQF`).
+
 - The actionable ToolbarText catalog example uses the standard TokenSearchField toolbar presentation for its search control, and an empty TokenSearchField shows its placeholder.
 
 - Preserve toolbar visibility and measurement state across app renders to prevent geometry-driven render loops and repeated observer/layout work (`KF-58HBRR`).

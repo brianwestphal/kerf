@@ -15,6 +15,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 - Pinned chrome needs a divider from the scrolling content only while content is scrolled beneath it (wireScrollDividers).
 - A lowered background must cover the scrolling work viewport and blank space after short content without a second scroll container (appearance: sunken).
 - A child table or other component needs edge-to-edge decoration with text aligned to other pane content.
+- An opaque edge-to-edge child needs a reserved vertical scrollbar gutter.
 
 **Not when:**
 
@@ -62,7 +63,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined).
+**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined).
 
 **Wiring:** `wireScrollDividers` is optional.
 
@@ -79,6 +80,7 @@ Margin: child · border: conditional · padding: child (layout role: structure).
 - Safe areas: the root and separators paint through unsafe areas while header, content, and footer pad the sides the pane still reaches (routed by --kui-edge-inset-\*); content block insets are scroll padding.
 - The scrolling content exposes its resolved logical inline padding to descendants as --kui-pane-content-inset-inline-start/end, including safe areas and deepInset.
 - deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge.
+- For opaque edge-to-edge children, --kui-pane-scrollbar-gutter: stable reserves a vertical scrollbar gutter outside the published content insets; the default is auto.
 
 ## Accessibility
 
@@ -93,7 +95,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-pane`, `kui-pane__content`, `kui-pane__footer`, `kui-pane__header`, `kui-pane__toolbar` on an element you write; render `Pane` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-edge-inset-block-end`, `--kui-edge-inset-block-start`, `--kui-edge-inset-inline-end`, `--kui-edge-inset-inline-start`, `--kui-pane-separator-color`, `--kui-pane-separator-width`, `--kui-pane-chrome-background`, `--kui-pane-content-inset-inline-start`, `--kui-pane-content-inset-inline-end`, `--kui-sunken-panel-background`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-edge-inset-block-end`, `--kui-edge-inset-block-start`, `--kui-edge-inset-inline-end`, `--kui-edge-inset-inline-start`, `--kui-pane-separator-color`, `--kui-pane-separator-width`, `--kui-pane-chrome-background`, `--kui-pane-content-inset-inline-start`, `--kui-pane-content-inset-inline-end`, `--kui-pane-scrollbar-gutter`, `--kui-sunken-panel-background`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

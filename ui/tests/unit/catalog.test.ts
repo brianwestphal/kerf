@@ -117,6 +117,9 @@ describe('UX catalog metadata', () => {
     expect(
       artifact.entries.find(({ id }) => id === 'foundation')?.publicTokens,
     ).toEqual(foundationTokens);
+    expect(
+      artifact.entries.find(({ id }) => id === 'pane')?.publicTokens,
+    ).toContain('--kui-pane-scrollbar-gutter');
     const workbench = artifact.entries.find(({ id }) => id === 'workbench');
     const workbenchCss = await readFile(
       resolve(

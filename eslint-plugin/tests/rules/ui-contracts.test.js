@@ -186,6 +186,10 @@ tester.run('ui-public-boundaries', boundaries, {
     },
     { code: "const css = 'color: var(--kui-color-border)';", settings },
     {
+      code: "const paneStyle = '--kui-pane-scrollbar-gutter: stable';",
+      settings: shippedUiSettings,
+    },
+    {
       code: "const css = 'width: var(--kui-workbench-rail-width); height: var(--kui-workbench-drawer-height)';",
       settings,
     },
