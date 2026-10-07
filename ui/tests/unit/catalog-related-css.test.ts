@@ -53,4 +53,20 @@ describe('Catalog related selector CSS', () => {
       'background-size': 'remify(16px) remify(16px)',
     });
   });
+
+  it('lets the sunken Pane paint through the sunken stage without stacking alpha', async () => {
+    const file = resolve(components, 'catalog-stage.css');
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const sunken = root.nodes.find(
+      (node): node is Rule =>
+        node.type === 'rule' &&
+        node.selector === '.kui-catalog__stage[data-background-style="sunken"]',
+    );
+    if (!sunken) throw new Error('Missing sunken catalog stage rule');
+    expect(
+      sunken.nodes.find(
+        (node) => node.type === 'decl' && node.prop === 'background-color',
+      ),
+    ).toMatchObject({ value: 'transparent' });
+  });
 });

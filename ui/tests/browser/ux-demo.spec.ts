@@ -2042,6 +2042,39 @@ test('switches catalog background patterns and surfaces across entries and theme
   await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
 });
 
+test('uses one sunken surface under the transparent Catalog stage in both themes', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=badge');
+  const pane = page.locator(
+    '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"]',
+  );
+  await expect(pane).toHaveAttribute('data-appearance', 'sunken');
+  const stage = page.locator('[data-catalog-stage]');
+  const menu = page.locator('[data-catalog-background-menu]');
+  await menu.locator('[slot="trigger"]').click();
+  await menu.locator('[data-background-choice="sunken"]').click();
+  for (const theme of ['light', 'dark']) {
+    await expect(stage).toHaveAttribute('data-background-style', 'sunken');
+    await expect(stage).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(stage).toHaveCSS('background-image', 'none');
+    if (browserName === 'chromium')
+      await page.screenshot({
+        path: `test-results/catalog-sunken-background-${theme}.png`,
+      });
+    if (theme === 'light')
+      await page.locator('[data-action="toggle-theme"]').click();
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(stage).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-sunken-background-dark-narrow.png',
+    });
+});
+
 test('tiles the catalog checkerboard through below-fold preview content', async ({
   page,
   browserName,

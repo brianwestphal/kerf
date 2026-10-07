@@ -20,6 +20,7 @@
 }
 
 .kui-catalog__stage[data-background-style="sunken"] {
+  background-color: transparent;
   background-image: none;
   background-size: auto;
 }
