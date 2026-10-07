@@ -70,6 +70,13 @@ describe('Catalog', () => {
     // The shell is a Workbench whose left rail holds the navigation.
     expect(html).toContain('data-component="workbench"');
     expect(html).toContain('id="kui-catalog-left-rail"');
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    const mainPane = host.querySelector(
+      '.kui-workbench__main [data-component="pane"]',
+    );
+    expect(mainPane?.getAttribute('data-appearance')).toBe('sunken');
+    expect(mainPane?.getAttribute('data-deep-inset')).toBe('true');
     expect(html).toContain(
       '<nav aria-label="Acme UI components" data-catalog-sidebar>',
     );

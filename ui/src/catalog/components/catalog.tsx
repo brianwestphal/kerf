@@ -171,6 +171,7 @@ export function Catalog({
             </>
           ),
         }}
+        mainPane={{ appearance: 'sunken', deepInset: true }}
         mainFooter={
           <CatalogResourceFooter
             name={name}

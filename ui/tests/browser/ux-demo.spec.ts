@@ -1963,6 +1963,36 @@ test('scrolls the complete catalog sidebar and detail at wide and narrow sizes',
     });
 });
 
+test('left aligns the catalog canvas inside a sunken, deep inset work pane', async ({
+  page,
+  browserName,
+}) => {
+  for (const viewport of [
+    { width: 1920, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/?component=badge');
+    const pane = page.locator(
+      '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"]',
+    );
+    await expect(pane).toHaveAttribute('data-appearance', 'sunken');
+    await expect(pane).toHaveAttribute('data-deep-inset', 'true');
+    const stage = page.locator('.kui-catalog__stage');
+    const canvas = page.locator('.kui-catalog__canvas');
+    const stageBox = await stage.boundingBox();
+    const canvasBox = await canvas.boundingBox();
+    expect(stageBox).not.toBeNull();
+    expect(canvasBox).not.toBeNull();
+    expect(Math.abs(canvasBox!.x - stageBox!.x)).toBeLessThanOrEqual(1);
+    await expect(canvas).toHaveCSS('justify-items', 'start');
+    if (browserName === 'chromium')
+      await page.screenshot({
+        path: `test-results/catalog-left-aligned-${viewport.width}.png`,
+      });
+  }
+});
+
 test('tiles the catalog checkerboard through below-fold preview content', async ({
   page,
   browserName,
@@ -1998,6 +2028,9 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
       stageContentHeight: stage.scrollHeight,
       viewportHeight: scrollOwner.clientHeight,
       scrollHeight: scrollOwner.scrollHeight,
+      contentPaddingEnd: Number.parseFloat(
+        window.getComputedStyle(scrollOwner).paddingBottom,
+      ),
     };
   });
   expect(wideGeometry.stageHeight).toBeGreaterThan(wideGeometry.viewportHeight);
@@ -2005,14 +2038,15 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
     Math.abs(wideGeometry.stageHeight - wideGeometry.stageContentHeight),
   ).toBeLessThanOrEqual(1);
   // The scroller holds the stage (and the entry description only when it is
-  // not pinned): nothing overflows past the stage. Both heights round a
+  // not pinned), plus the main Pane's deep inset after the stage. Both heights round a
   // fractional layout height independently (Firefox on Linux measured 1791
   // vs 1792), so allow the same 1px as the stage check.
   expect(
     Math.abs(
       wideGeometry.scrollHeight -
         wideGeometry.stageContentHeight -
-        wideGeometry.descriptionHeight,
+        wideGeometry.descriptionHeight -
+        wideGeometry.contentPaddingEnd,
     ),
   ).toBeLessThanOrEqual(1);
   await detailScroll.evaluate((element) =>

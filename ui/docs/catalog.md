@@ -485,7 +485,7 @@ matching options on `wireCatalog`) if they collide with your own action table.
 
 `Catalog` composes public components (`Workbench`, `Pane`, `Toolbar`, `List`,
 `ListHeader`, `ListItem`, `ListInsetText`, `Text`, …) and owns only the preview stage
-(the checkerboard and centered canvas), the geometry overlay, the example viewport
+(the checkerboard and left-aligned canvas), the geometry overlay, the example viewport
 options, and the brand mark's size. A bundler that honors the `browser` export
 condition loads the Catalog's stylesheets and those of every component it renders
 internally with the `@kerfjs/ui/catalog` import alone — no dependence on which other

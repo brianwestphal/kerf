@@ -11,7 +11,7 @@ interface CatalogStageProps {
   rootAttributes?: CatalogStageRootAttributes;
 }
 
-/** The centered preview canvas and its optional wire-managed geometry overlay. */
+/** The preview canvas and its optional wire-managed geometry overlay. */
 export function CatalogStage({
   name,
   content,
