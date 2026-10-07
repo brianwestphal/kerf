@@ -15,8 +15,6 @@ export const catalogDemoConformanceRules = Object.freeze({
   privateMarkup: 'catalog-demo/private-catalog-markup',
   emptyExample: 'catalog-demo/empty-example',
   wrappedStack: 'catalog-demo/wrapped-example-stack',
-  compositionSkip: 'catalog-demo/composition-overlay-skip',
-  shellOverlay: 'catalog-demo/component-only-overlay',
   shellMode: 'catalog-demo/documented-demo-mode',
   exceptionInvalid: 'catalog-demo/invalid-exception',
   exceptionStale: 'catalog-demo/stale-exception',
@@ -180,7 +178,6 @@ export function analyzeCatalogDemoSource({
   const catalogImports = new Map();
   const helperElements = { stacks: [], examples: [] };
   const directMetadata = [];
-  let hasSkipMetadata = false;
 
   for (const statement of file.statements) {
     if (
@@ -284,14 +281,7 @@ export function analyzeCatalogDemoSource({
               property,
             ),
           );
-        if (
-          ['data-demo', 'data-catalog-geometry-overlay-skip'].includes(
-            attributeName,
-          )
-        )
-          directMetadata.push(property);
-        if (attributeName === 'data-catalog-geometry-overlay-skip')
-          hasSkipMetadata = true;
+        if (attributeName === 'data-demo') directMetadata.push(property);
         if (!['class', 'className'].includes(attributeName)) continue;
         const customStyleClass = collectStaticStrings(property).find((value) =>
           /\b(?:demo|wa-demo|token-search)-[a-z0-9_-]+\b/i.test(value),
@@ -338,11 +328,6 @@ export function analyzeCatalogDemoSource({
             node,
           ),
         );
-      if (
-        rootAttributeValue(opening, 'data-catalog-geometry-overlay-skip') !==
-        undefined
-      )
-        hasSkipMetadata = true;
     }
     ts.forEachChild(node, visit);
   };
@@ -410,17 +395,6 @@ export function analyzeCatalogDemoSource({
       );
     }
   }
-  if (kind === 'composition' && hasSkipMetadata)
-    diagnostics.push(
-      diagnostic(
-        catalogDemoConformanceRules.compositionSkip,
-        route,
-        filePath,
-        'Composition routes already disable the global geometry overlay and must not add specimen skip markers.',
-        file,
-      ),
-    );
-
   return diagnostics;
 }
 
@@ -452,7 +426,6 @@ function expressionContainsComparison(expression, property, value) {
 export function analyzeCatalogShellSource({ filePath, source }) {
   const file = sourceFile(filePath, source);
   const diagnostics = [];
-  let validOverlay = false;
   let validMode = false;
   const visit = (node) => {
     if (
@@ -462,12 +435,6 @@ export function analyzeCatalogShellSource({ filePath, source }) {
     ) {
       const expression = node.initializer.expression;
       const name = node.name.getText(file);
-      if (expression && name === 'geometryOverlay')
-        validOverlay ||= expressionContainsComparison(
-          expression,
-          'kind',
-          'component',
-        );
       if (expression && name === 'data-demo-mode')
         validMode ||=
           expressionContainsComparison(expression, 'kind', 'component') &&
@@ -486,16 +453,6 @@ export function analyzeCatalogShellSource({ filePath, source }) {
     ts.forEachChild(node, visit);
   };
   visit(file);
-  if (!validOverlay)
-    diagnostics.push(
-      diagnostic(
-        catalogDemoConformanceRules.shellOverlay,
-        '@catalog-shell',
-        filePath,
-        'Catalog geometryOverlay must be derived from component versus composition kind.',
-        file,
-      ),
-    );
   if (!validMode)
     diagnostics.push(
       diagnostic(

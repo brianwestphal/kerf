@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Removed
 
+- **Breaking (`@kerfjs/ui`, 5.0 beta):** remove the Catalog geometry highlight overlay, its `geometryOverlay` prop, `wireCatalogGeometryOverlay` helper, and specimen skip marker. Catalog previews retain their component borders, outlines, and focus states (`KF-E3WKA5`).
+
 - **Breaking (`@kerfjs/ui`, 5.0 beta):** remove the deprecated `TabScaffold` component and type aliases, `wireTabScaffold` and `WireTabScaffoldOptions`, and the `tab-scaffold`, `wire-tab-scaffold`, and `tab-scaffold.css` package subpaths. Use `TabNavigator`, `TabNavigatorTab`, `TabNavigatorProps`, `wireTabNavigator`, and their corresponding subpaths. The rendered DOM classes and data attributes remain stable. See `ui/docs/tab-navigator.md` for migration steps (`KF-CMK0W8`).
 
 ### Added

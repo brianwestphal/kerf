@@ -130,7 +130,7 @@ copyable reference compositions, not new monolithic components.
 
 When presenting a component or recipe in a Catalog, use the authoritative
 [Catalog demo authoring contract](./catalog.md#catalog-demo-authoring-contract)
-rather than deriving preview structure or geometry-overlay behavior from these
+rather than deriving preview structure from these
 selection entries.
 
 ## Missing recurring concepts

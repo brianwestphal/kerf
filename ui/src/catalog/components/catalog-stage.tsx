@@ -13,16 +13,14 @@ const protectedAttributes = new Set([
 interface CatalogStageProps {
   name: string;
   content: KerfUiContent;
-  geometryOverlay?: boolean;
   backgroundStyle?: CatalogBackgroundStyle;
   rootAttributes?: CatalogStageRootAttributes;
 }
 
-/** The preview canvas and its optional wire-managed geometry overlay. */
+/** The preview canvas for an active Catalog entry. */
 export function CatalogStage({
   name,
   content,
-  geometryOverlay,
   backgroundStyle = 'checkerboard',
   rootAttributes = {},
 }: CatalogStageProps) {
@@ -38,17 +36,7 @@ export function CatalogStage({
       data-background-style={backgroundStyle}
       aria-label={`${name} preview`}
     >
-      <div class="kui-catalog__canvas">
-        {content}
-        {geometryOverlay !== undefined ? (
-          <div
-            class="kui-catalog__geometry-overlay"
-            data-catalog-geometry-overlay
-            data-morph-skip-children
-            aria-hidden="true"
-          />
-        ) : null}
-      </div>
+      <div class="kui-catalog__canvas">{content}</div>
     </section>
   );
 }

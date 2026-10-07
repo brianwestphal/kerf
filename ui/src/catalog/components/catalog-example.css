@@ -150,7 +150,7 @@
   }
 }
 
-/* The published inset lets the geometry overlay exclude this authoring aid. */
+/* Bare specimens use a small inset to align with the surrounding examples. */
 .kui-catalog-example[data-align="glyph"]
   > :not([data-catalog-example-label]):not([data-catalog-example-note]) {
   --kui-catalog-example-align: remify(16px);

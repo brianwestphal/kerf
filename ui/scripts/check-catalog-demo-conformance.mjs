@@ -104,5 +104,5 @@ if (failures.length) {
   process.exitCode = 1;
 } else
   console.log(
-    `[check-catalog-demo-conformance] OK — ${demos.length} routes use public imports, sanctioned helpers or reviewed exceptions, and kind-driven overlays.`,
+    `[check-catalog-demo-conformance] OK — ${demos.length} routes use public imports, sanctioned helpers or reviewed exceptions, and documented stage modes.`,
   );

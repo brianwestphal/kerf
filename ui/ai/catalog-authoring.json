@@ -14,7 +14,6 @@
     "CatalogExample",
     "CatalogExampleStack",
     "wireCatalog",
-    "wireCatalogGeometryOverlay",
     "revealCatalogEntry"
   ],
   "taxonomy": {
@@ -30,7 +29,6 @@
   },
   "metadata": {
     "slot": "rootAttributes",
-    "demo": "data-demo",
-    "geometryOverlaySkip": "data-catalog-geometry-overlay-skip"
+    "demo": "data-demo"
   }
 }

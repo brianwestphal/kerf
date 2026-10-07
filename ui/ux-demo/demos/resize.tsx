@@ -30,7 +30,6 @@ export function ResizeDemo() {
           overflow: 'auto-x',
           shadow: true,
         }}
-        rootAttributes={{ 'data-catalog-geometry-overlay-skip': '' }}
       >
         <ResizableRegion
           id="catalog-panel"

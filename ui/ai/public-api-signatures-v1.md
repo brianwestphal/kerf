@@ -2400,8 +2400,8 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-BYPKhTPH.js';
-export { b as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogStageRootAttributes } from './types-BYPKhTPH.js';
+import { a as CatalogProps } from './types-CXrh9Wyx.js';
+export { b as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogStageRootAttributes } from './types-CXrh9Wyx.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
 import './sides-BPSWde0A.js';
@@ -2424,7 +2424,7 @@ import './resizable-region.js';
  * standard toggle moves into the entry toolbar while it is collapsed, and on
  * a small screen the sidebar overlays the stage like any Workbench rail.
  */
-declare function Catalog({ id, brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, backgroundStyle, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
+declare function Catalog({ id, brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, backgroundStyle, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'text-trigger' | 'none';
@@ -2495,7 +2495,7 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-BYPKhTPH.js';
+import { C as CatalogResource } from './types-CXrh9Wyx.js';
 import './toolbar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
@@ -2611,14 +2611,6 @@ interface CatalogRevealOptions {
  */
 declare function revealCatalogEntry(root: HTMLElement, id: string, { block, inline, behavior, media, }?: CatalogRevealOptions): () => void;
 /**
- * Keep a Catalog's opt-in geometry overlay synchronized with its preview.
- * Specimens receive computed border highlights (or a dashed bound when they
- * have no border and are transparent), while positive computed margins use
- * devtools-style orange bands. CSS/stylesheet-only changes are observed too.
- * Returns a disposer.
- */
-declare function wireCatalogGeometryOverlay(root: HTMLElement): () => void;
-/**
  * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
  * item selection (and the related-entry popup menu), the sidebar collapse toggle, and
  * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
@@ -2629,7 +2621,7 @@ declare function wireCatalogGeometryOverlay(root: HTMLElement): () => void;
  */
 declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, collapsed, sidebarSize, sidebarStorageKey, id: catalogId, }: WireCatalogOptions): () => void;
 
-export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry, wireCatalog, wireCatalogGeometryOverlay };
+export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry, wireCatalog };
 ```
 
 ## `@kerfjs/ui/segmented-control`

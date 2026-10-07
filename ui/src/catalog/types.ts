@@ -98,7 +98,6 @@ export interface CatalogProps {
   secondarySections?: CatalogSecondaryGroup;
   sidebarFooter?: KerfUiContent;
   status?: KerfUiContent;
-  geometryOverlay?: boolean;
   /** Preview background (default `checkerboard`). */
   backgroundStyle?: CatalogBackgroundStyle;
   /** Consumer-owned data attributes applied to the preview stage. */

@@ -530,9 +530,8 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - `@kerfjs/ui/wire-sidebar` (`wireSidebar`: toggle, focus, compact overlay, persistence; a compact overlay starts closed and opens only on a user action, and `inlineCollapsed` declares a panel's inline default).
   `@kerfjs/ui/catalog` is another opt-in shell — a
   `Catalog` component + `wireCatalog` helper for building a component-gallery catalog
-  (collapsible category sidebar + preview stage + resources footer, with an opt-in
-  transparent-bound and margin geometry overlay plus focus-preserving active-row
-  reveal for long desktop sidebars) from your own
+  (collapsible category sidebar + preview stage + resources footer, with
+  focus-preserving active-row reveal for long desktop sidebars) from your own
   entries; controlled/stateless like the layouts. For any Catalog demo, follow
   the [authoritative authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
   rather than inferring structure from the shell or private CSS.

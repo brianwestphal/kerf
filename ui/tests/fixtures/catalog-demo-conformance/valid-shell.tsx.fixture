@@ -3,7 +3,6 @@ import { Catalog } from '@kerfjs/ui/catalog';
 export function Shell({ selected, content }) {
   return (
     <Catalog
-      geometryOverlay={selected.kind === 'component'}
       stageRootAttributes={{
         'data-demo-mode':
           selected.kind === 'component' ? 'component' : 'composition',

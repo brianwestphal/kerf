@@ -1087,100 +1087,35 @@ test('applies text and control insets only to selected physical sides', async ({
   expect(await edges(control, 'margin')).toEqual([0, 16, 16, 0]);
 });
 
-test('computes component geometry overlays from live CSS and leaves composition demos alone', async ({
+test('keeps catalog specimens free of geometry highlight layers', async ({
   page,
   browserName,
 }) => {
-  await page.setViewportSize({ width: 1200, height: 900 });
-
-  // A single-component demo: the wrapper card is stripped (transparent) so the
-  // component sits on the grid, and the overlay marks each component's outer
-  // bound/border edges and non-zero default margins (orange).
   await page.goto('/?component=list-header');
   const canvas = page.locator('.kui-catalog__canvas');
-  const stageInner = page.locator('[data-demo-stage-inner]');
-  await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
-  const wrapper = page.locator('[data-demo="list-header"]');
-  await expect
-    .poll(() =>
-      wrapper.evaluate((el) => window.getComputedStyle(el).backgroundColor),
-    )
-    .toBe('rgba(0, 0, 0, 0)');
-  const overlay = page.locator('[data-catalog-geometry-overlay]');
-  await expect
-    .poll(() =>
-      overlay
-        .locator('.kui-catalog__geometry-bound, .kui-catalog__geometry-border')
-        .count(),
-    )
-    .toBeGreaterThan(0);
-  await expect
-    .poll(() => overlay.locator('.kui-catalog__geometry-margin').count())
-    .toBeGreaterThan(0);
+  await expect(page.locator('[data-demo-stage-inner]')).toHaveAttribute(
+    'data-demo-mode',
+    'component',
+  );
+  await expect(canvas.locator('[data-catalog-geometry-overlay]')).toHaveCount(
+    0,
+  );
+  await expect(canvas.locator('[class*="kui-catalog__geometry-"]')).toHaveCount(
+    0,
+  );
   if (browserName === 'chromium')
     await canvas.screenshot({
-      path: 'test-results/component-demo-overlay.png',
+      path: 'test-results/component-demo-no-overlay.png',
     });
 
-  // Stylesheet-only changes are enough to refresh both kinds of computed
-  // geometry; demo markup and metadata do not need matching measurements.
-  await page.evaluate(() => {
-    const style = document.createElement('style');
-    style.id = 'geometry-overlay-live-css';
-    style.textContent =
-      '[data-demo="list-header"] [data-catalog-example] > [data-component="list-header"] { margin-left: 24px !important; border-left: 5px solid red !important; }';
-    document.head.append(style);
-  });
-  // The size gallery's List is specimen 0; the first standalone ListHeader is 1.
-  const featuredMargin = overlay.locator(
-    '[data-catalog-geometry-specimen="1"][data-catalog-geometry-side="left"]',
+  await page.goto('/?component=layout');
+  await expect(page.locator('[data-demo-stage-inner]')).toHaveAttribute(
+    'data-demo-mode',
+    'composition',
   );
-  const featuredBorder = overlay.locator(
-    '.kui-catalog__geometry-border[data-catalog-geometry-specimen="1"]',
+  await expect(canvas.locator('[data-catalog-geometry-overlay]')).toHaveCount(
+    0,
   );
-  await expect(featuredMargin).toHaveCSS('width', '24px');
-  await expect(featuredBorder).toHaveCSS('border-left-width', '5px');
-  if (browserName === 'chromium')
-    await canvas.screenshot({
-      path: 'test-results/component-demo-computed-border-overlay.png',
-    });
-  await page.evaluate(() => {
-    document.querySelector<HTMLStyleElement>(
-      '#geometry-overlay-live-css',
-    )!.textContent =
-      '[data-demo="list-header"] [data-catalog-example] > [data-component="list-header"] { margin-left: 36px !important; border-left: 7px solid red !important; }';
-  });
-  await expect(featuredMargin).toHaveCSS('width', '36px');
-  await expect(featuredBorder).toHaveCSS('border-left-width', '7px');
-  await page
-    .locator('#geometry-overlay-live-css')
-    .evaluate((style) => style.remove());
-
-  // The overlay marks the demoed SPECIMEN, not the example's ListHeader label or
-  // note. The two semantic modes, size, appearance, and color specimens each get a
-  // bound and no margin; the labels must not be marked.
-  await page.goto('/?component=lucide-icon');
-  await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
-  await expect
-    .poll(() => overlay.locator('.kui-catalog__geometry-bound').count())
-    .toBe(5);
-  await expect
-    .poll(() => overlay.locator('.kui-catalog__geometry-margin').count())
-    .toBe(0);
-
-  // List is a focused component demo, so its immediate List specimen gets an
-  // automatically computed geometry overlay.
-  await page.goto('/?component=list');
-  await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
-  await expect
-    .poll(() =>
-      overlay
-        .locator(
-          '.kui-catalog__geometry-bound, .kui-catalog__geometry-border, .kui-catalog__geometry-margin',
-        )
-        .count(),
-    )
-    .toBeGreaterThan(0);
 });
 
 test('keeps a toolbar trailing zone flush right when leading and center are empty', async ({

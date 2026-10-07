@@ -8,9 +8,11 @@ test('renders the Skeleton primitive demo', async ({ page, browserName }) => {
   await expect(demo).toBeVisible();
   await expect(demo).toHaveAttribute('data-catalog-example-stack', '');
 
-  const composition = demo.locator(
-    '[data-catalog-example][data-catalog-geometry-overlay-skip]',
-  );
+  const composition = demo.locator('[data-catalog-example]').filter({
+    has: page.locator('[data-catalog-example-label]', {
+      hasText: 'In composition',
+    }),
+  });
   await expect(composition).toHaveCount(1);
   await expect(composition).toHaveAttribute('data-align', 'none');
 

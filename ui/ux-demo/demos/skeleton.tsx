@@ -28,7 +28,6 @@ export function SkeletonDemo() {
             <strong>Loading inspector</strong> recipe for a full composition.
           </>
         }
-        rootAttributes={{ 'data-catalog-geometry-overlay-skip': '' }}
       >
         <ValueTable label="Placeholder rows">
           <ValueTableRow label="Status" value="" placeholder />

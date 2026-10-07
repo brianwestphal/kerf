@@ -394,7 +394,6 @@ test('Text control margins add exterior gutters without changing owned padding',
     ).toBe(true);
     await section.screenshot({
       path: testInfo.outputPath(`text-control-margins-${width}.png`),
-      style: '[data-catalog-geometry-overlay] { visibility: hidden; }',
     });
   }
   await all.evaluate((el) =>

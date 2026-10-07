@@ -87,7 +87,6 @@ test('expanded grouped search anchors clickable app surfaces and restores collap
             width: box!.width,
             height: popup!.y + popup!.height - box!.y + 4,
           },
-          style: '[data-catalog-geometry-overlay] { visibility: hidden; }',
         });
       }
     }

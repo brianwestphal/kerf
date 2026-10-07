@@ -320,7 +320,7 @@ test('nested checked choices, disabled commands, and context opening work', asyn
     });
 });
 
-test('context example keeps its row gutter on click without geometry highlights', async ({
+test('context example keeps its row gutter on click', async ({
   page,
   browserName,
 }) => {
@@ -330,10 +330,6 @@ test('context example keeps its row gutter on click without geometry highlights'
       hasText: 'Context menu',
     }),
   });
-  await expect(example).toHaveAttribute(
-    'data-catalog-geometry-overlay-skip',
-    '',
-  );
   const row = example.locator('[data-popup-menu-context-target]');
   for (const [width, name] of [
     [1100, 'wide'],

@@ -35,7 +35,9 @@ test('published guidance produces the sanctioned focused-component structure', a
   await mountFixture(page, 'component');
 
   const catalog = page.locator('[data-component="catalog"]');
-  await expect(catalog).toHaveAttribute('data-geometry-overlay', 'true');
+  await expect(catalog.locator('[data-catalog-geometry-overlay]')).toHaveCount(
+    0,
+  );
   const stack = catalog.locator('[data-catalog-example-stack]');
   await expect(stack).toHaveCount(1);
   await expect(stack).toHaveAttribute('data-demo', 'status');
@@ -53,21 +55,18 @@ test('published guidance produces the sanctioned focused-component structure', a
     rows.first().locator(':scope > [data-component="list-header"]'),
   ).toHaveText('Default');
 
-  const skipped = rows.nth(1);
-  await expect(skipped).toHaveAttribute(
-    'data-catalog-geometry-overlay-skip',
-    '',
-  );
-  await expect(skipped).toContainText('The application owns status copy.');
+  await expect(rows.nth(1)).toContainText('The application owns status copy.');
 });
 
-test('published guidance disables the global overlay for a composition', async ({
+test('published guidance renders a composition without highlight layers', async ({
   page,
 }) => {
   await mountFixture(page, 'composition');
 
   const catalog = page.locator('[data-component="catalog"]');
-  await expect(catalog).toHaveAttribute('data-geometry-overlay', 'false');
+  await expect(catalog.locator('[data-catalog-geometry-overlay]')).toHaveCount(
+    0,
+  );
   const stack = catalog.locator(
     '[data-catalog-example-stack][data-demo="workspace"]',
   );
@@ -79,7 +78,4 @@ test('published guidance disables the global overlay for a composition', async (
       ':scope > [data-component="state-banner"], :scope > [data-component="list-item"]',
     ),
   ).toHaveCount(2);
-  await expect(
-    catalog.locator('[data-catalog-geometry-overlay-skip]'),
-  ).toHaveCount(0);
 });

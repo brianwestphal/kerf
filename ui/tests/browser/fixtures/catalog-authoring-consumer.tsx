@@ -31,8 +31,7 @@ function FocusedPreview(): SafeHtml {
       }),
       CatalogExample({
         label: 'Authoring note',
-        note: 'Explanatory chrome is excluded from geometry inspection.',
-        rootAttributes: { 'data-catalog-geometry-overlay-skip': '' },
+        note: 'Explanatory chrome sits above the specimen.',
         children: raw(
           '<p data-fixture-explanation>The application owns status copy.</p>',
         ),
@@ -67,7 +66,6 @@ export function CatalogAuthoringConsumer({
     brand: { title: 'Consumer catalog' },
     sections,
     active: mode === 'component' ? 'status' : 'workspace',
-    geometryOverlay: mode === 'component',
     content: mode === 'component' ? FocusedPreview() : CompositionPreview(),
   });
 }

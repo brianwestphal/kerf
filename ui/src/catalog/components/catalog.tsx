@@ -43,7 +43,6 @@ export function Catalog({
   secondarySections,
   sidebarFooter,
   status,
-  geometryOverlay,
   backgroundStyle,
   stageRootAttributes,
   selectAction = 'catalog-select',
@@ -72,9 +71,6 @@ export function Catalog({
       class={`kui-catalog ${className}`.trim()}
       data-component="catalog"
       data-sidebar-collapsed={String(collapsed)}
-      data-geometry-overlay={
-        geometryOverlay === undefined ? undefined : String(geometryOverlay)
-      }
       slot={slot}
     >
       <Workbench
@@ -200,7 +196,6 @@ export function Catalog({
             <CatalogStage
               name={name}
               content={content}
-              geometryOverlay={geometryOverlay}
               backgroundStyle={backgroundStyle}
               rootAttributes={stageRootAttributes}
             />

@@ -98,7 +98,6 @@ test('quiet icon tile tones preserve geometry and do not recolor interactive gro
       }
       await section.screenshot({
         path: testInfo.outputPath(`icon-tile-tones-${theme}-${width}.png`),
-        style: '[data-catalog-geometry-overlay] { visibility: hidden; }',
       });
       if (theme === 'dark')
         await page.locator('[data-action="toggle-theme"]').click();

@@ -80,11 +80,11 @@ chosen component.
 
 Classify every entry before rendering it:
 
-| Entry kind      | Preview purpose                                                                                         | Geometry overlay                                                                    |
-| --------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| **Component**   | Show one public component, its meaningful variants, and adverse states.                                 | `true`; the overlay inspects each selected specimen.                                |
-| **Composition** | Show components commonly used together in one focused container or surface.                             | `false`; child geometry remains unmarked so the composition can be read as a whole. |
-| **Recipe**      | Teach the recommended production approach to a specific task, including ownership and application glue. | `false`; child geometry remains unmarked so the complete approach can be read.      |
+| Entry kind      | Preview purpose                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------- |
+| **Component**   | Show one public component, its meaningful variants, and adverse states.                                 |
+| **Composition** | Show components commonly used together in one focused container or surface.                             |
+| **Recipe**      | Teach the recommended production approach to a specific task, including ownership and application glue. |
 
 These three kinds are exhaustive. Theme/foundation showcases use a functional
 category, third-party specimens use source metadata, and state galleries retain
@@ -99,10 +99,6 @@ rule. Treat source order as the authored importance order when no explicit rank
 field exists. Show a `Composition` tag rather than repeating the word in a
 composition's display name; the generic `Catalog` accepts that through the
 entry's `tags` array.
-
-Keep `geometryOverlay` present and compute it from the active entry. Do not make
-it a permanent catalog-wide `true`, and do not give individual specimens their
-own overlay implementation.
 
 ### Required structure
 
@@ -155,29 +151,17 @@ const buttonPreview = (
     <CatalogExample label="Control" align="inline-control">
       <SegmentedControl id="view" label="View" value="list" choices={choices} />
     </CatalogExample>
-    <CatalogExample
-      label="Authoring note"
-      note="Explanatory chrome is not a specimen."
-      rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}
-    >
+    <CatalogExample label="Authoring note" note="Explain the specimen below.">
       <p>Use the public helper contract.</p>
     </CatalogExample>
   </CatalogExampleStack>
 );
 ```
 
-The overlay selects every immediate child of a `CatalogExample`; the helper
-marks its generated label and note so they are excluded automatically. It does
-not recursively promote a nested child to be the specimen. Outside an example
-row, it selects only top-level
-`[data-component]` roots in the canvas and ignores nested component descendants.
-These rules keep a row's label/group scaffolding out of the measurement and make
-the authored nesting determine exactly what is inspected.
-
 ### Metadata ownership
 
-Use `rootAttributes` on either helper for authoring metadata such as `data-demo`
-or `data-catalog-geometry-overlay-skip`; the metadata lands on that helper's
+Use `rootAttributes` on either helper for authoring metadata such as `data-demo`;
+the metadata lands on that helper's
 rendered root. The slot accepts only `data-*` strings. Structural
 `data-catalog-example`, `data-catalog-example-stack`, and `data-align` semantics
 remain helper-owned and are rejected case-insensitively at runtime, including
@@ -190,48 +174,16 @@ catalog-owned preview stage without an extra wrapper; `data-catalog-stage`
 remains protected.
 The helpers own their structural markers, label/note anatomy, alignment marker,
 and private classes. Component metadata such as margin/border/padding ownership
-lives in `component-catalog.json`; do not infer or overwrite it from overlay
-pixels.
+lives in `component-catalog.json`.
 
-### Geometry overlay and legend
+### Component metadata
 
-Pass the conditional `geometryOverlay` boolean to `Catalog`, then call
-`wireCatalogGeometryOverlay(root)` once after the first render and retain its
-disposer alongside `wireCatalog`'s.
+Machine-readable geometry ownership metadata identifies whether the component,
+its parent, or its children are responsible for margin, border, and padding.
+Keep that metadata in `component-catalog.json` and use the rendered specimen to
+review the actual appearance.
 
-| Overlay mark            | Meaning                                                                                              | It is not                                                                |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Orange translucent band | A positive computed margin on the selected specimen, after subtracting the helper's alignment inset. | Padding, gap, or empty content. Zero and negative margins are not drawn. |
-| Accent solid edge       | The selected specimen's computed border widths and radius, except `none`/`hidden` styles.            | A focus ring, outline, child border, or metadata ownership claim.        |
-| Quiet dashed outline    | The border-box bound of a transparent selected specimen with no visible border.                      | A real CSS border, padding edge, or proof that the specimen owns size.   |
-
-The overlay recomputes from live rendered styles when specimens resize, preview
-markup changes, theme/root attributes change, or loaded/inline stylesheets
-change. Component CSS is therefore the source of truth; do not duplicate margin
-or border values in demo data. The overlay does not visualize padding, gaps,
-negative/zero margins, scroll overflow, hit targets, or nested descendants.
-Inspect computed styles and the machine-readable `geometry` metadata for those
-facts. Opaque borderless specimens do not receive the dashed bound.
-
-```tsx
-<Catalog
-  {...props}
-  geometryOverlay={activeEntry.kind === "component"}
-  content={renderers[active.value]()}
-/>
-```
-
-Put `rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}` on a
-`CatalogExample` or `CatalogExampleStack` only when that whole subtree is
-explanatory chrome rather than a specimen. The marker excludes the marked root
-and every descendant from selection; it does not merely hide one band. It is
-normally unnecessary in a composition because the active entry already sets the
-global overlay to `false`.
-
-Use the overlay together with machine-readable geometry ownership metadata; the
-overlay verifies what is rendered, while metadata tells people and AI tools
-whether the component, its parent, or its children are responsible for margin,
-border, and padding. Catalogs for downstream components should conform to the
+Catalogs for downstream components should conform to the
 [`component-catalog-extension.schema.json`](../ai/component-catalog-extension.schema.json)
 contract and can start from the checked
 [`component-catalog-extension.json`](./examples/component-catalog-extension.json)
@@ -281,8 +233,8 @@ facts that source can prove without guessing at rendered intent:
 
 - focused component routes import and use `CatalogExampleStack` and
   `CatalogExample` from the public package;
-- focused route metadata uses the helpers' `rootAttributes` slot, example rows
-  are not empty, and composition routes do not add redundant skip markers;
+- focused route metadata uses the helpers' `rootAttributes` slot and example rows
+  are not empty;
 - every `@kerfjs/ui` import is a published package export and relative imports
   do not reach into `ui/src`;
 - focused demos have no relative stylesheet imports, inline style attributes,
@@ -292,20 +244,19 @@ facts that source can prove without guessing at rendered intent:
   analyzer) import no stylesheet other than public `@kerfjs/ui` CSS, set no
   inline style, and name only published layout and Web Awesome classes; each
   recipe declares its catalog frame through an exported `presentation`; and
-- the shell derives both geometry-overlay enablement and documented demo mode
-  from the active entry's source and kind.
+- the shell derives the documented demo mode from the active entry's kind.
 
 The gate deliberately does not infer component ownership from arbitrary class
-names, margins, borders, or nested descendants. Runtime selection and geometry
-remain the browser suite's job.
+names, margins, borders, or nested descendants. Runtime appearance remains the
+browser suite's job.
 
 A focused route may bypass the two public layout helpers only when the route's
 stage geometry is itself the reviewed specimen. Add the narrow waiver to
 [`catalog-conformance-exceptions.json`](../ux-demo/catalog-conformance-exceptions.json)
 with the exact route, source file, stable diagnostic ids, a substantive reason,
 and the reviewing `KF-*` ticket. Only helper/metadata rules are waivable;
-private imports, local styling, private markup, empty examples, composition overlay drift, and
-shell-mode drift always fail. The gate rejects duplicate, malformed, unused,
+private imports, local styling, private markup, empty examples, and shell-mode
+drift always fail. The gate rejects duplicate, malformed, unused,
 and stale exceptions, so delete a waiver when its route adopts the standard
 helpers.
 
@@ -336,7 +287,6 @@ import {
 import {
   revealCatalogEntry,
   wireCatalog,
-  wireCatalogGeometryOverlay,
 } from "@kerfjs/ui/wire-catalog";
 // A CSS-aware (browser-condition) bundler loads the Catalog's CSS with its import.
 
@@ -381,11 +331,7 @@ const renderers: Record<string, () => SafeHtml> = {
       <CatalogExample label="Default" align="inline-control">
         <Button label="Save" />
       </CatalogExample>
-      <CatalogExample
-        label="Authoring note"
-        note="This explanatory row is deliberately excluded from inspection."
-        rootAttributes={{ "data-catalog-geometry-overlay-skip": "" }}
-      >
+      <CatalogExample label="Authoring note" note="Explain the specimen below.">
         <p>The application owns product copy and actions.</p>
       </CatalogExample>
     </CatalogExampleStack>
@@ -408,7 +354,6 @@ const initial =
 const active = signal(initial);
 const collapsed = signal(false);
 const theme = signal<"light" | "dark">("light");
-const activeEntry = () => entries.find(({ id }) => id === active.value) ?? entries[0];
 
 const app = document.getElementById("app")!;
 mount(app, () => (
@@ -419,7 +364,6 @@ mount(app, () => (
     content={renderers[active.value]?.() ?? <></>}
     collapsed={collapsed.value}
     theme={theme.value}
-    geometryOverlay={activeEntry().kind === "component"}
   />
 ));
 
@@ -437,7 +381,6 @@ wireCatalog(app, {
   urlParam: "c", // mirror the active id into ?c=<id>
   revealSelection: true, // reveal long desktop sidebars without moving focus
 });
-wireCatalogGeometryOverlay(app);
 
 // Optional for an initial deep link whose row may start outside the viewport.
 revealCatalogEntry(app, initial, { block: "center" });
@@ -490,7 +433,7 @@ matching options on `wireCatalog`) if they collide with your own action table.
 
 `Catalog` composes public components (`Workbench`, `Pane`, `Toolbar`, `List`,
 `ListHeader`, `ListItem`, `ListInsetText`, `Text`, …) and owns only the preview stage
-(the checkerboard and left-aligned canvas), the geometry overlay, the example viewport
+(the checkerboard and left-aligned canvas), the example viewport
 options, and the brand mark's size. A bundler that honors the `browser` export
 condition loads the Catalog's stylesheets and those of every component it renders
 internally with the `@kerfjs/ui/catalog` import alone — no dependence on which other

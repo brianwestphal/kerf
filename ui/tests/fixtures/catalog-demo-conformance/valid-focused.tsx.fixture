@@ -10,10 +10,8 @@ export function FocusedDemo() {
           <ListItem label="Nested child" />
         </div>
       </CatalogExample>
-      <CatalogExample
-        rootAttributes={{ 'data-catalog-geometry-overlay-skip': '' }}
-      >
-        <p>Explanatory specimen intentionally skipped.</p>
+      <CatalogExample>
+        <p>Explanatory specimen.</p>
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -9,7 +9,7 @@ async function idleMutations(page: Page) {
         window.requestAnimationFrame(() => resolve()),
       );
     for (let index = 0; index < 8; index++) await frame();
-    const counts = { probeStyles: 0, geometryRedraws: 0 };
+    const counts = { probeStyles: 0 };
     const observer = new MutationObserver((records) => {
       for (const record of records) {
         const target = record.target as Element;
@@ -19,18 +19,12 @@ async function idleMutations(page: Page) {
           target.closest('[data-toolbar-visibility-probe]')
         )
           counts.probeStyles++;
-        if (
-          record.type === 'childList' &&
-          target.matches('[data-catalog-geometry-overlay]')
-        )
-          counts.geometryRedraws++;
       }
     });
     observer.observe(document.documentElement, {
       subtree: true,
       attributes: true,
       attributeFilter: ['style'],
-      childList: true,
     });
     for (let index = 0; index < 8; index++) await frame();
     observer.disconnect();
@@ -38,7 +32,7 @@ async function idleMutations(page: Page) {
   });
 }
 
-test('toolbar width probes and the production geometry overlay become idle after real transitions', async ({
+test('toolbar width probes become idle after real transitions', async ({
   page,
   browserName,
 }, testInfo) => {
@@ -56,17 +50,7 @@ test('toolbar width probes and the production geometry overlay become idle after
   });
   await expect(utility).toBeVisible();
   await expect(overflow).toBeHidden();
-  await expect(page.locator('[data-catalog-geometry-overlay]')).toBeVisible();
-  await expect
-    .poll(() => idleMutations(page))
-    .toEqual({ probeStyles: 0, geometryRedraws: 0 });
-  // A redraw owned by another observer must not keep changing measurement styles.
-  await page
-    .locator('[data-catalog-geometry-overlay]')
-    .evaluate((layer) => layer.append(document.createElement('span')));
-  await expect
-    .poll(() => idleMutations(page))
-    .toEqual({ probeStyles: 0, geometryRedraws: 0 });
+  await expect.poll(() => idleMutations(page)).toEqual({ probeStyles: 0 });
   await utility.evaluate((node) => {
     node.dataset.hideBelow = 'var(--idle-cutoff)';
     node.style.setProperty('--idle-cutoff', '1000px');
@@ -74,9 +58,7 @@ test('toolbar width probes and the production geometry overlay become idle after
     node.style.setProperty('--quoted-token', '"two  spaces"');
   });
   await expect(utility).toBeHidden();
-  await expect
-    .poll(() => idleMutations(page))
-    .toEqual({ probeStyles: 0, geometryRedraws: 0 });
+  await expect.poll(() => idleMutations(page)).toEqual({ probeStyles: 0 });
   const context = await utility.evaluate((node) => {
     const probe = node
       .closest('[data-component="toolbar"]')!
@@ -108,20 +90,15 @@ test('toolbar width probes and the production geometry overlay become idle after
   await expect(utility).toBeVisible();
   await utility.evaluate((node) => node.style.removeProperty('--idle-cutoff'));
   await expect(utility).toBeVisible();
-  await expect
-    .poll(() => idleMutations(page))
-    .toEqual({ probeStyles: 0, geometryRedraws: 0 });
+  await expect.poll(() => idleMutations(page)).toEqual({ probeStyles: 0 });
   await page.setViewportSize({ width: 390, height: 1000 });
   await expect(utility).toBeHidden();
   await expect(overflow).toBeVisible();
-  await expect
-    .poll(() => idleMutations(page))
-    .toEqual({ probeStyles: 0, geometryRedraws: 0 });
+  await expect.poll(() => idleMutations(page)).toEqual({ probeStyles: 0 });
   if (browserName === 'chromium')
     await toolbar.screenshot({
       path: testInfo.outputPath('toolbar-observer-idle-narrow.png'),
       animations: 'disabled',
-      style: '[data-catalog-geometry-overlay] { visibility: hidden; }',
     });
   await toolbar.getByRole('button', { name: 'Refresh workspace' }).click();
   await expect(page.locator('.catalog-log')).toContainText(
@@ -136,10 +113,7 @@ test('toolbar width probes and the production geometry overlay become idle after
     await toolbar.screenshot({
       path: testInfo.outputPath('toolbar-observer-idle-wide.png'),
       animations: 'disabled',
-      style: '[data-catalog-geometry-overlay] { visibility: hidden; }',
     });
   }
-  await expect
-    .poll(() => idleMutations(page))
-    .toEqual({ probeStyles: 0, geometryRedraws: 0 });
+  await expect.poll(() => idleMutations(page)).toEqual({ probeStyles: 0 });
 });

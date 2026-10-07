@@ -38,11 +38,10 @@
           "CatalogExample",
           "CatalogExampleStack",
           "wireCatalog",
-          "wireCatalogGeometryOverlay",
           "revealCatalogEntry"
         ]
       },
-      "minItems": 6,
+      "minItems": 5,
       "uniqueItems": true
     },
     "taxonomy": {
@@ -94,13 +93,10 @@
     },
     "metadata": {
       "type": "object",
-      "required": ["slot", "demo", "geometryOverlaySkip"],
+      "required": ["slot", "demo"],
       "properties": {
         "slot": { "const": "rootAttributes" },
-        "demo": { "const": "data-demo" },
-        "geometryOverlaySkip": {
-          "const": "data-catalog-geometry-overlay-skip"
-        }
+        "demo": { "const": "data-demo" }
       },
       "additionalProperties": false
     }

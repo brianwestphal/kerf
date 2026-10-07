@@ -84,7 +84,6 @@ describe('Catalog demo authoring guidance', () => {
       metadata: {
         slot: 'rootAttributes',
         demo: 'data-demo',
-        geometryOverlaySkip: 'data-catalog-geometry-overlay-skip',
       },
     });
     expect(artifact.helpers).toEqual([
@@ -92,7 +91,6 @@ describe('Catalog demo authoring guidance', () => {
       'CatalogExample',
       'CatalogExampleStack',
       'wireCatalog',
-      'wireCatalogGeometryOverlay',
       'revealCatalogEntry',
     ]);
     await expectUiLink(artifact.authoritativeGuide);
@@ -128,7 +126,7 @@ describe('Catalog demo authoring guidance', () => {
     ]);
   });
 
-  it('pins mode, nesting, selection, overlay legend, exclusions, and ownership', async () => {
+  it('pins mode, nesting, selection, and ownership', async () => {
     const guide = await readUi('docs/catalog.md');
     for (const required of [
       '**Component**',
@@ -141,20 +139,9 @@ describe('Catalog demo authoring guidance', () => {
       '`CatalogExampleStack` is the group',
       '`CatalogExample` is one row',
       'immediate child of `CatalogExample`',
-      'positive computed margin',
-      'computed border widths and radius',
-      'border-box bound',
-      'does not visualize padding, gaps',
-      'negative/zero margins',
-      'Component CSS is therefore the source of truth',
-      'every descendant from selection',
       '### Metadata ownership',
     ])
       expect(guide, required).toContain(required);
-    expect(guide).toContain(
-      'geometryOverlay={activeEntry().kind === "component"}',
-    );
-    expect(guide).not.toContain('geometryOverlay={true}');
   });
 
   it('keeps the browser consumer fixture on public helpers and metadata slots', async () => {
@@ -166,10 +153,6 @@ describe('Catalog demo authoring guidance', () => {
     expect(fixture).toContain('CatalogExample({');
     expect(fixture).toContain("rootAttributes: { 'data-demo':");
     expect(fixture).toContain("tags: ['Composition']");
-    expect(fixture).toContain(
-      "rootAttributes: { 'data-catalog-geometry-overlay-skip': '' }",
-    );
-    expect(fixture).toContain("geometryOverlay: mode === 'component'");
     expect(fixture).not.toMatch(/class(?:Name)?=["'][^"']*kui-catalog-/);
   });
 });

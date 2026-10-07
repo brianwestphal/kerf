@@ -60,7 +60,7 @@ describe('Catalog demo conformance analysis', () => {
     });
   });
 
-  it('accepts nested focused specimens and explicit overlay skips', async () => {
+  it('accepts nested focused specimens', async () => {
     expect(
       await analyzeFixture('valid-focused', 'focused', 'component'),
     ).toEqual([]);
@@ -194,7 +194,7 @@ describe('Catalog demo conformance analysis', () => {
     ).toEqual([catalogDemoConformanceRules.exceptionInvalid]);
   });
 
-  it('pins the shell to kind-driven overlays and documented stage modes', async () => {
+  it('pins the shell to documented stage modes', async () => {
     const valid = await readFile(
       resolve(fixtureRoot, 'valid-shell.tsx.fixture'),
       'utf8',
@@ -211,10 +211,7 @@ describe('Catalog demo conformance analysis', () => {
         filePath: 'invalid-shell.tsx',
         source: invalid,
       }).map((failure) => failure.rule),
-    ).toEqual([
-      catalogDemoConformanceRules.shellOverlay,
-      catalogDemoConformanceRules.shellMode,
-    ]);
+    ).toEqual([catalogDemoConformanceRules.shellMode]);
   });
 });
 

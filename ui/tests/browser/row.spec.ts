@@ -130,58 +130,17 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
     .poll(() => flexGeometry(participatingRows.nth(1)))
     .toMatchObject({ flex: '0 0 auto' });
 
-  // Each Row variant is its own catalog example, so the geometry overlay
-  // outlines every framed row individually rather than one bound around a
-  // stacked group of variants.
+  // Each Row variant has its own framed catalog example.
   const framedLabels = [
     'Default row',
     ...horizontal.map(([label]) => `${label} distribution`),
     ...vertical.map(([label]) => `${label} alignment`),
     'Wrapped row',
   ];
-  await expect
-    .poll(() =>
-      page.evaluate((labels) => {
-        const canvas = document.querySelector('.kui-catalog__canvas')!;
-        const base = canvas.getBoundingClientRect();
-        const bounds = [
-          ...document.querySelectorAll<HTMLElement>(
-            '.kui-catalog__geometry-bound',
-          ),
-        ].map((bound) => {
-          const rect = bound.getBoundingClientRect();
-          return {
-            top: Math.round(rect.top - base.top),
-            height: Math.round(rect.height),
-          };
-        });
-        return labels.map((label) => {
-          const example = [
-            ...document.querySelectorAll(
-              '[data-demo="row"] [data-catalog-example]',
-            ),
-          ].find(
-            (candidate) =>
-              candidate.querySelector('[data-catalog-example-label]')
-                ?.textContent === label,
-          );
-          const viewport = example?.querySelector(
-            ':scope > [data-catalog-example-viewport]',
-          );
-          const panels = viewport?.querySelectorAll('.kui-sunken-panel').length;
-          const rect = viewport?.getBoundingClientRect();
-          const top = rect ? Math.round(rect.top - base.top) : -1;
-          const height = rect ? Math.round(rect.height) : -1;
-          const matches = bounds.filter(
-            (bound) =>
-              Math.abs(bound.top - top) <= 1 &&
-              Math.abs(bound.height - height) <= 1,
-          ).length;
-          return `${label}: panels=${panels} bounds=${matches}`;
-        });
-      }, framedLabels),
-    )
-    .toEqual(framedLabels.map((label) => `${label}: panels=1 bounds=1`));
+  for (const label of framedLabels) {
+    const rowExample = example(label);
+    await expect(rowExample.locator('.kui-sunken-panel')).toHaveCount(1);
+  }
 
   if (browserName === 'chromium') {
     await page.screenshot({

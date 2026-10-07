@@ -157,7 +157,6 @@ export function PopupMenuDemo() {
         label="Context menu"
         note="Right-click the row to open actions at the pointer, or use the adjacent action button."
         align="inline-control"
-        rootAttributes={{ 'data-catalog-geometry-overlay-skip': '' }}
       >
         <ListItem
           label="Demand draft"

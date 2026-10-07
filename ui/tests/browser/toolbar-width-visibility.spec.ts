@@ -488,7 +488,6 @@ test('production toolbar demo keeps primary and overflow actions reachable', asy
         await toolbar.screenshot({
           path: testInfo.outputPath(`toolbar-production-${width}-${theme}.png`),
           animations: 'disabled',
-          style: '[data-catalog-geometry-overlay] { visibility: hidden; }',
         });
       }
     }

@@ -31,11 +31,7 @@ import {
 import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import {
-  revealCatalogEntry,
-  wireCatalog,
-  wireCatalogGeometryOverlay,
-} from '@kerfjs/ui/wire-catalog';
+import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import {
   isContentItemActivation,
   wireContentItems,
@@ -523,7 +519,6 @@ mount(app, () => {
           </Text>
         </>
       }
-      geometryOverlay={selected.kind === 'component'}
       backgroundStyle={backgroundStyle.value}
       stageRootAttributes={{
         'data-demo-stage-inner': '',
@@ -1161,7 +1156,6 @@ const stopCatalog = wireCatalog(app, {
   revealSelection: true,
   collapsed: sidebarCollapsed,
 });
-const stopGeometryOverlay = wireCatalogGeometryOverlay(app);
 const stopResize = wireResizableRegions(app, {
   onCommit: ({ id, size }) => {
     // Recipes own their resizable regions through their own wiring.
@@ -1762,7 +1756,6 @@ window.addEventListener(
   () => {
     stopActions();
     stopCatalog();
-    stopGeometryOverlay();
     stopResize();
     stopSelect();
     stopRecipeNav?.();
