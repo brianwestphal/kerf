@@ -16,6 +16,20 @@ export type ContentItemShape = 'rounded' | 'pill';
 export type ContentItemSelectionMode =
   'none' | 'single' | 'multiple' | 'toggle';
 
+function roleForSelectionMode(
+  mode: ContentItemSelectionMode,
+): 'option' | 'row' | 'button' {
+  switch (mode) {
+    case 'single':
+      return 'option';
+    case 'multiple':
+      return 'row';
+    case 'none':
+    case 'toggle':
+      return 'button';
+  }
+}
+
 const contentItemProtectedAttributes = new Set([
   'data-component',
   'data-appearance',
@@ -183,6 +197,10 @@ export function ContentItem({
         'data-disabled': disabled ? 'true' : undefined,
       }
     : {};
+  let role: 'option' | 'row' | 'button' | 'region' | undefined = ariaLabel
+    ? 'region'
+    : undefined;
+  if (interactive) role = roleForSelectionMode(selectionMode);
   return (
     <div
       {...safeRootAttributes}
@@ -192,17 +210,7 @@ export function ContentItem({
       data-component="content-item"
       data-appearance={appearance}
       data-outlined={outlined ? 'true' : undefined}
-      role={
-        interactive
-          ? selectionMode === 'single'
-            ? 'option'
-            : selectionMode === 'multiple'
-              ? 'row'
-              : 'button'
-          : ariaLabel
-            ? 'region'
-            : undefined
-      }
+      role={role}
       aria-label={ariaLabel}
       aria-selected={
         interactive &&

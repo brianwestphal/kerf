@@ -447,14 +447,18 @@ function selectDemo(id: string): void {
 mount(app, () => {
   const selected = findCatalogEntry(selectedDemo.value)!;
   const isRecipe = selected.kind === 'recipe';
-  const statusLabel =
-    selected.source === 'webawesome'
-      ? 'Web Awesome component · Kerf theme'
-      : selected.kind === 'component'
-        ? 'Kerf first-class component · production CSS'
-        : selected.kind === 'composition'
-          ? 'Kerf composition · production CSS'
-          : 'Kerf recipe · production CSS';
+  const statusLabel = ((): string => {
+    if (selected.source === 'webawesome')
+      return 'Web Awesome component · Kerf theme';
+    switch (selected.kind) {
+      case 'component':
+        return 'Kerf first-class component · production CSS';
+      case 'composition':
+        return 'Kerf composition · production CSS';
+      case 'recipe':
+        return 'Kerf recipe · production CSS';
+    }
+  })();
   return (
     <Catalog
       className="demo-catalog"

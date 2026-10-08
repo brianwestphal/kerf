@@ -105,16 +105,25 @@ export function wireContentItems(root: HTMLElement): () => void {
       const index = rows.indexOf(item);
       if (index < 0) return;
       const isTileGrid = grid.getAttribute('data-component') === 'grid';
-      const next =
-        event.key === 'Home'
-          ? rows[0]
-          : event.key === 'End'
-            ? rows[rows.length - 1]
-            : isTileGrid
-              ? nextTile(item, rows, event.key)
-              : event.key === 'ArrowDown' || event.key === 'ArrowUp'
-                ? rows[index + (event.key === 'ArrowDown' ? 1 : -1)]
-                : undefined;
+      let next: HTMLElement | undefined;
+      switch (event.key) {
+        case 'Home':
+          next = rows[0];
+          break;
+        case 'End':
+          next = rows[rows.length - 1];
+          break;
+        case 'ArrowDown':
+        case 'ArrowUp':
+          next = isTileGrid
+            ? nextTile(item, rows, event.key)
+            : rows[index + (event.key === 'ArrowDown' ? 1 : -1)];
+          break;
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          next = isTileGrid ? nextTile(item, rows, event.key) : undefined;
+          break;
+      }
       if (next) {
         event.preventDefault();
         next.focus();

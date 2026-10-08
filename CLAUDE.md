@@ -272,6 +272,7 @@ Coverage thresholds (`vitest.config.ts`): **100% lines and functions, 98.5% bran
 - **Always fix lint and type errors before finishing work.** Run `npx tsc --noEmit` and `npm run lint` before handing work back. Both must pass with zero errors.
 - **Prefer editing existing files** to creating new ones. The runtime is small on purpose.
 - **One coherent concern per file.** Split a file when it holds two genuinely separable concerns — never to satisfy a line count. Prefer a ~400-line file that houses one coherent state machine or algorithm to three fragments that each hold a slice of it (the keyed list reconciler is deliberately one algorithm even though it spans several hundred lines across its dispatcher and path files). A file growing past ~500 LOC is a _smell_ worth a second look for a hidden second concern, not a gate that fails the build. (One primary export per file — Design rule 4.)
+- **Prefer `switch` for finite dispatch.** When rendering or logic selects among cases of one discriminant (a union, action, patch, mode, or key), use a real `switch` instead of a nested ternary or long `if`/`else if` chain. For a return-valued switch over a closed TypeScript union, give the function an explicit return type and let `noImplicitReturns` check exhaustiveness. Keep simple two-way choices and independent boolean or range checks as ordinary conditions.
 
 ### Code search (prefer ast-grep for structure)
 

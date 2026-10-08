@@ -407,11 +407,21 @@ export function _hasGranularIndexShift<T>(
   const rendered: number[] = [];
   for (let i = 0; i < previousBindingCount; i++) rendered.push(i);
   for (const patch of patches) {
-    if (patch.type === 'insert') rendered.splice(patch.index, 0, patch.index);
-    else if (patch.type === 'remove') rendered.splice(patch.index, 1);
-    else if (patch.type === 'move') {
-      const [moved] = rendered.splice(patch.from, 1);
-      rendered.splice(patch.to, 0, moved);
+    switch (patch.type) {
+      case 'insert':
+        rendered.splice(patch.index, 0, patch.index);
+        break;
+      case 'remove':
+        rendered.splice(patch.index, 1);
+        break;
+      case 'move': {
+        const [moved] = rendered.splice(patch.from, 1);
+        rendered.splice(patch.to, 0, moved);
+        break;
+      }
+      case 'update':
+      case 'replace':
+        break;
     }
   }
   return rendered.some((renderedAt, index) => renderedAt !== index);

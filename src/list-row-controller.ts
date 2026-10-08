@@ -150,32 +150,41 @@ export function createListRowController<T>(
   const applyPatches = (patches: readonly ArrayPatch<T>[]): void => {
     preserveFocus(() => {
       for (const patch of patches) {
-        if (patch.type === 'insert') {
-          const row = makeRow(patch.item);
-          rows.set(key(patch.item), row);
-          order.splice(patch.index, 0, row);
-          container.insertBefore(
-            row.el,
-            order[patch.index + 1]?.el ?? endAnchor(),
-          );
-        } else if (patch.type === 'remove') {
-          const [row] = order.splice(patch.index, 1);
-          row.dispose();
-          row.el.remove();
-          rows.delete(key(row.item));
-        } else if (patch.type === 'move') {
-          const [row] = order.splice(patch.from, 1);
-          order.splice(patch.to, 0, row);
-          moveNode(container, row.el, order[patch.to + 1]?.el ?? endAnchor());
-        } else if (patch.type === 'update') {
-          const current = order[patch.index];
-          const row = reconcileItem(current, patch.item);
-          if (row !== current) {
-            order[patch.index] = row;
+        switch (patch.type) {
+          case 'insert': {
+            const row = makeRow(patch.item);
+            rows.set(key(patch.item), row);
+            order.splice(patch.index, 0, row);
             container.insertBefore(
               row.el,
               order[patch.index + 1]?.el ?? endAnchor(),
             );
+            break;
+          }
+          case 'remove': {
+            const [row] = order.splice(patch.index, 1);
+            row.dispose();
+            row.el.remove();
+            rows.delete(key(row.item));
+            break;
+          }
+          case 'move': {
+            const [row] = order.splice(patch.from, 1);
+            order.splice(patch.to, 0, row);
+            moveNode(container, row.el, order[patch.to + 1]?.el ?? endAnchor());
+            break;
+          }
+          case 'update': {
+            const current = order[patch.index];
+            const row = reconcileItem(current, patch.item);
+            if (row !== current) {
+              order[patch.index] = row;
+              container.insertBefore(
+                row.el,
+                order[patch.index + 1]?.el ?? endAnchor(),
+              );
+            }
+            break;
           }
         }
       }
