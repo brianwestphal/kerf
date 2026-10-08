@@ -116,9 +116,16 @@ const root = document.getElementById('app')!;
 
 mount(root, () => {
   const { items, filter, editingId } = todos.state.value;
-  const visible = items.filter((it) =>
-    filter === 'active' ? !it.done : filter === 'done' ? it.done : true,
-  );
+  const visible = items.filter((it) => {
+    switch (filter) {
+      case 'all':
+        return true;
+      case 'active':
+        return !it.done;
+      case 'done':
+        return it.done;
+    }
+  });
   const remaining = items.filter((it) => !it.done).length;
 
   return (

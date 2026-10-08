@@ -18,15 +18,18 @@ function nextTile(
       return { row, x: rect.left + rect.width / 2, y: rect.top };
     });
   const sameLine = (y: number) => Math.abs(y - current.top) < 1;
-  const directed = candidates.filter(({ x, y }) =>
-    key === 'ArrowLeft'
-      ? sameLine(y) && x < centerX
-      : key === 'ArrowRight'
-        ? sameLine(y) && x > centerX
-        : key === 'ArrowUp'
-          ? y < current.top - 1
-          : y > current.top + 1,
-  );
+  const directed = candidates.filter(({ x, y }) => {
+    switch (key) {
+      case 'ArrowLeft':
+        return sameLine(y) && x < centerX;
+      case 'ArrowRight':
+        return sameLine(y) && x > centerX;
+      case 'ArrowUp':
+        return y < current.top - 1;
+      default:
+        return y > current.top + 1;
+    }
+  });
   directed.sort((a, b) => {
     if (key === 'ArrowLeft') return b.x - a.x;
     if (key === 'ArrowRight') return a.x - b.x;
