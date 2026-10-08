@@ -31,6 +31,21 @@ Use `info` for the role backed by the existing `--kui-color-brand-*` tokens.
 Migrate Badge/Chip `tone="brand"` to `tone="info"`; `BadgeTone` and
 `StateBannerTone` remain deprecated aliases of `SemanticTone`.
 
+### Lowered surfaces are translucent
+
+The sunken/lowered background is a semi-transparent color, not a solid canvas.
+`--wa-color-surface-lowered` and its Kerf mirror
+`--kui-color-surface-lowered` provide the shared tint;
+`--kui-color-neutral-fill-quiet` uses that tint too. `SunkenPanel`, sunken
+`Pane`/`Workbench`/`TabNavigator` surfaces, and Web Awesome
+`appearance="sunken"` consume it through `--kui-sunken-panel-background` or
+`--kui-wa-sunken-background` (their optional override tokens). Each painted
+layer composites with everything beneath it. Use a separate lowered component
+when its nested depth is intentional; do not paint the same visual surface
+twice through a wrapper, a second background, or an unnecessary override.
+Check the resulting contrast in both color schemes, especially over a custom
+backdrop. See `../docs/webawesome-theme.md#contextual-transparency`.
+
 ## Components own their styles; configure, never override
 
 This is the rule every Kerf UI surface follows, and applications and

@@ -12,6 +12,18 @@ npm install kerfjs @kerfjs/ui # kerfjs is a peer; Web Awesome is an optional pee
 Import each component from its own subpath (`@kerfjs/ui/list-item`, `@kerfjs/ui/toolbar`,
 …); the browser build pulls that component's reachable CSS automatically, so do not
 maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
+
+The sunken/lowered background is semi-transparent: Web Awesome's
+`--wa-color-surface-lowered` is mirrored by `--kui-color-surface-lowered` and
+used by `--kui-color-neutral-fill-quiet`. `SunkenPanel`, sunken
+`Pane`/`Workbench`/`TabNavigator` surfaces, and Web Awesome
+`appearance="sunken"` use that tint by default through their optional
+`--kui-sunken-panel-background` / `--kui-wa-sunken-background` override tokens.
+Each layer composites over its backdrop. Intentional nested layers create
+depth; avoid a wrapper or extra background that paints the same visual surface
+twice. Check contrast in both color schemes over the actual backdrop. See
+[contextual transparency](./docs/webawesome-theme.md#contextual-transparency).
+
 For arbitrary interactive help or popup content, use `openAnchoredSurface` or
 `openAnchoredSurfaceAt` from `@kerfjs/ui/anchored-surface`; see
 [AnchoredSurface](./docs/anchored-surface.md). The app owns content and actions.

@@ -149,6 +149,19 @@ is absent. Nested SunkenPanel, Pane, and Web Awesome sunken surfaces therefore
 composite on their actual backdrop without application-owned depth wrappers
 or component-token overrides.
 
+The lowered tint is `--wa-color-surface-lowered` in the Web Awesome theme and
+`--kui-color-surface-lowered` in the Kerf foundation fallback;
+`--wa-color-neutral-fill-quiet` and `--kui-color-neutral-fill-quiet` share it.
+`SunkenPanel`, sunken Pane, Workbench, and TabNavigator surfaces read it by
+default through the optional `--kui-sunken-panel-background` override. Web
+Awesome Accordion, Card, and Details with `appearance="sunken"` read it
+through the optional `--kui-wa-sunken-background` override. These names do
+not denote separate opaque colors or distinct depth levels. A deliberate
+nested surface adds another translucent layer and can make hierarchy clearer;
+avoid painting a second background on a wrapper that represents the same
+surface. Inspect the composed result over the real backdrop in light and dark
+modes.
+
 The lowered light tint is `rgb(0 0 98.076923 / 0.05098)` (approximately
 `#f2f2f7` over white); dark is `rgb(228.157895 228.157895 255 / 0.07451)`
 (approximately `#111113` over black). Repeated layers darken in light mode

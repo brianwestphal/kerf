@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Documentation
+
+- Clarify for AI consumers that sunken/lowered token names resolve to a translucent tint, and explain intentional nested layers versus duplicate surface paint (`KF-9CM6D8`).
+
 ### Removed
 
 - **Breaking (`@kerfjs/ui`, 5.0 beta):** remove the Catalog geometry highlight overlay, its `geometryOverlay` prop, `wireCatalogGeometryOverlay` helper, and specimen skip marker. Catalog previews retain their component borders, outlines, and focus states (`KF-E3WKA5`).

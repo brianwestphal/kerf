@@ -859,7 +859,17 @@ UI metadata, feedback, and content appearances share the exported `SemanticTone`
 type: `neutral | info | pop | success | warning | danger`. Badge and Chip use
 `info` in place of the former `brand` tone.
 
-Neutral lowered surfaces and decorative neutral fills/borders are translucent theme colors; compose nested public components directly. Default/raised canvases, foregrounds, focus indicators, and loud contrast-bearing fills remain opaque. Do not assign depth-specific component tokens in demo wrappers.
+The sunken/lowered background is semi-transparent. `--wa-color-surface-lowered`
+and `--kui-color-surface-lowered` are the shared tint, also used by
+`--kui-color-neutral-fill-quiet`; `--kui-sunken-panel-background` and
+`--kui-wa-sunken-background` are optional component override tokens, not
+separate opaque depth colors. Each layer composites over its backdrop. Compose
+public components directly when nested depth is intentional, but avoid a
+wrapper or extra background that paints the same visual surface twice. Check
+light/dark contrast on the actual backdrop. Other decorative neutral
+fills/borders are translucent; default/raised canvases, foregrounds, focus
+indicators, and loud contrast-bearing fills remain opaque. See
+`ui/docs/webawesome-theme.md#contextual-transparency`.
 
 `ToolbarText.tone="dark"` uses the loud-surface foreground at every size,
 including actionable titles, to match dark control groups.
