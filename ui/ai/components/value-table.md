@@ -62,7 +62,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-value-table`, `kui-value-table__row`, `kui-value-table__icon`, `kui-value-table__label` on an element you write; render `ValueTable` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-color-surface-lowered`, `--kui-color-text`, `--kui-color-text-quiet`, `--kui-font-weight-semibold`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-space-2xs`, `--kui-value-table-background`, `--kui-value-table-border`, `--kui-value-table-icon-size`, `--kui-value-table-row-columns`, `--kui-value-table-row-padding-block`, `--kui-value-table-row-gap`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-color-surface-lowered`, `--kui-color-text`, `--kui-font-weight-semibold`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-space-2xs`, `--kui-value-table-background`, `--kui-value-table-border`, `--kui-value-table-icon-size`, `--kui-value-table-row-columns`, `--kui-value-table-row-padding-block`, `--kui-value-table-row-gap`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

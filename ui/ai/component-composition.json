@@ -2217,7 +2217,6 @@
           "--kui-color-neutral-border-normal",
           "--kui-color-surface-lowered",
           "--kui-color-text",
-          "--kui-color-text-quiet",
           "--kui-font-weight-semibold",
           "--kui-layout-inline-margin",
           "--kui-layout-item-gap",

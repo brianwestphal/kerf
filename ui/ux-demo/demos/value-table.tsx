@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Pane } from '@kerfjs/ui/pane';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { Wrench } from 'lucide';
 
@@ -22,6 +23,15 @@ export function ValueTableDemo() {
           <ValueTableRow label="Host" value="localhost" />
           <ValueTableRow label="Port" value="5432" />
         </ValueTable>
+      </CatalogExample>
+      <CatalogExample label="Sunken Pane" align="none">
+        <Pane appearance="sunken" deepInset>
+          <ValueTable label="Assumptions">
+            <ValueTableRow label="Owner" value="Workspace team" />
+            <ValueTableRow label="Review state" value="Ready" />
+            <ValueTableRow label="Source" value="Procurement brief" />
+          </ValueTable>
+        </Pane>
       </CatalogExample>
       <CatalogExample
         label="Placeholder"

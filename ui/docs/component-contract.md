@@ -671,6 +671,13 @@ value rather than running under it. A short label keeps its width beside a
 long value, which wraps; when both are long they split the row, so neither is
 starved.
 
+`ValueTable` defaults to the shared lowered surface and uses the normal text
+color for normal-weight labels, including when nested in a
+sunken `Pane`. Set `--kui-value-table-background` on an application-owned
+ancestor to change that surface for its tables; the table reads the inherited
+token and falls back to the lowered surface when it is absent. The application
+is responsible for checking text contrast when it supplies a custom background.
+
 ## Imports and side effects
 
 Every component has an explicit JS and CSS subpath. In CSS-aware browser builds,

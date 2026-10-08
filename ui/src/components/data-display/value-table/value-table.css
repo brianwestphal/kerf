@@ -1,5 +1,4 @@
 .kui-value-table {
-  --kui-value-table-background: var(--kui-color-surface-lowered);
   --kui-value-table-border: var(--kui-color-neutral-border-normal);
   --_kui-value-table-icon-size: var(--kui-value-table-icon-size, remify(24px));
   display: grid;
@@ -8,7 +7,10 @@
   overflow: hidden;
   border: 1px solid var(--kui-value-table-border);
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
-  background: var(--kui-value-table-background);
+  background: var(
+    --kui-value-table-background,
+    var(--kui-color-surface-lowered)
+  );
 }
 .kui-value-table__row {
   --_kui-value-table-inline-padding: var(
@@ -68,7 +70,7 @@
   max-width: 100%;
   min-width: 0;
   justify-self: start;
-  color: var(--kui-color-text-quiet);
+  color: var(--kui-color-text);
   align-items: center;
   gap: var(--kui-layout-item-gap, remify(8px));
 }
