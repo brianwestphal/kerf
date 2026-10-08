@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - The UX Catalog filter keeps its placeholder hidden when a controlled state change rerenders the sidebar while filter text remains (`KF-4EA9R6`).
 
+- Inspector TabBars use the shared rounded rectangle radius on the strip and inset tabs while ordinary segmented TabBars retain their pill geometry (`KF-K3RDN1`).
+
 ### Documentation
 
 - Clarify for AI consumers that sunken/lowered token names resolve to a translucent tint, and explain intentional nested layers versus duplicate surface paint (`KF-9CM6D8`).

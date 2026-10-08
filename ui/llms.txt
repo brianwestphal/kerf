@@ -506,6 +506,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `dropTarget` highlights a drag-over without changing selection. `attention`
   uses `--kui-app-tab-attention-color`. TabBar's public
   `--kui-tab-bar-strip-*` tokens set compact strip geometry.
+  An inspector TabBar uses the shared rounded rectangle radius on its strip
+  and inset segmented tabs; an ordinary segmented TabBar keeps pill ends and
+  smaller interior tab corners. Configure the presentation instead of
+  restyling AppTab.
   Set `pinned` on the first AppTab to keep it visible within a scrolling
   tablist; it remains in keyboard order. Use `--kui-app-tab-pinned-background`
   for the surrounding surface and keep that backdrop opaque.

@@ -94,6 +94,14 @@
   border-radius: var(--kui-radius-s);
   box-shadow: none;
 }
+.kui-tab-bar[data-presentation="inspector"]
+  .kui-app-tab[data-presentation="segmented"] {
+  border-radius: calc(
+    var(--kui-tab-bar-strip-radius, var(--kui-layout-rounded-radius)) -
+      var(--kui-tab-bar-strip-padding, 1px) -
+      var(--kui-tab-bar-strip-border-width, 1px)
+  );
+}
 .kui-app-tab:hover {
   border-color: var(--kui-color-neutral-border-normal);
   background: var(--kui-app-tab-hover-background);

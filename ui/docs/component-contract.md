@@ -339,7 +339,10 @@ parent's name. `ResizableRegion` widens its edge extent by the unsafe inset a
 split `SplitView` provides, and a `Skeleton` derives its fill from a solid
 `Badge`'s on-solid color, both in their own stylesheets; an `AppTab` rounds its
 outer corners in a segmented `TabBar` and shares a fill-allocated strip from
-`app-tab.css`. A `PopupMenu` sizes
+`app-tab.css`. An inspector `TabBar` uses the shared 12px rounded rectangle
+radius on its strip; its segmented `AppTab` corners follow that strip's inner
+curve, while an ordinary segmented strip keeps its pill ends and smaller
+interior corners. A `PopupMenu` sizes
 its trigger and applies a group's `menuInset` in its own stylesheet, and an
 icon-only `Select` reads the control slot a `ToolbarControlGroup` provides
 (`--_kui-toolbar-control-group-slot-*`). A parent may still style its own

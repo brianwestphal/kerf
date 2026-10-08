@@ -64,3 +64,48 @@ test('a filled segmented TabBar ends its strip concentric with the pill track', 
   expect(geometry.firstInner).toBeLessThan(concentric / 2);
   expect(geometry.lastInner).toBeLessThan(concentric / 2);
 });
+
+test('inspector tabs follow the rounded strip without changing segmented pill corners', async ({
+  page,
+  browserName,
+}, testInfo) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    for (const width of [1100, 390]) {
+      await page.setViewportSize({ width, height: 820 });
+      await page.goto('/?component=tab-bar');
+      const bar = page.locator('[data-tab-bar-id="inspector-tab-bar"]');
+      await bar.scrollIntoViewIfNeeded();
+      const radii = await bar.evaluate((element) => {
+        const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
+        const tab = strip.querySelector<HTMLElement>('.kui-app-tab')!;
+        return {
+          strip: parseFloat(window.getComputedStyle(strip).borderTopLeftRadius),
+          tab: parseFloat(window.getComputedStyle(tab).borderTopLeftRadius),
+          inset:
+            tab.getBoundingClientRect().top - strip.getBoundingClientRect().top,
+        };
+      });
+      expect(radii.strip).toBeCloseTo(12, 0);
+      expect(radii.tab).toBeCloseTo(radii.strip - radii.inset, 0);
+      await bar.screenshot({
+        path: testInfo.outputPath(
+          `inspector-rounded-${colorScheme}-${width}-${browserName}.png`,
+        ),
+      });
+      await bar.evaluate((element) =>
+        element.style.setProperty('--kui-tab-bar-strip-radius', '18px'),
+      );
+      const customRadii = await bar.evaluate((element) => {
+        const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
+        const tab = strip.querySelector<HTMLElement>('.kui-app-tab')!;
+        return {
+          strip: parseFloat(window.getComputedStyle(strip).borderTopLeftRadius),
+          tab: parseFloat(window.getComputedStyle(tab).borderTopLeftRadius),
+        };
+      });
+      expect(customRadii.strip).toBeCloseTo(18, 0);
+      expect(customRadii.tab).toBeCloseTo(18 - radii.inset, 0);
+    }
+  }
+});

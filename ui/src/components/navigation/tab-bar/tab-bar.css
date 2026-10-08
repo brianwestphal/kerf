@@ -78,7 +78,10 @@
 }
 .kui-tab-bar[data-presentation="inspector"] .kui-tab-bar__tabs {
   min-height: var(--kui-tab-bar-strip-min-height, remify(34px));
-  border-radius: var(--kui-tab-bar-strip-radius, var(--kui-radius-s));
+  border-radius: var(
+    --kui-tab-bar-strip-radius,
+    var(--kui-layout-rounded-radius)
+  );
 }
 .kui-tab-bar[data-trailing-placement="adjacent"] .kui-tab-bar__tabs {
   flex: 0 1 auto;

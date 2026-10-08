@@ -286,6 +286,8 @@ clips focus painting; never restyle Select shadow parts from application CSS.
 
 For application tabs, `AppTab presentation="icon-only"` retains its accessible `name`, `labelMaxWidth` truncates the visible name, and `attention` colors it through `--kui-app-tab-attention-color`. Configure TabBar strip geometry through public `--kui-tab-bar-strip-*` tokens.
 
+`TabBar presentation="inspector"` uses the shared rounded rectangle radius for its strip and inset segmented tabs. Ordinary `presentation="segmented"` keeps pill strip ends and smaller corners between tabs; do not restyle AppTab to make one presentation match the other.
+
 Set `AppTab dropTarget` while content is dragged over a tab to highlight the target without changing selection. Use `nameOverflow="visible"` for an inline loading treatment that needs the full visible name; the default is an ellipsis.
 
 Set `pinned` on the first `AppTab` when it must stay visible while peers scroll. Keep it inside `TabBar` children so it remains in the tablist and roving focus order. Use `--kui-app-tab-pinned-background` for a non-default surrounding surface; the pinned backdrop must cover tabs beneath it.
