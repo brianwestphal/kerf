@@ -167,7 +167,7 @@ test('at phone width the catalog sidebar overlays the stage, one tap from the en
 test('filters shared catalog entries and headings, including collapsed ecosystem items', async ({
   page,
   browserName,
-}) => {
+}, testInfo) => {
   await page.setViewportSize({ width: 1100, height: 820 });
   await page.goto('/?component=badge');
   const sidebar = page.locator('#kui-catalog-left-rail');
@@ -206,6 +206,21 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await sidebar.locator('[data-item-id="toolbar"]').click();
   await expect(page).toHaveURL(/component=toolbar/);
   await expect(filter).toHaveText('Toolbar');
+  const field = sidebar.locator('[data-component="token-search-field"]');
+  await expect(field).toHaveAttribute('data-placeholder-visible', 'false');
+  expect(
+    await field.evaluate(
+      (element) => window.getComputedStyle(element, '::before').content,
+    ),
+  ).not.toContain('Filter items or headings');
+  await field.screenshot({
+    path: testInfo.outputPath(`catalog-filter-after-wide-${browserName}.png`),
+  });
+  await sidebar.locator('.kui-pane__header').screenshot({
+    path: testInfo.outputPath(
+      `catalog-filter-header-after-wide-${browserName}.png`,
+    ),
+  });
   await expect(sidebar.locator('[data-item-id="toolbar"]')).toBeVisible();
   await sidebar.screenshot({
     path: `test-results/catalog-filter-wide-${browserName}.png`,
@@ -214,6 +229,10 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
   await expect(filter).toHaveText('Toolbar');
+  await expect(field).toHaveAttribute('data-placeholder-visible', 'false');
+  await field.screenshot({
+    path: testInfo.outputPath(`catalog-filter-after-narrow-${browserName}.png`),
+  });
   await sidebar.getByRole('button', { name: 'Clear filter' }).click();
   await expect(filter).toBeEmpty();
   await expect(sidebar.locator('[data-item-id="badge"]')).toBeVisible();

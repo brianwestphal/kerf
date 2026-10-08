@@ -84,7 +84,9 @@ function wireCatalogFilter(root: HTMLElement): () => void {
       '[data-component="token-search-field"]',
     )!;
     field.dataset.catalogFilterActive = String(Boolean(query));
-    field.dataset.placeholderVisible = String(!filterValue);
+    const placeholderVisible = String(!filterValue);
+    if (field.dataset.placeholderVisible !== placeholderVisible)
+      field.dataset.placeholderVisible = placeholderVisible;
     const clear = field.querySelector<HTMLElement>(
       '[data-action="catalog-clear-filter"]',
     )!;
@@ -168,9 +170,14 @@ function wireCatalogFilter(root: HTMLElement): () => void {
   root.addEventListener('input', onInput);
   root.addEventListener('click', onClick);
   const observer = new view.MutationObserver(() => {
-    if (query) apply();
+    if (filterValue) apply();
   });
-  observer.observe(root, { childList: true, subtree: true });
+  observer.observe(root, {
+    attributes: true,
+    attributeFilter: ['data-placeholder-visible'],
+    childList: true,
+    subtree: true,
+  });
   apply();
   return () => {
     root.removeEventListener('input', onInput);

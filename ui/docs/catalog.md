@@ -61,8 +61,9 @@ filters entry names and section headings as text is typed,
 ignoring case. A heading match shows all its entries; a matching secondary
 group heading searches its sections too, even while that group is collapsed.
 Empty sections disappear and an empty-result message appears when nothing
-matches. The query survives controlled Catalog rerenders and clears through the
-field's clear action. Filtering does not change the selected
+matches. The query survives controlled Catalog rerenders, with the field's
+placeholder hidden while text remains, and clears through the field's clear
+action. Filtering does not change the selected
 entry or its preview.
 
 Per-entry `resources` render as "open in new tab" links in the footer, and
