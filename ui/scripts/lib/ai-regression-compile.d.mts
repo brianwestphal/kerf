@@ -26,4 +26,5 @@ export function compileAiRegressionResponse(
   root: string,
   response: unknown,
   responseText?: string,
+  request?: unknown,
 ): Promise<AiRegressionCompileEvidence>;

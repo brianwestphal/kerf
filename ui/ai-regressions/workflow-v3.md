@@ -34,7 +34,9 @@ Doctor runs use full mode with cache disabled and its browser stage disabled.
 The compile probe overlays changed response files onto the case's unchanged
 `contextFiles` at their original relative paths. Those context files are
 available to TypeScript imports but remain absent from `response.files` and
-the changed-file count.
+the changed-file count. Pass `--request <prepared-request.json>` to the compile
+CLI for measured cells so it uses the exact context bytes and hashes the model
+saw; without a request, ad hoc compilation reads current checkout files.
 The harness calls the evaluator explicitly so it can name a URL, forward the
 same AbortSignal, and pass the four contexts from `compatibility-v3.json`
 rather than relying on evaluator defaults. The browser stage combines evaluator

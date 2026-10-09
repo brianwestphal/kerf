@@ -8,7 +8,10 @@ import { promisify } from 'node:util';
 import { describe, expect, it } from 'vitest';
 
 import { createCannedRepairLoopFixture } from '../../ai-regressions/fixtures/v3-canned-repair-loop.mjs';
-import { canonicalAiRegressionJson } from '../../scripts/lib/ai-regression-run-v3.mjs';
+import {
+  canonicalAiRegressionJson,
+  sha256AiRegression,
+} from '../../scripts/lib/ai-regression-run-v3.mjs';
 import { validateJsonSchemaSubset } from '../../scripts/lib/json-schema-subset.mjs';
 
 const exec = promisify(execFile);
@@ -142,13 +145,39 @@ describe('suite-v3 executable protocol', { timeout: 30_000 }, () => {
     const directory = await mkdtemp(join(tmpdir(), 'kerf-ai-v3-compile-'));
     try {
       const responsePath = join(directory, 'response.json');
+      const requestPath = join(directory, 'request.json');
+      const types = 'export type RecipeFactory = string;\n';
+      const oldApp = 'export const before = true;\n';
       await writeFile(
         responsePath,
         canonicalAiRegressionJson({
           caseId: 'extend-application-navigation',
           files: {
             'ux-demo/recipes/app-shell.tsx':
-              "import type { RecipeFactory } from './types.js';\ndeclare const createRecipe: RecipeFactory;\nvoid createRecipe;\n",
+              "import type { RecipeFactory } from './types.js';\nexport const createRecipe: RecipeFactory = 'ready';\n",
+          },
+        }),
+      );
+      await writeFile(
+        requestPath,
+        canonicalAiRegressionJson({
+          caseId: 'extend-application-navigation',
+          modelInput: {
+            caseId: 'extend-application-navigation',
+            caseContext: {
+              sources: [
+                {
+                  path: 'ux-demo/recipes/app-shell.tsx',
+                  content: oldApp,
+                  sha256: sha256AiRegression(oldApp),
+                },
+                {
+                  path: 'ux-demo/recipes/types.ts',
+                  content: types,
+                  sha256: sha256AiRegression(types),
+                },
+              ],
+            },
           },
         }),
       );
@@ -158,6 +187,8 @@ describe('suite-v3 executable protocol', { timeout: 30_000 }, () => {
           'scripts/compile-ai-regression-response.mjs',
           '--response',
           responsePath,
+          '--request',
+          requestPath,
         ],
         { cwd: root },
       );

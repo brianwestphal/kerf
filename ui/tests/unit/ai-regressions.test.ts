@@ -282,6 +282,87 @@ describe('local AI regression foundation', { timeout: 30_000 }, () => {
     compileTestTimeout,
   );
 
+  it(
+    'uses prepared v3 context bytes and rejects mismatched or incomplete requests',
+    async () => {
+      const types = 'export type RecipeFactory = string;\n';
+      const oldApp = 'export const before = true;\n';
+      const request = {
+        caseId: 'extend-application-navigation',
+        modelInput: {
+          caseId: 'extend-application-navigation',
+          caseContext: {
+            sources: [
+              {
+                path: 'ux-demo/recipes/app-shell.tsx',
+                content: oldApp,
+                sha256: sha256AiRegression(oldApp),
+              },
+              {
+                path: 'ux-demo/recipes/types.ts',
+                content: types,
+                sha256: sha256AiRegression(types),
+              },
+            ],
+          },
+        },
+      };
+      const response = {
+        caseId: request.caseId,
+        files: {
+          'ux-demo/recipes/app-shell.tsx':
+            "import type { RecipeFactory } from './types.js';\nexport const createRecipe: RecipeFactory = 'ready';\n",
+        },
+      };
+      expect((await compileAiRegressionResponse(root, response)).passed).toBe(
+        false,
+      );
+      const pinned = await compileAiRegressionResponse(
+        root,
+        response,
+        undefined,
+        request,
+      );
+      expect(pinned.diagnostics).toEqual([]);
+      expect(pinned.compiledFiles).toBe(1);
+      await expect(
+        compileAiRegressionResponse(root, response, undefined, {
+          ...request,
+          caseId: 'wrong-case',
+        }),
+      ).rejects.toThrow('does not match');
+      await expect(
+        compileAiRegressionResponse(root, response, undefined, {
+          ...request,
+          modelInput: {
+            ...request.modelInput,
+            caseContext: {
+              sources: request.modelInput.caseContext.sources.slice(0, 1),
+            },
+          },
+        }),
+      ).rejects.toThrow('missing case context files');
+      await expect(
+        compileAiRegressionResponse(root, response, undefined, {
+          ...request,
+          modelInput: {
+            ...request.modelInput,
+            caseContext: {
+              sources: [
+                request.modelInput.caseContext.sources[0],
+                {
+                  ...request.modelInput.caseContext.sources[1],
+                  sha256: '0'.repeat(64),
+                },
+              ],
+            },
+          },
+        }),
+      ).rejects.toThrow('Invalid prepared context source');
+    },
+    compileTestTimeout,
+  );
+
   it('reports incompatible callbacks and props without executing generated code', async () => {
     const result = await compileAiRegressionResponse(root, {
       files: {

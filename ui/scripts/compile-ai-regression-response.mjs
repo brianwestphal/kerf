@@ -12,13 +12,18 @@ const valueAfter = (flag) => {
 const responsePath = valueAfter('--response');
 if (!responsePath)
   throw new Error(
-    'Usage: compile-ai-regression-response --response <response.json> [--out <evidence.json>]',
+    'Usage: compile-ai-regression-response --response <response.json> [--request <prepared-request.json>] [--out <evidence.json>]',
   );
 const responseText = await readFile(resolve(root, responsePath), 'utf8');
+const requestPath = valueAfter('--request');
+const request = requestPath
+  ? JSON.parse(await readFile(resolve(root, requestPath), 'utf8'))
+  : undefined;
 const evidence = await compileAiRegressionResponse(
   root,
   JSON.parse(responseText),
   responseText,
+  request,
 );
 const output = `${JSON.stringify(evidence, null, 2)}\n`;
 const outputPath = valueAfter('--out');

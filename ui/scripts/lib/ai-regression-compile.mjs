@@ -10,6 +10,7 @@ const acceptedExtension = /(?:\.d)?\.tsx?$|\.css$/;
 
 function safeResponsePath(name) {
   if (
+    typeof name !== 'string' ||
     !name ||
     name.includes('\\') ||
     posix.isAbsolute(name) ||
@@ -85,6 +86,7 @@ export async function compileAiRegressionResponse(
   root,
   response,
   responseText = `${JSON.stringify(response, null, 2)}\n`,
+  request,
 ) {
   root = resolve(root);
   if (
@@ -106,12 +108,42 @@ export async function compileAiRegressionResponse(
     await readFile(resolve(root, 'ai-regressions/corpus-v3.json'), 'utf8'),
   );
   const caseDefinition = corpus.cases.find(({ id }) => id === response.caseId);
+  let pinnedSources;
+  if (request !== undefined) {
+    if (
+      !caseDefinition ||
+      request?.caseId !== response.caseId ||
+      request?.modelInput?.caseId !== response.caseId ||
+      !Array.isArray(request?.modelInput?.caseContext?.sources)
+    )
+      throw new Error(
+        'Prepared request case context does not match the response',
+      );
+    const sources = request.modelInput.caseContext.sources;
+    pinnedSources = new Map();
+    for (const source of sources) {
+      safeResponsePath(source?.path);
+      if (
+        typeof source.content !== 'string' ||
+        source.sha256 !== sha256(source.content) ||
+        pinnedSources.has(source.path)
+      )
+        throw new Error(`Invalid prepared context source: ${source.path}`);
+      pinnedSources.set(source.path, source.content);
+    }
+    if (
+      sources.length !== caseDefinition.contextFiles.length ||
+      caseDefinition.contextFiles.some((name) => !pinnedSources.has(name))
+    )
+      throw new Error('Prepared request is missing case context files');
+  }
   for (const name of caseDefinition?.contextFiles ?? []) {
     safeResponsePath(name);
     if (codeExtension.test(name))
       virtualFiles.set(
         resolve(virtualRoot, name),
-        await readFile(resolve(root, name), 'utf8'),
+        pinnedSources?.get(name) ??
+          (await readFile(resolve(root, name), 'utf8')),
       );
   }
   let compiledFiles = 0;
