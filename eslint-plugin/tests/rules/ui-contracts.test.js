@@ -75,6 +75,10 @@ const wiringRoot = mkdtempSync(join(tmpdir(), 'kerf-wiring-'));
 const wiringEntry = join(wiringRoot, 'main.tsx');
 const wiringEntryTwo = join(wiringRoot, 'other.tsx');
 const wiringLeaf = join(wiringRoot, 'leaf.tsx');
+const wiringApp = join(wiringRoot, 'app.tsx');
+const wiringInit = join(wiringRoot, 'init.ts');
+const wiringRootHelper = join(wiringRoot, 'search-field.tsx');
+const currencyLeaf = join(wiringRoot, 'currencies-view.tsx');
 writeFileSync(
   wiringEntry,
   "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);\n",
@@ -84,9 +88,26 @@ writeFileSync(
   "import { TokenSearchField, Select } from '@kerfjs/ui'; export const View = () => <><TokenSearchField /><Select /></>;\n",
 );
 writeFileSync(wiringEntryTwo, "import('./leaf');\n");
+writeFileSync(
+  currencyLeaf,
+  "import { TokenSearchField } from '@kerfjs/ui/token-search-field'; export const CurrenciesView = () => <TokenSearchField id='currency-filter' />;\n",
+);
+writeFileSync(wiringApp, "import { init } from './init.js'; init();\n");
+writeFileSync(
+  wiringInit,
+  "import './currencies-view.js'; import { wireShellSearch } from './search-field.js'; export function init() { void wireShellSearch(root); }\n",
+);
+writeFileSync(
+  wiringRootHelper,
+  "import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; export function wireShellSearch(root) { return wireTokenSearchFields(root, { onEdit({ id }) { if (id === 'currency-filter') updateFilter(); } }); }\n",
+);
 const entrySettings = uiSettings({
   workspaceRoot: wiringRoot,
   profile: { ...profile, wiring: { entries: ['main.tsx'] } },
+});
+const rootHelperSettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  profile: { ...profile, wiring: { entries: ['app.tsx'] } },
 });
 const twoEntrySettings = uiSettings({
   workspaceRoot: wiringRoot,
@@ -1226,6 +1247,16 @@ tester.run('ui-wiring', wiring, {
       code: "import { TokenSearchField, Select } from '@kerfjs/ui'; <><TokenSearchField /><Select /></>;",
       filename: wiringLeaf,
       settings: twoEntrySettings,
+    },
+    {
+      code: "import { init } from './init.js'; init();",
+      filename: wiringApp,
+      settings: rootHelperSettings,
+    },
+    {
+      code: "import { TokenSearchField } from '@kerfjs/ui/token-search-field'; export const CurrenciesView = () => <TokenSearchField id='currency-filter' />;",
+      filename: currencyLeaf,
+      settings: rootHelperSettings,
     },
     {
       code: "import { TokenSearchField } from '@kerfjs/ui'; import { wireTokenSearchFields as wire } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wire(root); <TokenSearchField />;",
