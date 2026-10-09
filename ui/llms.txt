@@ -566,7 +566,10 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
   `wireCatalog` callbacks instead of recreating their toolbar markup, while your
   app owns applying and persisting preferences. For any Catalog demo, follow
   the [authoritative authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
-  rather than inferring structure from the shell or private CSS.
+  rather than inferring structure from the shell or private CSS. The shipped
+  Catalog stage fills the preview scroller for short specimens and grows with
+  tall ones in every consumer; do not add a demo-specific height or backdrop
+  override.
   `@kerfjs/ui/webawesome` is a
   type-only boundary for `wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the
   declared side effects.

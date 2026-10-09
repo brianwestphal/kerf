@@ -64,6 +64,11 @@ backdrop. See `../docs/webawesome-theme.md#contextual-transparency`.
 This is the rule every Kerf UI surface follows, and applications and
 component packages built on Kerf UI must follow it too:
 
+`Catalog` owns its preview stage in every package: its shipped styles fill the
+Pane scroller for short specimens and grow for tall ones. Import its browser
+styles or companion CSS; never add a demo-specific stage height, backdrop, or
+Pane override to imitate the Kerf UI UX demo.
+
 - **A component styles only itself.** Change how a component looks or sits
   through its typed props and data attributes (size, density, inset,
   presentation, tone, `dividerSides`, `ToolbarConfig`, `PaneConfig`, …). Never

@@ -1057,6 +1057,10 @@ resource footer in `mainFooter`); `catalog-sidebar.tsx`, `catalog-section-list.t
 component); only `catalog.css`, `catalog-stage.css`, `catalog-example.css`, and
 `catalog-example-stack.css` remain (`ui/tests/unit/catalog-component.test.tsx`,
 `ui/tests/browser/catalog-sidebar-shell.spec.ts`).
+The Catalog stage's own stylesheet gives it a minimum height of the preview
+scroller, so short specimens and all background choices reach the pane bottom
+in first-party and downstream demos; taller specimens keep their natural height
+and scroll. Its browser subpath bundles that stylesheet for consumers.
 `ui/scripts/lib/css-ownership.mjs` holds the package-stylesheet ownership rules
 `check:css-ownership` applies to every colocated component stylesheet under
 `ui/src/components/<family>/<component>/` (a same-basename `.css` and `.tsx`

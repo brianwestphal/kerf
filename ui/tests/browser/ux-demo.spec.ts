@@ -1986,6 +1986,59 @@ test('insets the catalog canvas inside a sunken work pane', async ({
   }
 });
 
+test('fills the preview scroller for short Catalog specimens across backgrounds and widths', async ({
+  page,
+  browserName,
+}) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 1200 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/?component=badge');
+    const scroller = page.locator(
+      '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__content',
+    );
+    const stage = scroller.locator(':scope > [data-catalog-stage]');
+    const menu = page.locator('[data-catalog-background-menu]');
+    for (const background of [
+      'checkerboard',
+      'vertical-stripes',
+      'layout-guide',
+      'surface',
+      'sunken',
+    ]) {
+      await menu.locator('[slot="trigger"]').click();
+      await menu.locator(`[data-background-choice="${background}"]`).click();
+      await expect(stage).toHaveAttribute('data-background-style', background);
+      const geometry = await stage.evaluate((element) => {
+        const stage = element.getBoundingClientRect();
+        const content = element.parentElement!.getBoundingClientRect();
+        return {
+          stageTop: stage.top,
+          contentTop: content.top,
+          stageBottom: stage.bottom,
+          contentBottom: content.bottom,
+          stageHeight: stage.height,
+          contentHeight: content.height,
+          scrollHeight: element.parentElement!.scrollHeight,
+        };
+      });
+      expect(geometry.stageHeight).toBeGreaterThanOrEqual(
+        geometry.contentHeight - 1,
+      );
+      expect(
+        Math.abs(geometry.stageBottom - geometry.contentBottom),
+        JSON.stringify(geometry),
+      ).toBeLessThanOrEqual(1);
+      if (browserName === 'chromium' && background === 'checkerboard')
+        await scroller.screenshot({
+          path: `test-results/catalog-short-stage-${viewport.width}.png`,
+        });
+    }
+  }
+});
+
 test('keeps Catalog display controls fully visible and usable across widths', async ({
   page,
   browserName,

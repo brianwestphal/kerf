@@ -187,9 +187,14 @@ The app owns entry ids, `kind`, routing, sources, relationships, and test hooks.
 `Catalog.stageRootAttributes` places app-owned `data-*` state on the
 catalog-owned preview stage without an extra wrapper; `data-catalog-stage`
 remains protected.
-The stage is the main Pane's direct scrolling content, owns an 8px inset, and
-grows with tall specimens. The main Pane keeps its sunken appearance without a
-deep inset.
+The stage is the main Pane's direct scrolling content and fills its available
+scroller height for short specimens, so every backdrop reaches the pane's bottom.
+It grows with tall specimens and scrolls without clipping. The canvas owns the
+16px inset; the main Pane keeps its sunken appearance without a deep inset. The
+Catalog's shipped CSS supplies this behavior in this package's UX demo and in
+other packages' demos. Consumers should import `@kerfjs/ui/catalog` with its
+browser styles (or the companion CSS subpath for manual CSS pipelines) rather
+than styling Pane or stage internals.
 The helpers own their structural markers, label/note anatomy, alignment marker,
 and private classes. Component metadata such as margin/border/padding ownership
 lives in `component-catalog.json`.

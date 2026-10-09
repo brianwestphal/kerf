@@ -531,8 +531,10 @@ describe('consumer bundle boundaries', () => {
       "import { Catalog } from '@kerfjs/ui/catalog'; console.log(Catalog);",
     );
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
-    const subjects = styledClasses(output(result, '.css'));
+    const css = output(result, '.css');
+    const subjects = styledClasses(css);
     expect(inputs).toContain('dist/browser/catalog.js');
+    expect(css).toMatch(/\.kui-catalog__stage\s*\{[^}]*min-height:\s*100%/);
     // The components the Catalog shell renders internally: its sidebar, stage,
     // resource footer, and the Workbench (with its Panes) that hosts them.
     for (const subject of [
