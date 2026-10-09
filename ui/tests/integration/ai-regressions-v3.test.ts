@@ -138,6 +138,38 @@ describe('suite-v3 executable protocol', { timeout: 30_000 }, () => {
     expect(stdout).toContain('canned repair replayed; 0 measured runs audited');
   });
 
+  it('compiles a changed v3 file through the CLI with its unchanged context import', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'kerf-ai-v3-compile-'));
+    try {
+      const responsePath = join(directory, 'response.json');
+      await writeFile(
+        responsePath,
+        canonicalAiRegressionJson({
+          caseId: 'extend-application-navigation',
+          files: {
+            'ux-demo/recipes/app-shell.tsx':
+              "import type { RecipeFactory } from './types.js';\ndeclare const createRecipe: RecipeFactory;\nvoid createRecipe;\n",
+          },
+        }),
+      );
+      const { stdout } = await exec(
+        process.execPath,
+        [
+          'scripts/compile-ai-regression-response.mjs',
+          '--response',
+          responsePath,
+        ],
+        { cwd: root },
+      );
+      const evidence = JSON.parse(stdout);
+      expect(evidence.passed).toBe(true);
+      expect(evidence.compiledFiles).toBe(1);
+      expect(evidence.diagnostics).toEqual([]);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
   it('records and replays a staged canned campaign through the public scripts', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'kerf-ai-v3-cli-'));
     try {

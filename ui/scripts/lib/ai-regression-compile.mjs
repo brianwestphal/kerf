@@ -100,18 +100,34 @@ export async function compileAiRegressionResponse(
     responseSha256.slice(0, 12),
   );
   const virtualFiles = new Map();
+  // Suite v3 responses contain edits only. Keep unchanged case modules at
+  // their original paths so relative imports resolve inside the virtual host.
+  const corpus = JSON.parse(
+    await readFile(resolve(root, 'ai-regressions/corpus-v3.json'), 'utf8'),
+  );
+  const caseDefinition = corpus.cases.find(({ id }) => id === response.caseId);
+  for (const name of caseDefinition?.contextFiles ?? []) {
+    safeResponsePath(name);
+    if (codeExtension.test(name))
+      virtualFiles.set(
+        resolve(virtualRoot, name),
+        await readFile(resolve(root, name), 'utf8'),
+      );
+  }
+  let compiledFiles = 0;
   for (const [name, source] of Object.entries(response.files)) {
     safeResponsePath(name);
     if (typeof source !== 'string')
       throw new Error(`Response file is not a string: ${name}`);
-    if (codeExtension.test(name))
+    if (codeExtension.test(name)) {
       virtualFiles.set(resolve(virtualRoot, name), source);
+      compiledFiles++;
+    }
   }
-  if (!virtualFiles.size)
+  if (!compiledFiles)
     throw new Error(
       'Response contains no .ts, .tsx, or .d.ts files to compile',
     );
-  const compiledFiles = virtualFiles.size;
   const ambientPath = resolve(virtualRoot, 'response-assets.d.ts');
   virtualFiles.set(ambientPath, "declare module '*.css';\n");
   const webAwesomeTypesPath = resolve(
@@ -145,6 +161,7 @@ export async function compileAiRegressionResponse(
   const host = ts.createCompilerHost(compilerOptions, true);
   const readDefault = host.readFile.bind(host);
   const existsDefault = host.fileExists.bind(host);
+  const directoryExistsDefault = host.directoryExists?.bind(host);
   // TypeScript's own default libraries live wherever the `typescript` package
   // really is, which is outside `root` when node_modules is a symlink (as in
   // a worktree sharing the main checkout's install).
@@ -160,6 +177,11 @@ export async function compileAiRegressionResponse(
   host.fileExists = (fileName) =>
     virtualFiles.has(fileName) ||
     (readable(fileName) && existsDefault(fileName));
+  host.directoryExists = (directory) =>
+    [...virtualFiles.keys()].some((fileName) =>
+      isWithin(directory, fileName),
+    ) ||
+    (readable(directory) && (directoryExistsDefault?.(directory) ?? false));
   host.getSourceFile = (fileName, languageVersion) => {
     const source = host.readFile(fileName);
     return source === undefined

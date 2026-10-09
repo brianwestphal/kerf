@@ -249,6 +249,39 @@ describe('local AI regression foundation', { timeout: 30_000 }, () => {
     compileTestTimeout,
   );
 
+  it(
+    'compiles v3 edits with unchanged context modules without adding them to the response',
+    async () => {
+      const response = {
+        caseId: 'extend-application-navigation',
+        files: {
+          'ux-demo/recipes/app-shell.tsx':
+            "import type { RecipeFactory } from './types.js';\ndeclare const createRecipe: RecipeFactory;\nvoid createRecipe;\n",
+        },
+      };
+      const definition = (
+        await readJson('ai-regressions/corpus-v3.json')
+      ).cases.find(({ id }: { id: string }) => id === response.caseId);
+      expect(validateAiRegressionResponseV3(definition, response)).toEqual([]);
+      const valid = await compileAiRegressionResponse(root, response);
+      expect(valid.diagnostics).toEqual([]);
+      expect(valid.passed).toBe(true);
+      expect(valid.compiledFiles).toBe(1);
+
+      const invalid = await compileAiRegressionResponse(root, {
+        ...response,
+        files: {
+          'ux-demo/recipes/app-shell.tsx':
+            "import type { RecipeFactory } from './types.js';\nexport const createRecipe: RecipeFactory = 42;\n",
+        },
+      });
+      expect(invalid.passed).toBe(false);
+      expect(invalid.diagnostics.some(({ code }) => code === 2322)).toBe(true);
+      expect(invalid.diagnostics.some(({ code }) => code === 2307)).toBe(false);
+    },
+    compileTestTimeout,
+  );
+
   it('reports incompatible callbacks and props without executing generated code', async () => {
     const result = await compileAiRegressionResponse(root, {
       files: {

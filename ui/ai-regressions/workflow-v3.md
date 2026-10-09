@@ -31,6 +31,10 @@ Final evaluation runs every applicable stage for every condition even when a
 stage was not available as feedback.
 
 Doctor runs use full mode with cache disabled and its browser stage disabled.
+The compile probe overlays changed response files onto the case's unchanged
+`contextFiles` at their original relative paths. Those context files are
+available to TypeScript imports but remain absent from `response.files` and
+the changed-file count.
 The harness calls the evaluator explicitly so it can name a URL, forward the
 same AbortSignal, and pass the four contexts from `compatibility-v3.json`
 rather than relying on evaluator defaults. The browser stage combines evaluator
