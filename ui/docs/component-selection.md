@@ -15,6 +15,52 @@ The application adapter is usually a plain function that maps domain state to
 component props plus stable `data-action` values. It is not a fork of package
 markup or CSS.
 
+## Decision pass before JSX or CSS
+
+Make these choices in order for each region, including a region copied from a
+mockup or another application:
+
+1. **Name the job.** What does the person read, choose, edit, or navigate? What
+   state and keyboard behavior must survive? Search the Kerf catalog, then the
+   consuming application's catalog. Choose by that contract, not by a similar
+   silhouette. For example, use `ContentItem` for an owned content surface,
+   `List` for vertical rhythm, `Grid` for equal responsive tracks,
+   `Toolbar`/`ToolbarText` for a heading with actions, and `PopupMenu` for a
+   command menu. `TokenSearchField` is for text plus filter chips; an ordinary
+   search input does not gain tokens just to use that component.
+2. **Reuse, compose, then extend.** If a component already owns the job,
+   configure it. If several primitives form the job, compose them and keep
+   product data/actions in a thin adapter. Create an application component when
+   it owns a repeatable domain contract or genuinely new structure. If the
+   missing contract would benefit other applications, file a Kerf component or
+   recipe gap. Do not clone a component's markup to make a local variant.
+3. **Give every element and class a reason.** An element should supply semantic
+   meaning, an interaction target, an accessibility relationship, or layout
+   that no selected component already owns. Put accepted content directly in
+   the component's props/slots; delete wrapper `div`/`span` elements and
+   fragments used only for spacing, styling, or satisfying a child type. Add a
+   CSS class only for an application-owned selector, not to restyle a Kerf
+   root; use stable `data-action` hooks for behavior. Native links, tables,
+   and form controls still belong where their native semantics are the right
+   contract.
+4. **Assign geometry once.** Decide which component owns the surface, inset,
+   scrollport, and each gap before adding styles. Align neighboring text edges
+   and control edges; group related items tightly and separate distinct
+   sections with a larger step from the shared scale. Leave useful empty space
+   around a short form or sparse state instead of filling it with decorative
+   cards, labels, or dividers. Use a public edge-to-edge or inset option where
+   available; a negative margin or compensating wrapper is a sign to revisit
+   ownership. Check narrow and intermediate widths before choosing fixed
+   columns or dimensions.
+5. **Compare the finished composition.** Inspect it beside adjacent screens
+   and the catalog specimen, then in a real browser at wide and narrow widths.
+   Check reading order, content edges, wrapping, clipping, whitespace, scroll
+   ownership, focus, and active/empty/loading states. Revise the component
+   choice or composition when the result needs repeated CSS corrections.
+
+The package's defaults are the starting design, not an empty canvas. A custom
+component or rule should explain which missing behavior or structure it owns.
+
 **Don't fight the components.** The package is built to look right without an
 application customization layer. Before adding `padding`, `margin`, `width`,
 `height`, `border`, `background`, a wrapper card, or a decoration, check whether

@@ -21,6 +21,19 @@ documented dynamic-data widening. Do not extend those diagnostics to child
 markup, live DOM relationships, disposer invocation, or other conditions that
 TypeScript cannot prove from one call.
 
+Before writing JSX, run the
+[component-selection decision pass](../docs/component-selection.md#decision-pass-before-jsx-or-css):
+name the user's task and interaction, find the matching Kerf or application
+component, and use its public props. Compose existing primitives for layout; an
+app component is for a repeatable domain contract or new structure, not a copy
+of a Kerf component with local CSS. For each proposed `div`, `span`, fragment,
+class, or rule, identify the semantics, interaction, accessibility, or
+app-owned geometry it supplies; remove it when a selected component already
+supplies that job. Plan one owner for the surface, inset, scrollport, and gaps.
+Use the shared spacing scale by relationship and preserve useful empty space.
+Compare the result with adjacent screens and inspect real wide/narrow browser
+states before treating a passing analyzer or test as a design approval.
+
 ### Shared semantic tones
 
 `SemanticTone` is the shared color-role type for `Badge`, `Chip`, `StateBanner`,

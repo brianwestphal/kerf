@@ -59,6 +59,19 @@ not a reason to override — and your own components follow the same rule.
 
 ## How to build a screen (retrieval order)
 
+First make the design decision: state what the user must read or do, find the
+Kerf or consuming-app component whose purpose and interaction match, and
+configure it. Compose `Toolbar`, `List`, `Row`, `Grid`, `ContentItem`, and the
+other primitives before creating markup or CSS. A local component should own a
+real domain behavior or new structure; a wrapper made only to re-space or
+re-skin an existing component is the wrong choice. Ask what each `div`, `span`,
+fragment, class, and CSS rule contributes. Remove it if a component already
+owns the semantics, surface, inset, scrollport, or gap. Use the spacing scale
+to show relationships, keep useful negative space, and align neighboring text
+and control edges. Check the result against adjacent screens at wide and narrow
+widths. The concrete [decision pass](./docs/component-selection.md#decision-pass-before-jsx-or-css)
+explains when to reuse, compose, extend, or use native HTML.
+
 1. **Pick the component from the interface need**, not by appearance — read
    [component-selection.md](./docs/component-selection.md) (the problem→component
    matrix, with imports, wiring, ownership, and alternatives).

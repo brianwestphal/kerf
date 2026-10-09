@@ -91,6 +91,14 @@ missing prop is a component gap to report upstream, not a reason to override,
 and your own components should expose configuration the same way. See
 `ui/ai/skill.md` and `ui/docs/design-philosophy.md`.
 
+Before writing a consuming UI, use
+[`ui/docs/component-selection.md`](../../ui/docs/component-selection.md#decision-pass-before-jsx-or-css)
+to choose by purpose and interaction. Reuse a component or compose primitives
+before creating markup or CSS; every extra element and class should own
+semantics, behavior, accessibility, or layout the selected components do not.
+Choose one owner for each inset and scrollport, use the spacing scale to show
+relationships, and leave useful empty space rather than adding decoration.
+
 When a Kerf UI component is a light-DOM child of a custom element, pass the
 explicit native `slot="name"` prop. Every stable single-root visual component
 forwards it on every render branch, so native named-slot assignment survives

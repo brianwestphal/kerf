@@ -130,6 +130,15 @@ separation, very minor air, standard within a group, between homogeneous groups,
 and major between heterogeneous groups. Off-scale values (12px, 32px) are
 deliberate exceptions. See [`layout.md`](layout.md) "Spacing scale".
 
+Empty space also has a job. Keep related controls and content close, leave more
+room between distinct decisions, and let a short form or sparse state occupy
+only the width it needs. Align neighboring content edges before adjusting gaps.
+Do not fill an open area with a card, divider, label, or evenly stretched row
+merely to use the space. Give the pane, surface, and child layout one owner each;
+avoid a negative margin or spacer that only cancels an inset another component
+already provides. Recheck that rhythm with side rails open and at narrow and
+intermediate widths.
+
 ### Responsive design reprioritizes
 
 Protect primary content, readable type, recognizable icons, and usable targets. Relocate secondary information before compressing it below a usable scale. Keep one clear scroll owner per region and test narrow, wide, zoomed, and intermediate layouts.
