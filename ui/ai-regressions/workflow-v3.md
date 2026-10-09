@@ -9,7 +9,7 @@ model/version, settings, and replicate.
 
 The attempt-one model input is byte-identical across all three policies. It
 contains the same prompt, frozen guidance, application files, response
-contract, and response schema. Condition identity is harness metadata and is
+contract, exact case ID, and response schema. Condition identity is harness metadata and is
 not sent to the model.
 
 1. `guidance-only` records one response and returns no tool feedback.

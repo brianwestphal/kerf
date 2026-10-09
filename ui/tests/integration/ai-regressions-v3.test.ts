@@ -54,6 +54,7 @@ describe('suite-v3 executable protocol', { timeout: 30_000 }, () => {
     ).toBe(1);
     expect(requests[0].modelInput).toEqual(requests[1].modelInput);
     expect(requests[1].modelInput).toEqual(requests[2].modelInput);
+    expect(requests[0].modelInput.caseId).toBe('extend-application-navigation');
   });
 
   it('prepares a request whose only difference from guidance-only is the catalog representation', async () => {
@@ -78,6 +79,7 @@ describe('suite-v3 executable protocol', { timeout: 30_000 }, () => {
     expect(variant.condition).toBe(VARIANT);
     expect(variant.attempt).toBe(1);
     for (const field of [
+      'caseId',
       'prompt',
       'caseContext',
       'responseContract',

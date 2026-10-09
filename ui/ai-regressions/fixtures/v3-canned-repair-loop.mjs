@@ -63,6 +63,7 @@ export function createCannedRepairLoopFixture() {
     return { path, sha256: sha256AiRegression(content) };
   };
   const modelInput = {
+    caseId: 'extend-application-navigation',
     prompt: 'Repair the existing application.',
     guidanceContext: { sha256: zero, sources: [], text: 'Frozen guidance.' },
     caseContext: { sha256: zero, sources: [] },

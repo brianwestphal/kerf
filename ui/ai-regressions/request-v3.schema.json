@@ -21,6 +21,7 @@
     "modelInput": {
       "type": "object",
       "required": [
+        "caseId",
         "prompt",
         "guidanceContext",
         "caseContext",
@@ -29,6 +30,7 @@
       ],
       "additionalProperties": false,
       "properties": {
+        "caseId": { "type": "string", "minLength": 1 },
         "prompt": { "type": "string", "minLength": 1 },
         "guidanceContext": { "$ref": "#/$defs/context" },
         "caseContext": { "$ref": "#/$defs/context" },

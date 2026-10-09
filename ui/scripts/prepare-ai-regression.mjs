@@ -116,6 +116,7 @@ for (const testCase of selectedCases) {
       ).get(condition.id),
     });
     const modelInput = {
+      ...(suiteVersion === 3 ? { caseId: testCase.id } : {}),
       prompt,
       guidanceContext: {
         sourceRevision: context.sourceRevision,
@@ -142,7 +143,7 @@ for (const testCase of selectedCases) {
         : {}),
       responseContract:
         suiteVersion === 3
-          ? 'Return only JSON matching responseSchema. Put the complete contents of every changed editable file in files, keyed by its original repository-relative path. Do not return unchanged files or prose outside JSON.'
+          ? 'Return only JSON matching responseSchema. Set caseId exactly to modelInput.caseId. Put the complete contents of every changed editable file in files, keyed by its original repository-relative path. Do not return unchanged files or prose outside JSON.'
           : 'Return only JSON matching responseSchema. Put every proposed TypeScript, TSX, and CSS file in files. Do not include prose outside JSON.',
       responseSchema,
     };
