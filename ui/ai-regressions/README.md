@@ -1,5 +1,10 @@
 # Local AI regressions
 
+The [October 9 consumer adoption review](consumer-adoption-2026-10-09.md)
+examines Hot Sheet 2 and Karwan Procurement tickets, commits, and browser
+captures around KF-TMA3JT. It is observational evidence alongside the
+provider-neutral regression harness below.
+
 This directory is an internal authoring and regression tool. It is not a
 leaderboard, a public comparison, or evidence that any particular model is
 better than another.

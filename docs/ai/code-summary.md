@@ -128,6 +128,9 @@ test file is selected by no script reachable from `check` or `test:e2e`.
 The internal [September 13 Astra repeat findings](../../ui/ai-regressions/results/2026-09-13/findings.md)
 index three additional measured runs, preserved raw responses and the execution
 protocol; frozen structural scores remain separate from compile/runtime quality.
+The [October 9 consumer adoption review](../../ui/ai-regressions/consumer-adoption-2026-10-09.md)
+uses Hot Sheet 2 and Karwan Procurement tickets, commits, and browser captures
+as observational evidence for the KF-TMA3JT guidance, without a causal model claim.
 
 ## Directory tree
 
