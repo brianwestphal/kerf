@@ -21,6 +21,16 @@ const script = /\.(?:[cm]?[jt]sx?)$/;
 const imports =
   /(?:^|[;\n])\s*(?:import|export)\s+(?:[^;'"`]*?\s+from\s*)?['"]([^'"]+)['"]/g;
 const dynamicImports = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
+const staticImports =
+  /(?:^|[;\n])\s*import\s+(?:[^;'"`]*?\s+from\s*)?['"]([^'"]+)['"]/g;
+
+function moduleImportSources(source) {
+  const withoutComments = source.replace(
+    /\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,
+    (comment) => comment.replace(/[^\n]/g, ' '),
+  );
+  return [...withoutComments.matchAll(staticImports)].map((match) => match[1]);
+}
 
 function entryModules(entryFile, currentFile, currentText) {
   const modules = new Map();
@@ -223,11 +233,15 @@ export default {
         );
         const ownEntry = entries.find(({ file }) => file === filename);
         const reachableCalls = new Set(calls.keys());
+        const reachableImports = new Set(registry.sources);
         if (ownEntry)
           for (const [file, source] of ownEntry.modules)
-            if (file !== filename)
+            if (file !== filename) {
+              for (const imported of moduleImportSources(source))
+                reachableImports.add(imported);
               for (const helper of moduleCalls(source, file, contract))
                 reachableCalls.add(helper);
+            }
         const required = new Map(used);
         if (ownEntry)
           for (const [file, source] of ownEntry.modules)
@@ -242,7 +256,11 @@ export default {
           for (const helper of entry.wiring.helpers) {
             if (helper.startsWith('@')) {
               if (
-                !registry.sources.has(helper) &&
+                !(
+                  entry.wiring.scope === 'module'
+                    ? registry.sources
+                    : reachableImports
+                ).has(helper) &&
                 !isExcepted(contract, MISSING_CODE, filename)
               )
                 context.report({

@@ -79,6 +79,10 @@ const wiringApp = join(wiringRoot, 'app.tsx');
 const wiringInit = join(wiringRoot, 'init.ts');
 const wiringRootHelper = join(wiringRoot, 'search-field.tsx');
 const currencyLeaf = join(wiringRoot, 'currencies-view.tsx');
+const registrationEntry = join(wiringRoot, 'registration-entry.tsx');
+const registrationLeaf = join(wiringRoot, 'registration-leaf.tsx');
+const registrationInit = join(wiringRoot, 'registration-init.ts');
+const registrationUnrelated = join(wiringRoot, 'registration-unrelated.ts');
 writeFileSync(
   wiringEntry,
   "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);\n",
@@ -101,6 +105,19 @@ writeFileSync(
   wiringRootHelper,
   "import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; export function wireShellSearch(root) { return wireTokenSearchFields(root, { onEdit({ id }) { if (id === 'currency-filter') updateFilter(); } }); }\n",
 );
+writeFileSync(
+  registrationEntry,
+  "import './registration-leaf'; import './registration-init';\n",
+);
+writeFileSync(
+  registrationLeaf,
+  "import { Select } from '@kerfjs/ui'; export const View = () => <Select />;\n",
+);
+writeFileSync(registrationInit, "import '@kerfjs/ui/select/register';\n");
+writeFileSync(
+  registrationUnrelated,
+  "import '@kerfjs/ui/popup-menu/register';\n",
+);
 const entrySettings = uiSettings({
   workspaceRoot: wiringRoot,
   profile: { ...profile, wiring: { entries: ['main.tsx'] } },
@@ -108,6 +125,10 @@ const entrySettings = uiSettings({
 const rootHelperSettings = uiSettings({
   workspaceRoot: wiringRoot,
   profile: { ...profile, wiring: { entries: ['app.tsx'] } },
+});
+const registrationSettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  profile: { ...profile, wiring: { entries: ['registration-entry.tsx'] } },
 });
 const twoEntrySettings = uiSettings({
   workspaceRoot: wiringRoot,
@@ -1244,6 +1265,16 @@ tester.run('ui-wiring', wiring, {
       settings: entrySettings,
     },
     {
+      code: "import './registration-leaf'; import './registration-init';",
+      filename: registrationEntry,
+      settings: registrationSettings,
+    },
+    {
+      code: "import { Select } from '@kerfjs/ui'; export const View = () => <Select />;",
+      filename: registrationLeaf,
+      settings: registrationSettings,
+    },
+    {
       code: "import { TokenSearchField, Select } from '@kerfjs/ui'; <><TokenSearchField /><Select /></>;",
       filename: wiringLeaf,
       settings: twoEntrySettings,
@@ -1327,6 +1358,18 @@ tester.run('ui-wiring', wiring, {
       code: "import './leaf'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);",
       filename: wiringEntry,
       settings: entrySettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: "import './registration-leaf';",
+      filename: registrationEntry,
+      settings: registrationSettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: "import './registration-leaf'; import './registration-unrelated';",
+      filename: registrationEntry,
+      settings: registrationSettings,
       errors: [{ messageId: 'missing' }],
     },
     {
