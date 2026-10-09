@@ -3,6 +3,7 @@ import { delegate, type Signal } from 'kerfjs';
 import { readTokenSearchField } from '../../components/forms/token-search-field/token-search-field.js';
 import { wireWorkbench } from '../../components/layout/workbench/wiring/wire-workbench.js';
 import { wireScrollDividers } from '../../wiring/wire-scroll-dividers.js';
+import type { CatalogBackgroundStyle } from '../types.js';
 
 export interface WireCatalogOptions {
   /** Invoked with the entry id when a sidebar item or a related-entry option is chosen. */
@@ -11,6 +12,12 @@ export interface WireCatalogOptions {
   onToggleSidebar?: () => void;
   /** Invoked when the theme toggle is activated. */
   onToggleTheme?: () => void;
+  /** Report a contrast-toggle press; the app updates its signal and applies the preference. */
+  onToggleContrast?: () => void;
+  /** Report a reduced-motion-toggle press; the app updates its signal and applies the preference. */
+  onToggleMotion?: () => void;
+  /** Report a preview background choice; the app updates `backgroundStyle`. */
+  onSelectBackground?: (style: CatalogBackgroundStyle) => void;
   /** Invoked when the secondary (ecosystem) group's disclosure toggle is activated. */
   onToggleSecondary?: () => void;
   /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
@@ -23,6 +30,9 @@ export interface WireCatalogOptions {
   selectAction?: string;
   toggleSidebarAction?: string;
   toggleThemeAction?: string;
+  toggleContrastAction?: string;
+  toggleMotionAction?: string;
+  selectBackgroundAction?: string;
   toggleSecondaryAction?: string;
   /**
    * The sidebar's app-owned collapsed flag. With it, the catalog's Workbench
@@ -227,12 +237,18 @@ export function wireCatalog(
     onSelect,
     onToggleSidebar,
     onToggleTheme,
+    onToggleContrast,
+    onToggleMotion,
+    onSelectBackground,
     onToggleSecondary,
     urlParam,
     revealSelection,
     selectAction = 'catalog-select',
     toggleSidebarAction = 'catalog-toggle-sidebar',
     toggleThemeAction = 'catalog-toggle-theme',
+    toggleContrastAction = 'catalog-toggle-contrast',
+    toggleMotionAction = 'catalog-toggle-motion',
+    selectBackgroundAction = 'catalog-select-background',
     toggleSecondaryAction = 'catalog-toggle-secondary',
     collapsed,
     sidebarSize,
@@ -295,6 +311,40 @@ export function wireCatalog(
     disposers.push(
       delegate(root, 'click', `[data-action="${toggleThemeAction}"]`, () =>
         onToggleTheme(),
+      ),
+    );
+  }
+  if (onToggleContrast) {
+    disposers.push(
+      delegate(root, 'click', `[data-action="${toggleContrastAction}"]`, () =>
+        onToggleContrast(),
+      ),
+    );
+  }
+  if (onToggleMotion) {
+    disposers.push(
+      delegate(root, 'click', `[data-action="${toggleMotionAction}"]`, () =>
+        onToggleMotion(),
+      ),
+    );
+  }
+  if (onSelectBackground) {
+    disposers.push(
+      delegate(
+        root,
+        'click',
+        `[data-action="${selectBackgroundAction}"]`,
+        (_event, element) => {
+          const style = element.getAttribute('data-background-choice');
+          if (
+            style === 'checkerboard' ||
+            style === 'vertical-stripes' ||
+            style === 'layout-guide' ||
+            style === 'surface' ||
+            style === 'sunken'
+          )
+            onSelectBackground(style);
+        },
       ),
     );
   }

@@ -158,6 +158,60 @@ describe('Catalog', () => {
     expect(html).not.toContain('data-catalog-related');
   });
 
+  it('renders only requested display controls with controlled states and background selection', () => {
+    const props = {
+      brand: { title: 'Display' },
+      sections,
+      active: 'button',
+      content: raw('<b/>'),
+      increasedContrast: true,
+      reducedMotion: false,
+      backgroundControl: true,
+      backgroundStyle: 'surface' as const,
+    };
+    const host = document.createElement('div');
+    host.innerHTML = String(Catalog(props));
+    expect(
+      host
+        .querySelector('[data-action="catalog-toggle-contrast"]')
+        ?.getAttribute('aria-pressed'),
+    ).toBe('true');
+    expect(
+      host
+        .querySelector('[data-action="catalog-toggle-motion"]')
+        ?.getAttribute('aria-pressed'),
+    ).toBe('false');
+    expect(
+      host.querySelector('[data-action="catalog-toggle-theme"]'),
+    ).toBeNull();
+    const options = host.querySelectorAll(
+      '[data-action="catalog-select-background"]',
+    );
+    expect(options).toHaveLength(5);
+    expect(
+      host
+        .querySelector('[data-background-choice="surface"]')
+        ?.hasAttribute('checked'),
+    ).toBe(true);
+    host.innerHTML = String(
+      Catalog({
+        ...props,
+        increasedContrast: false,
+        backgroundStyle: 'sunken',
+      }),
+    );
+    expect(
+      host
+        .querySelector('[data-action="catalog-toggle-contrast"]')
+        ?.getAttribute('aria-pressed'),
+    ).toBe('false');
+    expect(
+      host
+        .querySelector('[data-background-choice="sunken"]')
+        ?.hasAttribute('checked'),
+    ).toBe(true);
+  });
+
   it('places filtered consumer metadata on the catalog-owned preview stage', () => {
     const html = asHtml(
       Catalog({
@@ -554,6 +608,60 @@ describe('wireCatalog', () => {
     document.body.append(root);
     return root;
   }
+
+  it('reports optional display actions and leaves state and persistence with the app', () => {
+    const root = mountShell(
+      String(
+        Catalog({
+          brand: { title: 'Display' },
+          sections,
+          active: 'button',
+          content: raw('<b/>'),
+          increasedContrast: false,
+          reducedMotion: true,
+          backgroundControl: true,
+        }),
+      ),
+    );
+    const onToggleContrast = vi.fn();
+    const onToggleMotion = vi.fn();
+    const onSelectBackground = vi.fn();
+    const dispose = wireCatalog(root, {
+      onSelect: () => {},
+      onToggleContrast,
+      onToggleMotion,
+      onSelectBackground,
+    });
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-toggle-contrast"]')!
+      .click();
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-toggle-motion"]')!
+      .click();
+    root
+      .querySelector<HTMLElement>('[data-background-choice="surface"]')!
+      .click();
+    expect(onToggleContrast).toHaveBeenCalledOnce();
+    expect(onToggleMotion).toHaveBeenCalledOnce();
+    expect(onSelectBackground).toHaveBeenCalledExactlyOnceWith('surface');
+    expect(
+      root
+        .querySelector('[data-action="catalog-toggle-contrast"]')
+        ?.getAttribute('aria-pressed'),
+    ).toBe('false');
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-select-background"]')!
+      .setAttribute('data-background-choice', 'invalid');
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-select-background"]')!
+      .click();
+    expect(onSelectBackground).toHaveBeenCalledOnce();
+    dispose();
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-toggle-contrast"]')!
+      .click();
+    expect(onToggleContrast).toHaveBeenCalledOnce();
+  });
 
   it('filters entry and heading names across groups, then restores the query after a rerender', async () => {
     const props = {

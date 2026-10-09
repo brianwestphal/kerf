@@ -20,12 +20,12 @@ npm install @kerfjs/ui # kerfjs is a peer; @kerfjs/ui/select/register is needed 
 ```
 
 - `Catalog(props)` returns the shell as `SafeHtml` (a `<main class="kui-catalog">`).
-  It is **controlled and stateless**: your app owns the `active`, `collapsed`, and
-  `theme` signals and computes the preview `content` from `active` in its own
+  It is **controlled and stateless**: your app owns the `active`, `collapsed`,
+  `theme`, and optional display-preference signals and computes the preview `content` from `active` in its own
   `mount()` render.
 - `wireCatalog(root, options)` wires the interactions (sidebar selection, the
-  related-entry popup menu, the built-in sidebar filter, and the collapse/theme
-  toggles) with one delegated listener set and returns a disposer; it can also
+  related-entry popup menu, the built-in sidebar filter, and the collapse/display
+  toggles and background chooser) with one delegated listener set and returns a disposer; it can also
   mirror the active id into the URL and reveal the active sidebar row after a
   controlled render.
 
@@ -46,6 +46,16 @@ description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
   opaque backdrop. `sunken` leaves the stage
   transparent so the main Pane's semitransparent sunken surface paints only once.
   A controlled app may pass its current choice on each render.
+- **Display controls** — `increasedContrast` and `reducedMotion` each show a
+  pressed-state toggle when their boolean value is supplied. `backgroundControl`
+  shows a `PopupMenu` for the five preview backdrops, marking the current
+  `backgroundStyle` as checked. These controls share the entry toolbar's compact,
+  wrapping display group with the optional theme toggle. Pass callbacks through
+  `wireCatalog`'s `onToggleContrast`, `onToggleMotion`, and `onSelectBackground`;
+  update your own signals, apply contrast/motion preferences to your app, and
+  persist them there if needed. `Catalog` does not change the document theme,
+  classes, or storage. Register `@kerfjs/ui/popup-menu/register` when showing the
+  background chooser.
 - **`brand`** — `{ title, subtitle?, logoUrl? }` for the sidebar header. The
   optional logo paints through `ToolbarControlGroup.avatarImage`.
 - **`secondarySections`** — an optional secondary "ecosystem" group shown below the
@@ -290,12 +300,14 @@ import {
   Catalog,
   CatalogExample,
   CatalogExampleStack,
+  type CatalogBackgroundStyle,
   type CatalogSection,
 } from "@kerfjs/ui/catalog";
 import {
   revealCatalogEntry,
   wireCatalog,
 } from "@kerfjs/ui/wire-catalog";
+import "@kerfjs/ui/popup-menu/register"; // for the background chooser
 // A CSS-aware (browser-condition) bundler loads the Catalog's CSS with its import.
 
 type DemoKind = "component" | "composition";
@@ -356,12 +368,15 @@ const renderers: Record<string, () => SafeHtml> = {
   ),
 };
 
-// 3. App-owned state (domain: which entry; transient: collapsed; global: theme).
+// 3. App-owned state (domain: which entry; transient: collapsed; display preferences).
 const initial =
   new URLSearchParams(location.search).get("c") ?? sections[0].entries[0].id;
 const active = signal(initial);
 const collapsed = signal(false);
 const theme = signal<"light" | "dark">("light");
+const increasedContrast = signal(false);
+const reducedMotion = signal(false);
+const backgroundStyle = signal<CatalogBackgroundStyle>("checkerboard");
 
 const app = document.getElementById("app")!;
 mount(app, () => (
@@ -372,6 +387,10 @@ mount(app, () => (
     content={renderers[active.value]?.() ?? <></>}
     collapsed={collapsed.value}
     theme={theme.value}
+    increasedContrast={increasedContrast.value}
+    reducedMotion={reducedMotion.value}
+    backgroundControl
+    backgroundStyle={backgroundStyle.value}
   />
 ));
 
@@ -385,6 +404,17 @@ wireCatalog(app, {
   onToggleTheme: () => {
     theme.value = theme.value === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = theme.value; // apply your theme however you like
+  },
+  onToggleContrast: () => {
+    increasedContrast.value = !increasedContrast.value;
+    document.documentElement.classList.toggle("increased-contrast", increasedContrast.value);
+  },
+  onToggleMotion: () => {
+    reducedMotion.value = !reducedMotion.value;
+    document.documentElement.classList.toggle("reduced-motion", reducedMotion.value);
+  },
+  onSelectBackground: (style) => {
+    backgroundStyle.value = style;
   },
   urlParam: "c", // mirror the active id into ?c=<id>
   revealSelection: true, // reveal long desktop sidebars without moving focus
@@ -433,9 +463,10 @@ revealCatalogEntry(app, initial, { block: "center" });
 ## Custom action names
 
 The shell emits `data-action="catalog-select"` (sidebar items),
-`catalog-toggle-sidebar`, and `catalog-toggle-theme`. Override them with
-`selectAction` / `toggleSidebarAction` / `toggleThemeAction` on `Catalog` (and the
-matching options on `wireCatalog`) if they collide with your own action table.
+`catalog-toggle-sidebar`, `catalog-toggle-theme`, `catalog-toggle-contrast`,
+`catalog-toggle-motion`, and `catalog-select-background`. Override them with
+the matching `*Action` props on `Catalog` and options on `wireCatalog` if they
+collide with your own action table.
 
 ## CSS
 

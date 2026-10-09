@@ -23,11 +23,7 @@ import {
 import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import {
-  openPopupMenuAt,
-  PopupMenu,
-  type PopupMenuElement,
-} from '@kerfjs/ui/popup-menu';
+import { openPopupMenuAt, type PopupMenuElement } from '@kerfjs/ui/popup-menu';
 import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -53,7 +49,7 @@ import {
   signal,
 } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { Contrast, StickyNote, ZapOff } from 'lucide';
+import { StickyNote } from 'lucide';
 
 import {
   catalog,
@@ -252,13 +248,6 @@ const saveDisplay = () =>
     increasedContrast: increasedContrast.peek(),
     reducedMotion: reducedMotion.peek(),
   });
-const backgroundChoices = [
-  { value: 'checkerboard', label: 'Checkerboard' },
-  { value: 'vertical-stripes', label: 'Vertical stripes' },
-  { value: 'layout-guide', label: 'Layout guide' },
-  { value: 'surface', label: 'Surface' },
-  { value: 'sunken', label: 'Sunken' },
-] as const;
 const webAwesomeReady = signal(false);
 let webAwesomeDemos:
   | Record<WebAwesomeCatalogId, () => ReturnType<typeof ToolbarControlGroup>>
@@ -473,9 +462,15 @@ mount(app, () => {
       active={selectedDemo.value}
       collapsed={sidebarCollapsed.value}
       theme={effectiveTheme.value === 'dark' ? 'dark' : 'light'}
+      increasedContrast={increasedContrast.value}
+      reducedMotion={reducedMotion.value}
+      backgroundControl
       selectAction="select-demo"
       toggleSidebarAction="toggle-catalog-sidebar"
       toggleThemeAction="toggle-theme"
+      toggleContrastAction="toggle-contrast"
+      toggleMotionAction="toggle-motion"
+      selectBackgroundAction="set-catalog-background"
       toggleSecondaryAction="toggle-webawesome-catalog"
       headerActions={
         <>
@@ -499,41 +494,6 @@ mount(app, () => {
               </button>
             </ToolbarControlGroup>
           ) : null}
-          <ToolbarControlGroup
-            appearance="borderless"
-            buttonAppearance="push"
-            content="mixed"
-            size="compact"
-            overflow="wrap"
-            label="Catalog display settings"
-          >
-            <button
-              type="button"
-              data-action="toggle-contrast"
-              aria-pressed={String(increasedContrast.value)}
-            >
-              <LucideIcon icon={Contrast} name="contrast" />
-              <span>Contrast</span>
-            </button>
-            <button
-              type="button"
-              data-action="toggle-motion"
-              aria-pressed={String(reducedMotion.value)}
-            >
-              <LucideIcon icon={ZapOff} name="zap-off" />
-              <span>Reduce motion</span>
-            </button>
-            <PopupMenu
-              text="Background"
-              rootAttributes={{ 'data-catalog-background-menu': '' }}
-              items={backgroundChoices.map(({ value, label }) => ({
-                label,
-                action: 'set-catalog-background',
-                checked: backgroundStyle.value === value,
-                attributes: { 'data-background-choice': value },
-              }))}
-            />
-          </ToolbarControlGroup>
         </>
       }
       status={
@@ -916,36 +876,6 @@ const stopActions = delegateActions(app, 'click', {
       tones[(tones.indexOf(bannerTone.value) + 1) % tones.length]!;
     actionLog.value = `Banner tone: ${bannerTone.value}`;
   },
-  'toggle-contrast': () => {
-    increasedContrast.value = !increasedContrast.value;
-    document.documentElement.classList.toggle(
-      'demo-contrast',
-      increasedContrast.value,
-    );
-    saveDisplay();
-    actionLog.value = increasedContrast.value
-      ? 'Increased contrast on'
-      : 'Increased contrast off';
-  },
-  'toggle-motion': () => {
-    reducedMotion.value = !reducedMotion.value;
-    document.documentElement.classList.toggle(
-      'demo-reduced-motion',
-      reducedMotion.value,
-    );
-    saveDisplay();
-    actionLog.value = reducedMotion.value
-      ? 'Reduced motion on'
-      : 'Reduced motion off';
-  },
-  'set-catalog-background': (_event, element) => {
-    const choice = element.getAttribute('data-background-choice');
-    const selected = backgroundChoices.find(({ value }) => value === choice);
-    if (!selected) return;
-    backgroundStyle.value = selected.value;
-    saveDisplay();
-    actionLog.value = `Background: ${selected.label}`;
-  },
   'log-add': () => {
     actionLog.value = 'Add action requested';
   },
@@ -1182,6 +1112,41 @@ const stopCatalog = wireCatalog(app, {
     saveDisplay();
     actionLog.value = `${explicitTheme === 'dark' ? 'Dark' : 'Light'} theme on`;
   },
+  onToggleContrast: () => {
+    increasedContrast.value = !increasedContrast.value;
+    document.documentElement.classList.toggle(
+      'demo-contrast',
+      increasedContrast.value,
+    );
+    saveDisplay();
+    actionLog.value = increasedContrast.value
+      ? 'Increased contrast on'
+      : 'Increased contrast off';
+  },
+  onToggleMotion: () => {
+    reducedMotion.value = !reducedMotion.value;
+    document.documentElement.classList.toggle(
+      'demo-reduced-motion',
+      reducedMotion.value,
+    );
+    saveDisplay();
+    actionLog.value = reducedMotion.value
+      ? 'Reduced motion on'
+      : 'Reduced motion off';
+  },
+  onSelectBackground: (style) => {
+    backgroundStyle.value = style;
+    saveDisplay();
+    actionLog.value = `Background: ${
+      {
+        checkerboard: 'Checkerboard',
+        'vertical-stripes': 'Vertical stripes',
+        'layout-guide': 'Layout guide',
+        surface: 'Surface',
+        sunken: 'Sunken',
+      }[style]
+    }`;
+  },
   onToggleSecondary: () => {
     webAwesomeExpanded.value = !webAwesomeExpanded.value;
     actionLog.value = webAwesomeExpanded.value
@@ -1191,6 +1156,9 @@ const stopCatalog = wireCatalog(app, {
   selectAction: 'select-demo',
   toggleSidebarAction: 'toggle-catalog-sidebar',
   toggleThemeAction: 'toggle-theme',
+  toggleContrastAction: 'toggle-contrast',
+  toggleMotionAction: 'toggle-motion',
+  selectBackgroundAction: 'set-catalog-background',
   toggleSecondaryAction: 'toggle-webawesome-catalog',
   revealSelection: true,
   collapsed: sidebarCollapsed,

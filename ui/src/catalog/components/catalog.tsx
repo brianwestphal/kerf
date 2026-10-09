@@ -1,5 +1,6 @@
-import { Moon, Sun, X } from 'lucide';
+import { Contrast, Moon, Sun, X, ZapOff } from 'lucide';
 
+import { PopupMenu } from '../../components/actions/popup-menu/popup-menu.js';
 import { ToolbarControlGroup } from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../../components/actions/toolbar-text/toolbar-text.js';
 import { ListInsetControl } from '../../components/collections/list-inset-control/list-inset-control.js';
@@ -38,6 +39,9 @@ export function Catalog({
   content,
   collapsed = false,
   theme,
+  increasedContrast,
+  reducedMotion,
+  backgroundControl = false,
   headerActions,
   secondarySections,
   sidebarFooter,
@@ -47,6 +51,9 @@ export function Catalog({
   selectAction = 'catalog-select',
   toggleSidebarAction = 'catalog-toggle-sidebar',
   toggleThemeAction = 'catalog-toggle-theme',
+  toggleContrastAction = 'catalog-toggle-contrast',
+  toggleMotionAction = 'catalog-toggle-motion',
+  selectBackgroundAction = 'catalog-select-background',
   toggleSecondaryAction = 'catalog-toggle-secondary',
   headerPlacement = 'auto',
   footerPlacement = 'auto',
@@ -64,6 +71,11 @@ export function Catalog({
   const name = selected?.name ?? '';
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
   const catalogName = `${brand.title} catalog`;
+  const displayControls =
+    increasedContrast !== undefined ||
+    reducedMotion !== undefined ||
+    backgroundControl ||
+    theme !== undefined;
 
   return (
     <main
@@ -142,26 +154,71 @@ export function Catalog({
           trailing: (
             <>
               {headerActions}
-              {theme ? (
+              {displayControls ? (
                 <ToolbarControlGroup
                   appearance="borderless"
                   content="mixed"
                   size="compact"
-                  label="Catalog display"
+                  overflow="wrap"
+                  buttonAppearance="push"
+                  label="Catalog display settings"
                 >
-                  <button
-                    type="button"
-                    data-action={toggleThemeAction}
-                    aria-label={`Use ${nextTheme} theme`}
-                    data-theme-preview={theme}
-                  >
-                    {nextTheme === 'dark' ? (
-                      <LucideIcon icon={Moon} name="moon" />
-                    ) : (
-                      <LucideIcon icon={Sun} name="sun" />
-                    )}
-                    <span>{nextTheme === 'dark' ? 'Dark' : 'Light'}</span>
-                  </button>
+                  {increasedContrast !== undefined ? (
+                    <button
+                      type="button"
+                      data-action={toggleContrastAction}
+                      aria-pressed={String(increasedContrast)}
+                    >
+                      <LucideIcon icon={Contrast} name="contrast" />
+                      <span>Contrast</span>
+                    </button>
+                  ) : null}
+                  {reducedMotion !== undefined ? (
+                    <button
+                      type="button"
+                      data-action={toggleMotionAction}
+                      aria-pressed={String(reducedMotion)}
+                    >
+                      <LucideIcon icon={ZapOff} name="zap-off" />
+                      <span>Reduce motion</span>
+                    </button>
+                  ) : null}
+                  {backgroundControl ? (
+                    <PopupMenu
+                      text="Background"
+                      rootAttributes={{ 'data-catalog-background-menu': '' }}
+                      items={[
+                        { value: 'checkerboard', label: 'Checkerboard' },
+                        {
+                          value: 'vertical-stripes',
+                          label: 'Vertical stripes',
+                        },
+                        { value: 'layout-guide', label: 'Layout guide' },
+                        { value: 'surface', label: 'Surface' },
+                        { value: 'sunken', label: 'Sunken' },
+                      ].map(({ value, label }) => ({
+                        label,
+                        action: selectBackgroundAction,
+                        checked: (backgroundStyle ?? 'checkerboard') === value,
+                        attributes: { 'data-background-choice': value },
+                      }))}
+                    />
+                  ) : null}
+                  {theme ? (
+                    <button
+                      type="button"
+                      data-action={toggleThemeAction}
+                      aria-label={`Use ${nextTheme} theme`}
+                      data-theme-preview={theme}
+                    >
+                      {nextTheme === 'dark' ? (
+                        <LucideIcon icon={Moon} name="moon" />
+                      ) : (
+                        <LucideIcon icon={Sun} name="sun" />
+                      )}
+                      <span>{nextTheme === 'dark' ? 'Dark' : 'Light'}</span>
+                    </button>
+                  ) : null}
                 </ToolbarControlGroup>
               ) : null}
             </>

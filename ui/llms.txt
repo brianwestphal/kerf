@@ -561,7 +561,10 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
   `Catalog` component + `wireCatalog` helper for building a component-gallery catalog
   (collapsible category sidebar + preview stage + resources footer, with
   focus-preserving active-row reveal for long desktop sidebars) from your own
-  entries; controlled/stateless like the layouts. For any Catalog demo, follow
+  entries; controlled/stateless like the layouts. Its optional contrast, reduced
+  motion, theme, and preview-background controls are built in; pass state and
+  `wireCatalog` callbacks instead of recreating their toolbar markup, while your
+  app owns applying and persisting preferences. For any Catalog demo, follow
   the [authoritative authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
   rather than inferring structure from the shell or private CSS.
   `@kerfjs/ui/webawesome` is a

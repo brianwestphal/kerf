@@ -94,6 +94,12 @@ export interface CatalogProps {
   content: KerfUiContent;
   collapsed?: boolean;
   theme?: 'light' | 'dark';
+  /** Show the controlled increased-contrast toggle when supplied. The app applies the preference. */
+  increasedContrast?: boolean;
+  /** Show the controlled reduced-motion toggle when supplied. The app applies the preference. */
+  reducedMotion?: boolean;
+  /** Show the preview background chooser; `backgroundStyle` remains app-owned. */
+  backgroundControl?: boolean;
   headerActions?: KerfUiContent;
   secondarySections?: CatalogSecondaryGroup;
   sidebarFooter?: KerfUiContent;
@@ -105,6 +111,9 @@ export interface CatalogProps {
   selectAction?: string;
   toggleSidebarAction?: string;
   toggleThemeAction?: string;
+  toggleContrastAction?: string;
+  toggleMotionAction?: string;
+  selectBackgroundAction?: string;
   toggleSecondaryAction?: string;
   /**
    * Whether the entry toolbar and description stay pinned above the preview
