@@ -201,6 +201,21 @@ Choose from the need, not from visual resemblance:
 4. Add a thin application adapter for copy, domain mapping, actions, routing, persistence, permissions, and transport.
 5. Build custom markup only when the semantic contract differs; if it recurs across products, open an upstream component or recipe request.
 
+### Application interaction choices
+
+For ordinary server-backed freshness, prefer event-driven updates,
+subscriptions, or explicit user refresh when they meet the product need. Use
+fixed-interval polling when periodic sampling is genuinely required or no
+suitable update channel exists; choose the interval deliberately and cancel
+the timer when its owning view is disposed.
+
+Match cursor cues to enabled behavior: pointer for actionable targets,
+grab/grabbing or resize cues for real drag and resize affordances, and default
+or disabled cues for unavailable actions. Align semantic controls, keyboard
+behavior, focus treatment, and disabled state with those cues; a cursor alone
+cannot explain an interaction. See [accessibility contracts](../docs/accessibility.md)
+and [interaction principles](../docs/apple-hig.md#interaction).
+
 Quick routing:
 
 | Need                                  | Choose                                                     | Nearest alternatives / boundary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |

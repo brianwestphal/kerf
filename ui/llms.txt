@@ -164,6 +164,22 @@ explains when to reuse, compose, extend, or use native HTML.
    ratings separately with a named reviewer rather than presenting them as
    objective assertions.
 
+## Application interaction choices
+
+For ordinary server-backed freshness, prefer event-driven updates, subscriptions,
+or explicit user refresh when they meet the product need. Use fixed-interval
+polling when periodic sampling is genuinely required or no suitable update
+channel exists; choose the interval deliberately and cancel the timer when its
+owning view is disposed.
+
+Make cursor cues match enabled behavior: use a pointer for actionable targets,
+grab/grabbing or resize cues for actual drag and resize affordances, and a
+default or disabled cue when an action is unavailable. Keep the semantic
+control, keyboard behavior, focus treatment, and disabled state aligned with
+the cursor; the cursor alone cannot explain an interaction. See
+[accessibility contracts](./docs/accessibility.md) and
+[interaction principles](./docs/apple-hig.md#interaction).
+
 ## Core rules (do the right thing)
 
 - **Prefer a Kerf UI component over a Web Awesome component over a raw HTML
