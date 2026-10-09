@@ -2,6 +2,7 @@
    specimen, never shrinking under it. The default checkerboard shares the
    sunken Pane's translucent surface instead of painting a second layer. */
 .kui-catalog__stage {
+  flex: 1 0 auto;
   min-height: 100%;
   background-color: transparent;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238e8e93' fill-opacity='.12' d='M0 0h8v8H0zM8 8h8v8H8z'/%3E%3C/svg%3E");
