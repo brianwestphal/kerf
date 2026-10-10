@@ -47,6 +47,11 @@ test('trailing priority stays inline above the breakpoint and zone tokens apply'
   page,
 }) => {
   await page.goto('/?component=toolbar');
+  await expect(
+    page.locator(
+      '[data-demo-toolbar-overflow="trailing-priority"] .kui-toolbar',
+    ),
+  ).toBeVisible();
   const geometry = await page.evaluate(() => {
     const original = document.querySelector<HTMLElement>(
       '[data-demo-toolbar-overflow="trailing-priority"] .kui-toolbar',
@@ -94,6 +99,11 @@ test('trailing priority retains a center control above the expanded search', asy
   page,
 }) => {
   await page.goto('/?component=toolbar');
+  await expect(
+    page.locator(
+      '[data-demo-toolbar-overflow="trailing-priority"] .kui-toolbar',
+    ),
+  ).toBeVisible();
   const geometry = await page.evaluate(() => {
     const original = document.querySelector<HTMLElement>(
       '[data-demo-toolbar-overflow="trailing-priority"] .kui-toolbar',
