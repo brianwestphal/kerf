@@ -8,7 +8,7 @@ not public monolithic components, with responsive, keyboard, state,
 theme/contrast/motion, zoom, drift, and ownership coverage. Source of truth:
 `docs/21-ui-package.md` and `ui/docs/recipes.md`.
 The local UX catalog shows a UX Review region-capture link when its Vite server
-can identify the Hot Sheet project; the link carries the selected demo's context.
+can identify its project folder; the link carries the selected demo's context.
 Their shipped reference adapter makes stable-root delegated actions, form and
 dialog forwarding, resize commits, and retained idempotent disposal copyable
 outside the catalog. A typed application-local command-palette example retains

@@ -11,10 +11,6 @@ const uiRoot = fileURLToPath(new URL('..', import.meta.url));
 const projectDirectory = realpathSync(
   fileURLToPath(new URL('../..', import.meta.url)),
 );
-const hasHotSheetStore = existsSync(
-  new URL('../../.hotsheet2/store', import.meta.url),
-);
-
 function serveReviewProject(
   request: { method?: string },
   response: {
@@ -23,7 +19,7 @@ function serveReviewProject(
     end(body?: string): void;
   },
 ) {
-  if (request.method !== 'GET' || !hasHotSheetStore) {
+  if (request.method !== 'GET') {
     response.statusCode = 404;
     response.end();
     return;
