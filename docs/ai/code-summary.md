@@ -5,7 +5,9 @@ A directory map + reverse index ("where do I look for X?") for Claude Code sessi
 The optional `ui/ux-demo/demos/` directory contains one focused renderer per
 first-party component or composition route plus a typed shared context and
 registry; `ui/ux-demo/main.tsx` retains the catalog shell, shared state, routing,
-and interaction wiring. The sibling `ui/ux-demo/recipes/` directory contains
+and interaction wiring. `ui/ux-demo/ux-review.ts` builds contextual region-capture
+links; `ui/ux-demo/vite.config.ts` serves the local Hot Sheet project path in
+development and preview. The sibling `ui/ux-demo/recipes/` directory contains
 ten literal dynamic recipe chunks and a shared per-instance controller contract;
 each recipe composes public components with no stylesheet and exports a
 catalog-only `presentation` (its `CatalogExample` viewport and ownership note). The composer recipe uses one visible form surface,

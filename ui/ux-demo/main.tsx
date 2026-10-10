@@ -26,7 +26,10 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { openPopupMenuAt, type PopupMenuElement } from '@kerfjs/ui/popup-menu';
 import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarActionLink,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import {
   isContentItemActivation,
@@ -49,7 +52,7 @@ import {
   signal,
 } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { StickyNote } from 'lucide';
+import { Scan, StickyNote } from 'lucide';
 
 import {
   catalog,
@@ -180,6 +183,7 @@ import {
 } from './display-preferences.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController, RecipePresentation } from './recipes/types.js';
+import { uxReviewCaptureUrl } from './ux-review.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
@@ -215,6 +219,24 @@ let nextDemoTabNumber = tabBarTabs.value.length + 1;
 /** How long a newly added application tab stays pending in the demo. */
 const DEMO_TAB_LOAD_MS = 1200;
 const actionLog = signal('Catalog ready');
+const uxReviewProject = signal<string | null>(null);
+void window
+  .fetch(new URL('./__ux-review/project.json', location.href))
+  .then(async (response) => {
+    if (!response.ok) return;
+    const data: unknown = await response.json();
+    if (
+      typeof data === 'object' &&
+      data !== null &&
+      'projectDirectory' in data &&
+      typeof data.projectDirectory === 'string' &&
+      data.projectDirectory.startsWith('/')
+    )
+      uxReviewProject.value = data.projectDirectory;
+  })
+  .catch(() => {
+    // Static hosting has no local project directory to give UX Review.
+  });
 let displayStorage: Storage | null = null;
 try {
   displayStorage = window.localStorage;
@@ -492,6 +514,26 @@ mount(app, () => {
               >
                 <LucideIcon icon={StickyNote} name="sticky-note" />
               </button>
+            </ToolbarControlGroup>
+          ) : null}
+          {uxReviewProject.value ? (
+            <ToolbarControlGroup
+              appearance="borderless"
+              single
+              size="compact"
+              content="mixed"
+              buttonAppearance="push"
+            >
+              <ToolbarActionLink
+                href={uxReviewCaptureUrl(
+                  uxReviewProject.value,
+                  selected,
+                  location.href,
+                )}
+                label="Capture region"
+                ariaLabel={`Capture ${selected.name} in UX Review`}
+                icon={<LucideIcon icon={Scan} name="scan" />}
+              />
             </ToolbarControlGroup>
           ) : null}
         </>

@@ -349,7 +349,13 @@ focused composition scenarios, and gives the selected entry one centered
 inspection stage. Functional groups follow product-importance order, list
 components before `Composition`-tagged composition demos, and use alphabetical
 display-name order to break importance ties; the final Recipes group follows
-the same within-group rule. Catalog metadata declares direct component dependencies; the
+the same within-group rule. The
+local Vite dev/preview server exposes its Hot Sheet project folder to the demo,
+which then shows a **Capture region** header link to UX Review. The link starts
+a region screenshot with the current project, selected entry, and demo URL as
+review context. Static hosting has no local project folder, so it hides the link;
+the browser cannot reliably detect whether the `uxreview:` app is installed.
+Catalog metadata declares direct component dependencies; the
 detail view derives one grouped `Uses` / `Used by` selector from that graph and
 omits the relationship footer when neither group exists. Each detail also shows
 the repository-relative first-party demo source and existing guidance path as

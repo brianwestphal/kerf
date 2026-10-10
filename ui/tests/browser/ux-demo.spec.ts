@@ -13,6 +13,56 @@ async function activateWithKeyboard(page: Page, locator: Locator) {
   await page.keyboard.press('Space');
 }
 
+test('UX Review capture follows the selected demo and local project', async ({
+  page,
+  request,
+}, testInfo) => {
+  const projectResponse = await request.get('/__ux-review/project.json');
+  expect(projectResponse.ok()).toBe(true);
+  const { projectDirectory } = (await projectResponse.json()) as {
+    projectDirectory: string;
+  };
+  expect(projectDirectory).toMatch(/^\//);
+
+  await page.goto('/?component=badge');
+  const link = page.getByRole('link', {
+    name: 'Capture Badge in UX Review',
+  });
+  await expect(link).toBeVisible();
+  let capture = new URL((await link.getAttribute('href'))!);
+  expect(capture.protocol).toBe('uxreview:');
+  expect(capture.host).toBe('capture');
+  expect(capture.searchParams.get('project')).toBe(projectDirectory);
+  expect(capture.searchParams.get('target')).toBe('region');
+  expect(capture.searchParams.get('kind')).toBe('screenshot');
+  expect(capture.searchParams.get('context')).toContain('Badge (badge)');
+
+  await page.locator('[data-catalog-sidebar] [data-item-id="chip"]').click();
+  await expect(link).toHaveCount(0);
+  const chipLink = page.getByRole('link', {
+    name: 'Capture Chip in UX Review',
+  });
+  await expect(chipLink).toBeVisible();
+  capture = new URL((await chipLink.getAttribute('href'))!);
+  expect(capture.searchParams.get('project')).toBe(projectDirectory);
+  expect(capture.searchParams.get('title')).toBe('Kerf UI: Chip');
+  expect(capture.searchParams.get('context')).toContain('Chip (chip)');
+  expect(capture.searchParams.get('context')).toContain('?component=chip');
+
+  if (testInfo.project.name === 'chromium') {
+    await page.screenshot({
+      path: 'test-results/ux-review-capture-wide.png',
+      fullPage: true,
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(chipLink).toBeVisible();
+    await page.screenshot({
+      path: 'test-results/ux-review-capture-narrow.png',
+      fullPage: true,
+    });
+  }
+});
+
 test('theme action follows the effective OS appearance and explicitly switches either direction', async ({
   page,
   browserName,

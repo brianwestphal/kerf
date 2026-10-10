@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 332500,
-  "measuredLargestJavaScriptGzip": 124512,
-  "measuredTotalJavaScriptGzip": 332445,
+  "totalJavaScriptGzip": 332800,
+  "measuredLargestJavaScriptGzip": 124515,
+  "measuredTotalJavaScriptGzip": 332790,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3091,6 +3091,22 @@
         "measuredTotalJavaScriptGzip": 332445,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 332500
+      }
+    },
+    {
+      "at": "2026-10-10T00:30:02.754Z",
+      "reason": "Add a contextual UX Review region-capture action to the local UX catalog",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124512,
+        "measuredTotalJavaScriptGzip": 332445,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 332500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124515,
+        "measuredTotalJavaScriptGzip": 332790,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 332800
       }
     }
   ]
