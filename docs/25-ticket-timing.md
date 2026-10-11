@@ -104,6 +104,9 @@ Empty initial lists get a second query with a fresh upper bound; if both are
 empty, the lookup reports unavailable rather than assuming no runs exist.
 
 The whole lookup has an eight-second deadline and at most five newer-run searches.
+`KERF_CI_STATUS_DEADLINE_MS` overrides that budget; the advisory's own tests use it
+so a heavily loaded machine cannot exhaust the budget before a fake `gh` starts
+(KF-TR4NZ6: the full pre-push suite once did exactly that).
 If stale, malformed, inconsistent, unavailable, or excessive evidence prevents
 validation, it prints an unavailable-status warning without failing the local
 gate or reporting the unvalidated candidate as red. A validated non-green result

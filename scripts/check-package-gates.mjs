@@ -5,6 +5,9 @@
 //
 //   KERF_SKIP_PACKAGE_GATES=1  skip the package gates (CI runs them anyway)
 //   KERF_SKIP_CI_STATUS=1      skip the `gh` CI-status lookup
+//   KERF_CI_STATUS_DEADLINE_MS override the lookup's 8000 ms budget (tests use
+//                              it so a loaded machine cannot exhaust the
+//                              budget before a fake `gh` even starts)
 
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -32,7 +35,10 @@ function changedPaths() {
 
 function reportCiStatus() {
   if (process.env.KERF_SKIP_CI_STATUS === '1') return;
-  const deadline = Date.now() + 8000;
+  const override = Number(process.env.KERF_CI_STATUS_DEADLINE_MS);
+  const budget =
+    Number.isSafeInteger(override) && override > 0 ? override : 8000;
+  const deadline = Date.now() + budget;
   const workflow = 'repos/{owner}/{repo}/actions/workflows/ci.yml/runs';
   let upperBound = Date.now();
   function request(endpoint) {

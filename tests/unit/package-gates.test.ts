@@ -74,7 +74,14 @@ describe('package gate CI advisory CLI', { timeout: 30_000 }, () => {
     workflow_runs: runs,
   });
   type Reply = { body: unknown; status?: number; delay?: number };
-  function runAdvisory(replies: Reply[], skip = false) {
+  // Functional cases get a budget no loaded machine exhausts: a fake `gh`
+  // is a Node process, and under the full coverage suite one startup alone
+  // has taken the whole default 8 s. Deadline cases pass their own.
+  function runAdvisory(
+    replies: Reply[],
+    skip = false,
+    deadlineMs: number | string = 60_000,
+  ) {
     const root = mkdtempSync(join(tmpdir(), 'kerf-ci-advisory-'));
     const gh = join(root, 'gh');
     const argsFile = join(root, 'args.jsonl');
@@ -99,9 +106,10 @@ process.exit(reply.status ?? 0);
       const result = spawnSync(execPath, ['scripts/check-package-gates.mjs'], {
         cwd: resolve('.'),
         encoding: 'utf8',
-        timeout: 12_000,
+        timeout: 90_000,
         env: {
           ...process.env,
+          KERF_CI_STATUS_DEADLINE_MS: String(deadlineMs),
           PATH: `${root}${delimiter}${process.env.PATH ?? ''}`,
           KERF_SKIP_PACKAGE_GATES: '1',
           KERF_SKIP_CI_STATUS: skip ? '1' : '0',
@@ -286,20 +294,41 @@ process.exit(reply.status ?? 0);
   });
 
   it('shares one deadline across successive subprocesses', () => {
-    const result = runAdvisory([
-      { body: list([old]), delay: 4000 },
-      { body: list([fresh]), delay: 5000 },
-    ]);
+    const result = runAdvisory(
+      [
+        { body: list([old]), delay: 1000 },
+        { body: list([fresh]), delay: 30_000 },
+      ],
+      false,
+      5000,
+    );
     expect(result.stderr).toContain('CI status on main is unavailable');
-    expect(result.elapsed).toBeGreaterThanOrEqual(7900);
+    // The second call is cut off at the shared 5 s deadline, not given its
+    // own 5 s after the first call's second.
+    expect(result.elapsed).toBeGreaterThanOrEqual(4900);
     expect(result.elapsed).toBeLessThan(10_000);
   });
 
   it('bounds the whole subprocess lookup deadline and remains non-blocking', () => {
-    const result = runAdvisory([{ body: list([old]), delay: 9000 }]);
+    const result = runAdvisory(
+      [{ body: list([old]), delay: 30_000 }],
+      false,
+      3000,
+    );
+    expect(result.stderr).toContain('CI status on main is unavailable');
+    expect(result.elapsed).toBeGreaterThanOrEqual(2900);
+    expect(result.elapsed).toBeLessThan(10_000);
+  });
+
+  it('falls back to the default 8 s deadline for an invalid override', () => {
+    const result = runAdvisory(
+      [{ body: list([old]), delay: 30_000 }],
+      false,
+      'soon',
+    );
     expect(result.stderr).toContain('CI status on main is unavailable');
     expect(result.elapsed).toBeGreaterThanOrEqual(7900);
-    expect(result.elapsed).toBeLessThan(10_000);
+    expect(result.elapsed).toBeLessThan(20_000);
   });
 
   it('honors the explicit CI-status opt out', () => {
