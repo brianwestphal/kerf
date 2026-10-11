@@ -364,10 +364,15 @@ export function jsx(
 ): SafeHtml {
   if (typeof tag === 'function') return tag(props);
 
-  const { children, ...attrs } = props;
+  const children = props.children;
   let attrStr = '';
   let bindIds: string[] | null = null;
-  for (const [k, v] of Object.entries(attrs)) {
+  // `for…in` with an own-key check, not a `{ children, ...attrs }` rest plus
+  // `Object.entries`: same own-key order without two allocations per element,
+  // and an inherited (e.g. prototype-polluted) key is never emitted.
+  for (const k in props) {
+    if (k === 'children' || !Object.hasOwn(props, k)) continue;
+    const v = props[k];
     // KF-294: a signal handed straight into an attribute. Inside a mount
     // render, register a binding and mark the element (via `data-kfb` for
     // static-surround holes / `data-kfbrow` for each()-row holes) instead of

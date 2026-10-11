@@ -222,6 +222,25 @@ describe('fine-grained bindings — bound-attribute security: warn+drop in produ
     dispose();
   });
 
+  it('screens static lowercase, mixed-case, and uppercase URL names alike, and passes safe ones', () => {
+    type AttrBag = Parameters<typeof jsx>[1];
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = String(
+      jsx('a', {
+        href: 'javascript:alert(1)',
+        Src: 'javascript:alert(1)',
+        'XLINK:HREF': 'javascript:alert(1)',
+        DaTa: 'https://example.com/ok',
+        'data-Href': 'javascript:not-a-url-attr',
+      } as unknown as AttrBag),
+    );
+    expect(html).toBe(
+      '<a DaTa="https://example.com/ok" data-Href="javascript:not-a-url-attr"></a>',
+    );
+    expect(warn).toHaveBeenCalledTimes(3);
+    warn.mockRestore();
+  });
+
   it('toggles the attribute as the bound URL goes safe → dangerous → safe', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const url = signal('/safe');

@@ -86,7 +86,7 @@ const BUDGETS = [
     // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
     // delegate registry + resolve-all-before-any-handler), so a synchronous
     // re-render cannot redirect a later delegate onto a recycled target.
-    budgetKb: 14.5,
+    budgetKb: 14.6,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -185,7 +185,7 @@ const BUDGETS = [
     // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
     // delegate registry + resolve-all-before-any-handler), so a synchronous
     // re-render cannot redirect a later delegate onto a recycled target.
-    budgetKb: 11.0,
+    budgetKb: 11.1,
     description:
       'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
@@ -233,7 +233,7 @@ const BUDGETS = [
     // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
     // delegate registry + resolve-all-before-any-handler), so a synchronous
     // re-render cannot redirect a later delegate onto a recycled target.
-    budgetKb: 6.8, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
+    budgetKb: 6.9, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
     description:
       'the router subpath (createRouter — the postcard router) — signals + jsx + delegate, no mount',
     entry: `

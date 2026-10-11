@@ -639,3 +639,18 @@ describe('static renderAttr URL screen — throws in dev (KF-297 / KF-340)', () 
     }
   });
 });
+
+describe('jsx() attribute iteration', () => {
+  it('emits own props in order and never an inherited key', () => {
+    const proto = { title: 'inherited', class: 'inherited' };
+    const props = Object.assign(
+      Object.create(proto) as Record<string, unknown>,
+      {
+        id: 'a',
+        'data-x': '1',
+        children: 'text',
+      },
+    );
+    expect(String(jsx('p', props))).toBe('<p id="a" data-x="1">text</p>');
+  });
+});
