@@ -1279,10 +1279,12 @@ type Root = HTMLElement | Document;
  * - each app-owned `targets` pairing: a `Toolbar` or `List` named as chrome
  *   draws the divider on its facing side.
  *
- * Structure is re-read after every DOM change below root (a re-render that
- * drops the attributes gets them back before paint), scroll is tracked with
- * one capturing listener per registered root, and size changes of each
- * scroller and its children with a `ResizeObserver`. Overlapping registrations
+ * Structure is re-read after every DOM change below root that can change a
+ * pairing — a structural element or target id added, removed, or re-classed;
+ * mutations inside scrolled content (a row's class, a list's rows) are skipped
+ * — and a re-render that drops the attributes gets them back before paint.
+ * Scroll is tracked with one capturing listener per registered root, and size
+ * changes of each scroller and its children with a `ResizeObserver`. Overlapping registrations
  * share one attribute writer; each disposer removes its registration, and the
  * final disposer removes the wiring-owned attributes. See
  * `docs/23-app-layouts.md` §3.7.
@@ -3287,7 +3289,7 @@ export { Chip, type ChipProps };
 ## `@kerfjs/ui/lucide-icon`
 
 ```ts
-import * as kerfjs from 'kerfjs';
+import { SafeHtml } from 'kerfjs';
 import { IconNode } from 'lucide';
 import { CssForegroundColor } from './css-values.js';
 
@@ -3310,7 +3312,7 @@ interface LucideIconProps {
     slot?: string;
 }
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-declare function LucideIcon({ icon, name, appearance, className, color, inline, label, size, slot, }: LucideIconProps): kerfjs.SafeHtml;
+declare function LucideIcon({ icon, name, appearance, className, color, inline, label, size, slot, }: LucideIconProps): SafeHtml;
 
 export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
 ```

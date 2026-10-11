@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 332800,
-  "measuredLargestJavaScriptGzip": 124515,
-  "measuredTotalJavaScriptGzip": 332790,
+  "totalJavaScriptGzip": 333300,
+  "measuredLargestJavaScriptGzip": 124514,
+  "measuredTotalJavaScriptGzip": 333279,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3107,6 +3107,22 @@
         "measuredTotalJavaScriptGzip": 332790,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 332800
+      }
+    },
+    {
+      "at": "2026-10-11T04:02:53.840Z",
+      "reason": "KF-50PA0Y scroll-divider mutation relevance filter, KF-AS24QP click-dispatch collapse flush, and KF-JPP0Z5 LucideIcon child-markup cache (~0.5 kB gzip total)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124515,
+        "measuredTotalJavaScriptGzip": 332790,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 332800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124514,
+        "measuredTotalJavaScriptGzip": 333279,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 333300
       }
     }
   ]

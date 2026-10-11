@@ -237,9 +237,8 @@ function write(element: Element, name: StateAttribute, value: string) {
  * pairing — a structural element or target id added, removed, or re-classed;
  * mutations inside scrolled content (a row's class, a list's rows) are skipped
  * — and a re-render that drops the attributes gets them back before paint.
- * Scroll is tracked with
- * one capturing listener per registered root, and size changes of each
- * scroller and its children with a `ResizeObserver`. Overlapping registrations
+ * Scroll is tracked with one capturing listener per registered root, and size
+ * changes of each scroller and its children with a `ResizeObserver`. Overlapping registrations
  * share one attribute writer; each disposer removes its registration, and the
  * final disposer removes the wiring-owned attributes. See
  * `docs/23-app-layouts.md` §3.7.
