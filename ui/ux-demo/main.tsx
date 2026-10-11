@@ -1580,6 +1580,9 @@ const stopListItemDrop = delegate(
   '[data-demo-drop-status="over"]',
   (event, element) => {
     event.preventDefault();
+    // The status was set imperatively, so reset it the same way: a re-render
+    // only reconciles elements whose markup changed, and this row's did not.
+    (element as HTMLElement).dataset.demoDropStatus = 'ready';
     actionLog.value = `Dropped on ${(element as HTMLElement).dataset.itemId ?? 'menu item'}`;
   },
 );
