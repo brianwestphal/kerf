@@ -276,6 +276,7 @@ kerf/
 │   │   ├── mount-lifecycle-and-skip.test.ts ← mount preconditions, disposal, and morph-skip lifecycle behavior
 │   │   ├── mount-initial-render-rollback.test.tsx ← a throwing first render rolls mount() back: original error rethrown, wired global/row bindings + dev listener observer released, pre-mount children restored, same-element retry and unrelated mounts work
 │   │   ├── mount-list-integration.test.ts ← mount integration with keyed lists and list transitions
+│   │   ├── mount-list-bindings.internal.test.ts ← KF-VBQJAX — `bindListsFromMarkers` skips its whole-tree `kf-list:` comment walk only when the render has no lists and no bindings exist (direct tests with an unwalkable root), plus mount transitions list-free → list → list-free → refill. `*.internal.test.ts` so dist-full excludes it.
 │   │   ├── bindings-text-and-attributes.test.ts ← global text/attribute bindings and boolean attributes
 │   │   ├── bindings-mixed-content-and-rewire.test.ts ← mixed holes, surrounding morphs, and binding rewire
 │   │   ├── bindings-list-rows.test.ts ← row-scoped bindings across snapshot and granular list paths

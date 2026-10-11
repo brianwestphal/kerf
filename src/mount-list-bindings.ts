@@ -71,6 +71,12 @@ export function bindListsFromMarkers(
   rebuiltLists?: Set<string>,
 ): void {
   const lists = collectLists(segment);
+  // KF-VBQJAX: a render with no `each()` lists and no live bindings has no
+  // marker to find — kerf only emits `kf-list:` markers for this render's
+  // lists, and `cleanupOrphanBindings` has already removed every departed
+  // list's marker. Skip the whole-tree comment walk, which on a large list-free
+  // page was a full DOM traversal after every morph.
+  if (lists.size === 0 && bindings.size === 0) return;
   const found: Comment[] = [];
   collectComments(rootEl, found);
   for (const marker of found) {
