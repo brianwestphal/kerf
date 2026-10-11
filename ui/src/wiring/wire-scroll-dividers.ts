@@ -235,8 +235,12 @@ function write(element: Element, name: StateAttribute, value: string) {
  *
  * Structure is re-read after every DOM change below root that can change a
  * pairing — a structural element or target id added, removed, or re-classed;
- * mutations inside scrolled content (a row's class, a list's rows) only
- * re-measure the scrollers in the next animation frame — and a re-render that drops the attributes gets them back before paint.
+ * mutations inside scrolled content (a row's class, a list's rows) do not
+ * re-read it. Either way the scrollers are re-measured once the next frame
+ * has laid out, before it paints, so a large render never forces a layout
+ * (where `ResizeObserver` is missing, structure is measured at once and
+ * content in the next animation frame) — and a re-render that drops the
+ * attributes gets them back before paint.
  * Scroll is tracked with one capturing listener per registered root, and size
  * changes of each scroller and its children with a `ResizeObserver`. Overlapping registrations
  * share one attribute writer; each disposer removes its registration, and the
@@ -387,11 +391,27 @@ function createController(
   };
 
   const observed = new Set<Element>();
+  /**
+   * A post-layout hook for the content re-measure: an inert zero-height box
+   * outside the app tree whose width a content mutation toggles. The
+   * ResizeObserver reports it after the frame's layout, so the re-measure
+   * reads scroll extents from a clean layout instead of forcing one on the
+   * freshly rendered tree.
+   */
+  let probe: HTMLElement | undefined;
+  /** Whether a toggled probe has yet to be reported. */
+  let probePending = false;
   const resizeObserver = view?.ResizeObserver
     ? new view.ResizeObserver((entries) => {
         if (disposed) return;
         const scrollers = new Set(pairings.map(({ scroller }) => scroller));
         for (const { target } of entries) {
+          if (target === probe) {
+            probePending = false;
+            for (const scroller of overflow.keys())
+              overflow.set(scroller, measure(scroller));
+            continue;
+          }
           const scroller = scrollers.has(target as HTMLElement)
             ? (target as HTMLElement)
             : target.parentElement;
@@ -421,13 +441,25 @@ function createController(
       }
   };
 
-  const refresh = () => {
+  /**
+   * Re-read every pairing. A registration measures at once; a mutation
+   * (`afterLayout`) keeps each still-paired scroller's last measurement and
+   * re-measures through the probe once the frame has laid out, before it
+   * paints, so a structural re-render does not force a layout either.
+   */
+  const refresh = (afterLayout = false) => {
+    const deferred = afterLayout && resizeObserver !== undefined;
+    const previous = deferred ? new Map(overflow) : undefined;
     pairings = collect();
     overflow.clear();
     for (const { scroller } of pairings)
-      overflow.set(scroller, measure(scroller));
+      overflow.set(
+        scroller,
+        previous ? (previous.get(scroller) ?? '') : measure(scroller),
+      );
     observeSizes();
     apply();
+    if (deferred) scheduleRemeasure();
   };
 
   /** Re-measure every scroller (pairings unchanged); write what changed. */
@@ -444,6 +476,24 @@ function createController(
 
   let remeasureFrame: number | undefined;
   const scheduleRemeasure = () => {
+    if (resizeObserver) {
+      // Toggle once per report: a second toggle before the frame would undo
+      // the size change and the report with it.
+      if (probePending) return;
+      probePending = true;
+      if (!probe) {
+        probe = ownerDocument.createElement('div');
+        probe.setAttribute('aria-hidden', 'true');
+        probe.style.cssText =
+          'position:fixed;top:0;left:0;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none;contain:strict';
+        resizeObserver.observe(probe);
+      }
+      // Outside body, so an app that renders into body never removes it; an
+      // app that removed it anyway gets it back.
+      if (!probe.isConnected) ownerDocument.documentElement.append(probe);
+      probe.style.width = probe.style.width === '1px' ? '0px' : '1px';
+      return;
+    }
     if (remeasureFrame !== undefined || !view?.requestAnimationFrame) return;
     // The final disposer cancels a pending frame.
     remeasureFrame = view.requestAnimationFrame(() => {
@@ -468,17 +518,19 @@ function createController(
         // dropped or changed attributes this wiring owns gets them back
         // without re-measuring.
         // Everything else (a row's selection class, a list morph's rows)
-        // cannot change a pairing. It is re-measured in the next frame
-        // instead, when the browser lays out anyway, which catches what the
-        // ResizeObserver cannot: an extent change that resizes no direct
-        // child (an absolutely positioned popup, a `display: contents` child).
+        // cannot change a pairing. It is re-measured after the next frame's
+        // layout instead (through the probe, else in the next animation
+        // frame), which catches what the scrollers' own observations cannot:
+        // an extent change that resizes no direct child (an absolutely
+        // positioned popup, a `display: contents` child), without forcing a
+        // layout of the freshly rendered tree.
         const ids = targetIds();
         const selector = [
           STRUCTURAL_SELECTOR,
           ...[...ids].map((id) => `[id=${quoted(id)}]`),
         ].join(', ');
         if (records.some((record) => changesPairings(record, ids, selector)))
-          refresh();
+          refresh(true);
         else {
           if (
             records.some(
@@ -606,6 +658,9 @@ function createController(
           view?.cancelAnimationFrame(remeasureFrame);
         remeasureFrame = undefined;
         resizeObserver?.disconnect();
+        probe?.remove();
+        probe = undefined;
+        probePending = false;
         for (const [element, values] of written)
           for (const name of values.keys()) write(element, name, '');
         written.clear();

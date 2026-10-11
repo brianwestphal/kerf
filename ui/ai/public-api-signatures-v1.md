@@ -1281,8 +1281,12 @@ type Root = HTMLElement | Document;
  *
  * Structure is re-read after every DOM change below root that can change a
  * pairing — a structural element or target id added, removed, or re-classed;
- * mutations inside scrolled content (a row's class, a list's rows) only
- * re-measure the scrollers in the next animation frame — and a re-render that drops the attributes gets them back before paint.
+ * mutations inside scrolled content (a row's class, a list's rows) do not
+ * re-read it. Either way the scrollers are re-measured once the next frame
+ * has laid out, before it paints, so a large render never forces a layout
+ * (where `ResizeObserver` is missing, structure is measured at once and
+ * content in the next animation frame) — and a re-render that drops the
+ * attributes gets them back before paint.
  * Scroll is tracked with one capturing listener per registered root, and size
  * changes of each scroller and its children with a `ResizeObserver`. Overlapping registrations
  * share one attribute writer; each disposer removes its registration, and the

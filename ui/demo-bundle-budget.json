@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 334200,
-  "measuredLargestJavaScriptGzip": 124514,
-  "measuredTotalJavaScriptGzip": 334118,
+  "totalJavaScriptGzip": 334400,
+  "measuredLargestJavaScriptGzip": 124515,
+  "measuredTotalJavaScriptGzip": 334306,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3171,6 +3171,22 @@
         "measuredTotalJavaScriptGzip": 334118,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 334200
+      }
+    },
+    {
+      "at": "2026-10-11T08:16:23.743Z",
+      "reason": "KF-4XYQ95: wireScrollDividers post-layout probe re-measure (about 0.1 kB gzip) so content and structural renders stop forcing layout",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124514,
+        "measuredTotalJavaScriptGzip": 334118,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 334200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124515,
+        "measuredTotalJavaScriptGzip": 334306,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 334400
       }
     }
   ]

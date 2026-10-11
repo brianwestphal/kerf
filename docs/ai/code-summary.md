@@ -893,6 +893,9 @@ root; `SplitView` forwards it via `compactStack`), `TabBar`, `Toolbar`, and `Lis
 Workbench / CollapsiblePanel / Catalog toolbars place no dividers of their own;
 `wireCatalog` installs the wiring. A per-document controller combines overlapping
 registrations and keeps one attribute writer through independent disposer calls;
+mutation-driven re-measures run after the frame's layout through a
+`ResizeObserver`-watched probe under the root element, never in the mutation
+callback or an animation frame (KF-4XYQ95);
 the UI selection catalog names `wireCatalog` as a `wireScrollDividers` provider
 for `ui-wiring`. Unit transition matrix in
 `ui/tests/unit/wire-scroll-dividers.test.ts`; three-engine geometry and

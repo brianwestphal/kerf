@@ -117,6 +117,23 @@ const overflow = (element: Element | null) =>
   element?.getAttribute('data-scroll-overflow') ?? null;
 const divider = (element: Element | null) =>
   element?.getAttribute('data-scroll-divider') ?? null;
+/**
+ * Let the observers run, then report the wiring's probe as the next frame's
+ * layout would (a fake ResizeObserver reports nothing by itself).
+ */
+async function laidOut() {
+  await settle();
+  const marker = probe();
+  if (!marker) return;
+  for (const observer of FakeResizeObserver.instances)
+    if (observer.observed.has(marker)) observer.fire(marker);
+}
+/** The wiring's post-layout probe, a direct child of the root element. */
+const probe = () =>
+  [...document.documentElement.children].find(
+    (child): child is HTMLElement =>
+      child instanceof HTMLElement && child.style.position === 'fixed',
+  ) ?? null;
 
 beforeEach(() => {
   FakeResizeObserver.instances = [];
@@ -722,9 +739,12 @@ describe('wireScrollDividers — lifecycle', () => {
     const dispose = wireScrollDividers(root);
     const observer = FakeResizeObserver.instances[0]!;
     const collects = vi.spyOn(root, 'querySelectorAll');
+    const frame = vi.spyOn(window, 'requestAnimationFrame');
     expect(divider(header)).toBe('b');
+    expect(probe()).toBeNull();
     // Content that grows or shrinks without resizing a direct child (an
-    // absolutely positioned popup): the ResizeObserver never reports it.
+    // absolutely positioned popup): the scrollers' own observations never
+    // report it.
     state.scrollTop = 0;
     list.firstElementChild!.classList.add('selected');
     list.firstElementChild!.setAttribute('data-active', 'true');
@@ -732,39 +752,199 @@ describe('wireScrollDividers — lifecycle', () => {
     list.lastElementChild!.remove();
     list.firstElementChild!.textContent = 'renamed';
     await settle();
+    // Nothing is read before the frame lays out: the probe outside the app
+    // tree is resized instead, and no animation frame is requested.
+    expect(divider(header)).toBe('b');
+    const marker = probe()!;
+    expect(marker.parentElement).toBe(document.documentElement);
+    expect(marker.style.width).toBe('1px');
+    expect(observer.observed.has(marker)).toBe(true);
+    expect(frame).not.toHaveBeenCalled();
+    // Its report, after layout, re-measures every scroller.
+    observer.fire(marker);
     expect(divider(header)).toBeNull();
     expect(collects).not.toHaveBeenCalled();
-    expect([...observer.observed]).toEqual([content, list]);
+    expect(observer.observed).toEqual(new Set([content, list, marker]));
 
-    // Dropping an owned attribute in the same batch still restores it.
+    // Dropping an owned attribute in the same batch still restores it at
+    // once; the re-measure follows the probe's next report.
     state.scrollTop = 50;
     list.firstElementChild!.classList.remove('selected');
     header!.removeAttribute('data-scroll-divider');
     await settle();
+    expect(divider(header)).toBeNull();
+    expect(marker.style.width).toBe('0px');
+    observer.fire(marker);
     expect(divider(header)).toBe('b');
     expect(collects).not.toHaveBeenCalled();
 
-    // A frame that measures nothing new writes nothing.
+    // A report that measures nothing new writes nothing.
     list.firstElementChild!.classList.add('selected');
     await settle();
+    const writes = vi.spyOn(header!, 'setAttribute');
+    observer.fire(marker);
     expect(divider(header)).toBe('b');
+    expect(writes).not.toHaveBeenCalled();
 
-    // Batches before the frame share it, and disposal cancels it.
-    const frame = vi.spyOn(window, 'requestAnimationFrame');
+    // Batches before the report share one toggle: a second toggle would undo
+    // the size change and lose the report.
     list.firstElementChild!.classList.remove('selected');
     await Promise.resolve();
     list.firstElementChild!.classList.add('selected');
     await Promise.resolve();
-    expect(frame).toHaveBeenCalledTimes(1);
+    expect(marker.style.width).toBe('0px');
+    // An app that removed the probe gets it back with the next toggle.
+    observer.fire(marker);
+    marker.remove();
+    list.firstElementChild!.classList.remove('selected');
+    await settle();
+    expect(marker.parentElement).toBe(document.documentElement);
+    expect(marker.style.width).toBe('1px');
+
+    // Disposal removes the probe, and a late report changes nothing.
     state.scrollTop = 0;
     dispose();
-    await settle();
+    expect(marker.isConnected).toBe(false);
+    observer.fire(marker);
     expect(divider(header)).toBeNull();
+    expect(frame).not.toHaveBeenCalled();
+    writes.mockRestore();
     frame.mockRestore();
     collects.mockRestore();
   });
 
-  it('skips the frame re-measure where requestAnimationFrame is missing', async () => {
+  it('reads no layout in the mutation callback for structure either, until the frame reports', async () => {
+    const root = mountHtml(
+      String(
+        Pane({
+          header: Toolbar({ label: 'Head' }),
+          children: raw('<div data-slot><p class="row">a</p></div>'),
+        }),
+      ),
+    );
+    const header = root.querySelector('.kui-pane__header');
+    const content = root.querySelector<HTMLElement>('.kui-pane__content')!;
+    const slot = root.querySelector('[data-slot]')!;
+    let reads = 0;
+    const counted = (element: Element, values: Partial<Geometry>) => {
+      const own = geometry(element, values);
+      Object.defineProperty(element, 'scrollHeight', {
+        configurable: true,
+        get: () => {
+          reads++;
+          return own.scrollHeight;
+        },
+      });
+      return own;
+    };
+    const state = counted(content, { scrollHeight: 300, scrollTop: 50 });
+    const dispose = wireScrollDividers(root);
+    const observer = FakeResizeObserver.instances[0]!;
+    expect(divider(header)).toBe('b');
+    expect(reads).toBeGreaterThan(0);
+
+    // A nested Pane rendered into the content re-reads the pairings, but
+    // measures nothing until the frame has laid out.
+    reads = 0;
+    slot.insertAdjacentHTML(
+      'beforeend',
+      String(Pane({ header: Toolbar({ label: 'Inner' }), children: body })),
+    );
+    const innerHeader = slot.querySelector('.kui-pane .kui-pane__header');
+    const inner = slot.querySelector('.kui-pane .kui-pane__content')!;
+    counted(inner, { scrollHeight: 300, scrollTop: 10 });
+    await settle();
+    expect(reads).toBe(0);
+    expect(divider(header)).toBe('b');
+    expect(divider(innerHeader)).toBeNull();
+    expect(observer.observed.has(inner)).toBe(true);
+    observer.fire(probe()!);
+    expect(reads).toBeGreaterThan(0);
+    expect(divider(innerHeader)).toBe('b');
+    expect(divider(header)).toBe('b');
+
+    // Repeated structural batches before the report share one toggle.
+    const width = probe()!.style.width;
+    slot.querySelector('.row')!.classList.add('kui-pane__toolbar');
+    await Promise.resolve();
+    slot.querySelector('.row')!.classList.remove('kui-pane__toolbar');
+    await Promise.resolve();
+    expect(probe()!.style.width).not.toBe(width);
+    observer.fire(probe()!);
+
+    // Removing the nested Pane releases its chrome at once, and the outer
+    // pairing keeps its last measurement until the report.
+    reads = 0;
+    slot.querySelector('.kui-pane')!.remove();
+    await settle();
+    expect(reads).toBe(0);
+    expect(divider(innerHeader)).toBeNull();
+    expect(divider(header)).toBe('b');
+    state.scrollTop = 0;
+    observer.fire(probe()!);
+    expect(divider(header)).toBeNull();
+
+    // Emptied, then refilled: the outer header follows each report.
+    slot.replaceChildren();
+    state.scrollHeight = 100;
+    await laidOut();
+    expect(overflow(content)).toBeNull();
+    slot.insertAdjacentHTML('beforeend', '<p class="row">b</p>');
+    state.scrollHeight = 300;
+    state.scrollTop = 40;
+    await laidOut();
+    expect(overflow(content)).toBe('tb');
+    expect(divider(header)).toBe('b');
+    dispose();
+    expect(probe()).toBeNull();
+  });
+
+  it('re-measures in the next frame where ResizeObserver is missing', async () => {
+    window.ResizeObserver = undefined as unknown as typeof ResizeObserver;
+    const root = mountHtml(
+      String(
+        Pane({
+          header: Toolbar({ label: 'Head' }),
+          children: raw('<p class="row">a</p>'),
+        }),
+      ),
+    );
+    const header = root.querySelector('.kui-pane__header');
+    const content = root.querySelector<HTMLElement>('.kui-pane__content')!;
+    const state = geometry(content, { scrollHeight: 300, scrollTop: 50 });
+    const dispose = wireScrollDividers(root);
+    const row = root.querySelector('.row')!;
+    expect(divider(header)).toBe('b');
+
+    // Batches before the frame share it, and no probe is made.
+    const frame = vi.spyOn(window, 'requestAnimationFrame');
+    state.scrollTop = 0;
+    row.classList.add('selected');
+    await Promise.resolve();
+    row.classList.remove('selected');
+    await Promise.resolve();
+    expect(frame).toHaveBeenCalledTimes(1);
+    expect(probe()).toBeNull();
+    await settle();
+    expect(divider(header)).toBeNull();
+
+    // A frame that measures nothing new writes nothing.
+    row.classList.add('selected');
+    await settle();
+    expect(divider(header)).toBeNull();
+
+    // Disposal cancels a pending frame.
+    row.classList.remove('selected');
+    await Promise.resolve();
+    state.scrollTop = 50;
+    dispose();
+    await settle();
+    expect(divider(header)).toBeNull();
+    frame.mockRestore();
+  });
+
+  it('skips the frame re-measure where ResizeObserver and requestAnimationFrame are missing', async () => {
+    window.ResizeObserver = undefined as unknown as typeof ResizeObserver;
     const root = mountHtml(
       String(
         Pane({
@@ -818,7 +998,7 @@ describe('wireScrollDividers — lifecycle', () => {
       const before = divider(header);
       state.scrollTop = before ? 0 : 50;
       mutate();
-      await settle();
+      await laidOut();
       if (collects.mock.calls.length > 0)
         expect(divider(header)).not.toBe(before);
       return collects.mock.calls.length > 0;
@@ -881,15 +1061,16 @@ describe('wireScrollDividers — lifecycle', () => {
     );
     const content = host.querySelector<HTMLElement>('.kui-pane__content')!;
     geometry(content, { scrollHeight: 300, scrollTop: 30 });
-    await settle();
+    await laidOut();
     const header = host.querySelector('.kui-pane__header');
     expect(divider(header)).toBe('b');
     expect(observer.observed.has(content)).toBe(true);
 
     host.replaceChildren();
-    await settle();
+    await laidOut();
     expect(observer.observed.has(content)).toBe(false);
-    expect(observer.observed.size).toBe(0);
+    // Only the post-layout probe stays observed.
+    expect([...observer.observed]).toEqual([probe()]);
     dispose();
   });
 
@@ -906,7 +1087,7 @@ describe('wireScrollDividers — lifecycle', () => {
     scrollTo(content, state, { scrollTop: 0 });
     observer.fire(content);
     header!.setAttribute('data-scroll-divider', 'b');
-    await settle();
+    await laidOut();
     expect(divider(footer)).toBeNull();
     expect(divider(header)).toBe('b');
     dispose();
@@ -1024,13 +1205,13 @@ describe('wireScrollDividers — NavStack chrome around the active view', () => 
     // Pop: the detail slides out (re-inserted, exiting) over the list.
     activate([list, detail], list);
     detail.setAttribute('data-nav-exiting', 'true');
-    await settle();
+    await laidOut();
     expect(overflow(list)).toBe('tb');
     expect(overflow(detail)).toBeNull();
     expect(divider(chrome)).toBe('b');
     expect(divider(bottom)).toBe('t');
     detail.remove();
-    await settle();
+    await laidOut();
     expect(divider(chrome)).toBe('b');
 
     // Scroll state follows the list while it is shown…
@@ -1042,7 +1223,7 @@ describe('wireScrollDividers — NavStack chrome around the active view', () => 
     detail.removeAttribute('data-nav-exiting');
     stack.querySelector('.kui-nav-stack__viewport')!.append(detail);
     activate([list, detail], detail);
-    await settle();
+    await laidOut();
     expect(overflow(list)).toBeNull();
     expect(overflow(detail)).toBe('b');
     expect(divider(chrome)).toBeNull();
@@ -1117,7 +1298,7 @@ describe('wireScrollDividers — NavStack chrome around the active view', () => 
     copy.dataset.navChromeCopy = '';
     copy.removeAttribute('data-scroll-divider');
     stack.append(copy);
-    await settle();
+    await laidOut();
     expect(divider(chrome)).toBe('b');
     expect(divider(copy)).toBeNull();
     dispose();
@@ -1168,14 +1349,14 @@ describe('wireScrollDividers — TabScaffold bar over the active scene', () => {
 
     // The second tab fits; switching back restores the first tab's state.
     select('two');
-    await settle();
+    await laidOut();
     expect(overflow(scene('one'))).toBeNull();
     expect(divider(bar)).toBeNull();
     two.scrollHeight = 300;
     observer.fire(scene('two'));
     expect(divider(bar)).toBe('t');
     select('one');
-    await settle();
+    await laidOut();
     expect(overflow(scene('one'))).toBe('t');
     expect(divider(bar)).toBeNull();
     dispose();

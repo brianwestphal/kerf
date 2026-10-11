@@ -254,6 +254,70 @@ test.describe('scroll dividers', () => {
       .toBeNull();
   });
 
+  test('a content or structural render is measured after the frame lays out, not in the mutation callback', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const content = page.locator('[data-case="pane-fits"] .kui-pane__content');
+    const footer = page.locator('[data-case="pane-fits"] .kui-pane__footer');
+    expect(await content.getAttribute('data-scroll-overflow')).toBeNull();
+    for (const structural of [false, true]) {
+      // Count this scroller's extent reads, then render into it and let the
+      // mutation callbacks run: nothing may read layout yet.
+      const result = await content.evaluate(async (element, nested) => {
+        let reads = 0;
+        const native = Object.getOwnPropertyDescriptor(
+          Element.prototype,
+          'scrollHeight',
+        )!.get!;
+        Object.defineProperty(element, 'scrollHeight', {
+          configurable: true,
+          get() {
+            reads++;
+            return native.call(this);
+          },
+        });
+        const item = element.firstElementChild as HTMLElement;
+        const added = document.createElement('div');
+        added.dataset.testGrowth = '';
+        // A nested element with a structural class makes the render re-read
+        // the pairings too.
+        if (nested) added.className = 'kui-pane';
+        added.style.blockSize = '2000px';
+        item.append(added);
+        // The mutation callbacks run as microtasks, before any frame, and an
+        // animation frame callback runs before the frame's layout: neither
+        // may read the extent of the freshly rendered tree.
+        for (let turn = 0; turn < 5; turn++) await Promise.resolve();
+        const afterCallbacks = reads;
+        const beforeLayout = await new Promise<number>((resolve) =>
+          globalThis.requestAnimationFrame(() => resolve(reads)),
+        );
+        await new Promise((resolve) =>
+          globalThis.requestAnimationFrame(() =>
+            globalThis.requestAnimationFrame(resolve),
+          ),
+        );
+        Reflect.deleteProperty(element, 'scrollHeight');
+        return {
+          beforeFrame: afterCallbacks + beforeLayout,
+          afterFrame: reads,
+          overflow: element.getAttribute('data-scroll-overflow'),
+        };
+      }, structural);
+      expect(result.beforeFrame).toBe(0);
+      expect(result.afterFrame).toBeGreaterThan(0);
+      expect(result.overflow).toBe('b');
+      expect(await footer.getAttribute('data-scroll-divider')).toBe('t');
+      await content.evaluate((element) => {
+        element.querySelector('[data-test-growth]')!.remove();
+      });
+      await expect
+        .poll(() => content.getAttribute('data-scroll-overflow'))
+        .toBeNull();
+    }
+  });
+
   test('content that fits shows no divider; always and none override the scroll state', async ({
     page,
   }) => {

@@ -1042,10 +1042,18 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   change of a scroller itself (KF-50PA0Y: a row selection deep inside a
   scroller used to force a full re-collect and a layout of every scroller);
   ordinary content morphs skip that re-read and only re-measure the known
-  scrollers in the next animation frame (KF-E29N3W: an extent change that
-  resizes no direct scroller child — an absolutely positioned popup, a
-  `display: contents` child — reaches no `ResizeObserver`), when the browser
-  lays out anyway. Horizontal edges are
+  scrollers (KF-E29N3W: an extent change that resizes no direct scroller
+  child — an absolutely positioned popup, a `display: contents` child —
+  reaches no `ResizeObserver`). Both re-measures wait for the frame's own
+  layout (KF-4XYQ95: reading extents in the mutation callback or in an
+  animation frame forced a synchronous layout of the freshly rendered tree):
+  the controller toggles the width of an inert, zero-height,
+  `position: fixed`, `contain: strict` probe it keeps under the root
+  element, outside the app tree, and the `ResizeObserver` reports it after
+  layout and before paint. A re-read keeps each still-paired scroller's last
+  measurement until then, and repeated batches before the report share one
+  toggle. Without `ResizeObserver`, structure is measured at once and content
+  in the next animation frame. Horizontal edges are
   physical, so a right-to-left scroller (negative `scrollLeft`) reports the
   same sides. A 1px tolerance absorbs the rounding between whole-pixel
   `scrollWidth` / `scrollHeight` and fractional scroll positions.
