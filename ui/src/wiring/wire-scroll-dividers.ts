@@ -233,8 +233,11 @@ function write(element: Element, name: StateAttribute, value: string) {
  * - each app-owned `targets` pairing: a `Toolbar` or `List` named as chrome
  *   draws the divider on its facing side.
  *
- * Structure is re-read after every DOM change below root (a re-render that
- * drops the attributes gets them back before paint), scroll is tracked with
+ * Structure is re-read after every DOM change below root that can change a
+ * pairing — a structural element or target id added, removed, or re-classed;
+ * mutations inside scrolled content (a row's class, a list's rows) are skipped
+ * — and a re-render that drops the attributes gets them back before paint.
+ * Scroll is tracked with
  * one capturing listener per registered root, and size changes of each
  * scroller and its children with a `ResizeObserver`. Overlapping registrations
  * share one attribute writer; each disposer removes its registration, and the
@@ -255,6 +258,40 @@ export function wireScrollDividers(
   }
   return register({ root, targets });
 }
+
+/**
+ * Every class `collect()` and `regionScrollers()` select by. An element that
+ * carries none of them (and no target id) can never become or stop being part
+ * of a pairing.
+ */
+const STRUCTURAL_CLASSES = [
+  'kui-pane',
+  'kui-pane__content',
+  'kui-pane__header',
+  'kui-pane__toolbar',
+  'kui-pane__footer',
+  'kui-nav-stack',
+  'kui-nav-stack__viewport',
+  'kui-nav-stack__view',
+  'kui-nav-stack__chrome',
+  'kui-nav-stack__bottom',
+  'kui-tab-scaffold',
+  'kui-tab-scaffold__scenes',
+  'kui-tab-scaffold__scene',
+  'kui-tab-scaffold__bar',
+] as const;
+
+const STRUCTURAL_SELECTOR = [
+  ...STRUCTURAL_CLASSES.map((name) => `.${name}`),
+  '[data-kui-tab-list]',
+].join(', ');
+
+/** Whether a class attribute value names a structural class. */
+const hasStructuralClass = (value: string | null) =>
+  !!value &&
+  value
+    .split(/\s+/)
+    .some((token) => (STRUCTURAL_CLASSES as readonly string[]).includes(token));
 
 function createController(
   ownerDocument: Document,
@@ -406,21 +443,85 @@ function createController(
   const mutationObserver = view?.MutationObserver
     ? new view.MutationObserver((records) => {
         if (disposed) return;
-        // A re-render that only dropped or changed attributes this wiring
-        // owns gets them back without re-measuring; structure changes
-        // re-read every pairing.
-        if (
-          records.every(
-            ({ type, attributeName }) =>
-              type === 'attributes' &&
-              (attributeName === SCROLL_OVERFLOW ||
-                attributeName === SCROLL_DIVIDER),
+        // Structure changes re-read every pairing. A re-render that only
+        // dropped or changed attributes this wiring owns gets them back
+        // without re-measuring.
+        // Everything else (a row's selection class, a list morph's rows)
+        // cannot change a pairing and is skipped: content-size changes it
+        // causes reach the ResizeObserver instead.
+        const ids = targetIds();
+        const selector = [
+          STRUCTURAL_SELECTOR,
+          ...[...ids].map((id) => `[id=${quoted(id)}]`),
+        ].join(', ');
+        if (records.some((record) => changesPairings(record, ids, selector)))
+          refresh();
+        else if (
+          records.some(
+            ({ attributeName }) =>
+              attributeName === SCROLL_OVERFLOW ||
+              attributeName === SCROLL_DIVIDER,
           )
         )
           apply();
-        else refresh();
       })
     : undefined;
+
+  /** Every target id any registration resolves. */
+  const targetIds = () => {
+    const ids = new Set<string>();
+    for (const { targets } of registrations)
+      for (const target of targets) {
+        ids.add(target.scroller);
+        for (const edge of EDGES) {
+          const id = target[TARGET_EDGES[edge]];
+          if (id) ids.add(id);
+        }
+      }
+    return ids;
+  };
+
+  /** Whether `node` is or contains an element matching `selector`. */
+  const holds = (node: Node, selector: string) =>
+    node.nodeType === 1 &&
+    ((node as Element).matches(selector) ||
+      !!(node as Element).querySelector(selector));
+
+  /**
+   * Whether a mutation record can change what `collect()` finds: a structural
+   * element or target-id element (or, through its old class or id, a former
+   * one) changed, or one was added or removed. Every scroller is itself
+   * structural or a target id, so a child-list change of a scroller (whose
+   * child count `regionScrollers` reads, and whose children the
+   * ResizeObserver watches) always counts.
+   */
+  const changesPairings = (
+    {
+      type,
+      target,
+      attributeName,
+      oldValue,
+      addedNodes,
+      removedNodes,
+    }: MutationRecord,
+    ids: ReadonlySet<string>,
+    selector: string,
+  ) => {
+    if (
+      type === 'attributes' &&
+      (attributeName === SCROLL_OVERFLOW || attributeName === SCROLL_DIVIDER)
+    )
+      return false;
+    if (target.nodeType === 1 && (target as Element).matches(selector))
+      return true;
+    if (type === 'attributes')
+      return attributeName === 'class'
+        ? hasStructuralClass(oldValue)
+        : attributeName === 'id' && oldValue !== null && ids.has(oldValue);
+    for (const node of [...addedNodes, ...removedNodes])
+      if (holds(node, selector)) return true;
+    return false;
+  };
 
   const syncRoots = () => {
     const roots = new Set([...registrations].map(({ root }) => root));
@@ -443,6 +544,8 @@ function createController(
         subtree: true,
         childList: true,
         attributes: true,
+        // Old values tell a class or id that stopped being structural.
+        attributeOldValue: true,
         // The shown NavStack view and TabNavigator scene change by attribute.
         attributeFilter: [
           SCROLL_OVERFLOW,

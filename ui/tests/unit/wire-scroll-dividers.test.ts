@@ -704,6 +704,116 @@ describe('wireScrollDividers — lifecycle', () => {
     dispose();
   });
 
+  it('skips mutations inside scrolled content that cannot change a pairing', async () => {
+    const root = mountHtml(
+      String(
+        Pane({
+          header: Toolbar({ label: 'Head' }),
+          children: raw(
+            '<ul data-list><li class="row">a</li><li class="row">b</li></ul>',
+          ),
+        }),
+      ),
+    );
+    const header = root.querySelector('.kui-pane__header');
+    const content = root.querySelector<HTMLElement>('.kui-pane__content')!;
+    const list = root.querySelector('[data-list]')!;
+    const state = geometry(content, { scrollHeight: 300, scrollTop: 50 });
+    const dispose = wireScrollDividers(root);
+    const observer = FakeResizeObserver.instances[0]!;
+    expect(divider(header)).toBe('b');
+    // Unobserved geometry: only a refresh would re-measure it.
+    state.scrollTop = 0;
+    list.firstElementChild!.classList.add('selected');
+    list.firstElementChild!.setAttribute('data-active', 'true');
+    list.append(Object.assign(document.createElement('li'), { id: 'row-c' }));
+    list.lastElementChild!.remove();
+    list.firstElementChild!.textContent = 'renamed';
+    await settle();
+    expect(divider(header)).toBe('b');
+    expect([...observer.observed]).toEqual([content, list]);
+
+    // Dropping an owned attribute in the same batch still restores it.
+    list.firstElementChild!.classList.remove('selected');
+    header!.removeAttribute('data-scroll-divider');
+    await settle();
+    expect(divider(header)).toBe('b');
+    dispose();
+  });
+
+  it('still re-reads pairings when content mutations add, re-class, or rename structure', async () => {
+    const root = mountHtml(
+      String(
+        Pane({
+          header: Toolbar({ label: 'Head' }),
+          children: raw('<div data-slot><p class="plain">x</p></div>'),
+        }),
+      ),
+    );
+    const header = root.querySelector('.kui-pane__header');
+    const content = root.querySelector<HTMLElement>('.kui-pane__content')!;
+    const slot = root.querySelector('[data-slot]')!;
+    const state = geometry(content, { scrollHeight: 300, scrollTop: 50 });
+    const dispose = wireScrollDividers(root, {
+      targets: [{ scroller: 'late-scroller', top: 'late-top' }],
+    });
+    const observer = FakeResizeObserver.instances[0]!;
+    const remeasuredBy = async (mutate: () => void) => {
+      // Flip the unobserved geometry against what is drawn now, so only a
+      // re-measure changes the divider.
+      const before = divider(header);
+      state.scrollTop = before ? 0 : 50;
+      mutate();
+      await settle();
+      return divider(header) !== before;
+    };
+
+    // A child-list change of the scroller itself (its child count and
+    // observed children).
+    expect(
+      await remeasuredBy(() => content.append(document.createElement('hr'))),
+    ).toBe(true);
+    expect(observer.observed.has(content.lastElementChild!)).toBe(true);
+    // A nested structural element added deep in the content.
+    expect(
+      await remeasuredBy(() =>
+        slot.insertAdjacentHTML(
+          'beforeend',
+          String(Pane({ header: Toolbar({ label: 'Inner' }), children: body })),
+        ),
+      ),
+    ).toBe(true);
+    const inner = slot.querySelector<HTMLElement>(
+      '.kui-pane .kui-pane__content',
+    )!;
+    expect(observer.observed.has(inner)).toBe(true);
+    // Its removal.
+    expect(
+      await remeasuredBy(() => slot.querySelector('.kui-pane')!.remove()),
+    ).toBe(true);
+    expect(observer.observed.has(inner)).toBe(false);
+    // A plain element gaining, then losing, a structural class.
+    const plain = slot.querySelector('.plain')!;
+    expect(
+      await remeasuredBy(() => plain.classList.add('kui-tab-scaffold')),
+    ).toBe(true);
+    expect(
+      await remeasuredBy(() => plain.classList.remove('kui-tab-scaffold')),
+    ).toBe(true);
+    expect(await remeasuredBy(() => plain.classList.add('other'))).toBe(false);
+    // A plain element gaining, then losing, a target id.
+    expect(await remeasuredBy(() => (plain.id = 'late-top'))).toBe(true);
+    expect(await remeasuredBy(() => (plain.id = 'renamed'))).toBe(true);
+    expect(await remeasuredBy(() => (plain.id = 'again'))).toBe(false);
+    expect(await remeasuredBy(() => plain.removeAttribute('id'))).toBe(false);
+    // A detached subtree holding a target id, added and removed.
+    const holder = document.createElement('section');
+    holder.innerHTML = '<div id="late-scroller"></div>';
+    expect(await remeasuredBy(() => slot.append(holder))).toBe(true);
+    expect(await remeasuredBy(() => holder.remove())).toBe(true);
+    dispose();
+  });
+
   it('pairs panes added later and releases panes that leave', async () => {
     const root = mountHtml('<div data-host></div>');
     const dispose = wireScrollDividers(root);

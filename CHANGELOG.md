@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- `wireScrollDividers` no longer re-collects pairings and re-measures every scroller for mutations that cannot change a pairing, such as a row's selection class or a list morph inside scrolled content; it still refreshes when structural elements or target ids are added, removed, re-classed, or renamed (`KF-50PA0Y`).
+
 - The UX Catalog filter keeps its placeholder hidden when a controlled state change rerenders the sidebar while filter text remains (`KF-4EA9R6`).
 
 - Inspector TabBars use the shared rounded rectangle radius on the strip and inset tabs while ordinary segmented TabBars retain their pill geometry (`KF-K3RDN1`).

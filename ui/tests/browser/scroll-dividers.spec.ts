@@ -193,6 +193,37 @@ test.describe('scroll dividers', () => {
     expect(await shows(footer)).toBe(true);
   });
 
+  test('content that grows deep inside a scroller is measured without a structural refresh', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const content = page.locator('[data-case="pane-fits"] .kui-pane__content');
+    const footer = page.locator('[data-case="pane-fits"] .kui-pane__footer');
+    expect(await content.getAttribute('data-scroll-overflow')).toBeNull();
+    // Grow the first item's own subtree (no child-list change of the
+    // scroller), as a row morph would: the ResizeObserver reports it.
+    await content.evaluate((element) => {
+      const item = element.firstElementChild!;
+      for (let line = 0; line < 30; line += 1) {
+        const row = document.createElement('div');
+        row.textContent = `Line ${String(line)}`;
+        item.append(row);
+      }
+      item.classList.add('selected');
+    });
+    await expect
+      .poll(() => content.getAttribute('data-scroll-overflow'))
+      .toBe('b');
+    expect(await footer.getAttribute('data-scroll-divider')).toBe('t');
+    await content.evaluate((element) => {
+      element.firstElementChild!.replaceChildren('Item 1');
+    });
+    await expect
+      .poll(() => content.getAttribute('data-scroll-overflow'))
+      .toBeNull();
+    expect(await footer.getAttribute('data-scroll-divider')).toBeNull();
+  });
+
   test('content that fits shows no divider; always and none override the scroll state', async ({
     page,
   }) => {

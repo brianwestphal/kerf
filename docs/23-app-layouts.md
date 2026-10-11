@@ -1029,7 +1029,14 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   a style. Scroll is one capturing `scroll` listener; content and container
   size changes come from a `ResizeObserver` on each scroller and its children;
   structure from a `MutationObserver`, which also restores an attribute the
-  morph dropped before paint without re-measuring. Horizontal edges are
+  morph dropped before paint without re-measuring. The observer re-reads
+  pairings and re-measures only for a record that can change a pairing — a
+  structural element (Pane, NavStack, TabNavigator, TabBar strip part) or
+  target-id element added, removed, re-classed, or renamed, or a child-list
+  change of a scroller itself (KF-50PA0Y: a row selection deep inside a
+  scroller used to force a full re-collect and a layout of every scroller);
+  ordinary content morphs are skipped and their size effects reach the
+  `ResizeObserver`. Horizontal edges are
   physical, so a right-to-left scroller (negative `scrollLeft`) reports the
   same sides. A 1px tolerance absorbs the rounding between whole-pixel
   `scrollWidth` / `scrollHeight` and fractional scroll positions.
