@@ -469,7 +469,9 @@ function runFirstRender(
  *   attribute or child set imperatively on a kerf-managed element (e.g.
  *   `el.setAttribute(...)`) survives across no-op re-renders because the
  *   diff doesn't run to wipe it. When the surrounds DO change, the diff
- *   runs and `morphAttributes` removes anything the JSX didn't authorise.
+ *   runs and `morphAttributes` removes anything the JSX didn't authorise
+ *   (on a custom element, once its attributes have synced, only what the
+ *   previous template rendered — see `RENDERED_ATTRS`).
  *   This matches the framework's "smallest cut" model: don't touch what
  *   JSX didn't change.
  *

@@ -37,7 +37,11 @@ const AMP = 0x26; // &
 const EQ = 0x3d; // =
 const SLASH = 0x2f; // /
 const TEXT_NODE = 3;
-import { isUserAgentOwnedAttr } from './utils/isUserAgentOwnedAttr.js';
+import {
+  isUserAgentOwnedAttr,
+  RENDERED_ATTRS,
+  type RenderedAttrsHost,
+} from './utils/isUserAgentOwnedAttr.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
 const ELEMENT_NODE = 1;
@@ -113,6 +117,11 @@ export function tryAttributeOnlyFastPath(
     liveNode.removeAttribute(name);
     syncFormProp(liveNode, name, '', false);
   }
+  // This path does not maintain the morph's record of what the template owns
+  // (see `RENDERED_ATTRS`); drop it so the next morph of this element falls
+  // back to the ordinary rule instead of trusting a stale record that would
+  // keep an attribute this path set.
+  delete (liveNode as RenderedAttrsHost)[RENDERED_ATTRS];
   return true;
 }
 

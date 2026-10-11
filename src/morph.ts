@@ -56,7 +56,11 @@ import {
 import type { SafeHtml } from './jsx-runtime.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { LIST_MARKER_PREFIX } from './segment.js';
-import { isUserAgentOwnedAttr } from './utils/isUserAgentOwnedAttr.js';
+import {
+  isUserAgentOwnedAttr,
+  RENDERED_ATTRS,
+  type RenderedAttrsHost,
+} from './utils/isUserAgentOwnedAttr.js';
 import { moveNode } from './utils/moveNode.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
@@ -591,6 +595,12 @@ function morphElement(
  * case is the common one and the one that was silently broken before.
  */
 function morphAttributes(fromEl: Element, toEl: Element): void {
+  const fromTag = fromEl.tagName;
+  // A custom element removes only what the previous template rendered — see
+  // `RENDERED_ATTRS`. `rendered` is undefined on its first sync (and always
+  // for plain elements), which keeps the ordinary remove-what-is-absent rule.
+  const host = fromEl as RenderedAttrsHost;
+  const rendered = host[RENDERED_ATTRS];
   // Set/update every attribute on toEl.
   const toAttrs = toEl.attributes;
   for (let i = 0; i < toAttrs.length; i++) {
@@ -614,7 +624,6 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
   }
   // Remove attributes that are no longer present on toEl.
   const fromAttrs = fromEl.attributes;
-  const fromTag = fromEl.tagName;
   for (let i = fromAttrs.length - 1; i >= 0; i--) {
     const attr = fromAttrs[i];
     const ns = attr.namespaceURI;
@@ -623,7 +632,8 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
       if (!toEl.hasAttributeNS(ns, name)) fromEl.removeAttributeNS(ns, name);
     } else if (
       !toEl.hasAttribute(name) &&
-      !isUserAgentOwnedAttr(fromTag, name)
+      !isUserAgentOwnedAttr(fromTag, name) &&
+      (!rendered || rendered.includes(name))
     ) {
       fromEl.removeAttribute(name);
       // KF-335: removed checked/value/selected attr → property follows (see
@@ -631,6 +641,7 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
       syncFormProp(fromEl, name, '', false);
     }
   }
+  if (fromTag.includes('-')) host[RENDERED_ATTRS] = toEl.getAttributeNames();
 }
 
 function isTextInputOrTextarea(el: Element): boolean {

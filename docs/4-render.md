@@ -401,6 +401,22 @@ Trade-off (the same one as `<details open>`): a static template cannot remove a 
 
 The rule is the same helper, `src/utils/isUserAgentOwnedAttr.ts` (KF-KQWZ8M; surfaced by an audit of the Web Awesome elements `@kerfjs/ui` renders, where a re-render stripped `wa-option`'s and `wa-divider`'s roles). It replaced a Select-specific restore observer in `@kerfjs/ui`.
 
+### Custom elements keep attributes the template never rendered
+
+Custom elements also reflect their own **defaults** onto the host: Web Awesome's `wa-button` sets `variant="neutral"`, `appearance="accent"`, and `size="m"`; `wa-tag`, `wa-badge`, `wa-input`, `wa-textarea`, `wa-select`, `wa-dropdown`, and `wa-dropdown-item` do the same for theirs. A template that omits them used to lose them on every re-render that reached the element: the morph removed the attribute, Lit put it straight back, and the element ran a full update. One row selection on a 300-row page flipped `wa-tag`'s `variant` and `appearance` on every row (1,200 attribute mutations and 300 Lit updates), and a `wa-textarea`'s update forced a layout on every render.
+
+So on **custom elements** (any hyphenated tag), the morph records which attribute names the template rendered on the element, and REMOVES an attribute the template omits only when the previous template rendered it:
+
+- A template that **stops** rendering an attribute still removes it (`disabled={busy}` flipping false removes `disabled`).
+- An attribute the template **never** rendered — a reflected default, or one the component or app set itself — is left alone.
+- On an element's **first** attribute sync there is no record yet, so the ordinary remove-what-is-absent rule applies once; every later re-render honors the record. (A byte-identical element is skipped before its attributes sync, so the record starts at the first render that actually differs.)
+- The keyed-list attribute fast path diffs the old row template against the new one, so it already removes only what the template rendered; it drops the morph's record when it rewrites a row's attributes, so a later morph falls back to the ordinary rule rather than trusting a stale record.
+- **Plain elements are unchanged.** The record lives in a symbol-keyed property on the element (`RENDERED_ATTRS` in `src/utils/isUserAgentOwnedAttr.ts`), so it lives exactly as long as the element.
+
+Trade-off: an attribute an app sets imperatively on a custom element (and never renders) now survives re-renders after the first. To have kerf own it, render it.
+
+The `open` / `role` / `aria-*` rule above still applies on top of this (KF-K8S4RX; surfaced by Web Awesome host churn measured in a 300-row consumer app).
+
 ## 4.4.2 Imperative DOM mutations and the no-op-render fast path
 
 `mount()` re-runs your render function whenever a signal it read changes. On each re-run kerf compares the new "static surrounds" HTML (everything outside `each()` lists) against the previous render's. **If they're byte-for-byte identical, the diff is skipped entirely** — the cost-saving optimization that lets a list signal flip a class without paying for a parent walk.
@@ -432,6 +448,8 @@ div.setAttribute("data-instrumented", "true");
 
 label.value = "second"; // surrounds changed → diff runs → attribute wiped.
 ```
+
+Custom elements are the exception once their attributes have synced: there the morph removes only attributes its previous template rendered (see §4.4.1), so an imperative attribute on a `wa-*` host survives.
 
 ### Practical guidance
 
@@ -468,7 +486,7 @@ morph(liveCard, raw(htmlFromServer));
 
 `morph()` reconciles only `liveRoot`'s **children**. The root element itself is never replaced and its own attributes are never touched — set them directly if they need to change. `template` therefore describes the content that goes inside the root: for an `Element` template, its child nodes are used and its own tag and attributes are ignored.
 
-`morph()` honors every short-circuit `mount()`'s internal pipeline uses: `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and the user-agent-owned `open` attribute on `<details>`, `<dialog>`, and custom elements (any hyphenated tag), plus the element-owned `role` / `aria-*` on custom elements. Match keys (`id`, then `data-key`) work the same way as inside a mount.
+`morph()` honors every short-circuit `mount()`'s internal pipeline uses: `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and the user-agent-owned `open` attribute on `<details>`, `<dialog>`, and custom elements (any hyphenated tag), plus the element-owned `role` / `aria-*` on custom elements and the custom-element rule that removes only attributes the previous template rendered. Match keys (`id`, then `data-key`) work the same way as inside a mount.
 
 What `morph()` doesn't do: it isn't reactive (no signal subscription, no effect). It runs once per call. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you already own, `morph()` is the primitive — five lines of glue away from what would otherwise force you back to `mount()`'s wipe-and-rebuild semantics or to a third-party morph library.
 

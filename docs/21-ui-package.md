@@ -198,7 +198,11 @@ templates render the defaults Web Awesome reflects onto its hosts
 `size="m"`, `wa-divider` `orientation="horizontal"`): omitted, each re-render
 stripped them and forced a Lit update per host to restore them. The same spec
 asserts an unchanged re-render produces no attribute records and no Lit update
-on any Web Awesome host.
+on any Web Awesome host. Since KF-K8S4RX the core morph also leaves any
+attribute a custom element's template never rendered (after the element's first
+attribute sync), so an omitted default no longer churns; rendering the defaults
+explicitly still keeps the very first re-render quiet, and the same spec's
+raw-host test guards the core rule with templates that omit every default.
 
 ## 21.3 Initial component set
 

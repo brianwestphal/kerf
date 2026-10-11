@@ -38,3 +38,21 @@ export function isUserAgentOwnedAttr(
     name === 'open' && (tagNameUpper === 'DETAILS' || tagNameUpper === 'DIALOG')
   );
 }
+
+/**
+ * Expando on a custom element (any hyphenated tag): the attribute names the
+ * template rendered onto it the last time a reconciler synced its attributes.
+ * Custom elements reflect their own defaults onto the host (Web Awesome's
+ * `wa-button` sets `variant="neutral"`, `wa-tag` sets `size="m"`, …), so the
+ * reconcilers only REMOVE an attribute the template omits when the previous
+ * template rendered it. Removing a reflected default made the element put it
+ * straight back, so every unrelated re-render forced an update on every such
+ * host. With no record yet (the element's first sync), the ordinary rule
+ * applies. Stored on the element, so it lives exactly as long as the element.
+ */
+export const RENDERED_ATTRS: unique symbol = Symbol();
+
+/** A live element that may carry the {@link RENDERED_ATTRS} record. */
+export type RenderedAttrsHost = Element & {
+  [RENDERED_ATTRS]?: readonly string[];
+};

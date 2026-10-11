@@ -768,6 +768,8 @@ For `bindList` over an `arraySignal`, a row-render exception still propagates to
   - Yes → `data-morph-preserve` opts it out of the trailing-removal pass. Keyed-match moves and attribute morphs still apply if the JSX _does_ end up referencing it.
 - **Does a web component (Web Awesome, Shoelace, FAST, …) set its own `open`, `role`, or `aria-*` on its host?**
   - Already automatic — on any custom element (hyphenated tag) the morph never _removes_ `open`, `role`, or `aria-*` just because the template omits them (the same rule `<details>` / `<dialog>` get for `open`). The template can still set or change them. To remove one, render an explicit value (`aria-expanded="false"`), bind it to a signal and set the signal to `null` / `false`, or remove it imperatively — omitting it from a static template leaves the last value in place.
+- **Does a web component reflect default attributes onto its host (Web Awesome's `variant`, `size`, `appearance`, …)?**
+  - Already automatic — on a custom element the morph removes an attribute the template omits only when the previous template rendered it, so reflected defaults survive re-renders and you don't need to render every default. A template that stops rendering an attribute still removes it.
 - **Does a focused input or contenteditable need its caret / selection to survive a re-render?**
   - Already automatic — the morph's focus-preservation pass restores caret position and selection range. No opt-in needed. (Lists must still have per-row keys per Hard Rule 2; otherwise the focused element matches by position and the focus jumps to the wrong row.)
 

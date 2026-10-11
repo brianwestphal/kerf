@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- The morph no longer strips the defaults a custom element reflects onto its host. Web Awesome reflects `variant`, `appearance`, `size`, `attention`, and similar defaults onto `wa-button`, `wa-tag`, `wa-badge`, `wa-textarea`, and others; a template that omitted them lost them on every re-render that reached the element, and Lit put them straight back with a full update (one row selection on a 300-row page flipped 1,200 attributes). On custom elements the morph now removes an attribute the template omits only when the previous template rendered it; an element's first attribute sync still uses the ordinary rule, a template that stops rendering an attribute still removes it, and plain elements are unchanged. An attribute set imperatively on a custom element now survives re-renders after the first (`KF-K8S4RX`).
+
 - `mount()` no longer walks the whole live tree for `each()` list markers after a re-render that changed the page when the render has no `each()` lists and no list is bound. A large list-free page (one `mount()` with plain `.map()`) paid a full DOM traversal per render for markers kerf never emitted (`KF-VBQJAX`).
 
 - Faster JSX attribute serialization on large pages: the runtime remembers, per attribute name, that the name passed the `on*` / malformed-name check and whether it is URL-bearing, instead of re-running those regexes for every attribute of every render, and the URL screen returns early for values without a `:` (no scheme to screen). Rejected names still throw their exact message on every render, and every URL value is still screened. Building a 300-row, ~1.4 MB list-free page drops from about 13.7 ms to 10.8 ms of CPU (`KF-VBQJAX`).
