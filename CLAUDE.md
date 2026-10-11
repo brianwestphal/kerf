@@ -540,18 +540,18 @@ Fully documented in the **Testing** section above; in brief:
 <!-- hotsheet:end specifics=testing-philosophy -->
 <!-- hotsheet:end section=testing-philosophy -->
 
-<!-- hotsheet:begin section=requirements-documentation v=1 -->
+<!-- hotsheet:begin section=requirements-documentation v=3 -->
 
 ## Requirements Documentation
 
-Keep human-readable requirements documents as the source of truth for what the project does, and **keep them up to date in the same change as the code** (add/remove/modify a requirement → update its doc). Create new docs for major new functional areas. Cross-reference related docs with relative links.
+Keep human-readable requirements as the source of truth for product behavior. Update them in the same change that adds, removes, or changes behavior. Create and cross-link documents for major new functional areas.
 
-### AI Summaries
+Maintain two concise AI-readable synthesis documents at project-specific, repository-relative locations:
 
-Maintain two synthesis docs an AI assistant reads at the start of a fresh session — keep them in sync with reality (source doc/code wins on conflict), and prefer small targeted edits over rewrites:
+- A codebase map of directory structure, entry points, schema, settings, build and test paths, and where to find important behavior. Update it when structure or contracts change.
+- A requirements summary covering each requirements document and marking what is shipped, partial, design-only, or deferred. Update it when requirements or implementation status change.
 
-- A **codebase map** — directory tree, entry points, data schema, build, tests, settings, and a "where do I look for X" index. Update it in the same change when you add a file or directory, add a route/endpoint, change the schema, add a client module, or add a setting key.
-- A **requirements summary** — a synthesized view of every requirements doc with status markers (e.g. Shipped / Partial / Design only / Deferred). Update it in the same change when you add a requirements doc, ship a design-only feature, or defer/regress a shipped one.
+If either document is absent, create a minimal, truthful version in the same change that first needs it; link it from the project's documentation index and record its relative path in local `hotsheet:specifics` guidance. Setup and refresh install these instructions but do not invent a map or product status. Preserve any existing document locations and prefer targeted updates over rewrites. Source requirements documents and code win if a summary conflicts with them.
 
 <!-- hotsheet:begin specifics=requirements-documentation v=1 -->
 
@@ -566,6 +566,7 @@ Fully documented in the **Requirements Documentation** section above; in brief:
 
 Keep all three `docs/ai/` summaries in sync whenever source or design changes — see the surface checklist above.
 <!-- hotsheet:end specifics=requirements-documentation -->
+
 <!-- hotsheet:end section=requirements-documentation -->
 
 ## Visual UI validation
@@ -760,3 +761,13 @@ independent failure. This does not defer local gates, integration, or pushing.
 **Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
 already uses; this default guidance does not require or forbid pushing on its own.
 <!-- END hotsheet:claude -->
+
+<!-- hotsheet:begin section=visual-qa v=1 -->
+
+## Visual QA
+
+For any change that can affect a rendered interface, inspect the real result in a browser at representative wide and narrow sizes before completing the ticket. Exercise the affected states and transitions, then review readability, clipping and overflow, alignment, spacing, typography, contrast, icons, responsive behavior, and consistency with adjacent components. Fix defects, rerun affected behavioral checks, and inspect the corrected result. DOM, accessibility, style, and geometry assertions support this review but do not replace looking at the rendered page.
+
+If the ticket has a problem or design image, capture the corresponding after state at the same component and viewport as closely as practical. Attach the image to the ticket and name it in the completion note. Screenshots supplement behavioral tests. If browser capture or attachment is unavailable after practical attempts, describe the exact blocker and leave the visual ticket open for review rather than claiming visual validation.
+
+<!-- hotsheet:end section=visual-qa -->
