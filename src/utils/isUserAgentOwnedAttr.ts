@@ -47,8 +47,11 @@ export function isUserAgentOwnedAttr(
  * reconcilers only REMOVE an attribute the template omits when the previous
  * template rendered it. Removing a reflected default made the element put it
  * straight back, so every unrelated re-render forced an update on every such
- * host. With no record yet (the element's first sync), the ordinary rule
- * applies. Stored on the element, so it lives exactly as long as the element.
+ * host. Elements the reconcilers create are seeded with their template's
+ * names before they connect (`seedRenderedAttrs`); an element with no record
+ * (one kerf did not create, or one the keyed-list fast path last wrote) gets
+ * the ordinary rule on its next sync. Stored on the element, so it lives
+ * exactly as long as the element.
  */
 export const RENDERED_ATTRS: unique symbol = Symbol();
 
@@ -56,3 +59,38 @@ export const RENDERED_ATTRS: unique symbol = Symbol();
 export type RenderedAttrsHost = Element & {
   [RENDERED_ATTRS]?: readonly string[];
 };
+
+/** Markup that opens a custom element (a hyphenated tag name). */
+const CUSTOM_TAG = /<[a-z][^\s/>-]*-/i;
+
+/** Whether `html` may contain a custom element worth seeding. */
+export function hasCustomTag(html: string): boolean {
+  return CUSTOM_TAG.test(html);
+}
+
+/**
+ * Seed the {@link RENDERED_ATTRS} record on every custom element under
+ * `from` — and on `from` itself when it is an element — so a freshly created
+ * element's first sync already knows what its template rendered and leaves
+ * reflected defaults alone. Must run before the nodes connect (and so before
+ * the element can reflect anything): the names come from the template.
+ * `to` is the live copy when the reconciler inserts a clone of `from`; the
+ * two subtrees are walked in parallel and an element whose tag does not line
+ * up is left unseeded (the ordinary rule then applies once).
+ */
+export function seedRenderedAttrs(
+  from: Element | DocumentFragment,
+  to: Element | DocumentFragment = from,
+): void {
+  if (from.nodeType === 1) seedOne(from as Element, to as Element);
+  const a = from.querySelectorAll('*');
+  const b = to.querySelectorAll('*');
+  for (let i = 0; i < a.length; i++) seedOne(a[i], b[i]);
+}
+
+function seedOne(from: Element, to: Element | undefined): void {
+  const tag = from.localName;
+  if (tag.includes('-') && to?.localName === tag) {
+    (to as RenderedAttrsHost)[RENDERED_ATTRS] = from.getAttributeNames();
+  }
+}

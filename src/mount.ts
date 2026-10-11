@@ -60,6 +60,10 @@ import {
   morphStaticChange,
   type StaticScanCache,
 } from './static-subtree-morph.js';
+import {
+  hasCustomTag,
+  seedRenderedAttrs,
+} from './utils/isUserAgentOwnedAttr.js';
 import { isOverlayHost } from './utils/overlay-host.js';
 
 /** What `mount()`'s render function may return; non-SafeHtml values coerce (nullish/boolean → render nothing). */
@@ -458,7 +462,20 @@ function runFirstRender(
   segment: Segment,
   bindings: Map<string, ListBinding>,
 ): void {
-  rootEl.innerHTML = flatten(segment, true);
+  const html = flatten(segment, true);
+  if (hasCustomTag(html)) {
+    // Parse detached, seed each custom element's record from its template,
+    // then insert: seeding after a connected parse would record whatever the
+    // element reflected in `connectedCallback` as template-rendered.
+    const tpl = rootEl.cloneNode(false) as HTMLElement;
+    tpl.innerHTML = html;
+    const content = document.createDocumentFragment();
+    while (tpl.firstChild !== null) content.appendChild(tpl.firstChild);
+    seedRenderedAttrs(content);
+    rootEl.replaceChildren(content);
+  } else {
+    rootEl.innerHTML = html;
+  }
   bindListsFromMarkers(rootEl, segment, bindings, true);
 }
 
@@ -479,8 +496,8 @@ function runFirstRender(
  *   `el.setAttribute(...)`) survives across no-op re-renders because the
  *   diff doesn't run to wipe it. When the surrounds DO change, the diff
  *   runs and `morphAttributes` removes anything the JSX didn't authorise
- *   (on a custom element, once its attributes have synced, only what the
- *   previous template rendered — see `RENDERED_ATTRS`).
+ *   (on a custom element, only what the previous template rendered — see
+ *   `RENDERED_ATTRS`).
  *   This matches the framework's "smallest cut" model: don't touch what
  *   JSX didn't change.
  *

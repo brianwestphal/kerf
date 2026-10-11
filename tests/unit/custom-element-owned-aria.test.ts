@@ -115,7 +115,9 @@ describe('morph(): custom-element-owned role / aria-*', () => {
     expect(option.getAttribute('aria-selected')).toBe('true');
     expect(divider.getAttribute('role')).toBe('separator');
     expect(divider.getAttribute('aria-orientation')).toBe('horizontal');
-    expect(option.hasAttribute('data-state')).toBe(false);
+    // Any other attribute the template never rendered survives too: kerf
+    // seeded the option's record from its template when it created it.
+    expect(option.hasAttribute('data-state')).toBe(true);
   });
 });
 

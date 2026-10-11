@@ -127,18 +127,18 @@ describe('morph(): a custom element keeps attributes the template never rendered
     expect(mutations).toEqual(['reflect-tag@data-x']);
   });
 
-  it('starts a fresh record for a replacement element after a tag change', () => {
+  it('seeds a replacement element after a tag change from its template', () => {
     root.innerHTML = '<my-a></my-a>';
     morph(root, '<my-a disabled=""></my-a>');
     morph(root, '<my-b disabled=""></my-b>');
     const b = root.firstElementChild!;
     expect(b.tagName).toBe('MY-B');
-    expect((b as RenderedAttrsHost)[RENDERED_ATTRS]).toBeUndefined();
+    expect((b as RenderedAttrsHost)[RENDERED_ATTRS]).toEqual(['disabled']);
     b.setAttribute('data-own', '1');
-    // First sync of the new element: the ordinary rule.
+    // Its first sync already knows what the template rendered.
     morph(root, '<my-b></my-b>');
     expect(b.hasAttribute('disabled')).toBe(false);
-    expect(b.hasAttribute('data-own')).toBe(false);
+    expect(b.getAttribute('data-own')).toBe('1');
   });
 
   it('leaves plain elements on the ordinary rule', () => {
@@ -153,7 +153,7 @@ describe('morph(): a custom element keeps attributes the template never rendered
 });
 
 describe('mount(): list-free re-renders stop flipping reflected defaults', () => {
-  it('a selection change mutates only the selected rows once their hosts have synced', () => {
+  it('a selection change mutates only the selected rows, from the first re-render', () => {
     const selected = signal(0);
     const ids = [0, 1, 2, 3, 4];
     mount(root, () =>
@@ -166,10 +166,7 @@ describe('mount(): list-free re-renders stop flipping reflected defaults', () =>
         ),
       }),
     );
-    // Warm-up: a host's first sync records it, and a list-free re-render
-    // syncs only the rows whose markup changed, so touch rows 0–2 once.
-    selected.value = 1;
-    selected.value = 2;
+    // No warm-up: the first render seeds every host's record.
     const mutations = attrMutations(() => {
       selected.value = 1;
     });
@@ -219,5 +216,93 @@ describe('keyed list: the attribute fast path and the morph agree', () => {
     expect(mutations).toEqual(['span@data-t']);
     expect(tag.getAttribute('variant')).toBe('neutral');
     expect(tag.getAttribute('size')).toBe('m');
+  });
+});
+
+describe('elements kerf creates are seeded before they connect', () => {
+  it('first render: a host that reflects in connectedCallback keeps its defaults', () => {
+    const label = signal('a');
+    mount(root, () =>
+      jsx('div', { children: jsx('reflect-tag', { label: label.value }) }),
+    );
+    const tag = root.querySelector('reflect-tag')! as RenderedAttrsHost;
+    expect(tag[RENDERED_ATTRS]).toEqual(['label']);
+    expect(tag.getAttribute('variant')).toBe('neutral');
+    const mutations = attrMutations(() => {
+      label.value = 'b';
+    });
+    expect(mutations).toEqual(['reflect-tag@label']);
+  });
+
+  it('first render without custom elements keeps the plain innerHTML path', () => {
+    const n = signal(0);
+    mount(root, () => jsx('p', { 'data-n': String(n.value) }));
+    const p = root.querySelector('p')! as RenderedAttrsHost;
+    expect(p[RENDERED_ATTRS]).toBeUndefined();
+    n.value = 1;
+    expect(p.getAttribute('data-n')).toBe('1');
+  });
+
+  it('morph: an inserted custom element (and one nested in a plain element) is seeded', () => {
+    root.innerHTML = '<div></div>';
+    morph(
+      root,
+      '<div></div><reflect-tag label="a"></reflect-tag><p><reflect-tag label="x"></reflect-tag></p>',
+    );
+    const [top, nested] = root.querySelectorAll('reflect-tag');
+    expect((top as RenderedAttrsHost)[RENDERED_ATTRS]).toEqual(['label']);
+    expect((nested as RenderedAttrsHost)[RENDERED_ATTRS]).toEqual(['label']);
+    const mutations = attrMutations(() =>
+      morph(
+        root,
+        '<div></div><reflect-tag label="b"></reflect-tag><p><reflect-tag label="y"></reflect-tag></p>',
+      ),
+    );
+    expect(mutations.sort()).toEqual([
+      'reflect-tag@label',
+      'reflect-tag@label',
+    ]);
+  });
+
+  it('each(): fresh rows are seeded, so their first in-place update keeps defaults', () => {
+    const rows = arraySignal([{ id: 1, t: 'a' }]);
+    mount(root, () =>
+      jsx('div', {
+        children: each(rows, (row) =>
+          jsx('reflect-tag', {
+            'data-key': String(row.id),
+            children: jsx('span', { 'data-t': row.t }),
+          }),
+        ),
+      }),
+    );
+    // Insert a row through the granular reconciler's parse.
+    rows.push({ id: 2, t: 'b' });
+    const fresh = root.querySelectorAll('reflect-tag')[1] as RenderedAttrsHost;
+    expect(fresh[RENDERED_ATTRS]).toEqual(['data-key']);
+    // A child attribute change defeats both fast paths → in-place morph.
+    const mutations = attrMutations(() =>
+      rows.update(1, (row) => ({ ...row, t: 'c' })),
+    );
+    expect(root.querySelectorAll('reflect-tag')[1]).toBe(fresh);
+    expect(mutations).toEqual(['span@data-t']);
+    expect(fresh.getAttribute('variant')).toBe('neutral');
+  });
+
+  it('each(): rows parsed inside foreign content are seeded too', () => {
+    const rows = signal([{ t: 'a' }]);
+    mount(root, () =>
+      jsx('svg', {
+        children: each(rows.value, (row) =>
+          jsx('my-glyph', { 'data-key': row.t }),
+        ),
+      }),
+    );
+    rows.value = [...rows.value, { t: 'b' }];
+    const glyphs = root.querySelectorAll('my-glyph');
+    expect(glyphs).toHaveLength(2);
+    expect((glyphs[1] as RenderedAttrsHost)[RENDERED_ATTRS]).toEqual([
+      'data-key',
+    ]);
   });
 });

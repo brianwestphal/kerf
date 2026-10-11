@@ -410,11 +410,11 @@ So on **custom elements** (any hyphenated tag), the morph records which attribut
 
 - A template that **stops** rendering an attribute still removes it (`disabled={busy}` flipping false removes `disabled`).
 - An attribute the template **never** rendered — a reflected default, or one the component or app set itself — is left alone.
-- On an element's **first** attribute sync there is no record yet, so the ordinary remove-what-is-absent rule applies once; every later re-render honors the record. (A byte-identical element is skipped before its attributes sync, so the record starts at the first render that actually differs.)
+- An element **kerf creates** — on a mount's first render, a morph insertion or tag-change replacement, or a new `each()` row — starts with the record of its own template, taken before the element connects (so before it can reflect anything). Its very first re-render therefore already leaves reflected defaults alone. An element kerf did not create (markup set some other way and then morphed) has no record until its first attribute sync, which uses the ordinary remove-what-is-absent rule once.
 - The keyed-list attribute fast path diffs the old row template against the new one, so it already removes only what the template rendered; it drops the morph's record when it rewrites a row's attributes, so a later morph falls back to the ordinary rule rather than trusting a stale record.
 - **Plain elements are unchanged.** The record lives in a symbol-keyed property on the element, so it lives exactly as long as the element.
 
-Trade-off: an attribute an app sets imperatively on a custom element (and never renders) now survives re-renders after the first. To have kerf own it, render it.
+Trade-off: an attribute an app sets imperatively on a custom element (and never renders) survives re-renders. To have kerf own it, render it.
 
 The `open` / `role` / `aria-*` rule above still applies on top of this.
 
@@ -450,7 +450,7 @@ div.setAttribute("data-instrumented", "true");
 label.value = "second"; // surrounds changed → diff runs → attribute wiped.
 ```
 
-Custom elements are the exception once their attributes have synced: there the morph removes only attributes its previous template rendered (see the custom-element section above), so an imperative attribute on a `wa-*` host survives.
+Custom elements are the exception: there the morph removes only attributes its previous template rendered (see the custom-element section above), so an imperative attribute on a `wa-*` host survives.
 
 **Change-scoped diff on list-free renders.** When the render has no `each()` list and no fine-grained bindings, kerf compares the previous and next surrounds strings, finds the innermost element around the change whose markup parses on its own, and parses and diffs only that element's changed children. A one-row selection on a large `.map()`-rendered page touches two rows instead of re-parsing the whole page. Whenever kerf cannot prove the scoped result identical to a full diff, it runs the full diff. The rule above then narrows from "the surrounds changed" to "**that element's markup changed**": in the example, the `label` change still removes `data-instrumented` because the `div` holds the change, but an imperative attribute on an unchanged sibling, or on an ancestor of the change, survives, just as it does on a no-op render.
 

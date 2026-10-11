@@ -60,6 +60,7 @@ import {
   isUserAgentOwnedAttr,
   RENDERED_ATTRS,
   type RenderedAttrsHost,
+  seedRenderedAttrs,
 } from './utils/isUserAgentOwnedAttr.js';
 import { moveNode } from './utils/moveNode.js';
 import { syncFormProp } from './utils/syncFormProp.js';
@@ -486,6 +487,9 @@ function morphChildren(
       //    fine — `insertBefore(node, ownedItem)` slots the new sibling
       //    in immediately before the list region).
       const cloned = toChild.cloneNode(true);
+      if (toChild.nodeType === ELEMENT_NODE) {
+        seedRenderedAttrs(toChild as Element, cloned as Element);
+      }
       fromParent.insertBefore(cloned, fromChild);
     }
 
@@ -535,7 +539,8 @@ function morphElement(
   ownedItems: ReadonlySet<Element>,
 ): void {
   if (fromEl.tagName !== toEl.tagName) {
-    const replacement = toEl.cloneNode(true);
+    const replacement = toEl.cloneNode(true) as Element;
+    seedRenderedAttrs(toEl, replacement);
     fromEl.parentNode?.replaceChild(replacement, fromEl);
     return;
   }
@@ -597,8 +602,9 @@ function morphElement(
 function morphAttributes(fromEl: Element, toEl: Element): void {
   const fromTag = fromEl.tagName;
   // A custom element removes only what the previous template rendered — see
-  // `RENDERED_ATTRS`. `rendered` is undefined on its first sync (and always
-  // for plain elements), which keeps the ordinary remove-what-is-absent rule.
+  // `RENDERED_ATTRS`. `rendered` is undefined on the first sync of an element
+  // kerf did not create (and always for plain elements), which keeps the
+  // ordinary remove-what-is-absent rule.
   const host = fromEl as RenderedAttrsHost;
   const rendered = host[RENDERED_ATTRS];
   // Set/update every attribute on toEl.

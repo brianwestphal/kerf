@@ -9,6 +9,8 @@
  * KF-115).
  */
 
+import { hasCustomTag, seedRenderedAttrs } from './isUserAgentOwnedAttr.js';
+
 /**
  * Truncation limit applied to row HTML when including it in a contract-
  * violation error message. Keeps the error readable when a row produced
@@ -98,6 +100,7 @@ export function parseRowTemplate(
   const wrapper = foreignWrapper(parent);
   if (wrapper === null) {
     tpl.innerHTML = html;
+    if (hasCustomTag(html)) seedRenderedAttrs(tpl.content);
     return { content: tpl.content, count: tpl.content.children.length };
   }
   // Re-enter foreign content the same way the first render does: wrap in an
@@ -108,6 +111,7 @@ export function parseRowTemplate(
   const host = tpl.content.firstElementChild as Element;
   const content = document.createDocumentFragment();
   while (host.firstChild !== null) content.appendChild(host.firstChild);
+  if (hasCustomTag(html)) seedRenderedAttrs(content);
   return { content, count: content.children.length };
 }
 

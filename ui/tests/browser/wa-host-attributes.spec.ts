@@ -236,10 +236,9 @@ test('re-renders leave reflected defaults on raw Web Awesome hosts alone', async
     );
     await settle();
   };
-  // A host's first sync records what its template owns. A list-free
-  // re-render syncs only the rows whose markup changed, so warm up every row
-  // the measured selections touch.
-  for (const id of [1, 2, 3]) await select(id);
+  // No warm-up: kerf seeds each host's record of what its template rendered
+  // when it creates the host, so the very first re-render already leaves the
+  // reflected defaults alone.
   await page.evaluate(() => {
     const log: string[] = [];
     new MutationObserver((records) => {
