@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Faster JSX attribute serialization on large pages: the runtime remembers, per attribute name, that the name passed the `on*` / malformed-name check and whether it is URL-bearing, instead of re-running those regexes for every attribute of every render, and the URL screen returns early for values without a `:` (no scheme to screen). Rejected names still throw their exact message on every render, and every URL value is still screened. Building a 300-row, ~1.4 MB list-free page drops from about 13.7 ms to 10.8 ms of CPU (`KF-VBQJAX`).
+
 - Faster attribute serialization for large static values: `LucideIcon` caches each icon node's rendered child markup by node identity, and the JSX runtime's HTML/attribute escaping skips its replace passes when a value has nothing to escape. A 138-icon render pass drops from about 0.80 ms to 0.45 ms (`KF-JPP0Z5`). `jsx()` also iterates props without the rest-spread and `Object.entries` allocations, and the URL screen checks lowercase attribute names without allocating a lowercased copy, about 25% faster for an attribute-heavy list row (`KF-YHNV84`).
 
 - `wireTokenSearchFields` collapses an empty field blurred by a pointer press in the click's own task, after the click reaches the window, instead of a separate task, so the click's render and the collapse share one style recalculation; a click that stops propagating still falls back to the next task (`KF-AS24QP`).

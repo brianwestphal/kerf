@@ -35,7 +35,11 @@ import {
 } from './segment.js';
 import { escapeAttr, escapeHtml } from './utils/escapeHtml.js';
 import { ATTR_ALIASES } from './utils/jsx-attr-aliases.js';
-import { isDangerousUrlValue, reportDangerousUrl } from './utils/url-screen.js';
+import {
+  isDangerousUrl,
+  isUrlAttrName,
+  reportDangerousUrl,
+} from './utils/url-screen.js';
 
 // Cross-realm/cross-bundle brand. Using `Symbol.for` (the global registry)
 // means two `SafeHtml` classes from different module copies still recognize
@@ -321,6 +325,32 @@ function assertEmittableAttrName(
   }
 }
 
+/**
+ * KF-VBQJAX: per-name memo of the two checks that depend ONLY on the emitted
+ * attribute name — `assertEmittableAttrName` passing, and whether the name is
+ * URL-bearing (`isUrlAttrName`). A large page re-renders the same few dozen
+ * names hundreds of thousands of times, and both checks are regex work.
+ *
+ * Only names that PASSED validation are stored (value: is-URL-attribute), so a
+ * rejected name throws on every attempt with its exact message, as before; the
+ * `isFn` message variant only matters for rejected names. Bounded so spreading
+ * untrusted keys into JSX can't grow it without limit: once full, unseen names
+ * are validated uncached.
+ */
+const VALIDATED_ATTR_NAMES = new Map<string, boolean>();
+const VALIDATED_ATTR_NAMES_MAX = 1024;
+
+/** Validate `name` (throws like `assertEmittableAttrName`); true if URL-bearing. */
+function checkAttrName(key: string, name: string, isFn: boolean): boolean {
+  const cached = VALIDATED_ATTR_NAMES.get(name);
+  if (cached !== undefined) return cached;
+  assertEmittableAttrName(key, name, isFn);
+  const isUrl = isUrlAttrName(name);
+  if (VALIDATED_ATTR_NAMES.size < VALIDATED_ATTR_NAMES_MAX)
+    VALIDATED_ATTR_NAMES.set(name, isUrl);
+  return isUrl;
+}
+
 function renderAttr(key: string, value: unknown): string {
   return renderAttrNamed(key, ATTR_ALIASES[key] ?? key, value);
 }
@@ -332,7 +362,7 @@ function renderAttr(key: string, value: unknown): string {
  */
 function renderAttrNamed(key: string, name: string, value: unknown): string {
   if (value == null || value === false) return '';
-  assertEmittableAttrName(key, name, typeof value === 'function');
+  const isUrlAttr = checkAttrName(key, name, typeof value === 'function');
   if (value === true) return ` ${name}`;
   let strValue: string;
   if (isSafeHtml(value)) {
@@ -343,7 +373,7 @@ function renderAttrNamed(key: string, name: string, value: unknown): string {
     // URL-screening shared with the fine-grained binding writer (KF-297).
     // `SafeHtml` values (raw()) skip this — they hit the branch above.
     // KF-340: throw in dev (fail loudly), warn+drop in prod.
-    if (isDangerousUrlValue(name, value)) {
+    if (isUrlAttr && isDangerousUrl(value)) {
       reportDangerousUrl('JSX', name, value);
       return '';
     }
@@ -386,7 +416,7 @@ export function jsx(
       // otherwise install a live inline handler via setAttribute, bypassing the
       // static renderAttr guard entirely. `isFn` is false: a signal is not a
       // function value, so this routes to the XSS-aware message.
-      assertEmittableAttrName(k, name, false);
+      checkAttrName(k, name, false);
       const id = bindAttr(name, v);
       if (id !== null) {
         (bindIds ??= []).push(id);

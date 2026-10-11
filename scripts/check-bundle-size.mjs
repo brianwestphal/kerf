@@ -168,7 +168,9 @@ const BUDGETS = [
     // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
     // delegate registry + resolve-all-before-any-handler), so a synchronous
     // re-render cannot redirect a later delegate onto a recycled target.
-    budgetKb: 18.6,
+    // KF-VBQJAX (~+0.05 KB): the JSX runtime's per-name attribute-check memo
+    // in the shared core.
+    budgetKb: 18.7,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -216,8 +218,9 @@ const BUDGETS = [
     // virtualization dimension checks, KF-MKGFHK branded-source check, KF-KBWEBA
     // row disposal when the initial render throws); +0.1 for KF-KGFJP6 mount()
     // first-render rollback in the shared core; +0.1 for KF-FBHQEP's
-    // overlay-host nested-mount boundary in the shared core.
-    budgetKb: 13.3,
+    // overlay-host nested-mount boundary in the shared core; +0.1 for
+    // KF-VBQJAX's per-name attribute-check memo in the shared core.
+    budgetKb: 13.4,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `

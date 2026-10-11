@@ -654,3 +654,115 @@ describe('jsx() attribute iteration', () => {
     expect(String(jsx('p', props))).toBe('<p id="a" data-x="1">text</p>');
   });
 });
+
+// KF-VBQJAX: `renderAttr` memoizes, per emitted attribute name, that the name
+// passed `assertEmittableAttrName` and whether it is URL-bearing. The memo must
+// be invisible: rejected names keep throwing their exact message every time, a
+// warmed URL attribute keeps screening every value, and the bound (signal) path
+// shares the same checks. These run in the default development shape.
+describe('jsx — attribute-name memo (KF-VBQJAX)', () => {
+  const messageOf = (fn: () => unknown): string => {
+    try {
+      fn();
+    } catch (err) {
+      return (err as Error).message;
+    }
+    throw new Error('expected a throw');
+  };
+
+  it('renders identical markup cold and warm', () => {
+    const render = (): string =>
+      jsx('a', {
+        href: '/x/1',
+        className: 'lnk',
+        'data-id': 7,
+        'aria-hidden': true,
+        title: 'a "q" & b',
+        children: 'go',
+      }).toString();
+    const cold = render();
+    expect(render()).toBe(cold);
+    expect(cold).toBe(
+      '<a href="/x/1" class="lnk" data-id="7" aria-hidden title="a &quot;q&quot; &amp; b">go</a>',
+    );
+  });
+
+  it('a rejected on* name throws its exact message on every render, per value kind', () => {
+    const fnMsg = messageOf(() => jsx('div', { onClick: () => {} }));
+    const strMsg = messageOf(() => jsx('div', { onclick: 'alert(1)' }));
+    expect(fnMsg).toMatch(/inline event handlers like onClick=\{fn\}/);
+    expect(strMsg).toMatch(/event-handler attribute "onclick" is not allowed/);
+    // Repeated, and with the value kinds swapped, the messages are unchanged:
+    // a failure is never memoized as a pass, and the isFn variant still applies.
+    for (let i = 0; i < 3; i++) {
+      expect(messageOf(() => jsx('div', { onClick: () => {} }))).toBe(fnMsg);
+      expect(messageOf(() => jsx('div', { onclick: 'alert(1)' }))).toBe(strMsg);
+    }
+    expect(messageOf(() => jsx('div', { onclick: signal('alert(1)') }))).toBe(
+      strMsg,
+    );
+  });
+
+  it('a malformed name throws on every render', () => {
+    const bag = { 'x onmouseover': 'alert(1)' } as Record<string, unknown>;
+    const first = messageOf(() => jsx('div', bag));
+    expect(first).toMatch(/invalid attribute name/);
+    expect(messageOf(() => jsx('div', bag))).toBe(first);
+  });
+
+  it('null / false values still skip validation entirely', () => {
+    const bag = { 'bad name': null, onclick: false } as Record<string, unknown>;
+    expect(jsx('div', bag).toString()).toBe('<div></div>');
+    expect(jsx('div', bag).toString()).toBe('<div></div>');
+  });
+
+  it('a non-string value on a warmed name still throws the value error', () => {
+    expect(jsx('div', { title: 'ok' }).toString()).toBe(
+      '<div title="ok"></div>',
+    );
+    expect(() => jsx('div', { title: {} as unknown as string })).toThrow(
+      /unsupported value for attribute "title"/,
+    );
+  });
+
+  it('a warmed URL attribute still screens every later value (dev throws)', () => {
+    for (const name of ['href', 'HREF', 'src']) {
+      expect(jsx('a', { [name]: '/safe' }).toString()).toBe(
+        `<a ${name}="/safe"></a>`,
+      );
+      expect(() => jsx('a', { [name]: 'javascript:alert(1)' })).toThrow(
+        /dropped dangerous URL value/,
+      );
+    }
+  });
+
+  it('a warmed non-URL attribute never screens', () => {
+    jsx('div', { 'data-go': '/x' });
+    expect(jsx('div', { 'data-go': 'javascript:alert(1)' }).toString()).toBe(
+      '<div data-go="javascript:alert(1)"></div>',
+    );
+  });
+
+  it('keeps validating and screening past the memo bound', () => {
+    // More distinct names than the memo holds — the overflow names are simply
+    // validated uncached.
+    for (let i = 0; i < 1500; i++) {
+      expect(jsx('i', { [`data-n${i}`]: i }).toString()).toBe(
+        `<i data-n${i}="${i}"></i>`,
+      );
+    }
+    expect(jsx('i', { 'data-n1499': 'x' }).toString()).toBe(
+      '<i data-n1499="x"></i>',
+    );
+    expect(() => jsx('i', { onfresh: 'x' })).toThrow(/event-handler attribute/);
+    expect(() =>
+      jsx('i', { 'fresh bad': 'x' } as Record<string, unknown>),
+    ).toThrow(/invalid attribute name/);
+    expect(() => jsx('a', { Action: 'javascript:alert(1)' })).toThrow(
+      /dropped dangerous URL value/,
+    );
+    expect(jsx('a', { Action: 'https://ok.example' }).toString()).toBe(
+      '<a Action="https://ok.example"></a>',
+    );
+  });
+});

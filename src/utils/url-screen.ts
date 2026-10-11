@@ -137,15 +137,35 @@ function isDangerousDataUrl(normalized: string): boolean {
   return true; // text/html, application/xhtml+xml, *xml, unknown → block
 }
 
-/** True if `value` is a dangerous URL for the URL-bearing attribute `name`. */
-export function isDangerousUrlValue(name: string, value: string): boolean {
+/**
+ * True if `name` is one of the URL-bearing attributes the screen inspects.
+ * A pure function of the name, so callers that see the same attribute name
+ * over and over (the JSX serializer) may cache its answer per name.
+ */
+export function isUrlAttrName(name: string): boolean {
   // HTML attribute names are ASCII-case-insensitive, and JSX can reach this
   // helper with the author-written casing on both static and bound paths.
   // Normalize before the allowlist check so `HREF` / `Src` / `XLINK:HREF`
   // cannot bypass the same browser sink written in lowercase.
   // Lowercase names (nearly all of them) are checked without allocating.
-  if (!URL_ATTRS.has(/[A-Z]/.test(name) ? name.toLowerCase() : name))
-    return false;
+  return URL_ATTRS.has(/[A-Z]/.test(name) ? name.toLowerCase() : name);
+}
+
+/** True if `value` is a dangerous URL for the URL-bearing attribute `name`. */
+export function isDangerousUrlValue(name: string, value: string): boolean {
+  return isUrlAttrName(name) && isDangerousUrl(value);
+}
+
+/**
+ * True if `value`, written into a URL-bearing attribute (see `isUrlAttrName`),
+ * would resolve to a script-executing URL.
+ */
+export function isDangerousUrl(value: string): boolean {
+  // No `:` → no scheme, so nothing to screen: a relative URL (`/a/b`, `#x`,
+  // `?q`, `logo.png`) is the common case in a large page. Exact: normalization
+  // only ever REMOVES characters, so it can never introduce the `:` that
+  // `schemeOf` needs.
+  if (!value.includes(':')) return false;
   // Normalized once here — every helper below reasons about the same string the
   // browser's scheme resolution would see.
   const normalized = normalizeUrl(value);
