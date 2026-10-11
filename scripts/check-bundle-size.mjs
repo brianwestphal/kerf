@@ -72,7 +72,10 @@ const BUDGETS = [
     // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
     // delegate registry + resolve-all-before-any-handler), so a synchronous
     // re-render cannot redirect a later delegate onto a recycled target.
-    budgetKb: 12.7,
+    // KF-K8S4RX (+0.02 KB): the morph records which attributes it rendered on
+    // a custom element, so reflected defaults (Web Awesome's variant/size/…)
+    // stop flipping on every re-render.
+    budgetKb: 12.8,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -261,7 +264,8 @@ const BUDGETS = [
     // render core; marginal cost for an app already using kerf is ~1 KB.
     name: 'remount',
     // +0.1 for KF-FBHQEP's overlay-host nested-mount boundary in the shared core.
-    budgetKb: 10.6,
+    // +0.1 for KF-K8S4RX's custom-element rendered-attribute record (see main).
+    budgetKb: 10.7,
     description:
       'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `
@@ -288,8 +292,8 @@ const BUDGETS = [
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.
     name: 'main-no-dev-code',
-    // Same figure as `main` (see its KF-HK7WE8 dispatch-snapshot note).
-    budgetKb: 12.7,
+    // Same figure as `main` (see its KF-HK7WE8 and KF-K8S4RX notes).
+    budgetKb: 12.8,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [
