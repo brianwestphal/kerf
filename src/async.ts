@@ -192,7 +192,7 @@ export function resource<T, I = void>(
         ? key !== undefined
           ? cache.get(key)
           : undefined
-        : state.value.data;
+        : state.peek().data;
 
     const gen = ++generation;
     state.value = {
@@ -206,7 +206,7 @@ export function resource<T, I = void>(
 
     const report = (completed: number, total: number): void => {
       if (gen === generation) {
-        state.value = { ...state.value, progress: { completed, total } };
+        state.value = { ...state.peek(), progress: { completed, total } };
       }
     };
 
@@ -214,7 +214,7 @@ export function resource<T, I = void>(
       if (gen === generation) {
         // Keep `data` (and thus `revision`) on failure — stale-while-error.
         state.value = {
-          ...state.value,
+          ...state.peek(),
           status: 'failed',
           error,
           progress: undefined,

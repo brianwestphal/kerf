@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { resource } from '../../src/async.js';
-import { effect } from '../../src/reactive.js';
+import { effect, signal } from '../../src/reactive.js';
 
 function deferred<T>() {
   let resolve!: (v: T) => void;
@@ -171,6 +171,72 @@ describe('resource()', () => {
     expect(seen).toContain('running');
     expect(seen[seen.length - 1]).toBe('completed');
     stop();
+  });
+
+  // run() reads its own state untracked, so an effect that re-runs a resource
+  // from an input signal depends on that signal alone instead of throwing
+  // "Cycle detected" on the run's own state write.
+  describe('run() inside an effect()', () => {
+    it('re-runs on input changes only, and the latest run lands', async () => {
+      const query = signal('a');
+      const r = resource<string>();
+      const pending = new Map<string, ReturnType<typeof deferred<string>>>();
+      let runs = 0;
+      const stop = effect(() => {
+        const q = query.value;
+        runs++;
+        void r.run(() => {
+          const d = deferred<string>();
+          pending.set(q, d);
+          return d.promise;
+        });
+      });
+      expect(runs).toBe(1);
+      expect(r.value.status).toBe('running');
+      pending.get('a')!.resolve('A');
+      await pending.get('a')!.promise;
+      await Promise.resolve();
+      expect(r.value).toMatchObject({ status: 'completed', data: 'A' });
+      expect(runs).toBe(1);
+
+      // The re-run keeps the previous data while running (single-slot SWR).
+      query.value = 'b';
+      expect(runs).toBe(2);
+      expect(r.value).toMatchObject({ status: 'running', data: 'A' });
+      query.value = 'c';
+      pending.get('b')!.resolve('B');
+      pending.get('c')!.resolve('C');
+      await pending.get('c')!.promise;
+      await Promise.resolve();
+      expect(r.value).toMatchObject({ status: 'completed', data: 'C' });
+      expect(runs).toBe(3);
+      stop();
+    });
+
+    it('a synchronous progress report and a synchronous throw do not cycle', () => {
+      const tick = signal(0);
+      const progress = resource<number>();
+      const failing = resource<number, number>();
+      let runs = 0;
+      const stop = effect(() => {
+        const n = tick.value;
+        runs++;
+        void progress.run((report) => {
+          report(n, 10);
+          return new Promise<number>(() => {});
+        });
+        void failing.run(n, () => {
+          throw new Error(`boom ${String(n)}`);
+        });
+      });
+      expect(progress.value.progress).toEqual({ completed: 0, total: 10 });
+      expect(failing.value).toMatchObject({ status: 'failed', input: 0 });
+      tick.value = 1;
+      expect(runs).toBe(2);
+      expect(progress.value.progress).toEqual({ completed: 1, total: 10 });
+      expect(failing.value).toMatchObject({ status: 'failed', input: 1 });
+      stop();
+    });
   });
 
   describe('run(input, fetcher): input threading', () => {

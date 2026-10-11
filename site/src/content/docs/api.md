@@ -810,7 +810,7 @@ await users.run(() => fetch(apiUrl).then((r) => r.json() as Promise<User[]>));
 users.value.status; // 'idle' | 'running' | 'completed' | 'failed'
 ```
 
-Returns a [`Resource<T, I>`](#resource-types). `resource.value` is a **tracking read** of `ResourceState<T, I>` (`{ status, data, error, progress, input, revision }`) — drive UI off `value.status`, exactly like reading a signal inside `mount()`/`computed()`/`effect()`. Methods:
+Returns a [`Resource<T, I>`](#resource-types). `resource.value` is a **tracking read** of `ResourceState<T, I>` (`{ status, data, error, progress, input, revision }`) — drive UI off `value.status`, exactly like reading a signal inside `mount()`/`computed()`/`effect()`. `run()` itself reads the resource's state untracked, so an `effect()` that reads an input signal and calls `run()` re-runs on each input change and does not subscribe to the state the run writes. Methods:
 
 - **`run(fetcher): Promise<T | undefined>`** — sets `running`, then `completed` (with `data`) or `failed` (with `error`), guarding against stale responses: **only the latest `run` may resolve the state**, so a slow response can't clobber a newer one. It **never rejects**, whether the fetcher throws synchronously or its promise rejects — a failure lands in `value.error`; the returned promise resolves the data (or `undefined` on failure) for callers who want to await. Previous `data` is preserved across a re-run and on failure (stale-while-revalidate).
 - **`run(input, fetcher): Promise<T | undefined>`** — same as above, plus records `input` as `value.input` for the `running`/`completed`/`failed` states of this run (again latest-wins under the stale guard). Use it when the failure UI must know **which request failed** — e.g. an inline error keyed by `value.input.fileId` — so you don't reintroduce module-scope bookkeeping. Parametrize the input type via the second type argument (`resource<Diff, { fileId: string }>()`).
@@ -950,7 +950,7 @@ self.onmessage = async (event: MessageEvent<Job>) => {
 The app wires a resource per job and renders as usual:
 
 ```tsx
-import { each, mount, signal } from 'kerfjs';
+import { each, effect, mount, signal } from 'kerfjs';
 import { resource } from 'kerfjs/async';
 import { debouncedSignal } from 'kerfjs/timing';
 
@@ -962,9 +962,9 @@ export const query = signal('');
 const settledQuery = debouncedSignal(query, 120);
 export const hits = resource<Hit[], string>();
 
-// `subscribe` runs its callback untracked, so the run's own state writes
-// don't feed back into the subscription.
-settledQuery.subscribe((q) => {
+// Re-runs whenever the settled query changes.
+effect(() => {
+  const q = settledQuery.value;
   void hits.run(q, () => call<Hit[]>({ kind: 'search', query: q }));
 });
 
