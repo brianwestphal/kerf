@@ -22,8 +22,12 @@ Property-specific CSS values are evaluated from each first- or third-party
 catalog entry's `cssValueProps`. `KUI-L013`–`KUI-L016` are blocking grammar
 violations and name a preferred shorthand/helper; `KUI-L017` keeps an
 exceptional but valid spacing choice in the review queue. The ESLint and
-analyzer stages share these ids, so the normalized report can be consumed as
-one repair loop without tool-specific translations.
+analyzer stages share these ids, messages, and severities, so each finding
+merges into one diagnostic and the normalized report can be consumed as one
+repair loop without tool-specific translations. ESLint has no `review`
+severity: the presets configure `ui-exceptional-shorthands` (`KUI-L017`) as
+`warn`, and the doctor reads an ESLint warning for a code the analyzer
+classifies as `review` as that review finding.
 
 The analyzer stage also reads consumer stylesheets for theme overrides:
 `KUI-L018` is a review finding for a `--wa-color-{tone}-fill-loud` override

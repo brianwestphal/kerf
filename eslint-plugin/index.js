@@ -9,6 +9,7 @@ import requireDelegateDisposer from './lib/rules/require-delegate-disposer.js';
 import uiComponentOwnership from './lib/rules/ui-component-ownership.js';
 import uiComposition from './lib/rules/ui-composition.js';
 import uiCssValues from './lib/rules/ui-css-values.js';
+import uiExceptionalShorthands from './lib/rules/ui-exceptional-shorthands.js';
 import uiPreferences from './lib/rules/ui-preferences.js';
 import uiPublicBoundaries from './lib/rules/ui-public-boundaries.js';
 import uiWiring from './lib/rules/ui-wiring.js';
@@ -27,6 +28,7 @@ const plugin = {
     'ui-component-ownership': uiComponentOwnership,
     'ui-composition': uiComposition,
     'ui-css-values': uiCssValues,
+    'ui-exceptional-shorthands': uiExceptionalShorthands,
     'ui-preferences': uiPreferences,
     'ui-public-boundaries': uiPublicBoundaries,
     'ui-wiring': uiWiring,
@@ -62,12 +64,21 @@ plugin.configs.recommended = {
   plugins: { kerfjs: plugin },
   rules: recommendedRules,
 };
+// UI rule severities follow the analyzer's classification of the KUI codes a
+// rule reports (`UI_ANALYSIS_RULES` in `@kerfjs/ui/analyzer`): an `error`
+// code ships as `error`, a `review` code as `warn`. `ui-exceptional-shorthands`
+// (`KUI-L017`) is a review finding — a deliberate off-scale choice to justify,
+// not a defect — so it stays `warn` in strict-ui too; promoting it would
+// contradict the analyzer and make kerf-ui-doctor report the same finding
+// twice. Gate review findings with the doctor's `failOn: 'review'` instead.
+// `@kerfjs/ui`'s eslint-severity-contract test pins this agreement.
 const recommendedUiRules = {
   ...recommendedRules,
   'kerfjs/ui-public-boundaries': 'error',
   'kerfjs/ui-component-ownership': 'error',
   'kerfjs/ui-composition': 'error',
   'kerfjs/ui-css-values': 'error',
+  'kerfjs/ui-exceptional-shorthands': 'warn',
   'kerfjs/ui-preferences': 'warn',
   'kerfjs/ui-wiring': 'warn',
 };

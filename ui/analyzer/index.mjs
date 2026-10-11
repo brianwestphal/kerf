@@ -1413,7 +1413,7 @@ function inspectCssValues(
           diagnostic(
             'KUI-L016',
             at,
-            `\`${entry.name}.${contract.path}\` is a forbidden declaration-list escape; use \`className\`, public tokens, or cataloged props.`,
+            `\`${entry.name}.${contract.path}\` is a forbidden declaration-list escape hatch; use \`className\`, public tokens, or cataloged props.`,
             { component: entry.key, path: contract.path },
           ),
         );
@@ -1426,7 +1426,7 @@ function inspectCssValues(
             diagnostic(
               'KUI-L017',
               at,
-              `\`${literal}\` is exceptional for \`${entry.name}.${contract.path}\`; prefer ${preferred} unless the off-scale choice is deliberate.`,
+              `\`${literal}\` is an exceptional shorthand for \`${entry.name}.${contract.path}\`; prefer ${preferred} unless the off-scale choice is deliberate.`,
               { component: entry.key, path: contract.path, value: literal },
             ),
           );
@@ -1458,7 +1458,7 @@ function inspectCssValues(
           diagnostic(
             'KUI-L015',
             at,
-            `\`${helper}()\` is not standalone for \`${entry.name}.${contract.path}\`; wrap it with an accepted composer such as \`calc()\`.`,
+            `\`${helper}()\` is not a standalone CSS value for \`${entry.name}.${contract.path}\`; wrap it with an accepted composer such as \`calc()\`.`,
             { component: entry.key, path: contract.path, helper },
           ),
         );
@@ -1470,7 +1470,7 @@ function inspectCssValues(
           diagnostic(
             'KUI-L014',
             at,
-            `\`${helper}()\` has the wrong grammar for \`${entry.name}.${contract.path}\`; use ${preferred}.`,
+            `\`${helper}()\` produces the wrong grammar for \`${entry.name}.${contract.path}\`; use ${preferred}.`,
             { component: entry.key, path: contract.path, helper },
           ),
         );

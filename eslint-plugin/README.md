@@ -80,9 +80,17 @@ settings: {
 For deterministic generated configs, the same settings accept parsed `catalog`, `selectionCatalog`, and `profile` objects. File-based precedence is package defaults, then workspace profile, then root-to-leaf directory profiles. The rules load `application-ui-profile-sync.cjs` from the installed `@kerfjs/ui` package by default because ESLint rule creation is synchronous; `profileContractPath` is only needed when artifacts are vendored, and then its directory must also hold `application-ui-diagnostic-ids-v1.json` and `component-class-owners.cjs` (the class-to-component rule `KUI-L103` shares with `@kerfjs/ui`'s generated component pages) from the same `@kerfjs/ui` release. Every raw layer is schema- and catalog-reference-validated before merge, so a child cannot hide malformed or stale parent policy. Exceptions use exact `KUI-L*` diagnostic ids and repository-relative file or directory targets.
 
 `ui-css-values` consumes each catalog entry's property-specific grammar and
-emits `KUI-L013`–`KUI-L017` with a preferred shorthand or helper. It covers JSX,
+emits `KUI-L013`–`KUI-L016` with a preferred shorthand or helper. It covers JSX,
 direct component calls, nested catalog paths, and explicitly configured
-third-party catalogs; dynamic values remain governed by TypeScript.
+third-party catalogs; dynamic values remain governed by TypeScript. Its
+companion `ui-exceptional-shorthands` walks the same contracts and emits the
+review finding `KUI-L017` for a valid but exceptional off-scale shorthand. It
+is `warn` in both `recommended-ui` and `strict-ui`, matching the analyzer's
+`review` classification, so `kerf-ui-doctor` merges the ESLint and analyzer
+reports into one review finding.
+
+UI rule severities follow the analyzer's classification of the codes each rule
+reports: an `error` code ships as `error`, and a `review` code ships as `warn`.
 
 `ui-component-ownership` keeps code out of another package's component
 internals: `KUI-L020` reports a reference to a component's private `--_*`
@@ -115,6 +123,7 @@ Use flat config (`eslint.config.js`), shown above. The `legacy-recommended` expo
 | [`ui-component-ownership`](docs/rules/ui-component-ownership.md)                 | — (configure components, never override them)                   | `error`                |
 | [`ui-composition`](docs/rules/ui-composition.md)                                 | — (cataloged parents and zones)                                 | `error`                |
 | [`ui-css-values`](docs/rules/ui-css-values.md)                                   | — (cataloged property-specific value grammar)                   | `error`                |
+| [`ui-exceptional-shorthands`](docs/rules/ui-exceptional-shorthands.md)           | — (review deliberate off-scale shorthands)                      | `warn`                 |
 | [`ui-preferences`](docs/rules/ui-preferences.md)                                 | — (application component choices)                               | `warn`                 |
 | [`ui-wiring`](docs/rules/ui-wiring.md)                                           | — (required setup and cleanup)                                  | `warn`                 |
 

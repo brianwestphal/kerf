@@ -48,8 +48,8 @@ before the program runs:
   Hard Rule 9 partial-set bugs as type errors. All complete example apps in
   this repo are under that gate.
 - **`eslint-plugin-kerfjs`** — a separate publishable package, in
-  [`eslint-plugin/`](../eslint-plugin/README.md), with thirteen rules: eight
-  core rules in its `recommended` config plus five `ui-*` rules for
+  [`eslint-plugin/`](../eslint-plugin/README.md), with fifteen rules: eight
+  core rules in its `recommended` config plus seven `ui-*` rules for
   `@kerfjs/ui` consumers. The core rules fire at edit time for hard-rule
   violations the dev-warns can't see syntactically. Four are errors:
   `no-inline-jsx-event-handlers` (Rule 10), `require-data-key-in-each`
@@ -61,9 +61,9 @@ before the program runs:
   nudge for `delegate()` literal selectors), and `ai-assistant-configs`
   (project hygiene — checks that the bundled AI configs are installed and
   current). The `ui-*` rules — `ui-public-boundaries`, `ui-component-ownership`, `ui-composition`,
-  `ui-css-values`, `ui-preferences`, `ui-wiring` — are enabled only by the
-  `recommended-ui` and `strict-ui` configs, which add them on top of the core
-  set.
+  `ui-css-values`, `ui-exceptional-shorthands`, `ui-preferences`, `ui-wiring`
+  — are enabled only by the `recommended-ui` and `strict-ui` configs, which add
+  them on top of the core set.
 
 The three layers are complementary, not redundant. Lint catches AST-shaped
 antipatterns at edit time; tsc catches type-shaped bugs at build time; the

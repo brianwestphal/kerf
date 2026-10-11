@@ -921,6 +921,15 @@ async function runTypeScript({ packageRoot, paths }) {
   return { diagnostics };
 }
 
+// ESLint has two severities; the analyzer has a third, `review`. The presets
+// configure every rule whose KUI code the analyzer classifies as `review`
+// (`KUI-L017`) as `warn`, so a warning for such a code is that review finding
+// and merges with the analyzer's report instead of conflicting with it.
+function eslintSeverity(severity, code) {
+  if (severity === 2) return 'error';
+  return UI_ANALYSIS_RULES[code]?.severity === 'review' ? 'review' : 'warning';
+}
+
 async function runEslint({
   packageRoot,
   paths,
@@ -999,7 +1008,7 @@ async function runEslint({
       diagnostics.push(
         normalizedDiagnostic({
           id: code ?? `eslint:${item.ruleId ?? 'parse-error'}`,
-          severity: item.severity === 2 ? 'error' : 'warning',
+          severity: eslintSeverity(item.severity, code),
           stage: 'eslint',
           message: item.message.replace(/^KUI-[A-Z]\d{3}:\s*/, ''),
           location: {

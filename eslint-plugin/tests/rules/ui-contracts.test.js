@@ -10,6 +10,7 @@ import preferences from '../../lib/rules/ui-preferences.js';
 import boundaries from '../../lib/rules/ui-public-boundaries.js';
 import wiring from '../../lib/rules/ui-wiring.js';
 import cssValues from '../../lib/rules/ui-css-values.js';
+import exceptionalShorthands from '../../lib/rules/ui-exceptional-shorthands.js';
 
 const tester = createRuleTester();
 const settings = uiSettings();
@@ -1409,6 +1410,12 @@ tester.run('ui-wiring', wiring, {
 
 tester.run('ui-css-values', cssValues, {
   valid: [
+    // KUI-L017 (exceptional shorthand) is a review finding reported by
+    // ui-exceptional-shorthands at `warn`; the contract rule stays silent.
+    {
+      code: 'import { List } from \'@kerfjs/ui\'; <List gap="xl" />;',
+      settings,
+    },
     {
       code: 'import { List, rem, flex } from \'@kerfjs/ui\'; <List gap="xs" flex={flex(1, 1, rem(20))} />;',
       settings,
@@ -1485,11 +1492,6 @@ tester.run('ui-css-values', cssValues, {
       errors: [{ messageId: 'declarations' }],
     },
     {
-      code: 'import { List } from \'@kerfjs/ui\'; <List gap="xl" />;',
-      settings,
-      errors: [{ messageId: 'exceptional' }],
-    },
-    {
       code: "import { Skeleton, uiColor } from '@kerfjs/ui'; <Skeleton width={uiColor('accent')} />;",
       settings,
       errors: [{ messageId: 'helper' }],
@@ -1541,6 +1543,47 @@ tester.run('ui-css-values', cssValues, {
       code: "import { Select, uiColor } from '@kerfjs/ui/select'; uiColor({ choices: [{ color: 'red' }] }); Select({ choices: [{ color: 'blue' }] });",
       settings,
       errors: [{ messageId: 'raw', column: 124 }],
+    },
+  ],
+});
+
+tester.run('ui-exceptional-shorthands', exceptionalShorthands, {
+  valid: [
+    {
+      code: 'import { List, rem } from \'@kerfjs/ui\'; <List gap="xs" />; <List gap={rem(1)} />;',
+      settings,
+    },
+    // Contract violations belong to ui-css-values, never to the review rule.
+    {
+      code: 'import { List, flex } from \'@kerfjs/ui\'; <List gap="12px" />; <List gap={flex(1)} />;',
+      settings,
+    },
+    {
+      code: 'import { ListItem } from \'@kerfjs/ui\'; <ListItem style="color: red" />;',
+      settings,
+    },
+    {
+      code: 'import { List } from \'other-ui\'; <List gap="xl" />;',
+      settings,
+    },
+  ],
+  invalid: [
+    {
+      // Pins the full text: kerf-ui-analyze emits the identical message so
+      // kerf-ui-doctor merges the two reports into one review finding.
+      code: 'import { List } from \'@kerfjs/ui\'; <List gap="xl" />;',
+      settings,
+      errors: [
+        {
+          message:
+            'KUI-L017: `xl` is an exceptional shorthand for `List.gap`; prefer `none` or `2xs` or `xs` or `m` or `l` or `px()` or `rem()` or `em()` or `pct()` or `space()` or `lengthVar()` or `calc()` unless the off-scale choice is deliberate.',
+        },
+      ],
+    },
+    {
+      code: "import { List } from '@kerfjs/ui'; List({ gap: 's' });",
+      settings,
+      errors: [{ messageId: 'exceptional' }],
     },
   ],
 });

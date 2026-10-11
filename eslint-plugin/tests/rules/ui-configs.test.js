@@ -46,19 +46,23 @@ test('UI flat configs publish an explicit severity policy', () => {
       recommended: [
         plugin.configs['recommended-ui'].rules['kerfjs/ui-public-boundaries'],
         plugin.configs['recommended-ui'].rules['kerfjs/ui-composition'],
+        plugin.configs['recommended-ui'].rules[
+          'kerfjs/ui-exceptional-shorthands'
+        ],
         plugin.configs['recommended-ui'].rules['kerfjs/ui-preferences'],
         plugin.configs['recommended-ui'].rules['kerfjs/ui-wiring'],
       ],
       strict: [
         plugin.configs['strict-ui'].rules['kerfjs/ui-public-boundaries'],
         plugin.configs['strict-ui'].rules['kerfjs/ui-composition'],
+        plugin.configs['strict-ui'].rules['kerfjs/ui-exceptional-shorthands'],
         plugin.configs['strict-ui'].rules['kerfjs/ui-preferences'],
         plugin.configs['strict-ui'].rules['kerfjs/ui-wiring'],
       ],
     },
     {
-      recommended: ['error', 'error', 'warn', 'warn'],
-      strict: ['error', 'error', 'error', 'error'],
+      recommended: ['error', 'error', 'warn', 'warn', 'warn'],
+      strict: ['error', 'error', 'warn', 'error', 'error'],
     },
   );
 });

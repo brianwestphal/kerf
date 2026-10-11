@@ -7,9 +7,11 @@ names their accepted helpers, finite shorthands, and raw-value policy.
 
 Stable diagnostics are `KUI-L013` (raw or unknown shorthand), `KUI-L014`
 (wrong property helper), `KUI-L015` (non-standalone expression), `KUI-L016`
-(forbidden declaration list), and review-oriented `KUI-L017` (exceptional
-spacing shorthand). Messages name the preferred shorthand or helper. Dynamic
-values are left to TypeScript rather than guessed.
+(forbidden declaration list). Messages name the preferred shorthand or helper.
+Dynamic values are left to TypeScript rather than guessed. The review finding
+`KUI-L017` (exceptional spacing shorthand) is reported by the companion
+[`ui-exceptional-shorthands`](ui-exceptional-shorthands.md) rule so it can carry
+the `warn` severity that matches the analyzer's `review` classification.
 
 Only component exports carry an entry's contracts. A catalog entry's
 `publicExports` also lists the helpers its props consume (`Select` ships

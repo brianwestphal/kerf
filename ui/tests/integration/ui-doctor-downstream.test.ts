@@ -902,7 +902,7 @@ test(
       );
       await writeFile(
         resolve(root, 'src/app.jsx'),
-        `import { List } from '@kerfjs/ui'; export const App = () => <List gap="17px" />;\n`,
+        `import { List, flex, plus, rem, px } from '@kerfjs/ui'; export const App = () => <><List gap="17px" /><List gap="s" /><List gap={flex(1)} /><List gap={plus(rem(1), px(2))} /></>;\n`,
       );
       await link(
         root,
@@ -928,6 +928,34 @@ test(
           }),
         ]),
       );
+      // ESLint and the analyzer both report the catalog CSS-value contracts.
+      // Each finding must merge into one diagnostic with one severity: the
+      // KUI-L017 review finding once used to arrive as an ESLint error plus
+      // an analyzer review, counted twice and flagged with KUI-D003.
+      const valueFindings = report.report.diagnostics.filter(
+        (item: { id: string }) => /^KUI-L01[3-7]$/.test(item.id),
+      );
+      expect(
+        valueFindings.map(
+          (item: {
+            id: string;
+            severity: string;
+            stage: string;
+            sources?: string[];
+          }) => [item.id, item.severity, item.stage, item.sources],
+        ),
+      ).toEqual([
+        ['KUI-L013', 'error', 'merged', ['analyzer', 'eslint']],
+        ['KUI-L014', 'error', 'merged', ['analyzer', 'eslint']],
+        ['KUI-L015', 'error', 'merged', ['analyzer', 'eslint']],
+        ['KUI-L017', 'review', 'merged', ['analyzer', 'eslint']],
+      ]);
+      expect(
+        report.report.diagnostics.some(
+          (item: { id: string }) => item.id === 'KUI-D003',
+        ),
+      ).toBe(false);
+      expect(report.report.summary.review).toBe(1);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
