@@ -452,9 +452,17 @@ export function wireTokenSearchFields(
       event.target instanceof Element ? event.target : null;
   };
   const flushPointerBlurCollapses = () => {
+    if (pointerReleaseTimer !== undefined)
+      view().clearTimeout(pointerReleaseTimer);
     pointerReleaseTimer = undefined;
     for (const collapse of pendingPointerBlurCollapses.values()) collapse();
     pendingPointerBlurCollapses.clear();
+  };
+  // The click has reached the window, the end of its propagation path, so
+  // every app handler has run: collapse in the same task as the click's own
+  // render, so the browser pays one style recalc and layout for both.
+  const flushAfterClickDispatch = () => {
+    view().queueMicrotask(flushPointerBlurCollapses);
   };
   const flushAfterPointerClick = () => {
     if (pendingPointerBlurCollapses.size === 0) return;
@@ -474,6 +482,12 @@ export function wireTokenSearchFields(
   const clearPointerActivationAfterClick = () => {
     clearPointerActivation();
     flushAfterPointerClick();
+    // The task above stays the fallback for a click whose propagation stops
+    // before the window, or that is dispatched outside the document.
+    if (pendingPointerBlurCollapses.size > 0)
+      view().addEventListener('click', flushAfterClickDispatch, {
+        once: true,
+      });
   };
   const cancelPointerActivation = () => {
     clearPointerActivation();
@@ -1110,6 +1124,7 @@ export function wireTokenSearchFields(
     disposed = true;
     if (pointerReleaseTimer !== undefined)
       view().clearTimeout(pointerReleaseTimer);
+    view().removeEventListener('click', flushAfterClickDispatch);
     pendingPointerBlurCollapses.clear();
     suggestionsObserver.disconnect();
     for (const stop of positionedSuggestions.values()) stop();

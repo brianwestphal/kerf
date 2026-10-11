@@ -1092,6 +1092,57 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     handle();
   });
 
+  it('collapses after the click reaches the window, in the click’s own task', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    const openAt: string[] = [];
+    const record = (where: string) => () =>
+      openAt.push(`${where}:${String(field.expandedSignal.value)}`);
+    outside.addEventListener('click', record('target'));
+    document.addEventListener('click', record('document'));
+    const atWindow = record('window');
+    window.addEventListener('click', atWindow);
+    editor.focus();
+    outside.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    outside.focus();
+    editor.dispatchEvent(focusoutEvent(outside));
+    outside.dispatchEvent(new Event('pointerup', { bubbles: true }));
+    outside.click();
+    // A microtask after dispatch, never a later task.
+    await micro();
+    expect(field.expandedSignal.value).toBe(false);
+    expect(openAt).toEqual(['target:true', 'document:true', 'window:true']);
+    window.removeEventListener('click', atWindow);
+    handle();
+  });
+
+  it('falls back to a task when the click stops propagating before the window', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    outside.addEventListener('click', (event) => event.stopPropagation());
+    editor.focus();
+    outside.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    outside.focus();
+    editor.dispatchEvent(focusoutEvent(outside));
+    outside.click();
+    await micro();
+    expect(field.expandedSignal.value).toBe(true);
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(field.expandedSignal.value).toBe(false);
+    // The unreached window listener is now inert.
+    outside.remove();
+    document.body.click();
+    await micro();
+    expect(field.expandedSignal.value).toBe(false);
+    handle();
+  });
+
   it.each(['pointerup', 'pointercancel'])(
     'releases a pending blur after %s without a click',
     async (end) => {

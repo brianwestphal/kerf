@@ -704,6 +704,12 @@ render, hands in its own via `collapsible.signals`, drives it through
 UI is consistent by default without every app reinventing it. A collapsed
 field may reveal its editor after the current microtask; the helper keeps a
 bounded render-frame focus handoff for that reveal and cancels it on disposal.
+When a pointer press moves focus out of an empty field, the collapse waits until
+the pressed control has received its click and every app handler has run, then
+renders in a microtask in that same click task, so the click's render and the
+collapse share one style recalculation and layout. A click that stops
+propagating before the window, or a press without a click, collapses in the
+next task instead.
 `TokenSearchField.trailingAction` supplies an icon, accessible `label`, delegated
 `action`, and optional `id`; the field renders a 24px wide button that fills its
 34px line slot, including the hit target, disabled state, hover, and focus ring.

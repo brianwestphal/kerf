@@ -99,6 +99,27 @@ test('empty blur waits for the pressed control click before collapsing a shiftin
     });
     syncHeight();
     document.body.dataset.testPressClicks = '0';
+    // Marks the click's own task: a timer queued at the very start of the
+    // click's dispatch ends it, ahead of any task the wiring could queue.
+    window.addEventListener(
+      'click',
+      () => {
+        document.body.dataset.testInClickTask = 'true';
+        window.setTimeout(() => {
+          delete document.body.dataset.testInClickTask;
+        }, 0);
+      },
+      true,
+    );
+    new MutationObserver(() => {
+      if (search.dataset.expanded === 'false')
+        document.body.dataset.testCollapseInClickTask = String(
+          document.body.dataset.testInClickTask === 'true',
+        );
+    }).observe(search, {
+      attributes: true,
+      attributeFilter: ['data-expanded'],
+    });
   });
   const target = page.locator('[data-test-press-target]');
   await target.scrollIntoViewIfNeeded();
@@ -118,6 +139,11 @@ test('empty blur waits for the pressed control click before collapsing a shiftin
     '1',
   );
   await expect(field).toHaveAttribute('data-expanded', 'false');
+  // The collapse renders in the click's task, batched with its render.
+  await expect(page.locator('body')).toHaveAttribute(
+    'data-test-collapse-in-click-task',
+    'true',
+  );
 });
 
 test('disposing the demo wiring cancels pending collapsible focus restoration', async ({
