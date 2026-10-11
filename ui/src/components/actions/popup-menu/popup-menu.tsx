@@ -1,6 +1,11 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  cachedPopupMenuContent,
+  cachePopupMenuContent,
+  popupMenuContentKey,
+} from './internal/popup-menu-content-cache.js';
 
 export type PopupMenuPlacement =
   'bottom-start' | 'bottom' | 'bottom-end' | 'top-start' | 'top' | 'top-end';
@@ -94,34 +99,6 @@ export type PopupMenuProps = PopupMenuTrigger & {
   slot?: string;
 };
 
-/** A short, stable FNV-1a digest of the trigger and item structure. */
-function contentKey(parts: readonly string[]): string {
-  let hash = 0x811c9dc5;
-  for (const character of parts.join('\u0000')) {
-    hash ^= character.codePointAt(0)!;
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return (hash >>> 0).toString(36);
-}
-
-function entryKey(entry: PopupMenuEntry): string {
-  if (entry.kind === 'divider') return '-';
-  if (entry.kind === 'heading') return `#${entry.label}`;
-  return [
-    entry.label,
-    entry.action ?? '',
-    entry.value ?? '',
-    entry.disabled ? '1' : '0',
-    entry.checked === undefined ? '-' : entry.checked ? '1' : '0',
-    entry.tone ?? '',
-    entry.disabledReason ?? '',
-    String(entry.icon ?? ''),
-    String(entry.details ?? ''),
-    JSON.stringify(entry.attributes ?? {}),
-    ...(entry.submenu ?? []).map(entryKey),
-  ].join('\u0001');
-}
-
 function renderEntry(entry: PopupMenuEntry, nested = false) {
   if (entry.kind === 'divider')
     return <wa-divider slot={nested ? 'submenu' : undefined} />;
@@ -185,52 +162,28 @@ export function closePopupMenu(menu: PopupMenuElement): void {
   menu.open = false;
 }
 
-/**
- * An action menu: a trigger button that opens a list of commands. Renders the
- * `wa-dropdown` root directly, so a `single` `ToolbarControlGroup` (with
- * `nestedDropdown`) or a `PopupSurface` sizes and insets it as usual. Items
- * dispatch through delegated `data-action`s; the app owns the commands and any
- * open-state reaction. Import `@kerfjs/ui/popup-menu/register` once to register
- * the Web Awesome elements. At viewport widths up to 480px, submenus appear
- * above or below their parent menu so their rows do not cover the parent list.
- */
-export function PopupMenu({
-  text,
+interface PopupMenuContentProps {
+  context: boolean;
+  label: string | undefined;
+  icon: KerfUiContent;
+  text: string | undefined;
+  caret: boolean;
+  disabled: boolean;
+  items: readonly PopupMenuEntry[];
+}
+
+/** The trigger and entries: everything inside the `wa-dropdown` root. */
+function renderContent({
+  context,
   label,
   icon,
+  text,
+  caret,
+  disabled,
   items,
-  placement = 'bottom-start',
-  caret = true,
-  disabled = false,
-  rootAttributes = {},
-  slot,
-  context = false,
-}: PopupMenuProps) {
-  // Web Awesome owns the trigger and item DOM once upgraded, so the morph
-  // skips the children; the content key rebuilds the menu when they change.
-  const key = `kui-popup-menu-${contentKey([
-    text ?? '',
-    label ?? '',
-    String(icon ?? ''),
-    String(caret),
-    String(disabled),
-    String(context),
-    ...items.map(entryKey),
-  ])}`;
-  // size="m" is Web Awesome's reflected default; rendering it keeps a
-  // re-render's morph from stripping it and forcing a Lit update.
+}: PopupMenuContentProps): SafeHtml {
   return (
-    <wa-dropdown
-      size="m"
-      {...rootAttributes}
-      class="kui-popup-menu"
-      data-component="popup-menu"
-      data-key={key}
-      data-morph-skip-children
-      data-trigger={context ? 'context' : 'button'}
-      placement={placement}
-      slot={slot}
-    >
+    <>
       {context ? (
         <button
           type="button"
@@ -256,6 +209,73 @@ export function PopupMenu({
         </wa-button>
       )}
       {items.map((entry) => renderEntry(entry))}
+    </>
+  );
+}
+
+/**
+ * An action menu: a trigger button that opens a list of commands. Renders the
+ * `wa-dropdown` root directly, so a `single` `ToolbarControlGroup` (with
+ * `nestedDropdown`) or a `PopupSurface` sizes and insets it as usual. Items
+ * dispatch through delegated `data-action`s; the app owns the commands and any
+ * open-state reaction. Import `@kerfjs/ui/popup-menu/register` once to register
+ * the Web Awesome elements. At viewport widths up to 480px, submenus appear
+ * above or below their parent menu so their rows do not cover the parent list.
+ */
+export function PopupMenu({
+  text,
+  label,
+  icon,
+  items,
+  placement = 'bottom-start',
+  caret = true,
+  disabled = false,
+  rootAttributes = {},
+  slot,
+  context = false,
+}: PopupMenuProps) {
+  // Web Awesome owns the trigger and item DOM once upgraded, so the morph
+  // skips the children; the content key rebuilds the menu when they change.
+  // An unchanged menu reuses its cached markup and costs one hash pass.
+  const { key, cacheKey } = popupMenuContentKey(
+    [
+      text ?? '',
+      label ?? '',
+      String(icon ?? ''),
+      String(caret),
+      String(disabled),
+      String(context),
+    ],
+    items,
+  );
+  let content = cachedPopupMenuContent(cacheKey);
+  if (!content) {
+    content = renderContent({
+      context,
+      label,
+      icon,
+      text,
+      caret,
+      disabled,
+      items,
+    });
+    cachePopupMenuContent(cacheKey, content);
+  }
+  // size="m" is Web Awesome's reflected default; rendering it keeps a
+  // re-render's morph from stripping it and forcing a Lit update.
+  return (
+    <wa-dropdown
+      size="m"
+      {...rootAttributes}
+      class="kui-popup-menu"
+      data-component="popup-menu"
+      data-key={key}
+      data-morph-skip-children
+      data-trigger={context ? 'context' : 'button'}
+      placement={placement}
+      slot={slot}
+    >
+      {content}
     </wa-dropdown>
   );
 }

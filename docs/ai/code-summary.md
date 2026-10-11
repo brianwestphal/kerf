@@ -919,6 +919,14 @@ a token change; the grammar demo exercises repeated saved-search replacement.
 `ui/src/components/actions/popup-menu/popup-menu.tsx` accepts the full `PopupMenuEntry` union in nested
 submenus and assigns the native submenu slot to headings and dividers as well
 as items. Browser coverage verifies the nested group structure and actions.
+Its `internal/popup-menu-content-cache.ts` streams the `data-key` FNV-1a digest
+(plus an independent check hash) over the trigger and entry fields without
+joining them, and keeps a bounded LRU of each menu's static trigger and entry
+markup, so an unchanged menu re-renders with one hash pass (KF-GVCMC7).
+`ui/tests/unit/popup-menu-content-cache.test.tsx` pins byte-identical output
+against the frozen `ui/tests/fixtures/popup-menu-legacy.tsx`, and
+`ui/tests/bench/popup-menu.bench.tsx` (`npm run bench:micro` in `ui/`) times a
+300-row render against it.
 `ui/src/components/feedback/anchored-surface/anchored-surface.tsx` exposes
 `openAnchoredSurface` and `openAnchoredSurfaceAt` at the
 `@kerfjs/ui/anchored-surface` subpath. It delegates positioning, focus,
