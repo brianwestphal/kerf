@@ -60,6 +60,27 @@ function renderChildren(icon: LucideNode): SafeHtml {
   return markup;
 }
 
+/**
+ * Each icon node's rendered icons, by their props. Rows that re-render the
+ * same glyph with the same props get the identical `SafeHtml` back instead of
+ * rebuilding the `<svg>` wrapper, and consumers that hash or compare icon
+ * markup (PopupMenu's content key) see one string object. Bounded per node,
+ * because a per-row `label` would otherwise grow it with the list; past the
+ * bound the oldest variant is evicted. Only nodes whose child markup is
+ * cacheable are cached.
+ */
+const iconMarkup = new WeakMap<LucideNode, Map<string, SafeHtml>>();
+
+/** Most rendered variants remembered per icon node. */
+const LUCIDE_ICON_VARIANT_LIMIT = 64;
+
+function variantKey(parts: readonly (string | number | boolean | undefined)[]) {
+  // U+0001 marks an omitted prop so it never equals an empty string.
+  return parts
+    .map((part) => (part === undefined ? '\u0001' : String(part)))
+    .join('\u0000');
+}
+
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
 export function LucideIcon({
   icon,
@@ -78,10 +99,23 @@ export function LucideIcon({
     );
   if (typeof size === 'string' && !Object.hasOwn(lucideIconSizePixels, size))
     throw new RangeError('LucideIcon size must use a named icon step');
+  const key = variantKey([
+    name,
+    appearance,
+    className,
+    color,
+    inline,
+    label,
+    size,
+    slot,
+  ]);
+  const variants = iconMarkup.get(icon);
+  const cached = variants?.get(key);
+  if (cached) return cached;
   const pixels =
     typeof size === 'number' ? size : size && lucideIconSizePixels[size];
   const slotAttribute = { slot };
-  return (
+  const markup = (
     <svg
       {...slotAttribute}
       class={className}
@@ -111,4 +145,12 @@ export function LucideIcon({
       {renderChildren(icon)}
     </svg>
   );
+  if (childMarkup.has(icon)) {
+    const known = variants ?? new Map<string, SafeHtml>();
+    if (!variants) iconMarkup.set(icon, known);
+    if (known.size >= LUCIDE_ICON_VARIANT_LIMIT)
+      known.delete(known.keys().next().value!);
+    known.set(key, markup);
+  }
+  return markup;
 }

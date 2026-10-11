@@ -5,9 +5,12 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   _clearPopupMenuMarkupCache,
   _popupMenuMarkupCacheSize,
+  _popupMenuPartDigestCount,
   cachedPopupMenuContent,
   cachePopupMenuContent,
+  LONG_PART_LENGTH,
   MARKUP_CACHE_LIMIT,
+  PART_DIGEST_LIMIT,
   popupMenuContentKey,
 } from '../../src/components/actions/popup-menu/internal/popup-menu-content-cache.js';
 import {
@@ -97,18 +100,86 @@ const cases: [string, PopupMenuProps][] = [
 
 afterEach(() => _clearPopupMenuMarkupCache());
 
+// Long parts (icon and details markup) feed the digest as their own memoized
+// hashes, so a menu holding one has a different `data-key` value than the
+// legacy character-by-character digest; everything else is byte-identical.
+const withoutKey = (html: string) =>
+  html.replace(/ data-key="kui-popup-menu-[^"]*"/, '');
+const keyOf = (html: string) => /data-key="([^"]+)"/.exec(html)![1];
+
 describe('PopupMenu content key and markup cache', () => {
   it.each(cases)(
-    'renders %s byte-identically to the previous implementation, cached or not',
+    'renders %s byte-identically to the previous implementation apart from the key value, cached or not',
     (_name, props) => {
-      const expected = String(LegacyPopupMenu(props));
-      expect(String(PopupMenu(props))).toBe(expected);
+      const expected = withoutKey(String(LegacyPopupMenu(props)));
+      const first = String(PopupMenu(props));
+      expect(withoutKey(first)).toBe(expected);
       // The second render is served from the markup cache.
-      expect(String(PopupMenu(props))).toBe(expected);
+      expect(String(PopupMenu(props))).toBe(first);
       _clearPopupMenuMarkupCache();
-      expect(String(PopupMenu(props))).toBe(expected);
+      expect(String(PopupMenu(props))).toBe(first);
     },
   );
+
+  it.each(
+    cases.filter(
+      ([name]) => name === 'empty menu' || name.startsWith('astral'),
+    ),
+  )(
+    'keeps the legacy key value for %s, which has no long part',
+    (_name, props) => {
+      expect(String(PopupMenu(props))).toBe(String(LegacyPopupMenu(props)));
+    },
+  );
+
+  it('hashes a part below the long-part length by its characters', () => {
+    const short = new SafeHtml('x'.repeat(LONG_PART_LENGTH - 1));
+    const props: PopupMenuProps = {
+      text: 'Short',
+      items: [{ label: 'Go', details: short }],
+    };
+    expect(String(PopupMenu(props))).toBe(String(LegacyPopupMenu(props)));
+    expect(_popupMenuPartDigestCount()).toBe(0);
+  });
+
+  it('keys a long part by its content, not its string identity', () => {
+    const long = (fill: string) =>
+      new SafeHtml(`<span>${fill.repeat(LONG_PART_LENGTH)}</span>`);
+    const keyFor = (details: SafeHtml) =>
+      popupMenuContentKey(['x'], [{ label: 'Go', details }]);
+    const first = keyFor(long('a'));
+    expect(_popupMenuPartDigestCount()).toBe(1);
+    // An equal string built afresh hits the memo and keys identically.
+    expect(keyFor(long('a'))).toEqual(first);
+    expect(_popupMenuPartDigestCount()).toBe(1);
+    // A one-character change is a new part with a new key.
+    const changed = keyFor(new SafeHtml(String(long('a')).replace('a', 'b')));
+    expect(changed.key).not.toBe(first.key);
+    expect(changed.cacheKey).not.toBe(first.cacheKey);
+    // The same long text as a trigger part keys the same way.
+    expect(popupMenuContentKey([String(long('a'))], []).key).not.toBe(
+      popupMenuContentKey([String(long('b'))], []).key,
+    );
+  });
+
+  it('bounds the memoized part digests, evicting the oldest', () => {
+    const keyFor = (index: number) =>
+      popupMenuContentKey(
+        ['x'],
+        [
+          {
+            label: 'Go',
+            details: new SafeHtml(`${'p'.repeat(LONG_PART_LENGTH)}${index}`),
+          },
+        ],
+      ).key;
+    const first = keyFor(0);
+    for (let index = 1; index <= PART_DIGEST_LIMIT; index++) keyFor(index);
+    expect(_popupMenuPartDigestCount()).toBe(PART_DIGEST_LIMIT);
+    // The evicted digest is recomputed to the same key.
+    expect(keyFor(0)).toBe(first);
+    expect(_popupMenuPartDigestCount()).toBe(PART_DIGEST_LIMIT);
+  });
 
   it('reuses one cached markup for equal props built afresh', () => {
     const first = popupMenuContentKey(['Actions'], richItems());
@@ -130,14 +201,15 @@ describe('PopupMenu content key and markup cache', () => {
     const copy = withIcon(Copy);
     const trash = withIcon(Trash);
     expect(trash).not.toBe(copy);
-    const keyOf = (html: string) => /data-key="([^"]+)"/.exec(html)![1];
     expect(keyOf(trash)).not.toBe(keyOf(copy));
-    expect(trash).toBe(
-      String(
-        LegacyPopupMenu({
-          text: 'Actions',
-          items: [{ label: 'Go', icon: icon(Trash, 'glyph') }],
-        }),
+    expect(withoutKey(trash)).toBe(
+      withoutKey(
+        String(
+          LegacyPopupMenu({
+            text: 'Actions',
+            items: [{ label: 'Go', icon: icon(Trash, 'glyph') }],
+          }),
+        ),
       ),
     );
     // Switching back reuses the first menu's cached markup.

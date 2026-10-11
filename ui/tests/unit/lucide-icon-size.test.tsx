@@ -92,6 +92,9 @@ describe('LucideIcon size', () => {
 });
 
 describe('LucideIcon child markup cache', () => {
+  // The per-node variant bound in lucide-icon.tsx (internal, not exported).
+  const LUCIDE_ICON_VARIANT_LIMIT = 64;
+
   it('renders every Lucide glyph byte-identically to serializing each child and concatenating', () => {
     // The children are built as one Fragment SafeHtml; the reference is the
     // plain per-child serialization, so PopupMenu data-key digests (which hash
@@ -128,6 +131,43 @@ describe('LucideIcon child markup cache', () => {
     expect(String(LucideIcon({ icon: [...node], name: 'copy' }))).toContain(
       '<path d="M9 9h9"></path>',
     );
+  });
+
+  it('returns the identical SafeHtml for the same node and props', () => {
+    const node: LucideIconProps['icon'] = [['path', { d: 'M3 3h18' }]];
+    const props = {
+      icon: node,
+      name: 'same',
+      size: 's' as const,
+      label: 'Same',
+    };
+    const first = LucideIcon(props);
+    expect(LucideIcon({ ...props })).toBe(first);
+    // Any prop difference is its own variant.
+    expect(LucideIcon({ ...props, label: 'Other' })).not.toBe(first);
+    expect(LucideIcon({ ...props, inline: true })).not.toBe(first);
+    // An omitted prop differs from an empty one.
+    const bare = LucideIcon({ icon: node, name: 'same' });
+    const empty = LucideIcon({ icon: node, name: 'same', className: '' });
+    expect(empty).not.toBe(bare);
+    expect(String(empty)).toContain('class=""');
+    expect(String(bare)).not.toContain('class=');
+  });
+
+  it('bounds the variants remembered per node, evicting the oldest', () => {
+    const node: LucideIconProps['icon'] = [['path', { d: 'M4 4h16' }]];
+    const render = (index: number) =>
+      LucideIcon({ icon: node, name: 'row', label: `Row ${index}` });
+    const first = render(0);
+    for (let index = 1; index < LUCIDE_ICON_VARIANT_LIMIT; index++)
+      render(index);
+    expect(render(0)).toBe(first);
+    // One more variant evicts the oldest insertion, row 0 (a hit does not
+    // refresh it), which then renders afresh to the same markup.
+    render(LUCIDE_ICON_VARIANT_LIMIT);
+    const again = render(0);
+    expect(again).not.toBe(first);
+    expect(String(again)).toBe(String(first));
   });
 
   it('renders a node with a value outside the IconNode type fresh every time', () => {

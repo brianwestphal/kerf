@@ -42,6 +42,48 @@ function hashText(text: string): void {
   hashState[1] = check;
 }
 
+/**
+ * Parts at least this long (icon and details markup) are hashed through
+ * {@link hashLongText}: by a memoized digest of the whole string instead of
+ * character by character, so a glyph repeated on every row costs a map lookup.
+ */
+export const LONG_PART_LENGTH = 64;
+
+/** Bound on memoized long-part digests; past it the oldest is evicted. */
+export const PART_DIGEST_LIMIT = 4096;
+const partDigests = new Map<string, readonly [number, number]>();
+
+/**
+ * Feed a long part as its own two hashes. A Lucide SVG is a few hundred
+ * characters and repeats across every row's menu, so hashing its characters
+ * dominated an unchanged menu's cost; V8 hashes a string key natively (once
+ * per string object) and compares equal strings quickly.
+ */
+function hashLongText(text: string): void {
+  let pair = partDigests.get(text);
+  if (!pair) {
+    const digest = hashState[0]!;
+    const check = hashState[1]!;
+    hashState[0] = 0x811c9dc5;
+    hashState[1] = 0x9747b28c;
+    hashText(text);
+    pair = [hashState[0], hashState[1]];
+    hashState[0] = digest;
+    hashState[1] = check;
+    if (partDigests.size >= PART_DIGEST_LIMIT)
+      partDigests.delete(partDigests.keys().next().value!);
+    partDigests.set(text, pair);
+  }
+  hashCode(pair[0]);
+  hashCode(pair[1]);
+}
+
+/** Hash a part, through its memoized digest when it is long. */
+function hashPart(text: string): void {
+  if (text.length >= LONG_PART_LENGTH) hashLongText(text);
+  else hashText(text);
+}
+
 const PART_SEPARATOR = 0x00;
 const FIELD_SEPARATOR = 0x01;
 
@@ -75,9 +117,9 @@ function hashEntry(entry: PopupMenuEntry): void {
   hashCode(FIELD_SEPARATOR);
   // SafeHtml stringifies to its stored markup without copying, and the key
   // must change when an icon or details change.
-  hashText(String(entry.icon ?? ''));
+  hashPart(String(entry.icon ?? ''));
   hashCode(FIELD_SEPARATOR);
-  hashText(String(entry.details ?? ''));
+  hashPart(String(entry.details ?? ''));
   hashCode(FIELD_SEPARATOR);
   hashText(entry.attributes ? JSON.stringify(entry.attributes) : '{}');
   for (const child of entry.submenu ?? []) {
@@ -99,7 +141,9 @@ const markupCache = new Map<string, SafeHtml>();
 /**
  * The menu's `data-key` and its cache key. The digest covers, in order and
  * separated by U+0000, the trigger parts and then each entry, whose fields are
- * separated by U+0001; it is the FNV-1a hash of that joined text.
+ * separated by U+0001; it is the FNV-1a hash of that joined text, except that
+ * a part of {@link LONG_PART_LENGTH} or more characters contributes its own
+ * two hashes in place of its characters.
  */
 export function popupMenuContentKey(
   triggerParts: readonly string[],
@@ -109,7 +153,7 @@ export function popupMenuContentKey(
   hashState[1] = 0x9747b28c;
   for (let index = 0; index < triggerParts.length; index++) {
     if (index > 0) hashCode(PART_SEPARATOR);
-    hashText(triggerParts[index]!);
+    hashPart(triggerParts[index]!);
   }
   for (const entry of items) {
     hashCode(PART_SEPARATOR);
@@ -147,9 +191,15 @@ export function cachePopupMenuContent(
   markupCache.set(cacheKey, content);
 }
 
-/** Test hook: drop cached menu markup. */
+/** Test hook: drop cached menu markup and memoized part digests. */
 export function _clearPopupMenuMarkupCache(): void {
   markupCache.clear();
+  partDigests.clear();
+}
+
+/** Test hook: the number of memoized long-part digests. */
+export function _popupMenuPartDigestCount(): number {
+  return partDigests.size;
 }
 
 /** Test hook: the number of cached menu markups. */

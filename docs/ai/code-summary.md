@@ -584,7 +584,7 @@ the single-root `CollapsiblePanelToggle` remains covered.
 `ui/src/components/feedback/loading-spinner/loading-spinner.tsx` shares LucideIcon's named and positive numeric
 `size` contract; its CSS keeps the omitted size at 1em and applies supplied
 sizes through a private property.
-`ui/src/components/media/lucide-icon/lucide-icon.tsx` accepts an optional typed foreground color for both outline stroke and solid fill; `ui/src/shared/styles/css-values.ts` mints semantic, variable, and custom CSS foregrounds.
+`ui/src/components/media/lucide-icon/lucide-icon.tsx` accepts an optional typed foreground color for both outline stroke and solid fill, caches each icon node's child markup, and returns the identical `SafeHtml` for a repeated node and props (bounded at 64 variants per node); `ui/src/shared/styles/css-values.ts` mints semantic, variable, and custom CSS foregrounds.
 `LucideIcon.inline` marks its SVG for inline-block layout so it can flow inside `Text` without changing size or accessible naming.
 
 The optional `ui/src/webawesome.css` bridge gives filled badges a contrast-safe
@@ -928,9 +928,13 @@ as items. Browser coverage verifies the nested group structure and actions.
 Its `internal/popup-menu-content-cache.ts` streams the `data-key` FNV-1a digest
 (plus an independent check hash) over the trigger and entry fields without
 joining them, and keeps a bounded LRU of each menu's static trigger and entry
-markup, so an unchanged menu re-renders with one hash pass (KF-GVCMC7).
-`ui/tests/unit/popup-menu-content-cache.test.tsx` pins byte-identical output
-against the frozen `ui/tests/fixtures/popup-menu-legacy.tsx`, and
+markup, so an unchanged menu re-renders with one hash pass (KF-GVCMC7). Parts
+of 64 or more characters (icon and details markup) feed the digest as a
+memoized per-string hash pair from a bounded map instead of their characters,
+so a glyph repeated on every row costs a map lookup (KF-V2ZBHT).
+`ui/tests/unit/popup-menu-content-cache.test.tsx` pins output byte-identical
+to the frozen `ui/tests/fixtures/popup-menu-legacy.tsx` apart from the
+`data-key` value of menus with a long part (identical for menus without one), and
 `ui/tests/bench/popup-menu.bench.tsx` (`npm run bench:micro` in `ui/`) times a
 300-row render against it.
 `ui/src/components/feedback/anchored-surface/anchored-surface.tsx` exposes
