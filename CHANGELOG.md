@@ -36,6 +36,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Documentation
 
+- New recipe in the `kerfjs/async` API reference: move heavy app compute (fuzzy search, CSV or markdown parsing, aggregation) into a Worker by having a `resource()` fetcher post a message to the worker and resolve with its reply. It covers request/reply ids, dropping superseded results, worker errors, transferring `ArrayBuffer`s, and keeping the render on the main thread (`KF-04KHT9`).
+
 - Clarify for AI consumers that sunken/lowered token names resolve to a translucent tint, and explain intentional nested layers versus duplicate surface paint (`KF-9CM6D8`).
 
 ### Removed

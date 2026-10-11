@@ -772,6 +772,8 @@ For `bindList` over an `arraySignal`, a row-render exception still propagates to
   - Already automatic — on a custom element the morph removes an attribute the template omits only when the previous template rendered it, so reflected defaults survive re-renders and you don't need to render every default. A template that stops rendering an attribute still removes it.
 - **Does a focused input or contenteditable need its caret / selection to survive a re-render?**
   - Already automatic — the morph's focus-preservation pass restores caret position and selection range. No opt-in needed. (Lists must still have per-row keys per Hard Rule 2; otherwise the focused element matches by position and the focus jumps to the wrong row.)
+- **Is the app doing heavy compute on the main thread (fuzzy search over thousands of rows, CSV / markdown parsing, aggregation)?**
+  - Move that compute to a Worker and keep the render on the main thread. Make the `resource()` fetcher post a message to the worker and resolve with its reply, so the stale-response guard drops superseded results and a worker error lands in `value.error`. Transfer large `ArrayBuffer`s and typed arrays; plain results can be copied. Return data, never HTML. Re-run from a signal with `signal.subscribe(...)`, not an `effect()`. Do not try to move kerf's render or morph into a worker: render functions read signals, and parsing and DOM work only happen on the main thread. Full recipe: `docs/8-api-reference.md`, "Recipe: heavy app compute in a Worker".
 
 Worked examples: markdown-editor at `site/src/examples/complete/markdown-editor/main.tsx` (focus survival), the `data-morph-skip*` decision matrix at `docs/4-render.md` §4.3.
 

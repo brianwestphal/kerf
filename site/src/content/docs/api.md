@@ -852,6 +852,152 @@ diff.run({ fileId }, (report) => fetchDiff(fileId, report));
 
 `Resource<T, I>`, `ResourceState<T, I>`, `ResourceOptions<T, I>`, `ResourceStatus`, `ResourceProgress`, and `ResourceFetcher<T>` are all exported from `kerfjs/async`. The input type `I` defaults to `void` (so `resource<T>()` keeps `value.input` as `undefined`).
 
+### Recipe: heavy app compute in a Worker
+
+kerf renders and diffs on the main thread, and it should: render functions read signals there, and parsing HTML and touching the DOM can only happen there. What a Worker _can_ take off the main thread is your app's own compute: fuzzy search over thousands of rows, parsing a CSV or markdown file, aggregating a dataset. `resource()` is the seam. Its fetcher is any function that returns a promise, so it can post a message to a Worker and resolve with the reply, and the result renders on the main thread like any other data.
+
+A small request/reply helper on the main thread:
+
+```ts
+// compute-client.ts — main thread
+type Reply = { id: number; result?: unknown; error?: string };
+
+const worker = new Worker(new URL('./compute.worker.ts', import.meta.url), {
+  type: 'module',
+});
+const pending = new Map<number, (reply: Reply) => void>();
+let nextId = 0;
+
+worker.onmessage = (event: MessageEvent<Reply>) => {
+  pending.get(event.data.id)?.(event.data);
+  pending.delete(event.data.id);
+};
+
+/** Post one request and resolve with its reply; a worker error rejects. */
+export function call<T>(
+  message: Record<string, unknown>,
+  transfer: Transferable[] = [],
+): Promise<T> {
+  const id = nextId++;
+  return new Promise<T>((resolve, reject) => {
+    pending.set(id, (reply) =>
+      reply.error === undefined
+        ? resolve(reply.result as T)
+        : reject(new Error(reply.error)),
+    );
+    worker.postMessage({ ...message, id }, { transfer });
+  });
+}
+```
+
+The worker holds the data and does the work. It needs no kerf import:
+
+```ts
+// compute.worker.ts — runs off the main thread
+type Row = { id: number; label: string };
+type Job =
+  | { id: number; kind: 'search'; query: string }
+  | { id: number; kind: 'csv'; buffer: ArrayBuffer };
+
+const rows: Promise<Row[]> = fetch('/rows.json').then((r) => r.json());
+
+function score(label: string, query: string): number {
+  // Subsequence match: every query character, in order; tighter runs score higher.
+  let at = -1;
+  let total = 0;
+  for (const ch of query.toLowerCase()) {
+    const next = label.toLowerCase().indexOf(ch, at + 1);
+    if (next < 0) return 0;
+    total += next === at + 1 ? 2 : 1;
+    at = next;
+  }
+  return total;
+}
+
+async function handle(job: Job): Promise<[unknown, Transferable[]]> {
+  switch (job.kind) {
+    case 'search': {
+      const hits = (await rows)
+        .map((row) => ({ ...row, score: score(row.label, job.query) }))
+        .filter((hit) => hit.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 50);
+      return [hits, []];
+    }
+    case 'csv': {
+      const lines = new TextDecoder().decode(job.buffer).trim().split('\n');
+      const values = new Float64Array(lines.length - 1);
+      for (let i = 1; i < lines.length; i++) {
+        values[i - 1] = Number(lines[i].split(',')[1]);
+      }
+      // Hand the column back without copying it.
+      return [{ header: lines[0], values }, [values.buffer]];
+    }
+  }
+}
+
+self.onmessage = async (event: MessageEvent<Job>) => {
+  const { id } = event.data;
+  try {
+    const [result, transfer] = await handle(event.data);
+    self.postMessage({ id, result }, { transfer });
+  } catch (error) {
+    self.postMessage({ id, error: String(error) });
+  }
+};
+```
+
+The app wires a resource per job and renders as usual:
+
+```tsx
+import { each, mount, signal } from 'kerfjs';
+import { resource } from 'kerfjs/async';
+import { debouncedSignal } from 'kerfjs/timing';
+
+import { call } from './compute-client.js';
+
+type Hit = { id: number; label: string; score: number };
+
+export const query = signal('');
+const settledQuery = debouncedSignal(query, 120);
+export const hits = resource<Hit[], string>();
+
+// `subscribe` runs its callback untracked, so the run's own state writes
+// don't feed back into the subscription.
+settledQuery.subscribe((q) => {
+  void hits.run(q, () => call<Hit[]>({ kind: 'search', query: q }));
+});
+
+// The render stays on the main thread and reads plain data from the resource.
+mount(document.getElementById('results')!, () => {
+  const { status, data, error } = hits.value;
+  if (status === 'failed') return <p role="alert">{String(error)}</p>;
+  return (
+    <ul aria-busy={status === 'running' ? 'true' : 'false'}>
+      {each(data ?? [], (hit) => <li data-key={hit.id}>{hit.label}</li>)}
+    </ul>
+  );
+});
+
+type Column = { header: string; values: Float64Array };
+export const column = resource<Column, string>();
+
+export async function importCsv(file: File): Promise<void> {
+  const buffer = await file.arrayBuffer();
+  // Transferred, not copied: `buffer` is detached (byteLength 0) after this.
+  await column.run(file.name, () =>
+    call<Column>({ kind: 'csv', buffer }, [buffer]),
+  );
+}
+```
+
+What each piece does:
+
+- **Superseded results never paint.** Typing fires a run per settled query; when an older reply arrives after a newer run started, the stale-response guard drops it, so the list only ever shows the latest query's hits. The worker still finishes the older job: a worker runs one message at a time and cannot see a newer one until the current job returns. The debounce keeps that queue short. For a job that runs for seconds, call `worker.terminate()` and create a fresh worker instead of waiting it out.
+- **Errors land in `value.error`.** A throw inside the worker becomes an error reply, `call()` rejects, and the resource moves to `failed` without an unhandled rejection.
+- **Transfer large binary data; let small results copy.** Passing an `ArrayBuffer` (or a typed array's `.buffer`) in the transfer list moves it between threads without a copy, and the sender's copy becomes detached. Plain objects and strings are copied by structured clone, which is fast at these sizes; a megabyte-scale string costs well under a millisecond on a desktop. Transferring pays off for large typed arrays and file contents.
+- **Keep the worker's results as data.** Send rows, numbers, and strings back, not HTML: the render function, `each()`, and the morph stay on the main thread, where they can read signals and preserve focus and selection.
+
 ## Keyed reactive list — `kerfjs/list` subpath
 
 Optional subpath (`import { bindList } from 'kerfjs/list'`) providing `bindList` — a keyed list with a **live per-row mount** and optional **viewport virtualization**. It is a deliberate second list API, distinct from [`each()`](#eacht-items-render-cachekey-safehtml): reach for it when you need surgical per-row updates or windowing; `each()` stays the default for item-owned-state lists rendered to HTML strings. See `docs/4-render.md` for the tradeoff.
