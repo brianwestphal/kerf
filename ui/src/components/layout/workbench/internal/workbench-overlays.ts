@@ -22,6 +22,9 @@ const PANEL_SELECTORS: Record<WorkbenchPanelKey, string> = {
   bottomDrawer: ':scope > .kui-workbench__center > [data-workbench-drawer]',
 };
 
+/** Any Workbench panel element: a rail or the bottom drawer. */
+const PANEL_ELEMENT = '[data-workbench-rail], [data-workbench-drawer]';
+
 const RESTORE_PANELS: Record<WorkbenchPanelKey, string> = {
   leftRail: 'left',
   rightRail: 'right',
@@ -112,11 +115,31 @@ export function wireWorkbenchOverlays(
   const panelElement = (panel: WorkbenchOverlayPanel): HTMLElement | null =>
     findWorkbench()?.querySelector<HTMLElement>(PANEL_SELECTORS[panel.key]) ??
     null;
+  /**
+   * Each panel element's computed "out of flow" state, so a mutation or a
+   * press does not force a document-wide style recalculation to read it. Its
+   * inputs are the Workbench's inline size (the container queries), the root
+   * font size (rem breakpoints), and the panel's own presentation attributes:
+   * a ResizeObserver callback clears every entry, and a presentation attribute
+   * change, whoever writes it, clears that panel's entry. A re-rendered panel
+   * is a new element and is measured afresh. Without a ResizeObserver to
+   * report a breakpoint crossing, nothing is cached.
+   */
+  let outOfFlow = new WeakMap<HTMLElement, boolean>();
   /** Whether the panel's responsive overlay breakpoint currently applies. */
-  const responsive = (element: HTMLElement): boolean =>
-    element.dataset.presentation === 'inline' &&
-    element.hasAttribute('data-responsive-overlay-at') &&
-    globalThis.getComputedStyle(element).position === 'absolute';
+  const responsive = (element: HTMLElement): boolean => {
+    if (
+      element.dataset.presentation !== 'inline' ||
+      !element.hasAttribute('data-responsive-overlay-at')
+    )
+      return false;
+    const cached = outOfFlow.get(element);
+    if (cached !== undefined) return cached;
+    const absolute =
+      globalThis.getComputedStyle(element).position === 'absolute';
+    if (resizeObserver) outOfFlow.set(element, absolute);
+    return absolute;
+  };
   const overlaid = (element: HTMLElement): boolean =>
     element.dataset.presentation === 'overlay' || responsive(element);
 
@@ -225,6 +248,15 @@ export function wireWorkbenchOverlays(
   // The inline collapsed state of each panel whose responsive overlay
   // currently applies, restored when it stops applying.
   const inlineState = new Map<WorkbenchOverlayPanel, boolean>();
+  // The Workbench's measured width, for numeric thresholds; cleared with the
+  // presentation cache, and when the Workbench element changes.
+  let measuredWidth: { workbench: HTMLElement; width: number } | undefined;
+  const workbenchWidth = (workbench: HTMLElement): number => {
+    if (measuredWidth?.workbench === workbench) return measuredWidth.width;
+    const width = workbench.getBoundingClientRect().width;
+    if (resizeObserver) measuredWidth = { workbench, width };
+    return width;
+  };
   const sync = (): void => {
     const workbench = findWorkbench();
     let width: number | undefined;
@@ -240,12 +272,16 @@ export function wireWorkbenchOverlays(
         Number.isFinite(at) &&
         at > 0 &&
         element.dataset.presentation === 'inline' &&
-        (width ??= workbench!.getBoundingClientRect().width) <= at;
+        (width ??= workbenchWidth(workbench!)) <= at;
       if (customActive) {
-        if (element.dataset.responsiveOverlayActive !== 'true')
+        if (element.dataset.responsiveOverlayActive !== 'true') {
           element.dataset.responsiveOverlayActive = 'true';
-      } else if (element.hasAttribute('data-responsive-overlay-active'))
+          outOfFlow.delete(element);
+        }
+      } else if (element.hasAttribute('data-responsive-overlay-active')) {
         element.removeAttribute('data-responsive-overlay-active');
+        outOfFlow.delete(element);
+      }
       const active = responsive(element);
       if (active && !inlineState.has(panel)) {
         inlineState.set(panel, panel.collapsed.peek());
@@ -262,8 +298,10 @@ export function wireWorkbenchOverlays(
         rendered &&
         customActive &&
         rendered.dataset.responsiveOverlayActive !== 'true'
-      )
+      ) {
         rendered.dataset.responsiveOverlayActive = 'true';
+        outOfFlow.delete(rendered);
+      }
     }
     if (!workbench) return;
     // A direct root attribute limits style invalidation to overlay changes.
@@ -305,7 +343,11 @@ export function wireWorkbenchOverlays(
   let observed: HTMLElement | null = null;
   const resizeObserver =
     typeof globalThis.ResizeObserver === 'function'
-      ? new globalThis.ResizeObserver(() => sync())
+      ? new globalThis.ResizeObserver(() => {
+          outOfFlow = new WeakMap();
+          measuredWidth = undefined;
+          sync();
+        })
       : undefined;
   /** Observe the current Workbench; whether it changed. */
   const track = (): boolean => {
@@ -316,9 +358,31 @@ export function wireWorkbenchOverlays(
     if (workbench) resizeObserver?.observe(workbench);
     return true;
   };
+  // Only a mutation that can change a panel's presentation re-syncs: a new
+  // Workbench, a panel element added or removed, or a presentation attribute
+  // change on a panel. Other renders below root (a CollapsiblePanel's
+  // `data-collapsed`, a list's rows) are skipped, so they never force style.
+  const isPanel = (node: Node): boolean =>
+    node instanceof HTMLElement && node.matches(PANEL_ELEMENT);
+  const hasPanel = (nodes: NodeList): boolean => {
+    for (const node of nodes) if (isPanel(node)) return true;
+    return false;
+  };
   const mutationObserver = new MutationObserver((records) => {
-    if (track() || records.some((record) => record.type === 'attributes'))
-      sync();
+    let relevant = track();
+    for (const record of records) {
+      if (record.type === 'attributes') {
+        if (!isPanel(record.target)) continue;
+        if (record.attributeName !== 'data-collapsed')
+          outOfFlow.delete(record.target as HTMLElement);
+        relevant = true;
+      } else if (
+        !relevant &&
+        (hasPanel(record.addedNodes) || hasPanel(record.removedNodes))
+      )
+        relevant = true;
+    }
+    if (relevant) sync();
   });
   mutationObserver.observe(root, {
     attributes: true,

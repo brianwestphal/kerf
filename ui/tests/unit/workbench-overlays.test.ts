@@ -1246,3 +1246,221 @@ describe('wireWorkbench toolbar toggle focus', () => {
     expect(document.activeElement).toBe(quick);
   });
 });
+
+describe('wireWorkbench presentation reads', () => {
+  /** Computed-style reads of the Workbench's own panels since the last reset. */
+  const panelStyleReads = () =>
+    vi
+      .mocked(globalThis.getComputedStyle)
+      .mock.calls.filter(
+        ([element]) =>
+          element instanceof HTMLElement &&
+          element.matches('[data-workbench-rail], [data-workbench-drawer]'),
+      ).length;
+  const resetReads = () => vi.mocked(globalThis.getComputedStyle).mockClear();
+
+  it('reads no style for renders that cannot change panel presentation', async () => {
+    const app = studio();
+    app.wire();
+    const main = app.root.querySelector<HTMLElement>('.kui-workbench__main')!;
+    resetReads();
+
+    // A large content render: rows added and removed, a nested section's
+    // collapsed state and presentation flipped, all inside the work area.
+    const section = document.createElement('section');
+    section.dataset.collapsed = 'false';
+    section.dataset.presentation = 'inline';
+    main.append(section);
+    for (let round = 0; round < 3; round++) {
+      section.replaceChildren(
+        ...Array.from({ length: 50 }, (_, index) => {
+          const row = document.createElement('div');
+          row.textContent = `Row ${round}-${index}`;
+          return row;
+        }),
+      );
+      section.dataset.collapsed = String(round % 2 === 0);
+      section.dataset.presentation = round % 2 === 0 ? 'overlay' : 'inline';
+      await flush();
+    }
+    expect(panelStyleReads()).toBe(0);
+
+    // Presses and clicks with the responsive navigator open reuse the
+    // measured presentation instead of forcing style on the fresh render.
+    for (let round = 0; round < 3; round++) {
+      press(app.button('Plain'));
+      app.button('Plain').click();
+    }
+    expect(app.left.value).toBe(false);
+    expect(panelStyleReads()).toBe(0);
+  });
+
+  it('re-reads once per crossing, in both directions, and not for repeats', async () => {
+    const app = studio();
+    app.wire();
+    resetReads();
+
+    narrow = true;
+    resize(true);
+    expect(app.left.value).toBe(true);
+    expect(app.drawer.value).toBe(true);
+    const crossing = panelStyleReads();
+    expect(crossing).toBeGreaterThan(0);
+
+    // Repeated mutations and clicks while the breakpoint applies: no reads,
+    // and the overlay still behaves as one.
+    resetReads();
+    app.left.value = false;
+    await flush();
+    expect(app.leftRail().contains(document.activeElement)).toBe(true);
+    app.leftRail().dataset.collapsed = 'false';
+    app.root
+      .querySelector('.kui-workbench__main')!
+      .append(document.createElement('div'));
+    await flush();
+    press(app.button('Plain'));
+    app.button('Plain').click();
+    expect(app.left.value).toBe(true);
+    app.left.value = false;
+    await flush();
+    press(app.button('Plain'));
+    app.button('Plain').click();
+    expect(app.left.value).toBe(true);
+    expect(panelStyleReads()).toBe(0);
+
+    // The breakpoint stops applying: the remembered inline state returns and
+    // a click no longer closes the inline navigator.
+    narrow = false;
+    resize(false);
+    expect(app.left.value).toBe(false);
+    expect(app.drawer.value).toBe(false);
+    expect(panelStyleReads()).toBeGreaterThan(0);
+    resetReads();
+    press(app.button('Plain'));
+    app.button('Plain').click();
+    expect(app.left.value).toBe(false);
+    expect(panelStyleReads()).toBe(0);
+
+    // And applies again: collapsed once more, then a further edit opens it.
+    narrow = true;
+    resize(true);
+    expect(app.left.value).toBe(true);
+    app.left.value = false;
+    await flush();
+    expect(app.leftRail().contains(document.activeElement)).toBe(true);
+  });
+
+  it('re-reads a panel whose presentation attributes change', async () => {
+    const app = studio();
+    app.wire();
+    // Cache the inline answer for the navigator.
+    press(app.button('Plain'));
+    app.button('Plain').click();
+    expect(app.left.value).toBe(false);
+    resetReads();
+
+    // The container query now applies, but no resize reports it: only a
+    // presentation attribute change on the panel can make it re-read.
+    narrow = true;
+    app.root
+      .querySelector('.kui-workbench__main')!
+      .append(document.createElement('div'));
+    await flush();
+    expect(app.left.value).toBe(false);
+    expect(panelStyleReads()).toBe(0);
+    app.leftRail().dataset.responsiveOverlayAt = 'compact';
+    await flush();
+    expect(app.left.value).toBe(true);
+    expect(panelStyleReads()).toBeGreaterThan(0);
+    // The app's re-render puts its own breakpoint back; still an overlay.
+    expect(app.leftRail().dataset.responsiveOverlayAt).toBe('narrow');
+
+    // And the other way: the cached overlay answer is not reused either.
+    narrow = false;
+    app.leftRail().dataset.responsiveOverlayAt = 'compact';
+    await flush();
+    expect(app.left.value).toBe(false);
+
+    // A static overlay needs no read at all.
+    resetReads();
+    app.rightMode.value = 'overlay';
+    await flush();
+    app.right.value = false;
+    await flush();
+    press(app.button('Plain'));
+    app.button('Plain').click();
+    expect(app.right.value).toBe(true);
+    expect(
+      vi
+        .mocked(globalThis.getComputedStyle)
+        .mock.calls.some(([element]) => element === app.rightRail()),
+    ).toBe(false);
+  });
+
+  it('measures a replaced panel element afresh', async () => {
+    const app = studio();
+    app.wire();
+    narrow = true;
+    resize(true);
+    expect(app.left.value).toBe(true);
+    await flush();
+    const before = app.leftRail();
+
+    // A re-render that swaps the rail element for a new one is a new
+    // measurement, and the replacement keeps the overlay behaviour.
+    const replacement = before.cloneNode(true) as HTMLElement;
+    resetReads();
+    before.replaceWith(replacement);
+    await flush();
+    // The panel's own childList change re-synced and measured it.
+    expect(
+      vi
+        .mocked(globalThis.getComputedStyle)
+        .mock.calls.some(([element]) => element === replacement),
+    ).toBe(true);
+    app.left.value = false;
+    await flush();
+    press(app.button('Plain'));
+    app.button('Plain').click();
+    expect(app.left.value).toBe(true);
+  });
+
+  it('measures a numeric threshold on every sync without ResizeObserver', async () => {
+    vi.stubGlobal('ResizeObserver', undefined);
+    const app = studio({ at: 1024 });
+    app.wire();
+    expect(app.left.value).toBe(false);
+    // No observer reports width changes, so each relevant sync measures.
+    workbenchWidth = 1024;
+    app.leftRail().dataset.presentation = 'inline';
+    await flush();
+    expect(app.leftRail().dataset.responsiveOverlayActive).toBe('true');
+    expect(app.left.value).toBe(true);
+    workbenchWidth = 1025;
+    app.leftRail().dataset.presentation = 'inline';
+    app.leftRail().dataset.collapsed = 'true';
+    await flush();
+    expect(app.leftRail().dataset.responsiveOverlayActive).toBeUndefined();
+    expect(app.left.value).toBe(false);
+  });
+
+  it('re-reads on every use without ResizeObserver', async () => {
+    vi.stubGlobal('ResizeObserver', undefined);
+    const app = studio();
+    app.wire();
+    resetReads();
+    narrow = true;
+    // No observer reports the crossing, so nothing may be cached: the next
+    // presentation-relevant change sees the breakpoint.
+    app.leftRail().dataset.presentation = 'inline';
+    await flush();
+    expect(app.left.value).toBe(true);
+    app.left.value = false;
+    await flush();
+    const reads = panelStyleReads();
+    press(app.button('Plain'));
+    app.button('Plain').click();
+    expect(app.left.value).toBe(true);
+    expect(panelStyleReads()).toBeGreaterThan(reads);
+  });
+});

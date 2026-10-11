@@ -428,7 +428,13 @@ anchor(--kui-restore-drawer top, <safe-area fallback>))` with
     begins to apply — detected by the panel computing `position: absolute`
     while `data-presentation` stays `inline`, re-checked by a
     `ResizeObserver` on the Workbench plus a `MutationObserver` for a
-    Workbench that renders later or a changed presentation — remembering and
+    Workbench that renders later or a changed presentation (KF-CRRD70: the
+    computed position is cached per panel element and re-read only after a
+    resize, a presentation attribute change on that panel, or for a new panel
+    element, and the observer re-syncs only for a new Workbench, an added or
+    removed panel, or an attribute change on a panel, so ordinary content
+    renders and presses never force a style recalculation; without
+    `ResizeObserver` nothing is cached) — remembering and
     later restoring its inline state (also on disposal), with the content's
     transition suspended across one style flush so no slide plays. Escape
     (unless already `defaultPrevented`) closes the focused, else most

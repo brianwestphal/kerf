@@ -1050,7 +1050,10 @@ internal
 (`wireWorkbenchOverlays`,
 `dismissOverlays` on by default): a panel collapses when its
 `responsiveOverlayAt` breakpoint begins to apply (a `ResizeObserver` on the
-Workbench plus a `MutationObserver` for late renders and presentation changes;
+Workbench plus a `MutationObserver` for late renders and presentation changes,
+filtered to records that touch a panel; each panel's computed position and the
+measured width are cached until a resize or a panel presentation attribute
+change, KF-CRRD70;
 numeric overlay state is mirrored onto the Workbench root for CSS, and width is
 measured only when a wired panel has a numeric breakpoint)
 and gets its inline state back when it ends, an open overlay takes focus on
