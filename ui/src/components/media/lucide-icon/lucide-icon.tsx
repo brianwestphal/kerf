@@ -1,3 +1,4 @@
+import { raw, type SafeHtml } from 'kerfjs';
 import { jsx } from 'kerfjs/jsx-runtime';
 import type { IconNode } from 'lucide';
 
@@ -30,6 +31,35 @@ export interface LucideIconProps {
   size?: LucideIconSize;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+}
+
+/**
+ * Each icon node's rendered child markup. Lucide icon nodes are module-level
+ * constants, so a list that re-renders the same glyph in every row serializes
+ * (validates, screens, and escapes) its path data once instead of per render.
+ * Keyed by node identity and held weakly, so an app-built node is collected
+ * with it; treat a node as immutable once rendered. A node carrying anything
+ * but string or number attribute values (outside the `IconNode` type) is
+ * rendered fresh every time.
+ */
+const childMarkup = new WeakMap<LucideNode, SafeHtml>();
+
+function renderChildren(icon: LucideNode): SafeHtml {
+  const cached = childMarkup.get(icon);
+  if (cached) return cached;
+  let cacheable = true;
+  const markup = raw(
+    icon
+      .map(([tag, attrs]) => {
+        for (const value of Object.values(attrs))
+          if (typeof value !== 'string' && typeof value !== 'number')
+            cacheable = false;
+        return String(jsx(tag, attrs));
+      })
+      .join(''),
+  );
+  if (cacheable) childMarkup.set(icon, markup);
+  return markup;
 }
 
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
@@ -80,7 +110,7 @@ export function LucideIcon({
           .join(';') || undefined
       }
     >
-      {icon.map(([tag, attrs]) => jsx(tag, attrs))}
+      {renderChildren(icon)}
     </svg>
   );
 }

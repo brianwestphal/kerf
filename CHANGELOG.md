@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Faster attribute serialization for large static values: `LucideIcon` caches each icon node's rendered child markup by node identity, and the JSX runtime's HTML/attribute escaping skips its replace passes when a value has nothing to escape. A 138-icon render pass drops from about 0.80 ms to 0.45 ms (`KF-JPP0Z5`).
+
 - `wireTokenSearchFields` collapses an empty field blurred by a pointer press in the click's own task, after the click reaches the window, instead of a separate task, so the click's render and the collapse share one style recalculation; a click that stops propagating still falls back to the next task (`KF-AS24QP`).
 
 - `wireScrollDividers` no longer re-collects pairings and re-measures every scroller for mutations that cannot change a pairing, such as a row's selection class or a list morph inside scrolled content; it still refreshes when structural elements or target ids are added, removed, re-classed, or renamed (`KF-50PA0Y`).

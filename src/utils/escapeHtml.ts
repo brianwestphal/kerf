@@ -4,7 +4,15 @@
  * runtime dependencies beyond `@preact/signals-core`.
  */
 
+// One scan with no allocation decides whether any replace pass is needed:
+// most text and attribute values (ids, classes, SVG path data) carry none of
+// these characters, and five full-string passes over each dominated the
+// serialization of large static values.
+const HTML_SPECIAL = /[&<>"]/;
+const ATTR_SPECIAL = /[&"'<>]/;
+
 export function escapeHtml(str: string): string {
+  if (!HTML_SPECIAL.test(str)) return str;
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -13,6 +21,7 @@ export function escapeHtml(str: string): string {
 }
 
 export function escapeAttr(str: string): string {
+  if (!ATTR_SPECIAL.test(str)) return str;
   return str
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')

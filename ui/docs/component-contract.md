@@ -788,6 +788,10 @@ node's own fill attributes.
 The SVG is block-level by default. Pass `inline` when it belongs inside a
 sentence or `Text`: the SVG becomes `inline-block`, keeps its inherited 1em
 size unless `size` is supplied, and stays decorative unless `label` is set.
+`LucideIcon` serializes an icon node's child markup once per node identity and
+reuses it on every later render (Lucide nodes are module constants), so a list
+that repeats a glyph per row does not re-escape its path data each render.
+Treat a node as immutable once rendered; build a new node for new geometry.
 
 `LoadingSpinner` accepts the same `size` steps as `LucideIcon`: `xs`, `s`, `m`,
 `l`, `xl` (12/16/20/24/32px at a 16px root) or a positive finite pixel

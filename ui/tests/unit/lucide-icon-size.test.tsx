@@ -1,3 +1,4 @@
+import { signal } from 'kerfjs';
 import { Circle, Star } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
@@ -86,5 +87,43 @@ describe('LucideIcon size', () => {
     expect(() =>
       LucideIcon({ ...props, size: 'giant' } as unknown as LucideIconProps),
     ).toThrow(RangeError);
+  });
+});
+
+describe('LucideIcon child markup cache', () => {
+  it('serializes each icon node once and reuses it across renders and props', () => {
+    const node: LucideIconProps['icon'] = [
+      ['path', { d: 'M1 1h22' }],
+      ['circle', { cx: 12, cy: 12, r: 4 }],
+    ];
+    const first = String(LucideIcon({ icon: node, name: 'own', size: 's' }));
+    expect(first).toContain(
+      '<path d="M1 1h22"></path><circle cx="12" cy="12" r="4"></circle></svg>',
+    );
+    // A rendered node is treated as immutable: the cached markup is reused,
+    // while every per-instance prop still renders fresh.
+    node[0]![1].d = 'M9 9h9';
+    const second = String(
+      LucideIcon({ icon: node, name: 'own', size: 'l', label: 'Own' }),
+    );
+    expect(second).toContain('<path d="M1 1h22"></path>');
+    expect(second).toContain('data-size="l"');
+    expect(second).toContain('aria-label="Own"');
+    // A different node identity renders its own markup.
+    expect(String(LucideIcon({ icon: [...node], name: 'copy' }))).toContain(
+      '<path d="M9 9h9"></path>',
+    );
+  });
+
+  it('renders a node with a value outside the IconNode type fresh every time', () => {
+    const d = signal('M1 1h22');
+    const node = [['path', { d }]] as unknown as LucideIconProps['icon'];
+    expect(String(LucideIcon({ icon: node, name: 'live' }))).toContain(
+      '<path d="M1 1h22"></path>',
+    );
+    d.value = 'M2 2h20';
+    expect(String(LucideIcon({ icon: node, name: 'live' }))).toContain(
+      '<path d="M2 2h20"></path>',
+    );
   });
 });
