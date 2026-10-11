@@ -286,6 +286,7 @@ kerf/
 │   │   ├── edge-case-array-and-shape-transitions.test.tsx ← array and DOM-shape transition adversarial cases
 │   │   ├── edge-case-focus-and-fast-paths.test.tsx ← focus and reconciler fast-path adversarial cases
 │   │   ├── edge-case-jsx-and-nesting.test.tsx ← unusual JSX children and nesting boundaries
+│   │   ├── escapeHtml.internal.test.ts ← KF-JPP0Z5 — `escapeHtml` / `escapeAttr` no-op fast path (value with nothing to escape returned unchanged) and every special character escaped alone or mixed. `.internal.test.ts` so dist-full excludes it.
 │   │   ├── edge-case-reconciliation.test.tsx ← keyed reconciliation, markers, and orphan recovery
 │   │   ├── edge-case-remount-recovery.test.tsx ← remount and recovery transitions
 │   │   ├── edge-case-events-and-reactivity.test.tsx ← event and reactive-graph edge cases
