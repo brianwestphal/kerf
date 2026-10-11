@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 334400,
-  "measuredLargestJavaScriptGzip": 124515,
-  "measuredTotalJavaScriptGzip": 334306,
+  "totalJavaScriptGzip": 336700,
+  "measuredLargestJavaScriptGzip": 124512,
+  "measuredTotalJavaScriptGzip": 336654,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3187,6 +3187,22 @@
         "measuredTotalJavaScriptGzip": 334306,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 334400
+      }
+    },
+    {
+      "at": "2026-10-11T13:41:43.026Z",
+      "reason": "KF-HA8R27: the kerfjs core grew ~2.07 KB gzip for the change-scoped list-free morph (approved budget raise)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124515,
+        "measuredTotalJavaScriptGzip": 334306,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 334400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124512,
+        "measuredTotalJavaScriptGzip": 336654,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 336700
       }
     }
   ]
