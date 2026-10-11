@@ -1,5 +1,5 @@
-import { raw, type SafeHtml } from 'kerfjs';
-import { jsx } from 'kerfjs/jsx-runtime';
+import type { SafeHtml } from 'kerfjs';
+import { Fragment, jsx } from 'kerfjs/jsx-runtime';
 import type { IconNode } from 'lucide';
 
 import type { CssForegroundColor } from '../../../shared/styles/css-values.js';
@@ -48,16 +48,14 @@ function renderChildren(icon: LucideNode): SafeHtml {
   const cached = childMarkup.get(icon);
   if (cached) return cached;
   let cacheable = true;
-  const markup = raw(
-    icon
-      .map(([tag, attrs]) => {
-        for (const value of Object.values(attrs))
-          if (typeof value !== 'string' && typeof value !== 'number')
-            cacheable = false;
-        return String(jsx(tag, attrs));
-      })
-      .join(''),
-  );
+  const markup = jsx(Fragment, {
+    children: icon.map(([tag, attrs]) => {
+      for (const value of Object.values(attrs))
+        if (typeof value !== 'string' && typeof value !== 'number')
+          cacheable = false;
+      return jsx(tag, attrs);
+    }),
+  });
   if (cacheable) childMarkup.set(icon, markup);
   return markup;
 }

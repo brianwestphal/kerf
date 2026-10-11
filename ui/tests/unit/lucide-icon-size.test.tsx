@@ -1,5 +1,6 @@
 import { signal } from 'kerfjs';
-import { Circle, Star } from 'lucide';
+import { jsx } from 'kerfjs/jsx-runtime';
+import { Circle, icons, Star } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -91,6 +92,20 @@ describe('LucideIcon size', () => {
 });
 
 describe('LucideIcon child markup cache', () => {
+  it('renders every Lucide glyph byte-identically to serializing each child and concatenating', () => {
+    // The children are built as one Fragment SafeHtml; the reference is the
+    // plain per-child serialization, so PopupMenu data-key digests (which hash
+    // this markup) do not move.
+    for (const [name, node] of Object.entries(icons)) {
+      const reference = node
+        .map(([tag, attrs]) => String(jsx(tag, attrs)))
+        .join('');
+      const html = String(LucideIcon({ icon: node, name }));
+      const children = html.slice(html.indexOf('>') + 1, -'</svg>'.length);
+      expect(children, name).toBe(reference);
+    }
+  });
+
   it('serializes each icon node once and reuses it across renders and props', () => {
     const node: LucideIconProps['icon'] = [
       ['path', { d: 'M1 1h22' }],
