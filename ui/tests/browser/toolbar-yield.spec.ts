@@ -4,6 +4,12 @@ test('trailing sibling groups yield and return across expansion and compact widt
   page,
 }) => {
   await page.goto('/?component=toolbar');
+  // The catalog renders the demo after navigation settles; WebKit can run the
+  // evaluate before it exists, so wait for the source toolbar first.
+  await page
+    .locator('[data-demo-toolbar-overflow="trailing-priority"] .kui-toolbar')
+    .first()
+    .waitFor({ state: 'attached' });
   await page.evaluate(() => {
     const source = document.querySelector<HTMLElement>(
       '[data-demo-toolbar-overflow="trailing-priority"] .kui-toolbar',
