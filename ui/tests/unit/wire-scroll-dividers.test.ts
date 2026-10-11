@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { raw } from 'kerfjs';
 import postcss from 'postcss';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Toolbar } from '../../src/components/actions/toolbar/toolbar.js';
 import { Pane } from '../../src/components/layout/pane/pane.js';
@@ -704,7 +704,7 @@ describe('wireScrollDividers — lifecycle', () => {
     dispose();
   });
 
-  it('skips mutations inside scrolled content that cannot change a pairing', async () => {
+  it('re-measures, without re-reading pairings, after mutations inside scrolled content', async () => {
     const root = mountHtml(
       String(
         Pane({
@@ -721,8 +721,10 @@ describe('wireScrollDividers — lifecycle', () => {
     const state = geometry(content, { scrollHeight: 300, scrollTop: 50 });
     const dispose = wireScrollDividers(root);
     const observer = FakeResizeObserver.instances[0]!;
+    const collects = vi.spyOn(root, 'querySelectorAll');
     expect(divider(header)).toBe('b');
-    // Unobserved geometry: only a refresh would re-measure it.
+    // Content that grows or shrinks without resizing a direct child (an
+    // absolutely positioned popup): the ResizeObserver never reports it.
     state.scrollTop = 0;
     list.firstElementChild!.classList.add('selected');
     list.firstElementChild!.setAttribute('data-active', 'true');
@@ -730,15 +732,63 @@ describe('wireScrollDividers — lifecycle', () => {
     list.lastElementChild!.remove();
     list.firstElementChild!.textContent = 'renamed';
     await settle();
-    expect(divider(header)).toBe('b');
+    expect(divider(header)).toBeNull();
+    expect(collects).not.toHaveBeenCalled();
     expect([...observer.observed]).toEqual([content, list]);
 
     // Dropping an owned attribute in the same batch still restores it.
+    state.scrollTop = 50;
     list.firstElementChild!.classList.remove('selected');
     header!.removeAttribute('data-scroll-divider');
     await settle();
     expect(divider(header)).toBe('b');
+    expect(collects).not.toHaveBeenCalled();
+
+    // A frame that measures nothing new writes nothing.
+    list.firstElementChild!.classList.add('selected');
+    await settle();
+    expect(divider(header)).toBe('b');
+
+    // Batches before the frame share it, and disposal cancels it.
+    const frame = vi.spyOn(window, 'requestAnimationFrame');
+    list.firstElementChild!.classList.remove('selected');
+    await Promise.resolve();
+    list.firstElementChild!.classList.add('selected');
+    await Promise.resolve();
+    expect(frame).toHaveBeenCalledTimes(1);
+    state.scrollTop = 0;
     dispose();
+    await settle();
+    expect(divider(header)).toBeNull();
+    frame.mockRestore();
+    collects.mockRestore();
+  });
+
+  it('skips the frame re-measure where requestAnimationFrame is missing', async () => {
+    const root = mountHtml(
+      String(
+        Pane({
+          header: Toolbar({ label: 'Head' }),
+          children: raw('<p class="row">a</p>'),
+        }),
+      ),
+    );
+    const header = root.querySelector('.kui-pane__header');
+    const content = root.querySelector<HTMLElement>('.kui-pane__content')!;
+    const state = geometry(content, { scrollHeight: 300, scrollTop: 50 });
+    const original = window.requestAnimationFrame;
+    window.requestAnimationFrame =
+      undefined as unknown as typeof window.requestAnimationFrame;
+    try {
+      const dispose = wireScrollDividers(root);
+      state.scrollTop = 0;
+      root.querySelector('.row')!.classList.add('selected');
+      await settle();
+      expect(divider(header)).toBe('b');
+      dispose();
+    } finally {
+      window.requestAnimationFrame = original;
+    }
   });
 
   it('still re-reads pairings when content mutations add, re-class, or rename structure', async () => {
@@ -758,14 +808,20 @@ describe('wireScrollDividers — lifecycle', () => {
       targets: [{ scroller: 'late-scroller', top: 'late-top' }],
     });
     const observer = FakeResizeObserver.instances[0]!;
+    // Every refresh re-collects pairings below the root; a frame
+    // re-measure of skipped content mutations does not.
+    const collects = vi.spyOn(root, 'querySelectorAll');
     const remeasuredBy = async (mutate: () => void) => {
-      // Flip the unobserved geometry against what is drawn now, so only a
-      // re-measure changes the divider.
+      collects.mockClear();
+      // Flip the unobserved geometry against what is drawn now, so the
+      // refresh's re-measure changes the divider.
       const before = divider(header);
       state.scrollTop = before ? 0 : 50;
       mutate();
       await settle();
-      return divider(header) !== before;
+      if (collects.mock.calls.length > 0)
+        expect(divider(header)).not.toBe(before);
+      return collects.mock.calls.length > 0;
     };
 
     // A child-list change of the scroller itself (its child count and
@@ -811,6 +867,7 @@ describe('wireScrollDividers — lifecycle', () => {
     holder.innerHTML = '<div id="late-scroller"></div>';
     expect(await remeasuredBy(() => slot.append(holder))).toBe(true);
     expect(await remeasuredBy(() => holder.remove())).toBe(true);
+    collects.mockRestore();
     dispose();
   });
 

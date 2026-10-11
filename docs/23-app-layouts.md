@@ -1035,8 +1035,11 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   target-id element added, removed, re-classed, or renamed, or a child-list
   change of a scroller itself (KF-50PA0Y: a row selection deep inside a
   scroller used to force a full re-collect and a layout of every scroller);
-  ordinary content morphs are skipped and their size effects reach the
-  `ResizeObserver`. Horizontal edges are
+  ordinary content morphs skip that re-read and only re-measure the known
+  scrollers in the next animation frame (KF-E29N3W: an extent change that
+  resizes no direct scroller child — an absolutely positioned popup, a
+  `display: contents` child — reaches no `ResizeObserver`), when the browser
+  lays out anyway. Horizontal edges are
   physical, so a right-to-left scroller (negative `scrollLeft`) reports the
   same sides. A 1px tolerance absorbs the rounding between whole-pixel
   `scrollWidth` / `scrollHeight` and fractional scroll positions.

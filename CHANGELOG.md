@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - `wireTokenSearchFields` collapses an empty field blurred by a pointer press in the click's own task, after the click reaches the window, instead of a separate task, so the click's render and the collapse share one style recalculation; a click that stops propagating still falls back to the next task (`KF-AS24QP`).
 
-- `wireScrollDividers` no longer re-collects pairings and re-measures every scroller for mutations that cannot change a pairing, such as a row's selection class or a list morph inside scrolled content; it still refreshes when structural elements or target ids are added, removed, re-classed, or renamed (`KF-50PA0Y`).
+- `wireScrollDividers` no longer re-collects pairings and re-measures every scroller for mutations that cannot change a pairing, such as a row's selection class or a list morph inside scrolled content; it still refreshes when structural elements or target ids are added, removed, re-classed, or renamed (`KF-50PA0Y`). Those content mutations instead re-measure the known scrollers once in the next animation frame, so an absolutely positioned descendant that extends the scroll area still updates its dividers (`KF-E29N3W`).
 
 - The UX Catalog filter keeps its placeholder hidden when a controlled state change rerenders the sidebar while filter text remains (`KF-4EA9R6`).
 

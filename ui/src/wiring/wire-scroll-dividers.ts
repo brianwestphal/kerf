@@ -235,8 +235,8 @@ function write(element: Element, name: StateAttribute, value: string) {
  *
  * Structure is re-read after every DOM change below root that can change a
  * pairing — a structural element or target id added, removed, or re-classed;
- * mutations inside scrolled content (a row's class, a list's rows) are skipped
- * — and a re-render that drops the attributes gets them back before paint.
+ * mutations inside scrolled content (a row's class, a list's rows) only
+ * re-measure the scrollers in the next animation frame — and a re-render that drops the attributes gets them back before paint.
  * Scroll is tracked with one capturing listener per registered root, and size
  * changes of each scroller and its children with a `ResizeObserver`. Overlapping registrations
  * share one attribute writer; each disposer removes its registration, and the
@@ -430,6 +430,28 @@ function createController(
     apply();
   };
 
+  /** Re-measure every scroller (pairings unchanged); write what changed. */
+  const remeasure = () => {
+    let changed = false;
+    for (const scroller of overflow.keys()) {
+      const edges = measure(scroller);
+      if (edges === overflow.get(scroller)) continue;
+      overflow.set(scroller, edges);
+      changed = true;
+    }
+    if (changed) apply();
+  };
+
+  let remeasureFrame: number | undefined;
+  const scheduleRemeasure = () => {
+    if (remeasureFrame !== undefined || !view?.requestAnimationFrame) return;
+    // The final disposer cancels a pending frame.
+    remeasureFrame = view.requestAnimationFrame(() => {
+      remeasureFrame = undefined;
+      remeasure();
+    });
+  };
+
   const onScroll = (event: Event) => {
     const scroller = event.target as HTMLElement;
     if (!overflow.has(scroller)) return;
@@ -446,8 +468,10 @@ function createController(
         // dropped or changed attributes this wiring owns gets them back
         // without re-measuring.
         // Everything else (a row's selection class, a list morph's rows)
-        // cannot change a pairing and is skipped: content-size changes it
-        // causes reach the ResizeObserver instead.
+        // cannot change a pairing. It is re-measured in the next frame
+        // instead, when the browser lays out anyway, which catches what the
+        // ResizeObserver cannot: an extent change that resizes no direct
+        // child (an absolutely positioned popup, a `display: contents` child).
         const ids = targetIds();
         const selector = [
           STRUCTURAL_SELECTOR,
@@ -455,14 +479,24 @@ function createController(
         ].join(', ');
         if (records.some((record) => changesPairings(record, ids, selector)))
           refresh();
-        else if (
-          records.some(
-            ({ attributeName }) =>
-              attributeName === SCROLL_OVERFLOW ||
-              attributeName === SCROLL_DIVIDER,
+        else {
+          if (
+            records.some(
+              ({ attributeName }) =>
+                attributeName === SCROLL_OVERFLOW ||
+                attributeName === SCROLL_DIVIDER,
+            )
           )
-        )
-          apply();
+            apply();
+          if (
+            records.some(
+              ({ attributeName }) =>
+                attributeName !== SCROLL_OVERFLOW &&
+                attributeName !== SCROLL_DIVIDER,
+            )
+          )
+            scheduleRemeasure();
+        }
       })
     : undefined;
 
@@ -568,6 +602,9 @@ function createController(
       if (registrations.size) refresh();
       else {
         disposed = true;
+        if (remeasureFrame !== undefined)
+          view?.cancelAnimationFrame(remeasureFrame);
+        remeasureFrame = undefined;
         resizeObserver?.disconnect();
         for (const [element, values] of written)
           for (const name of values.keys()) write(element, name, '');

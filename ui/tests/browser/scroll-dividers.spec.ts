@@ -224,6 +224,36 @@ test.describe('scroll dividers', () => {
     expect(await footer.getAttribute('data-scroll-divider')).toBeNull();
   });
 
+  test('an absolutely positioned descendant that extends the scroll area is measured in the next frame', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const content = page.locator('[data-case="pane-fits"] .kui-pane__content');
+    const footer = page.locator('[data-case="pane-fits"] .kui-pane__footer');
+    expect(await content.getAttribute('data-scroll-overflow')).toBeNull();
+    // Like an anchored popup: no direct child of the scroller changes size,
+    // so only the frame re-measure after the mutation can see it.
+    await content.evaluate((element) => {
+      const item = element.firstElementChild as HTMLElement;
+      item.style.position = 'relative';
+      const popup = document.createElement('div');
+      popup.dataset.testPopup = '';
+      popup.style.cssText =
+        'position:absolute;inset-block-start:0;block-size:2000px;inline-size:1px';
+      item.append(popup);
+    });
+    await expect
+      .poll(() => content.getAttribute('data-scroll-overflow'))
+      .toBe('b');
+    expect(await footer.getAttribute('data-scroll-divider')).toBe('t');
+    await content.evaluate((element) => {
+      element.querySelector('[data-test-popup]')!.remove();
+    });
+    await expect
+      .poll(() => content.getAttribute('data-scroll-overflow'))
+      .toBeNull();
+  });
+
   test('content that fits shows no divider; always and none override the scroll state', async ({
     page,
   }) => {
