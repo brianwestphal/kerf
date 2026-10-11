@@ -89,7 +89,9 @@ const BUDGETS = [
     // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
     // delegate registry + resolve-all-before-any-handler), so a synchronous
     // re-render cannot redirect a later delegate onto a recycled target.
-    budgetKb: 14.6,
+    // KF-3SHRTR (~+0.05 KB): single-pass escapeHtml/escapeAttr (about 2x on
+    // values that need escaping) in the shared jsx runtime.
+    budgetKb: 14.7,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -173,7 +175,9 @@ const BUDGETS = [
     // re-render cannot redirect a later delegate onto a recycled target.
     // KF-VBQJAX (~+0.05 KB): the JSX runtime's per-name attribute-check memo
     // in the shared core.
-    budgetKb: 18.7,
+    // KF-3SHRTR (~+0.05 KB): single-pass escapeHtml/escapeAttr (about 2x on
+    // values that need escaping) in the shared jsx runtime.
+    budgetKb: 18.8,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -239,7 +243,9 @@ const BUDGETS = [
     // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
     // delegate registry + resolve-all-before-any-handler), so a synchronous
     // re-render cannot redirect a later delegate onto a recycled target.
-    budgetKb: 6.9, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
+    // KF-3SHRTR (~+0.05 KB): single-pass escapeHtml/escapeAttr (about 2x on
+    // values that need escaping) in the shared jsx runtime.
+    budgetKb: 7.0, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
     description:
       'the router subpath (createRouter — the postcard router) — signals + jsx + delegate, no mount',
     entry: `

@@ -72,6 +72,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- HTML and attribute escaping in the JSX runtime now runs one pass over a value instead of one `replace` pass per special character, about 2x faster on values that need escaping. Output is unchanged (`KF-3SHRTR`).
+
 - Rename the internal TabNavigator implementation folder, files, and focused test files from `tab-scaffold` to `tab-navigator`; public imports and rendered DOM hooks stay stable.
 
 - `deepInset` now adds the same 8px to the top and bottom of Pane and plain TabNavigator scroll content, including scroll padding; Pane header and footer still own their safe-area edges.

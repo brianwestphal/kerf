@@ -36,4 +36,27 @@ describe('escapeHtml / escapeAttr fast path', () => {
       '<path d="M0 0&quot;/&gt;&lt;script&gt;"></path>',
     );
   });
+
+  it('matches a per-character replace chain on a seeded random corpus', () => {
+    const chainHtml = (s: string) =>
+      s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    const chainAttr = (s: string) => chainHtml(s).replace(/'/g, '&#39;');
+    const alphabet = 'ab &<>"\'é😀;#';
+    let seed = 0x2f6e2b1;
+    const next = () => (seed = (seed * 1103515245 + 12345) >>> 0);
+    for (let n = 0; n < 2000; n += 1) {
+      let s = '';
+      for (let len = next() % 24; len > 0; len -= 1) {
+        s += [...alphabet][next() % [...alphabet].length];
+      }
+      expect(escapeHtml(s)).toBe(chainHtml(s));
+      expect(escapeAttr(s)).toBe(chainAttr(s));
+      // Escaping twice in a row starts each scan fresh.
+      expect(escapeHtml(s)).toBe(chainHtml(s));
+    }
+  });
 });
