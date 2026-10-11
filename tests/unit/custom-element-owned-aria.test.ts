@@ -95,7 +95,10 @@ describe('morph(): custom-element-owned role / aria-*', () => {
       jsx('div', {
         children: [
           jsx('span', { children: String(tick.value) }),
-          jsx('wa-option', { value: 'a' }),
+          // The option's own markup changes too: a list-free re-render only
+          // reconciles the elements whose markup changed, so an unchanged
+          // sibling would keep even non-owned imperative attributes.
+          jsx('wa-option', { value: 'a', 'data-tick': String(tick.value) }),
           html`<wa-divider data-tick=${String(tick.value)}></wa-divider>`,
         ],
       }),

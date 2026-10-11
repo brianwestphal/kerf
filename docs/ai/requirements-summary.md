@@ -111,7 +111,7 @@ The original v0.1–v0.3 runtime design is shipped (`each` / native diff / list 
 
 ### §1 Overview
 
-States kerf's positioning: tiny reactive UI framework, ~13 KB (still ~13 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out routing in the core (an optional `kerfjs/router` subpath ships separately), full SSR, styling opinions, and a framework ecosystem.
+States kerf's positioning: tiny reactive UI framework, ~15 KB (still ~15 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out routing in the core (an optional `kerfjs/router` subpath ships separately), full SSR, styling opinions, and a framework ecosystem.
 
 ### §2 Reactivity
 
@@ -141,7 +141,7 @@ Its public `list.ts` entry now delegates keyed row ownership to `list-row-contro
 
 `remountOn` owns its parent subtree until disposal. Its returned disposer is idempotent and relinquishes that ownership before consumer cleanup, so a reentrant or repeated call cannot remove content installed in the parent after the first teardown.
 
-KF-117 documented kerf's no-op-render fast path as a contract: when the static-surrounds HTML is byte-for-byte identical to the previous render, `mount()` skips the diff entirely. Any attribute / child set imperatively on a kerf-managed element (`el.setAttribute(...)`, `el.appendChild(...)`) survives across no-op re-renders; when surrounds DO change, the diff runs and `morphAttributes` removes anything the JSX didn't authorize. The fast path saves ~8 ms per partial-update / select-row / swap-rows render in the krausest harness. See `docs/4-render.md` §4.4.2 for the full rationale + practical guidance (use `data-morph-skip` for stable library-owned subtrees, drive imperative state from signals where possible).
+KF-117 documented kerf's no-op-render fast path as a contract: when the static-surrounds HTML is byte-for-byte identical to the previous render, `mount()` skips the diff entirely. Any attribute / child set imperatively on a kerf-managed element (`el.setAttribute(...)`, `el.appendChild(...)`) survives across no-op re-renders; when surrounds DO change, the diff runs and `morphAttributes` removes anything the JSX didn't authorize. The fast path saves ~8 ms per partial-update / select-row / swap-rows render in the krausest harness. KF-HA8R27 (change-scoped list-free morph, `src/static-subtree-morph.ts`) narrows the changed-surrounds half on a render with no `each()` list and no bindings: `mount()` diffs the previous/next strings, scans both, and parses + morphs only the changed children of the innermost safely parseable host (full walk on anything it cannot prove equivalent), so imperative attributes on unchanged siblings/ancestors of the change now survive. About 1.7x faster per render on a 1.4 MB page in Chromium, +2.07 KB on `main`. See `docs/4-render.md` §4.4.2 for the full rationale + practical guidance (use `data-morph-skip` for stable library-owned subtrees, drive imperative state from signals where possible).
 
 ### §5 Event delegation
 

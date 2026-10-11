@@ -12,14 +12,14 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/kerfjs"><img src="https://img.shields.io/npm/v/kerfjs.svg" alt="npm version" /></a>
-  <img src="https://img.shields.io/badge/min%2Bgzip-~13%20KB-brightgreen.svg" alt="~13 KB minified and gzipped" />
+  <img src="https://img.shields.io/badge/min%2Bgzip-~15%20KB-brightgreen.svg" alt="~15 KB minified and gzipped" />
   <img src="https://img.shields.io/npm/l/kerfjs.svg" alt="MIT license" />
   <img src="https://img.shields.io/badge/types-included-3178c6.svg" alt="TypeScript types included" />
 </p>
 
 ---
 
-> ~13 KB. No virtual DOM. No compiler. No magic.
+> ~15 KB. No virtual DOM. No compiler. No magic.
 > Reactive UI that touches only the bytes that changed.
 
 ```ts
@@ -76,7 +76,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 
 ## Why Kerf
 
-1. **~13 KB in the browser.** ~13 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). The optional setup CLI has its own npm dependencies; they stay out of the browser bundle. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
+1. **~15 KB in the browser.** ~15 KB minified + gzipped including `@preact/signals-core` (~15 KB with `arraySignal`). The optional setup CLI has its own npm dependencies; they stay out of the browser bundle. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it _is_ the DOM.
 

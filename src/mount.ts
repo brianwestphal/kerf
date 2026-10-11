@@ -56,6 +56,10 @@ import {
   flattenWithoutListItems,
   type Segment,
 } from './segment.js';
+import {
+  morphStaticChange,
+  type StaticScanCache,
+} from './static-subtree-morph.js';
 import { isOverlayHost } from './utils/overlay-host.js';
 
 /** What `mount()`'s render function may return; non-SafeHtml values coerce (nullish/boolean → render nothing). */
@@ -210,6 +214,9 @@ export function mount(
   // and go straight to the per-list reconcilers. Saves ~8 ms per update-
   // path render against the krausest harness.
   let prevStaticHtml = '';
+  // The previous static HTML's structure scan, reused by the change-scoped
+  // morph on list-free renders so each render scans only its new string.
+  const scanCache: StaticScanCache = { html: '', scan: null };
   // Per-mount one-shot context for the opt-in value-only-re-render warning.
   const valueOnlyWarnCtx: WarnOnceContext = { warned: false };
 
@@ -286,6 +293,7 @@ export function mount(
         renderCtx,
         prevStaticHtml,
         valueOnlyWarnCtx,
+        scanCache,
       );
 
       // KF-411: the morph just rebuilt one or more lists' containers, so their
@@ -309,6 +317,7 @@ export function mount(
           renderCtx,
           prevStaticHtml,
           valueOnlyWarnCtx,
+          scanCache,
         );
       }
       // A changed static-surrounds string means morph() ran, which strips
@@ -490,6 +499,7 @@ function runSubsequentRender(
   renderCtx: RenderContext,
   prevStaticHtml: string,
   valueOnlyWarnCtx: WarnOnceContext,
+  scanCache: StaticScanCache,
 ): string {
   // KF-411: reflects only this bind pass. Cleared here — before the fast-path
   // early return — so the surrounds-unchanged path leaves it empty (no morph,
@@ -509,9 +519,24 @@ function runSubsequentRender(
     valueOnlyWarnCtx,
   );
   cleanupOrphanBindings(segment, bindings, renderCtx);
-  const template = rootEl.cloneNode(false) as HTMLElement;
-  template.innerHTML = currentStaticHtml;
-  morph(rootEl, template, collectOwnedItems(bindings));
+  const ownedItems = collectOwnedItems(bindings);
+  // List-free render: parse + morph only the changed subtrees when the edit
+  // can be proven equivalent to the full walk; otherwise the full walk.
+  if (!(
+    segment.kind === 'static' &&
+    bindings.size === 0 &&
+    morphStaticChange(
+      rootEl,
+      prevStaticHtml,
+      currentStaticHtml,
+      scanCache,
+      ownedItems,
+    )
+  )) {
+    const template = rootEl.cloneNode(false) as HTMLElement;
+    template.innerHTML = currentStaticHtml;
+    morph(rootEl, template, ownedItems);
+  }
   bindListsFromMarkers(
     rootEl,
     segment,

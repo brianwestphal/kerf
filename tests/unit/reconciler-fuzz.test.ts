@@ -91,9 +91,12 @@ function signatureOf(message: string): string {
     .replace(/"[^"]*"/g, '"…"');
 }
 
-function caseForSeed(seed: number): { spec: TreeSpec; mutations: Mutation[] } {
+function caseForSeed(
+  seed: number,
+  listFree = false,
+): { spec: TreeSpec; mutations: Mutation[] } {
   const rng = new Rng(seed);
-  const spec = generateSpec(rng);
+  const spec = generateSpec(rng, listFree);
   // Mutations are generated against a throwaway world so their indices are
   // valid at the point they run; `runCase` then replays them on a fresh one.
   return {
@@ -102,7 +105,11 @@ function caseForSeed(seed: number): { spec: TreeSpec; mutations: Mutation[] } {
   };
 }
 
-function report(failures: readonly SeedFailure[], runs: number): string {
+function report(
+  failures: readonly SeedFailure[],
+  runs: number,
+  listFree = false,
+): string {
   const bySignature = new Map<string, SeedFailure[]>();
   for (const f of failures) {
     const bucket = bySignature.get(f.signature);
@@ -121,7 +128,7 @@ function report(failures: readonly SeedFailure[], runs: number): string {
   }
   lines.push('');
   for (const [, seeds] of Array.from(bySignature).slice(0, MAX_REPORTS)) {
-    const { spec, mutations } = caseForSeed(seeds[0].seed);
+    const { spec, mutations } = caseForSeed(seeds[0].seed, listFree);
     lines.push(formatRepro(seeds[0].seed, shrinkCase(spec, mutations)), '');
   }
   return lines.join('\n');
@@ -145,6 +152,26 @@ describe('reconciler fuzz', () => {
       }
       if (failures.length > 0) expect.fail(report(failures, RUNS));
       // Scaled so a `KERF_FUZZ_RUNS=5000` soak doesn't trip vitest's default 5s.
+    },
+    Math.max(30_000, RUNS * 40),
+  );
+
+  // The list-free shape: no each(), plain signal reads in the static
+  // surrounds, so every write re-renders through the change-scoped morph (or
+  // its full-walk fallback). The differential invariant holds it to a
+  // from-scratch render after every step.
+  it(
+    'list-free trees hold every invariant through change-scoped re-renders',
+    () => {
+      const failures: SeedFailure[] = [];
+      for (let i = 0; i < RUNS; i++) {
+        const seed = BASE_SEED + 1_000_000 + i;
+        const { spec, mutations } = caseForSeed(seed, true);
+        const failure = runCase(spec, mutations);
+        if (failure !== null)
+          failures.push({ seed, signature: signatureOf(failure.message) });
+      }
+      if (failures.length > 0) expect.fail(report(failures, RUNS, true));
     },
     Math.max(30_000, RUNS * 40),
   );

@@ -451,6 +451,8 @@ label.value = "second"; // surrounds changed → diff runs → attribute wiped.
 
 Custom elements are the exception once their attributes have synced: there the morph removes only attributes its previous template rendered (see §4.4.1), so an imperative attribute on a `wa-*` host survives.
 
+**Change-scoped diff on list-free renders (KF-HA8R27: parse + morph only the elements whose markup changed).** When the render has no `each()` list and no fine-grained bindings, kerf diffs the previous and next surrounds strings, finds the innermost element enclosing the change whose markup parses context-free, and parses + diffs only that element's changed children. It falls back to the whole-tree diff whenever it cannot prove the scoped result identical. The rule above then narrows from "the surrounds changed" to "**that element's markup changed**": the example's `label` change still wipes `data-instrumented` (the `div` holds the change), but an imperative attribute on an unchanged sibling or on an ancestor of the change survives, exactly as it does on a no-op render.
+
 ### Practical guidance
 
 - For library-owned subtrees (charts, terminals, editors), use `data-morph-skip` to opt out of diffing entirely. The fast path's behavior above is brittle as a long-term plan because _any_ change to the JSX surrounds will wipe your imperative mutations on the next render.
@@ -534,4 +536,4 @@ This applies to the first render only. A later re-render that throws propagates 
 
 - It doesn't manage component lifecycle. There's no `onMount` / `onUnmount` / `onUpdate` hook. Use `effect()` directly if you need a side effect tied to a signal.
 - It doesn't batch updates across animation frames. If a signal mutates 100 times in 16ms, the render fn runs 100 times. Use `batch()` if you have a multi-write action that should fire once.
-- It doesn't diff what didn't change shape. A re-render whose static-surrounds HTML is byte-for-byte identical to the previous render skips the template build, parse, and morph walk entirely (the §4.4.2 fast path) — only list segments still dispatch to their reconcilers. When the surrounds DO change, the diff walks the tree with per-element `isEqualNode` short-circuits.
+- It doesn't diff what didn't change shape. A re-render whose static-surrounds HTML is byte-for-byte identical to the previous render skips the template build, parse, and morph walk entirely (the §4.4.2 fast path) — only list segments still dispatch to their reconcilers. When the surrounds DO change, the diff walks the tree with per-element `isEqualNode` short-circuits — and on a list-free, binding-free render it parses and walks only the elements whose markup changed (§4.4.2).

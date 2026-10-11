@@ -58,6 +58,9 @@ export interface ListSpec {
 export type NodeSpec =
   | { kind: 'text'; text: string }
   | { kind: 'hole'; sig: number; id: number }
+  // A signal read PLAINLY (not bound): its write re-renders the whole mount and
+  // changes the static surrounds — the list-free re-render shape.
+  | { kind: 'plain'; sig: number }
   | { kind: 'list'; list: number }
   | { kind: 'cond'; cond: number; children: NodeSpec[] }
   | { kind: 'svg'; children: NodeSpec[] }
@@ -104,6 +107,8 @@ interface GenCtx {
   holeId: number;
   /** Lists still waiting to be placed somewhere in the tree. */
   pending: number[];
+  /** Generate `plain` (non-bound) signal reads. Off for the default sweep. */
+  plain: boolean;
 }
 
 function makeItems(ids: readonly string[]): Item[] {
@@ -147,6 +152,9 @@ function genNode(
     return { kind: 'list', list };
   }
 
+  if (ctx.plain && rng.bool(0.2)) {
+    return { kind: 'plain', sig: rng.int(ctx.spec.sigCount) };
+  }
   const roll = rng.next();
   if (depth <= 0 || roll < 0.22) {
     return { kind: 'text', text: `t${rng.int(100)}` };
@@ -199,7 +207,12 @@ function genNode(
   };
 }
 
-export function generateSpec(rng: Rng): TreeSpec {
+/**
+ * `listFree` generates a tree with no `each()` at all plus plain signal reads,
+ * so re-renders take the list-free path (one static segment, changed
+ * surrounds) rather than the list reconcilers.
+ */
+export function generateSpec(rng: Rng, listFree = false): TreeSpec {
   const sourceCount = rng.range(1, 3);
   const spec: TreeSpec = {
     sigCount: rng.range(1, 3),
@@ -213,7 +226,7 @@ export function generateSpec(rng: Rng): TreeSpec {
     lists: [],
     root: [],
   };
-  const listCount = rng.range(1, 4);
+  const listCount = listFree ? 0 : rng.range(1, 4);
   for (let i = 0; i < listCount; i++) {
     spec.lists.push({
       source: rng.int(sourceCount),
@@ -229,6 +242,7 @@ export function generateSpec(rng: Rng): TreeSpec {
     spec,
     holeId: 0,
     pending: spec.lists.map((_, i) => i),
+    plain: listFree,
   };
   spec.root = genChildren(ctx, 4, false, false);
   // Anything the random walk didn't find room for goes at the top level.
@@ -307,6 +321,10 @@ function renderNode(node: NodeSpec, world: World): Rendered {
         'data-hole': String(node.id),
         children: world.sigs[node.sig],
       });
+    case 'plain': {
+      const v = world.sigs[node.sig].value;
+      return jsx('span', { 'data-plain': v, children: v });
+    }
     case 'list':
       return renderList(world, node.list);
     case 'cond':
@@ -368,6 +386,8 @@ export function liveness(world: World): Liveness {
           break;
         case 'hole':
           out.holes.set(n.id, n.sig);
+          break;
+        case 'plain':
           break;
         case 'cond':
           if (world.conds[n.cond].value) walk(n.children, inSvg);

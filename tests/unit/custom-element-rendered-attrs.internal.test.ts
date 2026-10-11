@@ -153,7 +153,7 @@ describe('morph(): a custom element keeps attributes the template never rendered
 });
 
 describe('mount(): list-free re-renders stop flipping reflected defaults', () => {
-  it('a selection change mutates only the selected rows after the first re-render', () => {
+  it('a selection change mutates only the selected rows once their hosts have synced', () => {
     const selected = signal(0);
     const ids = [0, 1, 2, 3, 4];
     mount(root, () =>
@@ -166,9 +166,12 @@ describe('mount(): list-free re-renders stop flipping reflected defaults', () =>
         ),
       }),
     );
-    selected.value = 1; // warm-up: the first sync records each host
+    // Warm-up: a host's first sync records it, and a list-free re-render
+    // syncs only the rows whose markup changed, so touch rows 0–2 once.
+    selected.value = 1;
+    selected.value = 2;
     const mutations = attrMutations(() => {
-      selected.value = 2;
+      selected.value = 1;
     });
     expect(mutations.sort()).toEqual(['li@data-selected', 'li@data-selected']);
     for (const tag of root.querySelectorAll('reflect-tag')) {

@@ -75,7 +75,10 @@ const BUDGETS = [
     // KF-K8S4RX (+0.02 KB): the morph records which attributes it rendered on
     // a custom element, so reflected defaults (Web Awesome's variant/size/…)
     // stop flipping on every re-render.
-    budgetKb: 12.8,
+    // KF-HA8R27 (+2.07 KB): the change-scoped morph for list-free re-renders —
+    // the static HTML is scanned, and only the elements whose markup changed
+    // are re-parsed and morphed instead of the whole page.
+    budgetKb: 14.8,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -91,7 +94,8 @@ const BUDGETS = [
     // re-render cannot redirect a later delegate onto a recycled target.
     // KF-3SHRTR (~+0.05 KB): single-pass escapeHtml/escapeAttr (about 2x on
     // values that need escaping) in the shared jsx runtime.
-    budgetKb: 14.7,
+    // KF-HA8R27 (+2.08 KB): the change-scoped morph in the shared core (see main).
+    budgetKb: 16.8,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -177,7 +181,8 @@ const BUDGETS = [
     // in the shared core.
     // KF-3SHRTR (~+0.05 KB): single-pass escapeHtml/escapeAttr (about 2x on
     // values that need escaping) in the shared jsx runtime.
-    budgetKb: 18.8,
+    // KF-HA8R27 (+2.1 KB): the change-scoped morph in the shared core (see main).
+    budgetKb: 20.9,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -194,7 +199,8 @@ const BUDGETS = [
     // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
     // delegate registry + resolve-all-before-any-handler), so a synchronous
     // re-render cannot redirect a later delegate onto a recycled target.
-    budgetKb: 11.1,
+    // KF-HA8R27 (+2.1 KB): the change-scoped morph in the shared core (see main).
+    budgetKb: 13.2,
     description:
       'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
@@ -226,8 +232,9 @@ const BUDGETS = [
     // row disposal when the initial render throws); +0.1 for KF-KGFJP6 mount()
     // first-render rollback in the shared core; +0.1 for KF-FBHQEP's
     // overlay-host nested-mount boundary in the shared core; +0.1 for
-    // KF-VBQJAX's per-name attribute-check memo in the shared core.
-    budgetKb: 13.4,
+    // KF-VBQJAX's per-name attribute-check memo in the shared core; +2.1 for
+    // KF-HA8R27's change-scoped morph in the shared core (see main).
+    budgetKb: 15.5,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
@@ -271,7 +278,8 @@ const BUDGETS = [
     name: 'remount',
     // +0.1 for KF-FBHQEP's overlay-host nested-mount boundary in the shared core.
     // +0.1 for KF-K8S4RX's custom-element rendered-attribute record (see main).
-    budgetKb: 10.7,
+    // +2.1 for KF-HA8R27's change-scoped morph in the shared core (see main).
+    budgetKb: 12.8,
     description:
       'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `
@@ -298,8 +306,8 @@ const BUDGETS = [
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.
     name: 'main-no-dev-code',
-    // Same figure as `main` (see its KF-HK7WE8 and KF-K8S4RX notes).
-    budgetKb: 12.8,
+    // Same figure as `main` (see its KF-HK7WE8, KF-K8S4RX, and KF-HA8R27 notes).
+    budgetKb: 14.8,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [

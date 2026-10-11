@@ -236,8 +236,10 @@ test('re-renders leave reflected defaults on raw Web Awesome hosts alone', async
     );
     await settle();
   };
-  // The first re-render records what each host's template owns.
-  await select(1);
+  // A host's first sync records what its template owns. A list-free
+  // re-render syncs only the rows whose markup changed, so warm up every row
+  // the measured selections touch.
+  for (const id of [1, 2, 3]) await select(id);
   await page.evaluate(() => {
     const log: string[] = [];
     new MutationObserver((records) => {
