@@ -1,10 +1,19 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 
 export type DialogSurfaceSize = 'small' | 'medium' | 'large';
 export type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen';
 export type SurfaceInset = 'none' | 'compact' | 'comfortable';
 export type DialogSurfaceMaxHeight = CssLength | 'viewport';
+/** A definite modal height: a length or the full viewport, minus both gutters. */
+export type DialogSurfaceHeight = CssLength | 'viewport';
+/**
+ * How the dialog body lays out its children: `flow` (default) scrolls ordinary
+ * content in the body; `fill` gives one child the body's whole height and
+ * lets it own scrolling (a SplitView, a Pane, an editor).
+ */
+export type DialogSurfaceBodyLayout = 'flow' | 'fill';
 
 export interface DialogSurfaceProps {
   children: KerfUiContent;
@@ -18,6 +27,13 @@ export interface DialogSurfaceProps {
   viewportGutter?: CssLength;
   /** Modal height cap, bounded by the dynamic viewport minus both gutters. */
   maxHeight?: DialogSurfaceMaxHeight;
+  /**
+   * Modal definite height, bounded the same way, so a filling child has a
+   * height to fill. Takes precedence over `maxHeight`.
+   */
+  height?: DialogSurfaceHeight;
+  /** Body layout (default `flow`); `fill` lets one child own the body. */
+  bodyLayout?: DialogSurfaceBodyLayout;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -33,6 +49,8 @@ export function DialogSurface({
   footerInset = 'comfortable',
   viewportGutter,
   maxHeight,
+  height,
+  bodyLayout = 'flow',
   className = '',
   slot,
 }: DialogSurfaceProps) {
@@ -46,6 +64,9 @@ export function DialogSurface({
     maxHeight === undefined || maxHeight === 'viewport'
       ? ''
       : `--_kui-dialog-surface-max-height:${maxHeight}`,
+    height === undefined || height === 'viewport'
+      ? ''
+      : `--_kui-dialog-surface-height:${height}`,
   ]
     .filter(Boolean)
     .join(';');
@@ -60,11 +81,123 @@ export function DialogSurface({
       data-footer-inset={footerInset}
       data-viewport-gutter={viewportGutter === undefined ? undefined : ''}
       data-max-height={maxHeight === undefined ? undefined : ''}
+      data-height={height === undefined ? undefined : ''}
+      data-body-layout={bodyLayout === 'fill' ? 'fill' : undefined}
       style={style || undefined}
       slot={slot}
     >
       {children}
     </div>
+  );
+}
+
+/** Where a PopoverDialogSurface appears: the top layer, or in flow. */
+export type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
+
+/** Application `data-*` metadata on the surface root. */
+export type PopoverDialogSurfaceDataAttributes = Readonly<
+  Record<`data-${string}`, string>
+>;
+
+type PopoverDialogSurfaceName =
+  { label: string; labelledBy?: never } | { label?: never; labelledBy: string };
+
+export type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
+  /** The root id: what an opening control's `popovertarget` names. */
+  id?: string;
+  children: KerfUiContent;
+  /**
+   * `overlay` (default) is a native `popover="auto"` in the top layer:
+   * non-modal, light dismiss (Escape or a press outside), nothing inert.
+   * `embedded` renders the same surface in flow for a catalog or inline use.
+   */
+  presentation?: PopoverDialogSurfacePresentation;
+  /** Preferred width preset: 400px, 560px (default), or 800px. */
+  size?: DialogSurfaceSize;
+  /** Preferred width; takes precedence over `size`, within the viewport cap. */
+  preferredWidth?: CssLength;
+  /** Definite height, bounded by the dynamic viewport minus both gutters. */
+  height?: DialogSurfaceHeight;
+  /** Height cap, bounded the same way, for a surface that sizes to content. */
+  maxHeight?: DialogSurfaceMaxHeight;
+  /** Edge clearance on each side of the viewport (default 16px). */
+  viewportGutter?: CssLength;
+  /** Body layout (default `flow`); `fill` lets one child own the surface. */
+  bodyLayout?: DialogSurfaceBodyLayout;
+  rootAttributes?: PopoverDialogSurfaceDataAttributes;
+  className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
+};
+
+const POPOVER_DIALOG_PROTECTED = new Set([
+  'data-component',
+  'data-presentation',
+  'data-size',
+  'data-height',
+  'data-max-height',
+  'data-body-layout',
+]);
+
+/**
+ * A non-modal dialog surface on the native Popover API: Kerf's dialog chrome,
+ * viewport-bounded size, and single-child fill without application CSS.
+ * Open it with a `popovertarget` control or `showPopover()`; it light
+ * dismisses and leaves the page interactive. Use `DialogSurface` with
+ * `wa-dialog` when the task must block the page.
+ */
+export function PopoverDialogSurface({
+  id,
+  children,
+  label,
+  labelledBy,
+  presentation = 'overlay',
+  size = 'medium',
+  preferredWidth,
+  height,
+  maxHeight,
+  viewportGutter,
+  bodyLayout = 'flow',
+  rootAttributes = {},
+  className = '',
+  slot,
+}: PopoverDialogSurfaceProps) {
+  const style = [
+    preferredWidth === undefined
+      ? ''
+      : `--_kui-popover-dialog-surface-preferred-width:${preferredWidth}`,
+    viewportGutter === undefined
+      ? ''
+      : `--_kui-popover-dialog-surface-gutter:${viewportGutter}`,
+    height === undefined || height === 'viewport'
+      ? ''
+      : `--_kui-popover-dialog-surface-height:${height}`,
+    maxHeight === undefined || maxHeight === 'viewport'
+      ? ''
+      : `--_kui-popover-dialog-surface-max-height:${maxHeight}`,
+  ]
+    .filter(Boolean)
+    .join(';');
+  return (
+    <section
+      {...filterDataAttributes(rootAttributes, POPOVER_DIALOG_PROTECTED)}
+      id={id}
+      class={`kui-popover-dialog-surface ${className}`.trim()}
+      data-component="popover-dialog-surface"
+      data-presentation={presentation}
+      data-size={size}
+      data-height={height === undefined ? undefined : ''}
+      data-max-height={maxHeight === undefined ? undefined : ''}
+      data-body-layout={bodyLayout === 'fill' ? 'fill' : undefined}
+      popover={presentation === 'overlay' ? 'auto' : undefined}
+      role="dialog"
+      aria-label={label}
+      aria-labelledby={labelledBy}
+      style={style || undefined}
+      slot={slot}
+    >
+      {children}
+    </section>
   );
 }
 

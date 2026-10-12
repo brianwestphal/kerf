@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 340000,
-  "measuredLargestJavaScriptGzip": 124514,
-  "measuredTotalJavaScriptGzip": 339917,
+  "totalJavaScriptGzip": 340600,
+  "measuredLargestJavaScriptGzip": 124569,
+  "measuredTotalJavaScriptGzip": 340585,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3347,6 +3347,22 @@
         "measuredTotalJavaScriptGzip": 339917,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 340000
+      }
+    },
+    {
+      "at": "2026-10-12T11:06:38.578Z",
+      "reason": "KF-XHECB9: DialogSurface height/bodyLayout, PopoverDialogSurface, and three surface-scaffold demo examples",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124514,
+        "measuredTotalJavaScriptGzip": 339917,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 340000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124569,
+        "measuredTotalJavaScriptGzip": 340585,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 340600
       }
     }
   ]

@@ -257,10 +257,16 @@ export {
 } from './components/surfaces/sunken-panel/sunken-panel.js';
 export {
   DialogSurface,
+  type DialogSurfaceBodyLayout,
+  type DialogSurfaceHeight,
   type DialogSurfaceMaxHeight,
   type DialogSurfacePresentation,
   type DialogSurfaceProps,
   type DialogSurfaceSize,
+  PopoverDialogSurface,
+  type PopoverDialogSurfaceDataAttributes,
+  type PopoverDialogSurfacePresentation,
+  type PopoverDialogSurfaceProps,
   PopupSurface,
   type PopupSurfaceInset,
   type PopupSurfaceProps,

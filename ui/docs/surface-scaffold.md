@@ -56,6 +56,24 @@ An application can configure device-class breakpoints when its phone policy
 differs from the default. Prefer a typed cap such as `maxHeight={remify(640)}`
 when the modal should stop growing before the viewport bound.
 
+### Filling the dialog
+
+`maxHeight` caps a modal that sizes to its content. A layout that fills the
+dialog (a list-detail `SplitView`, a `Pane` with its own chrome and scroller)
+needs a height to fill instead: set `height` to a branded length or
+`"viewport"`. It is bounded exactly like `maxHeight` (the dynamic viewport minus
+both gutters) and takes precedence over it. `bodyLayout="fill"` then gives the
+body's whole height to its one child, which owns its own scrolling; the body
+itself stops scrolling. Combine it with `bodyInset="none"`.
+
+```tsx
+<DialogSurface size="large" height={remify(640)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill">
+  <wa-dialog label="Repository status">
+    <SplitView id="repo-split" label="Changes" listWidth={{ size: 432, maxFraction: 0.5 }} list={list} detail={detail} />
+  </wa-dialog>
+</DialogSurface>;
+```
+
 Treat a dialog body as a `List` by default. When its rows or sections own their
 standard list geometry, set `bodyInset="none"` so the dialog does not add a
 second inset. Bare prose is still a list child: wrap it in `ListInsetText` so its
@@ -63,6 +81,35 @@ text edge receives the standard 8px margin + 1px transparent border + 8px
 padding and aligns with bordered siblings. Reserve `compact` or `comfortable`
 body insets for exceptional content that does not already have list/content-item
 geometry.
+
+## Non-modal dialogs: `PopoverDialogSurface`
+
+`wa-dialog` is modal: it makes the page inert until it closes. When a dialog
+should leave the page interactive and close on Escape or a press outside (a
+status panel, a quick inspector), render `PopoverDialogSurface` instead of a
+hand-built popover with application chrome CSS. It is a native
+`popover="auto"` section with `role="dialog"` that owns Kerf's dialog chrome
+(raised surface, border, large radius and shadow, and a backdrop) and the
+same geometry props as a modal `DialogSurface`: `size`, `preferredWidth`,
+`viewportGutter` (16px by default), `height` / `maxHeight`, and `bodyLayout`.
+Name it with `label` or `labelledBy`.
+
+Open it with a control's `popoverTarget` (or `showPopover()`); the browser
+places it centered in the top layer, light-dismisses it, and restores nothing
+else, so move focus into it with `autofocus` on its first control when that
+matters. A closed surface stays hidden; only the open one lays out.
+`presentation="embedded"` renders the same surface in flow, with no top
+layer and never wider than its container, for a catalog specimen or an inline
+preview.
+
+```tsx
+<button type="button" popoverTarget="repository-status">Repository status</button>
+<PopoverDialogSurface id="repository-status" label="Repository status" preferredWidth={remify(1024)} height={remify(640)} viewportGutter={remify(8)} bodyLayout="fill">
+  <SplitView id="repo-split" label="Changes" list={list} detail={detail} />
+</PopoverDialogSurface>;
+```
+
+Use `DialogSurface` with `wa-dialog` whenever the task must block the page.
 
 Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="list-zero"` removes menu
 padding for a child that already owns row insets, `compact` uses 4px, and

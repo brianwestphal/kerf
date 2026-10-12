@@ -151,13 +151,17 @@
 
 /* Bare specimens use a small inset to align with the surrounding examples. */
 .kui-catalog-example[data-align="glyph"]
-  > :not([data-catalog-example-label]):not([data-catalog-example-note]) {
+  > :not([data-catalog-example-label]):not([data-catalog-example-note]):not(
+    :popover-open
+  ) {
   --kui-catalog-example-align: remify(16px);
   margin-inline-start: var(--kui-catalog-example-align);
 }
 
 .kui-catalog-example[data-align="inline-control"]
-  > :not([data-catalog-example-label]):not([data-catalog-example-note]) {
+  > :not([data-catalog-example-label]):not([data-catalog-example-note]):not(
+    :popover-open
+  ) {
   --kui-catalog-example-align: remify(8px);
   margin-inline-start: var(--kui-catalog-example-align);
 }

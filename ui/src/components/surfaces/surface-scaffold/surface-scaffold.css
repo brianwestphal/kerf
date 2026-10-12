@@ -62,6 +62,28 @@
     )
   );
 }
+.kui-dialog-surface[data-presentation="modal"][data-height]
+  > wa-dialog::part(dialog) {
+  --_kui-dialog-surface-resolved-height: max(
+    0px,
+    min(
+      var(--_kui-dialog-surface-height, 100dvh),
+      calc(
+        100dvh - var(--_kui-dialog-surface-resolved-gutter) -
+          var(--_kui-dialog-surface-resolved-gutter)
+      )
+    )
+  );
+  height: var(--_kui-dialog-surface-resolved-height);
+  max-height: var(--_kui-dialog-surface-resolved-height);
+}
+/* One child owns the body: it gets the body's whole height and its own
+   scrolling (the body itself no longer scrolls). */
+.kui-dialog-surface[data-body-layout="fill"] > wa-dialog::part(body) {
+  display: grid;
+  overflow: hidden;
+  grid-template-rows: minmax(0, 1fr);
+}
 .kui-dialog-surface[data-body-inset="none"] > wa-dialog::part(body),
 .kui-dialog-surface[data-footer-inset="none"] > wa-dialog::part(footer) {
   padding: 0;
@@ -91,6 +113,103 @@
   height: 100dvh;
   max-height: 100dvh;
   border-radius: 0;
+}
+/* PopoverDialogSurface: the dialog chrome and bounded geometry for a native
+   popover="auto" surface (non-modal, light dismiss) or the same surface in
+   flow. The UA popover rules supply the centered top-layer placement. */
+.kui-popover-dialog-surface {
+  --_kui-popover-dialog-surface-width: remify(560px);
+  --_kui-popover-dialog-surface-resolved-gutter: max(
+    0px,
+    var(--_kui-popover-dialog-surface-gutter, remify(16px))
+  );
+  --_kui-popover-dialog-surface-available-height: calc(
+    100dvh - var(--_kui-popover-dialog-surface-resolved-gutter) -
+      var(--_kui-popover-dialog-surface-resolved-gutter)
+  );
+  box-sizing: border-box;
+  width: min(
+    var(
+      --_kui-popover-dialog-surface-preferred-width,
+      var(--_kui-popover-dialog-surface-width)
+    ),
+    max(
+      0px,
+      calc(
+        100vw - var(--_kui-popover-dialog-surface-resolved-gutter) -
+          var(--_kui-popover-dialog-surface-resolved-gutter)
+      )
+    )
+  );
+  max-height: max(0px, var(--_kui-popover-dialog-surface-available-height));
+  padding: 0;
+  overflow: auto;
+  color: var(--kui-color-text);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-radius-l);
+  background: var(--kui-color-surface-raised);
+  box-shadow: var(--kui-shadow-l);
+}
+.kui-popover-dialog-surface[data-size="small"] {
+  --_kui-popover-dialog-surface-width: remify(400px);
+}
+.kui-popover-dialog-surface[data-size="large"] {
+  --_kui-popover-dialog-surface-width: remify(800px);
+}
+.kui-popover-dialog-surface[data-max-height] {
+  max-height: max(
+    0px,
+    min(
+      var(--_kui-popover-dialog-surface-max-height, 100dvh),
+      var(--_kui-popover-dialog-surface-available-height)
+    )
+  );
+}
+.kui-popover-dialog-surface[data-height] {
+  height: max(
+    0px,
+    min(
+      var(--_kui-popover-dialog-surface-height, 100dvh),
+      var(--_kui-popover-dialog-surface-available-height)
+    )
+  );
+  max-height: none;
+}
+/* Centered in the top layer whatever margins or item alignment the host
+   sets: an absolutely positioned box's auto self-alignment otherwise
+   follows its parent's justify-items. */
+.kui-popover-dialog-surface[data-presentation="overlay"]:popover-open {
+  inset: 0;
+  margin: auto;
+  place-self: center;
+}
+.kui-popover-dialog-surface::backdrop {
+  background: var(
+    --wa-color-overlay-modal,
+    light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
+  );
+}
+/* Only an open overlay lays out, so a closed one stays hidden. One filling
+   child takes the whole surface and owns its scrolling. */
+.kui-popover-dialog-surface[data-body-layout="fill"]:is(
+    :popover-open,
+    [data-presentation="embedded"]
+  ) {
+  display: grid;
+  overflow: hidden;
+  grid-template-rows: minmax(0, 1fr);
+}
+/* In flow for a catalog or inline use: the same surface without the top
+   layer, never wider than its container. */
+.kui-popover-dialog-surface[data-presentation="embedded"] {
+  position: relative;
+  inset: auto;
+  /* The available inline space, after any margin the container gives it. */
+  max-width: 100%;
+  max-width: -webkit-fill-available;
+  max-width: -moz-available;
+  max-width: stretch;
+  margin: 0;
 }
 .kui-popup-surface {
   display: inline-flex;

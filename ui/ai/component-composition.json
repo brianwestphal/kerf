@@ -1867,7 +1867,11 @@
       ],
       "boundaries": {
         "rootClass": "kui-dialog-surface",
-        "publicClasses": ["kui-dialog-surface", "kui-popup-surface"],
+        "publicClasses": [
+          "kui-dialog-surface",
+          "kui-popover-dialog-surface",
+          "kui-popup-surface"
+        ],
         "publicTokens": [
           "--kui-radius-l",
           "--kui-wa-container-inset",

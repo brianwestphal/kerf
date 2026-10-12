@@ -2,8 +2,50 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { remify } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
+import { ListItem } from '@kerfjs/ui/list-item';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
-import { DialogSurface, PopupSurface } from '@kerfjs/ui/surface-scaffold';
+import { SplitView } from '@kerfjs/ui/split-view';
+import {
+  DialogSurface,
+  PopoverDialogSurface,
+  PopupSurface,
+} from '@kerfjs/ui/surface-scaffold';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+
+const PROJECTS = ['Atlas', 'Borealis', 'Cirrus', 'Delta', 'Ember', 'Fjord'];
+
+/** A list-detail SplitView that fills whichever surface it is given. */
+function projectSplit(id: string) {
+  return (
+    <SplitView
+      id={id}
+      label="Projects"
+      listTitle="Projects"
+      detailTitle="Atlas"
+      listWidth={{ size: 240, maxFraction: 0.4 }}
+      list={
+        <List>
+          {PROJECTS.map((name, index) => (
+            <ListItem
+              label={name}
+              itemId={name}
+              action="log-more"
+              selected={index === 0}
+            />
+          ))}
+        </List>
+      }
+      detail={
+        <List>
+          <ListInsetText>
+            Atlas is active. The split fills the surface's full height, and each
+            column scrolls on its own.
+          </ListInsetText>
+        </List>
+      }
+    />
+  );
+}
 
 export function SurfaceScaffoldDemo() {
   return (
@@ -127,6 +169,65 @@ export function SurfaceScaffoldDemo() {
             </wa-button>
           </wa-dialog>
         </DialogSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Filled list-detail modal"
+        note='height gives the modal a definite, viewport-bounded size and bodyLayout="fill" hands the whole body to one SplitView.'
+        align="inline-control"
+      >
+        <DialogSurface
+          size="large"
+          viewportGutter={remify(8)}
+          height={remify(480)}
+          bodyInset="none"
+          bodyLayout="fill"
+        >
+          <wa-button
+            data-action="show-wa-dialog"
+            data-dialog-id="catalog-filled-dialog"
+          >
+            Open project details
+          </wa-button>
+          <wa-dialog id="catalog-filled-dialog" label="Project details">
+            {projectSplit('catalog-filled-dialog-split')}
+          </wa-dialog>
+        </DialogSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Non-modal popover dialog"
+        note="A native popover: it light-dismisses on Escape or a press outside and leaves the page interactive."
+        align="inline-control"
+      >
+        <ToolbarControlGroup single>
+          <button type="button" popoverTarget="catalog-popover-dialog">
+            Open repository status
+          </button>
+        </ToolbarControlGroup>
+        <PopoverDialogSurface
+          id="catalog-popover-dialog"
+          label="Repository status"
+          preferredWidth={remify(720)}
+          height={remify(420)}
+          viewportGutter={remify(8)}
+          bodyLayout="fill"
+        >
+          {projectSplit('catalog-popover-dialog-split')}
+        </PopoverDialogSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Embedded popover dialog"
+        note='presentation="embedded" shows the same surface in flow, for a catalog or an inline preview.'
+        align="inline-control"
+      >
+        <PopoverDialogSurface
+          label="Repository status preview"
+          presentation="embedded"
+          preferredWidth={remify(560)}
+          height={remify(280)}
+          bodyLayout="fill"
+        >
+          {projectSplit('catalog-embedded-dialog-split')}
+        </PopoverDialogSurface>
       </CatalogExample>
       <CatalogExample label="Zero-inset list popup" align="inline-control">
         <PopupSurface inset="list-zero">

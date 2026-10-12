@@ -13,6 +13,7 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 - A Web Awesome dialog or dropdown needs a standard size, presentation, body/footer inset, or list-compatible menu inset.
 - A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText.
 - A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.
+- A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout="fill".
 
 **Not when:**
 
@@ -21,7 +22,7 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `PopupSurface`.
+- JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `PopoverDialogSurface`, `PopupSurface`.
 - CSS: the browser build of `@kerfjs/ui/surface-scaffold` pulls its CSS automatically; import `@kerfjs/ui/surface-scaffold.css` manually only without the `browser` export condition.
 - Registration: import `@kerfjs/ui/surface-scaffold/register` once (a side effect).
 - Declared side effects: browser-condition-css, custom-element-registration.
@@ -35,6 +36,8 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - small, medium, or large dialog
 - modal, side-sheet, or fullscreen dialog
 - typed modal preferred width, viewport gutter, and maximum height, including viewport cap
+- definite viewport-bounded modal height and a fill body layout for one child
+- non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
 
@@ -70,9 +73,11 @@ Margin: parent · border: child · padding: self (layout role: structure). `self
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-dialog-surface`, `kui-popup-surface`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-dialog-surface`, `kui-popover-dialog-surface`, `kui-popup-surface`.
 
 Never put `kui-dialog-surface` on an element you write; render `DialogSurface` instead (`KUI-L103`).
+
+Never put `kui-popover-dialog-surface` on an element you write; render `PopoverDialogSurface` instead (`KUI-L103`).
 
 Never put `kui-popup-surface` on an element you write; render `PopupSurface` instead (`KUI-L103`).
 

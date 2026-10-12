@@ -52,6 +52,7 @@ import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
 import { ContentItem } from '../../src/components/surfaces/content-item/content-item.js';
 import {
   DialogSurface,
+  PopoverDialogSurface,
   PopupSurface,
 } from '../../src/components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../../src/components/typography/text/text.js';
@@ -188,6 +189,85 @@ describe('production UI primitives', () => {
     );
     expect(hiddenWins).toContain('aria-hidden="true"');
     expect(hiddenWins).not.toContain('aria-label');
+  });
+
+  it('serializes a definite modal height and a filling body layout', () => {
+    const plain = asHtml(
+      DialogSurface({ children: <wa-dialog label="Edit">Body</wa-dialog> }),
+    );
+    expect(plain).not.toContain('data-height');
+    expect(plain).not.toContain('data-body-layout');
+    const viewport = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        height: 'viewport',
+        bodyLayout: 'fill',
+      }),
+    );
+    expect(viewport).toContain('data-height=""');
+    expect(viewport).toContain('data-body-layout="fill"');
+    expect(viewport).not.toContain('--_kui-dialog-surface-height');
+    const fixed = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        height: px(640),
+      }),
+    );
+    expect(fixed).toContain('--_kui-dialog-surface-height:640px');
+  });
+
+  it('renders a non-modal popover dialog surface, overlay or embedded', () => {
+    const overlay = asHtml(
+      PopoverDialogSurface({
+        id: 'repo-status',
+        label: 'Repository status',
+        height: px(640),
+        preferredWidth: px(1024),
+        viewportGutter: px(8),
+        bodyLayout: 'fill',
+        rootAttributes: {
+          'data-view': 'changes',
+          'data-presentation': 'spoofed',
+        } as Record<`data-${string}`, string>,
+        children: <p>Body</p>,
+      }),
+    );
+    expect(overlay).toContain('<section');
+    expect(overlay).toContain('id="repo-status"');
+    expect(overlay).toContain('popover="auto"');
+    expect(overlay).toContain('role="dialog"');
+    expect(overlay).toContain('aria-label="Repository status"');
+    expect(overlay).toContain('data-presentation="overlay"');
+    expect(overlay).not.toContain('spoofed');
+    expect(overlay).toContain('data-view="changes"');
+    expect(overlay).toContain('data-size="medium"');
+    expect(overlay).toContain('data-body-layout="fill"');
+    expect(overlay).toContain(
+      'style="--_kui-popover-dialog-surface-preferred-width:1024px;--_kui-popover-dialog-surface-gutter:8px;--_kui-popover-dialog-surface-height:640px"',
+    );
+    const embedded = asHtml(
+      PopoverDialogSurface({
+        labelledBy: 'status-title',
+        presentation: 'embedded',
+        size: 'large',
+        maxHeight: 'viewport',
+        children: <p>Body</p>,
+      }),
+    );
+    expect(embedded).not.toContain('popover=');
+    expect(embedded).toContain('aria-labelledby="status-title"');
+    expect(embedded).toContain('data-presentation="embedded"');
+    expect(embedded).toContain('data-max-height=""');
+    expect(embedded).not.toContain('style=');
+    expect(
+      asHtml(
+        PopoverDialogSurface({
+          label: 'Cap',
+          maxHeight: px(300),
+          children: <p>Body</p>,
+        }),
+      ),
+    ).toContain('--_kui-popover-dialog-surface-max-height:300px');
   });
 
   it('serializes optional modal bounds without changing omitted defaults', () => {

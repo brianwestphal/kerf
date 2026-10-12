@@ -43,7 +43,10 @@ export const packageClassRoots = new Map([
     ],
   ],
   ['skeleton.css', ['kui-skeleton', 'kui-skeleton-lines']],
-  ['surface-scaffold.css', ['kui-dialog-surface', 'kui-popup-surface']],
+  [
+    'surface-scaffold.css',
+    ['kui-dialog-surface', 'kui-popover-dialog-surface', 'kui-popup-surface'],
+  ],
   // The 5.0 source rename retained TabNavigator's established DOM class hooks.
   ['tab-navigator.css', ['kui-tab-scaffold']],
   [

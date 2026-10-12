@@ -434,3 +434,119 @@ test('a raw dropdown inside PopupSurface keeps keyboard navigation made during s
   await page.keyboard.press('Enter');
   await expect(dropdown).not.toHaveAttribute('open', '');
 });
+
+test('a definite-height DialogSurface hands its whole body to one filling child', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/?component=surface-scaffold');
+  await page.getByRole('button', { name: 'Open project details' }).click();
+  const dialog = page.locator('#catalog-filled-dialog');
+  await expect(dialog).toHaveAttribute('open', '');
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) => {
+        const part = element.shadowRoot!.querySelector('[part~="dialog"]')!;
+        const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+        const split = element.querySelector('[data-component="split-view"]')!;
+        return {
+          dialog: Math.round(part.getBoundingClientRect().height),
+          body: Math.round(body.getBoundingClientRect().height),
+          split: Math.round(split.getBoundingClientRect().height),
+        };
+      }),
+    )
+    .toMatchObject({ dialog: 480 });
+  const sizes = await dialog.evaluate((element) => {
+    const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+    const split = element.querySelector('[data-component="split-view"]')!;
+    return [
+      Math.round(body.getBoundingClientRect().height),
+      Math.round(split.getBoundingClientRect().height),
+    ];
+  });
+  expect(sizes[1]).toBe(sizes[0]);
+});
+
+test('PopoverDialogSurface is a centered, bounded, non-modal light-dismiss dialog', async ({
+  page,
+}) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=surface-scaffold');
+    const open = page.getByRole('button', { name: 'Open repository status' });
+    const surface = page.getByRole('dialog', {
+      name: 'Repository status',
+      exact: true,
+    });
+    await open.click();
+    await expect(surface).toBeVisible();
+    const box = await surface.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const split = element
+        .querySelector('[data-component="split-view"]')!
+        .getBoundingClientRect();
+      return {
+        left: Math.round(rect.left),
+        right: Math.round(window.innerWidth - rect.right),
+        top: Math.round(rect.top),
+        bottom: Math.round(window.innerHeight - rect.bottom),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+        split: Math.round(split.height),
+      };
+    });
+    // 720px preferred, capped to the viewport minus two 8px gutters, centered.
+    expect(box.width).toBe(Math.min(720, width - 16));
+    expect(Math.abs(box.left - box.right)).toBeLessThanOrEqual(1);
+    expect(Math.abs(box.top - box.bottom)).toBeLessThanOrEqual(1);
+    expect(box.height).toBe(420);
+    // The SplitView fills the surface inside its 1px borders.
+    expect(box.split).toBe(box.height - 2);
+    // Non-modal: the controls behind it are not made inert.
+    expect(
+      await page
+        .getByRole('button', { name: 'Open project details' })
+        .evaluate((element) => element.closest('[inert]') === null),
+    ).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(surface).toBeHidden();
+    // A press outside also dismisses it.
+    await open.click();
+    await expect(surface).toBeVisible();
+    await page.mouse.click(4, 4);
+    await expect(surface).toBeHidden();
+  }
+});
+
+test('an embedded PopoverDialogSurface renders the same surface in flow', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=surface-scaffold');
+  const embedded = page.getByRole('dialog', {
+    name: 'Repository status preview',
+  });
+  await embedded.scrollIntoViewIfNeeded();
+  await expect(embedded).toBeVisible();
+  await expect(embedded).not.toHaveAttribute('popover');
+  const geometry = await embedded.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const parent = element.parentElement!.getBoundingClientRect();
+    const split = element
+      .querySelector('[data-component="split-view"]')!
+      .getBoundingClientRect();
+    return {
+      position: window.getComputedStyle(element).position,
+      height: Math.round(rect.height),
+      fitsParent: rect.right <= parent.right + 1,
+      split: Math.round(split.height),
+    };
+  });
+  expect(geometry).toEqual({
+    position: 'relative',
+    height: 280,
+    fitsParent: true,
+    split: 278,
+  });
+});
