@@ -42,6 +42,7 @@ import {
   Folder,
   Inbox,
   List as ListIcon,
+  MoreHorizontal,
   Pencil,
   Plus,
   Rocket,
@@ -412,6 +413,27 @@ export const COMPONENTS = {
             trailingAction: 'edit',
             trailingActionLabel: 'Edit deployment',
             trailingActionIcon: glyph(Pencil, 'pencil'),
+          }),
+      },
+      {
+        id: 'trailing-menu',
+        label: 'Trailing overflow menu',
+        height: 52,
+        render: () =>
+          ListActionRow({
+            label: 'preview.example.com',
+            icon: glyph(Rocket, 'rocket'),
+            action: 'open',
+            itemId: 'preview',
+            trailingMenu: {
+              label: 'Actions for preview.example.com',
+              icon: glyph(MoreHorizontal, 'more-horizontal'),
+              items: [
+                { label: 'Edit', action: 'edit' },
+                { kind: 'divider' },
+                { label: 'Delete', action: 'delete', tone: 'danger' },
+              ],
+            },
           }),
       },
     ],
@@ -954,6 +976,21 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 // fixture to a font shipped by macOS so its text metrics are reproducible.
 const captureCss = `:root { --kui-font-mono: "Courier New", monospace; }`;
 
+// A `ListActionRow` `trailingMenu` is a real `PopupMenu`, whose trigger is a
+// native button inside Web Awesome's shadow root. domotion cannot read that
+// button's author styles, so a registered trigger is captured as a raster
+// image, which also keeps the library sheet from flattening. Templates
+// therefore capture the PopupMenu unregistered and give the trigger host the
+// static geometry popup-menu.css gives its `::part(base)` in a row: a
+// 44px-wide, row-height box centering the 16px icon (the host already gets
+// `display: flex`, the row min-height, and the icon size from the real CSS).
+// The closed menu's items stay hidden, as Web Awesome slots them into its
+// unopened popup.
+const staticPopupMenuTriggerCss = `
+.kui-list-action-row > .kui-popup-menu:not(:defined) > wa-button:not(:defined) { width: 44px; min-width: 44px; align-items: center; justify-content: center; border-radius: var(--kui-radius-pill); }
+.kui-list-action-row > .kui-popup-menu:not(:defined) > :not([slot="trigger"]) { display: none; }
+`;
+
 const escapeHtml = (value) =>
   String(value)
     .replaceAll('&', '&amp;')
@@ -1070,7 +1107,7 @@ async function buildComponent(domotion, name, spec) {
       const wiring = variant.wireToolbarVisibility
         ? `<script>${(await build({ stdin: { contents: "import { wireToolbarVisibility } from './ui/dist/wire-toolbar-visibility.js'; wireToolbarVisibility(document);", resolveDir: resolve(root, '..') }, bundle: true, format: 'iife', write: false })).outputFiles[0].text}</script>`
         : '';
-      const page = `<!doctype html><html><head><meta charset="utf-8"><style>${frameCss(theme)}${cssText}${captureCss}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div>${wiring}</body></html>`;
+      const page = `<!doctype html><html><head><meta charset="utf-8"><style>${frameCss(theme)}${cssText}${captureCss}${staticPopupMenuTriggerCss}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div>${wiring}</body></html>`;
       const pagePath = resolve(dir, `${variant.id}${theme.suffix}.html`);
       const svgPath = resolve(dir, `${variant.id}${theme.suffix}.svg`);
       await writeFile(pagePath, page);

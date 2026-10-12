@@ -62,3 +62,18 @@ describe('design template stylesheet resolution', () => {
     ]);
   });
 });
+
+describe('design template PopupMenu-backed variants', () => {
+  it('captures the ListActionRow trailing menu as a real PopupMenu', async () => {
+    const { COMPONENTS } = await import(
+      // @ts-expect-error no declaration file is needed for this build-only module
+      '../../scripts/build-design-templates.mjs'
+    );
+    const variant = COMPONENTS['list-action-row'].variants.find(
+      (entry: { id: string }) => entry.id === 'trailing-menu',
+    );
+    const row = String(variant.render());
+    expect(row).toContain('data-component="popup-menu"');
+    expect(row).not.toContain('kui-list-action-row__trailing-action');
+  });
+});
