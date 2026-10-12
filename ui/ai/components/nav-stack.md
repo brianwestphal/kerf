@@ -22,6 +22,7 @@ Present a single linear or drill-down flow while preserving each prior view's st
 
 - [SplitView](./split-view.md) (roomy-alternative) — Promote a list-to-detail stack to SplitView once both regions fit together.
 - [TabNavigator](./tab-navigator.md) (composes-with) — Use one NavStack as each TabNavigator tab's persistent content.
+- [ContentSwap](./content-swap.md) (nearest) — Use ContentSwap to swap content in place inside one region without navigation chrome.
 
 ## Imports
 
@@ -100,6 +101,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Toolbar](./toolbar.md), [ToolbarControlGroup](./toolbar-control-group.md), [ToolbarText](./toolbar-text.md), [SplitView](./split-view.md), [TabNavigator](./tab-navigator.md).
+- Components: [Toolbar](./toolbar.md), [ToolbarControlGroup](./toolbar-control-group.md), [ToolbarText](./toolbar-text.md), [SplitView](./split-view.md), [TabNavigator](./tab-navigator.md), [ContentSwap](./content-swap.md).
 - Docs: [`docs/nav-stack.md`](../../docs/nav-stack.md), [`docs/app-layouts.md#decision-matrix`](../../docs/app-layouts.md#decision-matrix).
 - UX catalog route: `?component=nav-stack`.

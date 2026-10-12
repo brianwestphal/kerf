@@ -110,6 +110,8 @@ import {
   contentCardChoice,
   contentCardSelected,
   contentCardSelections,
+  contentSwapFaded,
+  contentSwapStep,
   customDisclosureOpen,
   disclosureOpen,
   displayDensity,
@@ -759,6 +761,15 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = splitButtonOptionsOpen.value
       ? 'Drive options opened'
       : 'Drive options closed';
+  },
+  'content-swap-next': () => {
+    contentSwapStep.value = 'b';
+  },
+  'content-swap-back': () => {
+    contentSwapStep.value = 'a';
+  },
+  'content-swap-fade': () => {
+    contentSwapFaded.value = contentSwapFaded.value === 'a' ? 'b' : 'a';
   },
   'toggle-edge-activity-demo': () => {
     edgeActivityBusy.value = !edgeActivityBusy.value;

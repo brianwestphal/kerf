@@ -3960,6 +3960,45 @@ declare function ColumnTrack({ children, layout, minColumnWidth, peek, id, class
 export { ColumnTrack, type ColumnTrackLayout, type ColumnTrackProps };
 ```
 
+## `@kerfjs/ui/content-swap`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+type ContentSwapSide = 'a' | 'b';
+type ContentSwapTransition = 'none' | 'crossfade' | 'push';
+/** `forward` pushes the incoming side in from the inline end; `backward` from the start. */
+type ContentSwapDirection = 'forward' | 'backward';
+interface ContentSwapProps {
+    /** Which side is shown. Changing it runs the transition. */
+    active: ContentSwapSide;
+    a: KerfUiContent;
+    b: KerfUiContent;
+    /** `push` (default) slides the sides, `crossfade` fades them, `none` swaps instantly. */
+    transition?: ContentSwapTransition;
+    /** Push direction; mirrors in right-to-left documents. Default `forward`. */
+    direction?: ContentSwapDirection;
+    /** Accessible name; when set, the swap is a named region. */
+    label?: string;
+    /** Span the full width of its slot (a dialog label or footer) instead of its content. */
+    fill?: boolean;
+    className?: string;
+    /** Native named-slot assignment, such as a dialog's `label` or `footer`. */
+    slot?: string;
+}
+/**
+ * Two content sides sharing one cell (a dialog body that steps to a second
+ * page, a footer whose actions change), with the swap animated in place.
+ * Kerf owns the motion, the reduced-motion fallback, and the inactive side's
+ * `inert`/`aria-hidden`. Use `NavStack` for full views with their own
+ * toolbars.
+ */
+declare function ContentSwap({ active, a, b, transition, direction, label, fill, className, slot, }: ContentSwapProps): kerfjs.SafeHtml;
+
+export { ContentSwap, type ContentSwapDirection, type ContentSwapProps, type ContentSwapSide, type ContentSwapTransition };
+```
+
 ## `@kerfjs/ui/spacer`
 
 ```ts

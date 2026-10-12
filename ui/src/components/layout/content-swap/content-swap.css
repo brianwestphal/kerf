@@ -1,0 +1,154 @@
+/* Both sides share one grid cell, so the region keeps the active side's
+   height; the inactive side is taken out of flow, clipped, and hidden once its
+   exit animation ends (each keyframe keeps it visible while it runs). */
+.kui-content-swap {
+  --_kui-content-swap-dir: 1;
+  --_kui-content-swap-duration: 280ms;
+  position: relative;
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.kui-content-swap:dir(rtl) {
+  --_kui-content-swap-dir: -1;
+}
+
+.kui-content-swap[data-fill="true"] {
+  width: 100%;
+}
+
+.kui-content-swap__side {
+  min-width: 0;
+  grid-area: 1 / 1;
+}
+
+.kui-content-swap__side[data-active="false"] {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Motion runs only when the viewer has not asked for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Push forward: a leaves toward the start, b arrives from the end. */
+  .kui-content-swap[data-transition="push"][data-active-side="b"][data-direction="forward"]
+    > [data-side="a"],
+  .kui-content-swap[data-transition="push"][data-active-side="a"][data-direction="forward"]
+    > [data-side="b"] {
+    animation: kui-content-swap-out-start var(--_kui-content-swap-duration)
+      cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .kui-content-swap[data-transition="push"][data-active-side="b"][data-direction="forward"]
+    > [data-side="b"],
+  .kui-content-swap[data-transition="push"][data-active-side="a"][data-direction="forward"]
+    > [data-side="a"] {
+    animation: kui-content-swap-in-end var(--_kui-content-swap-duration)
+      cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* Push backward: the mirror image. */
+  .kui-content-swap[data-transition="push"][data-active-side="a"][data-direction="backward"]
+    > [data-side="b"],
+  .kui-content-swap[data-transition="push"][data-active-side="b"][data-direction="backward"]
+    > [data-side="a"] {
+    animation: kui-content-swap-out-end var(--_kui-content-swap-duration)
+      cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .kui-content-swap[data-transition="push"][data-active-side="a"][data-direction="backward"]
+    > [data-side="a"],
+  .kui-content-swap[data-transition="push"][data-active-side="b"][data-direction="backward"]
+    > [data-side="b"] {
+    animation: kui-content-swap-in-start var(--_kui-content-swap-duration)
+      cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .kui-content-swap[data-transition="crossfade"]
+    > .kui-content-swap__side[data-active="true"] {
+    animation: kui-content-swap-fade-in 200ms ease-out;
+  }
+  .kui-content-swap[data-transition="crossfade"]
+    > .kui-content-swap__side[data-active="false"] {
+    animation: kui-content-swap-fade-out 200ms ease-out;
+  }
+}
+
+@keyframes kui-content-swap-in-end {
+  from {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(calc(100% * var(--_kui-content-swap-dir)));
+  }
+  to {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes kui-content-swap-in-start {
+  from {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(calc(-100% * var(--_kui-content-swap-dir)));
+  }
+  to {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes kui-content-swap-out-start {
+  from {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(calc(-100% * var(--_kui-content-swap-dir)));
+  }
+}
+@keyframes kui-content-swap-out-end {
+  from {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(calc(100% * var(--_kui-content-swap-dir)));
+  }
+}
+@keyframes kui-content-swap-fade-in {
+  from {
+    visibility: visible;
+    opacity: 0;
+  }
+  to {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+@keyframes kui-content-swap-fade-out {
+  from {
+    visibility: visible;
+    opacity: 1;
+  }
+  to {
+    visibility: visible;
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: no slide; a push or crossfade swaps with a short fade. */
+@media (prefers-reduced-motion: reduce) {
+  .kui-content-swap:is([data-transition="push"], [data-transition="crossfade"])
+    > .kui-content-swap__side[data-active="true"] {
+    animation: kui-content-swap-fade-in 120ms ease-out;
+  }
+}

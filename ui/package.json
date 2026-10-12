@@ -367,6 +367,11 @@
       "browser": "./dist/browser/edge-activity-indicator.js",
       "import": "./dist/edge-activity-indicator.js"
     },
+    "./content-swap": {
+      "types": "./dist/content-swap.d.ts",
+      "browser": "./dist/browser/content-swap.js",
+      "import": "./dist/content-swap.js"
+    },
     "./column-track": {
       "types": "./dist/column-track.d.ts",
       "browser": "./dist/browser/column-track.js",
@@ -446,6 +451,7 @@
     "./state-banner.css": "./dist/styles/state-banner.css",
     "./corner-status.css": "./dist/styles/corner-status.css",
     "./column-track.css": "./dist/styles/column-track.css",
+    "./content-swap.css": "./dist/styles/content-swap.css",
     "./edge-activity-indicator.css": "./dist/styles/edge-activity-indicator.css",
     "./icon-button.css": "./dist/styles/icon-button.css",
     "./icon-toggle-button.css": "./dist/styles/icon-toggle-button.css",

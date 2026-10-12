@@ -214,6 +214,13 @@ export {
   type ColumnTrackLayout,
   type ColumnTrackProps,
 } from './components/layout/column-track/column-track.js';
+export {
+  ContentSwap,
+  type ContentSwapDirection,
+  type ContentSwapProps,
+  type ContentSwapSide,
+  type ContentSwapTransition,
+} from './components/layout/content-swap/content-swap.js';
 export { Grid, type GridProps } from './components/layout/grid/grid.js';
 export {
   Pane,

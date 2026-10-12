@@ -349,6 +349,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/layout.md"
   },
   {
+    "id": "content-swap",
+    "name": "ContentSwap",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Swap arbitrary content in place (a dialog body that steps to a second page, a label or footer whose actions change) with Kerf-owned push or crossfade motion, reduced-motion handling, and an inert, hidden inactive side.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/content-swap.tsx",
+    "componentSource": "ui/src/components/layout/content-swap/content-swap.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "spacer",
     "name": "Spacer",
     "category": "Structure",

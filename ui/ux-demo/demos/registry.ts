@@ -7,6 +7,7 @@ import { ChipDemo } from './chip.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { ColumnTrackDemo } from './column-track.js';
 import { ContentItemDemo } from './content-item.js';
+import { ContentSwapDemo } from './content-swap.js';
 import { CornerStatusDemo } from './corner-status.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { DocumentBaselineDemo } from './document-baseline.js';
@@ -99,6 +100,7 @@ export const demos = {
   'surface-scaffold': SurfaceScaffoldDemo,
   'corner-status': CornerStatusDemo,
   'column-track': ColumnTrackDemo,
+  'content-swap': ContentSwapDemo,
   'edge-activity-indicator': EdgeActivityIndicatorDemo,
   'icon-button': IconButtonDemo,
   'icon-toggle-button': IconToggleButtonDemo,

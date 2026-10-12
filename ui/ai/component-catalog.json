@@ -775,6 +775,11 @@
           "id": "tab-navigator",
           "relationship": "composes-with",
           "when": "Use one NavStack as each TabNavigator tab's persistent content."
+        },
+        {
+          "id": "content-swap",
+          "relationship": "nearest",
+          "when": "Use ContentSwap to swap content in place inside one region without navigation chrome."
         }
       ],
       "appOwns": [
@@ -3044,6 +3049,75 @@
       "links": {
         "catalogRoute": "?component=column-track",
         "documentation": "docs/layout.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "content-swap",
+      "name": "ContentSwap",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Two content sides sharing one cell, swapped in place with a push, a crossfade, or no motion.",
+      "uses": [],
+      "purpose": "Swap arbitrary content in place (a dialog body that steps to a second page, a label or footer whose actions change) with Kerf-owned push or crossfade motion, reduced-motion handling, and an inert, hidden inactive side.",
+      "publicExports": [
+        "ContentSwap"
+      ],
+      "useWhen": [
+        "A region swaps between two contents in place, such as a dialog's two steps or a footer's action sets, and the change should read as motion."
+      ],
+      "avoidWhen": [
+        "Do not use for full navigation views with their own toolbars; use NavStack.",
+        "Do not use to swap more than two states at once; render the current pair.",
+        "Do not hand-roll stacked cells, inert handling, or push keyframes in app CSS."
+      ],
+      "alternatives": [
+        {
+          "id": "nav-stack",
+          "relationship": "nearest",
+          "when": "Use NavStack for full views with toolbars and back navigation."
+        }
+      ],
+      "appOwns": [
+        "which side is active and the push direction",
+        "both sides' content",
+        "the region's name"
+      ],
+      "variants": [
+        "push forward or backward",
+        "crossfade",
+        "none",
+        "full-width slot region"
+      ],
+      "accessibility": [
+        "The inactive side is inert and aria-hidden; label makes the swap a named region. Push mirrors in right-to-left documents. Reduced motion replaces the slide with a short fade."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "Both sides share one grid cell; the region keeps the active side's height and clips the motion."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/content-swap",
+        "manualCssImport": "@kerfjs/ui/content-swap.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-content-swap",
+        "kui-content-swap__side"
+      ],
+      "publicTokens": [],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=content-swap",
+        "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }
     },

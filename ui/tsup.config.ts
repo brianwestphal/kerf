@@ -63,6 +63,7 @@ const entries = [
   'state-banner',
   'corner-status',
   'column-track',
+  'content-swap',
   'edge-activity-indicator',
   'icon-button',
   'icon-toggle-button',

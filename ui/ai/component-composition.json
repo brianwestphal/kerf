@@ -2577,6 +2577,66 @@
       }
     },
     {
+      "key": "@kerfjs/ui:content-swap",
+      "package": "@kerfjs/ui",
+      "id": "content-swap",
+      "name": "ContentSwap",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "which side is active and the push direction",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "both sides' content",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "the region's name", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "Both sides share one grid cell; the region keeps the active side's height and clips the motion."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The inactive side is inert and aria-hidden; label makes the swap a named region. Push mirrors in right-to-left documents. Reduced motion replaces the slide with a short fade."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-content-swap",
+        "publicClasses": ["kui-content-swap", "kui-content-swap__side"],
+        "rootElement": "div",
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:spacer",
       "package": "@kerfjs/ui",
       "id": "spacer",
