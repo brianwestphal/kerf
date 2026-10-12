@@ -556,6 +556,12 @@ test('submenu recovers from an interrupted close and a stale hidden open', async
   await expect
     .poll(() => parent.evaluate((element) => element.matches(':hover')))
     .toBe(false);
+  // Leaving an open submenu can arm Web Awesome's 100 ms hover-out close
+  // (engine-dependent). A longer in-page timer always fires after it, so the
+  // close cannot land on the submenu the stale-state hover reopens below.
+  await page.evaluate(
+    () => new Promise<void>((resolve) => window.setTimeout(resolve, 150)),
+  );
   await parent.evaluate((element) => {
     const item = element as HTMLElement & {
       submenuElement?: HTMLElement;
@@ -582,6 +588,13 @@ test('submenu recovers from an interrupted close and a stale hidden open', async
       ),
     )
     .toBe(false);
+  // Move the pointer off the menu before any submenu is open: Web Awesome's
+  // global mousemove handler arms a 100 ms close for an open submenu the
+  // pointer is not over, and that timer would race the keyboard reopen below.
+  await page.mouse.move(0, 0);
+  await expect
+    .poll(() => parent.evaluate((element) => element.matches(':hover')))
+    .toBe(false);
   await parent.evaluate((element) => {
     (element as HTMLElement & { submenuOpen: boolean }).submenuOpen = true;
   });
@@ -596,10 +609,6 @@ test('submenu recovers from an interrupted close and a stale hidden open', async
       ),
     )
     .toBe(true);
-  await page.mouse.move(0, 0);
-  await expect
-    .poll(() => parent.evaluate((element) => element.matches(':hover')))
-    .toBe(false);
   await parent.evaluate((element) => {
     const item = element as HTMLElement & {
       submenuElement?: HTMLElement;
