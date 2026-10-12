@@ -1382,6 +1382,17 @@ interface SplitViewCompactStack extends Pick<NavStackProps, 'toolbarConfig' | 'b
     /** Toolbar content for the pushed detail view. */
     detail?: SplitViewCompactViewToolbars;
 }
+/**
+ * The fixed list column's width: a size in CSS pixels, or that size capped
+ * at a fraction of the SplitView's own width so a narrow container (a
+ * dialog, a small window) always leaves the detail in view.
+ */
+type SplitViewListWidth = number | {
+    /** Preferred width in CSS pixels. */
+    size: number;
+    /** Largest share of the SplitView's width, greater than 0 and at most 1. */
+    maxFraction?: number;
+};
 interface SplitViewProps {
     id: string;
     label: string;
@@ -1407,6 +1418,12 @@ interface SplitViewProps {
     compactStack?: SplitViewCompactStack;
     /** A resizable separator on roomy classes (min/max px). Omit for a fixed split. */
     resizable?: SplitViewResizable;
+    /**
+     * The fixed split's list column width (default 320px). A number is CSS
+     * pixels; `{ size, maxFraction }` caps it at that share of the SplitView's
+     * width. A resizable split sizes its list with `resizable` instead.
+     */
+    listWidth?: SplitViewListWidth;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -1418,9 +1435,9 @@ interface SplitViewProps {
  * resizable wiring with `wireResizableRegions` and the compact back with
  * `wireNavStack`.
  */
-declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, compactStack, resizable, className, slot, }: SplitViewProps): kerfjs.SafeHtml;
+declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, compactStack, resizable, listWidth, className, slot, }: SplitViewProps): kerfjs.SafeHtml;
 
-export { SplitView, type SplitViewCompactStack, type SplitViewCompactViewToolbars, type SplitViewProps, type SplitViewResizable };
+export { SplitView, type SplitViewCompactStack, type SplitViewCompactViewToolbars, type SplitViewListWidth, type SplitViewProps, type SplitViewResizable };
 ```
 
 ## `@kerfjs/ui/pane`

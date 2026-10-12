@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 339000,
-  "measuredLargestJavaScriptGzip": 124514,
-  "measuredTotalJavaScriptGzip": 338986,
+  "totalJavaScriptGzip": 339300,
+  "measuredLargestJavaScriptGzip": 124513,
+  "measuredTotalJavaScriptGzip": 339292,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3299,6 +3299,22 @@
         "measuredTotalJavaScriptGzip": 338986,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 339000
+      }
+    },
+    {
+      "at": "2026-10-12T10:04:22.607Z",
+      "reason": "KF-7R5NWM: SplitView listWidth (validation plus the min()/fraction value) used by the SplitView demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124514,
+        "measuredTotalJavaScriptGzip": 338986,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 339000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 339292,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 339300
       }
     }
   ]

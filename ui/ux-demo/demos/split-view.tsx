@@ -184,7 +184,7 @@ export function SplitViewDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'split-view' }}>
       <CatalogExample
         label="Roomy list-detail split"
-        note="The public list-width token controls the fixed primary pane; selection stays visible alongside its detail."
+        note="listWidth sets the fixed list column to 240px, capped at 40% of the split, so a narrow container keeps the detail in view; selection stays visible alongside its detail."
         align="none"
         viewport={{
           layout: 'grid',
@@ -192,12 +192,12 @@ export function SplitViewDemo() {
           height: 'medium',
           frame: 'solid',
           responsive: 'roomy-only',
-          tokens: { '--kui-split-view-list-width': '15rem' },
         }}
       >
         <SplitView
           id="catalog-split-view-roomy"
           label="Messages"
+          listWidth={{ size: 240, maxFraction: 0.4 }}
           listTitle="Threads"
           detailTitle={roomySelection.subject}
           list={messageList(

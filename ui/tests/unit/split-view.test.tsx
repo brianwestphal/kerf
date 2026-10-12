@@ -282,6 +282,41 @@ describe('SplitView', () => {
     expect(html).not.toContain('data-nav-stack-chrome');
   });
 
+  it('sizes the fixed list column from listWidth, capped at a fraction', () => {
+    const style = (listWidth: Parameters<typeof SplitView>[0]['listWidth']) =>
+      /style="([^"]*)"/.exec(
+        String(SplitView({ id: 'sv', label: 'Mail', list, detail, listWidth })),
+      )?.[1];
+    expect(style(undefined)).toBeUndefined();
+    expect(style(432)).toBe('--kui-split-view-list-width:27rem');
+    expect(style({ size: 432 })).toBe('--kui-split-view-list-width:27rem');
+    expect(style({ size: 432, maxFraction: 0.5 })).toBe(
+      '--kui-split-view-list-width:min(27rem, 50%)',
+    );
+    expect(style({ size: 240, maxFraction: 0.4 })).toBe(
+      '--kui-split-view-list-width:min(15rem, 40%)',
+    );
+    expect(style({ size: 300, maxFraction: 1 })).toBe(
+      '--kui-split-view-list-width:min(18.75rem, 100%)',
+    );
+  });
+
+  it('rejects an invalid listWidth and a listWidth on a resizable split', () => {
+    const make = (props: Partial<Parameters<typeof SplitView>[0]>) => () =>
+      SplitView({ id: 'sv', label: 'Mail', list, detail, ...props });
+    for (const listWidth of [0, -10, Number.NaN, Number.POSITIVE_INFINITY])
+      expect(make({ listWidth })).toThrow(RangeError);
+    for (const maxFraction of [0, -0.5, 1.5, Number.NaN])
+      expect(make({ listWidth: { size: 300, maxFraction } })).toThrow(
+        RangeError,
+      );
+    expect(
+      make({ listWidth: 300, resizable: { size: 300, min: 200, max: 400 } }),
+    ).toThrow(RangeError);
+    // Validated in compact mode too, so a bad value never waits for a resize.
+    expect(make({ listWidth: -1, compact: true })).toThrow(RangeError);
+  });
+
   it('applies a custom className', () => {
     expect(
       String(

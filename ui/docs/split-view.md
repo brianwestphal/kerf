@@ -55,13 +55,31 @@ const selected = signal<string | null>(null);
 
 - **Roomy** (`compact: false`): both panes show. With `resizable`, the list sits
   in a `ResizableRegion` (wire it with `wireResizableRegions`); without it the
-  list takes a fixed `--kui-split-view-list-width` (default 320px) and the detail
-  fills the rest.
+  list takes a fixed width and the detail fills the rest. Set it with
+  `listWidth`: a number of CSS pixels (default 320), or `{ size, maxFraction }`
+  to cap the preferred size at that share of the SplitView's own width, so a
+  narrow container (a dialog, a small window) always leaves the detail in view —
+  `listWidth={{ size: 432, maxFraction: 0.5 }}` is 432px until the split is
+  narrower than 864px, then half of it. `listWidth` is for the fixed split; a
+  resizable list is sized by `resizable` (combining them throws). The
+  `--kui-split-view-list-width` token remains for theme-level defaults; the
+  prop wins over it.
 - **Compact** (`compact: true`): the split collapses to a `NavStack`. The list is
   the root; when `detailActive` is true the detail is pushed over it with an
   automatic back control (wire it with `wireNavStack`, whose `onBack` clears the
   app's selection). This is the portrait-tablet / handset presentation; as a
   dialog the compact form is a full-screen or large partial-cover modal.
+
+## Filling its container
+
+A SplitView fills its container's block size: give the container a definite
+height (a fixed or viewport-bounded `height`, a flex item that grows, a grid
+row) and the split stretches to it, with each `Pane` owning its own scrolling.
+That holds in a block box, a fixed-size native popover or dialog, a flex column
+below a header, and a grid; no app-side `display: grid` /
+`grid-template-rows: minmax(0, 1fr)` wrapper is needed. A container sized only
+by `max-height` has no height to fill, so the split takes its content height;
+give such a container a `height` instead.
 
 ## Configuring the list region and the compact stack
 

@@ -1,4 +1,5 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { pct, remify } from '../../../shared/styles/css-values.js';
 import {
   NavStack,
   type NavStackProps,
@@ -58,6 +59,43 @@ export interface SplitViewCompactStack extends Pick<
   detail?: SplitViewCompactViewToolbars;
 }
 
+/**
+ * The fixed list column's width: a size in CSS pixels, or that size capped
+ * at a fraction of the SplitView's own width so a narrow container (a
+ * dialog, a small window) always leaves the detail in view.
+ */
+export type SplitViewListWidth =
+  | number
+  | {
+      /** Preferred width in CSS pixels. */
+      size: number;
+      /** Largest share of the SplitView's width, greater than 0 and at most 1. */
+      maxFraction?: number;
+    };
+
+/** The list-width custom property value for a fixed split. */
+function listWidthValue(listWidth: SplitViewListWidth): string {
+  const { size, maxFraction } =
+    typeof listWidth === 'number'
+      ? { size: listWidth, maxFraction: undefined }
+      : listWidth;
+  if (!Number.isFinite(size) || size <= 0)
+    throw new RangeError(
+      'SplitView listWidth size must be a positive number of pixels',
+    );
+  if (
+    maxFraction !== undefined &&
+    (!Number.isFinite(maxFraction) || maxFraction <= 0 || maxFraction > 1)
+  )
+    throw new RangeError(
+      'SplitView listWidth maxFraction must be greater than 0 and at most 1',
+    );
+  const preferred = remify(size);
+  return maxFraction === undefined
+    ? preferred
+    : `min(${preferred}, ${pct(maxFraction * 100)})`;
+}
+
 export interface SplitViewProps {
   id: string;
   label: string;
@@ -83,6 +121,12 @@ export interface SplitViewProps {
   compactStack?: SplitViewCompactStack;
   /** A resizable separator on roomy classes (min/max px). Omit for a fixed split. */
   resizable?: SplitViewResizable;
+  /**
+   * The fixed split's list column width (default 320px). A number is CSS
+   * pixels; `{ size, maxFraction }` caps it at that share of the SplitView's
+   * width. A resizable split sizes its list with `resizable` instead.
+   */
+  listWidth?: SplitViewListWidth;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -107,9 +151,18 @@ export function SplitView({
   backLabel = 'Back',
   compactStack = {},
   resizable,
+  listWidth,
   className = '',
   slot,
 }: SplitViewProps) {
+  if (listWidth !== undefined && resizable)
+    throw new RangeError(
+      'SplitView listWidth applies to a fixed split; size a resizable list with resizable.size, min, and max',
+    );
+  const listWidthStyle =
+    listWidth === undefined
+      ? undefined
+      : `--kui-split-view-list-width:${listWidthValue(listWidth)}`;
   if (compact) {
     const listView: NavStackView = {
       ...compactStack.list,
@@ -191,6 +244,7 @@ export function SplitView({
       data-component="split-view"
       data-split-mode="split"
       aria-label={label}
+      style={listWidthStyle}
       slot={slot}
     >
       {listPane}

@@ -37,7 +37,7 @@ Exact prop names and types: [`@kerfjs/ui/split-view`](../public-api-signatures-v
 
 **Variants (configure, do not restyle):**
 
-- fixed roomy split
+- fixed roomy split with listWidth: a pixel size, optionally capped at a fraction of the split's width
 - resizable roomy split
 - collapsed resizable list with a restore control
 - compact list
