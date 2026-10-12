@@ -4,6 +4,7 @@ import type { KerfUiContent } from '../../../shared/content/semantic-content.js'
 import {
   collapsiblePanelToggleIcon,
   composedPanelBody,
+  groupSizeFor,
   type PanelBottomToolbar,
   type PanelChromePlacement,
   type PanelSide,
@@ -12,6 +13,7 @@ import {
   type PanelToolbar,
   relocatedPanelGroups,
 } from '../../../shared/panels/panel-toolbar.js';
+import type { ToolbarConfig } from '../../actions/toolbar/toolbar.js';
 import type { ListConfig } from '../../collections/list/list.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 import type { PaneConfig } from '../pane/pane.js';
@@ -267,6 +269,12 @@ export interface CollapsiblePanelRelocatedProps {
   collapsed: boolean;
   /** The same `toolbar` the panel receives. */
   toolbar: CollapsiblePanelToolbar;
+  /**
+   * Density of the toolbar the groups are placed in, so the standard toggle
+   * fits it (`compact` in a `density="compact"` toolbar). Defaults to
+   * `default`.
+   */
+  density?: ToolbarConfig['density'];
 }
 
 /**
@@ -282,6 +290,7 @@ export function CollapsiblePanelRelocated({
   side,
   collapsed,
   toolbar,
+  density,
 }: CollapsiblePanelRelocatedProps) {
   return (
     <>
@@ -290,6 +299,7 @@ export function CollapsiblePanelRelocated({
         side,
         collapsed,
         toggleAttributes(panelId),
+        groupSizeFor(density),
       )}
     </>
   );

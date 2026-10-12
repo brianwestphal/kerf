@@ -172,7 +172,9 @@ interface ToolbarProps {
      * `compact` sizes the toolbar to a 34px control band with 3px block
      * insets — 40px tall — for a header embedded in a panel or card. Fill it
      * with `ToolbarControlGroup size="compact"` groups; inline insets and the
-     * gap between zones are unchanged. Defaults to `default`.
+     * gap between zones are unchanged. Composites that render a Toolbar from a
+     * `ToolbarConfig` (Workbench, CollapsiblePanel, NavStack, SplitView) forward
+     * it and size the groups they compose to match. Defaults to `default`.
      */
     density?: ToolbarDensity;
     /**
@@ -223,7 +225,7 @@ interface ToolbarProps {
  * that renders a `Toolbar` for the app (a Workbench or CollapsiblePanel
  * toolbar) forwards, so the app configures that toolbar instead of styling it.
  */
-type ToolbarConfig = Pick<ToolbarProps, 'dividerSides' | 'centerAlign' | 'responsive' | 'responsiveAt' | 'safeAreaEdges'>;
+type ToolbarConfig = Pick<ToolbarProps, 'density' | 'dividerSides' | 'centerAlign' | 'responsive' | 'responsiveAt' | 'safeAreaEdges'>;
 declare function Toolbar({ leading, center, trailing, label, position, density, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
 
 export { Sides, Toolbar, type ToolbarConfig, type ToolbarDensity, type ToolbarPosition, type ToolbarProps };
@@ -2179,14 +2181,14 @@ import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { P as PanelSide, a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-CL9tYOkh.js';
 export { e as collapsiblePanelToggleIcon } from './panel-toolbar-CL9tYOkh.js';
+import { ToolbarConfig } from './toolbar.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
-import './toolbar.js';
-import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
 import './css-values.js';
+import './sides-BPSWde0A.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 
@@ -2301,6 +2303,12 @@ interface CollapsiblePanelRelocatedProps {
     collapsed: boolean;
     /** The same `toolbar` the panel receives. */
     toolbar: CollapsiblePanelToolbar;
+    /**
+     * Density of the toolbar the groups are placed in, so the standard toggle
+     * fits it (`compact` in a `density="compact"` toolbar). Defaults to
+     * `default`.
+     */
+    density?: ToolbarConfig['density'];
 }
 /**
  * A collapsed {@link CollapsiblePanel}'s marked groups and standard
@@ -2310,7 +2318,7 @@ interface CollapsiblePanelRelocatedProps {
  * `restoreControl`) for a bottom drawer. `wireSidebar` hands focus to it when
  * the panel closes from its own toggle.
  */
-declare function CollapsiblePanelRelocated({ panelId, side, collapsed, toolbar, }: CollapsiblePanelRelocatedProps): SafeHtml;
+declare function CollapsiblePanelRelocated({ panelId, side, collapsed, toolbar, density, }: CollapsiblePanelRelocatedProps): SafeHtml;
 
 export { CollapsiblePanel, type CollapsiblePanelBottomToolbar, type CollapsiblePanelChromePlacement, type CollapsiblePanelProps, CollapsiblePanelRelocated, type CollapsiblePanelRelocatedProps, type CollapsiblePanelSide, CollapsiblePanelToggle, type CollapsiblePanelToggleProps, type CollapsiblePanelToolbar, type CollapsiblePanelToolbarToggle };
 ```

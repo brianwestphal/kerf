@@ -156,6 +156,7 @@ export function NavStack({
   const topToolbar = top?.toolbar;
   const bottom = top?.bottomToolbar ?? bottomToolbar;
   const canPop = views.length > 1;
+  const topDensity = topToolbar?.density ?? toolbarConfig.density;
   return (
     <section
       class={`kui-nav-stack ${className}`.trim()}
@@ -176,6 +177,7 @@ export function NavStack({
         <div class="kui-nav-stack__chrome" data-nav-stack-chrome>
           <Toolbar
             label={topToolbar?.label ?? toolbarConfig.label}
+            density={topDensity}
             dividerSides={
               topToolbar?.dividerSides ?? toolbarConfig.dividerSides
             }
@@ -196,6 +198,7 @@ export function NavStack({
                     appearance="borderless"
                     shape="rounded"
                     content={backText ? 'mixed' : 'icon'}
+                    size={topDensity === 'compact' ? 'compact' : 'default'}
                     single
                   >
                     <button
@@ -288,6 +291,7 @@ export function NavStack({
           <Toolbar
             position="footer"
             label={bottom.label}
+            density={bottom.density}
             dividerSides={bottom.dividerSides}
             centerAlign={bottom.centerAlign}
             responsive={bottom.responsive}

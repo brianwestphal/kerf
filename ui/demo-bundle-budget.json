@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 356800,
-  "measuredLargestJavaScriptGzip": 139778,
-  "measuredTotalJavaScriptGzip": 356784,
+  "totalJavaScriptGzip": 356900,
+  "measuredLargestJavaScriptGzip": 139883,
+  "measuredTotalJavaScriptGzip": 356873,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3827,6 +3827,22 @@
         "measuredTotalJavaScriptGzip": 356784,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 356800
+      }
+    },
+    {
+      "at": "2026-10-12T23:34:58.761Z",
+      "reason": "Toolbar density forwarded through ToolbarConfig composites (KF-QPSTTA)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 139778,
+        "measuredTotalJavaScriptGzip": 356784,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 356800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 139883,
+        "measuredTotalJavaScriptGzip": 356873,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 356900
       }
     }
   ]

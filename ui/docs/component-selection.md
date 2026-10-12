@@ -331,7 +331,12 @@ selecting toolbar anatomy from application CSS.
 For a shorter header embedded in a panel or card, pass `Toolbar
 density="compact"`: a 40px toolbar with a 34px control band and 3px block
 insets (inline insets and the zone gap stay 8px). Give its groups
-`size="compact"` so they fit the band.
+`size="compact"` so they fit the band. Composite toolbars take the same
+`density` through their `ToolbarConfig` (Workbench panel, main, and bottom
+toolbars, CollapsiblePanel, NavStack, and SplitView) and size the groups they
+compose — panel toggles, relocated toggles, the back button — to match. Pass
+`density` to `CollapsiblePanelRelocated` when its destination toolbar is
+compact.
 
 Set `--kui-toolbar-inset: 0px` on an embedded Toolbar that should have no outer
 padding while keeping its `--kui-toolbar-gap` between control zones. The token

@@ -1,6 +1,7 @@
 import type { KerfUiContent } from '../../../../shared/content/semantic-content.js';
 import {
   composedPanelBody,
+  groupSizeFor,
   type PanelBottomToolbar,
   type PanelChromePlacement,
   type PanelSide,
@@ -121,6 +122,7 @@ export function relocatedGroups(
   workbenchId: string,
   key: WorkbenchPanelKey,
   panel: WorkbenchToolbarPanel | undefined,
+  density?: ToolbarConfig['density'],
 ): KerfUiContent[] {
   const active = panel?.navStack?.views.at(-1);
   const toolbar =
@@ -137,6 +139,7 @@ export function relocatedGroups(
     SIDES[key],
     Boolean(panel?.collapsed),
     toggleAttributes(workbenchId, key),
+    groupSizeFor(density),
   );
 }
 
@@ -157,6 +160,7 @@ export function panelBody(
       ...stack,
       toolbarConfig: {
         label: stack.toolbarConfig?.label ?? toolbar?.label,
+        density: stack.toolbarConfig?.density ?? toolbar?.density,
         dividerSides:
           stack.toolbarConfig?.dividerSides ?? toolbar?.dividerSides,
         centerAlign: stack.toolbarConfig?.centerAlign ?? toolbar?.centerAlign,
@@ -174,6 +178,7 @@ export function panelBody(
             toolbar.toggle,
             Boolean(panel.collapsed),
             toggleAttributes(workbenchId, key),
+            groupSizeFor(stack.toolbarConfig?.density ?? toolbar.density),
           )
         : undefined,
     });
@@ -267,10 +272,25 @@ export function mainBody({
 }) {
   if (!mainToolbar && !mainBottomToolbar && !mainHeader && !mainFooter)
     return main;
-  const left = relocatedGroups(workbenchId, 'leftRail', leftRail);
-  const right = relocatedGroups(workbenchId, 'rightRail', rightRail);
+  const left = relocatedGroups(
+    workbenchId,
+    'leftRail',
+    leftRail,
+    mainToolbar?.density,
+  );
+  const right = relocatedGroups(
+    workbenchId,
+    'rightRail',
+    rightRail,
+    mainToolbar?.density,
+  );
   const drawer = mainBottomToolbar
-    ? relocatedGroups(workbenchId, 'bottomDrawer', bottomDrawer)
+    ? relocatedGroups(
+        workbenchId,
+        'bottomDrawer',
+        bottomDrawer,
+        mainBottomToolbar.density,
+      )
     : [];
   // The Pane draws one divider under the header chrome and one over the
   // footer chrome, wherever that chrome ends, from the scroll state.
@@ -280,6 +300,7 @@ export function mainBody({
         {mainToolbar ? (
           <Toolbar
             label={mainToolbar.label}
+            density={mainToolbar.density}
             dividerSides={mainToolbar.dividerSides}
             centerAlign={mainToolbar.centerAlign}
             responsive={mainToolbar.responsive}
@@ -312,6 +333,7 @@ export function mainBody({
           <Toolbar
             position="footer"
             label={mainBottomToolbar.label}
+            density={mainBottomToolbar.density}
             dividerSides={mainBottomToolbar.dividerSides}
             centerAlign={mainBottomToolbar.centerAlign}
             responsive={mainBottomToolbar.responsive}

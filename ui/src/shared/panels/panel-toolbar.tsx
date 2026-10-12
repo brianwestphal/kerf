@@ -12,7 +12,10 @@ import {
   Toolbar,
   type ToolbarConfig,
 } from '../../components/actions/toolbar/toolbar.js';
-import { ToolbarControlGroup } from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
+import {
+  ToolbarControlGroup,
+  type ToolbarControlGroupSize,
+} from '../../components/actions/toolbar-control-group/toolbar-control-group.js';
 import {
   List,
   type ListConfig,
@@ -124,16 +127,29 @@ function panelChromeList(content: KerfUiContent, config?: ListConfig) {
 /** Owner-specific attributes a toggle button carries (its wiring hooks). */
 export type PanelToggleAttributes = Readonly<Record<string, string>>;
 
+/** The group size that fits a toolbar of this density. */
+export function groupSizeFor(
+  density: ToolbarConfig['density'],
+): ToolbarControlGroupSize {
+  return density === 'compact' ? 'compact' : 'default';
+}
+
 /** The standard toggle, alone in a borderless group. */
 export function panelToggleGroup(
   side: PanelSide,
   toggle: PanelToggle,
   collapsed: boolean,
   attributes: PanelToggleAttributes,
+  size: ToolbarControlGroupSize = 'default',
 ): SafeHtml {
   const glyph = collapsiblePanelToggleIcon(side, collapsed);
   return (
-    <ToolbarControlGroup label={toggle.name} appearance="borderless" single>
+    <ToolbarControlGroup
+      label={toggle.name}
+      appearance="borderless"
+      size={size}
+      single
+    >
       <button
         type="button"
         {...attributes}
@@ -163,6 +179,7 @@ export function composedPanelToolbar(
   return (
     <Toolbar
       label={toolbar.label}
+      density={toolbar.density}
       dividerSides={toolbar.dividerSides}
       centerAlign={toolbar.centerAlign}
       responsive={toolbar.responsive}
@@ -179,7 +196,13 @@ export function composedPanelToolbar(
         <>
           {toolbar.trailing}
           {toolbar.toggle
-            ? panelToggleGroup(side, toolbar.toggle, collapsed, attributes)
+            ? panelToggleGroup(
+                side,
+                toolbar.toggle,
+                collapsed,
+                attributes,
+                groupSizeFor(toolbar.density),
+              )
             : null}
         </>
       }
@@ -235,6 +258,7 @@ export function composedPanelBody({
           <Toolbar
             position="footer"
             label={bottomToolbar.label}
+            density={bottomToolbar.density}
             dividerSides={bottomToolbar.dividerSides}
             centerAlign={bottomToolbar.centerAlign}
             responsive={bottomToolbar.responsive}
@@ -284,6 +308,7 @@ export function relocatedPanelGroups(
   side: PanelSide,
   collapsed: boolean,
   attributes: PanelToggleAttributes,
+  size: ToolbarControlGroupSize = 'default',
 ): KerfUiContent[] {
   if (!collapsed || !toolbar) return [];
   const groups: KerfUiContent[] = [];
@@ -300,7 +325,7 @@ export function relocatedPanelGroups(
   return [
     ...groups,
     toolbar.toggle
-      ? panelToggleGroup(side, toolbar.toggle, true, attributes)
+      ? panelToggleGroup(side, toolbar.toggle, true, attributes, size)
       : null,
   ].filter((group) => group !== undefined && group !== null && group !== false);
 }

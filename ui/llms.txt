@@ -241,6 +241,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   safe-area compensation. For a shorter header embedded in a panel or card,
   pass `density="compact"` (40px: a 34px control band and 3px block insets)
   and give its groups `size="compact"`; never shrink a Toolbar with CSS.
+  Composites forward `density` from their `ToolbarConfig` (Workbench panel,
+  main, and bottom toolbars, CollapsiblePanel, NavStack, SplitView) and size
+  the groups they compose (panel toggles, the back button) to match; pass
+  `density` to `CollapsiblePanelRelocated` when its toolbar is compact.
 - **Position region restore controls declaratively.** A ResizableRegion has a
   background token, `contentOverflow="visible"` for an anchored popup,
   top/bottom `restorePosition`, typed `restoreInset`, and

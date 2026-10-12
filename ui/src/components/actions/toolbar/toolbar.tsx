@@ -17,7 +17,9 @@ export interface ToolbarProps {
    * `compact` sizes the toolbar to a 34px control band with 3px block
    * insets — 40px tall — for a header embedded in a panel or card. Fill it
    * with `ToolbarControlGroup size="compact"` groups; inline insets and the
-   * gap between zones are unchanged. Defaults to `default`.
+   * gap between zones are unchanged. Composites that render a Toolbar from a
+   * `ToolbarConfig` (Workbench, CollapsiblePanel, NavStack, SplitView) forward
+   * it and size the groups they compose to match. Defaults to `default`.
    */
   density?: ToolbarDensity;
   /**
@@ -72,6 +74,7 @@ export interface ToolbarProps {
  */
 export type ToolbarConfig = Pick<
   ToolbarProps,
+  | 'density'
   | 'dividerSides'
   | 'centerAlign'
   | 'responsive'

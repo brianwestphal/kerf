@@ -74,6 +74,7 @@ export function CatalogResourceFooter({
       <Toolbar
         position="footer"
         label={`${name} resources`}
+        density={toolbar?.density}
         dividerSides={toolbar?.dividerSides}
         centerAlign={toolbar?.centerAlign}
         responsive={toolbar?.responsive ?? 'stack'}
