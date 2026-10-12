@@ -3859,6 +3859,57 @@ declare function openAnchoredSurfaceAt(point: AnchoredSurfacePoint, content: Ove
 export { type AnchoredSurfaceOptions, type AnchoredSurfacePoint, openAnchoredSurface, openAnchoredSurfaceAt };
 ```
 
+## `@kerfjs/ui/icon-button`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { LucideNode } from './lucide-icon.js';
+import 'lucide';
+import './css-values.js';
+
+type IconButtonAppearance = 'accent' | 'filled' | 'outlined' | 'filled-outlined' | 'plain';
+type IconButtonVariant = 'neutral' | 'brand' | 'success' | 'warning' | 'danger';
+type IconButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
+type IconButtonRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+}>;
+interface IconButtonProps {
+    /** The Lucide-compatible icon node shown alone in the button. */
+    icon: LucideNode;
+    /** The icon's stable name, as `LucideIcon` takes it. */
+    iconName: string;
+    /** Accessible name; the button has no visible text, so it is required. */
+    label: string;
+    /** Delegated `data-action` the application handles. */
+    action?: string;
+    /** Web Awesome appearance; defaults to Web Awesome's own. */
+    appearance?: IconButtonAppearance;
+    /** Web Awesome semantic variant; defaults to Web Awesome's own. */
+    variant?: IconButtonVariant;
+    /** Web Awesome control size; the square follows its control height. */
+    size?: IconButtonSize;
+    type?: 'button' | 'submit' | 'reset';
+    disabled?: boolean;
+    id?: string;
+    className?: string;
+    /** Safe `data-*` metadata; `data-component` and `data-action` stay owned. */
+    rootAttributes?: IconButtonRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * An icon-only Web Awesome button with a `LucideIcon`: square, one form
+ * control height on each side, so it matches an adjacent `wa-input` or
+ * `Select`. Web Awesome squares a button only for a lone `wa-icon`; this is
+ * the Kerf form for Lucide icons. Register `wa-button` once
+ * (`@awesome.me/webawesome/dist/components/button/button.js`).
+ */
+declare function IconButton({ icon, iconName, label, action, appearance, variant, size, type, disabled, id, className, rootAttributes, slot, }: IconButtonProps): kerfjs.SafeHtml;
+
+export { IconButton, type IconButtonAppearance, type IconButtonProps, type IconButtonSize, type IconButtonVariant };
+```
+
 ## `@kerfjs/ui/corner-status`
 
 ```ts

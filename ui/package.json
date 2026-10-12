@@ -342,6 +342,11 @@
       "types": "./dist/webawesome.d.ts",
       "import": "./dist/webawesome.js"
     },
+    "./icon-button": {
+      "types": "./dist/icon-button.d.ts",
+      "browser": "./dist/browser/icon-button.js",
+      "import": "./dist/icon-button.js"
+    },
     "./corner-status": {
       "types": "./dist/corner-status.d.ts",
       "browser": "./dist/browser/corner-status.js",
@@ -415,6 +420,7 @@
     "./token-search-field.css": "./dist/styles/token-search-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",
     "./corner-status.css": "./dist/styles/corner-status.css",
+    "./icon-button.css": "./dist/styles/icon-button.css",
     "./empty-state.css": "./dist/styles/empty-state.css",
     "./value-table.css": "./dist/styles/value-table.css",
     "./ai/*": "./ai/*",

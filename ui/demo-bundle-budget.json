@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 341600,
-  "measuredLargestJavaScriptGzip": 125558,
-  "measuredTotalJavaScriptGzip": 341594,
+  "totalJavaScriptGzip": 342200,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 342184,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3427,6 +3427,22 @@
         "measuredTotalJavaScriptGzip": 341594,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 341600
+      }
+    },
+    {
+      "at": "2026-10-12T12:36:30.954Z",
+      "reason": "IconButton component and its catalog demo (KF-1315VN)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 125558,
+        "measuredTotalJavaScriptGzip": 341594,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 341600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 342184,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 342200
       }
     }
   ]

@@ -4875,6 +4875,84 @@
       }
     },
     {
+      "id": "icon-button",
+      "name": "IconButton",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Square, icon-only Web Awesome button with a LucideIcon and a required accessible name.",
+      "uses": [
+        "wa-button",
+        "lucide-icon"
+      ],
+      "purpose": "Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.",
+      "publicExports": [
+        "IconButton"
+      ],
+      "useWhen": [
+        "An icon-only action stands alone or beside a form field, such as a Browse button next to a path input."
+      ],
+      "avoidWhen": [
+        "Do not use inside a ToolbarControlGroup; the group owns its controls' geometry, so compose a native button with a LucideIcon there.",
+        "Do not use when the action needs a visible text label; use wa-button with text.",
+        "Do not override wa-button::part(base) width, min-height, or padding to square an icon button; use IconButton."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-button",
+          "relationship": "prefer-over",
+          "when": "Web Awesome squares a button only for a lone wa-icon; with a LucideIcon use IconButton."
+        },
+        {
+          "id": "list-inset-control",
+          "relationship": "composes-with",
+          "when": "Beside a field in a ListInsetControl the square keeps its size and aligns with the field below its label."
+        }
+      ],
+      "appOwns": [
+        "the delegated action",
+        "the accessible name",
+        "appearance, variant, and size choice"
+      ],
+      "variants": [
+        "default appearance",
+        "plain",
+        "outlined",
+        "danger variant",
+        "disabled",
+        "xs, s, m, l, or xl size"
+      ],
+      "accessibility": [
+        "label is required and names the button through its LucideIcon (role img), since the button shows no text."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/icon-button",
+        "manualCssImport": "@kerfjs/ui/icon-button.css",
+        "registrationImport": "@awesome.me/webawesome/dist/components/button/button.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "browser-condition-css",
+          "custom-element-registration"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-icon-button"
+      ],
+      "publicTokens": [],
+      "rootElement": "wa-button",
+      "links": {
+        "catalogRoute": "?component=icon-button",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "feedback",
       "name": "Feedback",
       "category": "Feedback",
@@ -5511,7 +5589,13 @@
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
       ],
       "recommendation": "supported",
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "icon-button",
+          "relationship": "prefer-kerf",
+          "when": "For an icon-only button with a LucideIcon, use IconButton for Web Awesome's square icon-button geometry."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",

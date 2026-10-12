@@ -3943,6 +3943,63 @@
       }
     },
     {
+      "key": "@kerfjs/ui:icon-button",
+      "package": "@kerfjs/ui",
+      "id": "icon-button",
+      "name": "IconButton",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the delegated action",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the accessible name",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "appearance, variant, and size choice",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "label is required and names the button through its LucideIcon (role img), since the button shows no text."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-icon-button",
+        "publicClasses": ["kui-icon-button"],
+        "rootElement": "wa-button",
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:feedback",
       "package": "@kerfjs/ui",
       "id": "feedback",

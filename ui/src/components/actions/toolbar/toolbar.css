@@ -230,7 +230,7 @@
   flex-wrap: wrap;
 }
 
-.kui-toolbar__trailing > wa-button {
+.kui-toolbar__trailing > wa-button:not(:where(.kui-icon-button)) {
   margin-block-start: max(
     0px,
     calc((var(--_kui-toolbar-band) - var(--wa-form-control-height)) / 2)

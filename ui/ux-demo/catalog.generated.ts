@@ -578,6 +578,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "icon-button",
+    "name": "IconButton",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.",
+    "uses": [
+      "wa-button",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/icon-button.tsx",
+    "componentSource": "ui/src/components/actions/icon-button/icon-button.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "feedback",
     "name": "Feedback",
     "category": "Feedback",

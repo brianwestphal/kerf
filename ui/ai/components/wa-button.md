@@ -12,6 +12,10 @@ Action control with semantic variants, appearances, loading, and icon support.
 
 - Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.
 
+**Alternatives:**
+
+- [IconButton](./icon-button.md) (prefer-kerf) — For an icon-only button with a LucideIcon, use IconButton for Web Awesome's square icon-button geometry.
+
 ## Imports
 
 - Theme CSS: import `@kerfjs/ui/webawesome.css` once.
@@ -50,6 +54,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Icon](./wa-icon.md), [Spinner](./wa-spinner.md).
+- Components: [Icon](./wa-icon.md), [Spinner](./wa-spinner.md), [IconButton](./icon-button.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage).
 - UX catalog route: `?component=wa-button`.

@@ -527,6 +527,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `presentation="strip"` renders a flush, square, full-width band for a
   layout edge with tone-colored `dividerSides` (bottom by default) instead of
   the inset rounded card; never restyle a card into a strip.
+- **Square an icon-only button with `IconButton`.** Web Awesome squares a
+  `wa-button` only for a lone `wa-icon`; with a `LucideIcon` use
+  `IconButton({ icon, iconName, label })` (label required) instead of
+  overriding `wa-button::part(base)`. Inside a `ToolbarControlGroup` keep a
+  native `button`; the group owns its geometry.
 - **Paint a strip's surface with `List surface`.** `surface="base"` or
   `"raised"` fills a List and its insets with a solid surface (a banner strip
   above a sunken work area); never wrap it in app CSS that sets a background.

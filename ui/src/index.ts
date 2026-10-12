@@ -4,6 +4,13 @@ export {
   type FloatingToolbarProps,
 } from './components/actions/floating-toolbar/floating-toolbar.js';
 export {
+  IconButton,
+  type IconButtonAppearance,
+  type IconButtonProps,
+  type IconButtonSize,
+  type IconButtonVariant,
+} from './components/actions/icon-button/icon-button.js';
+export {
   closePopupMenu,
   openPopupMenu,
   openPopupMenuAt,

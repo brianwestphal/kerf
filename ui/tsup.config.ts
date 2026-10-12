@@ -62,6 +62,7 @@ const entries = [
   'webawesome',
   'state-banner',
   'corner-status',
+  'icon-button',
   'wire-corner-status',
   'empty-state',
   'value-table',

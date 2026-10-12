@@ -262,9 +262,17 @@
   }
 }
 .kui-toolbar-control-group[data-content="text"]
-  > :is(button, wa-button, .kui-toolbar-action-link),
+  > :is(
+    button,
+    wa-button:not(:where(.kui-icon-button)),
+    .kui-toolbar-action-link
+  ),
 .kui-toolbar-control-group[data-content="mixed"]
-  > :is(button, wa-button, .kui-toolbar-action-link) {
+  > :is(
+    button,
+    wa-button:not(:where(.kui-icon-button)),
+    .kui-toolbar-action-link
+  ) {
   min-width: max-content;
 }
 .kui-toolbar-control-group[data-content="mixed"] > button {
@@ -272,14 +280,14 @@
   gap: var(--kui-space-xs);
 }
 .kui-toolbar-control-group[data-content="mixed"]
-  wa-button:not(:where(.kui-popup-menu > *)) {
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button)) {
   line-height: normal;
 }
 /* Toolbar controls never wrap. Web Awesome's label part is a plain block, so a
    slotted icon (a block SVG) and its text would otherwise stack vertically —
    lay them out on one row the way native mixed buttons already are. */
 .kui-toolbar-control-group
-  wa-button:not(:where(.kui-popup-menu > *))::part(label) {
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button))::part(label) {
   display: inline-flex;
   align-items: center;
   gap: var(--kui-space-xs);
@@ -339,7 +347,12 @@
    PopupMenu (`wa-dropdown.kui-popup-menu`) or Select sizes itself in the
    group's context from its own stylesheet (popup-menu.css, select.css); the
    group names those children by class only to key its own state on them. */
-.kui-toolbar-control-group > :is(button, wa-button, .kui-toolbar-action-link),
+.kui-toolbar-control-group
+  > :is(
+    button,
+    wa-button:not(:where(.kui-icon-button)),
+    .kui-toolbar-action-link
+  ),
 .kui-toolbar-control-group > wa-dropdown:not(.kui-popup-menu) {
   flex: 0 0 auto;
 }
@@ -429,7 +442,9 @@
 }
 
 .kui-toolbar-control-group > button svg,
-.kui-toolbar-control-group wa-button:not(:where(.kui-popup-menu > *)) > svg,
+.kui-toolbar-control-group
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button))
+  > svg,
 .kui-toolbar-control-group > .kui-toolbar-action-link svg {
   display: block;
   width: remify(16px);
@@ -441,40 +456,44 @@
    buttons: a composed PopupMenu's trigger (`.kui-popup-menu > wa-button`) is
    excluded inside a zero-specificity `:where()` and takes the same metrics
    from popup-menu.css. */
-.kui-toolbar-control-group wa-button:not(:where(.kui-popup-menu > *)) {
+.kui-toolbar-control-group
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button)) {
   --wa-form-control-height: remify(40px);
 }
 .kui-toolbar-control-group[data-size="compact"]
-  wa-button:not(:where(.kui-popup-menu > *)) {
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button)) {
   --wa-form-control-height: remify(32px);
 }
 
-.kui-toolbar-control-group > wa-button,
+.kui-toolbar-control-group > wa-button:not(:where(.kui-icon-button)),
 .kui-toolbar-control-group > wa-dropdown:not(.kui-popup-menu),
-.kui-toolbar-control-group > wa-dropdown:not(.kui-popup-menu) > wa-button,
 .kui-toolbar-control-group
   > wa-dropdown:not(.kui-popup-menu)
-  > wa-button::part(base) {
+  > wa-button:not(:where(.kui-icon-button)),
+.kui-toolbar-control-group
+  > wa-dropdown:not(.kui-popup-menu)
+  > wa-button:not(:where(.kui-icon-button))::part(base) {
   min-width: remify(40px);
   height: remify(40px);
 }
 .kui-toolbar-control-group[data-size="compact"] > button,
 .kui-toolbar-control-group[data-size="compact"] > .kui-toolbar-action-link,
-.kui-toolbar-control-group[data-size="compact"] > wa-button,
+.kui-toolbar-control-group[data-size="compact"]
+  > wa-button:not(:where(.kui-icon-button)),
 .kui-toolbar-control-group[data-size="compact"]
   > wa-dropdown:not(.kui-popup-menu),
 .kui-toolbar-control-group[data-size="compact"]
   > wa-dropdown:not(.kui-popup-menu)
-  > wa-button,
+  > wa-button:not(:where(.kui-icon-button)),
 .kui-toolbar-control-group[data-size="compact"]
   > wa-dropdown:not(.kui-popup-menu)
-  > wa-button::part(base),
+  > wa-button:not(:where(.kui-icon-button))::part(base),
 .kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
   wa-dropdown:not(.kui-popup-menu)
-  wa-button,
+  wa-button:not(:where(.kui-icon-button)),
 .kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
   wa-dropdown:not(.kui-popup-menu)
-  wa-button::part(base) {
+  wa-button:not(:where(.kui-icon-button))::part(base) {
   min-width: remify(32px);
   height: remify(32px);
   min-height: remify(32px);
@@ -523,7 +542,7 @@
 .kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
   > wa-dropdown:not(.kui-popup-menu),
 .kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
-  > wa-button {
+  > wa-button:not(:where(.kui-icon-button)) {
   margin: -2px;
 }
 
@@ -533,25 +552,26 @@
    the separator and the caret beyond the group border. */
 .kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
   > wa-dropdown:not(.kui-popup-menu)
-  > wa-button,
+  > wa-button:not(:where(.kui-icon-button)),
 .kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
   > wa-dropdown:not(.kui-popup-menu)
-  > wa-button::part(base) {
+  > wa-button:not(:where(.kui-icon-button))::part(base) {
   min-width: max-content;
 }
 .kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
   > wa-dropdown:not(.kui-popup-menu)
-  > wa-button::part(base) {
+  > wa-button:not(:where(.kui-icon-button))::part(base) {
   width: max-content;
 }
 
 .kui-toolbar-control-group[data-single="true"]
   > wa-dropdown:not(.kui-popup-menu)
-  > wa-button::part(base) {
+  > wa-button:not(:where(.kui-icon-button))::part(base) {
   width: max-content;
 }
 
-.kui-toolbar-control-group wa-button:not(:where(.kui-popup-menu > *)) {
+.kui-toolbar-control-group
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button)) {
   display: inline-flex;
   line-height: 0;
   align-items: center;
@@ -560,7 +580,7 @@
 }
 
 .kui-toolbar-control-group
-  wa-button:not(:where(.kui-popup-menu > *))::part(base) {
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button))::part(base) {
   /* Match min-width to the 40px height so an icon-only button's highlight is at
      least a circle, not a vertical oval — the host is 40px wide but the base
      part was sizing to its ~32px content. Text/caret buttons grow past it. */
@@ -575,7 +595,9 @@
 }
 
 .kui-toolbar-control-group
-  wa-button:not(:where(.kui-popup-menu > *)):hover::part(base) {
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button)):hover::part(
+    base
+  ) {
   border-color: var(--kui-toolbar-control-border);
   background-color: var(--kui-toolbar-control-hover-background);
 }
@@ -594,9 +616,15 @@
 }
 
 .kui-toolbar-control-group[data-single="true"]
-  > :is(button, wa-button, .kui-toolbar-action-link):hover,
+  > :is(
+    button,
+    wa-button:not(:where(.kui-icon-button)),
+    .kui-toolbar-action-link
+  ):hover,
 .kui-toolbar-control-group[data-single="true"]
-  wa-button:not(:where(.kui-popup-menu > *)):hover::part(base) {
+  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button)):hover::part(
+    base
+  ) {
   border-color: transparent;
   background: transparent;
 }
@@ -619,17 +647,25 @@
 }
 
 .kui-toolbar-control-group:not([data-single="true"]):has(
-    > :is(button, wa-button, .kui-toolbar-action-link):nth-child(
-        1 of :where(:not([data-toolbar-visibility-state]))
-      ):where(:nth-last-child(1 of :not([data-toolbar-visibility-state])))
+    > :is(
+        button,
+        wa-button:not(:where(.kui-icon-button)),
+        .kui-toolbar-action-link
+      ):nth-child(1 of :where(:not([data-toolbar-visibility-state]))):where(
+        :nth-last-child(1 of :not([data-toolbar-visibility-state]))
+      )
   )
-  > :is(button, wa-button, .kui-toolbar-action-link):hover,
+  > :is(
+    button,
+    wa-button:not(:where(.kui-icon-button)),
+    .kui-toolbar-action-link
+  ):hover,
 .kui-toolbar-control-group:not([data-single="true"]):has(
-    > :is(button, wa-button):nth-child(
+    > :is(button, wa-button:not(:where(.kui-icon-button))):nth-child(
         1 of :where(:not([data-toolbar-visibility-state]))
       ):where(:nth-last-child(1 of :not([data-toolbar-visibility-state])))
   )
-  > wa-button:hover::part(base) {
+  > wa-button:not(:where(.kui-icon-button)):hover::part(base) {
   border-color: transparent;
   background: transparent;
 }
@@ -651,18 +687,22 @@
    and stays inside the group's border instead of overflowing it as an oversized
    square (KF-5BDDQ9). The selected text color rides on the host and inherits in. */
 .kui-toolbar-control-group[data-single="false"]
-  > wa-button[aria-pressed="true"] {
+  > wa-button:not(:where(.kui-icon-button))[aria-pressed="true"] {
   color: var(--kui-toolbar-control-selected-color);
 }
 .kui-toolbar-control-group[data-single="false"]
-  > wa-button[aria-pressed="true"]::part(base) {
+  > wa-button:not(:where(.kui-icon-button))[aria-pressed="true"]::part(base) {
   border-color: var(--kui-toolbar-control-selected-border);
   background: var(--kui-toolbar-control-selected-background);
   box-shadow: var(--kui-toolbar-control-selected-shadow);
 }
 
 .kui-toolbar-control-group
-  > :is(button, wa-button, .kui-toolbar-action-link):focus-visible {
+  > :is(
+    button,
+    wa-button:not(:where(.kui-icon-button)),
+    .kui-toolbar-action-link
+  ):focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
@@ -743,7 +783,7 @@
 }
 
 .kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]
-  > :is(button, wa-button)[aria-pressed="true"] {
+  > :is(button, wa-button:not(:where(.kui-icon-button)))[aria-pressed="true"] {
   color: var(--kui-toolbar-control-pressed-color);
 }
 
@@ -785,18 +825,18 @@
 .kui-toolbar-control-group[data-content="avatar"]:is(
     [data-single="true"],
     :has(
-      > :is(button, wa-button):nth-child(
+      > :is(button, wa-button:not(:where(.kui-icon-button))):nth-child(
           1 of :where(:not([data-toolbar-visibility-state]))
         ):where(:nth-last-child(1 of :not([data-toolbar-visibility-state])))
     )
   )
-  > :is(button, wa-button) {
+  > :is(button, wa-button:not(:where(.kui-icon-button))) {
   color: transparent;
 }
 
 .kui-toolbar-control-group[data-content="avatar"][data-single="false"]:not(
     :has(
-      > :is(button, wa-button):nth-child(
+      > :is(button, wa-button:not(:where(.kui-icon-button))):nth-child(
           1 of :where(:not([data-toolbar-visibility-state]))
         ):where(:nth-last-child(1 of :not([data-toolbar-visibility-state])))
     )
@@ -804,12 +844,12 @@
   > button[aria-pressed="true"],
 .kui-toolbar-control-group[data-content="avatar"][data-single="false"]:not(
     :has(
-      > :is(button, wa-button):nth-child(
+      > :is(button, wa-button:not(:where(.kui-icon-button))):nth-child(
           1 of :where(:not([data-toolbar-visibility-state]))
         ):where(:nth-last-child(1 of :not([data-toolbar-visibility-state])))
     )
   )
-  > wa-button[aria-pressed="true"]::part(base) {
+  > wa-button:not(:where(.kui-icon-button))[aria-pressed="true"]::part(base) {
   color: transparent;
   background-image: var(--kui-toolbar-avatar-image);
   background-origin: border-box;

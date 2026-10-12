@@ -15,6 +15,7 @@ import { FloatingToolbarDemo } from './floating-toolbar.js';
 import { FoundationDemo } from './foundation.js';
 import { GridDemo } from './grid.js';
 import { HeadersDemo } from './headers.js';
+import { IconButtonDemo } from './icon-button.js';
 import { LayoutDemo } from './layout.js';
 import { ListDemo } from './list.js';
 import { ListActionRowDemo } from './list-action-row.js';
@@ -92,6 +93,7 @@ export const demos = {
   'popup-menu': PopupMenuDemo,
   'surface-scaffold': SurfaceScaffoldDemo,
   'corner-status': CornerStatusDemo,
+  'icon-button': IconButtonDemo,
   'sunken-panel': SunkenPanelDemo,
   'empty-state': EmptyStateDemo,
   'loading-spinner': LoadingSpinnerDemo,
