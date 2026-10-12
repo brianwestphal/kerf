@@ -640,6 +640,12 @@ of a definite height, make that ancestor a flex column and pass `flex` (not
 `fill`): `<List flex scrollable>` takes at most the remaining height and
 scrolls the rest, with no app-owned scrolling wrapper.
 
+A scrollable List is also a keyboard-focusable scroller: Chromium gives it a
+Tab stop when it holds no focusable rows, and a dialog may focus it first.
+When it has focus it draws the theme focus ring inset by the ring width and
+rounded with `--kui-radius-m`, so a rounded or `overflow: hidden` parent
+never clips it. Do not style `.kui-list` focus yourself.
+
 For long reading content, such as a reader view, pass `inset="document"`: 24px
 block and 32px inline on all four sides, narrowing to 16px inline below 576px.
 It replaces any `textInsets`/`controlInsets` on that List.

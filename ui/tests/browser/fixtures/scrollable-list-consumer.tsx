@@ -25,3 +25,22 @@ document.querySelector('[data-app]')!.innerHTML = String(
     </List>
   </nav>,
 );
+
+// A scrollable List of non-interactive rows inside a rounded, clipping
+// container: the scroller itself takes keyboard focus, and its ring must stay
+// inside the clip (Hot Sheet's project-close dialog).
+document.querySelector('[data-app]')!.insertAdjacentHTML(
+  'beforeend',
+  String(
+    <div
+      data-ring-host
+      style="display:flex;flex-direction:column;height:160px;width:320px;margin:24px;overflow:hidden;border-radius:12px;background:#f2f2f7"
+    >
+      <List flex scrollable rootAttributes={{ 'data-ring-list': '' }}>
+        {Array.from({ length: 8 }, (_, index) => (
+          <ListItem label={`Project ${index + 1}`} />
+        ))}
+      </List>
+    </div>,
+  ),
+);

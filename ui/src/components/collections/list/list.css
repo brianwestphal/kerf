@@ -138,6 +138,16 @@
   flex-shrink: 0;
 }
 
+/* A scrollable List is a keyboard-focusable scroller: Chromium focuses it on
+   Tab when it holds no focusable rows, and a dialog may pick it as its first
+   focusable area. Its ring sits inside its box, so a rounded or clipping
+   parent cannot cut it off, and rounds with the standard control radius. */
+.kui-list[data-scrollable="true"]:focus-visible {
+  border-radius: var(--kui-radius-m);
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+
 .kui-list:is([divider-sides*="t"], [data-scroll-divider*="t"]) {
   --_kui-list-divider-top: var(--kui-list-divider-color);
 }

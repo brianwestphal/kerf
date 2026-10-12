@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- A focused `scrollable` `List` now draws the theme focus ring inset by the ring width and rounded with the standard control radius. Chromium makes a scroller without focusable rows keyboard-focusable, and a dialog may focus it first. It used to show the UA's square outline outside its box, which a rounded or `overflow: hidden` parent clipped (`KF-AJNFTT`).
+
 - Typing quickly into a `TokenSearchField` whose app commits typed grammar to chips from `onEdit` (or removes a chip from `keyboard.onRemoveToken`) no longer loses keys. The token change re-keys the editor, so the controlled render replaced the focused element, and keys typed before the app refocused it went nowhere: `site:north site:annex` became `[site:north] ite:annex`. `wireTokenSearchFields` now hands focus and caret to the replacement at the same mutation checkpoint, as it already did for Clear and native deletion. A caret at the end stays at the end, and any other caret keeps its place in the remaining text (`KF-96TEF4`).
 
 - `DialogSurface` no longer names a `wa-dialog`'s native panel when the host is itself an explicit, named dialog (`role="dialog"` or `"alertdialog"`). Both used to carry the same name, so the accessibility tree had two dialogs with one name and role queries such as Playwright's `getByRole('dialog', { name })` failed in strict mode. Removing or changing the host role restores the panel name (`KF-A0NF2S`).

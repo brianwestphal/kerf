@@ -72,3 +72,46 @@ test('a scrollable List in a max-height column scrolls instead of shrinking mult
       );
   }
 });
+
+test('a focused scrollable List draws a rounded focus ring inside its box', async ({
+  page,
+  browserName,
+}) => {
+  const result = await fixtureBundle;
+  const javascript = result.outputFiles.find((file) =>
+    file.path.endsWith('.js'),
+  )!;
+  await page.setViewportSize({ width: 800, height: 600 });
+  await page.setContent('<body style="margin:0"><div data-app></div></body>');
+  await page.addStyleTag({ content: css });
+  await page.addScriptTag({ content: javascript.text });
+
+  const list = page.locator('[data-ring-list]');
+  // Recent Chromium makes a scroller without focusable rows keyboard-focusable
+  // by itself; the tabindex gives every engine the same Tab stop.
+  await list.evaluate((element) => element.setAttribute('tabindex', '0'));
+  for (let index = 0; index < 20; index += 1) {
+    await page.keyboard.press('Tab');
+    if (await list.evaluate((element) => element === document.activeElement))
+      break;
+  }
+  await expect(list).toBeFocused();
+  const ring = await list.evaluate((element) => {
+    const style = globalThis.getComputedStyle(element);
+    return {
+      focusVisible: element.matches(':focus-visible'),
+      outlineStyle: style.outlineStyle,
+      outlineOffset: style.outlineOffset,
+      radius: style.borderTopLeftRadius,
+    };
+  });
+  expect(ring).toEqual({
+    focusVisible: true,
+    outlineStyle: 'solid',
+    outlineOffset: '-3px',
+    radius: '6px',
+  });
+  await page.locator('[data-ring-host]').screenshot({
+    path: `test-results/scrollable-list-ring-${browserName}.png`,
+  });
+});

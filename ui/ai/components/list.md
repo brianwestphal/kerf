@@ -88,6 +88,7 @@ Margin: none · border: conditional · padding: conditional (layout role: naviga
 
 - List adds layout only and no list role by default; selectionMode="multiple" makes it an aria-multiselectable grid with a required ariaLabel for selectable ContentItem rows.
 - Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.
+- A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus.
 
 ## Styling boundary
 
