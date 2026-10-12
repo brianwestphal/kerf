@@ -54,6 +54,7 @@ export {
   List,
   type ListConfig,
   type ListProps,
+  type ListSurface,
   type ListVerticalAlignment,
   type Sides,
 } from './components/collections/list/list.js';

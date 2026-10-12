@@ -22,6 +22,7 @@ const listProtectedAttributes = new Set([
   'data-h-align',
   'data-v-align',
   'data-scrollable',
+  'data-surface',
   'data-text-insets',
   'data-control-insets',
 ]);
@@ -35,10 +36,18 @@ type ListRootAttributes = Readonly<
     'data-h-align'?: never;
     'data-v-align'?: never;
     'data-scrollable'?: never;
+    'data-surface'?: never;
     'data-text-insets'?: never;
     'data-control-insets'?: never;
   }
 >;
+
+/**
+ * A solid surface painted behind a List: `base` is the page surface
+ * (`--kui-color-surface`), `raised` the raised surface
+ * (`--kui-color-surface-raised`). A lowered region is a `SunkenPanel`.
+ */
+export type ListSurface = 'base' | 'raised';
 
 export interface ListProps {
   children?: KerfUiContent;
@@ -67,6 +76,12 @@ export interface ListProps {
    * column and use `flex`; `fill` needs a definite-height parent.
    */
   scrollable?: boolean;
+  /**
+   * Paint a solid surface behind the stack, including its insets: for a strip
+   * of chrome (a banner above a sunken work area) that must not show the
+   * lowered tint around its content. Omitted, the List is transparent.
+   */
+  surface?: ListSurface;
   /** Physical divider edges in canonical top/right/bottom/left order. */
   dividerSides?: Sides;
   /** Physical sides that receive the standard 17px text inset. */
@@ -102,6 +117,7 @@ export function List({
   hAlign = 'full',
   vAlign = 'top',
   scrollable = false,
+  surface,
   dividerSides = '',
   textInsets = '',
   controlInsets = '',
@@ -143,6 +159,7 @@ export function List({
       data-h-align={horizontalAlignment(hAlign)}
       data-v-align={verticalAlignment(vAlign)}
       data-scrollable={String(scrollable)}
+      data-surface={surface}
       divider-sides={dividerSides || undefined}
       data-text-insets={textInsets || undefined}
       data-control-insets={controlInsets || undefined}

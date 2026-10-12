@@ -629,6 +629,13 @@ of a definite height, make that ancestor a flex column and pass `flex` (not
 `fill`): `<List flex scrollable>` takes at most the remaining height and
 scrolls the rest, with no app-owned scrolling wrapper.
 
+A List is transparent by default. Pass `surface="base"` (the page surface) or
+`surface="raised"` to paint a solid background behind the stack and its
+insets — for example a banner strip above a sunken work area, which otherwise
+shows the lowered tint around the banner. Give that strip `controlInsets="tb"`
+so the banner's own inline margin, not a second List inset, sets its edges. A
+lowered region is a `SunkenPanel`, not a List surface.
+
 Put route, test, or recipe metadata on the same root with `rootAttributes`,
 which accepts safe `data-*` pairs and keeps each component's structural
 attributes (`data-component`, `data-flex`, `data-fill`, alignment, inset, and

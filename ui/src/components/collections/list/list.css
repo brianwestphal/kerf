@@ -138,6 +138,15 @@
   --_kui-list-divider-left: var(--kui-list-divider-color);
 }
 
+/* `surface`: a solid background behind the stack and its insets. */
+.kui-list[data-surface="base"] {
+  background: var(--kui-color-surface);
+}
+
+.kui-list[data-surface="raised"] {
+  background: var(--kui-color-surface-raised);
+}
+
 /* `fill`: the layout root of a definite-height parent (an app root or a
    fixed-height frame) takes its full height. Inside a flex layout use `flex`. */
 .kui-list[data-fill="true"] {

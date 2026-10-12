@@ -3163,6 +3163,7 @@
         "typed CssLength gap",
         "boolean, finite-keyword, or typed CssFlex flex",
         "scrollable",
+        "base or raised solid surface",
         "left/center/right/full horizontal alignment",
         "top/middle/bottom/full vertical alignment",
         "top/right/bottom/left divider combinations",
@@ -3217,7 +3218,9 @@
         "--kui-color-neutral-border-normal",
         "--kui-layout-item-gap",
         "--kui-list-divider-color",
-        "--kui-list-gap"
+        "--kui-list-gap",
+        "--kui-color-surface",
+        "--kui-color-surface-raised"
       ],
       "links": {
         "catalogRoute": "?component=list",

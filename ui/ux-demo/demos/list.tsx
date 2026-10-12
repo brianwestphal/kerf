@@ -11,6 +11,7 @@ import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
+import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -200,6 +201,26 @@ export function ListDemo() {
             </List>
           </List>
         </wa-card>
+      </CatalogExample>
+      <CatalogExample
+        label="Surface behind a strip"
+        note='surface="base" paints the page surface behind the stack and its insets, so a banner strip above a lowered work area does not show the sunken tint around it.'
+        viewport={{ frame: 'solid', surface: 'lowered', overflow: 'hidden' }}
+      >
+        <List surface="base" controlInsets="tb" dividerSides="b">
+          <StateBanner
+            tone="info"
+            title="Codex hooks are not installed"
+            detail="Install them to sync agent activity."
+            icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+          />
+        </List>
+        <List controlInsets="tb">
+          <DemoContentItem
+            title="Work area"
+            detail="The lowered region continues below the strip."
+          />
+        </List>
       </CatalogExample>
       <CatalogExample
         label="Divider between regions"

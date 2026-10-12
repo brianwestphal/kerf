@@ -2634,7 +2634,9 @@
           "--kui-color-neutral-border-normal",
           "--kui-layout-item-gap",
           "--kui-list-divider-color",
-          "--kui-list-gap"
+          "--kui-list-gap",
+          "--kui-color-surface",
+          "--kui-color-surface-raised"
         ]
       },
       "diagnostics": [],

@@ -783,6 +783,23 @@ describe('production UI primitives', () => {
     expect(defaults).toContain(
       'data-gap="false" data-flex="false" data-h-align="full" data-v-align="top" data-scrollable="false"',
     );
+    expect(defaults).not.toContain('data-surface');
+    expect(asHtml(List({ surface: 'base' }))).toContain(
+      'data-scrollable="false" data-surface="base"',
+    );
+    expect(asHtml(List({ surface: 'raised' }))).toContain(
+      'data-surface="raised"',
+    );
+    expect(
+      asHtml(
+        List({
+          rootAttributes: { 'data-surface': 'lowered' } as unknown as Record<
+            `data-${string}`,
+            string
+          >,
+        }),
+      ),
+    ).not.toContain('data-surface');
     expect(defaults).not.toContain('divider-sides');
     expect(defaults).not.toContain('text-insets');
     expect(defaults).not.toContain('control-insets');

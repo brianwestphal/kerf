@@ -686,9 +686,16 @@ type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-h-align'?: never;
     'data-v-align'?: never;
     'data-scrollable'?: never;
+    'data-surface'?: never;
     'data-text-insets'?: never;
     'data-control-insets'?: never;
 }>;
+/**
+ * A solid surface painted behind a List: `base` is the page surface
+ * (`--kui-color-surface`), `raised` the raised surface
+ * (`--kui-color-surface-raised`). A lowered region is a `SunkenPanel`.
+ */
+type ListSurface = 'base' | 'raised';
 interface ListProps {
     children?: KerfUiContent;
     /** Make this list a labeled multi-select grid for `ContentItem selectionMode="multiple"` rows. */
@@ -716,6 +723,12 @@ interface ListProps {
      * column and use `flex`; `fill` needs a definite-height parent.
      */
     scrollable?: boolean;
+    /**
+     * Paint a solid surface behind the stack, including its insets: for a strip
+     * of chrome (a banner above a sunken work area) that must not show the
+     * lowered tint around its content. Omitted, the List is transparent.
+     */
+    surface?: ListSurface;
     /** Physical divider edges in canonical top/right/bottom/left order. */
     dividerSides?: Sides;
     /** Physical sides that receive the standard 17px text inset. */
@@ -736,9 +749,9 @@ interface ListProps {
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, surface, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, type ListProps, ListVerticalAlignment, Sides, UiGap };
+export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, type ListProps, type ListSurface, ListVerticalAlignment, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/list-action-row`
