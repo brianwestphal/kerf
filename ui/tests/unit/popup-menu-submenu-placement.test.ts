@@ -186,4 +186,84 @@ describe('installPopupMenuSubmenuPlacement', () => {
     expect(submenu.style.top).toBe('306px');
     expect(submenu.getAttribute('data-placement')).toBe('top-start');
   });
+
+  it('re-measures the safe triangle after placement and after the show animation', async () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: false }));
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      frames.push(callback);
+      return frames.length;
+    });
+    const update = vi.fn();
+    const prototype = {
+      positionSubmenu: vi.fn(),
+      updateSafeTriangleCoordinates: update,
+    };
+    installPopupMenuSubmenuPlacement(prototype);
+    const menu = document.createElement('wa-dropdown');
+    Object.setPrototypeOf(
+      menu,
+      Object.assign(Object.create(HTMLElement.prototype), prototype),
+    );
+    menu.classList.add('kui-popup-menu');
+    const item = document.createElement('wa-dropdown-item') as HTMLElement & {
+      submenuElement: HTMLElement;
+      submenuOpen: boolean;
+    };
+    const submenu = document.createElement('div');
+    let settle!: () => void;
+    let fail!: (reason: unknown) => void;
+    const animations = [
+      { finished: new Promise<void>((resolve) => (settle = resolve)) },
+    ];
+    submenu.getAnimations = () => animations as unknown as Animation[];
+    item.submenuElement = submenu;
+    item.submenuOpen = true;
+    menu.append(item);
+    document.body.append(menu);
+    const position = () =>
+      (
+        menu as unknown as { positionSubmenu: (entry: typeof item) => void }
+      ).positionSubmenu(item);
+
+    position();
+    expect(update).not.toHaveBeenCalled();
+    frames.shift()!(0);
+    expect(update).toHaveBeenCalledTimes(1);
+    settle();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(update).toHaveBeenCalledTimes(2);
+
+    // A rejected (cancelled) animation is ignored; no animations skips the wait.
+    animations[0] = {
+      finished: new Promise<void>((_, reject) => (fail = reject)),
+    };
+    position();
+    frames.shift()!(0);
+    fail(new Error('cancelled'));
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(update).toHaveBeenCalledTimes(3);
+    animations.length = 0;
+    position();
+    frames.shift()!(0);
+    expect(update).toHaveBeenCalledTimes(4);
+
+    // A closed submenu or a disconnected menu is not re-measured.
+    position();
+    item.submenuOpen = false;
+    frames.shift()!(0);
+    item.submenuOpen = true;
+    position();
+    menu.remove();
+    frames.shift()!(0);
+    expect(update).toHaveBeenCalledTimes(4);
+
+    // An item without a submenu schedules nothing.
+    (
+      menu as unknown as { positionSubmenu: (entry: HTMLElement) => void }
+    ).positionSubmenu(document.createElement('wa-dropdown-item'));
+    expect(frames).toHaveLength(0);
+  });
 });

@@ -6,6 +6,7 @@ interface SubmenuItem extends HTMLElement {
 interface PopupMenuDropdown extends HTMLElement {
   menu?: HTMLElement;
   positionSubmenu(item: SubmenuItem): void;
+  updateSafeTriangleCoordinates?(item: SubmenuItem): void;
 }
 
 const installed = new WeakSet<object>();
@@ -57,6 +58,33 @@ function clearPhoneStyles(submenu: HTMLElement) {
 }
 
 /**
+ * Web Awesome measures the submenu for its pointer "safe triangle" right after
+ * starting placement, but its placement resolves asynchronously, so the
+ * triangle kept the submenu's pre-placement edge (often 0,0). The fixed,
+ * viewport-sized hit region then fanned away from the submenu, over the
+ * parent menu's rows, intercepting their hover and clicks while the diagonal
+ * path to the submenu stayed uncovered. Re-measure once the placement lands
+ * and again once the submenu's show animation settles.
+ */
+function remeasureSafeTriangle(dropdown: PopupMenuDropdown, item: SubmenuItem) {
+  if (typeof dropdown.updateSafeTriangleCoordinates !== 'function') return;
+  const update = () => {
+    if (dropdown.isConnected && item.submenuOpen)
+      dropdown.updateSafeTriangleCoordinates!(item);
+  };
+  window.requestAnimationFrame(() => {
+    update();
+    // The show animation scales the submenu, so measure its settled box too.
+    const animations = item.submenuElement?.getAnimations?.() ?? [];
+    if (animations.length > 0)
+      void Promise.all(animations.map((animation) => animation.finished)).then(
+        update,
+        () => undefined,
+      );
+  });
+}
+
+/**
  * Web Awesome's horizontal flip can place a submenu over the parent menu on a
  * phone. Its own auto-update loop calls this method on scroll and resize, so
  * override only PopupMenu's narrow placement and leave native menu navigation
@@ -73,6 +101,7 @@ export function installPopupMenuSubmenuPlacement(prototype: object): void {
       return;
     }
     const submenu = item.submenuElement;
+    if (submenu) remeasureSafeTriangle(this, item);
     if (!window.matchMedia(phoneWidth).matches || !submenu || !this.menu) {
       if (submenu) clearPhoneStyles(submenu);
       positionSubmenu.call(this, item);
