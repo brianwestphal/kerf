@@ -758,6 +758,12 @@ whole-tab starts after scroll and selection changes, reserving end room so the
 last peer can align there. The application still owns selection and tab order.
 ResizeObserver notifications coalesce snap measurements into the next animation
 frame, so inset writes cannot resize the observed strip during observer delivery.
+`wireTabBars` watches the whole root it is given, but a mutation re-measures only
+the bars it touched: a change inside a bar, a newly inserted bar, or a `dir`
+change on an element above one. Content elsewhere in the root (terminal output,
+list updates, streamed text) triggers no style or layout reads. A pinned strip
+re-measures when its own size changes, so a layout change outside the bar still
+reaches it.
 
 CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side

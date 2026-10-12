@@ -133,19 +133,57 @@ function revealInStrip(tab: HTMLElement): void {
     strip.scrollLeft += Math.min(box.right - bounds.right, box.left - left);
 }
 
-/** The selected tab button of every bar below root, keyed by bar. */
-function selectedTabs(root: HTMLElement | Document) {
+const TAB_BAR = '[data-component="tab-bar"]';
+const TAB_LIST = '[data-kui-tab-list]';
+
+/** The selected tab button of every bar below each scope, keyed by bar. */
+function selectedTabs(scopes: Iterable<ParentNode>) {
   const selected = new Map<TabBarRoot, HTMLElement>();
-  root
-    .querySelectorAll<HTMLElement>(
-      '[data-kui-tab-list] [role="tab"][aria-selected="true"]',
-    )
-    .forEach((button) => {
-      const tab = tabRoot(button);
-      const bar = tab && tabBar(tab);
-      if (bar && !selected.has(bar)) selected.set(bar, button);
-    });
+  for (const scope of scopes)
+    scope
+      .querySelectorAll<HTMLElement>(
+        `${TAB_LIST} [role="tab"][aria-selected="true"]`,
+      )
+      .forEach((button) => {
+        const tab = tabRoot(button);
+        const bar = tab && tabBar(tab);
+        if (bar && !selected.has(bar)) selected.set(bar, button);
+      });
   return selected;
+}
+
+/** `node` itself when it matches `selector`, plus its matching descendants. */
+function selfAndBelow<T extends Element>(node: Node, selector: string): T[] {
+  if (!(node instanceof Element)) return [];
+  const found = [...node.querySelectorAll<T>(selector)];
+  if (node.matches(selector)) found.unshift(node as T);
+  return found;
+}
+
+/**
+ * The tab bars a batch of mutation records can have changed. A mutation
+ * inside a bar touches that bar; an inserted subtree touches the bars it
+ * brings; a `dir` change touches every bar below its element. Mutations
+ * elsewhere in the root — terminal output, list morphs, streamed content —
+ * touch nothing and cost one `closest` per record.
+ */
+function touchedBars(records: readonly MutationRecord[]) {
+  const bars = new Set<TabBarRoot>();
+  for (const record of records) {
+    const target =
+      record.target instanceof Element
+        ? record.target
+        : record.target.parentElement;
+    const owner = target?.closest<TabBarRoot>(TAB_BAR);
+    if (owner) bars.add(owner);
+    else if (record.attributeName === 'dir' && target)
+      for (const bar of selfAndBelow<TabBarRoot>(target, TAB_BAR))
+        bars.add(bar);
+    record.addedNodes.forEach((node) => {
+      for (const bar of selfAndBelow<TabBarRoot>(node, TAB_BAR)) bars.add(bar);
+    });
+  }
+  return bars;
 }
 
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
@@ -173,13 +211,30 @@ export function wireTabBars(
       if (!disposed) syncSnapInRoot();
     });
   };
-  const snapResizeObserver = view.ResizeObserver
-    ? new view.ResizeObserver(scheduleSnapSync)
+  // A pinned strip's correction depends on its own box, which can change
+  // without a mutation inside it (a sibling panel collapsing), so resizes
+  // re-sync it directly; unrelated mutations elsewhere never have to.
+  const pinnedObserved = new Set<HTMLElement>();
+  const resizeObserver = view.ResizeObserver
+    ? new view.ResizeObserver((entries: ResizeObserverEntry[]) => {
+        if (disposed) return;
+        let snap = false;
+        for (const { target } of entries) {
+          if (pinnedObserved.has(target as HTMLElement))
+            syncPinned(target as HTMLElement);
+          if (snapObserved.has(target as HTMLElement)) snap = true;
+        }
+        if (snap) scheduleSnapSync();
+      })
     : undefined;
+  const observe = (element: HTMLElement) => {
+    if (!snapObserved.has(element) && !pinnedObserved.has(element))
+      resizeObserver?.observe(element);
+  };
   const observeSnap = (element: HTMLElement) => {
     if (snapObserved.has(element)) return;
+    observe(element);
     snapObserved.add(element);
-    snapResizeObserver?.observe(element);
   };
   const syncSnap = (strip: HTMLElement) => {
     const previousExtra = snapExtras.get(strip) ?? 0;
@@ -233,10 +288,12 @@ export function wireTabBars(
       snapExtras.set(strip, extra);
     }
   };
-  const syncSnapInRoot = () => {
-    for (const element of snapObserved)
+  /** Release observers and inline geometry of strips that left the root. */
+  const releaseDetached = () => {
+    for (const element of new Set([...pinnedObserved, ...snapObserved]))
       if (!root.contains(element)) {
-        snapResizeObserver?.unobserve(element);
+        resizeObserver?.unobserve(element);
+        pinnedObserved.delete(element);
         snapObserved.delete(element);
       }
     for (const strip of snapStrips)
@@ -245,13 +302,20 @@ export function wireTabBars(
         strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
         snapStrips.delete(strip);
       }
-    root.querySelectorAll<HTMLElement>('[data-kui-tab-list]').forEach(syncSnap);
+  };
+  const syncSnapInRoot = () => {
+    releaseDetached();
+    root.querySelectorAll<HTMLElement>(TAB_LIST).forEach(syncSnap);
   };
   const syncPinned = (strip: HTMLElement) => {
     const pinned = strip.querySelector<HTMLElement>(
       ':scope > .kui-app-tab[data-pinned="true"]',
     );
     if (!pinned) return;
+    if (!pinnedObserved.has(strip)) {
+      observe(strip);
+      pinnedObserved.add(strip);
+    }
     const previous = pinned.style.translate
       ? (pinnedOffsets.get(pinned) ?? 0)
       : 0;
@@ -618,9 +682,9 @@ export function wireTabBars(
   // bar's selected tab reveals, so a re-render that keeps the selection never
   // pulls a strip the user scrolled back to it.
   const selectedIds = new Map<string, string>();
-  const recordSelection = () => {
+  const recordSelection = (scopes: Iterable<ParentNode>) => {
     const changed: HTMLElement[] = [];
-    for (const [bar, button] of selectedTabs(root)) {
+    for (const [bar, button] of selectedTabs(scopes)) {
       const id = barId(bar);
       const tab = tabRoot(button);
       const selectedId = tab && tabId(tab);
@@ -631,14 +695,24 @@ export function wireTabBars(
     }
     return changed;
   };
-  recordSelection();
+  recordSelection([root]);
   syncPinnedInRoot();
-  const selectionObserver = new view.MutationObserver(() => {
+  // Only the bars the records touched are re-measured: this observer watches
+  // the whole application root, so most of its batches are unrelated content.
+  const selectionObserver = new view.MutationObserver((records) => {
     if (disposed) return;
-    syncSnapInRoot();
-    for (const button of recordSelection())
+    // A removal anywhere may have taken a strip with it; releasing walks only
+    // the few strips and tabs this wiring tracks.
+    if (records.some((record) => record.removedNodes.length)) releaseDetached();
+    const bars = touchedBars(records);
+    if (!bars.size) return;
+    const strips = [...bars].flatMap((bar) =>
+      selfAndBelow<HTMLElement>(bar, TAB_LIST),
+    );
+    strips.forEach(syncSnap);
+    for (const button of recordSelection(bars))
       if (ownerDocument.activeElement !== button) revealInStrip(button);
-    syncPinnedInRoot();
+    strips.forEach(syncPinned);
   });
   selectionObserver.observe(root, {
     subtree: true,
@@ -651,7 +725,8 @@ export function wireTabBars(
     disposed = true;
     if (snapFrame !== undefined) view.cancelAnimationFrame(snapFrame);
     selectionObserver.disconnect();
-    snapResizeObserver?.disconnect();
+    resizeObserver?.disconnect();
+    pinnedObserved.clear();
     for (const strip of snapStrips) {
       strip.style.removeProperty('--kui-tab-bar-snap-inset');
       strip.style.removeProperty('--kui-tab-bar-snap-end-extra');

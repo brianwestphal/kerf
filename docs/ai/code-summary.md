@@ -882,6 +882,10 @@ bar/tab identity after automatic keyboard activation synchronously rerenders a s
 Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
 `ui/tests/browser/tab-bar-controlled-focus.spec.ts` cover repeated Arrow/Home/End
 transitions and duplicate tab IDs in independent bars.
+Its root `MutationObserver` re-measures only the bars a batch touched (a change
+inside a bar, an inserted bar, a `dir` change above one), and one
+`ResizeObserver` serves both snap strips and pinned strips, so unrelated content
+mutations do no style or layout reads (KF-8H2MH2).
 `ui/src/wiring/wire-scroll-dividers.ts` (`@kerfjs/ui/wire-scroll-dividers`,
 `wireScrollDividers(root, { targets? })`) makes the divider between pinned chrome
 and scrolling content scroll state: it pairs every `.kui-pane` content slot with

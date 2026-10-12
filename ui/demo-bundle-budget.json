@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 337100,
-  "measuredLargestJavaScriptGzip": 124511,
-  "measuredTotalJavaScriptGzip": 337032,
+  "totalJavaScriptGzip": 337400,
+  "measuredLargestJavaScriptGzip": 124512,
+  "measuredTotalJavaScriptGzip": 337368,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3235,6 +3235,22 @@
         "measuredTotalJavaScriptGzip": 337032,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 337100
+      }
+    },
+    {
+      "at": "2026-10-12T03:38:16.155Z",
+      "reason": "KF-8H2MH2: wireTabBars scopes its root MutationObserver to touched tab bars and re-syncs pinned strips through a ResizeObserver",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124511,
+        "measuredTotalJavaScriptGzip": 337032,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 337100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124512,
+        "measuredTotalJavaScriptGzip": 337368,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 337400
       }
     }
   ]

@@ -713,11 +713,11 @@ describe('TabBar wiring', () => {
       const observed: Element[] = [];
       const unobserved: Element[] = [];
       const disconnected = vi.fn();
-      let resized: (() => void) | undefined;
+      let resized: ((entries: Array<{ target: Element }>) => void) | undefined;
       vi.stubGlobal(
         'ResizeObserver',
         class {
-          constructor(callback: () => void) {
+          constructor(callback: (entries: Array<{ target: Element }>) => void) {
             resized = callback;
           }
           observe(element: Element) {
@@ -757,8 +757,8 @@ describe('TabBar wiring', () => {
         '40px',
       );
       lastLeft = 200;
-      resized?.();
-      resized?.();
+      resized?.([{ target: strip }]);
+      resized?.([{ target: strip }]);
       expect(requestFrame).toHaveBeenCalledOnce();
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
         '40px',
@@ -767,6 +767,9 @@ describe('TabBar wiring', () => {
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
         '60px',
       );
+      // A resize leaves a frame pending across the removal; disposal cancels it.
+      resized?.([{ target: strip }]);
+      expect(requestFrame).toHaveBeenCalledTimes(2);
       strip.remove();
       await Promise.resolve();
       expect(unobserved).toEqual([strip, ...tabs]);
@@ -774,7 +777,9 @@ describe('TabBar wiring', () => {
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
         '',
       );
-      resized?.();
+      // A report for the released strip schedules nothing more.
+      resized?.([{ target: strip }]);
+      expect(requestFrame).toHaveBeenCalledTimes(2);
       stop();
       expect(cancelFrame).toHaveBeenCalledWith(42);
       expect(disconnected).toHaveBeenCalledOnce();
@@ -1067,6 +1072,119 @@ describe('TabBar wiring', () => {
       select(root, 'three');
       await settle();
       expect(strip.scrollLeft).toBe(0);
+      stop();
+    });
+  });
+
+  describe('scoping mutation work to the tab bars it touches', () => {
+    /** An RTL, overflowing strip whose pinned tab WebKit-style sticky shifts. */
+    function rtlPinned(root: HTMLElement) {
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const pinned = root.querySelector<HTMLElement>('[data-tab-id="one"]')!;
+      pinned.dataset.pinned = 'true';
+      strip.style.direction = 'rtl';
+      Object.defineProperties(strip, {
+        scrollWidth: { configurable: true, value: 600 },
+        clientWidth: { configurable: true, value: 300 },
+      });
+      let right = 300;
+      vi.spyOn(strip, 'getBoundingClientRect').mockImplementation(
+        () => ({ left: right - 300, right }) as DOMRect,
+      );
+      vi.spyOn(pinned, 'getBoundingClientRect').mockImplementation(
+        () =>
+          ({
+            right: 280 + (Number.parseFloat(pinned.style.translate) || 0),
+          }) as DOMRect,
+      );
+      return {
+        strip,
+        pinned,
+        moveStrip: (next: number) => {
+          right = next;
+        },
+      };
+    }
+
+    it('reads no layout for a mutation outside every tab bar', async () => {
+      const root = bar();
+      const { strip } = rtlPinned(root);
+      const log = document.createElement('pre');
+      root.append(log);
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      const style = vi.spyOn(window, 'getComputedStyle');
+      const measure = vi.mocked(strip.getBoundingClientRect);
+      measure.mockClear();
+      // Streamed output beside the bar: appended lines and a removal.
+      for (let n = 0; n < 5; n++) log.append(document.createElement('div'));
+      log.firstElementChild!.remove();
+      await Promise.resolve();
+      expect(style).not.toHaveBeenCalled();
+      expect(measure).not.toHaveBeenCalled();
+      // A mutation inside the bar still re-syncs it.
+      strip.querySelector('[data-tab-id="two"] [role="tab"]')!.ariaLabel = 'x';
+      strip
+        .querySelector('[data-tab-id="two"]')!
+        .append(document.createElement('span'));
+      await Promise.resolve();
+      expect(measure).toHaveBeenCalled();
+      stop();
+    });
+
+    it('re-syncs a pinned strip that resizes without any mutation', () => {
+      let resized: ((entries: Array<{ target: Element }>) => void) | undefined;
+      const observed: Element[] = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(callback: (entries: Array<{ target: Element }>) => void) {
+            resized = callback;
+          }
+          observe(element: Element) {
+            observed.push(element);
+          }
+          unobserve() {}
+          disconnect() {}
+        },
+      );
+      const root = bar();
+      const { strip, pinned, moveStrip } = rtlPinned(root);
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      expect(observed).toEqual([strip]);
+      expect(pinned.style.translate).toBe('20px 0');
+      // A sibling panel collapses: the strip's box moves, nothing inside it.
+      moveStrip(340);
+      resized?.([{ target: strip }]);
+      expect(pinned.style.translate).toBe('60px 0');
+      stop();
+      expect(pinned.style.translate).toBe('');
+    });
+
+    it('re-syncs every bar below an ancestor whose dir changes', async () => {
+      const root = bar();
+      const { pinned } = rtlPinned(root);
+      const host = root.querySelector<HTMLElement>(
+        '[data-component="tab-bar"]',
+      )!.parentElement!;
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      expect(pinned.style.translate).toBe('20px 0');
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      strip.style.direction = 'ltr';
+      host.setAttribute('dir', 'ltr');
+      await Promise.resolve();
+      expect(pinned.style.translate).toBe('');
+      stop();
+    });
+
+    it('syncs a bar inserted after wiring', async () => {
+      const root = bar('first');
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      const later = bar('second');
+      const nav = later.querySelector('[data-component="tab-bar"]')!;
+      const { pinned } = rtlPinned(later);
+      root.append(nav);
+      await Promise.resolve();
+      expect(pinned.style.translate).toBe('20px 0');
       stop();
     });
   });
