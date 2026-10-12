@@ -342,6 +342,11 @@
       "types": "./dist/webawesome.d.ts",
       "import": "./dist/webawesome.js"
     },
+    "./framed-list": {
+      "types": "./dist/framed-list.d.ts",
+      "browser": "./dist/browser/framed-list.js",
+      "import": "./dist/framed-list.js"
+    },
     "./icon-button": {
       "types": "./dist/icon-button.d.ts",
       "browser": "./dist/browser/icon-button.js",
@@ -421,6 +426,7 @@
     "./state-banner.css": "./dist/styles/state-banner.css",
     "./corner-status.css": "./dist/styles/corner-status.css",
     "./icon-button.css": "./dist/styles/icon-button.css",
+    "./framed-list.css": "./dist/styles/framed-list.css",
     "./empty-state.css": "./dist/styles/empty-state.css",
     "./value-table.css": "./dist/styles/value-table.css",
     "./ai/*": "./ai/*",

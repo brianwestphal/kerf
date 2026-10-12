@@ -2482,7 +2482,13 @@
       "avoidWhen": [
         "Do not use for editable fields or row/column tabular data."
       ],
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "framed-list",
+          "relationship": "nearest",
+          "when": "Use FramedList for rows of arbitrary content (copy and controls) in the same frame."
+        }
+      ],
       "appOwns": [
         "values",
         "formatting",
@@ -2534,6 +2540,89 @@
       ],
       "links": {
         "catalogRoute": "?component=value-table",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "framed-list",
+      "name": "FramedList",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "An inset-grouped list: one rounded, bordered frame with dividers between rows of arbitrary content.",
+      "uses": [],
+      "purpose": "Group settings-style rows of arbitrary content (copy, keycaps, controls) in one framed surface with between-row dividers and an optional highlighted row, without app list CSS.",
+      "publicExports": [
+        "FramedList",
+        "FramedListRow"
+      ],
+      "useWhen": [
+        "Settings rows, account or source cards, or shortcut lists group several rows of arbitrary content in one framed surface."
+      ],
+      "avoidWhen": [
+        "Do not use for read-only label/value facts; use ValueTable.",
+        "Do not use for selectable navigation rows; use List with ListItem.",
+        "Do not pad or border its rows from application CSS; FramedListRow owns the inset and divider."
+      ],
+      "alternatives": [
+        {
+          "id": "value-table",
+          "relationship": "nearest",
+          "when": "Use ValueTable when every row is a label and a value."
+        },
+        {
+          "id": "list",
+          "relationship": "nearest",
+          "when": "Use List with ListItem for navigation or selectable rows."
+        }
+      ],
+      "appOwns": [
+        "row content and its controls",
+        "which row is highlighted",
+        "the list's accessible name"
+      ],
+      "variants": [
+        "lowered surface",
+        "base surface",
+        "highlighted row"
+      ],
+      "accessibility": [
+        "Renders a list (ul role=list, li rows); pass label when no heading names it. Highlight is visual; carry its meaning in row content or a control's state."
+      ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "Rows own the 8px inset and the inset 1px divider above them; the frame owns the 8px margin, border, and radius."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/framed-list",
+        "manualCssImport": "@kerfjs/ui/framed-list.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-framed-list",
+        "kui-framed-list__row"
+      ],
+      "publicTokens": [
+        "--kui-framed-list-border",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-surface-lowered",
+        "--kui-color-surface",
+        "--kui-color-brand-fill-quiet",
+        "--kui-layout-inline-margin",
+        "--kui-layout-item-padding",
+        "--kui-layout-rounded-radius"
+      ],
+      "rootElement": "ul",
+      "links": {
+        "catalogRoute": "?component=framed-list",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }

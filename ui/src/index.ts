@@ -58,6 +58,13 @@ export {
   type ToolbarTextTone,
 } from './components/actions/toolbar-text/toolbar-text.js';
 export {
+  FramedList,
+  type FramedListProps,
+  FramedListRow,
+  type FramedListRowProps,
+  type FramedListSurface,
+} from './components/collections/framed-list/framed-list.js';
+export {
   List,
   type ListConfig,
   type ListInset,

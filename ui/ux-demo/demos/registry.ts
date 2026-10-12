@@ -13,6 +13,7 @@ import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
 import { FloatingToolbarDemo } from './floating-toolbar.js';
 import { FoundationDemo } from './foundation.js';
+import { FramedListDemo } from './framed-list.js';
 import { GridDemo } from './grid.js';
 import { HeadersDemo } from './headers.js';
 import { IconButtonDemo } from './icon-button.js';
@@ -94,6 +95,7 @@ export const demos = {
   'surface-scaffold': SurfaceScaffoldDemo,
   'corner-status': CornerStatusDemo,
   'icon-button': IconButtonDemo,
+  'framed-list': FramedListDemo,
   'sunken-panel': SunkenPanelDemo,
   'empty-state': EmptyStateDemo,
   'loading-spinner': LoadingSpinnerDemo,

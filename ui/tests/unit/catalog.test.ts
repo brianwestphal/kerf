@@ -516,6 +516,7 @@ describe('UX catalog metadata', () => {
       'ToolbarText',
       'Text',
       'ValueTable',
+      'FramedList',
       'Row',
       'Grid',
       'Spacer',

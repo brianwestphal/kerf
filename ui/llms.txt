@@ -527,6 +527,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `presentation="strip"` renders a flush, square, full-width band for a
   layout edge with tone-colored `dividerSides` (bottom by default) instead of
   the inset rounded card; never restyle a card into a strip.
+- **Group settings rows in `FramedList`.** For rows of arbitrary content in
+  one rounded frame with dividers between them (settings, account cards,
+  shortcut lists), compose `FramedListRow`s; `ValueTable` is the same frame for
+  label/value facts. Never hand-roll a `ul` with borders and row padding.
 - **Square an icon-only button with `IconButton`.** Web Awesome squares a
   `wa-button` only for a lone `wa-icon`; with a `LucideIcon` use
   `IconButton({ icon, iconName, label })` (label required) instead of

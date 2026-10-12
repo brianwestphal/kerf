@@ -63,6 +63,7 @@ const entries = [
   'state-banner',
   'corner-status',
   'icon-button',
+  'framed-list',
   'wire-corner-status',
   'empty-state',
   'value-table',

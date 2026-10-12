@@ -2245,6 +2245,79 @@
       }
     },
     {
+      "key": "@kerfjs/ui:framed-list",
+      "package": "@kerfjs/ui",
+      "id": "framed-list",
+      "name": "FramedList",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "row content and its controls",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "which row is highlighted",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the list's accessible name",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "self",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "Rows own the 8px inset and the inset 1px divider above them; the frame owns the 8px margin, border, and radius."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Renders a list (ul role=list, li rows); pass label when no heading names it. Highlight is visual; carry its meaning in row content or a control's state."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-framed-list",
+        "publicClasses": ["kui-framed-list", "kui-framed-list__row"],
+        "rootElement": "ul",
+        "publicTokens": [
+          "--kui-framed-list-border",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-surface-lowered",
+          "--kui-color-surface",
+          "--kui-color-brand-fill-quiet",
+          "--kui-layout-inline-margin",
+          "--kui-layout-item-padding",
+          "--kui-layout-rounded-radius"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:row",
       "package": "@kerfjs/ui",
       "id": "row",

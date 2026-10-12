@@ -16,6 +16,10 @@ Key/value rows with optional icons and aligned separators.
 
 - Do not use for editable fields or row/column tabular data.
 
+**Alternatives:**
+
+- [FramedList](./framed-list.md) (nearest) — Use FramedList for rows of arbitrary content (copy and controls) in the same frame.
+
 ## Imports
 
 - JavaScript: `@kerfjs/ui/value-table` — exports `ValueTable`, `ValueTableRow`.
@@ -68,6 +72,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md).
+- Components: [LucideIcon](./lucide-icon.md), [FramedList](./framed-list.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=value-table`.

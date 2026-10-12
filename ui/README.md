@@ -260,6 +260,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `createTokenSearchModel`                                            | `@kerfjs/ui/token-search-model`         | —                                      |
 | `StateBanner`                                                       | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`          |
 | `IconButton`                                                        | `@kerfjs/ui/icon-button`                | `@kerfjs/ui/icon-button.css`           |
+| `FramedList`, `FramedListRow`                                       | `@kerfjs/ui/framed-list`                | `@kerfjs/ui/framed-list.css`           |
 | `CornerStatus`                                                      | `@kerfjs/ui/corner-status`              | `@kerfjs/ui/corner-status.css`         |
 | `wireCornerStatus`                                                  | `@kerfjs/ui/wire-corner-status`         | —                                      |
 | `EmptyState`                                                        | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`           |

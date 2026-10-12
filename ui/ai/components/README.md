@@ -33,6 +33,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Text](./text.md) — Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.
 - [Headers](./headers.md) — Page, dialog, and definition-list hierarchy.
 - [ValueTable](./value-table.md) — Key/value rows with optional icons and aligned separators.
+- [FramedList](./framed-list.md) — Group settings-style rows of arbitrary content (copy, keycaps, controls) in one framed surface with between-row dividers and an optional highlighted row, without app list CSS.
 - [Row](./row.md) — Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full/baseline alignment instead of application-owned flex wrappers.
 - [Grid](./grid.md) — Arrange related siblings in equal-width columns with either a fixed count or automatic container-width collapse.
 - [Spacer](./spacer.md) — Express an intentional empty dimension or consume remaining flex space without application-owned spacer markup or raw CSS lengths.

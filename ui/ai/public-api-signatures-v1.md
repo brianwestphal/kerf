@@ -3708,6 +3708,58 @@ declare function Text({ variant: Variant, tone, color, size, font, border, flush
 export { FieldLabel, type FieldLabelProps, Sides, Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWrap };
 ```
 
+## `@kerfjs/ui/framed-list`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+/** The frame's fill: the lowered surface (as `ValueTable`), or the page surface. */
+type FramedListSurface = 'lowered' | 'base';
+type FramedListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-surface'?: never;
+}>;
+type FramedListRowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-highlighted'?: never;
+}>;
+interface FramedListProps {
+    /** `FramedListRow` children. */
+    children: KerfUiContent;
+    /** Accessible name for the list, when no heading names it. */
+    label?: string;
+    /** Frame fill; defaults to `lowered`, matching `ValueTable`. */
+    surface?: FramedListSurface;
+    id?: string;
+    className?: string;
+    /** Safe `data-*` metadata; FramedList-owned markers stay protected. */
+    rootAttributes?: FramedListRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+interface FramedListRowProps {
+    /** Arbitrary row content: a `Row` of copy and controls, a keycap, … */
+    children: KerfUiContent;
+    /** Tint the row (the row being edited or the current item). */
+    highlighted?: boolean;
+    id?: string;
+    className?: string;
+    /** Safe `data-*` metadata; FramedListRow-owned markers stay protected. */
+    rootAttributes?: FramedListRowRootAttributes;
+}
+/**
+ * An inset-grouped list (the settings-list pattern): one rounded, bordered
+ * frame with 1px dividers between rows of arbitrary content. `ValueTable` is
+ * the same frame for label/value facts; this one takes any row content.
+ */
+declare function FramedList({ children, label, surface, id, className, rootAttributes, slot, }: FramedListProps): kerfjs.SafeHtml;
+/** One row of a `FramedList`; it owns the row inset and the divider above it. */
+declare function FramedListRow({ children, highlighted, id, className, rootAttributes, }: FramedListRowProps): kerfjs.SafeHtml;
+
+export { FramedList, type FramedListProps, FramedListRow, type FramedListRowProps, type FramedListSurface };
+```
+
 ## `@kerfjs/ui/row`
 
 ```ts

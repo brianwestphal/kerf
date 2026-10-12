@@ -1,0 +1,47 @@
+/* The same frame as ValueTable: content-item margin, a real 1px border, the
+   rounded radius, and a lowered (or base) fill. Rows clip to its corners. */
+.kui-framed-list {
+  --kui-framed-list-border: var(--kui-color-neutral-border-normal);
+  display: flex;
+  flex-direction: column;
+  margin-block: 0;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--kui-framed-list-border);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  background: var(--kui-color-surface-lowered);
+  list-style: none;
+}
+
+.kui-framed-list[data-surface="base"] {
+  background: var(--kui-color-surface);
+}
+
+/* Each row owns the content inset and the 1px divider above it, inset to the
+   row's padding like ValueTable's separators. Its margin is reset because a
+   document or Web Awesome native stylesheet indents list items. */
+.kui-framed-list__row {
+  --_kui-framed-list-row-padding: var(--kui-layout-item-padding, remify(8px));
+  position: relative;
+  display: grid;
+  min-width: 0;
+  margin: 0;
+  min-height: remify(44px);
+  padding: var(--_kui-framed-list-row-padding);
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.kui-framed-list__row + .kui-framed-list__row::before {
+  position: absolute;
+  top: 0;
+  right: var(--_kui-framed-list-row-padding);
+  left: var(--_kui-framed-list-row-padding);
+  border-top: 1px solid var(--kui-framed-list-border);
+  content: "";
+}
+
+.kui-framed-list__row[data-highlighted="true"] {
+  background: var(--kui-color-brand-fill-quiet);
+}

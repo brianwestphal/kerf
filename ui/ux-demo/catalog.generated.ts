@@ -301,6 +301,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "framed-list",
+    "name": "FramedList",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Group settings-style rows of arbitrary content (copy, keycaps, controls) in one framed surface with between-row dividers and an optional highlighted row, without app list CSS.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/framed-list.tsx",
+    "componentSource": "ui/src/components/collections/framed-list/framed-list.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "row",
     "name": "Row",
     "category": "Structure",
