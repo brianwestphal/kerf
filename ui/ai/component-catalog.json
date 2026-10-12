@@ -5545,6 +5545,99 @@
       }
     },
     {
+      "id": "edge-activity-indicator",
+      "name": "EdgeActivityIndicator",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A layout-free top-edge activity strip with a traveling wave and an optional hanging status pill.",
+      "uses": [],
+      "purpose": "Signal ambient background activity (server work, sync) along the top edge of the viewport without allocating layout or taking the pointer, with Kerf-owned motion and reduced-motion handling.",
+      "publicExports": [
+        "EdgeActivityIndicator"
+      ],
+      "useWhen": [
+        "Ambient, app-wide background activity (server work, sync) should be visible without a modal, a banner, or any layout shift."
+      ],
+      "avoidWhen": [
+        "Do not use for progress the user waits on or must read; use CornerStatus or a StateBanner.",
+        "Do not use for known progress; use a progress bar.",
+        "Do not use it as the only record of important state; the bars are hidden from assistive technology."
+      ],
+      "alternatives": [
+        {
+          "id": "corner-status",
+          "relationship": "nearest",
+          "when": "Use CornerStatus for readable, non-dismissible app-level progress."
+        },
+        {
+          "id": "loading-spinner",
+          "relationship": "nearest",
+          "when": "Use LoadingSpinner for local activity beside the affected control."
+        }
+      ],
+      "appOwns": [
+        "the busy state",
+        "the optional status message",
+        "the tone"
+      ],
+      "variants": [
+        "busy or idle",
+        "with or without a status pill",
+        "semantic tone",
+        "safe-area inset or flush"
+      ],
+      "accessibility": [
+        "The strip is aria-hidden and pointer-inert; the optional pill is a polite live region that holds text only while it shows. Under reduced motion the wave and scale stop and the strip and pill only fade."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "Fixed to the top edge below the device safe area; it allocates no layout."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/edge-activity-indicator",
+        "manualCssImport": "@kerfjs/ui/edge-activity-indicator.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-edge-activity-indicator",
+        "kui-edge-activity-indicator__strip",
+        "kui-edge-activity-indicator__message"
+      ],
+      "publicTokens": [
+        "--kui-edge-activity-indicator-z-index",
+        "--kui-safe-area-block-start",
+        "--kui-color-brand-fill-loud",
+        "--kui-color-brand-on-loud",
+        "--kui-color-neutral-fill-loud",
+        "--kui-color-neutral-on-loud",
+        "--kui-color-pop-fill-loud",
+        "--kui-color-pop-on-loud",
+        "--kui-color-success-fill-loud",
+        "--kui-color-success-on-loud",
+        "--kui-color-warning-fill-loud",
+        "--kui-color-warning-on-loud",
+        "--kui-color-danger-fill-loud",
+        "--kui-color-danger-on-loud",
+        "--kui-font-2xs",
+        "--kui-space-m",
+        "--kui-space-s"
+      ],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=edge-activity-indicator",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "empty-state",
       "name": "EmptyState",
       "category": "Feedback",

@@ -4458,6 +4458,84 @@
       }
     },
     {
+      "key": "@kerfjs/ui:edge-activity-indicator",
+      "package": "@kerfjs/ui",
+      "id": "edge-activity-indicator",
+      "name": "EdgeActivityIndicator",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "the busy state", "owner": "application", "required": false },
+        {
+          "id": "the optional status message",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "the tone", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "Fixed to the top edge below the device safe area; it allocates no layout."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The strip is aria-hidden and pointer-inert; the optional pill is a polite live region that holds text only while it shows. Under reduced motion the wave and scale stop and the strip and pill only fade."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-edge-activity-indicator",
+        "publicClasses": [
+          "kui-edge-activity-indicator",
+          "kui-edge-activity-indicator__strip",
+          "kui-edge-activity-indicator__message"
+        ],
+        "rootElement": "div",
+        "publicTokens": [
+          "--kui-edge-activity-indicator-z-index",
+          "--kui-safe-area-block-start",
+          "--kui-color-brand-fill-loud",
+          "--kui-color-brand-on-loud",
+          "--kui-color-neutral-fill-loud",
+          "--kui-color-neutral-on-loud",
+          "--kui-color-pop-fill-loud",
+          "--kui-color-pop-on-loud",
+          "--kui-color-success-fill-loud",
+          "--kui-color-success-on-loud",
+          "--kui-color-warning-fill-loud",
+          "--kui-color-warning-on-loud",
+          "--kui-color-danger-fill-loud",
+          "--kui-color-danger-on-loud",
+          "--kui-font-2xs",
+          "--kui-space-m",
+          "--kui-space-s"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:empty-state",
       "package": "@kerfjs/ui",
       "id": "empty-state",

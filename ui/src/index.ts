@@ -139,6 +139,10 @@ export {
 } from './components/feedback/corner-status/corner-status.js';
 export { wireCornerStatus } from './components/feedback/corner-status/wiring/wire-corner-status.js';
 export {
+  EdgeActivityIndicator,
+  type EdgeActivityIndicatorProps,
+} from './components/feedback/edge-activity-indicator/edge-activity-indicator.js';
+export {
   EmptyState,
   type EmptyStateProps,
 } from './components/feedback/empty-state/empty-state.js';

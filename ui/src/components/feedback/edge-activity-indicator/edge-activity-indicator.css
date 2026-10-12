@@ -1,0 +1,127 @@
+/* A fixed, layout-free host at the top edge: it allocates no space and never
+   takes the pointer. Its strip and pill scale in from the edge while busy. */
+.kui-edge-activity-indicator {
+  --_kui-edge-activity-indicator-fill: var(--kui-color-brand-fill-loud);
+  --_kui-edge-activity-indicator-on: var(--kui-color-brand-on-loud);
+  position: fixed;
+  z-index: var(--kui-edge-activity-indicator-z-index, 2147483000);
+  inset: var(--kui-safe-area-block-start, 0px) 0 auto 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.kui-edge-activity-indicator[data-inset="none"] {
+  inset-block-start: 0;
+}
+
+.kui-edge-activity-indicator[data-tone="neutral"] {
+  --_kui-edge-activity-indicator-fill: var(--kui-color-neutral-fill-loud);
+  --_kui-edge-activity-indicator-on: var(--kui-color-neutral-on-loud);
+}
+.kui-edge-activity-indicator[data-tone="pop"] {
+  --_kui-edge-activity-indicator-fill: var(--kui-color-pop-fill-loud);
+  --_kui-edge-activity-indicator-on: var(--kui-color-pop-on-loud);
+}
+.kui-edge-activity-indicator[data-tone="success"] {
+  --_kui-edge-activity-indicator-fill: var(--kui-color-success-fill-loud);
+  --_kui-edge-activity-indicator-on: var(--kui-color-success-on-loud);
+}
+.kui-edge-activity-indicator[data-tone="warning"] {
+  --_kui-edge-activity-indicator-fill: var(--kui-color-warning-fill-loud);
+  --_kui-edge-activity-indicator-on: var(--kui-color-warning-on-loud);
+}
+.kui-edge-activity-indicator[data-tone="danger"] {
+  --_kui-edge-activity-indicator-fill: var(--kui-color-danger-fill-loud);
+  --_kui-edge-activity-indicator-on: var(--kui-color-danger-on-loud);
+}
+
+/* 3px bars on a 5px pitch, drawn by one gradient. A repeating wave mask (1px
+   to 4px tall, hanging from the edge) slides across them, so each bar grows
+   and shrinks slightly out of phase with its neighbor. */
+.kui-edge-activity-indicator__strip,
+.kui-edge-activity-indicator__message {
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+
+.kui-edge-activity-indicator__strip {
+  height: remify(4px);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--_kui-edge-activity-indicator-fill) 0 remify(3px),
+    transparent remify(3px) remify(5px)
+  );
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='4' viewBox='0 0 100 4'%3E%3Cpath d='M0 0H100L100 1.00 L98 1.01 L96 1.05 L94 1.11 L92 1.19 L90 1.29 L88 1.41 L86 1.54 L84 1.70 L82 1.86 L80 2.04 L78 2.22 L76 2.41 L74 2.59 L72 2.78 L70 2.96 L68 3.14 L66 3.30 L64 3.46 L62 3.59 L60 3.71 L58 3.81 L56 3.89 L54 3.95 L52 3.99 L50 4.00 L48 3.99 L46 3.95 L44 3.89 L42 3.81 L40 3.71 L38 3.59 L36 3.46 L34 3.30 L32 3.14 L30 2.96 L28 2.78 L26 2.59 L24 2.41 L22 2.22 L20 2.04 L18 1.86 L16 1.70 L14 1.54 L12 1.41 L10 1.29 L8 1.19 L6 1.11 L4 1.05 L2 1.01 L0 1.00Z'/%3E%3C/svg%3E")
+    0 0 / remify(100px) 100% repeat-x;
+  animation: kui-edge-activity-indicator-wave 1s linear infinite paused;
+}
+
+.kui-edge-activity-indicator[data-busy="true"]
+  > .kui-edge-activity-indicator__strip {
+  opacity: 1;
+  transform: scaleY(1);
+  animation-play-state: running;
+}
+
+@keyframes kui-edge-activity-indicator-wave {
+  to {
+    mask-position: remify(100px) 0;
+  }
+}
+
+/* The status pill hangs centered from the edge, over the strip. */
+.kui-edge-activity-indicator__message {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 50%;
+  max-width: calc(100vw - 2 * var(--kui-space-m));
+  padding: remify(2px) var(--kui-space-s);
+  overflow: hidden;
+  border-radius: 0 0 remify(8px) remify(8px);
+  color: var(--_kui-edge-activity-indicator-on);
+  background: var(--_kui-edge-activity-indicator-fill);
+  font-size: var(--kui-font-2xs);
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: translateX(-50%) scaleY(0);
+}
+
+.kui-edge-activity-indicator__message[data-visible="true"] {
+  opacity: 1;
+  transform: translateX(-50%) scaleY(1);
+}
+
+:dir(rtl) .kui-edge-activity-indicator__message {
+  transform: translateX(50%) scaleY(0);
+}
+:dir(rtl) .kui-edge-activity-indicator__message[data-visible="true"] {
+  transform: translateX(50%) scaleY(1);
+}
+
+/* Reduced motion: no wave and no scale; the strip and pill only fade. */
+@media (prefers-reduced-motion: reduce) {
+  .kui-edge-activity-indicator__strip,
+  .kui-edge-activity-indicator__message {
+    transition: opacity 200ms ease;
+  }
+  .kui-edge-activity-indicator__strip,
+  .kui-edge-activity-indicator[data-busy="true"]
+    > .kui-edge-activity-indicator__strip {
+    mask: none;
+    transform: none;
+    animation: none;
+  }
+  .kui-edge-activity-indicator__message,
+  .kui-edge-activity-indicator__message[data-visible="true"] {
+    transform: translateX(-50%);
+  }
+  :dir(rtl) .kui-edge-activity-indicator__message,
+  :dir(rtl) .kui-edge-activity-indicator__message[data-visible="true"] {
+    transform: translateX(50%);
+  }
+}

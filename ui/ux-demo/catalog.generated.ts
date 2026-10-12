@@ -679,6 +679,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "edge-activity-indicator",
+    "name": "EdgeActivityIndicator",
+    "category": "Feedback",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Signal ambient background activity (server work, sync) along the top edge of the viewport without allocating layout or taking the pointer, with Kerf-owned motion and reduced-motion handling.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/edge-activity-indicator.tsx",
+    "componentSource": "ui/src/components/feedback/edge-activity-indicator/edge-activity-indicator.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "empty-state",
     "name": "EmptyState",
     "category": "Feedback",

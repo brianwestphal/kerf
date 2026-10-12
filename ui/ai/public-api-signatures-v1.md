@@ -4171,3 +4171,36 @@ declare function CornerStatus({ id, children, placement, presentation, className
 
 export { CornerStatus, type CornerStatusPlacement, type CornerStatusPresentation, type CornerStatusProps };
 ```
+
+## `@kerfjs/ui/edge-activity-indicator`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
+
+interface EdgeActivityIndicatorProps {
+    /** Whether work is in progress; shows the strip and runs its wave. */
+    busy: boolean;
+    /**
+     * Optional status shown in a small pill hanging from the edge while busy.
+     * The pill is a polite live region; omit it for a purely decorative strip.
+     */
+    message?: string;
+    /** Strip and pill color; defaults to `info`. */
+    tone?: SemanticTone;
+    /** Clear the device's top safe area (default) or sit at the very edge. */
+    inset?: 'safe-area' | 'none';
+    className?: string;
+}
+/**
+ * A layout-free activity strip pinned to the top edge of the viewport: a row
+ * of thin bars that ripple in a traveling wave while `busy`, plus an optional
+ * hanging status pill. It allocates no layout, ignores the pointer, and its
+ * bars are hidden from assistive technology; only the pill announces.
+ * Kerf owns the motion: it scales in from the edge and, under reduced motion,
+ * only fades.
+ */
+declare function EdgeActivityIndicator({ busy, message, tone, inset, className, }: EdgeActivityIndicatorProps): kerfjs.SafeHtml;
+
+export { EdgeActivityIndicator, type EdgeActivityIndicatorProps };
+```

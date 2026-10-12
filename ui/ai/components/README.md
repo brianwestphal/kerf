@@ -68,6 +68,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Feedback](./feedback.md) — Banners, empty states, and labeled progress.
 - [StateBanner](./state-banner.md) — Present persistent inline feedback or attractive non-status emphasis with a named semantic tone.
 - [CornerStatus](./corner-status.md) — Show ongoing app-level progress such as "Loading…" or "Updating tickets… 3 of 12" in a viewport corner above page chrome and any dialog opened before it, without a close button, light dismiss, Escape, or focus change.
+- [EdgeActivityIndicator](./edge-activity-indicator.md) — Signal ambient background activity (server work, sync) along the top edge of the viewport without allocating layout or taking the pointer, with Kerf-owned motion and reduced-motion handling.
 - [EmptyState](./empty-state.md) — Actionable empty and busy content states.
 - [LoadingSpinner](./loading-spinner.md) — Meaningfully labeled or decorative progress.
 - [Skeleton](./skeleton.md) — A subtle, unanimated loading placeholder block for a not-yet-known value slot.

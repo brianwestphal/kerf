@@ -9,6 +9,7 @@ import { ContentItemDemo } from './content-item.js';
 import { CornerStatusDemo } from './corner-status.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { DocumentBaselineDemo } from './document-baseline.js';
+import { EdgeActivityIndicatorDemo } from './edge-activity-indicator.js';
 import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
 import { FloatingToolbarDemo } from './floating-toolbar.js';
@@ -96,6 +97,7 @@ export const demos = {
   'popup-menu': PopupMenuDemo,
   'surface-scaffold': SurfaceScaffoldDemo,
   'corner-status': CornerStatusDemo,
+  'edge-activity-indicator': EdgeActivityIndicatorDemo,
   'icon-button': IconButtonDemo,
   'icon-toggle-button': IconToggleButtonDemo,
   'split-button': SplitButtonDemo,

@@ -113,6 +113,8 @@ import {
   customDisclosureOpen,
   disclosureOpen,
   displayDensity,
+  edgeActivityBusy,
+  edgeActivityMessage,
   floatingToolbarOpen,
   grammarSearchModel,
   gridTileSelections,
@@ -757,6 +759,13 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = splitButtonOptionsOpen.value
       ? 'Drive options opened'
       : 'Drive options closed';
+  },
+  'toggle-edge-activity-demo': () => {
+    edgeActivityBusy.value = !edgeActivityBusy.value;
+    actionLog.value = edgeActivityBusy.value ? 'Server busy' : 'Server idle';
+  },
+  'toggle-edge-activity-message-demo': () => {
+    edgeActivityMessage.value = !edgeActivityMessage.value;
   },
   'toggle-icon-toggle-demo': () => {
     iconToggleConversationOpen.value = !iconToggleConversationOpen.value;
@@ -1539,6 +1548,12 @@ const stopFloatingToolbarReset = effect(() => {
   if (selectedDemo.value !== 'floating-toolbar')
     floatingToolbarOpen.value = false;
 });
+// The edge activity strip pins to the whole page, so it stops when the viewer
+// leaves its demo.
+const stopEdgeActivityReset = effect(() => {
+  if (selectedDemo.value !== 'edge-activity-indicator')
+    edgeActivityBusy.value = false;
+});
 let stopAdoptionKeyboard: (() => void) | null = null;
 const stopAdoptionKeyboardEffect = effect(() => {
   const id = selectedDemo.value;
@@ -1839,6 +1854,7 @@ window.addEventListener(
     stopAdoptionKeyboard?.();
     stopAdoptionKeyboardEffect();
     stopFloatingToolbarReset();
+    stopEdgeActivityReset();
     stopListItemDragOver();
     stopListItemDrop();
     stopListActionRowDoubleClick();
