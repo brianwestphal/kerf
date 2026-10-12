@@ -4,13 +4,14 @@
 
 `@kerfjs/ui:list-action-row` · Kerf UI · component · Navigation
 
-Configurable navigation rows with structured labels, status/busy metadata, density, group dividers, and sibling primary/trailing native-button actions.
+Configurable navigation rows with structured labels, status/busy metadata, density, group dividers, and a primary native-button action beside a sibling trailing native button or trailing overflow PopupMenu.
 
 ## When to use
 
 Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.
 
 - A navigation or item row needs both a primary selectable action and an independently focusable trailing action.
+- A command row needs a trailing "…" overflow menu (trailingMenu), optionally also opened at the pointer from the row's contextmenu with openPopupMenuAt.
 
 **Not when:**
 
@@ -44,6 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/list-action-row`](../public-api-signatu
 - description and status
 - busy while retaining content
 - interaction-revealed trailing action
+- trailing overflow menu
 - before, after, or paired group divider
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
@@ -55,7 +57,7 @@ Exact prop names and types: [`@kerfjs/ui/list-action-row`](../public-api-signatu
 - Parents: any.
 - Contexts: `application-ui`.
 - Children: unrestricted.
-- Built from: [LucideIcon](./lucide-icon.md), [LoadingSpinner](./loading-spinner.md).
+- Built from: [LucideIcon](./lucide-icon.md), [LoadingSpinner](./loading-spinner.md), [PopupMenu](./popup-menu.md).
 
 ## State and wiring
 
@@ -70,6 +72,7 @@ Margin: self · border: self · padding: self (layout role: navigation). `self` 
 ## Accessibility
 
 - The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.
+- A trailingMenu replaces the trailing button with a PopupMenu trigger in the same position: an icon-only button named by trailingMenu.label that exposes aria-haspopup="menu" and aria-expanded, moves focus into the menu, and returns focus to the trigger on Escape or a choice.
 - Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing.
 
 ## Styling boundary
@@ -86,6 +89,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [LoadingSpinner](./loading-spinner.md), [ListItem](./list-item.md), [AppTab](./tabs.md).
+- Components: [LucideIcon](./lucide-icon.md), [LoadingSpinner](./loading-spinner.md), [PopupMenu](./popup-menu.md), [ListItem](./list-item.md), [AppTab](./tabs.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=list-action-row`.

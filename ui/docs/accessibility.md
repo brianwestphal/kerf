@@ -256,6 +256,15 @@ light and dark themes. The application owns controlled
 selection and the lifecycle, focus, and dismissal policy of any related
 popover or context menu.
 
+With `trailingMenu`, the trailing control is a `PopupMenu` trigger instead of
+the native trailing button: an icon-only Web Awesome button named by
+`trailingMenu.label`, announced with `aria-haspopup="menu"` and
+`aria-expanded`, in the same primary-then-trailing order. Opening it moves
+focus to the first command; Escape or a choice closes the menu and returns
+focus to the trigger. An interaction-revealed trigger stays visible while its
+menu is open. A pointer opening through `openPopupMenuAt` (for example from
+the row's `contextmenu`) keeps the same keyboard and dismissal behavior.
+
 ## ResizableRegion
 
 Set `responsiveFillAt="narrow"` or `"compact"` when a responsive composition

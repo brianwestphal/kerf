@@ -428,7 +428,8 @@ export const generatedKerfCatalog = [
     "description": "Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.",
     "uses": [
       "lucide-icon",
-      "loading-spinner"
+      "loading-spinner",
+      "popup-menu"
     ],
     "demoSource": "ui/ux-demo/demos/list-action-row.tsx",
     "componentSource": "ui/src/components/collections/list-action-row/list-action-row.tsx",

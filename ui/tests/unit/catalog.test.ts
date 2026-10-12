@@ -629,6 +629,7 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('list-action-row')?.uses).toEqual([
       'lucide-icon',
       'loading-spinner',
+      'popup-menu',
     ]);
     expect(
       catalogEntriesUsing('list-action-row').map((entry) => entry.id),

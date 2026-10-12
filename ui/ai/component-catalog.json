@@ -3699,10 +3699,11 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Configurable navigation rows with structured labels, status/busy metadata, density, group dividers, and sibling primary/trailing native-button actions.",
+      "description": "Configurable navigation rows with structured labels, status/busy metadata, density, group dividers, and a primary native-button action beside a sibling trailing native button or trailing overflow PopupMenu.",
       "uses": [
         "lucide-icon",
-        "loading-spinner"
+        "loading-spinner",
+        "popup-menu"
       ],
       "purpose": "Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.",
       "publicExports": [
@@ -3723,7 +3724,8 @@
         }
       ],
       "useWhen": [
-        "A navigation or item row needs both a primary selectable action and an independently focusable trailing action."
+        "A navigation or item row needs both a primary selectable action and an independently focusable trailing action.",
+        "A command row needs a trailing \"…\" overflow menu (trailingMenu), optionally also opened at the pointer from the row's contextmenu with openPopupMenuAt."
       ],
       "avoidWhen": [
         "Use ListItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls.",
@@ -3759,10 +3761,12 @@
         "description and status",
         "busy while retaining content",
         "interaction-revealed trailing action",
+        "trailing overflow menu",
         "before, after, or paired group divider"
       ],
       "accessibility": [
         "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
+        "A trailingMenu replaces the trailing button with a PopupMenu trigger in the same position: an icon-only button named by trailingMenu.label that exposes aria-haspopup=\"menu\" and aria-expanded, moves focus into the menu, and returns focus to the trigger on Escape or a choice.",
         "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing."
       ],
       "geometry": {

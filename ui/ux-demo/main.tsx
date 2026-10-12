@@ -23,7 +23,11 @@ import {
 import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { openPopupMenu, type PopupMenuElement } from '@kerfjs/ui/popup-menu';
+import {
+  openPopupMenu,
+  openPopupMenuAt,
+  type PopupMenuElement,
+} from '@kerfjs/ui/popup-menu';
 import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -972,6 +976,12 @@ const stopActions = delegateActions(app, 'click', {
     menuActionPressed.value = !menuActionPressed.value;
     actionLog.value = `${itemId} ${menuActionPressed.value ? 'pressed' : 'not pressed'}`;
   },
+  'edit-list-action-row': (_event, element) => {
+    actionLog.value = `Edit ${element.closest<HTMLElement>('[data-component="list-action-row"]')?.dataset.itemId ?? 'row'}`;
+  },
+  'delete-list-action-row': (_event, element) => {
+    actionLog.value = `Delete ${element.closest<HTMLElement>('[data-component="list-action-row"]')?.dataset.itemId ?? 'row'}`;
+  },
   'open-list-action-row-actions': (_event, element) => {
     actionLog.value = `Actions requested for ${(element as HTMLElement).dataset.itemId ?? 'row'}`;
   },
@@ -1668,6 +1678,15 @@ const stopListActionRowContextMenu = delegate(
   '[data-component="list-action-row"] > [data-action="select-list-action-row"]',
   (event, element) => {
     event.preventDefault();
+    // A row with a trailing menu opens that menu at the pointer.
+    const menu = element.parentElement?.querySelector<PopupMenuElement>(
+      ':scope > [data-component="popup-menu"]',
+    );
+    if (menu) {
+      const { clientX, clientY } = event as MouseEvent;
+      openPopupMenuAt(menu, clientX, clientY);
+      return;
+    }
     actionLog.value = `Context menu for ${(element as HTMLElement).dataset.itemId ?? 'row'} primary`;
   },
 );

@@ -557,7 +557,15 @@ type PopupMenuProps = PopupMenuTrigger & {
 type PopupMenuElement = HTMLElement & {
     open: boolean;
 };
-/** Open a context PopupMenu at viewport pointer coordinates. */
+/**
+ * Open a PopupMenu at viewport pointer coordinates. A `context` menu rendered
+ * without `anchor` moves its invisible anchor there (a menu rendered with
+ * `anchor` opens with `openPopupMenu` instead). A button-triggered menu (such as a `ListActionRow`
+ * trailing menu) anchors its popup at the point, opening `bottom-start` like a
+ * context menu, for this opening only; once the menu has closed it returns to
+ * its trigger and placement. Before Web Awesome upgrades it, the menu opens at
+ * its trigger.
+ */
 declare function openPopupMenuAt(menu: PopupMenuElement, x: number, y: number): void;
 /**
  * Open a context PopupMenu at the `anchor` it was rendered with (or the
@@ -788,6 +796,8 @@ export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, ty
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { PopupMenuEntry, PopupMenuPlacement } from './popup-menu.js';
+import './semantic-content-BbzjvSu9.js';
 
 type ListActionRowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -813,7 +823,39 @@ type ListActionRowTrailingAttributes = Readonly<Record<`data-${string}`, string 
     'aria-controls'?: string;
     'aria-haspopup'?: 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid' | 'true';
 }>;
-interface ListActionRowProps {
+/** A trailing overflow `PopupMenu` rendered as the row's sibling trailing control. */
+interface ListActionRowTrailingMenu {
+    /** Accessible name of the icon-only menu trigger, such as `Actions for report.json`. */
+    label: string;
+    /** Decorative trigger icon, typically a `MoreHorizontal` `LucideIcon`. */
+    icon: SafeHtml;
+    /** The menu's commands, headings, and dividers; items dispatch their own `data-action`s. */
+    items: readonly PopupMenuEntry[];
+    /** Where the menu opens relative to its trigger. Defaults to `bottom-end`. */
+    placement?: PopupMenuPlacement;
+    disabled?: boolean;
+}
+interface ListActionRowTrailingButtonProps {
+    trailingAction: string;
+    trailingActionLabel: string;
+    /** Decorative dormant content for the trailing button. Must not contain interactive descendants. */
+    trailingActionIcon: SafeHtml;
+    trailingActionDisabled?: boolean;
+    trailingActionTitle?: string;
+    trailingActionAttributes?: ListActionRowTrailingAttributes;
+    trailingMenu?: never;
+}
+interface ListActionRowTrailingMenuProps {
+    /** A trailing overflow menu in place of the trailing button. Import `@kerfjs/ui/popup-menu/register` once. */
+    trailingMenu: ListActionRowTrailingMenu;
+    trailingAction?: never;
+    trailingActionLabel?: never;
+    trailingActionIcon?: never;
+    trailingActionDisabled?: never;
+    trailingActionTitle?: never;
+    trailingActionAttributes?: never;
+}
+interface ListActionRowCommonProps {
     /** Visible dormant content for the primary button. Must not contain interactive descendants. */
     label: string | SafeHtml;
     description?: string | SafeHtml;
@@ -835,22 +877,17 @@ interface ListActionRowProps {
     tabIndex?: number;
     /** Render as an unanimated loading skeleton, disabling both actions: label, description, icon, and status text become skeletons; the `busy` indicator stays live. */
     placeholder?: boolean;
-    trailingAction: string;
-    trailingActionLabel: string;
-    /** Decorative dormant content for the trailing button. Must not contain interactive descendants. */
-    trailingActionIcon: SafeHtml;
-    trailingActionDisabled?: boolean;
-    trailingActionTitle?: string;
     trailingActionVisibility?: 'always' | 'interaction';
     className?: string;
     rootAttributes?: ListActionRowRootAttributes;
-    trailingActionAttributes?: ListActionRowTrailingAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, className, rootAttributes, trailingActionAttributes, slot, }: ListActionRowProps): SafeHtml;
+/** Exactly one trailing control: a native button (`trailingAction*`) or an overflow menu (`trailingMenu`). */
+type ListActionRowProps = ListActionRowCommonProps & (ListActionRowTrailingButtonProps | ListActionRowTrailingMenuProps);
+declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, trailingMenu, className, rootAttributes, trailingActionAttributes, slot, }: ListActionRowProps): SafeHtml;
 
-export { ListActionRow, type ListActionRowProps };
+export { ListActionRow, type ListActionRowProps, type ListActionRowTrailingMenu };
 ```
 
 ## `@kerfjs/ui/list-item`

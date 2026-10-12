@@ -3051,6 +3051,7 @@
       "accessibility": {
         "obligations": [
           "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
+          "A trailingMenu replaces the trailing button with a PopupMenu trigger in the same position: an icon-only button named by trailingMenu.label that exposes aria-haspopup=\"menu\" and aria-expanded, moves focus into the menu, and returns focus to the trigger on Escape or a choice.",
           "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing."
         ]
       },

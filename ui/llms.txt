@@ -370,7 +370,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   and disabled reasons; nested headings/dividers stay out of keyboard choices;
   use `context` with `anchor` + `openPopupMenu` (or `openPopupMenuAt`) and
   `closePopupMenu` for pointer-anchored row menus; the menu owns its
-  zero-footprint anchor host, so add no wrapper or CSS. Do not force a dropdown or button width. Nothing
+  zero-footprint anchor host, so add no wrapper or CSS. `openPopupMenuAt`
+  also opens a button-triggered menu at the pointer for one opening. A row's
+  trailing "…" overflow menu is `ListActionRow`'s `trailingMenu` (`label`,
+  `icon`, `items`, optional `placement` and `disabled`), which renders a
+  `PopupMenu` as the row's sibling trailing control. Do not force a dropdown or button width. Nothing
   wraps inside a group: an icon sits beside its label on one row, and a
   `ToolbarText` is one ellipsized line unless you opt into `wrap`/`maxLines`. A
   Select or PopupMenu trigger drops its focus ring while its popup is open and

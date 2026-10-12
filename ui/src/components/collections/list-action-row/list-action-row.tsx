@@ -6,6 +6,11 @@ import {
 } from '../../../shared/dom/extension-attributes.js';
 import { em, remify } from '../../../shared/styles/css-values.js';
 import { withWordBreaks } from '../../../shared/text/word-breaks.js';
+import {
+  PopupMenu,
+  type PopupMenuEntry,
+  type PopupMenuPlacement,
+} from '../../actions/popup-menu/popup-menu.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
 import { Skeleton } from '../../feedback/skeleton/skeleton.js';
 
@@ -60,7 +65,42 @@ type ListActionRowTrailingAttributes = Readonly<
   }
 >;
 
-export interface ListActionRowProps {
+/** A trailing overflow `PopupMenu` rendered as the row's sibling trailing control. */
+export interface ListActionRowTrailingMenu {
+  /** Accessible name of the icon-only menu trigger, such as `Actions for report.json`. */
+  label: string;
+  /** Decorative trigger icon, typically a `MoreHorizontal` `LucideIcon`. */
+  icon: SafeHtml;
+  /** The menu's commands, headings, and dividers; items dispatch their own `data-action`s. */
+  items: readonly PopupMenuEntry[];
+  /** Where the menu opens relative to its trigger. Defaults to `bottom-end`. */
+  placement?: PopupMenuPlacement;
+  disabled?: boolean;
+}
+
+interface ListActionRowTrailingButtonProps {
+  trailingAction: string;
+  trailingActionLabel: string;
+  /** Decorative dormant content for the trailing button. Must not contain interactive descendants. */
+  trailingActionIcon: SafeHtml;
+  trailingActionDisabled?: boolean;
+  trailingActionTitle?: string;
+  trailingActionAttributes?: ListActionRowTrailingAttributes;
+  trailingMenu?: never;
+}
+
+interface ListActionRowTrailingMenuProps {
+  /** A trailing overflow menu in place of the trailing button. Import `@kerfjs/ui/popup-menu/register` once. */
+  trailingMenu: ListActionRowTrailingMenu;
+  trailingAction?: never;
+  trailingActionLabel?: never;
+  trailingActionIcon?: never;
+  trailingActionDisabled?: never;
+  trailingActionTitle?: never;
+  trailingActionAttributes?: never;
+}
+
+interface ListActionRowCommonProps {
   /** Visible dormant content for the primary button. Must not contain interactive descendants. */
   label: string | SafeHtml;
   description?: string | SafeHtml;
@@ -82,19 +122,16 @@ export interface ListActionRowProps {
   tabIndex?: number;
   /** Render as an unanimated loading skeleton, disabling both actions: label, description, icon, and status text become skeletons; the `busy` indicator stays live. */
   placeholder?: boolean;
-  trailingAction: string;
-  trailingActionLabel: string;
-  /** Decorative dormant content for the trailing button. Must not contain interactive descendants. */
-  trailingActionIcon: SafeHtml;
-  trailingActionDisabled?: boolean;
-  trailingActionTitle?: string;
   trailingActionVisibility?: 'always' | 'interaction';
   className?: string;
   rootAttributes?: ListActionRowRootAttributes;
-  trailingActionAttributes?: ListActionRowTrailingAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
+
+/** Exactly one trailing control: a native button (`trailingAction*`) or an overflow menu (`trailingMenu`). */
+export type ListActionRowProps = ListActionRowCommonProps &
+  (ListActionRowTrailingButtonProps | ListActionRowTrailingMenuProps);
 
 export function ListActionRow({
   label,
@@ -121,6 +158,7 @@ export function ListActionRow({
   trailingActionDisabled = false,
   trailingActionTitle,
   trailingActionVisibility = 'always',
+  trailingMenu,
   className = '',
   rootAttributes = {},
   trailingActionAttributes = {},
@@ -202,19 +240,30 @@ export function ListActionRow({
           )}
         </span>
       </button>
-      <button
-        {...extensionTrailingAttributes}
-        type="button"
-        class="kui-list-action-row__trailing-action"
-        data-action={placeholder ? undefined : trailingAction}
-        data-item-id={itemId}
-        aria-label={trailingActionLabel}
-        title={trailingActionTitle ?? trailingActionLabel}
-        disabled={trailingActionDisabled || placeholder || undefined}
-        data-kui-disabled={trailingActionDisabled ? 'true' : undefined}
-      >
-        {trailingActionIcon}
-      </button>
+      {trailingMenu ? (
+        <PopupMenu
+          label={trailingMenu.label}
+          icon={trailingMenu.icon}
+          items={trailingMenu.items}
+          placement={trailingMenu.placement ?? 'bottom-end'}
+          caret={false}
+          disabled={Boolean(trailingMenu.disabled) || placeholder}
+        />
+      ) : (
+        <button
+          {...extensionTrailingAttributes}
+          type="button"
+          class="kui-list-action-row__trailing-action"
+          data-action={placeholder ? undefined : trailingAction}
+          data-item-id={itemId}
+          aria-label={trailingActionLabel}
+          title={trailingActionTitle ?? trailingActionLabel}
+          disabled={trailingActionDisabled || placeholder || undefined}
+          data-kui-disabled={trailingActionDisabled ? 'true' : undefined}
+        >
+          {trailingActionIcon}
+        </button>
+      )}
     </div>
   );
 }

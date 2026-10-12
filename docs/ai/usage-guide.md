@@ -182,6 +182,12 @@ primary and trailing sibling buttons with independent action, name, disabled,
 focus, and click ownership while the application controls selection and any
 popover or context-menu lifecycle. Its `label`, `icon`, and
 `trailingActionIcon` SafeHtml slots are dormant and must not contain controls.
+For a trailing overflow menu, pass `trailingMenu: { label, icon, items,
+placement?, disabled? }` instead of the `trailingAction*` props: the row
+renders a `PopupMenu` as its sibling trailing control (register
+`@kerfjs/ui/popup-menu/register` once), and `openPopupMenuAt(menu, x, y)` opens
+that button-triggered menu at the pointer from the app's `contextmenu`
+handler.
 `ListItem` clips descendant painting to its rounded row boundary; set
 `multiline` when its primary label should wrap instead of truncate.
 For filled command rows, scope `--kui-list-item-background`,

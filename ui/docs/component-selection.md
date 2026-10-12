@@ -682,6 +682,47 @@ available on hover and keyboard focus and automatically leaves it visible on
 non-hover devices. These props own presentation only—the application still
 owns labels, status meaning, action policy, selection, and domain metadata.
 
+When the trailing control is an overflow menu ("…" with Edit, Delete, …),
+pass `trailingMenu: { label, icon, items, placement?, disabled? }` instead of
+the `trailingAction*` props. The row renders a real `PopupMenu` (icon-only, no
+caret, opening `bottom-end` by default) as its sibling trailing control, and
+`trailingActionVisibility="interaction"` reveals it the same way, keeping it
+visible while the menu is open. Register `@kerfjs/ui/popup-menu/register` once.
+Items dispatch their own `data-action`s; find the row from a chosen item with
+`closest('[data-component="list-action-row"]')`. To open the same menu on a
+right-click, delegate `contextmenu` on the row's primary button, prevent the
+browser menu, and call `openPopupMenuAt` with the row's
+`[data-component="popup-menu"]` child and the pointer's `clientX` /
+`clientY`: a button-triggered menu opens `bottom-start` at the pointer for that
+opening and returns to its trigger once it closes.
+
+```tsx
+<ListActionRow
+  action="select-command"
+  itemId={command.id}
+  label={command.name}
+  trailingActionVisibility="interaction"
+  trailingMenu={{
+    label: `Actions for ${command.name}`,
+    icon: moreIcon,
+    items: [
+      { label: 'Edit', action: 'edit-command' },
+      { kind: 'divider' },
+      { label: 'Delete', action: 'delete-command', tone: 'danger' },
+    ],
+  }}
+/>;
+
+delegate(list, 'contextmenu', '[data-action="select-command"]', (event, primary) => {
+  const menu = primary.parentElement?.querySelector<PopupMenuElement>(
+    ':scope > [data-component="popup-menu"]',
+  );
+  if (!menu) return;
+  event.preventDefault();
+  openPopupMenuAt(menu, (event as MouseEvent).clientX, (event as MouseEvent).clientY);
+});
+```
+
 ## Correct composition and duplicated-markup trap
 
 Correct: let the pane stay unpadded while its children own the shared 8/1/8

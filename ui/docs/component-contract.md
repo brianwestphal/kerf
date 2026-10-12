@@ -324,6 +324,9 @@ and disposal.
 contain controls. When a row needs an independently interactive trailing
 region, `ListActionRow` owns the noninteractive root and the two sibling native
 buttons; the application owns their delegated behavior and controlled state.
+A `ListActionRow` with `trailingMenu` composes a real `PopupMenu` as that
+sibling trailing control instead of a button; the menu styles its trigger in
+the row's context from `popup-menu.css`, and the row never styles it.
 Both row components align a leading icon with the first label line when
 `multiline` allows the label to wrap; additional lines extend below that fixed
 visual anchor.

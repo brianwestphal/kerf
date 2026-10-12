@@ -289,3 +289,65 @@
   > wa-dropdown.kui-popup-menu::part(menu) {
   padding: 0;
 }
+
+/* As a ListActionRow's trailing menu, the PopupMenu styles its trigger in the
+   row's context like the row's trailing button: a full-height 44px pill (36px
+   in a compact row) on the row's trailing-hover fill, with a 16px icon. */
+.kui-list-action-row > .kui-popup-menu {
+  display: flex;
+  flex: none;
+}
+.kui-list-action-row > .kui-popup-menu > wa-button {
+  display: flex;
+  min-height: remify(44px);
+  color: inherit;
+}
+.kui-list-action-row[data-density="compact"] > .kui-popup-menu > wa-button {
+  min-height: remify(36px);
+}
+.kui-list-action-row > .kui-popup-menu > wa-button::part(base) {
+  width: remify(44px);
+  min-width: remify(44px);
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--kui-radius-pill);
+  color: inherit;
+  background: transparent;
+}
+.kui-list-action-row
+  > .kui-popup-menu
+  > wa-button:not([disabled]):hover::part(base) {
+  background: var(--kui-list-action-row-trailing-hover-background);
+}
+.kui-list-action-row > .kui-popup-menu > wa-button::part(base):focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+.kui-list-action-row > .kui-popup-menu > wa-button > svg {
+  display: block;
+  width: remify(16px);
+  height: remify(16px);
+}
+/* The row's interaction visibility reveals the trigger on hover or focus, and
+   keeps it visible while its menu is open. A placeholder row reveals nothing. */
+.kui-list-action-row[data-trailing-visibility="interaction"]
+  > .kui-popup-menu:not([open])
+  > wa-button {
+  opacity: 0;
+}
+.kui-list-action-row[data-trailing-visibility="interaction"]:not(
+    [data-placeholder="true"]
+  ):is(:hover, :focus-within)
+  > .kui-popup-menu
+  > wa-button {
+  opacity: 1;
+}
+@media (hover: none) {
+  .kui-list-action-row[data-trailing-visibility="interaction"]
+    > .kui-popup-menu
+    > wa-button {
+    opacity: 1;
+  }
+}

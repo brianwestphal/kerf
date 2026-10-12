@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 352400,
-  "measuredLargestJavaScriptGzip": 135366,
-  "measuredTotalJavaScriptGzip": 352311,
+  "totalJavaScriptGzip": 352800,
+  "measuredLargestJavaScriptGzip": 135844,
+  "measuredTotalJavaScriptGzip": 352776,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3731,6 +3731,22 @@
         "measuredTotalJavaScriptGzip": 352311,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 352400
+      }
+    },
+    {
+      "at": "2026-10-12T22:47:10.695Z",
+      "reason": "ListActionRow trailingMenu and its catalog demo (KF-VWTCYB)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 135366,
+        "measuredTotalJavaScriptGzip": 352311,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 352400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 135844,
+        "measuredTotalJavaScriptGzip": 352776,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 352800
       }
     }
   ]

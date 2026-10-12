@@ -158,7 +158,21 @@ function renderEntry(entry: PopupMenuEntry, nested = false) {
 /** A rendered context PopupMenu with Web Awesome's controlled open state. */
 export type PopupMenuElement = HTMLElement & { open: boolean };
 
-/** Open a context PopupMenu at viewport pointer coordinates. */
+/** The Web Awesome popup inside an upgraded `wa-dropdown`, which accepts a virtual anchor. */
+type PopupMenuPopup = HTMLElement & { anchor?: unknown; placement: string };
+
+/** Pending trigger-anchor restorations of pointer-opened button menus. */
+const pointerRestores = new WeakMap<HTMLElement, (event: Event) => void>();
+
+/**
+ * Open a PopupMenu at viewport pointer coordinates. A `context` menu rendered
+ * without `anchor` moves its invisible anchor there (a menu rendered with
+ * `anchor` opens with `openPopupMenu` instead). A button-triggered menu (such as a `ListActionRow`
+ * trailing menu) anchors its popup at the point, opening `bottom-start` like a
+ * context menu, for this opening only; once the menu has closed it returns to
+ * its trigger and placement. Before Web Awesome upgrades it, the menu opens at
+ * its trigger.
+ */
 export function openPopupMenuAt(
   menu: PopupMenuElement,
   x: number,
@@ -166,6 +180,27 @@ export function openPopupMenuAt(
 ): void {
   menu.style.setProperty('--kui-popup-menu-context-x', `${x}px`);
   menu.style.setProperty('--kui-popup-menu-context-y', `${y}px`);
+  const popup =
+    menu.getAttribute('data-trigger') === 'context'
+      ? null
+      : menu.shadowRoot?.querySelector<PopupMenuPopup>('wa-popup');
+  if (popup) {
+    popup.anchor = {
+      getBoundingClientRect: () => new DOMRect(x, y, 0, 0),
+    };
+    popup.placement = 'bottom-start';
+    const previous = pointerRestores.get(menu);
+    if (previous) menu.removeEventListener('wa-after-hide', previous);
+    const restore = (event: Event) => {
+      if (event.target !== menu) return;
+      menu.removeEventListener('wa-after-hide', restore);
+      pointerRestores.delete(menu);
+      popup.anchor = undefined;
+      popup.placement = menu.getAttribute('placement') ?? 'bottom-start';
+    };
+    pointerRestores.set(menu, restore);
+    menu.addEventListener('wa-after-hide', restore);
+  }
   menu.open = true;
 }
 

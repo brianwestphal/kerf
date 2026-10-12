@@ -1,7 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Folder, MoreHorizontal } from 'lucide';
+import { Folder, MoreHorizontal, Pencil, Terminal, Trash2 } from 'lucide';
 
 import { DemoListPopover } from './demo-list-popover.js';
 import { menuActionCurrent, menuActionPressed } from './state.js';
@@ -25,6 +25,37 @@ export function ListActionRowDemo() {
           }
           trailingActionVisibility="interaction"
           rootAttributes={{ 'data-demo-action-row': 'status' }}
+        />
+      </CatalogExample>
+      <CatalogExample align="none">
+        <ListActionRow
+          label="Run tests"
+          description="npm test"
+          icon={<LucideIcon icon={Terminal} name="terminal" />}
+          action="select-list-action-row"
+          itemId="run-tests"
+          selected={menuActionCurrent.value === 'run-tests'}
+          accessibleLabel="Select Run tests"
+          trailingActionVisibility="interaction"
+          trailingMenu={{
+            label: 'Actions for Run tests',
+            icon: <LucideIcon icon={MoreHorizontal} name="more-horizontal" />,
+            items: [
+              {
+                label: 'Edit',
+                action: 'edit-list-action-row',
+                icon: <LucideIcon icon={Pencil} name="pencil" />,
+              },
+              { kind: 'divider' },
+              {
+                label: 'Delete',
+                action: 'delete-list-action-row',
+                tone: 'danger',
+                icon: <LucideIcon icon={Trash2} name="trash-2" />,
+              },
+            ],
+          }}
+          rootAttributes={{ 'data-demo-action-row': 'menu' }}
         />
       </CatalogExample>
       <CatalogExample align="none">
