@@ -31,8 +31,13 @@ import { fileURLToPath } from 'node:url';
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const SPEC = 'tests/unit/reconciler-fuzz.test.ts';
 
-/** Window size that comfortably fits a default Node heap, measured not guessed. */
-const DEFAULT_WINDOW = 2500;
+/**
+ * Window size that comfortably fits a default Node heap, measured not guessed.
+ * Every window runs each sweep in `reconciler-fuzz.test.ts` (three since
+ * KF-03KWNV), so a window is 3× this many cases: 2500 ran out of heap at the
+ * default seed even with two sweeps, while 1000 soaks clean.
+ */
+const DEFAULT_WINDOW = 1000;
 const DEFAULT_TOTAL = 20_000;
 const DEFAULT_SEED = 20_260_724;
 

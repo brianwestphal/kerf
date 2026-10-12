@@ -537,19 +537,21 @@ function runSubsequentRender(
   );
   cleanupOrphanBindings(segment, bindings, renderCtx);
   const ownedItems = collectOwnedItems(bindings);
-  // List-free render: parse + morph only the changed subtrees when the edit
-  // can be proven equivalent to the full walk; otherwise the full walk.
-  if (!(
-    segment.kind === 'static' &&
-    bindings.size === 0 &&
-    morphStaticChange(
+  // Parse + morph only the changed subtrees when the edit can be proven
+  // equivalent to the full walk; otherwise the full walk. Lists are no
+  // exception: their rows are absent from the static string, so any element
+  // on the path that holds rows has more live element children than the scan
+  // recorded and the scoped morph declines, while a change beside the list
+  // (a details pane, a toolbar) is morphed without visiting the rows.
+  if (
+    !morphStaticChange(
       rootEl,
       prevStaticHtml,
       currentStaticHtml,
       scanCache,
       ownedItems,
     )
-  )) {
+  ) {
     const template = rootEl.cloneNode(false) as HTMLElement;
     template.innerHTML = currentStaticHtml;
     morph(rootEl, template, ownedItems);
@@ -560,6 +562,7 @@ function runSubsequentRender(
     bindings,
     false,
     renderCtx.rebuiltLists,
+    ownedItems,
   );
   return currentStaticHtml;
 }

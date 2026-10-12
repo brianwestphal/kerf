@@ -208,11 +208,20 @@ function genNode(
 }
 
 /**
- * `listFree` generates a tree with no `each()` at all plus plain signal reads,
- * so re-renders take the list-free path (one static segment, changed
- * surrounds) rather than the list reconcilers.
+ * Which tree shape a sweep generates:
+ *
+ * - `lists` — `each()` lists, conditionals and fine-grained holes, with no
+ *   plain signal reads (the default sweep; its seeds predate the others).
+ * - `listFree` — no `each()` at all plus plain signal reads, so re-renders take
+ *   the list-free path (one static segment, changed surrounds).
+ * - `listsWithPlain` — `each()` lists AND plain reads, so a write changes the
+ *   static surrounds while lists are bound: the change-scoped morph runs (or
+ *   declines) beside live rows.
  */
-export function generateSpec(rng: Rng, listFree = false): TreeSpec {
+export type SweepShape = 'lists' | 'listFree' | 'listsWithPlain';
+
+export function generateSpec(rng: Rng, shape: SweepShape = 'lists'): TreeSpec {
+  const listFree = shape === 'listFree';
   const sourceCount = rng.range(1, 3);
   const spec: TreeSpec = {
     sigCount: rng.range(1, 3),
@@ -242,7 +251,7 @@ export function generateSpec(rng: Rng, listFree = false): TreeSpec {
     spec,
     holeId: 0,
     pending: spec.lists.map((_, i) => i),
-    plain: listFree,
+    plain: shape !== 'lists',
   };
   spec.root = genChildren(ctx, 4, false, false);
   // Anything the random walk didn't find room for goes at the top level.

@@ -232,6 +232,7 @@ Each `*.bench.ts` file targets one hot path:
 | `jsx-string-build.bench.ts`         | JSX runtime vs raw string concat. Shows the JSX abstraction's overhead vs the absolute floor.                                                                                                                                                                                                                                               |
 | `attribute-diff-detection.bench.ts` | Placeholder for KF-198 — measures the proposed HTML-string diff heuristic in isolation.                                                                                                                                                                                                                                                     |
 | `large-static-rerender.bench.ts`    | What does one re-render of a large list-free page cost (300 rows × ~170 nodes, plain `.map()`, no `each()`) — JSX build alone, build + flatten + compare, and a full `mount()` re-render flipping one row's class? Tracks per-render core overhead that scales with total static HTML (KF-VBQJAX). Fixture: `large-static-tree.fixture.ts`. |
+| `large-keyed-rerender.bench.ts`     | What does one re-render of the same page cost when its 300 rows come from a memoized keyed `each()` and a details pane follows the selection — the surrounds change beside live rows, so the change-scoped morph and the row-skipping marker scan apply                                                                                     |
 
 ### When to use
 

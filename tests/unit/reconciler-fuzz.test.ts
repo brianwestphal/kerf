@@ -54,7 +54,12 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { formatRepro, runCase, shrinkCase } from './fuzz/harness.js';
-import { generateSpec, makeWorld, type TreeSpec } from './fuzz/model.js';
+import {
+  generateSpec,
+  makeWorld,
+  type SweepShape,
+  type TreeSpec,
+} from './fuzz/model.js';
 import { generateMutations, type Mutation } from './fuzz/mutations.js';
 import { Rng } from './fuzz/rng.js';
 
@@ -93,10 +98,10 @@ function signatureOf(message: string): string {
 
 function caseForSeed(
   seed: number,
-  listFree = false,
+  shape: SweepShape = 'lists',
 ): { spec: TreeSpec; mutations: Mutation[] } {
   const rng = new Rng(seed);
-  const spec = generateSpec(rng, listFree);
+  const spec = generateSpec(rng, shape);
   // Mutations are generated against a throwaway world so their indices are
   // valid at the point they run; `runCase` then replays them on a fresh one.
   return {
@@ -108,7 +113,7 @@ function caseForSeed(
 function report(
   failures: readonly SeedFailure[],
   runs: number,
-  listFree = false,
+  shape: SweepShape = 'lists',
 ): string {
   const bySignature = new Map<string, SeedFailure[]>();
   for (const f of failures) {
@@ -128,7 +133,7 @@ function report(
   }
   lines.push('');
   for (const [, seeds] of Array.from(bySignature).slice(0, MAX_REPORTS)) {
-    const { spec, mutations } = caseForSeed(seeds[0].seed, listFree);
+    const { spec, mutations } = caseForSeed(seeds[0].seed, shape);
     lines.push(formatRepro(seeds[0].seed, shrinkCase(spec, mutations)), '');
   }
   return lines.join('\n');
@@ -166,12 +171,33 @@ describe('reconciler fuzz', () => {
       const failures: SeedFailure[] = [];
       for (let i = 0; i < RUNS; i++) {
         const seed = BASE_SEED + 1_000_000 + i;
-        const { spec, mutations } = caseForSeed(seed, true);
+        const { spec, mutations } = caseForSeed(seed, 'listFree');
         const failure = runCase(spec, mutations);
         if (failure !== null)
           failures.push({ seed, signature: signatureOf(failure.message) });
       }
-      if (failures.length > 0) expect.fail(report(failures, RUNS, true));
+      if (failures.length > 0) expect.fail(report(failures, RUNS, 'listFree'));
+    },
+    Math.max(30_000, RUNS * 40),
+  );
+
+  // Lists bound AND plain reads in the surrounds: a write changes the static
+  // HTML while rows are live, so the change-scoped morph must either update
+  // only the change beside the rows or decline to the full walk — never
+  // misplace an element whose live index is shifted by a list's rows.
+  it(
+    'list trees hold every invariant when the surrounds change beside live rows',
+    () => {
+      const failures: SeedFailure[] = [];
+      for (let i = 0; i < RUNS; i++) {
+        const seed = BASE_SEED + 2_000_000 + i;
+        const { spec, mutations } = caseForSeed(seed, 'listsWithPlain');
+        const failure = runCase(spec, mutations);
+        if (failure !== null)
+          failures.push({ seed, signature: signatureOf(failure.message) });
+      }
+      if (failures.length > 0)
+        expect.fail(report(failures, RUNS, 'listsWithPlain'));
     },
     Math.max(30_000, RUNS * 40),
   );

@@ -1,10 +1,11 @@
 /**
- * Change-scoped morph for list-free re-renders.
+ * Change-scoped morph for surrounds-changed re-renders.
  *
  * `mount()`'s surrounds-changed path re-parses the WHOLE static HTML and morphs
- * the whole tree even when one attribute on one row changed. On a list-free
- * page (one `mount()`, plain `.map()`, no `each()`) that makes every re-render
- * cost O(page) in parse + morph. `morphStaticChange` instead:
+ * the whole tree even when one attribute on one row changed. On a large page
+ * (one `mount()`, plain `.map()` rows or a details pane beside an `each()`)
+ * that makes every re-render cost O(page) in parse + morph.
+ * `morphStaticChange` instead:
  *
  *  1. finds the byte range where the previous and next static HTML differ
  *     (common prefix / suffix);
@@ -25,12 +26,14 @@
  * quote outside an attribute value), table-family elements outside their
  * required parents or text directly inside a table box (the parser would
  * foster-parent or drop them), a live structure that disagrees with the
- * previous render's string, `data-morph-skip(-children)` or the focused element
- * on the path, or a changed child whose key / protection attributes would make
- * the full walk replace rather than morph it. Parser-context-sensitive
- * ancestors (`p`, `li`, `a`, formatting elements, `select`, `template`, foreign
- * content, headings, …) are never used as a parse context: the host climbs
- * above the topmost one.
+ * previous render's string (including any path element that holds `each()`
+ * rows, which the static string omits — so a change in or after a list's rows
+ * declines while a change beside it is scoped), `data-morph-skip(-children)` or
+ * the focused element on the path, or a changed child whose key / protection
+ * attributes would make the full walk replace rather than morph it.
+ * Parser-context-sensitive ancestors (`p`, `li`, `a`, formatting elements,
+ * `select`, `template`, foreign content, headings, …) are never used as a
+ * parse context: the host climbs above the topmost one.
  *
  * Internal. One primary export.
  */

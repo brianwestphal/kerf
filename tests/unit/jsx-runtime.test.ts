@@ -28,6 +28,35 @@ import {
 } from '../helpers/dev-shape.js';
 
 describe('SafeHtml', () => {
+  it('flattens a structured segment lazily, once', () => {
+    const page = new SafeHtml({
+      kind: 'mixed',
+      parts: [
+        { kind: 'static', html: '<ul>' },
+        {
+          kind: 'list',
+          id: '0',
+          items: [
+            { ref: {}, cacheKey: undefined, html: '<li>a</li>' },
+            { ref: {}, cacheKey: undefined, html: '<li>b</li>' },
+          ],
+        },
+        { kind: 'static', html: '</ul>' },
+      ],
+    });
+    // Not computed by construction: no own enumerable string field exists.
+    expect(Object.keys(page)).not.toContain('__html');
+    const first = page.__html;
+    expect(first).toBe('<ul><li>a</li><li>b</li></ul>');
+    expect(page.toString()).toBe(first);
+    expect(page.__html).toBe(first);
+    // A static segment and a string input are served without a flatten.
+    expect(new SafeHtml({ kind: 'static', html: '<b>x</b>' }).__html).toBe(
+      '<b>x</b>',
+    );
+    expect(new SafeHtml('<i>y</i>').toString()).toBe('<i>y</i>');
+  });
+
   it('wraps a string and exposes it via toString()', () => {
     const sh = new SafeHtml('<p>hi</p>');
     expect(sh.toString()).toBe('<p>hi</p>');

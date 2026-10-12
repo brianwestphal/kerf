@@ -62,6 +62,12 @@ export function anyRebuiltListIsGranular(
  * Existing bindings whose marker is still in the DOM are left intact —
  * `bindings.has(id)` skips re-binding so the prior render's item nodes
  * survive across static-surrounds diffs.
+ *
+ * `ownedItems` (the bound rows, from `collectOwnedItems`) are not descended
+ * into: a row never holds a list marker, because row HTML is flattened
+ * without markers and an `each()` inside a row render throws. Skipping them
+ * keeps the walk proportional to the surrounds rather than to every row's
+ * subtree, which on a large keyed page was most of a surrounds-changed render.
  */
 export function bindListsFromMarkers(
   rootEl: Element,
@@ -69,6 +75,7 @@ export function bindListsFromMarkers(
   bindings: Map<string, ListBinding>,
   inlinedItems: boolean,
   rebuiltLists?: Set<string>,
+  ownedItems?: ReadonlySet<Element>,
 ): void {
   const lists = collectLists(segment);
   // KF-VBQJAX: a render with no `each()` lists and no live bindings has no
@@ -78,7 +85,7 @@ export function bindListsFromMarkers(
   // page was a full DOM traversal after every morph.
   if (lists.size === 0 && bindings.size === 0) return;
   const found: Comment[] = [];
-  collectComments(rootEl, found);
+  collectComments(rootEl, found, ownedItems);
   for (const marker of found) {
     if (!marker.data.startsWith(LIST_MARKER_PREFIX)) continue;
     const id = marker.data.slice(LIST_MARKER_PREFIX.length);
@@ -286,13 +293,22 @@ export function cleanupOrphanBindings(
 /**
  * Recursive collector for comment nodes — happy-dom's `TreeWalker` doesn't
  * surface `Node.COMMENT_NODE` despite accepting `NodeFilter.SHOW_COMMENT`,
- * so we walk children directly. Cheap (O(elements)) and portable.
+ * so we walk children directly. O(elements outside `skip`) and portable.
  */
-function collectComments(node: Node, out: Comment[]): void {
+function collectComments(
+  node: Node,
+  out: Comment[],
+  skip: ReadonlySet<Element> | undefined,
+): void {
   for (let c: Node | null = node.firstChild; c; c = c.nextSibling) {
     if (c.nodeType === Node.COMMENT_NODE) out.push(c as Comment);
-    // An overlay host slot holds another mount's list markers.
-    else if (c.nodeType === Node.ELEMENT_NODE && !isOverlayHost(c as Element))
-      collectComments(c, out);
+    // An overlay host slot holds another mount's list markers; a bound row
+    // holds none.
+    else if (
+      c.nodeType === Node.ELEMENT_NODE &&
+      !isOverlayHost(c as Element) &&
+      !skip?.has(c as Element)
+    )
+      collectComments(c, out, skip);
   }
 }

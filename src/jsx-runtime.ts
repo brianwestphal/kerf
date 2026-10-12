@@ -50,18 +50,26 @@ import {
 const SAFE_HTML_BRAND = Symbol.for('kerfjs.SafeHtml');
 
 export class SafeHtml {
-  readonly __html: string;
   readonly __segment: Segment;
   // Branded so `isSafeHtml()` recognizes instances from any copy of this module.
   readonly [SAFE_HTML_BRAND] = true as const;
+  // The flattened HTML, computed on first read. A structured segment wraps its
+  // children's segments rather than their strings, so flattening eagerly made
+  // every element above an `each()` copy all of the list's row HTML again —
+  // O(depth × rows) per render, while `mount()` reads only the segment.
+  #html: string | undefined;
   constructor(input: string | Segment) {
     if (typeof input === 'string') {
       this.__segment = { kind: 'static', html: input };
-      this.__html = input;
+      this.#html = input;
     } else {
       this.__segment = input;
-      this.__html = flatten(input, false);
+      if (input.kind === 'static') this.#html = input.html;
     }
+  }
+  /** The flattened HTML string (what `toString()` returns). */
+  get __html(): string {
+    return (this.#html ??= flatten(this.__segment, false));
   }
   toString(): string {
     return this.__html;

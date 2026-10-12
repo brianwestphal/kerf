@@ -114,3 +114,57 @@ export function renderPage(selected: number): SafeHtml {
     ],
   });
 }
+
+/** One line of the keyed-list variant; identity is what `each()` memoizes on. */
+export interface Line {
+  id: number;
+}
+
+export const LINES: readonly Line[] = Array.from({ length: ROWS }, (_, id) => ({
+  id,
+}));
+
+/**
+ * KF-03KWNV — the same page with its rows rendered through a memoized keyed
+ * `each()`, plus a details pane whose text follows the selection. Selecting a
+ * row re-renders two rows (their `cacheKey` flips) AND changes the static
+ * surrounds, which is the shape that used to disqualify the change-scoped
+ * morph.
+ */
+export function renderKeyedPage(selected: number, each: EachFn): SafeHtml {
+  return jsx('main', {
+    className: 'app',
+    children: [
+      jsx('header', {
+        className: 'app-header',
+        children: jsx('h1', { children: 'Demand 42' }),
+      }),
+      jsx('aside', {
+        className: 'details',
+        children: jsx('p', {
+          children: selected < 0 ? 'Nothing selected' : `Line ${selected}`,
+        }),
+      }),
+      jsx('section', {
+        className: 'lines',
+        children: jsx('div', {
+          role: 'grid',
+          children: each(LINES, (line) => row(line.id, line.id === selected), {
+            key: 'lines',
+            cacheKey: (line) => line.id === selected,
+          }),
+        }),
+      }),
+    ],
+  });
+}
+
+/** `each()` as the fixture needs it, injected so this file stays DOM-free. */
+export type EachFn = (
+  items: readonly Line[],
+  render: (line: Line) => SafeHtml,
+  options: {
+    key: string;
+    cacheKey: (line: Line) => unknown;
+  },
+) => SafeHtml;
