@@ -657,6 +657,11 @@ writeJson('component-composition.json', {
       ['@kerfjs/ui:toolbar-control-group'],
       { publicExports: [{ name: 'SourceOnlyGroup' }] },
     ),
+    // Required wiring that is a root-delegated action, not a named helper.
+    wrapper('board-card', 'BoardCard', undefined, {
+      publicExports: [{ name: 'BoardCard' }],
+      wiring: { required: true, helpers: [], actions: ['open-card'] },
+    }),
     wrapper('ticket-search', 'TicketSearch', undefined, {
       publicExports: [{ name: 'TicketSearch' }],
       wiring: {
@@ -794,6 +799,24 @@ writeSource(
 writeSource(
   'src/wiring-commented.ts',
   "import { wireTicketSearch } from './interactions/ticket-search.js'; // wireTicketSearch(root)\nexport const example = 'wireTicketSearch(root)';\n",
+);
+// The component renders its own data-action (and here even imports delegate);
+// its source never counts as the application's handler.
+writeSource(
+  'src/board-card.tsx',
+  'import { delegate } from \'kerfjs\'; export function BoardCard() { return <article data-action="open-card" />; }\n',
+);
+writeSource(
+  'src/board-view.tsx',
+  "import { BoardCard } from './board-card.js'; export const Board = () => <BoardCard />;\n",
+);
+writeSource(
+  'src/board-actions.ts',
+  "import { delegateActions } from 'kerfjs/actions'; export function wireBoard(root) { return delegateActions(root, 'click', { 'open-card': () => {} }); }\n",
+);
+writeSource(
+  'src/board-actions-other.ts',
+  "import { delegate } from 'kerfjs'; // 'open-card' is handled elsewhere\nexport function wireOther(root) { return delegate(root, 'click', '[data-action=\"close-card\"]', () => {}); }\n",
 );
 const appSettings = uiSettings({
   profile: undefined,
@@ -1255,6 +1278,23 @@ tester.run('ui-wiring', wiring, {
       filename: appFile,
       settings: appSettings,
     },
+    // A required root-delegated action is satisfied by a reachable handler:
+    // a delegateActions table key, or a delegate() selector in the same file.
+    {
+      code: "import './board-view.js'; import { wireBoard } from './board-actions.js'; const dispose = wireBoard(root);",
+      filename: join(appRoot, 'src/wiring-entry.tsx'),
+      settings: appSettings,
+    },
+    {
+      code: "import { delegate } from 'kerfjs'; import { BoardCard } from './board-card.js'; const dispose = delegate(root, 'click', '[data-action=\"open-card\"]', () => {}); <BoardCard />;",
+      filename: appFile,
+      settings: appSettings,
+    },
+    {
+      code: "import { delegateActions } from 'kerfjs/actions'; import { BoardCard } from './board-card.js'; const dispose = delegateActions(root, 'click', { openCard: () => {}, 'open-card': () => {} }); <BoardCard />;",
+      filename: appFile,
+      settings: appSettings,
+    },
     {
       code: "import { TicketSearch } from './ticket-search.js'; import { wireTicketSearch as wire } from './interactions/index.js'; const dispose = wire(root); <TicketSearch />;",
       filename: appFile,
@@ -1336,6 +1376,26 @@ tester.run('ui-wiring', wiring, {
       filename: join(appRoot, 'src/wiring-entry.tsx'),
       settings: appSettings,
       errors: [{ messageId: 'missing' }],
+    },
+    // Only the component's own source (which renders data-action and imports
+    // delegate) and a comment mention are reachable: neither is a handler.
+    {
+      code: "import './board-view.js'; import { wireOther } from './board-actions-other.js'; const dispose = wireOther(root);",
+      filename: join(appRoot, 'src/wiring-entry.tsx'),
+      settings: appSettings,
+      errors: [
+        {
+          messageId: 'action',
+          data: { component: 'karwan-app:board-card', action: 'open-card' },
+        },
+      ],
+    },
+    // Naming the action without a Kerf delegation import is not handling it.
+    {
+      code: "import { BoardCard } from './board-card.js'; const action = 'open-card'; <BoardCard />;",
+      filename: appFile,
+      settings: appSettings,
+      errors: [{ messageId: 'action' }],
     },
     {
       code: "import './wiring-view.js'; import { wireTicketSearch } from './other-interactions.js'; const dispose = wireTicketSearch(root);",

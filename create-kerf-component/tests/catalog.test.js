@@ -1149,3 +1149,32 @@ test('passes verified wiring sources and scope through to the composition catalo
     );
   });
 });
+
+test('required wiring may be root-delegated actions instead of a helper', () => {
+  withScaffold(({ target }) => {
+    const value = metadata(target);
+    const wiring = value.components[0].composition.wiring;
+    wiring.helpers = [];
+    wiring.actions = ['increment', 'decrement'];
+    writeMetadata(target, value);
+    const [result] = generateCatalogs(target);
+    assert.deepEqual(result.catalog.entries[0].wiring.actions, [
+      'increment',
+      'decrement',
+    ]);
+    assert.deepEqual(validateComposition(result.catalog), []);
+
+    wiring.actions = [];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      'composition.wiring: required wiring names at least one helper or action',
+    );
+    wiring.actions = ['increment', 'increment'];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.components[0].composition.wiring.actions: expected unique items',
+    );
+  });
+});

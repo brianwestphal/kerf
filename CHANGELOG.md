@@ -58,6 +58,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Required wiring can be root-delegated actions.** Composition catalogs and `kerf.components.json` accept `wiring.actions`, the `data-action` values the app must handle with its own root `delegate()` / `delegateActions()` listener. Required wiring now names at least one helper _or_ action, so an app no longer has to mark such wiring `required: false` and weaken the check. `eslint-plugin-kerfjs`'s `ui-wiring` reports each unhandled action as `KUI-L401`. An action counts as handled when a reachable module imports a Kerf delegation API and names it as a string, selector, or table key. Comments and the component's own source do not count (`KF-AF5KD5`).
+
 - **`kerf.components.json` declares where app-owned wiring helpers live.** `composition.wiring.sources` lists each application helper's `{ export, source }`. The generator verifies that the helper is in `helpers`, that the file exists, and that the file exports it. `ui-wiring` then resolves the app's relative imports of that helper, so page-root wiring with helpers such as `wireTicketSearchFields` no longer raises `KUI-L401`. `composition.wiring.scope` (`application` or `module`) is now authorable too. Both fields were previously expressible only in a hand-written catalog (`KF-YZE3DP`).
 
 - **`kerf.components.json` zones can name their JSX prop.** A zone may declare `jsx: { prop }` (`children` for the default slot). The prop must be unique per component, and the generated composition catalog keeps it, so `ui-composition` maps a prop's value to its zone exactly as it does for `@kerfjs/ui`'s own catalog (`KF-99Z95S`).

@@ -325,6 +325,10 @@
                 "additionalProperties": false
               }
             },
+            "actions": {
+              "description": "data-action values the application must handle with a root-delegated listener (delegate or delegateActions) instead of a named helper. Required wiring names at least one helper or action; UI lint verifies a reachable handler (KUI-L401).",
+              "$ref": "#/$defs/stringList"
+            },
             "obligations": { "$ref": "#/$defs/stringList" },
             "stateAttributes": {
               "description": "Optional wiring-owned state attributes: data-* attributes a wiring helper writes at runtime, which the application must not render, remove, or treat as its own state.",

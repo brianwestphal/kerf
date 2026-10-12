@@ -164,6 +164,36 @@ function moduleCalls(source, file, contract) {
   return calls;
 }
 
+// A module that can delegate: it imports delegate, delegateCapture, or
+// delegateActions from kerfjs or kerfjs/actions.
+const delegationImport =
+  /\bimport\s*\{[^}]*\b(?:delegate|delegateCapture|delegateActions)\b[^}]*\}\s*from\s*['"]kerfjs(?:\/actions)?['"]/;
+
+const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// A required root-delegated action is handled when a module that imports a
+// Kerf delegation API names it: as a quoted string (a delegateActions table
+// key, an action() value, a selector such as `[data-action="name"]`) or as a
+// bare table key. Cataloged component sources render their own data-action
+// attributes, so they never count as the handler.
+function handlesAction(modules, action, contract) {
+  const quoted = new RegExp(
+    `(['"\`])${escapeRegExp(action)}\\1|data-action=\\?["']${escapeRegExp(action)}\\?["']`,
+  );
+  const bareKey = /^[A-Za-z_$][\w$]*$/.test(action)
+    ? new RegExp(`[{,]\\s*${action}\\s*:`)
+    : undefined;
+  for (const [file, source] of modules) {
+    if (contract.componentSources?.has(file)) continue;
+    const code = source.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, (comment) =>
+      comment.replace(/[^\n]/g, ' '),
+    );
+    if (!delegationImport.test(code)) continue;
+    if (quoted.test(code) || bareKey?.test(code)) return true;
+  }
+  return false;
+}
+
 function applicationEntries(contract, filename, source) {
   const root = resolve(contract.cwd);
   const entries = [];
@@ -188,6 +218,8 @@ export default {
       config: `${UI_CONTRACT_LOAD_CODE}: Kerf UI catalog/profile could not be loaded: {{error}}`,
       missing:
         'KUI-L401: `{{component}}` requires `{{helper}}`; import and invoke the documented wiring contract.',
+      action:
+        'KUI-L401: `{{component}}` requires the application to handle `data-action="{{action}}"` with a root `delegate()` or `delegateActions()` listener.',
       cleanup:
         'KUI-L402: Retain or return the disposer from `{{helper}}`; use `void` only for an intentional page-lifetime binding.',
     },
@@ -253,6 +285,20 @@ export default {
           if (entry.wiring.scope === 'module' && !used.has(key)) continue;
           if (entry.wiring.scope !== 'module' && reachable.length && !ownEntry)
             continue;
+          const actionModules =
+            entry.wiring.scope !== 'module' && ownEntry
+              ? ownEntry.modules
+              : new Map([[filename, context.sourceCode.text]]);
+          for (const action of entry.wiring.actions ?? [])
+            if (
+              !handlesAction(actionModules, action, contract) &&
+              !isExcepted(contract, MISSING_CODE, filename)
+            )
+              context.report({
+                node: usage,
+                messageId: 'action',
+                data: { component: key, action },
+              });
           for (const helper of entry.wiring.helpers) {
             if (helper.startsWith('@')) {
               if (

@@ -421,8 +421,24 @@ function validateComposition(component, at, diagnostics, packageRoot) {
     composition.wiring?.helpers,
     `${at}.composition.wiring.helpers`,
     diagnostics,
-    { nonempty: composition.wiring?.required === true },
   );
+  if ('actions' in (composition.wiring ?? {}))
+    validateStringList(
+      composition.wiring.actions,
+      `${at}.composition.wiring.actions`,
+      diagnostics,
+    );
+  // Required wiring names something the app must do: a helper to call, or a
+  // root-delegated data-action to handle.
+  if (
+    composition.wiring?.required === true &&
+    Array.isArray(composition.wiring.helpers) &&
+    !composition.wiring.helpers.length &&
+    !composition.wiring.actions?.length
+  )
+    diagnostics.push(
+      `${at}.composition.wiring: required wiring names at least one helper or action`,
+    );
   validateStringList(
     composition.wiring?.obligations,
     `${at}.composition.wiring.obligations`,

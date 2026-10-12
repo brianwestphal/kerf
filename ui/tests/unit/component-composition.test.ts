@@ -63,6 +63,32 @@ describe('component composition catalog contract', () => {
     );
   });
 
+  it('accepts required wiring that is root-delegated actions and rejects empty required wiring', async () => {
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
+    );
+    const entry = composition.entries.find(
+      (item) => item.id === 'token-search-field',
+    )!;
+    entry.wiring = {
+      ...entry.wiring,
+      required: true,
+      helpers: [],
+      sources: undefined,
+      stateAttributes: [],
+      actions: ['open-card'],
+    };
+    expect(validateComposition(composition)).toEqual([]);
+    entry.wiring.actions = [];
+    expect(validateComposition(composition)).toContain(
+      `${entry.key} required wiring must name a helper, import, or action`,
+    );
+    entry.wiring.actions = ['open-card', 'open-card'];
+    expect(validateComposition(composition)).toContain(
+      `${entry.key} wiring.actions must contain unique non-empty strings`,
+    );
+  });
+
   it('projects every live v1 entry with package-qualified identity and complete boundaries', async () => {
     const [v1, composition] = await Promise.all([
       readJson<{ package: string; entries: Array<{ id: string }> }>(

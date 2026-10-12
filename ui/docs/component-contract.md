@@ -114,6 +114,14 @@ package root; `ui-wiring` resolves helper imports through this file, including
 relative re-export barrels. Every named export must also appear in
 `wiring.helpers`.
 
+When a component's required wiring is the application's own root-delegated
+handlers rather than a named helper, list the `data-action` values it must
+handle in `wiring.actions`. Required wiring names at least one helper or action.
+`ui-wiring` accepts an action when a reachable module that imports `delegate`,
+`delegateCapture`, or `delegateActions` (from `kerfjs` or `kerfjs/actions`)
+names it as a string, selector, or table key; a cataloged component's own
+source never counts, because it renders the attribute.
+
 The selection catalog's `wiringProviders` lists public helpers that install
 other wiring helpers. The `ui-wiring` rule accepts a provider call for each
 helper it declares; `wireCatalog` provides `wireScrollDividers`.

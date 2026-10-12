@@ -343,7 +343,11 @@ resolves relative imports of it through that file, so page-root wiring with an
 app helper satisfies `KUI-L401` instead of warning. `composition.wiring.scope`
 (`application`, the default, or `module`) says whether a required helper must
 run anywhere reachable from a profile wiring entry or in the module that renders
-the component. A zone
+the component. When the required wiring is the app's own root-delegated
+handlers rather than a helper, list the `data-action` values under
+`composition.wiring.actions`; required wiring names at least one helper or
+action, and `ui-wiring` reports an action no reachable `delegate()` /
+`delegateActions()` module handles. A zone
 filled by a JSX prop names it with the optional `jsx: { prop }` (`children` for
 the default slot; unique per component), which the generated catalog keeps so
 `ui-composition` can map a prop's value to its zone. The

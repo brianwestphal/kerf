@@ -239,6 +239,10 @@
                 "additionalProperties": false
               }
             },
+            "actions": {
+              "description": "data-action values the application must handle with a root-delegated listener (delegate or delegateActions) instead of a named helper. Required wiring names at least one helper or action.",
+              "$ref": "#/$defs/stringList"
+            },
             "obligations": { "$ref": "#/$defs/stringList" },
             "stateAttributes": {
               "description": "Wiring-owned state attributes: data-* attributes a wiring helper writes at runtime, which the application must not render, remove, or treat as its own state. Optional for extension catalogs; first-party entries always list it, empty when their helpers write none.",

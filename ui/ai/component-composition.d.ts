@@ -87,6 +87,9 @@ export interface CatalogCompositionEntry {
     helpers: string[];
     /** Defining source files for application-owned helpers, relative to the catalog package root. */
     sources?: Array<{ export: string; source: string }>;
+    /** `data-action` values the application handles with a root-delegated
+     *  listener (`delegate` / `delegateActions`) instead of a named helper. */
+    actions?: string[];
     obligations: string[];
     /** Wiring-owned `data-*` attributes a helper writes at runtime. Optional
      *  for extension catalogs; first-party entries always list it. */

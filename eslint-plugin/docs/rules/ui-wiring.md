@@ -30,6 +30,14 @@ Consumer composition catalogs can name an application helper's defining file in 
 
 The source path is relative to the catalog package root. The rule resolves relative imports, aliases, and re-export barrels to that file, so another function with the same name does not satisfy the obligation.
 
+Required wiring can instead be the application's own root-delegated handlers. List the `data-action` values in `wiring.actions` (required wiring names at least one helper or action):
+
+```json
+"wiring": { "required": true, "helpers": [], "actions": ["open-card"], "obligations": ["Handle open-card at the page root."] }
+```
+
+`KUI-L401` reports each listed action that no reachable module handles. A module handles an action when it imports `delegate`, `delegateCapture`, or `delegateActions` from `kerfjs` or `kerfjs/actions` and names the action as a quoted string (a `delegateActions` table key, an `action()` value, a `[data-action="open-card"]` selector) or as a bare table key. Comments do not count, and neither does a cataloged component's own source, which renders the attribute. Reachability and `scope` follow the helper rules above.
+
 The selection catalog can declare a public wiring provider in `wiringProviders`, naming its export, import source, and the helpers it installs. A recognized `wireCatalog` call from `@kerfjs/ui/wire-catalog` provides `wireScrollDividers`, so the rule does not ask for a duplicate call on the same application entry. The provider's disposer still needs to be retained.
 
 Assign, return, or otherwise retain a disposer when the binding has a shorter lifetime than the page. A `void` call is accepted as an explicit page-lifetime choice. The rule derives valid helper sources from each component-catalog entry's `publicExports` and `wiring[].import` facts, so aliases, root named imports, root namespaces, wiring-subpath named imports, and wiring-subpath namespaces resolve without a second hard-coded export table. It does not attempt flow-sensitive cleanup proof and offers no autofix.

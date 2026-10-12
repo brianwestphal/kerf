@@ -172,8 +172,17 @@ export function validateComposition(catalog, options = {}) {
       !isStringList(entry?.wiring?.obligations)
     )
       fail(`${at} wiring lists must contain unique non-empty strings`);
-    if (entry?.wiring?.required && !entry.wiring.helpers.length)
-      fail(`${at} required wiring must name a helper or import`);
+    if (
+      entry?.wiring?.actions !== undefined &&
+      !isStringList(entry.wiring.actions)
+    )
+      fail(`${at} wiring.actions must contain unique non-empty strings`);
+    if (
+      entry?.wiring?.required &&
+      !entry.wiring.helpers.length &&
+      !entry.wiring.actions?.length
+    )
+      fail(`${at} required wiring must name a helper, import, or action`);
     if (entry?.wiring?.sources !== undefined) {
       if (!Array.isArray(entry.wiring.sources))
         fail(`${at} wiring.sources must be an array`);
