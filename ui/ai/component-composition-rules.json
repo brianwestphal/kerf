@@ -247,6 +247,17 @@
       ]
     }
   },
+  "@kerfjs/ui:choice-chips": {
+    "_source": "docs/accessibility.md#choicechips",
+    "contexts": ["wrapping-exclusive-choice"],
+    "state": [{ "id": "value", "owner": "controlled", "required": false }],
+    "accessibility": {
+      "obligations": [
+        "Name the radio group with label or with labelledBy pointing at a visible heading.",
+        "Every choice keeps a visible text label; a swatch or icon is decorative."
+      ]
+    }
+  },
   "@kerfjs/ui:token-search-field": {
     "_source": "docs/accessibility.md#tokensearchfield",
     "contexts": ["structured-search-editor"],

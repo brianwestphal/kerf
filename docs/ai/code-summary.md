@@ -961,6 +961,13 @@ only the surface, and closing with the dialog.
 `ui/src/components/feedback/chip/chip.tsx` renders a self-styled tag with an optional native remove
 button. It exposes delegated action and item identity, semantic appearance,
 compact geometry, and a disabled state.
+`ui/src/components/forms/choice-chips/choice-chips.tsx` (`@kerfjs/ui/choice-chips`)
+renders a wrapping exclusive choice: separate pill `<label>`s around native
+radios in a `role="radiogroup"`, with optional leading `swatch` (a `CssColor`
+or the struck-through `'transparent'` dot) or `icon`. The CSS paints checked
+and focus-visible state on the pill through `:has()`; the browser owns keyboard
+selection and the form value. Tests: `ui/tests/unit/choice-chips.test.tsx`,
+`ui/tests/browser/choice-chips.spec.ts`.
 `ui/src/components/forms/select/select.tsx` renders disabled choices and opt-in multiple-select action
 buttons. `ui/src/components/forms/select/internal/install-select-actions.ts`
 applies select-all or clear through

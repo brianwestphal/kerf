@@ -30,6 +30,7 @@ import {
   CatalogExampleStack,
 } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
+import { ChoiceChips } from '@kerfjs/ui/choice-chips';
 import {
   CollapsiblePanel,
   CollapsiblePanelToggle,
@@ -121,6 +122,36 @@ Chip({
   removeLabel: 'Remove Urgent tag',
 });
 Chip({ children: 'Backlog', size: 'compact', disabled: true });
+ChoiceChips({
+  name: 'color',
+  label: 'Command color',
+  value: 'blue',
+  choices: [
+    { value: 'transparent', label: 'Transparent', swatch: 'transparent' },
+    { value: 'blue', label: 'Blue', swatch: foregroundColor('#3b82f6') },
+  ],
+});
+ChoiceChips({
+  name: 'view',
+  labelledBy: 'view-label',
+  size: 'compact',
+  choices: [{ value: 'board', label: 'Board' }],
+});
+ChoiceChips<'board' | 'list'>({
+  name: 'view',
+  label: 'View',
+  // @ts-expect-error The controlled value must be one of the choice values.
+  value: 'calendar',
+  choices: [{ value: 'board', label: 'Board' }],
+});
+// @ts-expect-error A radio group needs exactly one name source.
+ChoiceChips({ name: 'view', choices: [{ value: 'board', label: 'Board' }] });
+ChoiceChips({
+  name: 'color',
+  label: 'Color',
+  // @ts-expect-error A swatch is a branded CssColor or 'transparent', not a raw string.
+  choices: [{ value: 'blue', label: 'Blue', swatch: '#3b82f6' }],
+});
 // @ts-expect-error A removable chip requires a specific accessible name.
 Chip({ children: 'Unlabeled', removeAction: 'remove-tag' });
 // @ts-expect-error A plain chip cannot carry an orphan remove label.

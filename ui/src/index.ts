@@ -167,6 +167,13 @@ export {
   type StateBannerUrgency,
 } from './components/feedback/state-banner/state-banner.js';
 export {
+  ChoiceChips,
+  type ChoiceChipsChoice,
+  type ChoiceChipsProps,
+  type ChoiceChipsSize,
+  type ChoiceChipsSwatch,
+} from './components/forms/choice-chips/choice-chips.js';
+export {
   Combobox,
   type ComboboxProps,
   type ComboboxSuggestion,

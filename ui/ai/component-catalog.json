@@ -4618,6 +4618,83 @@
       }
     },
     {
+      "id": "choice-chips",
+      "name": "ChoiceChips",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "An exclusive, wrapping set of separated pill chips backed by native radios, with optional leading color swatches or icons.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Choose one value from a visible set too large for a segmented track, such as a color palette with labeled swatches.",
+      "publicExports": [
+        "ChoiceChips"
+      ],
+      "useWhen": [
+        "Expose one exclusive choice among several visible options that must wrap onto more rows, such as a labeled color palette with swatches."
+      ],
+      "avoidWhen": [
+        "Use SegmentedControl for a few compact choices on one track.",
+        "Use Select when the choice list is long or space is tight.",
+        "Do not use it for removable tags (Chip) or for multiple selection."
+      ],
+      "alternatives": [
+        {
+          "id": "segmented-control",
+          "relationship": "nearest"
+        },
+        {
+          "id": "select",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-radio-group",
+          "relationship": "prefer-over",
+          "when": "Use ChoiceChips instead of button-appearance radios that must wrap; a joined button group wraps into ragged rows with shared borders."
+        }
+      ],
+      "appOwns": [
+        "value",
+        "choices and labels",
+        "swatch colors",
+        "change action",
+        "form submission"
+      ],
+      "variants": [
+        "color swatch, transparent (struck-through) swatch, icon, or text-only choices",
+        "default or compact size",
+        "disabled group or disabled choices",
+        "required"
+      ],
+      "accessibility": [
+        "The group is a named role=\"radiogroup\" of native radios: one Tab stop, arrow keys move the selection, and the checked radio submits the form value.",
+        "Every choice keeps a visible text label; the swatch is decorative and the selection adds a heavier border, so neither relies on color alone."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/choice-chips",
+        "manualCssImport": "@kerfjs/ui/choice-chips.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-choice-chips"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=choice-chips",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/accessibility.md#choicechips"
+      }
+    },
+    {
       "id": "token-search-field",
       "name": "TokenSearchField",
       "category": "Controls",

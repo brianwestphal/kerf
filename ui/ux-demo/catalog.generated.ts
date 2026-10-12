@@ -552,6 +552,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "choice-chips",
+    "name": "ChoiceChips",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Choose one value from a visible set too large for a segmented track, such as a color palette with labeled swatches.",
+    "uses": [
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/choice-chips.tsx",
+    "componentSource": "ui/src/components/forms/choice-chips/choice-chips.tsx",
+    "designTemplate": "ui/docs/design/templates/choice-chips.svg",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "token-search-field",
     "name": "TokenSearchField",
     "category": "Controls",

@@ -255,6 +255,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `SunkenPanel`                                                       | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`            |
 | `Select`                                                            | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                  |
 | `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |
+| `ChoiceChips`                                                       | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`      |
 | `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                        |
 | `createTokenSearchModel`                                            | `@kerfjs/ui/token-search-model`         | —                                        |
@@ -698,6 +699,30 @@ Each choice remains a native button in sequential Tab order and exposes its
 value through `data-segment-value`. Override an instance through
 `--kui-segmented-{background|border|foreground|hover-background}` and
 `--kui-segmented-selected-{background|foreground|border|shadow}`.
+
+`ChoiceChips` is the wrapping exclusive choice for a visible set too large for
+one segmented track, such as a labeled color palette. Each choice is a separate
+pill backed by a native radio, so the group is one Tab stop, arrow keys move
+the selection, and the checked radio submits the form value under `name`. A
+choice may lead with a `swatch` (a `CssColor`, or `'transparent'` for the
+struck-through no-color dot) or a decorative `icon`:
+
+```tsx
+<ChoiceChips
+  name="color"
+  label="Command color"
+  value={color.value}
+  action="select-command-color"
+  choices={[
+    { value: "transparent", label: "Transparent", swatch: "transparent" },
+    { value: "blue", label: "Blue", swatch: foregroundColor("#3b82f6") },
+  ]}
+/>
+```
+
+Listen for `change` on the supplied action (for example
+`delegateActions(root, "change", { "select-command-color": … })`), read the
+radio's `value`, and re-render.
 
 `TokenSearchField` is a token-controlled contenteditable searchbox that keeps
 free text and ordered filter chips in one field. Its editable text stays

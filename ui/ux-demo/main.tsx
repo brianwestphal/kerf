@@ -112,6 +112,9 @@ import {
   adoptionReadout,
   adoptionTokens,
   bannerTone,
+  choiceChipsColor,
+  choiceChipsDialogColor,
+  choiceChipsView,
   collapsibleSearchOpen,
   comboboxTags,
   contentCardChoice,
@@ -611,6 +614,17 @@ const stopActions = delegateActions(app, 'click', {
       `#${target.getAttribute('data-dialog-id') ?? 'catalog-wa-dialog'}`,
     );
     if (dialog) dialog.open = true;
+  },
+  'save-choice-chips-dialog': () => {
+    const form = document.querySelector<HTMLFormElement>(
+      '#choice-chips-dialog-form',
+    );
+    const color = form ? new FormData(form).get('color') : null;
+    actionLog.value = `Saved color: ${typeof color === 'string' ? color : 'none'}`;
+    const dialog = document.querySelector<HTMLElement & { open: boolean }>(
+      '#choice-chips-dialog',
+    );
+    if (dialog) dialog.open = false;
   },
   'hide-wa-dialog': (_event, target) => {
     actionLog.value = 'Dialog closed';
@@ -1790,6 +1804,17 @@ const updateAnimationSetting = (element: Element): void => {
   }
   demo.output.textContent = 'Settings updated';
 };
+const stopChoiceChipsDemo = delegateActions(app, 'change', {
+  'choice-chips-demo': (_event, element) => {
+    const input = element as HTMLInputElement;
+    const group = input.closest('[data-component="choice-chips"]')?.id;
+    if (group === 'choice-chips-color') choiceChipsColor.value = input.value;
+    if (group === 'choice-chips-dialog-color')
+      choiceChipsDialogColor.value = input.value;
+    if (group === 'choice-chips-view') choiceChipsView.value = input.value;
+    actionLog.value = `Choice: ${input.value}`;
+  },
+});
 const stopAnimationSelects = delegate(
   app,
   'change',
@@ -1918,6 +1943,7 @@ window.addEventListener(
     stopAnchoredSurfaceDemo();
     stopAnchoredSurfaceContextDemo();
     stopAnchoredSurfaceOpenModal();
+    stopChoiceChipsDemo();
     stopAnimationSelects();
     stopAnimationRanges();
     stopAnimationEvents.forEach((dispose) => dispose());

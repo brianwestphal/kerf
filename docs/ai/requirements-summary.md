@@ -469,6 +469,11 @@ three-engine browser tests cover wide, narrow, and modal use.
 Chip presents a short tag with an optional named remove button and delegated
 action. It supports semantic tone, appearance, shape, compact size, and disabled
 state without consumer rules on Web Awesome internals.
+ChoiceChips (shipped) is the wrapping exclusive choice for a visible set too
+large for SegmentedControl: separate pills over native radios (one Tab stop,
+arrow-key selection, real form value), with color swatches including a
+struck-through transparent swatch, or icons; `label`/`labelledBy`, controlled
+`value`, delegated `change` action, compact size, required, and disabled.
 Select choices can be disabled with an optional reason. Multiple Selects can
 show localized select-all and clear actions that preserve controlled values,
 skip disabled choices, and report changes through ordinary events.

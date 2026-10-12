@@ -3800,6 +3800,47 @@
       }
     },
     {
+      "key": "@kerfjs/ui:choice-chips",
+      "package": "@kerfjs/ui",
+      "id": "choice-chips",
+      "name": "ChoiceChips",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["wrapping-exclusive-choice"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [{ "id": "value", "owner": "controlled", "required": false }],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Name the radio group with label or with labelledBy pointing at a visible heading.",
+          "Every choice keeps a visible text label; a swatch or icon is decorative."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-choice-chips",
+        "publicClasses": ["kui-choice-chips"],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/accessibility.md#choicechips"
+      }
+    },
+    {
       "key": "@kerfjs/ui:token-search-field",
       "package": "@kerfjs/ui",
       "id": "token-search-field",

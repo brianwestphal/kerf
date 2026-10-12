@@ -2904,6 +2904,69 @@ declare function SegmentedControl<Value extends string>({ id, label, value, choi
 export { SegmentedControl, type SegmentedControlAppearance, type SegmentedControlChoice, type SegmentedControlLayout, type SegmentedControlProps, type SegmentedControlShape, type SegmentedControlSize };
 ```
 
+## `@kerfjs/ui/choice-chips`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+import { CssColor } from './css-values.js';
+
+type ChoiceChipsSize = 'default' | 'compact';
+/**
+ * A leading color dot: a {@link CssColor} from `uiColor()`, `colorVar()`, or
+ * `foregroundColor()`, or `'transparent'` for the no-color swatch (an outlined
+ * dot struck through by a diagonal line).
+ */
+type ChoiceChipsSwatch = CssColor | 'transparent';
+interface ChoiceChipsChoice<Value extends string = string> {
+    value: Value;
+    /** Visible label; it is also the radio's accessible name. */
+    label: string;
+    /** Leading color dot. Mutually exclusive with `icon`. */
+    swatch?: ChoiceChipsSwatch;
+    /** Decorative leading icon, normally an unsized LucideIcon. */
+    icon?: SafeHtml;
+    /** Supplementary tooltip; never the only place a choice is described. */
+    title?: string;
+    disabled?: boolean;
+}
+interface ChoiceChipsCommonProps<Value extends string> {
+    /** Native radio `name`: the form field the selected value submits under. */
+    name: string;
+    /** The selected value. Omit (or pass `undefined`) for no selection. */
+    value?: NoInfer<Value>;
+    choices: readonly ChoiceChipsChoice<Value>[];
+    /** Delegated `data-action` on every radio; listen for `change`. */
+    action?: string;
+    size?: ChoiceChipsSize;
+    /** Disable the whole group. */
+    disabled?: boolean;
+    /** Require a selection for native form validation. */
+    required?: boolean;
+    /** Associate the radios with a form outside their ancestor chain. */
+    form?: string;
+    id?: string;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/** A radio group is named either by a string or by a visible heading's id. */
+type ChoiceChipsProps<Value extends string = string> = ChoiceChipsCommonProps<Value> & ({
+    label: string;
+    labelledBy?: never;
+} | {
+    labelledBy: string;
+    label?: never;
+});
+/**
+ * An exclusive, wrapping set of pill chips backed by native radios: one Tab
+ * stop, arrow-key selection, and a real form value. Each choice may lead with
+ * a color swatch (including a struck-through transparent swatch) or an icon.
+ */
+declare function ChoiceChips<Value extends string>({ name, value, choices, action, size, disabled, required, form, id, className, slot, label, labelledBy, }: ChoiceChipsProps<Value>): SafeHtml;
+
+export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsProps, type ChoiceChipsSize, type ChoiceChipsSwatch };
+```
+
 ## `@kerfjs/ui/select`
 
 ```ts

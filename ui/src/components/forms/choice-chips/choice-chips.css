@@ -1,0 +1,154 @@
+/* ChoiceChips: separated pills that wrap with the control gap. Each pill is a
+   <label> around a native radio, so the radio owns focus, arrow keys, and the
+   form value; the pill paints the radio's state through :has(). */
+.kui-choice-chips {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--kui-layout-control-gap, remify(8px));
+}
+
+.kui-choice-chips__chip {
+  --_kui-choice-chips-border: var(--kui-color-neutral-border-normal);
+
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  min-height: remify(32px);
+  padding-inline: remify(12px);
+  box-sizing: border-box;
+  border: 1px solid var(--_kui-choice-chips-border);
+  border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  align-items: center;
+  gap: remify(6px);
+  font-size: var(--kui-font-s);
+  font-weight: var(--kui-font-weight-semibold, 600);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition-property: background, border-color, box-shadow;
+  transition-duration: 120ms;
+}
+
+.kui-choice-chips[data-size="compact"] .kui-choice-chips__chip {
+  min-height: remify(24px);
+  padding-inline: remify(8px);
+  gap: remify(4px);
+  font-size: var(--kui-font-xs);
+}
+
+/* The native radio covers the pill so a pointer press lands on it directly,
+   but paints nothing: the pill draws its checked and focus state. */
+.kui-choice-chips__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: inherit;
+  opacity: 0;
+  cursor: inherit;
+  appearance: none;
+}
+
+.kui-choice-chips__chip:hover:not([data-disabled]):not(
+    :has(> .kui-choice-chips__input:checked)
+  ) {
+  background: var(--kui-color-neutral-fill-quiet);
+}
+
+.kui-choice-chips__chip:has(> .kui-choice-chips__input:checked) {
+  --_kui-choice-chips-border: var(--kui-color-brand-border-loud);
+
+  color: var(--kui-color-brand-on-fill);
+  background: var(--kui-color-brand-fill-normal);
+  /* A second pixel of border marks the selection without relying on hue. */
+  box-shadow: inset 0 0 0 1px var(--_kui-choice-chips-border);
+}
+
+.kui-choice-chips__chip:has(> .kui-choice-chips__input:focus-visible) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}
+
+.kui-choice-chips__chip[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.kui-choice-chips__swatch {
+  width: remify(12px);
+  height: remify(12px);
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--_kui-choice-chips-swatch, transparent);
+  /* An inner edge keeps a pale swatch visible against the pill. */
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--kui-color-text) 20%, transparent);
+  flex: none;
+}
+
+.kui-choice-chips[data-size="compact"] .kui-choice-chips__swatch {
+  width: remify(10px);
+  height: remify(10px);
+}
+
+/* The no-color swatch: an outlined dot struck through from corner to corner. */
+.kui-choice-chips__swatch[data-swatch="transparent"] {
+  position: relative;
+  box-shadow: inset 0 0 0 1px var(--kui-color-neutral-border-loud);
+}
+
+.kui-choice-chips__swatch[data-swatch="transparent"]::after {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 0.75px);
+  width: 1.5px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--kui-color-danger-on-quiet);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.kui-choice-chips__icon {
+  display: inline-grid;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+  place-items: center;
+  flex: none;
+}
+
+.kui-choice-chips__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (forced-colors: active) {
+  .kui-choice-chips__chip {
+    border-color: ButtonBorder;
+  }
+
+  .kui-choice-chips__chip:has(> .kui-choice-chips__input:checked) {
+    border-color: Highlight;
+    color: HighlightText;
+    background: Highlight;
+  }
+
+  .kui-choice-chips__swatch {
+    forced-color-adjust: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-choice-chips__chip {
+    transition: none;
+  }
+}

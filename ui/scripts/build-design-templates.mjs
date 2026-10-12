@@ -52,7 +52,8 @@ import {
 } from 'lucide';
 
 import { AppTab } from '../dist/app-tab.js';
-import { em, px } from '../dist/css-values.js';
+import { ChoiceChips } from '../dist/choice-chips.js';
+import { em, foregroundColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
 import { List } from '../dist/list.js';
 import { ListActionRow } from '../dist/list-action-row.js';
@@ -633,6 +634,96 @@ export const COMPONENTS = {
               { value: 'day', label: 'Day' },
               { value: 'week', label: 'Week' },
               { value: 'month', label: 'Month' },
+            ],
+          }),
+      },
+    ],
+  },
+  'choice-chips': {
+    css: ['foundation', 'layout', 'lucide-icon', 'choice-chips'],
+    selector: '#frame',
+    width: 600,
+    frameWidth: 560,
+    variants: [
+      {
+        id: 'color-palette',
+        label: 'Wrapping color palette',
+        height: 96,
+        render: () =>
+          ChoiceChips({
+            name: 'color',
+            label: 'Color',
+            value: 'blue',
+            choices: [
+              {
+                value: 'transparent',
+                label: 'Transparent',
+                swatch: 'transparent',
+              },
+              {
+                value: 'blue',
+                label: 'Blue',
+                swatch: foregroundColor('#3b82f6'),
+              },
+              {
+                value: 'green',
+                label: 'Green',
+                swatch: foregroundColor('#22c55e'),
+              },
+              {
+                value: 'orange',
+                label: 'Orange',
+                swatch: foregroundColor('#f97316'),
+              },
+              {
+                value: 'red',
+                label: 'Red',
+                swatch: foregroundColor('#ef4444'),
+              },
+              {
+                value: 'purple',
+                label: 'Purple',
+                swatch: foregroundColor('#a855f7'),
+              },
+              {
+                value: 'pink',
+                label: 'Pink',
+                swatch: foregroundColor('#ec4899'),
+              },
+              {
+                value: 'teal',
+                label: 'Teal',
+                swatch: foregroundColor('#14b8a6'),
+              },
+              {
+                value: 'gray',
+                label: 'Gray',
+                swatch: foregroundColor('#6b7280'),
+              },
+            ],
+          }),
+      },
+      {
+        id: 'compact-icons',
+        label: 'Compact with icons',
+        height: 40,
+        render: () =>
+          ChoiceChips({
+            name: 'view',
+            label: 'View',
+            value: 'board',
+            size: 'compact',
+            choices: [
+              {
+                value: 'board',
+                label: 'Board',
+                icon: LucideIcon({ icon: Columns3, name: 'columns-3' }),
+              },
+              {
+                value: 'list',
+                label: 'List',
+                icon: LucideIcon({ icon: ListIcon, name: 'list' }),
+              },
             ],
           }),
       },

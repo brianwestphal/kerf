@@ -57,6 +57,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 ## Kerf UI — Controls
 
 - [SegmentedControl](./segmented-control.md) — Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.
+- [ChoiceChips](./choice-chips.md) — Choose one value from a visible set too large for a segmented track, such as a color palette with labeled swatches.
 - [TokenSearchField](./token-search-field.md) — Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.
 - [ResizableRegion](./resize.md) — Pointer and keyboard-operable split region with a customizable handle icon.
 - [Select](./select.md) — Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.

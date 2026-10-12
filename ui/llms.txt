@@ -638,12 +638,20 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `removeAction` and a specific `removeLabel`; the application updates the tag
   list. `itemId` identifies the chip to the action handler. `size="compact"`
   gives a 20px chip and 16px remove button; `disabled` disables removal.
+- **Use `ChoiceChips` for a wrapping exclusive choice.** When one value comes
+  from a visible set too large for a `SegmentedControl` track (a nine-color
+  palette in a 560px dialog), render separate pills backed by native radios:
+  one Tab stop, arrow-key selection, and a real form value under `name`. Name
+  the group with `label` or `labelledBy`, lead choices with a `swatch`
+  (`CssColor`, or `'transparent'` for the struck-through no-color dot) or an
+  `icon`, and handle the delegated `action` on `change`. Never wrap a
+  `SegmentedControl` or button-appearance `wa-radio` set instead.
 
 ## Public exports
 
 `Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `FloatingToolbar`, `ToolbarText`, `Text`,
 `ListItem`, `ListActionRow`, `ListHeader`, `ListInsetControl`,
-`ListInsetText`, `SegmentedControl`,
+`ListInsetText`, `SegmentedControl`, `ChoiceChips`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `wireScrollDividers` (scroll-state dividers for every `Pane`, `NavStack`,

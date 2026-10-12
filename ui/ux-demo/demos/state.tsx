@@ -3,6 +3,9 @@ import { createTokenSearchModel } from '@kerfjs/ui/token-search-model';
 import { signal } from 'kerfjs';
 
 export const regionSize = signal(276);
+export const choiceChipsColor = signal('blue');
+export const choiceChipsDialogColor = signal('transparent');
+export const choiceChipsView = signal('board');
 export const tabBarActive = signal('components');
 /** An application tab; `pending` while its content is still loading. */
 export interface DemoTab {

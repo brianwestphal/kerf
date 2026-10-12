@@ -4,6 +4,7 @@ import { AnchoredSurfaceDemo } from './anchored-surface.js';
 import { ApplicationTabsDemo } from './application-tabs.js';
 import { BadgeDemo, BadgeSettings } from './badge.js';
 import { ChipDemo } from './chip.js';
+import { ChoiceChipsDemo } from './choice-chips.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { ColumnTrackDemo } from './column-track.js';
 import { ComboboxDemo } from './combobox.js';
@@ -71,6 +72,7 @@ export const demos = {
   'toolbar-control-group': ToolbarControlGroupDemo,
   'floating-toolbar': FloatingToolbarDemo,
   'segmented-control': SegmentedControlDemo,
+  'choice-chips': ChoiceChipsDemo,
   'token-search-field': TokenSearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
   text: TextDemo,

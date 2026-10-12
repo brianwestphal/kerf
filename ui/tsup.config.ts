@@ -54,6 +54,7 @@ const entries = [
   'sunken-panel',
   'select',
   'segmented-control',
+  'choice-chips',
   'token-search-field',
   'token-search-model',
   'wire-token-search-fields',

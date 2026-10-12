@@ -432,6 +432,22 @@ icon. The filled track uses the normal neutral text role for readable unselected
 labels in light and dark themes. Use tabs—not a segmented control—when choices switch page regions that
 need `tab`/`tabpanel` semantics.
 
+## ChoiceChips
+
+`ChoiceChips` renders `role="radiogroup"`, named by `label` (`aria-label`) or
+by `labelledBy` (`aria-labelledby`, typically a visible `FieldLabel`). Each
+choice is a native `<input type="radio">` inside its pill `<label>`, so the
+browser owns the interaction: the group is a single Tab stop on the checked
+radio (or the first enabled one when nothing is selected), arrow keys move and
+select, Space selects, and the checked radio submits its value under `name`.
+`required` makes an unselected group fail native form validation, and
+`disabled` (group) or a choice's `disabled` removes it from interaction. The
+radio's accessible name is the visible label; a `swatch` or `icon` is
+`aria-hidden` decoration. The focus ring is drawn on the pill around the
+focused radio, and the checked pill adds a second pixel of border so the
+selection does not rely on hue alone; forced-colors mode paints it with
+`Highlight`.
+
 ## TokenSearchField
 
 Use `presentation="form-field"` when a structured search query sits beside
