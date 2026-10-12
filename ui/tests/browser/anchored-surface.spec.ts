@@ -106,3 +106,42 @@ test('interactive help remains usable inside a Web Awesome dialog', async ({
     await expect(help).toHaveCount(0);
   }
 });
+
+// A wa-dialog that opens while a surface outside it is showing fires its
+// `toggle` inside its shadow root, which never reaches the document. kerf
+// watches open shadow roots too, so the surface is re-shown above the modal
+// instead of staying painted beneath its backdrop.
+test('a surface already showing is re-hosted above a Web Awesome dialog that opens later', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1180, height: 760 });
+  await page.goto('/?component=anchored-surface');
+  await page.getByRole('button', { name: 'Explain this field' }).click();
+  const help = page.locator(surface);
+  await expect(help).toBeVisible();
+  const modal = page.locator('[data-anchored-surface-modal]');
+  await modal.evaluate((dialog: HTMLElement & { open: boolean }) => {
+    dialog.open = true;
+  });
+  await expect(modal).toHaveAttribute('open');
+  // Paint order, in pixels (hit-testing cannot see an inert element): an
+  // opaque backdrop hides anything beneath the modal; a red surface above it
+  // still shows in its own box.
+  const clip = await page.evaluate(() => {
+    const host = document.querySelector('[data-anchored-surface-modal]')!;
+    const style = document.createElement('style');
+    style.textContent = 'dialog::backdrop{background:#fff!important}';
+    host.shadowRoot!.appendChild(style);
+    const el = document.querySelector<HTMLElement>(
+      '[data-component="anchored-surface"]',
+    )!;
+    el.style.background = '#f00';
+    const r = el.getBoundingClientRect();
+    return { x: r.left, y: r.top, width: r.width, height: r.height };
+  });
+  await page.waitForTimeout(400); // let the dialog's show animation settle
+  const shown = await page.screenshot({ clip });
+  await help.evaluate((el: HTMLElement) => (el.style.visibility = 'hidden'));
+  const hidden = await page.screenshot({ clip });
+  expect(shown.equals(hidden)).toBe(false);
+});

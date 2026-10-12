@@ -158,6 +158,8 @@ interface OverlayArbitration {
   handled: WeakSet<Event>;
   /** Document capture listener, installed only while the stack is non-empty. */
   onToggle: (event: Event) => void;
+  /** Open shadow roots carrying `onToggle` too (a shadow `toggle` never reaches the document). */
+  shadowRoots: Set<ShadowRoot>;
 }
 
 type ArbitratedDocument = Document & {
@@ -184,15 +186,65 @@ function overlayArbitration(doc: Document): OverlayArbitration {
       )
         rehostAbove(arbitration, dialog);
     },
+    shadowRoots: new Set(),
   });
+}
+
+// Every open shadow root in `root`, nested ones included (KF-1FGTX1: Web
+// Awesome's `wa-dialog` / `wa-drawer` keep their modal `<dialog>` in one, where
+// neither `querySelectorAll` nor a document `toggle` listener can see it). A
+// closed shadow root is invisible by design. One element walk per `overlay()`
+// open — a user-paced event — so the cost stays off every render path.
+function openShadowRoots(
+  root: Document | ShadowRoot,
+  found: ShadowRoot[] = [],
+): ShadowRoot[] {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+    const shadow = (node as Element).shadowRoot;
+    if (shadow !== null) {
+      found.push(shadow);
+      openShadowRoots(shadow, found);
+    }
+  }
+  return found;
+}
+
+// Install the `toggle` watch on every open shadow root not yet watched, so an
+// app-owned modal `<dialog>` opening inside one re-hosts the surfaces showing.
+function watchShadowRoots(
+  arbitration: OverlayArbitration,
+  roots: readonly ShadowRoot[],
+): void {
+  for (const root of roots)
+    if (!arbitration.shadowRoots.has(root)) {
+      arbitration.shadowRoots.add(root);
+      root.addEventListener('toggle', arbitration.onToggle, true);
+    }
+}
+
+// Is `el` inside `dialog` in the flat tree — the rendered tree, where content
+// slotted into a shadow host renders inside the host's shadow `<dialog>`?
+function renderedInside(el: Element, dialog: Element): boolean {
+  for (let node: Element | null = el; node !== null;) {
+    if (node === dialog) return true;
+    const root = node.getRootNode();
+    node =
+      node.assignedSlot ??
+      node.parentElement ??
+      (root instanceof ShadowRoot ? root.host : null);
+  }
+  return false;
 }
 
 // Every non-modal kerf surface already open is blocked beneath a modal
 // `<dialog>` that just opened: lift (or re-show) it above (KF-FJ9VD8). One
-// inside that dialog is part of its subtree already.
+// rendered inside that dialog — including a slot-hosted one in a shadow
+// host's light DOM — is part of its subtree already.
 function rehostAbove(arbitration: OverlayArbitration, dialog: Element): void {
   for (const { el, liftAbove } of arbitration.stack)
-    if (el !== dialog && el.isConnected && !dialog.contains(el)) liftAbove?.();
+    if (el !== dialog && el.isConnected && !renderedInside(el, dialog))
+      liftAbove?.();
 }
 
 // Is `dialog` an open modal `<dialog>`? kerf's own are known from the stack;
@@ -215,14 +267,18 @@ function isOpenModal(
 
 // Is a modal `<dialog>` open (KF-0V9RTE: a plain surface opened in that state
 // is inert and painted beneath the dialog's top layer)?
+// The open shadow roots count too (KF-1FGTX1: a `wa-dialog`'s modal).
 function modalDialogOpen(
   doc: Document,
   arbitration: OverlayArbitration,
+  shadowRoots: readonly ShadowRoot[],
 ): boolean {
   return (
     arbitration.stack.some(({ el }) => isOpenModal(el, arbitration)) ||
-    Array.from(doc.querySelectorAll('dialog[open]')).some((dialog) =>
-      isOpenModal(dialog, arbitration),
+    [doc, ...shadowRoots].some((root) =>
+      Array.from(root.querySelectorAll('dialog[open]')).some((dialog) =>
+        isOpenModal(dialog, arbitration),
+      ),
     )
   );
 }
@@ -373,10 +429,11 @@ export function overlay(
   // explicit `container` there, including one slotted into a shadow-root
   // modal) is already part of the modal subtree: no lift.
   const containerContext = modalContext(container, arbitration);
+  const shadowRoots = openShadowRoots(document);
   const liftOverModal =
     !native &&
     containerContext === undefined &&
-    modalDialogOpen(document, arbitration);
+    modalDialogOpen(document, arbitration, shadowRoots);
   const topLayer = native || liftOverModal;
   const useDialog = topLayer && trap && supportsDialog();
   const usePopover = topLayer && !trap && supportsPopover();
@@ -447,8 +504,12 @@ export function overlay(
     const { stack } = arbitration;
     const stackIndex = stack.indexOf(surface);
     if (stackIndex !== -1) stack.splice(stackIndex, 1);
-    if (stack.length === 0)
+    if (stack.length === 0) {
       document.removeEventListener('toggle', arbitration.onToggle, true);
+      for (const root of arbitration.shadowRoots)
+        root.removeEventListener('toggle', arbitration.onToggle, true);
+      arbitration.shadowRoots.clear();
+    }
     // A surface opened from inside this one would restore focus into a node
     // that is about to be detached: hand it this surface's own restore target.
     for (const other of stack)
@@ -503,8 +564,11 @@ export function overlay(
       typeof content === 'function' ? content : () => content,
     );
     // Watch for app-owned modal dialogs while any kerf surface is open.
+    // Shadow roots are refreshed on every open; one attached after the latest
+    // open is not watched until the next.
     if (arbitration.stack.push(surface) === 1)
       document.addEventListener('toggle', arbitration.onToggle, true);
+    watchShadowRoots(arbitration, shadowRoots);
 
     // Enter the top layer after the content is mounted + connected.
     // `showModal()` moves focus into the dialog by default; kerf's

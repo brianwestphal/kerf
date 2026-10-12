@@ -211,3 +211,71 @@ test('a plain tooltip already showing is re-hosted above a modal <dialog> the ap
     .toBe(true);
   expect(await paintedAboveModal(page, '.kerf-tooltip')).toBe(true);
 });
+
+// A modal <dialog> inside a shadow root, the way Web Awesome's wa-dialog /
+// wa-drawer are built: neither document.querySelectorAll nor a document
+// `toggle` listener can see it, so kerf scans open shadow roots too.
+async function addShadowModal(page: Page, open: boolean): Promise<void> {
+  await page.evaluate((open) => {
+    const host = document.createElement('div');
+    host.id = 'shadow-modal';
+    document.body.appendChild(host);
+    const root = host.attachShadow({ mode: 'open' });
+    root.innerHTML =
+      '<style>dialog.late-dialog::backdrop{background:#fff}</style>' +
+      '<dialog class="late-dialog">shadow dialog<slot></slot></dialog>';
+    if (open) root.querySelector('dialog')!.showModal();
+  }, open);
+}
+
+test('a plain popover opened outside an open shadow-root modal <dialog> is lifted above it', async ({
+  page,
+}) => {
+  await addShadowModal(page, true);
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.textContent = 'page control';
+    document.body.appendChild(anchor);
+    const { popover } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    popover(anchor, raw('<p>note</p>'), { className: 'shadow-note' });
+  });
+  const note = page.locator('.shadow-note');
+  expect(await note.evaluate((el) => el.matches(':popover-open'))).toBe(true);
+  expect(await paintedAboveModal(page, '.shadow-note')).toBe(true);
+});
+
+test('a plain tooltip already showing is re-hosted above a shadow-root modal <dialog> that opens later', async ({
+  page,
+}) => {
+  await addShadowModal(page, false);
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.id = 'page-anchor';
+    anchor.textContent = 'page control';
+    Object.assign(anchor.style, {
+      position: 'absolute',
+      left: '40px',
+      top: '120px',
+    });
+    document.body.appendChild(anchor);
+    const { tooltip } = (window as any).kerfOverlay;
+    tooltip(anchor, 'Still here', { delay: 0, hideDelay: 10_000 });
+  });
+  await page.locator('#page-anchor').hover();
+  await expect(page.locator('.kerf-tooltip')).toHaveText('Still here');
+  await page.evaluate(() =>
+    document
+      .getElementById('shadow-modal')!
+      .shadowRoot!.querySelector('dialog')!
+      .showModal(),
+  );
+  await expect
+    .poll(() =>
+      page
+        .locator('.kerf-tooltip')
+        .evaluate((el) => el.matches(':popover-open')),
+    )
+    .toBe(true);
+  expect(await paintedAboveModal(page, '.kerf-tooltip')).toBe(true);
+});

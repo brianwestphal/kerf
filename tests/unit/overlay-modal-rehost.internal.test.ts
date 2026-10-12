@@ -14,7 +14,9 @@
  * paint order is pinned in `tests/browser/overlay-modal-promotion.spec.ts`.
  */
 import {
+  afterAll,
   afterEach,
+  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -283,5 +285,144 @@ describe('an app-owned modal <dialog> opened outside kerf', () => {
     // Nothing open: an app dialog opening later reaches no kerf listener.
     openAppDialog();
     expect(calls).toEqual([]);
+  });
+});
+
+describe('a modal <dialog> in a shadow root (Web Awesome wa-dialog / wa-drawer)', () => {
+  // happy-dom assigns slots but has no `Element.assignedSlot`; browsers do.
+  beforeAll(() => {
+    Object.defineProperty(Element.prototype, 'assignedSlot', {
+      configurable: true,
+      get(this: Element) {
+        const slots = this.parentElement?.shadowRoot?.querySelectorAll('slot');
+        return (
+          Array.from(slots ?? []).find((slot) =>
+            slot.assignedElements().includes(this),
+          ) ?? null
+        );
+      },
+    });
+  });
+  afterAll(() => {
+    delete (Element.prototype as { assignedSlot?: unknown }).assignedSlot;
+  });
+
+  function reportModal(dialog: Element): void {
+    const matches = vi
+      .spyOn(Element.prototype, 'matches')
+      .mockImplementation(function (this: Element, selector: string) {
+        return selector === ':modal'
+          ? this === dialog
+          : realMatches.call(this, selector);
+      });
+    disposers.unshift(() => matches.mockRestore());
+  }
+
+  /** A `wa-dialog`-shaped host: modal `<dialog>` in its shadow root, light DOM slotted in. */
+  function shadowDialog(light = '', parent: ParentNode = document.body) {
+    const host = document.createElement('div');
+    host.innerHTML = light;
+    parent.appendChild(host);
+    const root = host.attachShadow({ mode: 'open' });
+    root.innerHTML = '<dialog><slot></slot></dialog>';
+    const inner = root.querySelector('dialog') as HTMLDialogElement;
+    disposers.push(() => {
+      if (inner.open) inner.close();
+    });
+    const open = (): void => {
+      inner.showModal();
+      reportModal(inner);
+      inner.dispatchEvent(new Event('toggle')); // not composed: stays in the shadow root
+    };
+    return { host, root, inner, open };
+  }
+
+  it('a surface opened outside it while it is open is lifted into the top layer', () => {
+    stubPopoverApi();
+    shadowDialog().open();
+    const pop = popover(button('outside'), raw('<p>note</p>'), {
+      className: 'note',
+    });
+    disposers.unshift(() => pop.close());
+    expect(pop.el.getAttribute('popover')).toBe('manual');
+    expect(calls).toEqual(['show:note']);
+    expect(warn).not.toHaveBeenCalled(); // no controls to leave inert
+  });
+
+  it('finds one nested inside another shadow root', () => {
+    stubPopoverApi();
+    const outer = document.createElement('div');
+    document.body.appendChild(outer);
+    shadowDialog('', outer.attachShadow({ mode: 'open' })).open();
+    const pop = popover(button('outside'), raw('<p>note</p>'));
+    disposers.unshift(() => pop.close());
+    expect(pop.el.getAttribute('popover')).toBe('manual');
+  });
+
+  it('re-hosts a tooltip already showing when it opens later (toggle in the shadow root)', () => {
+    stubPopoverApi();
+    const dialog = shadowDialog();
+    const tip = showTooltip(button('anchor'));
+    expect(tip.hasAttribute('popover')).toBe(false);
+    dialog.open();
+    expect(tip.getAttribute('popover')).toBe('manual');
+    expect(calls).toEqual(['show:kerf-tooltip']);
+  });
+
+  it('leaves a surface hosted inside it (its light-DOM slot) where it is', () => {
+    stubPopoverApi();
+    const dialog = shadowDialog('<button id="inside">i</button>');
+    const tip = showTooltip(button('anchor'));
+    dialog.inner.showModal();
+    reportModal(dialog.inner);
+    const pop = popover(
+      document.getElementById('inside')!,
+      raw('<button>x</button>'),
+      { className: 'in-slot' },
+    );
+    disposers.unshift(() => pop.close());
+    expect(pop.el.parentElement!.parentElement).toBe(dialog.host);
+    // The real `toggle` is queued after `showModal()`: it arrives now.
+    dialog.inner.dispatchEvent(new Event('toggle'));
+    expect(pop.el.hasAttribute('popover')).toBe(false);
+    expect(tip.getAttribute('popover')).toBe('manual');
+    expect(calls).toEqual(['show:kerf-tooltip']);
+  });
+
+  it('re-hosts a surface whose container sits in a component shadow tree', () => {
+    stubPopoverApi();
+    const dialog = shadowDialog();
+    const widget = document.createElement('div');
+    document.body.appendChild(widget);
+    const box = document.createElement('div');
+    widget.attachShadow({ mode: 'open' }).appendChild(box);
+    const pop = popover(button('anchor'), raw('<p>x</p>'), {
+      container: box,
+      className: 'in-widget',
+    });
+    disposers.unshift(() => pop.close());
+    dialog.open();
+    expect(pop.el.getAttribute('popover')).toBe('manual');
+    expect(calls).toEqual(['show:in-widget']);
+  });
+
+  it('watches shadow roots only while a kerf surface is open, refreshed on each open', () => {
+    stubPopoverApi();
+    const early = shadowDialog();
+    const add = vi.spyOn(early.root, 'addEventListener');
+    const remove = vi.spyOn(early.root, 'removeEventListener');
+    const toggles = (spy: typeof add) =>
+      spy.mock.calls.filter(([type]) => type === 'toggle');
+    const a = popover(button('a'), raw('<p>a</p>'), { className: 'a' });
+    const late = shadowDialog(); // attached after that open: not yet watched
+    const tip = showTooltip(button('anchor')); // this open picks it up
+    const hideTip = disposers.pop()!;
+    a.close();
+    expect(toggles(remove)).toHaveLength(0); // the tooltip is still open
+    late.open();
+    expect(tip.getAttribute('popover')).toBe('manual');
+    hideTip();
+    expect(toggles(add)).toHaveLength(1); // watched once across both opens
+    expect(toggles(remove)).toHaveLength(1);
   });
 });

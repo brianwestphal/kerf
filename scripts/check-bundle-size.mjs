@@ -189,7 +189,9 @@ const BUDGETS = [
     // KF-F52T5D (+0.1 KB): shadow-boundary-aware modal context (a slotted
     // anchor in a wa-dialog / wa-drawer is hosted inside the shadow dialog)
     // and closing a surface with the modal dialog it sits in.
-    budgetKb: 21.2,
+    // KF-1FGTX1 (+0.12 KB): open-shadow-root scan so a wa-dialog's shadow
+    // modal counts for the lift and re-host (with per-root toggle watching).
+    budgetKb: 21.35,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

@@ -246,6 +246,22 @@ data-morph-skip></div>` anywhere inside the dialog (both attributes are
   stay beneath such a dialog there; open the dialog through `overlay()` (or
   close the surface first). Chromium, Firefox, and WebKit as run by the test
   suite all fire it.
+- **Modal dialogs in shadow roots are seen too (KF-1FGTX1).** Web Awesome's
+  `wa-dialog` / `wa-drawer` keep their modal `<dialog>` in a shadow root, where
+  `document.querySelectorAll('dialog[open]')` cannot find it and its `toggle`
+  (not composed) never reaches the document. On every `overlay()` open, kerf
+  walks the document's elements for open shadow roots (nested ones included).
+  The "is a modal open" check behind the lift also looks for `dialog[open]` in
+  each of them, so a surface opened outside an open `wa-dialog` is lifted
+  above it. The `toggle` capture listener is installed on each of those roots
+  as well, under the same lifetime as the document listener, so a `wa-dialog`
+  that opens while surfaces are showing re-hosts them. Containment for the
+  re-host is flat-tree containment (through `assignedSlot`), so a surface
+  hosted in the `wa-dialog`'s light-DOM slot stays where it is. **Cost:** one
+  element walk per `overlay()` open (tooltips included), a user-paced event,
+  never a render path. **Gaps:** a closed shadow root is invisible, and a
+  shadow root attached after the latest `overlay()` open is not watched for
+  `toggle` until the next open (the lift-on-open check always sees it).
 - **Unchanged everywhere:** the promise API (`{ el, close, result }`), the `render`
   slots, `validate`, Enter-to-submit, `initialFocus`, `outsideIgnore`, and
   focus-restore. kerf's manual focus-restore stays in place — redundant with

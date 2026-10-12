@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 357000,
-  "measuredLargestJavaScriptGzip": 139888,
-  "measuredTotalJavaScriptGzip": 356911,
+  "totalJavaScriptGzip": 357100,
+  "measuredLargestJavaScriptGzip": 140046,
+  "measuredTotalJavaScriptGzip": 357057,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3859,6 +3859,22 @@
         "measuredTotalJavaScriptGzip": 356911,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 357000
+      }
+    },
+    {
+      "at": "2026-10-12T23:42:40.961Z",
+      "reason": "shadow-root modal overlay lift (KF-1FGTX1) on top of the batch",
+      "old": {
+        "measuredLargestJavaScriptGzip": 139888,
+        "measuredTotalJavaScriptGzip": 356911,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 140046,
+        "measuredTotalJavaScriptGzip": 357057,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357100
       }
     }
   ]
