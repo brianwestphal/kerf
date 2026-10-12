@@ -384,6 +384,12 @@ close button, light dismiss, or Escape. Call `wireCornerStatus` once; it opens
 each host as renders insert it, and the application removes the host when the
 work ends.
 
+A modal dialog opened while the status shows stacks above it, as it does over a
+toast. Raising the status back above the modal would only paint it there: a
+modal makes everything outside its own subtree inert, so the status could not
+be reached or announced either way. When the dialog's task depends on that
+progress, show it inside the dialog.
+
 For a compact `Select`, set `triggerWidth` to `"fit-content"`, `"max-content"`,
 or `"fill"` and cap it with `--kui-select-trigger-max-width` when needed.
 For a round icon-only toolbar trigger, set `selectedPresentation="icon-only"`

@@ -260,7 +260,9 @@ slot without mixing authoring rules into the per-entry component catalog.
   as part of the banner, and its tone must not be the only conveyed meaning.
 - `CornerStatus` adds no role; its composed `StateBanner` is the polite live
   region. Opening it (`wireCornerStatus`) never moves focus, and it has no close
-  button, light dismiss, or Escape to compete with dialogs.
+  button, light dismiss, or Escape to compete with dialogs. A modal opened
+  while it shows stacks above it and makes it inert (unannounced), so progress
+  a dialog's task depends on belongs inside that dialog.
 - Panel, dialog, and page headings use a plain top `Toolbar`: an optional icon
   group and a direct extra-large `ToolbarText` in the leading zone, grouped
   controls in the trailing zone, and optional app-owned supporting copy below.

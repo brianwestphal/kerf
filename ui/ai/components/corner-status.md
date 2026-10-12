@@ -8,7 +8,7 @@ Non-dismissible app-level status pinned to a viewport corner in the top layer, h
 
 ## When to use
 
-Show ongoing app-level progress such as "Loading…" or "Updating tickets… 3 of 12" in a viewport corner above page chrome and dialogs opened before it, without a close button, light dismiss, Escape, or focus change.
+Show ongoing app-level progress such as "Loading…" or "Updating tickets… 3 of 12" in a viewport corner above page chrome and any dialog opened before it, without a close button, light dismiss, Escape, or focus change.
 
 - Show ongoing app-level progress or status that has no better home beside the affected work and must stay visible until the work ends.
 
@@ -67,6 +67,7 @@ Margin: none · border: child · padding: child (layout role: feedback). `self` 
 
 - The host adds no role; the composed StateBanner with urgency="status" is the polite live region.
 - Opening never moves focus, and there is no close button, light dismiss, or Escape handling to compete with dialogs.
+- A modal dialog opened while it shows stacks above it and makes it inert (unannounced); show progress the dialog's task depends on inside the dialog.
 
 ## Styling boundary
 
