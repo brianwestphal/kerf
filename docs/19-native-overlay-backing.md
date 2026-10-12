@@ -173,6 +173,30 @@ data-morph-skip></div>` anywhere inside the dialog (both attributes are
     `container` explicitly. An element marked without `data-morph-skip` is not
     a slot. A slot inside a nested `<dialog>` belongs to that dialog, not the
     outer one.
+  - **A modal `<dialog>` in a shadow root counts too (KF-F52T5D).** Web
+    Awesome's `wa-dialog` / `wa-drawer` keep their modal `<dialog>` in their
+    shadow root and slot the app's light-DOM content into it, so
+    `closest('dialog')` from that content finds nothing — the surface used to
+    land in `document.body`, painted but inert. kerf resolves the modal
+    context by walking the light-DOM ancestors (continuing from a shadow tree
+    to its host): the nearest `<dialog>` decides, and so does a shadow host
+    whose slot for the walked-from child sits inside a `<dialog>` in its
+    shadow root. Only an open modal dialog is a context. The slot for a
+    shadow-hosted modal is created on demand in the host's light DOM (the
+    same `display:contents` + `data-morph-skip` + `data-morph-preserve`
+    element), where the host slots it inside the dialog; an app could not put
+    one inside the shadow root itself. An explicit `container` in that light
+    DOM likewise counts as inside the modal (never lifted). Content slotted
+    outside the shadow dialog is not in it.
+  - **A surface inside a modal context closes with its dialog.** Whether it
+    reached the dialog through its host slot or an explicit `container`, the
+    surface listens for the dialog's `close` event and closes (no
+    `onDismiss`), because closing an app-owned or shadow-hosted dialog
+    removes nothing and a shadow dialog's `close` never reaches a light-DOM
+    listener. Escape still closes an Escape-dismissible surface first:
+    kerf's capture-phase document `keydown` handler stops propagation and
+    `preventDefault`s the key, so neither the native `cancel` nor Web
+    Awesome's bubble-phase document `keydown` listener sees it.
   - **The slot is the one sanctioned nested-mount boundary.** The dialog is
     usually already a `mount()` root (kerf's own dialog mounts its content
     into the `<dialog>` itself), and kerf allows one mount per tree. The slot

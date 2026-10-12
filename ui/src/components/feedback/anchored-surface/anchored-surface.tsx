@@ -11,17 +11,46 @@ export interface AnchoredSurfaceOptions extends Pick<
   | 'initialFocus'
   | 'onDismiss'
   | 'outsideIgnore'
+  | 'container'
 > {
   /** Accessible name for the non-modal dialog. */
   label: string;
+  /**
+   * Where to append the surface. Default: inside the anchor's open modal
+   * dialog — a native `<dialog>`'s host slot, or a slot kerf creates in a
+   * `wa-dialog` / `wa-drawer` — so the surface stays interactive there;
+   * otherwise `document.body`. Pass an element only for a modal context kerf
+   * cannot resolve; an element inside an open modal closes the surface with it.
+   */
+  container?: Element;
 }
 
 /** A viewport pointer location; `context` is the element under the pointer. */
 export interface AnchoredSurfacePoint {
   x: number;
   y: number;
-  /** Pass the event target when opening from inside a modal dialog. */
+  /**
+   * Pass the event target when opening from inside a modal dialog, native or
+   * Web Awesome (`wa-dialog`, `wa-drawer`).
+   */
   context?: Element;
+}
+
+// The element a temporary pointer anchor joins so the overlay core resolves
+// the same modal context as `context`: the nearest `<dialog>`, or a shadow host
+// (`wa-dialog`, `wa-drawer`) whose slot renders `context` inside a `<dialog>`
+// in its shadow root. Light-DOM children of that host are slotted inside it.
+function modalScope(context: Element | undefined): Element {
+  let child: Element | undefined;
+  for (let node = context ?? null; node !== null;) {
+    if (node.localName === 'dialog') return node;
+    if (child?.assignedSlot?.closest('dialog')) return node;
+    child = node;
+    const root = node.getRootNode();
+    node =
+      node.parentElement ?? (root instanceof ShadowRoot ? root.host : null);
+  }
+  return document.body;
 }
 
 /**
@@ -88,7 +117,7 @@ export function openAnchoredSurfaceAt(
   anchor.getBoundingClientRect = () => new DOMRect(x, y, 0, 0);
   // Only modal membership matters for host selection. Keep the temporary node
   // out of the event target itself (which may be an input or a custom element).
-  (context?.closest('dialog') ?? document.body).append(anchor);
+  modalScope(context).append(anchor);
   try {
     const handle = openAnchoredSurface(anchor, content, options);
     void handle.result.then(() => anchor.remove());

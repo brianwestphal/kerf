@@ -4203,15 +4203,26 @@ export { Combobox, type ComboboxProps, type ComboboxSuggestion };
 import { PopoverOptions, OverlayContent, OverlayHandle } from 'kerfjs/overlay';
 
 /** App-facing options for a non-modal, arbitrary-content help surface. */
-interface AnchoredSurfaceOptions extends Pick<PopoverOptions, 'placement' | 'align' | 'gap' | 'dismiss' | 'initialFocus' | 'onDismiss' | 'outsideIgnore'> {
+interface AnchoredSurfaceOptions extends Pick<PopoverOptions, 'placement' | 'align' | 'gap' | 'dismiss' | 'initialFocus' | 'onDismiss' | 'outsideIgnore' | 'container'> {
     /** Accessible name for the non-modal dialog. */
     label: string;
+    /**
+     * Where to append the surface. Default: inside the anchor's open modal
+     * dialog — a native `<dialog>`'s host slot, or a slot kerf creates in a
+     * `wa-dialog` / `wa-drawer` — so the surface stays interactive there;
+     * otherwise `document.body`. Pass an element only for a modal context kerf
+     * cannot resolve; an element inside an open modal closes the surface with it.
+     */
+    container?: Element;
 }
 /** A viewport pointer location; `context` is the element under the pointer. */
 interface AnchoredSurfacePoint {
     x: number;
     y: number;
-    /** Pass the event target when opening from inside a modal dialog. */
+    /**
+     * Pass the event target when opening from inside a modal dialog, native or
+     * Web Awesome (`wa-dialog`, `wa-drawer`).
+     */
     context?: Element;
 }
 /**

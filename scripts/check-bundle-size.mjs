@@ -186,7 +186,10 @@ const BUDGETS = [
     // values that need escaping) in the shared jsx runtime.
     // KF-HA8R27 (+2.1 KB): the change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
-    budgetKb: 21.1,
+    // KF-F52T5D (+0.1 KB): shadow-boundary-aware modal context (a slotted
+    // anchor in a wa-dialog / wa-drawer is hosted inside the shadow dialog)
+    // and closing a surface with the modal dialog it sits in.
+    budgetKb: 21.2,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

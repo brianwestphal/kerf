@@ -51,35 +51,58 @@ test('pointer location clamps into a narrow viewport and dismisses outside', asy
   await expect(help).toHaveCount(0);
 });
 
-test('interactive help remains usable inside a modal dialog', async ({
+// wa-dialog keeps its modal <dialog> in a shadow root, so the slotted trigger
+// has no `dialog` ancestor. The surface must still join the modal's flat tree:
+// a surface left in document.body is painted but inert (no focus, no input).
+test('interactive help remains usable inside a Web Awesome dialog', async ({
   page,
 }, testInfo) => {
-  await page.setViewportSize({ width: 390, height: 760 });
-  await page.goto('/?component=anchored-surface');
-  await page.getByRole('button', { name: 'Open dialog' }).click();
-  const modal = page.locator('[data-anchored-surface-modal]');
-  await expect(modal).toBeVisible();
-  await modal.getByRole('button', { name: 'Explain in dialog' }).click();
-  const help = page.locator(surface);
-  await expect(help).toBeVisible();
-  expect(
-    await help.evaluate((element) =>
-      Boolean(element.closest('[data-kerf-overlay-host]')),
-    ),
-  ).toBe(true);
-  await page.screenshot({
-    path: `test-results/anchored-surface-modal-narrow-${testInfo.project.name}.png`,
-    fullPage: true,
-  });
-  await help.getByRole('button', { name: 'Got it' }).click();
-  await expect(help).toHaveCount(0);
-  await expect(modal).toBeVisible();
-  await modal.getByRole('button', { name: 'Explain in dialog' }).click();
-  await expect(help).toBeVisible();
-  await modal.evaluate((dialog: HTMLDialogElement) => dialog.close());
-  await expect(help).toHaveCount(0);
-  await expect(modal).not.toBeVisible();
-  await page.getByRole('button', { name: 'Open dialog' }).click();
-  await modal.getByRole('button', { name: 'Close dialog' }).click();
-  await expect(modal).not.toBeVisible();
+  for (const width of [1180, 390]) {
+    await page.setViewportSize({ width, height: 760 });
+    await page.goto('/?component=anchored-surface');
+    await page.getByRole('button', { name: 'Open dialog' }).click();
+    const modal = page.locator('[data-anchored-surface-modal]');
+    await expect(modal).toHaveAttribute('open');
+    const explain = modal.getByRole('button', { name: 'Explain in dialog' });
+    await explain.click();
+    const help = page.locator(surface);
+    await expect(help).toBeVisible();
+    expect(
+      await help.evaluate((element) => ({
+        hosted: element.closest('[data-kerf-overlay-host]')?.parentElement
+          ?.localName,
+        lightDomOfDialog: Boolean(
+          element.closest('[data-anchored-surface-modal]'),
+        ),
+      })),
+    ).toEqual({ hosted: 'wa-dialog', lightDomOfDialog: true });
+    const gotIt = help.getByRole('button', { name: 'Got it' });
+    await expect(gotIt).toBeFocused(); // inert content cannot take focus
+    await page.screenshot({
+      path: `test-results/anchored-surface-wa-dialog-${width}-${testInfo.project.name}.png`,
+    });
+
+    // Escape dismisses only the surface; the dialog beneath stays open.
+    await page.keyboard.press('Escape');
+    await expect(help).toHaveCount(0);
+    await expect(explain).toBeFocused();
+    await expect(modal).toHaveAttribute('open');
+    await page.waitForTimeout(300); // a stray close request would animate out
+    await expect(modal).toHaveAttribute('open');
+
+    // Pointer input reaches the surface: its action closes it.
+    await explain.click();
+    await gotIt.click();
+    await expect(help).toHaveCount(0);
+    await expect(modal).toHaveAttribute('open');
+
+    // Closing the dialog takes an open surface with it.
+    await explain.click();
+    await expect(help).toBeVisible();
+    await modal
+      .locator('[data-dialog="close"]')
+      .evaluate((button: HTMLElement) => button.click());
+    await expect(modal).not.toHaveAttribute('open');
+    await expect(help).toHaveCount(0);
+  }
 });

@@ -33,7 +33,12 @@ export type OverlayContent = SafeHtml | (() => MountResult);
 
 /** Options for {@link overlay}. */
 export interface OverlayOptions {
-  /** Where to append the overlay wrapper. Default `document.body`. */
+  /**
+   * Where to append the overlay wrapper. Default `document.body`. A container
+   * inside an open modal `<dialog>` (including one slotted into a shadow-root
+   * modal such as Web Awesome's `wa-dialog`) is already interactive, so the
+   * surface is not lifted, and it closes when that dialog closes.
+   */
   container?: Element;
   /** Class on the wrapper element (you style it — kerf ships no CSS). Default `'kerf-overlay'`. */
   className?: string;
@@ -222,29 +227,70 @@ function modalDialogOpen(
   );
 }
 
+// The modal context `el` renders in, resolved across shadow boundaries
+// (KF-F52T5D: Web Awesome's `wa-dialog` / `wa-drawer` keep their modal
+// `<dialog>` in a shadow root, so `closest('dialog')` from slotted light-DOM
+// content found nothing and the surface landed, inert, in `document.body`).
+// Walks the light-DOM ancestors, continuing from a shadow tree to its host.
+// The nearest `<dialog>` decides, as before; so does a shadow host whose slot
+// for the walked-from child sits inside a `<dialog>` in its shadow root. Only
+// an OPEN MODAL dialog yields a context: `dialog` is that element, `root` the
+// light-DOM element a host slot belongs in — the dialog itself, or the shadow
+// host (content appended to it is slotted into the dialog).
+interface ModalContext {
+  dialog: Element;
+  root: Element;
+}
+function modalContext(
+  el: Element,
+  arbitration: OverlayArbitration,
+): ModalContext | undefined {
+  let child: Element | undefined;
+  for (let node: Element | null = el; node !== null;) {
+    const dialog =
+      node.localName === 'dialog'
+        ? node
+        : child?.assignedSlot?.closest('dialog');
+    if (dialog != null)
+      return isOpenModal(dialog, arbitration)
+        ? { dialog, root: node }
+        : undefined;
+    child = node;
+    const root = node.getRootNode();
+    node =
+      node.parentElement ?? (root instanceof ShadowRoot ? root.host : null);
+  }
+  return undefined;
+}
+
 // The in-dialog host slot (KF-FBHQEP: a surface lifted over a modal
 // `<dialog>` is visible but inert, because every engine inerts content outside
-// the modal). A `popover()` / `tooltip()` whose anchor sits inside an open
-// modal `<dialog>` renders into that dialog's `[data-kerf-overlay-host]`
-// element instead, so it is part of the modal subtree and fully interactive.
-// An app-owned dialog opts in by marking an element; a dialog kerf opened
-// itself gets one on demand — `display: contents` so it adds no layout box,
-// and `data-morph-skip` + `data-morph-preserve` so the dialog content's own
-// `mount()` neither re-renders nor removes it (`utils/overlay-host.ts` makes
-// the slot a nested-mount boundary).
+// the modal). A `popover()` / `tooltip()` whose anchor renders inside an open
+// modal `<dialog>` (see `modalContext`) renders into that context's
+// `[data-kerf-overlay-host]` element instead, so it is part of the modal
+// subtree and fully interactive. An app-owned native dialog opts in by marking
+// an element; a dialog kerf opened itself, and a shadow-hosted modal (whose
+// author cannot reach inside the shadow root), get one on demand —
+// `display: contents` so it adds no layout box, and `data-morph-skip` +
+// `data-morph-preserve` so the content's own `mount()` neither re-renders nor
+// removes it (`utils/overlay-host.ts` makes the slot a nested-mount boundary).
 export function overlayHost(anchor: Element): Element | undefined {
   const arbitration = overlayArbitration(document);
-  const dialog = anchor.closest('dialog');
-  if (dialog === null || !isOpenModal(dialog, arbitration)) return undefined;
-  let host = Array.from(dialog.querySelectorAll(OVERLAY_HOST_SELECTOR)).find(
-    (el) => el.closest('dialog') === dialog,
+  const context = modalContext(anchor, arbitration);
+  if (context === undefined) return undefined;
+  const { dialog, root } = context;
+  let host = Array.from(root.querySelectorAll(OVERLAY_HOST_SELECTOR)).find(
+    (el) => modalContext(el, arbitration)?.root === root,
   );
-  if (host === undefined && arbitration.stack.some(({ el }) => el === dialog)) {
-    dialog.insertAdjacentHTML(
+  if (
+    host === undefined &&
+    (root !== dialog || arbitration.stack.some(({ el }) => el === dialog))
+  ) {
+    root.insertAdjacentHTML(
       'beforeend',
       '<div data-kerf-overlay-host data-morph-skip data-morph-preserve style="display:contents"></div>',
     );
-    host = dialog.lastElementChild as Element;
+    host = root.lastElementChild as Element;
   }
   return host;
 }
@@ -324,11 +370,12 @@ export function overlay(
   // `<div>` would be inert and painted beneath the dialog.
   const arbitration = overlayArbitration(document);
   // A surface placed inside an open modal `<dialog>` (its host slot, or an
-  // explicit `container` there) is already part of the modal subtree: no lift.
-  const containerDialog = container.closest('dialog');
+  // explicit `container` there, including one slotted into a shadow-root
+  // modal) is already part of the modal subtree: no lift.
+  const containerContext = modalContext(container, arbitration);
   const liftOverModal =
     !native &&
-    !(containerDialog !== null && isOpenModal(containerDialog, arbitration)) &&
+    containerContext === undefined &&
     modalDialogOpen(document, arbitration);
   const topLayer = native || liftOverModal;
   const useDialog = topLayer && trap && supportsDialog();
@@ -483,6 +530,16 @@ export function overlay(
       // never fires. Watch the wrapper itself: close as cleanup (no
       // `onDismiss`) and leave the open-order stack.
       removers.push(attach(wrapper, () => close));
+    }
+    // KF-F52T5D: a surface inside a modal context leaves when that dialog
+    // closes, as cleanup (no `onDismiss`). Closing an app-owned or
+    // shadow-hosted dialog removes nothing, and a shadow dialog's `close`
+    // never reaches a light-DOM listener, so a caller could not watch it.
+    if (containerContext !== undefined) {
+      const { dialog } = containerContext;
+      const onDialogClose = (): void => close();
+      dialog.addEventListener('close', onDialogClose);
+      removers.push(() => dialog.removeEventListener('close', onDialogClose));
     }
     applyInitialFocus();
   } catch (error) {

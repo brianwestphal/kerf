@@ -36,13 +36,21 @@ openAnchoredSurfaceAt(
 );
 ```
 
-Pass `context` for a pointer opened inside a modal `<dialog>`. For app-owned
-dialogs, include `<div data-kerf-overlay-host data-morph-skip></div>` in the
-dialog markup so controls in the anchored surface stay interactive. Dialogs
-opened by `kerfjs/overlay` get that host automatically. The helper uses the
-browser top layer where available, and the shared overlay fallback elsewhere.
-Closing an anchor's modal dialog also closes the surface. The temporary pointer
-anchor is removed when the surface closes.
+Pass `context` for a pointer opened inside a modal dialog. Inside a Web
+Awesome `wa-dialog` or `wa-drawer`, the surface stays interactive with no extra
+markup: `kerfjs/overlay` finds the modal `<dialog>` in the element's shadow
+root and hosts the surface in the element's light DOM, slotted inside the
+dialog. Dialogs opened by `kerfjs/overlay` get a host automatically too. For an
+app-owned native `<dialog>`, include
+`<div data-kerf-overlay-host data-morph-skip></div>` in the dialog markup so
+controls in the anchored surface stay interactive. For any other modal context,
+pass `container`: an element inside the open modal, where the surface is
+appended instead. The helper uses the browser top layer where available, and
+the shared overlay fallback elsewhere.
+
+Closing the anchor's modal dialog also closes the surface. Escape closes only
+the surface; the dialog beneath stays open. The temporary pointer anchor is
+removed when the surface closes.
 
 Override `--kui-anchored-surface-inset` and
 `--kui-anchored-surface-radius` for a theme; content can compose any Kerf UI

@@ -1,5 +1,13 @@
 import { type OverlayContent, popover } from 'kerfjs/overlay';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import {
   openAnchoredSurface,
@@ -103,6 +111,87 @@ describe('anchored surface contract', () => {
     handle.close();
     await handle.result;
     expect(context.querySelector('span')).toBeNull();
+  });
+
+  it('forwards an explicit container to the overlay core', () => {
+    const anchor = document.createElement('button');
+    const container = document.createElement('div');
+    mockedPopover.mockReturnValue(surface());
+    openAnchoredSurface(anchor, content, { label: 'Help', container });
+    expect(mockedPopover).toHaveBeenCalledWith(
+      anchor,
+      content,
+      expect.objectContaining({ container }),
+    );
+  });
+
+  describe('a pointer context inside a shadow-root modal (wa-dialog / wa-drawer)', () => {
+    // happy-dom assigns slots but has no `Element.assignedSlot`; browsers do.
+    beforeAll(() => {
+      Object.defineProperty(Element.prototype, 'assignedSlot', {
+        configurable: true,
+        get(this: Element) {
+          const slots =
+            this.parentElement?.shadowRoot?.querySelectorAll('slot') ?? [];
+          return (
+            Array.from(slots).find((slot) =>
+              slot.assignedElements().includes(this),
+            ) ?? null
+          );
+        },
+      });
+    });
+    afterAll(() => {
+      delete (Element.prototype as { assignedSlot?: unknown }).assignedSlot;
+    });
+
+    function shadowModal(light: string): HTMLElement {
+      const host = document.createElement('div');
+      host.innerHTML = light;
+      document.body.append(host);
+      host.attachShadow({ mode: 'open' }).innerHTML =
+        '<slot name="outside"></slot><dialog><slot></slot></dialog>';
+      return host;
+    }
+
+    it('joins the shadow host light DOM, so the anchor is slotted into the dialog', () => {
+      const host = shadowModal('<p><input id="field"></p>');
+      mockedPopover.mockReturnValue(surface());
+      openAnchoredSurfaceAt(
+        { x: 1, y: 2, context: host.querySelector('#field')! },
+        content,
+        { label: 'Help' },
+      );
+      const anchor = mockedPopover.mock.calls[0][0];
+      expect(anchor.parentElement).toBe(host);
+    });
+
+    it('content slotted outside the shadow dialog stays in the body', () => {
+      const host = shadowModal('<button slot="outside">x</button>');
+      mockedPopover.mockReturnValue(surface());
+      openAnchoredSurfaceAt(
+        { x: 1, y: 2, context: host.querySelector('button')! },
+        content,
+        { label: 'Help' },
+      );
+      expect(mockedPopover.mock.calls[0][0].parentElement).toBe(document.body);
+    });
+
+    it('a target inside a component shadow tree resolves through its host', () => {
+      const dialog = document.createElement('dialog');
+      const widget = document.createElement('div');
+      dialog.append(widget);
+      document.body.append(dialog);
+      const shadow = widget.attachShadow({ mode: 'open' });
+      shadow.innerHTML = '<button>inner</button>';
+      mockedPopover.mockReturnValue(surface());
+      openAnchoredSurfaceAt(
+        { x: 1, y: 2, context: shadow.querySelector('button')! },
+        content,
+        { label: 'Help' },
+      );
+      expect(mockedPopover.mock.calls[0][0].parentElement).toBe(dialog);
+    });
   });
 
   it('closes when the owning modal closes and drops its listener after dismissal', async () => {

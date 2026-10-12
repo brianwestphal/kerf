@@ -25,16 +25,15 @@ export function AnchoredSurfaceDemo() {
         <button type="button" data-anchored-surface-open-modal>
           Open dialog
         </button>
-        <dialog data-anchored-surface-modal>
+        <wa-dialog data-anchored-surface-modal label="Field settings">
           <Text>Dialog content can open interactive anchored help.</Text>
           <button type="button" data-anchored-surface-trigger="modal">
             Explain in dialog
           </button>
-          <button type="button" data-anchored-surface-close-modal>
+          <button type="button" slot="footer" data-dialog="close">
             Close dialog
           </button>
-          <div data-kerf-overlay-host data-morph-skip />
-        </dialog>
+        </wa-dialog>
       </CatalogExample>
     </CatalogExampleStack>
   );

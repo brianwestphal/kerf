@@ -221,8 +221,10 @@ menu's keyboard navigation moves among actionable items.
 For arbitrary interactive help or popup content, call `openAnchoredSurface`
 from `@kerfjs/ui/anchored-surface` with an element, content, and a `label`.
 Use `openAnchoredSurfaceAt` with pointer coordinates and the event target as
-`context` when opening inside a modal dialog. The handle's `close()` ends the
-surface; the app owns its content and actions. Import its CSS or `styles.css`.
+`context` when opening inside a modal dialog. Inside a native `<dialog>`, a
+`wa-dialog`, or a `wa-drawer`, the surface stays interactive and closes with
+the dialog; pass `container` only for a modal context kerf cannot resolve.
+The handle's `close()` ends the surface; the app owns its content and actions. Import its CSS or `styles.css`.
 See `ui/docs/anchored-surface.md` for focus, dismissal, and dialog host details.
 
 Use `Chip` for a removable tag. Pass `removeAction` and a specific

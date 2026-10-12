@@ -12,7 +12,9 @@
  * `tests/browser/overlay-modal-host.spec.ts`.
  */
 import {
+  afterAll,
   afterEach,
+  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -424,5 +426,133 @@ describe('an app-owned modal <dialog>', () => {
     cleanups.unshift(() => pop.close());
     expect(pop.el.parentElement).toBe(document.body);
     expect(dialog.querySelector(HOST)!.childElementCount).toBe(0);
+  });
+});
+
+describe('a modal <dialog> inside a shadow root (Web Awesome wa-dialog / wa-drawer)', () => {
+  /**
+   * A shadow host whose modal `<dialog>` lives in its shadow root, with the
+   * light-DOM content slotted into it, the way `wa-dialog` is built.
+   * `closest('dialog')` from that content finds nothing (KF-F52T5D).
+   */
+  function openShadowDialog(light: string, { open = true } = {}) {
+    const host = document.createElement('div');
+    host.innerHTML = light;
+    document.body.appendChild(host);
+    const root = host.attachShadow({ mode: 'open' });
+    root.innerHTML =
+      '<slot name="outside"></slot><dialog><slot></slot><slot name="footer"></slot></dialog>';
+    const inner = root.querySelector('dialog') as HTMLDialogElement;
+    if (open) inner.showModal();
+    const matches = reportModal(open ? inner : document.body);
+    cleanups.push(() => {
+      matches.mockRestore();
+      if (inner.open) inner.close();
+    });
+    return { host, inner };
+  }
+
+  // happy-dom assigns slots (`assignedElements()`) but has no
+  // `Element.assignedSlot`; every browser does. Derive it from the slots.
+  beforeAll(() => {
+    Object.defineProperty(Element.prototype, 'assignedSlot', {
+      configurable: true,
+      get(this: Element) {
+        const slots = this.parentElement?.shadowRoot?.querySelectorAll('slot');
+        return (
+          Array.from(slots ?? []).find((slot) =>
+            slot.assignedElements().includes(this),
+          ) ?? null
+        );
+      },
+    });
+  });
+  afterAll(() => {
+    delete (Element.prototype as { assignedSlot?: unknown }).assignedSlot;
+  });
+
+  it('hosts the popover in an on-demand slot in the host light DOM, slotted into the dialog', () => {
+    const { host } = openShadowDialog('<button id="anchor">a</button>');
+    const pop = popover(byId('anchor'), raw('<input id="field">'));
+    cleanups.unshift(() => pop.close());
+    const slot = host.querySelector(HOST) as HTMLElement;
+    expect(slot.parentElement).toBe(host);
+    expect(slot.hasAttribute('data-morph-skip')).toBe(true);
+    expect(slot.hasAttribute('data-morph-preserve')).toBe(true);
+    expect(slot.style.display).toBe('contents');
+    expect(slot.assignedSlot?.closest('dialog')).not.toBeNull();
+    expect(pop.el.parentElement).toBe(slot);
+    expect(pop.el.hasAttribute('popover')).toBe(false); // inside the modal: no lift
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('reuses the slot, and finds it from an anchor in a named slot', () => {
+    const { host } = openShadowDialog(
+      '<button id="anchor">a</button><span slot="footer"><button id="foot">f</button></span>',
+    );
+    const a = popover(byId('anchor'), raw('<p>a</p>'));
+    const b = popover(byId('foot'), raw('<p>b</p>'));
+    cleanups.unshift(() => (a.close(), b.close()));
+    expect(host.querySelectorAll(HOST)).toHaveLength(1);
+    expect(b.el.parentElement).toBe(a.el.parentElement);
+  });
+
+  it('closes the surface (no onDismiss) when the shadow dialog closes', () => {
+    const { inner } = openShadowDialog('<button id="anchor">a</button>');
+    const onDismiss = vi.fn();
+    const pop = popover(byId('anchor'), raw('<p>x</p>'), { onDismiss });
+    inner.dispatchEvent(new Event('close'));
+    expect(pop.el.isConnected).toBe(false);
+    expect(onDismiss).not.toHaveBeenCalled();
+    // Closed first: the later dialog close finds no listener left to run.
+    const again = popover(byId('anchor'), raw('<p>y</p>'), { onDismiss });
+    again.close();
+    inner.dispatchEvent(new Event('close'));
+    expect(again.el.isConnected).toBe(false);
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it('an explicit container in the host light DOM counts as inside the modal: no lift', () => {
+    const { host } = openShadowDialog(
+      '<button id="anchor">a</button><div id="box"></div>',
+    );
+    const pop = popover(byId('anchor'), raw('<p>x</p>'), {
+      container: byId('box'),
+    });
+    cleanups.unshift(() => pop.close());
+    expect(pop.el.parentElement).toBe(byId('box'));
+    expect(pop.el.hasAttribute('popover')).toBe(false);
+    expect(host.querySelector(HOST)).toBeNull();
+  });
+
+  it('a shadow dialog that is not open gives no slot', () => {
+    const { host } = openShadowDialog('<button id="anchor">a</button>', {
+      open: false,
+    });
+    const pop = popover(byId('anchor'), raw('<p>x</p>'));
+    cleanups.unshift(() => pop.close());
+    expect(pop.el.parentElement).toBe(document.body);
+    expect(host.querySelector(HOST)).toBeNull();
+  });
+
+  it('content slotted outside the shadow dialog is not in it', () => {
+    const { host } = openShadowDialog(
+      '<button id="anchor" slot="outside">a</button>',
+    );
+    const pop = popover(byId('anchor'), raw('<p>x</p>'));
+    cleanups.unshift(() => pop.close());
+    expect(pop.el.parentElement).toBe(document.body);
+    expect(host.querySelector(HOST)).toBeNull();
+  });
+
+  it('an anchor inside a component shadow tree resolves through its host to the dialog', () => {
+    const dialog = openAppDialog(
+      '<div id="widget"></div><div data-kerf-overlay-host data-morph-skip></div>',
+    );
+    const shadow = byId('widget').attachShadow({ mode: 'open' });
+    shadow.innerHTML = '<button>inner</button>';
+    const pop = popover(shadow.querySelector('button')!, raw('<p>x</p>'));
+    cleanups.unshift(() => pop.close());
+    expect(pop.el.parentElement).toBe(dialog.querySelector(HOST));
   });
 });

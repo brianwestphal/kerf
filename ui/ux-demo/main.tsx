@@ -1758,19 +1758,12 @@ const stopAnchoredSurfaceOpenModal = delegate(
   app,
   'click',
   '[data-anchored-surface-open-modal]',
-  () =>
-    app
-      .querySelector<HTMLDialogElement>('[data-anchored-surface-modal]')
-      ?.showModal(),
-);
-const stopAnchoredSurfaceCloseModal = delegate(
-  app,
-  'click',
-  '[data-anchored-surface-close-modal]',
-  () =>
-    app
-      .querySelector<HTMLDialogElement>('[data-anchored-surface-modal]')
-      ?.close(),
+  () => {
+    const dialog = app.querySelector<HTMLElement & { open: boolean }>(
+      '[data-anchored-surface-modal]',
+    );
+    if (dialog) dialog.open = true;
+  },
 );
 const updateAnimationSetting = (element: Element): void => {
   const demo = animationDemoFrom(element);
@@ -1925,7 +1918,6 @@ window.addEventListener(
     stopAnchoredSurfaceDemo();
     stopAnchoredSurfaceContextDemo();
     stopAnchoredSurfaceOpenModal();
-    stopAnchoredSurfaceCloseModal();
     stopAnimationSelects();
     stopAnimationRanges();
     stopAnimationEvents.forEach((dispose) => dispose());

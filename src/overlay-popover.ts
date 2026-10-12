@@ -15,7 +15,11 @@ export interface PopoverOptions {
    * Where to append the popover wrapper. Default: when `anchor` sits inside an
    * open modal `<dialog>`, that dialog's `[data-kerf-overlay-host]` element (a
    * dialog kerf opened gets one automatically), so the popover is part of the
-   * modal subtree and stays interactive; otherwise `document.body`.
+   * modal subtree and stays interactive; otherwise `document.body`. A modal
+   * `<dialog>` in a shadow root counts when `anchor` is slotted into it (Web
+   * Awesome's `wa-dialog` / `wa-drawer`): the slot is created on demand in the
+   * shadow host's light DOM. A popover inside a modal closes when that dialog
+   * closes.
    */
   container?: Element;
   /** Class on the wrapper. Default `'kerf-popover'`. */
