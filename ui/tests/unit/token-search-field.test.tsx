@@ -320,7 +320,19 @@ describe('TokenSearchField', () => {
       'utf8',
     );
     expect(fieldCss).toMatch(
-      /\.kui-token-search\[data-collapsible="true"\][^{]*\{[^}]+width 0\.25s ease/s,
+      /\.kui-token-search\[data-collapsible="true"\][^{]*\{[^}]+width var\(--_kui-toolbar-group-grow-search-width-duration, 0\.25s\) ease/s,
+    );
+    // A grow search group owns the open/close motion: it animates its flex
+    // lengths, zeroes the field's width transition, and hands the field a
+    // basis-wide minimum so the clipped query never re-wraps mid-transition.
+    expect(groupCss).toMatch(
+      /\.kui-toolbar-control-group\[data-content="search"\]\[data-sizing="grow"\] \{[^}]+--_kui-toolbar-group-grow-search-width-duration: 0s;[^}]+transition-property:\s*width, flex-basis, flex-grow, min-width/s,
+    );
+    expect(groupCss).toMatch(
+      /--_kui-toolbar-group-grow-search-min-width: calc\(\s*var\(--kui-toolbar-group-grow-basis/,
+    );
+    expect(fieldCss).toMatch(
+      /\.kui-token-search\[data-collapsible="true"\]\[data-expanded="true"\] \{\s*min-width: var\(--_kui-toolbar-group-grow-search-min-width, 0px\);/,
     );
     expect(fieldCss).toMatch(
       /\.kui-token-search\[data-presentation="toolbar-group"\]\[data-collapsible="true"\]/,

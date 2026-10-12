@@ -573,7 +573,11 @@ Use `sizing="grow"` on an expanded search group in a wrapping zone: it grows fro
 `growBasis` (19rem by default) into available row space, then takes a whole
 row at 480px container width or less. The basis remains its intrinsic minimum
 in a wider, non-stacked Toolbar, so sibling trailing groups can share the
-row. The collapsed search stays icon-sized.
+row. The collapsed search stays icon-sized. The group owns the open and
+close motion: its flex size animates while a collapsible `TokenSearchField`
+inside fills it on every frame, laid out at least basis-wide and clipped by the
+group, so a query never wraps or leaves an empty band mid-transition. At 480px
+container width or less, and under reduced motion, it opens in one frame.
 Use `sizing="fill"` for a group, including a non-search segmented control,
 that spans its wrapping row. Set `visibility="hide-collapsed-tiny"` on a
 collapsible group to omit its closed icon at 224px or less; expanded content

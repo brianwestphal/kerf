@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- A collapsible `TokenSearchField` in a `ToolbarControlGroup` with `content="search"` and `sizing="grow"` now opens and closes as one surface. The group snapped straight to its grown width (its `width: auto` cannot transition) while the field animated its own width inside it, so for about 250ms the pill showed an empty band and the query wrapped onto several lines. The group now animates its flex size, and the field fills it on every frame, laid out at least basis-wide while the group clips it. In a toolbar 480px wide or narrower, where the grown group takes its own row, and under reduced motion, both open in one frame (`KF-50K0JM`).
+
 - A `ToolbarControlGroup` now dims a native button marked `aria-disabled="true"` (one kept focusable while unavailable) exactly as it dims a `disabled` one: half opacity, a `not-allowed` cursor, and no hover surface, including a lone group's whole-group hover. It used to look and hover like an enabled control. A disabled raw `wa-button` in a group also no longer paints the group's hover surface (`KF-Y3ZZ10`).
 
 - A focused `scrollable` `List` now draws the theme focus ring inset by the ring width and rounded with the standard control radius. Chromium makes a scroller without focusable rows keyboard-focusable, and a dialog may focus it first. It used to show the UA's square outline outside its box, which a rounded or `overflow: hidden` parent clipped (`KF-AJNFTT`).

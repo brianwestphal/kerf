@@ -284,10 +284,21 @@
      no-grow / may-shrink behavior a toolbar row wants without leaking the width
      into the cross axis. */
   flex: 0 1 auto;
+  /* A grow search group animates the open/close itself and sets this duration
+     to 0s: the field is the group's width on every frame instead of running a
+     second, lagging width transition that left an empty band beside a wrapped
+     query (KF-50K0JM). */
   transition:
-    width 0.25s ease,
+    width var(--_kui-toolbar-group-grow-search-width-duration, 0.25s) ease,
     background-color 0.2s ease,
     border-color 0.2s ease;
+}
+
+/* While a grow search group is still narrower than its basis, keep the
+   basis-wide layout it provides; the group clips the field and reveals the
+   query instead of re-wrapping it every frame. Elsewhere this is 0px. */
+.kui-token-search[data-collapsible="true"][data-expanded="true"] {
+  min-width: var(--_kui-toolbar-group-grow-search-min-width, 0px);
 }
 
 .kui-token-search[data-collapsible="true"][data-expanded="true"][data-fill="true"] {

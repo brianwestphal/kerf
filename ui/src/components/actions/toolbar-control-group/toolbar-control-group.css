@@ -215,9 +215,34 @@
 
 .kui-toolbar-control-group[data-sizing="grow"][data-expanded="true"] {
   --_kui-toolbar-group-grow-search-width: 100%;
+  /* The grown group's content-box width at its basis (basis minus the 1px
+     border and 1px padding on each side). A collapsible search lays its editor
+     out at least this wide while the group's flex size animates open, so the
+     clipped query is revealed rather than re-wrapped every frame (KF-50K0JM). */
+  --_kui-toolbar-group-grow-search-min-width: calc(
+    var(--kui-toolbar-group-grow-basis, remify(304px)) - 4px
+  );
   width: auto;
   min-width: var(--kui-toolbar-group-grow-basis, remify(304px));
   flex: 1 1 var(--kui-toolbar-group-grow-basis, remify(304px));
+}
+
+/* A grow search animates its flex size, not `width`: an expanded grow group's
+   `width: auto` cannot interpolate, so it used to snap open while the search
+   inside animated, leaving an empty band (KF-50K0JM). The collapsed state names
+   a definite basis and minimum so all three flex lengths interpolate. */
+.kui-toolbar-control-group[data-content="search"][data-sizing="grow"] {
+  /* The group owns this motion; a collapsible search inside follows it on
+     every frame rather than running its own width transition. */
+  --_kui-toolbar-group-grow-search-width-duration: 0s;
+  transition-property:
+    width, flex-basis, flex-grow, min-width, background-color, border-color;
+  transition-duration: 0.25s, 0.25s, 0.25s, 0.25s, 0.2s, 0.2s;
+  transition-timing-function: ease;
+}
+.kui-toolbar-control-group[data-content="search"][data-sizing="grow"][data-expanded="false"] {
+  min-width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  flex: 0 0 var(--kui-toolbar-group-size, calc(2px + remify(42px)));
 }
 .kui-toolbar-control-group[data-sizing="fill"] {
   width: 100%;
@@ -256,9 +281,18 @@
 
 @container kui-toolbar (max-width: remify(480px)) {
   .kui-toolbar-control-group[data-sizing="grow"][data-expanded="true"] {
+    --_kui-toolbar-group-grow-search-min-width: 0px;
     width: 100%;
     min-width: 0;
     flex: 1 1 100%;
+  }
+
+  /* Here the grown search takes its own line. Animating its basis would push
+     the trailing siblings and then jump the group to the next line mid-way, so
+     it opens and closes in one frame with the search filling it. */
+  .kui-toolbar-control-group[data-content="search"][data-sizing="grow"] {
+    transition-property: background-color, border-color;
+    transition-duration: 0.2s;
   }
 }
 .kui-toolbar-control-group[data-content="text"]
@@ -809,7 +843,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kui-toolbar-control-group[data-content="search"] {
+  .kui-toolbar-control-group[data-content="search"],
+  .kui-toolbar-control-group[data-content="search"][data-sizing="grow"] {
     transition-duration: 0s;
   }
 

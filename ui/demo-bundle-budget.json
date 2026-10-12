@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 356900,
-  "measuredLargestJavaScriptGzip": 139883,
-  "measuredTotalJavaScriptGzip": 356873,
+  "totalJavaScriptGzip": 357000,
+  "measuredLargestJavaScriptGzip": 139888,
+  "measuredTotalJavaScriptGzip": 356911,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3843,6 +3843,22 @@
         "measuredTotalJavaScriptGzip": 356873,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 356900
+      }
+    },
+    {
+      "at": "2026-10-12T23:39:45.326Z",
+      "reason": "grow search group flex animation (KF-50K0JM) combined with the KF-QPSTTA growth",
+      "old": {
+        "measuredLargestJavaScriptGzip": 139883,
+        "measuredTotalJavaScriptGzip": 356873,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 356900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 139888,
+        "measuredTotalJavaScriptGzip": 356911,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357000
       }
     }
   ]
