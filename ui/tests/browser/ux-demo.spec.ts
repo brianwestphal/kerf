@@ -5108,10 +5108,10 @@ test('renders self-styled Badge variants without app CSS', async ({
   await page.goto('/?component=badge');
   const demo = page.locator('[data-demo="badge"]');
   const allBadges = demo.locator('[data-component="badge"]');
-  // The settings-driven playground badge, four text badges, and the text-free
+  // The settings-driven playground badge, five text badges, and the text-free
   // dot, whose 8px geometry is covered by tab-navigator-badge.spec.ts; the
   // text-badge checks below skip it.
-  await expect(allBadges).toHaveCount(6);
+  await expect(allBadges).toHaveCount(7);
   await expect(
     demo.locator('[data-badge-playground] [data-component="badge"]'),
   ).toHaveAttribute('data-tone', 'info');
@@ -5121,12 +5121,28 @@ test('renders self-styled Badge variants without app CSS', async ({
   const badges = demo.locator(
     '[data-component="badge"]:not([data-size="dot"])',
   );
-  await expect(badges).toHaveCount(5);
+  await expect(badges).toHaveCount(6);
   await expect(badges.nth(1)).toHaveAttribute('data-tone', 'success');
   await expect(badges.nth(2)).toHaveAttribute('aria-label', '12 unread items');
+  await expect(badges.nth(2)).toHaveAttribute('role', 'img');
   await expect(badges.nth(2)).toHaveAttribute('data-appearance', 'solid');
-  await expect(badges.nth(3)).toHaveAttribute('data-shape', 'rounded');
-  await expect(badges.nth(3)).toHaveAttribute('data-appearance', 'outline');
+  const iconBadge = badges.nth(3);
+  await expect(iconBadge).toHaveAttribute('data-band', 'high');
+  await expect(iconBadge).toHaveAttribute(
+    'title',
+    'Confidence of the latest completion',
+  );
+  const iconGap = await iconBadge.evaluate((node) => {
+    const icon = node
+      .querySelector('.kui-badge__icon')!
+      .getBoundingClientRect();
+    const range = document.createRange();
+    range.selectNodeContents(node.lastChild!);
+    return range.getBoundingClientRect().left - icon.right;
+  });
+  expect(iconGap).toBeCloseTo(4, 0);
+  await expect(badges.nth(4)).toHaveAttribute('data-shape', 'rounded');
+  await expect(badges.nth(4)).toHaveAttribute('data-appearance', 'outline');
   expect(
     await badges.evaluateAll((nodes) =>
       nodes.every((node) => {

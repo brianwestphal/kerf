@@ -566,7 +566,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   For new content without a count, use the text-free `size="dot"` form: it
   takes no children, and needs a `label` (announced as an image) or
   `ariaHidden` when its owner announces it. A `TabNavigator` tab shows the dot
-  with `badge: true` plus its required `badgeLabel`.
+  with `badge: true` plus its required `badgeLabel`. A text badge takes a
+  decorative leading `icon`, a `title` tooltip, and `data-*` `rootAttributes`
+  for app identity; never wrap a Badge or nest a `Row` in it for those.
 - **Use `Chip` for removable tags.** Give the native remove button a delegated
   `removeAction` and a specific `removeLabel`; the application updates the tag
   list. `itemId` identifies the chip to the action handler. `size="compact"`

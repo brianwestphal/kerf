@@ -23,6 +23,20 @@
   white-space: nowrap;
 }
 
+/* A leading icon sits 4px before the text and inherits the badge's color. */
+.kui-badge[data-has-icon="true"] {
+  gap: remify(4px);
+}
+
+.kui-badge__icon {
+  display: inline-grid;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+  place-items: center;
+  flex: none;
+}
+
 .kui-badge[data-tone="info"] {
   --_kui-badge-fill-quiet: var(--kui-color-brand-fill-quiet);
   --_kui-badge-fill-solid: var(--kui-color-brand-on-fill);

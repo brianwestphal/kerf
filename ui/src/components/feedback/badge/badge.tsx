@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 
 export type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
@@ -10,8 +11,33 @@ export type BadgeShape = 'pill' | 'rounded';
 /** Size of a text badge. A text-free dot is the separate `size: 'dot'` form. */
 export type BadgeSize = 'compact' | 'default';
 
+const badgeProtectedAttributes = new Set([
+  'data-component',
+  'data-tone',
+  'data-appearance',
+  'data-shape',
+  'data-size',
+  'data-has-icon',
+]);
+
+/** Application `data-*` identity on the badge root; Badge-owned markers stay protected. */
+export type BadgeRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-tone'?: never;
+    'data-appearance'?: never;
+    'data-shape'?: never;
+    'data-size'?: never;
+    'data-has-icon'?: never;
+  }
+>;
+
 interface BadgeCommonProps {
   tone?: SemanticTone;
+  /** Native tooltip text that explains the badge on hover. */
+  title?: string;
+  /** Safe `data-*` identity, such as a status band, on the badge root. */
+  rootAttributes?: BadgeRootAttributes;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -20,10 +46,16 @@ interface BadgeCommonProps {
 /** A badge that shows a short status, count, or category as visible text. */
 export interface BadgeTextProps extends BadgeCommonProps {
   children: SafeHtml | string | number;
+  /** Decorative leading icon, normally an unsized LucideIcon, 4px before the text. */
+  icon?: SafeHtml;
   appearance?: BadgeAppearance;
   shape?: BadgeShape;
   size?: BadgeSize;
-  /** Optional accessible name when the visible content is abbreviated. */
+  /**
+   * Accessible name that replaces the visible content when it is abbreviated
+   * or symbolic (`"82% confidence"` for `82`); the badge is then exposed as a
+   * labeled image.
+   */
   label?: string;
   /** Hide a repeated visual badge from assistive technology. */
   ariaHidden?: boolean;
@@ -59,12 +91,23 @@ export type BadgeProps = BadgeTextProps | BadgeDotProps;
 
 /** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
 export function Badge(props: BadgeProps) {
-  const { tone = 'neutral', className = '', slot } = props;
+  const {
+    tone = 'neutral',
+    title,
+    rootAttributes = {},
+    className = '',
+    slot,
+  } = props;
+  const identity = filterDataAttributes(
+    rootAttributes,
+    badgeProtectedAttributes,
+  );
   if (props.size === 'dot') {
     // A dot without a usable label has no text fallback, so it is decorative.
     const label = props.ariaHidden ? undefined : props.label?.trim();
     return (
       <span
+        {...identity}
         class={`kui-badge ${className}`.trim()}
         data-component="badge"
         data-tone={tone}
@@ -73,30 +116,42 @@ export function Badge(props: BadgeProps) {
         role={label ? 'img' : undefined}
         aria-label={label || undefined}
         aria-hidden={label ? undefined : 'true'}
+        title={title}
         slot={slot}
       />
     );
   }
   const {
     children,
+    icon,
     appearance = 'quiet',
     shape = 'pill',
     size = 'default',
     label,
     ariaHidden = false,
   } = props;
+  const named = !ariaHidden && Boolean(label?.trim());
   return (
     <span
+      {...identity}
       class={`kui-badge ${className}`.trim()}
       data-component="badge"
       data-tone={tone}
       data-appearance={appearance}
       data-shape={shape}
       data-size={size}
-      aria-label={ariaHidden ? undefined : label}
+      data-has-icon={icon === undefined ? undefined : 'true'}
+      role={named ? 'img' : undefined}
+      aria-label={named ? label : undefined}
       aria-hidden={ariaHidden ? 'true' : undefined}
+      title={title}
       slot={slot}
     >
+      {icon === undefined ? null : (
+        <span class="kui-badge__icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
       {children}
     </span>
   );

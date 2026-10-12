@@ -3,7 +3,9 @@ import '@kerfjs/ui/select/register';
 import { Badge } from '@kerfjs/ui/badge';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Select } from '@kerfjs/ui/select';
+import { Gauge } from 'lucide';
 
 import { badgePlayground, type BadgePlaygroundState } from './state.js';
 
@@ -124,6 +126,21 @@ export function BadgeDemo() {
         align="inline-control"
       >
         <Badge tone="danger" size="dot" label="New activity" />
+      </CatalogExample>
+      <CatalogExample
+        label="Icon and title"
+        note="A decorative leading icon sits 4px before the text; title explains the badge on hover, and rootAttributes carries app identity."
+        align="inline-control"
+      >
+        <Badge
+          tone="success"
+          icon={<LucideIcon icon={Gauge} name="gauge" />}
+          title="Confidence of the latest completion"
+          label="82% confidence"
+          rootAttributes={{ 'data-band': 'high' }}
+        >
+          82%
+        </Badge>
       </CatalogExample>
       <CatalogExample label="Category tag" align="inline-control">
         <Badge tone="pop" appearance="outline" shape="rounded">

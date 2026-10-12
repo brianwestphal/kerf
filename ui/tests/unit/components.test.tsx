@@ -147,7 +147,40 @@ describe('production UI primitives', () => {
     expect(badge).toContain('data-appearance="solid"');
     expect(badge).toContain('data-shape="rounded"');
     expect(badge).toContain('data-size="compact"');
-    expect(badge).toContain('aria-label="12 unread items">12</span>');
+    expect(badge).toContain(
+      'role="img" aria-label="12 unread items">12</span>',
+    );
+    const identified = asHtml(
+      Badge({
+        children: '82%',
+        icon: <svg />,
+        title: 'Confidence of the latest run',
+        rootAttributes: {
+          'data-band': 'high',
+          'data-tone': 'danger',
+        } as unknown as Record<`data-${string}`, string>,
+      }),
+    );
+    expect(identified).toContain('data-band="high"');
+    expect(identified).toContain('data-tone="neutral"');
+    expect(identified).not.toContain('data-tone="danger"');
+    expect(identified).toContain(
+      'data-has-icon="true" title="Confidence of the latest run"><span class="kui-badge__icon" aria-hidden="true"><svg></svg></span>82%</span>',
+    );
+    expect(identified).not.toContain('role=');
+    expect(asHtml(Badge({ children: '1', label: '  ' }))).not.toContain(
+      'aria-label',
+    );
+    expect(
+      asHtml(
+        Badge({
+          size: 'dot',
+          ariaHidden: true,
+          title: 'New',
+          rootAttributes: { 'data-kind': 'new' },
+        }),
+      ),
+    ).toContain('data-kind="new"');
     const duplicate = asHtml(
       Badge({ children: 2, label: 'ignored', ariaHidden: true }),
     );

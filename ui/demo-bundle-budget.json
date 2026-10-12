@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 342200,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 342184,
+  "totalJavaScriptGzip": 342500,
+  "measuredLargestJavaScriptGzip": 126268,
+  "measuredTotalJavaScriptGzip": 342443,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3443,6 +3443,22 @@
         "measuredTotalJavaScriptGzip": 342184,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 342200
+      }
+    },
+    {
+      "at": "2026-10-12T12:58:01.689Z",
+      "reason": "Badge icon/title/rootAttributes and its catalog example (KF-2YKKK5)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 342184,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 342200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126268,
+        "measuredTotalJavaScriptGzip": 342443,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 342500
       }
     }
   ]

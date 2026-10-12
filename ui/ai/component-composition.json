@@ -45,13 +45,14 @@
       "accessibility": {
         "obligations": [
           "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component. A text-free dot must take either label (exposed as an image) or ariaHidden, which the types enforce.",
-          "Keep meaningful text visible because tone is supplementary."
+          "Keep meaningful text visible because tone is supplementary.",
+          "A label replaces abbreviated or symbolic visible text; the badge is then a labeled image (role img)."
         ]
       },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-badge",
-        "publicClasses": ["kui-badge"],
+        "publicClasses": ["kui-badge", "kui-badge__icon"],
         "publicTokens": []
       },
       "diagnostics": [],

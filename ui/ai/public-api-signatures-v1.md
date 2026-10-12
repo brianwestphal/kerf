@@ -3336,8 +3336,21 @@ type BadgeAppearance = 'quiet' | 'solid' | 'outline';
 type BadgeShape = 'pill' | 'rounded';
 /** Size of a text badge. A text-free dot is the separate `size: 'dot'` form. */
 type BadgeSize = 'compact' | 'default';
+/** Application `data-*` identity on the badge root; Badge-owned markers stay protected. */
+type BadgeRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-tone'?: never;
+    'data-appearance'?: never;
+    'data-shape'?: never;
+    'data-size'?: never;
+    'data-has-icon'?: never;
+}>;
 interface BadgeCommonProps {
     tone?: SemanticTone;
+    /** Native tooltip text that explains the badge on hover. */
+    title?: string;
+    /** Safe `data-*` identity, such as a status band, on the badge root. */
+    rootAttributes?: BadgeRootAttributes;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -3345,10 +3358,16 @@ interface BadgeCommonProps {
 /** A badge that shows a short status, count, or category as visible text. */
 interface BadgeTextProps extends BadgeCommonProps {
     children: SafeHtml | string | number;
+    /** Decorative leading icon, normally an unsized LucideIcon, 4px before the text. */
+    icon?: SafeHtml;
     appearance?: BadgeAppearance;
     shape?: BadgeShape;
     size?: BadgeSize;
-    /** Optional accessible name when the visible content is abbreviated. */
+    /**
+     * Accessible name that replaces the visible content when it is abbreviated
+     * or symbolic (`"82% confidence"` for `82`); the badge is then exposed as a
+     * labeled image.
+     */
     label?: string;
     /** Hide a repeated visual badge from assistive technology. */
     ariaHidden?: boolean;
@@ -3380,7 +3399,7 @@ type BadgeProps = BadgeTextProps | BadgeDotProps;
 /** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
 declare function Badge(props: BadgeProps): SafeHtml;
 
-export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgeProps, type BadgeShape, type BadgeSize, type BadgeTextProps, type BadgeTone, SemanticTone };
+export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgeProps, type BadgeRootAttributes, type BadgeShape, type BadgeSize, type BadgeTextProps, type BadgeTone, SemanticTone };
 ```
 
 ## `@kerfjs/ui/chip`

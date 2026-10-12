@@ -43,11 +43,14 @@
         "quiet, solid, or outline appearance",
         "pill or rounded shape",
         "compact or default size, or a text-free dot (size: 'dot')",
-        "labeled or decorative duplicate"
+        "labeled or decorative duplicate",
+        "leading icon",
+        "title tooltip and data-* rootAttributes"
       ],
       "accessibility": [
         "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component. A text-free dot must take either label (exposed as an image) or ariaHidden, which the types enforce.",
-        "Keep meaningful text visible because tone is supplementary."
+        "Keep meaningful text visible because tone is supplementary.",
+        "A label replaces abbreviated or symbolic visible text; the badge is then a labeled image (role img)."
       ],
       "geometry": {
         "margin": "none",
@@ -63,7 +66,8 @@
       },
       "wiring": [],
       "publicClasses": [
-        "kui-badge"
+        "kui-badge",
+        "kui-badge__icon"
       ],
       "publicTokens": [],
       "links": {
