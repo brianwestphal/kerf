@@ -47,7 +47,7 @@ function stubCanvas() {
 }
 
 describe('sunken texture', () => {
-  it('draws the same monochrome Gaussian tile every time, within 8% opacity', () => {
+  it('draws the same monochrome Gaussian tile every time, within 4% opacity', () => {
     const pixels = sunkenTexturePixels();
     expect(pixels).toHaveLength(100 * 100 * 4);
     expect(sunkenTexturePixels()).toEqual(pixels);
@@ -65,8 +65,8 @@ describe('sunken texture', () => {
         else light += 1;
       }
     }
-    expect(maxAlpha).toBeLessThanOrEqual(Math.round(0.08 * 255));
-    expect(maxAlpha).toBeGreaterThan(10);
+    // Clipped at 2.5σ, the strongest grains reach exactly 4% (alpha 10).
+    expect(maxAlpha).toBe(Math.round(0.04 * 255));
     // Grains lighten and darken in roughly equal measure.
     expect(Math.abs(dark - light) / (dark + light)).toBeLessThan(0.1);
   });

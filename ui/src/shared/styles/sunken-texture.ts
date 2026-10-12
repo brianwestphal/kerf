@@ -9,8 +9,8 @@ export const SUNKEN_TEXTURE_PROPERTY = '--_kui-sunken-texture-generated';
 
 /** Tile edge in pixels; foundation.css repeats it at the same CSS size. */
 const TILE = 100;
-/** Strongest grain opacity: the reviewed "Gaussian 8%" treatment. */
-const MAX_OPACITY = 0.08;
+/** Strongest grain opacity: the reviewed "Gaussian 4%" treatment. */
+const MAX_OPACITY = 0.04;
 const SEED = 7;
 
 /** A small deterministic PRNG (mulberry32), so every page draws the same tile. */

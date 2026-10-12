@@ -91,7 +91,7 @@ escape hatches, not a reason to restyle each demo or nesting level.
 Every sunken surface — SunkenPanel, `Pane appearance="sunken"`, sunken
 Workbench regions and TabNavigator scenes, and Web Awesome
 `appearance="sunken"` — paints `--kui-sunken-surface`: a fine, monochrome
-grain (a seeded 100px tile at 8% maximum opacity) over the lowered color. The
+grain (a seeded 100px tile at 4% maximum opacity) over the lowered color. The
 tile is drawn once per page, at runtime, by the first sunken surface that
 renders (nothing ships as an asset; server rendering paints the flat color
 until the browser renders one). Translucent children such as a `ValueTable`
