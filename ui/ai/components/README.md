@@ -59,6 +59,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [TokenSearchField](./token-search-field.md) — Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.
 - [ResizableRegion](./resize.md) — Pointer and keyboard-operable split region with a customizable handle icon.
 - [Select](./select.md) — Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.
+- [Combobox](./combobox.md) — Let people pick an existing value or create a new one by typing (tags, labels, recipients), with the themed field chrome, the ARIA combobox pattern, and a touch-safe font size, without a native datalist or app CSS.
 - [PopupMenu](./popup-menu.md) — A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.
 - [IconButton](./icon-button.md) — Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.
 - [IconToggleButton](./icon-toggle-button.md) — Render an icon-only aria-pressed toggle in content or a pane footer, where a Toolbar does not belong, with the 44px contained geometry and raised pressed face of a single ToolbarControlGroup.

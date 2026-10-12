@@ -28,6 +28,7 @@ import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
+import { wireComboboxes } from '@kerfjs/ui/wire-comboboxes';
 import {
   isContentItemActivation,
   wireContentItems,
@@ -108,6 +109,7 @@ import {
   adoptionTokens,
   bannerTone,
   collapsibleSearchOpen,
+  comboboxTags,
   contentCardChoice,
   contentCardSelected,
   contentCardSelections,
@@ -1553,6 +1555,15 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
   },
 });
 const stopToolbarWidthVisibility = wireToolbarVisibility(app);
+const stopComboboxes = wireComboboxes(app, {
+  onCommit: ({ value, created, input }) => {
+    const tag = value.trim().replaceAll(/\s+/g, '-');
+    if (!comboboxTags.value.includes(tag))
+      comboboxTags.value = [...comboboxTags.value, tag];
+    input.value = '';
+    actionLog.value = `${created ? 'Created' : 'Added'} tag ${tag}`;
+  },
+});
 const stopFilePickers = wireFilePickers(app, {
   onFiles: ({ files, via }) => {
     filePickerFiles.value = [
@@ -1881,6 +1892,7 @@ window.addEventListener(
     stopFloatingToolbarReset();
     stopEdgeActivityReset();
     stopFilePickers();
+    stopComboboxes();
     stopListItemDragOver();
     stopListItemDrop();
     stopListActionRowDoubleClick();

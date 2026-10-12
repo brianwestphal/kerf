@@ -34,8 +34,8 @@ export function fileMatchesAccept(file: File, accept: string): boolean {
   });
 }
 
-function pickerOf(target: EventTarget | null): HTMLElement | null {
-  return target instanceof Element ? target.closest<HTMLElement>(PICKER) : null;
+function pickerOf(input: HTMLInputElement): HTMLElement | null {
+  return input.closest<HTMLElement>(PICKER);
 }
 
 function inputOf(picker: HTMLElement): HTMLInputElement | null {
@@ -67,7 +67,8 @@ export function wireFilePickers(
     if (!(input instanceof HTMLInputElement) || input.type !== 'file') return;
     const picker = pickerOf(input);
     if (!picker) return;
-    report(picker, [...(input.files ?? [])], 'browse');
+    // A file input always has a FileList.
+    report(picker, [...input.files!], 'browse');
     input.value = '';
   };
   const zoneOf = (event: Event): HTMLElement | null => {

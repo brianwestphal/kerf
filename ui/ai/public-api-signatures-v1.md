@@ -4030,6 +4030,51 @@ import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 ```
 
+## `@kerfjs/ui/combobox`
+
+```ts
+import * as kerfjs from 'kerfjs';
+
+/** A suggestion: a plain string, or a value with a distinct visible label. */
+type ComboboxSuggestion = string | {
+    value: string;
+    label: string;
+};
+interface ComboboxProps {
+    /** Unique id; it also identifies the field in `wireComboboxes` reports. */
+    id: string;
+    /** Visible field label. */
+    label: string;
+    /** Suggestions to filter as the person types. */
+    suggestions: readonly ComboboxSuggestion[];
+    /** Initial text; the field owns its text while the person types. */
+    value?: string;
+    placeholder?: string;
+    /** Optional hint below the field, such as "Press Enter to add". */
+    hint?: string;
+    /** Form field name. */
+    name?: string;
+    /**
+     * Offer to create the typed text when it matches no suggestion; the option
+     * reads `createLabel` with `{value}` replaced. Omit to only allow
+     * suggestions. Default `Create “{value}”`.
+     */
+    createLabel?: string | false;
+    disabled?: boolean;
+    className?: string;
+}
+/**
+ * A free-text field with a filtered suggestion list that can also create a new
+ * value: the ARIA combobox pattern on a native input with the themed Web
+ * Awesome field chrome. `wireComboboxes` filters, moves the active option,
+ * and reports commits (Enter, comma, or a click). Use `Select` when only
+ * existing values are allowed and nothing is typed.
+ */
+declare function Combobox({ id, label, suggestions, value, placeholder, hint, name, createLabel, disabled, className, }: ComboboxProps): kerfjs.SafeHtml;
+
+export { Combobox, type ComboboxProps, type ComboboxSuggestion };
+```
+
 ## `@kerfjs/ui/anchored-surface`
 
 ```ts

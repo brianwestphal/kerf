@@ -585,6 +585,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "combobox",
+    "name": "Combobox",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Let people pick an existing value or create a new one by typing (tags, labels, recipients), with the themed field chrome, the ARIA combobox pattern, and a touch-safe font size, without a native datalist or app CSS.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/combobox.tsx",
+    "componentSource": "ui/src/components/forms/combobox/combobox.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "anchored-surface",
     "name": "AnchoredSurface",
     "category": "Feedback",

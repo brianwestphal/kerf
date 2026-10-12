@@ -6,6 +6,7 @@ import { BadgeDemo, BadgeSettings } from './badge.js';
 import { ChipDemo } from './chip.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { ColumnTrackDemo } from './column-track.js';
+import { ComboboxDemo } from './combobox.js';
 import { ContentItemDemo } from './content-item.js';
 import { ContentSwapDemo } from './content-swap.js';
 import { CornerStatusDemo } from './corner-status.js';
@@ -103,6 +104,7 @@ export const demos = {
   'column-track': ColumnTrackDemo,
   'content-swap': ContentSwapDemo,
   'file-picker': FilePickerDemo,
+  combobox: ComboboxDemo,
   'edge-activity-indicator': EdgeActivityIndicatorDemo,
   'icon-button': IconButtonDemo,
   'icon-toggle-button': IconToggleButtonDemo,

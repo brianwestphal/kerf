@@ -267,6 +267,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `ContentSwap`                                                       | `@kerfjs/ui/content-swap`               | `@kerfjs/ui/content-swap.css`            |
 | `FilePickerTrigger`, `FileDropZone`                                 | `@kerfjs/ui/file-picker`                | `@kerfjs/ui/file-picker.css`             |
 | `wireFilePickers`, `fileMatchesAccept`                              | `@kerfjs/ui/wire-file-pickers`          | —                                        |
+| `Combobox`                                                          | `@kerfjs/ui/combobox`                   | `@kerfjs/ui/combobox.css`                |
+| `wireComboboxes`                                                    | `@kerfjs/ui/wire-comboboxes`            | —                                        |
 | `CornerStatus`                                                      | `@kerfjs/ui/corner-status`              | `@kerfjs/ui/corner-status.css`           |
 | `EdgeActivityIndicator`                                             | `@kerfjs/ui/edge-activity-indicator`    | `@kerfjs/ui/edge-activity-indicator.css` |
 | `wireCornerStatus`                                                  | `@kerfjs/ui/wire-corner-status`         | —                                        |

@@ -161,6 +161,16 @@ export {
   type StateBannerUrgency,
 } from './components/feedback/state-banner/state-banner.js';
 export {
+  Combobox,
+  type ComboboxProps,
+  type ComboboxSuggestion,
+} from './components/forms/combobox/combobox.js';
+export {
+  type ComboboxCommit,
+  wireComboboxes,
+  type WireComboboxesOptions,
+} from './components/forms/combobox/wiring/wire-comboboxes.js';
+export {
   FieldLabel,
   type FieldLabelProps,
 } from './components/forms/field-label/field-label.js';

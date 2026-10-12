@@ -367,6 +367,15 @@
       "browser": "./dist/browser/edge-activity-indicator.js",
       "import": "./dist/edge-activity-indicator.js"
     },
+    "./combobox": {
+      "types": "./dist/combobox.d.ts",
+      "browser": "./dist/browser/combobox.js",
+      "import": "./dist/combobox.js"
+    },
+    "./wire-comboboxes": {
+      "types": "./dist/wire-comboboxes.d.ts",
+      "import": "./dist/wire-comboboxes.js"
+    },
     "./file-picker": {
       "types": "./dist/file-picker.d.ts",
       "browser": "./dist/browser/file-picker.js",
@@ -462,6 +471,7 @@
     "./column-track.css": "./dist/styles/column-track.css",
     "./content-swap.css": "./dist/styles/content-swap.css",
     "./file-picker.css": "./dist/styles/file-picker.css",
+    "./combobox.css": "./dist/styles/combobox.css",
     "./edge-activity-indicator.css": "./dist/styles/edge-activity-indicator.css",
     "./icon-button.css": "./dist/styles/icon-button.css",
     "./icon-toggle-button.css": "./dist/styles/icon-toggle-button.css",

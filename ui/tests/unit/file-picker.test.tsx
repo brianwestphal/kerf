@@ -59,6 +59,9 @@ describe('FilePickerTrigger and FileDropZone', () => {
     );
     expect(zone).toContain('disabled>');
     expect(String(FilePickerTrigger({ label: 'Add' }))).not.toContain('icon');
+    expect(
+      String(FilePickerTrigger({ label: 'Add', disabled: true })),
+    ).toContain('data-presentation="trigger" data-disabled="true"');
     expect(String(FileDropZone({ title: 'Drop' }))).not.toContain('__detail');
   });
 });
@@ -157,6 +160,9 @@ describe('wireFilePickers', () => {
     expect(disabled!.dataset.dragging).toBeUndefined();
     disabled!.dispatchEvent(dragEvent('drop', [file('a.png', 'image/png')]));
     root.dispatchEvent(dragEvent('drop'));
+    const loose = document.createTextNode('loose');
+    root.append(loose);
+    loose.dispatchEvent(dragEvent('dragover'));
     root.dispatchEvent(dragEvent('dragleave'));
 
     zone!.dispatchEvent(

@@ -65,6 +65,8 @@ const entries = [
   'column-track',
   'content-swap',
   'file-picker',
+  'combobox',
+  'wire-comboboxes',
   'wire-file-pickers',
   'edge-activity-indicator',
   'icon-button',

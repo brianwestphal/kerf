@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 349000,
-  "measuredLargestJavaScriptGzip": 132231,
-  "measuredTotalJavaScriptGzip": 348938,
+  "totalJavaScriptGzip": 350600,
+  "measuredLargestJavaScriptGzip": 133803,
+  "measuredTotalJavaScriptGzip": 350531,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3651,6 +3651,22 @@
         "measuredTotalJavaScriptGzip": 348938,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 349000
+      }
+    },
+    {
+      "at": "2026-10-12T15:03:32.176Z",
+      "reason": "Combobox component, wiring, and interactive catalog demo (KF-XDVAMR)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 132231,
+        "measuredTotalJavaScriptGzip": 348938,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 349000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 133803,
+        "measuredTotalJavaScriptGzip": 350531,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 350600
       }
     }
   ]

@@ -1,0 +1,113 @@
+/* A field label, the themed input with its listbox, and an optional hint,
+   aligned like a Web Awesome form field: label and hint sit on the value's
+   text column (1px border + 8px padding). */
+.kui-combobox {
+  display: grid;
+  min-width: 0;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-combobox__label,
+.kui-combobox__hint {
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+}
+
+.kui-combobox__label {
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.kui-combobox__hint {
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}
+
+.kui-combobox__control {
+  position: relative;
+  min-width: 0;
+}
+
+/* The same chrome as a themed wa-input: 44px, 1px border, 8px inset. */
+.kui-combobox__input {
+  width: 100%;
+  min-width: 0;
+  height: remify(44px);
+  margin: 0;
+  padding: 0 var(--kui-layout-item-padding, remify(8px));
+  box-sizing: border-box;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  font: inherit;
+  font-size: var(--kui-font-s);
+}
+
+.kui-combobox__input::placeholder {
+  color: var(--kui-color-text-quiet);
+}
+
+.kui-combobox__input:focus-visible {
+  border-color: var(--kui-color-text-link);
+  outline: none;
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
+}
+
+.kui-combobox[data-disabled="true"] {
+  opacity: 0.55;
+}
+
+/* A touch field below 16px makes iOS magnify the page on focus. */
+@media (hover: none) and (pointer: coarse) {
+  .kui-combobox__input {
+    font-size: max(16px, var(--kui-font-s));
+  }
+}
+
+/* The suggestion list drops below the field over the content that follows. */
+.kui-combobox__listbox {
+  position: absolute;
+  z-index: var(--kui-combobox-z-index, 20);
+  inset: calc(100% + var(--kui-space-2xs)) 0 auto;
+  max-height: remify(240px);
+  margin: 0;
+  padding: var(--kui-space-2xs);
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  background: var(--kui-color-surface-raised);
+  box-shadow: var(--kui-shadow-l);
+  list-style: none;
+}
+
+.kui-combobox__listbox[hidden] {
+  display: none;
+}
+
+.kui-combobox__option {
+  margin: 0;
+  padding: var(--kui-space-xs);
+  border-radius: max(
+    0px,
+    calc(var(--kui-layout-rounded-radius, remify(12px)) - var(--kui-space-2xs))
+  );
+  color: var(--kui-color-text);
+  cursor: pointer;
+  font-size: var(--kui-font-s);
+  overflow-wrap: anywhere;
+}
+
+.kui-combobox__option:hover,
+.kui-combobox__option[aria-selected="true"] {
+  background: var(--kui-color-brand-fill-quiet);
+}
+
+.kui-combobox__option[data-create] {
+  color: var(--kui-color-text-link);
+}

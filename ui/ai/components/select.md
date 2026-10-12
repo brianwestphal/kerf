@@ -23,6 +23,7 @@ Choose one or more controlled values, keep unavailable choices visible, and opti
 - [SegmentedControl](./segmented-control.md) (nearest)
 - [Select](./wa-select.md) (prefer-over)
 - [Dropdown](./wa-dropdown.md) (prefer-over)
+- [Combobox](./combobox.md) (nearest) — Use Combobox when people may type to filter or create a new value.
 
 ## Imports
 
@@ -110,6 +111,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [Badge](./badge.md), [Select](./wa-select.md), [Option](./wa-option.md), [SegmentedControl](./segmented-control.md), [Dropdown](./wa-dropdown.md).
+- Components: [LucideIcon](./lucide-icon.md), [Badge](./badge.md), [Select](./wa-select.md), [Option](./wa-option.md), [SegmentedControl](./segmented-control.md), [Dropdown](./wa-dropdown.md), [Combobox](./combobox.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#web-awesome-overlap-policy`](../../docs/component-selection.md#web-awesome-overlap-policy).
 - UX catalog route: `?component=select`.

@@ -90,6 +90,7 @@ export const splitButtonRunning = signal(false);
 export const splitButtonOptionsOpen = signal(false);
 export const edgeActivityBusy = signal(false);
 export const filePickerFiles = signal<string[]>([]);
+export const comboboxTags = signal<string[]>(['bug']);
 export const contentSwapStep = signal<'a' | 'b'>('a');
 export const contentSwapFaded = signal<'a' | 'b'>('a');
 export const edgeActivityMessage = signal(true);

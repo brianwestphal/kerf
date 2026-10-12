@@ -4022,6 +4022,104 @@
       }
     },
     {
+      "key": "@kerfjs/ui:combobox",
+      "package": "@kerfjs/ui",
+      "id": "combobox",
+      "name": "Combobox",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the suggestions and the committed values",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "normalizing and validating created values",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "clearing the field after a commit",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireComboboxes"],
+        "obligations": [
+          "Filters suggestions, moves the active option, and reports commits; without it the list never opens."
+        ],
+        "stateAttributes": [
+          {
+            "name": "data-value",
+            "on": "the create option (kui-combobox__option[data-create])",
+            "helper": "wireComboboxes",
+            "meaning": "The typed text the create option would commit; rewritten as the person types."
+          }
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "Label and hint sit on the value's text column (1px border + 8px padding); the 44px field matches a themed wa-input."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Native input with role=combobox, aria-autocomplete=list, aria-expanded, aria-controls, and aria-activedescendant; options are role=option in a listbox. The visible label is a real label; the hint is aria-describedby."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-combobox",
+        "publicClasses": [
+          "kui-combobox",
+          "kui-combobox__label",
+          "kui-combobox__hint",
+          "kui-combobox__control",
+          "kui-combobox__input",
+          "kui-combobox__listbox",
+          "kui-combobox__option"
+        ],
+        "rootElement": "div",
+        "publicTokens": [
+          "--kui-combobox-z-index",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-text-quiet",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-text",
+          "--kui-color-surface",
+          "--kui-color-surface-raised",
+          "--kui-color-text-link",
+          "--kui-color-brand-fill-quiet",
+          "--kui-font-xs",
+          "--kui-font-s",
+          "--kui-layout-item-padding",
+          "--kui-layout-rounded-radius",
+          "--kui-shadow-l",
+          "--kui-space-2xs",
+          "--kui-space-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:anchored-surface",
       "package": "@kerfjs/ui",
       "id": "anchored-surface",
