@@ -71,6 +71,24 @@
   --kui-content-item-foreground: var(--kui-color-warning-on-fill);
 }
 
+.kui-content-item[data-appearance="brand-loud"] {
+  --kui-content-item-border: var(--kui-color-brand-border-loud);
+  --kui-content-item-background: var(--kui-color-brand-fill-loud);
+  --kui-content-item-foreground: var(--kui-color-brand-on-loud);
+}
+
+/* Chat bubble: the item shrinks to its content up to 80% of the row and sits
+   at the start or end of the line; long unbroken text wraps inside it. */
+.kui-content-item[data-bubble] {
+  width: fit-content;
+  max-width: 80%;
+  overflow-wrap: anywhere;
+}
+
+.kui-content-item[data-bubble="end"] {
+  margin-inline-start: auto;
+}
+
 .kui-content-item[data-appearance="danger"] {
   --kui-content-item-border: var(--kui-color-danger-border-quiet);
   --kui-content-item-background: var(--kui-color-danger-fill-quiet);

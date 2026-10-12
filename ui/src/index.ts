@@ -330,6 +330,7 @@ export {
 export {
   ContentItem,
   type ContentItemAppearance,
+  type ContentItemBubble,
   type ContentItemFrame,
   type ContentItemProps,
   type ContentItemSelectionMode,

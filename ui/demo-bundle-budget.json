@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 356500,
-  "measuredLargestJavaScriptGzip": 139419,
-  "measuredTotalJavaScriptGzip": 356412,
+  "totalJavaScriptGzip": 356800,
+  "measuredLargestJavaScriptGzip": 139778,
+  "measuredTotalJavaScriptGzip": 356784,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3811,6 +3811,22 @@
         "measuredTotalJavaScriptGzip": 356412,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 356500
+      }
+    },
+    {
+      "at": "2026-10-12T23:22:25.089Z",
+      "reason": "ContentItem bubble and brand-loud, plus the transcript catalog example (KF-M3HJK8)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 139419,
+        "measuredTotalJavaScriptGzip": 356412,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 356500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 139778,
+        "measuredTotalJavaScriptGzip": 356784,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 356800
       }
     }
   ]

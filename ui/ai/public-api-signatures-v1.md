@@ -1055,8 +1055,17 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 
-/** Base surface treatment or semantic status colors. */
-type ContentItemAppearance = 'transparent' | 'surface' | SemanticTone;
+/**
+ * Base surface treatment, semantic status colors, or `brand-loud`: the solid
+ * brand fill with its on-loud foreground (a transcript's own messages).
+ */
+type ContentItemAppearance = 'transparent' | 'surface' | 'brand-loud' | SemanticTone;
+/**
+ * A chat-bubble layout for transcripts: the item fits its content up to 80%
+ * of the row and sits at the `start` (other participants) or `end` (the
+ * person's own messages) of the line.
+ */
+type ContentItemBubble = 'start' | 'end';
 /** Whether the item's always-reserved 1px border is transparent or visible. */
 type ContentItemFrame = 'none' | 'framed';
 /** Corner shape: the 12px rounded rectangle or the 22px pill. */
@@ -1067,11 +1076,13 @@ type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | unde
     'data-component'?: never;
     'data-appearance'?: never;
     'data-outlined'?: never;
+    'data-bubble'?: never;
 }>;
 type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-appearance'?: never;
     'data-outlined'?: never;
+    'data-bubble'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -1099,6 +1110,12 @@ interface ContentItemBaseProps {
     flush?: boolean;
     /** Corner shape. Defaults to `rounded`. */
     shape?: ContentItemShape;
+    /**
+     * Lay the item out as a chat bubble: content width up to 80% of the row,
+     * at the `start` or `end` of the line. Pair `end` with `brand-loud` for the
+     * person's own messages. Omit for an ordinary full-width item.
+     */
+    bubble?: ContentItemBubble;
     /** Native hover tooltip. */
     title?: string;
     /**
@@ -1147,9 +1164,9 @@ type ContentItemProps = ContentItemBaseProps & ({
  * border (transparent unless `framed`), 8px padding, and a rounded or pill
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
-declare function ContentItem({ appearance, children, frame, flush, shape, title, ariaLabel, focusTarget, outlined, tabIndex, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
+declare function ContentItem({ appearance, children, frame, flush, shape, bubble, title, ariaLabel, focusTarget, outlined, tabIndex, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
-export { ContentItem, type ContentItemAppearance, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape, SemanticTone };
+export { ContentItem, type ContentItemAppearance, type ContentItemBubble, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape, SemanticTone };
 ```
 
 ## `@kerfjs/ui/value-table`

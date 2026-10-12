@@ -139,6 +139,44 @@ export function ContentItemDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
+        label="Transcript bubbles"
+        note={
+          <>
+            <code>bubble</code> fits an item to its message up to 80% of the
+            row: <code>start</code> for other participants and <code>end</code>{' '}
+            with the <code>brand-loud</code> appearance for the person's own
+            messages.
+          </>
+        }
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <Pane label="Assistant conversation">
+          <List gap="xs" rootAttributes={{ 'data-demo-transcript': '' }}>
+            <ContentItem
+              bubble="end"
+              appearance="brand-loud"
+              rootAttributes={{ 'data-demo-bubble': 'user' }}
+            >
+              <Text variant="span">Summarize the failing checks.</Text>
+            </ContentItem>
+            <ContentItem
+              bubble="start"
+              appearance="neutral"
+              rootAttributes={{ 'data-demo-bubble': 'assistant' }}
+            >
+              <Text variant="span">
+                Two checks fail: the bundle budget grew by 213 bytes, and the
+                design-template drift render is missing the new variant.
+              </Text>
+            </ContentItem>
+            <ContentItem bubble="end" appearance="brand-loud">
+              <Text variant="span">Thanks!</Text>
+            </ContentItem>
+          </List>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
         label="Pill shape"
         note={
           <>

@@ -4,8 +4,19 @@ import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 
 export type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 
-/** Base surface treatment or semantic status colors. */
-export type ContentItemAppearance = 'transparent' | 'surface' | SemanticTone;
+/**
+ * Base surface treatment, semantic status colors, or `brand-loud`: the solid
+ * brand fill with its on-loud foreground (a transcript's own messages).
+ */
+export type ContentItemAppearance =
+  'transparent' | 'surface' | 'brand-loud' | SemanticTone;
+
+/**
+ * A chat-bubble layout for transcripts: the item fits its content up to 80%
+ * of the row and sits at the `start` (other participants) or `end` (the
+ * person's own messages) of the line.
+ */
+export type ContentItemBubble = 'start' | 'end';
 
 /** Whether the item's always-reserved 1px border is transparent or visible. */
 export type ContentItemFrame = 'none' | 'framed';
@@ -34,11 +45,13 @@ const contentItemProtectedAttributes = new Set([
   'data-component',
   'data-appearance',
   'data-outlined',
+  'data-bubble',
 ]);
 const interactiveProtectedAttributes = new Set([
   'data-component',
   'data-appearance',
   'data-outlined',
+  'data-bubble',
   'data-action',
   'data-item-id',
   'data-interactive',
@@ -53,6 +66,7 @@ type ContentItemRootAttributes = Readonly<
     'data-component'?: never;
     'data-appearance'?: never;
     'data-outlined'?: never;
+    'data-bubble'?: never;
   }
 >;
 
@@ -61,6 +75,7 @@ type ContentItemInteractiveRootAttributes = Readonly<
     'data-component'?: never;
     'data-appearance'?: never;
     'data-outlined'?: never;
+    'data-bubble'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -90,6 +105,12 @@ interface ContentItemBaseProps {
   flush?: boolean;
   /** Corner shape. Defaults to `rounded`. */
   shape?: ContentItemShape;
+  /**
+   * Lay the item out as a chat bubble: content width up to 80% of the row,
+   * at the `start` or `end` of the line. Pair `end` with `brand-loud` for the
+   * person's own messages. Omit for an ordinary full-width item.
+   */
+  bubble?: ContentItemBubble;
   /** Native hover tooltip. */
   title?: string;
   /**
@@ -150,6 +171,7 @@ export function ContentItem({
   frame = 'none',
   flush = false,
   shape = 'rounded',
+  bubble,
   title,
   ariaLabel,
   focusTarget = false,
@@ -210,6 +232,7 @@ export function ContentItem({
       data-component="content-item"
       data-appearance={appearance}
       data-outlined={outlined ? 'true' : undefined}
+      data-bubble={bubble}
       role={role}
       aria-label={ariaLabel}
       aria-selected={

@@ -47,6 +47,8 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 - framed pill item
 - base surface item
 - neutral, info, pop, success, warning, or danger semantic item
+- brand-loud item (solid brand fill, on-loud foreground)
+- chat bubble at the start or end of the row (bubble), fit to its content up to 80%
 - named focus-target region
 - multi-select rich grid row
 

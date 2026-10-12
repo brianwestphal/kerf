@@ -203,7 +203,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   own the geometry (8px inline margin + 1px border + 8px padding). Render an
   ordinary surface-like child as `ContentItem` (`@kerfjs/ui/content-item`) with
   typed `frame` (`none`/`framed`) and `shape` (`rounded`/`pill`) props instead
-  of hand-writing `<div class="kui-content-item">`. Do not add a
+  of hand-writing `<div class="kui-content-item">`. For a chat transcript, set
+  `bubble="start"` (other participants) or `bubble="end"` with
+  `appearance="brand-loud"` (the person's own messages): the item fits its
+  message up to 80% of the row. Do not add a
   container padding on top of a content-item's own margin — pick one owner. Use
   `.kui-content` for 24px major vertical rhythm.
 - **Opt into document globals explicitly.** Import `@kerfjs/ui/document.css`
