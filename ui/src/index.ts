@@ -30,6 +30,11 @@ export {
   type PopupMenuProps,
 } from './components/actions/popup-menu/popup-menu.js';
 export {
+  SplitButton,
+  type SplitButtonProps,
+  type SplitButtonTone,
+} from './components/actions/split-button/split-button.js';
+export {
   Toolbar,
   type ToolbarConfig,
   type ToolbarPosition,

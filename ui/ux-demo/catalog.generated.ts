@@ -619,6 +619,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "split-button",
+    "name": "SplitButton",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.",
+    "uses": [
+      "lucide-icon",
+      "loading-spinner"
+    ],
+    "demoSource": "ui/ux-demo/demos/split-button.tsx",
+    "componentSource": "ui/src/components/actions/split-button/split-button.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "feedback",
     "name": "Feedback",
     "category": "Feedback",

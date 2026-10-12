@@ -1,0 +1,95 @@
+/* One loud semantic fill split into a primary half and a narrow options
+   trigger, with a hairline divider in the foreground color. Both halves are
+   native buttons on the shared fill; each brightens on its own hover. */
+.kui-split-button {
+  --_kui-split-button-fill: var(--kui-color-brand-fill-loud);
+  --_kui-split-button-on: var(--kui-color-brand-on-loud);
+  display: inline-grid;
+  min-width: 0;
+  min-height: remify(44px);
+  overflow: hidden;
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: var(--_kui-split-button-on);
+  background: var(--_kui-split-button-fill);
+  grid-template-columns: minmax(0, auto) remify(40px);
+  font-weight: var(--kui-font-weight-semibold);
+}
+
+.kui-split-button[data-tone="neutral"] {
+  --_kui-split-button-fill: var(--kui-color-neutral-fill-loud);
+  --_kui-split-button-on: var(--kui-color-neutral-on-loud);
+}
+
+.kui-split-button[data-tone="success"] {
+  --_kui-split-button-fill: var(--kui-color-success-fill-loud);
+  --_kui-split-button-on: var(--kui-color-success-on-loud);
+}
+
+.kui-split-button[data-tone="warning"] {
+  --_kui-split-button-fill: var(--kui-color-warning-fill-loud);
+  --_kui-split-button-on: var(--kui-color-warning-on-loud);
+}
+
+.kui-split-button[data-tone="danger"] {
+  --_kui-split-button-fill: var(--kui-color-danger-fill-loud);
+  --_kui-split-button-on: var(--kui-color-danger-on-loud);
+}
+
+.kui-split-button[data-fill="true"] {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) remify(40px);
+}
+
+.kui-split-button > button {
+  display: flex;
+  min-width: 0;
+  min-height: remify(44px);
+  margin: 0;
+  padding-block: var(--kui-space-xs);
+  padding-inline: var(--kui-space-s);
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kui-space-xs);
+  font: inherit;
+}
+
+.kui-split-button > .kui-split-button__options {
+  padding-inline: 0;
+  border-inline-start: 1px solid
+    color-mix(in srgb, currentColor 28%, transparent);
+}
+
+.kui-split-button > button:hover:not(:disabled) {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+/* The group clips outer outlines at its rounded corners, so the ring sits
+   inside each half. */
+.kui-split-button > button:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+
+.kui-split-button > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.kui-split-button__icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+}
+
+.kui-split-button__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

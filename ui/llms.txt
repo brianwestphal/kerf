@@ -527,6 +527,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `presentation="strip"` renders a flush, square, full-width band for a
   layout edge with tone-colored `dividerSides` (bottom by default) instead of
   the inset rounded card; never restyle a card into a strip.
+- **Use `SplitButton` for a primary action with options.** One loud semantic
+  fill with a native primary button and an options trigger (`aria-expanded`,
+  `aria-haspopup`); `tone`, `fill`, `busy`, and `disabled` are props. Never
+  build one from `wa-button-group` or app CSS on native buttons.
 - **Use `IconToggleButton` for an icon toggle outside a Toolbar.** In content or a
   pane footer, `IconToggleButton({ icon, iconName, label, pressed, action })`
   gives a native `aria-pressed` button the single contained toolbar group's

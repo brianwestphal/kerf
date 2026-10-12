@@ -36,6 +36,7 @@ import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
 import { SkeletonDemo } from './skeleton.js';
 import { SpacerDemo } from './spacer.js';
+import { SplitButtonDemo } from './split-button.js';
 import { SplitViewDemo } from './split-view.js';
 import { StateBannerDemo } from './state-banner.js';
 import { SunkenPanelDemo } from './sunken-panel.js';
@@ -97,6 +98,7 @@ export const demos = {
   'corner-status': CornerStatusDemo,
   'icon-button': IconButtonDemo,
   'icon-toggle-button': IconToggleButtonDemo,
+  'split-button': SplitButtonDemo,
   'framed-list': FramedListDemo,
   'sunken-panel': SunkenPanelDemo,
   'empty-state': EmptyStateDemo,

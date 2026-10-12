@@ -261,6 +261,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `StateBanner`                                                       | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`          |
 | `IconButton`                                                        | `@kerfjs/ui/icon-button`                | `@kerfjs/ui/icon-button.css`           |
 | `IconToggleButton`                                                  | `@kerfjs/ui/icon-toggle-button`         | `@kerfjs/ui/icon-toggle-button.css`    |
+| `SplitButton`                                                       | `@kerfjs/ui/split-button`               | `@kerfjs/ui/split-button.css`          |
 | `FramedList`, `FramedListRow`                                       | `@kerfjs/ui/framed-list`                | `@kerfjs/ui/framed-list.css`           |
 | `CornerStatus`                                                      | `@kerfjs/ui/corner-status`              | `@kerfjs/ui/corner-status.css`         |
 | `wireCornerStatus`                                                  | `@kerfjs/ui/wire-corner-status`         | —                                      |

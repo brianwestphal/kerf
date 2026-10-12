@@ -4051,6 +4051,68 @@ declare function IconToggleButton({ icon, iconName, label, pressed, action, shap
 export { IconToggleButton, type IconToggleButtonProps, type IconToggleButtonShape };
 ```
 
+## `@kerfjs/ui/split-button`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+/** The loud fill the whole split button paints. */
+type SplitButtonTone = 'brand' | 'neutral' | 'success' | 'warning' | 'danger';
+type SplitButtonRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-tone'?: never;
+    'data-fill'?: never;
+    'data-busy'?: never;
+}>;
+interface SplitButtonProps {
+    /** Visible primary label. */
+    label: string;
+    /** Delegated `data-action` of the primary half. */
+    action: string;
+    /** Optional decorative leading icon of the primary half. */
+    icon?: SafeHtml;
+    /** Primary accessible name when it should say more than `label`. */
+    accessibleLabel?: string;
+    /** Accessible name (and tooltip) of the options trigger. */
+    optionsLabel: string;
+    /** Delegated `data-action` of the options trigger, which opens the app's menu. */
+    optionsAction: string;
+    /** Whether the options menu is open, exposed as `aria-expanded`. */
+    optionsExpanded?: boolean;
+    /** What the options trigger opens, exposed as `aria-haspopup`; defaults to `menu`. */
+    optionsPopup?: 'menu' | 'dialog' | 'listbox';
+    /** Element id the options trigger controls, exposed as `aria-controls`. */
+    optionsControls?: string;
+    /** The loud fill; defaults to `brand`. Switch it (for example to `neutral`) while running. */
+    tone?: SplitButtonTone;
+    /** Span the full width of the parent instead of sizing to the label. */
+    fill?: boolean;
+    /** Show work in progress: a spinner replaces the icon and the primary is `aria-busy`. */
+    busy?: boolean;
+    /** Disable the primary half. */
+    disabled?: boolean;
+    /** Disable the options trigger. */
+    optionsDisabled?: boolean;
+    /** Native tooltip of the primary half, for example why it is disabled. */
+    title?: string;
+    className?: string;
+    /** Safe `data-*` metadata; SplitButton-owned markers stay protected. */
+    rootAttributes?: SplitButtonRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A primary action with an attached options trigger on one loud, semantic
+ * fill (a "Drive" button with a provider menu). Both halves are native
+ * buttons, so `aria-expanded` and the accessible names reach assistive
+ * technology directly; the application opens its own menu from the options
+ * action and owns the running state.
+ */
+declare function SplitButton({ label, action, icon, accessibleLabel, optionsLabel, optionsAction, optionsExpanded, optionsPopup, optionsControls, tone, fill, busy, disabled, optionsDisabled, title, className, rootAttributes, slot, }: SplitButtonProps): SafeHtml;
+
+export { SplitButton, type SplitButtonProps, type SplitButtonTone };
+```
+
 ## `@kerfjs/ui/corner-status`
 
 ```ts

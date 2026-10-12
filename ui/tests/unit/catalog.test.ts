@@ -537,6 +537,7 @@ describe('UX catalog metadata', () => {
       'PopupMenu',
       'IconButton',
       'IconToggleButton',
+      'SplitButton',
       'StateBanner',
       'CornerStatus',
       'EmptyState',
@@ -587,6 +588,7 @@ describe('UX catalog metadata', () => {
     ).toEqual([
       'list-action-row',
       'list-item',
+      'split-button',
       'feedback',
       'empty-state',
       'recipe-list-workspace-states',

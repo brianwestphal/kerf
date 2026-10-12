@@ -15,6 +15,7 @@ Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.
 **Alternatives:**
 
 - [SegmentedControl](./segmented-control.md) (prefer-kerf)
+- [SplitButton](./split-button.md) (prefer-kerf) — For a primary action with an attached options trigger, use SplitButton.
 
 ## Imports
 
@@ -54,6 +55,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Button](./wa-button.md), [SegmentedControl](./segmented-control.md).
+- Components: [Button](./wa-button.md), [SegmentedControl](./segmented-control.md), [SplitButton](./split-button.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage), [`docs/component-selection.md#web-awesome-overlap-policy`](../../docs/component-selection.md#web-awesome-overlap-policy).
 - UX catalog route: `?component=wa-button-group`.

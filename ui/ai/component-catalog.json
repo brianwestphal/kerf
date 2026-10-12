@@ -5138,6 +5138,98 @@
       }
     },
     {
+      "id": "split-button",
+      "name": "SplitButton",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A primary action with an attached options trigger on one loud semantic fill.",
+      "uses": [
+        "lucide-icon",
+        "loading-spinner"
+      ],
+      "purpose": "Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.",
+      "publicExports": [
+        "SplitButton"
+      ],
+      "useWhen": [
+        "A prominent primary action has a closely related set of options chosen from an attached trigger, such as Drive with a provider menu or Deploy with targets."
+      ],
+      "avoidWhen": [
+        "Do not use for a plain action without options; use wa-button.",
+        "Do not use inside a Toolbar for a command menu; use PopupMenu in a ToolbarControlGroup.",
+        "Do not use wa-button-group to build one; its hosts do not forward aria-expanded or names to their inner buttons."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-button-group",
+          "relationship": "prefer-over",
+          "when": "SplitButton's native halves expose names and aria-expanded directly."
+        },
+        {
+          "id": "popup-menu",
+          "relationship": "composes-with",
+          "when": "Open the app's options menu from optionsAction; PopupMenu remains the command menu inside a toolbar."
+        }
+      ],
+      "appOwns": [
+        "the primary and options actions",
+        "the options menu and its open state",
+        "the running state, tone switch, and copy"
+      ],
+      "variants": [
+        "brand, neutral, success, warning, or danger tone",
+        "content width or fill",
+        "busy",
+        "disabled primary or options"
+      ],
+      "accessibility": [
+        "Both halves are native buttons in a group; the options trigger exposes aria-haspopup, aria-expanded, and optional aria-controls, and needs optionsLabel. busy sets aria-busy on the primary."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/split-button",
+        "manualCssImport": "@kerfjs/ui/split-button.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-split-button",
+        "kui-split-button__options",
+        "kui-split-button__icon",
+        "kui-split-button__label"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-fill-loud",
+        "--kui-color-brand-on-loud",
+        "--kui-color-neutral-fill-loud",
+        "--kui-color-neutral-on-loud",
+        "--kui-color-success-fill-loud",
+        "--kui-color-success-on-loud",
+        "--kui-color-warning-fill-loud",
+        "--kui-color-warning-on-loud",
+        "--kui-color-danger-fill-loud",
+        "--kui-color-danger-on-loud",
+        "--kui-focus-ring",
+        "--kui-font-weight-semibold",
+        "--kui-layout-rounded-radius",
+        "--kui-space-s",
+        "--kui-space-xs"
+      ],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=split-button",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "feedback",
       "name": "Feedback",
       "category": "Feedback",
@@ -5823,6 +5915,11 @@
         {
           "id": "segmented-control",
           "relationship": "prefer-kerf"
+        },
+        {
+          "id": "split-button",
+          "relationship": "prefer-kerf",
+          "when": "For a primary action with an attached options trigger, use SplitButton."
         }
       ],
       "geometry": {

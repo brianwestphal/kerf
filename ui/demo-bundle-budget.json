@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 344400,
-  "measuredLargestJavaScriptGzip": 127953,
-  "measuredTotalJavaScriptGzip": 344355,
+  "totalJavaScriptGzip": 345500,
+  "measuredLargestJavaScriptGzip": 128763,
+  "measuredTotalJavaScriptGzip": 345426,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3523,6 +3523,22 @@
         "measuredTotalJavaScriptGzip": 344355,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 344400
+      }
+    },
+    {
+      "at": "2026-10-12T13:50:06.288Z",
+      "reason": "SplitButton component and its interactive catalog demo (KF-KFC7C2)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 127953,
+        "measuredTotalJavaScriptGzip": 344355,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 344400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128763,
+        "measuredTotalJavaScriptGzip": 345426,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 345500
       }
     }
   ]

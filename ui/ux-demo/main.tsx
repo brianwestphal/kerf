@@ -128,6 +128,8 @@ import {
   selectedChoice,
   selectViewTitle,
   sizedDisclosureOpen,
+  splitButtonOptionsOpen,
+  splitButtonRunning,
   tabBarActive,
   tabBarTabs,
   ticketLabelFilter,
@@ -743,6 +745,18 @@ const stopActions = delegateActions(app, 'click', {
       );
       actionLog.value = `Loaded ${id}`;
     }, DEMO_TAB_LOAD_MS);
+  },
+  'toggle-split-button-demo': () => {
+    splitButtonRunning.value = !splitButtonRunning.value;
+    actionLog.value = splitButtonRunning.value
+      ? 'Drive started'
+      : 'Drive stopped';
+  },
+  'toggle-split-button-options-demo': () => {
+    splitButtonOptionsOpen.value = !splitButtonOptionsOpen.value;
+    actionLog.value = splitButtonOptionsOpen.value
+      ? 'Drive options opened'
+      : 'Drive options closed';
   },
   'toggle-icon-toggle-demo': () => {
     iconToggleConversationOpen.value = !iconToggleConversationOpen.value;

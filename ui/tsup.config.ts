@@ -64,6 +64,7 @@ const entries = [
   'corner-status',
   'icon-button',
   'icon-toggle-button',
+  'split-button',
   'framed-list',
   'wire-corner-status',
   'empty-state',
