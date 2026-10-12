@@ -3466,6 +3466,17 @@ type TextFont = 'default' | 'monospace';
 type TextBorder = 'transparent' | 'none';
 type TextLineHeight = 'default' | 'tight';
 type TextWrap = 'normal' | 'anywhere' | 'nowrap' | 'truncate';
+/**
+ * Where `wrap="truncate"` places its ellipsis: `end` (default) keeps the
+ * start, `start` keeps the tail (branch names, the end of an identifier), and
+ * `middle` keeps both the start and a suffix (file paths).
+ */
+type TextTruncate = 'end' | 'middle' | 'start';
+/**
+ * The suffix `truncate="middle"` always keeps: a number of trailing
+ * characters, or `segment` for the last path segment with its separator.
+ */
+type TextTruncateKeep = number | 'segment';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
 type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
@@ -3495,19 +3506,39 @@ type TextProps = TextCommonProps & ({
     wrap?: 'normal' | 'anywhere';
     /** Cap wrapped text to this positive number of lines. */
     maxLines?: number;
+    truncate?: never;
+    truncateKeep?: never;
 } | {
-    /** Keep one line, with or without an ellipsis. */
-    wrap: 'nowrap' | 'truncate';
+    /** Keep one line without an ellipsis. */
+    wrap: 'nowrap';
     maxLines?: never;
+    truncate?: never;
+    truncateKeep?: never;
+} | {
+    /** Keep one line with an ellipsis. */
+    wrap: 'truncate';
+    maxLines?: never;
+    /**
+     * Where the ellipsis goes (default `end`). `start` and `middle` are
+     * for left-to-right identifiers and paths, and `middle` requires
+     * string or number children so it can split them.
+     */
+    truncate?: TextTruncate;
+    /**
+     * The suffix `truncate="middle"` keeps (default `segment`: the last
+     * path segment, or the last 10 characters when there is no `/` or
+     * `\\` separator).
+     */
+    truncateKeep?: TextTruncateKeep;
 });
 /**
  * Semantic heading, paragraph, or inline text. Block variants use the standard
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, color, size, font, border, flush, controlMargins, lineHeight, wrap, maxLines, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, color, size, font, border, flush, controlMargins, lineHeight, wrap, maxLines, truncate, truncateKeep, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
 
-export { FieldLabel, type FieldLabelProps, Sides, Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextVariant, type TextWrap };
+export { FieldLabel, type FieldLabelProps, Sides, Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWrap };
 ```
 
 ## `@kerfjs/ui/row`

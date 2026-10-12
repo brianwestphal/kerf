@@ -45,6 +45,42 @@ span.kui-text[data-wrap="truncate"] {
   max-width: 100%;
 }
 
+/* Tail-preserving truncation: the clip box runs right to left so its ellipsis
+   lands at the start, while the isolated left-to-right run keeps the text's
+   own order and punctuation. Short text that fits stays left-aligned. */
+.kui-text__truncate-start {
+  display: block;
+  overflow: hidden;
+  direction: rtl;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Middle truncation: the head shrinks to an ellipsis while the kept suffix
+   (the last path segment) stays whole. Pre keeps a space at the split. */
+.kui-text__truncate-middle {
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.kui-text__truncate-head,
+.kui-text__truncate-tail {
+  white-space: pre;
+}
+
+.kui-text__truncate-head {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kui-text__truncate-tail {
+  flex: 0 0 auto;
+}
+
 .kui-text__clamp {
   display: -webkit-box;
   overflow: hidden;

@@ -41,6 +41,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 - default or monospace font
 - flush item geometry and tight line height
 - controlMargins selects exterior 8px gutters with canonical physical Sides
+- wrap normal, anywhere, nowrap, or truncate; truncate places its ellipsis at the end, the start (keeping the tail), or the middle (keeping the last path segment or a character suffix)
 
 ## Composition
 
@@ -67,6 +68,7 @@ Margin: self · border: self · padding: self (layout role: structure). `self` m
 - Ordinary global, data, and ARIA attributes pass through to the native element.
 - Choose tone, size, and font independently of the heading level so appearance does not distort the document outline.
 - FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby.
+- Start and middle truncation clip visually only: the whole value stays in the DOM in reading order, and Text shows it as the element's title unless the app supplies one.
 
 ## Styling boundary
 

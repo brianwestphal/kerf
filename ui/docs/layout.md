@@ -473,6 +473,17 @@ width. On `normal` or `anywhere`, set a positive integer `maxLines` to clamp
 wrapped text with an ellipsis. Omit `maxLines` for unlimited lines. The cap is
 incompatible with `nowrap` and `truncate`.
 
+With `wrap="truncate"`, `truncate` chooses where the ellipsis goes: `end`
+(default) keeps the start; `start` keeps the tail, for a branch name or the
+end of an identifier; and `middle` keeps the start and a suffix, for a file
+path. `truncateKeep` sets that suffix: `segment` (default) keeps the last path
+segment with its `/` or `\` separator (the last 10 characters when there is
+none), or a number keeps that many trailing characters. `middle` needs string
+or number children so it can split them. Both positions are for left-to-right
+identifiers and paths, keep the whole value in the DOM in order for assistive
+technology, and show it as the element's `title` unless you pass your own.
+Never hand-roll these with `direction: rtl` or split spans in app CSS.
+
 ```tsx
 import { Text } from "@kerfjs/ui/text";
 
@@ -486,6 +497,8 @@ import { Text } from "@kerfjs/ui/text";
 <Text tone="danger" font="monospace">ERR_INVALID_ID</Text>;
 <Text wrap="anywhere">A-very-long-unbroken-identifier</Text>;
 <Text wrap="truncate" variant="span">Long vendor name</Text>;
+<Text wrap="truncate" truncate="middle" font="monospace">{path}</Text>;
+<Text wrap="truncate" truncate="start" variant="span">{branchName}</Text>;
 <Text wrap="normal" maxLines={2}>A long summary capped at two lines.</Text>;
 ```
 

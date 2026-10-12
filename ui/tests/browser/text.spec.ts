@@ -319,6 +319,63 @@ test('Text wrap policies keep long copy within the row and cap summaries', async
   }
 });
 
+test('Text truncates a path in the middle and a branch name at the start', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=text');
+  const middle = page.locator('[data-demo-copy="truncate-middle"]');
+  const start = page.locator('[data-demo-copy="truncate-start"]');
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await middle.scrollIntoViewIfNeeded();
+    await expect(middle).toHaveAttribute('title', /tab-overflow-menu\.tsx$/);
+    await expect(start).toHaveAttribute('title', /^feature\/kf-482/);
+    const geometry = await page.evaluate(() => {
+      const box = (selector: string) =>
+        document.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
+      const head = document.querySelector<HTMLElement>(
+        '[data-demo-copy="truncate-middle"] .kui-text__truncate-head',
+      )!;
+      const clip = document.querySelector<HTMLElement>(
+        '[data-demo-copy="truncate-start"] .kui-text__truncate-start',
+      )!;
+      const run = clip.firstElementChild!.getBoundingClientRect();
+      const clipBox = clip.getBoundingClientRect();
+      return {
+        headClipped: head.scrollWidth > head.clientWidth,
+        tailEnd: box(
+          '[data-demo-copy="truncate-middle"] .kui-text__truncate-tail',
+        ).right,
+        middleEnd: box(
+          '[data-demo-copy="truncate-middle"] .kui-text__truncate-middle',
+        ).right,
+        startClipped: clip.scrollWidth > clip.clientWidth,
+        runStartDelta: run.left - clipBox.left,
+        runEndDelta: run.right - clipBox.right,
+        ellipsis: window.getComputedStyle(clip).textOverflow,
+      };
+    });
+    // The kept suffix stays whole inside the box while the head shrinks.
+    expect(geometry.headClipped).toBe(true);
+    expect(geometry.tailEnd).toBeLessThanOrEqual(geometry.middleEnd + 1);
+    expect(geometry.ellipsis).toBe('ellipsis');
+    if (width === 390) {
+      // Overflowing, the run's tail is flush with the box end and its start
+      // is clipped behind the leading ellipsis.
+      expect(geometry.startClipped).toBe(true);
+      expect(Math.abs(geometry.runEndDelta)).toBeLessThanOrEqual(1);
+      expect(geometry.runStartDelta).toBeLessThan(0);
+    } else {
+      // Fitting text stays left-aligned with its neighbors.
+      expect(geometry.startClipped).toBe(false);
+      expect(Math.abs(geometry.runStartDelta)).toBeLessThanOrEqual(1);
+    }
+    await middle
+      .locator('..')
+      .screenshot({ path: testInfo.outputPath(`text-truncate-${width}.png`) });
+  }
+});
+
 test('Text font="monospace" resolves to the Kerf code stack with Web Awesome loaded', async ({
   page,
   browserName,

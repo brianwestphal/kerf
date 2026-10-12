@@ -122,7 +122,7 @@ export function TextDemo() {
       </CatalogExample>
       <CatalogExample
         label="Long copy and truncation"
-        note="Text breaks long identifiers, caps summaries, or yields space to a fixed sibling with a one-line ellipsis."
+        note="Text breaks long identifiers, caps summaries, yields space to a fixed sibling with a one-line ellipsis, and truncates a path in the middle or a branch name at the start."
         align="inline-control"
         viewport={{ width: 'medium' }}
       >
@@ -144,6 +144,22 @@ export function TextDemo() {
         </Row>
         <Text wrap="nowrap" data-demo-copy="nowrap">
           This status stays on one line.
+        </Text>
+        <Text
+          wrap="truncate"
+          truncate="middle"
+          font="monospace"
+          data-demo-copy="truncate-middle"
+        >
+          src/components/navigation/application-tabs/internal/tab-overflow-menu.tsx
+        </Text>
+        <Text
+          wrap="truncate"
+          truncate="start"
+          font="monospace"
+          data-demo-copy="truncate-start"
+        >
+          feature/kf-482-procurement-approval-routing-refactor
         </Text>
       </CatalogExample>
     </CatalogExampleStack>

@@ -65,6 +65,98 @@ describe('Text wrapping', () => {
   });
 });
 
+describe('Text truncation position', () => {
+  const head = (html: string) =>
+    /kui-text__truncate-head">([^<]*)</.exec(html)?.[1];
+  const tail = (html: string) =>
+    /kui-text__truncate-tail">([^<]*)</.exec(html)?.[1];
+
+  it('keeps end truncation unchanged and untitled', () => {
+    for (const truncate of [undefined, 'end'] as const) {
+      const html = String(
+        Text({ children: 'Vendor', wrap: 'truncate', truncate }),
+      );
+      expect(html).toContain('data-wrap="truncate"');
+      expect(html).not.toContain('data-truncate');
+      expect(html).not.toContain('title=');
+      expect(html).toContain('>Vendor</p>');
+    }
+  });
+
+  it('keeps the tail in an isolated left-to-right run for start truncation', () => {
+    const html = String(
+      Text({
+        children: 'feature/kf-123-long-branch',
+        wrap: 'truncate',
+        truncate: 'start',
+        variant: 'span',
+      }),
+    );
+    expect(html).toContain('data-truncate="start"');
+    expect(html).toContain('title="feature/kf-123-long-branch"');
+    expect(html).toContain(
+      '<span class="kui-text__truncate-start"><span dir="ltr">feature/kf-123-long-branch</span></span>',
+    );
+  });
+
+  it('splits middle truncation at the last path segment by default', () => {
+    const cases: [string, string, string][] = [
+      ['src/components/text/text.tsx', 'src/components/text', '/text.tsx'],
+      ['C:\\repo\\src\\main.ts', 'C:\\repo\\src', '\\main.ts'],
+      ['src/lib/', 'src', '/lib/'],
+      ['a-very-long-identifier-value', 'a-very-long-identi', 'fier-value'],
+      ['short', 'short', ''],
+      ['/root', '/root', ''],
+    ];
+    for (const [text, expectedHead, expectedTail] of cases) {
+      const html = String(
+        Text({ children: text, wrap: 'truncate', truncate: 'middle' }),
+      );
+      expect(html).toContain('data-truncate="middle"');
+      expect(head(html)).toBe(expectedHead);
+      expect(tail(html) ?? '').toBe(expectedTail);
+      // The DOM keeps the whole value in order for assistive technology.
+      expect((head(html) ?? '') + (tail(html) ?? '')).toBe(text);
+    }
+  });
+
+  it('keeps an explicit character suffix, numbers, and an app title', () => {
+    const html = String(
+      Text({
+        children: 1234567890,
+        wrap: 'truncate',
+        truncate: 'middle',
+        truncateKeep: 4,
+        title: 'Order number',
+      }),
+    );
+    expect(head(html)).toBe('123456');
+    expect(tail(html)).toBe('7890');
+    expect(html).toContain('title="Order number"');
+    expect(html).not.toContain('title="1234567890"');
+  });
+
+  it('rejects invalid truncation combinations for JavaScript callers', () => {
+    const bad = (props: Record<string, unknown>) => () =>
+      Text({ children: 'a/b', ...props } as unknown as TextProps);
+    expect(bad({ truncate: 'middle' })).toThrow(RangeError);
+    expect(bad({ wrap: 'nowrap', truncate: 'start' })).toThrow(RangeError);
+    expect(bad({ wrap: 'truncate', truncate: 'center' })).toThrow(RangeError);
+    expect(bad({ wrap: 'truncate', truncateKeep: 3 })).toThrow(RangeError);
+    for (const truncateKeep of [0, -2, 1.5, 'last'])
+      expect(
+        bad({ wrap: 'truncate', truncate: 'middle', truncateKeep }),
+      ).toThrow(RangeError);
+    expect(() =>
+      Text({
+        children: ['a', 'b'],
+        wrap: 'truncate',
+        truncate: 'middle',
+      }),
+    ).toThrow(TypeError);
+  });
+});
+
 describe('Text control margins', () => {
   it('omits an empty margin selection and projects every canonical side combination', () => {
     for (const controlMargins of [undefined, ''] as const)
