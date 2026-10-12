@@ -368,6 +368,13 @@ action needs a separate trailing row. The default values keep both inline;
 `--kui-state-banner-copy-gap` and `--kui-state-banner-copy-row-gap` adjust the
 stacked copy's spacing at an instance boundary.
 
+For a full-width status band at a layout edge — above a workspace, below an
+app bar — use `presentation="strip"` instead of restyling the card: it is flush
+(no inline margin), square, puts its copy on the shared content-text column,
+and draws only tone-colored `dividerSides` edges (bottom by default; `''` for
+none). Keep the default `card` presentation for a banner beside the affected
+work inside a pane.
+
 For a compact `Select`, set `triggerWidth` to `"fit-content"`, `"max-content"`,
 or `"fill"` and cap it with `--kui-select-trigger-max-width` when needed.
 For a round icon-only toolbar trigger, set `selectedPresentation="icon-only"`

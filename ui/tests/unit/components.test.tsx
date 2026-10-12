@@ -2340,6 +2340,30 @@ describe('production UI primitives', () => {
         }),
       ),
     ).toContain('data-copy-layout="stacked" data-action-placement="below"');
+    const card = asHtml(StateBanner({ title: 'Card', dividerSides: 't' }));
+    expect(card).toContain('data-presentation="card"');
+    expect(card).not.toContain('divider-sides');
+    expect(
+      asHtml(StateBanner({ title: 'Strip', presentation: 'strip' })),
+    ).toContain('data-presentation="strip" divider-sides="b"');
+    expect(
+      asHtml(
+        StateBanner({
+          title: 'Strip',
+          presentation: 'strip',
+          dividerSides: 'tb',
+        }),
+      ),
+    ).toContain('divider-sides="tb"');
+    expect(
+      asHtml(
+        StateBanner({
+          title: 'Strip',
+          presentation: 'strip',
+          dividerSides: '',
+        }),
+      ),
+    ).not.toContain('divider-sides');
     for (const tone of [
       'neutral',
       'info',

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 340600,
-  "measuredLargestJavaScriptGzip": 124569,
-  "measuredTotalJavaScriptGzip": 340585,
+  "totalJavaScriptGzip": 340800,
+  "measuredLargestJavaScriptGzip": 124690,
+  "measuredTotalJavaScriptGzip": 340731,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3363,6 +3363,22 @@
         "measuredTotalJavaScriptGzip": 340585,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 340600
+      }
+    },
+    {
+      "at": "2026-10-12T11:30:52.408Z",
+      "reason": "StateBanner gains the strip presentation and its catalog example (KF-JQ8FB0)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124569,
+        "measuredTotalJavaScriptGzip": 340585,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 340600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124690,
+        "measuredTotalJavaScriptGzip": 340731,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 340800
       }
     }
   ]

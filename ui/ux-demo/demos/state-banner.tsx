@@ -71,6 +71,17 @@ export function StateBannerDemo() {
           action={<wa-button size="small">Review projects</wa-button>}
         />
       </CatalogExample>
+      <CatalogExample label="Strip" align="none">
+        <StateBanner
+          presentation="strip"
+          tone="warning"
+          title="Notifications paused"
+          detail="Desktop alerts resume when you reconnect."
+          icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+          copyLayout="stacked"
+          action={<wa-button size="small">Resume</wa-button>}
+        />
+      </CatalogExample>
       <CatalogExample label="Placeholder" align="none">
         <StateBanner
           tone="neutral"

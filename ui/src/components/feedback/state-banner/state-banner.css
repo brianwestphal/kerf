@@ -135,6 +135,30 @@
     var(--kui-state-banner-danger-foreground, var(--kui-color-danger-on-fill))
   );
 }
+/* A strip is a full-width band at a layout edge rather than a card beside the
+   work: flush, square, and divided from its neighbor only on the edges it
+   names, in the tone's own border color. Its inline padding lands the copy on
+   the content-text column a card banner's copy uses (8px margin + 1px border
+   + 8px padding), so a strip above a pane lines up with the pane's text. */
+.kui-state-banner[data-presentation="strip"] {
+  margin-inline: 0;
+  padding-block: var(--kui-space-xs);
+  padding-inline: calc(1px + remify(16px));
+  border-width: 0;
+  border-radius: 0;
+}
+.kui-state-banner[data-presentation="strip"][divider-sides*="t"] {
+  border-top-width: 1px;
+}
+.kui-state-banner[data-presentation="strip"][divider-sides*="r"] {
+  border-right-width: 1px;
+}
+.kui-state-banner[data-presentation="strip"][divider-sides*="b"] {
+  border-bottom-width: 1px;
+}
+.kui-state-banner[data-presentation="strip"][divider-sides*="l"] {
+  border-left-width: 1px;
+}
 .kui-state-banner__icon {
   display: grid;
   place-items: center;

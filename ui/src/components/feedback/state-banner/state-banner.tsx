@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import type { Sides } from '../../../shared/layout/sides.js';
 import { em } from '../../../shared/styles/css-values.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 import { Badge } from '../badge/badge.js';
@@ -12,6 +13,7 @@ export type StateBannerTone = SemanticTone;
 export type StateBannerUrgency = 'status' | 'alert';
 export type StateBannerCopyLayout = 'inline' | 'stacked';
 export type StateBannerActionPlacement = 'trailing' | 'below';
+export type StateBannerPresentation = 'card' | 'strip';
 
 export interface StateBannerProps {
   title: string;
@@ -26,6 +28,19 @@ export interface StateBannerProps {
   copyLayout?: StateBannerCopyLayout;
   /** Place the action beside the copy or on a separate trailing row. */
   actionPlacement?: StateBannerActionPlacement;
+  /**
+   * `card` (the default) is an inset, rounded, fully bordered banner beside
+   * the affected work. `strip` is a full-width band at a layout edge, such as
+   * above a workspace: square corners, no inline margin, inline padding on the
+   * shared content-text column, and only the tone-colored `dividerSides` edges.
+   */
+  presentation?: StateBannerPresentation;
+  /**
+   * Physical tone-colored divider edges of a `strip`, in canonical
+   * top/right/bottom/left order. Defaults to the bottom edge; `''` draws none.
+   * A `card` keeps its full border and ignores this.
+   */
+  dividerSides?: Sides;
   className?: string;
   /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. The detail line appears only when `detail` is set, as in the live banner. */
   placeholder?: boolean;
@@ -43,6 +58,8 @@ export function StateBanner({
   urgency = 'status',
   copyLayout = 'inline',
   actionPlacement = 'trailing',
+  presentation = 'card',
+  dividerSides = 'b',
   className = '',
   placeholder = false,
   slot,
@@ -54,6 +71,10 @@ export function StateBanner({
       data-tone={tone}
       data-copy-layout={copyLayout}
       data-action-placement={actionPlacement}
+      data-presentation={presentation}
+      divider-sides={
+        presentation === 'strip' ? dividerSides || undefined : undefined
+      }
       data-placeholder={placeholder ? 'true' : undefined}
       role={urgency}
       aria-live={urgency === 'alert' ? 'assertive' : 'polite'}

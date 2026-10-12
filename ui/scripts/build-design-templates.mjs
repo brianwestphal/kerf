@@ -513,6 +513,21 @@ export const COMPONENTS = {
             action: raw(pushButton('View log')),
           }),
       },
+      {
+        id: 'strip',
+        label: 'Strip (full-width band)',
+        height: 76,
+        render: () =>
+          StateBanner({
+            presentation: 'strip',
+            tone: 'warning',
+            icon: glyph(TriangleAlert, 'triangle-alert'),
+            title: 'Notifications paused',
+            detail: 'Desktop alerts resume when you reconnect.',
+            copyLayout: 'stacked',
+            action: raw(pushButton('Resume')),
+          }),
+      },
     ],
   },
   'empty-state': {

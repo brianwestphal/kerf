@@ -62,6 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`StateBanner` strip presentation.** `presentation="strip"` renders a full-width status band for a layout edge, such as above a workspace: flush (no inline margin), square, with its copy on the shared content-text column and only tone-colored `dividerSides` edges (bottom by default; `''` draws none). Apps no longer zero the card's margin, radius, padding, and border tokens and draw their own per-tone rule. The default `card` presentation is unchanged (`KF-JQ8FB0`).
 - **Dialogs that fill, and a non-modal dialog surface.**
   - `DialogSurface` gains `height`: a definite modal height bounded by the dynamic viewport minus both gutters, like `maxHeight`. It also gains `bodyLayout="fill"`, which gives the body's whole height to one child (a `SplitView` or `Pane`) that owns its scrolling.
   - The new `PopoverDialogSurface` in `@kerfjs/ui/surface-scaffold` is the non-modal counterpart. It is a native `popover="auto"` `role="dialog"` section that light-dismisses on Escape or an outside press and leaves the page interactive.

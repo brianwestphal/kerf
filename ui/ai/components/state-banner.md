@@ -46,6 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/state-banner`](../public-api-signatures
 - badge
 - stacked copy
 - action below
+- strip presentation
 - placeholder (loading)
 
 ## Composition

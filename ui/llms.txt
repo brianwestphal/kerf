@@ -524,6 +524,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Configure StateBanner copy and action placement.** `copyLayout="stacked"`
   puts detail below the title and badge; `actionPlacement="below"` gives the
   action a separate trailing row. The inline defaults remain compact.
+  `presentation="strip"` renders a flush, square, full-width band for a
+  layout edge with tone-colored `dividerSides` (bottom by default) instead of
+  the inset rounded card; never restyle a card into a strip.
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
   `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
   selected text, use the public color, font-size, and font-weight tokens; the

@@ -2930,6 +2930,7 @@ export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectMultip
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as Sides } from './sides-BPSWde0A.js';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 
 /** @deprecated Use SemanticTone. */
@@ -2937,6 +2938,7 @@ type StateBannerTone = SemanticTone;
 type StateBannerUrgency = 'status' | 'alert';
 type StateBannerCopyLayout = 'inline' | 'stacked';
 type StateBannerActionPlacement = 'trailing' | 'below';
+type StateBannerPresentation = 'card' | 'strip';
 interface StateBannerProps {
     title: string;
     detail?: string;
@@ -2950,15 +2952,28 @@ interface StateBannerProps {
     copyLayout?: StateBannerCopyLayout;
     /** Place the action beside the copy or on a separate trailing row. */
     actionPlacement?: StateBannerActionPlacement;
+    /**
+     * `card` (the default) is an inset, rounded, fully bordered banner beside
+     * the affected work. `strip` is a full-width band at a layout edge, such as
+     * above a workspace: square corners, no inline margin, inline padding on the
+     * shared content-text column, and only the tone-colored `dividerSides` edges.
+     */
+    presentation?: StateBannerPresentation;
+    /**
+     * Physical tone-colored divider edges of a `strip`, in canonical
+     * top/right/bottom/left order. Defaults to the bottom edge; `''` draws none.
+     * A `card` keeps its full border and ignores this.
+     */
+    dividerSides?: Sides;
     className?: string;
     /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. The detail line appears only when `detail` is set, as in the live banner. */
     placeholder?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, copyLayout, actionPlacement, className, placeholder, slot, }: StateBannerProps): SafeHtml;
+declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, copyLayout, actionPlacement, presentation, dividerSides, className, placeholder, slot, }: StateBannerProps): SafeHtml;
 
-export { SemanticTone, StateBanner, type StateBannerActionPlacement, type StateBannerCopyLayout, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
+export { SemanticTone, StateBanner, type StateBannerActionPlacement, type StateBannerCopyLayout, type StateBannerPresentation, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
 ```
 
 ## `@kerfjs/ui/empty-state`
