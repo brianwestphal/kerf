@@ -247,7 +247,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   gives option rows more room. `multiline` wraps labels, with
   `multilineIconAlign="center"` when the icon should center on the whole copy.
   `divider` owns row separators and `state="drag-target"` paints the drop
-  target. Public ListItem tokens set row, icon, label, and trailing geometry;
+  target. For a reorderable list, set `draggable` + `itemId` on `ListItem`,
+  `ListItemLink`, or `ListActionRow` rows and call `wireListReorder` (from
+  `@kerfjs/ui/wire-list-reorder`) once; it paints the dimmed dragging rows and
+  the before/after insertion line, supports Alt+Shift+ArrowUp/ArrowDown, and
+  reports `{ listId, sourceIds, target: { id, position }, source }` for
+  `reorderListItems`. The `dragging` / `dropPosition` props render the same
+  states from app-owned drag state. Public ListItem tokens set row, icon, label, and trailing geometry;
   ListHeader `size="xs|sm|m|l|xl"` sets label scale independently of
   `headingLevel` (`sm` keeps the current FieldLabel-sized uppercase style;
   `m`/`l`/`xl` match themed h5/h4/h3). Its height, title padding, and border
@@ -653,7 +659,7 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 ## Public exports
 
 `Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `FloatingToolbar`, `ToolbarText`, `Text`,
-`ListItem`, `ListActionRow`, `ListHeader`, `ListInsetControl`,
+`ListItem`, `ListActionRow` (+ `wireListReorder`, `reorderListItems`), `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`, `ChoiceChips`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),

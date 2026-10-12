@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 354600,
-  "measuredLargestJavaScriptGzip": 137565,
-  "measuredTotalJavaScriptGzip": 354571,
+  "totalJavaScriptGzip": 356500,
+  "measuredLargestJavaScriptGzip": 139419,
+  "measuredTotalJavaScriptGzip": 356412,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3795,6 +3795,22 @@
         "measuredTotalJavaScriptGzip": 354571,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 354600
+      }
+    },
+    {
+      "at": "2026-10-12T23:13:25.647Z",
+      "reason": "drag-to-reorder rows and wireListReorder demos (KF-HWYE11)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 137565,
+        "measuredTotalJavaScriptGzip": 354571,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 354600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 139419,
+        "measuredTotalJavaScriptGzip": 356412,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 356500
       }
     }
   ]

@@ -27,11 +27,13 @@ Keep a selectable primary row action and an independently named trailing action 
 
 - JavaScript: `@kerfjs/ui/list-action-row` — exports `ListActionRow`.
 - CSS: the browser build of `@kerfjs/ui/list-action-row` pulls its CSS automatically; import `@kerfjs/ui/list-action-row.css` manually only without the `browser` export condition.
+- Wiring: `wireListReorder` from `@kerfjs/ui/wire-list-reorder` (optional).
+- Wiring: `reorderListItems` from `@kerfjs/ui/wire-list-reorder` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/list-action-row`](../public-api-signatures-v1.md#kerfjsuilist-action-row) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/list-action-row`](../public-api-signatures-v1.md#kerfjsuilist-action-row), [`@kerfjs/ui/wire-list-reorder`](../public-api-signatures-v1.md#kerfjsuiwire-list-reorder) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -47,6 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/list-action-row`](../public-api-signatu
 - interaction-revealed trailing action
 - trailing overflow menu
 - before, after, or paired group divider
+- draggable row with dragging and drop-before / drop-after insertion states
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -61,9 +64,14 @@ Exact prop names and types: [`@kerfjs/ui/list-action-row`](../public-api-signatu
 
 ## State and wiring
 
-**The app owns:** routing; selection; action handling; domain data attributes; popover or context-menu policy.
+**The app owns:** routing; selection; action handling; domain data attributes; popover or context-menu policy; row order.
 
-No wiring helper.
+**Wiring:** `wireListReorder`, `reorderListItems` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-dragging` on `ListActionRow rows being dragged` (`wireListReorder`): "true" on every row a pointer drag is moving (the dragged row, or every selected row of its list when the dragged row is selected). Same attribute the `dragging` prop renders.
+- `data-drop-position` on `ListActionRow row under the pointer` (`wireListReorder`): "before" or "after": the edge of this row the dragged rows would land beside. Same attribute the `dropPosition` prop renders.
 
 ## Geometry
 
@@ -74,6 +82,7 @@ Margin: self · border: self · padding: self (layout role: navigation). `self` 
 - The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.
 - A trailingMenu replaces the trailing button with a PopupMenu trigger in the same position: an icon-only button named by trailingMenu.label that exposes aria-haspopup="menu" and aria-expanded, moves focus into the menu, and returns focus to the trigger on Escape or a choice.
 - Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing.
+- A draggable row is dragged by its noninteractive root; with wireListReorder, Alt+Shift+ArrowUp/ArrowDown on its primary button moves it, and focus returns to that button after the application re-renders.
 
 ## Styling boundary
 
@@ -83,7 +92,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-list-action-row`, `kui-list-action-row__icon`, `kui-list-action-row__label`, `kui-list-action-row__primary-label`, `kui-list-action-row__description`, `kui-list-action-row__status`, `kui-list-action-row__primary`, `kui-list-action-row__trailing-action` on an element you write; render `ListActionRow` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-brand-border-quiet`, `--kui-color-brand-fill-normal`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-fill-normal`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`, `--kui-radius-pill`, `--kui-list-action-row-background`, `--kui-list-action-row-border`, `--kui-list-action-row-color`, `--kui-list-action-row-hover-background`, `--kui-list-action-row-hover-border`, `--kui-list-action-row-selected-background`, `--kui-list-action-row-selected-border`, `--kui-list-action-row-selected-color`, `--kui-list-action-row-trailing-hover-background`, `--kui-list-group-divider-color`, `--kui-font-xs`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-brand-border-loud`, `--kui-color-brand-border-quiet`, `--kui-color-brand-fill-normal`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-fill-normal`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`, `--kui-radius-pill`, `--kui-list-action-row-background`, `--kui-list-action-row-border`, `--kui-list-action-row-color`, `--kui-list-action-row-dragging-opacity`, `--kui-list-action-row-drop-indicator`, `--kui-list-action-row-drop-indicator-width`, `--kui-list-action-row-hover-background`, `--kui-list-action-row-hover-border`, `--kui-list-action-row-selected-background`, `--kui-list-action-row-selected-border`, `--kui-list-action-row-selected-color`, `--kui-list-action-row-trailing-hover-background`, `--kui-list-group-divider-color`, `--kui-font-xs`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

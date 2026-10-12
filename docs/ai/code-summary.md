@@ -915,6 +915,18 @@ for `ui-wiring`. Unit transition matrix in
 `ui/tests/unit/wire-scroll-dividers.test.ts`; three-engine geometry and
 computed-style coverage in `ui/tests/browser/scroll-dividers.spec.ts` with the
 fixture `ui/tests/browser/fixtures/scroll-dividers.tsx`. See docs/23 §3.7.
+`ui/src/wiring/wire-list-reorder.ts` (`@kerfjs/ui/wire-list-reorder`,
+`wireListReorder(root, { onReorder })` + `reorderListItems`) wires native
+drag-and-drop and Alt+Shift+ArrowUp/ArrowDown reordering for `draggable`
+`ListItem` / `ListItemLink` / `ListActionRow` rows within their `List`
+(`data-list-id` names it); a selected or pressed row carries every selected row,
+and it paints the same `data-dragging` / `data-drop-position` attributes the
+rows' `dragging` / `dropPosition` props render (KF-HWYE11, drag-to-reorder list
+rows). `ui/src/shared/dom/draggable.ts` holds the shared native `draggable`
+value rule (never true on a placeholder). Unit coverage in
+`ui/tests/unit/wire-list-reorder.test.ts` and
+`ui/tests/unit/list-row-reorder-props.test.ts`; Chromium drag/keyboard and
+geometry coverage in `ui/tests/browser/list-reorder.spec.ts`.
 `wireTokenSearchFields` captures managed clear before app handlers, suppresses the
 transient replacement blur, and restores the current editor at its mutation checkpoint
 before the next input task, without app reopen code or frame-delayed focus.

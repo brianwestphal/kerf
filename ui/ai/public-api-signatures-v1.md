@@ -825,6 +825,8 @@ type ListActionRowRootAttributes = Readonly<Record<`data-${string}`, string | un
     'data-state'?: never;
     'data-selected'?: never;
     'data-pressed'?: never;
+    'data-dragging'?: never;
+    'data-drop-position'?: never;
 }>;
 type ListActionRowTrailingAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -890,6 +892,12 @@ interface ListActionRowCommonProps {
     tabIndex?: number;
     /** Render as an unanimated loading skeleton, disabling both actions: label, description, icon, and status text become skeletons; the `busy` indicator stays live. */
     placeholder?: boolean;
+    /** Native HTML drag source (`draggable="true"` on the row root); a placeholder is never draggable. Pair with `wireListReorder` for pointer and keyboard reordering. */
+    draggable?: boolean;
+    /** Dim this row as one of the rows being dragged. */
+    dragging?: boolean;
+    /** Draw the insertion line at this row's leading (`before`) or trailing (`after`) block edge. */
+    dropPosition?: 'before' | 'after';
     trailingActionVisibility?: 'always' | 'interaction';
     className?: string;
     rootAttributes?: ListActionRowRootAttributes;
@@ -898,7 +906,7 @@ interface ListActionRowCommonProps {
 }
 /** Exactly one trailing control: a native button (`trailingAction*`) or an overflow menu (`trailingMenu`). */
 type ListActionRowProps = ListActionRowCommonProps & (ListActionRowTrailingButtonProps | ListActionRowTrailingMenuProps);
-declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, trailingMenu, className, rootAttributes, trailingActionAttributes, slot, }: ListActionRowProps): SafeHtml;
+declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, trailingMenu, className, rootAttributes, trailingActionAttributes, slot, }: ListActionRowProps): SafeHtml;
 
 export { ListActionRow, type ListActionRowProps, type ListActionRowTrailingMenu };
 ```
@@ -922,6 +930,8 @@ type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefin
     'data-state'?: never;
     'data-kui-disabled'?: never;
     'data-icon-align'?: never;
+    'data-dragging'?: never;
+    'data-drop-position'?: never;
 }>;
 interface ListItemProps {
     label: string | SafeHtml;
@@ -951,6 +961,12 @@ interface ListItemProps {
     tabIndex?: number;
     /** Render the row as an unanimated loading skeleton, disabling its action: label, description, icon, status, and trailing content become skeletons; the `busy` indicator stays live. */
     placeholder?: boolean;
+    /** Native HTML drag source (`draggable="true"`); a placeholder is never draggable. Pair with `wireListReorder` for pointer and keyboard reordering. */
+    draggable?: boolean;
+    /** Dim this row as one of the rows being dragged. */
+    dragging?: boolean;
+    /** Draw the insertion line at this row's leading (`before`) or trailing (`after`) block edge. */
+    dropPosition?: 'before' | 'after';
     rootAttributes?: ListItemRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -963,9 +979,9 @@ interface ListItemLinkProps extends Omit<ListItemProps, 'action' | 'pressed'> {
     action?: never;
     pressed?: never;
 }
-declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, rootAttributes, slot, }: ListItemProps): SafeHtml;
+declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, rootAttributes, slot, }: ListItemProps): SafeHtml;
 /** A navigation row with native link activation and ListItem geometry. */
-declare function ListItemLink({ href, external, label, description, icon, trailing, status, busy, density, divider, selected, itemId, className, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, rootAttributes, slot, }: ListItemLinkProps): SafeHtml;
+declare function ListItemLink({ href, external, label, description, icon, trailing, status, busy, density, divider, selected, itemId, className, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, rootAttributes, slot, }: ListItemLinkProps): SafeHtml;
 
 export { ListItem, ListItemLink, type ListItemLinkProps, type ListItemProps };
 ```
@@ -1429,6 +1445,52 @@ type Root = HTMLElement | Document;
 declare function wireScrollDividers(root: Root, { targets }?: WireScrollDividersOptions): () => void;
 
 export { type ScrollDividerTarget, type WireScrollDividersOptions, wireScrollDividers };
+```
+
+## `@kerfjs/ui/wire-list-reorder`
+
+```ts
+/** Which edge of the target row the moved rows land beside. */
+type ListDropPosition = 'before' | 'after';
+/** How the person asked for the move. */
+type ListReorderSource = 'pointer' | 'keyboard';
+/** The row the moved rows land beside, and on which side of it. */
+interface ListReorderTarget {
+    id: string;
+    position: ListDropPosition;
+}
+/** One requested reorder. The application applies it to its own ordered state. */
+interface ListReorder {
+    /** The containing list's `data-list-id`, when it has one. */
+    listId?: string;
+    /** The moved rows' `itemId`s, in their current order. */
+    sourceIds: string[];
+    target: ListReorderTarget;
+    source: ListReorderSource;
+}
+interface WireListReorderOptions {
+    /** Apply the change synchronously (for example with `reorderListItems`) and re-render. */
+    onReorder: (change: ListReorder) => void;
+}
+/**
+ * Move `sourceIds` (kept in their current relative order) to `target`'s side
+ * of the target row. Returns a new array; an unknown target, a target that is
+ * itself being moved, or no known sources leave the order unchanged.
+ */
+declare function reorderListItems<T>(items: readonly T[], getId: (item: T) => string, sourceIds: readonly string[], target: ListReorderTarget): T[];
+/**
+ * Wire native drag-and-drop and Alt+Shift+ArrowUp/ArrowDown reordering for
+ * draggable `ListItem`, `ListItemLink`, and `ListActionRow` rows below `root`.
+ * Rows reorder within their `List` (or parent element) and are identified by
+ * `itemId`. Dragging a selected or pressed row moves every selected row of
+ * its list. While a pointer drag is in progress the wiring paints the same
+ * `data-dragging` / `data-drop-position` attributes the rows' `dragging` and
+ * `dropPosition` props render. Order stays application state: `onReorder`
+ * reports the change and the application re-renders. Returns a disposer.
+ */
+declare function wireListReorder(root: HTMLElement | Document, { onReorder }: WireListReorderOptions): () => void;
+
+export { type ListDropPosition, type ListReorder, type ListReorderSource, type ListReorderTarget, type WireListReorderOptions, reorderListItems, wireListReorder };
 ```
 
 ## `@kerfjs/ui/nav-stack`

@@ -129,6 +129,25 @@ export const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>(
   'comfortable',
 );
 
+/** A row in the drag-to-reorder ListItem and ListActionRow demos. */
+export interface DemoReorderRow {
+  id: string;
+  label: string;
+}
+export const reorderCommands = signal<DemoReorderRow[]>([
+  { id: 'run-tests', label: 'Run tests' },
+  { id: 'build', label: 'Build package' },
+  { id: 'lint', label: 'Lint sources' },
+  { id: 'deploy-preview', label: 'Deploy preview' },
+]);
+export const reorderFiles = signal<DemoReorderRow[]>([
+  { id: 'readme', label: 'README.md' },
+  { id: 'changelog', label: 'CHANGELOG.md' },
+  { id: 'package', label: 'package.json' },
+]);
+/** Item ids pressed in the reorder demos; dragging a pressed row moves them all. */
+export const reorderSelection = signal<readonly string[]>([]);
+
 /** The Badge entry's playground configuration, edited from its catalog settings pane. */
 export interface BadgePlaygroundState {
   tone: 'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger';

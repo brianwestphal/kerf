@@ -24,13 +24,15 @@ Selectable, disabled, trailing, and multiline action or link rows.
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/list-item` — exports `ListItem`, `ListItemLink`.
+- JavaScript: `@kerfjs/ui/list-item` — exports `ListItem`, `ListItemLink`, `wireListReorder`, `reorderListItems`.
 - CSS: the browser build of `@kerfjs/ui/list-item` pulls its CSS automatically; import `@kerfjs/ui/list-item.css` manually only without the `browser` export condition.
+- Wiring: `wireListReorder` from `@kerfjs/ui/wire-list-reorder` (optional).
+- Wiring: `reorderListItems` from `@kerfjs/ui/wire-list-reorder` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1.md#kerfjsuilist-item) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1.md#kerfjsuilist-item), [`@kerfjs/ui/wire-list-reorder`](../public-api-signatures-v1.md#kerfjsuiwire-list-reorder) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -45,6 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1
 - spacious density
 - centered icon beside a multiline label
 - drag-target state
+- draggable row with dragging and drop-before / drop-after insertion states
 - description and status
 - busy while retaining content
 - before, after, or paired group divider
@@ -62,9 +65,14 @@ Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1
 
 ## State and wiring
 
-**The app owns:** routing; link destinations; selection; permissions; action handling; domain data attributes.
+**The app owns:** routing; link destinations; selection; permissions; action handling; domain data attributes; row order.
 
-No wiring helper.
+**Wiring:** `wireListReorder`, `reorderListItems` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-dragging` on `ListItem / ListItemLink rows being dragged` (`wireListReorder`): "true" on every row a pointer drag is moving (the dragged row, or every selected row of its list when the dragged row is selected). Same attribute the `dragging` prop renders.
+- `data-drop-position` on `ListItem / ListItemLink row under the pointer` (`wireListReorder`): "before" or "after": the edge of this row the dragged rows would land beside. Same attribute the `dropPosition` prop renders.
 
 ## Geometry
 
@@ -74,7 +82,7 @@ Margin: self · border: self · padding: self (layout role: navigation). `self` 
 
 ## Accessibility
 
-- ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls.
+- ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls. A draggable row reorders by pointer drag or, with wireListReorder, Alt+Shift+ArrowUp/ArrowDown; a placeholder is never draggable.
 
 ## Styling boundary
 
@@ -84,7 +92,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-list-item`, `kui-list-item__icon`, `kui-list-item__label`, `kui-list-item__primary-label`, `kui-list-item__description`, `kui-list-item__status`, `kui-list-item__trailing` on an element you write; render `ListItem` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-brand-border-normal`, `--kui-color-brand-border-quiet`, `--kui-color-brand-fill-quiet`, `--kui-color-brand-fill-normal`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-quiet`, `--kui-color-neutral-border-normal`, `--kui-focus-ring`, `--kui-list-item-color`, `--kui-list-item-background`, `--kui-list-item-align-items`, `--kui-list-item-border-width`, `--kui-list-item-border`, `--kui-list-item-columns`, `--kui-list-item-drag-target-background`, `--kui-list-item-drag-target-outline`, `--kui-list-item-drag-target-outline-offset`, `--kui-list-item-gap`, `--kui-list-item-hover-background`, `--kui-list-item-hover-border`, `--kui-list-item-icon-color`, `--kui-list-item-icon-size`, `--kui-list-item-label-max-width`, `--kui-list-item-label-weight`, `--kui-list-item-min-height`, `--kui-list-item-padding-block`, `--kui-list-item-padding-inline`, `--kui-list-item-radius`, `--kui-list-item-selected-background`, `--kui-list-item-selected-border`, `--kui-list-item-selected-color`, `--kui-list-item-trailing-color`, `--kui-list-group-divider-color`, `--kui-font-xs`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-brand-border-loud`, `--kui-color-brand-border-normal`, `--kui-color-brand-border-quiet`, `--kui-color-brand-fill-quiet`, `--kui-color-brand-fill-normal`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-quiet`, `--kui-color-neutral-border-normal`, `--kui-radius-pill`, `--kui-focus-ring`, `--kui-list-item-color`, `--kui-list-item-background`, `--kui-list-item-align-items`, `--kui-list-item-border-width`, `--kui-list-item-border`, `--kui-list-item-columns`, `--kui-list-item-drag-target-background`, `--kui-list-item-drag-target-outline`, `--kui-list-item-drag-target-outline-offset`, `--kui-list-item-dragging-opacity`, `--kui-list-item-drop-indicator`, `--kui-list-item-drop-indicator-width`, `--kui-list-item-gap`, `--kui-list-item-hover-background`, `--kui-list-item-hover-border`, `--kui-list-item-icon-color`, `--kui-list-item-icon-size`, `--kui-list-item-label-max-width`, `--kui-list-item-label-weight`, `--kui-list-item-min-height`, `--kui-list-item-padding-block`, `--kui-list-item-padding-inline`, `--kui-list-item-radius`, `--kui-list-item-selected-background`, `--kui-list-item-selected-border`, `--kui-list-item-selected-color`, `--kui-list-item-trailing-color`, `--kui-list-group-divider-color`, `--kui-font-xs`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

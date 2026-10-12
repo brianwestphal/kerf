@@ -285,7 +285,19 @@ For a larger option row, use `ListItem density="spacious"`; `compact` and
 `standard` remain available. `multiline` wraps its label and aligns its icon
 to the first line; `multilineIconAlign="center"` centers the icon against the
 whole label. `divider` owns a before or after separator. Set
-`state="drag-target"` for the component's drop outline and background. Public
+`state="drag-target"` for the component's drop outline and background (a row
+that accepts dropped content). For a list the person reorders, set
+`draggable` on each `ListItem`, `ListItemLink`, or `ListActionRow` (each with
+an `itemId`) and call `wireListReorder` from `@kerfjs/ui/wire-list-reorder`
+once, retaining its disposer: it dims the dragged rows, draws the 2px brand
+insertion line on the hovered row's `before` or `after` edge, moves rows with
+Alt+Shift+ArrowUp/ArrowDown, and reports
+`{ listId, sourceIds, target: { id, position }, source }`. Dragging a selected
+or pressed row moves every selected row of its `List` (set `data-list-id` on
+the `List` to tell several lists apart). Apply the change synchronously with
+`reorderListItems`; order stays application state. Without the wiring, the
+`dragging` and `dropPosition` props render the same states from app-owned
+drag state. Public
 `--kui-list-item-*` tokens control its row, icon, label, and trailing geometry
 and color. `ListHeader` exposes `--kui-list-header-min-height`, title padding,
 title minimum height, and border-width tokens for section density.

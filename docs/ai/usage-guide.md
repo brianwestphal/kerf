@@ -328,7 +328,10 @@ The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab
 state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
 `wireTabBars(root, { onReorder })` add the reusable interaction behavior and
-return disposers. Tab dragging automatically scrolls toward a nearby horizontal
+return disposers. For a reorderable list, set `draggable` + `itemId` on
+`ListItem` / `ListActionRow` rows and call `wireListReorder(root, { onReorder })`
+(`@kerfjs/ui/wire-list-reorder`); apply the reported
+`{ sourceIds, target: { id, position } }` with `reorderListItems`. Tab dragging automatically scrolls toward a nearby horizontal
 edge to expose earlier or later drop targets. Toolbars draw no divider by
 default; `wireScrollDividers(root)` (`@kerfjs/ui/wire-scroll-dividers`) makes
 each `Pane` draw its header/footer divider, each `NavStack` / `TabNavigator` its

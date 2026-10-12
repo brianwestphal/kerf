@@ -295,6 +295,20 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
+  it('keeps the list-reorder wiring a DOM-only module with no CSS or components', async () => {
+    const result = await bundle(
+      "import { reorderListItems, wireListReorder } from '@kerfjs/ui/wire-list-reorder'; console.log(reorderListItems, wireListReorder);",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).filter(
+      (input) => input !== 'consumer.ts',
+    );
+    expect(inputs).toContain('dist/wire-list-reorder.js');
+    for (const input of inputs)
+      expect(input).toMatch(/^dist\/(wire-list-reorder|chunk-[A-Z0-9]+)\.js$/);
+    expect(output(result, '.css')).toBe('');
+    expect(output(result, '.js')).toContain('dropPosition');
+  });
+
   it('keeps the scroll-divider wiring a DOM-only module with no CSS or components', async () => {
     const result = await bundle(
       "import { wireScrollDividers } from '@kerfjs/ui/wire-scroll-dividers'; console.log(wireScrollDividers);",
@@ -804,6 +818,11 @@ describe('consumer bundle boundaries', () => {
       import: './dist/wire-scroll-dividers.js',
     });
     expect(pkg.exports['./wire-scroll-dividers']).not.toHaveProperty('browser');
+    expect(pkg.exports['./wire-list-reorder']).toMatchObject({
+      types: './dist/wire-list-reorder.d.ts',
+      import: './dist/wire-list-reorder.js',
+    });
+    expect(pkg.exports['./wire-list-reorder']).not.toHaveProperty('browser');
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./list.css']).toBe('./dist/styles/list.css');
     expect(pkg.exports['./row']).toMatchObject({

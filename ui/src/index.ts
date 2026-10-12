@@ -398,6 +398,15 @@ export {
   type UiSpaceName,
 } from './shared/styles/css-values.js';
 export {
+  type ListDropPosition,
+  type ListReorder,
+  type ListReorderSource,
+  type ListReorderTarget,
+  reorderListItems,
+  wireListReorder,
+  type WireListReorderOptions,
+} from './wiring/wire-list-reorder.js';
+export {
   type ScrollDividerTarget,
   wireScrollDividers,
   type WireScrollDividersOptions,

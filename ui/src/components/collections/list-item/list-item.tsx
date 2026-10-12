@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { nativeDraggable } from '../../../shared/dom/draggable.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import { em, remify } from '../../../shared/styles/css-values.js';
 import { withWordBreaks } from '../../../shared/text/word-breaks.js';
@@ -20,6 +21,8 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-state',
   'data-kui-disabled',
   'data-icon-align',
+  'data-dragging',
+  'data-drop-position',
 ]);
 
 type ListItemRootAttributes = Readonly<
@@ -36,6 +39,8 @@ type ListItemRootAttributes = Readonly<
     'data-state'?: never;
     'data-kui-disabled'?: never;
     'data-icon-align'?: never;
+    'data-dragging'?: never;
+    'data-drop-position'?: never;
   }
 >;
 
@@ -67,6 +72,12 @@ export interface ListItemProps {
   tabIndex?: number;
   /** Render the row as an unanimated loading skeleton, disabling its action: label, description, icon, status, and trailing content become skeletons; the `busy` indicator stays live. */
   placeholder?: boolean;
+  /** Native HTML drag source (`draggable="true"`); a placeholder is never draggable. Pair with `wireListReorder` for pointer and keyboard reordering. */
+  draggable?: boolean;
+  /** Dim this row as one of the rows being dragged. */
+  dragging?: boolean;
+  /** Draw the insertion line at this row's leading (`before`) or trailing (`after`) block edge. */
+  dropPosition?: 'before' | 'after';
   rootAttributes?: ListItemRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -171,6 +182,9 @@ export function ListItem({
   disabled = false,
   tabIndex,
   placeholder = false,
+  draggable,
+  dragging = false,
+  dropPosition,
   rootAttributes = {},
   slot,
 }: ListItemProps) {
@@ -199,6 +213,9 @@ export function ListItem({
       data-state={state}
       data-kui-disabled={disabled ? 'true' : undefined}
       data-placeholder={placeholder ? 'true' : undefined}
+      draggable={nativeDraggable(draggable, placeholder)}
+      data-dragging={dragging ? 'true' : undefined}
+      data-drop-position={dropPosition}
       aria-label={accessibleLabel}
       aria-current={selected ? 'page' : undefined}
       aria-pressed={pressed === undefined ? undefined : String(pressed)}
@@ -242,6 +259,9 @@ export function ListItemLink({
   disabled = false,
   tabIndex,
   placeholder = false,
+  draggable,
+  dragging = false,
+  dropPosition,
   rootAttributes = {},
   slot,
 }: ListItemLinkProps) {
@@ -276,6 +296,9 @@ export function ListItemLink({
       data-state={state}
       data-kui-disabled={disabled ? 'true' : undefined}
       data-placeholder={placeholder ? 'true' : undefined}
+      draggable={nativeDraggable(draggable, placeholder)}
+      data-dragging={dragging ? 'true' : undefined}
+      data-drop-position={dropPosition}
       aria-label={linkLabel}
       aria-current={selected ? 'page' : undefined}
       aria-disabled={inactive ? 'true' : undefined}

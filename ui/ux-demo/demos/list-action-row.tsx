@@ -1,10 +1,23 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Folder, MoreHorizontal, Pencil, Terminal, Trash2 } from 'lucide';
+import {
+  Folder,
+  GripVertical,
+  MoreHorizontal,
+  Pencil,
+  Terminal,
+  Trash2,
+} from 'lucide';
 
 import { DemoListPopover } from './demo-list-popover.js';
-import { menuActionCurrent, menuActionPressed } from './state.js';
+import {
+  menuActionCurrent,
+  menuActionPressed,
+  reorderFiles,
+  reorderSelection,
+} from './state.js';
 
 export function ListActionRowDemo() {
   return (
@@ -146,6 +159,70 @@ export function ListActionRowDemo() {
           }
           rootAttributes={{ 'data-demo-action-row': 'placeholder' }}
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Drag to reorder"
+        note="Drag a row, or focus it and press Alt+Shift+Up or Down. The row under the pointer shows where the dragged rows land."
+        align="none"
+      >
+        <List rootAttributes={{ 'data-list-id': 'demo-reorder-files' }}>
+          {reorderFiles.value.map((file) => (
+            <ListActionRow
+              label={file.label}
+              icon={<LucideIcon icon={GripVertical} name="grip-vertical" />}
+              action="toggle-reorder-row"
+              itemId={file.id}
+              pressed={reorderSelection.value.includes(file.id)}
+              draggable
+              trailingAction="open-list-action-row-actions"
+              trailingActionLabel={`Actions for ${file.label}`}
+              trailingActionIcon={
+                <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+              }
+              trailingActionVisibility="interaction"
+            />
+          ))}
+        </List>
+      </CatalogExample>
+      <CatalogExample label="Dragging and insertion states" align="none">
+        <List>
+          <ListActionRow
+            label="Drops above this row"
+            action="select-list-action-row"
+            itemId="reorder-before"
+            draggable
+            dropPosition="before"
+            trailingAction="open-list-action-row-actions"
+            trailingActionLabel="Actions for the row below the drop"
+            trailingActionIcon={
+              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+            }
+          />
+          <ListActionRow
+            label="Row being dragged"
+            action="select-list-action-row"
+            itemId="reorder-dragging"
+            draggable
+            dragging
+            trailingAction="open-list-action-row-actions"
+            trailingActionLabel="Actions for the dragged row"
+            trailingActionIcon={
+              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+            }
+          />
+          <ListActionRow
+            label="Drops below this row"
+            action="select-list-action-row"
+            itemId="reorder-after"
+            draggable
+            dropPosition="after"
+            trailingAction="open-list-action-row-actions"
+            trailingActionLabel="Actions for the row above the drop"
+            trailingActionIcon={
+              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+            }
+          />
+        </List>
       </CatalogExample>
       <DemoListPopover id="list-action-row-popover" label="File actions">
         <button type="button" data-action="log-more">

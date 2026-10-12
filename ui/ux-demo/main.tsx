@@ -38,6 +38,10 @@ import {
   wireContentItems,
 } from '@kerfjs/ui/wire-content-items';
 import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers';
+import {
+  reorderListItems,
+  wireListReorder,
+} from '@kerfjs/ui/wire-list-reorder';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
@@ -140,6 +144,9 @@ import {
   popupContextAnchor,
   popupSortChoice,
   regionSize,
+  reorderCommands,
+  reorderFiles,
+  reorderSelection,
   selectedChoice,
   selectViewTitle,
   sizedDisclosureOpen,
@@ -995,6 +1002,14 @@ const stopActions = delegateActions(app, 'click', {
   },
   'delete-list-action-row': (_event, element) => {
     actionLog.value = `Delete ${element.closest<HTMLElement>('[data-component="list-action-row"]')?.dataset.itemId ?? 'row'}`;
+  },
+  'toggle-reorder-row': (_event, element) => {
+    const itemId = (element as HTMLElement).dataset.itemId ?? '';
+    const pressed = reorderSelection.value.includes(itemId);
+    reorderSelection.value = pressed
+      ? reorderSelection.value.filter((id) => id !== itemId)
+      : [...reorderSelection.value, itemId];
+    actionLog.value = `${itemId} ${pressed ? 'not pressed' : 'pressed'}`;
   },
   'open-list-action-row-actions': (_event, element) => {
     actionLog.value = `Actions requested for ${(element as HTMLElement).dataset.itemId ?? 'row'}`;
@@ -1903,6 +1918,24 @@ const stopTabBars = wireTabBars(app, {
     actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`;
   },
 });
+const stopListReorder = wireListReorder(app, {
+  onReorder: ({ listId, sourceIds, target, source }) => {
+    const rows =
+      listId === 'demo-reorder-commands'
+        ? reorderCommands
+        : listId === 'demo-reorder-files'
+          ? reorderFiles
+          : undefined;
+    if (!rows) return;
+    rows.value = reorderListItems(
+      rows.value,
+      (row) => row.id,
+      sourceIds,
+      target,
+    );
+    actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceIds.join(', ')} ${target.position} ${target.id}`;
+  },
+});
 const syncSystemTheme = (event: MediaQueryListEvent): void => {
   if (!explicitTheme) effectiveTheme.value = preferredDemoTheme(event.matches);
 };
@@ -1951,6 +1984,7 @@ window.addEventListener(
     stopMutationObserver();
     stopResizeObserver();
     stopTabBars();
+    stopListReorder();
     stopContentItems();
     systemDarkTheme.removeEventListener('change', syncSystemTheme);
   },

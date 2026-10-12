@@ -265,6 +265,20 @@ focus to the trigger. An interaction-revealed trigger stays visible while its
 menu is open. A pointer opening through `openPopupMenuAt` (for example from
 the row's `contextmenu`) keeps the same keyboard and dismissal behavior.
 
+## Reorderable list rows
+
+A `draggable` `ListItem`, `ListItemLink`, or `ListActionRow` is a native HTML
+drag source (a `ListActionRow` is dragged by its noninteractive root, so its two
+buttons keep their own activation). Pointer dragging is never the only way to
+reorder: `wireListReorder()` moves the focused row (or, when it is selected or
+pressed, every selected row of its list) with Alt+Shift+ArrowUp and
+Alt+Shift+ArrowDown, and returns focus to the moved row's focusable control
+after the application re-renders. The dragged rows dim and the drop target
+draws a 2px brand insertion line (system `Highlight` in forced colors), so the
+landing position never relies on color alone. A loading placeholder is never
+draggable. The application owns order, selection, and any announcement of the
+completed move.
+
 ## ResizableRegion
 
 Set `responsiveFillAt="narrow"` or `"compact"` when a responsive composition

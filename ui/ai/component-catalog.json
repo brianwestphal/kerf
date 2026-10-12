@@ -3749,7 +3749,8 @@
         "selection",
         "action handling",
         "domain data attributes",
-        "popover or context-menu policy"
+        "popover or context-menu policy",
+        "row order"
       ],
       "variants": [
         "selected",
@@ -3763,12 +3764,14 @@
         "busy while retaining content",
         "interaction-revealed trailing action",
         "trailing overflow menu",
-        "before, after, or paired group divider"
+        "before, after, or paired group divider",
+        "draggable row with dragging and drop-before / drop-after insertion states"
       ],
       "accessibility": [
         "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
         "A trailingMenu replaces the trailing button with a PopupMenu trigger in the same position: an icon-only button named by trailingMenu.label that exposes aria-haspopup=\"menu\" and aria-expanded, moves focus into the menu, and returns focus to the trigger on Escape or a choice.",
-        "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing."
+        "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing.",
+        "A draggable row is dragged by its noninteractive root; with wireListReorder, Alt+Shift+ArrowUp/ArrowDown on its primary button moves it, and focus returns to that button after the application re-renders."
       ],
       "geometry": {
         "margin": "self",
@@ -3782,7 +3785,30 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireListReorder",
+          "import": "@kerfjs/ui/wire-list-reorder",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-dragging",
+              "on": "ListActionRow rows being dragged",
+              "meaning": "\"true\" on every row a pointer drag is moving (the dragged row, or every selected row of its list when the dragged row is selected). Same attribute the `dragging` prop renders."
+            },
+            {
+              "name": "data-drop-position",
+              "on": "ListActionRow row under the pointer",
+              "meaning": "\"before\" or \"after\": the edge of this row the dragged rows would land beside. Same attribute the `dropPosition` prop renders."
+            }
+          ]
+        },
+        {
+          "export": "reorderListItems",
+          "import": "@kerfjs/ui/wire-list-reorder",
+          "required": false
+        }
+      ],
       "publicClasses": [
         "kui-list-action-row",
         "kui-list-action-row__icon",
@@ -3794,6 +3820,7 @@
         "kui-list-action-row__trailing-action"
       ],
       "publicTokens": [
+        "--kui-color-brand-border-loud",
         "--kui-color-brand-border-quiet",
         "--kui-color-brand-fill-normal",
         "--kui-color-neutral-border-normal",
@@ -3811,6 +3838,9 @@
         "--kui-list-action-row-background",
         "--kui-list-action-row-border",
         "--kui-list-action-row-color",
+        "--kui-list-action-row-dragging-opacity",
+        "--kui-list-action-row-drop-indicator",
+        "--kui-list-action-row-drop-indicator-width",
         "--kui-list-action-row-hover-background",
         "--kui-list-action-row-hover-border",
         "--kui-list-action-row-selected-background",
@@ -3840,7 +3870,9 @@
       "purpose": "Selectable, disabled, trailing, and multiline action or link rows.",
       "publicExports": [
         "ListItem",
-        "ListItemLink"
+        "ListItemLink",
+        "wireListReorder",
+        "reorderListItems"
       ],
       "cssValueProps": [
         {
@@ -3881,7 +3913,8 @@
         "selection",
         "permissions",
         "action handling",
-        "domain data attributes"
+        "domain data attributes",
+        "row order"
       ],
       "variants": [
         "native link and external link",
@@ -3895,12 +3928,13 @@
         "spacious density",
         "centered icon beside a multiline label",
         "drag-target state",
+        "draggable row with dragging and drop-before / drop-after insertion states",
         "description and status",
         "busy while retaining content",
         "before, after, or paired group divider"
       ],
       "accessibility": [
-        "ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
+        "ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls. A draggable row reorders by pointer drag or, with wireListReorder, Alt+Shift+ArrowUp/ArrowDown; a placeholder is never draggable."
       ],
       "geometry": {
         "margin": "self",
@@ -3917,7 +3951,30 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireListReorder",
+          "import": "@kerfjs/ui/wire-list-reorder",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-dragging",
+              "on": "ListItem / ListItemLink rows being dragged",
+              "meaning": "\"true\" on every row a pointer drag is moving (the dragged row, or every selected row of its list when the dragged row is selected). Same attribute the `dragging` prop renders."
+            },
+            {
+              "name": "data-drop-position",
+              "on": "ListItem / ListItemLink row under the pointer",
+              "meaning": "\"before\" or \"after\": the edge of this row the dragged rows would land beside. Same attribute the `dropPosition` prop renders."
+            }
+          ]
+        },
+        {
+          "export": "reorderListItems",
+          "import": "@kerfjs/ui/wire-list-reorder",
+          "required": false
+        }
+      ],
       "publicClasses": [
         "kui-list-item",
         "kui-list-item__icon",
@@ -3928,6 +3985,7 @@
         "kui-list-item__trailing"
       ],
       "publicTokens": [
+        "--kui-color-brand-border-loud",
         "--kui-color-brand-border-normal",
         "--kui-color-brand-border-quiet",
         "--kui-color-brand-fill-quiet",
@@ -3937,6 +3995,7 @@
         "--kui-color-neutral-on-quiet",
         "--kui-color-neutral-border-quiet",
         "--kui-color-neutral-border-normal",
+        "--kui-radius-pill",
         "--kui-focus-ring",
         "--kui-list-item-color",
         "--kui-list-item-background",
@@ -3947,6 +4006,9 @@
         "--kui-list-item-drag-target-background",
         "--kui-list-item-drag-target-outline",
         "--kui-list-item-drag-target-outline-offset",
+        "--kui-list-item-dragging-opacity",
+        "--kui-list-item-drop-indicator",
+        "--kui-list-item-drop-indicator-width",
         "--kui-list-item-gap",
         "--kui-list-item-hover-background",
         "--kui-list-item-hover-border",

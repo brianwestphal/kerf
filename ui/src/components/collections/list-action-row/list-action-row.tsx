@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { nativeDraggable } from '../../../shared/dom/draggable.js';
 import {
   filterControlAttributes,
   filterDataAttributes,
@@ -27,6 +28,8 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-state',
   'data-selected',
   'data-pressed',
+  'data-dragging',
+  'data-drop-position',
 ]);
 const PROTECTED_TRAILING_DATA_ATTRIBUTES = new Set([
   'data-component',
@@ -49,6 +52,8 @@ type ListActionRowRootAttributes = Readonly<
     'data-state'?: never;
     'data-selected'?: never;
     'data-pressed'?: never;
+    'data-dragging'?: never;
+    'data-drop-position'?: never;
   }
 >;
 
@@ -122,6 +127,12 @@ interface ListActionRowCommonProps {
   tabIndex?: number;
   /** Render as an unanimated loading skeleton, disabling both actions: label, description, icon, and status text become skeletons; the `busy` indicator stays live. */
   placeholder?: boolean;
+  /** Native HTML drag source (`draggable="true"` on the row root); a placeholder is never draggable. Pair with `wireListReorder` for pointer and keyboard reordering. */
+  draggable?: boolean;
+  /** Dim this row as one of the rows being dragged. */
+  dragging?: boolean;
+  /** Draw the insertion line at this row's leading (`before`) or trailing (`after`) block edge. */
+  dropPosition?: 'before' | 'after';
   trailingActionVisibility?: 'always' | 'interaction';
   className?: string;
   rootAttributes?: ListActionRowRootAttributes;
@@ -152,6 +163,9 @@ export function ListActionRow({
   disabled = false,
   tabIndex,
   placeholder = false,
+  draggable,
+  dragging = false,
+  dropPosition,
   trailingAction,
   trailingActionLabel,
   trailingActionIcon,
@@ -189,6 +203,9 @@ export function ListActionRow({
       data-selected={String(selected)}
       data-pressed={pressed === undefined ? undefined : String(pressed)}
       data-placeholder={placeholder ? 'true' : undefined}
+      draggable={nativeDraggable(draggable, placeholder)}
+      data-dragging={dragging ? 'true' : undefined}
+      data-drop-position={dropPosition}
       aria-busy={placeholder || busy ? 'true' : undefined}
       slot={slot}
     >

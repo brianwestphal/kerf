@@ -2,7 +2,9 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { ListItem, ListItemLink } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { CircleHelp, Folder, Inbox, Wrench } from 'lucide';
+import { CircleHelp, Folder, GripVertical, Inbox, Wrench } from 'lucide';
+
+import { reorderCommands, reorderSelection } from './state.js';
 
 export function ListItemDemo() {
   return (
@@ -129,6 +131,49 @@ export function ListItemDemo() {
           label="Move ticket here"
           state="drag-target"
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Drag to reorder"
+        note="Drag a row, or focus it and press Alt+Shift+Up or Down. Press several rows to move them together."
+        align="none"
+      >
+        <List rootAttributes={{ 'data-list-id': 'demo-reorder-commands' }}>
+          {reorderCommands.value.map((command) => (
+            <ListItem
+              action="toggle-reorder-row"
+              itemId={command.id}
+              label={command.label}
+              icon={<LucideIcon icon={GripVertical} name="grip-vertical" />}
+              pressed={reorderSelection.value.includes(command.id)}
+              draggable
+            />
+          ))}
+        </List>
+      </CatalogExample>
+      <CatalogExample label="Dragging and insertion states" align="none">
+        <List>
+          <ListItem
+            action="log-projects"
+            itemId="reorder-before"
+            label="Drops above this row"
+            draggable
+            dropPosition="before"
+          />
+          <ListItem
+            action="log-projects"
+            itemId="reorder-dragging"
+            label="Row being dragged"
+            draggable
+            dragging
+          />
+          <ListItem
+            action="log-projects"
+            itemId="reorder-after"
+            label="Drops below this row"
+            draggable
+            dropPosition="after"
+          />
+        </List>
       </CatalogExample>
       <CatalogExample align="none">
         <ListItem
