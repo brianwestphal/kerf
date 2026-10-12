@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 336900,
-  "measuredLargestJavaScriptGzip": 124515,
-  "measuredTotalJavaScriptGzip": 336835,
+  "totalJavaScriptGzip": 337100,
+  "measuredLargestJavaScriptGzip": 124511,
+  "measuredTotalJavaScriptGzip": 337032,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3219,6 +3219,22 @@
         "measuredTotalJavaScriptGzip": 336835,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 336900
+      }
+    },
+    {
+      "at": "2026-10-11T23:59:27.768Z",
+      "reason": "KF-V2ZBHT: LucideIcon variant cache and PopupMenu long-part digest memo (+0.13 kB) for 6x faster large-list menu re-renders",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124515,
+        "measuredTotalJavaScriptGzip": 336835,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 336900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124511,
+        "measuredTotalJavaScriptGzip": 337032,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 337100
       }
     }
   ]
