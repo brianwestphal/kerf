@@ -3793,6 +3793,67 @@ declare function FramedListRow({ children, highlighted, id, className, rootAttri
 export { FramedList, type FramedListProps, FramedListRow, type FramedListRowProps, type FramedListSurface };
 ```
 
+## `@kerfjs/ui/summary-row`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
+
+/** `row` for a list section; `card` for a board column. */
+type SummaryRowPresentation = 'row' | 'card';
+/** A row's place in a rounded list section, so its corners match. */
+type SummaryRowListEdge = 'start' | 'end' | 'only';
+type SummaryRowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-presentation'?: never;
+    'data-list-edge'?: never;
+    'data-rail'?: never;
+    'data-selected'?: never;
+    'data-dimmed'?: never;
+}>;
+interface SummaryRowProps {
+    /** The identity line: an identifier, inline status glyphs, and the title. */
+    title: KerfUiContent;
+    /** Optional leading glyph, such as a category icon. */
+    leading?: SafeHtml;
+    /** Quiet text at the end of the title line, such as a relative time. */
+    trailingMeta?: string | SafeHtml;
+    /** A wrapping line of badges, chips, and quiet text below the title. */
+    metadata?: KerfUiContent;
+    /** `row` (default) or `card`. */
+    presentation?: SummaryRowPresentation;
+    /** Title lines before clipping; default 2 for a row and 4 for a card. */
+    titleLines?: number;
+    /** A leading state rail in a semantic tone (Up Next, blocked, …). */
+    rail?: SemanticTone;
+    /** Selected state, exposed as `aria-selected`. */
+    selected?: boolean;
+    /** Dim a finished or cut item; hover and selection restore it. */
+    dimmed?: boolean;
+    /** Round the corners that meet a rounded list section's edge. */
+    listEdge?: SummaryRowListEdge;
+    /** Skip rendering while off screen in long lists (`content-visibility`). */
+    deferRendering?: boolean;
+    /** Accessible name when the visible content is not a good one. */
+    ariaLabel?: string;
+    id?: string;
+    className?: string;
+    /** Safe `data-*` identity (an item id or delegated action) on the option. */
+    rootAttributes?: SummaryRowRootAttributes;
+}
+/**
+ * A selectable, keyboard-focusable summary of one item, as a list row or a
+ * board card: an optional leading glyph and state rail, a clamped identity line
+ * with trailing quiet metadata, and a wrapping metadata line. It is a
+ * `role="option"`; place rows in a labeled `role="listbox"` and own selection
+ * and keyboard movement in the application.
+ */
+declare function SummaryRow({ title, leading, trailingMeta, metadata, presentation, titleLines, rail, selected, dimmed, listEdge, deferRendering, ariaLabel, id, className, rootAttributes, }: SummaryRowProps): SafeHtml;
+
+export { SummaryRow, type SummaryRowListEdge, type SummaryRowPresentation, type SummaryRowProps };
+```
+
 ## `@kerfjs/ui/row`
 
 ```ts

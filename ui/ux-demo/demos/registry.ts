@@ -44,6 +44,7 @@ import { SpacerDemo } from './spacer.js';
 import { SplitButtonDemo } from './split-button.js';
 import { SplitViewDemo } from './split-view.js';
 import { StateBannerDemo } from './state-banner.js';
+import { SummaryRowDemo } from './summary-row.js';
 import { SunkenPanelDemo } from './sunken-panel.js';
 import { SurfaceScaffoldDemo } from './surface-scaffold.js';
 import { TabBarDemo } from './tab-bar.js';
@@ -105,6 +106,7 @@ export const demos = {
   'content-swap': ContentSwapDemo,
   'file-picker': FilePickerDemo,
   combobox: ComboboxDemo,
+  'summary-row': SummaryRowDemo,
   'edge-activity-indicator': EdgeActivityIndicatorDemo,
   'icon-button': IconButtonDemo,
   'icon-toggle-button': IconToggleButtonDemo,

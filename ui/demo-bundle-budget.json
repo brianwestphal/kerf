@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 350600,
-  "measuredLargestJavaScriptGzip": 133803,
-  "measuredTotalJavaScriptGzip": 350531,
+  "totalJavaScriptGzip": 351900,
+  "measuredLargestJavaScriptGzip": 134869,
+  "measuredTotalJavaScriptGzip": 351803,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3667,6 +3667,22 @@
         "measuredTotalJavaScriptGzip": 350531,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 350600
+      }
+    },
+    {
+      "at": "2026-10-12T15:11:07.611Z",
+      "reason": "SummaryRow component and its interactive catalog demo (KF-XCFMX8)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 133803,
+        "measuredTotalJavaScriptGzip": 350531,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 350600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 134869,
+        "measuredTotalJavaScriptGzip": 351803,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 351900
       }
     }
   ]

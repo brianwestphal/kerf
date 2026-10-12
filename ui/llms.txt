@@ -548,6 +548,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   label column, `presentation="stacked"` puts values under labels, and
   `stackBelow="compact" | "narrow"` stacks only while the table is narrower
   than 512px/576px; do not override `--kui-value-table-row-columns`.
+- **Show selectable item summaries with `SummaryRow`.** One `role="option"`
+  per item as a list `row` or board `card`, with a state `rail`, a clamped
+  `title`, `trailingMeta`, a `metadata` line, `selected`, `dimmed`, and
+  `listEdge` rounding; the app owns the listbox and keyboard movement. Never
+  hand-roll ticket-row chrome.
 - **Group settings rows in `FramedList`.** For rows of arbitrary content in
   one rounded frame with dividers between them (settings, account cards,
   shortcut lists), compose `FramedListRow`s; `ValueTable` is the same frame for

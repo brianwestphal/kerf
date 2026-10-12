@@ -106,6 +106,12 @@ export {
   type ListItemProps,
 } from './components/collections/list-item/list-item.js';
 export {
+  SummaryRow,
+  type SummaryRowListEdge,
+  type SummaryRowPresentation,
+  type SummaryRowProps,
+} from './components/collections/summary-row/summary-row.js';
+export {
   ValueTable,
   type ValueTablePresentation,
   type ValueTableProps,

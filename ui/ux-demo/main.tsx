@@ -138,6 +138,7 @@ import {
   sizedDisclosureOpen,
   splitButtonOptionsOpen,
   splitButtonRunning,
+  summaryRowSelected,
   tabBarActive,
   tabBarTabs,
   ticketLabelFilter,
@@ -765,6 +766,10 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = splitButtonOptionsOpen.value
       ? 'Drive options opened'
       : 'Drive options closed';
+  },
+  'select-summary-row-demo': (_event, element) => {
+    const id = element.getAttribute('data-item-id');
+    if (id) summaryRowSelected.value = id;
   },
   'clear-file-picker-demo': () => {
     filePickerFiles.value = [];

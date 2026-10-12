@@ -2641,6 +2641,110 @@
       }
     },
     {
+      "id": "summary-row",
+      "name": "SummaryRow",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A selectable, focusable summary of one item as a list row or a board card, with a state rail, a clamped title, trailing meta, and a metadata line.",
+      "uses": [],
+      "purpose": "Present dense item summaries (tickets, tasks, messages) as selectable list rows or board cards with Kerf-owned selection, hover, focus, rail, clamping, list-edge rounding, and narrow compaction, without app row CSS.",
+      "publicExports": [
+        "SummaryRow"
+      ],
+      "useWhen": [
+        "A list or board shows many items as dense, selectable summaries with an identifier, a title, a timestamp, and metadata."
+      ],
+      "avoidWhen": [
+        "Do not use for navigation rows with a single label; use ListItem.",
+        "Do not use for selectable tiles of free-form content; use ContentItem with selectionMode.",
+        "Do not hand-roll row chrome (selection fill, rail, title clamp, edge rounding) in app CSS."
+      ],
+      "alternatives": [
+        {
+          "id": "list-item",
+          "relationship": "nearest",
+          "when": "Use ListItem for navigation rows."
+        },
+        {
+          "id": "content-item",
+          "relationship": "nearest",
+          "when": "Use ContentItem for selectable rich tiles."
+        }
+      ],
+      "appOwns": [
+        "the listbox container, selection set, and keyboard movement",
+        "the title, leading glyph, trailing meta, and metadata content",
+        "rail tone and dimming policy"
+      ],
+      "variants": [
+        "row",
+        "card",
+        "selected",
+        "dimmed",
+        "state rail",
+        "list edge start, end, or only",
+        "title line budget",
+        "deferred rendering"
+      ],
+      "accessibility": [
+        "Each SummaryRow is role=option with tabindex=0 and aria-selected; place rows in a labeled role=listbox and move focus with the arrow keys in the app. The rail is decorative; carry its meaning in text."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "Rows sit flush in a list section and round only the corners at its edges; cards are borderless rounded cards."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/summary-row",
+        "manualCssImport": "@kerfjs/ui/summary-row.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-summary-row",
+        "kui-summary-row__rail",
+        "kui-summary-row__body",
+        "kui-summary-row__leading",
+        "kui-summary-row__content",
+        "kui-summary-row__title",
+        "kui-summary-row__trailing",
+        "kui-summary-row__metadata"
+      ],
+      "publicTokens": [
+        "--kui-color-neutral-border-quiet",
+        "--kui-color-text",
+        "--kui-color-surface",
+        "--kui-color-brand-border-normal",
+        "--kui-color-text-link",
+        "--kui-color-brand-fill-quiet",
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-brand-fill-loud",
+        "--kui-color-pop-fill-loud",
+        "--kui-color-success-fill-loud",
+        "--kui-color-warning-fill-loud",
+        "--kui-color-danger-fill-loud",
+        "--kui-color-text-quiet",
+        "--kui-font-2xs",
+        "--kui-font-xs",
+        "--kui-layout-rounded-radius",
+        "--kui-space-2xs",
+        "--kui-space-s",
+        "--kui-space-xs"
+      ],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=summary-row",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "row",
       "name": "Row",
       "category": "Structure",
@@ -3751,6 +3855,11 @@
           "id": "list-action-row",
           "relationship": "nearest",
           "when": "The trailing region must be independently interactive."
+        },
+        {
+          "id": "summary-row",
+          "relationship": "nearest",
+          "when": "Use SummaryRow for dense selectable item summaries with metadata."
         }
       ],
       "appOwns": [

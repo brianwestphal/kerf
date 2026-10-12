@@ -1,0 +1,161 @@
+/* A selectable summary: a full-width option on the base surface, a container
+   for its own compaction, with a hairline divider below each list row. */
+.kui-summary-row {
+  --_kui-summary-row-rail: transparent;
+  --_kui-summary-row-radius: var(
+    --kui-layout-rounded-radius,
+    calc(1px + remify(11px))
+  );
+  --_kui-summary-row-title-lines: 2;
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-block-end-color: var(--kui-color-neutral-border-quiet);
+  border-radius: 0;
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  cursor: pointer;
+  outline: none;
+  container-type: inline-size;
+  user-select: none;
+}
+
+.kui-summary-row[data-presentation="card"] {
+  --_kui-summary-row-title-lines: 4;
+  border-color: transparent;
+  border-radius: var(--_kui-summary-row-radius);
+}
+
+.kui-summary-row[data-list-edge="start"] {
+  border-start-start-radius: var(--_kui-summary-row-radius);
+  border-start-end-radius: var(--_kui-summary-row-radius);
+}
+.kui-summary-row[data-list-edge="end"] {
+  border-end-start-radius: var(--_kui-summary-row-radius);
+  border-end-end-radius: var(--_kui-summary-row-radius);
+}
+.kui-summary-row[data-list-edge="only"] {
+  border-radius: var(--_kui-summary-row-radius);
+}
+
+.kui-summary-row[data-defer="true"] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto remify(72px);
+}
+
+.kui-summary-row:hover {
+  border-color: var(--kui-color-brand-border-normal);
+}
+
+.kui-summary-row:focus-visible {
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--kui-color-text-link) 24%, transparent);
+}
+
+.kui-summary-row[data-selected="true"] {
+  border-color: var(--kui-color-brand-border-normal);
+  background: var(--kui-color-brand-fill-quiet);
+}
+
+.kui-summary-row[data-dimmed="true"]:not(:hover, [data-selected="true"]) {
+  opacity: 0.55;
+}
+
+/* The leading state rail. */
+.kui-summary-row__rail {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: remify(4px);
+  background: var(--_kui-summary-row-rail);
+}
+.kui-summary-row[data-rail="neutral"] {
+  --_kui-summary-row-rail: var(--kui-color-neutral-on-quiet);
+}
+.kui-summary-row[data-rail="info"] {
+  --_kui-summary-row-rail: var(--kui-color-brand-fill-loud);
+}
+.kui-summary-row[data-rail="pop"] {
+  --_kui-summary-row-rail: var(--kui-color-pop-fill-loud);
+}
+.kui-summary-row[data-rail="success"] {
+  --_kui-summary-row-rail: var(--kui-color-success-fill-loud);
+}
+.kui-summary-row[data-rail="warning"] {
+  --_kui-summary-row-rail: var(--kui-color-warning-fill-loud);
+}
+.kui-summary-row[data-rail="danger"] {
+  --_kui-summary-row-rail: var(--kui-color-danger-fill-loud);
+}
+
+/* Leading glyph, then the content column. */
+.kui-summary-row__body {
+  display: grid;
+  min-width: 0;
+  padding: var(--kui-space-xs) var(--kui-space-s);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--kui-space-xs);
+}
+
+.kui-summary-row__body:not(:has(> .kui-summary-row__leading)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.kui-summary-row__leading {
+  display: grid;
+  min-width: remify(24px);
+  min-height: remify(24px);
+  color: var(--kui-color-neutral-on-quiet);
+  place-items: center;
+}
+
+.kui-summary-row[data-presentation="card"] .kui-summary-row__leading {
+  min-width: remify(18px);
+  min-height: remify(20px);
+}
+
+.kui-summary-row__content {
+  display: grid;
+  min-width: 0;
+  gap: var(--kui-space-2xs);
+}
+
+/* The identity line clips at its line budget; the trailing meta floats to its
+   end so the title wraps around it. */
+.kui-summary-row__title {
+  min-width: 0;
+  max-height: calc(var(--_kui-summary-row-title-lines) * 1.3em);
+  overflow: hidden;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.kui-summary-row__trailing {
+  float: inline-end;
+  margin-inline-start: var(--kui-space-s);
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-2xs);
+  line-height: calc(1.3em * 1.15);
+  white-space: nowrap;
+}
+
+.kui-summary-row__metadata {
+  display: flex;
+  min-width: 0;
+  color: var(--kui-color-neutral-on-quiet);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--kui-space-2xs) var(--kui-space-xs);
+  font-size: var(--kui-font-xs);
+}
+
+/* A narrow row tightens its gaps. */
+@container (max-width: remify(384px)) {
+  .kui-summary-row__body {
+    padding: var(--kui-space-xs);
+  }
+}

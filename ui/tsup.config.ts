@@ -73,6 +73,7 @@ const entries = [
   'icon-toggle-button',
   'split-button',
   'framed-list',
+  'summary-row',
   'wire-corner-status',
   'empty-state',
   'value-table',

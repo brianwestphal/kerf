@@ -20,6 +20,7 @@ Selectable, disabled, trailing, and multiline action or link rows.
 **Alternatives:**
 
 - [ListActionRow](./list-action-row.md) (nearest) — The trailing region must be independently interactive.
+- [SummaryRow](./summary-row.md) (nearest) — Use SummaryRow for dense selectable item summaries with metadata.
 
 ## Imports
 
@@ -89,6 +90,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [LoadingSpinner](./loading-spinner.md), [ListActionRow](./list-action-row.md).
+- Components: [LucideIcon](./lucide-icon.md), [LoadingSpinner](./loading-spinner.md), [ListActionRow](./list-action-row.md), [SummaryRow](./summary-row.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=list-item`.

@@ -313,6 +313,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "summary-row",
+    "name": "SummaryRow",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Present dense item summaries (tickets, tasks, messages) as selectable list rows or board cards with Kerf-owned selection, hover, focus, rail, clamping, list-edge rounding, and narrow compaction, without app row CSS.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/summary-row.tsx",
+    "componentSource": "ui/src/components/collections/summary-row/summary-row.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "row",
     "name": "Row",
     "category": "Structure",
