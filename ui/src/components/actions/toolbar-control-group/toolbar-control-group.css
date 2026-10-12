@@ -395,12 +395,15 @@
   place-items: center;
 }
 
-.kui-toolbar-control-group > button:disabled {
+/* A native button that is disabled, or kept focusable with aria-disabled,
+   dims and drops hover chrome. */
+.kui-toolbar-control-group > button:is(:disabled, [aria-disabled="true"]) {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.kui-toolbar-control-group > button:not(:disabled):hover {
+.kui-toolbar-control-group
+  > button:not(:disabled, [aria-disabled="true"]):hover {
   border-color: var(--kui-toolbar-control-border);
   background: var(--kui-toolbar-control-hover-background);
 }
@@ -611,17 +614,18 @@
 }
 
 .kui-toolbar-control-group
-  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button)):hover::part(
-    base
-  ) {
+  wa-button:not(
+    :where(.kui-popup-menu > *, .kui-icon-button),
+    [disabled]
+  ):hover::part(base) {
   border-color: var(--kui-toolbar-control-border);
   background-color: var(--kui-toolbar-control-hover-background);
 }
 
 .kui-toolbar-control-group[data-single="true"]:has(
     > :is(
-      button:not(:disabled),
-      wa-button,
+      button:not(:disabled, [aria-disabled="true"]),
+      wa-button:not([disabled]),
       .kui-popup-menu,
       wa-dropdown:not(.kui-popup-menu),
       .kui-select,
@@ -638,9 +642,10 @@
     .kui-toolbar-action-link
   ):hover,
 .kui-toolbar-control-group[data-single="true"]
-  wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button)):hover::part(
-    base
-  ) {
+  wa-button:not(
+    :where(.kui-popup-menu > *, .kui-icon-button),
+    [disabled]
+  ):hover::part(base) {
   border-color: transparent;
   background: transparent;
 }
@@ -651,8 +656,8 @@
    Done action). */
 .kui-toolbar-control-group:not([data-single="true"]):has(
     > :is(
-        button:not(:disabled),
-        wa-button,
+        button:not(:disabled, [aria-disabled="true"]),
+        wa-button:not([disabled]),
         .kui-select,
         .kui-toolbar-action-link
       ):nth-child(1 of :where(:not([data-toolbar-visibility-state]))):where(

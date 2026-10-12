@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- A `ToolbarControlGroup` now dims a native button marked `aria-disabled="true"` (one kept focusable while unavailable) exactly as it dims a `disabled` one: half opacity, a `not-allowed` cursor, and no hover surface, including a lone group's whole-group hover. It used to look and hover like an enabled control. A disabled raw `wa-button` in a group also no longer paints the group's hover surface (`KF-Y3ZZ10`).
+
 - A focused `scrollable` `List` now draws the theme focus ring inset by the ring width and rounded with the standard control radius. Chromium makes a scroller without focusable rows keyboard-focusable, and a dialog may focus it first. It used to show the UA's square outline outside its box, which a rounded or `overflow: hidden` parent clipped (`KF-AJNFTT`).
 
 - Typing quickly into a `TokenSearchField` whose app commits typed grammar to chips from `onEdit` (or removes a chip from `keyboard.onRemoveToken`) no longer loses keys. The token change re-keys the editor, so the controlled render replaced the focused element, and keys typed before the app refocused it went nowhere: `site:north site:annex` became `[site:north] ite:annex`. `wireTokenSearchFields` now hands focus and caret to the replacement at the same mutation checkpoint, as it already did for Clear and native deletion. A caret at the end stays at the end, and any other caret keeps its place in the remaining text (`KF-96TEF4`).

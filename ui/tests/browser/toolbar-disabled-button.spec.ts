@@ -60,3 +60,75 @@ test('disabled native toolbar buttons stay dimmed without hover chrome', async (
     });
   }
 });
+
+test('disabled and aria-disabled controls are dimmed in every group variant', async ({
+  page,
+}) => {
+  await page.goto('/?component=toolbar-control-group');
+  await page.waitForFunction(() => customElements.get('wa-button'));
+  const variants = [
+    'data-single="false"',
+    'data-single="false" data-content="icon"',
+    'data-single="false" data-content="mixed"',
+    'data-single="false" data-size="compact"',
+    'data-single="false" data-size="compact" data-content="icon"',
+    'data-single="true" data-content="icon"',
+  ];
+  await page.evaluate(async (groups) => {
+    const host = document.createElement('div');
+    host.dataset.disabledVariantFixture = '';
+    host.style.cssText = 'display:flex;gap:8px;padding:8px;flex-wrap:wrap';
+    host.innerHTML = groups
+      .map(
+        (attributes, index) => `
+        <div class="kui-toolbar-control-group" ${attributes}>
+          <button type="button" disabled data-v="${index}-native">A</button>
+          <button type="button" aria-disabled="true" data-v="${index}-aria">B</button>
+          <wa-button disabled data-v="${index}-wa">C</wa-button>
+          <button type="button" data-v="${index}-enabled">D</button>
+        </div>`,
+      )
+      .join('');
+    document.body.append(host);
+    await Promise.all(
+      [...host.querySelectorAll('wa-button')].map(
+        (button) =>
+          (button as HTMLElement & { updateComplete: Promise<unknown> })
+            .updateComplete,
+      ),
+    );
+  }, variants);
+  const read = (selector: string) =>
+    page.locator(selector).evaluate((element) => {
+      const base =
+        element.localName === 'wa-button'
+          ? element.shadowRoot!.querySelector('[part~="base"]')!
+          : element;
+      return {
+        opacity: globalThis.getComputedStyle(element).opacity,
+        cursor: globalThis.getComputedStyle(base).cursor,
+        background: globalThis.getComputedStyle(base).backgroundColor,
+      };
+    });
+  for (const [index] of variants.entries()) {
+    for (const kind of ['native', 'aria', 'wa']) {
+      const selector = `[data-v="${index}-${kind}"]`;
+      const resting = await read(selector);
+      expect(resting, `${variants[index]} ${kind}`).toMatchObject({
+        opacity: '0.5',
+        cursor: 'not-allowed',
+      });
+      await page.locator(selector).hover({ force: true });
+      expect((await read(selector)).background, selector).toBe(
+        resting.background,
+      );
+    }
+    expect(await read(`[data-v="${index}-enabled"]`)).toMatchObject({
+      opacity: '1',
+      cursor: 'pointer',
+    });
+  }
+  await page.locator('[data-disabled-variant-fixture]').screenshot({
+    path: 'test-results/toolbar-disabled-variants.png',
+  });
+});
