@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 340800,
-  "measuredLargestJavaScriptGzip": 124690,
-  "measuredTotalJavaScriptGzip": 340731,
+  "totalJavaScriptGzip": 341300,
+  "measuredLargestJavaScriptGzip": 125200,
+  "measuredTotalJavaScriptGzip": 341242,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3379,6 +3379,22 @@
         "measuredTotalJavaScriptGzip": 340731,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 340800
+      }
+    },
+    {
+      "at": "2026-10-12T11:46:28.812Z",
+      "reason": "CornerStatus component, its wiring, and its catalog demo (KF-PZCPHQ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124690,
+        "measuredTotalJavaScriptGzip": 340731,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 340800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 125200,
+        "measuredTotalJavaScriptGzip": 341242,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 341300
       }
     }
   ]

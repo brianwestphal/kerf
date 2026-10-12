@@ -527,6 +527,12 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `presentation="strip"` renders a flush, square, full-width band for a
   layout edge with tone-colored `dividerSides` (bottom by default) instead of
   the inset rounded card; never restyle a card into a strip.
+- **Host app-level progress in `CornerStatus`.** For a non-dismissible
+  "Loading…" or "Updating… N of M" with no home beside the affected work, put
+  a `StateBanner` (`urgency="status"`) inside `CornerStatus` and call
+  `wireCornerStatus` once: a top-layer manual popover at a safe-area-aware
+  corner, with no close button, light dismiss, Escape, or focus change. Never
+  position a banner with fixed-position CSS or hide a toast's close part.
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
   `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
   selected text, use the public color, font-size, and font-weight tokens; the

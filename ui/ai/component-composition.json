@@ -4094,13 +4094,86 @@
           "--kui-state-banner-success-foreground",
           "--kui-state-banner-warning-background",
           "--kui-state-banner-warning-border",
-          "--kui-state-banner-warning-foreground"
+          "--kui-state-banner-warning-foreground",
+          "--kui-shadow-l"
         ]
       },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
         "composition": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:corner-status",
+      "package": "@kerfjs/ui",
+      "id": "corner-status",
+      "name": "CornerStatus",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "status lifetime (render while the work runs, remove when it ends)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the composed StateBanner copy and progress",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "corner placement", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireCornerStatus"],
+        "obligations": [
+          "Opens each overlay host in the top layer as renders insert it; without it the Popover API keeps the host hidden."
+        ],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": {
+          "margin": "none",
+          "border": "child",
+          "padding": "child",
+          "notes": [
+            "Placement owns the 16px viewport gutter plus device safe-area insets; a StateBanner inside drops its inline margin and gains elevation."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The host adds no role; the composed StateBanner with urgency=\"status\" is the polite live region.",
+          "Opening never moves focus, and there is no close button, light dismiss, or Escape handling to compete with dialogs."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-corner-status",
+        "publicClasses": ["kui-corner-status"],
+        "rootElement": "div",
+        "publicTokens": [
+          "--kui-corner-status-gutter",
+          "--kui-corner-status-z-index",
+          "--kui-safe-area-block-end",
+          "--kui-safe-area-block-start",
+          "--kui-safe-area-inline-end",
+          "--kui-safe-area-inline-start",
+          "--kui-space-m",
+          "--kui-space-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
       }
     },
     {

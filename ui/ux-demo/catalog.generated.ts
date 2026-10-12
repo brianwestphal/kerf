@@ -609,6 +609,20 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "corner-status",
+    "name": "CornerStatus",
+    "category": "Feedback",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Show ongoing app-level progress such as \"Loading…\" or \"Updating tickets… 3 of 12\" in a viewport corner above page chrome and dialogs opened before it, without a close button, light dismiss, Escape, or focus change.",
+    "uses": [
+      "state-banner"
+    ],
+    "demoSource": "ui/ux-demo/demos/corner-status.tsx",
+    "componentSource": "ui/src/components/feedback/corner-status/corner-status.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "empty-state",
     "name": "EmptyState",
     "category": "Feedback",

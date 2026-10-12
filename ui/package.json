@@ -342,6 +342,15 @@
       "types": "./dist/webawesome.d.ts",
       "import": "./dist/webawesome.js"
     },
+    "./corner-status": {
+      "types": "./dist/corner-status.d.ts",
+      "browser": "./dist/browser/corner-status.js",
+      "import": "./dist/corner-status.js"
+    },
+    "./wire-corner-status": {
+      "types": "./dist/wire-corner-status.d.ts",
+      "import": "./dist/wire-corner-status.js"
+    },
     "./state-banner": {
       "types": "./dist/state-banner.d.ts",
       "browser": "./dist/browser/state-banner.js",
@@ -405,6 +414,7 @@
     "./segmented-control.css": "./dist/styles/segmented-control.css",
     "./token-search-field.css": "./dist/styles/token-search-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",
+    "./corner-status.css": "./dist/styles/corner-status.css",
     "./empty-state.css": "./dist/styles/empty-state.css",
     "./value-table.css": "./dist/styles/value-table.css",
     "./ai/*": "./ai/*",

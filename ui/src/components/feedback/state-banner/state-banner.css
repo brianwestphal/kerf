@@ -159,6 +159,20 @@
 .kui-state-banner[data-presentation="strip"][divider-sides*="l"] {
   border-left-width: 1px;
 }
+/* Inside a CornerStatus the banner floats over the page at a viewport corner:
+   the corner's gutter replaces the inline margin, elevation separates it from
+   whatever content it covers, and the translucent tone fill composites over
+   the opaque surface so that content never shows through the copy. */
+.kui-corner-status > .kui-state-banner {
+  margin-inline: 0;
+  background:
+    linear-gradient(
+      var(--_kui-state-banner-background),
+      var(--_kui-state-banner-background)
+    ),
+    var(--kui-color-surface);
+  box-shadow: var(--kui-shadow-l);
+}
 .kui-state-banner__icon {
   display: grid;
   place-items: center;

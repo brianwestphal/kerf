@@ -7,7 +7,9 @@
     {
       "export": "wireCatalog",
       "import": "@kerfjs/ui/wire-catalog",
-      "provides": ["wireScrollDividers"]
+      "provides": [
+        "wireScrollDividers"
+      ]
     }
   ],
   "entries": [
@@ -673,7 +675,7 @@
         "border": "conditional",
         "padding": "child",
         "notes": [
-        "The pane is unpadded; separators are independently opt-in on logical edges and default off.",
+          "The pane is unpadded; separators are independently opt-in on logical edges and default off.",
           "Safe areas: the root and separators paint through unsafe areas while header, content, and footer pad the sides the pane still reaches (routed by --kui-edge-inset-*); content block insets are scroll padding.",
           "The scrolling content exposes its resolved logical inline padding to descendants as --kui-pane-content-inset-inline-start/end, including safe areas and deepInset.",
           "deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge.",
@@ -4401,13 +4403,25 @@
         {
           "path": "restoreInset",
           "grammar": "length",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
           "shorthands": [],
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["restoreInset={space(\"xs\")}"]
+          "examples": [
+            "restoreInset={space(\"xs\")}"
+          ]
         }
       ],
       "useWhen": [
@@ -4443,8 +4457,8 @@
         "slide, fade-slide, or instant content",
         "clipped, scrolling, or popup-visible content",
         "inline, overlay, or hidden responsive presentation",
-        "safe-area restore control"
-        ,"top-corner or inline restore placement"
+        "safe-area restore control",
+        "top-corner or inline restore placement"
       ],
       "accessibility": [
         "Preserve separator naming, value ARIA, and keyboard behavior.",
@@ -4695,8 +4709,14 @@
         "Use PopupMenu for a typed action menu, Select for a choice, and a modal dialog for a task that must block the page."
       ],
       "alternatives": [
-        { "id": "popup-menu", "relationship": "nearest" },
-        { "id": "wa-popup", "relationship": "prefer-over" }
+        {
+          "id": "popup-menu",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-popup",
+          "relationship": "prefer-over"
+        }
       ],
       "appOwns": [
         "content and action policy",
@@ -4727,7 +4747,9 @@
       "delivery": {
         "browserImport": "@kerfjs/ui/anchored-surface",
         "manualCssImport": "@kerfjs/ui/anchored-surface.css",
-        "sideEffects": ["browser-condition-css"]
+        "sideEffects": [
+          "browser-condition-css"
+        ]
       },
       "wiring": [],
       "publicClasses": [],
@@ -4954,6 +4976,11 @@
         {
           "id": "wa-toast",
           "relationship": "prefer-over"
+        },
+        {
+          "id": "corner-status",
+          "relationship": "composes-with",
+          "when": "Host app-level progress in a viewport corner with CornerStatus instead of fixed-position CSS."
         }
       ],
       "appOwns": [
@@ -5052,10 +5079,105 @@
         "--kui-state-banner-success-foreground",
         "--kui-state-banner-warning-background",
         "--kui-state-banner-warning-border",
-        "--kui-state-banner-warning-foreground"
+        "--kui-state-banner-warning-foreground",
+        "--kui-shadow-l"
       ],
       "links": {
         "catalogRoute": "?component=state-banner",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#ambiguous-choices"
+      }
+    },
+    {
+      "id": "corner-status",
+      "name": "CornerStatus",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Non-dismissible app-level status pinned to a viewport corner in the top layer, hosting StateBanner.",
+      "uses": [
+        "state-banner"
+      ],
+      "purpose": "Show ongoing app-level progress such as \"Loading…\" or \"Updating tickets… 3 of 12\" in a viewport corner above page chrome and dialogs opened before it, without a close button, light dismiss, Escape, or focus change.",
+      "publicExports": [
+        "CornerStatus",
+        "wireCornerStatus"
+      ],
+      "useWhen": [
+        "Show ongoing app-level progress or status that has no better home beside the affected work and must stay visible until the work ends."
+      ],
+      "avoidWhen": [
+        "Do not use for transient, dismissible confirmation; use a toast.",
+        "Do not use for status that belongs beside the affected work; place a StateBanner there.",
+        "Do not position a StateBanner with fixed-position application CSS; use CornerStatus."
+      ],
+      "alternatives": [
+        {
+          "id": "state-banner",
+          "relationship": "composes-with",
+          "when": "Compose one or more StateBanners (urgency=\"status\") inside it; they stack."
+        },
+        {
+          "id": "wa-toast",
+          "relationship": "prefer-over",
+          "when": "A toast item is transient and always dismissible; CornerStatus stays until the application removes it."
+        }
+      ],
+      "appOwns": [
+        "status lifetime (render while the work runs, remove when it ends)",
+        "the composed StateBanner copy and progress",
+        "corner placement"
+      ],
+      "variants": [
+        "bottom-end",
+        "bottom-start",
+        "top-end",
+        "top-start",
+        "embedded (in flow)"
+      ],
+      "accessibility": [
+        "The host adds no role; the composed StateBanner with urgency=\"status\" is the polite live region.",
+        "Opening never moves focus, and there is no close button, light dismiss, or Escape handling to compete with dialogs."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child",
+        "notes": [
+          "Placement owns the 16px viewport gutter plus device safe-area insets; a StateBanner inside drops its inline margin and gains elevation."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/corner-status",
+        "manualCssImport": "@kerfjs/ui/corner-status.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireCornerStatus",
+          "import": "@kerfjs/ui/wire-corner-status",
+          "required": true,
+          "reason": "Opens each overlay host in the top layer as renders insert it; without it the Popover API keeps the host hidden."
+        }
+      ],
+      "publicClasses": [
+        "kui-corner-status"
+      ],
+      "publicTokens": [
+        "--kui-corner-status-gutter",
+        "--kui-corner-status-z-index",
+        "--kui-safe-area-block-end",
+        "--kui-safe-area-block-start",
+        "--kui-safe-area-inline-end",
+        "--kui-safe-area-inline-start",
+        "--kui-space-m",
+        "--kui-space-xs"
+      ],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=corner-status",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#ambiguous-choices"
       }

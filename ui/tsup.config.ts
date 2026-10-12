@@ -61,6 +61,8 @@ const entries = [
   'help-tags-register',
   'webawesome',
   'state-banner',
+  'corner-status',
+  'wire-corner-status',
   'empty-state',
   'value-table',
 ];

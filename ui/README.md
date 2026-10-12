@@ -259,6 +259,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                      |
 | `createTokenSearchModel`                                            | `@kerfjs/ui/token-search-model`         | —                                      |
 | `StateBanner`                                                       | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`          |
+| `CornerStatus`                                                      | `@kerfjs/ui/corner-status`              | `@kerfjs/ui/corner-status.css`         |
+| `wireCornerStatus`                                                  | `@kerfjs/ui/wire-corner-status`         | —                                      |
 | `EmptyState`                                                        | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`           |
 | `ValueTable`, `ValueTableRow`                                       | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`           |
 

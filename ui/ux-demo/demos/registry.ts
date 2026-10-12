@@ -6,6 +6,7 @@ import { BadgeDemo, BadgeSettings } from './badge.js';
 import { ChipDemo } from './chip.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { ContentItemDemo } from './content-item.js';
+import { CornerStatusDemo } from './corner-status.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { DocumentBaselineDemo } from './document-baseline.js';
 import { EmptyStateDemo } from './empty-state.js';
@@ -90,6 +91,7 @@ export const demos = {
   'state-banner': StateBannerDemo,
   'popup-menu': PopupMenuDemo,
   'surface-scaffold': SurfaceScaffoldDemo,
+  'corner-status': CornerStatusDemo,
   'sunken-panel': SunkenPanelDemo,
   'empty-state': EmptyStateDemo,
   'loading-spinner': LoadingSpinnerDemo,

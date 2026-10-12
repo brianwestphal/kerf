@@ -1,0 +1,60 @@
+/* The host only places the stack: the composed banners own their fill,
+   border, and padding. A native popover's UA box (inset 0, auto margin,
+   border, padding, Canvas background, scrolling) is reset so the stack sizes
+   to its banners in the chosen corner. Stacked banners share the widest
+   banner's width, so a stack reads as one aligned column. */
+.kui-corner-status {
+  --_kui-corner-status-gutter: var(
+    --kui-corner-status-gutter,
+    var(--kui-space-m)
+  );
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: var(--kui-space-xs);
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  color: inherit;
+  background: transparent;
+}
+.kui-corner-status[data-presentation="overlay"] {
+  position: fixed;
+  z-index: var(--kui-corner-status-z-index, 1000);
+  inset: auto;
+  max-width: calc(
+    100vw - 2 * var(--_kui-corner-status-gutter) -
+      var(--kui-safe-area-inline-start) - var(--kui-safe-area-inline-end)
+  );
+}
+/* A browser with the Popover API hides the host until wireCornerStatus opens
+   it; without the API the fixed host simply shows. */
+.kui-corner-status[data-presentation="overlay"][popover]:not(:popover-open) {
+  display: none;
+}
+.kui-corner-status[data-placement^="top"] {
+  inset-block-start: calc(
+    var(--_kui-corner-status-gutter) + var(--kui-safe-area-block-start)
+  );
+}
+.kui-corner-status[data-placement^="bottom"] {
+  inset-block-end: calc(
+    var(--_kui-corner-status-gutter) + var(--kui-safe-area-block-end)
+  );
+}
+.kui-corner-status[data-placement$="-start"] {
+  inset-inline-start: calc(
+    var(--_kui-corner-status-gutter) + var(--kui-safe-area-inline-start)
+  );
+}
+.kui-corner-status[data-placement$="-end"] {
+  inset-inline-end: calc(
+    var(--_kui-corner-status-gutter) + var(--kui-safe-area-inline-end)
+  );
+}
+.kui-corner-status[data-presentation="embedded"] {
+  position: static;
+}

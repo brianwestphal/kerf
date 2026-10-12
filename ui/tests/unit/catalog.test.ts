@@ -535,6 +535,7 @@ describe('UX catalog metadata', () => {
       'AnchoredSurface',
       'PopupMenu',
       'StateBanner',
+      'CornerStatus',
       'EmptyState',
       'LoadingSpinner',
       'Skeleton',

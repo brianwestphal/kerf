@@ -104,6 +104,13 @@ export {
 } from './components/feedback/badge/badge.js';
 export { Chip, type ChipProps } from './components/feedback/chip/chip.js';
 export {
+  CornerStatus,
+  type CornerStatusPlacement,
+  type CornerStatusPresentation,
+  type CornerStatusProps,
+} from './components/feedback/corner-status/corner-status.js';
+export { wireCornerStatus } from './components/feedback/corner-status/wiring/wire-corner-status.js';
+export {
   EmptyState,
   type EmptyStateProps,
 } from './components/feedback/empty-state/empty-state.js';
