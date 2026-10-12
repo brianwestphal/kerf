@@ -880,8 +880,32 @@ test.describe('resizable Workbench panels', () => {
     await left.getByText('Navigator').click();
     await expect(left).toHaveAttribute('data-collapsed', 'false');
     const editor = workbench.getByText('Resize the panels');
-    const box = (await workbench.boundingBox())!;
-    await page.mouse.click(box.x + box.width - 16, box.y + box.height - 16);
+    // Click the strip the open rail leaves uncovered, at a point the page
+    // actually hit-tests there: the workbench's corner can sit below the
+    // viewport (how far the catalog pane is scrolled varies), and a click off
+    // the viewport never reaches the page.
+    const outside = await workbench.evaluate((element) => {
+      const rail = element.querySelector('[data-workbench-rail="left"]')!;
+      const box = element.getBoundingClientRect();
+      const x = box.right - 16;
+      for (
+        let y = Math.min(box.bottom, window.innerHeight) - 8;
+        y > Math.max(box.top, 0);
+        y -= 8
+      ) {
+        const hit = document.elementFromPoint(x, y);
+        if (
+          hit &&
+          element.contains(hit) &&
+          !rail.contains(hit) &&
+          !hit.closest('button, a, [aria-controls]')
+        )
+          return { x, y };
+      }
+      return null;
+    });
+    expect(outside, 'a visible point outside the open rail').not.toBeNull();
+    await page.mouse.click(outside!.x, outside!.y);
     await expect(left).toHaveAttribute('data-collapsed', 'true');
     await expect(editor).toBeVisible();
 
