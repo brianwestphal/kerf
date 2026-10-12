@@ -15,7 +15,8 @@ export type ToolbarControlGroupDensity = 'comfortable' | 'tight';
 export type ToolbarControlGroupContent =
   'icon' | 'text' | 'mixed' | 'avatar' | 'search';
 export type ToolbarControlGroupFocusRing = 'control' | 'outline' | 'halo';
-export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
+export type ToolbarControlGroupSelectedChrome =
+  'raised' | 'filled' | 'outline' | 'none';
 export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 export type ToolbarControlGroupOverflow = 'visible' | 'scroll' | 'wrap';
 export type ToolbarControlGroupExpandedOverflow = 'clip' | 'visible';
@@ -92,6 +93,13 @@ export interface ToolbarControlGroupProps {
   content?: ToolbarControlGroupContent;
   /** Whether controls paint focus individually or the group paints an outline/halo on focus-within. */
   focusRing?: ToolbarControlGroupFocusRing;
+  /**
+   * Chrome a pressed (`aria-pressed="true"`) control paints. `none` keeps a
+   * pressed control looking like its neighbors, for an icon-state toggle whose
+   * glyph already shows the state (an empty or filled star); hover and the
+   * focus ring are unchanged. One control can opt out alone with
+   * `data-selected-chrome="none"` on its own button.
+   */
   selectedChrome?: ToolbarControlGroupSelectedChrome;
   selectedTone?: ToolbarControlGroupSelectedTone;
   /** Size a nested Web Awesome dropdown trigger as part of this group. */

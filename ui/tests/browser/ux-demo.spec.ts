@@ -6752,6 +6752,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Push button, resting',
     'Push button, pressed',
     'Pop selected tone',
+    'Icon-state toggle',
     'Dark group',
     'Compact mixed controls',
     'Avatar profile',
@@ -6760,7 +6761,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Wrapping zone sizing',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  const expectedGroupCount = 28;
+  const expectedGroupCount = 29;
   await expect(groups).toHaveCount(expectedGroupCount);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',

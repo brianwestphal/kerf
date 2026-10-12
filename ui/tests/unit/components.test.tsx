@@ -570,6 +570,9 @@ describe('production UI primitives', () => {
     expect(
       asHtml(ToolbarControlGroup({ children: icon, overflow: 'wrap' })),
     ).toContain('data-overflow="wrap"');
+    expect(
+      asHtml(ToolbarControlGroup({ children: icon, selectedChrome: 'none' })),
+    ).toContain('data-selected-chrome="none"');
     expect(asHtml(group)).toContain(
       'style="--kui-toolbar-avatar-image:url(&quot;/profile.svg&quot;)"',
     );

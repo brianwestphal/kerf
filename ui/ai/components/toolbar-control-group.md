@@ -49,7 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-s
 - default or compact size
 - comfortable or tight density
 - icon, text, mixed, or avatar content
-- raised, filled, or outline selected chrome
+- raised, filled, outline, or no selected chrome (group-wide or one control via data-selected-chrome="none")
 - brand, neutral, or pop selected tone
 - nested dropdown trigger
 - standard, compact, or list-zero dropdown menu inset

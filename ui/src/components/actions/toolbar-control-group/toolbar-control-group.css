@@ -343,6 +343,22 @@
   background: transparent;
 }
 
+/* `selectedChrome="none"`: a pressed control paints like its unpressed
+   neighbors, for an icon-state toggle whose glyph already shows the state.
+   One button opts out alone with `data-selected-chrome="none"`. After the
+   tone and appearance rules above, so it wins over their selected fills. */
+.kui-toolbar-control-group[data-selected-chrome="none"],
+.kui-toolbar-control-group
+  > :is(
+    button,
+    wa-button:not(:where(.kui-icon-button))
+  )[data-selected-chrome="none"] {
+  --kui-toolbar-control-selected-shadow: none;
+  --kui-toolbar-control-selected-border: transparent;
+  --kui-toolbar-control-selected-background: transparent;
+  --kui-toolbar-control-selected-color: var(--kui-toolbar-control-color);
+}
+
 /* The group lays out its own native and raw Web Awesome children. A composed
    PopupMenu (`wa-dropdown.kui-popup-menu`) or Select sizes itself in the
    group's context from its own stylesheet (popup-menu.css, select.css); the

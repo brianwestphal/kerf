@@ -527,6 +527,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `presentation="strip"` renders a flush, square, full-width band for a
   layout edge with tone-colored `dividerSides` (bottom by default) instead of
   the inset rounded card; never restyle a card into a strip.
+- **Let an icon-state toggle skip selected chrome.** When a pressed toggle's
+  glyph already shows its state (an empty or filled star), set
+  `data-selected-chrome="none"` on that button, or `selectedChrome="none"` on
+  its `ToolbarControlGroup`; never override the group's pressed-button styles.
 - **Group settings rows in `FramedList`.** For rows of arbitrary content in
   one rounded frame with dividers between them (settings, account cards,
   shortcut lists), compose `FramedListRow`s; `ValueTable` is the same frame for

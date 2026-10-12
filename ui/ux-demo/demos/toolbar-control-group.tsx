@@ -25,6 +25,7 @@ import {
   PanelLeftOpen,
   Pin,
   Settings,
+  Share2,
   Star,
 } from 'lucide';
 
@@ -298,6 +299,26 @@ export function ToolbarControlGroupDemo() {
             data-action="log-featured"
           >
             <LucideIcon icon={Star} name="star" />
+          </button>
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample
+        label="Icon-state toggle"
+        note='The filled star already shows the pressed state, so data-selected-chrome="none" keeps that one button from painting selected chrome; selectedChrome="none" does the same for a whole group.'
+        align="inline-control"
+      >
+        <ToolbarControlGroup label="Ticket actions" shape={shape}>
+          <button
+            type="button"
+            aria-label="Up next"
+            aria-pressed="true"
+            data-selected-chrome="none"
+            data-action="log-up-next"
+          >
+            <LucideIcon icon={Star} name="star" appearance="solid" />
+          </button>
+          <button type="button" aria-label="Share" data-action="log-share">
+            <LucideIcon icon={Share2} name="share-2" />
           </button>
         </ToolbarControlGroup>
       </CatalogExample>

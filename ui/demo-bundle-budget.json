@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 343700,
-  "measuredLargestJavaScriptGzip": 127338,
-  "measuredTotalJavaScriptGzip": 343627,
+  "totalJavaScriptGzip": 343900,
+  "measuredLargestJavaScriptGzip": 127489,
+  "measuredTotalJavaScriptGzip": 343833,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3491,6 +3491,22 @@
         "measuredTotalJavaScriptGzip": 343627,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 343700
+      }
+    },
+    {
+      "at": "2026-10-12T13:32:21.733Z",
+      "reason": "Icon-state toggle catalog example (KF-GGDABA)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 127338,
+        "measuredTotalJavaScriptGzip": 343627,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 343700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 127489,
+        "measuredTotalJavaScriptGzip": 343833,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 343900
       }
     }
   ]
