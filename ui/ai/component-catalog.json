@@ -45,7 +45,8 @@
         "compact or default size, or a text-free dot (size: 'dot')",
         "labeled or decorative duplicate",
         "leading icon",
-        "title tooltip and data-* rootAttributes"
+        "title tooltip and data-* rootAttributes",
+        "maxWidth caps the badge and truncates long text with an ellipsis, defaulting the title to string or number content"
       ],
       "accessibility": [
         "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component. A text-free dot must take either label (exposed as an image) or ariaHidden, which the types enforce.",
@@ -67,7 +68,8 @@
       "wiring": [],
       "publicClasses": [
         "kui-badge",
-        "kui-badge__icon"
+        "kui-badge__icon",
+        "kui-badge__label"
       ],
       "publicTokens": [],
       "links": {

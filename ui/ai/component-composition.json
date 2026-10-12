@@ -52,7 +52,7 @@
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-badge",
-        "publicClasses": ["kui-badge", "kui-badge__icon"],
+        "publicClasses": ["kui-badge", "kui-badge__icon", "kui-badge__label"],
         "publicTokens": []
       },
       "diagnostics": [],

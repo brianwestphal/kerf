@@ -188,6 +188,30 @@ describe('production UI primitives', () => {
     expect(duplicate).not.toContain('aria-label');
   });
 
+  it('truncates a Badge to maxWidth and keeps its full text as the title', () => {
+    const truncated = asHtml(
+      Badge({ maxWidth: px(120), children: 'customer-escalation' }),
+    );
+    expect(truncated).toContain('data-truncate="true"');
+    expect(truncated).toContain('style="--_kui-badge-max-width:120px"');
+    expect(truncated).toContain('title="customer-escalation"');
+    expect(truncated).toContain(
+      '<span class="kui-badge__label">customer-escalation</span>',
+    );
+    expect(
+      asHtml(Badge({ maxWidth: px(80), title: 'Tag: 42', children: 42 })),
+    ).toContain('title="Tag: 42"');
+    expect(asHtml(Badge({ maxWidth: px(80), children: 42 }))).toContain(
+      'title="42"',
+    );
+    const rich = asHtml(Badge({ maxWidth: px(80), children: <b>Rich</b> }));
+    expect(rich).not.toContain('title=');
+    const plain = asHtml(Badge({ children: 'Short' }));
+    expect(plain).not.toContain('data-truncate');
+    expect(plain).not.toContain('title=');
+    expect(plain).not.toContain('kui-badge__label');
+  });
+
   it('renders a text-free Badge dot as a labeled image or a decorative mark', () => {
     const labeled = asHtml(
       Badge({ size: 'dot', tone: 'danger', label: ' New activity ' }),

@@ -3374,6 +3374,7 @@ export { type ActionHandler, type DelegateActionsOptions, action, delegateAction
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { CssLength } from './css-values.js';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 
 /** @deprecated Use SemanticTone. */
@@ -3390,6 +3391,7 @@ type BadgeRootAttributes = Readonly<Record<`data-${string}`, string | undefined>
     'data-shape'?: never;
     'data-size'?: never;
     'data-has-icon'?: never;
+    'data-truncate'?: never;
 }>;
 interface BadgeCommonProps {
     tone?: SemanticTone;
@@ -3409,6 +3411,13 @@ interface BadgeTextProps extends BadgeCommonProps {
     appearance?: BadgeAppearance;
     shape?: BadgeShape;
     size?: BadgeSize;
+    /**
+     * Cap the badge's width and truncate longer text with an ellipsis, for
+     * app-supplied text such as a tag or category name. String and number
+     * content becomes the native `title` tooltip unless `title` is supplied, so
+     * the full text stays available on hover; SafeHtml content needs `title`.
+     */
+    maxWidth?: CssLength;
     /**
      * Accessible name that replaces the visible content when it is abbreviated
      * or symbolic (`"82% confidence"` for `82`); the badge is then exposed as a
@@ -3440,6 +3449,7 @@ type BadgeDotProps = BadgeCommonProps & {
     children?: never;
     appearance?: never;
     shape?: never;
+    maxWidth?: never;
 } & (BadgeDotLabeled | BadgeDotDecorative);
 type BadgeProps = BadgeTextProps | BadgeDotProps;
 /** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
@@ -3454,6 +3464,7 @@ export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgeProps, type 
 import { SafeHtml } from 'kerfjs';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 import { BadgeAppearance, BadgeShape, BadgeSize } from './badge.js';
+import './css-values.js';
 
 interface ChipCommonProps {
     /** Decorative leading icon, normally an unsized LucideIcon. */

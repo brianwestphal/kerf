@@ -70,6 +70,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`Badge maxWidth`.** A text `Badge` takes `maxWidth` (a `CssLength`). Longer text truncates with an ellipsis inside a new `kui-badge__label`, the badge may shrink below the cap in a tight row, and string or number content becomes the native `title` tooltip unless `title` is supplied (`KF-0WKZY2`).
+
 - **`Text align`.** `Text` takes `align="start" | "center" | "end"` (default `start`), so centered status copy that wraps in a narrow surface, or an end-aligned value, uses `Text` directly instead of an app rule on `.kui-text`. Start and middle truncation align their single line to match (`KF-MMAWEG`).
 
 - **`SummaryRow`.** `@kerfjs/ui/summary-row` is a selectable, focusable summary of one item (`role="option"`) as a list `row` (bottom divider, `listEdge` rounding for rounded sections) or a board `card`. It has a leading glyph, a semantic `rail`, an identity `title` clamped to `titleLines` (two for rows, four for cards) with `trailingMeta` floated at its end, and a wrapping `metadata` line. Kerf owns hover, focus, `selected`, `dimmed`, narrow compaction, and optional `deferRendering` for long lists (`KF-XCFMX8`).

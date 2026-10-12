@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import type { CssLength } from '../../../shared/styles/css-values.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 
 export type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
@@ -18,6 +19,7 @@ const badgeProtectedAttributes = new Set([
   'data-shape',
   'data-size',
   'data-has-icon',
+  'data-truncate',
 ]);
 
 /** Application `data-*` identity on the badge root; Badge-owned markers stay protected. */
@@ -29,6 +31,7 @@ export type BadgeRootAttributes = Readonly<
     'data-shape'?: never;
     'data-size'?: never;
     'data-has-icon'?: never;
+    'data-truncate'?: never;
   }
 >;
 
@@ -51,6 +54,13 @@ export interface BadgeTextProps extends BadgeCommonProps {
   appearance?: BadgeAppearance;
   shape?: BadgeShape;
   size?: BadgeSize;
+  /**
+   * Cap the badge's width and truncate longer text with an ellipsis, for
+   * app-supplied text such as a tag or category name. String and number
+   * content becomes the native `title` tooltip unless `title` is supplied, so
+   * the full text stays available on hover; SafeHtml content needs `title`.
+   */
+  maxWidth?: CssLength;
   /**
    * Accessible name that replaces the visible content when it is abbreviated
    * or symbolic (`"82% confidence"` for `82`); the badge is then exposed as a
@@ -85,6 +95,7 @@ export type BadgeDotProps = BadgeCommonProps & {
   children?: never;
   appearance?: never;
   shape?: never;
+  maxWidth?: never;
 } & (BadgeDotLabeled | BadgeDotDecorative);
 
 export type BadgeProps = BadgeTextProps | BadgeDotProps;
@@ -127,10 +138,18 @@ export function Badge(props: BadgeProps) {
     appearance = 'quiet',
     shape = 'pill',
     size = 'default',
+    maxWidth,
     label,
     ariaHidden = false,
   } = props;
   const named = !ariaHidden && Boolean(label?.trim());
+  const truncates = maxWidth !== undefined;
+  // A truncated label keeps its full text as the hover tooltip.
+  const tooltip =
+    title ??
+    (truncates && (typeof children === 'string' || typeof children === 'number')
+      ? String(children)
+      : undefined);
   return (
     <span
       {...identity}
@@ -141,10 +160,12 @@ export function Badge(props: BadgeProps) {
       data-shape={shape}
       data-size={size}
       data-has-icon={icon === undefined ? undefined : 'true'}
+      data-truncate={truncates ? 'true' : undefined}
+      style={truncates ? `--_kui-badge-max-width:${maxWidth}` : undefined}
       role={named ? 'img' : undefined}
       aria-label={named ? label : undefined}
       aria-hidden={ariaHidden ? 'true' : undefined}
-      title={title}
+      title={tooltip}
       slot={slot}
     >
       {icon === undefined ? null : (
@@ -152,7 +173,7 @@ export function Badge(props: BadgeProps) {
           {icon}
         </span>
       )}
-      {children}
+      {truncates ? <span class="kui-badge__label">{children}</span> : children}
     </span>
   );
 }

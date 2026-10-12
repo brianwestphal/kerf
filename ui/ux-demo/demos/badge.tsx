@@ -2,6 +2,7 @@ import '@kerfjs/ui/select/register';
 
 import { Badge } from '@kerfjs/ui/badge';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { px } from '@kerfjs/ui/css-values';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Select } from '@kerfjs/ui/select';
@@ -145,6 +146,19 @@ export function BadgeDemo() {
       <CatalogExample label="Category tag" align="inline-control">
         <Badge tone="pop" appearance="outline" shape="rounded">
           Design
+        </Badge>
+      </CatalogExample>
+      <CatalogExample
+        label="Long text"
+        note="maxWidth caps a badge holding app-supplied text and truncates it with an ellipsis; the full text is the hover title."
+        align="inline-control"
+      >
+        <Badge
+          tone="info"
+          maxWidth={px(120)}
+          rootAttributes={{ 'data-demo-badge': 'truncate' }}
+        >
+          customer-escalation-priority-review
         </Badge>
       </CatalogExample>
       <CatalogExample label="Neutral metadata" align="inline-control">

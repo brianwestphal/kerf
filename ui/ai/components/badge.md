@@ -36,6 +36,7 @@ Exact prop names and types: [`@kerfjs/ui/badge`](../public-api-signatures-v1.md#
 - labeled or decorative duplicate
 - leading icon
 - title tooltip and data-\* rootAttributes
+- maxWidth caps the badge and truncates long text with an ellipsis, defaulting the title to string or number content
 
 ## Composition
 
@@ -63,9 +64,9 @@ Margin: none · border: self · padding: self (layout role: foundation). `self` 
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-badge`, `kui-badge__icon`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-badge`, `kui-badge__icon`, `kui-badge__label`.
 
-Never put `kui-badge`, `kui-badge__icon` on an element you write; render `Badge` instead (`KUI-L103`).
+Never put `kui-badge`, `kui-badge__icon`, `kui-badge__label` on an element you write; render `Badge` instead (`KUI-L103`).
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

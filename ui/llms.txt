@@ -620,6 +620,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   with `badge: true` plus its required `badgeLabel`. A text badge takes a
   decorative leading `icon`, a `title` tooltip, and `data-*` `rootAttributes`
   for app identity; never wrap a Badge or nest a `Row` in it for those.
+  For app-supplied text that can run long (a tag or category name), set
+  `maxWidth` (a `CssLength`, such as `px(160)`): the label truncates with an
+  ellipsis and string or number content becomes the hover `title`.
 - **Use `Chip` for removable tags.** Give the native remove button a delegated
   `removeAction` and a specific `removeLabel`; the application updates the tag
   list. `itemId` identifies the chip to the action handler. `size="compact"`

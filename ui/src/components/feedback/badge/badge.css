@@ -28,6 +28,19 @@
   gap: remify(4px);
 }
 
+/* maxWidth caps the badge; the label truncates with an ellipsis and the
+   badge may shrink below the cap in a tight flex row. */
+.kui-badge[data-truncate="true"] {
+  max-width: var(--_kui-badge-max-width);
+  flex: 0 1 auto;
+}
+
+.kui-badge__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .kui-badge__icon {
   display: inline-grid;
   width: 1em;
