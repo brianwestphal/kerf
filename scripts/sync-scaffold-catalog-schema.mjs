@@ -24,28 +24,41 @@ for (let index = 0; index < args.length; index += 1) {
   throw new Error(`Unknown argument: ${arg}`);
 }
 
-const source = resolve(root, 'ui/ai/component-composition.schema.json');
-const target = resolve(
-  root,
-  'create-kerf-component/component-composition.schema.json',
-);
-const canonical = await readFile(source, 'utf8');
+// The scaffold bundles both canonical UI catalog schemas: the composition
+// schema its generated component-composition.json conforms to, and the
+// selection (component-catalog extension) schema its optional selection
+// output conforms to.
+const SCHEMAS = [
+  'component-composition.schema.json',
+  'component-catalog-extension.schema.json',
+];
+
+const stale = [];
+for (const name of SCHEMAS) {
+  const source = resolve(root, 'ui/ai', name);
+  const target = resolve(root, 'create-kerf-component', name);
+  const canonical = await readFile(source, 'utf8');
+  if (mode === '--check') {
+    const scaffold = await readFile(target, 'utf8').catch(() => null);
+    if (scaffold !== canonical) stale.push(name);
+  } else {
+    await writeFile(target, canonical);
+  }
+}
 
 if (mode === '--check') {
-  const scaffold = await readFile(target, 'utf8');
-  if (scaffold !== canonical) {
+  if (stale.length) {
     console.error(
-      '[sync-scaffold-catalog-schema] create-kerf-component schema is stale; run npm run sync:scaffold-catalog-schema.',
+      `[sync-scaffold-catalog-schema] create-kerf-component schema is stale (${stale.join(', ')}); run npm run sync:scaffold-catalog-schema.`,
     );
     process.exitCode = 1;
   } else {
     console.log(
-      '[sync-scaffold-catalog-schema] create-kerf-component schema matches the canonical UI catalog contract.',
+      '[sync-scaffold-catalog-schema] create-kerf-component schemas match the canonical UI catalog contracts.',
     );
   }
 } else {
-  await writeFile(target, canonical);
   console.log(
-    '[sync-scaffold-catalog-schema] copied the canonical UI catalog schema into create-kerf-component.',
+    '[sync-scaffold-catalog-schema] copied the canonical UI catalog schemas into create-kerf-component.',
   );
 }

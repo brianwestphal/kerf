@@ -352,6 +352,58 @@ and processes every package with `kerfComponentCatalog` configuration. Output
 is sorted by package path and component id, so identical inputs are byte-for-byte
 deterministic.
 
+### Selection catalog: `selectionOutput`
+
+The composition catalog says whether and how two entries fit; `@kerfjs/ui`'s
+component-catalog extension
+([`component-catalog-extension.schema.json`](../ui/ai/component-catalog-extension.schema.json))
+says which entry to choose. The generator emits that selection catalog from the
+same `kerf.components.json` when `kerfComponentCatalog.selectionOutput` names a
+path:
+
+```json
+{
+  "kerfComponentCatalog": {
+    "source": "./kerf.components.json",
+    "output": "./component-composition.json",
+    "selectionOutput": "./component-catalog.json"
+  }
+}
+```
+
+The manifest then needs a top-level `description`, and every `component` and
+`composition` entry a `selection` block with the facts the composition metadata
+cannot express:
+
+```json
+{
+  "selection": {
+    "useWhen": ["A form needs a bounded numeric stepper with a visible value."],
+    "avoidWhen": ["The value is free-form numeric input."],
+    "uses": ["chip"],
+    "styleSources": ["src/counter.css"],
+    "demoSource": "ux-demo/demos/counter.tsx",
+    "documentation": "README.md#use-it"
+  }
+}
+```
+
+`name`, `kind`, `purpose`, and `source` come from the component;
+`publicClasses` and `publicTokens` from `boundaries`; and `geometry` from
+`composition.layout.geometry`. The selection vocabulary has no `composed`
+owner, so a component whose geometry uses it must state `selection.geometry`
+explicitly. Recipes are not selection entries and may not carry a `selection`
+block. `uses` names this package's own component ids or `@kerfjs/ui` catalog
+ids, resolved against the installed package; a self-reference, an unknown id,
+or a component id that duplicates a Kerf id fails. `styleSources`,
+`demoSource`, and `documentation` must exist locally. The composition catalog's
+`compatibility.componentCatalog` is derived from the selection output path, so
+a conflicting explicit `componentCatalog` is reported. A `description` or
+`selection` block without a configured `selectionOutput` is reported rather
+than silently dropped. `--check` verifies both files for drift, and both are
+validated against the schemas `create-kerf-component` ships (synchronized from
+`@kerfjs/ui` by `npm run sync:scaffold-catalog-schema`).
+
 AI tools merge catalogs as separate package-owned inputs: index entries by the
 full `package:id` key, reject duplicate full keys, search the consuming package's
 entries before the generic Kerf catalog, and preserve package identity on every

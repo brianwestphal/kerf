@@ -67,6 +67,7 @@ test('scaffolds the expected file tree', () => {
       'scripts/kerf-component-catalog.mjs',
       'scripts/component-metadata.schema.json',
       'scripts/component-composition.schema.json',
+      'scripts/component-catalog-extension.schema.json',
     ]) {
       assert.ok(existsSync(join(target, f)), `missing ${f}`);
     }

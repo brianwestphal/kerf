@@ -101,7 +101,8 @@ my-widgets/
 ├── scripts/
 │   ├── kerf-component-catalog.mjs # local generator + check mode
 │   ├── component-metadata.schema.json # author-source schema used by the checker
-│   └── component-composition.schema.json # emitted-catalog schema used by the checker
+│   ├── component-composition.schema.json # emitted-catalog schema used by the checker
+│   └── component-catalog-extension.schema.json # optional selection-catalog schema
 ├── LICENSE             # MIT license with the package contributor notice
 ├── .gitignore
 ├── README.md
@@ -119,7 +120,10 @@ for its authoring checks.
 The package also exposes `kerf-component-catalog`. It accepts `--write` (the
 default), `--check`, and `--root <path>`. A root package with npm `workspaces`
 generates every child package that declares `package.json#kerfComponentCatalog`,
-in deterministic package and component order.
+in deterministic package and component order. Set
+`kerfComponentCatalog.selectionOutput` and give each component a `selection`
+block (`useWhen`, `avoidWhen`, …) to also generate and check the `@kerfjs/ui`
+selection catalog extension from the same `kerf.components.json`.
 
 Application projects do not need this package scaffold. `npx kerfjs setup
 --ui` creates an empty, schema-valid author metadata file, wires this catalog

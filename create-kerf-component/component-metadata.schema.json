@@ -10,7 +10,12 @@
     "componentCatalog": {
       "type": "string",
       "minLength": 1,
-      "description": "Relative path to the package's component (selection) catalog, copied into the generated composition catalog's compatibility.componentCatalog; defaults to \"not-applicable\"."
+      "description": "Relative path to the package's component (selection) catalog, copied into the generated composition catalog's compatibility.componentCatalog. When package.json#kerfComponentCatalog.selectionOutput is configured and this is absent or \"not-applicable\", the generator derives it from that output path; otherwise it defaults to \"not-applicable\"."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One-line description of the package's components, emitted as the selection catalog's description. Required when package.json#kerfComponentCatalog.selectionOutput is configured."
     },
     "components": {
       "type": "array",
@@ -45,6 +50,66 @@
         }
       },
       "additionalProperties": false
+    },
+    "repositoryPath": {
+      "description": "A package-relative POSIX path without traversal or empty segments.",
+      "type": "string",
+      "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+    },
+    "selection": {
+      "description": "Selection facts for the generated selection catalog (package.json#kerfComponentCatalog.selectionOutput). name, kind, purpose, source, publicClasses, publicTokens, and geometry are derived from the component; only the facts the composition metadata cannot express live here. Required on every component and composition when selectionOutput is configured; recipes are not selection entries.",
+      "type": "object",
+      "required": ["useWhen", "avoidWhen"],
+      "properties": {
+        "useWhen": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "avoidWhen": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "uses": {
+          "description": "Directly composed catalog entry ids: this package's own component ids or @kerfjs/ui selection catalog ids.",
+          "$ref": "#/$defs/stringList"
+        },
+        "styleSources": {
+          "description": "Stylesheets this component owns, relative to the package root.",
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/repositoryPath" },
+              { "pattern": "\\.css$" }
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "demoSource": { "$ref": "#/$defs/repositoryPath" },
+        "documentation": { "type": "string", "minLength": 1 },
+        "geometry": {
+          "description": "Overrides composition.layout.geometry in the selection catalog. Required when that geometry uses the composition-only owner \"composed\".",
+          "type": "object",
+          "required": ["margin", "border", "padding"],
+          "properties": {
+            "margin": { "$ref": "#/$defs/selectionGeometryOwner" },
+            "border": { "$ref": "#/$defs/selectionGeometryOwner" },
+            "padding": { "$ref": "#/$defs/selectionGeometryOwner" },
+            "notes": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "selectionGeometryOwner": {
+      "enum": ["self", "parent", "child", "none", "conditional"]
     },
     "stringList": {
       "type": "array",
@@ -156,7 +221,8 @@
             "composition": { "type": "string", "minLength": 1 }
           },
           "additionalProperties": false
-        }
+        },
+        "selection": { "$ref": "#/$defs/selection" }
       },
       "additionalProperties": false
     },

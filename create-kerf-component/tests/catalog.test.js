@@ -23,6 +23,7 @@ import {
   runCatalogCommand,
   validateDocumentAgainstSchema,
 } from '../catalog.js';
+import { validateCatalogExtensionReferences } from '../../ui/scripts/component-catalog-extension-validation.mjs';
 import { validateComposition } from '../../ui/scripts/component-composition-validation.mjs';
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -728,7 +729,7 @@ test('published-package dry run includes source metadata and generated catalog',
   });
 });
 
-test('the published generator package includes its bin and both schemas', () => {
+test('the published generator package includes its bin and every schema', () => {
   const temporaryRoot = mkdtempSync(join(tmpdir(), 'kerf-generator-pack-'));
   try {
     cpSync(packageRoot, join(temporaryRoot, 'package'), {
@@ -752,7 +753,291 @@ test('the published generator package includes its bin and both schemas', () => 
     assert.ok(paths.includes('catalog.js'));
     assert.ok(paths.includes('component-metadata.schema.json'));
     assert.ok(paths.includes('component-composition.schema.json'));
+    assert.ok(paths.includes('component-catalog-extension.schema.json'));
   } finally {
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
+});
+
+function withSelection(
+  target,
+  { selectionOutput = './component-catalog.json' } = {},
+) {
+  const packagePath = join(target, 'package.json');
+  const manifest = JSON.parse(readFileSync(packagePath, 'utf8'));
+  manifest.kerfComponentCatalog.selectionOutput = selectionOutput;
+  writeFileSync(packagePath, `${JSON.stringify(manifest, null, 2)}\n`);
+  const value = metadata(target);
+  value.description = 'Reusable counters composed with Kerf UI.';
+  value.components[0].selection = {
+    useWhen: ['A form needs a bounded numeric stepper with visible value.'],
+    avoidWhen: ['The value is free-form numeric input; use a number field.'],
+    styleSources: ['src/counter.css'],
+    documentation: 'README.md#use-it',
+  };
+  writeMetadata(target, value);
+  return value;
+}
+
+function selectionSchemaFromUi() {
+  return JSON.parse(
+    readFileSync(
+      join(
+        packageRoot,
+        '..',
+        'ui',
+        'ai',
+        'component-catalog-extension.schema.json',
+      ),
+      'utf8',
+    ),
+  );
+}
+
+test('emits the selection catalog from kerf.components.json and checks its drift', () => {
+  withScaffold(({ target }) => {
+    withSelection(target);
+    const [result] = runCatalogCommand({ root: target });
+    assert.equal(
+      result.selectionOutputPath,
+      join(target, 'component-catalog.json'),
+    );
+    assert.deepEqual(result.selection, {
+      $schema:
+        'https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog-extension.schema.json',
+      schemaVersion: 1,
+      package: 'my-widgets',
+      description: 'Reusable counters composed with Kerf UI.',
+      entries: [
+        {
+          id: 'counter',
+          name: 'Counter',
+          kind: 'component',
+          purpose:
+            'Render a controlled counter with delegated increment and decrement actions.',
+          useWhen: [
+            'A form needs a bounded numeric stepper with visible value.',
+          ],
+          avoidWhen: [
+            'The value is free-form numeric input; use a number field.',
+          ],
+          publicClasses: ['kerf-counter'],
+          publicTokens: ['--kerf-counter-gap'],
+          source: 'src/counter.tsx',
+          styleSources: ['src/counter.css'],
+          geometry: { margin: 'none', border: 'none', padding: 'none' },
+          documentation: 'README.md#use-it',
+        },
+      ],
+    });
+    // The composition catalog points at the selection catalog it now ships.
+    assert.equal(
+      result.catalog.compatibility.componentCatalog,
+      './component-catalog.json',
+    );
+    assert.deepEqual(validateComposition(result.catalog), []);
+    // The emitted document satisfies the canonical UI selection contract and
+    // its consumer-side reference checks.
+    assert.deepEqual(
+      validateDocumentAgainstSchema(
+        result.selection,
+        selectionSchemaFromUi(),
+        'component-catalog.json',
+      ),
+      [],
+    );
+    assert.deepEqual(
+      validateCatalogExtensionReferences(result.selection, { entries: [] }),
+      [],
+    );
+    const written = readFileSync(result.selectionOutputPath, 'utf8');
+    assert.equal(written, formatCatalog(result.selection));
+    assert.doesNotThrow(() => runCatalogCommand({ root: target, check: true }));
+
+    writeFileSync(result.selectionOutputPath, `${written}\n`);
+    assert.throws(
+      () => runCatalogCommand({ root: target, check: true }),
+      (error) =>
+        error instanceof CatalogError &&
+        error.diagnostics.some((diagnostic) =>
+          diagnostic.endsWith(
+            'generated selection catalog is stale; run catalog:generate',
+          ),
+        ),
+    );
+    unlinkSync(result.selectionOutputPath);
+    assert.throws(
+      () => runCatalogCommand({ root: target, check: true }),
+      (error) =>
+        error instanceof CatalogError &&
+        error.diagnostics.some((diagnostic) =>
+          diagnostic.endsWith('generated selection catalog is missing'),
+        ),
+    );
+  });
+});
+
+test('selection geometry derives from composition geometry, with an override for "composed"', () => {
+  withScaffold(({ target }) => {
+    const value = withSelection(target);
+    value.components[0].composition.layout.geometry = {
+      margin: 'parent',
+      border: 'composed',
+      padding: 'child',
+      notes: ['The embedding pane positions the counter.'],
+    };
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      'components.counter.selection.geometry: required because composition.layout.geometry uses "composed", which the selection catalog cannot express',
+    );
+    value.components[0].selection.geometry = {
+      margin: 'parent',
+      border: 'child',
+      padding: 'child',
+    };
+    writeMetadata(target, value);
+    assert.deepEqual(
+      generateCatalogs(target)[0].selection.entries[0].geometry,
+      {
+        margin: 'parent',
+        border: 'child',
+        padding: 'child',
+      },
+    );
+
+    delete value.components[0].selection.geometry;
+    value.components[0].composition.layout.geometry.border = 'self';
+    writeMetadata(target, value);
+    assert.deepEqual(
+      generateCatalogs(target)[0].selection.entries[0].geometry,
+      {
+        margin: 'parent',
+        border: 'self',
+        padding: 'child',
+        notes: ['The embedding pane positions the counter.'],
+      },
+    );
+  });
+});
+
+test('selection uses resolve to this package or the installed @kerfjs/ui catalog', () => {
+  withScaffold(({ target }) => {
+    const value = withSelection(target);
+    const at = 'components.counter.selection.uses';
+    value.components[0].selection.uses = ['chip'];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      `${at}: cannot resolve chip; install @kerfjs/ui so its selection catalog ids can be checked`,
+    );
+
+    const uiAi = join(target, 'node_modules', '@kerfjs', 'ui', 'ai');
+    mkdirSync(uiAi, { recursive: true });
+    writeFileSync(
+      join(uiAi, 'component-catalog.json'),
+      JSON.stringify({ entries: [{ id: 'chip' }, { id: 'toolbar' }] }),
+    );
+    assert.deepEqual(generateCatalogs(target)[0].selection.entries[0].uses, [
+      'chip',
+    ]);
+
+    value.components[0].selection.uses = ['chips'];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      `${at}: chips is neither a component in this package nor a @kerfjs/ui catalog entry`,
+    );
+
+    value.components[0].selection.uses = ['counter'];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      `${at}: counter names the component itself`,
+    );
+
+    value.components[0].selection.uses = [];
+    writeFileSync(
+      join(uiAi, 'component-catalog.json'),
+      JSON.stringify({ entries: [{ id: 'counter' }] }),
+    );
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      'components.counter.id duplicates a @kerfjs/ui catalog id, which the selection catalog cannot disambiguate',
+    );
+  });
+});
+
+test('selection metadata requires decisions and a configured output', () => {
+  withScaffold(({ target }) => {
+    // Selection facts with no configured output would be silently dropped.
+    const value = metadata(target);
+    value.description = 'Counters.';
+    value.components[0].selection = { useWhen: ['a'], avoidWhen: ['b'] };
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      'description is emitted only to a selection catalog; configure package.json#kerfComponentCatalog.selectionOutput or remove it',
+    );
+    assertCatalogDiagnostic(
+      target,
+      'components.counter.selection is emitted only to a selection catalog; configure package.json#kerfComponentCatalog.selectionOutput or remove it',
+    );
+
+    const configured = withSelection(target);
+    delete configured.description;
+    delete configured.components[0].selection;
+    writeMetadata(target, configured);
+    assertCatalogDiagnostic(
+      target,
+      '.description: author decision required; the selection catalog needs a package description',
+    );
+    assertCatalogDiagnostic(
+      target,
+      'components.counter.selection: author decision required; selectionOutput is configured, so every component and composition needs useWhen and avoidWhen',
+    );
+
+    const recipe = withSelection(target);
+    recipe.components[0].kind = 'recipe';
+    writeMetadata(target, recipe);
+    assertCatalogDiagnostic(
+      target,
+      'components.counter.selection: recipes are not selection catalog entries; remove it',
+    );
+    delete recipe.components[0].selection;
+    writeMetadata(target, recipe);
+    assert.deepEqual(generateCatalogs(target)[0].selection.entries, []);
+    recipe.components[0].kind = 'component';
+    writeMetadata(target, recipe);
+
+    const paths = withSelection(target);
+    paths.components[0].selection.demoSource = 'demo/counter.tsx';
+    writeMetadata(target, paths);
+    assertCatalogDiagnostic(
+      target,
+      'components.counter.selection: local path does not exist: demo/counter.tsx',
+    );
+    paths.components[0].selection.demoSource = 'src/counter.tsx';
+    paths.components[0].selection.useWhen = [];
+    writeMetadata(target, paths);
+    assertCatalogDiagnostic(
+      target,
+      '.components[0].selection.useWhen: expected at least 1 item(s)',
+    );
+
+    const mismatch = withSelection(target);
+    mismatch.componentCatalog = './elsewhere.json';
+    writeMetadata(target, mismatch);
+    assertCatalogDiagnostic(
+      target,
+      '.componentCatalog: ./elsewhere.json disagrees with the configured selectionOutput (./component-catalog.json); remove it or set it to "not-applicable"',
+    );
+
+    withSelection(target, { selectionOutput: './component-composition.json' });
+    assertCatalogDiagnostic(
+      target,
+      'package.json#kerfComponentCatalog.selectionOutput: expected a path distinct from output',
+    );
+  });
 });

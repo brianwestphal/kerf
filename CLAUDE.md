@@ -475,9 +475,10 @@ since beta” draft does not replace hand-curated history. The release step
 formats `CHANGELOG.md` before lint, and lockstep version sync writes the
 ESLint plugin metadata in its formatted quote style.
 
-`ui/ai/component-composition.schema.json` is also the canonical schema bundled
-by `create-kerf-component`. Run `npm run sync:scaffold-catalog-schema` after
-changing it. `npm run check` and the interactive release flow run
+`ui/ai/component-composition.schema.json` and
+`ui/ai/component-catalog-extension.schema.json` are also the canonical schemas
+bundled by `create-kerf-component`. Run `npm run sync:scaffold-catalog-schema`
+after changing either. `npm run check` and the interactive release flow run
 `check:scaffold-catalog-schema`, so a stale scaffold copy blocks a tag.
 
 The non-interactive beta command continues the highest existing prerelease

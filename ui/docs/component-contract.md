@@ -275,6 +275,9 @@ example. Keep app and Kerf entries as package-qualified inputs, then let people
 or AI tools search their combined entries and compare `geometry` before adding
 wrappers or insets. Do not add app-owned entries to Kerf's canonical catalog or
 claim Kerf delivery paths for them.
+Packages that keep a `kerf.components.json` can generate this file instead of
+hand-maintaining it: set `kerfComponentCatalog.selectionOutput` and run
+`kerf-component-catalog` (see `create-kerf-component`'s README).
 Extension entries may add `uses` for direct composition dependencies and
 repository-relative `source` and `demoSource` files. Resolve each dependency
 against the combined Kerf and consumer catalogs; do not duplicate a Kerf id.

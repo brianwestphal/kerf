@@ -34,6 +34,7 @@
     "catalog.js",
     "component-metadata.schema.json",
     "component-composition.schema.json",
+    "component-catalog-extension.schema.json",
     "template",
     "README.md",
     "LICENSE"

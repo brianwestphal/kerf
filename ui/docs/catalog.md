@@ -211,6 +211,9 @@ Catalogs for downstream components should conform to the
 contract and can start from the checked
 [`component-catalog-extension.json`](./examples/component-catalog-extension.json)
 example; provide those entries beside Kerf's shipped catalog to AI tools.
+Packages that keep a `kerf.components.json` can generate this file instead of
+hand-maintaining it: set `kerfComponentCatalog.selectionOutput` and run
+`kerf-component-catalog` (see `create-kerf-component`'s README).
 An extension entry may declare `uses` with direct Kerf or extension entry ids,
 plus repository-relative `source` and `demoSource` paths. Keep the ids unique
 and resolvable across both catalogs; paths use `/` separators and cannot

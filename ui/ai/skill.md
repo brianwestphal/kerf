@@ -136,7 +136,9 @@ second, package-qualified input beside `./component-catalog.json`: search both,
 preserve their source identity, and use the shared `geometry` vocabulary across
 their composition boundary. An extension entry's optional `uses` ids resolve
 against both catalogs; its `source` and `demoSource` are repository-relative
-files for consumer catalog links. When a consuming project has reusable visual
+files for consumer catalog links. A project with `kerf.components.json` generates
+that extension with `kerf-component-catalog` (`kerfComponentCatalog.selectionOutput`
+plus per-component `selection` blocks) rather than hand-writing it. When a consuming project has reusable visual
 components, derive demo rows with `@kerfjs/ui/catalog-projection` or
 `kerf-catalog-demo --write`, then guard drift with `--check`; see
 `../docs/catalog.md`. For a local catalog's UX Review **Capture region** link,

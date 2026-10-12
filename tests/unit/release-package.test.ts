@@ -52,11 +52,13 @@ beforeAll(() => {
     'create-kerf-component/catalog.js',
     'create-kerf-component/component-metadata.schema.json',
     'create-kerf-component/component-composition.schema.json',
+    'create-kerf-component/component-catalog-extension.schema.json',
     'create-kerf-component/template',
     'ui/package.json',
     'ui/ai/public-api-signatures-v1.md',
     'ui/ai/webawesome-jsx-signatures-v1.md',
     'ui/ai/component-composition.schema.json',
+    'ui/ai/component-catalog-extension.schema.json',
   ])
     copy(relative);
 
@@ -107,40 +109,37 @@ describe('release package preparation', { timeout: 30_000 }, () => {
       fixtureRoot,
       'scripts/sync-scaffold-catalog-schema.mjs',
     );
-    const scaffoldSchema = join(
-      fixtureRoot,
-      'create-kerf-component/component-composition.schema.json',
-    );
-    const canonicalSchema = join(
-      fixtureRoot,
-      'ui/ai/component-composition.schema.json',
-    );
-    writeFileSync(scaffoldSchema, '{}\n');
-
+    const schemas = [
+      'component-composition.schema.json',
+      'component-catalog-extension.schema.json',
+    ];
+    for (const name of schemas) {
+      const scaffoldSchema = join(fixtureRoot, 'create-kerf-component', name);
+      writeFileSync(scaffoldSchema, '{}\n');
+      expect(() =>
+        execFileSync(
+          process.execPath,
+          [script, '--check', '--root', fixtureRoot],
+          { stdio: 'pipe' },
+        ),
+      ).toThrow();
+      execFileSync(
+        process.execPath,
+        [script, '--write', '--root', fixtureRoot],
+        { stdio: 'pipe' },
+      );
+    }
     expect(() =>
       execFileSync(
         process.execPath,
         [script, '--check', '--root', fixtureRoot],
-        {
-          stdio: 'pipe',
-        },
-      ),
-    ).toThrow();
-    execFileSync(process.execPath, [script, '--write', '--root', fixtureRoot], {
-      stdio: 'pipe',
-    });
-    expect(() =>
-      execFileSync(
-        process.execPath,
-        [script, '--check', '--root', fixtureRoot],
-        {
-          stdio: 'pipe',
-        },
+        { stdio: 'pipe' },
       ),
     ).not.toThrow();
-    expect(readFileSync(scaffoldSchema, 'utf8')).toBe(
-      readFileSync(canonicalSchema, 'utf8'),
-    );
+    for (const name of schemas)
+      expect(
+        readFileSync(join(fixtureRoot, 'create-kerf-component', name), 'utf8'),
+      ).toBe(readFileSync(join(fixtureRoot, 'ui/ai', name), 'utf8'));
   });
 
   it('packs synchronized beta metadata into all four release artifacts', () => {
@@ -184,6 +183,11 @@ describe('release package preparation', { timeout: 30_000 }, () => {
       JSON.parse(packedText(createTarball, 'component-composition.schema.json'))
         .title,
     ).toBe('Kerf UI composition catalog');
+    expect(
+      JSON.parse(
+        packedText(createTarball, 'component-catalog-extension.schema.json'),
+      ).title,
+    ).toBe('Kerf UI consumer component catalog extension');
 
     const uiTarball = tarballs.get('@kerfjs/ui')!;
     const uiManifest = JSON.parse(packedText(uiTarball, 'package.json'));

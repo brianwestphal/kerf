@@ -22,6 +22,12 @@ const metadataSchema = JSON.parse(
 const catalogSchema = JSON.parse(
   readFileSync(join(scriptRoot, 'component-composition.schema.json'), 'utf8'),
 );
+const selectionSchema = JSON.parse(
+  readFileSync(
+    join(scriptRoot, 'component-catalog-extension.schema.json'),
+    'utf8',
+  ),
+);
 
 export class CatalogError extends Error {
   constructor(diagnostics) {
@@ -772,6 +778,192 @@ function validateRendersAs(results, diagnostics) {
       }
 }
 
+// The selection catalog (the @kerfjs/ui component-catalog extension) shares
+// identity, purpose, boundaries, and geometry with the composition metadata,
+// so only the selection-only facts live in each component's `selection` block.
+function selectionGeometry(component) {
+  if (component.selection?.geometry) return component.selection.geometry;
+  const { notes, ...owners } = component.composition.layout.geometry;
+  return notes?.length ? { ...owners, notes } : owners;
+}
+
+function toSelectionEntry(component) {
+  const { selection, boundaries } = component;
+  return {
+    id: component.id,
+    name: component.name,
+    kind: component.kind,
+    purpose: component.purpose,
+    useWhen: selection.useWhen,
+    avoidWhen: selection.avoidWhen,
+    publicClasses: boundaries.publicClasses,
+    publicTokens: boundaries.publicTokens,
+    ...(selection.uses ? { uses: selection.uses } : {}),
+    source: component.source,
+    ...(selection.styleSources ? { styleSources: selection.styleSources } : {}),
+    ...(selection.demoSource ? { demoSource: selection.demoSource } : {}),
+    geometry: selectionGeometry(component),
+    ...(selection.documentation
+      ? { documentation: selection.documentation }
+      : {}),
+  };
+}
+
+// The @kerfjs/ui selection catalog ids an installed copy ships, which a
+// selection entry's `uses` may name alongside the package's own ids.
+function kerfSelectionIds(packageRoot) {
+  for (let dir = packageRoot; ; dir = dirname(dir)) {
+    const catalogPath = join(
+      dir,
+      'node_modules',
+      '@kerfjs',
+      'ui',
+      'ai',
+      'component-catalog.json',
+    );
+    if (existsSync(catalogPath)) {
+      try {
+        const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
+        return new Set((catalog.entries ?? []).map((entry) => entry.id));
+      } catch {
+        return null;
+      }
+    }
+    if (dirname(dir) === dir) return null;
+  }
+}
+
+function localPathExists(packageRoot, link) {
+  if (/^[a-z]+:/i.test(link)) return true;
+  const localPath = link.split('#')[0];
+  return !localPath || existsSync(resolve(packageRoot, localPath));
+}
+
+function posixRelative(from, to) {
+  const path = relative(from, to).split(sep).join('/');
+  return path.startsWith('.') ? path : `./${path}`;
+}
+
+function buildSelectionCatalog({
+  packageRoot,
+  packageJson,
+  metadata,
+  metadataPath,
+  outputPath,
+  selectionOutputPath,
+  diagnostics,
+}) {
+  const at = metadataPath;
+  const selected = metadata.components.filter(
+    (component) => component.kind !== 'recipe',
+  );
+  if (!selectionOutputPath) {
+    if (metadata.description !== undefined)
+      diagnostics.push(
+        `${at}: description is emitted only to a selection catalog; configure package.json#${CONFIG_KEY}.selectionOutput or remove it`,
+      );
+    for (const component of metadata.components)
+      if (component.selection)
+        diagnostics.push(
+          `${at}: components.${component.id}.selection is emitted only to a selection catalog; configure package.json#${CONFIG_KEY}.selectionOutput or remove it`,
+        );
+    return null;
+  }
+
+  if (!metadata.description)
+    diagnostics.push(
+      `${at}.description: author decision required; the selection catalog needs a package description`,
+    );
+  const derived = posixRelative(dirname(outputPath), selectionOutputPath);
+  if (
+    metadata.componentCatalog !== undefined &&
+    metadata.componentCatalog !== 'not-applicable' &&
+    metadata.componentCatalog !== derived
+  )
+    diagnostics.push(
+      `${at}.componentCatalog: ${metadata.componentCatalog} disagrees with the configured selectionOutput (${derived}); remove it or set it to "not-applicable"`,
+    );
+
+  const ownIds = new Set(selected.map((component) => component.id));
+  let kerfIds;
+  for (const component of metadata.components) {
+    const componentAt = `${at}: components.${component.id}.selection`;
+    if (component.kind === 'recipe') {
+      if (component.selection)
+        diagnostics.push(
+          `${componentAt}: recipes are not selection catalog entries; remove it`,
+        );
+      continue;
+    }
+    if (!component.selection) {
+      diagnostics.push(
+        `${componentAt}: author decision required; selectionOutput is configured, so every component and composition needs useWhen and avoidWhen`,
+      );
+      continue;
+    }
+    const { selection } = component;
+    if (
+      !selection.geometry &&
+      Object.values(component.composition.layout.geometry).includes('composed')
+    )
+      diagnostics.push(
+        `${componentAt}.geometry: required because composition.layout.geometry uses "composed", which the selection catalog cannot express`,
+      );
+    for (const path of [
+      ...(selection.styleSources ?? []),
+      ...(selection.demoSource ? [selection.demoSource] : []),
+      ...(selection.documentation ? [selection.documentation] : []),
+    ])
+      if (!localPathExists(packageRoot, path))
+        diagnostics.push(`${componentAt}: local path does not exist: ${path}`);
+    for (const use of selection.uses ?? []) {
+      if (use === component.id)
+        diagnostics.push(
+          `${componentAt}.uses: ${use} names the component itself`,
+        );
+      else if (!ownIds.has(use)) {
+        kerfIds ??= kerfSelectionIds(packageRoot);
+        if (!kerfIds)
+          diagnostics.push(
+            `${componentAt}.uses: cannot resolve ${use}; install @kerfjs/ui so its selection catalog ids can be checked`,
+          );
+        else if (!kerfIds.has(use))
+          diagnostics.push(
+            `${componentAt}.uses: ${use} is neither a component in this package nor a @kerfjs/ui catalog entry`,
+          );
+      }
+    }
+  }
+  if (ownIds.size) {
+    kerfIds ??= kerfSelectionIds(packageRoot);
+    for (const id of ownIds)
+      if (kerfIds?.has(id))
+        diagnostics.push(
+          `${at}: components.${id}.id duplicates a @kerfjs/ui catalog id, which the selection catalog cannot disambiguate`,
+        );
+  }
+
+  const catalog = {
+    $schema:
+      'https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog-extension.schema.json',
+    schemaVersion: 1,
+    package: packageJson.name,
+    description: metadata.description,
+    entries: selected
+      .filter((component) => component.selection)
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .map(toSelectionEntry),
+  };
+  diagnostics.push(
+    ...validateDocumentAgainstSchema(
+      catalog,
+      selectionSchema,
+      selectionOutputPath,
+    ),
+  );
+  return catalog;
+}
+
 export function generateCatalogs(root = process.cwd()) {
   const diagnostics = [];
   const packages = configuredPackages(resolve(root), diagnostics);
@@ -796,6 +988,16 @@ export function generateCatalogs(root = process.cwd()) {
     for (const key of ['source', 'output'])
       if (!config?.[key])
         diagnostics.push(`${packagePath}#${CONFIG_KEY}.${key}: is required`);
+    if (
+      config?.selectionOutput !== undefined &&
+      (typeof config.selectionOutput !== 'string' ||
+        !config.selectionOutput ||
+        resolve(packageRoot, config.selectionOutput) ===
+          resolve(packageRoot, config.output ?? ''))
+    )
+      diagnostics.push(
+        `${packagePath}#${CONFIG_KEY}.selectionOutput: expected a path distinct from output`,
+      );
     if (!config?.source || !config?.output) continue;
     const metadataPath = resolve(packageRoot, config.source);
     const metadata = readJson(metadataPath, metadataPath, diagnostics);
@@ -823,29 +1025,43 @@ export function generateCatalogs(root = process.cwd()) {
     const entries = [...metadata.components]
       .sort((a, b) => a.id.localeCompare(b.id))
       .map((component) => toEntry(packageJson.name, component));
+    const outputPath = resolve(packageRoot, config.output);
+    const selectionOutputPath =
+      typeof config.selectionOutput === 'string' && config.selectionOutput
+        ? resolve(packageRoot, config.selectionOutput)
+        : null;
+    const selection = buildSelectionCatalog({
+      packageRoot,
+      packageJson,
+      metadata,
+      metadataPath,
+      outputPath,
+      selectionOutputPath,
+      diagnostics,
+    });
+    const componentCatalog = selectionOutputPath
+      ? posixRelative(dirname(outputPath), selectionOutputPath)
+      : (metadata.componentCatalog ?? 'not-applicable');
     const catalog = {
       $schema:
         'https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-composition-extension.schema.json',
       schemaVersion: 1,
       package: packageJson.name,
       compatibility: {
-        componentCatalog: metadata.componentCatalog ?? 'not-applicable',
+        componentCatalog,
         identity: 'package:id',
       },
       entries,
     };
     diagnostics.push(
-      ...validateDocumentAgainstSchema(
-        catalog,
-        catalogSchema,
-        resolve(packageRoot, config.output),
-      ),
+      ...validateDocumentAgainstSchema(catalog, catalogSchema, outputPath),
     );
     results.push({
       packageRoot,
       metadataPath,
-      outputPath: resolve(packageRoot, config.output),
+      outputPath,
       catalog,
+      ...(selection ? { selectionOutputPath, selection } : {}),
     });
   }
   validateRendersAs(results, diagnostics);
@@ -857,6 +1073,21 @@ export function formatCatalog(catalog) {
   return `${JSON.stringify(catalog, null, 2)}\n`;
 }
 
+function checkOutput(path, catalog, schema, label, diagnostics) {
+  if (!existsSync(path)) {
+    diagnostics.push(`${path}: generated ${label} is missing`);
+    return;
+  }
+  const actualSource = readFileSync(path, 'utf8');
+  const actual = readJson(path, path, diagnostics);
+  if (actual)
+    diagnostics.push(...validateDocumentAgainstSchema(actual, schema, path));
+  if (actualSource !== formatCatalog(catalog))
+    diagnostics.push(
+      `${path}: generated ${label} is stale; run catalog:generate`,
+    );
+}
+
 export function runCatalogCommand({
   root = process.cwd(),
   check = false,
@@ -864,32 +1095,19 @@ export function runCatalogCommand({
   const results = generateCatalogs(root);
   const diagnostics = [];
   for (const result of results) {
-    const expected = formatCatalog(result.catalog);
-    if (check) {
-      if (!existsSync(result.outputPath))
-        diagnostics.push(`${result.outputPath}: generated catalog is missing`);
-      else {
-        const actualSource = readFileSync(result.outputPath, 'utf8');
-        const actual = readJson(
-          result.outputPath,
-          result.outputPath,
-          diagnostics,
-        );
-        if (actual)
-          diagnostics.push(
-            ...validateDocumentAgainstSchema(
-              actual,
-              catalogSchema,
-              result.outputPath,
-            ),
-          );
-        if (actualSource !== expected)
-          diagnostics.push(
-            `${result.outputPath}: generated catalog is stale; run catalog:generate`,
-          );
-      }
-    } else {
-      writeFileSync(result.outputPath, expected);
+    const outputs = [
+      [result.outputPath, result.catalog, catalogSchema, 'catalog'],
+    ];
+    if (result.selection)
+      outputs.push([
+        result.selectionOutputPath,
+        result.selection,
+        selectionSchema,
+        'selection catalog',
+      ]);
+    for (const [path, catalog, schema, label] of outputs) {
+      if (check) checkOutput(path, catalog, schema, label, diagnostics);
+      else writeFileSync(path, formatCatalog(catalog));
     }
   }
   if (diagnostics.length) throw new CatalogError(diagnostics);
@@ -924,9 +1142,9 @@ if (isMain) {
     const results = runCatalogCommand(options);
     const verb = options.check ? 'verified' : 'wrote';
     for (const result of results)
-      process.stdout.write(
-        `${verb} ${relative(options.root, result.outputPath)}\n`,
-      );
+      for (const path of [result.outputPath, result.selectionOutputPath])
+        if (path)
+          process.stdout.write(`${verb} ${relative(options.root, path)}\n`);
   } catch (error) {
     const diagnostics =
       error instanceof CatalogError ? error.diagnostics : [error.message];

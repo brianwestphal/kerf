@@ -373,7 +373,10 @@ guidance, public hooks, and explicit geometry ownership; then concatenate its
 `entries` with Kerf's shipped `entries` in the AI context. Keep package/source
 identity alongside each input when ids could collide. This makes a combined
 tool reason about both sides of a composition using one vocabulary without
-pretending app-local components are `@kerfjs/ui` exports.
+pretending app-local components are `@kerfjs/ui` exports. A package that
+keeps a `kerf.components.json` generates this extension with
+`kerf-component-catalog` by setting `kerfComponentCatalog.selectionOutput`
+instead of maintaining a second JSON by hand.
 For a consumer UX demo, `@kerfjs/ui/catalog-projection` derives rows and
 relationships from that extension; `kerf-catalog-demo --write` emits a typed
 module and `--check` catches drift. See the [catalog guide](./docs/catalog.md)
