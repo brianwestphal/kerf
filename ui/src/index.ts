@@ -11,6 +11,11 @@ export {
   type IconButtonVariant,
 } from './components/actions/icon-button/icon-button.js';
 export {
+  IconToggleButton,
+  type IconToggleButtonProps,
+  type IconToggleButtonShape,
+} from './components/actions/icon-toggle-button/icon-toggle-button.js';
+export {
   closePopupMenu,
   openPopupMenu,
   openPopupMenuAt,

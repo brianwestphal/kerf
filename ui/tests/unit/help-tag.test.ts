@@ -549,6 +549,20 @@ const buttonTags = () =>
   );
 
 describe('icon-only toolbar button help tags', () => {
+  it('show for a standalone IconToggleButton outside any group', () => {
+    const { group, control, icon } = toolbarControl({
+      label: 'Open conversation',
+      inGroup: false,
+    });
+    control.className = 'kui-icon-toggle-button';
+    pointerOver(icon);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    const [tag] = buttonTags();
+    expect(tag!.textContent).toBe('Open conversation');
+    expect(tag!.anchor).toBe(control);
+    group.remove();
+  });
+
   it('show the aria-label after the hover delay in a body-level layer', () => {
     const { control, icon } = toolbarControl();
     pointerOver(icon);

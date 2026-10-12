@@ -86,15 +86,17 @@ const ariaLabel = (control: Element): string =>
   (control.getAttribute('aria-label') ?? '').replace(/\s+/g, ' ').trim();
 
 /**
- * An icon-only toolbar button or link: inside a `ToolbarControlGroup`, named
- * by `aria-label`, with no visible text, and without a native `title` or a Web
- * Awesome tooltip of its own that a second tag would duplicate.
+ * An icon-only toolbar button or link (inside a `ToolbarControlGroup`) or an
+ * `IconToggleButton`: named by `aria-label`, with no visible text, and without
+ * a native `title` or a Web Awesome tooltip of its own that a second tag would
+ * duplicate.
  */
 function isToolbarIconControl(target: HTMLElement): boolean {
   if (!target.matches('button, a[href]')) return false;
   if (!ariaLabel(target) || target.hasAttribute('title') || words(target))
     return false;
-  if (!target.closest('.kui-toolbar-control-group')) return false;
+  if (!target.closest('.kui-toolbar-control-group, .kui-icon-toggle-button'))
+    return false;
   return !(
     target.id &&
     target.ownerDocument.querySelector(

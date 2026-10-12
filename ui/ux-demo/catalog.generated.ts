@@ -605,6 +605,20 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "icon-toggle-button",
+    "name": "IconToggleButton",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Render an icon-only aria-pressed toggle in content or a pane footer, where a Toolbar does not belong, with the 44px contained geometry and raised pressed face of a single ToolbarControlGroup.",
+    "uses": [
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/icon-toggle-button.tsx",
+    "componentSource": "ui/src/components/actions/icon-toggle-button/icon-toggle-button.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "feedback",
     "name": "Feedback",
     "category": "Feedback",

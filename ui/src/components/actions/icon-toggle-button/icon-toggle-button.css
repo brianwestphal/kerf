@@ -1,0 +1,83 @@
+/* The single contained ToolbarControlGroup's geometry, standalone: a 44px
+   filled, bordered control whose 2px-inset face lifts to the raised surface
+   on hover and stays raised, in the brand foreground, while pressed. */
+.kui-icon-toggle-button {
+  --_kui-icon-toggle-button-radius: var(
+    --kui-layout-pill-radius,
+    calc(1px + remify(21px))
+  );
+  --_kui-icon-toggle-button-inset: var(
+    --kui-layout-highlight-inset,
+    remify(2px)
+  );
+  /* One full-size track for the face. The button sets its own track and
+     alignment because native or document button styles center content,
+     which would shrink the face to the icon. */
+  display: inline-grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-content: stretch;
+  place-items: stretch;
+  width: remify(44px);
+  height: remify(44px);
+  margin: 0;
+  padding: var(--_kui-icon-toggle-button-inset);
+  box-sizing: border-box;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--_kui-icon-toggle-button-radius);
+  color: var(--kui-color-neutral-on-quiet);
+  background: var(--kui-color-neutral-fill-normal);
+  cursor: pointer;
+  flex: none;
+  font: inherit;
+}
+
+.kui-icon-toggle-button[data-shape="rounded"] {
+  --_kui-icon-toggle-button-radius: var(
+    --kui-layout-rounded-radius,
+    calc(1px + remify(11px))
+  );
+}
+
+.kui-icon-toggle-button__face {
+  display: grid;
+  border-radius: max(
+    0px,
+    calc(
+      var(--_kui-icon-toggle-button-radius) -
+        var(--_kui-icon-toggle-button-inset) - 1px
+    )
+  );
+  place-items: center;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.kui-icon-toggle-button:hover:not(:disabled) > .kui-icon-toggle-button__face {
+  background: var(--kui-color-surface);
+}
+
+.kui-icon-toggle-button[aria-pressed="true"] {
+  color: var(--kui-color-brand-on-quiet);
+}
+
+.kui-icon-toggle-button[aria-pressed="true"] > .kui-icon-toggle-button__face {
+  background: var(--kui-color-surface);
+  box-shadow: var(--kui-shadow-s);
+}
+
+.kui-icon-toggle-button:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-icon-toggle-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-icon-toggle-button__face {
+    transition: none;
+  }
+}

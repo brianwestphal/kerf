@@ -28,6 +28,7 @@ Provide complete toolbar action geometry through configuration, including semant
 
 - [SegmentedControl](./segmented-control.md) (nearest)
 - [Button Group](./wa-button-group.md) (prefer-over)
+- [IconToggleButton](./icon-toggle-button.md) (nearest) — Outside a Toolbar, a standalone icon-only toggle is an IconToggleButton.
 
 ## Imports
 
@@ -116,6 +117,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [SegmentedControl](./segmented-control.md), [Button Group](./wa-button-group.md).
+- Components: [LucideIcon](./lucide-icon.md), [SegmentedControl](./segmented-control.md), [Button Group](./wa-button-group.md), [IconToggleButton](./icon-toggle-button.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=toolbar-control-group`.

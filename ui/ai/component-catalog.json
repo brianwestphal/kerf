@@ -1722,6 +1722,11 @@
         {
           "id": "wa-button-group",
           "relationship": "prefer-over"
+        },
+        {
+          "id": "icon-toggle-button",
+          "relationship": "nearest",
+          "when": "Outside a Toolbar, a standalone icon-only toggle is an IconToggleButton."
         }
       ],
       "appOwns": [
@@ -5045,6 +5050,89 @@
       "rootElement": "wa-button",
       "links": {
         "catalogRoute": "?component=icon-button",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "icon-toggle-button",
+      "name": "IconToggleButton",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A standalone icon-only toggle with a single contained toolbar group's geometry and pressed chrome.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Render an icon-only aria-pressed toggle in content or a pane footer, where a Toolbar does not belong, with the 44px contained geometry and raised pressed face of a single ToolbarControlGroup.",
+      "publicExports": [
+        "IconToggleButton"
+      ],
+      "useWhen": [
+        "An icon-only on/off control (show a panel, a conversation) sits in content or a pane footer outside any Toolbar."
+      ],
+      "avoidWhen": [
+        "Do not use inside a Toolbar; compose a ToolbarControlGroup there.",
+        "Do not use for a momentary action; use IconButton.",
+        "Do not use for one-of-several choices; use SegmentedControl."
+      ],
+      "alternatives": [
+        {
+          "id": "toolbar-control-group",
+          "relationship": "nearest",
+          "when": "Inside a Toolbar, a single ToolbarControlGroup with a pressed button is the same control."
+        },
+        {
+          "id": "icon-button",
+          "relationship": "nearest",
+          "when": "Use IconButton for a momentary icon-only action."
+        }
+      ],
+      "appOwns": [
+        "the pressed state and its delegated action",
+        "the accessible name"
+      ],
+      "variants": [
+        "pressed",
+        "unpressed",
+        "pill or rounded shape",
+        "disabled"
+      ],
+      "accessibility": [
+        "Native button with aria-pressed and a required aria-label; with help tags registered it shows that label on hover and keyboard focus."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/icon-toggle-button",
+        "manualCssImport": "@kerfjs/ui/icon-toggle-button.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-icon-toggle-button",
+        "kui-icon-toggle-button__face"
+      ],
+      "publicTokens": [
+        "--kui-color-neutral-border-normal",
+        "--kui-color-neutral-fill-normal",
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-surface",
+        "--kui-color-brand-on-quiet",
+        "--kui-shadow-s",
+        "--kui-focus-ring",
+        "--kui-layout-pill-radius",
+        "--kui-layout-rounded-radius",
+        "--kui-layout-highlight-inset"
+      ],
+      "rootElement": "button",
+      "links": {
+        "catalogRoute": "?component=icon-toggle-button",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }

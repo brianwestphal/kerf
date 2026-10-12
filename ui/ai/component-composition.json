@@ -4077,6 +4077,72 @@
       }
     },
     {
+      "key": "@kerfjs/ui:icon-toggle-button",
+      "package": "@kerfjs/ui",
+      "id": "icon-toggle-button",
+      "name": "IconToggleButton",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the pressed state and its delegated action",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the accessible name",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Native button with aria-pressed and a required aria-label; with help tags registered it shows that label on hover and keyboard focus."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-icon-toggle-button",
+        "publicClasses": [
+          "kui-icon-toggle-button",
+          "kui-icon-toggle-button__face"
+        ],
+        "rootElement": "button",
+        "publicTokens": [
+          "--kui-color-neutral-border-normal",
+          "--kui-color-neutral-fill-normal",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-surface",
+          "--kui-color-brand-on-quiet",
+          "--kui-shadow-s",
+          "--kui-focus-ring",
+          "--kui-layout-pill-radius",
+          "--kui-layout-rounded-radius",
+          "--kui-layout-highlight-inset"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:feedback",
       "package": "@kerfjs/ui",
       "id": "feedback",

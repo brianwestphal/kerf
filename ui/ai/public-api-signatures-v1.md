@@ -4004,6 +4004,53 @@ declare function IconButton({ icon, iconName, label, action, appearance, variant
 export { IconButton, type IconButtonAppearance, type IconButtonProps, type IconButtonSize, type IconButtonVariant };
 ```
 
+## `@kerfjs/ui/icon-toggle-button`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { LucideNode } from './lucide-icon.js';
+import 'lucide';
+import './css-values.js';
+
+/** Corner shape: fully round `pill` (default) or a softer `rounded` square. */
+type IconToggleButtonShape = 'pill' | 'rounded';
+type IconToggleButtonRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-action'?: never;
+    'data-shape'?: never;
+}>;
+interface IconToggleButtonProps {
+    /** The Lucide-compatible icon node. */
+    icon: LucideNode;
+    /** The icon's stable name, as `LucideIcon` takes it. */
+    iconName: string;
+    /** Accessible name and hover help tag; required because no text is shown. */
+    label: string;
+    /** Pressed state, exposed as `aria-pressed`; the application owns it. */
+    pressed: boolean;
+    /** Delegated `data-action` the application handles to flip `pressed`. */
+    action?: string;
+    shape?: IconToggleButtonShape;
+    disabled?: boolean;
+    id?: string;
+    className?: string;
+    /** Safe `data-*` metadata; IconToggleButton-owned markers stay protected. */
+    rootAttributes?: IconToggleButtonRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A standalone, icon-only toggle: a native `<button aria-pressed>` with the
+ * geometry and pressed chrome of a single contained `ToolbarControlGroup`
+ * (44px, a 2px-inset face that rises when pressed), for content and pane
+ * footers where no `Toolbar` belongs. Inside a toolbar, use a
+ * `ToolbarControlGroup` instead.
+ */
+declare function IconToggleButton({ icon, iconName, label, pressed, action, shape, disabled, id, className, rootAttributes, slot, }: IconToggleButtonProps): kerfjs.SafeHtml;
+
+export { IconToggleButton, type IconToggleButtonProps, type IconToggleButtonShape };
+```
+
 ## `@kerfjs/ui/corner-status`
 
 ```ts

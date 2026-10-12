@@ -527,6 +527,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `presentation="strip"` renders a flush, square, full-width band for a
   layout edge with tone-colored `dividerSides` (bottom by default) instead of
   the inset rounded card; never restyle a card into a strip.
+- **Use `IconToggleButton` for an icon toggle outside a Toolbar.** In content or a
+  pane footer, `IconToggleButton({ icon, iconName, label, pressed, action })`
+  gives a native `aria-pressed` button the single contained toolbar group's
+  geometry; never wrap a `ToolbarControlGroup` outside a toolbar or restyle a
+  button to match it.
 - **Let an icon-state toggle skip selected chrome.** When a pressed toggle's
   glyph already shows its state (an empty or filled star), set
   `data-selected-chrome="none"` on that button, or `selectedChrome="none"` on

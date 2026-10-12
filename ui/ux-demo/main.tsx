@@ -116,6 +116,7 @@ import {
   floatingToolbarOpen,
   grammarSearchModel,
   gridTileSelections,
+  iconToggleConversationOpen,
   inspectorSection,
   itemTypes,
   menuActionCurrent,
@@ -742,6 +743,12 @@ const stopActions = delegateActions(app, 'click', {
       );
       actionLog.value = `Loaded ${id}`;
     }, DEMO_TAB_LOAD_MS);
+  },
+  'toggle-icon-toggle-demo': () => {
+    iconToggleConversationOpen.value = !iconToggleConversationOpen.value;
+    actionLog.value = iconToggleConversationOpen.value
+      ? 'Conversation shown'
+      : 'Conversation hidden';
   },
   'select-segment-demo': (_event, element) => {
     const value = element.getAttribute('data-segment-value');
