@@ -370,9 +370,9 @@
      inside the exported `details` part, while Accordion and Card paint their
      host directly. */
   :is(wa-accordion, wa-card)[appearance="sunken"] {
-    background-color: var(
+    background: var(
       --kui-wa-sunken-background,
-      var(--kui-color-surface-lowered, var(--wa-color-surface-lowered))
+      var(--kui-sunken-surface, var(--wa-color-surface-lowered))
     );
     border-color: transparent;
     border-radius: var(
@@ -383,9 +383,9 @@
   }
 
   wa-details[appearance="sunken"]::part(details) {
-    background-color: var(
+    background: var(
       --kui-wa-sunken-background,
-      var(--kui-color-surface-lowered, var(--wa-color-surface-lowered))
+      var(--kui-sunken-surface, var(--wa-color-surface-lowered))
     );
     border-color: transparent;
     border-radius: var(

@@ -394,6 +394,8 @@
         "--kui-color-surface",
         "--kui-color-surface-raised",
         "--kui-color-surface-lowered",
+        "--kui-sunken-texture",
+        "--kui-sunken-surface",
         "--kui-color-text",
         "--kui-color-text-quiet",
         "--kui-color-text-link",
@@ -1471,7 +1473,8 @@
       "uses": [],
       "purpose": "Group a vertical list of application content on a visually lowered surface with one owned 8px inset and an explicit rounded or square-corner shape.",
       "publicExports": [
-        "SunkenPanel"
+        "SunkenPanel",
+        "ensureSunkenTexture"
       ],
       "useWhen": [
         "A main content region or nested work area needs a darker/lowered background and one compact inset around a vertical stack.",

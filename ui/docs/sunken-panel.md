@@ -88,6 +88,19 @@ See [Contextual transparency](./webawesome-theme.md#contextual-transparency).
 Keep ordinary composition on these defaults; public properties are theming
 escape hatches, not a reason to restyle each demo or nesting level.
 
+Every sunken surface — SunkenPanel, `Pane appearance="sunken"`, sunken
+Workbench regions and TabNavigator scenes, and Web Awesome
+`appearance="sunken"` — paints `--kui-sunken-surface`: a fine, monochrome
+grain (a seeded 100px tile at 8% maximum opacity) over the lowered color. The
+tile is drawn once per page, at runtime, by the first sunken surface that
+renders (nothing ships as an asset; server rendering paints the flat color
+until the browser renders one). Translucent children such as a `ValueTable`
+let the grain show through rather than adding their own. Set
+`--kui-sunken-texture: none` at `:root` for a flat lowered surface, or to
+another image; call `ensureSunkenTexture()` (exported from
+`@kerfjs/ui/sunken-panel`) on a page whose only sunken surfaces are Web Awesome
+elements.
+
 The public root class is `.kui-sunken-panel`. Prefer the properties above over
 styling descendants. The `square` shape deliberately overrides the radius
 property with zero; use `rounded` when customizing the radius token.

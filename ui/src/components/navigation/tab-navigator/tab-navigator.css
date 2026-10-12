@@ -52,10 +52,7 @@
 }
 
 .kui-tab-scaffold__scene[data-appearance="sunken"] {
-  background: var(
-    --kui-sunken-panel-background,
-    var(--kui-color-surface-lowered)
-  );
+  background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
 }
 
 /* A scene is its region's scroll owner, so its top inset is padding inside

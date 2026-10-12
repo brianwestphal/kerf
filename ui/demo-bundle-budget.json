@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 339400,
-  "measuredLargestJavaScriptGzip": 124513,
-  "measuredTotalJavaScriptGzip": 339358,
+  "totalJavaScriptGzip": 340000,
+  "measuredLargestJavaScriptGzip": 124514,
+  "measuredTotalJavaScriptGzip": 339917,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3331,6 +3331,22 @@
         "measuredTotalJavaScriptGzip": 339358,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 339400
+      }
+    },
+    {
+      "at": "2026-10-12T10:42:43.718Z",
+      "reason": "KF-GMAK3H: runtime sunken-surface noise generator (ensureSunkenTexture) called by sunken surfaces",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 339358,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 339400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124514,
+        "measuredTotalJavaScriptGzip": 339917,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 340000
       }
     }
   ]

@@ -2,6 +2,7 @@ import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import type { NavPane } from '../../../shared/panels/nav-pane.js';
+import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import type { ListConfig } from '../../collections/list/list.js';
 import type { NavStackProps } from '../../navigation/nav-stack/nav-stack.js';
 import type { PaneConfig } from '../pane/pane.js';
@@ -582,6 +583,14 @@ export function Workbench({
   ]
     .filter(Boolean)
     .join(';');
+  // A region painted directly (no composed Pane chrome) needs the texture too.
+  if (
+    [leftRail, rightRail, bottomDrawer].some(
+      (panel) => panel?.pane?.appearance === 'sunken',
+    ) ||
+    mainPane?.appearance === 'sunken'
+  )
+    ensureSunkenTexture();
   return (
     <section
       class={`kui-workbench ${className}`.trim()}

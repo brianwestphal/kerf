@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import { Badge } from '../../feedback/badge/badge.js';
 import type { PaneAppearance } from '../../layout/pane/pane.js';
 
@@ -107,6 +108,7 @@ export function TabNavigator<Id extends string>({
   className = '',
   slot,
 }: TabNavigatorProps<Id>) {
+  if (tabs.some((tab) => tab.appearance === 'sunken')) ensureSunkenTexture();
   return (
     <section
       class={`kui-tab-scaffold ${className}`.trim()}

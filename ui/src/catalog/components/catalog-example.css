@@ -108,7 +108,7 @@
 }
 
 .kui-catalog-example__viewport[data-surface="lowered"] {
-  background: var(--kui-color-surface-lowered);
+  background: var(--kui-sunken-surface);
 }
 
 .kui-catalog-example__viewport[data-overflow="hidden"] {

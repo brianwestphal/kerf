@@ -199,3 +199,42 @@ test('shared translucent sunken surfaces compound at each nesting level', async 
     .getByRole('region', { name: 'First layer', exact: true })
     .screenshot({ path: testInfo.outputPath('sunken-forced-colors.png') });
 });
+
+test('sunken surfaces carry the generated grain texture, which an app can opt out of', async ({
+  page,
+}) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.goto('/?component=sunken-panel');
+    const panel = page.getByRole('region', { name: 'Release workspace' });
+    await expect(panel).toBeVisible();
+    const painted = await panel.evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return {
+        image: style.backgroundImage,
+        size: style.backgroundSize,
+        repeat: style.backgroundRepeat,
+        color: style.backgroundColor,
+        tile: document.documentElement.style.getPropertyValue(
+          '--_kui-sunken-texture-generated',
+        ),
+      };
+    });
+    // One generated PNG tile, repeated at 100px over the lowered color.
+    expect(painted.image).toMatch(/^url\("data:image\/png;base64,/);
+    expect(painted.size.split(',')[0]).toBe('100px 100px');
+    expect(painted.repeat.split(',')[0]).toBe('repeat');
+    expect(painted.color).not.toBe('rgba(0, 0, 0, 0)');
+    expect(painted.tile).toContain('data:image/png;base64,');
+  }
+  await page.addStyleTag({ content: ':root { --kui-sunken-texture: none; }' });
+  await expect
+    .poll(() =>
+      page
+        .getByRole('region', { name: 'Release workspace' })
+        .evaluate(
+          (element) => window.getComputedStyle(element).backgroundImage,
+        ),
+    )
+    .not.toContain('url(');
+});

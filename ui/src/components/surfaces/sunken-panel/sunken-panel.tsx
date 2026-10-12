@@ -3,6 +3,7 @@ import type {
   CssFlex,
   CssFlexKeyword,
 } from '../../../shared/styles/css-values.js';
+import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 
 export type SunkenPanelShape = 'rounded' | 'square';
 
@@ -42,6 +43,7 @@ export function SunkenPanel({
   slot,
 }: SunkenPanelProps) {
   const flexValue = flex === true ? '1 1 auto' : flex || undefined;
+  ensureSunkenTexture();
   return (
     <div
       class={`kui-sunken-panel ${className}`.trim()}
@@ -60,3 +62,5 @@ export function SunkenPanel({
     </div>
   );
 }
+
+export { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';

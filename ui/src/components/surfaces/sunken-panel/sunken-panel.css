@@ -12,10 +12,7 @@
     var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
   );
   color: var(--kui-sunken-panel-foreground, var(--kui-color-text));
-  background: var(
-    --kui-sunken-panel-background,
-    var(--kui-color-surface-lowered)
-  );
+  background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
   flex-direction: column;
   gap: var(--kui-sunken-panel-gap, remify(8px));
 }

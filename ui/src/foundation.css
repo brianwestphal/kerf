@@ -131,6 +131,14 @@
       rgb(228.157895 228.157895 255 / 0.07451)
     )
   );
+  /* The sunken surface: a fine monochrome grain over the lowered color. The
+     tile is generated once per page by the first sunken surface that renders
+     (ensureSunkenTexture); set --kui-sunken-texture to none at :root for a
+     flat lowered surface, or to another image. */
+  --kui-sunken-texture: var(--_kui-sunken-texture-generated, none);
+  --kui-sunken-surface:
+    var(--kui-sunken-texture) 0 0 / 100px 100px repeat,
+    var(--kui-color-surface-lowered);
   --kui-color-text: var(--wa-color-text-normal, light-dark(#1d1d1f, #f5f5f7));
   --kui-color-text-quiet: var(
     --wa-color-text-quiet,

@@ -157,7 +157,7 @@ describe('Web Awesome consumer guidance', () => {
     expect(css).toContain('wa-details[appearance="sunken"]::part(details)');
     expect(css).toContain('--kui-wa-sunken-background');
     expect(css).toContain('--kui-wa-sunken-radius');
-    expect(css).toContain('var(--kui-color-surface-lowered');
+    expect(css).toContain('var(--kui-sunken-surface');
     expect(guidance).toContain(
       '`appearance="sunken"` is a Kerf theme extension for Accordion, Card, and',
     );

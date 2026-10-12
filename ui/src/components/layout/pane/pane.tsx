@@ -1,5 +1,6 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 
 /**
  * Logical pane sides: where a {@link Pane} can show a separator and where it can
@@ -211,6 +212,7 @@ export function Pane({
   );
   const resolvedChromeDividers =
     chromeDividers ?? (appearance === 'sunken' ? 'always' : 'scroll');
+  if (appearance === 'sunken') ensureSunkenTexture();
   const body = (
     <>
       {header === undefined ? null : (

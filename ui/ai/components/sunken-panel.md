@@ -23,7 +23,7 @@ Group a vertical list of application content on a visually lowered surface with 
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/sunken-panel` — exports `SunkenPanel`.
+- JavaScript: `@kerfjs/ui/sunken-panel` — exports `SunkenPanel`, `ensureSunkenTexture`.
 - CSS: the browser build of `@kerfjs/ui/sunken-panel` pulls its CSS automatically; import `@kerfjs/ui/sunken-panel.css` manually only without the `browser` export condition.
 - Declared side effects: browser-condition-css.
 

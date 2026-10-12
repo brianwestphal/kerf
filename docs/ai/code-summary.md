@@ -1240,7 +1240,7 @@ Update this doc whenever you:
 6. Add or change a repository script or any gate wired into `npm run check` / `check:full`.
 7. Add, remove, or rename a site route, migrating page, complete example app, deploy/build input, or benchmark-data consumer.
 
-The UI shared type `SemanticTone` lives in `ui/src/shared/styles/semantic-tone.ts`.
+The UI shared type `SemanticTone` lives in `ui/src/shared/styles/semantic-tone.ts`. `ui/src/shared/styles/sunken-texture.ts` draws the seeded sunken-surface grain tile on a canvas once per document (`ensureSunkenTexture`, called by SunkenPanel, sunken Pane, Workbench, TabNavigator, and the catalog's lowered viewport) and stores it in the private `--_kui-sunken-texture-generated` property that `foundation.css`'s public `--kui-sunken-texture` / `--kui-sunken-surface` tokens layer over the lowered color.
 Badge, Chip, StateBanner, and ContentItem use its six roles (`info` maps to brand
 color tokens); `BadgeTone` and `StateBannerTone` are deprecated aliases.
 

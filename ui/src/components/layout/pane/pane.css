@@ -44,17 +44,11 @@
    Fixed chrome leaves the content slot scrolling; auto chrome lets the Pane
    root scroll in its short mode, while its content remains transparent. */
 .kui-pane[data-appearance="sunken"] > .kui-pane__content {
-  background: var(
-    --kui-sunken-panel-background,
-    var(--kui-color-surface-lowered)
-  );
+  background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
 }
 
 .kui-pane[data-appearance="sunken"][data-chrome-placement="auto"] {
-  background: var(
-    --kui-sunken-panel-background,
-    var(--kui-color-surface-lowered)
-  );
+  background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
 }
 
 .kui-pane[data-appearance="sunken"][data-chrome-placement="auto"]

@@ -250,6 +250,7 @@ export {
   type ContentItemShape,
 } from './components/surfaces/content-item/content-item.js';
 export {
+  ensureSunkenTexture,
   SunkenPanel,
   type SunkenPanelProps,
   type SunkenPanelShape,

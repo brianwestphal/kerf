@@ -3050,6 +3050,13 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssFlexKeyword, CssFlex } from './css-values.js';
 
+/**
+ * Generate the sunken texture once for a document. Sunken surfaces call this
+ * as they render; it is idempotent, and on a server (no document) or without
+ * a 2D canvas it does nothing, leaving the flat lowered surface.
+ */
+declare function ensureSunkenTexture(doc?: Document | undefined): void;
+
 type SunkenPanelShape = 'rounded' | 'square';
 interface SunkenPanelProps {
     children?: KerfUiContent;
@@ -3076,7 +3083,7 @@ interface SunkenPanelProps {
  */
 declare function SunkenPanel({ children, ariaLabel, shape, flex, fill, tabIndex, outlined, className, slot, }: SunkenPanelProps): kerfjs.SafeHtml;
 
-export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
+export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape, ensureSunkenTexture };
 ```
 
 ## `@kerfjs/ui/token-search-field`

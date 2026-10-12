@@ -5,6 +5,7 @@ import { ListInsetText } from '../../components/collections/list-inset-text/list
 import { Text } from '../../components/typography/text/text.js';
 import type { KerfUiContent } from '../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../shared/dom/extension-attributes.js';
+import { ensureSunkenTexture } from '../../shared/styles/sunken-texture.js';
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 export type CatalogExampleAlign =
@@ -84,6 +85,7 @@ export function CatalogExample({
         .map(([name, value]) => `${name}:${value}`)
         .join(';')
     : undefined;
+  if (viewport?.surface === 'lowered') ensureSunkenTexture();
   const specimen = viewport ? (
     <div
       class="kui-catalog-example__viewport"
