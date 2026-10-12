@@ -629,6 +629,10 @@ of a definite height, make that ancestor a flex column and pass `flex` (not
 `fill`): `<List flex scrollable>` takes at most the remaining height and
 scrolls the rest, with no app-owned scrolling wrapper.
 
+For long reading content, such as a reader view, pass `inset="document"`: 24px
+block and 32px inline on all four sides, narrowing to 16px inline below 576px.
+It replaces any `textInsets`/`controlInsets` on that List.
+
 A List is transparent by default. Pass `surface="base"` (the page surface) or
 `surface="raised"` to paint a solid background behind the stack and its
 insets — for example a banner strip above a sunken work area, which otherwise
@@ -639,7 +643,11 @@ lowered region is a `SunkenPanel`, not a List surface.
 Put route, test, or recipe metadata on the same root with `rootAttributes`,
 which accepts safe `data-*` pairs and keeps each component's structural
 attributes (`data-component`, `data-flex`, `data-fill`, alignment, inset, and
-column markers) protected:
+column markers) protected. A `List` or `Row` root also takes `aria-*`
+attributes and a structural `role` (`region`, `group`, `list`, `status`, a
+landmark, …), so a labeled drop-target region or an `aria-busy` stack needs no
+wrapper; widget roles are dropped, and a multi-select `List` keeps its own
+grid role and name:
 
 ```tsx
 <Row gap="none" fill rootAttributes={{ "data-recipe": "sidebar" }}>

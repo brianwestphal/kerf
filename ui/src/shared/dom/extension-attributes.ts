@@ -31,6 +31,60 @@ export function filterDataAttributes(
   return filtered;
 }
 
+const ARIA_ATTRIBUTE_NAME = /^aria-[a-z]+$/;
+
+/**
+ * Non-widget roles an application may give a layout root: landmarks, named
+ * regions, groups, and live regions. Widget roles (button, grid, listbox, …)
+ * promise keyboard behavior a layout primitive does not provide.
+ */
+export const STRUCTURAL_ROOT_ROLES = [
+  'region',
+  'group',
+  'list',
+  'feed',
+  'log',
+  'status',
+  'note',
+  'article',
+  'navigation',
+  'complementary',
+  'search',
+  'form',
+  'presentation',
+  'none',
+] as const;
+export type StructuralRootRole = (typeof STRUCTURAL_ROOT_ROLES)[number];
+const STRUCTURAL_ROLES = new Set<string>(STRUCTURAL_ROOT_ROLES);
+
+/** Safe `data-*`, `aria-*`, and structural `role` metadata on a layout root. */
+export type StructuralRootAttributes = Readonly<
+  Record<`data-${string}` | `aria-${string}`, string | undefined> & {
+    role?: StructuralRootRole;
+  }
+>;
+
+/**
+ * `filterDataAttributes` plus `aria-*` string attributes and a structural
+ * `role`, for layout roots an application names or marks as a region.
+ */
+export function filterRootAttributes(
+  attributes: object,
+  protectedNames: ReadonlySet<string>,
+): Record<string, string> {
+  const filtered = filterDataAttributes(attributes, protectedNames);
+  for (const [name, value] of Object.entries(attributes as AttributeBag)) {
+    const normalizedName = name.toLowerCase();
+    if (typeof value !== 'string' || protectedNames.has(normalizedName))
+      continue;
+    if (ARIA_ATTRIBUTE_NAME.test(normalizedName))
+      filtered[normalizedName] = value;
+    else if (normalizedName === 'role' && STRUCTURAL_ROLES.has(value))
+      filtered.role = value;
+  }
+  return filtered;
+}
+
 export function filterControlAttributes(
   attributes: object,
   protectedDataNames: ReadonlySet<string>,

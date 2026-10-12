@@ -81,6 +81,22 @@
   );
 }
 
+/* `inset="document"`: a reading inset on all four sides that replaces any
+   side-selected text or control inset. */
+.kui-list[data-inset="document"] {
+  --_kui-list-inset-top: var(--kui-space-l);
+  --_kui-list-inset-right: var(--kui-space-xl);
+  --_kui-list-inset-bottom: var(--kui-space-l);
+  --_kui-list-inset-left: var(--kui-space-xl);
+}
+
+@media (max-width: remify(576px)) {
+  .kui-list[data-inset="document"] {
+    --_kui-list-inset-right: var(--kui-space-m);
+    --_kui-list-inset-left: var(--kui-space-m);
+  }
+}
+
 .kui-list[data-h-align="left"] {
   align-items: flex-start;
   align-content: flex-start;

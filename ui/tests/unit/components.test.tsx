@@ -758,6 +758,22 @@ describe('production UI primitives', () => {
     expect(grid).toContain('data-fill="true"');
     expect(grid).not.toContain('data-columns="9"');
 
+    const namedRow = asHtml(
+      Row({
+        rootAttributes: {
+          role: 'group',
+          'aria-labelledby': 'actions-title',
+          'ARIA-hidden': 'false',
+          'aria-x1': 'dropped',
+          'data-component': 'nope',
+        } as unknown as Record<`data-${string}`, string>,
+      }),
+    );
+    expect(namedRow).toContain(
+      'role="group" aria-labelledby="actions-title" aria-hidden="false" class="kui-row"',
+    );
+    expect(namedRow).not.toContain('aria-x1');
+    expect(namedRow).not.toContain('nope');
     // Filling is opt-in: the default markup carries no fill marker.
     for (const markup of [
       asHtml(List({})),
@@ -813,6 +829,46 @@ describe('production UI primitives', () => {
     expect(() => List({ selectionMode: 'multiple' })).toThrow(
       'requires an ariaLabel',
     );
+    const region = asHtml(
+      List({
+        inset: 'document',
+        rootAttributes: {
+          role: 'region',
+          'aria-label': 'Ticket inspector',
+          'aria-busy': 'true',
+          'data-panel': 'inspector',
+        },
+      }),
+    );
+    expect(region).toContain(
+      'role="region" aria-label="Ticket inspector" aria-busy="true" class="kui-list"',
+    );
+    expect(region).toContain('data-inset="document"');
+    expect(
+      asHtml(
+        List({
+          rootAttributes: { role: 'button' } as unknown as Record<
+            `data-${string}`,
+            string
+          >,
+        }),
+      ),
+    ).not.toContain('role=');
+    const ownedGrid = asHtml(
+      List({
+        selectionMode: 'multiple',
+        ariaLabel: 'Demand lines',
+        rootAttributes: {
+          role: 'region',
+          'aria-label': 'Overridden',
+          'aria-describedby': 'hint',
+        },
+      }),
+    );
+    expect(ownedGrid).toContain(
+      'aria-describedby="hint" role="grid" aria-label="Demand lines" aria-multiselectable="true"',
+    );
+    expect(ownedGrid).not.toContain('Overridden');
     expect(defaults).toContain(
       'data-gap="false" data-flex="false" data-h-align="full" data-v-align="top" data-scrollable="false"',
     );

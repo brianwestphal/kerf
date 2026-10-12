@@ -1,5 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
-import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import {
+  filterRootAttributes,
+  type StructuralRootAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import {
   type HorizontalAlignment,
   horizontalAlignment,
@@ -25,8 +28,8 @@ const rowProtectedAttributes = new Set([
   'data-control-insets',
 ]);
 
-type RowRootAttributes = Readonly<
-  Record<`data-${string}`, string | undefined> & {
+type RowRootAttributes = StructuralRootAttributes &
+  Readonly<{
     'data-component'?: never;
     'data-h-align'?: never;
     'data-v-align'?: never;
@@ -35,8 +38,7 @@ type RowRootAttributes = Readonly<
     'data-wrap'?: never;
     'data-text-insets'?: never;
     'data-control-insets'?: never;
-  }
->;
+  }>;
 
 export interface RowProps {
   children?: KerfUiContent;
@@ -61,7 +63,10 @@ export interface RowProps {
   /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
   controlInsets?: Sides;
   className?: string;
-  /** Safe `data-*` metadata; Row-owned structural attributes remain protected. */
+  /**
+   * Safe `data-*`, `aria-*`, and structural `role` metadata (a named
+   * `region`, a `group`); Row-owned structural attributes remain protected.
+   */
   rootAttributes?: RowRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -82,7 +87,7 @@ export function Row({
   rootAttributes = {},
   slot,
 }: RowProps) {
-  const safeRootAttributes = filterDataAttributes(
+  const safeRootAttributes = filterRootAttributes(
     rootAttributes,
     rowProtectedAttributes,
   );

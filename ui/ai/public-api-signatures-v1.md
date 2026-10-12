@@ -672,13 +672,13 @@ export { ListHeader, type ListHeaderProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
-export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
+import { H as HorizontalAlignment, L as ListVerticalAlignment, S as StructuralRootAttributes } from './flex-alignment-CzXjitz2.js';
+export { V as VerticalAlignment } from './flex-alignment-CzXjitz2.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
 export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
 
-type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+type ListRootAttributes = StructuralRootAttributes & Readonly<{
     'data-component'?: never;
     'data-gap'?: never;
     'data-flex'?: never;
@@ -687,6 +687,7 @@ type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-v-align'?: never;
     'data-scrollable'?: never;
     'data-surface'?: never;
+    'data-inset'?: never;
     'data-text-insets'?: never;
     'data-control-insets'?: never;
 }>;
@@ -696,6 +697,12 @@ type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
  * (`--kui-color-surface-raised`). A lowered region is a `SunkenPanel`.
  */
 type ListSurface = 'base' | 'raised';
+/**
+ * A preset inset on all four sides. `document` is the reading inset for long
+ * content such as a reader view: 24px block and 32px inline, narrowing to
+ * 16px inline below 576px. It replaces any `textInsets`/`controlInsets`.
+ */
+type ListInset = 'document';
 interface ListProps {
     children?: KerfUiContent;
     /** Make this list a labeled multi-select grid for `ContentItem selectionMode="multiple"` rows. */
@@ -731,12 +738,18 @@ interface ListProps {
     surface?: ListSurface;
     /** Physical divider edges in canonical top/right/bottom/left order. */
     dividerSides?: Sides;
+    /** A preset four-sided inset; see `ListInset`. */
+    inset?: ListInset;
     /** Physical sides that receive the standard 17px text inset. */
     textInsets?: Sides;
     /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
     controlInsets?: Sides;
     className?: string;
-    /** Safe `data-*` metadata; List-owned structural attributes remain protected. */
+    /**
+     * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
+     * `region`, `aria-busy`); List-owned structural attributes remain
+     * protected, and a multi-select List owns its grid role and name.
+     */
     rootAttributes?: ListRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -749,9 +762,9 @@ interface ListProps {
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, surface, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, surface, inset, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, type ListProps, type ListSurface, ListVerticalAlignment, Sides, UiGap };
+export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -1340,7 +1353,7 @@ export { c as NavStack, N as NavStackProps, d as NavStackToolbarConfig, a as Nav
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './list.js';
-import './flex-alignment-4ms8ZbV8.js';
+import './flex-alignment-CzXjitz2.js';
 import './sides-BPSWde0A.js';
 import './css-values.js';
 import './pane.js';
@@ -1382,7 +1395,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { N as NavStackProps, a as NavStackView } from './nav-stack-BvSKY448.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './list.js';
-import './flex-alignment-4ms8ZbV8.js';
+import './flex-alignment-CzXjitz2.js';
 import './sides-BPSWde0A.js';
 import './css-values.js';
 import './pane.js';
@@ -1609,7 +1622,7 @@ import { a as PanelToolbar, c as PanelBottomToolbar, b as PanelChromePlacement, 
 import { ToolbarConfig } from './toolbar.js';
 import './toolbar-text.js';
 import './css-values.js';
-import './flex-alignment-4ms8ZbV8.js';
+import './flex-alignment-CzXjitz2.js';
 import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -2007,7 +2020,7 @@ import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
 import './css-values.js';
-import './flex-alignment-4ms8ZbV8.js';
+import './flex-alignment-CzXjitz2.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 type CollapsiblePanelSide = PanelSide;
@@ -2475,7 +2488,7 @@ import './pane.js';
 import './workbench.js';
 import './nav-stack-BvSKY448.js';
 import './list.js';
-import './flex-alignment-4ms8ZbV8.js';
+import './flex-alignment-CzXjitz2.js';
 import './css-values.js';
 import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
@@ -2598,7 +2611,7 @@ import './pane.js';
 import './workbench.js';
 import './nav-stack-BvSKY448.js';
 import './list.js';
-import './flex-alignment-4ms8ZbV8.js';
+import './flex-alignment-CzXjitz2.js';
 import './css-values.js';
 import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
@@ -2651,7 +2664,7 @@ import './pane.js';
 import './workbench.js';
 import './nav-stack-BvSKY448.js';
 import './list.js';
-import './flex-alignment-4ms8ZbV8.js';
+import './flex-alignment-CzXjitz2.js';
 import './css-values.js';
 import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
@@ -3700,12 +3713,12 @@ export { FieldLabel, type FieldLabelProps, Sides, Text, type TextBorder, type Te
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
+import { H as HorizontalAlignment, V as VerticalAlignment, S as StructuralRootAttributes } from './flex-alignment-CzXjitz2.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
 export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
 
-type RowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+type RowRootAttributes = StructuralRootAttributes & Readonly<{
     'data-component'?: never;
     'data-h-align'?: never;
     'data-v-align'?: never;
@@ -3738,7 +3751,10 @@ interface RowProps {
     /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
     controlInsets?: Sides;
     className?: string;
-    /** Safe `data-*` metadata; Row-owned structural attributes remain protected. */
+    /**
+     * Safe `data-*`, `aria-*`, and structural `role` metadata (a named
+     * `region`, a `group`); Row-owned structural attributes remain protected.
+     */
     rootAttributes?: RowRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;

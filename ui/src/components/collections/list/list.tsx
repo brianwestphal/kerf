@@ -1,5 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
-import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import {
+  filterRootAttributes,
+  type StructuralRootAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import {
   type HorizontalAlignment,
   horizontalAlignment,
@@ -14,6 +17,9 @@ import {
   type UiGap,
 } from '../../../shared/styles/css-values.js';
 
+/** Attributes a multi-select List owns as an ARIA grid. */
+const listGridAttributes = ['role', 'aria-label', 'aria-multiselectable'];
+
 const listProtectedAttributes = new Set([
   'data-component',
   'data-gap',
@@ -23,12 +29,13 @@ const listProtectedAttributes = new Set([
   'data-v-align',
   'data-scrollable',
   'data-surface',
+  'data-inset',
   'data-text-insets',
   'data-control-insets',
 ]);
 
-type ListRootAttributes = Readonly<
-  Record<`data-${string}`, string | undefined> & {
+type ListRootAttributes = StructuralRootAttributes &
+  Readonly<{
     'data-component'?: never;
     'data-gap'?: never;
     'data-flex'?: never;
@@ -37,10 +44,10 @@ type ListRootAttributes = Readonly<
     'data-v-align'?: never;
     'data-scrollable'?: never;
     'data-surface'?: never;
+    'data-inset'?: never;
     'data-text-insets'?: never;
     'data-control-insets'?: never;
-  }
->;
+  }>;
 
 /**
  * A solid surface painted behind a List: `base` is the page surface
@@ -48,6 +55,13 @@ type ListRootAttributes = Readonly<
  * (`--kui-color-surface-raised`). A lowered region is a `SunkenPanel`.
  */
 export type ListSurface = 'base' | 'raised';
+
+/**
+ * A preset inset on all four sides. `document` is the reading inset for long
+ * content such as a reader view: 24px block and 32px inline, narrowing to
+ * 16px inline below 576px. It replaces any `textInsets`/`controlInsets`.
+ */
+export type ListInset = 'document';
 
 export interface ListProps {
   children?: KerfUiContent;
@@ -84,12 +98,18 @@ export interface ListProps {
   surface?: ListSurface;
   /** Physical divider edges in canonical top/right/bottom/left order. */
   dividerSides?: Sides;
+  /** A preset four-sided inset; see `ListInset`. */
+  inset?: ListInset;
   /** Physical sides that receive the standard 17px text inset. */
   textInsets?: Sides;
   /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
   controlInsets?: Sides;
   className?: string;
-  /** Safe `data-*` metadata; List-owned structural attributes remain protected. */
+  /**
+   * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
+   * `region`, `aria-busy`); List-owned structural attributes remain
+   * protected, and a multi-select List owns its grid role and name.
+   */
   rootAttributes?: ListRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -118,6 +138,7 @@ export function List({
   vAlign = 'top',
   scrollable = false,
   surface,
+  inset,
   dividerSides = '',
   textInsets = '',
   controlInsets = '',
@@ -128,10 +149,20 @@ export function List({
   if (selectionMode === 'multiple' && !ariaLabel) {
     throw new Error('Multi-select List requires an ariaLabel');
   }
-  const safeRootAttributes = filterDataAttributes(
+  const multiple = selectionMode === 'multiple';
+  const safeRootAttributes = filterRootAttributes(
     rootAttributes,
-    listProtectedAttributes,
+    multiple
+      ? new Set([...listProtectedAttributes, ...listGridAttributes])
+      : listProtectedAttributes,
   );
+  const gridAttributes = multiple
+    ? {
+        role: 'grid',
+        'aria-label': ariaLabel,
+        'aria-multiselectable': 'true',
+      }
+    : {};
   const gapStyle =
     gap === true
       ? '--_kui-list-gap:var(--kui-list-gap)'
@@ -148,11 +179,9 @@ export function List({
   return (
     <div
       {...safeRootAttributes}
+      {...gridAttributes}
       class={`kui-list ${className}`.trim()}
       data-component="list"
-      role={selectionMode === 'multiple' ? 'grid' : undefined}
-      aria-label={selectionMode === 'multiple' ? ariaLabel : undefined}
-      aria-multiselectable={selectionMode === 'multiple' ? 'true' : undefined}
       data-gap={String(Boolean(gap))}
       data-flex={String(Boolean(flex))}
       data-fill={fill ? 'true' : undefined}
@@ -160,6 +189,7 @@ export function List({
       data-v-align={verticalAlignment(vAlign)}
       data-scrollable={String(scrollable)}
       data-surface={surface}
+      data-inset={inset}
       divider-sides={dividerSides || undefined}
       data-text-insets={textInsets || undefined}
       data-control-insets={controlInsets || undefined}

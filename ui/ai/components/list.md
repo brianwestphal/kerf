@@ -45,12 +45,13 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 - boolean, finite-keyword, or typed CssFlex flex
 - scrollable
 - base or raised solid surface
+- document reading inset
 - left/center/right/full horizontal alignment
 - top/middle/bottom/full vertical alignment
 - top/right/bottom/left divider combinations
 - top/right/bottom/left text and control inset combinations
 - fill: the layout root fills a definite-height parent
-- rootAttributes: safe data-\* metadata on the root
+- rootAttributes: safe data-\*, aria-\*, and structural role on the root
 - scroll dividers when named as wireScrollDividers targets chrome
 - multi-select grid for rich ContentItem rows
 
@@ -96,7 +97,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-list` on an element you write; render `List` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-layout-item-gap`, `--kui-list-divider-color`, `--kui-list-gap`, `--kui-color-surface`, `--kui-color-surface-raised`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-color-surface`, `--kui-color-surface-raised`, `--kui-layout-item-gap`, `--kui-list-divider-color`, `--kui-list-gap`, `--kui-space-l`, `--kui-space-m`, `--kui-space-xl`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

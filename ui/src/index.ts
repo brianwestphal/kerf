@@ -60,6 +60,7 @@ export {
 export {
   List,
   type ListConfig,
+  type ListInset,
   type ListProps,
   type ListSurface,
   type ListVerticalAlignment,

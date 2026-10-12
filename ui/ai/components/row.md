@@ -47,7 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/row`](../public-api-signatures-v1.md#ke
 - nowrap or wrapping
 - top/right/bottom/left text and control inset combinations
 - fill: the layout root fills a definite-height parent
-- rootAttributes: safe data-\* metadata on the root
+- rootAttributes: safe data-\*, aria-\*, and structural role metadata on the root
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 

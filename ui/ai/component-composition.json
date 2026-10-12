@@ -2633,11 +2633,14 @@
         "publicClasses": ["kui-list"],
         "publicTokens": [
           "--kui-color-neutral-border-normal",
+          "--kui-color-surface",
+          "--kui-color-surface-raised",
           "--kui-layout-item-gap",
           "--kui-list-divider-color",
           "--kui-list-gap",
-          "--kui-color-surface",
-          "--kui-color-surface-raised"
+          "--kui-space-l",
+          "--kui-space-m",
+          "--kui-space-xl"
         ]
       },
       "diagnostics": [],

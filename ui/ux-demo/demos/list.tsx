@@ -12,6 +12,7 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -220,6 +221,27 @@ export function ListDemo() {
             title="Work area"
             detail="The lowered region continues below the strip."
           />
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Document inset"
+        note='inset="document" gives long reading content 24px block and 32px inline insets, narrowing to 16px inline on phones; rootAttributes can name the stack as a region.'
+        viewport={{ frame: 'solid', surface: 'default', overflow: 'hidden' }}
+      >
+        <List
+          inset="document"
+          gap="m"
+          rootAttributes={{ role: 'region', 'aria-label': 'Reader' }}
+        >
+          <Text variant="h3">Release notes</Text>
+          <Text>
+            The reader keeps a generous inset so long lines of prose have room
+            to breathe, without application padding around the stack.
+          </Text>
+          <Text>
+            On a phone the inline inset narrows so the text column keeps a
+            readable width.
+          </Text>
         </List>
       </CatalogExample>
       <CatalogExample

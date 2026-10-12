@@ -2657,7 +2657,7 @@
         "nowrap or wrapping",
         "top/right/bottom/left text and control inset combinations",
         "fill: the layout root fills a definite-height parent",
-        "rootAttributes: safe data-* metadata on the root"
+        "rootAttributes: safe data-*, aria-*, and structural role metadata on the root"
       ],
       "accessibility": [
         "Row adds layout only and no grouping role; children retain responsibility for native or ARIA semantics.",
@@ -3168,12 +3168,13 @@
         "boolean, finite-keyword, or typed CssFlex flex",
         "scrollable",
         "base or raised solid surface",
+        "document reading inset",
         "left/center/right/full horizontal alignment",
         "top/middle/bottom/full vertical alignment",
         "top/right/bottom/left divider combinations",
         "top/right/bottom/left text and control inset combinations",
         "fill: the layout root fills a definite-height parent",
-        "rootAttributes: safe data-* metadata on the root",
+        "rootAttributes: safe data-*, aria-*, and structural role on the root",
         "scroll dividers when named as wireScrollDividers targets chrome",
         "multi-select grid for rich ContentItem rows"
       ],
@@ -3220,11 +3221,14 @@
       ],
       "publicTokens": [
         "--kui-color-neutral-border-normal",
+        "--kui-color-surface",
+        "--kui-color-surface-raised",
         "--kui-layout-item-gap",
         "--kui-list-divider-color",
         "--kui-list-gap",
-        "--kui-color-surface",
-        "--kui-color-surface-raised"
+        "--kui-space-l",
+        "--kui-space-m",
+        "--kui-space-xl"
       ],
       "links": {
         "catalogRoute": "?component=list",
