@@ -25,7 +25,7 @@ export function installDialogLabel(prototype: object): void {
       observed.add(this);
       new MutationObserver(() => syncDialogLabel(this)).observe(this, {
         attributes: true,
-        attributeFilter: ['aria-label'],
+        attributeFilter: ['aria-label', 'role'],
       });
     }
     syncDialogLabel(this);
@@ -37,6 +37,15 @@ function syncDialogLabel(host: NamedDialog): void {
   const panel = host.dialog;
   if (!panel) return;
   const previous = ownedNames.get(panel);
+  // A host that is itself the named dialog (an explicit role="dialog" plus
+  // its own name) owns that name; naming the panel too would expose two
+  // dialogs with one name.
+  if (/^(alert)?dialog$/.test(host.getAttribute('role')?.trim() ?? '')) {
+    if (previous && panel.getAttribute(previous.attribute) === previous.value)
+      panel.removeAttribute(previous.attribute);
+    ownedNames.delete(panel);
+    return;
+  }
   const externalName = ['aria-label', 'aria-labelledby'].some((attribute) => {
     const value = panel.getAttribute(attribute);
     return (

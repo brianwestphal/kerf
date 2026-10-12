@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- `DialogSurface` no longer names a `wa-dialog`'s native panel when the host is itself an explicit, named dialog (`role="dialog"` or `"alertdialog"`). Both used to carry the same name, so the accessibility tree had two dialogs with one name and role queries such as Playwright's `getByRole('dialog', { name })` failed in strict mode. Removing or changing the host role restores the panel name (`KF-A0NF2S`).
+
 - A nested `PopupMenu` submenu's pointer "safe triangle" now spans the gap to the placed submenu. Web Awesome measured the submenu for that triangle before its asynchronous placement landed, so the triangle kept the submenu's pre-placement edge (often the viewport origin): its fixed, viewport-sized hit region fanned away from the submenu and could cover the parent menu's rows, swallowing their hover and clicks. PopupMenu now re-measures once the placement lands and again when the submenu's show animation settles, so applications need no `::part(submenu)::before` override (`KF-YAHAZK`).
 
 - A `scrollable` `List` bounded by a `max-height` ancestor now scrolls its rows instead of compressing them. Its children kept the default `flex-shrink: 1`, and a `ListItem` clips its own overflow, so multiline rows shrank into one another and their descriptions overlapped the next row. A scrollable List's direct children no longer shrink, and `docs/layout.md` documents bounding one with `flex` inside a max-height flex column (`KF-93GZC1`).

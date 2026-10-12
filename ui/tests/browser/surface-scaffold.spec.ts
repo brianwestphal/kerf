@@ -550,3 +550,31 @@ test('an embedded PopoverDialogSurface renders the same surface in flow', async 
     split: 278,
   });
 });
+
+// A wa-dialog host that is itself an explicit, named dialog owns that name:
+// DialogSurface no longer names the native panel too, so one dialog carries
+// the name (a role query is not ambiguous) and the slotted content stays in it.
+test('a host with an explicit dialog role is the only dialog with its name', async ({
+  page,
+}) => {
+  await page.goto('/?component=surface-scaffold');
+  const dialog = page.locator('#catalog-bounded-dialog');
+  await dialog.evaluate((element) => {
+    element.setAttribute('role', 'dialog');
+    element.setAttribute('aria-label', 'Not working');
+  });
+  await page.getByRole('button', { name: 'Open bounded dialog' }).click();
+  const named = page.getByRole('dialog', { name: 'Not working', exact: true });
+  await expect(named).toHaveCount(1);
+  expect(
+    await dialog.evaluate((element) => {
+      const panel = element.shadowRoot!.querySelector('dialog')!;
+      return [
+        panel.open,
+        panel.getAttribute('aria-label'),
+        panel.getAttribute('aria-labelledby'),
+      ];
+    }),
+  ).toEqual([true, null, null]);
+  await page.keyboard.press('Escape');
+});

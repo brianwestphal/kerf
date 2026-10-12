@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 345700,
-  "measuredLargestJavaScriptGzip": 128994,
-  "measuredTotalJavaScriptGzip": 345674,
+  "totalJavaScriptGzip": 345800,
+  "measuredLargestJavaScriptGzip": 129040,
+  "measuredTotalJavaScriptGzip": 345720,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3555,6 +3555,22 @@
         "measuredTotalJavaScriptGzip": 345674,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 345700
+      }
+    },
+    {
+      "at": "2026-10-12T14:06:10.401Z",
+      "reason": "DialogSurface host-role naming guard (KF-A0NF2S)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128994,
+        "measuredTotalJavaScriptGzip": 345674,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 345700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 129040,
+        "measuredTotalJavaScriptGzip": 345720,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 345800
       }
     }
   ]

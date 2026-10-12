@@ -74,6 +74,31 @@ describe('Web Awesome dialog naming adapter', () => {
     expect(panel.hasAttribute('aria-label')).toBe(false);
   });
 
+  it('leaves the panel unnamed while the host is itself an explicit dialog', async () => {
+    const { host, panel } = fixture();
+    host.update(undefined);
+    expect(panel.getAttribute('aria-labelledby')).toBe('title');
+    host.setAttribute('role', 'dialog');
+    host.setAttribute('aria-label', 'Not working');
+    await Promise.resolve();
+    expect(panel.hasAttribute('aria-labelledby')).toBe(false);
+    expect(panel.hasAttribute('aria-label')).toBe(false);
+    host.update(undefined);
+    expect(panel.hasAttribute('aria-label')).toBe(false);
+    host.setAttribute('role', ' alertdialog ');
+    await Promise.resolve();
+    expect(panel.hasAttribute('aria-label')).toBe(false);
+    // An app-owned panel name survives the host taking the dialog role.
+    panel.setAttribute('aria-label', 'Owned by the app');
+    host.update(undefined);
+    expect(panel.getAttribute('aria-label')).toBe('Owned by the app');
+    panel.removeAttribute('aria-label');
+    // Dropping the host role restores the panel name.
+    host.removeAttribute('role');
+    await Promise.resolve();
+    expect(panel.getAttribute('aria-label')).toBe('Not working');
+  });
+
   it('synchronizes attribute-only explicit name changes without another render', async () => {
     const { host, panel, update } = fixture();
     host.update(undefined);
