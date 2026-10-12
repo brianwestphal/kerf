@@ -43,7 +43,7 @@
  */
 
 import { effect, isSignal, type Signal } from './reactive.js';
-import { isOverlayHost, OVERLAY_HOST_SELECTOR } from './utils/overlay-host.js';
+import { isOverlayHost } from './utils/overlay-host.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 import { isDangerousUrlValue, reportDangerousUrl } from './utils/url-screen.js';
 
@@ -188,17 +188,23 @@ export function bindText(signal: Signal<unknown>): string | null {
  * Disposes `prevDisposers` first (a surrounds-changed morph strips bound attrs
  * and removes inserted text nodes, so we re-establish them), then attaches one
  * effect per hole. Zero-cost when there are no global holes.
+ *
+ * `rows` — the `each()` rows bound in this mount — are not searched: a row
+ * renders in row scope, so it carries only `data-kfbrow` / `kfbr:` markers,
+ * never a global one. Skipping them keeps the marker search proportional to
+ * the surrounds instead of to every row's subtree.
  */
 export function wireBindings(
   rootEl: Element,
   ctx: BindingContext,
   prevDisposers: ReadonlyArray<() => void>,
+  rows?: ReadonlySet<Element>,
 ): ReadonlyArray<() => void> {
   for (const d of prevDisposers) d();
   if (ctx.list.length === 0) return NO_DISPOSERS;
   const disposers: Array<() => void> = [];
   try {
-    wireInto(rootEl, ctx.list, disposers);
+    wireInto(rootEl, ctx.list, disposers, rows);
   } catch (err) {
     // A hole whose first write threw (a throwing `computed`, a screened URL in
     // dev) must not strand the effects wired before it: nobody would ever
@@ -224,8 +230,8 @@ export function wireRowBindings(
   //
   // Hot path: most row holes are an attribute on the row's ROOT element (e.g.
   // `<tr class={sig}>`). For those we resolve the node with a single
-  // `getAttribute` + allocation-free id membership check — no `querySelectorAll`,
-  // no `collectComments` walk, no Map. The descendant-attr index and the
+  // `getAttribute` + allocation-free id membership check — no marker walk, no
+  // Map. The descendant-attr index and the
   // text-comment index are built lazily, only if a hole actually needs them.
   // Dense by construction: disposers are PUSHED, never index-assigned, so a
   // skipped hole (the defensive missing-marker `continue` below) leaves no gap
@@ -236,8 +242,11 @@ export function wireRowBindings(
   // For the common single-root-binding row, `rootIds === b.id` resolves the
   // node with zero allocation. Only a row with 2+ root bindings builds the Set.
   let rootIdSet: Set<string> | null = null;
-  let descIndex: Map<string, Element> | null = null;
-  let textMarkers: Map<string, Comment> | null = null;
+  // The descendant-attr and text-comment indexes come from one walk of the
+  // row, made the first time a hole needs either.
+  let markers: Markers | null = null;
+  const rowMarkers = (): Markers =>
+    (markers ??= indexMarkers(rowNode, BIND_ATTR_ROW, ROW_TEXT_PREFIX));
 
   try {
     for (let i = 0; i < bindings.length; i++) {
@@ -256,18 +265,13 @@ export function wireRowBindings(
         if (onRoot) {
           el = rowNode;
         } else {
-          descIndex ??= indexAttrEls(rowNode, BIND_ATTR_ROW);
-          el = descIndex.get(b.id);
+          el = rowMarkers().attrs.get(b.id);
         }
         // Defensive: a registered binding always emits its marker into the row.
         if (el === undefined) continue;
         disposers.push(attachAttrEffect(el, b.attr, b.signal));
       } else {
-        if (textMarkers === null) {
-          textMarkers = new Map();
-          collectComments(rowNode, ROW_TEXT_PREFIX, textMarkers);
-        }
-        const marker = textMarkers.get(b.id);
+        const marker = rowMarkers().texts.get(b.id);
         // Defensive: same invariant as the attr branch.
         if (marker === undefined) continue;
         disposers.push(attachTextEffect(marker, b.signal));
@@ -353,19 +357,18 @@ function wireInto(
   scope: Element,
   bindings: Binding[],
   disposers: Array<() => void>,
+  rows: ReadonlySet<Element> | undefined,
 ): void {
-  const attrEls = indexAttrEls(scope, BIND_ATTR);
-  const textMarkers = new Map<string, Comment>();
-  collectComments(scope, TEXT_MARKER_PREFIX, textMarkers);
+  const markers = indexMarkers(scope, BIND_ATTR, TEXT_MARKER_PREFIX, rows);
 
   for (const b of bindings) {
     if (b.kind === 'attr') {
-      const el = attrEls.get(b.id);
+      const el = markers.attrs.get(b.id);
       /* c8 ignore next -- defensive: a registered binding always emits its marker into `scope`. */
       if (el === undefined) continue;
       disposers.push(attachAttrEffect(el, b.attr, b.signal));
     } else {
-      const marker = textMarkers.get(b.id);
+      const marker = markers.texts.get(b.id);
       /* c8 ignore next -- defensive: same invariant as the attr branch. */
       if (marker === undefined) continue;
       disposers.push(attachTextEffect(marker, b.signal));
@@ -374,22 +377,40 @@ function wireInto(
 }
 
 /**
- * Index every DESCENDANT element under `scope` carrying `attrName` by binding
- * id. Callers that also need the scope root itself check it separately (row
- * roots via the `rootIds` fast path; global holes are never on the mount root).
+ * One walk that indexes, by binding id, the DESCENDANT elements of `node`
+ * carrying `attrName` and the comment markers starting with `textPrefix`,
+ * stepping over overlay host slots (another mount's markers) and `skip` (the
+ * bound rows, when wiring the global scope: rows carry only row-scope
+ * markers). Hand-rolled because happy-dom's `TreeWalker` does not surface
+ * comment nodes; the attribute index rides along on the same walk.
  */
-function indexAttrEls(scope: Element, attrName: string): Map<string, Element> {
-  const map = new Map<string, Element>();
-  // Skip another mount's markers inside an overlay host slot below `scope`.
-  // One lookup decides whether any slot exists, so the common case pays no
-  // per-element walk.
-  const hasHost = scope.querySelector(OVERLAY_HOST_SELECTOR);
-  for (const el of scope.querySelectorAll(`[${attrName}]`)) {
-    if (hasHost && scope.contains(el.closest(OVERLAY_HOST_SELECTOR))) continue;
-    for (const id of (el.getAttribute(attrName) as string).split(','))
-      map.set(id, el);
+function indexMarkers(
+  node: Node,
+  attrName: string,
+  textPrefix: string,
+  skip?: ReadonlySet<Element>,
+  out: Markers = { attrs: new Map(), texts: new Map() },
+): Markers {
+  for (let c: Node | null = node.firstChild; c !== null; c = c.nextSibling) {
+    if (c.nodeType === Node.COMMENT_NODE) {
+      const data = (c as Comment).data;
+      if (data.startsWith(textPrefix))
+        out.texts.set(data.slice(textPrefix.length), c as Comment);
+    } else if (c.nodeType === Node.ELEMENT_NODE) {
+      const el = c as Element;
+      if (skip?.has(el) || isOverlayHost(el)) continue;
+      const ids = el.getAttribute(attrName);
+      if (ids !== null) for (const id of ids.split(',')) out.attrs.set(id, el);
+      indexMarkers(el, attrName, textPrefix, skip, out);
+    }
   }
-  return map;
+  return out;
+}
+
+/** Binding markers under a scope, by binding id. */
+interface Markers {
+  attrs: Map<string, Element>;
+  texts: Map<string, Comment>;
 }
 
 /** Attach a fine-grained attribute effect; returns its disposer. */
@@ -517,30 +538,6 @@ function isSafeHtmlValue(v: unknown): v is { __html: string } {
 function coerceText(value: unknown): string {
   if (value == null || typeof value === 'boolean') return '';
   return String(value);
-}
-
-/**
- * Collect comment markers with the given prefix under `node`, keyed by id.
- * Hand-rolled recursion (same as `mount.ts`'s comment walker) because
- * happy-dom's `TreeWalker` does not surface comment nodes.
- */
-function collectComments(
-  node: Node,
-  prefix: string,
-  out: Map<string, Comment>,
-): void {
-  for (let c: Node | null = node.firstChild; c !== null; c = c.nextSibling) {
-    if (c.nodeType === Node.COMMENT_NODE) {
-      const data = (c as Comment).data;
-      if (data.startsWith(prefix))
-        out.set(data.slice(prefix.length), c as Comment);
-    } else if (
-      c.nodeType === Node.ELEMENT_NODE &&
-      !isOverlayHost(c as Element) // another mount's markers live there
-    ) {
-      collectComments(c, prefix, out);
-    }
-  }
 }
 
 // Re-exported so the JSX runtime imports signal-detection + binding

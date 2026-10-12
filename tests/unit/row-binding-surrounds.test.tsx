@@ -129,3 +129,104 @@ describe('KF-380 interaction matrix: row-scoped bindings × surrounds morph', ()
     dispose();
   });
 });
+
+describe('global bindings beside keyed rows after a surrounds-changed render', () => {
+  // The global marker search steps over bound rows (they only ever carry
+  // row-scope markers). These walk the shapes that would break if it skipped
+  // too much — markers before, between, and after the rows, in the rows'
+  // own container — or too little: an overlay host slot holding another
+  // mount's identically-numbered markers.
+  it('re-wires attribute and text holes before, after, and around the rows', () => {
+    const tone = signal('cool');
+    const label = signal('a');
+    const tail = signal('x');
+    const pane = signal(0);
+    const rowTone = signal('r');
+    const lines = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const dispose = mount(root, () => (
+      <main class={tone}>
+        <aside>
+          <p>Pane {String(pane.value)}</p>
+          <b>{label}</b>
+        </aside>
+        <ul>
+          <li class="head">{label}</li>
+          {each(
+            lines,
+            (line) => (
+              <li data-key={String(line.id)} class={rowTone}>
+                r{String(line.id)}
+              </li>
+            ),
+            { key: 'lines' },
+          )}
+          <li class="tail" data-tail={tail}>
+            end
+          </li>
+        </ul>
+      </main>
+    ));
+    const rows = Array.from(root.querySelectorAll('li[data-key]'));
+    for (let n = 1; n <= 3; n++) {
+      pane.value = n; // surrounds change → global holes re-wired
+      tone.value = `t${n}`;
+      label.value = `l${n}`;
+      tail.value = `x${n}`;
+      rowTone.value = `r${n}`;
+      expect(root.querySelector('main')!.className).toBe(`t${n}`);
+      expect(root.querySelector('aside b')!.textContent).toBe(`l${n}`);
+      expect(root.querySelector('.head')!.textContent).toBe(`l${n}`);
+      expect(root.querySelector('.tail')!.getAttribute('data-tail')).toBe(
+        `x${n}`,
+      );
+      expect(rows.map((r) => r.className)).toEqual([`r${n}`, `r${n}`, `r${n}`]);
+    }
+    expect(Array.from(root.querySelectorAll('li[data-key]'))).toEqual(rows);
+    dispose();
+  });
+
+  // The search steps over the slot whether or not there are rows to skip.
+  it.each([
+    ['with', 2],
+    ['without', 0],
+  ])(
+    "does not take an overlay host slot's markers for its own, %s rows",
+    (_, count) => {
+      const outer = signal('outer-a');
+      const inner = signal('inner-a');
+      const pane = signal(0);
+      const lines = Array.from({ length: count }, (_, k) => ({ id: k + 1 }));
+      const dispose = mount(root, () => (
+        <main>
+          <p>Pane {String(pane.value)}</p>
+          {/* Before the slot: a later same-id marker inside it would win. */}
+          <span class={outer}>o</span>
+          <div data-kerf-overlay-host data-morph-skip />
+          <ul>
+            {each(
+              lines,
+              (line) => (
+                <li data-key={String(line.id)}>{String(line.id)}</li>
+              ),
+              { key: 'lines' },
+            )}
+          </ul>
+        </main>
+      ));
+      const slot = root.querySelector(
+        '[data-kerf-overlay-host]',
+      ) as HTMLElement;
+      // A surface mounted inside the slot numbers its global holes from zero too.
+      const surface = document.createElement('div');
+      slot.appendChild(surface);
+      const disposeInner = mount(surface, () => <span class={inner}>i</span>);
+      pane.value = 1; // outer surrounds change → outer re-wires
+      outer.value = 'outer-b';
+      inner.value = 'inner-b';
+      expect(root.querySelector('main > span')!.className).toBe('outer-b');
+      expect(slot.querySelector('span')!.className).toBe('inner-b');
+      disposeInner();
+      dispose();
+    },
+  );
+});

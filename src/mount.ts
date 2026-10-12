@@ -224,6 +224,12 @@ export function mount(
   // Per-mount one-shot context for the opt-in value-only-re-render warning.
   const valueOnlyWarnCtx: WarnOnceContext = { warned: false };
 
+  /** The bound `each()` rows, for the global binding wiring to step over. */
+  const boundRows = (): ReadonlySet<Element> | undefined =>
+    bindingCtx.list.length > 0 && bindings.size > 0
+      ? collectOwnedItems(bindings)
+      : undefined;
+
   /** One pass of the user's render function with both collection contexts fresh. */
   const runRenderPass = (): MountResult => {
     renderCtx.counter = 0;
@@ -286,7 +292,12 @@ export function mount(
       // (KERF_DEV_WARN_PARSER_REPAIR). First render only: the shape is a
       // property of the markup, not of any particular update.
       devHooks.parserRepair?.(prevStaticHtml);
-      bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
+      bindingDisposers = wireBindings(
+        rootEl,
+        bindingCtx,
+        bindingDisposers,
+        boundRows(),
+      );
       if (devHooks.staleBindingEnabled?.()) prevWiredBindings = bindingCtx.list;
       isFirst = false;
     } else {
@@ -343,7 +354,12 @@ export function mount(
       // §2.9). Re-wiring here would need fast-path text-node reuse to avoid
       // duplicating inserted text nodes, so it's not worth it for an anti-pattern.
       if (nextStaticHtml !== prevStaticHtml) {
-        bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
+        bindingDisposers = wireBindings(
+          rootEl,
+          bindingCtx,
+          bindingDisposers,
+          boundRows(),
+        );
         if (devHooks.staleBindingEnabled?.())
           prevWiredBindings = bindingCtx.list;
       } else {
