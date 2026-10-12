@@ -22,6 +22,22 @@ Native table cells (`th`, `td`) and form controls (`button`, `input`, `select`,
 zero-specificity selectors. Table headers keep their native bold weight and
 alignment, and application styles can override the baseline.
 
+Native controls also get semantic cursors, again at zero specificity so a
+component's or application's own cursor wins:
+
+- `pointer` on enabled `button`, `a[href]`, `[role="button"]` (unless
+  `aria-disabled="true"`), `summary`, `select`, checkbox / radio / color /
+  file / button / reset / submit inputs, and a `label` wrapping an enabled
+  checkbox or radio;
+- `not-allowed` on disabled `button`, `input`, `select`, and `textarea`, on
+  `[role="button"][aria-disabled="true"]`, and on a disabled `wa-button`'s
+  `base` part (Web Awesome leaves a pointer there);
+- `text` on enabled `textarea` and text-like inputs (`text`, `search`,
+  `email`, `url`, `tel`, `password`, `number`, and untyped).
+
+Applications no longer need their own global cursor policy for native
+controls.
+
 `html`, `body`, and `.kui-app-root` form a definite `height: 100%` chain. Add
 `.kui-app-root` to the one direct mount container of a full-height application
 whose child is a `Workbench`, `SplitView`, `NavStack`, or another percentage-

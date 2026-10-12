@@ -206,8 +206,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `.kui-content` for 24px major vertical rhythm.
 - **Opt into document globals explicitly.** Import `@kerfjs/ui/document.css`
   once for border-box sizing, token-backed body/link presentation, inherited
-  native table-cell and form-control font metrics, and zero body
-  margin. Put `.kui-app-root` on the one direct mount container only when a
+  native table-cell and form-control font metrics, zero body margin, and
+  zero-specificity semantic cursors for native controls (pointer, not-allowed
+  when disabled, text on text inputs). Put `.kui-app-root` on the one direct mount container only when a
   percentage-height shell needs the provided `html` → `body` → app-root height
   chain. The baseline is not part of `styles.css` or component browser imports.
 - **Use compact layout options where needed.** `Text flush lineHeight="tight"`

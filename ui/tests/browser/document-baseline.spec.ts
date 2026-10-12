@@ -165,3 +165,72 @@ test('native table cells and controls inherit document typography', async ({
     });
   }
 });
+
+test('native controls get semantic cursors that components can override', async ({
+  page,
+}) => {
+  await page.goto('/?component=document-baseline');
+  await page.waitForFunction(() => customElements.get('wa-button'));
+  const cursors = await page.evaluate(async () => {
+    const fixture = document.createElement('section');
+    fixture.innerHTML = `
+      <button type="button" data-c="button">Apply</button>
+      <button type="button" disabled data-c="button-disabled">Off</button>
+      <a href="#x" data-c="link">Link</a>
+      <a data-c="anchor-no-href">Plain</a>
+      <span role="button" tabindex="0" data-c="role-button">Role</span>
+      <span role="button" aria-disabled="true" data-c="role-disabled">Off</span>
+      <input type="checkbox" data-c="checkbox" />
+      <input type="radio" data-c="radio" />
+      <input type="submit" data-c="submit" />
+      <input type="checkbox" disabled data-c="checkbox-disabled" />
+      <label data-c="checkbox-label"><input type="checkbox" /> Label</label>
+      <input data-c="text" />
+      <input type="search" data-c="search" />
+      <input disabled data-c="text-disabled" />
+      <textarea data-c="textarea"></textarea>
+      <select data-c="select"><option>A</option></select>
+      <button type="button" style="cursor:grab" data-c="override">Grab</button>
+      <wa-button disabled data-c="wa-disabled">Off</wa-button>
+      <wa-button data-c="wa-enabled">On</wa-button>`;
+    document.body.append(fixture);
+    await Promise.all(
+      [...fixture.querySelectorAll('wa-button')].map(
+        (button) =>
+          (button as HTMLElement & { updateComplete: Promise<unknown> })
+            .updateComplete,
+      ),
+    );
+    const result: Record<string, string> = {};
+    for (const element of fixture.querySelectorAll<HTMLElement>('[data-c]')) {
+      const target =
+        element.localName === 'wa-button'
+          ? element.shadowRoot!.querySelector('[part~="base"]')!
+          : element;
+      result[element.dataset.c!] = globalThis.getComputedStyle(target).cursor;
+    }
+    fixture.remove();
+    return result;
+  });
+  expect(cursors).toEqual({
+    button: 'pointer',
+    'button-disabled': 'not-allowed',
+    link: 'pointer',
+    'anchor-no-href': 'auto',
+    'role-button': 'pointer',
+    'role-disabled': 'not-allowed',
+    checkbox: 'pointer',
+    radio: 'pointer',
+    submit: 'pointer',
+    'checkbox-disabled': 'not-allowed',
+    'checkbox-label': 'pointer',
+    text: 'text',
+    search: 'text',
+    'text-disabled': 'not-allowed',
+    textarea: 'text',
+    select: 'pointer',
+    override: 'grab',
+    'wa-disabled': 'not-allowed',
+    'wa-enabled': 'pointer',
+  });
+});

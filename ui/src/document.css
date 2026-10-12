@@ -31,3 +31,56 @@ body {
 :where(a) {
   color: var(--kui-color-text-link);
 }
+
+/* Semantic cursors for native controls, which browsers draw with the default
+   arrow. Zero specificity keeps component and application cursors in charge. */
+:where(
+  button:enabled,
+  a[href],
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  label:has(> input:is([type="checkbox"], [type="radio"]):enabled),
+  select:enabled,
+  input:is(
+      [type="button"],
+      [type="checkbox"],
+      [type="color"],
+      [type="file"],
+      [type="radio"],
+      [type="reset"],
+      [type="submit"]
+    ):enabled
+) {
+  cursor: pointer;
+}
+
+:where(
+  button:disabled,
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  [role="button"][aria-disabled="true"]
+) {
+  cursor: not-allowed;
+}
+
+:where(
+  textarea:enabled,
+  input:is(
+      :not([type]),
+      [type="email"],
+      [type="number"],
+      [type="password"],
+      [type="search"],
+      [type="tel"],
+      [type="text"],
+      [type="url"]
+    ):enabled
+) {
+  cursor: text;
+}
+
+/* Web Awesome keeps a pointer on a disabled button's base part. */
+:where(wa-button[disabled])::part(base) {
+  cursor: not-allowed;
+}

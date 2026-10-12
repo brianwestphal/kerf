@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:document-baseline` · Kerf UI · CSS composition · Foundation
 
-Opt-in document-level defaults: border-box sizing, body margin/font/surface, native table-cell and form-control font metrics, link color, and the html → body → .kui-app-root full-height chain.
+Opt-in document-level defaults: border-box sizing, body margin/font/surface, native table-cell and form-control font metrics, semantic control cursors, link color, and the html → body → .kui-app-root full-height chain.
 
 ## When to use
 
@@ -57,6 +57,7 @@ Margin: none · border: none · padding: none (layout role: foundation). `self` 
 ## Accessibility
 
 - Links keep the semantic link color at zero specificity so application focus and link styles still apply.
+- Native controls get semantic cursors at zero specificity: pointer on enabled buttons, links, role=button, checkbox/radio/button-type inputs, selects, and checkbox/radio labels; not-allowed on disabled controls, aria-disabled role=button, and a disabled wa-button's base part; text on text-like inputs and textareas.
 
 ## Styling boundary
 

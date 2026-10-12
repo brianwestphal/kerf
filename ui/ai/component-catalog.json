@@ -482,7 +482,7 @@
       "category": "Foundation",
       "kind": "composition",
       "source": "kerf",
-      "description": "Opt-in document-level defaults: border-box sizing, body margin/font/surface, native table-cell and form-control font metrics, link color, and the html → body → .kui-app-root full-height chain.",
+      "description": "Opt-in document-level defaults: border-box sizing, body margin/font/surface, native table-cell and form-control font metrics, semantic control cursors, link color, and the html → body → .kui-app-root full-height chain.",
       "uses": [],
       "purpose": "Let an application opt into Kerf UI-owned document defaults and a definite full-height chain for a percentage-height application shell.",
       "publicExports": [],
@@ -510,7 +510,8 @@
         "full-height application root"
       ],
       "accessibility": [
-        "Links keep the semantic link color at zero specificity so application focus and link styles still apply."
+        "Links keep the semantic link color at zero specificity so application focus and link styles still apply.",
+        "Native controls get semantic cursors at zero specificity: pointer on enabled buttons, links, role=button, checkbox/radio/button-type inputs, selects, and checkbox/radio labels; not-allowed on disabled controls, aria-disabled role=button, and a disabled wa-button's base part; text on text-like inputs and textareas."
       ],
       "geometry": {
         "margin": "none",
