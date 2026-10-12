@@ -1041,3 +1041,54 @@ test('selection metadata requires decisions and a configured output', () => {
     );
   });
 });
+
+test('passes zone jsx.prop through and rejects a prop that fills two zones', () => {
+  withScaffold(({ target }) => {
+    const value = metadata(target);
+    const zone = (id, prop) => ({
+      id,
+      ...(prop ? { jsx: { prop } } : {}),
+      accepts: ['content'],
+      cardinality: { min: 0, max: 'unbounded' },
+      exclusiveWith: [],
+    });
+    value.components[0].composition.zones = [
+      zone('header', 'header'),
+      zone('body', 'children'),
+      zone('decoration'),
+    ];
+    writeMetadata(target, value);
+    const [result] = generateCatalogs(target);
+    assert.deepEqual(
+      result.catalog.entries[0].zones.map((item) => item.jsx),
+      [{ prop: 'header' }, { prop: 'children' }, undefined],
+    );
+    assert.deepEqual(validateComposition(result.catalog), []);
+
+    value.components[0].composition.zones[2] = zone('decoration', 'header');
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      'composition.zones.decoration.jsx.prop: header already fills another zone',
+    );
+
+    value.components[0].composition.zones[2] = {
+      ...zone('decoration'),
+      jsx: { prop: '' },
+    };
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.components[0].composition.zones[2].jsx.prop: expected at least 1 character(s)',
+    );
+    value.components[0].composition.zones[2] = {
+      ...zone('decoration'),
+      jsx: { prop: 'footer', slot: 'end' },
+    };
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.components[0].composition.zones[2].jsx.slot: additional property is not allowed',
+    );
+  });
+});

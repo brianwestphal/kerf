@@ -335,7 +335,10 @@ responsive behavior, margin/border/padding ownership, public classes and
 tokens, accessibility obligations, and source/provenance links. A component
 whose wiring helper writes runtime `data-*` state may also declare it under the
 optional `composition.wiring.stateAttributes` (`{ name, on, helper, meaning }`),
-so tools can tell those wiring-owned attributes from app-authored ones. The
+so tools can tell those wiring-owned attributes from app-authored ones. A zone
+filled by a JSX prop names it with the optional `jsx: { prop }` (`children` for
+the default slot; unique per component), which the generated catalog keeps so
+`ui-composition` can map a prop's value to its zone. The
 generator does not inspect screenshots or CSS to guess those decisions. Missing decisions,
 missing source files, stale named exports, duplicate ids, and stale generated
 output produce path-specific errors. Both author metadata and generated output

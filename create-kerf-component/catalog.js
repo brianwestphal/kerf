@@ -339,11 +339,20 @@ function validateComposition(component, at, diagnostics) {
   if (!Array.isArray(composition.zones))
     diagnostics.push(`${at}.composition.zones: expected an array`);
   const zoneIds = new Set();
+  const zoneProps = new Set();
   for (const zone of composition.zones ?? []) {
     const zoneAt = `${at}.composition.zones.${zone?.id ?? '<unknown>'}`;
     if (!zone?.id || zoneIds.has(zone.id))
       diagnostics.push(`${zoneAt}.id: expected a unique non-empty id`);
     zoneIds.add(zone?.id);
+    const prop = zone?.jsx?.prop;
+    if (prop !== undefined) {
+      if (zoneProps.has(prop))
+        diagnostics.push(
+          `${zoneAt}.jsx.prop: ${prop} already fills another zone`,
+        );
+      zoneProps.add(prop);
+    }
     validateStringList(zone?.accepts, `${zoneAt}.accepts`, diagnostics, {
       nonempty: true,
     });

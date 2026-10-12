@@ -58,6 +58,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`kerf.components.json` zones can name their JSX prop.** A zone may declare `jsx: { prop }` (`children` for the default slot). The prop must be unique per component, and the generated composition catalog keeps it, so `ui-composition` maps a prop's value to its zone exactly as it does for `@kerfjs/ui`'s own catalog (`KF-99Z95S`).
+
 - **Context `PopupMenu` owns its anchor.** A context-mode menu takes an `anchor: { x, y }` prop in viewport pixels and renders the point into its own template, so the point survives re-renders and a menu rebuilt with changed items. Open it with the new `openPopupMenu(menu)`; `openPopupMenuAt` still works for menus without `anchor`. The menu's root is now out of flow (`position: fixed`, 0×0). Previously its 0×0 `inline-block` added a line box in block layout and an extra gap slot in a flex row. Apps no longer need a fixed, 1px, z-indexed wrapper, and no z-index is needed because the open menu is in the top layer (`KF-FXGW0C`).
 
 - **`SplitView` `listWidth`.** Size the fixed list column with a prop instead of a raw token: a number of CSS pixels, or `{ size, maxFraction }` to cap it at that share of the split's own width (`{ size: 432, maxFraction: 0.5 }` is 432px until the split is narrower than 864px). A narrow dialog then always leaves the detail in view. It is validated, and it throws when combined with `resizable`, which already sizes the list. The guide now states, and browser tests pin, that a SplitView fills any container with a definite height: a block box, a fixed-size popover, a flex column below a header, or a grid. Apps do not need a `display: grid` / `minmax(0, 1fr)` wrapper (`KF-7R5NWM`).
