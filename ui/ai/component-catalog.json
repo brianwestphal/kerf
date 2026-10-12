@@ -507,7 +507,8 @@
       ],
       "variants": [
         "document-flow page (no .kui-app-root)",
-        "full-height application root"
+        "full-height application root",
+        "viewport-locked application root (data-viewport=\"locked\" on a body-child .kui-app-root: 100dvh and overflow clip on html, body, and the root)"
       ],
       "accessibility": [
         "Links keep the semantic link color at zero specificity so application focus and link styles still apply.",

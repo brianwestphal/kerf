@@ -22,6 +22,18 @@ body {
   line-height: 1.45;
 }
 
+/* Opt-in viewport lock for a full-viewport application shell: the dynamic
+   viewport height keeps mobile browser toolbars and the on-screen keyboard
+   from leaving the root taller than the visible area, and clipping (not
+   hidden overflow) leaves the document with no scroll container, so only the
+   shell's Panes scroll. The mount container must be a direct child of body. */
+html:has(> body > .kui-app-root[data-viewport="locked"]),
+body:has(> .kui-app-root[data-viewport="locked"]),
+body > .kui-app-root[data-viewport="locked"] {
+  height: 100dvh;
+  overflow: clip;
+}
+
 :where(button, input, select, textarea, th, td) {
   font-family: inherit;
   font-size: inherit;

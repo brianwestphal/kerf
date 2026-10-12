@@ -70,6 +70,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Viewport-locked app root.** In the opt-in `@kerfjs/ui/document.css` baseline, `data-viewport="locked"` on a body-child `.kui-app-root` gives `html`, `body`, and the root `height: 100dvh` and `overflow: clip`. Mobile browser toolbars can then never leave the root taller than the visible area, and the document itself never scrolls; only the shell's panes do. `docs/document-baseline.md` covers the on-screen keyboard (`KF-1XNQYP`).
+
 - **Semantic cursors in `document.css`.** The opt-in `@kerfjs/ui/document.css` baseline now gives native controls semantic cursors with zero specificity: `pointer` on enabled buttons, links, `role="button"`, `summary`, selects, checkbox/radio/button-type inputs, and labels around checkboxes or radios; `not-allowed` on disabled controls, `aria-disabled` role buttons, and a disabled `wa-button`'s `base` part (Web Awesome 3.12 leaves a pointer there); and `text` on text-like inputs and textareas. Components and applications keep their own cursors (`KF-C336VV`).
 
 - **`Badge maxWidth`.** A text `Badge` takes `maxWidth` (a `CssLength`). Longer text truncates with an ellipsis inside a new `kui-badge__label`, the badge may shrink below the cap in a tight row, and string or number content becomes the native `title` tooltip unless `title` is supplied (`KF-0WKZY2`).

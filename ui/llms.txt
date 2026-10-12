@@ -210,7 +210,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   zero-specificity semantic cursors for native controls (pointer, not-allowed
   when disabled, text on text inputs). Put `.kui-app-root` on the one direct mount container only when a
   percentage-height shell needs the provided `html` → `body` → app-root height
-  chain. The baseline is not part of `styles.css` or component browser imports.
+  chain. Add `data-viewport="locked"` to that body-child root for a
+  full-viewport shell whose document never scrolls (`100dvh` and
+  `overflow: clip` on `html`, `body`, and the root). The baseline is not part of `styles.css` or component browser imports.
 - **Use compact layout options where needed.** `Text flush lineHeight="tight"`
   fits short dialog copy, and `Text align="center"` centers wrapping status
   copy; `ValueTable density="compact"` reduces row spacing,

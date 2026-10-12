@@ -48,6 +48,41 @@ The class sets `height: 100%`, not a viewport minimum; the direct child shell
 must also fill its parent (for example with its `fill` prop). If the host page
 already supplies a definite height, use that host geometry instead.
 
+### Viewport-locked application shell
+
+A shell that fills the whole window (a `Workbench` app such as Hot Sheet) can
+also lock the document to the viewport:
+
+```html
+<body>
+  <div id="app" class="kui-app-root" data-viewport="locked"></div>
+</body>
+```
+
+With `data-viewport="locked"` on a `.kui-app-root` that is a direct child of
+`body`, `html`, `body`, and the root take `height: 100dvh` and
+`overflow: clip`:
+
+- The **dynamic** viewport height tracks the visible area as mobile browser
+  toolbars show and hide (iOS Safari, WKWebView), so the root is never taller
+  than what the person can see.
+- `overflow: clip` (rather than `hidden`) leaves the document with no scroll
+  container at all. Neither the person, nor `scrollIntoView()`, nor focus can
+  leave the page scrolled: only the shell's `Pane`s scroll.
+
+**On-screen keyboard.** `100dvh` does not shrink for the on-screen keyboard.
+When a field near the bottom takes focus, iOS pans the _visual_ viewport to
+reveal it and pans back when the keyboard closes; because the document itself
+cannot scroll, there is no leftover document offset to restore. A field
+inside a scrolling `Pane` is revealed by that Pane's own scroll. If the
+layout should instead shrink above the keyboard, add
+`interactive-widget=resizes-content` to the viewport meta tag on engines
+that support it. Do not add scroll-restoration handlers for the document:
+the locked document has no scroll position.
+
+Leave the attribute off for document-flow pages and embedded shells; the
+default `height: 100%` chain keeps those scrolling normally.
+
 `kui-app-root` is the public class of the component catalog's
 `document-baseline` entry, so `kerf-ui-doctor` and the
 `kerfjs/ui-public-boundaries` ESLint rule accept it (no KUI-L101 finding).

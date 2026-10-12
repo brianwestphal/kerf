@@ -35,6 +35,7 @@ No props: this entry has no JavaScript API.
 
 - document-flow page (no .kui-app-root)
 - full-height application root
+- viewport-locked application root (data-viewport="locked" on a body-child .kui-app-root: 100dvh and overflow clip on html, body, and the root)
 
 ## Composition
 

@@ -234,3 +234,51 @@ test('native controls get semantic cursors that components can override', async 
     'wa-enabled': 'pointer',
   });
 });
+
+test('data-viewport="locked" pins the app root to the dynamic viewport and clips the document', async ({
+  page,
+}) => {
+  await page.goto('/?component=workbench');
+  for (const [width, height] of [
+    [1100, 900],
+    [390, 844],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    const result = await page.evaluate(() => {
+      const root = document.querySelector<HTMLElement>('#app')!;
+      const read = () => {
+        const html = globalThis.getComputedStyle(document.documentElement);
+        const body = globalThis.getComputedStyle(document.body);
+        const app = globalThis.getComputedStyle(root);
+        return {
+          parentIsBody: root.parentElement === document.body,
+          overflow: [html.overflow, body.overflow, app.overflow],
+          height: [html.height, body.height, app.height],
+        };
+      };
+      const before = read();
+      root.dataset.viewport = 'locked';
+      // Content taller than the viewport must not make the document scroll.
+      const tall = document.createElement('div');
+      tall.style.height = '3000px';
+      tall.dataset.lockProbe = '';
+      document.body.append(tall);
+      globalThis.scrollTo(0, 1000);
+      return { before, after: { ...read(), scrollY: globalThis.scrollY } };
+    });
+    await page.screenshot({
+      path: `test-results/document-viewport-locked-${width}.png`,
+    });
+    await page.evaluate(() => {
+      document.querySelector('[data-lock-probe]')!.remove();
+      delete document.querySelector<HTMLElement>('#app')!.dataset.viewport;
+    });
+    expect(result.before.overflow).not.toContain('clip');
+    expect(result.after).toEqual({
+      parentIsBody: true,
+      overflow: ['clip', 'clip', 'clip'],
+      height: [`${height}px`, `${height}px`, `${height}px`],
+      scrollY: 0,
+    });
+  }
+});
