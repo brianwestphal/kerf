@@ -104,8 +104,14 @@
   height: var(--_kui-popup-row-icon-size);
 }
 
+/* A context menu takes no space where it is rendered: out of flow, it adds no
+   line box in block layout and no gap slot in a flex or grid container. Its
+   fixed anchor opens the menu at the recorded viewport point. */
 .kui-popup-menu[data-trigger="context"] {
-  display: inline-block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
   width: 0;
   height: 0;
 }

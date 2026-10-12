@@ -762,3 +762,45 @@ test('context menu and nested commands stay within each viewport corner', async 
     }
   }
 });
+
+test('a context PopupMenu renders its anchor point and takes no layout space', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 800 });
+  await page.goto('/?component=popup-menu');
+  const context = page.locator('[data-popup-context-menu]');
+  const row = page.locator('[data-popup-menu-context-target]');
+  // Out of flow: no line box in block layout, no gap slot in flex or grid.
+  expect(
+    await context.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return {
+        position: window.getComputedStyle(element).position,
+        width: box.width,
+        height: box.height,
+      };
+    }),
+  ).toEqual({ position: 'fixed', width: 0, height: 0 });
+  await row.click({ button: 'right', position: { x: 30, y: 10 } });
+  await expect(context).toHaveAttribute('open', '');
+  const rowBox = (await row.boundingBox())!;
+  // The point lives in the rendered template, not only in imperative style,
+  // so a re-render or replacement of the menu keeps it.
+  const style = await context.getAttribute('style');
+  const [x, y] = [
+    /--kui-popup-menu-context-x:\s*([\d.]+)px/.exec(style ?? '')?.[1],
+    /--kui-popup-menu-context-y:\s*([\d.]+)px/.exec(style ?? '')?.[1],
+  ].map(Number);
+  expect(Math.abs(x - (rowBox.x + 30))).toBeLessThanOrEqual(2);
+  expect(Math.abs(y - (rowBox.y + 10))).toBeLessThanOrEqual(2);
+  // The menu panel opens at the point.
+  const panel = (await context
+    .getByRole('menuitem', { name: 'Open' })
+    .boundingBox())!;
+  expect(panel.x).toBeGreaterThanOrEqual(x - 16);
+  expect(panel.x).toBeLessThanOrEqual(x + 32);
+  expect(panel.y).toBeGreaterThanOrEqual(y - 4);
+  expect(panel.y).toBeLessThanOrEqual(y + 48);
+  await page.keyboard.press('Escape');
+  await expect(context).not.toHaveAttribute('open', '');
+});

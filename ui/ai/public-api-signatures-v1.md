@@ -501,11 +501,23 @@ type PopupMenuTriggerName = {
      */
     label: string;
 };
+/** A context PopupMenu's viewport anchor point. */
+interface PopupMenuAnchor {
+    x: number;
+    y: number;
+}
 type PopupMenuTrigger = (PopupMenuTriggerName & {
     context?: false;
+    anchor?: never;
 }) | {
     context: true;
     label: string;
+    /**
+     * The viewport point (CSS pixels, as in `MouseEvent.clientX/Y`) the
+     * menu opens from. Rendered into the menu itself, so it survives
+     * re-renders and replacement; open it with `openPopupMenu`.
+     */
+    anchor?: PopupMenuAnchor;
     text?: never;
     icon?: never;
     caret?: never;
@@ -531,6 +543,11 @@ type PopupMenuElement = HTMLElement & {
 };
 /** Open a context PopupMenu at viewport pointer coordinates. */
 declare function openPopupMenuAt(menu: PopupMenuElement, x: number, y: number): void;
+/**
+ * Open a context PopupMenu at the `anchor` it was rendered with (or the
+ * point a previous `openPopupMenuAt` set).
+ */
+declare function openPopupMenu(menu: PopupMenuElement): void;
 /** Close a programmatically opened PopupMenu. */
 declare function closePopupMenu(menu: PopupMenuElement): void;
 /**
@@ -542,9 +559,9 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  * the Web Awesome elements. At viewport widths up to 480px, submenus appear
  * above or below their parent menu so their rows do not cover the parent list.
  */
-declare function PopupMenu({ text, label, icon, items, placement, caret, disabled, rootAttributes, slot, context, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu({ text, label, icon, items, placement, caret, disabled, rootAttributes, slot, context, anchor, }: PopupMenuProps): SafeHtml;
 
-export { PopupMenu, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, closePopupMenu, openPopupMenuAt };
+export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, closePopupMenu, openPopupMenu, openPopupMenuAt };
 ```
 
 ## `@kerfjs/ui/list-header`

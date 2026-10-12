@@ -5,8 +5,10 @@ export {
 } from './components/actions/floating-toolbar/floating-toolbar.js';
 export {
   closePopupMenu,
+  openPopupMenu,
   openPopupMenuAt,
   PopupMenu,
+  type PopupMenuAnchor,
   type PopupMenuDivider,
   type PopupMenuElement,
   type PopupMenuEntry,

@@ -605,11 +605,18 @@ Commands still dispatch their own `data-action` once on pointer and keyboard
 selection.
 
 For a row opened by right-click, render `PopupMenu` with `context`, `label`,
-and a stable root `data-*` marker. Its trigger is an invisible anchor removed
-from the accessibility tree; a separate visible button may stay disabled. In
-the app's `contextmenu` handler, find that root, call `openPopupMenuAt` with
-the menu and `event.clientX` / `event.clientY`, and prevent the browser
-menu. Call `closePopupMenu` for programmatic dismissal. The pointer anchor
+`anchor`, and a stable root `data-*` marker. Its trigger is an invisible anchor
+removed from the accessibility tree; a separate visible button may stay
+disabled. The menu owns its anchor host: it renders out of flow with no layout
+footprint (no line box, no gap slot), so render it anywhere in the surface it
+belongs to — never inside an app wrapper with `position: fixed`, a 1px size,
+or a `z-index` (the open menu is in the browser top layer). In the app's
+`contextmenu` handler, prevent the browser menu, store
+`{ x: event.clientX, y: event.clientY }` in the signal the menu renders as
+`anchor`, and call `openPopupMenu` with the menu. Because the point is part of the
+menu's own template, it survives re-renders and a rebuilt menu, so the app
+never re-applies it. `openPopupMenuAt` still opens a menu rendered without `anchor` at a given
+point. Call `closePopupMenu` for programmatic dismissal. The pointer anchor
 retains Web Awesome's collision placement, focus management, submenu keyboard
 navigation, and outside/Escape dismissal.
 

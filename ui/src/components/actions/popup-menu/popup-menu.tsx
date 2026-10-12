@@ -73,11 +73,23 @@ type PopupMenuTriggerName =
       label: string;
     };
 
+/** A context PopupMenu's viewport anchor point. */
+export interface PopupMenuAnchor {
+  x: number;
+  y: number;
+}
+
 type PopupMenuTrigger =
-  | (PopupMenuTriggerName & { context?: false })
+  | (PopupMenuTriggerName & { context?: false; anchor?: never })
   | {
       context: true;
       label: string;
+      /**
+       * The viewport point (CSS pixels, as in `MouseEvent.clientX/Y`) the
+       * menu opens from. Rendered into the menu itself, so it survives
+       * re-renders and replacement; open it with `openPopupMenu`.
+       */
+      anchor?: PopupMenuAnchor;
       text?: never;
       icon?: never;
       caret?: never;
@@ -157,6 +169,14 @@ export function openPopupMenuAt(
   menu.open = true;
 }
 
+/**
+ * Open a context PopupMenu at the `anchor` it was rendered with (or the
+ * point a previous `openPopupMenuAt` set).
+ */
+export function openPopupMenu(menu: PopupMenuElement): void {
+  menu.open = true;
+}
+
 /** Close a programmatically opened PopupMenu. */
 export function closePopupMenu(menu: PopupMenuElement): void {
   menu.open = false;
@@ -233,7 +253,15 @@ export function PopupMenu({
   rootAttributes = {},
   slot,
   context = false,
+  anchor,
 }: PopupMenuProps) {
+  if (
+    anchor !== undefined &&
+    (!context || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y))
+  )
+    throw new RangeError(
+      'PopupMenu anchor requires context mode and finite x and y coordinates',
+    );
   // Web Awesome owns the trigger and item DOM once upgraded, so the morph
   // skips the children; the content key rebuilds the menu when they change.
   // An unchanged menu reuses its cached markup and costs one hash pass.
@@ -272,6 +300,11 @@ export function PopupMenu({
       data-key={key}
       data-morph-skip-children
       data-trigger={context ? 'context' : 'button'}
+      style={
+        anchor
+          ? `--kui-popup-menu-context-x:${anchor.x}px;--kui-popup-menu-context-y:${anchor.y}px`
+          : undefined
+      }
       placement={placement}
       slot={slot}
     >

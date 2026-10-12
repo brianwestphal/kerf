@@ -24,7 +24,7 @@ A typed action menu with nested choices, selected state, and optional pointer-an
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/popup-menu` — exports `PopupMenu`, `openPopupMenuAt`, `closePopupMenu`.
+- JavaScript: `@kerfjs/ui/popup-menu` — exports `PopupMenu`, `openPopupMenu`, `openPopupMenuAt`, `closePopupMenu`.
 - CSS: the browser build of `@kerfjs/ui/popup-menu` pulls its CSS automatically; import `@kerfjs/ui/popup-menu.css` manually only without the `browser` export condition.
 - Theme CSS: import `@kerfjs/ui/webawesome.css` once.
 - Registration: import `@kerfjs/ui/popup-menu/register` once (a side effect).
@@ -45,7 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/popup-menu`](../public-api-signatures-v
 - nested actions
 - checked choices and trailing details
 - danger tone and disabled reasons
-- context trigger
+- context trigger with a rendered anchor point and a zero-footprint anchor host
 - placement
 
 ## Composition

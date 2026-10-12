@@ -15,7 +15,7 @@ import {
   Trash2,
 } from 'lucide';
 
-import { popupSortChoice } from './state.js';
+import { popupContextAnchor, popupSortChoice } from './state.js';
 
 export function PopupMenuDemo() {
   return (
@@ -176,6 +176,7 @@ export function PopupMenuDemo() {
         <PopupMenu
           context
           label="Demand actions"
+          anchor={popupContextAnchor.value}
           rootAttributes={{ 'data-popup-context-menu': '' }}
           items={[
             { label: 'Open', action: 'log-context-open' },

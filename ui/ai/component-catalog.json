@@ -4749,6 +4749,7 @@
       "purpose": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.",
       "publicExports": [
         "PopupMenu",
+        "openPopupMenu",
         "openPopupMenuAt",
         "closePopupMenu"
       ],
@@ -4787,7 +4788,7 @@
         "nested actions",
         "checked choices and trailing details",
         "danger tone and disabled reasons",
-        "context trigger",
+        "context trigger with a rendered anchor point and a zero-footprint anchor host",
         "placement"
       ],
       "usageExamples": [

@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { installPopupMenuKeyboard } from '../../src/components/actions/popup-menu/internal/install-popup-menu-keyboard.js';
 import {
   closePopupMenu,
+  openPopupMenu,
   openPopupMenuAt,
   PopupMenu,
   type PopupMenuElement,
@@ -126,6 +127,65 @@ describe('PopupMenu', () => {
     closePopupMenu(menu);
     expect(menu.open).toBe(false);
   });
+  it('renders a context anchor point that survives re-renders and replacement', () => {
+    const point = signal({ x: 40, y: 60 });
+    const checked = signal(false);
+    const host = document.createElement('div');
+    document.body.append(host);
+    const dispose = mount(host, () =>
+      PopupMenu({
+        context: true,
+        label: 'Ticket actions',
+        anchor: point.value,
+        items: [
+          { label: 'Pin', action: 'pin', checked: checked.value },
+          { label: 'Open', action: 'open' },
+        ],
+      }),
+    );
+    const menu = () =>
+      host.querySelector<PopupMenuElement>('[data-component="popup-menu"]')!;
+    const at = () => [
+      menu().style.getPropertyValue('--kui-popup-menu-context-x'),
+      menu().style.getPropertyValue('--kui-popup-menu-context-y'),
+    ];
+    expect(at()).toEqual(['40px', '60px']);
+    openPopupMenu(menu());
+    expect(menu().open).toBe(true);
+    // A changed item rebuilds the menu under a new content key; the anchor is
+    // part of its template, so the replacement keeps the point.
+    const before = menu();
+    checked.value = true;
+    expect(menu()).not.toBe(before);
+    expect(at()).toEqual(['40px', '60px']);
+    point.value = { x: 300, y: 12.5 };
+    expect(at()).toEqual(['300px', '12.5px']);
+    dispose();
+    host.remove();
+  });
+
+  it('rejects an anchor outside context mode or with non-finite coordinates', () => {
+    const items = [{ label: 'Open', action: 'open' }] as const;
+    for (const anchor of [
+      { x: Number.NaN, y: 0 },
+      { x: 0, y: Number.POSITIVE_INFINITY },
+    ])
+      expect(() =>
+        PopupMenu({ context: true, label: 'Menu', anchor, items }),
+      ).toThrow(RangeError);
+    expect(() =>
+      PopupMenu({
+        text: 'Menu',
+        anchor: { x: 1, y: 1 },
+        items,
+      } as unknown as Parameters<typeof PopupMenu>[0]),
+    ).toThrow(RangeError);
+    // Without an anchor the root renders no style attribute.
+    expect(
+      asHtml(PopupMenu({ context: true, label: 'Menu', items })),
+    ).not.toContain('style=');
+  });
+
   it('renders an icon-only trigger named by its label over typed commands', () => {
     const menu = render(
       asHtml(

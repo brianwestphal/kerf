@@ -404,7 +404,7 @@ Set `LucideIcon.inline` when an icon belongs within `Text` or another sentence; 
 
 For `Select`, mark an unavailable choice with `disabled` and optionally `disabledReason`. In a multiple Select, `selectAllLabel` and `clearLabel` opt in to localized footer actions that select enabled choices or clear the selection through normal input/change events; the app still owns the controlled `value`.
 
-For nested action menus, use `PopupMenuItem.submenu` with item, heading, and divider entries; headings and dividers do not enter keyboard navigation. Items support `checked`, `icon`, `details`, `disabledReason`, and `tone`. The app owns choice state. For a right-click menu, use `PopupMenu` with `context: true` and call `openPopupMenuAt` from the app's `contextmenu` handler; the package positions and opens the menu. Call `closePopupMenu` for programmatic dismissal.
+For nested action menus, use `PopupMenuItem.submenu` with item, heading, and divider entries; headings and dividers do not enter keyboard navigation. Items support `checked`, `icon`, `details`, `disabledReason`, and `tone`. The app owns choice state. For a right-click menu, use `PopupMenu` with `context: true` and `anchor` (a signal holding the pointer's `{ x, y }` client coordinates); the `contextmenu` handler sets that signal and calls `openPopupMenu(menu)`. The menu owns its zero-footprint anchor host and keeps the point across re-renders, so never wrap it in a fixed/1px/z-index anchor element or re-apply the point after a render; `openPopupMenuAt(menu, x, y)` is only for a menu rendered without `anchor`. Call `closePopupMenu` for programmatic dismissal.
 
 ## Select lifecycle ownership
 
