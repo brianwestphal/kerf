@@ -211,7 +211,7 @@ test('every tone keeps AA text contrast on its fills in light and dark', async (
   await page.goto('/?component=state-banner');
   await expect(
     page.locator('[data-demo="state-banner"] [data-component="state-banner"]'),
-  ).toHaveCount(2 * TONES.length + 3);
+  ).toHaveCount(2 * TONES.length + 4);
 
   for (const scheme of ['light', 'dark'] as const) {
     if (scheme === 'dark') {
