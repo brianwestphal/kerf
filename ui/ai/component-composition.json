@@ -2234,8 +2234,8 @@
           "--kui-value-table-border",
           "--kui-value-table-icon-size",
           "--kui-value-table-row-columns",
-          "--kui-value-table-row-padding-block",
-          "--kui-value-table-row-gap"
+          "--kui-value-table-row-gap",
+          "--kui-value-table-row-padding-block"
         ]
       },
       "diagnostics": [],

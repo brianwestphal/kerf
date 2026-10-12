@@ -107,9 +107,11 @@ export {
 } from './components/collections/list-item/list-item.js';
 export {
   ValueTable,
+  type ValueTablePresentation,
   type ValueTableProps,
   ValueTableRow,
   type ValueTableRowProps,
+  type ValueTableStackBelow,
 } from './components/data-display/value-table/value-table.js';
 export {
   type AnchoredSurfaceOptions,

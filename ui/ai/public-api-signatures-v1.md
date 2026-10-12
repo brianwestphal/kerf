@@ -1082,6 +1082,7 @@ export { ContentItem, type ContentItemAppearance, type ContentItemFrame, type Co
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
 
 interface ValueTableRowProps {
     label: string | SafeHtml;
@@ -1095,18 +1096,35 @@ interface ValueTableRowProps {
 }
 declare function ValueTableRow({ label, value, icon, className, placeholder, slot, }: ValueTableRowProps): SafeHtml;
 
+/** `columns` keeps label and value side by side; `stacked` puts each value under its label. */
+type ValueTablePresentation = 'columns' | 'stacked';
+/** Table width below which columns stack: `compact` is 512px, `narrow` 576px. */
+type ValueTableStackBelow = 'compact' | 'narrow';
 interface ValueTableProps {
     label: string;
     /** Compact row spacing for metadata-dense surfaces. */
     density?: 'default' | 'compact';
+    /**
+     * Minimum width of the label column (for example `px(160)`); the value then
+     * takes the rest of the row. Omitted, label and value share the row by
+     * content.
+     */
+    labelWidth?: CssLength;
+    /** Side-by-side columns (default) or values stacked under their labels. */
+    presentation?: ValueTablePresentation;
+    /**
+     * Stack the rows only while the table itself is narrower than the preset,
+     * so one table reads as columns in a wide dialog and stacks on a phone.
+     */
+    stackBelow?: ValueTableStackBelow;
     className?: string;
     children: KerfUiContent;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ValueTable({ label, density, className, children, slot, }: ValueTableProps): kerfjs.SafeHtml;
+declare function ValueTable({ label, density, labelWidth, presentation, stackBelow, className, children, slot, }: ValueTableProps): kerfjs.SafeHtml;
 
-export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProps };
+export { ValueTable, type ValueTablePresentation, type ValueTableProps, ValueTableRow, type ValueTableRowProps, type ValueTableStackBelow };
 ```
 
 ## `@kerfjs/ui/app-tab`

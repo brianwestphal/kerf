@@ -1,8 +1,9 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { px } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
-import { Wrench } from 'lucide';
+import { Server, Wrench } from 'lucide';
 
 export function ValueTableDemo() {
   return (
@@ -32,6 +33,25 @@ export function ValueTableDemo() {
             <ValueTableRow label="Source" value="Procurement brief" />
           </ValueTable>
         </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Label column and stacking"
+        note='labelWidth={px(160)} gives labels a minimum column and the value the rest; stackBelow="compact" puts each value under its label while the table is narrower than 512px.'
+        align="none"
+      >
+        <ValueTable
+          label="Connection details"
+          labelWidth={px(160)}
+          stackBelow="compact"
+        >
+          <ValueTableRow
+            label="Server"
+            value="hotsheet.example.com:4174"
+            icon={<LucideIcon icon={Server} name="server" />}
+          />
+          <ValueTableRow label="Store" value="~/Documents/kerf.hs2" />
+          <ValueTableRow label="Status" value="Connected" />
+        </ValueTable>
       </CatalogExample>
       <CatalogExample
         label="Placeholder"

@@ -105,3 +105,79 @@
   font-weight: var(--kui-font-weight-semibold);
   text-align: end;
 }
+
+/* `labelWidth`: a minimum label column; the value takes the rest of the row
+   (never wider than the row, so a narrow table still fits). */
+.kui-value-table[data-label-width] .kui-value-table__row {
+  grid-template-columns: var(
+    --kui-value-table-row-columns,
+    minmax(min(var(--_kui-value-table-label-min), 100%), auto) minmax(0, 1fr)
+  );
+}
+
+/* Only a table that stacks below a width becomes a size container. Size
+   containment drops its content-based width, so it fills its container's
+   width (inside its own inline margins) instead; a table without
+   `stackBelow` keeps sizing to content in shrink-to-fit contexts. */
+.kui-value-table[data-stack-below] {
+  box-sizing: border-box;
+  width: calc(100% - 2 * var(--kui-layout-inline-margin, remify(8px)));
+  container: kui-value-table / inline-size;
+}
+
+/* Stacked rows: each value sits under its label and starts at the label's
+   text edge (after a leading icon). */
+.kui-value-table[data-presentation="stacked"] .kui-value-table__row {
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--kui-space-2xs);
+}
+.kui-value-table[data-presentation="stacked"] .kui-value-table__row dd {
+  justify-content: flex-start;
+  text-align: start;
+}
+.kui-value-table[data-presentation="stacked"]
+  .kui-value-table__row[data-has-icon="true"]
+  dd {
+  padding-inline-start: calc(
+    var(--_kui-value-table-separator-start) -
+      var(--_kui-value-table-inline-padding)
+  );
+}
+
+@container kui-value-table (max-width: remify(576px)) {
+  .kui-value-table[data-stack-below="narrow"] .kui-value-table__row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--kui-space-2xs);
+  }
+  .kui-value-table[data-stack-below="narrow"] .kui-value-table__row dd {
+    justify-content: flex-start;
+    text-align: start;
+  }
+  .kui-value-table[data-stack-below="narrow"]
+    .kui-value-table__row[data-has-icon="true"]
+    dd {
+    padding-inline-start: calc(
+      var(--_kui-value-table-separator-start) -
+        var(--_kui-value-table-inline-padding)
+    );
+  }
+}
+
+@container kui-value-table (max-width: remify(512px)) {
+  .kui-value-table[data-stack-below="compact"] .kui-value-table__row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--kui-space-2xs);
+  }
+  .kui-value-table[data-stack-below="compact"] .kui-value-table__row dd {
+    justify-content: flex-start;
+    text-align: start;
+  }
+  .kui-value-table[data-stack-below="compact"]
+    .kui-value-table__row[data-has-icon="true"]
+    dd {
+    padding-inline-start: calc(
+      var(--_kui-value-table-separator-start) -
+        var(--_kui-value-table-inline-padding)
+    );
+  }
+}

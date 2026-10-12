@@ -2503,7 +2503,10 @@
         "icon rows",
         "iconless rows",
         "compact density",
-        "placeholder (loading)"
+        "placeholder (loading)",
+        "minimum label column (labelWidth)",
+        "stacked presentation",
+        "stack below a compact or narrow table width"
       ],
       "accessibility": [
         "Name ValueTable with its label; ValueTableRow supplies dt/dd semantics, and row icons stay decorative unless meaning requires an accessible label."
@@ -2540,8 +2543,8 @@
         "--kui-value-table-border",
         "--kui-value-table-icon-size",
         "--kui-value-table-row-columns",
-        "--kui-value-table-row-padding-block",
-        "--kui-value-table-row-gap"
+        "--kui-value-table-row-gap",
+        "--kui-value-table-row-padding-block"
       ],
       "links": {
         "catalogRoute": "?component=value-table",

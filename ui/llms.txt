@@ -540,6 +540,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   glyph already shows its state (an empty or filled star), set
   `data-selected-chrome="none"` on that button, or `selectedChrome="none"` on
   its `ToolbarControlGroup`; never override the group's pressed-button styles.
+- **Lay out a `ValueTable` through its props.** `labelWidth` sets a minimum
+  label column, `presentation="stacked"` puts values under labels, and
+  `stackBelow="compact" | "narrow"` stacks only while the table is narrower
+  than 512px/576px; do not override `--kui-value-table-row-columns`.
 - **Group settings rows in `FramedList`.** For rows of arbitrary content in
   one rounded frame with dividers between them (settings, account cards,
   shortcut lists), compose `FramedListRow`s; `ValueTable` is the same frame for
