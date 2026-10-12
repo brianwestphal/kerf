@@ -335,7 +335,15 @@ responsive behavior, margin/border/padding ownership, public classes and
 tokens, accessibility obligations, and source/provenance links. A component
 whose wiring helper writes runtime `data-*` state may also declare it under the
 optional `composition.wiring.stateAttributes` (`{ name, on, helper, meaning }`),
-so tools can tell those wiring-owned attributes from app-authored ones. A zone
+so tools can tell those wiring-owned attributes from app-authored ones. An
+application-owned helper in `composition.wiring.helpers` declares where it is
+defined under `composition.wiring.sources` (`{ export, source }`, relative to the
+package root); the generator checks the file exports it, and `ui-wiring`
+resolves relative imports of it through that file, so page-root wiring with an
+app helper satisfies `KUI-L401` instead of warning. `composition.wiring.scope`
+(`application`, the default, or `module`) says whether a required helper must
+run anywhere reachable from a profile wiring entry or in the module that renders
+the component. A zone
 filled by a JSX prop names it with the optional `jsx: { prop }` (`children` for
 the default slot; unique per component), which the generated catalog keeps so
 `ui-composition` can map a prop's value to its zone. The

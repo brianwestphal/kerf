@@ -1092,3 +1092,60 @@ test('passes zone jsx.prop through and rejects a prop that fills two zones', () 
     );
   });
 });
+
+test('passes verified wiring sources and scope through to the composition catalog', () => {
+  withScaffold(({ target }) => {
+    const value = metadata(target);
+    const wiring = value.components[0].composition.wiring;
+    wiring.scope = 'module';
+    wiring.sources = [{ export: 'wireCounter', source: 'src/counter.tsx' }];
+    writeMetadata(target, value);
+    const [result] = generateCatalogs(target);
+    assert.equal(result.catalog.entries[0].wiring.scope, 'module');
+    assert.deepEqual(result.catalog.entries[0].wiring.sources, [
+      { export: 'wireCounter', source: 'src/counter.tsx' },
+    ]);
+    assert.deepEqual(validateComposition(result.catalog), []);
+
+    const at = 'composition.wiring.sources';
+    wiring.sources = [{ export: 'wireCounter', source: 'src/missing.ts' }];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      `${at}.wireCounter.source: file does not exist: src/missing.ts`,
+    );
+    wiring.sources = [{ export: 'wireCounter', source: 'src/index.ts' }];
+    writeFileSync(join(target, 'src/index.ts'), 'export const other = 1;\n');
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      `${at}.wireCounter: wireCounter is not exported by src/index.ts`,
+    );
+    wiring.sources = [
+      { export: 'createCounter', source: 'src/counter.tsx' },
+      { export: 'createCounter', source: 'src/counter.tsx' },
+    ];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      `${at}.createCounter: createCounter is not listed in composition.wiring.helpers`,
+    );
+    assertCatalogDiagnostic(
+      target,
+      `${at}.createCounter: declared more than once`,
+    );
+    wiring.sources = [{ export: 'wireCounter' }];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.components[0].composition.wiring.sources[0].source: is required',
+    );
+    delete wiring.sources;
+    wiring.scope = 'page';
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.components[0].composition.wiring.scope: expected one of "application", "module"',
+    );
+  });
+});

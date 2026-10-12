@@ -321,7 +321,7 @@ function validateStringList(value, at, diagnostics, { nonempty = false } = {}) {
     );
 }
 
-function validateComposition(component, at, diagnostics) {
+function validateComposition(component, at, diagnostics, packageRoot) {
   const composition = component.composition ?? {};
   if (!['any', 'root', 'listed'].includes(composition.parents?.mode))
     diagnostics.push(`${at}.composition.parents.mode: invalid parent mode`);
@@ -428,6 +428,26 @@ function validateComposition(component, at, diagnostics) {
     `${at}.composition.wiring.obligations`,
     diagnostics,
   );
+  const helperSourcesSeen = new Set();
+  for (const helperSource of composition.wiring?.sources ?? []) {
+    const sourceAt = `${at}.composition.wiring.sources.${helperSource?.export}`;
+    if (helperSourcesSeen.has(helperSource?.export))
+      diagnostics.push(`${sourceAt}: declared more than once`);
+    helperSourcesSeen.add(helperSource?.export);
+    if (!composition.wiring.helpers?.includes(helperSource?.export))
+      diagnostics.push(
+        `${sourceAt}: ${helperSource?.export} is not listed in composition.wiring.helpers`,
+      );
+    const file = resolve(packageRoot, helperSource?.source ?? '');
+    if (!helperSource?.source || !existsSync(file))
+      diagnostics.push(
+        `${sourceAt}.source: file does not exist: ${helperSource?.source}`,
+      );
+    else if (!exportedNamesFromFile(file).has(helperSource.export))
+      diagnostics.push(
+        `${sourceAt}: ${helperSource.export} is not exported by ${helperSource.source}`,
+      );
+  }
   const stateAttributes = composition.wiring?.stateAttributes;
   if (stateAttributes !== undefined && !Array.isArray(stateAttributes))
     diagnostics.push(
@@ -618,7 +638,7 @@ function validateComponent(
         `${at}.sourceLinks: local source link does not exist: ${link}`,
       );
   }
-  validateComposition(component, at, diagnostics);
+  validateComposition(component, at, diagnostics, packageRoot);
   validateStringList(
     component.boundaries?.publicClasses,
     `${at}.boundaries.publicClasses`,

@@ -307,7 +307,24 @@
           "required": ["required", "helpers", "obligations"],
           "properties": {
             "required": { "type": "boolean" },
+            "scope": {
+              "description": "Where a required helper must run: application (default) anywhere reachable from a profile wiring entry, or module in the module that renders the component.",
+              "enum": ["application", "module"]
+            },
             "helpers": { "$ref": "#/$defs/stringList" },
+            "sources": {
+              "description": "Where each application-owned helper in helpers is defined: its export name and source file relative to the package root. UI lint resolves relative imports of these helpers to verify page-root wiring (KUI-L401).",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["export", "source"],
+                "properties": {
+                  "export": { "type": "string", "minLength": 1 },
+                  "source": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": false
+              }
+            },
             "obligations": { "$ref": "#/$defs/stringList" },
             "stateAttributes": {
               "description": "Optional wiring-owned state attributes: data-* attributes a wiring helper writes at runtime, which the application must not render, remove, or treat as its own state.",

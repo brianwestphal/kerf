@@ -58,6 +58,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`kerf.components.json` declares where app-owned wiring helpers live.** `composition.wiring.sources` lists each application helper's `{ export, source }`. The generator verifies that the helper is in `helpers`, that the file exists, and that the file exports it. `ui-wiring` then resolves the app's relative imports of that helper, so page-root wiring with helpers such as `wireTicketSearchFields` no longer raises `KUI-L401`. `composition.wiring.scope` (`application` or `module`) is now authorable too. Both fields were previously expressible only in a hand-written catalog (`KF-YZE3DP`).
+
 - **`kerf.components.json` zones can name their JSX prop.** A zone may declare `jsx: { prop }` (`children` for the default slot). The prop must be unique per component, and the generated composition catalog keeps it, so `ui-composition` maps a prop's value to its zone exactly as it does for `@kerfjs/ui`'s own catalog (`KF-99Z95S`).
 
 - **Context `PopupMenu` owns its anchor.** A context-mode menu takes an `anchor: { x, y }` prop in viewport pixels and renders the point into its own template, so the point survives re-renders and a menu rebuilt with changed items. Open it with the new `openPopupMenu(menu)`; `openPopupMenuAt` still works for menus without `anchor`. The menu's root is now out of flow (`position: fixed`, 0×0). Previously its 0×0 `inline-block` added a line box in block layout and an extra gap slot in a flex row. Apps no longer need a fixed, 1px, z-indexed wrapper, and no z-index is needed because the open menu is in the top layer (`KF-FXGW0C`).
