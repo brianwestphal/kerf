@@ -125,6 +125,32 @@ span.kui-text[data-wrap="truncate"] {
   line-height: 1.2;
 }
 
+/* Inline alignment. The truncation boxes carry their own direction or flex
+   layout, so each aligns its single line explicitly. */
+.kui-text[data-align="center"] {
+  text-align: center;
+}
+
+.kui-text[data-align="end"] {
+  text-align: end;
+}
+
+.kui-text[data-align="center"] > .kui-text__truncate-start {
+  text-align: center;
+}
+
+.kui-text[data-align="end"] > .kui-text__truncate-start {
+  text-align: right;
+}
+
+.kui-text[data-align="center"] > .kui-text__truncate-middle {
+  justify-content: center;
+}
+
+.kui-text[data-align="end"] > .kui-text__truncate-middle {
+  justify-content: flex-end;
+}
+
 span.kui-text {
   margin: 0;
   border: 0;

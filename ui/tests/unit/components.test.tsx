@@ -1249,6 +1249,15 @@ describe('production UI primitives', () => {
     expect(
       asHtml(Text({ flush: true, lineHeight: 'tight', children: 'Copy' })),
     ).toContain('data-flush="true" data-line-height="tight"');
+    expect(asHtml(Text({ align: 'center', children: 'Status' }))).toContain(
+      'data-align="center"',
+    );
+    expect(asHtml(Text({ align: 'end', children: 'Total' }))).toContain(
+      'data-align="end"',
+    );
+    expect(asHtml(Text({ align: 'start', children: 'Copy' }))).not.toContain(
+      'data-align',
+    );
   });
 
   it('renders nullable and recursively nested semantic children without a Fragment', () => {

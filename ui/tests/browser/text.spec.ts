@@ -273,6 +273,35 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await page.screenshot({ path: 'test-results/text-size-narrow.png' });
 });
 
+test('Text align centers wrapped status copy and end-aligns values', async ({
+  page,
+}) => {
+  await page.goto('/?component=text');
+  const centered = page.locator('[data-demo-copy="align-center"]');
+  const end = page.locator('[data-demo-copy="align-end"]');
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await expect(centered).toHaveCSS('text-align', 'center');
+    await expect(end).toHaveCSS('text-align', 'end');
+    const lines = await centered.evaluate((element) => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const box = element.getBoundingClientRect();
+      return [...range.getClientRects()].map((rect) => ({
+        left: rect.left - box.left,
+        right: box.right - rect.right,
+      }));
+    });
+    expect(lines.length).toBeGreaterThan(1);
+    for (const line of lines)
+      expect(Math.abs(line.left - line.right)).toBeLessThanOrEqual(2);
+  }
+  await centered.scrollIntoViewIfNeeded();
+  await centered
+    .locator('..')
+    .screenshot({ path: 'test-results/text-align-narrow.png' });
+});
+
 test('Text wrap policies keep long copy within the row and cap summaries', async ({
   page,
 }, testInfo) => {

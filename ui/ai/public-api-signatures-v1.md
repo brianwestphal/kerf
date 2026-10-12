@@ -3666,6 +3666,8 @@ type TextFont = 'default' | 'monospace';
 type TextBorder = 'transparent' | 'none';
 type TextLineHeight = 'default' | 'tight';
 type TextWrap = 'normal' | 'anywhere' | 'nowrap' | 'truncate';
+/** Inline alignment of the text's lines, in logical (writing-direction) terms. */
+type TextAlign = 'start' | 'center' | 'end';
 /**
  * Where `wrap="truncate"` places its ellipsis: `end` (default) keeps the
  * start, `start` keeps the tail (branch names, the end of an identifier), and
@@ -3697,6 +3699,8 @@ type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> &
     flush?: boolean;
     /** Use compact leading for short dialog or metadata copy. */
     lineHeight?: TextLineHeight;
+    /** Inline alignment of the lines (default `start`), for centered status copy. */
+    align?: TextAlign;
     children: TextContent;
     class?: string;
     className?: string;
@@ -3736,9 +3740,9 @@ type TextProps = TextCommonProps & ({
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, color, size, font, border, flush, controlMargins, lineHeight, wrap, maxLines, truncate, truncateKeep, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, color, size, font, border, flush, controlMargins, lineHeight, align, wrap, maxLines, truncate, truncateKeep, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
 
-export { FieldLabel, type FieldLabelProps, Sides, Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWrap };
+export { FieldLabel, type FieldLabelProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWrap };
 ```
 
 ## `@kerfjs/ui/framed-list`

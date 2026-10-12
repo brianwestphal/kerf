@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 351900,
-  "measuredLargestJavaScriptGzip": 134869,
-  "measuredTotalJavaScriptGzip": 351803,
+  "totalJavaScriptGzip": 352000,
+  "measuredLargestJavaScriptGzip": 135025,
+  "measuredTotalJavaScriptGzip": 351957,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3683,6 +3683,22 @@
         "measuredTotalJavaScriptGzip": 351803,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 351900
+      }
+    },
+    {
+      "at": "2026-10-12T22:15:01.345Z",
+      "reason": "Text align prop plus its centered-status catalog example (KF-MMAWEG)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 134869,
+        "measuredTotalJavaScriptGzip": 351803,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 351900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 135025,
+        "measuredTotalJavaScriptGzip": 351957,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 352000
       }
     }
   ]

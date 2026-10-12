@@ -17,6 +17,8 @@ export type TextFont = 'default' | 'monospace';
 export type TextBorder = 'transparent' | 'none';
 export type TextLineHeight = 'default' | 'tight';
 export type TextWrap = 'normal' | 'anywhere' | 'nowrap' | 'truncate';
+/** Inline alignment of the text's lines, in logical (writing-direction) terms. */
+export type TextAlign = 'start' | 'center' | 'end';
 /**
  * Where `wrap="truncate"` places its ellipsis: `end` (default) keeps the
  * start, `start` keeps the tail (branch names, the end of an identifier), and
@@ -54,6 +56,8 @@ type TextCommonProps = Omit<
   flush?: boolean;
   /** Use compact leading for short dialog or metadata copy. */
   lineHeight?: TextLineHeight;
+  /** Inline alignment of the lines (default `start`), for centered status copy. */
+  align?: TextAlign;
   children: TextContent;
   class?: string;
   className?: string;
@@ -129,6 +133,7 @@ export function Text({
   flush = false,
   controlMargins = '',
   lineHeight = 'default',
+  align = 'start',
   wrap = 'normal',
   maxLines,
   truncate,
@@ -193,6 +198,7 @@ export function Text({
       data-control-margins={controlMargins || undefined}
       data-flush={flush ? 'true' : undefined}
       data-line-height={lineHeight === 'tight' ? 'tight' : undefined}
+      data-align={align === 'start' ? undefined : align}
       data-wrap={wrap === 'normal' ? undefined : wrap}
       data-max-lines={maxLines === undefined ? undefined : String(maxLines)}
       data-truncate={position === 'end' ? undefined : position}

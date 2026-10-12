@@ -40,6 +40,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 - compact, default, large, or xlarge size
 - default or monospace font
 - flush item geometry and tight line height
+- align start (default), center, or end for centered status copy or trailing values
 - controlMargins selects exterior 8px gutters with canonical physical Sides
 - wrap normal, anywhere, nowrap, or truncate; truncate places its ellipsis at the end, the start (keeping the tail), or the middle (keeping the last path segment or a character suffix)
 

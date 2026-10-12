@@ -321,7 +321,8 @@ also reduces its minimum height by the removed inset; safe-area compensation
 still adds to the chosen inset on claimed edges.
 
 For compact dialog copy, use `Text flush lineHeight="tight"`; block Text still
-resets native margins. `ValueTable density="compact"` reduces row padding and
+resets native margins. Center short status copy with `Text align="center"`
+(`end` aligns a trailing value) instead of setting `text-align` on `.kui-text`. `ValueTable density="compact"` reduces row padding and
 gap. Its `--kui-value-table-row-columns`, `--kui-value-table-row-padding-block`,
 and `--kui-value-table-row-gap` tokens support a specific metadata layout.
 Use `ToolbarText size="xsmall"` for a dense rail heading. Use

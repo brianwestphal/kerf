@@ -211,7 +211,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   percentage-height shell needs the provided `html` → `body` → app-root height
   chain. The baseline is not part of `styles.css` or component browser imports.
 - **Use compact layout options where needed.** `Text flush lineHeight="tight"`
-  fits short dialog copy; `ValueTable density="compact"` reduces row spacing,
+  fits short dialog copy, and `Text align="center"` centers wrapping status
+  copy; `ValueTable density="compact"` reduces row spacing,
   with public row column, padding, and gap tokens for specific metadata layouts.
   `ToolbarText size="xsmall"` suits a dense rail heading. The
   `TokenSearchField` editor shrinks in narrow groups; its minimum width can be

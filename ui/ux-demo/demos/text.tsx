@@ -121,6 +121,20 @@ export function TextDemo() {
         </Text>
       </CatalogExample>
       <CatalogExample
+        label="Centered status copy"
+        note="align centers short status copy that wraps in a narrow surface; end aligns trailing values."
+        align="glyph"
+        viewport={{ width: 'compact' }}
+      >
+        <Text align="center" tone="quiet" data-demo-copy="align-center">
+          The terminal could not start. Check the shell path in settings, then
+          try again.
+        </Text>
+        <Text align="end" data-demo-copy="align-end">
+          Total: 42 items
+        </Text>
+      </CatalogExample>
+      <CatalogExample
         label="Long copy and truncation"
         note="Text breaks long identifiers, caps summaries, yields space to a fixed sibling with a one-line ellipsis, and truncates a path in the middle or a branch name at the start."
         align="inline-control"
