@@ -49,6 +49,29 @@ button.kui-toolbar-text:focus-visible {
   padding-block: max(0px, calc((var(--_kui-toolbar-band) - 1.25em) / 2));
 }
 
+/* A title with supporting copy stacks the two lines and centers them together
+   in the control band (growing past it only when they do not fit), so
+   trailing groups stay on the band and both lines start at the same edge. */
+.kui-toolbar-text[data-has-description="true"] {
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: remify(2px);
+}
+
+.kui-toolbar-text__description {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* A filling title grows into its row's free space and truncates there. */
 .kui-toolbar-text[data-fill="true"] {
   flex: 1 1 auto;

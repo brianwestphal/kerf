@@ -662,8 +662,11 @@ owners. The [layout contract](./layout.md) lists the public roles and tokens.
 Panel, dialog, and page headings are direct `Toolbar` compositions. The leading
 zone holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; app actions belong in a trailing `ToolbarControlGroup`. Omit the
-icon group when it has no content. Supporting copy is app-owned content below
-the toolbar so it cannot pull the icon or actions out of alignment.
+icon group when it has no content. A short supporting line is the title's
+`ToolbarText` `description`: it renders quiet, single-line, truncating copy
+under the title, starting at the title's text with or without an icon group,
+and the title and description share the control band so the icon and actions
+stay aligned. Longer supporting copy is app-owned content below the toolbar.
 For an editable title, `ToolbarText action="edit-title"` renders a native button
 directly in the leading zone. It keeps content width when there is room, shrinks
 and ellipsizes beside a status chip when space is tight, and emits the delegated

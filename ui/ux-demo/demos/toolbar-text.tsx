@@ -1,9 +1,11 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { SquareTerminal, X } from 'lucide';
 
 const overflowLabel =
   'A very long workspace name that does not fit the available width and keeps going past two lines';
@@ -92,6 +94,48 @@ export function ToolbarTextDemo() {
                 fill
               />
             </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Supporting text"
+        note="A heading's quiet description sits under the title and starts at the title's text, with or without a leading icon tile."
+        viewport={{ width: 'medium', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-toolbar-text-description': '' }}
+      >
+        <Toolbar
+          label="Command editor heading"
+          leading={
+            <>
+              <ToolbarControlGroup single tileTone="brand" label="Commands">
+                <LucideIcon icon={SquareTerminal} name="square-terminal" />
+              </ToolbarControlGroup>
+              <ToolbarText
+                text="Custom commands"
+                size="xlarge"
+                headingLevel={2}
+                id="toolbar-text-description-title"
+                description="Changes save automatically."
+                descriptionId="toolbar-text-description-copy"
+              />
+            </>
+          }
+          trailing={
+            <ToolbarControlGroup single label="Close">
+              <button type="button" aria-label="Close">
+                <LucideIcon icon={X} name="x" />
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
+        <Toolbar
+          label="Repository status heading"
+          leading={
+            <ToolbarText
+              text="Repository status"
+              size="xlarge"
+              description="Working tree is clean"
+            />
           }
         />
       </CatalogExample>

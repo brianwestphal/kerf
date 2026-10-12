@@ -43,6 +43,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures
 - small
 - xsmall
 - placeholder (loading)
+- description: quiet single-line supporting copy under a read-only title, aligned with its text, with descriptionId for aria-describedby
 - dark (loud-surface foreground)
 - typed hideBelow/showBelow thresholds at the nearest Toolbar content width
 

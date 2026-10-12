@@ -280,6 +280,17 @@ type ToolbarTextProps = ToolbarTextBaseProps & (({
     headingLevel?: HeadingLevel;
     /** Render an unanimated loading skeleton instead of the text. */
     placeholder?: boolean;
+    /**
+     * Quiet, single-line supporting copy under the title ("Changes save
+     * automatically."), truncating with an ellipsis. Title and description
+     * share the toolbar's control band and the same text start, with or
+     * without a leading icon group. With a description, `id` and
+     * `headingLevel` apply to the title alone, so a dialog's
+     * `aria-labelledby` names only the title.
+     */
+    description?: string;
+    /** Id for the description, for a dialog's `aria-describedby`. */
+    descriptionId?: string;
 } & ToolbarTextWrappingProps) | {
     /** Render a native button with this delegated action; the app owns editing. */
     action: string;
@@ -287,8 +298,10 @@ type ToolbarTextProps = ToolbarTextBaseProps & (({
     placeholder?: never;
     wrap?: never;
     maxLines?: never;
+    description?: never;
+    descriptionId?: never;
 });
-declare function ToolbarText({ text, size, tone, hideBelow, showBelow, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, tone, hideBelow, showBelow, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, description, descriptionId, }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize, type ToolbarTextTone };
 ```

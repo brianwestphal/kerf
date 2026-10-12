@@ -57,6 +57,17 @@ export type ToolbarTextProps = ToolbarTextBaseProps &
         headingLevel?: HeadingLevel;
         /** Render an unanimated loading skeleton instead of the text. */
         placeholder?: boolean;
+        /**
+         * Quiet, single-line supporting copy under the title ("Changes save
+         * automatically."), truncating with an ellipsis. Title and description
+         * share the toolbar's control band and the same text start, with or
+         * without a leading icon group. With a description, `id` and
+         * `headingLevel` apply to the title alone, so a dialog's
+         * `aria-labelledby` names only the title.
+         */
+        description?: string;
+        /** Id for the description, for a dialog's `aria-describedby`. */
+        descriptionId?: string;
       } & ToolbarTextWrappingProps)
     | {
         /** Render a native button with this delegated action; the app owns editing. */
@@ -65,6 +76,8 @@ export type ToolbarTextProps = ToolbarTextBaseProps &
         placeholder?: never;
         wrap?: never;
         maxLines?: never;
+        description?: never;
+        descriptionId?: never;
       }
   );
 
@@ -84,6 +97,8 @@ export function ToolbarText({
   fill = false,
   slot,
   action,
+  description,
+  descriptionId,
 }: ToolbarTextProps) {
   const capped = wrap && maxLines != null && maxLines > 0;
   if (action !== undefined)
@@ -105,6 +120,19 @@ export function ToolbarText({
         <span class="kui-toolbar-text__text">{text}</span>
       </button>
     );
+  const described = description !== undefined && !placeholder;
+  const title = placeholder ? (
+    <Skeleton width={em(8)} />
+  ) : (
+    <span
+      class="kui-toolbar-text__text"
+      id={described ? id : undefined}
+      role={described && headingLevel ? 'heading' : undefined}
+      aria-level={described && headingLevel ? String(headingLevel) : undefined}
+    >
+      {text}
+    </span>
+  );
   return (
     <span
       class={`kui-toolbar-text ${className}`.trim()}
@@ -119,17 +147,19 @@ export function ToolbarText({
       data-max-lines={capped ? String(maxLines) : undefined}
       style={capped ? `--kui-toolbar-text-max-lines:${maxLines}` : undefined}
       data-placeholder={placeholder ? 'true' : undefined}
-      id={id}
-      role={headingLevel ? 'heading' : undefined}
-      aria-level={headingLevel ? String(headingLevel) : undefined}
+      data-has-description={described ? 'true' : undefined}
+      id={described ? undefined : id}
+      role={headingLevel && !described ? 'heading' : undefined}
+      aria-level={headingLevel && !described ? String(headingLevel) : undefined}
       aria-busy={placeholder ? 'true' : undefined}
       slot={slot}
     >
-      {placeholder ? (
-        <Skeleton width={em(8)} />
-      ) : (
-        <span class="kui-toolbar-text__text">{text}</span>
-      )}
+      {title}
+      {described ? (
+        <span class="kui-toolbar-text__description" id={descriptionId}>
+          {description}
+        </span>
+      ) : null}
     </span>
   );
 }

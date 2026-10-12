@@ -93,8 +93,9 @@ matters, and ask rather than guess when a design brief is ambiguous.**
   fix is usually the surrounding layout, not an override.
 - **One heading composition.** Panel/dialog/page headings are plain `Toolbar`
   compositions: a direct xl `ToolbarText`, optional grouped icon, and grouped
-  trailing controls. Set `headingLevel` for page/section landmarks. Supporting
-  copy is app-owned content below the toolbar.
+  trailing controls. Set `headingLevel` for page/section landmarks. A short
+  supporting line is the title's `ToolbarText` `description`; longer
+  supporting copy is app-owned content below the toolbar.
 - **Size the title to its track.** xl is for a page, view, dialog, or pane
   that holds it at its narrowest size. A narrow peripheral rail or drawer — a
   navigator, inspector, or console beside a work area that already carries the

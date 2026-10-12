@@ -330,7 +330,11 @@ so screen-reader heading navigation and "main heading" semantics work — the sa
 role/level pair used throughout Kerf UI. Keep the levels meaningful and
 non-skipping within a view. Pass trailing
 controls as a labeled `ToolbarControlGroup` when that group needs an accessible
-name. Keep supporting copy as app-owned content below the toolbar.
+name. A short supporting line belongs in the title's `description`: with it,
+`id` and `headingLevel` move to the title span, so `aria-labelledby` names only
+the title, and `descriptionId` gives the description its own id for
+`aria-describedby`. Keep longer supporting copy as app-owned content below the
+toolbar.
 An editable title can use `ToolbarText action="edit-title"`; it renders a native
 button whose full text remains its accessible name even when visually truncated.
 Click, Enter, and Space activate the delegated action. The app owns the input

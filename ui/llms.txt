@@ -391,8 +391,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   divider to make it look right.
 - **Use one direct toolbar composition for panel/dialog/page headings.** Put an
   optional icon in a `ToolbarControlGroup`, an extra-large `ToolbarText` directly
-  in the leading zone, and actions in a trailing group. Supporting copy is
-  app-owned content below. Do not create a private heading wrapper or restyle the
+  in the leading zone, and actions in a trailing group. A short supporting
+  line ("Changes save automatically.") is the `ToolbarText` `description`:
+  quiet, one truncating line under the title, aligned with its text, with
+  `descriptionId` for `aria-describedby`. Longer copy is app-owned content
+  below. Do not create a private heading wrapper or restyle the
   toolbar. A narrow peripheral rail or drawer, where extra-large would truncate
   at its minimum size, names itself with the default `ToolbarText` size.
   `ToolbarText size="xlarge-fixed"` keeps the 20px `--kui-font-l` heading step;
