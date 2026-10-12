@@ -273,6 +273,25 @@ are neither attempts nor failures, and their near-zero duration never dilutes
 the gate's timing. Force the full gate for one push with
 `KERF_FORCE_CHECK=1 git push`.
 
+### Long gates and the remote connection
+
+`git push` opens the connection to the remote and reads its ref advertisement
+_before_ it runs the pre-push hook, and keeps that connection open, idle, while
+the hook runs. When a change makes the hook run the scoped sibling-package
+gates, the whole gate can take about five minutes, long enough for the remote
+side of an SSH connection to drop it. Git then fails writing the pack with exit
+status 141 (`SIGPIPE`) right after the gate's step summary, and nothing is
+pushed (`KF-8MFKZM`: pushes failed with a 175 s and a 194 s package-gate step
+and succeeded with a 110 s one).
+
+- **Prefer `npm run push`** (`npm run check && git push`; arguments follow
+  `--`, e.g. `npm run push -- origin main`). The gate runs before git connects,
+  records its pass, and the hook then skips the identical rerun, so the
+  connection is open only for the transfer.
+- **After a 141 that follows a green gate**, run the same `git push` again:
+  the hook's own `npm run check` recorded the pass, so the retry skips the gate
+  and pushes in seconds. A 141 that follows a _failed_ gate is just the failure.
+
 ## Record format
 
 The note schema is versioned as `KERF_TICKET_TIMING_V1`. Gate and failure names
