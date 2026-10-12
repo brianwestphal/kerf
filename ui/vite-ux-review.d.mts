@@ -38,6 +38,45 @@ export interface UxReviewPlugin {
 /** The nearest directory at or above `start` that holds `.git`, else `start`. */
 export declare function findProjectDirectory(start: string): string;
 
+export interface ResolveUxReviewProjectOptions {
+  /** The directory to start from. Default: `process.cwd()`. */
+  root?: string;
+  /**
+   * An explicit project directory, resolved against `root`. Default: the
+   * nearest ancestor of `root` holding `.git`, or `root` itself.
+   */
+  projectDirectory?: string;
+}
+
+/** The real path of the UX Review project directory for a server. */
+export declare function resolveUxReviewProject(
+  options?: ResolveUxReviewProjectOptions,
+): string;
+
+/**
+ * Answer a Fetch API request for `…/__ux-review/project.json` at any base
+ * path: the project JSON for a GET, 405 for another method, or `null` for any
+ * other path so the server handles it as usual. Mount it on a development
+ * server only.
+ */
+export declare function uxReviewProjectResponse(
+  request: Request,
+  projectDirectory: string,
+): Response | null;
+
+/** A Node / connect `(request, response, next)` handler for a server's middleware stack. */
+export type UxReviewMiddleware = Parameters<
+  UxReviewMiddlewareServer['middlewares']['use']
+>[0];
+
+/**
+ * A Node / connect-style handler for `…/__ux-review/project.json` at any base
+ * path; other requests go to `next`. Mount it on a development server only.
+ */
+export declare function uxReviewMiddleware(
+  projectDirectory: string,
+): UxReviewMiddleware;
+
 /** Serve the UX Review project directory to catalog pages on dev and preview servers. */
 export declare function uxReviewPlugin(
   options?: UxReviewPluginOptions,

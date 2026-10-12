@@ -521,7 +521,9 @@ production demo inside chrome that consumes the same semantic light/dark tokens;
 when served locally, its **Capture region** action opens
 UX Review with that project and the selected demo in the review context (any
 `@kerfjs/ui/catalog` app gets the same link from `uxReviewPlugin` in
-`@kerfjs/ui/vite-ux-review`, `wireCatalog`'s `onUxReviewProject`, and
+`@kerfjs/ui/vite-ux-review` — or, without Vite, that subpath's
+`uxReviewProjectResponse` / `uxReviewMiddleware` mounted on the development
+server — `wireCatalog`'s `onUxReviewProject`, and
 `Catalog`'s `uxReview` prop);
 the detail view derives one grouped `Uses` / `Used by` selector from declared
 component dependencies and hides it for unrelated components. The catalog also

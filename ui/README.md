@@ -382,8 +382,10 @@ relationships from that extension; `kerf-catalog-demo --write` emits a typed
 module and `--check` catches drift. See the [catalog guide](./docs/catalog.md)
 for repository base and source path configuration. To offer the catalog's
 **Capture region** link to UX Review on a local server, add the Node-only
-`uxReviewPlugin` from `@kerfjs/ui/vite-ux-review` to the Vite config and pass
-`wireCatalog`'s `onUxReviewProject` result to `Catalog`'s `uxReview` (the
+`uxReviewPlugin` from `@kerfjs/ui/vite-ux-review` to the Vite config (or, for a
+catalog your own backend serves, mount its `uxReviewProjectResponse` /
+`uxReviewMiddleware` on the development server) and pass `wireCatalog`'s
+`onUxReviewProject` result to `Catalog`'s `uxReview` (the
 [catalog guide](./docs/catalog.md#ux-review-capture) has the wiring).
 
 Composition-aware consumers use

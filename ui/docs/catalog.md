@@ -542,6 +542,47 @@ wireCatalog(app, {
 The browser helpers behind it, `uxReviewCaptureUrl` and `loadUxReviewProject`,
 are exported from `@kerfjs/ui/catalog` for a capture link placed elsewhere.
 
+### Catalogs served without Vite
+
+A catalog served by the app's own backend (an esbuild bundle behind Hono,
+Express, or a plain Node server) mounts the same endpoint from the same
+Node-only subpath, on its development server only. The catalog requests
+`__ux-review/project.json` relative to its page, so a page at `/ux-demo` asks
+for `/__ux-review/project.json`; both helpers answer at any base path.
+
+```ts
+import {
+  resolveUxReviewProject,
+  uxReviewMiddleware,
+  uxReviewProjectResponse,
+} from "@kerfjs/ui/vite-ux-review";
+
+// Resolve once at startup: the repository holding the working directory, or
+// resolveUxReviewProject({ root, projectDirectory }) like the Vite plugin.
+const projectDirectory = resolveUxReviewProject();
+
+// Fetch API servers (Hono, Bun, Deno): null means "not this endpoint".
+if (isDev)
+  app.use("*", async (c, next) =>
+    uxReviewProjectResponse(c.req.raw, projectDirectory) ?? next(),
+  );
+
+// Node / connect servers (Express, node:http):
+if (isDev) expressApp.use(uxReviewMiddleware(projectDirectory));
+```
+
+- **`resolveUxReviewProject({ root?, projectDirectory? })`** returns the real
+  path the Vite plugin would serve: `projectDirectory` resolved against `root`,
+  or the repository holding `root` (default `process.cwd()`).
+- **`uxReviewProjectResponse(request, projectDirectory)`** answers a Fetch API
+  `Request`: the JSON for a GET, `405` for another method, or `null` for any
+  other path.
+- **`uxReviewMiddleware(projectDirectory)`** is the same endpoint as a
+  `(request, response, next)` handler; `uxReviewPlugin` mounts it on Vite.
+
+Never register the endpoint in production: it reveals a local path, and a
+deployed catalog has no local project to capture into.
+
 ## Custom action names
 
 The shell emits `data-action="catalog-select"` (sidebar items),

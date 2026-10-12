@@ -143,7 +143,9 @@ components, derive demo rows with `@kerfjs/ui/catalog-projection` or
 `kerf-catalog-demo --write`, then guard drift with `--check`; see
 `../docs/catalog.md`. For a local catalog's UX Review **Capture region** link,
 add `uxReviewPlugin()` from the Node-only `@kerfjs/ui/vite-ux-review` to the
-Vite config, report the project with `wireCatalog`'s `onUxReviewProject`, and
+Vite config (a catalog served by the app's own backend mounts that subpath's
+`uxReviewProjectResponse` or `uxReviewMiddleware` on its development server
+only), report the project with `wireCatalog`'s `onUxReviewProject`, and
 render `Catalog` with `uxReview={{ projectDirectory }}`; never hand-roll the
 endpoint or the `uxreview://` link. For per-entry variant/state controls, pass
 them as `Catalog`'s `settings` (with `settingsCollapsed` and the same signal as

@@ -1,6 +1,7 @@
 import { mkdirSync, mkdtempSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import process from 'node:process';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,8 +12,11 @@ import {
 } from '../../src/catalog/ux-review.js';
 import {
   findProjectDirectory,
+  resolveUxReviewProject,
   UX_REVIEW_PROJECT_PATH as PLUGIN_PATH,
+  uxReviewMiddleware,
   uxReviewPlugin,
+  uxReviewProjectResponse,
 } from '../../vite-ux-review.mjs';
 
 describe('uxReviewCaptureUrl', () => {
@@ -175,6 +179,57 @@ describe('uxReviewPlugin (@kerfjs/ui/vite-ux-review)', () => {
     expect(JSON.parse(response.body!)).toEqual({
       projectDirectory: join(top, 'packages'),
     });
+  });
+
+  it('resolves the project directory for any server, defaulting to the working directory', () => {
+    const { top, root } = tree();
+    mkdirSync(join(top, 'packages'));
+    expect(resolveUxReviewProject({ root })).toBe(top);
+    expect(
+      resolveUxReviewProject({ root, projectDirectory: '../../packages' }),
+    ).toBe(join(top, 'packages'));
+    const cwd = vi.spyOn(process, 'cwd').mockReturnValue(root);
+    expect(resolveUxReviewProject()).toBe(top);
+    cwd.mockRestore();
+  });
+
+  it('answers Fetch API requests at any base path and leaves others to the server', async () => {
+    const at = (path: string, method = 'GET') =>
+      uxReviewProjectResponse(
+        new Request(`http://127.0.0.1:3000${path}`, { method }),
+        '/repo',
+      );
+    for (const path of [`/${PLUGIN_PATH}`, `/ux-demo/${PLUGIN_PATH}?t=1`]) {
+      const response = at(path)!;
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Content-Type')).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(response.headers.get('Cache-Control')).toBe('no-store');
+      await expect(response.json()).resolves.toEqual({
+        projectDirectory: '/repo',
+      });
+    }
+    expect(at('/ux-demo')).toBeNull();
+    expect(at(`/x${PLUGIN_PATH}`)).toBeNull();
+    const post = at(`/${PLUGIN_PATH}`, 'POST')!;
+    expect(post.status).toBe(405);
+    expect(post.headers.get('Allow')).toBe('GET');
+    await expect(post.text()).resolves.toBe('');
+  });
+
+  it('serves the endpoint from a Node / connect middleware stack', () => {
+    const handler = uxReviewMiddleware('/repo');
+    const ok = request(handler, `/base/${PLUGIN_PATH}#x`);
+    expect(ok.next).not.toHaveBeenCalled();
+    expect(JSON.parse(ok.response.body!)).toEqual({
+      projectDirectory: '/repo',
+    });
+    expect(ok.headers['Cache-Control']).toBe('no-store');
+    expect(request(handler, '/other').next).toHaveBeenCalledOnce();
+    expect(request(handler, `/${PLUGIN_PATH}`, 'PUT').response.statusCode).toBe(
+      405,
+    );
   });
 
   it('shares its endpoint path with the browser helpers', () => {

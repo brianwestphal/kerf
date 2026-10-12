@@ -7,7 +7,10 @@ first-party component or composition route plus a typed shared context and
 registry; `ui/ux-demo/main.tsx` retains the catalog shell, shared state, routing,
 and interaction wiring. The published UX Review pieces build its contextual region-capture
 link: `ui/vite-ux-review.mjs` (`@kerfjs/ui/vite-ux-review`, Node-only
-`uxReviewPlugin`) serves the local project path in development and preview,
+`uxReviewPlugin`, plus the server-neutral `resolveUxReviewProject`,
+`uxReviewProjectResponse` for Fetch API servers, and `uxReviewMiddleware` for
+Node/connect servers that the plugin is built on) serves the local project path
+in development and preview,
 `ui/src/catalog/ux-review.ts` holds the browser helpers
 (`uxReviewCaptureUrl`, `loadUxReviewProject`), `wireCatalog`'s
 `onUxReviewProject` probes the endpoint and stamps the page URL when the link is
