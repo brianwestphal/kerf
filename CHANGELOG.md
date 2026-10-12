@@ -44,6 +44,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Inspector TabBars use the shared rounded rectangle radius on the strip and inset tabs while ordinary segmented TabBars retain their pill geometry (`KF-K3RDN1`).
 
+- **`KUI-L103` no longer flags a component's classes inside its own source.** `ui-public-boundaries` treats a catalog entry's `source` file as the owner of that entry's public classes, so an app component writing its own root class is not reported as recreating itself. Apps no longer need to mark those classes `placeableClasses` to silence it. Any other file, including another component's source, is still checked (`KF-G6FR6V`).
+
 ### Documentation
 
 - New recipe in the `kerfjs/async` API reference: move heavy app compute (fuzzy search, CSV or markdown parsing, aggregation) into a Worker by having a `resource()` fetcher post a message to the worker and resolve with its reply. It covers request/reply ids, dropping superseded results, worker errors, transferring `ArrayBuffer`s, and keeping the render on the main thread (`KF-04KHT9`).

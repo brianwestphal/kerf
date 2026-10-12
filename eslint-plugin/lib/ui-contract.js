@@ -235,6 +235,9 @@ export function loadUiContract(context) {
           name: entry.name,
           boundaries: entry.boundaries,
           exports: (entry.publicExports ?? []).map(exportName),
+          // The component's own source renders its anatomy classes; L103
+          // applies only outside it.
+          ...(entry.source ? { source: resolve(root, entry.source) } : {}),
         });
         for (const item of entry.publicExports ?? []) {
           const name = exportName(item);
@@ -351,6 +354,7 @@ function componentClassOwners(classOwnerEntries, componentClassOwnership) {
           key: entry.key,
           render,
           ...(element ? { element } : {}),
+          ...(entry.source ? { source: entry.source } : {}),
         });
   return owners;
 }

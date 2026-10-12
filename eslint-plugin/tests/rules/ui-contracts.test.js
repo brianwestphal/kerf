@@ -1082,6 +1082,13 @@ tester.run('ui-public-boundaries kerfjs/html templates', boundaries, {
 
 tester.run('ui-public-boundaries declared component packages', boundaries, {
   valid: [
+    // The component's own source writes its anatomy; that is not a recreation.
+    {
+      ...appCase(
+        'export function PlainWidget() { return <div class="karwan-widget" />; }',
+      ),
+      filename: join(appRoot, 'src/plain-widget.tsx'),
+    },
     // The package's own component element carries its own root class.
     appCase(
       'import { Meter } from \'@acme/bits/meter\'; <Meter className="acme-meter" />;',
@@ -1114,6 +1121,12 @@ tester.run('ui-public-boundaries declared component packages', boundaries, {
         data: { name, element: 'section', component: 'Card', render: '`Card`' },
       })),
     }),
+    // Another component's source does not own the class.
+    {
+      ...appCase('export const Other = () => <div class="karwan-widget" />;'),
+      filename: join(appRoot, 'src/title-text.tsx'),
+      errors: [{ messageId: 'component' }],
+    },
     // An application catalog's class (no subpath export) names its component.
     appCase('<div class="karwan-widget" />;', {
       errors: [

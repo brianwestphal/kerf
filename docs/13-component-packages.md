@@ -436,7 +436,9 @@ under `catalogs`, `eslint-plugin-kerfjs`'s `ui-public-boundaries` reports that
 as `KUI-L103` and names the export to render — the same diagnostic
 `@kerfjs/ui`'s own `kui-*` classes get, and for any class name, not only a
 `kui-` prefix. The package's own element (`<Meter className="acme-meter">`) is
-never reported.
+never reported, and neither is the component's own `source` file, where it
+writes that anatomy — so do not mark a class placeable just to author the
+component itself.
 
 List the subset applications may legitimately write themselves (a layout
 utility, item geometry a non-component carrier may take) under the optional

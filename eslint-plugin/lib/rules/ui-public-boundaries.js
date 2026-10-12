@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 import {
   importRegistry,
   isExcepted,
@@ -82,6 +84,8 @@ export default {
       for (const name of names) {
         const owner = contract.componentClasses?.get(name);
         if (!owner || owner.key === renderedKey) continue;
+        // A component's own source file is where its anatomy is written.
+        if (owner.source && owner.source === resolve(filename)) continue;
         if (owner.element && owner.element !== intrinsicTag) continue;
         context.report({
           node,
