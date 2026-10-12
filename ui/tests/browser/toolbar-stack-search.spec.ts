@@ -21,6 +21,15 @@ test('stacked search ends its collapsed row and enters a full row on expand', as
       node.textContent = `[data-demo-section="toolbar-group-sizing"] { width: ${value}px !important; box-sizing: border-box !important; }`;
     }, width);
     await expect(search).toHaveAttribute('data-expanded', 'false');
+    // The previous width's Escape collapse may still be animating: measure the
+    // settled collapsed layout, as the expanded checks below already do.
+    await search.evaluate(async (node) => {
+      await Promise.all(
+        node
+          .getAnimations({ subtree: true })
+          .map((animation) => animation.finished.catch(() => undefined)),
+      );
+    });
     const zoneBox = (await trailing.boundingBox())!;
     const sortBox = (await sort.boundingBox())!;
     const closedBox = (await search.boundingBox())!;
