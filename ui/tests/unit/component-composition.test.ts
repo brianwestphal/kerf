@@ -18,7 +18,17 @@ type InvalidFixture = {
 const readJson = async <T>(path: string): Promise<T> =>
   JSON.parse(await readFile(resolve(import.meta.dirname, path), 'utf8')) as T;
 
+// Path segments are object keys or array indexes; `id:<id>` picks the array
+// element with that `id`, so a fixture keeps addressing the same catalog entry
+// when entries are inserted before it.
 const childAt = (value: unknown, part: string): unknown => {
+  if (Array.isArray(value) && part.startsWith('id:')) {
+    const found = value.find(
+      (item) => (item as { id?: unknown }).id === part.slice(3),
+    );
+    if (found === undefined) throw new Error(`No entry with ${part}`);
+    return found;
+  }
   if (Array.isArray(value)) return value[Number(part)];
   return (value as Record<string, unknown>)[part];
 };
