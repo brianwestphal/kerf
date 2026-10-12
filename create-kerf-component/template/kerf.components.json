@@ -47,7 +47,7 @@
         },
         "responsive": { "owner": "not-applicable", "behaviors": [] },
         "layout": {
-          "roles": ["counter"],
+          "roles": ["controls"],
           "geometry": { "margin": "none", "border": "none", "padding": "none" }
         }
       },

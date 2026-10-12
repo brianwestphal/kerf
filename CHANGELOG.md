@@ -52,6 +52,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Clarify for AI consumers that sunken/lowered token names resolve to a translucent tint, and explain intentional nested layers versus duplicate surface paint (`KF-9CM6D8`).
 
+- **`layout.roles` vocabulary for app components.** The component-packages guide documents the eleven roles `@kerfjs/ui` uses, what each covers, and how to map application dialogs, rows, status indicators, and composed views onto them. The `kerf.components.json` schema description lists them, and the `create-kerf-component` template now uses `controls` instead of a one-off `counter` role (`KF-4E04HF`).
+
 ### Removed
 
 - **Breaking (`@kerfjs/ui`, 5.0 beta):** remove the Catalog geometry highlight overlay, its `geometryOverlay` prop, `wireCatalogGeometryOverlay` helper, and specimen skip marker. Catalog previews retain their component borders, outlines, and focus states (`KF-E3WKA5`).

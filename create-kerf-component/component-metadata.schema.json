@@ -353,7 +353,10 @@
           "type": "object",
           "required": ["roles", "geometry"],
           "properties": {
-            "roles": { "$ref": "#/$defs/stringList" },
+            "roles": {
+              "description": "One or more grouping roles for selection and catalog navigation. Prefer @kerfjs/ui's vocabulary so merged catalogs group consistently: structure, navigation, controls, actions, forms, feedback, foundation, media, layout, helpers, reference-composition (see docs/13-component-packages.md, Layout roles).",
+              "$ref": "#/$defs/stringList"
+            },
             "geometry": {
               "type": "object",
               "required": ["margin", "border", "padding"],

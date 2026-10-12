@@ -112,7 +112,7 @@
       },
       "layout": {
         "roles": [
-          "counter"
+          "controls"
         ],
         "geometry": {
           "margin": "none",

@@ -426,6 +426,35 @@ parent, child, and zone reference. Never merge by bare `id`. The generated
 `purpose`, `publicExports`, and `sourceLinks` fields answer selection and source
 questions; the composition fields answer whether and how two entries fit.
 
+### Layout roles: `composition.layout.roles`
+
+`layout.roles` is a required, non-empty list that groups an entry for
+selection and catalog navigation; no check infers behavior from it. Use
+`@kerfjs/ui`'s own vocabulary so a merged catalog groups app and Kerf entries
+the same way, and give a component more than one role only when it genuinely
+serves both:
+
+| Role                    | Use it for                                                                  | `@kerfjs/ui` examples                       |
+| ----------------------- | --------------------------------------------------------------------------- | ------------------------------------------- |
+| `structure`             | Shells, panes, panels, splits, toolbars, and dialog or sheet surfaces       | `Pane`, `Workbench`, `SplitView`, `Toolbar` |
+| `navigation`            | Lists, rows, tabs, and entries that select or move between content          | `List`, `ListItem`, `TabBar`                |
+| `controls`              | Interactive value controls an app configures (pickers, segmented, search)   | `Select`, `SegmentedControl`, `PopupMenu`   |
+| `actions`               | Command buttons and command groups                                          | `wa-button`, `wa-dropdown`                  |
+| `forms`                 | Form fields and the editors that wrap them                                  | `wa-input`, `wa-checkbox`                   |
+| `feedback`              | Status, empty, loading, error, and transient notice surfaces                | `StateBanner`, `EmptyState`, `Skeleton`     |
+| `foundation`            | Small display primitives: badges, chips, icons, tokens                      | `Badge`, `Chip`, `LucideIcon`               |
+| `media`                 | Images, avatars, previews, and rich media                                   | `wa-avatar`, `wa-carousel`                  |
+| `layout`                | Generic content containers without app semantics (cards, details, dividers) | `wa-card`, `wa-details`, `wa-divider`       |
+| `helpers`               | Non-visual utilities and positioning helpers                                | `wa-format-date`, `wa-popup`                |
+| `reference-composition` | Whole-task reference screens composed from many entries (recipes)           | `recipe-app-shell`, `recipe-composer-form`  |
+
+For an application component, pick by what it is to the person using it: a
+product dialog or inspector is `structure`; a ticket row is `navigation`; a
+status pill is `foundation` (or `feedback` when it reports system state); a
+screen-level view composed of other entries is `structure`, adding
+`reference-composition` only for a documented recipe. A value outside this
+vocabulary is allowed, but it groups alone.
+
 ### Placeable classes: `boundaries.placeableClasses` / `rootElement`
 
 Every class in `boundaries.publicClasses` is, by default, the component's
