@@ -263,6 +263,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `IconToggleButton`                                                  | `@kerfjs/ui/icon-toggle-button`         | `@kerfjs/ui/icon-toggle-button.css`      |
 | `SplitButton`                                                       | `@kerfjs/ui/split-button`               | `@kerfjs/ui/split-button.css`            |
 | `FramedList`, `FramedListRow`                                       | `@kerfjs/ui/framed-list`                | `@kerfjs/ui/framed-list.css`             |
+| `ColumnTrack`                                                       | `@kerfjs/ui/column-track`               | `@kerfjs/ui/column-track.css`            |
 | `CornerStatus`                                                      | `@kerfjs/ui/corner-status`              | `@kerfjs/ui/corner-status.css`           |
 | `EdgeActivityIndicator`                                             | `@kerfjs/ui/edge-activity-indicator`    | `@kerfjs/ui/edge-activity-indicator.css` |
 | `wireCornerStatus`                                                  | `@kerfjs/ui/wire-corner-status`         | —                                        |

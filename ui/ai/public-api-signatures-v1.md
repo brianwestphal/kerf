@@ -679,8 +679,9 @@ export { ListHeader, type ListHeaderProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { H as HorizontalAlignment, L as ListVerticalAlignment, S as StructuralRootAttributes } from './flex-alignment-CzXjitz2.js';
-export { V as VerticalAlignment } from './flex-alignment-CzXjitz2.js';
+import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
+import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
+export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
 export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
@@ -1378,7 +1379,8 @@ export { c as NavStack, N as NavStackProps, d as NavStackToolbarConfig, a as Nav
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './list.js';
-import './flex-alignment-CzXjitz2.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
 import './css-values.js';
 import './pane.js';
@@ -1420,7 +1422,8 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { N as NavStackProps, a as NavStackView } from './nav-stack-BvSKY448.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './list.js';
-import './flex-alignment-CzXjitz2.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
 import './css-values.js';
 import './pane.js';
@@ -1647,7 +1650,8 @@ import { a as PanelToolbar, c as PanelBottomToolbar, b as PanelChromePlacement, 
 import { ToolbarConfig } from './toolbar.js';
 import './toolbar-text.js';
 import './css-values.js';
-import './flex-alignment-CzXjitz2.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -2045,7 +2049,8 @@ import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
 import './css-values.js';
-import './flex-alignment-CzXjitz2.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 type CollapsiblePanelSide = PanelSide;
@@ -2513,7 +2518,8 @@ import './pane.js';
 import './workbench.js';
 import './nav-stack-BvSKY448.js';
 import './list.js';
-import './flex-alignment-CzXjitz2.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './css-values.js';
 import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
@@ -2636,7 +2642,8 @@ import './pane.js';
 import './workbench.js';
 import './nav-stack-BvSKY448.js';
 import './list.js';
-import './flex-alignment-CzXjitz2.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './css-values.js';
 import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
@@ -2689,7 +2696,8 @@ import './pane.js';
 import './workbench.js';
 import './nav-stack-BvSKY448.js';
 import './list.js';
-import './flex-alignment-CzXjitz2.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
 import './css-values.js';
 import './panel-toolbar-CL9tYOkh.js';
 import './lucide-icon.js';
@@ -3790,7 +3798,8 @@ export { FramedList, type FramedListProps, FramedListRow, type FramedListRowProp
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { H as HorizontalAlignment, V as VerticalAlignment, S as StructuralRootAttributes } from './flex-alignment-CzXjitz2.js';
+import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
+import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
 export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
@@ -3903,6 +3912,52 @@ type GridProps = GridCommonProps & ({
 declare function Grid({ children, selectionMode, ariaLabel, columns, minColumnWidth, autoFill, gap, flex, fill, textInsets, controlInsets, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, Sides, UiGap };
+```
+
+## `@kerfjs/ui/column-track`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
+import { CssLength } from './css-values.js';
+
+/** `scroll` keeps equal min-width columns; `paged` shows one near-full-width column per page. */
+type ColumnTrackLayout = 'scroll' | 'paged';
+type ColumnTrackRootAttributes = StructuralRootAttributes & Readonly<{
+    'data-component'?: never;
+    'data-layout'?: never;
+}>;
+interface ColumnTrackProps {
+    /** The columns, in order; each owns its own inset and scrolling. */
+    children: KerfUiContent;
+    /**
+     * `scroll` (default): equal columns that never shrink below
+     * `minColumnWidth`, so a narrow track scrolls sideways instead of crushing
+     * them. `paged`: each column is nearly the visible width, the next one peeks
+     * in, and scrolling snaps to column starts.
+     */
+    layout?: ColumnTrackLayout;
+    /** Narrowest a `scroll` column gets before the track scrolls; default 250px. */
+    minColumnWidth?: CssLength;
+    /** How much of the next column a `paged` track shows; default 24px. */
+    peek?: CssLength;
+    id?: string;
+    className?: string;
+    /** Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller. */
+    rootAttributes?: ColumnTrackRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A horizontal track of columns (a kanban board): the track is the sideways
+ * scroll owner and fills its parent's height; columns sit flush and own their
+ * insets and vertical scrolling. Kerf owns the overflow, the paged snapping,
+ * and reduced motion.
+ */
+declare function ColumnTrack({ children, layout, minColumnWidth, peek, id, className, rootAttributes, slot, }: ColumnTrackProps): kerfjs.SafeHtml;
+
+export { ColumnTrack, type ColumnTrackLayout, type ColumnTrackProps };
 ```
 
 ## `@kerfjs/ui/spacer`

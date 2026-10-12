@@ -585,6 +585,17 @@ semantics.
 Use application-owned CSS grid for intrinsic, asymmetric, spanning, or masonry
 tracks, and use `ResizableRegion` when people must adjust a boundary.
 
+## Column tracks
+
+A board of parallel columns (kanban lanes) is a `ColumnTrack`: one horizontal
+scroll owner that fills its parent's height, with columns that sit flush and
+own their insets and vertical scrolling. By default columns share the width
+equally but never narrow below `minColumnWidth` (250px), so a narrow board
+scrolls sideways instead of crushing them. `layout="paged"` gives each column
+nearly the visible width, lets the next one `peek` in (24px), snaps to column
+starts, hides the scrollbar, and scrolls smoothly unless reduced motion is
+preferred. Choose the layout per device class in the app.
+
 ## Row and List alignment
 
 Use `Row` for a horizontal flex layout and `List` for a vertical one. `Row`

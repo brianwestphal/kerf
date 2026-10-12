@@ -2513,6 +2513,70 @@
       }
     },
     {
+      "key": "@kerfjs/ui:column-track",
+      "package": "@kerfjs/ui",
+      "id": "column-track",
+      "name": "ColumnTrack",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the columns and their content",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "choosing scroll or paged layout (for example by device class)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "drag and drop between columns",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "self",
+          "notes": [
+            "The track pads 8px inline and fills its parent's height; columns sit flush and own their insets and vertical scrolling."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Name the track with aria-label through rootAttributes when it is a landmark-like region; give each column a region name. Paged scrolling is smooth unless reduced motion is preferred."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-column-track",
+        "publicClasses": ["kui-column-track", "kui-column-track__columns"],
+        "rootElement": "div",
+        "publicTokens": ["--kui-layout-inline-margin"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:spacer",
       "package": "@kerfjs/ui",
       "id": "spacer",

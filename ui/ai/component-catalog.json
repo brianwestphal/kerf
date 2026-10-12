@@ -2920,6 +2920,11 @@
           "id": "resize",
           "relationship": "interactive-alternative",
           "when": "Use ResizableRegion when people must adjust the boundary between tracks."
+        },
+        {
+          "id": "column-track",
+          "relationship": "nearest",
+          "when": "Use ColumnTrack for a board of columns that scroll sideways or page instead of wrapping."
         }
       ],
       "appOwns": [
@@ -2971,6 +2976,75 @@
         "catalogRoute": "?component=grid",
         "documentation": "docs/layout.md",
         "recipe": "docs/layout.md#grid"
+      }
+    },
+    {
+      "id": "column-track",
+      "name": "ColumnTrack",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A horizontal track of equal, min-width columns that scrolls sideways, or pages one column at a time with peek and snapping.",
+      "uses": [],
+      "purpose": "Lay out a board of columns (kanban) as one horizontal scroll owner: equal columns that never shrink below a minimum, or a paged phone layout with a peeking next column and start snapping, without app track CSS.",
+      "publicExports": [
+        "ColumnTrack"
+      ],
+      "useWhen": [
+        "A board shows several parallel columns (kanban lanes) that must keep a readable width and scroll sideways, or page one at a time on a phone."
+      ],
+      "avoidWhen": [
+        "Do not use for a responsive grid that wraps; use Grid.",
+        "Do not use for two resizable panes; use SplitView or ResizableRegion.",
+        "Do not re-track a Grid from application CSS to get overflowing columns."
+      ],
+      "alternatives": [
+        {
+          "id": "grid",
+          "relationship": "nearest",
+          "when": "Use Grid when columns should wrap or collapse instead of scrolling."
+        }
+      ],
+      "appOwns": [
+        "the columns and their content",
+        "choosing scroll or paged layout (for example by device class)",
+        "drag and drop between columns"
+      ],
+      "variants": [
+        "scroll with a minimum column width",
+        "paged with peek and mandatory snapping"
+      ],
+      "accessibility": [
+        "Name the track with aria-label through rootAttributes when it is a landmark-like region; give each column a region name. Paged scrolling is smooth unless reduced motion is preferred."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "self",
+        "notes": [
+          "The track pads 8px inline and fills its parent's height; columns sit flush and own their insets and vertical scrolling."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/column-track",
+        "manualCssImport": "@kerfjs/ui/column-track.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-column-track",
+        "kui-column-track__columns"
+      ],
+      "publicTokens": [
+        "--kui-layout-inline-margin"
+      ],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=column-track",
+        "documentation": "docs/layout.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }
     },
     {

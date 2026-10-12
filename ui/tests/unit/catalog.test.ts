@@ -519,6 +519,7 @@ describe('UX catalog metadata', () => {
       'FramedList',
       'Row',
       'Grid',
+      'ColumnTrack',
       'Spacer',
       'List',
       'ListHeader',

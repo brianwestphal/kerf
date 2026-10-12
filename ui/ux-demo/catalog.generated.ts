@@ -337,6 +337,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/layout.md"
   },
   {
+    "id": "column-track",
+    "name": "ColumnTrack",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Lay out a board of columns (kanban) as one horizontal scroll owner: equal columns that never shrink below a minimum, or a paged phone layout with a peeking next column and start snapping, without app track CSS.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/column-track.tsx",
+    "componentSource": "ui/src/components/layout/column-track/column-track.tsx",
+    "documentation": "ui/docs/layout.md"
+  },
+  {
     "id": "spacer",
     "name": "Spacer",
     "category": "Structure",

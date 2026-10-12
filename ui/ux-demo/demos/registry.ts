@@ -5,6 +5,7 @@ import { ApplicationTabsDemo } from './application-tabs.js';
 import { BadgeDemo, BadgeSettings } from './badge.js';
 import { ChipDemo } from './chip.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
+import { ColumnTrackDemo } from './column-track.js';
 import { ContentItemDemo } from './content-item.js';
 import { CornerStatusDemo } from './corner-status.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
@@ -97,6 +98,7 @@ export const demos = {
   'popup-menu': PopupMenuDemo,
   'surface-scaffold': SurfaceScaffoldDemo,
   'corner-status': CornerStatusDemo,
+  'column-track': ColumnTrackDemo,
   'edge-activity-indicator': EdgeActivityIndicatorDemo,
   'icon-button': IconButtonDemo,
   'icon-toggle-button': IconToggleButtonDemo,

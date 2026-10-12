@@ -27,6 +27,7 @@ Arrange related siblings in equal-width columns with either a fixed count or aut
 - [Row](./row.md) (axis-alternative) — Use Row for one horizontal flex line, alignment, or wrapping rather than fixed equal tracks.
 - [List](./list.md) (axis-alternative) — Use List when the main layout axis is vertical.
 - [ResizableRegion](./resize.md) (interactive-alternative) — Use ResizableRegion when people must adjust the boundary between tracks.
+- [ColumnTrack](./column-track.md) (nearest) — Use ColumnTrack for a board of columns that scroll sideways or page instead of wrapping.
 
 ## Imports
 
@@ -95,6 +96,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Row](./row.md), [List](./list.md), [ResizableRegion](./resize.md).
+- Components: [Row](./row.md), [List](./list.md), [ResizableRegion](./resize.md), [ColumnTrack](./column-track.md).
 - Docs: [`docs/layout.md`](../../docs/layout.md), [`docs/layout.md#grid`](../../docs/layout.md#grid).
 - UX catalog route: `?component=grid`.

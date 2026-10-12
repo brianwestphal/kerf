@@ -560,6 +560,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Paint a strip's surface with `List surface`.** `surface="base"` or
   `"raised"` fills a List and its insets with a solid surface (a banner strip
   above a sunken work area); never wrap it in app CSS that sets a background.
+- **Lay out a kanban board with `ColumnTrack`.** Equal columns that never
+  narrow below `minColumnWidth` scroll sideways; `layout="paged"` pages one
+  column at a time with a peek and snapping. Never re-track a `Grid` or
+  hand-roll scroll-snap CSS.
 - **Show ambient activity with `EdgeActivityIndicator`.** A layout-free,
   pointer-inert top-edge strip whose bars ripple while `busy`, with an optional
   polite `message` pill; Kerf owns the wave and reduced motion. Never hand-roll
