@@ -20,4 +20,11 @@ export type {
   CatalogSecondaryGroup,
   CatalogSection,
   CatalogStageRootAttributes,
+  CatalogUxReview,
 } from './catalog/types.js';
+export {
+  loadUxReviewProject,
+  UX_REVIEW_PROJECT_PATH,
+  type UxReviewCapture,
+  uxReviewCaptureUrl,
+} from './catalog/ux-review.js';

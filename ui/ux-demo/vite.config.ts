@@ -1,34 +1,14 @@
-import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
+import { uxReviewPlugin } from '@kerfjs/ui/vite-ux-review';
 import { defineConfig } from 'vite';
 
 import { computeDemoSourceFreshness } from '../scripts/lib/demo-source-freshness.mjs';
 import remifyCss from '../scripts/remify-css.mjs';
 
 const uiRoot = fileURLToPath(new URL('..', import.meta.url));
-const projectDirectory = realpathSync(
-  fileURLToPath(new URL('../..', import.meta.url)),
-);
-function serveReviewProject(
-  request: { method?: string },
-  response: {
-    statusCode: number;
-    setHeader(name: string, value: string): void;
-    end(body?: string): void;
-  },
-) {
-  if (request.method !== 'GET') {
-    response.statusCode = 404;
-    response.end();
-    return;
-  }
-  response.setHeader('Content-Type', 'application/json; charset=utf-8');
-  response.setHeader('Cache-Control', 'no-store');
-  response.end(JSON.stringify({ projectDirectory }));
-}
-
 const browserEntryDirectory = fileURLToPath(
   new URL('../dist/browser/', import.meta.url),
 );
@@ -61,15 +41,8 @@ export default defineConfig({
   // Keep the standalone catalog relocatable when it is hosted below a preview or proxy path.
   base: './',
   plugins: [
-    {
-      name: 'kerf-ux-review-project',
-      configureServer(server) {
-        server.middlewares.use('/__ux-review/project.json', serveReviewProject);
-      },
-      configurePreviewServer(server) {
-        server.middlewares.use('/__ux-review/project.json', serveReviewProject);
-      },
-    },
+    // The catalog's "Capture region" link: the same published plugin consumers use.
+    uxReviewPlugin(),
     {
       // Dev server only: serve component JS from src so edits hot-reload
       // instead of waiting for a rebuild. Browser-condition entries still load

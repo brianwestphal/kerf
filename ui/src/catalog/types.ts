@@ -48,6 +48,18 @@ export interface CatalogBrand {
   logoUrl?: string;
 }
 
+/**
+ * The UX Review capture link a {@link Catalog} shows when it knows the local
+ * project directory (see `uxReviewPlugin` and `wireCatalog`'s
+ * `onUxReviewProject`).
+ */
+export interface CatalogUxReview {
+  /** The absolute project directory UX Review files captures under. */
+  projectDirectory: string;
+  /** The catalog's name in the capture title and context (default `brand.title`). */
+  name?: string;
+}
+
 export type CatalogStageRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-catalog-stage'?: never;
@@ -101,6 +113,12 @@ export interface CatalogProps {
   /** Show the preview background chooser; `backgroundStyle` remains app-owned. */
   backgroundControl?: boolean;
   headerActions?: KerfUiContent;
+  /**
+   * Show a "Capture region" link to UX Review after `headerActions`, preset
+   * with the project and the active entry. Supply it once the project is known
+   * (`wireCatalog`'s `onUxReviewProject`); omit it on static hosting.
+   */
+  uxReview?: CatalogUxReview;
   secondarySections?: CatalogSecondaryGroup;
   sidebarFooter?: KerfUiContent;
   status?: KerfUiContent;

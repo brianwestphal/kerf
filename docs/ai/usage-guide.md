@@ -519,7 +519,10 @@ For visual review, `ui/ux-demo/` groups every public visual component by categor
 in a master/detail catalog. Each `?component=<id>` route renders one focused
 production demo inside chrome that consumes the same semantic light/dark tokens;
 when served locally, its **Capture region** action opens
-UX Review with that project and the selected demo in the review context;
+UX Review with that project and the selected demo in the review context (any
+`@kerfjs/ui/catalog` app gets the same link from `uxReviewPlugin` in
+`@kerfjs/ui/vite-ux-review`, `wireCatalog`'s `onUxReviewProject`, and
+`Catalog`'s `uxReview` prop);
 the detail view derives one grouped `Uses` / `Used by` selector from declared
 component dependencies and hides it for unrelated components. The catalog also
 lists all 70 free Web Awesome 3.12 components in a collapsible ecosystem section,

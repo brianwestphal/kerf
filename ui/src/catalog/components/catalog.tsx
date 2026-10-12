@@ -13,13 +13,15 @@ import type { CatalogEntry, CatalogProps, CatalogSection } from '../types.js';
 import { CatalogResourceFooter } from './catalog-resource-footer.js';
 import { CatalogSidebar } from './catalog-sidebar.js';
 import { CatalogStage } from './catalog-stage.js';
+import { CatalogUxReviewLink } from './catalog-ux-review-link.js';
 
 function findEntry(
   sections: readonly CatalogSection[],
   id: string,
-): CatalogEntry | undefined {
+): { entry: CatalogEntry; category: string } | undefined {
   for (const section of sections) {
-    for (const entry of section.entries) if (entry.id === id) return entry;
+    for (const entry of section.entries)
+      if (entry.id === id) return { entry, category: section.category };
   }
   return undefined;
 }
@@ -43,6 +45,7 @@ export function Catalog({
   reducedMotion,
   backgroundControl = false,
   headerActions,
+  uxReview,
   secondarySections,
   sidebarFooter,
   status,
@@ -63,11 +66,12 @@ export function Catalog({
   className = '',
   slot,
 }: CatalogProps) {
-  const selected =
+  const found =
     findEntry(sections, active) ??
     (secondarySections
       ? findEntry(secondarySections.sections, active)
       : undefined);
+  const selected = found?.entry;
   const name = selected?.name ?? '';
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
   const catalogName = `${brand.title} catalog`;
@@ -154,6 +158,13 @@ export function Catalog({
           trailing: (
             <>
               {headerActions}
+              {uxReview && found ? (
+                <CatalogUxReviewLink
+                  uxReview={{ ...uxReview, name: uxReview.name ?? brand.title }}
+                  entry={found.entry}
+                  category={found.category}
+                />
+              ) : null}
               {displayControls ? (
                 <ToolbarControlGroup
                   appearance="borderless"

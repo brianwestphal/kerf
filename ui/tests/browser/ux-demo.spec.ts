@@ -17,6 +17,7 @@ test('UX Review capture follows the selected demo and local project', async ({
   page,
   request,
 }, testInfo) => {
+  // Served by the published `@kerfjs/ui/vite-ux-review` plugin.
   const projectResponse = await request.get('/__ux-review/project.json');
   expect(projectResponse.ok()).toBe(true);
   const { projectDirectory } = (await projectResponse.json()) as {
@@ -35,6 +36,7 @@ test('UX Review capture follows the selected demo and local project', async ({
   expect(capture.searchParams.get('project')).toBe(projectDirectory);
   expect(capture.searchParams.get('target')).toBe('region');
   expect(capture.searchParams.get('kind')).toBe('screenshot');
+  expect(capture.searchParams.get('title')).toBe('Kerf UI: Badge');
   expect(capture.searchParams.get('context')).toContain('Badge (badge)');
 
   await page.locator('[data-catalog-sidebar] [data-item-id="chip"]').click();
@@ -47,7 +49,17 @@ test('UX Review capture follows the selected demo and local project', async ({
   expect(capture.searchParams.get('project')).toBe(projectDirectory);
   expect(capture.searchParams.get('title')).toBe('Kerf UI: Chip');
   expect(capture.searchParams.get('context')).toContain('Chip (chip)');
-  expect(capture.searchParams.get('context')).toContain('?component=chip');
+
+  // Following the link stamps the page it was followed from (the URL the
+  // selection wrote), without leaving the catalog in this test.
+  await page.evaluate(() =>
+    document.addEventListener('click', (event) => event.preventDefault()),
+  );
+  await chipLink.click();
+  capture = new URL((await chipLink.getAttribute('href'))!);
+  expect(capture.searchParams.get('context')).toMatch(
+    /\nPage: http:\/\/[^\n]*\?component=chip$/,
+  );
 
   if (testInfo.project.name === 'chromium') {
     await page.screenshot({
@@ -61,6 +73,20 @@ test('UX Review capture follows the selected demo and local project', async ({
       fullPage: true,
     });
   }
+});
+
+test('UX Review capture stays hidden when the server names no project', async ({
+  page,
+}) => {
+  // What a static host, or a dev server without the plugin, answers.
+  await page.route('**/__ux-review/project.json', (route) =>
+    route.fulfill({ status: 404, body: '' }),
+  );
+  await page.goto('/?component=badge');
+  await expect(
+    page.getByRole('heading', { name: 'Badge', level: 2 }),
+  ).toBeVisible();
+  await expect(page.locator('a[href^="uxreview:"]')).toHaveCount(0);
 });
 
 test('theme action follows the effective OS appearance and explicitly switches either direction', async ({

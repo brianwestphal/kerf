@@ -58,6 +58,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **UX Review capture in any `@kerfjs/ui/catalog` app.** The catalog's **Capture region** header link, which starts a UX Review region screenshot preset with the project and the active entry, now ships in the package instead of living in Kerf's own demo. Add `uxReviewPlugin()` from the new Node-only `@kerfjs/ui/vite-ux-review` subpath to the Vite config. Report the project with `wireCatalog`'s new `onUxReviewProject` callback, and pass it to `Catalog`'s new `uxReview` prop. The link appears on local dev and preview servers and stays hidden on static hosting. `uxReviewCaptureUrl` and `loadUxReviewProject` are exported from `@kerfjs/ui/catalog` for custom placements (`KF-XB1G3S`).
+
 - Deep-inset Pane content supports `--kui-pane-scrollbar-gutter: stable` for opaque edge-to-edge content, and Pane/Workbench focus rings paint above such scrollers without blocking their controls (`KF-9NVNGT`).
 
 - NavStack now has `separator="auto" | "hidden"`. Automatic separators frame a sunken active Pane at the top chrome and optional bottom toolbar; hidden suppresses stack-owned lines (`KF-1XRSRW`).

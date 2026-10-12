@@ -2414,8 +2414,8 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { b as CatalogProps } from './types-oLe_N1w0.js';
-export { a as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogStageRootAttributes } from './types-oLe_N1w0.js';
+import { b as CatalogProps } from './types-BNP4gA41.js';
+export { a as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogStageRootAttributes, i as CatalogUxReview } from './types-BNP4gA41.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
 import './sides-BPSWde0A.js';
@@ -2438,7 +2438,7 @@ import './resizable-region.js';
  * standard toggle moves into the entry toolbar while it is collapsed, and on
  * a small screen the sidebar overlays the stage like any Workbench rail.
  */
-declare function Catalog({ id, brand, sections, active, content, collapsed, theme, increasedContrast, reducedMotion, backgroundControl, headerActions, secondarySections, sidebarFooter, status, backgroundStyle, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleContrastAction, toggleMotionAction, selectBackgroundAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
+declare function Catalog({ id, brand, sections, active, content, collapsed, theme, increasedContrast, reducedMotion, backgroundControl, headerActions, uxReview, secondarySections, sidebarFooter, status, backgroundStyle, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleContrastAction, toggleMotionAction, selectBackgroundAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'text-trigger' | 'none';
@@ -2503,13 +2503,39 @@ interface CatalogExampleStackProps {
 /** A vertically stacked group of catalog examples. */
 declare function CatalogExampleStack({ label, rootAttributes, className, children, slot, }: CatalogExampleStackProps): kerfjs.SafeHtml;
 
-export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogExampleViewport, CatalogProps };
+/**
+ * Browser helpers for UX Review region captures from a catalog. The local
+ * project directory comes from `uxReviewPlugin` (`@kerfjs/ui/vite-ux-review`),
+ * which serves it to the catalog page on a Vite dev or preview server; static
+ * hosting has no such endpoint, so a catalog there shows no capture link.
+ */
+/** Where `uxReviewPlugin` serves `{ projectDirectory }`, relative to the catalog page. */
+declare const UX_REVIEW_PROJECT_PATH = "__ux-review/project.json";
+/** What a UX Review region capture is preset with. */
+interface UxReviewCapture {
+    /** The absolute project directory UX Review files the review under. */
+    projectDirectory: string;
+    /** The review title. */
+    title: string;
+    /** Review context: what was selected and where. */
+    context: string;
+}
+/** A `uxreview://capture` link that starts a region screenshot for a project. */
+declare function uxReviewCaptureUrl({ projectDirectory, title, context, }: UxReviewCapture): string;
+/**
+ * Ask the server that served `pageUrl` for its UX Review project directory.
+ * Resolves `null` when there is none (static hosting, a server without the
+ * plugin, a malformed answer, or a network failure); never rejects.
+ */
+declare function loadUxReviewProject(pageUrl: string | URL, fetchImpl?: typeof globalThis.fetch): Promise<string | null>;
+
+export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogExampleViewport, CatalogProps, UX_REVIEW_PROJECT_PATH, type UxReviewCapture, loadUxReviewProject, uxReviewCaptureUrl };
 ```
 
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-oLe_N1w0.js';
+import { C as CatalogResource } from './types-BNP4gA41.js';
 import './toolbar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
@@ -2563,7 +2589,7 @@ export { type CatalogGuidanceKind, type CatalogResourceKind, type CatalogResourc
 
 ```ts
 import { Signal } from 'kerfjs';
-import { a as CatalogBackgroundStyle } from './types-oLe_N1w0.js';
+import { a as CatalogBackgroundStyle } from './types-BNP4gA41.js';
 import './toolbar.js';
 import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
@@ -2629,6 +2655,13 @@ interface WireCatalogOptions {
     sidebarStorageKey?: string;
     /** The Catalog's `id`, when it is not the default `kui-catalog`. */
     id?: string;
+    /**
+     * Ask the page's server once for its UX Review project directory (served by
+     * `uxReviewPlugin` from `@kerfjs/ui/vite-ux-review`) and report it, so the
+     * app can render the Catalog with `uxReview`. Never called on static
+     * hosting or a server without the plugin.
+     */
+    onUxReviewProject?: (projectDirectory: string) => void;
 }
 interface CatalogRevealOptions {
     /** Scroll alignment within the sidebar. Default `'nearest'`. */
@@ -2657,7 +2690,7 @@ declare function revealCatalogEntry(root: HTMLElement, id: string, { block, inli
  * catalog's panes and every example in it show their chrome dividers only
  * while scrolled. Returns a disposer.
  */
-declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleContrast, onToggleMotion, onSelectBackground, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleContrastAction, toggleMotionAction, selectBackgroundAction, toggleSecondaryAction, collapsed, sidebarSize, sidebarStorageKey, id: catalogId, }: WireCatalogOptions): () => void;
+declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleContrast, onToggleMotion, onSelectBackground, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleContrastAction, toggleMotionAction, selectBackgroundAction, toggleSecondaryAction, collapsed, sidebarSize, sidebarStorageKey, id: catalogId, onUxReviewProject, }: WireCatalogOptions): () => void;
 
 export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry, wireCatalog };
 ```

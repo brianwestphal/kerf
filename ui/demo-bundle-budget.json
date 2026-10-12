@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 337400,
-  "measuredLargestJavaScriptGzip": 124512,
-  "measuredTotalJavaScriptGzip": 337368,
+  "totalJavaScriptGzip": 337800,
+  "measuredLargestJavaScriptGzip": 124513,
+  "measuredTotalJavaScriptGzip": 337785,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3251,6 +3251,22 @@
         "measuredTotalJavaScriptGzip": 337368,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 337400
+      }
+    },
+    {
+      "at": "2026-10-12T04:13:45.146Z",
+      "reason": "KF-XB1G3S: the Catalog shell renders the UX Review capture link and wireCatalog probes the project endpoint (moved from the demo into the published package)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124512,
+        "measuredTotalJavaScriptGzip": 337368,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 337400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 337785,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 337800
       }
     }
   ]

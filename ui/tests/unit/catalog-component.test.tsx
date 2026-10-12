@@ -390,6 +390,89 @@ describe('Catalog', () => {
   });
 });
 
+describe('Catalog UX Review link', () => {
+  const capture = (html: string) => {
+    const root = document.createElement('div');
+    root.innerHTML = html;
+    const link = root.querySelector<HTMLAnchorElement>(
+      'a[href^="uxreview://capture"]',
+    );
+    return link && { link, url: new URL(link.getAttribute('href')!) };
+  };
+
+  it('presets a region capture for the active entry after the header actions', () => {
+    const html = asHtml(
+      Catalog({
+        brand: { title: 'Acme UI' },
+        sections,
+        active: 'banner',
+        content: raw('<b/>'),
+        headerActions: raw('<button data-app-action>App</button>'),
+        uxReview: { projectDirectory: '/work/acme' },
+      }),
+    );
+    const found = capture(html)!;
+    expect(found.link.getAttribute('aria-label')).toBe(
+      'Capture Banner in UX Review',
+    );
+    expect(found.link.textContent).toContain('Capture region');
+    expect(Object.fromEntries(found.url.searchParams)).toEqual({
+      kind: 'screenshot',
+      target: 'region',
+      project: '/work/acme',
+      title: 'Acme UI: Banner',
+      context: 'Acme UI catalog\nSelected Feedback: Banner (banner)',
+    });
+    expect(html.indexOf('data-app-action')).toBeLessThan(
+      html.indexOf('uxreview://capture'),
+    );
+  });
+
+  it('names the catalog as asked and finds entries in the secondary group', () => {
+    const found = capture(
+      asHtml(
+        Catalog({
+          brand: { title: 'Acme' },
+          sections,
+          secondarySections: {
+            label: 'Ecosystem',
+            sections: [
+              { category: 'Vendor', entries: [{ id: 'wa', name: 'WA' }] },
+            ],
+          },
+          active: 'wa',
+          content: raw('<b/>'),
+          uxReview: { projectDirectory: '/w', name: 'Acme UI' },
+        }),
+      ),
+    )!;
+    expect(found.url.searchParams.get('title')).toBe('Acme UI: WA');
+    expect(found.url.searchParams.get('context')).toBe(
+      'Acme UI catalog\nSelected Vendor: WA (wa)',
+    );
+  });
+
+  it('shows no link without a project or without an active entry', () => {
+    const base = {
+      brand: { title: 'Acme' },
+      sections,
+      content: raw('<b/>'),
+    };
+    expect(capture(asHtml(Catalog({ ...base, active: 'button' })))).toBeNull();
+    expect(
+      capture(
+        asHtml(
+          Catalog({
+            ...base,
+            active: 'missing',
+            uxReview: { projectDirectory: '/w' },
+          }),
+        ),
+      ),
+    ).toBeNull();
+  });
+});
+
 describe('CatalogExample', () => {
   it('renders a labeled, noted example with an alignment inset', () => {
     const html = asHtml(
@@ -1248,5 +1331,94 @@ describe('wireCatalog', () => {
       .querySelector<HTMLElement>('[data-item-id="select"]')!
       .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  describe('UX Review', () => {
+    const shell = (projectDirectory?: string) =>
+      mountShell(
+        asHtml(
+          Catalog({
+            brand: { title: 'X' },
+            sections,
+            active: 'button',
+            content: raw('<b/>'),
+            uxReview: projectDirectory ? { projectDirectory } : undefined,
+          }),
+        ),
+      );
+    const settle = () =>
+      new Promise((resolve) => globalThis.setTimeout(resolve, 0));
+    const serve = (body: unknown, ok = true) =>
+      vi
+        .spyOn(window, 'fetch')
+        .mockResolvedValue({ ok, json: async () => body } as Response);
+
+    it('reports the project the page server names, once', async () => {
+      const fetch = serve({ projectDirectory: '/work/x' });
+      const onUxReviewProject = vi.fn();
+      const stop = wireCatalog(shell(), {
+        onSelect: vi.fn(),
+        onUxReviewProject,
+      });
+      await settle();
+      expect(fetch).toHaveBeenCalledOnce();
+      expect(String(fetch.mock.calls[0]![0])).toBe(
+        new URL('__ux-review/project.json', location.href).href,
+      );
+      expect(onUxReviewProject).toHaveBeenCalledExactlyOnceWith('/work/x');
+      stop();
+    });
+
+    it('stays silent without the endpoint, after disposal, or when not asked', async () => {
+      const onUxReviewProject = vi.fn();
+      serve({}, false);
+      wireCatalog(shell(), { onSelect: vi.fn(), onUxReviewProject })();
+      serve({ projectDirectory: '/work/x' });
+      const stop = wireCatalog(shell(), {
+        onSelect: vi.fn(),
+        onUxReviewProject,
+      });
+      stop();
+      await settle();
+      expect(onUxReviewProject).not.toHaveBeenCalled();
+      const fetch = serve({ projectDirectory: '/work/x' });
+      fetch.mockClear();
+      wireCatalog(shell(), { onSelect: vi.fn() })();
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('stamps the current page into the capture context as it is followed', async () => {
+      serve({ projectDirectory: '/work/x' });
+      const root = shell('/work/x');
+      const stop = wireCatalog(root, {
+        onSelect: vi.fn(),
+        onUxReviewProject: vi.fn(),
+      });
+      const link = root.querySelector<HTMLAnchorElement>(
+        'a[href^="uxreview://capture"]',
+      )!;
+      // Keep the test page from following the custom scheme.
+      link.addEventListener('click', (event) => event.preventDefault());
+      // Returns the page the click happened on alongside the stamped context.
+      const contextAfterClick = () => {
+        const page = location.href;
+        link.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        return [new URL(link.href).searchParams.get('context'), page];
+      };
+      history.replaceState(null, '', '?component=button');
+      let [context, page] = contextAfterClick();
+      expect(context).toBe(
+        `X catalog\nSelected Controls: Button (button)\nPage: ${page}`,
+      );
+      // Followed again from another URL: the page line is replaced, not added.
+      history.replaceState(null, '', '?component=button&theme=dark');
+      [context, page] = contextAfterClick();
+      expect(page).toContain('theme=dark');
+      expect(context).toBe(
+        `X catalog\nSelected Controls: Button (button)\nPage: ${page}`,
+      );
+      stop();
+      await settle();
+    });
   });
 });

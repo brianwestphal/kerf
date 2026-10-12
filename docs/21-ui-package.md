@@ -357,7 +357,11 @@ the same within-group rule. The
 local Vite dev/preview server exposes its project folder to the demo,
 which then shows a **Capture region** header link to UX Review. The link starts
 a region screenshot with the current project, selected entry, and demo URL as
-review context. UX Review validates the Hot Sheet store when the review is
+review context. All three pieces ship in the package, so any catalog built on
+`@kerfjs/ui/catalog` gets the same link: the Node-only `uxReviewPlugin`
+(`@kerfjs/ui/vite-ux-review`) serves the project directory, `wireCatalog`'s
+`onUxReviewProject` reports it, and `Catalog`'s `uxReview` prop renders the link
+(KF-XB1G3S); the demo dogfoods them. UX Review validates the Hot Sheet store when the review is
 submitted. Static hosting has no local project folder, so it hides the link;
 the browser cannot reliably detect whether the `uxreview:` app is installed.
 Catalog metadata declares direct component dependencies; the

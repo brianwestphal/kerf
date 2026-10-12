@@ -56,6 +56,10 @@
       "types": "./catalog-projection.d.mts",
       "import": "./catalog-projection.mjs"
     },
+    "./vite-ux-review": {
+      "types": "./vite-ux-review.d.mts",
+      "import": "./vite-ux-review.mjs"
+    },
     "./lucide-icon": {
       "types": "./dist/lucide-icon.d.ts",
       "browser": "./dist/browser/lucide-icon.js",
@@ -412,6 +416,8 @@
     "catalog-projection.mjs",
     "catalog-projection.d.mts",
     "catalog-projection-cli.mjs",
+    "vite-ux-review.mjs",
+    "vite-ux-review.d.mts",
     "scripts/component-catalog-extension-validation.mjs",
     "analyzer",
     "doctor",

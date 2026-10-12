@@ -465,6 +465,57 @@ revealCatalogEntry(app, initial, { block: "center" });
   the toggle, the app applies the theme (the shell reads `theme` to show the toggle's
   opposite-state label). Omit `theme` to hide the toggle entirely.
 
+## UX Review capture
+
+On a local Vite dev or preview server the catalog can offer a **Capture region**
+header link that starts a UX Review region screenshot, preset with the project
+and the active entry. Static hosting has no local project, so the link never
+appears there. Three pieces wire it:
+
+```ts
+// vite.config.ts — Node only; never part of the browser bundle.
+import { uxReviewPlugin } from "@kerfjs/ui/vite-ux-review";
+
+export default defineConfig({ plugins: [uxReviewPlugin()] });
+```
+
+```tsx
+const uxReviewProject = signal<string | null>(null);
+
+mount(app, () => (
+  <Catalog
+    /* …the props above… */
+    uxReview={
+      uxReviewProject.value
+        ? { projectDirectory: uxReviewProject.value }
+        : undefined
+    }
+  />
+));
+
+wireCatalog(app, {
+  onSelect: (id) => (active.value = id),
+  onUxReviewProject: (directory) => (uxReviewProject.value = directory),
+});
+```
+
+- **`uxReviewPlugin(options?)`** answers `GET …/__ux-review/project.json` with
+  `{ projectDirectory }` on the dev and preview servers, at any base path. The
+  directory defaults to the repository holding Vite's `root` (the nearest
+  ancestor with `.git`, or `root` itself); pass `projectDirectory` (resolved
+  against `root`) to name another.
+- **`wireCatalog`'s `onUxReviewProject`** asks the page's server once and
+  reports the directory. It is never called on static hosting or a server
+  without the plugin. While wired, following the link stamps the current page
+  URL into the capture context.
+- **`Catalog`'s `uxReview`** (`{ projectDirectory, name? }`) renders the link
+  after `headerActions`. The capture is titled `<name>: <entry>`, and its
+  context names the catalog, the entry's section, and the entry; `name`
+  defaults to `brand.title`.
+
+The browser helpers behind it, `uxReviewCaptureUrl` and `loadUxReviewProject`,
+are exported from `@kerfjs/ui/catalog` for a capture link placed elsewhere.
+
 ## Custom action names
 
 The shell emits `data-action="catalog-select"` (sidebar items),

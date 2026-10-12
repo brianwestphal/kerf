@@ -4,6 +4,7 @@ import { readTokenSearchField } from '../../components/forms/token-search-field/
 import { wireWorkbench } from '../../components/layout/workbench/wiring/wire-workbench.js';
 import { wireScrollDividers } from '../../wiring/wire-scroll-dividers.js';
 import type { CatalogBackgroundStyle } from '../types.js';
+import { loadUxReviewProject } from '../ux-review.js';
 
 export interface WireCatalogOptions {
   /** Invoked with the entry id when a sidebar item or a related-entry option is chosen. */
@@ -55,6 +56,13 @@ export interface WireCatalogOptions {
   sidebarStorageKey?: string;
   /** The Catalog's `id`, when it is not the default `kui-catalog`. */
   id?: string;
+  /**
+   * Ask the page's server once for its UX Review project directory (served by
+   * `uxReviewPlugin` from `@kerfjs/ui/vite-ux-review`) and report it, so the
+   * app can render the Catalog with `uxReview`. Never called on static
+   * hosting or a server without the plugin.
+   */
+  onUxReviewProject?: (projectDirectory: string) => void;
 }
 
 export interface CatalogRevealOptions {
@@ -254,8 +262,17 @@ export function wireCatalog(
     sidebarSize,
     sidebarStorageKey,
     id: catalogId = 'kui-catalog',
+    onUxReviewProject,
   }: WireCatalogOptions,
 ): () => void {
+  let disposed = false;
+  const view = root.ownerDocument.defaultView;
+  if (onUxReviewProject && view)
+    void loadUxReviewProject(view.location.href, (input, init) =>
+      view.fetch(input, init),
+    ).then((directory) => {
+      if (directory && !disposed) onUxReviewProject(directory);
+    });
   let cancelReveal: (() => void) | undefined;
   const select = (id: string) => {
     onSelect(id);
@@ -368,7 +385,32 @@ export function wireCatalog(
         },
       }),
     );
+  if (onUxReviewProject)
+    // The capture context names the page the review came from. The URL can
+    // change after the link rendered (`urlParam`), so stamp it as the link is
+    // followed; the browser navigates to the href as it stands after the click.
+    disposers.push(
+      delegate(
+        root,
+        'click',
+        'a.kui-toolbar-action-link[href^="uxreview://capture"]',
+        (_event, element) => {
+          const link = element as HTMLAnchorElement;
+          const url = new URL(link.href);
+          const context = (url.searchParams.get('context') ?? '').replace(
+            /\nPage: [^\n]*$/,
+            '',
+          );
+          url.searchParams.set(
+            'context',
+            `${context}\nPage: ${link.ownerDocument.location.href}`,
+          );
+          link.href = url.href;
+        },
+      ),
+    );
   return () => {
+    disposed = true;
     cancelReveal?.();
     for (const dispose of disposers.splice(0)) dispose();
   };
