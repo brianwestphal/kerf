@@ -15,7 +15,7 @@ const fixtureBundle = build({
   write: false,
 });
 
-const css = ['foundation', 'layout', 'list', 'list-item']
+const css = ['foundation', 'layout', 'list', 'list-item', 'text']
   .map((name) =>
     readFileSync(
       resolve(import.meta.dirname, `../../dist/styles/${name}.css`),

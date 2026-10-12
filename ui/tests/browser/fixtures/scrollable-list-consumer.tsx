@@ -1,5 +1,6 @@
 import { List } from '@kerfjs/ui/list';
 import { ListItem } from '@kerfjs/ui/list-item';
+import { Text } from '@kerfjs/ui/text';
 
 const description =
   '/Users/someone/Documents/projects/a-very-long-project-directory-name/with/nested/folders/that/wraps/onto/several/lines';
@@ -38,7 +39,7 @@ document.querySelector('[data-app]')!.insertAdjacentHTML(
     >
       <List flex scrollable rootAttributes={{ 'data-ring-list': '' }}>
         {Array.from({ length: 8 }, (_, index) => (
-          <ListItem label={`Project ${index + 1}`} />
+          <Text>{`Project ${index + 1}`}</Text>
         ))}
       </List>
     </div>,
