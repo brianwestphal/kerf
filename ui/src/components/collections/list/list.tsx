@@ -60,7 +60,12 @@ export interface ListProps {
   hAlign?: HorizontalAlignment;
   /** Vertical distribution. Defaults to top. */
   vAlign?: ListVerticalAlignment;
-  /** Own vertical scrolling and overscroll containment. */
+  /**
+   * Own vertical scrolling and overscroll containment. Children keep their
+   * natural height and scroll instead of shrinking. To bound the list by a
+   * `max-height` ancestor (no definite height), give that ancestor a flex
+   * column and use `flex`; `fill` needs a definite-height parent.
+   */
   scrollable?: boolean;
   /** Physical divider edges in canonical top/right/bottom/left order. */
   dividerSides?: Sides;

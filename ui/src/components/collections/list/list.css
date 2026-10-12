@@ -113,6 +113,15 @@
   overscroll-behavior-y: contain;
 }
 
+/* A scrollable List owns the overflow, so its rows keep their natural height
+   and scroll rather than shrink. Items that clip their own overflow (a
+   ListItem) have a zero automatic minimum height, so the default
+   `flex-shrink: 1` compressed multiline rows into one another once the List
+   was bounded by a max-height ancestor. */
+.kui-list[data-scrollable="true"] > * {
+  flex-shrink: 0;
+}
+
 .kui-list:is([divider-sides*="t"], [data-scroll-divider*="t"]) {
   --_kui-list-divider-top: var(--kui-list-divider-color);
 }

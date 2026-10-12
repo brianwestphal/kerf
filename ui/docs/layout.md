@@ -623,6 +623,12 @@ frame), pass `fill` instead: the root takes the parent's full height
 (`height: 100%`), so its `flex` children can grow into it. Use `fill` only on
 that sole layout root; a sibling inside a flex layout keeps using `flex`.
 
+A `scrollable` List owns its overflow: its rows keep their natural height and
+scroll rather than shrink. To bound one by an ancestor's `max-height` instead
+of a definite height, make that ancestor a flex column and pass `flex` (not
+`fill`): `<List flex scrollable>` takes at most the remaining height and
+scrolls the rest, with no app-owned scrolling wrapper.
+
 Put route, test, or recipe metadata on the same root with `rootAttributes`,
 which accepts safe `data-*` pairs and keeps each component's structural
 attributes (`data-component`, `data-flex`, `data-fill`, alignment, inset, and
