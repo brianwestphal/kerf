@@ -491,7 +491,7 @@ controlled state), and ArrowRight moves the caret past a trailing chip so typed
 text lands after it. An optional `onEdit({ id, editor, event })` — with the
 originating `InputEvent` so a caller can gate on `inputType`/`data` — fires on every editor
 `input`, letting a caller drop its own `input` listener; the application still
-owns query parsing and result-count/loading announcements.
+owns query parsing and result-count/loading announcements. When the app's `onEdit` or `onRemoveToken` changes tokens and the controlled render replaces the focused editor, `wireTokenSearchFields` moves focus and caret to the replacement at the same mutation checkpoint (a caret at the end of the query stays at the end; any other caret keeps its place in the remaining text), so keys typed at full speed are not lost.
 
 With a `createTokenSearchModel` passed to the field and registered in
 `wireTokenSearchFields(root, { models })`, grammar parsing, chips, clear/edit/

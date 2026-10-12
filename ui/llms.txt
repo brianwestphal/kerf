@@ -495,6 +495,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `onRemoveToken`, ArrowRight moves the caret past a trailing chip), and an
   `onEdit({id, editor, event})` input callback (the `InputEvent` lets you gate on `inputType`/`data`) — so the app can drop its own keydown/input
   boilerplate while still owning parsing and controlled token state.
+  When `onEdit` or `onRemoveToken` changes tokens and the controlled render
+  replaces the focused editor, the helper hands focus and caret to the new
+  editor in the same task (end stays at end), so do not add a refocus
+  `MutationObserver` or `requestAnimationFrame`.
 - **Placeholder loading state, don't rebuild it.** For a value or component that is
   still loading, set `placeholder` on the component (`Select`, `ListHeader`,
   `ListItem`, `ValueTableRow`, `SegmentedControl`, `StateBanner`,

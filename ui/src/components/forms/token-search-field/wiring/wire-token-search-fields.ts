@@ -599,7 +599,11 @@ export function wireTokenSearchFields(
   };
   const restoreDeletion = (
     editor: HTMLElement,
-    deletion: Pick<PendingTokenDeletion, 'id' | 'offset'>,
+    deletion: {
+      id: string;
+      /** Query offset for the replacement, or a function of it. */
+      offset: number | ((replacement: HTMLElement) => number | undefined);
+    },
   ) => {
     deleting.get(deletion.id)?.();
     const stop = () => {
@@ -620,7 +624,12 @@ export function wireTokenSearchFields(
         active !== replacement.ownerDocument.body
       )
         return;
-      placeTokenSearchCaret(replacement, deletion.offset);
+      placeTokenSearchCaret(
+        replacement,
+        typeof deletion.offset === 'number'
+          ? deletion.offset
+          : deletion.offset(replacement),
+      );
     };
     const observer = new MutationObserver(restore);
     observer.observe(root, { childList: true, subtree: true });
@@ -628,6 +637,26 @@ export function wireTokenSearchFields(
     // disconnects observation; it cannot move a later selection or steal focus.
     const timeout = view().setTimeout(stop, 0);
     deleting.set(deletion.id, stop);
+  };
+  // An application that changes tokens while handling this input or key (it
+  // commits typed grammar to a chip in onEdit, or applies onRemoveToken)
+  // re-renders and replaces the focused editor. Hand focus and caret to the
+  // replacement at the same mutation checkpoint, before another key can land
+  // on no editor: a caret at the end of the query stays at the end, any other
+  // caret keeps its place in the text that remains after the new chip.
+  const handOffAppEdit = (editor: HTMLElement, id: string) => {
+    if (editor.ownerDocument.activeElement !== editor) return;
+    const offset = caretQueryOffset(editor);
+    if (offset === undefined) return;
+    const before = readTokenSearchField(editor).query.length;
+    restoreDeletion(editor, {
+      id,
+      offset: (replacement) => {
+        if (offset >= before) return undefined;
+        const after = readTokenSearchField(replacement).query.length;
+        return Math.min(after, Math.max(0, offset - (before - after)));
+      },
+    });
   };
   const onInput = (event: Event) => {
     const editor = editorFromEvent(root, event);
@@ -675,7 +704,10 @@ export function wireTokenSearchFields(
         if (model.state.value.tokens.length > before)
           focusAfterRender(id, '[data-token-search-editor]', true);
       }
-      if (onEdit) onEdit({ id, editor, event: event as InputEvent });
+      if (onEdit) {
+        if (!restore && !model && !deleting.has(id)) handOffAppEdit(editor, id);
+        onEdit({ id, editor, event: event as InputEvent });
+      }
     }
     pending.delete(editorId);
   };
@@ -814,11 +846,9 @@ export function wireTokenSearchFields(
               editor,
               direction,
             };
-            if (models[id]) {
-              const offset = caretQueryOffset(editor);
-              if (offset !== undefined) restoreDeletion(editor, { id, offset });
-              models[id].remove(removal.value);
-            }
+            const offset = caretQueryOffset(editor);
+            if (offset !== undefined) restoreDeletion(editor, { id, offset });
+            models[id]?.remove(removal.value);
             onRemoveToken?.(removal);
             return;
           }

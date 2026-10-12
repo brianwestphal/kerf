@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Typing quickly into a `TokenSearchField` whose app commits typed grammar to chips from `onEdit` (or removes a chip from `keyboard.onRemoveToken`) no longer loses keys. The token change re-keys the editor, so the controlled render replaced the focused element, and keys typed before the app refocused it went nowhere: `site:north site:annex` became `[site:north] ite:annex`. `wireTokenSearchFields` now hands focus and caret to the replacement at the same mutation checkpoint, as it already did for Clear and native deletion. A caret at the end stays at the end, and any other caret keeps its place in the remaining text (`KF-96TEF4`).
+
 - `DialogSurface` no longer names a `wa-dialog`'s native panel when the host is itself an explicit, named dialog (`role="dialog"` or `"alertdialog"`). Both used to carry the same name, so the accessibility tree had two dialogs with one name and role queries such as Playwright's `getByRole('dialog', { name })` failed in strict mode. Removing or changing the host role restores the panel name (`KF-A0NF2S`).
 
 - A nested `PopupMenu` submenu's pointer "safe triangle" now spans the gap to the placed submenu. Web Awesome measured the submenu for that triangle before its asynchronous placement landed, so the triangle kept the submenu's pre-placement edge (often the viewport origin): its fixed, viewport-sized hit region fanned away from the submenu and could cover the parent menu's rows, swallowing their hover and clicks. PopupMenu now re-measures once the placement lands and again when the submenu's show animation settles, so applications need no `::part(submenu)::before` override (`KF-YAHAZK`).

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 345800,
-  "measuredLargestJavaScriptGzip": 129040,
-  "measuredTotalJavaScriptGzip": 345720,
+  "totalJavaScriptGzip": 345900,
+  "measuredLargestJavaScriptGzip": 129132,
+  "measuredTotalJavaScriptGzip": 345816,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3571,6 +3571,22 @@
         "measuredTotalJavaScriptGzip": 345720,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 345800
+      }
+    },
+    {
+      "at": "2026-10-12T14:12:37.031Z",
+      "reason": "TokenSearchField app-edit caret handoff (KF-96TEF4)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 129040,
+        "measuredTotalJavaScriptGzip": 345720,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 345800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 129132,
+        "measuredTotalJavaScriptGzip": 345816,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 345900
       }
     }
   ]

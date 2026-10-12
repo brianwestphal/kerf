@@ -31,6 +31,90 @@ function inputEvent(
 }
 
 describe('wireTokenSearchFields', () => {
+  it('hands focus and caret to an editor the app replaces from onEdit', async () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const query = signal('site:north pump');
+    const tokens = signal<TokenSearchToken[]>([]);
+    const stopMount = mount(root, () =>
+      TokenSearchField({
+        id: 'commit',
+        label: 'Search',
+        query: query.value,
+        tokens: tokens.value,
+      }),
+    );
+    const editor = () =>
+      root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const commit = () => {
+      const value = readTokenSearchField(editor(), tokens.value);
+      const match = /^(\S+:\S+)\s+/.exec(value.query);
+      if (!match) return;
+      batch(() => {
+        tokens.value = [
+          ...value.tokens,
+          { value: match[1]!, label: match[1]! },
+        ];
+        query.value = value.query.slice(match[0].length);
+      });
+    };
+    const stop = wireTokenSearchFields(root, {
+      collapsible: false,
+      onEdit: commit,
+    });
+    const caret = () => {
+      const range = document.getSelection()!.getRangeAt(0);
+      const prefix = document.createRange();
+      prefix.selectNodeContents(editor());
+      prefix.setEnd(range.startContainer, range.startOffset);
+      const holder = document.createElement('div');
+      holder.append(prefix.cloneContents());
+      return readTokenSearchField(holder).query.length;
+    };
+    const textNode = () =>
+      [...editor().querySelectorAll('[data-token-search-text]')]
+        .map((span) => span.firstChild)
+        .find((node) => node && node.textContent)!;
+
+    // A caret inside "pump" keeps its place after the committed chip.
+    focusAt(editor(), textNode(), 'site:north pu'.length);
+    const before = editor();
+    before.dispatchEvent(inputEvent('input', 'insertText'));
+    await Promise.resolve();
+    expect(editor()).not.toBe(before);
+    expect(document.activeElement).toBe(editor());
+    expect(tokens.value.map((token) => token.value)).toEqual(['site:north']);
+    expect(caret()).toBe('pu'.length);
+
+    // A caret at the end of the query stays at the end. The browser owns the
+    // editor's text (it is morph-skipped), so type by editing it in place.
+    textNode().textContent = 'site:annex x';
+    focusAt(editor(), textNode(), 'site:annex x'.length);
+    editor().dispatchEvent(inputEvent('input', 'insertText'));
+    await Promise.resolve();
+    expect(document.activeElement).toBe(editor());
+    expect(caret()).toBe(1);
+
+    // An unfocused editor, or an edit that renders no replacement, is left alone.
+    textNode().textContent = 'site:mill rest';
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    outside.focus();
+    editor().dispatchEvent(inputEvent('input', 'insertText'));
+    await Promise.resolve();
+    expect(document.activeElement).toBe(outside);
+    textNode().textContent = 'plain';
+    focusAt(editor(), textNode(), 2);
+    const unchanged = editor();
+    unchanged.dispatchEvent(inputEvent('input', 'insertText'));
+    await new Promise((resolve) => globalThis.setTimeout(resolve, 0));
+    expect(editor()).toBe(unchanged);
+    outside.remove();
+    stop();
+    stopMount();
+    root.remove();
+  });
+
   it('focuses an enabled form editor when its visible label is clicked', () => {
     const root = document.createElement('div');
     root.innerHTML =
