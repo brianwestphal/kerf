@@ -40,6 +40,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - trailing priority for an expanded trailing control at compact or narrow widths
 - trailing groups and a standalone primary wa-button wrap instead of clipping
 - outer inset independently configurable from zone gap
+- compact density: a 40px header (34px band, 3px block insets) for an embedded panel, filled with compact ToolbarControlGroups
 - app bar or bottom bar claiming its screen edges (safeAreaEdges)
 - typed hideBelow/showBelow thresholds at the nearest Toolbar content width
 

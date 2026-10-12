@@ -233,7 +233,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   full row and a reduced-motion-aware downward entrance.
   `--kui-toolbar-inset: 0px` removes an embedded Toolbar's outer padding and
   corresponding minimum-height allowance while preserving its zone gap and
-  safe-area compensation.
+  safe-area compensation. For a shorter header embedded in a panel or card,
+  pass `density="compact"` (40px: a 34px control band and 3px block insets)
+  and give its groups `size="compact"`; never shrink a Toolbar with CSS.
 - **Position region restore controls declaratively.** A ResizableRegion has a
   background token, `contentOverflow="visible"` for an anchored popup,
   top/bottom `restorePosition`, typed `restoreInset`, and

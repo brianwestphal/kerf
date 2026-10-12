@@ -162,6 +162,32 @@ export function ToolbarDemo() {
           }
         />
       </CatalogExample>
+      <CatalogExample
+        label="Compact density"
+        note="Compact density makes a 40px header for a panel embedded in a card or inspector; its groups take the compact size."
+        viewport={{ width: 'medium', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-toolbar-compact': '' }}
+      >
+        <Toolbar
+          label="Recent activity"
+          density="compact"
+          leading={<ToolbarText text="Recent activity" />}
+          trailing={
+            <ToolbarControlGroup
+              label="Activity actions"
+              size="compact"
+              content="icon"
+            >
+              <button type="button" aria-label="Refresh activity">
+                <LucideIcon icon={RefreshCw} name="refresh-cw" />
+              </button>
+              <button type="button" aria-label="Filter activity">
+                <LucideIcon icon={Filter} name="filter" />
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
       <CatalogExample viewport={{ width: 'wide', frame: 'solid' }}>
         <List gap="xs">
           <Toolbar

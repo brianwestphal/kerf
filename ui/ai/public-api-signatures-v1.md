@@ -159,6 +159,8 @@ import { S as Sides } from './sides-BPSWde0A.js';
 import { PaneSeparatorSide } from './pane.js';
 
 type ToolbarPosition = 'header' | 'footer';
+/** Control-band density: `default` (60px with 44px groups) or `compact`. */
+type ToolbarDensity = 'default' | 'compact';
 interface ToolbarProps {
     leading?: KerfUiContent;
     center?: KerfUiContent;
@@ -166,6 +168,13 @@ interface ToolbarProps {
     label?: string;
     /** Use footer semantics for a bottom toolbar; defaults to header. */
     position?: ToolbarPosition;
+    /**
+     * `compact` sizes the toolbar to a 34px control band with 3px block
+     * insets — 40px tall — for a header embedded in a panel or card. Fill it
+     * with `ToolbarControlGroup size="compact"` groups; inline insets and the
+     * gap between zones are unchanged. Defaults to `default`.
+     */
+    density?: ToolbarDensity;
     /**
      * Physical divider edges in canonical top/right/bottom/left order, drawn
      * always. Defaults to none: a toolbar pinned over or under scrolling content
@@ -215,9 +224,9 @@ interface ToolbarProps {
  * toolbar) forwards, so the app configures that toolbar instead of styling it.
  */
 type ToolbarConfig = Pick<ToolbarProps, 'dividerSides' | 'centerAlign' | 'responsive' | 'responsiveAt' | 'safeAreaEdges'>;
-declare function Toolbar({ leading, center, trailing, label, position, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
+declare function Toolbar({ leading, center, trailing, label, position, density, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
 
-export { Sides, Toolbar, type ToolbarConfig, type ToolbarPosition, type ToolbarProps };
+export { Sides, Toolbar, type ToolbarConfig, type ToolbarDensity, type ToolbarPosition, type ToolbarProps };
 ```
 
 ## `@kerfjs/ui/toolbar-text`

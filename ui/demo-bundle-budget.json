@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 352200,
-  "measuredLargestJavaScriptGzip": 135219,
-  "measuredTotalJavaScriptGzip": 352168,
+  "totalJavaScriptGzip": 352400,
+  "measuredLargestJavaScriptGzip": 135366,
+  "measuredTotalJavaScriptGzip": 352311,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3715,6 +3715,22 @@
         "measuredTotalJavaScriptGzip": 352168,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 352200
+      }
+    },
+    {
+      "at": "2026-10-12T22:41:22.869Z",
+      "reason": "Toolbar compact density and its catalog example (KF-0QDF0V)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 135219,
+        "measuredTotalJavaScriptGzip": 352168,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 352200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 135366,
+        "measuredTotalJavaScriptGzip": 352311,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 352400
       }
     }
   ]

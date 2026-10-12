@@ -34,18 +34,13 @@
   /* The minimum height grows by any claimed block inset, so a toolbar a flex
      column shrinks still keeps a whole control row clear of the unsafe area. */
   min-height: calc(
-    var(--kui-toolbar-group-size, calc(2px + remify(42px))) +
-      (2 * var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px)))) +
+    var(--_kui-toolbar-band) + (2 * var(--_kui-toolbar-block-inset)) +
       var(--_kui-toolbar-safe-block-start) + var(--_kui-toolbar-safe-block-end)
   );
   padding-block: calc(
-      var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px))) +
-        var(--_kui-toolbar-safe-block-start)
+      var(--_kui-toolbar-block-inset) + var(--_kui-toolbar-safe-block-start)
     )
-    calc(
-      var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px))) +
-        var(--_kui-toolbar-safe-block-end)
-    );
+    calc(var(--_kui-toolbar-block-inset) + var(--_kui-toolbar-safe-block-end));
   padding-inline: calc(
       var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px))) +
         var(--_kui-toolbar-safe-inline-start)
@@ -157,6 +152,18 @@
    `--_kui-toolbar-band` is context those components use for that placement. */
 .kui-toolbar {
   --_kui-toolbar-band: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  --_kui-toolbar-block-inset: var(
+    --kui-toolbar-inset,
+    var(--kui-toolbar-gap, remify(8px))
+  );
+}
+
+/* Compact density: a 34px band (the compact ToolbarControlGroup's size) with
+   3px block insets makes a 40px header for an embedded panel or card. The
+   inline insets and zone gap keep the standard 8px. */
+.kui-toolbar[data-density="compact"] {
+  --_kui-toolbar-band: remify(34px);
+  --_kui-toolbar-block-inset: var(--kui-toolbar-inset, remify(3px));
 }
 
 .kui-toolbar__leading,

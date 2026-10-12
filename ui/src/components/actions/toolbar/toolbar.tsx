@@ -3,6 +3,8 @@ import type { Sides } from '../../../shared/layout/sides.js';
 import type { PaneSeparatorSide } from '../../layout/pane/pane.js';
 
 export type ToolbarPosition = 'header' | 'footer';
+/** Control-band density: `default` (60px with 44px groups) or `compact`. */
+export type ToolbarDensity = 'default' | 'compact';
 
 export interface ToolbarProps {
   leading?: KerfUiContent;
@@ -11,6 +13,13 @@ export interface ToolbarProps {
   label?: string;
   /** Use footer semantics for a bottom toolbar; defaults to header. */
   position?: ToolbarPosition;
+  /**
+   * `compact` sizes the toolbar to a 34px control band with 3px block
+   * insets — 40px tall — for a header embedded in a panel or card. Fill it
+   * with `ToolbarControlGroup size="compact"` groups; inline insets and the
+   * gap between zones are unchanged. Defaults to `default`.
+   */
+  density?: ToolbarDensity;
   /**
    * Physical divider edges in canonical top/right/bottom/left order, drawn
    * always. Defaults to none: a toolbar pinned over or under scrolling content
@@ -81,6 +90,7 @@ export function Toolbar({
   trailing,
   label,
   position = 'header',
+  density = 'default',
   dividerSides = '',
   centerAlign = 'center',
   responsive = 'none',
@@ -92,6 +102,7 @@ export function Toolbar({
   const attributes = {
     class: `kui-toolbar ${className}`.trim(),
     'data-component': 'toolbar',
+    'data-density': density === 'compact' ? 'compact' : undefined,
     'divider-sides': dividerSides || undefined,
     'data-has-center': String(Boolean(center)),
     'data-center-align': centerAlign,
