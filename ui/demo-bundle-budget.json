@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 337800,
+  "totalJavaScriptGzip": 338500,
   "measuredLargestJavaScriptGzip": 124513,
-  "measuredTotalJavaScriptGzip": 337785,
+  "measuredTotalJavaScriptGzip": 338430,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3267,6 +3267,22 @@
         "measuredTotalJavaScriptGzip": 337785,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 337800
+      }
+    },
+    {
+      "at": "2026-10-12T06:14:59.919Z",
+      "reason": "KF-0AY6AE: Catalog settings pane plus the Badge entry's settings playground demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 337785,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 337800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124513,
+        "measuredTotalJavaScriptGzip": 338430,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 338500
       }
     }
   ]

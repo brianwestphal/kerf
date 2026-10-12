@@ -112,3 +112,17 @@ export const inspectorSection = signal<'summary' | 'activity' | 'files'>(
 export const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>(
   'comfortable',
 );
+
+/** The Badge entry's playground configuration, edited from its catalog settings pane. */
+export interface BadgePlaygroundState {
+  tone: 'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger';
+  appearance: 'quiet' | 'solid' | 'outline';
+  shape: 'pill' | 'rounded';
+  size: 'compact' | 'default';
+}
+export const badgePlayground = signal<BadgePlaygroundState>({
+  tone: 'info',
+  appearance: 'quiet',
+  shape: 'pill',
+  size: 'default',
+});

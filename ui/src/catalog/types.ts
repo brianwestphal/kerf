@@ -94,10 +94,36 @@ export interface CatalogSidebarConfig extends Pick<
   toolbar?: ToolbarConfig;
 }
 
+/**
+ * The Catalog settings pane's configuration, forwarded to its Workbench right
+ * rail. Everything is optional; omitted fields keep the Catalog's defaults.
+ */
+export interface CatalogSettingsConfig extends Pick<
+  WorkbenchPanel,
+  | 'resizable'
+  | 'separator'
+  | 'collapseMotion'
+  | 'presentation'
+  | 'responsiveOverlayAt'
+  | 'compactOverlay'
+> {
+  /**
+   * Pane width in px (default 288). With `resizable`, it is the current
+   * width: render the app's size signal here and hand the same signal to
+   * `wireCatalog`'s `settingsSize`, which writes each committed resize to it.
+   */
+  size?: number;
+  /** The pane's title (default `Settings`); it also names the toggle. */
+  title?: string;
+  /** The pane header toolbar's configuration. */
+  toolbar?: ToolbarConfig;
+}
+
 export interface CatalogProps {
   /**
    * The catalog's `id` (default `kui-catalog`). Its Workbench derives the
-   * sidebar's id from it (`<id>-left-rail`), which `wireCatalog` wires.
+   * sidebar's id from it (`<id>-left-rail`) and the settings pane's
+   * (`<id>-right-rail`), which `wireCatalog` wires.
    */
   id?: string;
   brand: CatalogBrand;
@@ -113,6 +139,29 @@ export interface CatalogProps {
   /** Show the preview background chooser; `backgroundStyle` remains app-owned. */
   backgroundControl?: boolean;
   headerActions?: KerfUiContent;
+  /**
+   * The active entry's settings (variant and state controls for its preview).
+   * When supplied, the Catalog renders a settings pane beside the stage — a
+   * Workbench right rail titled `settingsPanel.title` — with the standard
+   * toggle: in the pane's header while it is open, at the end of the entry
+   * toolbar while it is collapsed. Omit it (or pass `null`) for an entry with
+   * no settings; neither the pane nor the toggle renders. Below the
+   * Workbench's `narrow` breakpoint the pane overlays the stage.
+   */
+  settings?: KerfUiContent;
+  /**
+   * Whether the settings pane is collapsed (default `false`). The app owns
+   * it; hand the same signal to `wireCatalog`'s `settingsCollapsed`, which
+   * flips it from the toggle and makes the pane a transient overlay on a
+   * small screen.
+   */
+  settingsCollapsed?: boolean;
+  /**
+   * The settings pane's title, size, resizing, and overlay configuration
+   * (default: `Settings`, 288px, not resizable, an overlay below the
+   * Workbench's `narrow` breakpoint, `inset` in a compact Workbench).
+   */
+  settingsPanel?: CatalogSettingsConfig;
   /**
    * Show a "Capture region" link to UX Review after `headerActions`, preset
    * with the project and the active entry. Supply it once the project is known
@@ -133,6 +182,8 @@ export interface CatalogProps {
   toggleMotionAction?: string;
   selectBackgroundAction?: string;
   toggleSecondaryAction?: string;
+  /** The settings pane toggle's `data-action` (default `catalog-toggle-settings`). */
+  toggleSettingsAction?: string;
   /**
    * Whether the entry toolbar and description stay pinned above the preview
    * (`fixed`), scroll away with it (`scroll`), or stay pinned while the entry

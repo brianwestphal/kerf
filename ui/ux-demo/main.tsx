@@ -71,6 +71,7 @@ import {
   oppositeDemoTheme,
   preferredDemoTheme,
 } from './demo-theme.js';
+import { applyBadgeSetting } from './demos/badge.js';
 import {
   RELOCATION_RAIL_ACTION,
   RELOCATION_RAIL_ID,
@@ -87,7 +88,7 @@ import {
   pushNavStackDemo,
   resetNavStackDemo,
 } from './demos/nav-stack.js';
-import { demos } from './demos/registry.js';
+import { demos, demoSettings } from './demos/registry.js';
 import {
   clearSplitViewSelection,
   resetSplitViewDemo,
@@ -210,6 +211,7 @@ const webAwesomeExpanded = signal(
   findCatalogEntry(initialDemo)?.source === 'webawesome',
 );
 const sidebarCollapsed = signal(false);
+const settingsCollapsed = signal(false);
 const recipeNotesVisible = signal(false);
 let nextDemoTabNumber = tabBarTabs.value.length + 1;
 /** How long a newly added application tab stays pending in the demo. */
@@ -462,6 +464,12 @@ mount(app, () => {
       }}
       active={selectedDemo.value}
       collapsed={sidebarCollapsed.value}
+      settings={
+        isRecipeId(selected.id) || selected.source === 'webawesome'
+          ? undefined
+          : demoSettings[selected.id as keyof typeof demoSettings]?.()
+      }
+      settingsCollapsed={settingsCollapsed.value}
       theme={effectiveTheme.value === 'dark' ? 'dark' : 'light'}
       increasedContrast={increasedContrast.value}
       reducedMotion={reducedMotion.value}
@@ -1171,6 +1179,12 @@ const stopCatalog = wireCatalog(app, {
   toggleSecondaryAction: 'toggle-webawesome-catalog',
   revealSelection: true,
   collapsed: sidebarCollapsed,
+  settingsCollapsed,
+  onToggleSettings: () => {
+    actionLog.value = settingsCollapsed.value
+      ? 'Settings collapsed'
+      : 'Settings expanded';
+  },
 });
 const stopResize = wireResizableRegions(app, {
   onCommit: ({ id, size }) => {
@@ -1196,6 +1210,13 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
       name === 'toolbar-ticket-label-filter'
     )
       ticketLabelFilter.value = value;
+    return;
+  }
+  if (
+    typeof value === 'string' &&
+    applyBadgeSetting(element.getAttribute('name'), value)
+  ) {
+    actionLog.value = `Badge ${element.getAttribute('name')!.slice('badge-playground-'.length)}: ${value}`;
     return;
   }
   if (value === 'quiet' || value === 'balanced' || value === 'explicit')

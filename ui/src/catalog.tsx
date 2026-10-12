@@ -19,6 +19,7 @@ export type {
   CatalogResource,
   CatalogSecondaryGroup,
   CatalogSection,
+  CatalogSettingsConfig,
   CatalogStageRootAttributes,
   CatalogUxReview,
 } from './catalog/types.js';

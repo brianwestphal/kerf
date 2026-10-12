@@ -64,6 +64,14 @@ expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
   `expanded` (the app owns it; wire it with `wireCatalog`'s `onToggleSecondary`).
 - Optional slots: `headerActions` (extra header controls), `sidebarFooter` (extra
   sidebar content), and `status` (a footer status line).
+- **`settings`** — the active entry's settings (variant and state controls for
+  its preview). When supplied, the Catalog renders a **Settings** pane beside the
+  stage (its Workbench right rail) with the standard collapse toggle: in the
+  pane's header while it is open, at the end of the entry toolbar while it is
+  collapsed. Omit it (or pass `null`) for an entry with no settings; neither the
+  pane nor its toggle renders. Supply only the controls — compose them from
+  `ListInsetControl` + `Select` (or other form components) so they share the
+  pane's text column; the Catalog owns the pane, its title, and its toggle.
 
 The sidebar includes a `TokenSearchField` in its fixed header for every Catalog
 consumer, so the filter remains visible while the entries scroll. `wireCatalog`
@@ -457,6 +465,21 @@ revealCatalogEntry(app, initial, { block: "center" });
   header's `ToolbarConfig`). A resizable sidebar's width is app state like
   `collapsed`: render your size signal as `sidebar.size` and pass the same signal
   as `wireCatalog`'s `sidebarSize` (plus `sidebarStorageKey` to remember it).
+- **`settingsCollapsed`** is transient UI like `collapsed`: render your signal as
+  `settingsCollapsed` and pass the same signal as `wireCatalog`'s
+  `settingsCollapsed`. `wireCatalog` then flips it from the toggle (report it
+  with `onToggleSettings`, which runs after the flip) and wires the pane as a
+  Workbench rail: below the `narrow` breakpoint it starts collapsed and opens as
+  an overlay over the stage that Escape or a press outside closes, handing focus
+  back to the toggle. The sidebar and settings overlays are exclusive. Without
+  the signal, `onToggleSettings` alone reports the press and the app flips its
+  own state.
+- **`settingsPanel`** configures the settings pane like `sidebar` configures the
+  sidebar: `title` (default `Settings`; it also names the toggle), `size`
+  (default 288px), `resizable`, `separator`, `collapseMotion`, `presentation`,
+  `responsiveOverlayAt`, `compactOverlay`, and `toolbar`. A resizable pane's
+  width is app state: render your signal as `settingsPanel.size` and pass it as
+  `wireCatalog`'s `settingsSize` (plus `settingsStorageKey` to remember it).
 - **`mainToolbar` / `footerToolbar`** take the entry toolbar's and the resource
   footer toolbar's `ToolbarConfig` (`dividerSides`, `centerAlign`, `responsive`,
   `responsiveAt`, `safeAreaEdges`). The defaults are a wrapping entry toolbar

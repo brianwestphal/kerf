@@ -1,7 +1,10 @@
 import { delegate, type Signal } from 'kerfjs';
 
 import { readTokenSearchField } from '../../components/forms/token-search-field/token-search-field.js';
-import { wireWorkbench } from '../../components/layout/workbench/wiring/wire-workbench.js';
+import {
+  wireWorkbench,
+  type WireWorkbenchOptions,
+} from '../../components/layout/workbench/wiring/wire-workbench.js';
 import { wireScrollDividers } from '../../wiring/wire-scroll-dividers.js';
 import type { CatalogBackgroundStyle } from '../types.js';
 import { loadUxReviewProject } from '../ux-review.js';
@@ -19,6 +22,11 @@ export interface WireCatalogOptions {
   onToggleMotion?: () => void;
   /** Report a preview background choice; the app updates `backgroundStyle`. */
   onSelectBackground?: (style: CatalogBackgroundStyle) => void;
+  /**
+   * Invoked when the settings pane toggle is activated. With
+   * `settingsCollapsed`, `wireCatalog` has already flipped the signal.
+   */
+  onToggleSettings?: () => void;
   /** Invoked when the secondary (ecosystem) group's disclosure toggle is activated. */
   onToggleSecondary?: () => void;
   /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
@@ -35,6 +43,7 @@ export interface WireCatalogOptions {
   toggleMotionAction?: string;
   selectBackgroundAction?: string;
   toggleSecondaryAction?: string;
+  toggleSettingsAction?: string;
   /**
    * The sidebar's app-owned collapsed flag. With it, the catalog's Workbench
    * sidebar is wired like any Workbench rail: it becomes a transient overlay
@@ -54,6 +63,25 @@ export interface WireCatalogOptions {
    * catalog remembers the user's sidebar width.
    */
   sidebarStorageKey?: string;
+  /**
+   * The settings pane's app-owned collapsed flag, rendered as the Catalog's
+   * `settingsCollapsed`. With it, `wireCatalog` owns the pane's toggle (each
+   * press flips the signal) and wires the pane like any Workbench rail: a
+   * transient overlay on a small screen (collapsed as the breakpoint applies,
+   * closed on Escape or a press outside, focus handed back).
+   */
+  settingsCollapsed?: Signal<boolean>;
+  /**
+   * The app-owned settings pane width signal for a Catalog rendered with
+   * `settingsPanel={{ resizable: true, size: settingsSize.value }}`. Each
+   * committed drag or keyboard resize is written to it.
+   */
+  settingsSize?: Signal<number>;
+  /**
+   * With `settingsSize`, load and save the width under this storage key so
+   * the catalog remembers the user's settings pane width.
+   */
+  settingsStorageKey?: string;
   /** The Catalog's `id`, when it is not the default `kui-catalog`. */
   id?: string;
   /**
@@ -232,8 +260,8 @@ export function revealCatalogEntry(
 
 /**
  * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
- * item selection (and the related-entry popup menu), the sidebar collapse toggle, and
- * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
+ * item selection (and the related-entry popup menu), the sidebar collapse toggle,
+ * the settings pane toggle, and the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
  * It also wires the scroll dividers below root (`wireScrollDividers`), so the
  * catalog's panes and every example in it show their chrome dividers only
@@ -249,6 +277,7 @@ export function wireCatalog(
     onToggleMotion,
     onSelectBackground,
     onToggleSecondary,
+    onToggleSettings,
     urlParam,
     revealSelection,
     selectAction = 'catalog-select',
@@ -258,9 +287,13 @@ export function wireCatalog(
     toggleMotionAction = 'catalog-toggle-motion',
     selectBackgroundAction = 'catalog-select-background',
     toggleSecondaryAction = 'catalog-toggle-secondary',
+    toggleSettingsAction = 'catalog-toggle-settings',
     collapsed,
     sidebarSize,
     sidebarStorageKey,
+    settingsCollapsed,
+    settingsSize,
+    settingsStorageKey,
     id: catalogId = 'kui-catalog',
     onUxReviewProject,
   }: WireCatalogOptions,
@@ -372,19 +405,31 @@ export function wireCatalog(
       ),
     );
   }
-  if (collapsed || sidebarSize)
+  if (settingsCollapsed || onToggleSettings) {
     disposers.push(
-      wireWorkbench(root, {
-        id: catalogId,
-        panels: {
-          leftRail: {
-            collapsed,
-            size: sidebarSize,
-            storageKey: sidebarStorageKey,
-          },
-        },
+      delegate(root, 'click', `[data-action="${toggleSettingsAction}"]`, () => {
+        if (settingsCollapsed)
+          settingsCollapsed.value = !settingsCollapsed.peek();
+        onToggleSettings?.();
       }),
     );
+  }
+  // One wireWorkbench call owns every wired rail, so overlays stay exclusive.
+  const panels: WireWorkbenchOptions['panels'] = {};
+  if (collapsed || sidebarSize)
+    panels.leftRail = {
+      collapsed,
+      size: sidebarSize,
+      storageKey: sidebarStorageKey,
+    };
+  if (settingsCollapsed || settingsSize)
+    panels.rightRail = {
+      collapsed: settingsCollapsed,
+      size: settingsSize,
+      storageKey: settingsStorageKey,
+    };
+  if (panels.leftRail || panels.rightRail)
+    disposers.push(wireWorkbench(root, { id: catalogId, panels }));
   if (onUxReviewProject)
     // The capture context names the page the review came from. The URL can
     // change after the link rendered (`urlParam`), so stamp it as the link is

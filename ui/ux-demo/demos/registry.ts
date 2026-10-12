@@ -2,7 +2,7 @@ import type { KerfCatalogId } from '../catalog.js';
 import type { RecipeId } from '../recipes/loaders.js';
 import { AnchoredSurfaceDemo } from './anchored-surface.js';
 import { ApplicationTabsDemo } from './application-tabs.js';
-import { BadgeDemo } from './badge.js';
+import { BadgeDemo, BadgeSettings } from './badge.js';
 import { ChipDemo } from './chip.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { ContentItemDemo } from './content-item.js';
@@ -98,3 +98,13 @@ export const demos = {
   Exclude<KerfCatalogId, RecipeId>,
   () => ReturnType<typeof LucideIconDemo>
 >;
+
+/** Entries whose preview has settings, rendered in the Catalog's settings pane. */
+export const demoSettings: Partial<
+  Record<
+    Exclude<KerfCatalogId, RecipeId>,
+    () => ReturnType<typeof BadgeSettings>
+  >
+> = {
+  badge: BadgeSettings,
+};

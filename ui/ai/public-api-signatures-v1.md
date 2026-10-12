@@ -2414,8 +2414,8 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { b as CatalogProps } from './types-BNP4gA41.js';
-export { a as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogStageRootAttributes, i as CatalogUxReview } from './types-BNP4gA41.js';
+import { b as CatalogProps } from './types-CVgIwSdq.js';
+export { a as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogSettingsConfig, i as CatalogStageRootAttributes, j as CatalogUxReview } from './types-CVgIwSdq.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
 import './sides-BPSWde0A.js';
@@ -2437,8 +2437,10 @@ import './resizable-region.js';
  * toolbar, description, preview stage, and resource footer. The sidebar's
  * standard toggle moves into the entry toolbar while it is collapsed, and on
  * a small screen the sidebar overlays the stage like any Workbench rail.
+ * An entry's `settings` render in a right-rail settings pane beside the stage,
+ * with the same toggle relocation and small-screen overlay.
  */
-declare function Catalog({ id, brand, sections, active, content, collapsed, theme, increasedContrast, reducedMotion, backgroundControl, headerActions, uxReview, secondarySections, sidebarFooter, status, backgroundStyle, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleContrastAction, toggleMotionAction, selectBackgroundAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
+declare function Catalog({ id, brand, sections, active, content, collapsed, theme, increasedContrast, reducedMotion, backgroundControl, headerActions, settings, settingsCollapsed, settingsPanel, uxReview, secondarySections, sidebarFooter, status, backgroundStyle, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleContrastAction, toggleMotionAction, selectBackgroundAction, toggleSecondaryAction, toggleSettingsAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'text-trigger' | 'none';
@@ -2535,7 +2537,7 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-BNP4gA41.js';
+import { C as CatalogResource } from './types-CVgIwSdq.js';
 import './toolbar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
@@ -2589,7 +2591,7 @@ export { type CatalogGuidanceKind, type CatalogResourceKind, type CatalogResourc
 
 ```ts
 import { Signal } from 'kerfjs';
-import { a as CatalogBackgroundStyle } from './types-BNP4gA41.js';
+import { a as CatalogBackgroundStyle } from './types-CVgIwSdq.js';
 import './toolbar.js';
 import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
@@ -2618,6 +2620,11 @@ interface WireCatalogOptions {
     onToggleMotion?: () => void;
     /** Report a preview background choice; the app updates `backgroundStyle`. */
     onSelectBackground?: (style: CatalogBackgroundStyle) => void;
+    /**
+     * Invoked when the settings pane toggle is activated. With
+     * `settingsCollapsed`, `wireCatalog` has already flipped the signal.
+     */
+    onToggleSettings?: () => void;
     /** Invoked when the secondary (ecosystem) group's disclosure toggle is activated. */
     onToggleSecondary?: () => void;
     /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
@@ -2634,6 +2641,7 @@ interface WireCatalogOptions {
     toggleMotionAction?: string;
     selectBackgroundAction?: string;
     toggleSecondaryAction?: string;
+    toggleSettingsAction?: string;
     /**
      * The sidebar's app-owned collapsed flag. With it, the catalog's Workbench
      * sidebar is wired like any Workbench rail: it becomes a transient overlay
@@ -2653,6 +2661,25 @@ interface WireCatalogOptions {
      * catalog remembers the user's sidebar width.
      */
     sidebarStorageKey?: string;
+    /**
+     * The settings pane's app-owned collapsed flag, rendered as the Catalog's
+     * `settingsCollapsed`. With it, `wireCatalog` owns the pane's toggle (each
+     * press flips the signal) and wires the pane like any Workbench rail: a
+     * transient overlay on a small screen (collapsed as the breakpoint applies,
+     * closed on Escape or a press outside, focus handed back).
+     */
+    settingsCollapsed?: Signal<boolean>;
+    /**
+     * The app-owned settings pane width signal for a Catalog rendered with
+     * `settingsPanel={{ resizable: true, size: settingsSize.value }}`. Each
+     * committed drag or keyboard resize is written to it.
+     */
+    settingsSize?: Signal<number>;
+    /**
+     * With `settingsSize`, load and save the width under this storage key so
+     * the catalog remembers the user's settings pane width.
+     */
+    settingsStorageKey?: string;
     /** The Catalog's `id`, when it is not the default `kui-catalog`. */
     id?: string;
     /**
@@ -2683,14 +2710,14 @@ interface CatalogRevealOptions {
 declare function revealCatalogEntry(root: HTMLElement, id: string, { block, inline, behavior, media, }?: CatalogRevealOptions): () => void;
 /**
  * Wire a {@link Catalog}'s interactions with one delegated listener set: sidebar
- * item selection (and the related-entry popup menu), the sidebar collapse toggle, and
- * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
+ * item selection (and the related-entry popup menu), the sidebar collapse toggle,
+ * the settings pane toggle, and the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
  * It also wires the scroll dividers below root (`wireScrollDividers`), so the
  * catalog's panes and every example in it show their chrome dividers only
  * while scrolled. Returns a disposer.
  */
-declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleContrast, onToggleMotion, onSelectBackground, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleContrastAction, toggleMotionAction, selectBackgroundAction, toggleSecondaryAction, collapsed, sidebarSize, sidebarStorageKey, id: catalogId, onUxReviewProject, }: WireCatalogOptions): () => void;
+declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleContrast, onToggleMotion, onSelectBackground, onToggleSecondary, onToggleSettings, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleContrastAction, toggleMotionAction, selectBackgroundAction, toggleSecondaryAction, toggleSettingsAction, collapsed, sidebarSize, sidebarStorageKey, settingsCollapsed, settingsSize, settingsStorageKey, id: catalogId, onUxReviewProject, }: WireCatalogOptions): () => void;
 
 export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry, wireCatalog };
 ```

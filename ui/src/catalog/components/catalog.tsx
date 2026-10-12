@@ -32,6 +32,8 @@ function findEntry(
  * toolbar, description, preview stage, and resource footer. The sidebar's
  * standard toggle moves into the entry toolbar while it is collapsed, and on
  * a small screen the sidebar overlays the stage like any Workbench rail.
+ * An entry's `settings` render in a right-rail settings pane beside the stage,
+ * with the same toggle relocation and small-screen overlay.
  */
 export function Catalog({
   id = 'kui-catalog',
@@ -45,6 +47,9 @@ export function Catalog({
   reducedMotion,
   backgroundControl = false,
   headerActions,
+  settings,
+  settingsCollapsed = false,
+  settingsPanel = {},
   uxReview,
   secondarySections,
   sidebarFooter,
@@ -58,6 +63,7 @@ export function Catalog({
   toggleMotionAction = 'catalog-toggle-motion',
   selectBackgroundAction = 'catalog-select-background',
   toggleSecondaryAction = 'catalog-toggle-secondary',
+  toggleSettingsAction = 'catalog-toggle-settings',
   headerPlacement = 'auto',
   footerPlacement = 'auto',
   sidebar = {},
@@ -80,12 +86,18 @@ export function Catalog({
     reducedMotion !== undefined ||
     backgroundControl ||
     theme !== undefined;
+  const hasSettings =
+    settings !== undefined && settings !== null && settings !== false;
+  const settingsTitle = settingsPanel.title ?? 'Settings';
 
   return (
     <main
       class={`kui-catalog ${className}`.trim()}
       data-component="catalog"
       data-sidebar-collapsed={String(collapsed)}
+      data-settings-collapsed={
+        hasSettings ? String(settingsCollapsed) : undefined
+      }
       slot={slot}
     >
       <Workbench
@@ -149,6 +161,33 @@ export function Catalog({
             />
           ),
         }}
+        rightRail={
+          hasSettings
+            ? {
+                label: name ? `${name} ${settingsTitle}` : settingsTitle,
+                size: settingsPanel.size ?? 288,
+                resizable: settingsPanel.resizable,
+                separator: settingsPanel.separator,
+                collapseMotion: settingsPanel.collapseMotion,
+                presentation: settingsPanel.presentation,
+                responsiveOverlayAt: settingsPanel.responsiveOverlayAt,
+                compactOverlay: settingsPanel.compactOverlay,
+                collapsed: settingsCollapsed,
+                toolbar: {
+                  ...settingsPanel.toolbar,
+                  label: `${settingsTitle} header`,
+                  // A peripheral rail beside the xl entry title takes the
+                  // default title size, so it never truncates at 288px.
+                  title: <ToolbarText text={settingsTitle} headingLevel={2} />,
+                  toggle: {
+                    action: toggleSettingsAction,
+                    name: settingsTitle.toLocaleLowerCase(),
+                  },
+                },
+                content: settings,
+              }
+            : undefined
+        }
         mainToolbar={{
           ...mainToolbar,
           label: `${name} header`,

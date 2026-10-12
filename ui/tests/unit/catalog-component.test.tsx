@@ -1126,6 +1126,144 @@ describe('wireCatalog', () => {
     dispose();
   });
 
+  it('renders an entry settings pane only when the entry supplies settings', () => {
+    const base = {
+      brand: { title: 'X' },
+      sections,
+      active: 'button',
+      content: raw('<b/>'),
+    };
+    const host = document.createElement('div');
+    host.innerHTML = asHtml(
+      Catalog({ ...base, settings: raw('<p data-settings-body>Tone</p>') }),
+    );
+    const catalog = host.querySelector<HTMLElement>('.kui-catalog')!;
+    expect(catalog.getAttribute('data-settings-collapsed')).toBe('false');
+    const pane = host.querySelector<HTMLElement>('#kui-catalog-right-rail')!;
+    expect(pane).not.toBeNull();
+    expect(pane.querySelector('[data-settings-body]')).not.toBeNull();
+    expect(pane.textContent).toContain('Settings');
+    const hide = pane.querySelector<HTMLElement>(
+      '[data-action="catalog-toggle-settings"]',
+    )!;
+    expect(hide.getAttribute('aria-label')).toBe('Hide settings');
+
+    // Collapsed, the standard toggle moves to the end of the entry toolbar.
+    host.innerHTML = asHtml(
+      Catalog({
+        ...base,
+        settings: raw('<p>Tone</p>'),
+        settingsCollapsed: true,
+        settingsPanel: { title: 'Inspector' },
+        toggleSettingsAction: 'inspector-toggle',
+      }),
+    );
+    expect(
+      host
+        .querySelector('.kui-catalog')!
+        .getAttribute('data-settings-collapsed'),
+    ).toBe('true');
+    expect(
+      host
+        .querySelector('[data-action="inspector-toggle"]')!
+        .getAttribute('aria-label'),
+    ).toBe('Show inspector');
+
+    // Without settings: no pane, no toggle, no state attribute.
+    for (const settings of [undefined, null, false] as const) {
+      host.innerHTML = asHtml(Catalog({ ...base, settings }));
+      expect(host.querySelector('#kui-catalog-right-rail')).toBeNull();
+      expect(
+        host.querySelector('[data-action="catalog-toggle-settings"]'),
+      ).toBeNull();
+      expect(
+        host
+          .querySelector('.kui-catalog')!
+          .hasAttribute('data-settings-collapsed'),
+      ).toBe(false);
+    }
+  });
+
+  it('flips the app-owned settings signal from the toggle and reports it', () => {
+    const settingsCollapsed = signal(false);
+    const root = mountShell(
+      asHtml(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active: 'button',
+          content: raw('<b/>'),
+          settings: raw('<p>Tone</p>'),
+          settingsCollapsed: settingsCollapsed.value,
+        }),
+      ),
+    );
+    const onToggleSettings = vi.fn(() => settingsCollapsed.value);
+    const stop = wireCatalog(root, {
+      onSelect: () => {},
+      settingsCollapsed,
+      onToggleSettings,
+    });
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-toggle-settings"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(settingsCollapsed.value).toBe(true);
+    // The callback sees the already-flipped value.
+    expect(onToggleSettings).toHaveReturnedWith(true);
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-toggle-settings"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(settingsCollapsed.value).toBe(false);
+    stop();
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-toggle-settings"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(settingsCollapsed.value).toBe(false);
+    expect(onToggleSettings).toHaveBeenCalledTimes(2);
+  });
+
+  it('reports the settings toggle without a signal and writes settings resizes', () => {
+    const size = signal(288);
+    const storage = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => storage.set(key, value),
+      removeItem: (key: string) => storage.delete(key),
+    });
+    const root = mountShell(
+      asHtml(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active: 'button',
+          content: raw('<b/>'),
+          settings: raw('<p>Tone</p>'),
+          settingsPanel: { resizable: true, size: size.value },
+        }),
+      ),
+    );
+    const onToggleSettings = vi.fn();
+    const stop = wireCatalog(root, {
+      onSelect: () => {},
+      onToggleSettings,
+      settingsSize: size,
+      settingsStorageKey: 'catalog-settings',
+    });
+    root
+      .querySelector<HTMLElement>('[data-action="catalog-toggle-settings"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(onToggleSettings).toHaveBeenCalledTimes(1);
+    const handle = root.querySelector<HTMLElement>(
+      '#kui-catalog-right-rail [role="separator"]',
+    )!;
+    handle.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }),
+    );
+    expect(size.value).not.toBe(288);
+    expect(storage.get('catalog-settings')).toBe(String(size.value));
+    stop();
+  });
+
   it('reveals an exact sidebar id after render without moving focus', () => {
     vi.spyOn(window, 'matchMedia').mockReturnValue({
       matches: true,

@@ -145,7 +145,10 @@ components, derive demo rows with `@kerfjs/ui/catalog-projection` or
 add `uxReviewPlugin()` from the Node-only `@kerfjs/ui/vite-ux-review` to the
 Vite config, report the project with `wireCatalog`'s `onUxReviewProject`, and
 render `Catalog` with `uxReview={{ projectDirectory }}`; never hand-roll the
-endpoint or the `uxreview://` link. Prefer its generated `component-composition.json`. A package
+endpoint or the `uxreview://` link. For per-entry variant/state controls, pass
+them as `Catalog`'s `settings` (with `settingsCollapsed` and the same signal as
+`wireCatalog`'s `settingsCollapsed`); never build a separate settings aside and
+toggle. Prefer its generated `component-composition.json`. A package
 scaffolded by `create-kerf-component` owns the decisions in
 `kerf.components.json`; run `npm run catalog:check` before using its output. If
 no generated extension exists, start from the checked examples and require the

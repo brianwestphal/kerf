@@ -242,3 +242,49 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
     path: `test-results/catalog-filter-narrow-${browserName}.png`,
   });
 });
+
+test('an entry with settings shows a settings pane that drives its preview, collapses into the entry toolbar, and overlays at phone width', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=badge');
+
+  const shell = page.locator('.kui-catalog');
+  const settings = page.locator('#kui-catalog-right-rail');
+  const detail = page.locator(
+    '#kui-catalog > .kui-workbench__center > [data-workbench-main]',
+  );
+  const playground = page.locator(
+    '[data-badge-playground] [data-component="badge"]',
+  );
+
+  await expect(shell).toHaveAttribute('data-settings-collapsed', 'false');
+  await expect(settings).toBeVisible();
+  await expect(playground).toHaveAttribute('data-tone', 'info');
+
+  await settings.locator('wa-select[name="badge-playground-tone"]').click();
+  await page.locator('wa-option[value="success"]').first().click();
+  await expect(playground).toHaveAttribute('data-tone', 'success');
+
+  await settings.getByRole('button', { name: 'Hide settings' }).click();
+  await expect(shell).toHaveAttribute('data-settings-collapsed', 'true');
+  await expect(settings).toBeHidden();
+  await detail.getByRole('button', { name: 'Show settings' }).click();
+  await expect(settings).toBeVisible();
+
+  // An entry without settings renders neither the pane nor its toggle.
+  await page.locator('#kui-catalog-left-rail [data-item-id="chip"]').click();
+  await expect(settings).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /settings$/ })).toHaveCount(0);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=badge');
+  await expect(shell).toHaveAttribute('data-settings-collapsed', 'true');
+  const show = detail.getByRole('button', { name: 'Show settings' });
+  await show.click();
+  await expect(shell).toHaveAttribute('data-settings-collapsed', 'false');
+  await expect(settings).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(shell).toHaveAttribute('data-settings-collapsed', 'true');
+  await expect(show).toBeFocused();
+});
