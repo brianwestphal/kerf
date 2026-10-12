@@ -4225,6 +4225,58 @@ declare function SplitButton({ label, action, icon, accessibleLabel, optionsLabe
 export { SplitButton, type SplitButtonProps, type SplitButtonTone };
 ```
 
+## `@kerfjs/ui/file-picker`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+interface FileInputProps {
+    /** Accepted types, as the native `accept` attribute (`.png,image/*`). */
+    accept?: string;
+    /** Allow several files at once. */
+    multiple?: boolean;
+    /** Form field name of the native file input. */
+    name?: string;
+    /** Identifies this picker in `wireFilePickers` reports. */
+    pickerId?: string;
+    disabled?: boolean;
+    className?: string;
+}
+interface FilePickerTriggerProps extends FileInputProps {
+    /** Visible trigger text, such as "Add". */
+    label: string;
+    /** Accessible name of the file input when it should say more than `label`. */
+    accessibleLabel?: string;
+    /** Optional decorative leading icon, normally an unsized LucideIcon. */
+    icon?: SafeHtml;
+}
+interface FileDropZoneProps extends FileInputProps {
+    /** Primary copy, such as "Drop attachments here or browse". */
+    title: string;
+    /** Optional secondary copy, such as accepted types or a size limit. */
+    detail?: string;
+    /** Optional decorative icon above the copy, normally an unsized LucideIcon. */
+    icon?: SafeHtml;
+    /** Accessible name of the file input when it should say more than `title`. */
+    accessibleLabel?: string;
+}
+/**
+ * A compact, link-toned trigger that opens the native file chooser: a label
+ * around a visually hidden `<input type="file">`, so a click or keyboard
+ * activation reaches the input without script. Report choices with
+ * `wireFilePickers`.
+ */
+declare function FilePickerTrigger(props: FilePickerTriggerProps): SafeHtml;
+/**
+ * A dashed drop target that also opens the file chooser when clicked. While
+ * files are dragged over it, `wireFilePickers` sets `data-dragging` and Kerf
+ * highlights it; dropped and chosen files are reported the same way.
+ */
+declare function FileDropZone(props: FileDropZoneProps): SafeHtml;
+
+export { FileDropZone, type FileDropZoneProps, FilePickerTrigger, type FilePickerTriggerProps };
+```
+
 ## `@kerfjs/ui/corner-status`
 
 ```ts

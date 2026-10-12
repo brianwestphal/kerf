@@ -14,6 +14,7 @@ import { DocumentBaselineDemo } from './document-baseline.js';
 import { EdgeActivityIndicatorDemo } from './edge-activity-indicator.js';
 import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
+import { FilePickerDemo } from './file-picker.js';
 import { FloatingToolbarDemo } from './floating-toolbar.js';
 import { FoundationDemo } from './foundation.js';
 import { FramedListDemo } from './framed-list.js';
@@ -101,6 +102,7 @@ export const demos = {
   'corner-status': CornerStatusDemo,
   'column-track': ColumnTrackDemo,
   'content-swap': ContentSwapDemo,
+  'file-picker': FilePickerDemo,
   'edge-activity-indicator': EdgeActivityIndicatorDemo,
   'icon-button': IconButtonDemo,
   'icon-toggle-button': IconToggleButtonDemo,

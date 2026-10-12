@@ -1,0 +1,81 @@
+/* The native file input stays inside each label for activation, keyboard
+   focus, and form submission, visually hidden but accessible. */
+.kui-file-picker__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.kui-file-picker__icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+}
+
+/* A compact, link-toned browse trigger. */
+.kui-file-picker[data-presentation="trigger"] {
+  position: relative;
+  display: inline-flex;
+  min-height: remify(32px);
+  padding: 0 var(--kui-space-xs);
+  border-radius: var(--kui-radius-pill);
+  color: var(--kui-color-text-link);
+  cursor: pointer;
+  align-items: center;
+  gap: var(--kui-space-2xs);
+  font-size: var(--kui-font-xs);
+  font-weight: var(--kui-font-weight-semibold);
+}
+
+.kui-file-picker[data-presentation="trigger"]:hover {
+  background: var(--kui-color-brand-fill-quiet);
+}
+
+/* A dashed drop target with content-item margins, highlighted on hover and
+   while files are dragged over it. */
+.kui-file-picker[data-presentation="drop-zone"] {
+  position: relative;
+  display: grid;
+  min-height: remify(80px);
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: var(--kui-space-s);
+  box-sizing: border-box;
+  border: 1px dashed var(--kui-color-neutral-border-loud);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: var(--kui-color-neutral-on-quiet);
+  cursor: pointer;
+  place-items: center;
+  align-content: center;
+  gap: var(--kui-space-2xs);
+  font-size: var(--kui-font-xs);
+  text-align: center;
+}
+
+.kui-file-picker[data-presentation="drop-zone"]:hover,
+.kui-file-picker[data-presentation="drop-zone"][data-dragging="true"] {
+  border-color: var(--kui-color-text-link);
+  background: var(--kui-color-brand-fill-quiet);
+}
+
+.kui-file-picker__title {
+  color: var(--kui-color-text);
+}
+
+.kui-file-picker__detail {
+  font-size: var(--kui-font-2xs);
+}
+
+/* Keyboard focus lands on the hidden input; the visible control shows it. */
+.kui-file-picker:has(> .kui-file-picker__input:focus-visible) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}
+
+.kui-file-picker[data-disabled="true"] {
+  cursor: default;
+  opacity: 0.5;
+  pointer-events: none;
+}

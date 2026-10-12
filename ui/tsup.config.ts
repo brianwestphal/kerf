@@ -64,6 +64,8 @@ const entries = [
   'corner-status',
   'column-track',
   'content-swap',
+  'file-picker',
+  'wire-file-pickers',
   'edge-activity-indicator',
   'icon-button',
   'icon-toggle-button',

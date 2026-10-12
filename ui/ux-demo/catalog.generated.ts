@@ -658,6 +658,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "file-picker",
+    "name": "FilePicker",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/file-picker.tsx",
+    "componentSource": "ui/src/components/forms/file-picker/file-picker.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "feedback",
     "name": "Feedback",
     "category": "Feedback",

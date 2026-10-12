@@ -165,6 +165,18 @@ export {
   type FieldLabelProps,
 } from './components/forms/field-label/field-label.js';
 export {
+  FileDropZone,
+  type FileDropZoneProps,
+  FilePickerTrigger,
+  type FilePickerTriggerProps,
+} from './components/forms/file-picker/file-picker.js';
+export {
+  fileMatchesAccept,
+  type FilePickerSelection,
+  wireFilePickers,
+  type WireFilePickersOptions,
+} from './components/forms/file-picker/wiring/wire-file-pickers.js';
+export {
   SegmentedControl,
   type SegmentedControlAppearance,
   type SegmentedControlChoice,

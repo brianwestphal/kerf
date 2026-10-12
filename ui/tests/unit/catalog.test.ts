@@ -540,6 +540,7 @@ describe('UX catalog metadata', () => {
       'IconButton',
       'IconToggleButton',
       'SplitButton',
+      'FilePicker',
       'StateBanner',
       'CornerStatus',
       'EdgeActivityIndicator',

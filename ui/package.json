@@ -367,6 +367,15 @@
       "browser": "./dist/browser/edge-activity-indicator.js",
       "import": "./dist/edge-activity-indicator.js"
     },
+    "./file-picker": {
+      "types": "./dist/file-picker.d.ts",
+      "browser": "./dist/browser/file-picker.js",
+      "import": "./dist/file-picker.js"
+    },
+    "./wire-file-pickers": {
+      "types": "./dist/wire-file-pickers.d.ts",
+      "import": "./dist/wire-file-pickers.js"
+    },
     "./content-swap": {
       "types": "./dist/content-swap.d.ts",
       "browser": "./dist/browser/content-swap.js",
@@ -452,6 +461,7 @@
     "./corner-status.css": "./dist/styles/corner-status.css",
     "./column-track.css": "./dist/styles/column-track.css",
     "./content-swap.css": "./dist/styles/content-swap.css",
+    "./file-picker.css": "./dist/styles/file-picker.css",
     "./edge-activity-indicator.css": "./dist/styles/edge-activity-indicator.css",
     "./icon-button.css": "./dist/styles/icon-button.css",
     "./icon-toggle-button.css": "./dist/styles/icon-toggle-button.css",

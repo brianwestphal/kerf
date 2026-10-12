@@ -32,6 +32,7 @@ import {
   isContentItemActivation,
   wireContentItems,
 } from '@kerfjs/ui/wire-content-items';
+import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
@@ -117,6 +118,7 @@ import {
   displayDensity,
   edgeActivityBusy,
   edgeActivityMessage,
+  filePickerFiles,
   floatingToolbarOpen,
   grammarSearchModel,
   gridTileSelections,
@@ -761,6 +763,9 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = splitButtonOptionsOpen.value
       ? 'Drive options opened'
       : 'Drive options closed';
+  },
+  'clear-file-picker-demo': () => {
+    filePickerFiles.value = [];
   },
   'content-swap-next': () => {
     contentSwapStep.value = 'b';
@@ -1548,6 +1553,15 @@ const stopTokenSearchSubmits = wireTokenSearchFields(app, {
   },
 });
 const stopToolbarWidthVisibility = wireToolbarVisibility(app);
+const stopFilePickers = wireFilePickers(app, {
+  onFiles: ({ files, via }) => {
+    filePickerFiles.value = [
+      ...filePickerFiles.value,
+      ...files.map((file) => file.name),
+    ];
+    actionLog.value = `${via === 'drop' ? 'Dropped' : 'Chose'} ${files.length} file${files.length === 1 ? '' : 's'}`;
+  },
+});
 // The opt-in chip keyboard + onEdit are demonstrated ONLY on the adoption-knobs
 // field, so wire a second helper scoped to that field's container (the app-wide
 // helper above stays keyboard-free, leaving the other token-search demos on their
@@ -1866,6 +1880,7 @@ window.addEventListener(
     stopAdoptionKeyboardEffect();
     stopFloatingToolbarReset();
     stopEdgeActivityReset();
+    stopFilePickers();
     stopListItemDragOver();
     stopListItemDrop();
     stopListActionRowDoubleClick();

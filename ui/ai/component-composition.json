@@ -4345,6 +4345,101 @@
       }
     },
     {
+      "key": "@kerfjs/ui:file-picker",
+      "package": "@kerfjs/ui",
+      "id": "file-picker",
+      "name": "FilePicker",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "what happens to the reported files (upload, validation, limits)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the list of chosen files",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "copy and accepted types",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireFilePickers"],
+        "obligations": [
+          "Reports chosen and dropped files and accepts drops on the zone; without it drops open the file in the browser."
+        ],
+        "stateAttributes": [
+          {
+            "name": "data-dragging",
+            "on": "kui-file-picker (drop zone)",
+            "helper": "wireFilePickers",
+            "meaning": "\"true\" while files are dragged over the zone."
+          }
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "self",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "The drop zone carries the 8px content-item inline margin; the trigger is a compact 32px inline control."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Each control is a label around a real file input that receives keyboard focus; the visible control shows the focus ring. Give the input an accessibleLabel when the visible copy is short."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-file-picker",
+        "publicClasses": [
+          "kui-file-picker",
+          "kui-file-picker__title",
+          "kui-file-picker__detail",
+          "kui-file-picker__input",
+          "kui-file-picker__icon"
+        ],
+        "rootElement": "label",
+        "publicTokens": [
+          "--kui-color-text-link",
+          "--kui-color-brand-fill-quiet",
+          "--kui-color-neutral-border-loud",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-text",
+          "--kui-focus-ring",
+          "--kui-font-xs",
+          "--kui-font-2xs",
+          "--kui-font-weight-semibold",
+          "--kui-layout-inline-margin",
+          "--kui-layout-rounded-radius",
+          "--kui-radius-pill",
+          "--kui-space-2xs",
+          "--kui-space-s",
+          "--kui-space-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:feedback",
       "package": "@kerfjs/ui",
       "id": "feedback",

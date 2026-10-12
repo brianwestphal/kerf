@@ -63,6 +63,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [IconButton](./icon-button.md) — Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.
 - [IconToggleButton](./icon-toggle-button.md) — Render an icon-only aria-pressed toggle in content or a pane footer, where a Toolbar does not belong, with the 44px contained geometry and raised pressed face of a single ToolbarControlGroup.
 - [SplitButton](./split-button.md) — Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.
+- [FilePicker](./file-picker.md) — Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.
 
 ## Kerf UI — Feedback
 
