@@ -19,6 +19,24 @@ respectively, before the viewport width cap. Set `preferredWidth` to a branded
 desktop preferences can share the same responsive dialog without changing its
 resource tracks or preview aspect sizing.
 
+### Sibling dialogs keep their identity
+
+Every `DialogSurface` root has the same structure, so two sibling dialogs that
+are rendered conditionally are matched by position when the page re-renders:
+one open dialog's element (with its accessible name and open state) can be
+reused for another, and Web Awesome events such as `wa-after-hide` fire on the
+wrong dialog or not at all. Give each sibling a stable key on its root with
+`rootAttributes`, instead of wrapping it in an app `div`:
+
+```tsx
+<DialogSurface rootAttributes={{ "data-key": "project-setup" }}>
+  <wa-dialog label="Set up project">…</wa-dialog>
+</DialogSurface>
+```
+
+`rootAttributes` takes `data-*` identity only; the surface's own configuration
+attributes (`data-size`, `data-presentation`, …) stay protected.
+
 ### Modal viewport bounds
 
 `viewportGutter` accepts a branded `CssLength` from `@kerfjs/ui/css-values`.

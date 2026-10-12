@@ -3752,6 +3752,11 @@ type DialogSurfaceHeight = CssLength | 'viewport';
  * lets it own scrolling (a SplitView, a Pane, an editor).
  */
 type DialogSurfaceBodyLayout = 'flow' | 'fill';
+/**
+ * Application `data-*` identity on the DialogSurface root, such as
+ * `data-key`; the surface's own configuration attributes stay protected.
+ */
+type DialogSurfaceRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
 interface DialogSurfaceProps {
     children: KerfUiContent;
     size?: DialogSurfaceSize;
@@ -3771,12 +3776,19 @@ interface DialogSurfaceProps {
     height?: DialogSurfaceHeight;
     /** Body layout (default `flow`); `fill` lets one child own the body. */
     bodyLayout?: DialogSurfaceBodyLayout;
+    /**
+     * Safe `data-*` identity on the root. Give sibling dialogs distinct
+     * `data-key`s so a re-render morphs each surface into itself instead of
+     * reusing one dialog's element for another (structurally identical roots
+     * are otherwise matched by position).
+     */
+    rootAttributes?: DialogSurfaceRootAttributes;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
-declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, bodyLayout, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, bodyLayout, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */
@@ -3834,7 +3846,7 @@ interface PopupSurfaceProps {
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
-export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
+export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
 ```
 
 ## `@kerfjs/ui/text`

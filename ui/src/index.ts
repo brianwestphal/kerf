@@ -348,6 +348,7 @@ export {
   type DialogSurfaceMaxHeight,
   type DialogSurfacePresentation,
   type DialogSurfaceProps,
+  type DialogSurfaceRootAttributes,
   type DialogSurfaceSize,
   PopoverDialogSurface,
   type PopoverDialogSurfaceDataAttributes,

@@ -34,6 +34,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 **Variants (configure, do not restyle):**
 
 - small, medium, or large dialog
+- data-\* rootAttributes (a data-key) so sibling dialogs morph by identity
 - modal, side-sheet, or fullscreen dialog
 - typed modal preferred width, viewport gutter, and maximum height, including viewport cap
 - definite viewport-bounded modal height and a fill body layout for one child

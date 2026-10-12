@@ -15,6 +15,27 @@ export type DialogSurfaceHeight = CssLength | 'viewport';
  */
 export type DialogSurfaceBodyLayout = 'flow' | 'fill';
 
+/**
+ * Application `data-*` identity on the DialogSurface root, such as
+ * `data-key`; the surface's own configuration attributes stay protected.
+ */
+export type DialogSurfaceRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined>
+>;
+
+const DIALOG_SURFACE_PROTECTED = new Set([
+  'data-component',
+  'data-size',
+  'data-presentation',
+  'data-preferred-width',
+  'data-body-inset',
+  'data-footer-inset',
+  'data-viewport-gutter',
+  'data-max-height',
+  'data-height',
+  'data-body-layout',
+]);
+
 export interface DialogSurfaceProps {
   children: KerfUiContent;
   size?: DialogSurfaceSize;
@@ -34,6 +55,13 @@ export interface DialogSurfaceProps {
   height?: DialogSurfaceHeight;
   /** Body layout (default `flow`); `fill` lets one child own the body. */
   bodyLayout?: DialogSurfaceBodyLayout;
+  /**
+   * Safe `data-*` identity on the root. Give sibling dialogs distinct
+   * `data-key`s so a re-render morphs each surface into itself instead of
+   * reusing one dialog's element for another (structurally identical roots
+   * are otherwise matched by position).
+   */
+  rootAttributes?: DialogSurfaceRootAttributes;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -51,6 +79,7 @@ export function DialogSurface({
   maxHeight,
   height,
   bodyLayout = 'flow',
+  rootAttributes = {},
   className = '',
   slot,
 }: DialogSurfaceProps) {
@@ -72,6 +101,7 @@ export function DialogSurface({
     .join(';');
   return (
     <div
+      {...filterDataAttributes(rootAttributes, DIALOG_SURFACE_PROTECTED)}
       class={`kui-dialog-surface ${className}`.trim()}
       data-component="dialog-surface"
       data-size={size}
