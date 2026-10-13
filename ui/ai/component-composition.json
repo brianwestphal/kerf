@@ -1810,6 +1810,7 @@
       "accessibility": {
         "obligations": [
           "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",
+          "Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.",
           "Use popup surfaces only for real dropdown menus with named triggers."
         ]
       },

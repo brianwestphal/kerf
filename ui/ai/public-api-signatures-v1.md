@@ -3938,6 +3938,12 @@ type PopoverDialogSurfaceName = {
 type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
     /** The root id: what an opening control's `popovertarget` names. */
     id?: string;
+    /**
+     * Id of the element whose text is the dialog's accessible description,
+     * such as a title `ToolbarText`'s `descriptionId`; rendered as
+     * `aria-describedby` on the `role="dialog"` root.
+     */
+    describedBy?: string;
     children: KerfUiContent;
     /**
      * `overlay` (default) is a native `popover="auto"` in the top layer:
@@ -3972,7 +3978,7 @@ type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
  * dismisses and leaves the page interactive. Use `DialogSurface` with
  * `wa-dialog` when the task must block the page.
  */
-declare function PopoverDialogSurface({ id, children, label, labelledBy, presentation, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, rootAttributes, className, slot, }: PopoverDialogSurfaceProps): kerfjs.SafeHtml;
+declare function PopoverDialogSurface({ id, children, label, labelledBy, describedBy, presentation, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, rootAttributes, className, slot, }: PopoverDialogSurfaceProps): kerfjs.SafeHtml;
 type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
 interface PopupSurfaceProps {
     children: KerfUiContent;

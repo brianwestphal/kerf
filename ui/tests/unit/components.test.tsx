@@ -352,6 +352,17 @@ describe('production UI primitives', () => {
     );
     expect(embedded).not.toContain('popover=');
     expect(embedded).toContain('aria-labelledby="status-title"');
+    expect(overlay).not.toContain('aria-describedby');
+    expect(embedded).not.toContain('aria-describedby');
+    const described = asHtml(
+      PopoverDialogSurface({
+        labelledBy: 'status-title',
+        describedBy: 'status-description',
+        children: <p>Body</p>,
+      }),
+    );
+    expect(described).toContain('role="dialog"');
+    expect(described).toContain('aria-describedby="status-description"');
     expect(embedded).toContain('data-presentation="embedded"');
     expect(embedded).toContain('data-max-height=""');
     expect(embedded).not.toContain('style=');

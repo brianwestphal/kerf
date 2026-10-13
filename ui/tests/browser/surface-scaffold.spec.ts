@@ -493,7 +493,8 @@ test('PopoverDialogSurface is a centered, bounded, non-modal light-dismiss dialo
         bottom: Math.round(window.innerHeight - rect.bottom),
         width: Math.round(rect.width),
         height: Math.round(rect.height),
-        split: Math.round(split.height),
+        splitBottom: Math.round(rect.bottom - split.bottom),
+        splitBelowHeading: split.top > rect.top + 1,
       };
     });
     // 720px preferred, capped to the viewport minus two 8px gutters, centered.
@@ -501,8 +502,15 @@ test('PopoverDialogSurface is a centered, bounded, non-modal light-dismiss dialo
     expect(Math.abs(box.left - box.right)).toBeLessThanOrEqual(1);
     expect(Math.abs(box.top - box.bottom)).toBeLessThanOrEqual(1);
     expect(box.height).toBe(420);
-    // The SplitView fills the surface inside its 1px borders.
-    expect(box.split).toBe(box.height - 2);
+    // fill-last: the heading keeps its height and the SplitView fills the
+    // rest of the surface down to its 1px bottom border.
+    expect(box.splitBelowHeading).toBe(true);
+    expect(box.splitBottom).toBe(1);
+    // labelledBy / describedBy name and describe the dialog from its
+    // heading's title and ToolbarText description.
+    await expect(surface).toHaveAccessibleDescription(
+      'Three projects have uncommitted changes.',
+    );
     // Non-modal: the controls behind it are not made inert.
     expect(
       await page

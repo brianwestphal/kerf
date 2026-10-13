@@ -160,7 +160,20 @@ hand-built popover with application chrome CSS. It is a native
 same geometry props as a modal `DialogSurface`: `size`, `preferredWidth`,
 `viewportGutter` (16px by default), `height` / `maxHeight`, and `bodyLayout`
 (`flow`, `fill`, or `fill-last`).
-Name it with `label` or `labelledBy`.
+Name it with `label` or `labelledBy`. To give it an accessible description,
+pass `describedBy`, the id of the element that holds the summary. It renders as
+`aria-describedby` on the `role="dialog"` root and usually names a title
+`ToolbarText`'s `descriptionId`:
+
+```tsx
+<PopoverDialogSurface id="connection-details" labelledBy="connection-title" describedBy="connection-summary" bodyLayout="fill-last">
+  <Toolbar label="Connection Details Heading" leading={<ToolbarText text="Connection Details" size="xlarge" id="connection-title" description="Connected to the build server." descriptionId="connection-summary" />} />
+  {details}
+</PopoverDialogSurface>;
+```
+
+`DialogSurface` has no `describedBy`. It wraps a `wa-dialog` that the app
+authors, so the app names and describes that dialog on its own markup.
 
 Open it with a control's `popoverTarget` (or `showPopover()`); the browser
 places it centered in the top layer, light-dismisses it, and restores nothing

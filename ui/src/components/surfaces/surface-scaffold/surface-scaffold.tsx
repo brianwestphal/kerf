@@ -168,6 +168,12 @@ type PopoverDialogSurfaceName =
 export type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
   /** The root id: what an opening control's `popovertarget` names. */
   id?: string;
+  /**
+   * Id of the element whose text is the dialog's accessible description,
+   * such as a title `ToolbarText`'s `descriptionId`; rendered as
+   * `aria-describedby` on the `role="dialog"` root.
+   */
+  describedBy?: string;
   children: KerfUiContent;
   /**
    * `overlay` (default) is a native `popover="auto"` in the top layer:
@@ -217,6 +223,7 @@ export function PopoverDialogSurface({
   children,
   label,
   labelledBy,
+  describedBy,
   presentation = 'overlay',
   size = 'medium',
   preferredWidth,
@@ -259,6 +266,7 @@ export function PopoverDialogSurface({
       role="dialog"
       aria-label={label}
       aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
       style={style || undefined}
       slot={slot}
     >

@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 362600,
-  "measuredLargestJavaScriptGzip": 144662,
-  "measuredTotalJavaScriptGzip": 362511,
+  "measuredLargestJavaScriptGzip": 144762,
+  "measuredTotalJavaScriptGzip": 362591,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4081,6 +4081,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 144662,
         "measuredTotalJavaScriptGzip": 362511,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 362600
+      }
+    },
+    {
+      "at": "2026-10-13T10:53:42.321Z",
+      "reason": "PopoverDialogSurface describedBy demo heading (KF-SKVEQW)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 144662,
+        "measuredTotalJavaScriptGzip": 362511,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 362600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 144762,
+        "measuredTotalJavaScriptGzip": 362591,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 362600
       }

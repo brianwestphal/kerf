@@ -14,7 +14,9 @@ import {
   PopupSurface,
 } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
 const PROJECTS = ['Atlas', 'Borealis', 'Cirrus', 'Delta', 'Ember', 'Fjord'];
@@ -313,7 +315,7 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Non-Modal Popover Dialog"
-        note="A native popover: it light-dismisses on Escape or a press outside and leaves the page interactive."
+        note="A native popover: it light-dismisses on Escape or a press outside and leaves the page interactive. labelledBy and describedBy name it from its heading's title and description."
         align="inline-control"
       >
         <ToolbarControlGroup single>
@@ -323,12 +325,25 @@ export function SurfaceScaffoldDemo() {
         </ToolbarControlGroup>
         <PopoverDialogSurface
           id="catalog-popover-dialog"
-          label="Repository Status"
+          labelledBy="catalog-popover-dialog-title"
+          describedBy="catalog-popover-dialog-description"
           preferredWidth={remify(720)}
           height={remify(420)}
           viewportGutter={remify(8)}
-          bodyLayout="fill"
+          bodyLayout="fill-last"
         >
+          <Toolbar
+            label="Repository Status Heading"
+            leading={
+              <ToolbarText
+                text="Repository Status"
+                size="xlarge"
+                id="catalog-popover-dialog-title"
+                description="Three projects have uncommitted changes."
+                descriptionId="catalog-popover-dialog-description"
+              />
+            }
+          />
           {projectSplit('catalog-popover-dialog-split')}
         </PopoverDialogSurface>
       </CatalogExample>

@@ -41,7 +41,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - definite viewport-bounded modal height and a fill body layout for one child
 - fill-last body layout: fixed rows above one filling, scrolling last child
 - docked or floating footer with a typed footerOffset; the body reserves the measured footer height
-- non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow
+- non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow, named by label or labelledBy and described by describedBy
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
 
@@ -72,6 +72,7 @@ Margin: parent · border: child · padding: self (layout role: structure). `self
 ## Accessibility
 
 - Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.
+- Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.
 - Use popup surfaces only for real dropdown menus with named triggers.
 
 ## Styling boundary
