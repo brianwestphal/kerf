@@ -1577,6 +1577,27 @@ declare function wireListReorder(root: HTMLElement | Document, { onReorder }: Wi
 export { type ListDropPosition, type ListReorder, type ListReorderSource, type ListReorderTarget, type WireListReorderOptions, reorderListItems, wireListReorder };
 ```
 
+## `@kerfjs/ui/wire-list-focus-scroll`
+
+```ts
+type Root = HTMLElement | Document;
+/**
+ * Bring a keyboard-focused row of a `scrollable` List below `root` fully into
+ * view, focus ring included. Engines differ on how `focus()` scrolls a partly
+ * hidden row: Chromium scrolls it to the nearest edge plus scroll padding,
+ * Firefox waits until about half of it is hidden and then centers it, and
+ * WebKit leaves it where it is. On `focusin`, when the newly focused element
+ * matches `:focus-visible` and its ring crosses the nearest scrollable List's
+ * clip, this calls `scrollIntoView({ block: 'nearest', inline: 'nearest' })`,
+ * which honors the List's ring-room scroll padding in every engine. Pointer
+ * focus is left alone, so a click never scrolls the row out from under the
+ * pointer. Returns a disposer.
+ */
+declare function wireListFocusScroll(root: Root): () => void;
+
+export { wireListFocusScroll };
+```
+
 ## `@kerfjs/ui/nav-stack`
 
 ```ts

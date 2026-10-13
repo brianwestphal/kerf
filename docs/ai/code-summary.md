@@ -944,6 +944,15 @@ value rule (never true on a placeholder). Unit coverage in
 `ui/tests/unit/wire-list-reorder.test.ts` and
 `ui/tests/unit/list-row-reorder-props.test.ts`; Chromium drag/keyboard and
 geometry coverage in `ui/tests/browser/list-reorder.spec.ts`.
+`ui/src/components/collections/list/wiring/wire-list-focus-scroll.ts`
+(`@kerfjs/ui/wire-list-focus-scroll`, `wireListFocusScroll(root)`) scrolls a
+`:focus-visible` element inside a `scrollable` List into view (`block`/`inline`
+`nearest`, honoring the List's ring-room scroll padding) only when its focus
+ring crosses the clip; pointer focus is left alone. It exists because Firefox and
+WebKit `focus()` leave a partly hidden row clipped (KF-VA0WDK, opt-in focus
+scroll for scrollable Lists). Unit coverage in
+`ui/tests/unit/wire-list-focus-scroll.test.ts`; three-engine keyboard and
+pointer coverage in `ui/tests/browser/result-picker.spec.ts`.
 `TokenSearchField.trailingAction` renders the compact clear-button-matched trailing icon button with optional `expanded`/`pressed` (exclusive) ARIA state, `controls`, `haspopup`, and domain `data-*` `attributes`; `ui/tests/browser/token-search-trailing-presentations.spec.ts` (fixture `fixtures/token-search-trailing-presentations.tsx`) pins its geometry and state across the standalone, form-field, and toolbar-group presentations.
 `wireTokenSearchFields` captures managed clear before app handlers, suppresses the
 transient replacement blur, and restores the current editor at its mutation checkpoint

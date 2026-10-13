@@ -84,6 +84,7 @@ export {
   type ScrollClearance,
   type Sides,
 } from './components/collections/list/list.js';
+export { wireListFocusScroll } from './components/collections/list/wiring/wire-list-focus-scroll.js';
 export {
   ListActionRow,
   type ListActionRowProps,

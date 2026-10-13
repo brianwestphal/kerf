@@ -39,6 +39,7 @@ import {
   wireContentItems,
 } from '@kerfjs/ui/wire-content-items';
 import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers';
+import { wireListFocusScroll } from '@kerfjs/ui/wire-list-focus-scroll';
 import {
   reorderListItems,
   wireListReorder,
@@ -2020,6 +2021,7 @@ const stopTabBars = wireTabBars(app, {
     actionLog.value = `${source === 'pointer' ? 'Dragged' : 'Moved'} ${sourceId} ${position} ${targetId} in ${barId}`;
   },
 });
+const stopListFocusScroll = wireListFocusScroll(app);
 const stopListReorder = wireListReorder(app, {
   onReorder: ({ listId, sourceIds, target, source }) => {
     const rows =
@@ -2088,6 +2090,7 @@ window.addEventListener(
     stopResizeObserver();
     stopTabBars();
     stopListReorder();
+    stopListFocusScroll();
     stopContentItems();
     systemDarkTheme.removeEventListener('change', syncSystemTheme);
   },

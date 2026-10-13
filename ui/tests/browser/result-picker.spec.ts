@@ -58,6 +58,19 @@ async function focusedRing(page: Page) {
   });
 }
 
+function ringInside(
+  ring: Awaited<ReturnType<typeof focusedRing>>,
+  clip: Awaited<ReturnType<typeof frameGeometry>>['clip'],
+) {
+  return (
+    ring.style !== 'none' &&
+    ring.top >= clip.top - 0.5 &&
+    ring.bottom <= clip.bottom + 0.5 &&
+    ring.left >= clip.left - 0.5 &&
+    ring.right <= clip.right + 0.5
+  );
+}
+
 function expectInside(
   ring: Awaited<ReturnType<typeof focusedRing>>,
   clip: Awaited<ReturnType<typeof frameGeometry>>['clip'],
@@ -112,12 +125,18 @@ for (const width of [1280, 390]) {
     const rows = page.locator(`${picker} > .kui-list-item`);
     // A key press first gives later focus the keyboard (focus-visible)
     // modality in every engine; WebKit keeps buttons out of the Tab order by
-    // default, so focus each row directly. Focusing scrolls the row into
-    // view, which is where a ring meets the clip.
+    // default, so focus each row directly. The DOM focus(), not Playwright's
+    // locator.focus(), which scrolls the element into view itself and would
+    // hide the engine's and the catalog's wireListFocusScroll scroll.
     await page.keyboard.press('Shift');
     for (const row of [rows.first(), rows.last(), rows.first()]) {
-      await row.focus();
+      await row.evaluate((element) => element.focus());
       await expect(row).toBeFocused();
+      await expect
+        .poll(async () =>
+          ringInside(await focusedRing(page), (await frameGeometry(page)).clip),
+        )
+        .toBe(true);
       expectInside(await focusedRing(page), (await frameGeometry(page)).clip);
     }
   });
@@ -155,16 +174,12 @@ for (const width of [1280, 390]) {
   for (const edge of ['bottom', 'top'] as const) {
     test(`a middle row focused from the ${edge} edge keeps its ring inside the clip at ${width}px`, async ({
       page,
-      browserName,
     }) => {
-      // Only Chromium's focus() scrolls a partly visible row to the nearest
-      // edge. Firefox scrolls only once about half the row is hidden, and
-      // then centers it; WebKit leaves a partly visible row where it is
-      // (KF-Z5M10V). The scroll-into-view case below covers every engine.
-      test.skip(
-        browserName !== 'chromium',
-        'only Chromium focus scrolls a partly visible row to the nearest edge',
-      );
+      // Only Chromium's own focus() scroll brings a partly visible row to the
+      // nearest edge; Firefox waits until about half the row is hidden and
+      // WebKit never scrolls it (KF-Z5M10V). The catalog wires
+      // wireListFocusScroll, which scrolls the row into view in every engine
+      // (KF-VA0WDK).
       await openDemo(page, width);
       await page.keyboard.press('Shift');
       const index = await partlyHiddenRow(page, edge);
@@ -174,7 +189,66 @@ for (const width of [1280, 390]) {
       // into view itself, which would hide the engine's own focus scroll.
       await row.evaluate((element) => element.focus());
       await expect(row).toBeFocused();
-      expectInside(await focusedRing(page), (await frameGeometry(page)).clip);
+      await expect
+        .poll(async () =>
+          ringInside(await focusedRing(page), (await frameGeometry(page)).clip),
+        )
+        .toBe(true);
+    });
+
+    test(`a clicked middle row from the ${edge} edge is not scrolled by the wiring at ${width}px`, async ({
+      page,
+      browserName,
+    }) => {
+      await openDemo(page, width);
+      // Bring the picker onto the page viewport before the spy is installed.
+      await page
+        .locator(picker)
+        .evaluate((list) => list.scrollIntoView({ block: 'center' }));
+      await page.evaluate(() => {
+        const original = Element.prototype.scrollIntoView;
+        const calls: Element[] = [];
+        (globalThis as unknown as { scrollCalls: Element[] }).scrollCalls =
+          calls;
+        Element.prototype.scrollIntoView = function (
+          this: Element,
+          ...args: Parameters<Element['scrollIntoView']>
+        ) {
+          calls.push(this);
+          original.apply(this, args);
+        };
+      });
+      const index = await partlyHiddenRow(page, edge);
+      expect(index).toBeGreaterThan(0);
+      const row = page.locator(`${picker} > .kui-list-item`).nth(index);
+      // Click the row's visible part with the mouse (locator.click() would
+      // scroll it into view first). Pointer focus is not :focus-visible, so
+      // the wiring must not scroll the row from under the pointer. The
+      // engine may still scroll on its own (Chromium always, Firefox past
+      // half hidden), so only the wiring's scrollIntoView() call is
+      // asserted. WebKit does not focus a clicked button at all.
+      const point = await row.evaluate((element) => {
+        const list = element.parentElement!;
+        const clip = list.getBoundingClientRect();
+        const box = element.getBoundingClientRect();
+        const top = Math.max(box.top, clip.top + 1);
+        const bottom = Math.min(box.bottom, clip.bottom - 1);
+        return { x: box.left + box.width / 2, y: (top + bottom) / 2 };
+      });
+      await page.mouse.click(point.x, point.y);
+      if (browserName !== 'webkit') {
+        await expect(row).toBeFocused();
+        expect(
+          await row.evaluate((element) => element.matches(':focus-visible')),
+        ).toBe(false);
+      }
+      expect(
+        await page.evaluate(
+          () =>
+            (globalThis as unknown as { scrollCalls: Element[] }).scrollCalls
+              .length,
+        ),
+      ).toBe(0);
     });
 
     test(`a middle row scrolled into view from the ${edge} edge keeps its ring inside the clip at ${width}px`, async ({

@@ -3538,7 +3538,8 @@
         "lengthVar",
         "plus",
         "calc",
-        "flex"
+        "flex",
+        "wireListFocusScroll"
       ],
       "publicExportImports": {
         "px": "@kerfjs/ui/css-values",
@@ -3549,7 +3550,8 @@
         "lengthVar": "@kerfjs/ui/css-values",
         "plus": "@kerfjs/ui/css-values",
         "calc": "@kerfjs/ui/css-values",
-        "flex": "@kerfjs/ui/css-values"
+        "flex": "@kerfjs/ui/css-values",
+        "wireListFocusScroll": "@kerfjs/ui/wire-list-focus-scroll"
       },
       "cssValueProps": [
         {
@@ -3674,7 +3676,8 @@
         "Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row.",
         "Use selectionMode=\"multiple\" and ariaLabel to group selectable rich ContentItem rows in a multi-select grid.",
         "Use scrollClearance on the scrollable List that reaches an edge overlaid by chrome (a DialogSurface floating footer) so rows scroll visibly beneath it while the first and last rows still rest clear of it.",
-        "Render a bounded, framed result picker of ListItem rows (search results, duplicate candidates) with scrollable, frame, and typed maxHeight/minHeight instead of an app-owned bordered scroller."
+        "Render a bounded, framed result picker of ListItem rows (search results, duplicate candidates) with scrollable, frame, and typed maxHeight/minHeight instead of an app-owned bordered scroller.",
+        "Call wireListFocusScroll(root) once when keyboard users move focus through a scrollable List's rows, so Firefox and Safari bring a partly hidden focused row and its ring fully into view as Chromium does."
       ],
       "avoidWhen": [
         "Do not use List as semantic list markup; use ul/ol when list semantics are required and apply layout deliberately.",
@@ -3714,7 +3717,8 @@
       "accessibility": [
         "List adds layout only and no list role by default; selectionMode=\"multiple\" makes it an aria-multiselectable grid with a required ariaLabel for selectable ContentItem rows.",
         "Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.",
-        "A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus."
+        "A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus.",
+        "With wireListFocusScroll, a keyboard-focused (:focus-visible) element in a scrollable List whose focus ring crosses the clip is scrolled into view (block and inline nearest, honoring the ring-room scroll padding) in every engine; pointer focus never scrolls, so a click cannot move its row from under the pointer."
       ],
       "geometry": {
         "margin": "none",
@@ -3757,6 +3761,11 @@
               "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
             }
           ]
+        },
+        {
+          "export": "wireListFocusScroll",
+          "import": "@kerfjs/ui/wire-list-focus-scroll",
+          "required": false
         }
       ],
       "publicClasses": [

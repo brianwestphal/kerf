@@ -2995,7 +2995,7 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": ["wireScrollDividers"],
+        "helpers": ["wireScrollDividers", "wireListFocusScroll"],
         "obligations": [],
         "stateAttributes": [
           {
@@ -3038,7 +3038,8 @@
         "obligations": [
           "List adds layout only and no list role by default; selectionMode=\"multiple\" makes it an aria-multiselectable grid with a required ariaLabel for selectable ContentItem rows.",
           "Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.",
-          "A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus."
+          "A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus.",
+          "With wireListFocusScroll, a keyboard-focused (:focus-visible) element in a scrollable List whose focus ring crosses the clip is scrolled into view (block and inline nearest, honoring the ring-room scroll padding) in every engine; pointer focus never scrolls, so a click cannot move its row from under the pointer."
         ]
       },
       "cssValueProps": [

@@ -360,6 +360,22 @@ describe('consumer bundle boundaries', () => {
     expect(output(result, '.js')).toContain('dropPosition');
   });
 
+  it('keeps the list focus-scroll wiring a DOM-only module with no CSS or components', async () => {
+    const result = await bundle(
+      "import { wireListFocusScroll } from '@kerfjs/ui/wire-list-focus-scroll'; console.log(wireListFocusScroll);",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).filter(
+      (input) => input !== 'consumer.ts',
+    );
+    expect(inputs).toContain('dist/wire-list-focus-scroll.js');
+    for (const input of inputs)
+      expect(input).toMatch(
+        /^dist\/(wire-list-focus-scroll|chunk-[A-Z0-9]+)\.js$/,
+      );
+    expect(output(result, '.css')).toBe('');
+    expect(output(result, '.js')).toContain('focus-visible');
+  });
+
   it('keeps the scroll-divider wiring a DOM-only module with no CSS or components', async () => {
     const result = await bundle(
       "import { wireScrollDividers } from '@kerfjs/ui/wire-scroll-dividers'; console.log(wireScrollDividers);",
@@ -874,6 +890,13 @@ describe('consumer bundle boundaries', () => {
       import: './dist/wire-list-reorder.js',
     });
     expect(pkg.exports['./wire-list-reorder']).not.toHaveProperty('browser');
+    expect(pkg.exports['./wire-list-focus-scroll']).toMatchObject({
+      types: './dist/wire-list-focus-scroll.d.ts',
+      import: './dist/wire-list-focus-scroll.js',
+    });
+    expect(pkg.exports['./wire-list-focus-scroll']).not.toHaveProperty(
+      'browser',
+    );
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./list.css']).toBe('./dist/styles/list.css');
     expect(pkg.exports['./row']).toMatchObject({

@@ -290,7 +290,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   the before/after insertion line, supports Alt+Shift+ArrowUp/ArrowDown, and
   reports `{ listId, sourceIds, target: { id, position }, source }` for
   `reorderListItems`. The `dragging` / `dropPosition` props render the same
-  states from app-owned drag state. Public ListItem tokens set row, icon, label, and trailing geometry;
+  states from app-owned drag state. For keyboard row navigation in a
+  `scrollable` List, call `wireListFocusScroll` (from
+  `@kerfjs/ui/wire-list-focus-scroll`) once: it scrolls a keyboard-focused row
+  whose focus ring crosses the clip into view in Firefox and Safari too.
+  Public ListItem tokens set row, icon, label, and trailing geometry;
   ListHeader `size="xs|sm|m|l|xl"` sets label scale independently of
   `headingLevel` (`sm` keeps the current FieldLabel-sized uppercase style;
   `m`/`l`/`xl` match themed h5/h4/h3). Its height, title padding, and border
@@ -765,7 +769,7 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 ## Public exports
 
 `Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `FloatingToolbar`, `ToolbarText`, `Text`,
-`ListItem`, `ListActionRow` (+ `wireListReorder`, `reorderListItems`), `ListHeader`, `ListInsetControl`,
+`ListItem`, `ListActionRow` (+ `wireListReorder`, `reorderListItems`), `wireListFocusScroll`, `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`, `ChoiceChips`, `Composer`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),

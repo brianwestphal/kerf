@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.59.0
+kerf-ui-skill-version: 1.60.0
 ---
 
 # Building with @kerfjs/ui
@@ -361,7 +361,7 @@ Use `--kui-resizable-region-background` for a region surface and `contentOverflo
 
 Use `ListItem density="spacious"` for larger option rows, `multiline` plus `multilineIconAlign="center"` when its icon should center on wrapped copy, `divider` for row separators (for lines only between rows, every row but the last takes `divider="after"` and the last `"none"`; corners are flat wherever a divider line meets them, so the group rounds only its outer corners), and `state="drag-target"` for the drop target treatment. For a reorderable list, set `draggable` and `itemId` on each `ListItem`, `ListItemLink`, or `ListActionRow` and call `wireListReorder(root, { onReorder })` from `@kerfjs/ui/wire-list-reorder` once: it dims the dragged rows, draws the brand insertion line on the hovered row's `before`/`after` edge, supports Alt+Shift+ArrowUp/ArrowDown, and reports `{ listId, sourceIds, target: { id, position }, source }` (a selected or pressed row drags every selected row of its `List`; `data-list-id` on the `List` names it). Apply it with `reorderListItems` and re-render; the `dragging` and `dropPosition` props render the same states from app-owned drag state. Never hand-style drag rows. Public `--kui-list-item-*` tokens adjust row, icon, label, and trailing geometry and color; ListHeader height, title padding, and border tokens adjust section density.
 
-For a bounded, framed result picker of `ListItem` rows (search results, duplicate candidates), configure the List: `<List scrollable frame gap="2xs" minHeight={rem(4.25)} maxHeight={rem(14)}>`. `frame` draws a 1px neutral border with the control radius and a 4px inset that keeps the first and last rows' focus rings inside the clip, and the typed `CssLength` `maxHeight` / `minHeight` (from `@kerfjs/ui/css-values`) bound it without a flex-column ancestor. Never wrap a List in an app div with `max-height`, `overflow`, a border, or padding.
+For a bounded, framed result picker of `ListItem` rows (search results, duplicate candidates), configure the List: `<List scrollable frame gap="2xs" minHeight={rem(4.25)} maxHeight={rem(14)}>`. `frame` draws a 1px neutral border with the control radius and a 4px inset that keeps the first and last rows' focus rings inside the clip, and the typed `CssLength` `maxHeight` / `minHeight` (from `@kerfjs/ui/css-values`) bound it without a flex-column ancestor. Never wrap a List in an app div with `max-height`, `overflow`, a border, or padding. When keyboard users move through a scrollable List's rows, call `wireListFocusScroll(appRoot)` (`@kerfjs/ui/wire-list-focus-scroll`) once and keep the disposer: Firefox and Safari leave a partly hidden focused row clipped, and the wiring scrolls a keyboard-focused row whose ring crosses the clip into view (pointer focus never scrolls). Do not call `scrollIntoView` from app focus handlers for this.
 
 Set `ListHeader.size` to `xs`, `sm`, `m`, `l`, or `xl` for label scale. The default `sm` remains the small uppercase style shared with `FieldLabel`; `xs` is 2xs and capitalized, while `m`/`l`/`xl` match themed h5/h4/h3 typography. Choose `headingLevel` separately from the document outline.
 

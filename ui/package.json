@@ -228,6 +228,10 @@
       "types": "./dist/wire-list-reorder.d.ts",
       "import": "./dist/wire-list-reorder.js"
     },
+    "./wire-list-focus-scroll": {
+      "types": "./dist/wire-list-focus-scroll.d.ts",
+      "import": "./dist/wire-list-focus-scroll.js"
+    },
     "./wire-toolbar-visibility": {
       "types": "./dist/wire-toolbar-visibility.d.ts",
       "import": "./dist/wire-toolbar-visibility.js"

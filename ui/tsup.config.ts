@@ -38,6 +38,7 @@ const entries = [
   'wire-tab-bars',
   'wire-scroll-dividers',
   'wire-list-reorder',
+  'wire-list-focus-scroll',
   'wire-toolbar-visibility',
   'nav-stack',
   'wire-nav-stack',

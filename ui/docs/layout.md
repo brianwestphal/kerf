@@ -767,10 +767,13 @@ show a whole ring.
 How far `focus()` scrolls a partly visible row is up to the engine: Chromium
 brings it to the nearest edge, Firefox leaves it until about half of it is
 hidden and then centers it, and WebKit leaves a partly visible row where it
-is. `scrollIntoView({ block: 'nearest' })` honors the frame's scroll padding
-in every engine, so an app that moves focus through rows itself (arrow-key
-navigation) can call it after `focus()` to bring the whole row and its ring
-into view everywhere. `maxHeight` and `minHeight` take typed
+is. Call `wireListFocusScroll(root)` from `@kerfjs/ui/wire-list-focus-scroll`
+once at the app root (keep its disposer) to make keyboard focus consistent:
+when a `:focus-visible` element inside a `scrollable` List has a ring that
+crosses the clip, it calls `scrollIntoView({ block: 'nearest' })`, which
+honors the List's scroll padding in every engine. It leaves pointer focus
+alone, so a click never scrolls its row from under the pointer, and it is a
+no-op where Chromium has already scrolled. `maxHeight` and `minHeight` take typed
 `CssLength`s from `@kerfjs/ui/css-values` and bound the List directly, with no
 flex-column ancestor; pair `maxHeight` with `scrollable`. A frame of settings
 rows with dividers between them is a `FramedList`, not a framed List.

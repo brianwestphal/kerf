@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 372100,
+  "totalJavaScriptGzip": 372300,
   "measuredLargestJavaScriptGzip": 118702,
-  "measuredTotalJavaScriptGzip": 372092,
+  "measuredTotalJavaScriptGzip": 372298,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4499,6 +4499,22 @@
         "measuredTotalJavaScriptGzip": 372092,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 372100
+      }
+    },
+    {
+      "at": "2026-10-13T21:51:10.812Z",
+      "reason": "wireListFocusScroll wired into the catalog for keyboard row focus in scrollable Lists (KF-VA0WDK)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118702,
+        "measuredTotalJavaScriptGzip": 372092,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 372100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118702,
+        "measuredTotalJavaScriptGzip": 372298,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 372300
       }
     }
   ]

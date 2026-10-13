@@ -229,6 +229,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `ListActionRow`                                                     | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`         |
 | `ListItem`                                                          | `@kerfjs/ui/list-item`                  | `@kerfjs/ui/list-item.css`               |
 | `wireListReorder`, `reorderListItems`                               | `@kerfjs/ui/wire-list-reorder`          | —                                        |
+| `wireListFocusScroll`                                               | `@kerfjs/ui/wire-list-focus-scroll`     | —                                        |
 | `ListHeader`                                                        | `@kerfjs/ui/list-header`                | `@kerfjs/ui/list-header.css`             |
 | `ListInsetControl`                                                  | `@kerfjs/ui/list-inset-control`         | `@kerfjs/ui/list-inset-control.css`      |
 | `ListInsetText`                                                     | `@kerfjs/ui/list-inset-text`            | `@kerfjs/ui/list-inset-text.css`         |

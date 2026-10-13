@@ -19,6 +19,7 @@ Standardize vertical component layout, optional physical-side text/control inset
 - Use selectionMode="multiple" and ariaLabel to group selectable rich ContentItem rows in a multi-select grid.
 - Use scrollClearance on the scrollable List that reaches an edge overlaid by chrome (a DialogSurface floating footer) so rows scroll visibly beneath it while the first and last rows still rest clear of it.
 - Render a bounded, framed result picker of ListItem rows (search results, duplicate candidates) with scrollable, frame, and typed maxHeight/minHeight instead of an app-owned bordered scroller.
+- Call wireListFocusScroll(root) once when keyboard users move focus through a scrollable List's rows, so Firefox and Safari bring a partly hidden focused row and its ring fully into view as Chromium does.
 
 **Not when:**
 
@@ -30,13 +31,15 @@ Standardize vertical component layout, optional physical-side text/control inset
 
 - JavaScript: `@kerfjs/ui/list` — exports `List`.
 - JavaScript: `@kerfjs/ui/css-values` — exports `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `plus`, `calc`, `flex`.
+- JavaScript: `@kerfjs/ui/wire-list-focus-scroll` — exports `wireListFocusScroll`.
 - CSS: the browser build of `@kerfjs/ui/list` pulls its CSS automatically; import `@kerfjs/ui/list.css` manually only without the `browser` export condition.
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
+- Wiring: `wireListFocusScroll` from `@kerfjs/ui/wire-list-focus-scroll` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#kerfjsuilist), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#kerfjsuilist), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values), [`@kerfjs/ui/wire-list-focus-scroll`](../public-api-signatures-v1.md#kerfjsuiwire-list-focus-scroll), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -78,7 +81,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 
 **The app owns:** child semantics and content; the bounded height needed for scrolling; typed gap, flex, alignment, and divider choices; the accessible label and selection state of a multi-select grid; which one scroller opts into scroll clearance (the one reaching the covered edge); the result picker bounds (maxHeight/minHeight) and its rows.
 
-**Wiring:** `wireScrollDividers` is optional.
+**Wiring:** `wireScrollDividers`, `wireListFocusScroll` is optional.
 
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 
@@ -101,6 +104,7 @@ Margin: none · border: conditional · padding: conditional (layout role: naviga
 - List adds layout only and no list role by default; selectionMode="multiple" makes it an aria-multiselectable grid with a required ariaLabel for selectable ContentItem rows.
 - Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.
 - A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus.
+- With wireListFocusScroll, a keyboard-focused (:focus-visible) element in a scrollable List whose focus ring crosses the clip is scrolled into view (block and inline nearest, honoring the ring-room scroll padding) in every engine; pointer focus never scrolls, so a click cannot move its row from under the pointer.
 
 ## Styling boundary
 
