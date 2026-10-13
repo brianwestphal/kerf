@@ -393,6 +393,11 @@ slot without mixing authoring rules into the per-entry component catalog.
     `scrollClearance`, the body publishes the header's height as
     `--kui-scroll-clearance-block-start` instead, so a transcript scrolls
     beneath both the title bar and a floating composer.
+  - **Scroll divider.** The register also listens for `scroll` (capture
+    phase, on the shadow panel and the host) and, while the body or a
+    slotted scroller that reaches beneath the header is away from its top,
+    publishes `--_kui-dialog-surface-header-divider` on the panel; the
+    header draws it as a 1px inset line, matching a Pane's overlay header.
   - **Contrast.** Normal text passes AA over the raised material on the same
     worst-case backdrops (about 10.5:1 light, 6.7:1 dark).
   - **Verification.** `ui/tests/browser/dialog-floating-header.spec.ts` runs

@@ -125,6 +125,54 @@ test('the transcript reaches beneath the floating title bar, and its first messa
   await page.keyboard.press('Escape');
 });
 
+/** The floating header's computed divider shadow and the panel's state. */
+function headerDivider(page: Page, dialog = DIALOG) {
+  return page.locator(dialog).evaluate((element) => {
+    const shadow = element.shadowRoot!;
+    const header = shadow.querySelector('[part~="header"]')!;
+    const panel = shadow.querySelector<HTMLElement>('[part~="dialog"]')!;
+    return {
+      shadow: globalThis.getComputedStyle(header).boxShadow,
+      published: panel.style.getPropertyValue(
+        '--_kui-dialog-surface-header-divider',
+      ),
+    };
+  });
+}
+
+/** Scroll an element (inside the dialog, light DOM or shadow) to a position. */
+async function scrollThread(page: Page, position: 'start' | 'middle') {
+  await page.locator(TRANSCRIPT).evaluate((transcript, at) => {
+    const max = transcript.scrollHeight - transcript.clientHeight;
+    transcript.scrollTop = at === 'start' ? 0 : max / 2;
+  }, position);
+}
+
+test('the title bar draws its divider only while the transcript is scrolled beneath it', async ({
+  page,
+}) => {
+  await openThread(page);
+  await scrollThread(page, 'start');
+  await expect.poll(async () => (await headerDivider(page)).published).toBe('');
+  const rest = await headerDivider(page);
+  // At rest the inset line is transparent.
+  expect(rest.shadow).toMatch(/rgba\(0, 0, 0, 0\)|transparent|none/);
+
+  await scrollThread(page, 'middle');
+  await expect
+    .poll(async () => (await headerDivider(page)).published)
+    .not.toBe('');
+  const scrolled = await headerDivider(page);
+  // The neutral border color draws a 1px inset line along the bottom edge.
+  expect(scrolled.shadow).toMatch(/inset/);
+  expect(scrolled.shadow).not.toMatch(/rgba\(0, 0, 0, 0\)/);
+  expect(scrolled.shadow).toMatch(/0px -1px/);
+
+  await scrollThread(page, 'start');
+  await expect.poll(async () => (await headerDivider(page)).published).toBe('');
+  await page.keyboard.press('Escape');
+});
+
 test('the clearance follows the header as its text grows, and leaves with the header', async ({
   page,
 }) => {

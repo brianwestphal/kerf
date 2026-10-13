@@ -193,6 +193,8 @@ describe('scroll clearance context', () => {
       '-webkit-backdrop-filter:var(--kui-chrome-material-filter)',
       'backdrop-filter:var(--kui-chrome-material-filter)',
       'background:var(--kui-chrome-material-raised)',
+      // Scroll-state divider: transparent until the register publishes it.
+      'box-shadow:inset 0 -1px var(--_kui-dialog-surface-header-divider, transparent)',
       // Forced colors: an opaque system surface and a visible edge.
       '-webkit-backdrop-filter:none',
       'backdrop-filter:none',

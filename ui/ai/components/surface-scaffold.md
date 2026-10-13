@@ -46,6 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - floating footer over a filling child that opts into block-end scrollClearance: content scrolls beneath the footer through the published --kui-scroll-clearance-block-end
 - docked or floating header (headerPresentation) on the translucent chrome material; the body reserves the measured header height
 - floating header over a filling only child that opts into block-start scrollClearance: content scrolls beneath the title bar through the published --kui-scroll-clearance-block-start
+- floating header divider as scroll state: a hairline under the title bar only while the body or a filling child beneath it is scrolled away from its top
 - non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow, named by label or labelledBy and described by describedBy
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu

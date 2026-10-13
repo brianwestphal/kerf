@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 369400,
-  "measuredLargestJavaScriptGzip": 124586,
-  "measuredTotalJavaScriptGzip": 369361,
+  "totalJavaScriptGzip": 369700,
+  "measuredLargestJavaScriptGzip": 124585,
+  "measuredTotalJavaScriptGzip": 369625,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4451,6 +4451,22 @@
         "measuredTotalJavaScriptGzip": 369361,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 369400
+      }
+    },
+    {
+      "at": "2026-10-13T20:46:56.839Z",
+      "reason": "KF-ZVV4PN: DialogSurface floating header scroll-state divider (register scroll listener)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124586,
+        "measuredTotalJavaScriptGzip": 369361,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 369400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124585,
+        "measuredTotalJavaScriptGzip": 369625,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 369700
       }
     }
   ]

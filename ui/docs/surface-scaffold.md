@@ -190,6 +190,13 @@ composer and `scrollClearance="both"`, the transcript scrolls beneath both:
 </DialogSurface>;
 ```
 
+Like a `Pane`'s overlay header, the title bar draws its divider as scroll
+state: a 1px line along its bottom edge only while the body, or a filling
+child that reaches beneath it, is scrolled away from its top, and none at
+rest. The register follows those scrollers (a nested scroller that starts
+below the title bar never counts), and the line is an inset shadow, so it
+never moves the header or the content.
+
 The material turns opaque under `prefers-reduced-transparency: reduce` or
 `prefers-contrast: more`, and where the browser lacks `backdrop-filter`; in
 forced colors the header paints `Canvas` with a `CanvasText` bottom edge.
@@ -260,4 +267,4 @@ preserve `data-morph-skip-children` when its upgraded light-DOM items must retai
 identity across Kerf rerenders. Import `@kerfjs/ui/popup-menu/register` once for
 the focus handoff fix when wrapping a raw `wa-dropdown`.
 
-Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog`, measures each surface's footer for a floating footer's body clearance, and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. A host that is itself an explicit dialog (`role="dialog"` or `"alertdialog"` with its own name) keeps that name alone: the native panel is left unnamed, so one dialog carries the name. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.
+Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog`, measures each surface's footer for a floating footer's body clearance, draws a floating header's divider while content is scrolled beneath it, and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. A host that is itself an explicit dialog (`role="dialog"` or `"alertdialog"` with its own name) keeps that name alone: the native panel is left unnamed, so one dialog carries the name. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.
