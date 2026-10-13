@@ -368,6 +368,16 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `LucideIcon` is 24px); if it looks wrong, fix the surrounding layout, not the
   control. Never force a component's width/height to size it — that leaves a halo
   or a stretched oval.
+- **Make room for an expanded search instead of growing it past what fits.** A
+  collapsible search group grows into the space beside its sibling groups; if
+  that space is too small, the siblings wrap onto a new row while it opens.
+  Size the expanded search to what fits (`--kui-token-search-expanded-width`,
+  or `sizing="grow"` with a `growBasis` that fits), and if a useful search
+  cannot fit beside the other controls, set aside those controls while the
+  search is open: mark them `visibility="yield-to-expanded-sibling"` (they
+  leave a 480px-or-narrower toolbar while a sibling is expanded) or gather
+  them behind a "…" `PopupMenu` overflow group. The app decides which
+  controls yield.
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never put a bare
   button, input, link, or loose markup in a `leading`/`center`/`trailing` zone.
   Wrap every control — `SegmentedControl`, `Select`, a collapsible

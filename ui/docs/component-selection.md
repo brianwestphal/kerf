@@ -579,6 +579,22 @@ the control's dimensions, shows `LoadingSpinner` in its icon slot, sets
 | A command menu                 | `<ToolbarControlGroup single nestedDropdown><PopupMenu … /></ToolbarControlGroup>`     | Register `@kerfjs/ui/popup-menu/register` once; set `menuInset` on the group                                      |
 | A collapsible search box       | `<ToolbarControlGroup single><TokenSearchField collapsible … /></ToolbarControlGroup>` | The group animates the iconic ↔ expanded states; `wireTokenSearchFields` manages expand/collapse/focus by default |
 
+### Room for an expanded search
+
+A collapsible search group grows into the room beside its sibling groups. When
+that room is too small, the siblings wrap onto a new row partway through the
+opening, and the toolbar grows a row taller. Kerf does not hide or move your
+other controls; plan for it instead:
+
+- Size the expanded search to what fits: `--kui-token-search-expanded-width`
+  for a plain search group, or `sizing="grow"` with a `growBasis` that fits
+  beside the siblings.
+- If a useful search cannot fit beside the other controls, set those controls
+  aside while it is open. Mark them `visibility="yield-to-expanded-sibling"`
+  (they leave a 480px-or-narrower toolbar while a sibling is expanded), or
+  gather them behind a "…" `PopupMenu` overflow group. The application decides
+  which controls yield.
+
 ### Application surfaces below search
 
 Pass `expandedOverflow="visible"` to `ToolbarControlGroup content="search"`
