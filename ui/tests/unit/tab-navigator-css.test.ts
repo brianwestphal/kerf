@@ -74,7 +74,8 @@ describe('TabNavigator overlay bar', () => {
       position: 'absolute',
       'z-index': '2',
       'inset-block-end': '0',
-      'inset-inline': '0',
+      'inset-inline':
+        '0 var(--_kui-tab-scaffold-bar-scrollbar-inline-size, 0px)',
     });
     expect(rule(`${measured} > .kui-tab-scaffold__scenes`)[0]).toEqual({
       '--kui-edge-inset-block-end':

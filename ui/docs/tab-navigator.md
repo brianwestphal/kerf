@@ -202,8 +202,9 @@ and the selected label mixes 40% of it into the brand color, so both keep AA
 over any content beneath. The material turns opaque under reduced
 transparency, increased contrast, or without `backdrop-filter`, and paints
 `Canvas` with a `CanvasText` top edge in forced colors. The scroll divider still
-shows only while more content lies below. A classic (space-taking) scrollbar's
-bottom end runs beneath the bar.
+shows only while more content lies below. Like the NavStack overlay bars, the
+tab bar ends where a classic (space-taking) scrollbar's track begins, so the
+active scene's thumb and buttons stay visible and usable.
 
 ## Tab badges
 

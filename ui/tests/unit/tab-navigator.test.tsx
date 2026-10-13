@@ -459,6 +459,162 @@ describe('TabNavigator overlay bar', () => {
     dispose();
   });
 
+  // KF-D5CBFH: the bar ends where the active scene's classic scrollbar
+  // track begins.
+  describe('classic scrollbar beneath the bar', () => {
+    const SIZE = '--_kui-tab-scaffold-bar-scrollbar-inline-size';
+
+    /** Give `element` a 15px classic scrollbar in happy-dom. */
+    function scrollbar(element: HTMLElement, width = 15) {
+      Object.defineProperty(element, 'offsetWidth', {
+        configurable: true,
+        value: 300,
+      });
+      Object.defineProperty(element, 'clientWidth', {
+        configurable: true,
+        value: 300 - width,
+      });
+    }
+
+    function renderScene(
+      content: ReturnType<typeof raw>,
+      active: 'home' | 'search' = 'home',
+    ) {
+      document.body.innerHTML = String(
+        TabNavigator({
+          id: 'app',
+          label: 'Sections',
+          active,
+          barPresentation: 'overlay',
+          tabs: [
+            { id: 'home', label: 'Home', content },
+            { id: 'search', label: 'Search', content: raw('<div>s</div>') },
+          ],
+        }),
+      );
+      const section = document.querySelector<HTMLElement>('#app')!;
+      const scene = (id: string) =>
+        section.querySelector<HTMLElement>(
+          `[data-tab-scaffold-scene="${id}"]`,
+        )!;
+      return { section, scene };
+    }
+
+    it('measures a plain scene, follows the active tab, and clears on dispose', async () => {
+      const { report } = fakeResizeObserver();
+      const { section, scene } = renderScene(raw('<div>rows</div>'));
+      scrollbar(scene('home'));
+      const dispose = wireTabNavigator(section, { onSelect: vi.fn() });
+      expect(section.style.getPropertyValue(SIZE)).toBe('15px');
+      // The search scene has no classic scrollbar.
+      scrollbar(scene('search'), 0);
+      scene('home').dataset.active = 'false';
+      scene('search').dataset.active = 'true';
+      await settle();
+      expect(section.style.getPropertyValue(SIZE)).toBe('');
+      // A scrollbar appearing resizes the scroller's content box.
+      scrollbar(scene('search'), 12);
+      report(scene('search'));
+      expect(section.style.getPropertyValue(SIZE)).toBe('12px');
+      dispose();
+      expect(section.style.getPropertyValue(SIZE)).toBe('');
+    });
+
+    it("measures a sole Pane's content, but not past its footer", async () => {
+      fakeResizeObserver();
+      const { section, scene } = renderScene(
+        raw(
+          '<section class="kui-pane" data-component="pane"><div class="kui-pane__content"></div></section>',
+        ),
+      );
+      const pane = scene('home').querySelector('.kui-pane')!;
+      scrollbar(pane.querySelector<HTMLElement>('.kui-pane__content')!);
+      const dispose = wireTabNavigator(section, { onSelect: vi.fn() });
+      expect(section.style.getPropertyValue(SIZE)).toBe('15px');
+      const footer = document.createElement('footer');
+      footer.className = 'kui-pane__footer';
+      pane.append(footer);
+      await settle();
+      expect(section.style.getPropertyValue(SIZE)).toBe('');
+      dispose();
+    });
+
+    const stack = (inner: string, bottom = '') =>
+      raw(
+        `<section data-component="nav-stack" ${bottom}><div data-nav-stack-viewport>${inner}</div></section>`,
+      );
+
+    it("measures a sole NavStack's active view, or its sole Pane's content", async () => {
+      fakeResizeObserver();
+      const { section, scene } = renderScene(
+        stack(
+          '<div data-nav-active="true"><div>root</div></div><div data-nav-active="true" data-nav-exiting="true"></div>',
+        ),
+      );
+      const view = scene('home').querySelector<HTMLElement>(
+        '[data-nav-active="true"]',
+      )!;
+      scrollbar(view);
+      const dispose = wireTabNavigator(section, { onSelect: vi.fn() });
+      expect(section.style.getPropertyValue(SIZE)).toBe('15px');
+      // A pushed view holding a sole Pane: the Pane's content scrolls.
+      const pushed = document.createElement('div');
+      pushed.dataset.navActive = 'true';
+      pushed.innerHTML =
+        '<section class="kui-pane" data-component="pane"><div class="kui-pane__content"></div></section>';
+      scrollbar(pushed.querySelector<HTMLElement>('.kui-pane__content')!, 11);
+      view.parentElement!.append(pushed);
+      await settle();
+      expect(section.style.getPropertyValue(SIZE)).toBe('11px');
+      // A view holding a nested layout owns its own scroller.
+      pushed.innerHTML = '<section data-component="split-view"></section>';
+      await settle();
+      expect(section.style.getPropertyValue(SIZE)).toBe('');
+      // A stack with no active view.
+      pushed.remove();
+      view.dataset.navActive = 'false';
+      await settle();
+      expect(section.style.getPropertyValue(SIZE)).toBe('');
+      dispose();
+    });
+
+    it('leaves a NavStack with a docked bottom toolbar alone, but measures under an overlay one', async () => {
+      fakeResizeObserver();
+      const { section, scene } = renderScene(
+        stack(
+          '<div data-nav-active="true"></div>',
+          'data-bottom-toolbar-presentation="docked"',
+        ),
+      );
+      const root = scene('home').querySelector<HTMLElement>(
+        '[data-component="nav-stack"]',
+      )!;
+      const bottom = document.createElement('div');
+      bottom.setAttribute('data-nav-stack-bottom', '');
+      root.append(bottom);
+      scrollbar(root.querySelector<HTMLElement>('[data-nav-active]')!);
+      const dispose = wireTabNavigator(section, { onSelect: vi.fn() });
+      expect(section.style.getPropertyValue(SIZE)).toBe('');
+      root.setAttribute('data-bottom-toolbar-presentation', 'overlay');
+      await settle();
+      expect(section.style.getPropertyValue(SIZE)).toBe('15px');
+      dispose();
+    });
+
+    it('ignores a scene whose only child is another nested layout, and a missing active scene', async () => {
+      fakeResizeObserver();
+      const { section, scene } = renderScene(
+        raw('<section data-component="workbench"></section>'),
+      );
+      const dispose = wireTabNavigator(section, { onSelect: vi.fn() });
+      expect(section.style.getPropertyValue(SIZE)).toBe('');
+      scene('home').dataset.active = 'false';
+      await settle();
+      expect(section.style.getPropertyValue(SIZE)).toBe('');
+      dispose();
+    });
+  });
+
   it('measures the bar directly where ResizeObserver is missing', () => {
     vi.stubGlobal('ResizeObserver', undefined);
     const { section, bar } = render();

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 373400,
-  "measuredLargestJavaScriptGzip": 118706,
-  "measuredTotalJavaScriptGzip": 373358,
+  "totalJavaScriptGzip": 373700,
+  "measuredLargestJavaScriptGzip": 118704,
+  "measuredTotalJavaScriptGzip": 373683,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4611,6 +4611,22 @@
         "measuredTotalJavaScriptGzip": 373358,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 373400
+      }
+    },
+    {
+      "at": "2026-10-13T23:19:18.970Z",
+      "reason": "overlay TabNavigator bar measures the active scene's classic scrollbar (KF-D5CBFH)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118706,
+        "measuredTotalJavaScriptGzip": 373358,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 373400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118704,
+        "measuredTotalJavaScriptGzip": 373683,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 373700
       }
     }
   ]

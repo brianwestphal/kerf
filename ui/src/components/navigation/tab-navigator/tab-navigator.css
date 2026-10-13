@@ -193,7 +193,9 @@
   position: absolute;
   z-index: 2;
   inset-block-end: 0;
-  inset-inline: 0;
+  /* Like the NavStack overlay bars, it ends where a classic scrollbar's
+     track begins, so the thumb and buttons stay visible and usable. */
+  inset-inline: 0 var(--_kui-tab-scaffold-bar-scrollbar-inline-size, 0px);
 }
 
 .kui-tab-scaffold[data-bar-presentation="overlay"][data-bar-overlay="measured"]

@@ -24,6 +24,8 @@ const bundle = (fixture: string) =>
 const fixtureBundle = bundle('overlay-nav-stack.tsx');
 // KF-Z4NSDF: an overlay bottom toolbar leaves the strip uncovered the same way.
 const bottomBundle = bundle('overlay-nav-stack-bottom.tsx');
+// KF-D5CBFH: an overlay TabNavigator bar leaves the strip uncovered too.
+const tabBundle = bundle('overlay-tab-navigator.tsx');
 
 const css = [
   'foundation',
@@ -162,4 +164,75 @@ test('the overlay bottom toolbar leaves the active view scrollbar uncovered, bef
   // A Pane footer ends its content above the toolbar: nothing to leave.
   const footer = await strip(page, 'bottom', 'footer');
   expect(footer.published).toBe('');
+});
+
+test('the overlay tab bar leaves the active scene scrollbar uncovered in a plain, Pane, and NavStack scene', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName === 'firefox',
+    "Playwright's Firefox has no classic scrollbars",
+  );
+  const result = await tabBundle;
+  const javascript = result.outputFiles.find((file) =>
+    file.path.endsWith('.js'),
+  )!;
+  await page.setViewportSize({ width: 800, height: 2400 });
+  await page.setContent('<body style="margin:0"><div data-app></div></body>');
+  await page.addStyleTag({ content: css });
+  await page.addStyleTag({
+    content:
+      '::-webkit-scrollbar{width:15px}::-webkit-scrollbar-thumb{background:#888}',
+  });
+  await page.addScriptTag({ content: javascript.text });
+  for (const region of ['plain', 'pane', 'stack']) {
+    const scaffold = page.locator(
+      `[data-region="${region}"] .kui-tab-scaffold`,
+    );
+    await expect(scaffold).toHaveAttribute('data-bar-overlay', 'measured');
+    const measured = await scaffold.evaluate((element) => {
+      const scene = element.querySelector<HTMLElement>(
+        '.kui-tab-scaffold__scene[data-active="true"]',
+      )!;
+      const scroller =
+        scene.querySelector<HTMLElement>(
+          ':scope > .kui-pane > .kui-pane__content',
+        ) ??
+        [
+          ...scene.querySelectorAll<HTMLElement>(
+            '.kui-nav-stack__view[data-nav-active="true"]',
+          ),
+        ].at(-1) ??
+        scene;
+      const bar = element
+        .querySelector(':scope > .kui-tab-scaffold__bar')!
+        .getBoundingClientRect();
+      const box = scroller.getBoundingClientRect();
+      const scrollbar = scroller.offsetWidth - scroller.clientWidth;
+      const trackStart = box.left + scroller.clientLeft + scroller.clientWidth;
+      return {
+        scrollbar,
+        published: (element as HTMLElement).style.getPropertyValue(
+          '--_kui-tab-scaffold-bar-scrollbar-inline-size',
+        ),
+        barRight: bar.right,
+        trackStart,
+        hit:
+          document.elementFromPoint(
+            trackStart + scrollbar / 2,
+            bar.top + bar.height / 2,
+          ) === scroller,
+      };
+    });
+    expect(measured.scrollbar, region).toBeGreaterThan(0);
+    expect(measured.published, region).toBe(`${String(measured.scrollbar)}px`);
+    expect(measured.barRight, region).toBeLessThanOrEqual(
+      measured.trackStart + 0.5,
+    );
+    expect(measured.hit, region).toBe(true);
+  }
+  await page.locator('[data-region="plain"]').screenshot({
+    path: test.info().outputPath('tab-bar-classic-scrollbar.png'),
+  });
 });

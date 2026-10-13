@@ -857,8 +857,16 @@ Resolved decisions:
 - **Fallbacks.** Opaque under reduced transparency, increased contrast, or
   without `backdrop-filter` (the material tokens); `Canvas` with a
   `CanvasText` top edge in forced colors.
-- **Not covered.** A classic scrollbar's bottom end runs beneath the bar
-  (unlike the NavStack bars, the tab bar spans the full width).
+- **Classic scrollbars (KF-D5CBFH: the bar covered the bottom of a classic
+  scrollbar).** Like the NavStack overlay bars, the wiring finds the active
+  scene's scroller (the scene itself, a sole Pane's content unless the Pane
+  has a footer, or a sole NavStack's active view or its sole Pane's content
+  unless a docked stack toolbar sits between), measures its classic
+  scrollbar (`offsetWidth - clientWidth - borders`), and publishes
+  `--_kui-tab-scaffold-bar-scrollbar-inline-size`, which the measured bar's
+  `inset-inline-end` takes. A nested-layout scene owns its scroller and
+  publishes nothing. It re-measures when the scroller's content box changes,
+  on a tab switch, and on a stack push or pop.
 
 Verification: `ui/tests/unit/tab-navigator.test.tsx` (markup, publish,
 observer fallback, replacement, strip and restore, presentation switch,
