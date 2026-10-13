@@ -55,8 +55,14 @@ describe('scroll clearance context', () => {
       ),
     ).toBe('var(--kui-scroll-clearance-block-end, 0px)');
     expect(
-      valueOf(file, '.kui-list[data-scroll-clearance]', 'scroll-padding-block'),
-    ).toBe('var(--_kui-list-clearance-start) var(--_kui-list-clearance-end)');
+      valueOf(
+        file,
+        '[data-scroll-clearance], [data-frame',
+        'scroll-padding-block',
+      ),
+    ).toBe(
+      'calc( var(--_kui-list-clearance-start) + var(--_kui-list-ring-room) ) calc(var(--_kui-list-clearance-end) + var(--_kui-list-ring-room))',
+    );
     expect(valueOf(file, '.kui-list', 'padding')).toContain(
       'var(--_kui-list-clearance-end)',
     );

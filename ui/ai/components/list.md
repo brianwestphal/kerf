@@ -18,6 +18,7 @@ Standardize vertical component layout, optional physical-side text/control inset
 - Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row.
 - Use selectionMode="multiple" and ariaLabel to group selectable rich ContentItem rows in a multi-select grid.
 - Use scrollClearance on the scrollable List that reaches an edge overlaid by chrome (a DialogSurface floating footer) so rows scroll visibly beneath it while the first and last rows still rest clear of it.
+- Render a bounded, framed result picker of ListItem rows (search results, duplicate candidates) with scrollable, frame, and typed maxHeight/minHeight instead of an app-owned bordered scroller.
 
 **Not when:**
 
@@ -46,6 +47,8 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 - boolean, finite-keyword, or typed CssFlex flex
 - scrollable
 - scrollClearance block-start, block-end, or both: clears overlaying chrome inside the scroll area
+- frame: 1px neutral border, control radius, and a 4px focus-ring-safe inset
+- typed CssLength maxHeight and minHeight bounds
 - base or raised solid surface
 - document reading inset
 - left/center/right/full horizontal alignment
@@ -61,6 +64,8 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 
 - `gap`: length grammar; raw values: forbid; shorthands `none`, `2xs`, `xs`, `m`, `l`; exceptional (justify) `s`, `xl`; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `gap="xs"`
 - `flex`: flex grammar; raw values: forbid; shorthands `none`, `auto`, `initial`; helpers `flex` — e.g. `flex="none"`
+- `maxHeight`: length grammar; raw values: forbid; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `maxHeight={rem(14)}`
+- `minHeight`: length grammar; raw values: forbid; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `minHeight={rem(4.25)}`
 
 ## Composition
 
@@ -71,7 +76,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** child semantics and content; the bounded height needed for scrolling; typed gap, flex, alignment, and divider choices; the accessible label and selection state of a multi-select grid; which one scroller opts into scroll clearance (the one reaching the covered edge).
+**The app owns:** child semantics and content; the bounded height needed for scrolling; typed gap, flex, alignment, and divider choices; the accessible label and selection state of a multi-select grid; which one scroller opts into scroll clearance (the one reaching the covered edge); the result picker bounds (maxHeight/minHeight) and its rows.
 
 **Wiring:** `wireScrollDividers` is optional.
 
@@ -86,6 +91,7 @@ Margin: none · border: conditional · padding: conditional (layout role: naviga
 
 - List adds no margin. dividerSides draws selected physical edges without changing geometry; textInsets adds the full 17px content inset and controlInsets adds 8px on selected sides, with text winning on overlap.
 - scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the List block padding and scroll-padding on the opted-in edges; without it the context is ignored.
+- frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets) that is also block scroll padding, so the first and last rows' focus rings stay inside the clip; maxHeight/minHeight bound the List directly.
 
 ## Accessibility
 

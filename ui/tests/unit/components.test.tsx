@@ -951,6 +951,27 @@ describe('production UI primitives', () => {
     );
     expect(defaults).not.toContain('data-surface');
     expect(defaults).not.toContain('data-scroll-clearance');
+    expect(defaults).not.toContain('data-frame');
+    expect(defaults).not.toContain('max-height');
+    const picker = asHtml(
+      List({
+        scrollable: true,
+        frame: true,
+        minHeight: rem(4.25),
+        maxHeight: rem(14),
+        rootAttributes: {
+          // @ts-expect-error the List owns its frame state.
+          'data-frame': 'false',
+        },
+      }),
+    );
+    expect(picker).toContain('data-frame="true"');
+    expect(picker.match(/data-frame=/g)).toHaveLength(1);
+    expect(picker).toContain(
+      'style="--_kui-list-max-height:14rem;--_kui-list-min-height:4.25rem"',
+    );
+    // @ts-expect-error maxHeight takes a typed CssLength, never a raw string.
+    List({ maxHeight: '224px' });
     for (const scrollClearance of ['block-start', 'block-end', 'both'] as const)
       expect(asHtml(List({ scrollable: true, scrollClearance }))).toContain(
         `data-scrollable="true" data-scroll-clearance="${scrollClearance}"`,

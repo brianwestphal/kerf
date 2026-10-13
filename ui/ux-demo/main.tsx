@@ -1044,6 +1044,10 @@ const stopActions = delegateActions(app, 'click', {
   'log-settings': () => {
     actionLog.value = 'Settings selected';
   },
+  'log-result-picker': (_event, element) => {
+    const itemId = (element as HTMLElement).dataset.itemId ?? '';
+    actionLog.value = `Duplicate candidate ${itemId} selected`;
+  },
   'select-icon-tile-row': (_event, element) => {
     const itemId = (element as HTMLElement).dataset.itemId ?? '';
     iconTileCurrent.value = itemId;

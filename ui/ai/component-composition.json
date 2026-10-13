@@ -2892,6 +2892,11 @@
           "id": "which one scroller opts into scroll clearance (the one reaching the covered edge)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "the result picker bounds (maxHeight/minHeight) and its rows",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -2922,7 +2927,8 @@
           "padding": "conditional",
           "notes": [
             "List adds no margin. dividerSides draws selected physical edges without changing geometry; textInsets adds the full 17px content inset and controlInsets adds 8px on selected sides, with text winning on overlap.",
-            "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the List block padding and scroll-padding on the opted-in edges; without it the context is ignored."
+            "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the List block padding and scroll-padding on the opted-in edges; without it the context is ignored.",
+            "frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets) that is also block scroll padding, so the first and last rows' focus rings stay inside the clip; maxHeight/minHeight bound the List directly."
           ]
         }
       },
@@ -2959,6 +2965,28 @@
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
           "examples": ["flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
+        },
+        {
+          "path": "maxHeight",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["maxHeight={rem(14)}"]
+        },
+        {
+          "path": "minHeight",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["minHeight={rem(4.25)}"]
         }
       ],
       "boundaries": {

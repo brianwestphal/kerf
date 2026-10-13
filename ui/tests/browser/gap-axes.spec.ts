@@ -51,8 +51,8 @@ test('Row, Grid, and List resolve independent gaps without leaking into nested l
     });
 
   await page.goto('/?component=list');
-  const list = page.locator(
-    '[data-demo="list"] [data-component="list"][data-scrollable="true"]',
+  const list = example(page, 'Scrollable Application List').locator(
+    '[data-component="list"][data-scrollable="true"]',
   );
   await expect(list).toHaveAttribute('data-gap', 'true');
   await expect(list).toHaveCSS('column-gap', '0px');

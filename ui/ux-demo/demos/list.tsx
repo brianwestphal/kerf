@@ -3,7 +3,7 @@ import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/tag/tag.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { flex } from '@kerfjs/ui/css-values';
+import { flex, rem } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
@@ -29,6 +29,35 @@ import {
 
 import { DemoContentItem } from './demo-content-item.js';
 import { menuToolsOpen } from './state.js';
+
+/** Duplicate candidates for the Result Picker example. */
+const RESULT_PICKER_CANDIDATES = [
+  {
+    id: 'result-1',
+    title: 'Dialog footer hides the last message',
+    detail: 'Closed last week, surface scaffold',
+  },
+  {
+    id: 'result-2',
+    title: 'Transcript stops above the composer',
+    detail: 'Open, chat dialog',
+  },
+  {
+    id: 'result-3',
+    title: 'Composer grows past the panel on phones',
+    detail: 'Closed in September, composer',
+  },
+  {
+    id: 'result-4',
+    title: 'Floating footer loses its offset after resize',
+    detail: 'Open, surface scaffold',
+  },
+  {
+    id: 'result-5',
+    title: 'Scrollable list compresses multiline rows',
+    detail: 'Closed in August, list',
+  },
+] as const;
 
 export function ListDemo() {
   const workspaceHeading: string | undefined = 'Workspace';
@@ -277,6 +306,34 @@ export function ListDemo() {
             On a phone the inline inset narrows so the text column keeps a
             readable width.
           </Text>
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Result Picker"
+        note="frame draws a 1px neutral border with the control radius and a 4px inset that keeps the first and last rows' focus rings inside the clip; with scrollable, maxHeight and minHeight bound the candidates without an app-owned scroller."
+        viewport={{ width: 'compact' }}
+      >
+        <List
+          scrollable
+          frame
+          gap="2xs"
+          minHeight={rem(4.25)}
+          maxHeight={rem(14)}
+          rootAttributes={{
+            role: 'region',
+            'aria-label': 'Possible Duplicates',
+            'data-demo-result-picker': '',
+          }}
+        >
+          {RESULT_PICKER_CANDIDATES.map((candidate) => (
+            <ListItem
+              action="log-result-picker"
+              itemId={candidate.id}
+              label={candidate.title}
+              description={candidate.detail}
+              multiline
+            />
+          ))}
         </List>
       </CatalogExample>
       <CatalogExample

@@ -14,6 +14,9 @@
   --_kui-list-inset-left: 0px;
   --_kui-list-clearance-start: 0px;
   --_kui-list-clearance-end: 0px;
+  --_kui-list-ring-room: 0px;
+  --_kui-list-max-height: none;
+  --_kui-list-min-height: 0px;
   --_kui-list-divider-top: transparent;
   --_kui-list-divider-right: transparent;
   --_kui-list-divider-bottom: transparent;
@@ -21,7 +24,8 @@
 
   display: flex;
   min-width: 0;
-  min-height: 0;
+  min-height: var(--_kui-list-min-height);
+  max-height: var(--_kui-list-max-height);
   box-sizing: border-box;
   padding: calc(
       var(--_kui-list-inset-top, 0px) + var(--_kui-list-clearance-start)
@@ -103,6 +107,22 @@
   }
 }
 
+/* `frame`: a bordered, rounded stack (a result picker). Its 4px inset on
+   every side replaces any side-selected or document inset, and is exactly
+   the reach of a row's focus ring (3px ring, 1px offset), so the first and
+   last rows' rings stay inside a scrolling frame's clip. The same room is
+   scroll padding, so a row focused or scrolled into view stops with its
+   ring inside the clip rather than flush against the frame. */
+.kui-list[data-frame="true"] {
+  --_kui-list-inset-top: var(--kui-space-2xs);
+  --_kui-list-inset-right: var(--kui-space-2xs);
+  --_kui-list-inset-bottom: var(--kui-space-2xs);
+  --_kui-list-inset-left: var(--kui-space-2xs);
+  --_kui-list-ring-room: var(--kui-space-2xs);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-radius-m);
+}
+
 .kui-list[data-h-align="left"] {
   align-items: flex-start;
   align-content: flex-start;
@@ -155,9 +175,11 @@
   --_kui-list-clearance-end: var(--kui-scroll-clearance-block-end, 0px);
 }
 
-.kui-list[data-scroll-clearance] {
-  scroll-padding-block: var(--_kui-list-clearance-start)
-    var(--_kui-list-clearance-end);
+.kui-list:is([data-scroll-clearance], [data-frame="true"]) {
+  scroll-padding-block: calc(
+      var(--_kui-list-clearance-start) + var(--_kui-list-ring-room)
+    )
+    calc(var(--_kui-list-clearance-end) + var(--_kui-list-ring-room));
 }
 
 /* A scrollable List owns the overflow, so its rows keep their natural height

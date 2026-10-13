@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 364800,
-  "measuredLargestJavaScriptGzip": 146918,
-  "measuredTotalJavaScriptGzip": 364767,
+  "totalJavaScriptGzip": 365200,
+  "measuredLargestJavaScriptGzip": 147326,
+  "measuredTotalJavaScriptGzip": 365178,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4259,6 +4259,22 @@
         "measuredTotalJavaScriptGzip": 364767,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 364800
+      }
+    },
+    {
+      "at": "2026-10-13T13:08:57.424Z",
+      "reason": "List frame/maxHeight/minHeight and Result Picker example (KF-SHW2J9)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146918,
+        "measuredTotalJavaScriptGzip": 364767,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 147326,
+        "measuredTotalJavaScriptGzip": 365178,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 365200
       }
     }
   ]

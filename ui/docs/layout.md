@@ -674,6 +674,29 @@ sets this context:
 </section>;
 ```
 
+### Framed result pickers
+
+For a bounded, framed list of `ListItem` rows (search results, duplicate
+candidates, a recent-items picker), configure the List instead of wrapping it
+in an app-owned scroller:
+
+```tsx
+<List scrollable frame gap="2xs" minHeight={rem(4.25)} maxHeight={rem(14)}>
+  {candidates.map((candidate) => (
+    <ListItem action="pick-duplicate" itemId={candidate.id} label={candidate.title} description={candidate.detail} multiline />
+  ))}
+</List>;
+```
+
+`frame` draws a 1px `--kui-color-neutral-border-normal` border with the
+`--kui-radius-m` control radius and a 4px inset on every side (replacing
+`inset`, `textInsets`, and `controlInsets`). That inset is exactly a row's
+focus-ring reach, and the frame adds it to its scroll padding, so the first and
+last rows' rings stay inside the clip. `maxHeight` and `minHeight` take typed
+`CssLength`s from `@kerfjs/ui/css-values` and bound the List directly, with no
+flex-column ancestor; pair `maxHeight` with `scrollable`. A frame of settings
+rows with dividers between them is a `FramedList`, not a framed List.
+
 For long reading content, such as a reader view, pass `inset="document"`: 24px
 block and 32px inline on all four sides, narrowing to 16px inline below 576px.
 It replaces any `textInsets`/`controlInsets` on that List.

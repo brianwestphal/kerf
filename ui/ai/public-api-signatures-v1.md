@@ -725,8 +725,8 @@ import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-ali
 export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
 import { S as Sides } from './sides-BPSWde0A.js';
-import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
-export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
+import { UiGap, CssFlexKeyword, CssFlex, CssLength } from './css-values.js';
+export { UiGapValue, UiSpaceName } from './css-values.js';
 
 type ListRootAttributes = StructuralRootAttributes & Readonly<{
     'data-component'?: never;
@@ -737,6 +737,7 @@ type ListRootAttributes = StructuralRootAttributes & Readonly<{
     'data-v-align'?: never;
     'data-scrollable'?: never;
     'data-scroll-clearance'?: never;
+    'data-frame'?: never;
     'data-surface'?: never;
     'data-inset'?: never;
     'data-text-insets'?: never;
@@ -792,6 +793,25 @@ interface ListProps {
      */
     scrollClearance?: ScrollClearance;
     /**
+     * Draw a bordered, rounded frame around the stack: a 1px neutral border,
+     * the standard control radius, and a 4px inset on every side that keeps the
+     * first and last rows' focus rings inside a scrolling frame's clip. It
+     * replaces any `inset`/`textInsets`/`controlInsets`. With `scrollable` and
+     * `maxHeight` it is a bounded result picker of `ListItem` rows.
+     */
+    frame?: boolean;
+    /**
+     * The List's maximum block size, a typed `CssLength` from
+     * `@kerfjs/ui/css-values` (such as `rem(14)`). Pair it with `scrollable` so
+     * rows beyond it scroll; it bounds the List without a flex-column ancestor.
+     */
+    maxHeight?: CssLength;
+    /**
+     * The List's minimum block size, a typed `CssLength` (such as `rem(4.25)`),
+     * so a short or empty result set keeps a stable box. Defaults to no minimum.
+     */
+    minHeight?: CssLength;
+    /**
      * Paint a solid surface behind the stack, including its insets: for a strip
      * of chrome (a banner above a sunken work area) that must not show the
      * lowered tint around its content. Omitted, the List is transparent.
@@ -823,9 +843,9 @@ interface ListProps {
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, surface, inset, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
+export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/list-action-row`

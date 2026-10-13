@@ -630,6 +630,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   one rounded frame with dividers between them (settings, account cards,
   shortcut lists), compose `FramedListRow`s; `ValueTable` is the same frame for
   label/value facts. Never hand-roll a `ul` with borders and row padding.
+- **Bound a result picker with a framed `List`.** For a bordered, scrolling
+  list of `ListItem` rows (search results, duplicate candidates), use
+  `<List scrollable frame maxHeight={rem(14)} minHeight={rem(4.25)}>`:
+  `frame` draws a 1px neutral border, the control radius, and a 4px inset
+  that keeps the first and last rows' focus rings inside the clip, and the
+  typed `CssLength` bounds need no flex-column ancestor. Never wrap a List in
+  an app div with `max-height`, `overflow`, and a border.
 - **Square an icon-only button with `IconButton`.** Web Awesome squares a
   `wa-button` only for a lone `wa-icon`; with a `LucideIcon` use
   `IconButton({ icon, iconName, label })` (label required) instead of

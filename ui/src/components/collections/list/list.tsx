@@ -15,6 +15,7 @@ import type { Sides } from '../../../shared/layout/sides.js';
 import {
   type CssFlex,
   type CssFlexKeyword,
+  type CssLength,
   type UiGap,
 } from '../../../shared/styles/css-values.js';
 
@@ -30,6 +31,7 @@ const listProtectedAttributes = new Set([
   'data-v-align',
   'data-scrollable',
   'data-scroll-clearance',
+  'data-frame',
   'data-surface',
   'data-inset',
   'data-text-insets',
@@ -46,6 +48,7 @@ type ListRootAttributes = StructuralRootAttributes &
     'data-v-align'?: never;
     'data-scrollable'?: never;
     'data-scroll-clearance'?: never;
+    'data-frame'?: never;
     'data-surface'?: never;
     'data-inset'?: never;
     'data-text-insets'?: never;
@@ -104,6 +107,25 @@ export interface ListProps {
    */
   scrollClearance?: ScrollClearance;
   /**
+   * Draw a bordered, rounded frame around the stack: a 1px neutral border,
+   * the standard control radius, and a 4px inset on every side that keeps the
+   * first and last rows' focus rings inside a scrolling frame's clip. It
+   * replaces any `inset`/`textInsets`/`controlInsets`. With `scrollable` and
+   * `maxHeight` it is a bounded result picker of `ListItem` rows.
+   */
+  frame?: boolean;
+  /**
+   * The List's maximum block size, a typed `CssLength` from
+   * `@kerfjs/ui/css-values` (such as `rem(14)`). Pair it with `scrollable` so
+   * rows beyond it scroll; it bounds the List without a flex-column ancestor.
+   */
+  maxHeight?: CssLength;
+  /**
+   * The List's minimum block size, a typed `CssLength` (such as `rem(4.25)`),
+   * so a short or empty result set keeps a stable box. Defaults to no minimum.
+   */
+  minHeight?: CssLength;
+  /**
    * Paint a solid surface behind the stack, including its insets: for a strip
    * of chrome (a banner above a sunken work area) that must not show the
    * lowered tint around its content. Omitted, the List is transparent.
@@ -151,6 +173,9 @@ export function List({
   vAlign = 'top',
   scrollable = false,
   scrollClearance,
+  frame = false,
+  maxHeight,
+  minHeight,
   surface,
   inset,
   dividerSides = '',
@@ -186,7 +211,12 @@ export function List({
           ? `--_kui-list-gap:${gapLength(gap)}`
           : `--_kui-list-column-gap:${gapLength(gap.column)};--_kui-list-row-gap:${gapLength(gap.row)}`;
   const flexValue = flex === true ? '1 1 auto' : flex || undefined;
-  const style = [gapStyle, flexValue ? `--_kui-list-flex:${flexValue}` : '']
+  const style = [
+    gapStyle,
+    flexValue ? `--_kui-list-flex:${flexValue}` : '',
+    maxHeight === undefined ? '' : `--_kui-list-max-height:${maxHeight}`,
+    minHeight === undefined ? '' : `--_kui-list-min-height:${minHeight}`,
+  ]
     .filter(Boolean)
     .join(';');
 
@@ -203,6 +233,7 @@ export function List({
       data-v-align={verticalAlignment(vAlign)}
       data-scrollable={String(scrollable)}
       data-scroll-clearance={scrollClearance}
+      data-frame={frame ? 'true' : undefined}
       data-surface={surface}
       data-inset={inset}
       divider-sides={dividerSides || undefined}

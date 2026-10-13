@@ -3533,6 +3533,52 @@
             "flex=\"none\"",
             "flex={flex(1, 1, rem(20))}"
           ]
+        },
+        {
+          "path": "maxHeight",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "maxHeight={rem(14)}"
+          ]
+        },
+        {
+          "path": "minHeight",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "minHeight={rem(4.25)}"
+          ]
         }
       ],
       "useWhen": [
@@ -3543,7 +3589,8 @@
         "Apply the standard text or control inset to selected physical sides without an application wrapper.",
         "Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row.",
         "Use selectionMode=\"multiple\" and ariaLabel to group selectable rich ContentItem rows in a multi-select grid.",
-        "Use scrollClearance on the scrollable List that reaches an edge overlaid by chrome (a DialogSurface floating footer) so rows scroll visibly beneath it while the first and last rows still rest clear of it."
+        "Use scrollClearance on the scrollable List that reaches an edge overlaid by chrome (a DialogSurface floating footer) so rows scroll visibly beneath it while the first and last rows still rest clear of it.",
+        "Render a bounded, framed result picker of ListItem rows (search results, duplicate candidates) with scrollable, frame, and typed maxHeight/minHeight instead of an app-owned bordered scroller."
       ],
       "avoidWhen": [
         "Do not use List as semantic list markup; use ul/ol when list semantics are required and apply layout deliberately.",
@@ -3556,7 +3603,8 @@
         "the bounded height needed for scrolling",
         "typed gap, flex, alignment, and divider choices",
         "the accessible label and selection state of a multi-select grid",
-        "which one scroller opts into scroll clearance (the one reaching the covered edge)"
+        "which one scroller opts into scroll clearance (the one reaching the covered edge)",
+        "the result picker bounds (maxHeight/minHeight) and its rows"
       ],
       "variants": [
         "no gap",
@@ -3566,6 +3614,8 @@
         "boolean, finite-keyword, or typed CssFlex flex",
         "scrollable",
         "scrollClearance block-start, block-end, or both: clears overlaying chrome inside the scroll area",
+        "frame: 1px neutral border, control radius, and a 4px focus-ring-safe inset",
+        "typed CssLength maxHeight and minHeight bounds",
         "base or raised solid surface",
         "document reading inset",
         "left/center/right/full horizontal alignment",
@@ -3588,7 +3638,8 @@
         "padding": "conditional",
         "notes": [
           "List adds no margin. dividerSides draws selected physical edges without changing geometry; textInsets adds the full 17px content inset and controlInsets adds 8px on selected sides, with text winning on overlap.",
-          "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the List block padding and scroll-padding on the opted-in edges; without it the context is ignored."
+          "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the List block padding and scroll-padding on the opted-in edges; without it the context is ignored.",
+          "frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets) that is also block scroll padding, so the first and last rows' focus rings stay inside the clip; maxHeight/minHeight bound the List directly."
         ]
       },
       "delivery": {
