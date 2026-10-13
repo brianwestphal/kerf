@@ -83,6 +83,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `CatalogExampleStack` takes a `width` option: `reading` (default) keeps the 736px reading measure, and `full` lets the stack span the stage so a catalog can show application-width compositions such as boards, app shells, drawers, and split views without clipping them (`KF-HKVT5S`).
 - **Chat-bubble `ContentItem`s.** `bubble="start" | "end"` lays a `ContentItem` out as a transcript bubble: it fits its message up to 80% of the row, sits at the start (other participants) or end (the person's own messages), and wraps long unbroken text. The new `appearance="brand-loud"` paints the solid brand fill with its on-loud foreground for the person's own messages (`KF-M3HJK8`).
 
 - **`DialogSurface rootAttributes`.** `DialogSurface` takes safe `data-*` `rootAttributes`, such as a `data-key`, on its root; its own configuration attributes stay protected. Sibling dialogs that render conditionally then morph by identity rather than by position. Before, a re-render could reuse one open dialog's element for another, swapping its accessible name and suppressing `wa-after-hide`. Apps no longer wrap each dialog in a keyed `div` (`KF-D7H0WN`).

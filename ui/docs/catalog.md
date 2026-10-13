@@ -132,6 +132,10 @@ entry's `tags` array.
   Pass `label` when the stack needs an accessible name: the rendered `section`
   is then exposed as a named region. An unlabeled stack remains an ordinary
   grouping rather than adding an unnecessary landmark.
+  A stack holds a 736px reading measure by default; pass `width="full"` for
+  application-width compositions (boards, app shells, drawers, split views) so
+  the stack spans the stage like a `viewport.width: "full"` row instead of
+  clipping them.
 - `CatalogExample` is one row: optional generated `ListHeader` label, optional
   generated note, then one specimen or one intentionally coupled specimen
   cluster. Use one row per variant/state; do not hand-author the helper's private

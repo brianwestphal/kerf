@@ -7,3 +7,8 @@
   flex-direction: column;
   gap: remify(16px);
 }
+
+/* Application-width compositions span the stage instead of a reading measure. */
+.kui-catalog-example-stack[data-width="full"] {
+  max-width: none;
+}

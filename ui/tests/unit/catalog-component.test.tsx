@@ -594,6 +594,24 @@ describe('CatalogExample', () => {
     expect(html).toContain('<section/>');
   });
 
+  it('keeps a reading measure by default and spans the stage when full', () => {
+    const reading = asHtml(CatalogExampleStack({ children: raw('<i/>') }));
+    expect(reading).not.toContain('data-width');
+    expect(
+      asHtml(CatalogExampleStack({ width: 'reading', children: raw('<i/>') })),
+    ).not.toContain('data-width');
+    expect(
+      asHtml(CatalogExampleStack({ width: 'full', children: raw('<i/>') })),
+    ).toContain('data-width="full"');
+    const spoofed = asHtml(
+      CatalogExampleStack({
+        rootAttributes: { 'data-width': 'full' } as Record<string, string>,
+        children: raw('<i/>'),
+      }),
+    );
+    expect(spoofed).not.toContain('data-width');
+  });
+
   it('places safe authoring metadata on the intended example roots', () => {
     const example = asHtml(
       CatalogExample({

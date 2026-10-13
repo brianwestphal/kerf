@@ -2735,9 +2735,19 @@ type CatalogExampleStackRootAttributes = Readonly<Record<`data-${string}`, strin
     'data-catalog-example-label'?: never;
     'data-catalog-example-note'?: never;
     'data-align'?: never;
+    'data-width'?: never;
 }>;
+/**
+ * How wide a stack may grow: `reading` (default) caps it at a 736px reading
+ * measure for component specimens; `full` lets it span the stage for
+ * application-width compositions such as boards, app shells, drawers, and
+ * split views.
+ */
+type CatalogExampleStackWidth = 'reading' | 'full';
 interface CatalogExampleStackProps {
     label?: string;
+    /** Maximum width of the stack (default `reading`). */
+    width?: CatalogExampleStackWidth;
     rootAttributes?: CatalogExampleStackRootAttributes;
     className?: string;
     children?: KerfUiContent;
@@ -2745,7 +2755,7 @@ interface CatalogExampleStackProps {
     slot?: string;
 }
 /** A vertically stacked group of catalog examples. */
-declare function CatalogExampleStack({ label, rootAttributes, className, children, slot, }: CatalogExampleStackProps): kerfjs.SafeHtml;
+declare function CatalogExampleStack({ label, width, rootAttributes, className, children, slot, }: CatalogExampleStackProps): kerfjs.SafeHtml;
 
 /**
  * Browser helpers for UX Review region captures from a catalog. The local
@@ -2773,7 +2783,7 @@ declare function uxReviewCaptureUrl({ projectDirectory, title, context, }: UxRev
  */
 declare function loadUxReviewProject(pageUrl: string | URL, fetchImpl?: typeof globalThis.fetch): Promise<string | null>;
 
-export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogExampleViewport, CatalogProps, UX_REVIEW_PROJECT_PATH, type UxReviewCapture, loadUxReviewProject, uxReviewCaptureUrl };
+export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogExampleStackWidth, type CatalogExampleViewport, CatalogProps, UX_REVIEW_PROJECT_PATH, type UxReviewCapture, loadUxReviewProject, uxReviewCaptureUrl };
 ```
 
 ## `@kerfjs/ui/catalog-resources`

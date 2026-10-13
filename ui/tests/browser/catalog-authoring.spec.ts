@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import { expect, type Page, test } from '@playwright/test';
@@ -78,4 +79,32 @@ test('published guidance renders a composition without highlight layers', async 
       ':scope > [data-component="state-banner"], :scope > [data-component="list-item"]',
     ),
   ).toHaveCount(2);
+});
+
+test('a full-width stack spans the stage instead of the reading measure', async ({
+  page,
+}) => {
+  const css = await readFile(
+    resolve(
+      import.meta.dirname,
+      '../../src/catalog/components/catalog-example-stack.css',
+    ),
+    'utf8',
+  );
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.setContent(
+    '<div style="width:1200px"><section class="kui-catalog-example-stack" data-catalog-example-stack data-stack="reading"></section><section class="kui-catalog-example-stack" data-catalog-example-stack data-width="full" data-stack="full"></section></div>',
+  );
+  await page.addStyleTag({
+    content: css.replace(
+      /remify\(([\d.]+)px\)/g,
+      (_, pixels: string) => `${String(Number(pixels) / 16)}rem`,
+    ),
+  });
+  const width = (name: string) =>
+    page
+      .locator(`[data-stack="${name}"]`)
+      .evaluate((stack) => stack.getBoundingClientRect().width);
+  expect(await width('reading')).toBe(736);
+  expect(await width('full')).toBe(1200);
 });

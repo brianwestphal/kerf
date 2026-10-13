@@ -9,6 +9,7 @@ export {
 export {
   CatalogExampleStack,
   type CatalogExampleStackProps,
+  type CatalogExampleStackWidth,
 } from './catalog/components/catalog-example-stack.js';
 export type {
   CatalogBackgroundStyle,
