@@ -169,7 +169,9 @@ export function panelBody(
           stack.toolbarConfig?.responsiveAt ?? toolbar?.responsiveAt,
         safeAreaEdges:
           stack.toolbarConfig?.safeAreaEdges ?? toolbar?.safeAreaEdges,
-        titleSize: stack.toolbarConfig?.titleSize,
+        // A rail or drawer is peripheral to the work area's xlarge title, so
+        // its stack keeps the large title at every depth.
+        titleSize: stack.toolbarConfig?.titleSize ?? 'large',
         headingLevel: stack.toolbarConfig?.headingLevel,
       },
       panelToggle: toolbar?.toggle

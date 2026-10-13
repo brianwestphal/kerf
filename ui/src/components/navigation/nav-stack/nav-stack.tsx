@@ -45,7 +45,11 @@ export type NavStackViewBottomToolbar = PanelBottomToolbar;
 export interface NavStackToolbarConfig extends ToolbarConfig {
   /** Accessible name of the top toolbar (default: none). */
   label?: string;
-  /** Size of the view title's `ToolbarText` (default `large`). */
+  /**
+   * Size of the view title's `ToolbarText`. Default `xlarge` at the root,
+   * where the title is the page heading, and `large` once a back control
+   * shares the bar.
+   */
   titleSize?: ToolbarTextSize;
   /** Expose the view title as a heading at this level (default: a plain span). */
   headingLevel?: HeadingLevel;
@@ -163,7 +167,11 @@ export function NavStack({
   const title = (
     <ToolbarText
       text={topToolbar?.title ?? ''}
-      size={topToolbar?.titleSize ?? toolbarConfig.titleSize ?? 'large'}
+      size={
+        topToolbar?.titleSize ??
+        toolbarConfig.titleSize ??
+        (canPop ? 'large' : 'xlarge')
+      }
       headingLevel={topToolbar?.headingLevel ?? toolbarConfig.headingLevel}
       fill={!centerTitle}
     />

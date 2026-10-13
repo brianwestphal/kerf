@@ -84,7 +84,7 @@ describe('NavStack markup', () => {
     expect(html).not.toContain('data-nav-back');
     expect(html).toContain('data-nav-active="true"');
     expect(html).toContain(
-      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="large" data-fill="true"><span class="kui-toolbar-text__text">Home</span></span>',
+      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="xlarge" data-fill="true"><span class="kui-toolbar-text__text">Home</span></span>',
     );
   });
 
@@ -180,6 +180,11 @@ describe('NavStack markup', () => {
       }),
     );
     expect(rootToolbar.dataset.centerAlign).toBe('stretch');
+    // The root title is the page heading, so it takes the xlarge size; a
+    // title beside a back control steps down to large.
+    expect(
+      rootToolbar.querySelector<HTMLElement>('.kui-toolbar-text')!.dataset.size,
+    ).toBe('xlarge');
     expect(
       rootToolbar.querySelector(
         '.kui-toolbar__leading > .kui-toolbar-text[data-fill="true"]',
@@ -193,6 +198,9 @@ describe('NavStack markup', () => {
       }),
     );
     expect(pushed.dataset.centerAlign).toBe('balanced');
+    expect(
+      pushed.querySelector<HTMLElement>('.kui-toolbar-text')!.dataset.size,
+    ).toBe('large');
     expect(
       pushed.querySelector('.kui-toolbar__center > .kui-toolbar-text')
         ?.textContent,
@@ -403,7 +411,7 @@ describe('NavStack markup', () => {
     expect(html).not.toContain('data-nav-back');
     expect(html).not.toContain('kui-nav-stack__actions');
     expect(html).toContain(
-      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="large" data-fill="true"><span class="kui-toolbar-text__text"></span></span>',
+      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="xlarge" data-fill="true"><span class="kui-toolbar-text__text"></span></span>',
     );
   });
 
