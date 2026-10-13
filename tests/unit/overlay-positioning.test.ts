@@ -522,6 +522,52 @@ describe('viewportMargin / fitHeight', () => {
     expect(el.style.getPropertyValue(AVAILABLE)).toBe('676px');
   });
 
+  it("honors the element's own max-height when choosing a side", () => {
+    setViewport(1000, 800);
+    // Room below 800 − 454 = 346; room above 400 − 4 = 396.
+    const anchor = anchorAt({ left: 100, right: 150, top: 400, bottom: 450 });
+    const el = cappedElement(80, 500);
+    positionAnchored(el, anchor, { fitHeight: true });
+    // Uncapped, 500px fits neither side: the roomier side (above) wins.
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+
+    // An app cap of 300px fits below, so the preferred side holds.
+    el.style.maxHeight = '300px';
+    positionAnchored(el, anchor, { fitHeight: true });
+    expect(el.style.top).toBe('454px');
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('346px');
+
+    // A content-box cap adds the vertical padding and border: 300 + 2×20 +
+    // 2×5 = 350 no longer fits below (346), so it goes above again.
+    el.style.padding = '20px 0';
+    el.style.border = '5px solid';
+    el.style.boxSizing = 'content-box';
+    positionAnchored(el, anchor, { fitHeight: true });
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+    // A border-box cap is the whole height.
+    el.style.boxSizing = 'border-box';
+    positionAnchored(el, anchor, { fitHeight: true });
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('346px');
+    // A cap that does not resolve to px is no cap.
+    el.style.maxHeight = '50%';
+    positionAnchored(el, anchor, { fitHeight: true });
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+  });
+
+  it('never reads back the room it published as the element cap', () => {
+    setViewport(1000, 800);
+    const anchor = anchorAt({ left: 100, right: 150, top: 400, bottom: 450 });
+    const el = cappedElement(80, 500);
+    // The element is capped by the room kerf publishes, and a previous,
+    // tight placement published 100px. Read back as the element's own cap,
+    // that 100px would "fit" below and pin it there.
+    el.style.maxHeight = `var(${AVAILABLE})`;
+    el.style.setProperty(AVAILABLE, '100px');
+    positionAnchored(el, anchor, { fitHeight: true });
+    // Measured at its full 500px instead: the roomier side (above) wins.
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+  });
+
   it('forwards the options through popover() and tooltip()', () => {
     vi.useFakeTimers();
     setViewport(400, 400);

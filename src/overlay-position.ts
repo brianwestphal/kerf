@@ -31,7 +31,11 @@ export interface AnchorPositionOptions {
    * that room — from the gap to the viewport margin, in `el`'s CSS px — is
    * published on `el` as the `--kerf-anchor-available-height` custom property
    * on every reposition. Cap the element with it, for example
-   * `max-height: var(--kerf-anchor-available-height); overflow: auto`. Default
+   * `max-height: var(--kerf-anchor-available-height); overflow: auto`. The
+   * height measured for that choice honors the element's own `max-height`
+   * (read without the published property, so `max-height: min(300px,
+   * var(--kerf-anchor-available-height))` counts as a 300px cap), so an
+   * app-capped element that fits the preferred side stays there. Default
    * `false`.
    */
   fitHeight?: boolean;
@@ -118,14 +122,59 @@ export function positionAnchored(
 
 /**
  * The height `el` would take without the cap a previous reposition published:
- * its laid-out height plus whatever it currently scrolls. Read from scroll
- * metrics rather than by lifting the cap, which would reset the element's own
- * scroll position — and every scroll inside it repositions it. Scroll metrics
+ * its laid-out height plus whatever it currently scrolls, but no more than its
+ * own `max-height` (see {@link ownMaxHeight}). Read from scroll metrics rather
+ * than by lifting the cap, which would reset the element's own scroll position
+ * — and every scroll inside it repositions it. Scroll metrics and `max-height`
  * are CSS px, so they are scaled into the viewport px of `rect`.
  */
 function fullHeight(el: HTMLElement, rect: DOMRect): number {
   const scale = el.offsetHeight ? rect.height / el.offsetHeight : 1;
-  return rect.height + Math.max(0, el.scrollHeight - el.clientHeight) * scale;
+  const full =
+    rect.height + Math.max(0, el.scrollHeight - el.clientHeight) * scale;
+  return Math.min(full, ownMaxHeight(el) * scale);
+}
+
+/** The vertical padding and border a `content-box` `max-height` excludes. */
+const VERTICAL_EDGES = [
+  'paddingTop',
+  'paddingBottom',
+  'borderTopWidth',
+  'borderBottomWidth',
+] as const;
+
+/**
+ * The stand-in room published while {@link ownMaxHeight} reads the element's
+ * own cap: large enough that it never binds, and a valid length so a cap such
+ * as `min(300px, var(--kerf-anchor-available-height))` still resolves (removing
+ * the property would make that declaration invalid, so `none`).
+ */
+const UNBOUNDED_ROOM = '9999999px';
+
+/**
+ * `el`'s own border-box `max-height` in CSS px, excluding the room kerf
+ * itself published. The published property is swapped for an unbounded room
+ * only around a computed-style read (a style recalc, no layout, so nothing
+ * reflows or scrolls) and restored at once, so kerf never reads its own last
+ * cap back as the element's. A `max-height` that does not resolve to px
+ * (`none`, a percentage) is no cap.
+ */
+function ownMaxHeight(el: HTMLElement): number {
+  const published = el.style.getPropertyValue(AVAILABLE_HEIGHT);
+  el.style.setProperty(AVAILABLE_HEIGHT, UNBOUNDED_ROOM);
+  const style = window.getComputedStyle(el);
+  const maxHeight = style.maxHeight;
+  const inset =
+    style.boxSizing === 'border-box'
+      ? 0
+      : VERTICAL_EDGES.reduce(
+          (sum, edge) => sum + (Number.parseFloat(style[edge]) || 0),
+          0,
+        );
+  if (published) el.style.setProperty(AVAILABLE_HEIGHT, published);
+  else el.style.removeProperty(AVAILABLE_HEIGHT);
+  if (!maxHeight.endsWith('px')) return Infinity;
+  return Number.parseFloat(maxHeight) + inset;
 }
 
 /**

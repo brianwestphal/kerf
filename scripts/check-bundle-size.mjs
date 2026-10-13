@@ -193,7 +193,9 @@ const BUDGETS = [
     // modal counts for the lift and re-host (with per-root toggle watching).
     // KF-K4GE6K (+0.17 KB): positionAnchored viewportMargin + fitHeight
     // (gutter clamp, roomier-side choice, published available height).
-    budgetKb: 21.6,
+    // KF-878W6T (+0.09 KB): fitHeight measures against the element's own
+    // max-height (read with the published room swapped out).
+    budgetKb: 21.7,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 365200,
-  "measuredLargestJavaScriptGzip": 147326,
-  "measuredTotalJavaScriptGzip": 365178,
+  "totalJavaScriptGzip": 365400,
+  "measuredLargestJavaScriptGzip": 147496,
+  "measuredTotalJavaScriptGzip": 365362,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4275,6 +4275,22 @@
         "measuredTotalJavaScriptGzip": 365178,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 365200
+      }
+    },
+    {
+      "at": "2026-10-13T13:31:33.351Z",
+      "reason": "KF-878W6T: positionAnchored fitHeight honors the element's own max-height (aliased kerfjs/overlay source in the demo)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 147326,
+        "measuredTotalJavaScriptGzip": 365178,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 365200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 147496,
+        "measuredTotalJavaScriptGzip": 365362,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 365400
       }
     }
   ]
