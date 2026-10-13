@@ -229,17 +229,17 @@ describe('icon tile stylesheet contract', () => {
     }
   });
 
-  it('leaves the untiled default icon sizes unchanged', async () => {
+  it('leaves the untiled icons on the shared list row icon size', async () => {
     await expect(
       declarationsFor('list-item.css', '.kui-list-item__icon svg'),
     ).resolves.toMatchObject({
-      width: 'var(--kui-list-item-icon-size, remify(18px))',
+      width: 'var(--_kui-list-item-icon-size)',
     });
     await expect(
       declarationsFor('list-action-row.css', '.kui-list-action-row__icon svg'),
     ).resolves.toMatchObject({
-      width: 'remify(24px)',
-      height: 'remify(24px)',
+      width: 'var(--_kui-list-action-row-icon-size)',
+      height: 'var(--_kui-list-action-row-icon-size)',
     });
   });
 });

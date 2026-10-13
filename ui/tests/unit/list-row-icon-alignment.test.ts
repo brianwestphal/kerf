@@ -53,16 +53,22 @@ describe('menu row icon alignment contract', () => {
 
   it('sizes the ListItem leading icon and its SVG to 18px', async () => {
     await expect(
+      declarationsFor('list-item.css', '.kui-list-item'),
+    ).resolves.toMatchObject({
+      '--_kui-list-item-icon-size':
+        'var( --kui-list-item-icon-size, var(--kui-list-row-icon-size, remify(18px)) )',
+    });
+    await expect(
       declarationsFor('list-item.css', '.kui-list-item__icon'),
     ).resolves.toMatchObject({
-      width: 'var(--kui-list-item-icon-size, remify(18px))',
-      height: 'var(--kui-list-item-icon-size, remify(18px))',
+      width: 'var(--_kui-list-item-icon-size)',
+      height: 'var(--_kui-list-item-icon-size)',
     });
     await expect(
       declarationsFor('list-item.css', '.kui-list-item__icon svg'),
     ).resolves.toMatchObject({
-      width: 'var(--kui-list-item-icon-size, remify(18px))',
-      height: 'var(--kui-list-item-icon-size, remify(18px))',
+      width: 'var(--_kui-list-item-icon-size)',
+      height: 'var(--_kui-list-item-icon-size)',
     });
   });
 
@@ -74,8 +80,7 @@ describe('menu row icon alignment contract', () => {
       ),
     ).resolves.toEqual({
       'align-self': 'start',
-      'margin-block-start':
-        'calc( (1lh - var(--kui-list-item-icon-size, remify(18px))) / 2 )',
+      'margin-block-start': 'calc((1lh - var(--_kui-list-item-icon-size)) / 2)',
     });
   });
 

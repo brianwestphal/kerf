@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 364100,
-  "measuredLargestJavaScriptGzip": 146154,
-  "measuredTotalJavaScriptGzip": 364005,
+  "measuredLargestJavaScriptGzip": 146181,
+  "measuredTotalJavaScriptGzip": 364023,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4161,6 +4161,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 146154,
         "measuredTotalJavaScriptGzip": 364005,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364100
+      }
+    },
+    {
+      "at": "2026-10-13T12:09:18.423Z",
+      "reason": "shared 18px list row icon size (KF-KWFMM1)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146154,
+        "measuredTotalJavaScriptGzip": 364005,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146181,
+        "measuredTotalJavaScriptGzip": 364023,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 364100
       }

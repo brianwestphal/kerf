@@ -1,4 +1,12 @@
 .kui-list-item {
+  /* The leading icon size. An inherited `--kui-list-row-icon-size` on the
+     containing List sizes ListItem and ListActionRow icons together, so a
+     mixed list keeps its labels on one edge; `--kui-list-item-icon-size`
+     still wins for ListItem rows that set it. */
+  --_kui-list-item-icon-size: var(
+    --kui-list-item-icon-size,
+    var(--kui-list-row-icon-size, remify(18px))
+  );
   display: grid;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-height: var(--kui-list-item-min-height, remify(44px));
@@ -88,7 +96,7 @@
 .kui-list-item[data-has-icon="true"] {
   grid-template-columns: var(
     --kui-list-item-columns,
-    var(--kui-list-item-icon-size, remify(18px)) minmax(0, 1fr) auto
+    var(--_kui-list-item-icon-size) minmax(0, 1fr) auto
   );
 }
 
@@ -168,16 +176,16 @@
 
 .kui-list-item__icon {
   display: grid;
-  width: var(--kui-list-item-icon-size, remify(18px));
-  height: var(--kui-list-item-icon-size, remify(18px));
+  width: var(--_kui-list-item-icon-size);
+  height: var(--_kui-list-item-icon-size);
   color: var(--kui-list-item-icon-color, currentColor);
   place-items: center;
 }
 
 .kui-list-item__icon svg {
   display: block;
-  width: var(--kui-list-item-icon-size, remify(18px));
-  height: var(--kui-list-item-icon-size, remify(18px));
+  width: var(--_kui-list-item-icon-size);
+  height: var(--_kui-list-item-icon-size);
 }
 
 .kui-list-item__label {
@@ -233,9 +241,7 @@
 
 .kui-list-item[data-multiline="true"] .kui-list-item__icon {
   align-self: start;
-  margin-block-start: calc(
-    (1lh - var(--kui-list-item-icon-size, remify(18px))) / 2
-  );
+  margin-block-start: calc((1lh - var(--_kui-list-item-icon-size)) / 2);
 }
 
 .kui-list-item[data-multiline="true"][data-icon-align="center"]

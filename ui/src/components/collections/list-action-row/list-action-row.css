@@ -19,6 +19,10 @@
     --kui-list-row-padding-inline,
     var(--kui-layout-item-padding, remify(8px))
   );
+  /* The leading icon size, shared with ListItem through an inherited
+     `--kui-list-row-icon-size` on the containing List, so a mixed list keeps
+     its labels on one edge. It defaults to ListItem's 18px row icon. */
+  --_kui-list-action-row-icon-size: var(--kui-list-row-icon-size, remify(18px));
   display: flex;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-height: remify(44px);
@@ -182,8 +186,8 @@
   inset-block-start: 50%;
   inset-inline-start: calc(1px + var(--_kui-list-action-row-padding-inline));
   display: grid;
-  width: remify(24px);
-  height: remify(24px);
+  width: var(--_kui-list-action-row-icon-size);
+  height: var(--_kui-list-action-row-icon-size);
   color: currentColor;
   transform: translateY(-50%);
   place-items: center;
@@ -191,8 +195,8 @@
 
 .kui-list-action-row__icon svg {
   display: block;
-  width: remify(24px);
-  height: remify(24px);
+  width: var(--_kui-list-action-row-icon-size);
+  height: var(--_kui-list-action-row-icon-size);
 }
 
 .kui-list-action-row__label {
@@ -239,7 +243,8 @@
 
 .kui-list-action-row[data-has-icon="true"] .kui-list-action-row__label {
   margin-inline-start: calc(
-    remify(24px) + var(--kui-layout-item-gap, remify(8px))
+    var(--_kui-list-action-row-icon-size) +
+      var(--kui-layout-item-gap, remify(8px))
   );
 }
 

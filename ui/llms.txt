@@ -294,7 +294,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   and `--kui-list-item-selected-border` at the list or row boundary.
   To align `ListItem` and `ListActionRow` rows in one list on a custom
   leading inset, set `--kui-list-row-padding-inline` on the `List` (never
-  `--kui-list-item-padding-inline`, which moves only `ListItem` rows).
+  `--kui-list-item-padding-inline`, which moves only `ListItem` rows). Both
+  row kinds draw an 18px untiled leading icon by default, so their labels
+  align; resize both with `--kui-list-row-icon-size` on the `List` (never
+  `--kui-list-item-icon-size`, which resizes only `ListItem` icons).
 - **Use `Row` for horizontal and `List` for vertical layout.** Both expose
   physical `hAlign`/`vAlign` props and typed gaps. Row defaults to left/full,
   an `xs` gap, and no wrapping; List retains full/top and zero-gap defaults.

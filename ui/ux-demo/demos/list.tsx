@@ -179,7 +179,7 @@ export function ListDemo() {
       </CatalogExample>
       <CatalogExample
         label="Shared Row Inset"
-        note="Scope --kui-list-row-padding-inline on a List so ListItem and ListActionRow rows start their leading icons on one edge; it defaults to the 8px item padding."
+        note="Scope --kui-list-row-padding-inline on a List so ListItem and ListActionRow rows start their leading icons on one edge; it defaults to the 8px item padding. Both row kinds share the 18px --kui-list-row-icon-size, so their labels line up too."
         align="none"
         viewport={{
           width: 'medium',

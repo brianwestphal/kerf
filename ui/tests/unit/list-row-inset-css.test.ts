@@ -84,3 +84,59 @@ describe('shared list row inline inset token', () => {
     ).toEqual([]);
   });
 });
+
+describe('shared list row icon size token', () => {
+  const SHARED_ICON = 'var(--kui-list-row-icon-size,remify(18px))';
+
+  it('neither row kind declares the shared token on its own root', async () => {
+    for (const name of ['list-item', 'list-action-row']) {
+      const css = await parse(name);
+      const declared: string[] = [];
+      css.walkDecls('--kui-list-row-icon-size', (decl) => {
+        declared.push(decl.prop);
+      });
+      expect(declared, name).toEqual([]);
+    }
+  });
+
+  it('ListItem reads it beneath its own icon-size token, defaulting to 18px', async () => {
+    const css = await parse('list-item');
+    expect(
+      declarations(css, '.kui-list-item', '--_kui-list-item-icon-size'),
+    ).toEqual([`var(--kui-list-item-icon-size,${SHARED_ICON})`]);
+  });
+
+  it('ListActionRow sizes its untiled icon, glyph, and label offset from it', async () => {
+    const css = await parse('list-action-row');
+    expect(
+      declarations(
+        css,
+        '.kui-list-action-row',
+        '--_kui-list-action-row-icon-size',
+      ),
+    ).toEqual([SHARED_ICON]);
+    const size = 'var(--_kui-list-action-row-icon-size)';
+    for (const selector of [
+      '.kui-list-action-row__icon',
+      '.kui-list-action-row__icon svg',
+    ]) {
+      expect(declarations(css, selector, 'width'), selector).toEqual([size]);
+      expect(declarations(css, selector, 'height'), selector).toEqual([size]);
+    }
+    expect(
+      declarations(
+        css,
+        '.kui-list-action-row[data-has-icon="true"] .kui-list-action-row__label',
+        'margin-inline-start',
+      ),
+    ).toEqual([`calc(${size}+var(--kui-layout-item-gap,remify(8px)))`]);
+    // A tile keeps its fixed 18px glyph whatever the shared size is.
+    expect(
+      declarations(
+        css,
+        '.kui-list-action-row[data-icon-tile] .kui-list-action-row__icon svg',
+        'width',
+      ),
+    ).toEqual(['remify(18px)']);
+  });
+});

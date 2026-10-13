@@ -318,6 +318,12 @@ icons on the same edge at any value, and the token defaults to
 `--kui-layout-item-padding`. `--kui-list-item-padding-inline` still overrides
 it for `ListItem` rows alone, so use the shared token whenever the two row kinds
 share a list.
+Both row kinds also draw their untiled leading icon at one shared size,
+`--kui-list-row-icon-size` (default 18px), so a list that mixes them starts
+their labels on one edge too. Set it on the containing `List` to resize both
+row kinds together; `--kui-list-item-icon-size` still overrides it for
+`ListItem` rows alone. An `iconTile` keeps its 32px tile and 18px glyph at any
+value.
 For a filled command list, set `--kui-list-item-background` and
 `--kui-list-item-border` on the list or row. Scope `--kui-list-item-color`,
 `--kui-list-item-hover-background`, `--kui-list-item-selected-color`, and
