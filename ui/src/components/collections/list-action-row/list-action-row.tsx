@@ -1,5 +1,9 @@
 import type { SafeHtml } from 'kerfjs';
 
+import {
+  type ListIconTile,
+  listIconTilePresentation,
+} from '../../../shared/content/list-icon-tile.js';
 import { nativeDraggable } from '../../../shared/dom/draggable.js';
 import {
   filterControlAttributes,
@@ -15,11 +19,19 @@ import {
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
 import { Skeleton } from '../../feedback/skeleton/skeleton.js';
 
+export type {
+  ListIconTile,
+  ListIconTileColor,
+  ListIconTileTone,
+} from '../../../shared/content/list-icon-tile.js';
+
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-component',
   'data-action',
   'data-item-id',
   'data-has-icon',
+  'data-icon-tile',
+  'data-icon-tile-tone',
   'data-multiline',
   'data-density',
   'data-divider',
@@ -44,6 +56,8 @@ type ListActionRowRootAttributes = Readonly<
     'data-action'?: never;
     'data-item-id'?: never;
     'data-has-icon'?: never;
+    'data-icon-tile'?: never;
+    'data-icon-tile-tone'?: never;
     'data-multiline'?: never;
     'data-density'?: never;
     'data-divider'?: never;
@@ -115,6 +129,8 @@ interface ListActionRowCommonProps {
   divider?: 'none' | 'before' | 'after' | 'both';
   /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
   icon?: SafeHtml;
+  /** Present `icon` in a filled 32px rounded tile with an 18px glyph: a quiet tone preset, or `{ color, foreground? }` for an application color. */
+  iconTile?: ListIconTile;
   action: string;
   itemId?: string;
   selected?: boolean;
@@ -152,6 +168,7 @@ export function ListActionRow({
   density = 'standard',
   divider = 'none',
   icon,
+  iconTile,
   action,
   itemId,
   selected = false,
@@ -186,6 +203,10 @@ export function ListActionRow({
     trailingActionAttributes,
     PROTECTED_TRAILING_DATA_ATTRIBUTES,
   );
+  const tile = icon
+    ? listIconTilePresentation(iconTile, 'list-action-row')
+    : null;
+  const iconSize = tile?.tile ? 32 : 18;
 
   return (
     <div
@@ -194,6 +215,8 @@ export function ListActionRow({
       data-component="list-action-row"
       data-item-id={itemId}
       data-has-icon={String(Boolean(icon))}
+      data-icon-tile={tile?.tile}
+      data-icon-tile-tone={tile?.tone}
       data-multiline={multiline ? 'true' : undefined}
       data-density={density}
       data-divider={divider}
@@ -223,9 +246,16 @@ export function ListActionRow({
         aria-pressed={pressed === undefined ? undefined : String(pressed)}
       >
         {icon && (
-          <span class="kui-list-action-row__icon">
+          <span
+            class="kui-list-action-row__icon"
+            style={placeholder ? undefined : tile?.style}
+          >
             {placeholder ? (
-              <Skeleton block width={remify(18)} height={remify(18)} />
+              <Skeleton
+                block
+                width={remify(iconSize)}
+                height={remify(iconSize)}
+              />
             ) : (
               icon
             )}

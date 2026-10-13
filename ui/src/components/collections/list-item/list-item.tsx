@@ -1,5 +1,10 @@
 import type { SafeHtml } from 'kerfjs';
 
+import {
+  type ListIconTile,
+  type ListIconTilePresentation,
+  listIconTilePresentation,
+} from '../../../shared/content/list-icon-tile.js';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { nativeDraggable } from '../../../shared/dom/draggable.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
@@ -7,6 +12,12 @@ import { em, remify } from '../../../shared/styles/css-values.js';
 import { withWordBreaks } from '../../../shared/text/word-breaks.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
 import { Skeleton } from '../../feedback/skeleton/skeleton.js';
+
+export type {
+  ListIconTile,
+  ListIconTileColor,
+  ListIconTileTone,
+} from '../../../shared/content/list-icon-tile.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-component',
@@ -21,6 +32,8 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-state',
   'data-kui-disabled',
   'data-icon-align',
+  'data-icon-tile',
+  'data-icon-tile-tone',
   'data-dragging',
   'data-drop-position',
 ]);
@@ -39,6 +52,8 @@ type ListItemRootAttributes = Readonly<
     'data-state'?: never;
     'data-kui-disabled'?: never;
     'data-icon-align'?: never;
+    'data-icon-tile'?: never;
+    'data-icon-tile-tone'?: never;
     'data-dragging'?: never;
     'data-drop-position'?: never;
   }
@@ -49,6 +64,8 @@ export interface ListItemProps {
   /** App-owned supporting text rendered in the component's stable label stack. */
   description?: string | SafeHtml;
   icon?: SafeHtml;
+  /** Present `icon` in a filled 32px rounded tile with an 18px glyph: a quiet tone preset, or `{ color, foreground? }` for an application color. */
+  iconTile?: ListIconTile;
   /** Dormant author content at the row's end; a placeholder renders it as a skeleton. */
   trailing?: KerfUiContent;
   /** Dormant status metadata rendered before trailing content; a placeholder renders it as a skeleton. */
@@ -99,6 +116,7 @@ function listItemContent({
   label,
   description,
   icon,
+  tile,
   trailing,
   status,
   busy = false,
@@ -114,13 +132,21 @@ function listItemContent({
   | 'busy'
   | 'multiline'
   | 'placeholder'
->) {
+> & { tile: ListIconTilePresentation | null }) {
+  const tileSize = tile?.tile ? 32 : 18;
   return (
     <>
       {icon && (
-        <span class="kui-list-item__icon">
+        <span
+          class="kui-list-item__icon"
+          style={placeholder ? undefined : tile?.style}
+        >
           {placeholder ? (
-            <Skeleton block width={remify(18)} height={remify(18)} />
+            <Skeleton
+              block
+              width={remify(tileSize)}
+              height={remify(tileSize)}
+            />
           ) : (
             icon
           )}
@@ -164,6 +190,7 @@ export function ListItem({
   label,
   description,
   icon,
+  iconTile,
   trailing,
   status,
   busy = false,
@@ -192,6 +219,7 @@ export function ListItem({
     rootAttributes,
     PROTECTED_ROOT_DATA_ATTRIBUTES,
   );
+  const tile = icon ? listIconTilePresentation(iconTile, 'list-item') : null;
   return (
     <button
       {...extensionAttributes}
@@ -207,6 +235,8 @@ export function ListItem({
       data-has-description={String(Boolean(description))}
       data-multiline={multiline ? 'true' : undefined}
       data-icon-align={multiline ? multilineIconAlign : undefined}
+      data-icon-tile={tile?.tile}
+      data-icon-tile-tone={tile?.tone}
       data-density={density}
       data-divider={divider}
       data-busy={busy ? 'true' : undefined}
@@ -226,6 +256,7 @@ export function ListItem({
         label,
         description,
         icon,
+        tile,
         trailing,
         status,
         busy,
@@ -243,6 +274,7 @@ export function ListItemLink({
   label,
   description,
   icon,
+  iconTile,
   trailing,
   status,
   busy = false,
@@ -269,6 +301,7 @@ export function ListItemLink({
     rootAttributes,
     PROTECTED_ROOT_DATA_ATTRIBUTES,
   );
+  const tile = icon ? listIconTilePresentation(iconTile, 'list-item') : null;
   const inactive = disabled || placeholder;
   const linkLabel =
     accessibleLabel ??
@@ -290,6 +323,8 @@ export function ListItemLink({
       data-has-description={String(Boolean(description))}
       data-multiline={multiline ? 'true' : undefined}
       data-icon-align={multiline ? multilineIconAlign : undefined}
+      data-icon-tile={tile?.tile}
+      data-icon-tile-tone={tile?.tone}
       data-density={density}
       data-divider={divider}
       data-busy={busy ? 'true' : undefined}
@@ -309,6 +344,7 @@ export function ListItemLink({
         label,
         description,
         icon,
+        tile,
         trailing,
         status,
         busy,

@@ -1,23 +1,69 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import {
+  BookOpen,
   Folder,
   GripVertical,
   MoreHorizontal,
+  Paintbrush,
   Pencil,
+  Rocket,
   Terminal,
   Trash2,
 } from 'lucide';
 
 import { DemoListPopover } from './demo-list-popover.js';
 import {
+  iconTileCurrent,
   menuActionCurrent,
   menuActionPressed,
   reorderFiles,
   reorderSelection,
 } from './state.js';
+
+const iconTileCommands = [
+  {
+    id: 'tile-run-tests',
+    label: 'Run Tests',
+    command: 'npm test',
+    icon: <LucideIcon icon={Terminal} name="terminal" />,
+    tile: { color: foregroundColor('#30a46c') },
+  },
+  {
+    id: 'tile-deploy-preview',
+    label: 'Deploy Preview',
+    command: 'npm run deploy',
+    icon: <LucideIcon icon={Rocket} name="rocket" />,
+    tile: { color: foregroundColor('#0090ff') },
+  },
+  {
+    id: 'tile-format-code',
+    label: 'Format Code',
+    command: 'npm run format',
+    icon: <LucideIcon icon={Paintbrush} name="paintbrush" />,
+    tile: { color: foregroundColor('#ffc53d') },
+  },
+  {
+    id: 'tile-clean-build',
+    label: 'Clean Build',
+    command: 'npm run clean',
+    icon: <LucideIcon icon={Trash2} name="trash-2" />,
+    tile: { color: foregroundColor('#e5484d') },
+  },
+  {
+    id: 'tile-open-docs',
+    label: 'Open Docs',
+    command: 'npm run docs',
+    icon: <LucideIcon icon={BookOpen} name="book-open" />,
+    tile: {
+      color: uiColor('brand-fill-loud'),
+      foreground: uiColor('brand-on-loud'),
+    },
+  },
+] as const;
 
 export function ListActionRowDemo() {
   return (
@@ -159,6 +205,30 @@ export function ListActionRowDemo() {
           }
           rootAttributes={{ 'data-demo-action-row': 'placeholder' }}
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Colored Icon Tiles"
+        note="Each command keeps its own color in a filled tile. A custom fill draws its glyph in black or white, whichever contrasts, unless the row names a foreground."
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <List rootAttributes={{ 'data-demo-icon-tiles': 'list-action-row' }}>
+          {iconTileCommands.map((command) => (
+            <ListActionRow
+              label={command.label}
+              description={command.command}
+              icon={command.icon}
+              iconTile={command.tile}
+              action="select-icon-tile-row"
+              itemId={command.id}
+              selected={iconTileCurrent.value === command.id}
+              trailingAction="open-list-action-row-actions"
+              trailingActionLabel={`Edit ${command.label}`}
+              trailingActionIcon={<LucideIcon icon={Pencil} name="pencil" />}
+              trailingActionVisibility="interaction"
+            />
+          ))}
+        </List>
       </CatalogExample>
       <CatalogExample
         label="Drag to Reorder"

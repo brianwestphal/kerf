@@ -12,6 +12,7 @@ Keep a selectable primary row action and an independently named trailing action 
 
 - A navigation or item row needs both a primary selectable action and an independently focusable trailing action.
 - A command row needs a trailing "…" overflow menu (trailingMenu), optionally also opened at the pointer from the row's contextmenu with openPopupMenuAt.
+- A settings or command row identifies each entry by a colored icon tile (iconTile) instead of a bare glyph.
 
 **Not when:**
 
@@ -51,6 +52,7 @@ Exact prop names and types: [`@kerfjs/ui/list-action-row`](../public-api-signatu
 - before, after, or paired group divider
 - position-aware divided-list corners: flat wherever a divider line (this row's or a neighbor's) meets the edge
 - draggable row with dragging and drop-before / drop-after insertion states
+- filled leading icon tile (iconTile): a quiet tone preset (neutral, brand, success, warning, danger) or an application fill with an optional foreground; a 32px rounded tile holding an 18px glyph
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -93,7 +95,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-list-action-row`, `kui-list-action-row__icon`, `kui-list-action-row__label`, `kui-list-action-row__primary-label`, `kui-list-action-row__description`, `kui-list-action-row__status`, `kui-list-action-row__primary`, `kui-list-action-row__trailing-action` on an element you write; render `ListActionRow` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-brand-border-loud`, `--kui-color-brand-border-quiet`, `--kui-color-brand-fill-normal`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-fill-normal`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`, `--kui-radius-pill`, `--kui-list-action-row-background`, `--kui-list-action-row-border`, `--kui-list-action-row-color`, `--kui-list-action-row-dragging-opacity`, `--kui-list-action-row-drop-indicator`, `--kui-list-action-row-drop-indicator-width`, `--kui-list-action-row-hover-background`, `--kui-list-action-row-hover-border`, `--kui-list-action-row-selected-background`, `--kui-list-action-row-selected-border`, `--kui-list-action-row-selected-color`, `--kui-list-action-row-trailing-hover-background`, `--kui-list-group-divider-color`, `--kui-list-row-padding-inline`, `--kui-font-xs`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-brand-border-loud`, `--kui-color-brand-border-quiet`, `--kui-color-brand-fill-normal`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-fill-normal`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`, `--kui-radius-pill`, `--kui-list-action-row-background`, `--kui-list-action-row-border`, `--kui-list-action-row-color`, `--kui-list-action-row-dragging-opacity`, `--kui-list-action-row-drop-indicator`, `--kui-list-action-row-drop-indicator-width`, `--kui-list-action-row-hover-background`, `--kui-list-action-row-hover-border`, `--kui-list-action-row-selected-background`, `--kui-list-action-row-selected-border`, `--kui-list-action-row-selected-color`, `--kui-list-action-row-trailing-hover-background`, `--kui-list-group-divider-color`, `--kui-list-row-padding-inline`, `--kui-font-xs`, `--kui-radius-m`, `--kui-color-brand-fill-quiet`, `--kui-color-brand-on-quiet`, `--kui-color-success-fill-quiet`, `--kui-color-success-border-quiet`, `--kui-color-success-on-quiet`, `--kui-color-warning-fill-quiet`, `--kui-color-warning-border-quiet`, `--kui-color-warning-on-quiet`, `--kui-color-danger-fill-quiet`, `--kui-color-danger-border-quiet`, `--kui-color-danger-on-quiet`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

@@ -304,7 +304,141 @@
   height: remify(16px);
 }
 
+/* A filled icon tile (`iconTile`): the leading icon sits in a 32px rounded
+   tile with an 18px glyph, 6px clear of a standard 44px row's edges (a
+   compact row is at least 42px tall) like a ListItem tile. The 6px radius
+   is concentric with the row's 12px corner at that clearance. */
+.kui-list-action-row[data-icon-tile] {
+  --_kui-list-action-row-icon-tile-size: remify(32px);
+}
+
+.kui-list-action-row[data-icon-tile][data-density="compact"],
+.kui-list-action-row[data-icon-tile][data-density="compact"]
+  :is(.kui-list-action-row__primary, .kui-list-action-row__trailing-action) {
+  min-height: remify(42px);
+}
+
+.kui-list-action-row[data-icon-tile] .kui-list-action-row__icon {
+  width: var(--_kui-list-action-row-icon-tile-size);
+  height: var(--_kui-list-action-row-icon-tile-size);
+  border-radius: var(--kui-radius-m, remify(6px));
+  color: var(--_kui-list-action-row-icon-tile-foreground, currentColor);
+  background: var(--_kui-list-action-row-icon-tile-fill, transparent);
+  box-shadow: inset 0 0 0 1px
+    var(--_kui-list-action-row-icon-tile-border, transparent);
+}
+
+.kui-list-action-row[data-icon-tile] .kui-list-action-row__icon svg {
+  width: remify(18px);
+  height: remify(18px);
+}
+
+.kui-list-action-row[data-has-icon="true"][data-icon-tile]
+  .kui-list-action-row__label {
+  margin-inline-start: calc(
+    var(--_kui-list-action-row-icon-tile-size) +
+      var(--kui-layout-item-gap, remify(8px))
+  );
+}
+
+/* An application fill defaults its glyph to black or white, whichever
+   contrasts with the fill's lightness. */
+.kui-list-action-row[data-icon-tile="color"] .kui-list-action-row__icon {
+  color: var(--_kui-list-action-row-icon-tile-foreground, #fff);
+}
+
+@supports (color: oklch(from red l c h)) {
+  .kui-list-action-row[data-icon-tile="color"] .kui-list-action-row__icon {
+    color: var(
+      --_kui-list-action-row-icon-tile-foreground,
+      oklch(
+        from var(--_kui-list-action-row-icon-tile-fill)
+          clamp(0, (0.68 - l) * 1000, 1) 0 0
+      )
+    );
+  }
+}
+
+.kui-list-action-row[data-icon-tile-tone="neutral"] .kui-list-action-row__icon {
+  --_kui-list-action-row-icon-tile-fill: var(--kui-color-neutral-fill-quiet);
+  --_kui-list-action-row-icon-tile-border: var(
+    --kui-color-neutral-border-quiet
+  );
+  --_kui-list-action-row-icon-tile-foreground: var(
+    --kui-color-neutral-on-quiet
+  );
+}
+
+.kui-list-action-row[data-icon-tile-tone="brand"] .kui-list-action-row__icon {
+  --_kui-list-action-row-icon-tile-fill: var(--kui-color-brand-fill-quiet);
+  --_kui-list-action-row-icon-tile-border: var(--kui-color-brand-border-quiet);
+  --_kui-list-action-row-icon-tile-foreground: var(--kui-color-brand-on-quiet);
+}
+
+.kui-list-action-row[data-icon-tile-tone="success"] .kui-list-action-row__icon {
+  --_kui-list-action-row-icon-tile-fill: var(--kui-color-success-fill-quiet);
+  --_kui-list-action-row-icon-tile-border: var(
+    --kui-color-success-border-quiet
+  );
+  --_kui-list-action-row-icon-tile-foreground: var(
+    --kui-color-success-on-quiet
+  );
+}
+
+.kui-list-action-row[data-icon-tile-tone="warning"] .kui-list-action-row__icon {
+  --_kui-list-action-row-icon-tile-fill: var(--kui-color-warning-fill-quiet);
+  --_kui-list-action-row-icon-tile-border: var(
+    --kui-color-warning-border-quiet
+  );
+  --_kui-list-action-row-icon-tile-foreground: var(
+    --kui-color-warning-on-quiet
+  );
+}
+
+.kui-list-action-row[data-icon-tile-tone="danger"] .kui-list-action-row__icon {
+  --_kui-list-action-row-icon-tile-fill: var(--kui-color-danger-fill-quiet);
+  --_kui-list-action-row-icon-tile-border: var(--kui-color-danger-border-quiet);
+  --_kui-list-action-row-icon-tile-foreground: var(--kui-color-danger-on-quiet);
+}
+
+/* A loading row shows a tile-sized skeleton in place of the fill. */
+.kui-list-action-row[data-icon-tile][data-placeholder="true"]
+  .kui-list-action-row__icon {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* A wrapped label keeps its first line centered on the tile: the tile sits
+   6px below the row's top like a single-line row's, and the label starts
+   half the difference between the tile and its line box lower. */
+.kui-list-action-row[data-icon-tile][data-multiline="true"]
+  .kui-list-action-row__primary {
+  padding-block: remify(6px);
+}
+
+.kui-list-action-row[data-icon-tile][data-multiline="true"]
+  .kui-list-action-row__icon {
+  inset-block-start: calc(
+    remify(6px) + (var(--_kui-list-action-row-icon-tile-size) / 2)
+  );
+}
+
+.kui-list-action-row[data-icon-tile][data-multiline="true"]
+  .kui-list-action-row__label {
+  box-sizing: border-box;
+  min-height: var(--_kui-list-action-row-icon-tile-size);
+  padding-block-start: max(
+    0px,
+    (var(--_kui-list-action-row-icon-tile-size) - 1lh) / 2
+  );
+}
+
 @media (forced-colors: active) {
+  .kui-list-action-row[data-icon-tile] .kui-list-action-row__icon {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+
   .kui-list-action-row[data-drop-position]::after {
     background: Highlight;
     forced-color-adjust: none;

@@ -323,3 +323,133 @@
   width: remify(16px);
   height: remify(16px);
 }
+
+/* A filled icon tile (`iconTile`): the leading icon sits in a 32px rounded
+   tile with an 18px glyph. The tile overhangs the content box by up to 3px
+   into the block padding, so a single-line row keeps its density height
+   (44px standard, 52px spacious) and a compact row grows only to 42px; the
+   tile then sits 6px (5px compact) clear of the row edges, like a
+   ListActionRow tile, and rows with descriptions keep their height. The 6px
+   radius is concentric with the row's 12px corner at that clearance. */
+.kui-list-item[data-icon-tile] {
+  --_kui-list-item-icon-tile-size: remify(32px);
+  --_kui-list-item-icon-tile-overhang: remify(3px);
+}
+
+.kui-list-item[data-icon-tile][data-density="compact"] {
+  --_kui-list-item-icon-tile-overhang: 0px;
+  /* Native buttons take a form-control height, so a compact tile row
+     declares its tile-sized minimum rather than relying on content height. */
+  min-height: var(--kui-list-item-min-height, remify(42px));
+}
+
+.kui-list-item[data-has-icon="true"][data-icon-tile] {
+  grid-template-columns: var(
+    --kui-list-item-columns,
+    var(--_kui-list-item-icon-tile-size) minmax(0, 1fr) auto
+  );
+}
+
+.kui-list-item[data-icon-tile] .kui-list-item__icon {
+  width: var(--_kui-list-item-icon-tile-size);
+  height: var(--_kui-list-item-icon-tile-size);
+  margin-block: calc(-1 * var(--_kui-list-item-icon-tile-overhang));
+  border-radius: var(--kui-radius-m, remify(6px));
+  color: var(--_kui-list-item-icon-tile-foreground, currentColor);
+  background: var(--_kui-list-item-icon-tile-fill, transparent);
+  box-shadow: inset 0 0 0 1px
+    var(--_kui-list-item-icon-tile-border, transparent);
+}
+
+.kui-list-item[data-icon-tile] .kui-list-item__icon svg {
+  width: remify(18px);
+  height: remify(18px);
+}
+
+/* An application fill defaults its glyph to black or white, whichever
+   contrasts with the fill's lightness. */
+.kui-list-item[data-icon-tile="color"] .kui-list-item__icon {
+  color: var(--_kui-list-item-icon-tile-foreground, #fff);
+}
+
+@supports (color: oklch(from red l c h)) {
+  .kui-list-item[data-icon-tile="color"] .kui-list-item__icon {
+    color: var(
+      --_kui-list-item-icon-tile-foreground,
+      oklch(
+        from var(--_kui-list-item-icon-tile-fill) clamp(0, (0.68 - l) * 1000, 1)
+          0 0
+      )
+    );
+  }
+}
+
+.kui-list-item[data-icon-tile-tone="neutral"] .kui-list-item__icon {
+  --_kui-list-item-icon-tile-fill: var(--kui-color-neutral-fill-quiet);
+  --_kui-list-item-icon-tile-border: var(--kui-color-neutral-border-quiet);
+  --_kui-list-item-icon-tile-foreground: var(--kui-color-neutral-on-quiet);
+}
+
+.kui-list-item[data-icon-tile-tone="brand"] .kui-list-item__icon {
+  --_kui-list-item-icon-tile-fill: var(--kui-color-brand-fill-quiet);
+  --_kui-list-item-icon-tile-border: var(--kui-color-brand-border-quiet);
+  --_kui-list-item-icon-tile-foreground: var(--kui-color-brand-on-quiet);
+}
+
+.kui-list-item[data-icon-tile-tone="success"] .kui-list-item__icon {
+  --_kui-list-item-icon-tile-fill: var(--kui-color-success-fill-quiet);
+  --_kui-list-item-icon-tile-border: var(--kui-color-success-border-quiet);
+  --_kui-list-item-icon-tile-foreground: var(--kui-color-success-on-quiet);
+}
+
+.kui-list-item[data-icon-tile-tone="warning"] .kui-list-item__icon {
+  --_kui-list-item-icon-tile-fill: var(--kui-color-warning-fill-quiet);
+  --_kui-list-item-icon-tile-border: var(--kui-color-warning-border-quiet);
+  --_kui-list-item-icon-tile-foreground: var(--kui-color-warning-on-quiet);
+}
+
+.kui-list-item[data-icon-tile-tone="danger"] .kui-list-item__icon {
+  --_kui-list-item-icon-tile-fill: var(--kui-color-danger-fill-quiet);
+  --_kui-list-item-icon-tile-border: var(--kui-color-danger-border-quiet);
+  --_kui-list-item-icon-tile-foreground: var(--kui-color-danger-on-quiet);
+}
+
+/* A loading row shows a tile-sized skeleton in place of the fill. */
+.kui-list-item[data-icon-tile][data-placeholder="true"] .kui-list-item__icon {
+  background: transparent;
+  box-shadow: none;
+}
+
+.kui-list-item[data-icon-tile][data-multiline="true"][data-icon-align="center"]
+  .kui-list-item__icon {
+  margin-block: calc(-1 * var(--_kui-list-item-icon-tile-overhang));
+}
+
+/* A wrapped label keeps its first line centered on the tile: the tile sits
+   at the top of the content box (less its overhang) and the label starts
+   the rest of the way down, instead of the tile overhanging the row edge. */
+.kui-list-item[data-icon-tile][data-multiline="true"]:not(
+    [data-icon-align="center"]
+  )
+  .kui-list-item__icon {
+  margin-block-start: calc(-1 * var(--_kui-list-item-icon-tile-overhang));
+}
+
+.kui-list-item[data-icon-tile][data-multiline="true"]:not(
+    [data-icon-align="center"]
+  )
+  .kui-list-item__label {
+  align-self: start;
+  padding-block-start: max(
+    0px,
+    (var(--_kui-list-item-icon-tile-size) - 1lh) / 2 -
+      var(--_kui-list-item-icon-tile-overhang)
+  );
+}
+
+@media (forced-colors: active) {
+  .kui-list-item[data-icon-tile] .kui-list-item__icon {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+}

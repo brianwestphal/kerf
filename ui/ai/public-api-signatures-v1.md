@@ -811,7 +811,10 @@ export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, ty
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { L as ListIconTile } from './list-icon-tile-Bo_Diu9o.js';
+export { a as ListIconTileColor, b as ListIconTileTone } from './list-icon-tile-Bo_Diu9o.js';
 import { PopupMenuEntry, PopupMenuPlacement } from './popup-menu.js';
+import './css-values.js';
 import './semantic-content-BbzjvSu9.js';
 
 type ListActionRowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
@@ -819,6 +822,8 @@ type ListActionRowRootAttributes = Readonly<Record<`data-${string}`, string | un
     'data-action'?: never;
     'data-item-id'?: never;
     'data-has-icon'?: never;
+    'data-icon-tile'?: never;
+    'data-icon-tile-tone'?: never;
     'data-multiline'?: never;
     'data-density'?: never;
     'data-divider'?: never;
@@ -882,6 +887,8 @@ interface ListActionRowCommonProps {
     divider?: 'none' | 'before' | 'after' | 'both';
     /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
     icon?: SafeHtml;
+    /** Present `icon` in a filled 32px rounded tile with an 18px glyph: a quiet tone preset, or `{ color, foreground? }` for an application color. */
+    iconTile?: ListIconTile;
     action: string;
     itemId?: string;
     selected?: boolean;
@@ -908,16 +915,19 @@ interface ListActionRowCommonProps {
 }
 /** Exactly one trailing control: a native button (`trailingAction*`) or an overflow menu (`trailingMenu`). */
 type ListActionRowProps = ListActionRowCommonProps & (ListActionRowTrailingButtonProps | ListActionRowTrailingMenuProps);
-declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, trailingMenu, className, rootAttributes, trailingActionAttributes, slot, }: ListActionRowProps): SafeHtml;
+declare function ListActionRow({ label, description, status, busy, density, divider, icon, iconTile, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, trailingMenu, className, rootAttributes, trailingActionAttributes, slot, }: ListActionRowProps): SafeHtml;
 
-export { ListActionRow, type ListActionRowProps, type ListActionRowTrailingMenu };
+export { ListActionRow, type ListActionRowProps, type ListActionRowTrailingMenu, ListIconTile };
 ```
 
 ## `@kerfjs/ui/list-item`
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { L as ListIconTile } from './list-icon-tile-Bo_Diu9o.js';
+export { a as ListIconTileColor, b as ListIconTileTone } from './list-icon-tile-Bo_Diu9o.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import './css-values.js';
 
 type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -932,6 +942,8 @@ type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefin
     'data-state'?: never;
     'data-kui-disabled'?: never;
     'data-icon-align'?: never;
+    'data-icon-tile'?: never;
+    'data-icon-tile-tone'?: never;
     'data-dragging'?: never;
     'data-drop-position'?: never;
 }>;
@@ -940,6 +952,8 @@ interface ListItemProps {
     /** App-owned supporting text rendered in the component's stable label stack. */
     description?: string | SafeHtml;
     icon?: SafeHtml;
+    /** Present `icon` in a filled 32px rounded tile with an 18px glyph: a quiet tone preset, or `{ color, foreground? }` for an application color. */
+    iconTile?: ListIconTile;
     /** Dormant author content at the row's end; a placeholder renders it as a skeleton. */
     trailing?: KerfUiContent;
     /** Dormant status metadata rendered before trailing content; a placeholder renders it as a skeleton. */
@@ -981,11 +995,11 @@ interface ListItemLinkProps extends Omit<ListItemProps, 'action' | 'pressed'> {
     action?: never;
     pressed?: never;
 }
-declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, rootAttributes, slot, }: ListItemProps): SafeHtml;
+declare function ListItem({ label, description, icon, iconTile, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, rootAttributes, slot, }: ListItemProps): SafeHtml;
 /** A navigation row with native link activation and ListItem geometry. */
-declare function ListItemLink({ href, external, label, description, icon, trailing, status, busy, density, divider, selected, itemId, className, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, rootAttributes, slot, }: ListItemLinkProps): SafeHtml;
+declare function ListItemLink({ href, external, label, description, icon, iconTile, trailing, status, busy, density, divider, selected, itemId, className, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, draggable, dragging, dropPosition, rootAttributes, slot, }: ListItemLinkProps): SafeHtml;
 
-export { ListItem, ListItemLink, type ListItemLinkProps, type ListItemProps };
+export { ListIconTile, ListItem, ListItemLink, type ListItemLinkProps, type ListItemProps };
 ```
 
 ## `@kerfjs/ui/list-inset-control`

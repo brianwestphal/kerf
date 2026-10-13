@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 361000,
-  "measuredLargestJavaScriptGzip": 143652,
-  "measuredTotalJavaScriptGzip": 360994,
+  "totalJavaScriptGzip": 362600,
+  "measuredLargestJavaScriptGzip": 144662,
+  "measuredTotalJavaScriptGzip": 362511,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4067,6 +4067,22 @@
         "measuredTotalJavaScriptGzip": 360994,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 361000
+      }
+    },
+    {
+      "at": "2026-10-13T10:39:58.630Z",
+      "reason": "ListItem/ListActionRow icon tiles and their catalog examples (KF-77AVAJ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 143652,
+        "measuredTotalJavaScriptGzip": 360994,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 361000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 144662,
+        "measuredTotalJavaScriptGzip": 362511,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 362600
       }
     }
   ]

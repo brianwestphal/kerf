@@ -2,9 +2,53 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { ListItem, ListItemLink } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { CircleHelp, Folder, GripVertical, Inbox, Wrench } from 'lucide';
+import {
+  Bell,
+  CircleHelp,
+  Folder,
+  GripVertical,
+  HardDrive,
+  Inbox,
+  Settings,
+  ShieldCheck,
+  Trash2,
+  Wrench,
+} from 'lucide';
 
-import { reorderCommands, reorderSelection } from './state.js';
+import { iconTileCurrent, reorderCommands, reorderSelection } from './state.js';
+
+const iconTileSettings = [
+  {
+    id: 'tile-general',
+    label: 'General',
+    icon: <LucideIcon icon={Settings} name="settings" />,
+    tone: 'neutral',
+  },
+  {
+    id: 'tile-notifications',
+    label: 'Notifications',
+    icon: <LucideIcon icon={Bell} name="bell" />,
+    tone: 'brand',
+  },
+  {
+    id: 'tile-backups',
+    label: 'Backups',
+    icon: <LucideIcon icon={ShieldCheck} name="shield-check" />,
+    tone: 'success',
+  },
+  {
+    id: 'tile-storage',
+    label: 'Storage',
+    icon: <LucideIcon icon={HardDrive} name="hard-drive" />,
+    tone: 'warning',
+  },
+  {
+    id: 'tile-reset',
+    label: 'Reset Workspace',
+    icon: <LucideIcon icon={Trash2} name="trash-2" />,
+    tone: 'danger',
+  },
+] as const;
 
 export function ListItemDemo() {
   return (
@@ -75,6 +119,25 @@ export function ListItemDemo() {
             label="Current Project"
             selected
           />
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Tone Icon Tiles"
+        note="Tone presets fill the tile with the quiet palette of a toolbar icon tile; selecting or hovering a row leaves the tile's colors alone."
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <List rootAttributes={{ 'data-demo-icon-tiles': 'list-item' }}>
+          {iconTileSettings.map((setting) => (
+            <ListItem
+              action="select-icon-tile-row"
+              itemId={setting.id}
+              label={setting.label}
+              icon={setting.icon}
+              iconTile={setting.tone}
+              selected={iconTileCurrent.value === setting.id}
+            />
+          ))}
         </List>
       </CatalogExample>
       <CatalogExample align="none">

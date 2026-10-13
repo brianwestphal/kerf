@@ -126,7 +126,7 @@ counts use the required localized `count`/`countLabel` pair and the shared
 neutral pill; non-count `SafeHtml` remains available through the mutually
 exclusive legacy `badge` slot. `ListActionRow` keeps independently interactive
 primary and trailing 44px controls as sibling buttons inside a noninteractive
-full-width row; `ListItem.trailing` remains dormant. Both row kinds read one inherited `--kui-list-row-padding-inline` leading inset (default `--kui-layout-item-padding`), so a `List` that mixes them keeps their leading icons on one edge at any value. The layer does not specify product reading width
+full-width row; `ListItem.trailing` remains dormant. Both row kinds read one inherited `--kui-list-row-padding-inline` leading inset (default `--kui-layout-item-padding`), so a `List` that mixes them keeps their leading icons on one edge at any value. Both also take an additive `iconTile` that presents the leading icon in a filled 32px rounded tile holding an 18px glyph — a quiet tone preset (`neutral`/`brand`/`success`/`warning`/`danger`, the `ToolbarControlGroup.tileTone` palette) or `{ color: CssColor, foreground?: CssForegroundColor }` for an application color, whose glyph defaults to black or white by contrast. The tile keeps 6px clear of a standard 44px row (compact rows are at least 42px tall), moves the label to its edge, never takes hover or selection colors, and leaves the untiled 18px (`ListItem`) and 24px (`ListActionRow`) icon defaults unchanged. The layer does not specify product reading width
 or responsive pane placement; consumers adapt public `--kui-layout-*` tokens
 instead of adding wrapper padding, negative margins, or duplicated offsets.
 

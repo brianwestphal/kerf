@@ -3151,7 +3151,19 @@
           "--kui-list-action-row-trailing-hover-background",
           "--kui-list-group-divider-color",
           "--kui-list-row-padding-inline",
-          "--kui-font-xs"
+          "--kui-font-xs",
+          "--kui-radius-m",
+          "--kui-color-brand-fill-quiet",
+          "--kui-color-brand-on-quiet",
+          "--kui-color-success-fill-quiet",
+          "--kui-color-success-border-quiet",
+          "--kui-color-success-on-quiet",
+          "--kui-color-warning-fill-quiet",
+          "--kui-color-warning-border-quiet",
+          "--kui-color-warning-on-quiet",
+          "--kui-color-danger-fill-quiet",
+          "--kui-color-danger-border-quiet",
+          "--kui-color-danger-on-quiet"
         ]
       },
       "diagnostics": [],
@@ -3293,7 +3305,18 @@
           "--kui-layout-inline-margin",
           "--kui-layout-item-gap",
           "--kui-layout-item-padding",
-          "--kui-layout-rounded-radius"
+          "--kui-layout-rounded-radius",
+          "--kui-radius-m",
+          "--kui-color-brand-on-quiet",
+          "--kui-color-success-fill-quiet",
+          "--kui-color-success-border-quiet",
+          "--kui-color-success-on-quiet",
+          "--kui-color-warning-fill-quiet",
+          "--kui-color-warning-border-quiet",
+          "--kui-color-warning-on-quiet",
+          "--kui-color-danger-fill-quiet",
+          "--kui-color-danger-border-quiet",
+          "--kui-color-danger-on-quiet"
         ]
       },
       "diagnostics": [],

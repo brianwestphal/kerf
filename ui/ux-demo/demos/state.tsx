@@ -121,6 +121,7 @@ export const ADOPTION_SUGGESTIONS: readonly TokenSearchToken[] = [
 ];
 export const menuActionCurrent = signal('src/main.ts');
 export const menuActionPressed = signal(false);
+export const iconTileCurrent = signal('tile-run-tests');
 export const inspectorSection = signal<'summary' | 'activity' | 'files'>(
   'summary',
 );

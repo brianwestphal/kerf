@@ -3759,7 +3759,8 @@
       ],
       "useWhen": [
         "A navigation or item row needs both a primary selectable action and an independently focusable trailing action.",
-        "A command row needs a trailing \"…\" overflow menu (trailingMenu), optionally also opened at the pointer from the row's contextmenu with openPopupMenuAt."
+        "A command row needs a trailing \"…\" overflow menu (trailingMenu), optionally also opened at the pointer from the row's contextmenu with openPopupMenuAt.",
+        "A settings or command row identifies each entry by a colored icon tile (iconTile) instead of a bare glyph."
       ],
       "avoidWhen": [
         "Use ListItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls.",
@@ -3799,7 +3800,8 @@
         "trailing overflow menu",
         "before, after, or paired group divider",
         "position-aware divided-list corners: flat wherever a divider line (this row's or a neighbor's) meets the edge",
-        "draggable row with dragging and drop-before / drop-after insertion states"
+        "draggable row with dragging and drop-before / drop-after insertion states",
+        "filled leading icon tile (iconTile): a quiet tone preset (neutral, brand, success, warning, danger) or an application fill with an optional foreground; a 32px rounded tile holding an 18px glyph"
       ],
       "accessibility": [
         "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
@@ -3883,7 +3885,19 @@
         "--kui-list-action-row-trailing-hover-background",
         "--kui-list-group-divider-color",
         "--kui-list-row-padding-inline",
-        "--kui-font-xs"
+        "--kui-font-xs",
+        "--kui-radius-m",
+        "--kui-color-brand-fill-quiet",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-success-fill-quiet",
+        "--kui-color-success-border-quiet",
+        "--kui-color-success-on-quiet",
+        "--kui-color-warning-fill-quiet",
+        "--kui-color-warning-border-quiet",
+        "--kui-color-warning-on-quiet",
+        "--kui-color-danger-fill-quiet",
+        "--kui-color-danger-border-quiet",
+        "--kui-color-danger-on-quiet"
       ],
       "links": {
         "catalogRoute": "?component=list-action-row",
@@ -3924,7 +3938,8 @@
         }
       ],
       "useWhen": [
-        "Render a selectable, disabled, trailing, or multiline sidebar action row whose descendants must remain clipped to the rounded row boundary; use ListItemLink when the destination has an href and needs native link activation."
+        "Render a selectable, disabled, trailing, or multiline sidebar action row whose descendants must remain clipped to the rounded row boundary; use ListItemLink when the destination has an href and needs native link activation.",
+        "A settings or command row identifies each entry by a colored icon tile (iconTile) instead of a bare glyph."
       ],
       "avoidWhen": [
         "Do not use for an ordinary inline link, form button, isolated ARIA menuitem, or an interactive trailing action; use ListActionRow for sibling row actions.",
@@ -3967,7 +3982,8 @@
         "description and status",
         "busy while retaining content",
         "before, after, or paired group divider",
-        "position-aware divided-list corners: flat wherever a divider line (this row's or a neighbor's) meets the edge"
+        "position-aware divided-list corners: flat wherever a divider line (this row's or a neighbor's) meets the edge",
+        "filled leading icon tile (iconTile): a quiet tone preset (neutral, brand, success, warning, danger) or an application fill with an optional foreground; a 32px rounded tile holding an 18px glyph"
       ],
       "accessibility": [
         "ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls. A draggable row reorders by pointer drag or, with wireListReorder, Alt+Shift+ArrowUp/ArrowDown; a placeholder is never draggable."
@@ -4066,7 +4082,18 @@
         "--kui-layout-inline-margin",
         "--kui-layout-item-gap",
         "--kui-layout-item-padding",
-        "--kui-layout-rounded-radius"
+        "--kui-layout-rounded-radius",
+        "--kui-radius-m",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-success-fill-quiet",
+        "--kui-color-success-border-quiet",
+        "--kui-color-success-on-quiet",
+        "--kui-color-warning-fill-quiet",
+        "--kui-color-warning-border-quiet",
+        "--kui-color-warning-on-quiet",
+        "--kui-color-danger-fill-quiet",
+        "--kui-color-danger-border-quiet",
+        "--kui-color-danger-on-quiet"
       ],
       "links": {
         "catalogRoute": "?component=list-item",

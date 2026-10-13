@@ -137,6 +137,7 @@ import {
   floatingToolbarOpen,
   grammarSearchModel,
   gridTileSelections,
+  iconTileCurrent,
   iconToggleConversationOpen,
   inspectorSection,
   itemTypes,
@@ -1008,6 +1009,11 @@ const stopActions = delegateActions(app, 'click', {
   },
   'log-settings': () => {
     actionLog.value = 'Settings selected';
+  },
+  'select-icon-tile-row': (_event, element) => {
+    const itemId = (element as HTMLElement).dataset.itemId ?? '';
+    iconTileCurrent.value = itemId;
+    actionLog.value = `${itemId} selected`;
   },
   'select-list-action-row': (_event, element) => {
     const itemId = (element as HTMLElement).dataset.itemId ?? '';

@@ -300,6 +300,19 @@ export const COMPONENTS = {
             itemId: 'billing-migration',
           }),
       },
+      {
+        id: 'icon-tile',
+        label: 'Tone Icon Tile',
+        height: 52,
+        render: () =>
+          ListItem({
+            label: 'Notifications',
+            icon: glyph(Bell, 'bell'),
+            iconTile: 'brand',
+            action: 'select',
+            itemId: 'notifications-tile',
+          }),
+      },
     ],
   },
   'list-header': {
@@ -434,6 +447,22 @@ export const COMPONENTS = {
                 { label: 'Delete', action: 'delete', tone: 'danger' },
               ],
             },
+          }),
+      },
+      {
+        id: 'icon-tile',
+        label: 'Colored Icon Tile',
+        height: 52,
+        render: () =>
+          ListActionRow({
+            label: 'Deploy Preview',
+            icon: glyph(Rocket, 'rocket'),
+            iconTile: { color: foregroundColor('#0090ff') },
+            action: 'open',
+            itemId: 'deploy-preview',
+            trailingAction: 'edit',
+            trailingActionLabel: 'Edit Deploy Preview',
+            trailingActionIcon: glyph(Pencil, 'pencil'),
           }),
       },
     ],

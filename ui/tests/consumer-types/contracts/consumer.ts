@@ -548,6 +548,38 @@ foregroundColorVar('--app-choice-color', uiColor('warning-fill-quiet'));
 ListItem({ label: 'Item', style: 'color:red' });
 // @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.
 ListActionRow({ label: 'Action', style: 'color:red' });
+// KUI-T013 positive: a row icon tile takes a tone preset, or a CssColor fill
+// with an optional CssForegroundColor glyph.
+ListItem({ label: 'Tests', action: 'open', iconTile: 'success' });
+ListItem({
+  label: 'Tests',
+  action: 'open',
+  iconTile: {
+    color: uiColor('brand-fill-loud'),
+    foreground: uiColor('brand-on-loud'),
+  },
+});
+ListActionRow({
+  label: 'Deploy',
+  action: 'open',
+  iconTile: { color: foregroundColor('#0090ff') },
+  trailingAction: 'edit',
+  trailingActionLabel: 'Edit Deploy',
+  trailingActionIcon: icon,
+});
+// @ts-expect-error KUI-T013 an icon tile fill is a typed CssColor, not a raw string.
+ListItem({ label: 'Tests', action: 'open', iconTile: { color: '#30a46c' } });
+ListItem({
+  label: 'Tests',
+  action: 'open',
+  iconTile: {
+    color: foregroundColor('#30a46c'),
+    // @ts-expect-error KUI-T013 an icon tile glyph cannot be a fill token.
+    foreground: uiColor('success-fill-quiet'),
+  },
+});
+// @ts-expect-error KUI-T013 icon tile tones are the finite tileTone vocabulary.
+ListItem({ label: 'Tests', action: 'open', iconTile: 'pop' });
 
 // KUI-T011 positive: semantic component zones accept recursively nested,
 // readonly component content and runtime-empty values.

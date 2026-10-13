@@ -100,6 +100,9 @@ export {
   type ListInsetTextProps,
 } from './components/collections/list-inset-text/list-inset-text.js';
 export {
+  type ListIconTile,
+  type ListIconTileColor,
+  type ListIconTileTone,
   ListItem,
   ListItemLink,
   type ListItemLinkProps,
