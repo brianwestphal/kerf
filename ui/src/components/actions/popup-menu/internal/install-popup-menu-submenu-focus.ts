@@ -1,3 +1,5 @@
+import { revealInScroller } from './reveal-in-scroller.js';
+
 interface SubmenuItem extends HTMLElement {
   active: boolean;
 }
@@ -120,7 +122,10 @@ export function installPopupMenuSubmenuFocus(prototype: object): void {
         )
           return;
         items.forEach((item) => (item.active = item === selected));
+        // The handoff's focus scrolled the submenu to its first item; bring
+        // the restored choice back into view within the submenu only.
         selected.focus({ preventScroll: true });
+        revealInScroller(selected);
       }, 0);
     }
   };

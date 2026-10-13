@@ -1,3 +1,5 @@
+import { revealInScroller } from './reveal-in-scroller.js';
+
 interface FocusableDropdownItem extends HTMLElement {
   active: boolean;
 }
@@ -64,6 +66,9 @@ export function installDropdownShowFocus(prototype: object): void {
     siblings.forEach((item) => {
       item.active = item === navigatedItem;
     });
+    // Web Awesome's show focus may have scrolled a long menu back to its
+    // first item; reveal the restored item within the menu only.
     navigatedItem.focus({ preventScroll: true });
+    revealInScroller(navigatedItem);
   };
 }

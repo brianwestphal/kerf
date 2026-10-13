@@ -881,6 +881,58 @@ test('a context PopupMenu renders its anchor point and takes no layout space', a
   await expect(context).not.toHaveAttribute('open', '');
 });
 
+// KF-6KRE6H: End pressed before Web Awesome's late first-item handoff lands
+// focused the last choice, the handoff then focused (and scrolled to) the
+// first, and the keyboard-choice restore refocused the last choice with
+// preventScroll, leaving it focused but scrolled out of view.
+test('End pressed as a long submenu opens leaves the last choice focused and scrolled into view', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=popup-menu');
+  const nested = page
+    .locator('[data-demo="popup-menu"]')
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .filter({ has: page.locator('wa-dropdown-item[slot="submenu"]') });
+  const trigger = nested.getByRole('button', { name: 'Decide' });
+  const parent = nested.locator(
+    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
+  );
+  await parent.evaluate((item) => {
+    for (let index = 0; index < 20; index++) {
+      const choice = document.createElement('wa-dropdown-item');
+      choice.setAttribute('slot', 'submenu');
+      choice.dataset.action = 'log-decision';
+      choice.dataset.decision = `project-${String(index)}`;
+      choice.textContent = `Project ${String(index)}`;
+      item.append(choice);
+    }
+  });
+  const last = parent.locator('[data-decision="project-19"]');
+  await trigger.focus();
+  await page.keyboard.press('Enter');
+  await expect(parent).toBeFocused();
+  // No wait between opening the submenu and the End press: the press lands
+  // before Web Awesome's queued first-item focus.
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('End');
+  await expect(last).toBeFocused();
+  // Past the handoff timer and the restore that follows it.
+  await page.waitForTimeout(800);
+  await expect(last).toBeFocused();
+  const placement = await parent.evaluate((item) => {
+    const submenu = item.shadowRoot!.querySelector('[part~="submenu"]')!;
+    const choice = item.querySelector('[data-decision="project-19"]')!;
+    const clip = submenu.getBoundingClientRect();
+    const box = choice.getBoundingClientRect();
+    return {
+      scrolled: submenu.scrollTop > 0,
+      inside: box.top >= clip.top - 0.5 && box.bottom <= clip.bottom + 1,
+    };
+  });
+  expect(placement).toEqual({ scrolled: true, inside: true });
+});
+
 test('a long phone submenu stays inside the viewport and scrolls to every choice', async ({
   page,
 }) => {
