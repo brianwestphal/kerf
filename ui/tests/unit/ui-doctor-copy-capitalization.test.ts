@@ -303,6 +303,13 @@ describe('UX demo copy', () => {
         /<DemoContentItem\b[^>]*?\btitle="([^"]+)"/g,
       ))
         titles.push(match[1]!);
+      // The Workbench, CollapsiblePanel, and TabNavigator demos build their
+      // regions and scenes through local helpers whose first argument is the
+      // visible region title.
+      for (const match of source.matchAll(
+        /\b(?:content|region|scene)\('([^']+)'/g,
+      ))
+        titles.push(match[1]!);
     }
     expect(titles.length).toBeGreaterThan(5);
     expect(

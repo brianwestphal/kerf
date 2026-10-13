@@ -297,7 +297,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-card': () => (
     <wa-card appearance="sunken" with-header with-footer>
       <Text slot="header">
-        <strong>Release readiness</strong>
+        <strong>Release Readiness</strong>
       </Text>
 
       <Text>
@@ -364,7 +364,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       </Row>
       <wa-divider />
       <Row vAlign="middle" hAlign="space-between">
-        <strong>Needs review</strong>
+        <strong>Needs Review</strong>
         <Text variant="span" tone="quiet" size="compact">
           3 components
         </Text>
@@ -397,7 +397,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           Overview
         </a>
         <Text variant="span" slot="main-header">
-          <strong>Component catalog</strong>
+          <strong>Component Catalog</strong>
         </Text>
         <Text>A compact application shell inside the preview canvas.</Text>
         <Text variant="span" size="compact" tone="quiet" slot="footer">
@@ -895,7 +895,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         >
           <div data-observer-target hidden>
             <SunkenPanel ariaLabel="Observed Intersection Target">
-              <strong>Observed intersection target</strong>
+              <strong>Observed Intersection Target</strong>
               <Text variant="span" tone="quiet" size="compact">
                 The helper emits when this surface enters or leaves its root.
               </Text>
@@ -910,7 +910,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-mutation-observer attr="data-revision" child-list>
         <div data-observer-target data-revision="0">
           <SunkenPanel ariaLabel="Observed Mutation Target">
-            <strong>Observed mutation target</strong>
+            <strong>Observed Mutation Target</strong>
             <Text variant="span" tone="quiet" size="compact" data-observer-copy>
               The helper reports attribute and child-list changes.
             </Text>
@@ -932,7 +932,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         Toggle Popover
       </wa-button>
       <wa-popover for="catalog-popover-target" placement="bottom">
-        <strong>Popover content</strong>
+        <strong>Popover Content</strong>
         <Text>Interactive content stays anchored to its trigger.</Text>
         <wa-button size="small">Action</wa-button>
       </wa-popover>
@@ -978,7 +978,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         <wa-resize-observer>
           <div data-observer-target>
             <SunkenPanel ariaLabel="Observed Resize Target">
-              <strong>Observed resize target</strong>
+              <strong>Observed Resize Target</strong>
               <Text variant="span" tone="quiet" size="compact">
                 The helper emits when this preview changes dimensions.
               </Text>

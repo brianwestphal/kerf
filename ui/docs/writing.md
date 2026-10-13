@@ -34,7 +34,9 @@ uses sentence style ("Changes sync when you reconnect").
 | Status lines, counts, and timestamps (`ToolbarText` status, `Badge`, `CornerStatus`)                | Sentence                     | Saved just now, 3 of 12 updated                        |
 
 Data is never recapitalized. Names that a person or a system supplies keep
-their own spelling: file names, ticket titles, user names, and tags. A content
+their own spelling: file names, ticket titles, user names, and tags. So do
+code identifiers shown as text, such as a prop value a specimen is labeled
+with (`danger`, `transparent`). A content
 item that shows such data (a ticket subject, a message) keeps it as written;
 only a title the interface itself names is title style. `ContentItem`'s own
 `title` prop is a native tooltip, so it is sentence style. Keep a content

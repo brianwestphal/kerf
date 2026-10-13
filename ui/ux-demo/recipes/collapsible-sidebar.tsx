@@ -155,11 +155,12 @@ export const createRecipe: RecipeFactory = (announce) => {
       <ContentItem>
         <List gap="2xs">
           <Text variant="span">
-            <strong>Narrow the window to a compact width</strong>
+            <strong>Compact Width</strong>
           </Text>
           <Text variant="span" tone="quiet" size="compact">
-            The rail and drawer start closed and open as a dismissable overlay:
-            a backdrop, Escape, and a trapped Tab ring, all managed by the wire.
+            Narrow the window to a compact width: the rail and drawer start
+            closed and open as a dismissable overlay, with a backdrop, Escape,
+            and a trapped Tab ring, all managed by the wire.
           </Text>
         </List>
       </ContentItem>

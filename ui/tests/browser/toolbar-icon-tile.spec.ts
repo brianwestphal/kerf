@@ -52,7 +52,9 @@ test('quiet icon tile tones preserve geometry and do not recolor interactive gro
       if (theme === 'dark')
         await page.locator('[data-action="toggle-theme"]').click();
       for (const tone of tones) {
-        const group = section.getByRole('group', { name: `${tone} icon tile` });
+        const group = section.getByRole('group', {
+          name: `${tone.charAt(0).toUpperCase() + tone.slice(1)} Icon Tile`,
+        });
         await expect(
           group.locator('button, wa-button, a, [tabindex]'),
         ).toHaveCount(0);
@@ -121,7 +123,7 @@ test('quiet icon tile tones preserve geometry and do not recolor interactive gro
   await expect(action).toBeFocused();
   await action.press('Enter');
   await expect(page.getByText('Pin requested', { exact: true })).toBeVisible();
-  const tile = section.getByRole('group', { name: 'brand icon tile' });
+  const tile = section.getByRole('group', { name: 'Brand Icon Tile' });
   const eligiblePaint = await tile.evaluate(
     (el) => globalThis.getComputedStyle(el).backgroundColor,
   );

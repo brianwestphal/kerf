@@ -70,13 +70,13 @@ export function ToolbarControlGroupDemo() {
                 single
                 tileTone={tileTone}
                 shape={shape}
-                label={`${tileTone} icon tile`}
+                label={`${tileTone.charAt(0).toUpperCase() + tileTone.slice(1)} Icon Tile`}
               >
                 <LucideIcon icon={Settings} name="settings" />
               </ToolbarControlGroup>
               <Text flush>
-                {tileTone.charAt(0).toUpperCase() + tileTone.slice(1)} heading
-                identity
+                {tileTone.charAt(0).toUpperCase() + tileTone.slice(1)} Heading
+                Identity
               </Text>
             </Row>
           ),

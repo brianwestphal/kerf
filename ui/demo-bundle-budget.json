@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 359500,
-  "measuredLargestJavaScriptGzip": 142272,
-  "measuredTotalJavaScriptGzip": 359498,
+  "totalJavaScriptGzip": 359600,
+  "measuredLargestJavaScriptGzip": 142263,
+  "measuredTotalJavaScriptGzip": 359521,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4019,6 +4019,22 @@
         "measuredTotalJavaScriptGzip": 359498,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 359500
+      }
+    },
+    {
+      "at": "2026-10-13T10:06:54.083Z",
+      "reason": "title-style demo specimen titles and icon-tile names (KF-BB99A9)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 142272,
+        "measuredTotalJavaScriptGzip": 359498,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 359500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 142263,
+        "measuredTotalJavaScriptGzip": 359521,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 359600
       }
     }
   ]
