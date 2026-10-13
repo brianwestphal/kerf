@@ -58,6 +58,17 @@ function output(
   );
 }
 
+/** The Lucide icon modules that contribute bytes to a bundle's output, sorted. */
+function lucideIconModules(result: Awaited<ReturnType<typeof build>>) {
+  const icons = new Set<string>();
+  for (const out of Object.values(result.metafile!.outputs))
+    for (const [input, { bytesInOutput }] of Object.entries(out.inputs)) {
+      const icon = /lucide\/dist\/esm\/icons\/([^/]+)\.m?js$/.exec(input)?.[1];
+      if (icon && bytesInOutput > 0) icons.add(icon);
+    }
+  return [...icons].sort();
+}
+
 /**
  * The `kui-*` classes a stylesheet's rules actually style: the rightmost
  * compound of each selector, ignoring `:has()` / `:not()` / `:is()` arguments.
@@ -293,6 +304,46 @@ describe('consumer bundle boundaries', () => {
     expect(css).not.toContain('.kui-list-action-row');
     expect(css).not.toContain('remify(');
     expect(inputs).not.toContain('@awesome.me/webawesome');
+  });
+
+  // `lucide` is an external peer, so a consumer's bundler tree-shakes it to the
+  // icons actually used. Inlining it into a dist chunk, a namespace import, or
+  // a dynamic icon-name lookup would silently ship all ~1,800 icons.
+  it('tree-shakes Lucide to the one icon a LucideIcon consumer uses', async () => {
+    const result = await bundle(
+      "import { LucideIcon } from '@kerfjs/ui/lucide-icon'; import { Star } from 'lucide'; console.log(String(LucideIcon({ icon: Star, name: 'star' }))); ",
+    );
+    expect(lucideIconModules(result)).toEqual(['star']);
+  });
+
+  // A chevron inlined into a dist chunk would contribute no lucide input here.
+  it('tree-shakes Lucide to the back chevron in a NavStack consumer', async () => {
+    const result = await bundle(
+      "import { NavStack } from '@kerfjs/ui/nav-stack'; console.log(NavStack);",
+    );
+    expect(lucideIconModules(result)).toEqual(['chevron-left']);
+  });
+
+  it('imports lucide from dist only as a bare, named-import specifier', async () => {
+    const dist = new URL('../../dist/', import.meta.url);
+    const files = (await readdir(dist, { recursive: true })).filter((file) =>
+      file.endsWith('.js'),
+    );
+    let lucideImports = 0;
+    for (const file of files) {
+      const source = await readFile(new URL(file, dist), 'utf8');
+      for (const match of source.matchAll(/['"](lucide[^'"]*)['"]/g)) {
+        expect(match[1], `${file}: lucide specifier`).toBe('lucide');
+        lucideImports += 1;
+      }
+      expect(source, `${file}: namespace import`).not.toMatch(
+        /import\s*\*\s*as\s+\w+\s+from\s*['"]lucide['"]/,
+      );
+      expect(source, `${file}: dynamic import`).not.toMatch(
+        /import\(\s*['"]lucide['"]\s*\)/,
+      );
+    }
+    expect(lucideImports).toBeGreaterThan(0);
   });
 
   it('keeps the list-reorder wiring a DOM-only module with no CSS or components', async () => {

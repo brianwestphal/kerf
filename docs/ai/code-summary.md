@@ -844,7 +844,9 @@ esbuild resolves into that subpath's source graph. The root barrel,
 optional Web Awesome stay external; explicit CSS subpaths and the deliberate
 full `styles.css` layer export compiled output, while source styles are not
 published. The package's consumer-bundle gate proves those CSS boundaries,
-root-barrel JavaScript tree-shaking, and that `Select` stays registration-free
+root-barrel JavaScript tree-shaking, Lucide tree-shaking (a `LucideIcon` + `Star`
+consumer ships only `star`, `NavStack` only `chevron-left`, and `dist/` imports
+`lucide` only as a bare named-import external), and that `Select` stays registration-free
 until `@kerfjs/ui/select/register` is imported. The root declaration barrel
 also exports the CSS-free `css-values` builders and brands; source and packed
 contracts keep lengths, flex shorthands, and colors distinct from one another
