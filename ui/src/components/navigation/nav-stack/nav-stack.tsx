@@ -195,8 +195,6 @@ export function NavStack({
               <>
                 {canPop && (
                   <ToolbarControlGroup
-                    appearance="borderless"
-                    shape="rounded"
                     content={backText ? 'mixed' : 'icon'}
                     size={topDensity === 'compact' ? 'compact' : 'default'}
                     single

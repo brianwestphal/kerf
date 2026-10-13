@@ -180,6 +180,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- The `NavStack` back control is now a contained, bordered `ToolbarControlGroup` (the default pill), so it reads as a real control instead of a bare chevron beside the title (`KF-TBRP2P`).
 - HTML and attribute escaping in the JSX runtime now runs one pass over a value instead of one `replace` pass per special character, about 2x faster on values that need escaping. Output is unchanged (`KF-3SHRTR`).
 
 - Rename the internal TabNavigator implementation folder, files, and focused test files from `tab-scaffold` to `tab-navigator`; public imports and rendered DOM hooks stay stable.

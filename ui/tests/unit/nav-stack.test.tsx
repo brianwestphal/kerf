@@ -151,7 +151,8 @@ describe('NavStack markup', () => {
     const leading = toolbar.querySelector('.kui-toolbar__leading')!;
     const [group, title] = Array.from(leading.children) as HTMLElement[];
     expect(group.dataset.component).toBe('toolbar-control-group');
-    expect(group.dataset.appearance).toBe('borderless');
+    expect(group.dataset.appearance).toBe('contained');
+    expect(group.dataset.shape).toBe('pill');
     expect(group.dataset.single).toBe('true');
     const back = group.querySelector<HTMLButtonElement>('[data-nav-back]')!;
     expect(back.getAttribute('aria-label')).toBe('Back');

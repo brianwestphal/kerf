@@ -79,7 +79,7 @@ and layout content.
 
 The top chrome is a real `Toolbar`, so it follows the same zone,
 group, and responsive rules as every other toolbar. Its leading zone holds the
-back control (a borderless `ToolbarControlGroup`, shown once the stack has
+back control (a contained, bordered `ToolbarControlGroup`, shown once the stack has
 depth), then `toolbar.leading`, then `toolbar.title` as a `ToolbarText`.
 `toolbar.center` fills the center zone and `toolbar.trailing` fills the
 trailing zone. Give each zone `ToolbarControlGroup`s or `ToolbarText`,

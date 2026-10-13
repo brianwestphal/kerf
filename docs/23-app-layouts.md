@@ -142,7 +142,7 @@ slides** (the pattern already used on several `~/Documents/hotsheet2` dialogs).
 
 - Top toolbar is standard; it can be **hidden** in rare cases, and show/hide is
   itself animated. Bottom toolbar is optional.
-- The top toolbar is a real `Toolbar`: the back control (a borderless
+- The top toolbar is a real `Toolbar`: the back control (a contained, bordered
   `ToolbarControlGroup`) and the title (`ToolbarText`) lead, followed by the
   active view's `toolbar.leading` groups; the view's `toolbar.center` and
   `toolbar.trailing` fill the other zones. `toolbarConfig` supplies defaults
