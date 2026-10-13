@@ -16,6 +16,10 @@ test-results/
 *.tsbuildinfo
 .DS_Store
 .mcp.json
+# Agent MCP configs carry machine-local paths (Hot Sheet store, local builds).
+.agents/mcp_config.json
+.codex/config.toml
+opencode.json
 .claude/settings.local.json
 .claude/worktrees
 # Retired HS1 runtime artifacts may remain locally after migration.

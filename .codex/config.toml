@@ -1,9 +1,0 @@
-[mcp_servers.hotsheet]
-args = [
-    "--path",
-    "/Users/westphal/Documents/kerf.hs2",
-]
-command = "hotsheet-mcp"
-
-[mcp_servers.hotsheet.env]
-HOTSHEET_ACTOR_ROLE = "ai"
