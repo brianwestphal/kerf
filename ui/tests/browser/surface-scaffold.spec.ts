@@ -737,8 +737,9 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
   await expect
     .poll(async () => (await chatGeometry(page)).footer.height)
     .toBeGreaterThan(geometry.footer.height);
-  const grown = await chatGeometry(page);
-  expect(footerGap(grown)).toBe(0);
+  // The footer grows first; the measured clearance follows on the next
+  // ResizeObserver delivery, so wait for it rather than sampling once.
+  await expect.poll(async () => footerGap(await chatGeometry(page))).toBe(0);
   await page.getByRole('button', { name: 'Send' }).click();
   await expect(
     page.locator('#catalog-chat-dialog [data-demo-chat-transcript]'),
