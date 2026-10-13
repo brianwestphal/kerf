@@ -115,7 +115,7 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'stack',
-        label: 'Standard gap and four dividers',
+        label: 'Standard Gap and Four Dividers',
         height: 190,
         render: () =>
           List({
@@ -143,7 +143,7 @@ export const COMPONENTS = {
       },
       {
         id: 'compact',
-        label: 'Compact, no gap',
+        label: 'Compact, No Gap',
         height: 150,
         render: () =>
           List({
@@ -156,7 +156,7 @@ export const COMPONENTS = {
               }),
               ListItem({
                 action: 'open-all',
-                label: 'All work',
+                label: 'All Work',
                 icon: glyph(ListIcon, 'list'),
               }),
             ],
@@ -179,7 +179,7 @@ export const COMPONENTS = {
       ...['neutral', 'brand', 'success', 'warning', 'danger'].map(
         (tileTone) => ({
           id: `icon-tile-${tileTone}`,
-          label: `${tileTone} quiet icon tile`,
+          label: `${tileTone[0].toUpperCase()}${tileTone.slice(1)} Quiet Icon Tile`,
           height: 56,
           render: () =>
             ToolbarControlGroup({
@@ -191,7 +191,7 @@ export const COMPONENTS = {
       ),
       {
         id: 'icon-buttons',
-        label: 'Bordered group of icon buttons',
+        label: 'Bordered Group of Icon Buttons',
         height: 56,
         render: () =>
           ToolbarControlGroup({
@@ -205,7 +205,7 @@ export const COMPONENTS = {
       },
       {
         id: 'borderless-single',
-        label: 'Borderless single control',
+        label: 'Borderless Single Control',
         height: 56,
         render: () =>
           ToolbarControlGroup({
@@ -216,7 +216,7 @@ export const COMPONENTS = {
       },
       {
         id: 'with-text',
-        label: 'Label text beside a control',
+        label: 'Label Text Beside a Control',
         height: 56,
         render: () =>
           ToolbarControlGroup({
@@ -229,7 +229,7 @@ export const COMPONENTS = {
       },
       {
         id: 'push-buttons',
-        label: 'Push-appearance buttons',
+        label: 'Push-Appearance Buttons',
         height: 56,
         render: () =>
           ToolbarControlGroup({
@@ -250,7 +250,7 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'default',
-        label: 'Icon and label',
+        label: 'Icon and Label',
         height: 52,
         render: () =>
           ListItem({
@@ -266,7 +266,7 @@ export const COMPONENTS = {
         height: 52,
         render: () =>
           ListItem({
-            label: 'Billing & plans',
+            label: 'Billing & Plans',
             icon: glyph(Settings, 'settings'),
             selected: true,
             action: 'select',
@@ -275,7 +275,7 @@ export const COMPONENTS = {
       },
       {
         id: 'trailing',
-        label: 'Trailing metadata',
+        label: 'Trailing Metadata',
         height: 52,
         render: () =>
           ListItem({
@@ -288,7 +288,7 @@ export const COMPONENTS = {
       },
       {
         id: 'multiline',
-        label: 'Multiline label (icon aligns to first line)',
+        label: 'Multiline Label (Icon Aligns to First Line)',
         height: 72,
         render: () =>
           ListItem({
@@ -316,11 +316,11 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'action',
-        label: 'Label with an action',
+        label: 'Label with an Action',
         height: 52,
         render: () =>
           ListHeader({
-            label: 'Team members',
+            label: 'Team Members',
             action: 'add-member',
             actionLabel: 'Add member',
             actionIcon: glyph(Plus, 'plus'),
@@ -328,24 +328,24 @@ export const COMPONENTS = {
       },
       {
         id: 'count',
-        label: 'Label with a count pill',
+        label: 'Label with a Count Pill',
         height: 52,
         render: () =>
           ListHeader({
-            label: 'Open tickets',
+            label: 'Open Tickets',
             count: 12,
             countLabel: '12 open tickets',
           }),
       },
       ...['xs', 'm', 'l', 'xl'].map((size) => ({
         id: `size-${size}`,
-        label: `Label size ${size}`,
+        label: `Label Size ${size.toUpperCase()}`,
         height: 52,
-        render: () => ListHeader({ label: 'Team members', size }),
+        render: () => ListHeader({ label: 'Team Members', size }),
       })),
       {
         id: 'inline-action',
-        label: 'Inline label with an action',
+        label: 'Inline Label with an Action',
         height: 52,
         render: () =>
           ListHeader({
@@ -358,14 +358,14 @@ export const COMPONENTS = {
       },
       {
         id: 'toggle-collapsed',
-        label: 'Disclosure toggle, collapsed',
+        label: 'Disclosure Toggle, Collapsed',
         height: 52,
         render: () =>
           ListHeader({ label: 'Archived', toggle: true, expanded: false }),
       },
       {
         id: 'toggle-expanded',
-        label: 'Disclosure toggle, expanded',
+        label: 'Disclosure Toggle, Expanded',
         height: 52,
         render: () =>
           ListHeader({
@@ -386,7 +386,7 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'default',
-        label: 'Primary with a trailing action',
+        label: 'Primary with a Trailing Action',
         height: 52,
         render: () =>
           ListActionRow({
@@ -401,7 +401,7 @@ export const COMPONENTS = {
       },
       {
         id: 'selected',
-        label: 'Selected primary',
+        label: 'Selected Primary',
         height: 52,
         render: () =>
           ListActionRow({
@@ -417,7 +417,7 @@ export const COMPONENTS = {
       },
       {
         id: 'trailing-menu',
-        label: 'Trailing overflow menu',
+        label: 'Trailing Overflow Menu',
         height: 52,
         render: () =>
           ListActionRow({
@@ -446,11 +446,11 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'details',
-        label: 'Key/value detail rows',
+        label: 'Key/Value Detail Rows',
         height: 180,
         render: () =>
           ValueTable({
-            label: 'Deployment details',
+            label: 'Deployment Details',
             children: [
               ValueTableRow({ label: 'Status', value: 'Live' }),
               ValueTableRow({
@@ -459,7 +459,7 @@ export const COMPONENTS = {
                 icon: glyph(Rocket, 'rocket'),
               }),
               ValueTableRow({ label: 'Region', value: 'us-east-1' }),
-              ValueTableRow({ label: 'Last deploy', value: '2 hours ago' }),
+              ValueTableRow({ label: 'Last Deploy', value: '2 hours ago' }),
             ],
           }),
       },
@@ -479,20 +479,20 @@ export const COMPONENTS = {
           StateBanner({
             tone: 'info',
             icon: glyph(CircleAlert, 'circle-alert'),
-            title: 'Draft not published',
+            title: 'Draft Not Published',
             detail: 'Changes are saved but only visible to your team.',
             action: raw(pushButton('Publish')),
           }),
       },
       {
         id: 'info-badge',
-        label: 'Info with badge',
+        label: 'Info with Badge',
         height: 76,
         render: () =>
           StateBanner({
             tone: 'info',
             icon: glyph(CircleAlert, 'circle-alert'),
-            title: 'Unanswered questions',
+            title: 'Unanswered Questions',
             badge: '1',
             action: raw(pushButton('Answer')),
           }),
@@ -505,7 +505,7 @@ export const COMPONENTS = {
           StateBanner({
             tone: 'success',
             icon: glyph(CircleCheck, 'circle-check'),
-            title: 'Deployment complete',
+            title: 'Deployment Complete',
             detail: 'production.example.com is serving the new build.',
           }),
       },
@@ -517,28 +517,28 @@ export const COMPONENTS = {
           StateBanner({
             tone: 'warning',
             icon: glyph(TriangleAlert, 'triangle-alert'),
-            title: 'Approaching your plan limit',
+            title: 'Approaching Your Plan Limit',
             detail: 'You have used 92% of this month’s build minutes.',
             action: raw(pushButton('Upgrade')),
           }),
       },
       {
         id: 'danger',
-        label: 'Danger (alert)',
+        label: 'Danger (Alert)',
         height: 76,
         render: () =>
           StateBanner({
             tone: 'danger',
             urgency: 'alert',
             icon: glyph(CircleAlert, 'circle-alert'),
-            title: 'Build failed',
+            title: 'Build Failed',
             detail: 'Step “test” exited with code 1.',
-            action: raw(pushButton('View log')),
+            action: raw(pushButton('View Log')),
           }),
       },
       {
         id: 'strip',
-        label: 'Strip (full-width band)',
+        label: 'Strip (Full-Width Band)',
         height: 76,
         render: () =>
           StateBanner({
@@ -561,24 +561,24 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'with-action',
-        label: 'Icon, title, detail, and action',
+        label: 'Icon, Title, Detail, and Action',
         height: 180,
         render: () =>
           EmptyState({
             icon: glyph(Inbox, 'inbox'),
-            title: 'No open tickets',
+            title: 'No Open Tickets',
             detail: 'When someone files a ticket it will show up here.',
-            action: raw(pushButton('New ticket')),
+            action: raw(pushButton('New Ticket')),
           }),
       },
       {
         id: 'filtered',
-        label: 'No results for a filter',
+        label: 'No Results for a Filter',
         height: 150,
         render: () =>
           EmptyState({
             icon: glyph(Filter, 'filter'),
-            title: 'No matches',
+            title: 'No Matches',
             detail: 'No tickets match the current filters.',
           }),
       },
@@ -592,19 +592,19 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'block',
-        label: 'Single block',
+        label: 'Single Block',
         height: 40,
         render: () => Skeleton({ width: em(16), height: em(1.5) }),
       },
       {
         id: 'lines',
-        label: 'Paragraph lines',
+        label: 'Paragraph Lines',
         height: 84,
         render: () => Skeleton({ lines: 3 }),
       },
       {
         id: 'avatar',
-        label: 'Circular (avatar)',
+        label: 'Circular (Avatar)',
         height: 56,
         render: () =>
           Skeleton({ width: em(3), height: em(3), radius: px(999) }),
@@ -625,7 +625,7 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'equal',
-        label: 'Equal-width rounded',
+        label: 'Equal-Width Rounded',
         height: 48,
         render: () =>
           SegmentedControl({
@@ -643,7 +643,7 @@ export const COMPONENTS = {
       },
       {
         id: 'pill-small',
-        label: 'Pill, small',
+        label: 'Pill, Small',
         height: 48,
         render: () =>
           SegmentedControl({
@@ -669,7 +669,7 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'color-palette',
-        label: 'Wrapping color palette',
+        label: 'Wrapping Color Palette',
         height: 96,
         render: () =>
           ChoiceChips({
@@ -727,7 +727,7 @@ export const COMPONENTS = {
       },
       {
         id: 'compact-icons',
-        label: 'Compact with icons',
+        label: 'Compact with Icons',
         height: 40,
         render: () =>
           ChoiceChips({
@@ -759,12 +759,12 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'workspace-tabs',
-        label: 'Selected tab among peers',
+        label: 'Selected Tab Among Peers',
         height: 56,
         render: () =>
           TabBar({
             id: 'files',
-            label: 'Open files',
+            label: 'Open Files',
             children: [
               AppTab({
                 id: 'readme',
@@ -801,12 +801,12 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'tokens',
-        label: 'Text with atomic tokens',
+        label: 'Text with Atomic Tokens',
         height: 60,
         render: () =>
           TokenSearchField({
             id: 'search',
-            label: 'Search tickets',
+            label: 'Search Tickets',
             query: 'payments is:open ',
             tokens: [{ value: 'is:open', label: 'is:open', offset: 9 }],
             placeholder: 'Search tickets',
@@ -814,7 +814,7 @@ export const COMPONENTS = {
       },
       {
         id: 'empty',
-        label: 'Empty, expanded',
+        label: 'Empty, Expanded',
         height: 60,
         render: () =>
           TokenSearchField({
@@ -840,7 +840,7 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'title-and-actions',
-        label: 'Title with a trailing group',
+        label: 'Title with a Trailing Group',
         height: 64,
         render: () =>
           Toolbar({
@@ -862,7 +862,7 @@ export const COMPONENTS = {
       },
       ...[600, 320].map((width) => ({
         id: `width-visibility-${width}`,
-        label: `Width visibility (${width}px)`,
+        label: `Width Visibility (${width}px)`,
         height: 64,
         wireToolbarVisibility: true,
         render: () =>
@@ -890,7 +890,7 @@ export const COMPONENTS = {
                     single: true,
                     label: 'More',
                     children: raw(
-                      iconButton(Columns3, 'columns-3', 'More actions'),
+                      iconButton(Columns3, 'columns-3', 'More Actions'),
                     ),
                   }),
                 ],
@@ -908,7 +908,7 @@ export const COMPONENTS = {
     variants: [
       {
         id: 'dark-tone',
-        label: 'Dark toolbar tone',
+        label: 'Dark Toolbar Tone',
         height: 40,
         render: () =>
           raw(
@@ -917,10 +917,10 @@ export const COMPONENTS = {
       },
       {
         id: 'large',
-        label: 'Large (title)',
+        label: 'Large (Title)',
         height: 40,
         render: () =>
-          ToolbarText({ text: 'Northstar migration', size: 'large' }),
+          ToolbarText({ text: 'Northstar Migration', size: 'large' }),
       },
       {
         id: 'default',
@@ -930,7 +930,7 @@ export const COMPONENTS = {
       },
       {
         id: 'small',
-        label: 'Small (label)',
+        label: 'Small (Label)',
         height: 32,
         render: () => ToolbarText({ text: 'Filters', size: 'small' }),
       },
