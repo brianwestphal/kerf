@@ -48,7 +48,7 @@ export function ListDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'list' }}>
       <CatalogExample
-        label="Scrollable application list"
+        label="Scrollable Application List"
         note="Pane owns the header/content/footer anatomy; the content List owns flex growth, scrolling, and a typed major gap."
       >
         <wa-card appearance="outlined">
@@ -139,7 +139,7 @@ export function ListDemo() {
                       disabled
                     />
                     <DemoContentItem
-                      title="Shared item geometry"
+                      title="Shared Item Geometry"
                       detail="The child owns its margin, border, and padding."
                       rootAttributes={{ 'data-content-item': '' }}
                     />
@@ -151,7 +151,7 @@ export function ListDemo() {
         </wa-card>
       </CatalogExample>
       <CatalogExample
-        label="Shared row dividers"
+        label="Shared Row Dividers"
         note="Scope the public divider color on a List so headers, items, and action rows share the same line."
         align="none"
         viewport={{ width: 'medium' }}
@@ -199,7 +199,7 @@ export function ListDemo() {
             label="Projects"
             icon={<LucideIcon icon={Folder} name="folder" />}
             trailingAction="log-settings"
-            trailingActionLabel="Project options"
+            trailingActionLabel="Project Options"
             trailingActionIcon={
               <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
             }
@@ -213,7 +213,7 @@ export function ListDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Physical-axis alignment"
+        label="Physical-Axis Alignment"
         note="List keeps its stretch-and-top defaults when omitted; explicit horizontal and vertical alignment use the same vocabulary as Row."
       >
         <wa-card appearance="sunken">
@@ -225,7 +225,7 @@ export function ListDemo() {
         </wa-card>
       </CatalogExample>
       <CatalogExample
-        label="Side-selectable insets"
+        label="Side-Selectable Insets"
         note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px, and text wins where both select a side."
       >
         <wa-card appearance="sunken">
@@ -239,7 +239,7 @@ export function ListDemo() {
         </wa-card>
       </CatalogExample>
       <CatalogExample
-        label="Surface behind a strip"
+        label="Surface Behind a Strip"
         note='surface="base" paints the page surface behind the stack and its insets, so a banner strip above a lowered work area does not show the sunken tint around it.'
         viewport={{ frame: 'solid', surface: 'lowered', overflow: 'hidden' }}
       >
@@ -253,13 +253,13 @@ export function ListDemo() {
         </List>
         <List controlInsets="tb">
           <DemoContentItem
-            title="Work area"
+            title="Work Area"
             detail="The lowered region continues below the strip."
           />
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Document inset"
+        label="Document Inset"
         note='inset="document" gives long reading content 24px block and 32px inline insets, narrowing to 16px inline on phones; rootAttributes can name the stack as a region.'
         viewport={{ frame: 'solid', surface: 'default', overflow: 'hidden' }}
       >
@@ -280,7 +280,7 @@ export function ListDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Divider between regions"
+        label="Divider Between Regions"
         note="dividerSides draws a 1px edge on the named physical sides. A navigation list beside a detail region takes a right divider, so the line marks the real boundary between the two."
         viewport={{
           width: 'compact',

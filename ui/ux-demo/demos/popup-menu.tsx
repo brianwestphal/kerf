@@ -22,11 +22,11 @@ import { popupContextAnchor, popupSortChoice } from './state.js';
 export function PopupMenuDemo() {
   return (
     <CatalogExampleStack
-      label="PopupMenu demo"
+      label="PopupMenu Demo"
       rootAttributes={{ 'data-demo': 'popup-menu' }}
     >
       <CatalogExample
-        label="Icon trigger in a toolbar group"
+        label="Icon Trigger in a Toolbar Group"
         note="A single group with nestedDropdown sizes the trigger as a toolbar button; menuInset sets the menu's inset. Hover or keyboard focus shows the label as a help tag."
         align="inline-control"
       >
@@ -42,7 +42,7 @@ export function PopupMenuDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Grouped commands with icons"
+        label="Grouped Commands with Icons"
         align="inline-control"
       >
         <ToolbarControlGroup
@@ -77,7 +77,7 @@ export function PopupMenuDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Trailing toolbar menu" align="none">
+      <CatalogExample label="Trailing Toolbar Menu" align="none">
         <Toolbar
           label="Ticket View"
           leading={<ToolbarText text="Tickets" size="xlarge" />}
@@ -97,7 +97,7 @@ export function PopupMenuDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Checked choices"
+        label="Checked Choices"
         note="Open the menu to compare a checked choice, an unchecked choice that keeps the checkmark space, and a plain command that keeps it too because its menu holds choices. Choosing a sort option updates the checks."
         align="text-trigger"
       >
@@ -121,7 +121,7 @@ export function PopupMenuDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Nested decisions"
+        label="Nested Decisions"
         note="The Decide submenu mixes a checked choice with plain commands, so every row keeps the check column and icons line up; the top level holds no choice and keeps the compact start."
         align="text-trigger"
       >
@@ -163,7 +163,7 @@ export function PopupMenuDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Context menu"
+        label="Context Menu"
         note="Right-click the row to open actions at the pointer, or use the adjacent action button."
         align="inline-control"
       >
@@ -198,7 +198,7 @@ export function PopupMenuDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Standalone in a popup surface"
+        label="Standalone in a Popup Surface"
         align="inline-control"
       >
         <PopupSurface inset="list-zero">

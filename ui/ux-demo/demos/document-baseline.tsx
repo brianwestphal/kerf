@@ -14,7 +14,7 @@ export function DocumentBaselineDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'document-baseline' }}>
       <CatalogExample
-        label="Full-height application root"
+        label="Full-Height Application Root"
         note="Put kui-app-root on the one direct mount container. The SplitView inside it fills the definite height with no application-owned height."
         align="none"
         viewport={{

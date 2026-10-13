@@ -235,7 +235,7 @@ export function WorkbenchDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'workbench' }}>
       <CatalogExample
-        label="Navigating ticket rail"
+        label="Navigating Ticket Rail"
         note="The right rail pushes from a collection to a detail with one toolbar per screen. Each screen keeps its own header above one scroll area; the standard rail toggle stays last and relocates while collapsed."
         align="none"
         viewport={{
@@ -275,7 +275,7 @@ export function WorkbenchDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Full desktop workspace"
+        label="Full Desktop Workspace"
         note="The shell owns panel tracks and separators; each region owns its content and scroll behavior. The center keeps a selected outline, while the right rail is a keyboard focus target."
         align="none"
         compactFallback="Workbench is a desktop-class shell. Use focused navigation and overlays instead at this viewport width."
@@ -314,7 +314,7 @@ export function WorkbenchDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Resizable panels"
+        label="Resizable Panels"
         note="Resizing is opt-in per panel, and wireWorkbench drives the separators. The panels leave the work area its minimum, 320 px wide and 120 px tall: resizing stops there, and the rails shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays by default, which start hidden, open one at a time over the editor and console, do not resize, and close from their own toolbar, on Escape, or on a click outside. A closed rail's toggle moves to the editor toolbar, on the rail's side. At phone widths an open rail fills the workbench less a 44 px strip that closes it."
         align="none"
         viewport={{
@@ -333,17 +333,17 @@ export function WorkbenchDemo() {
           main={
             <div class="kui-content">
               <DemoContentItem
-                title="Resize the panels"
+                title="Resize the Panels"
                 detail="Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size."
               />
               <ContentItem
                 interactive
                 action="workbench-demo-command"
                 itemId="underlay"
-                ariaLabel="Select underlying item"
+                ariaLabel="Select Underlying Item"
                 rootAttributes={{ 'data-demo-underlay': '' }}
               >
-                Select underlying item
+                Select Underlying Item
               </ContentItem>
             </div>
           }
@@ -357,7 +357,7 @@ export function WorkbenchDemo() {
                 name: 'navigator',
               },
             },
-            content: region('Files and symbols', '180–400 px wide'),
+            content: region('Files and Symbols', '180–400 px wide'),
             collapsed: workbenchNavigatorCollapsed.value,
             size: workbenchNavigatorSize.value,
             resizable: { min: 180, max: 400 },
@@ -422,7 +422,7 @@ export function WorkbenchDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Responsive overlay drawer"
+        label="Responsive Overlay Drawer"
         note="With responsiveOverlayAt, the drawer takes its own track beside a wide editor and overlays the bottom of the editor once the workbench is 704 px or narrower. There wireWorkbench starts it hidden and closes it from its own toolbar, on Escape, or on a click outside; while it is closed, its toggle trails the editor's bottom toolbar."
         align="none"
         viewport={{
@@ -443,7 +443,7 @@ export function WorkbenchDemo() {
             leading: <ToolbarText text="Ready" size="small" />,
           }}
           main={region(
-            'Narrow the workbench',
+            'Narrow the Workbench',
             'At 704 px or narrower the output drawer overlays the bottom of the editor instead of taking its own track.',
           )}
           bottomDrawer={{
@@ -454,7 +454,7 @@ export function WorkbenchDemo() {
               toggle: { action: 'toggle-workbench-output', name: 'output' },
             },
             content: region(
-              'Build output',
+              'Build Output',
               'Inline above 704 px; an overlay below it',
             ),
             collapsed: workbenchOutputCollapsed.value,
@@ -464,7 +464,7 @@ export function WorkbenchDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Controlled collapsed panels"
+        label="Controlled Collapsed Panels"
         note="Collapsed tracks snap to zero while their fixed-size content slides out. A closed rail's marked groups and toggle lead the editor toolbar, and its unmarked groups wait in the closed panel. With no editor bottom toolbar, a closed drawer's toggle floats in the editor's corner."
         align="none"
         compactFallback="Collapsed tracks preserve desktop workspace state; they are not a compact-layout substitute."
@@ -482,7 +482,7 @@ export function WorkbenchDemo() {
           label="Focused Editor Workbench"
           mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
           main={region(
-            'The app owns every collapsed flag',
+            'App-Owned Collapsed Flags',
             'A closed panel lends its always-available groups and its toggle to the editor toolbars.',
           )}
           leftRail={{

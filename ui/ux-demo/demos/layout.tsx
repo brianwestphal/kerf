@@ -15,7 +15,7 @@ export function LayoutDemo() {
       label="Semantic Layout Composition"
       rootAttributes={{ 'data-demo': 'layout' }}
     >
-      <CatalogExample label="Pane with child-owned content geometry">
+      <CatalogExample label="Pane with Child-Owned Content Geometry">
         <Pane
           contentElement="section"
           header={

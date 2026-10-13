@@ -45,7 +45,7 @@ export function ContentItemDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'content-item' }}>
       <CatalogExample
-        label="Unframed and framed items"
+        label="Unframed and Framed Items"
         note={
           <>
             Every item reserves the same 1px border, so an unframed item and a{' '}
@@ -58,7 +58,7 @@ export function ContentItemDemo() {
         <Pane label="Content Items">
           <ContentItem rootAttributes={{ 'data-demo-item': 'plain' }}>
             {itemCopy(
-              'Workspace details',
+              'Workspace Details',
               'An ordinary item sits directly on the surface.',
             )}
           </ContentItem>
@@ -67,14 +67,14 @@ export function ContentItemDemo() {
             rootAttributes={{ 'data-demo-item': 'framed' }}
           >
             {itemCopy(
-              'Unsaved changes',
+              'Unsaved Changes',
               'A framed item reads as visibly bounded without moving its content.',
             )}
           </ContentItem>
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Focusable item and outlined drop target"
+        label="Focusable Item and Outlined Drop Target"
         note="A static item may enter the tab order without becoming an action. outlined keeps the same ring visible for a drop target."
         align="none"
       >
@@ -84,12 +84,12 @@ export function ContentItemDemo() {
             outlined
             rootAttributes={{ 'data-demo-item': 'outlined' }}
           >
-            {itemCopy('Drop target', 'Drop a file here or focus this item.')}
+            {itemCopy('Drop Target', 'Drop a file here or focus this item.')}
           </ContentItem>
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Surface and semantic appearances"
+        label="Surface and Semantic Appearances"
         note="Transparent preserves the surrounding surface; surface adds the base fill. Semantic appearances coordinate the same status fills, borders, and foregrounds as StateBanner."
         align="none"
       >
@@ -113,7 +113,7 @@ export function ContentItemDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
-        label="Flush content and separate card actions"
+        label="Flush Content and Separate Card Actions"
         note="Flush removes block padding and borders. A rich card keeps its primary and secondary buttons as siblings inside a static item."
         align="none"
       >
@@ -139,7 +139,7 @@ export function ContentItemDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Transcript bubbles"
+        label="Transcript Bubbles"
         note={
           <>
             <code>bubble</code> fits an item to its message up to 80% of the
@@ -177,7 +177,7 @@ export function ContentItemDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Pill shape"
+        label="Pill Shape"
         note={
           <>
             <code>shape="pill"</code> selects the 22px radius that matches pill
@@ -197,7 +197,7 @@ export function ContentItemDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Interactive cards"
+        label="Interactive Cards"
         note="Enter and Space activate the focused card; selection keeps the reserved border geometry."
         align="none"
       >
@@ -208,11 +208,11 @@ export function ContentItemDemo() {
             itemId="line-42"
             selectionMode="toggle"
             selected={contentCardSelected.value}
-            ariaLabel="Line item 42"
+            ariaLabel="Line Item 42"
             title="Edit this quotation"
             rootAttributes={{ 'data-demo-item': 'toggle-card' }}
           >
-            {itemCopy('Line item 42', 'Select this item for review.')}
+            {itemCopy('Line Item 42', 'Select this item for review.')}
           </ContentItem>
           <ContentItem
             interactive
@@ -220,10 +220,10 @@ export function ContentItemDemo() {
             itemId="card-with-action"
             selectionMode="toggle"
             selected={false}
-            ariaLabel="Card with nested action"
+            ariaLabel="Card with Action"
             rootAttributes={{ 'data-demo-item': 'card-with-action' }}
           >
-            {itemCopy('Card with action', 'The inner button acts on its own.')}
+            {itemCopy('Card with Action', 'The inner button acts on its own.')}
             <wa-button appearance="plain" data-action="log-more">
               More Actions
             </wa-button>
@@ -233,10 +233,10 @@ export function ContentItemDemo() {
             action="toggle-content-card"
             itemId="locked-card"
             disabled
-            ariaLabel="Locked item"
+            ariaLabel="Locked Item"
             rootAttributes={{ 'data-demo-item': 'disabled-card' }}
           >
-            {itemCopy('Locked item', 'Unavailable while processing.')}
+            {itemCopy('Locked Item', 'Unavailable while processing.')}
           </ContentItem>
           <div role="listbox" aria-label="Documents">
             {(['document-a', 'document-b'] as const).map((id) => (
@@ -259,7 +259,7 @@ export function ContentItemDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Selectable rich cards"
+        label="Selectable Rich Cards"
         note="Each card is a focusable grid row. Its buttons and decision control keep independent actions; the app owns multi-selection."
         align="none"
       >
@@ -271,12 +271,12 @@ export function ContentItemDemo() {
               itemId={id}
               selectionMode="multiple"
               selected={contentCardSelections.value.includes(id)}
-              ariaLabel={id === 'demand-a' ? 'Demand line A' : 'Demand line B'}
+              ariaLabel={id === 'demand-a' ? 'Demand Line A' : 'Demand Line B'}
               rootAttributes={{ 'data-demo-item': id }}
             >
               <Row vAlign="middle" wrap>
                 {itemCopy(
-                  id === 'demand-a' ? 'Demand line A' : 'Demand line B',
+                  id === 'demand-a' ? 'Demand Line A' : 'Demand Line B',
                   'Review the quote and choose a decision.',
                 )}
                 <button type="button" data-action="log-card-primary">

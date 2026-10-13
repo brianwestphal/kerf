@@ -14,7 +14,7 @@ export function FilePickerDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'file-picker' }}>
       <CatalogExample
-        label="Browse trigger and drop zone"
+        label="Browse Trigger and Drop Zone"
         note="Choose files with Add or by clicking the zone, or drop files on the zone; wireFilePickers reports both and highlights the zone while dragging."
         viewport={{ width: 'medium' }}
       >

@@ -837,7 +837,7 @@ test.describe('resizable Workbench panels', () => {
     ).toBe(Math.round(width));
     // The overlay starts collapsed, so the editor is readable on arrival.
     await expect(left).toHaveAttribute('data-collapsed', 'true');
-    await expect(workbench.getByText('Resize the panels')).toBeVisible();
+    await expect(workbench.getByText('Resize the Panels')).toBeVisible();
     await expect
       .poll(() =>
         page.evaluate(
@@ -879,7 +879,7 @@ test.describe('resizable Workbench panels', () => {
     await expect(left).toHaveAttribute('data-collapsed', 'false');
     await left.getByText('Navigator').click();
     await expect(left).toHaveAttribute('data-collapsed', 'false');
-    const editor = workbench.getByText('Resize the panels');
+    const editor = workbench.getByText('Resize the Panels');
     // Click the strip the open rail leaves uncovered, at a point the page
     // actually hit-tests there: the workbench's corner can sit below the
     // viewport (how far the catalog pane is scrolled varies), and a click off
@@ -1481,7 +1481,7 @@ test('the responsive drawer example is inline when wide and a transient overlay 
   await expect
     .poll(async () => Math.round((await main.boundingBox())!.height))
     .toBe(Math.round(narrow.height));
-  await expect(workbench.getByText('Narrow the workbench')).toBeVisible();
+  await expect(workbench.getByText('Narrow the Workbench')).toBeVisible();
 
   // The editor's bottom toolbar opens it over the editor; its own toolbar
   // closes it, and focus returns to the toggle in the editor's bottom

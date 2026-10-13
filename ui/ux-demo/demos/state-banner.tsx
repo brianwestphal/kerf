@@ -42,7 +42,7 @@ export function StateBannerDemo() {
         ))}
       </>
       <CatalogExample
-        label="Scoped override"
+        label="Scoped Override"
         align="none"
         rootAttributes={{ 'data-demo-state-banner-override': '' }}
         viewport={{
@@ -60,7 +60,7 @@ export function StateBannerDemo() {
           icon={<LucideIcon icon={Check} name="check" />}
         />
       </CatalogExample>
-      <CatalogExample label="Stacked copy and action" align="none">
+      <CatalogExample label="Stacked Copy and Action" align="none">
         <StateBanner
           tone="warning"
           title="Migration Needs Review"
@@ -95,7 +95,7 @@ export function StateBannerDemo() {
       <>
         {specimens.map(({ tone, title }, index) => (
           <CatalogExample
-            label={`Placeholder with badge · ${tone}`}
+            label={`Placeholder with Badge · ${tone}`}
             align="none"
           >
             <StateBanner

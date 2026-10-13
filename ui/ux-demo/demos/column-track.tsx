@@ -36,7 +36,7 @@ export function ColumnTrackDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'column-track' }}>
       <CatalogExample
-        label="Scrolling board"
+        label="Scrolling Board"
         note="Equal columns never narrow below 250px; when they do not fit, the track scrolls sideways instead of crushing them."
         viewport={{ height: 'medium', frame: 'solid' }}
       >
@@ -45,7 +45,7 @@ export function ColumnTrackDemo() {
         </ColumnTrack>
       </CatalogExample>
       <CatalogExample
-        label="Paged board"
+        label="Paged Board"
         note='layout="paged" shows one near-full-width column per page; the next one peeks in and a swipe snaps to its start.'
         viewport={{ height: 'medium', width: 'compact', frame: 'solid' }}
       >

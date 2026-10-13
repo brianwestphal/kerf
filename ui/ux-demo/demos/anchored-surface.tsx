@@ -7,13 +7,13 @@ export function AnchoredSurfaceDemo() {
       label="AnchoredSurface Demo"
       rootAttributes={{ 'data-demo': 'anchored-surface' }}
     >
-      <CatalogExample label="Interactive help" align="inline-control">
+      <CatalogExample label="Interactive Help" align="inline-control">
         <button type="button" data-anchored-surface-trigger="element">
           Explain This Field
         </button>
       </CatalogExample>
       <CatalogExample
-        label="Pointer placement"
+        label="Pointer Placement"
         note="Right-click or press the button. The content stays in the viewport near the pointer."
         align="inline-control"
       >
@@ -21,7 +21,7 @@ export function AnchoredSurfaceDemo() {
           Open at Pointer
         </button>
       </CatalogExample>
-      <CatalogExample label="Help inside a modal" align="inline-control">
+      <CatalogExample label="Help Inside a Modal" align="inline-control">
         <button type="button" data-anchored-surface-open-modal>
           Open Dialog
         </button>

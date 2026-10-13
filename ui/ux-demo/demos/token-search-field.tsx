@@ -28,7 +28,7 @@ export function TokenSearchFieldDemo() {
       rootAttributes={{ 'data-demo': 'token-search-field' }}
     >
       <CatalogExample
-        label="Saved-view form fields"
+        label="Saved-View Form Fields"
         note="The query field shares label, hint, required, and control edges with Web Awesome input without a Toolbar."
         align="none"
         viewport={{ layout: 'grid', width: 'compact' }}
@@ -52,7 +52,7 @@ export function TokenSearchFieldDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Structured ticket search"
+        label="Structured Ticket Search"
         note="Text and atomic filters remain in one keyboard-focusable editor."
         align="inline-control"
       >
@@ -84,7 +84,7 @@ export function TokenSearchFieldDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Grammar assisted search"
+        label="Grammar Assisted Search"
         note="Type tag: or is: for suggestions below the field. Longer lists scroll inside a rounded popup. Committed tags leave the list; whitespace commits filters. Add release tag works directly or with an unfinished tag:rel prefix. Load saved search replaces the current draft."
         align="inline-control"
       >
@@ -165,7 +165,7 @@ export function TokenSearchFieldDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Adoption knobs"
+        label="Adoption Knobs"
         note={
           <>
             The <code>wireTokenSearchFields</code> hooks a real app reaches for:

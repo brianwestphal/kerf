@@ -161,7 +161,7 @@ export function ListActionRowDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Drag to reorder"
+        label="Drag to Reorder"
         note="Drag a row, or focus it and press Alt+Shift+Up or Down. The row under the pointer shows where the dragged rows land."
         align="none"
       >
@@ -184,7 +184,7 @@ export function ListActionRowDemo() {
           ))}
         </List>
       </CatalogExample>
-      <CatalogExample label="Dragging and insertion states" align="none">
+      <CatalogExample label="Dragging and Insertion States" align="none">
         <List>
           <ListActionRow
             label="Drops Above This Row"

@@ -13,7 +13,7 @@ export function GridDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'grid' }}>
       <CatalogExample
-        label="Two columns"
+        label="Two Columns"
         note="Related form fields divide the available width evenly with the standard homogeneous-group gap."
       >
         <Grid columns={2} gap="m">
@@ -22,7 +22,7 @@ export function GridDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
-        label="Four columns"
+        label="Four Columns"
         note="The same component accepts any positive column count; each minmax track stays equal even when content has different intrinsic widths."
       >
         <Grid columns={4} gap="xs">
@@ -32,7 +32,7 @@ export function GridDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
-        label="Independent gaps"
+        label="Independent Gaps"
         note="Column tracks touch while rows use the m spacing token."
       >
         <Grid
@@ -46,7 +46,7 @@ export function GridDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
-        label="Responsive form columns"
+        label="Responsive Form Columns"
         note="Equal tracks stay at least 376px wide, then collapse to one when a second track no longer fits."
         viewport={{ width: 'wide' }}
       >
@@ -56,7 +56,7 @@ export function GridDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
-        label="Text and control insets"
+        label="Text and Control Insets"
         note="Text insets add the full 17px content inset; control insets add 8px. When both select an edge, the text inset wins."
         rootAttributes={{ 'data-demo-section': 'grid-insets' }}
       >
@@ -71,7 +71,7 @@ export function GridDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
-        label="Flex participation"
+        label="Flex Participation"
         note="Like Row and List, Grid can explicitly grow inside a flex-owned parent without changing its equal-track contract."
       >
         <wa-card appearance="sunken">
@@ -83,7 +83,7 @@ export function GridDemo() {
         </wa-card>
       </CatalogExample>
       <CatalogExample
-        label="Sparse document tiles"
+        label="Sparse Document Tiles"
         note="Auto-fill keeps empty tracks, so a single document tile stays at the shared card width instead of stretching across the row."
         viewport={{ width: 'wide' }}
       >
@@ -92,7 +92,7 @@ export function GridDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
-        label="Selectable document tiles"
+        label="Selectable Document Tiles"
         note="Arrow keys follow the wrapped tile layout; Home and End reach its edges. Enter or Space selects a tile, while its button acts independently."
         viewport={{ width: 'wide' }}
       >

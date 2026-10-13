@@ -20,7 +20,7 @@ export function SkeletonDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="In composition"
+        label="In Composition"
         note={
           <>
             Value-bearing components accept a <code>placeholder</code> prop that

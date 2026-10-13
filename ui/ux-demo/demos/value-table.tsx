@@ -19,7 +19,7 @@ export function ValueTableDemo() {
           <ValueTableRow label="Styles" value="Explicit CSS subpaths" />
         </ValueTable>
       </CatalogExample>
-      <CatalogExample label="Compact metadata" align="none">
+      <CatalogExample label="Compact Metadata" align="none">
         <ValueTable label="Connection Metadata" density="compact">
           <ValueTableRow label="Host" value="localhost" />
           <ValueTableRow label="Port" value="5432" />
@@ -35,7 +35,7 @@ export function ValueTableDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Label column and stacking"
+        label="Label Column and Stacking"
         note='labelWidth={px(160)} gives labels a minimum column and the value the rest; stackBelow="compact" puts each value under its label while the table is narrower than 512px.'
         align="none"
       >

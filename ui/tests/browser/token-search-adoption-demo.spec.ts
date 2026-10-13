@@ -9,7 +9,7 @@ test('select-all deletion keeps a controlled search open before delayed frames a
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: /^\s*Adoption knobs\s*$/,
+        hasText: /^\s*Adoption Knobs\s*$/,
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
@@ -96,7 +96,7 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: /^\s*Adoption knobs\s*$/,
+        hasText: /^\s*Adoption Knobs\s*$/,
       }),
     })
     .locator('[data-component="token-search-field"]');
@@ -210,7 +210,7 @@ test('managed clear keeps immediate typing and later focus ownership before dela
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: /^\s*Adoption knobs\s*$/,
+        hasText: /^\s*Adoption Knobs\s*$/,
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');

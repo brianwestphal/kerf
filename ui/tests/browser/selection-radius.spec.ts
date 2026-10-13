@@ -39,7 +39,7 @@ async function screenshotShapeExamples(demo: Locator, path: string) {
     const rows = element.querySelectorAll<HTMLElement>(
       ':scope > [data-catalog-example]',
     );
-    const labels = ['Shape', 'Segmented choices'];
+    const labels = ['Shape', 'Segmented Choices'];
     if (
       Array.from(rows).filter((row) =>
         labels.includes(
@@ -87,7 +87,7 @@ test('keeps toolbar selections concentric with pill and rounded group shapes', a
   );
   const selectedView = demo
     .locator(':scope > [data-catalog-example]')
-    .filter({ has: page.getByText('Segmented choices', { exact: true }) })
+    .filter({ has: page.getByText('Segmented Choices', { exact: true }) })
     .getByRole('button', { name: 'List View', exact: true });
   const viewGroup = selectedView.locator(
     'xpath=ancestor::*[@data-component="toolbar-control-group"]',

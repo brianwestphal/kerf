@@ -9,7 +9,7 @@ export function IconToggleButtonDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'icon-toggle-button' }}>
       <CatalogExample
-        label="Standalone toggle"
+        label="Standalone Toggle"
         note="A native aria-pressed button with a single contained toolbar group's geometry, for content and pane footers. Click it to toggle."
         align="inline-control"
       >
@@ -21,7 +21,7 @@ export function IconToggleButtonDemo() {
           action="toggle-icon-toggle-demo"
         />
       </CatalogExample>
-      <CatalogExample label="Shapes and states" align="inline-control">
+      <CatalogExample label="Shapes and States" align="inline-control">
         <Row>
           <IconToggleButton
             icon={PanelRight}

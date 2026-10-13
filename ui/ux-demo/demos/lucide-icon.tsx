@@ -34,7 +34,7 @@ export function LucideIconDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Icon sizes"
+        label="Icon Sizes"
         note="Named xs/s/m/l/xl steps use 12/16/20/24/32px at a 16px root; a positive numeric pixel size converts to rem. The default remains 1em."
         align="glyph"
       >
@@ -48,7 +48,7 @@ export function LucideIconDemo() {
         </Row>
       </CatalogExample>
       <CatalogExample
-        label="Outline and solid"
+        label="Outline and Solid"
         note="Use the solid appearance for a selected or emphasized glyph; its fill follows the current text color."
         align="glyph"
       >
@@ -58,7 +58,7 @@ export function LucideIconDemo() {
         </Row>
       </CatalogExample>
       <CatalogExample
-        label="Icon colors"
+        label="Icon Colors"
         note="Use a semantic foreground token, or a custom CSS color for a specific application meaning. Omit color to inherit surrounding text."
         align="glyph"
       >
@@ -78,7 +78,7 @@ export function LucideIconDemo() {
         </Row>
       </CatalogExample>
       <CatalogExample
-        label="Inline with text"
+        label="Inline with Text"
         note="Set inline when an icon belongs in a sentence; it keeps the inherited 1em size and flows with the text."
         align="inline-control"
       >

@@ -19,7 +19,7 @@ export function FloatingToolbarDemo() {
       rootAttributes={{ 'data-demo': 'floating-toolbar' }}
     >
       <CatalogExample
-        label="Floating over content"
+        label="Floating over Content"
         note={
           <>
             A transparent, forced-dark toolbar floats over its container's
@@ -83,7 +83,7 @@ export function FloatingToolbarDemo() {
           </FloatingToolbar>
         ) : null}
       </CatalogExample>
-      <CatalogExample label="Inline restore cluster" align="none">
+      <CatalogExample label="Inline Restore Cluster" align="none">
         <FloatingToolbar label="Inline Drawer Restore" placement="inline">
           <ToolbarControlGroup label="Restore Drawer" single>
             <button type="button" aria-label="Restore Drawer">

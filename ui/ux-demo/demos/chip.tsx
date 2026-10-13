@@ -9,7 +9,7 @@ export function ChipDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'chip' }}>
       <CatalogExample
-        label="Removable tag"
+        label="Removable Tag"
         note="The native button delegates removal; the application owns the tag list."
         align="inline-control"
       >
@@ -51,11 +51,11 @@ export function ChipDemo() {
           Locked
         </Chip>
       </CatalogExample>
-      <CatalogExample label="Plain label" align="inline-control">
+      <CatalogExample label="Plain Label" align="inline-control">
         <Chip appearance="solid">Backlog</Chip>
       </CatalogExample>
       <CatalogExample
-        label="Icon and truncated label"
+        label="Icon and Truncated Label"
         note="Chip sizes a decorative leading icon and clips a long label inside its own width. The adjacent price stays whole. Hover the label for the full native title."
         align="inline-control"
         viewport={{ width: 'medium' }}

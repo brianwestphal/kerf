@@ -227,8 +227,8 @@ test('multi-select rich rows keep selection and nested controls independent', as
 }) => {
   await page.goto('/?component=content-item');
   const grid = page.getByRole('grid', { name: 'Demand Lines' });
-  const first = grid.getByRole('row', { name: 'Demand line A' });
-  const second = grid.getByRole('row', { name: 'Demand line B' });
+  const first = grid.getByRole('row', { name: 'Demand Line A' });
+  const second = grid.getByRole('row', { name: 'Demand Line B' });
   await expect(grid).toHaveAttribute('aria-multiselectable', 'true');
   await expect(first).toHaveAttribute('aria-selected', 'false');
   await expect(first.getByRole('gridcell')).toContainText('Open Quote');

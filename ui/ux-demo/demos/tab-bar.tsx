@@ -63,12 +63,12 @@ const overflowTabs = [
 export function TabBarDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'tab-bar' }}>
-      <CatalogExample label="Rail · intrinsic allocation" align="none">
+      <CatalogExample label="Rail · Intrinsic Allocation" align="none">
         <TabBar id="rail-tab-bar" label="Rail Tab Bar">
           {tabs()}
         </TabBar>
       </CatalogExample>
-      <CatalogExample label="Segmented · fill allocation" align="none">
+      <CatalogExample label="Segmented · Fill Allocation" align="none">
         <TabBar
           id="segmented-tab-bar"
           label="Segmented Tab Bar"
@@ -79,7 +79,7 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
-        label="Responsive icon-only segmented tabs"
+        label="Responsive Icon-Only Segmented Tabs"
         note="The tablist switches at 832px of its own width; each tab keeps its accessible name when its visible name hides."
         align="none"
       >
@@ -108,7 +108,7 @@ export function TabBarDemo() {
           />
         </TabBar>
       </CatalogExample>
-      <CatalogExample label="Inspector · adjacent and end actions" align="none">
+      <CatalogExample label="Inspector · Adjacent and End Actions" align="none">
         <TabBar
           id="inspector-tab-bar"
           label="Inspector Tab Bar"
@@ -133,7 +133,7 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
-        label="Project strip · primary action"
+        label="Project Strip · Primary Action"
         note="A standalone Web Awesome action keeps its own brand chrome at the far edge while tabs shrink and scroll."
         align="none"
       >
@@ -156,7 +156,7 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
-        label="Compact project tabs"
+        label="Compact Project Tabs"
         align="none"
         viewport={{
           tokens: {
@@ -191,7 +191,7 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
-        label="Overflow · scroll dividers"
+        label="Overflow · Scroll Dividers"
         note="When the tabs overflow, a divider marks each side of the strip with tabs scrolled out of view. wireScrollDividers reports the strip's scroll state; the tab bar draws the lines."
         align="none"
       >
@@ -217,7 +217,7 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
-        label="Pinned leading tab"
+        label="Pinned Leading Tab"
         note="The compact icon-only Project grid tab remains visible while labeled tabs scroll beneath it."
         align="none"
         viewport={{

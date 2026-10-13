@@ -21,7 +21,7 @@ export function LoadingSpinnerDemo() {
         <LoadingSpinner />
       </CatalogExample>
       <CatalogExample
-        label="Spinner sizes"
+        label="Spinner Sizes"
         note="Named xs/s/m/l/xl steps use 12/16/20/24/32px at a 16px root; a positive numeric pixel size converts to rem. The default remains 1em."
         align="glyph"
       >
@@ -35,7 +35,7 @@ export function LoadingSpinnerDemo() {
         </Row>
       </CatalogExample>
       <CatalogExample
-        label="Spinner colors"
+        label="Spinner Colors"
         note="Use a semantic foreground token or an application color. Omit color to inherit surrounding text."
         align="glyph"
       >

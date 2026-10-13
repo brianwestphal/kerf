@@ -8,7 +8,7 @@ test('long suggestions scroll in a rounded list and clear uses a pill highlight'
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: 'Grammar assisted search',
+        hasText: 'Grammar Assisted Search',
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
@@ -87,7 +87,7 @@ test('suggestions stay in the viewport and track their field while scrolling', a
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: 'Grammar assisted search',
+        hasText: 'Grammar Assisted Search',
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
@@ -189,7 +189,7 @@ test('a committed chip does not reclaim focus from the next form control', async
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: 'Grammar assisted search',
+        hasText: 'Grammar Assisted Search',
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
@@ -233,7 +233,7 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: 'Grammar assisted search',
+        hasText: 'Grammar Assisted Search',
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
@@ -298,7 +298,7 @@ test('an app helper commits an active grammar value outside suggestions', async 
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: 'Grammar assisted search',
+        hasText: 'Grammar Assisted Search',
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
@@ -348,7 +348,7 @@ test('model chip keys and plain-field clear keep the replacement editor focused'
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: 'Grammar assisted search',
+        hasText: 'Grammar Assisted Search',
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
@@ -398,7 +398,7 @@ test('an app helper replaces DOM-owned draft text from saved search state', asyn
     .locator('[data-demo="token-search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: 'Grammar assisted search',
+        hasText: 'Grammar Assisted Search',
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');

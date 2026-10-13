@@ -21,7 +21,7 @@ export function ListItemDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Divided list"
+        label="Divided List"
         note="Every row but the last divides after itself, so lines sit only between rows. Corners round only on the outer edges of the group, so a hovered or selected first, middle, or last row keeps the right shape."
         align="none"
         viewport={{ width: 'medium' }}
@@ -42,7 +42,7 @@ export function ListItemDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Filled command rows"
+        label="Filled Command Rows"
         note="Public color, fill, and border tokens let a list carry its own resting, hover, and selected tones without a wrapper."
         align="none"
         viewport={{
@@ -97,7 +97,7 @@ export function ListItemDemo() {
           rootAttributes={{ 'data-demo-drop-status': 'ready' }}
         />
       </CatalogExample>
-      <CatalogExample label="Native navigation link" align="none">
+      <CatalogExample label="Native Navigation Link" align="none">
         <ListItemLink
           href="#list-item-link-target"
           itemId="link"
@@ -107,7 +107,7 @@ export function ListItemDemo() {
         />
         <span id="list-item-link-target">List destination</span>
       </CatalogExample>
-      <CatalogExample label="External navigation link" align="none">
+      <CatalogExample label="External Navigation Link" align="none">
         <ListItemLink
           href="https://example.com"
           itemId="external-link"
@@ -132,7 +132,7 @@ export function ListItemDemo() {
           multiline
         />
       </CatalogExample>
-      <CatalogExample label="Spacious option and centered icon" align="none">
+      <CatalogExample label="Spacious Option and Centered Icon" align="none">
         <ListItem
           action="log-settings"
           itemId="spacious"
@@ -145,7 +145,7 @@ export function ListItemDemo() {
           multilineIconAlign="center"
         />
       </CatalogExample>
-      <CatalogExample label="Drop target" align="none">
+      <CatalogExample label="Drop Target" align="none">
         <ListItem
           action="log-projects"
           itemId="drag-target"
@@ -154,7 +154,7 @@ export function ListItemDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Drag to reorder"
+        label="Drag to Reorder"
         note="Drag a row, or focus it and press Alt+Shift+Up or Down. Press several rows to move them together."
         align="none"
       >
@@ -171,7 +171,7 @@ export function ListItemDemo() {
           ))}
         </List>
       </CatalogExample>
-      <CatalogExample label="Dragging and insertion states" align="none">
+      <CatalogExample label="Dragging and Insertion States" align="none">
         <List>
           <ListItem
             action="log-projects"

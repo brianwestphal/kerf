@@ -13,10 +13,10 @@ const overflowLabel =
 export function ToolbarTextDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'toolbar-text' }}>
-      <CatalogExample label="Extra large" align="inline-control">
+      <CatalogExample label="Extra Large" align="inline-control">
         <ToolbarText text="Workspace Settings" size="xlarge" />
       </CatalogExample>
-      <CatalogExample label="Fixed extra large" align="inline-control">
+      <CatalogExample label="Fixed Extra Large" align="inline-control">
         <ToolbarText
           text="Terminal Tickets"
           size="xlarge-fixed"
@@ -32,11 +32,11 @@ export function ToolbarTextDemo() {
       <CatalogExample label="Small" align="inline-control">
         <ToolbarText text="read-only" size="small" />
       </CatalogExample>
-      <CatalogExample label="Extra small" align="inline-control">
+      <CatalogExample label="Extra Small" align="inline-control">
         <ToolbarText text="rail heading" size="xsmall" />
       </CatalogExample>
       <CatalogExample
-        label="Dark toolbar"
+        label="Dark Toolbar"
         note="Use dark tone for a filename or title on a loud surface, matching dark control groups."
         viewport={{
           width: 'wide',
@@ -62,7 +62,7 @@ export function ToolbarTextDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Actionable title beside status"
+        label="Actionable Title Beside Status"
         note="Click or press Enter to request editing. The title keeps its content width until the center search needs space, then ellipsizes beside the chip."
         viewport={{ width: 'wide', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-text-action': '' }}
@@ -98,7 +98,7 @@ export function ToolbarTextDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Supporting text"
+        label="Supporting Text"
         note="A heading's quiet description sits under the title and starts at the title's text, with or without a leading icon tile."
         viewport={{ width: 'medium', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-text-description': '' }}
@@ -147,7 +147,7 @@ export function ToolbarTextDemo() {
         <ToolbarText text="" size="large" placeholder />
       </CatalogExample>
       <CatalogExample
-        label="Ellipsis (default)"
+        label="Ellipsis (Default)"
         note="One line, ellipsized when it does not fit."
         align="inline-control"
         viewport={{ layout: 'flex', width: 'text', frame: 'dashed' }}
@@ -169,7 +169,7 @@ export function ToolbarTextDemo() {
         <ToolbarText text={overflowLabel} size="large" wrap />
       </CatalogExample>
       <CatalogExample
-        label="Wrap, capped to 2 lines"
+        label="Wrap, Capped to 2 Lines"
         note={
           <>
             <code>maxLines</code> caps the wrap and ellipsizes past it.

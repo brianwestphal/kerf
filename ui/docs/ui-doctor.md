@@ -159,6 +159,8 @@ covers these string literals:
 - `ToolbarText` titles: text with `headingLevel`, a large size, or in a
   toolbar or panel `title`, `header`, or (unless small) `leading` slot;
 - `ListHeader`, `ListActionRow`, `SplitButton`, and `Combobox` labels;
+- `CatalogExample` and `CatalogExampleStack` labels, which render as a
+  `ListHeader` heading (their `note` stays sentence style and is not read);
 - `EmptyState` and `StateBanner` titles;
 - `PopupMenu` trigger text and item and heading labels, including submenus
   declared in the same file;
@@ -184,6 +186,9 @@ The check is deliberately one-directional, to keep false positives rare:
   even though the rule gives those title style too.
 - It skips tokens containing digits, code, paths, or URLs, and lowercase-led
   brands such as iOS and macOS.
+- It keeps a minor word inside a longer hyphenated compound lowercase, as
+  between separate words ("Edge-to-Edge", "Up-to-Date").
+- It does not read `ContentItem` `title`, which is a native tooltip.
 
 Suppress `KUI-D040` for a file whose copy is a lowercase brand or product
 name.

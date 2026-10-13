@@ -19,7 +19,7 @@ export function ResizeDemo() {
       rootAttributes={{ 'data-demo': 'resize' }}
     >
       <CatalogExample
-        label="Horizontal resize"
+        label="Horizontal Resize"
         note="Use the handle with a pointer, arrow keys, Home, or End."
         viewport={{
           layout: 'flex',
@@ -43,7 +43,7 @@ export function ResizeDemo() {
         >
           <Pane>
             <DemoContentItem
-              title="Catalog panel"
+              title="Catalog Panel"
               // Word joiners and a no-break space keep the width range on one line.
               detail={
                 'Navigation or inspector content, 180\u2060\u2013\u2060420\u00a0px wide.'
@@ -53,7 +53,7 @@ export function ResizeDemo() {
         </ResizableRegion>
       </CatalogExample>
       <CatalogExample
-        label="Popup from a clipped drawer"
+        label="Popup from a Clipped Drawer"
         note="Opening a menu releases the drawer's clipping and raises its popup layer without changing contentOverflow or rerendering the region."
         viewport={{
           layout: 'flex',
@@ -84,7 +84,7 @@ export function ResizeDemo() {
         </ResizableRegion>
       </CatalogExample>
       <CatalogExample
-        label="Collapsed region restore"
+        label="Collapsed Region Restore"
         note="The region places its restore control in a safe-area-aware top corner."
         viewport={{
           layout: 'flex',

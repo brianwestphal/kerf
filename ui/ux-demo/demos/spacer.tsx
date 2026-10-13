@@ -14,7 +14,7 @@ export function SpacerDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'spacer' }}>
       <CatalogExample
-        label="Named dimensions"
+        label="Named Dimensions"
         viewport={{ width: 'compact' }}
         note="Width and height accept the finite UI spacing scale or a typed CssLength."
       >
@@ -27,7 +27,7 @@ export function SpacerDemo() {
         </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
-        label="Flexible space"
+        label="Flexible Space"
         viewport={{ width: 'compact' }}
         note="flex fills the available space along a flex parent's main axis while the neighboring controls keep their natural size."
       >
@@ -40,7 +40,7 @@ export function SpacerDemo() {
         </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
-        label="Vertical space"
+        label="Vertical Space"
         note="A height-only spacer separates vertical content without introducing semantics or a wrapper gap policy."
       >
         <wa-card appearance="sunken">

@@ -13,7 +13,7 @@ export function SunkenPanelDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'sunken-panel' }}>
       <CatalogExample
-        label="Rounded application work area"
+        label="Rounded Application Work Area"
         note="The default shape uses the shared rounded-rectangle radius."
       >
         <SunkenPanel ariaLabel="Release Workspace">
@@ -25,7 +25,7 @@ export function SunkenPanelDemo() {
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample
-        label="Focusable outlined surface"
+        label="Focusable Outlined Surface"
         note="tabIndex makes the surface a keyboard stop; outlined can keep its ring visible for a selected or drop-target state."
       >
         <SunkenPanel ariaLabel="Selected Work Surface" tabIndex={0} outlined>
@@ -33,7 +33,7 @@ export function SunkenPanelDemo() {
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample
-        label="Square-corner content stack"
+        label="Square-Corner Content Stack"
         note="Square corners fit a flush or edge-to-edge application area."
       >
         <SunkenPanel shape="square">
@@ -43,7 +43,7 @@ export function SunkenPanelDemo() {
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample
-        label="Panel fills a work area"
+        label="Panel Fills a Work Area"
         note="fill takes the height of a definite-height frame; flex takes the remaining space in a flex column. Neither creates another scroller."
         align="none"
         viewport={{
@@ -64,7 +64,7 @@ export function SunkenPanelDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Direct frame fill"
+        label="Direct Frame Fill"
         note="A panel can fill a definite-height frame without an application wrapper."
         align="none"
         viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
@@ -74,7 +74,7 @@ export function SunkenPanelDemo() {
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample
-        label="Nested surfaces"
+        label="Nested Surfaces"
         note="The shared translucent lowered color composites naturally at every depth. No per-layer styling is needed."
       >
         <SunkenPanel ariaLabel="First Layer">
@@ -89,7 +89,7 @@ export function SunkenPanelDemo() {
         </SunkenPanel>
       </CatalogExample>
       <CatalogExample
-        label="Pane and nested panel"
+        label="Pane and Nested Panel"
         viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
       >
         <Pane appearance="sunken" label="Layered Pane">
@@ -98,7 +98,7 @@ export function SunkenPanelDemo() {
           </SunkenPanel>
         </Pane>
       </CatalogExample>
-      <CatalogExample label="Web Awesome nested surfaces">
+      <CatalogExample label="Web Awesome Nested Surfaces">
         <wa-card appearance="sunken">
           <Text>Web Awesome card</Text>
           <wa-details appearance="sunken" summary="Nested Details" open>

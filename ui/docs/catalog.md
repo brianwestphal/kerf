@@ -142,6 +142,11 @@ entry's `tags` array.
   classes. A supplied `label` also names the row's `section`, so each specimen
   is a named region that assistive technology and
   `getByRole("region", { name })` can address.
+- Example and stack labels are headings, so they use title style ("Heading
+  Identity Stays Whole", "Icon Trigger in a Toolbar Group"); the `note` that
+  explains a specimen stays sentence style. Write a label as a name, not a
+  sentence. See [Writing interface copy](./writing.md#capitalization);
+  `kerf-ui-doctor` reports a sentence-case label as `KUI-D040`.
 - Focused demos do not import local stylesheets, use inline `style`, or invent
   styling-only `demo-*` classes. Prefer a public Kerf component, then a Web
   Awesome surface when Kerf has no equivalent, then ordinary semantic HTML.
@@ -174,7 +179,7 @@ import { CatalogExample, CatalogExampleStack } from "@kerfjs/ui/catalog";
 
 const buttonPreview = (
   <CatalogExampleStack
-    label="Button variants"
+    label="Button Variants"
     rootAttributes={{ "data-demo": "button" }}
   >
     <CatalogExample label="Icon" note="A bare glyph." align="glyph">
@@ -183,7 +188,7 @@ const buttonPreview = (
     <CatalogExample label="Control" align="inline-control">
       <SegmentedControl id="view" label="View" value="list" choices={choices} />
     </CatalogExample>
-    <CatalogExample label="Authoring note" note="Explain the specimen below.">
+    <CatalogExample label="Authoring Note" note="Explain the specimen below.">
       <p>Use the public helper contract.</p>
     </CatalogExample>
   </CatalogExampleStack>
@@ -370,23 +375,23 @@ const sections: CatalogSection[] = [
 const renderers: Record<string, () => SafeHtml> = {
   button: () => (
     <CatalogExampleStack
-      label="Button states"
+      label="Button States"
       rootAttributes={{ "data-demo": "button" }}
     >
       <CatalogExample label="Default" align="inline-control">
         <Button label="Save" />
       </CatalogExample>
-      <CatalogExample label="Authoring note" note="Explain the specimen below.">
+      <CatalogExample label="Authoring Note" note="Explain the specimen below.">
         <p>The application owns product copy and actions.</p>
       </CatalogExample>
     </CatalogExampleStack>
   ),
   "profile-form": () => (
     <CatalogExampleStack
-      label="Profile form composition"
+      label="Profile Form Composition"
       rootAttributes={{ "data-demo": "profile-form" }}
     >
-      <CatalogExample label="Complete composition">
+      <CatalogExample label="Complete Composition">
         <ProfileForm />
       </CatalogExample>
     </CatalogExampleStack>

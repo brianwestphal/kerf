@@ -1004,7 +1004,7 @@ export const webAwesomeComponentDemos: Record<
     entry.id,
     () => (
       <CatalogExampleStack
-        label={`${entry.name} Web Awesome demo`}
+        label={`${entry.name} Web Awesome Demo`}
         rootAttributes={{ 'data-demo': entry.id }}
       >
         <CatalogExample

@@ -90,7 +90,7 @@ export function CollapsiblePanelDemo() {
       rootAttributes={{ 'data-demo': 'collapsible-panel' }}
     >
       <CatalogExample
-        label="Left rail"
+        label="Left Rail"
         note="The panel owns its width and trailing separator; its child owns internal content geometry."
         viewport={{ layout: 'grid', width: 'full', height: 'short' }}
       >
@@ -109,7 +109,7 @@ export function CollapsiblePanelDemo() {
         </CollapsiblePanel>
       </CatalogExample>
       <CatalogExample
-        label="Right rail"
+        label="Right Rail"
         note="Right-side panels use the mirrored separator and slide direction."
         viewport={{ layout: 'grid', width: 'full', height: 'short' }}
       >
@@ -126,7 +126,7 @@ export function CollapsiblePanelDemo() {
         </CollapsiblePanel>
       </CatalogExample>
       <CatalogExample
-        label="Bottom drawer"
+        label="Bottom Drawer"
         note="A drawer owns its top separator and controlled height."
       >
         <CollapsiblePanel
@@ -136,13 +136,13 @@ export function CollapsiblePanelDemo() {
           label="Build Output"
         >
           {content(
-            'Build output',
+            'Build Output',
             'Use Workbench when several panels form one shell.',
           )}
         </CollapsiblePanel>
       </CatalogExample>
       <CatalogExample
-        label="Toolbar relocation"
+        label="Toolbar Relocation"
         note="The rail composes its toolbar: groups use leading, center, and trailing zones, with the standard toggle last. While it is collapsed, CollapsiblePanelRelocated puts groups marked relocateOnCollapse and the toggle at the start of the editor toolbar."
         viewport={{
           layout: 'grid',
@@ -189,7 +189,7 @@ export function CollapsiblePanelDemo() {
               }
             >
               {content(
-                'The app owns the collapsed flag',
+                'App-Owned Collapsed Flag',
                 'Show the navigator from the editor toolbar; hide it from its own toolbar.',
               )}
             </Pane>
@@ -197,7 +197,7 @@ export function CollapsiblePanelDemo() {
         </Row>
       </CatalogExample>
       <CatalogExample
-        label="Restore control"
+        label="Restore Control"
         note="With no bottom toolbar to hold it, a collapsed drawer's toggle floats in a corner of its container; wireSidebar hands focus between the two toggles."
         viewport={{
           layout: 'flex-column',
@@ -218,7 +218,7 @@ export function CollapsiblePanelDemo() {
           }
         >
           {content(
-            'The app owns the collapsed flag',
+            'App-Owned Collapsed Flag',
             'Hide the console from its own toolbar; restore it from the corner control.',
           )}
         </Pane>
@@ -241,7 +241,7 @@ export function CollapsiblePanelDemo() {
           }
         >
           {content(
-            'Build finished',
+            'Build Finished',
             'The drawer stays mounted while it is collapsed.',
           )}
         </CollapsiblePanel>

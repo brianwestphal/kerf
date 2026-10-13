@@ -16,7 +16,7 @@ export function FeedbackDemo() {
       label="Feedback Composition"
       rootAttributes={{ 'data-demo': 'feedback' }}
     >
-      <CatalogExample label="Persistent, empty, and loading feedback">
+      <CatalogExample label="Persistent, Empty, and Loading Feedback">
         <List gap="m">
           <StateBanner
             tone={tone}

@@ -109,7 +109,7 @@ export function SurfaceScaffoldDemo() {
       label="Surface Scaffold Demo"
       rootAttributes={{ 'data-demo': 'surface-scaffold' }}
     >
-      <CatalogExample label="Medium dialog" align="inline-control">
+      <CatalogExample label="Medium Dialog" align="inline-control">
         <DialogSurface
           size="medium"
           presentation="modal"
@@ -137,7 +137,7 @@ export function SurfaceScaffoldDemo() {
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
-        label="Viewport-bounded modal"
+        label="Viewport-Bounded Modal"
         note="An 832px preferred width overrides the large preset; an 8px gutter and viewport height cap keep it on phones."
         align="inline-control"
       >
@@ -184,7 +184,7 @@ export function SurfaceScaffoldDemo() {
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
-        label="Capped modal"
+        label="Capped Modal"
         note="A 480px preferred width and typed 360px maximum stay viewport-bounded while the footer remains outside the scrolling body."
         align="inline-control"
       >
@@ -227,7 +227,7 @@ export function SurfaceScaffoldDemo() {
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
-        label="Filled list-detail modal"
+        label="Filled List-Detail Modal"
         note='height gives the modal a definite, viewport-bounded size and bodyLayout="fill" hands the whole body to one SplitView.'
         align="inline-control"
       >
@@ -250,7 +250,7 @@ export function SurfaceScaffoldDemo() {
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
-        label="Chat dialog"
+        label="Chat Dialog"
         note='footerPresentation="floating" lays the composer over the body, 8px from the panel edges so it aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills and scrolls above the composer.'
         align="inline-control"
       >
@@ -312,7 +312,7 @@ export function SurfaceScaffoldDemo() {
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
-        label="Non-modal popover dialog"
+        label="Non-Modal Popover Dialog"
         note="A native popover: it light-dismisses on Escape or a press outside and leaves the page interactive."
         align="inline-control"
       >
@@ -333,7 +333,7 @@ export function SurfaceScaffoldDemo() {
         </PopoverDialogSurface>
       </CatalogExample>
       <CatalogExample
-        label="Embedded popover dialog"
+        label="Embedded Popover Dialog"
         note='presentation="embedded" shows the same surface in flow, for a catalog or an inline preview.'
         align="inline-control"
       >
@@ -347,7 +347,7 @@ export function SurfaceScaffoldDemo() {
           {projectSplit('catalog-embedded-dialog-split')}
         </PopoverDialogSurface>
       </CatalogExample>
-      <CatalogExample label="Zero-inset list popup" align="inline-control">
+      <CatalogExample label="Zero-Inset List Popup" align="inline-control">
         <PopupSurface inset="list-zero">
           <PopupMenu
             text="Choose View"

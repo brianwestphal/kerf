@@ -28,7 +28,7 @@ export function DisclosureArrowDemo() {
         </button>
       </CatalogExample>
       <CatalogExample
-        label="Replacement icon"
+        label="Replacement Icon"
         note="A replacement glyph, closed left and open up."
         align="inline-control"
       >

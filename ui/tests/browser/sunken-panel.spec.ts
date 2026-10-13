@@ -31,7 +31,7 @@ test('SunkenPanel owns one lowered 8px inset and vertical content stack', async 
 
   const unnamed = page
     .locator('[data-demo="sunken-panel"] [data-catalog-example]')
-    .filter({ hasText: 'Square-corner content stack' })
+    .filter({ hasText: 'Square-Corner Content Stack' })
     .locator('[data-component="sunken-panel"]');
   await expect(unnamed).not.toHaveAttribute('role');
   await expect(unnamed).not.toHaveAttribute('aria-label');

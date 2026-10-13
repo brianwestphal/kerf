@@ -11,7 +11,7 @@ export function IconButtonDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'icon-button' }}>
       <CatalogExample
-        label="Beside a field"
+        label="Beside a Field"
         note="A square one control height on each side, aligned with the field below its label."
         viewport={{ width: 'medium' }}
       >
@@ -25,7 +25,7 @@ export function IconButtonDemo() {
           />
         </ListInsetControl>
       </CatalogExample>
-      <CatalogExample label="Appearances and variants" align="inline-control">
+      <CatalogExample label="Appearances and Variants" align="inline-control">
         <Row>
           <IconButton
             icon={RefreshCw}

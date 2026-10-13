@@ -18,7 +18,7 @@ export function ListInsetControlDemo() {
       rootAttributes={{ 'data-demo': 'list-inset-control' }}
     >
       <CatalogExample
-        label="Inset a self-bordered control"
+        label="Inset a Self-Bordered Control"
         note={
           <>
             A control that owns its border and padding but no outer margin (an
@@ -46,7 +46,7 @@ export function ListInsetControlDemo() {
         </DemoListInsetPane>
       </CatalogExample>
       <CatalogExample
-        label="Selected physical sides"
+        label="Selected Physical Sides"
         note="The sides prop defaults to all sides and can select any canonical top/right/bottom/left combination."
         align="none"
         viewport={{ width: 'medium' }}
@@ -61,7 +61,7 @@ export function ListInsetControlDemo() {
         </DemoListInsetPane>
       </CatalogExample>
       <CatalogExample
-        label="Stretch any self-bordered control"
+        label="Stretch Any Self-Bordered Control"
         note="A Select, a text input, and a button each fill the inset row. Several children in one inset share the row with an 8px gap."
         align="none"
         viewport={{ width: 'medium' }}

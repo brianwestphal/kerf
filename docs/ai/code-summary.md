@@ -685,7 +685,7 @@ is reported.
 stylesheet filenames, and foreign component selectors (`KUI-D030`–`KUI-D032`).
 The `copy-capitalization-checks.mjs` pass (`KUI-D040`, warning) reads string
 literals passed to known title-style label props: ToolbarText titles,
-ListHeader, PopupMenu items, choices, tabs, empty/banner titles, button text,
+ListHeader, CatalogExample / CatalogExampleStack labels, PopupMenu items, choices, tabs, empty/banner titles, button text,
 FieldLabel, and the accessible names of icon-only controls (IconButton /
 IconToggleButton / PopupMenu `label`, SplitButton `optionsLabel`,
 TokenSearchField `clearLabel`, an icon-only button's `aria-label`). It

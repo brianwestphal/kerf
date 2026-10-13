@@ -22,7 +22,7 @@ export function ApplicationTabsDemo() {
       rootAttributes={{ 'data-demo': 'application-tabs' }}
     >
       <CatalogExample
-        label="Reorderable application tabs"
+        label="Reorderable Application Tabs"
         viewport={{ width: 'medium' }}
       >
         <wa-card

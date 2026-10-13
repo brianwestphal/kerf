@@ -129,7 +129,7 @@ export function BadgeDemo() {
         <Badge tone="danger" size="dot" label="New activity" />
       </CatalogExample>
       <CatalogExample
-        label="Icon and title"
+        label="Icon and Title"
         note="A decorative leading icon sits 4px before the text; title explains the badge on hover, and rootAttributes carries app identity."
         align="inline-control"
       >
@@ -143,13 +143,13 @@ export function BadgeDemo() {
           82%
         </Badge>
       </CatalogExample>
-      <CatalogExample label="Category tag" align="inline-control">
+      <CatalogExample label="Category Tag" align="inline-control">
         <Badge tone="pop" appearance="outline" shape="rounded">
           Design
         </Badge>
       </CatalogExample>
       <CatalogExample
-        label="Long text"
+        label="Long Text"
         note="maxWidth caps a badge holding app-supplied text and truncates it with an ellipsis; the full text is the hover title."
         align="inline-control"
       >
@@ -161,7 +161,7 @@ export function BadgeDemo() {
           customer-escalation-priority-review
         </Badge>
       </CatalogExample>
-      <CatalogExample label="Neutral metadata" align="inline-control">
+      <CatalogExample label="Neutral Metadata" align="inline-control">
         <Badge>Draft</Badge>
       </CatalogExample>
     </CatalogExampleStack>

@@ -33,7 +33,7 @@ export function FramedListDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'framed-list' }}>
       <CatalogExample
-        label="Settings rows"
+        label="Settings Rows"
         note="One rounded frame with dividers between rows of arbitrary content; the highlighted row is the one being edited."
         viewport={{ width: 'medium' }}
       >
@@ -70,7 +70,7 @@ export function FramedListDemo() {
         </FramedList>
       </CatalogExample>
       <CatalogExample
-        label="Base surface"
+        label="Base Surface"
         align="none"
         viewport={{ width: 'medium', surface: 'lowered', frame: 'solid' }}
       >

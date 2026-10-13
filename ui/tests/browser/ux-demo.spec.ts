@@ -520,7 +520,7 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
     await page.locator('wa-button[aria-label="Favorite View"]').hover();
     await page
       .locator('.kui-catalog-example', {
-        has: page.locator('.kui-list-header:has-text("Button group")'),
+        has: page.locator('.kui-list-header:has-text("Button Group")'),
       })
       .locator('[data-component="toolbar-control-group"]')
       .screenshot({ path: 'test-results/button-group-highlight.png' });
@@ -615,7 +615,7 @@ test('the ToolbarControlGroup Demo shape toggle switches each shape-controlled s
     .filter({
       hasNot: page
         .locator('[data-catalog-example-label]')
-        .filter({ hasText: /^(Shape|Wrapping zone sizing)$/ }),
+        .filter({ hasText: /^(Shape|Wrapping Zone Sizing)$/ }),
     })
     .locator('.kui-toolbar-control-group');
   const shapeControlledCount = await shapeControlledGroups.count();
@@ -995,16 +995,16 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
     /Meaningful/,
   );
   await expect(examples.nth(2).locator('.kui-list-header')).toHaveText(
-    /Icon sizes/,
+    /Icon Sizes/,
   );
   await expect(examples.nth(3).locator('.kui-list-header')).toHaveText(
-    /Outline and solid/,
+    /Outline and Solid/,
   );
   await expect(examples.nth(4).locator('.kui-list-header')).toHaveText(
-    /Icon colors/,
+    /Icon Colors/,
   );
   await expect(examples.nth(5).locator('.kui-list-header')).toHaveText(
-    /Inline with text/,
+    /Inline with Text/,
   );
   await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(6);
   const alignedLeftEdges = await examples.evaluateAll((nodes) =>
@@ -6741,26 +6741,26 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     )
     .toBe(true);
   await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
-    'Icon tile tones',
+    'Icon Tile Tones',
     'Shape',
-    'Segmented choices',
-    'Popup menu',
-    'Action link',
-    'Button group',
-    'Select beside actions',
-    'Single button',
-    'Busy action',
-    'Borderless group',
-    'Push button, resting',
-    'Push button, pressed',
-    'Pop selected tone',
-    'Icon-state toggle',
-    'Dark group',
-    'Compact mixed controls',
-    'Avatar profile',
-    'Avatar selection',
-    'Collapsible search',
-    'Wrapping zone sizing',
+    'Segmented Choices',
+    'Popup Menu',
+    'Action Link',
+    'Button Group',
+    'Select Beside Actions',
+    'Single Button',
+    'Busy Action',
+    'Borderless Group',
+    'Push Button, Resting',
+    'Push Button, Pressed',
+    'Pop Selected Tone',
+    'Icon-State Toggle',
+    'Dark Group',
+    'Compact Mixed Controls',
+    'Avatar Profile',
+    'Avatar Selection',
+    'Collapsible Search',
+    'Wrapping Zone Sizing',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
   const expectedGroupCount = 29;
@@ -7737,7 +7737,7 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', 
   await expect(controls).toHaveCount(3);
   await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
     'Toolbar',
-    'Rounded rectangle',
+    'Rounded Rectangle',
     'Pill',
     'Placeholder',
   ]);

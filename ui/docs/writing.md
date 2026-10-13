@@ -21,6 +21,8 @@ uses sentence style ("Changes sync when you reconnect").
 | Segmented-control segments, `Select` and pop-up choices, tabs                                       | Title                        | List View, Last 30 Days, In Review                     |
 | Page, view, pane, dialog, and toolbar titles (`ToolbarText` titles), back labels                    | Title                        | Workspace Settings, Back to Inbox                      |
 | Group and list headers (`ListHeader`), table column headings                                        | Title                        | Saved Projects, Needs Attention, Last Modified         |
+| Catalog example and stack labels (`CatalogExample`, `CatalogExampleStack`)                          | Title                        | Heading Identity Stays Whole, Icon Trigger in a Group  |
+| Content item titles: the name an item or card shows                                                 | Title                        | Build Output, Work Area, Unsaved Changes               |
 | Field labels (`FieldLabel`, a field's `label`)                                                      | Title                        | Project Name, Release Date                             |
 | Accessible names of icon-only controls                                                              | Title                        | More Actions, Clear Search                             |
 | `EmptyState`, `StateBanner`, alert, and notification titles that are fragments                      | Title, no ending punctuation | No Release Tasks, Migration Needs Review               |
@@ -32,7 +34,11 @@ uses sentence style ("Changes sync when you reconnect").
 | Status lines, counts, and timestamps (`ToolbarText` status, `Badge`, `CornerStatus`)                | Sentence                     | Saved just now, 3 of 12 updated                        |
 
 Data is never recapitalized. Names that a person or a system supplies keep
-their own spelling: file names, ticket titles, user names, and tags.
+their own spelling: file names, ticket titles, user names, and tags. A content
+item that shows such data (a ticket subject, a message) keeps it as written;
+only a title the interface itself names is title style. `ContentItem`'s own
+`title` prop is a native tooltip, so it is sentence style. Keep a content
+item's `ariaLabel` equal to its visible title.
 
 ### Title-style rules
 
@@ -83,6 +89,7 @@ The covered props are:
 - `ToolbarText` `text` when the text is a title: it has `headingLevel`, a
   large size, or sits in a toolbar or panel `title`, `header`, or (unless small) `leading` slot;
 - `ListHeader`, `ListActionRow`, `SplitButton`, and `Combobox` `label`;
+- `CatalogExample` and `CatalogExampleStack` `label`;
 - `EmptyState` and `StateBanner` `title`;
 - `PopupMenu` `text` and item and heading labels, including submenus;
 - `SegmentedControl`, `Select`, and `TabNavigator` choice and tab labels;

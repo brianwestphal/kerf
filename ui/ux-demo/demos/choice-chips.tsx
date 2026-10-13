@@ -33,7 +33,7 @@ export function ChoiceChipsDemo() {
       rootAttributes={{ 'data-demo': 'choice-chips' }}
     >
       <CatalogExample
-        label="Color palette"
+        label="Color Palette"
         note="Nine labeled swatches wrap as separate pills. Tab reaches the group once; arrow keys move the selection."
       >
         <ChoiceChips
@@ -46,7 +46,7 @@ export function ChoiceChipsDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="In a 560px dialog"
+        label="In a 560px Dialog"
         note="The checked radio is the form value; Save reads it from the form."
         align="inline-control"
       >
@@ -87,7 +87,7 @@ export function ChoiceChipsDemo() {
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
-        label="Compact with icons"
+        label="Compact with Icons"
         note="A compact group leads each choice with an icon; one choice is unavailable."
       >
         <ChoiceChips<string>

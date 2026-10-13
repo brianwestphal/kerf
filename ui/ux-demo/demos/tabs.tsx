@@ -17,7 +17,7 @@ const extensionAttributes = {
 export function TabsDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'tabs' }}>
-      <CatalogExample label="Selected and closable" align="none">
+      <CatalogExample label="Selected and Closable" align="none">
         <TabBar id="app-tab-selected" label="Selected AppTab Specimen">
           <AppTab
             id="guidelines"
@@ -29,7 +29,7 @@ export function TabsDemo() {
           />
         </TabBar>
       </CatalogExample>
-      <CatalogExample label="Compact and segmented" align="none">
+      <CatalogExample label="Compact and Segmented" align="none">
         <TabBar
           id="app-tab-compact"
           label="Compact AppTab Specimen"
@@ -53,7 +53,7 @@ export function TabsDemo() {
           />
         </TabBar>
       </CatalogExample>
-      <CatalogExample label="Truncated label" align="none">
+      <CatalogExample label="Truncated Label" align="none">
         <TabBar id="app-tab-truncated" label="Truncated AppTab Specimen">
           <AppTab
             id="long-label"
@@ -65,7 +65,7 @@ export function TabsDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
-        label="Drop target and visible name"
+        label="Drop Target and Visible Name"
         note="The drop-target state paints a brand ring. A visible name expands instead of clipping an inline loading treatment."
         align="none"
       >

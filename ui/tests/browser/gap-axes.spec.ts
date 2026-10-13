@@ -12,7 +12,7 @@ test('Row, Grid, and List resolve independent gaps without leaking into nested l
 }) => {
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=row');
-  const row = example(page, 'Independent gaps').locator(
+  const row = example(page, 'Independent Gaps').locator(
     '[data-component="row"]',
   );
   await expect(row).toHaveCSS('column-gap', '0px');
@@ -22,7 +22,7 @@ test('Row, Grid, and List resolve independent gaps without leaking into nested l
   );
   expect(new Set(rowTops).size).toBeGreaterThan(1);
 
-  const nestedRows = example(page, 'Nested row insets').locator(
+  const nestedRows = example(page, 'Nested Row Insets').locator(
     '[data-component="row"]',
   );
   await expect(nestedRows.first()).toHaveCSS('column-gap', '0px');
@@ -30,7 +30,7 @@ test('Row, Grid, and List resolve independent gaps without leaking into nested l
   await expect(nestedRows.nth(1)).toHaveCSS('column-gap', '8px');
   await expect(nestedRows.nth(1)).toHaveCSS('row-gap', '8px');
   if (browserName === 'chromium')
-    await example(page, 'Independent gaps').screenshot({
+    await example(page, 'Independent Gaps').screenshot({
       path: 'test-results/row-independent-gaps.png',
     });
 
@@ -46,7 +46,7 @@ test('Row, Grid, and List resolve independent gaps without leaking into nested l
   });
   expect(measuredGridGap).toBeCloseTo(16, 0);
   if (browserName === 'chromium')
-    await example(page, 'Independent gaps').screenshot({
+    await example(page, 'Independent Gaps').screenshot({
       path: 'test-results/grid-independent-gaps.png',
     });
 
@@ -58,7 +58,7 @@ test('Row, Grid, and List resolve independent gaps without leaking into nested l
   await expect(list).toHaveCSS('column-gap', '0px');
   await expect(list).toHaveCSS('row-gap', '24px');
   if (browserName === 'chromium')
-    await example(page, 'Scrollable application list').screenshot({
+    await example(page, 'Scrollable Application List').screenshot({
       path: 'test-results/list-independent-gaps.png',
     });
 });

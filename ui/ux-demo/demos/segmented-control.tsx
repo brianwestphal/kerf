@@ -49,7 +49,7 @@ export function SegmentedControlDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Rounded rectangle"
+        label="Rounded Rectangle"
         note="An equal-width inspector switcher with labels."
         align="inline-control"
         viewport={{ width: 'control' }}

@@ -17,7 +17,7 @@ export function HeadersDemo() {
       label="Heading Compositions"
       rootAttributes={{ 'data-demo': 'headers' }}
     >
-      <CatalogExample label="Page and panel headings">
+      <CatalogExample label="Page and Panel Headings">
         <List gap="none">
           <Toolbar
             label="UI Foundations"

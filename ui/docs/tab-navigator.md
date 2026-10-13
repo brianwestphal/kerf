@@ -136,7 +136,7 @@ The app owns each stack's view array and the navigator's active tab. Call
 `wireTabNavigator` for tab selection and `wireNavStack` for back navigation
 and transitions, each on its own component root. Push a detail by appending
 a view with its own `toolbar` and `pane`; switching tabs keeps that view
-mounted. The catalog's **NavStack inside a tab** example demonstrates the
+mounted. The catalog's **NavStack Inside a Tab** example demonstrates the
 push, tab switch, and return flow.
 
 Set a tab's `appearance: "sunken"` when its scene owns scrolling and should

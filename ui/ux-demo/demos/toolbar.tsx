@@ -28,7 +28,7 @@ export function ToolbarDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'toolbar' }}>
       <CatalogExample
-        label="Container width visibility"
+        label="Container Width Visibility"
         note="Secondary controls yield to the overflow action as this toolbar narrows. Resize the specimen to see the identity and utility actions return."
         viewport={{ width: 'wide', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-width-visibility': '' }}
@@ -88,7 +88,7 @@ export function ToolbarDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Focus rings across toolbar zones"
+        label="Focus Rings Across Toolbar Zones"
         note="Keyboard focus stays visible on leading, center, and trailing controls, including beside a shrinking title."
         viewport={{ width: 'wide', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-focus-zones': '' }}
@@ -139,7 +139,7 @@ export function ToolbarDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Standalone primary action in trailing"
+        label="Standalone Primary Action in Trailing"
         note="A primary Web Awesome button keeps its rounded rectangle while the toolbar aligns it beside grouped actions."
         viewport={{ width: 'medium', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-primary-action': '' }}
@@ -163,7 +163,7 @@ export function ToolbarDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Compact density"
+        label="Compact Density"
         note="Compact density makes a 40px header for a panel embedded in a card or inspector; its groups take the compact size."
         viewport={{ width: 'medium', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-compact': '' }}
@@ -262,7 +262,7 @@ export function ToolbarDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Balanced center with trailing actions"
+        label="Balanced Center with Trailing Actions"
         note="Equal leading and trailing tracks keep the ticket number on the toolbar midpoint even when only the trailing side has actions."
         viewport={{ width: 'wide', frame: 'solid' }}
       >
@@ -283,7 +283,7 @@ export function ToolbarDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Gap without outer inset"
+        label="Gap Without Outer Inset"
         note="An embedded toolbar can keep the 8px zone gap while its own padding is zero."
         viewport={{
           width: 'medium',
@@ -309,7 +309,7 @@ export function ToolbarDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Stacked actions wrap"
+        label="Stacked Actions Wrap"
         note="A stacked control zone moves whole groups to another row instead of clipping them."
         viewport={{ width: 'text', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-overflow': 'stack' }}
@@ -357,7 +357,7 @@ export function ToolbarDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Heading identity stays whole"
+        label="Heading Identity Stays Whole"
         note="The wrap policy keeps one row while the title fits, then moves the trailing zone below the title."
         viewport={{ width: 'text', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-overflow': 'wrap' }}
@@ -383,7 +383,7 @@ export function ToolbarDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Trailing search priority"
+        label="Trailing Search Priority"
         note="An expanded trailing search takes the full row below the heading at narrow widths."
         viewport={{ width: 'text', frame: 'solid' }}
         rootAttributes={{ 'data-demo-toolbar-overflow': 'trailing-priority' }}

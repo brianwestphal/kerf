@@ -84,7 +84,7 @@ export function SummaryRowDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'summary-row' }}>
       <CatalogExample
-        label="List section"
+        label="List Section"
         note="Rows round at the section's edges, clip long titles to two lines, float the timestamp at the title's end, and show the selection; click a row to select it."
         viewport={{ width: 'medium', surface: 'lowered', frame: 'solid' }}
       >
@@ -95,7 +95,7 @@ export function SummaryRowDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Board cards"
+        label="Board Cards"
         note='presentation="card" is a borderless rounded card that allows four title lines.'
         viewport={{ width: 'compact', surface: 'lowered', frame: 'solid' }}
       >

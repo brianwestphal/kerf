@@ -12,7 +12,7 @@ export function ListHeaderDemo() {
   const unpricedCount = 3;
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'list-header' }}>
-      <CatalogExample label="Label sizes" align="none">
+      <CatalogExample label="Label Sizes" align="none">
         <List gap="xs" rootAttributes={{ 'data-demo-list-header-sizes': '' }}>
           <ListHeader label="Extra Small" size="xs" headingLevel={3} />
           <ListHeader label="Small" size="sm" headingLevel={3} />
@@ -60,7 +60,7 @@ export function ListHeaderDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Badge and status together"
+        label="Badge and Status Together"
         note="Both indicators can be shown together. Either prop can be undefined while app state changes."
         align="none"
         rootAttributes={{ 'data-demo-list-header-combined': '' }}

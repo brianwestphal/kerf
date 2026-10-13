@@ -10,7 +10,7 @@ export function EdgeActivityIndicatorDemo() {
       rootAttributes={{ 'data-demo': 'edge-activity-indicator' }}
     >
       <CatalogExample
-        label="Top-edge activity"
+        label="Top-Edge Activity"
         note="The strip pins to the top of the page and allocates no layout. Start the activity to see the wave and the optional status pill; it stops when you leave this demo."
         align="inline-control"
       >

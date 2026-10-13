@@ -32,11 +32,11 @@ test('responsive rail backdrop absorbs a press over a work-area card', async ({
   await expect(left).toHaveAttribute('data-collapsed', 'true');
   await expect(backdrop).toBeHidden();
   await expect(page.locator('.catalog-log')).not.toContainText(
-    'Select underlying item requested',
+    'Select Underlying Item requested',
   );
   await underlay.click();
   await expect(page.locator('.catalog-log')).toContainText(
-    'Select underlying item requested',
+    'Select Underlying Item requested',
   );
 });
 

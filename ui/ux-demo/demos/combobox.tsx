@@ -14,7 +14,7 @@ export function ComboboxDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'combobox' }}>
       <CatalogExample
-        label="Add or create a tag"
+        label="Add or Create a Tag"
         note="Type to filter existing tags; Enter or a comma adds the highlighted tag, or creates the typed one."
         viewport={{ width: 'medium', minHeight: 'medium' }}
       >

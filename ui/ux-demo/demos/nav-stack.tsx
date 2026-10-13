@@ -218,7 +218,7 @@ export function NavStackDemo() {
       rootAttributes={{ 'data-demo': 'nav-stack' }}
     >
       <CatalogExample
-        label="Interactive push and pop"
+        label="Interactive Push and Pop"
         note="Choose a project to push its detail. The content slides while the view-owned title, actions, and bottom status cross-fade; Back pops to the preserved list."
         viewport={{
           layout: 'grid',
@@ -235,7 +235,7 @@ export function NavStackDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Configured toolbar"
+        label="Configured Toolbar"
         note="toolbarConfig exposes the title as a level-2 heading with a bottom divider. The library view adds leading and center groups, the pushed project a trailing group, and backText names the previous view beside the back chevron."
         viewport={{
           layout: 'grid',

@@ -183,7 +183,7 @@ export function SplitViewDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'split-view' }}>
       <CatalogExample
-        label="Roomy list-detail split"
+        label="Roomy List-Detail Split"
         note="listWidth sets the fixed list column to 240px, capped at 40% of the split, so a narrow container keeps the detail in view; selection stays visible alongside its detail."
         align="none"
         viewport={{
@@ -208,7 +208,7 @@ export function SplitViewDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Resizable, collapsible list"
+        label="Resizable, Collapsible List"
         note="resizable forwards the list's ResizableRegion options: drag the hidden separator to resize, or hide the list and restore it from the FloatingToolbar that docks in the split's corner."
         align="none"
         viewport={{
@@ -272,7 +272,7 @@ export function SplitViewDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Interactive compact drill-down"
+        label="Interactive Compact Drill-Down"
         note="Choose a message to push its detail into the controlled navigation stack. Back clears the selection and restores the list. compactStack gives each view its own toolbar groups and the detail its own bottom toolbar."
         align="none"
         viewport={{

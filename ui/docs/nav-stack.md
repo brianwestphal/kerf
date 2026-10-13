@@ -136,7 +136,7 @@ Configure the toolbar with `toolbarConfig` instead of styling it:
 view's top toolbar. `Workbench` uses it for a navigation panel's standard
 collapse toggle; the active view still owns the preceding toolbar groups.
 
-The catalog's **Configured toolbar** example shows these together: a level-2
+The catalog's **Configured Toolbar** example shows these together: a level-2
 heading title over a bottom divider, leading and center groups on the root
 view, a trailing group on the pushed view, and `backText` set to the previous
 view's title.

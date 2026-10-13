@@ -10,7 +10,7 @@ test('renders the Skeleton primitive demo', async ({ page, browserName }) => {
 
   const composition = demo.locator('[data-catalog-example]').filter({
     has: page.locator('[data-catalog-example-label]', {
-      hasText: 'In composition',
+      hasText: 'In Composition',
     }),
   });
   await expect(composition).toHaveCount(1);

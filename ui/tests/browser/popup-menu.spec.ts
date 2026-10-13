@@ -89,11 +89,11 @@ test('nested checked choices, disabled commands, and context opening work', asyn
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=popup-menu');
-  await expectDemoTriggerAlignment(page, 'Checked choices');
-  await expectDemoTriggerAlignment(page, 'Nested decisions');
+  await expectDemoTriggerAlignment(page, 'Checked Choices');
+  await expectDemoTriggerAlignment(page, 'Nested Decisions');
   await page.setViewportSize({ width: 390, height: 800 });
-  await expectDemoTriggerAlignment(page, 'Checked choices');
-  await expectDemoTriggerAlignment(page, 'Nested decisions');
+  await expectDemoTriggerAlignment(page, 'Checked Choices');
+  await expectDemoTriggerAlignment(page, 'Nested Decisions');
   await page.setViewportSize({ width: 1100, height: 800 });
   const demo = page.locator('[data-demo="popup-menu"]');
   const nested = demo
@@ -191,7 +191,7 @@ test('nested checked choices, disabled commands, and context opening work', asyn
     '2',
   );
   await page.setViewportSize({ width: 390, height: 844 });
-  await expectDemoTriggerAlignment(page, 'Nested decisions');
+  await expectDemoTriggerAlignment(page, 'Nested Decisions');
   await trigger.click();
   await parent.hover();
   await expect(other).toBeVisible();
@@ -337,7 +337,7 @@ test('context example keeps its row gutter on click', async ({
   await page.goto('/?component=popup-menu');
   const example = page.locator('[data-catalog-example]').filter({
     has: page.locator('[data-catalog-example-label]', {
-      hasText: 'Context menu',
+      hasText: 'Context Menu',
     }),
   });
   const row = example.locator('[data-popup-menu-context-target]');
@@ -373,7 +373,7 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
   const priority = menu.getByRole('menuitemcheckbox', { name: 'Priority' });
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
-    await expectDemoTriggerAlignment(page, 'Checked choices');
+    await expectDemoTriggerAlignment(page, 'Checked Choices');
     await trigger.click();
     await expect(updated).toHaveAttribute('aria-checked', 'true');
     await expect(priority).toHaveAttribute('aria-checked', 'false');
@@ -724,7 +724,7 @@ test('context PopupMenu dismisses when clicking outside after either opening pat
   const row = demo.locator('[data-popup-menu-context-target]');
   const button = demo.getByRole('button', { name: 'Demand Actions' });
   const heading = demo.locator('[data-catalog-example-label]', {
-    hasText: 'Context menu',
+    hasText: 'Context Menu',
   });
 
   for (const width of [1100, 390]) {

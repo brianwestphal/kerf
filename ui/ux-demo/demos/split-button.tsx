@@ -11,7 +11,7 @@ export function SplitButtonDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'split-button' }}>
       <CatalogExample
-        label="Full-width primary action"
+        label="Full-Width Primary Action"
         note="Click the primary half to start or stop; the app switches the tone to neutral and marks it busy while running. The options trigger reports aria-expanded for the app's own menu."
         viewport={{ width: 'compact' }}
       >
@@ -27,7 +27,7 @@ export function SplitButtonDemo() {
           fill
         />
       </CatalogExample>
-      <CatalogExample label="Tones and states" align="inline-control">
+      <CatalogExample label="Tones and States" align="inline-control">
         <Row wrap>
           <SplitButton
             label="Deploy"

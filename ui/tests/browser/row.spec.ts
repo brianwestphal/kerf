@@ -41,7 +41,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
         hasText: new RegExp(`^${label}$`),
       }),
     });
-  const defaultRow = example('Default row').locator('[data-component="row"]');
+  const defaultRow = example('Default Row').locator('[data-component="row"]');
   await expect(defaultRow).toHaveAttribute('data-h-align', 'left');
   await expect(defaultRow).toHaveAttribute('data-v-align', 'full');
   await expect(defaultRow).toHaveAttribute('data-flex', 'false');
@@ -68,7 +68,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
     await expect
       .poll(() =>
         flexGeometry(
-          example(`${label} distribution`).locator(
+          example(`${label} Distribution`).locator(
             `[data-component="row"][data-h-align="${name}"]`,
           ),
         ),
@@ -87,7 +87,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
     await expect
       .poll(() =>
         flexGeometry(
-          example(`${label} alignment`).locator(
+          example(`${label} Alignment`).locator(
             `[data-component="row"][data-v-align="${name}"]`,
           ),
         ),
@@ -95,7 +95,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
       .toMatchObject({ alignItems: items, alignContent: content });
   }
 
-  const wrapped = example('Wrapped row').locator(
+  const wrapped = example('Wrapped Row').locator(
     '[data-component="row"][data-wrap="true"]',
   );
   await expect
@@ -117,7 +117,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
     ),
   ).toBeGreaterThan(1);
 
-  const flexExample = example('Flex participation');
+  const flexExample = example('Flex Participation');
   const participatingRows = flexExample.locator('[data-component="row"]');
   const growing = participatingRows.nth(0);
   await expect(growing).toHaveAttribute('data-flex', 'true');
@@ -132,11 +132,11 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
 
   // Each Row variant has its own framed catalog example.
   const framedLabels = [
-    'Default row',
-    ...horizontal.map(([label]) => `${label} distribution`),
-    ...vertical.map(([label]) => `${label} alignment`),
-    'Wrapped row',
-    'Independent gaps',
+    'Default Row',
+    ...horizontal.map(([label]) => `${label} Distribution`),
+    ...vertical.map(([label]) => `${label} Alignment`),
+    'Wrapped Row',
+    'Independent Gaps',
   ];
   for (const label of framedLabels) {
     const rowExample = example(label);
@@ -177,7 +177,7 @@ test('every Row example specimen fits its preview column at 390px', async ({
 
   // The side-selectable inset specimen stays legible as two small examples
   // instead of one six-chip row that overflowed a phone-width column.
-  const insetRow = example('Side-selectable insets').locator(
+  const insetRow = example('Side-Selectable Insets').locator(
     '[data-component="row"]',
   );
   await expect(insetRow).toHaveCount(1);
@@ -185,7 +185,7 @@ test('every Row example specimen fits its preview column at 390px', async ({
   await expect(insetRow).toHaveAttribute('data-control-insets', 'r');
   await expect(insetRow).toHaveCSS('padding', '17px 8px 17px 17px');
 
-  const nestedRows = example('Nested row insets').locator(
+  const nestedRows = example('Nested Row Insets').locator(
     '[data-component="row"]',
   );
   await expect(nestedRows).toHaveCount(2);
@@ -248,7 +248,7 @@ test('List retains defaults and accepts the shared alignment vocabulary', async 
         hasText: new RegExp(`^${label}$`),
       }),
     });
-  const defaultList = example('Scrollable application list')
+  const defaultList = example('Scrollable Application List')
     .locator('[data-component="list"]')
     .first();
   await expect(defaultList).toHaveAttribute('data-h-align', 'full');
@@ -263,7 +263,7 @@ test('List retains defaults and accepts the shared alignment vocabulary', async 
   await expect
     .poll(() =>
       flexGeometry(
-        example('Physical-axis alignment').locator('[data-component="list"]'),
+        example('Physical-Axis Alignment').locator('[data-component="list"]'),
       ),
     )
     .toMatchObject({
@@ -283,7 +283,7 @@ test('List dividerSides draws a real boundary between a list and its detail regi
       .locator('[data-demo="list"] [data-catalog-example]')
       .filter({
         has: page.locator('[data-catalog-example-label]', {
-          hasText: /^Divider between regions$/,
+          hasText: /^Divider Between Regions$/,
         }),
       });
     const frame = example.locator(':scope > [data-catalog-example-viewport]');

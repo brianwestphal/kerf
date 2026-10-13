@@ -47,7 +47,7 @@ export function RowDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'row' }}>
       <CatalogExample
-        label="Default row"
+        label="Default Row"
         viewport={{ width: 'compact' }}
         note="Row defaults to left, full-height children, the xs gap, and no wrapping."
       >
@@ -57,7 +57,7 @@ export function RowDemo() {
       </CatalogExample>
       {horizontal.map(([label, alignment, note]) => (
         <CatalogExample
-          label={`${label} distribution`}
+          label={`${label} Distribution`}
           viewport={{ width: 'compact' }}
           note={note}
         >
@@ -70,7 +70,7 @@ export function RowDemo() {
       ))}
       {vertical.map(([label, alignment, note]) => (
         <CatalogExample
-          label={`${label} alignment`}
+          label={`${label} Alignment`}
           viewport={{ width: 'compact' }}
           note={note}
         >
@@ -82,7 +82,7 @@ export function RowDemo() {
         </CatalogExample>
       ))}
       <CatalogExample
-        label="Wrapped row"
+        label="Wrapped Row"
         viewport={{ width: 'compact' }}
         note="Wrapping is opt-in and keeps the same physical alignment and typed gap contract; wrapped lines use the matching vertical distribution."
       >
@@ -101,7 +101,7 @@ export function RowDemo() {
         </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
-        label="Independent gaps"
+        label="Independent Gaps"
         viewport={{ width: 'compact' }}
         note="Wrapping can keep columns touching while separating rows by the m spacing token."
       >
@@ -125,7 +125,7 @@ export function RowDemo() {
         </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
-        label="Flex participation"
+        label="Flex Participation"
         note="Row accepts the same boolean, finite-keyword, and typed flex grammar as List when it participates in a parent flex layout."
       >
         <wa-card appearance="sunken">
@@ -140,7 +140,7 @@ export function RowDemo() {
         </wa-card>
       </CatalogExample>
       <CatalogExample
-        label="Side-selectable insets"
+        label="Side-Selectable Insets"
         note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px. Physical sides use canonical top/right/bottom/left order. Here the text inset covers top, bottom, and left, and the control inset covers the right."
       >
         <DemoFrameShell>
@@ -150,7 +150,7 @@ export function RowDemo() {
         </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
-        label="Nested row insets"
+        label="Nested Row Insets"
         note="A nested Row owns its own insets: the outer row keeps its left text inset while the nested row adds only an 8px bottom control inset."
       >
         <DemoFrameShell>

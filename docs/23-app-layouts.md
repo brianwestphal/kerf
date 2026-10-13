@@ -860,7 +860,7 @@ and three-engine Playwright coverage of collapse/expand, focus move/restore, the
 compact overlay + Escape/backdrop dismiss, and Tab trap shipped in KF-JP6KVY
 (`ui/tests/browser/collapsible-sidebar-recipe.spec.ts`). The whole-screen layouts
 also ship focused component demos and three-engine catalog coverage. The
-focused CollapsiblePanel route's "Restore control" example (KF-DRMN5Q: no demo
+focused CollapsiblePanel route's "Restore Control" example (KF-DRMN5Q: no demo
 exercised a standalone `restoreControl` before) collapses a bottom drawer to a
 `FloatingToolbar` corner control wired with `wireSidebar`, covered in
 `ui/tests/browser/app-layout-catalog.spec.ts`.

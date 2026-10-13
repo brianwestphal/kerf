@@ -7,7 +7,8 @@ import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 
 // KUI-D040: visible labels that Kerf UI's capitalization rule (docs/writing.md)
 // gives title style — button titles, menu items, segment and pop-up choices,
-// tab labels, field labels, list/group headers, and view/pane/dialog titles —
+// tab labels, field labels, list/group headers (including catalog example
+// labels), and view/pane/dialog titles —
 // plus the accessible names of icon-only controls, checked against Apple's
 // title-style rule. Only string literals passed to known title-style props
 // are read, so prose, descriptions, placeholders, tooltips, checkbox/switch
@@ -117,6 +118,13 @@ export function titleStyleViolation(text) {
       // and except a single-letter prefix such as e-mail.
       if (lowercaseCompoundTails.has(core.toLowerCase())) return segment;
       if (segments[0].length === 1) return segment;
+      // A minor word inside a longer compound stays lowercase, as it would
+      // between separate words: Edge-to-Edge, Up-to-Date.
+      if (
+        segmentIndex < segments.length - 1 &&
+        TITLE_STYLE_MINOR_WORDS.has(segment.toLowerCase())
+      )
+        return segment;
       return capitalize(segment);
     });
     const repaired = fixed.join('-');
@@ -138,6 +146,10 @@ export function titleStyleViolation(text) {
 const titleStyleProps = new Map([
   ['ListHeader', { props: ['label'] }],
   ['ListActionRow', { props: ['label'] }],
+  // A catalog example or stack label renders as a ListHeader and names the
+  // specimen's region, so it is a heading.
+  ['CatalogExample', { props: ['label'] }],
+  ['CatalogExampleStack', { props: ['label'] }],
   ['EmptyState', { props: ['title'] }],
   ['StateBanner', { props: ['title'] }],
   ['SplitButton', { props: ['label', 'optionsLabel'] }],

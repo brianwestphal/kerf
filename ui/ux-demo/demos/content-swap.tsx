@@ -13,7 +13,7 @@ export function ContentSwapDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'content-swap' }}>
       <CatalogExample
-        label="Push between steps"
+        label="Push Between Steps"
         note="Next pushes the second step in from the end; Back pushes the first step back in from the start. The hidden side is inert."
         viewport={{ width: 'compact', frame: 'solid' }}
       >

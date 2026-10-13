@@ -44,7 +44,7 @@ const labelChoices = [
 export function SelectDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'select' }}>
-      <CatalogExample label="Rendering balance" align="inline-control">
+      <CatalogExample label="Rendering Balance" align="inline-control">
         <List gap="xs">
           <Select<string>
             name="rendering-balance"
@@ -97,7 +97,7 @@ export function SelectDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
-        label="Multiple selection"
+        label="Multiple Selection"
         note="Choosing toggles a check and keeps the popup open; click away or press Escape to close."
         align="inline-control"
       >
@@ -111,7 +111,7 @@ export function SelectDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Multiple selection actions"
+        label="Multiple Selection Actions"
         note="Select all includes enabled choices only; Clear reports an ordinary change. Unavailable choices remain visible with a reason."
         align="inline-control"
       >
@@ -137,7 +137,7 @@ export function SelectDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Toolbar filter"
+        label="Toolbar Filter"
         note="A multiple icon-only trigger keeps a fixed icon and counts the chosen filters; hover or keyboard focus shows a help tag with its name and chosen labels."
         align="inline-control"
       >
@@ -161,7 +161,7 @@ export function SelectDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Toolbar filter beside actions"
+        label="Toolbar Filter Beside Actions"
         note="The pin button, filter, and menu each show their name as a help tag on hover or keyboard focus."
         align="inline-control"
       >
@@ -187,7 +187,7 @@ export function SelectDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Accessible name without a visible label"
+        label="Accessible Name Without a Visible Label"
         align="inline-control"
       >
         <Select<string>
@@ -201,7 +201,7 @@ export function SelectDemo() {
           ]}
         />
       </CatalogExample>
-      <CatalogExample label="Visible label" align="inline-control">
+      <CatalogExample label="Visible Label" align="inline-control">
         <Select<string>
           name="labeled-rendering-balance"
           value={selectedChoice.value}
@@ -216,7 +216,7 @@ export function SelectDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Compact selected text"
+        label="Compact Selected Text"
         align="inline-control"
         viewport={{
           tokens: {
@@ -239,7 +239,7 @@ export function SelectDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Toolbar icon"
+        label="Toolbar Icon"
         note="An icon-only trigger keeps its caret; a single group grows to fit both. Hover or keyboard focus shows a help tag with its name and current choice."
         align="inline-control"
       >
@@ -261,7 +261,7 @@ export function SelectDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Round toolbar icon"
+        label="Round Toolbar Icon"
         note="An icon-only Select can omit its caret to match a round action trigger. The accessible name and current choice remain available on hover and focus."
         align="inline-control"
       >
@@ -285,7 +285,7 @@ export function SelectDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Round toolbar custom icon"
+        label="Round Toolbar Custom Icon"
         note="A custom selected icon stays centered in the same caret-free round trigger."
         align="inline-control"
       >
@@ -314,7 +314,7 @@ export function SelectDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Compact toolbar icon" align="inline-control">
+      <CatalogExample label="Compact Toolbar Icon" align="inline-control">
         <ToolbarControlGroup
           label="Rendering Mode"
           size="compact"
@@ -335,7 +335,7 @@ export function SelectDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Long options within viewport"
+        label="Long Options Within Viewport"
         align="inline-control"
       >
         <Row hAlign="right">
@@ -367,7 +367,7 @@ export function SelectDemo() {
           </ToolbarControlGroup>
         </Row>
       </CatalogExample>
-      <CatalogExample label="Navigation label" align="inline-control">
+      <CatalogExample label="Navigation Label" align="inline-control">
         <Select<string>
           name="navigation-rendering-balance"
           value={selectedChoice.value}
@@ -387,7 +387,7 @@ export function SelectDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="View title"
+        label="View Title"
         note="The 36px title trigger starts flush, keeps its caret beside the name, and draws focus inside clipped panels."
         viewport={{ width: 'compact' }}
       >
@@ -420,7 +420,7 @@ export function SelectDemo() {
         </div>
       </CatalogExample>
       <CatalogExample
-        label="Inline status badge"
+        label="Inline Status Badge"
         note="The selected badge supplies the whole closed trigger box; focus and the listbox remain Select-owned."
         align="inline-control"
       >

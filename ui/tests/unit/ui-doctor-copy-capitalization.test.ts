@@ -1,6 +1,14 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { describe, expect, test } from 'vitest';
 
@@ -52,6 +60,8 @@ describe('titleStyleViolation', () => {
     'What to Do If Your iPhone Is Lost',
     'Settings: The Basics',
     'Updating Tickets… 3 of 12',
+    'Edge-to-Edge Table, Deep Inset',
+    'Up-to-Date Records',
   ])('accepts title style: %s', (text) => {
     expect(titleStyleViolation(text)).toBeNull();
   });
@@ -93,6 +103,7 @@ describe('titleStyleViolation', () => {
     ['Up to date', 'Up to Date', ['date']],
     ['Show details for iOS', 'Show Details for iOS', ['details']],
     ['Open (beta) features', 'Open (Beta) Features', ['beta', 'features']],
+    ['Edge-to-edge table', 'Edge-to-Edge Table', ['Edge-to-edge', 'table']],
   ])('reports %s', (text, suggestion, words) => {
     expect(titleStyleViolation(text)).toEqual({ words, suggestion });
   });
@@ -161,6 +172,24 @@ describe('titleStyleLabels', () => {
       'SplitButton label: Publish',
       'SplitButton optionsLabel: Publish options',
       'TokenSearchField clearLabel: Clear search',
+    ]);
+  });
+
+  test('reads catalog example and stack labels but not their notes', () => {
+    expect(
+      labels(`
+        export const Demo = () => (
+          <CatalogExampleStack label="Toolbar variants">
+            <CatalogExample label="Heading identity stays whole" note="The title keeps its first line.">
+              <ContentItem title="Open the ticket" ariaLabel="Build Output" />
+            </CatalogExample>
+            <CatalogExample label={\`\${name} distribution\`} />
+          </CatalogExampleStack>
+        );
+      `),
+    ).toEqual([
+      'CatalogExampleStack label: Toolbar variants',
+      'CatalogExample label: Heading identity stays whole',
     ]);
   });
 
@@ -249,5 +278,35 @@ describe('checkCopyCapitalization', () => {
       severity: 'warning',
       title: 'Visible label is not title-style capitalized',
     });
+  });
+});
+
+describe('UX demo copy', () => {
+  const uiRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+  const demoSources = async () =>
+    (await readdir(resolve(uiRoot, 'ux-demo'), { recursive: true }))
+      .filter((name) => name.endsWith('.tsx'))
+      .map((name) => resolve(uiRoot, 'ux-demo', name));
+
+  test('every demo and recipe label, including example captions, is title style', async () => {
+    const findings = await checkCopyCapitalization(uiRoot, await demoSources());
+    expect(findings.map((item) => item.message)).toEqual([]);
+  });
+
+  test('demo content item titles are title style', async () => {
+    // DemoContentItem is a private demo helper, so the shipped doctor does not
+    // know it; its visible `title` is the name an item shows.
+    const titles: string[] = [];
+    for (const file of await demoSources()) {
+      const source = await readFile(file, 'utf8');
+      for (const match of source.matchAll(
+        /<DemoContentItem\b[^>]*?\btitle="([^"]+)"/g,
+      ))
+        titles.push(match[1]!);
+    }
+    expect(titles.length).toBeGreaterThan(5);
+    expect(
+      titles.filter((title) => titleStyleViolation(title) !== null),
+    ).toEqual([]);
   });
 });

@@ -11,7 +11,7 @@ export function TextDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'text' }}>
       <CatalogExample
-        label="Semantic variants"
+        label="Semantic Variants"
         note="Text renders the selected native heading or paragraph while giving each text box the standard transparent border and content padding."
         align="inline-control"
         rootAttributes={{ 'data-demo-section': 'semantic-variants' }}
@@ -33,7 +33,7 @@ export function TextDemo() {
         </Text>
       </CatalogExample>
       <CatalogExample
-        label="Text colors"
+        label="Text Colors"
         note="Use a semantic foreground token or an application color. Omit color to keep tone or inherited text color; an explicit color wins over tone."
         align="inline-control"
         rootAttributes={{ 'data-demo-section': 'text-colors' }}
@@ -48,7 +48,7 @@ export function TextDemo() {
         </Text>
       </CatalogExample>
       <CatalogExample
-        label="Presentation roles"
+        label="Presentation Roles"
         note="Tone, size, and font are independent of the native semantic element, so applications can express supporting copy, errors, compact metadata, prominent copy, and code without global utility classes."
         align="inline-control"
         rootAttributes={{ 'data-demo-section': 'presentation-roles' }}
@@ -72,7 +72,7 @@ export function TextDemo() {
         <Text size="xlarge">Extra large body copy</Text>
       </CatalogExample>
       <CatalogExample
-        label="Read-only field preview"
+        label="Read-Only Field Preview"
         note="FieldLabel mirrors a Web Awesome form-control label when a field is a preview rather than an input. The preview group uses the label id as its accessible name."
         align="none"
         rootAttributes={{ 'data-demo-section': 'field-label' }}
@@ -88,7 +88,7 @@ export function TextDemo() {
         </ListInsetControl>
       </CatalogExample>
       <CatalogExample
-        label="Control margins"
+        label="Control Margins"
         note="Text adds the shared 8px gutter outside selected sides, keeping its own border and padding. No Row wrapper is needed for an isolated paragraph."
         align="none"
         rootAttributes={{ 'data-demo-section': 'control-margins' }}
@@ -115,13 +115,13 @@ export function TextDemo() {
           stays in its sentence.
         </Text>
       </CatalogExample>
-      <CatalogExample label="Flush dialog copy" align="glyph">
+      <CatalogExample label="Flush Dialog Copy" align="glyph">
         <Text flush lineHeight="tight" data-demo-copy="flush">
           Compact supporting copy inside a dialog body.
         </Text>
       </CatalogExample>
       <CatalogExample
-        label="Centered status copy"
+        label="Centered Status Copy"
         note="align centers short status copy that wraps in a narrow surface; end aligns trailing values."
         align="glyph"
         viewport={{ width: 'compact' }}
@@ -135,7 +135,7 @@ export function TextDemo() {
         </Text>
       </CatalogExample>
       <CatalogExample
-        label="Long copy and truncation"
+        label="Long Copy and Truncation"
         note="Text breaks long identifiers, caps summaries, yields space to a fixed sibling with a one-line ellipsis, and truncates a path in the middle or a branch name at the start."
         align="inline-control"
         viewport={{ width: 'medium' }}

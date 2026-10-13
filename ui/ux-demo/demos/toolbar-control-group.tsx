@@ -58,7 +58,7 @@ export function ToolbarControlGroupDemo() {
       rootAttributes={{ 'data-demo': 'toolbar-control-group' }}
     >
       <CatalogExample
-        label="Icon tile tones"
+        label="Icon Tile Tones"
         note="A contained single group with a direct decorative icon can use a quiet semantic tileTone. Interactive groups retain their control chrome."
         align="inline-control"
         rootAttributes={{ 'data-demo-section': 'icon-tile-tones' }}
@@ -108,7 +108,7 @@ export function ToolbarControlGroupDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Segmented choices" align="inline-control">
+      <CatalogExample label="Segmented Choices" align="inline-control">
         <ToolbarControlGroup shape={shape}>
           <SegmentedControl
             id="toolbar-view"
@@ -138,7 +138,7 @@ export function ToolbarControlGroupDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Popup menu" align="inline-control">
+      <CatalogExample label="Popup Menu" align="inline-control">
         <ToolbarControlGroup
           single
           shape={shape}
@@ -155,7 +155,7 @@ export function ToolbarControlGroupDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Action link" align="inline-control">
+      <CatalogExample label="Action Link" align="inline-control">
         <ToolbarControlGroup content="mixed" shape={shape} single>
           <ToolbarActionLink
             href="https://github.com/brianwestphal/kerf"
@@ -166,7 +166,7 @@ export function ToolbarControlGroupDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Button group"
+        label="Button Group"
         note="Name an icon-only button with aria-label; hover or keyboard focus shows that name as a help tag."
         align="inline-control"
       >
@@ -188,7 +188,7 @@ export function ToolbarControlGroupDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Select beside actions"
+        label="Select Beside Actions"
         note="An icon-only Select shares the group's inset, hover, and per-control focus ring with its sibling buttons."
         align="inline-control"
       >
@@ -216,7 +216,7 @@ export function ToolbarControlGroupDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Single button" align="inline-control">
+      <CatalogExample label="Single Button" align="inline-control">
         <ToolbarControlGroup single shape={shape}>
           <wa-button
             appearance="plain"
@@ -228,7 +228,7 @@ export function ToolbarControlGroupDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Busy action"
+        label="Busy Action"
         note="The original action keeps its size while inert; a status announces the work."
         align="inline-control"
       >
@@ -250,7 +250,7 @@ export function ToolbarControlGroupDemo() {
           {toolbarGroupBusy.value ? 'Finish' : 'Start'} pricing check
         </button>
       </CatalogExample>
-      <CatalogExample label="Borderless group" align="inline-control">
+      <CatalogExample label="Borderless Group" align="inline-control">
         <ToolbarControlGroup appearance="borderless" single shape={shape}>
           <button
             type="button"
@@ -261,7 +261,7 @@ export function ToolbarControlGroupDemo() {
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Push button, resting" align="inline-control">
+      <CatalogExample label="Push Button, Resting" align="inline-control">
         <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
           <button
             type="button"
@@ -273,7 +273,7 @@ export function ToolbarControlGroupDemo() {
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Push button, pressed" align="inline-control">
+      <CatalogExample label="Push Button, Pressed" align="inline-control">
         <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
           <button
             type="button"
@@ -285,7 +285,7 @@ export function ToolbarControlGroupDemo() {
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Pop selected tone" align="inline-control">
+      <CatalogExample label="Pop Selected Tone" align="inline-control">
         <ToolbarControlGroup
           label="Featured Action"
           selectedChrome="filled"
@@ -303,7 +303,7 @@ export function ToolbarControlGroupDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Icon-state toggle"
+        label="Icon-State Toggle"
         note='The filled star already shows the pressed state, so data-selected-chrome="none" keeps that one button from painting selected chrome; selectedChrome="none" does the same for a whole group.'
         align="inline-control"
       >
@@ -322,7 +322,7 @@ export function ToolbarControlGroupDemo() {
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Dark group" align="inline-control">
+      <CatalogExample label="Dark Group" align="inline-control">
         <ToolbarControlGroup label="Dark Navigation" tone="dark" shape={shape}>
           <button
             type="button"
@@ -336,7 +336,7 @@ export function ToolbarControlGroupDemo() {
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Compact mixed controls" align="inline-control">
+      <CatalogExample label="Compact Mixed Controls" align="inline-control">
         <ToolbarControlGroup
           label="Compact Formatting"
           size="compact"
@@ -350,7 +350,7 @@ export function ToolbarControlGroupDemo() {
           <PopupMenu text="More" items={[{ label: 'Archive' }]} />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Avatar profile" align="inline-control">
+      <CatalogExample label="Avatar Profile" align="inline-control">
         <ToolbarControlGroup
           label="Profile"
           content="avatar"
@@ -363,7 +363,7 @@ export function ToolbarControlGroupDemo() {
           <button type="button" aria-label="Open Brian Profile" />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Avatar selection" align="inline-control">
+      <CatalogExample label="Avatar Selection" align="inline-control">
         <ToolbarControlGroup
           label="Profile View"
           content="avatar"
@@ -388,7 +388,7 @@ export function ToolbarControlGroupDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
-        label="Collapsible search"
+        label="Collapsible Search"
         note={
           <>
             An empty, unfocused search collapses to one iconic control in the
@@ -425,7 +425,7 @@ export function ToolbarControlGroupDemo() {
         </div>
       </CatalogExample>
       <CatalogExample
-        label="Wrapping zone sizing"
+        label="Wrapping Zone Sizing"
         note="The first search grows from a 19rem basis. In the rail example, the collapsed search sits after Sort at the row's end, then expands onto a full row with a downward entrance."
         align="none"
         viewport={{ width: 'full' }}

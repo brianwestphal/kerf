@@ -13,7 +13,7 @@ export function PaneDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'pane' }}>
       <CatalogExample
-        label="Pane structure and separators"
+        label="Pane Structure and Separators"
         note="The header and footer stay fixed while the primary vertical content slot owns scrolling."
         viewport={{
           layout: 'grid',
@@ -52,7 +52,7 @@ export function PaneDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Focusable pane and persistent outline"
+        label="Focusable Pane and Persistent Outline"
         note="tabIndex makes the pane reachable by keyboard; outlined keeps its focus ring visible while it marks a drop target."
         viewport={{ layout: 'grid', width: 'medium', height: 'short' }}
       >
@@ -67,7 +67,7 @@ export function PaneDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Deep inset content"
+        label="Deep Inset Content"
         note="deepInset adds 8px on all sides of the Pane's scrolling content. Direct items and items inside a List align at 16px from the inline edge while the List keeps its ordinary internal 8px spacing."
         viewport={{
           layout: 'grid',
@@ -93,7 +93,7 @@ export function PaneDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Edge-to-edge table, regular content inset"
+        label="Edge-to-Edge Table, Regular Content Inset"
         note="The table's tinted rows and rules reach both Pane edges. Its cell text follows the ordinary content-item text axis."
         viewport={{
           layout: 'grid',
@@ -105,7 +105,7 @@ export function PaneDemo() {
         <EdgeToEdgeTable deepInset={false} />
       </CatalogExample>
       <CatalogExample
-        label="Edge-to-edge table, deep inset"
+        label="Edge-to-Edge Table, Deep Inset"
         note="The same table reads the Pane's resolved inline inset variables, including deepInset and safe-area padding."
         viewport={{
           layout: 'grid',
@@ -117,7 +117,7 @@ export function PaneDemo() {
         <EdgeToEdgeTable deepInset />
       </CatalogExample>
       <CatalogExample
-        label="Scroll dividers"
+        label="Scroll Dividers"
         note="The line under the header appears once the content scrolls beneath it, and the line over the footer only while more content lies below. wireScrollDividers reports the scroll state; the pane draws both lines."
         viewport={{
           layout: 'grid',
@@ -150,7 +150,7 @@ export function PaneDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Sunken chat workspace"
+        label="Sunken Chat Workspace"
         note="The lowered surface fills short conversations behind the fixed composer without another scroller."
         viewport={{
           layout: 'grid',
@@ -172,7 +172,7 @@ export function PaneDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Sunken auto chrome"
+        label="Sunken Auto Chrome"
         note="At short heights the Pane root owns the scroll, while its header and footer stay on the normal surface."
         viewport={{
           layout: 'grid',
@@ -194,7 +194,7 @@ export function PaneDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
-        label="Sunken workbench regions without Pane chrome"
+        label="Sunken Workbench Regions Without Pane Chrome"
         note="The main region and rail paint their own surfaces when no Pane chrome is composed."
         viewport={{
           layout: 'grid',

@@ -12,7 +12,7 @@ export function ListInsetTextDemo() {
       rootAttributes={{ 'data-demo': 'list-inset-text' }}
     >
       <CatalogExample
-        label="Inset bare text"
+        label="Inset Bare Text"
         note={
           <>
             Plain text has no margin, border, or padding, so it does not line up
@@ -36,7 +36,7 @@ export function ListInsetTextDemo() {
         </DemoListInsetPane>
       </CatalogExample>
       <CatalogExample
-        label="Horizontal-only inset"
+        label="Horizontal-Only Inset"
         note={
           <>
             Pass <code>sides="rl"</code> to keep the horizontal inset but drop
@@ -56,7 +56,7 @@ export function ListInsetTextDemo() {
         </DemoListInsetPane>
       </CatalogExample>
       <CatalogExample
-        label="Selected physical sides"
+        label="Selected Physical Sides"
         note="The sides prop uses canonical top/right/bottom/left order; only selected sides receive the full text inset geometry."
         align="none"
       >

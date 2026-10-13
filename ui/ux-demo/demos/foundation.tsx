@@ -22,7 +22,7 @@ export function FoundationDemo() {
       rootAttributes={{ 'data-demo': 'foundation' }}
     >
       <CatalogExample
-        label="Semantic palette"
+        label="Semantic Palette"
         note="Foundation roles stay readable in the active light or dark theme."
         align="none"
       >
@@ -37,7 +37,7 @@ export function FoundationDemo() {
         </Grid>
       </CatalogExample>
       <CatalogExample
-        label="Type and spacing"
+        label="Type and Spacing"
         note="The public scale keeps application-owned composition aligned with component defaults."
         align="none"
       >
