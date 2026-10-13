@@ -317,6 +317,10 @@
       "browser": "./dist/browser/composer.js",
       "import": "./dist/composer.js"
     },
+    "./wire-composers": {
+      "types": "./dist/wire-composers.d.ts",
+      "import": "./dist/wire-composers.js"
+    },
     "./token-search-field": {
       "types": "./dist/token-search-field.d.ts",
       "browser": "./dist/browser/token-search-field.js",

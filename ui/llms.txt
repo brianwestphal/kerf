@@ -715,7 +715,11 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `actions` (a brand Send button). Name it with a title-style `label`; give it
   an `id` so the hint describes the field. Slot it into a `DialogSurface`
   floating footer (`footerInset="none"`) over a transcript. Never rebuild
-  composer chrome around a `wa-textarea` with app CSS.
+  composer chrome around a `wa-textarea` with app CSS. For Enter-to-send, set
+  `submitOnEnter` and call `wireComposers(root)` from
+  `@kerfjs/ui/wire-composers` once: Enter or Cmd/Ctrl+Enter clicks the first
+  trailing action, Shift+Enter inserts a newline, and an IME composition
+  commit or an empty message never sends. Never hand-roll that handler.
 
 ## Public exports
 

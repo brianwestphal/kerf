@@ -33,6 +33,7 @@ import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import { wireComboboxes } from '@kerfjs/ui/wire-comboboxes';
+import { wireComposers } from '@kerfjs/ui/wire-composers';
 import {
   isContentItemActivation,
   wireContentItems,
@@ -1651,6 +1652,7 @@ const stopComboboxes = wireComboboxes(app, {
     actionLog.value = `${created ? 'Created' : 'Added'} tag ${tag}`;
   },
 });
+const stopComposers = wireComposers(app);
 const stopFilePickers = wireFilePickers(app, {
   onFiles: ({ files, via }) => {
     filePickerFiles.value = [
@@ -2021,6 +2023,7 @@ window.addEventListener(
     stopAdoptionKeyboardEffect();
     stopFloatingToolbarReset();
     stopEdgeActivityReset();
+    stopComposers();
     stopFilePickers();
     stopComboboxes();
     stopListItemDragOver();

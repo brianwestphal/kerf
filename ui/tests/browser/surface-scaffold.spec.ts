@@ -799,3 +799,35 @@ test('a phone chat dialog floats its composer 8px from the panel edges', async (
   expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.footer.top + 0.5);
   await page.keyboard.press('Escape');
 });
+
+test('the chat dialog composer sends on Enter and keeps Shift+Enter newlines', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=surface-scaffold');
+  await page.getByRole('button', { name: 'Open Assistant' }).click();
+  const field = page.locator(
+    '#catalog-chat-dialog textarea[name="catalog-chat-message"]',
+  );
+  const transcript = page.locator(
+    '#catalog-chat-dialog [data-demo-chat-transcript]',
+  );
+  const messages = transcript.locator('.kui-content-item');
+  const before = await messages.count();
+  await field.focus();
+  // An empty Enter sends nothing.
+  await page.keyboard.press('Enter');
+  await expect(field).toHaveValue('');
+  await expect(messages).toHaveCount(before);
+  // Shift+Enter keeps a newline; Enter sends through the Send action.
+  await page.keyboard.type('Check the nightly');
+  await page.keyboard.press('Shift+Enter');
+  await page.keyboard.type('build log');
+  await expect(field).toHaveValue('Check the nightly\nbuild log');
+  await page.keyboard.press('Enter');
+  await expect(messages).toHaveCount(before + 2);
+  await expect(transcript).toContainText('Check the nightly');
+  await expect(field).toHaveValue('');
+  await expect(field).toBeFocused();
+  await page.keyboard.press('Escape');
+});

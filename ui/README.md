@@ -258,6 +258,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |
 | `ChoiceChips`                                                       | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |
 | `Composer`                                                          | `@kerfjs/ui/composer`                   | `@kerfjs/ui/composer.css`                |
+| `wireComposers`                                                     | `@kerfjs/ui/wire-composers`             | —                                        |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`      |
 | `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                        |
 | `createTokenSearchModel`                                            | `@kerfjs/ui/token-search-model`         | —                                        |
@@ -751,8 +752,11 @@ with an optional quiet `hint` and the trailing `actions`:
 />
 ```
 
-The app reads and clears the textarea from its send action and owns any
-keyboard shortcut. Put it in a `DialogSurface` with
+The app reads and clears the textarea from its send action. For
+Enter-to-send, set `submitOnEnter` and call `wireComposers(root)` from
+`@kerfjs/ui/wire-composers` once: Enter or Cmd/Ctrl+Enter clicks the first
+trailing action, Shift+Enter inserts a newline, and an IME composition commit
+or an empty message never sends. Put it in a `DialogSurface` with
 `footerPresentation="floating"` (`slot="footer"`) to float it over a
 transcript.
 

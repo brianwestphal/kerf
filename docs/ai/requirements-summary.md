@@ -495,7 +495,11 @@ brand while focus is within, a borderless native textarea that grows with
 `field-sizing: content` between `minRows` and `maxRows` lines (a fixed
 three-line scrolling fallback elsewhere), and an action row with an optional
 hint (the field's description when an `id` is given) and trailing actions.
-The app owns the value, sending, and keyboard shortcuts.
+The app owns the value and sending. Opt-in `submitOnEnter` with
+`wireComposers(root)` (`@kerfjs/ui/wire-composers`) turns Enter or
+Cmd/Ctrl+Enter into a click on the first trailing action; Shift+Enter, IME
+composition commits, empty messages, auto-repeat, and a disabled field or
+action never send.
 Select choices can be disabled with an optional reason. Multiple Selects can
 show localized select-all and clear actions that preserve controlled values,
 skip disabled choices, and report changes through ordinary events.

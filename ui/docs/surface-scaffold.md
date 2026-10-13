@@ -120,7 +120,8 @@ content-item edges when the body has `bodyInset="none"` and list geometry;
 `viewportGutter` and `footerOffset` can follow `deviceClass()` when a phone
 needs tighter edges. Put a [`Composer`](./composer.md) in the floating footer
 with `footerInset="none"`: its raised frame and shadow lift it over the
-transcript, and its field grows the measured footer.
+transcript, and its field grows the measured footer. With `submitOnEnter` and
+`wireComposers(root)`, Enter sends through the same action as the Send button.
 
 ```tsx
 <DialogSurface height={remify(560)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill-last" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
@@ -133,7 +134,7 @@ transcript, and its field grows the measured footer.
         </ContentItem>
       ))}
     </List>
-    <Composer slot="footer" id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={<wa-button variant="brand">Send</wa-button>} />
+    <Composer submitOnEnter slot="footer" id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>} />
   </wa-dialog>
 </DialogSurface>;
 ```

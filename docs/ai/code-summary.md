@@ -1002,6 +1002,13 @@ borderless native textarea sized by `field-sizing: content` between
 `minRows`/`maxRows` lines, and an action row (hint + trailing actions). Its
 requirements live in `ui/docs/composer.md`. Tests:
 `ui/tests/unit/composer.test.tsx`, `ui/tests/browser/composer.spec.ts`.
+`ui/src/components/forms/composer/wiring/wire-composers.ts`
+(`@kerfjs/ui/wire-composers`) is the opt-in Enter-to-send wiring for a
+`submitOnEnter` composer: one root `keydown` listener (plus composition
+tracking) that clicks the first trailing action. Tests:
+`ui/tests/unit/wire-composers.test.tsx`, the submitOnEnter case in
+`ui/tests/browser/composer.spec.ts`, and the chat dialog case in
+`ui/tests/browser/surface-scaffold.spec.ts`.
 `ui/src/components/forms/select/select.tsx` renders disabled choices and opt-in multiple-select action
 buttons. `ui/src/components/forms/select/internal/install-select-actions.ts`
 applies select-all or clear through

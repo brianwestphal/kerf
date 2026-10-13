@@ -23,19 +23,21 @@ Write a chat message or prompt in a raised frame whose border turns brand while 
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/composer` — exports `Composer`.
+- JavaScript: `@kerfjs/ui/composer` — exports `Composer`, `wireComposers`.
 - CSS: the browser build of `@kerfjs/ui/composer` pulls its CSS automatically; import `@kerfjs/ui/composer.css` manually only without the `browser` export condition.
+- Wiring: `wireComposers` from `@kerfjs/ui/wire-composers` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/composer`](../public-api-signatures-v1.md#kerfjsuicomposer) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/composer`](../public-api-signatures-v1.md#kerfjsuicomposer), [`@kerfjs/ui/wire-composers`](../public-api-signatures-v1.md#kerfjsuiwire-composers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
 - minRows and maxRows bounds for the growing field
 - optional hint, described by the field when an id is given
 - disabled field
+- submitOnEnter: Enter or Cmd/Ctrl+Enter activates the first trailing action, Shift+Enter inserts a newline (with wireComposers)
 - slotted into a DialogSurface floating footer
 
 ## Composition
@@ -53,7 +55,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 - value — controlled
 
-No wiring helper.
+**Wiring:** `wireComposers` is optional.
 
 ## Geometry
 

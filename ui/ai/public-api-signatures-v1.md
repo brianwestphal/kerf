@@ -3162,6 +3162,14 @@ interface ComposerProps {
     actions: KerfUiContent;
     /** Disable the field; the app disables its own actions. */
     disabled?: boolean;
+    /**
+     * Opt in to Enter-to-send: with `wireComposers` running over an ancestor,
+     * Enter (or Cmd/Ctrl+Enter) in the field activates the first trailing
+     * action, Shift+Enter inserts a newline, and an Enter that commits an IME
+     * composition or meets an empty message does not send. The field announces
+     * the shortcut with `aria-keyshortcuts`.
+     */
+    submitOnEnter?: boolean;
     /** Safe `data-*` identity on the root. */
     rootAttributes?: ComposerRootAttributes;
     className?: string;
@@ -3172,12 +3180,33 @@ interface ComposerProps {
  * A chat or prompt composer: a raised frame whose border turns brand while
  * focus is within, holding a borderless message field that grows with its
  * content between `minRows` and `maxRows` lines, above an action row with an
- * optional hint and trailing actions. The app owns the value, sending, and
- * any keyboard shortcut.
+ * optional hint and trailing actions. The app owns the value and sending;
+ * `submitOnEnter` with `wireComposers` adds Enter-to-send.
  */
-declare function Composer({ label, name, id, value, placeholder, minRows, maxRows, hint, actions, disabled, rootAttributes, className, slot, }: ComposerProps): kerfjs.SafeHtml;
+declare function Composer({ label, name, id, value, placeholder, minRows, maxRows, hint, actions, disabled, submitOnEnter, rootAttributes, className, slot, }: ComposerProps): kerfjs.SafeHtml;
 
 export { Composer, type ComposerProps, type ComposerRootAttributes };
+```
+
+## `@kerfjs/ui/wire-composers`
+
+```ts
+type Root = HTMLElement | Document;
+/**
+ * Enter-to-send for every `Composer` rendered with `submitOnEnter` below
+ * root. In its field, Enter (alone or with Cmd or Ctrl) activates the
+ * composer's first trailing action, so a keyboard send runs the same
+ * delegated handler as a click. Shift+Enter and Alt+Enter insert a newline.
+ * Nothing is sent, and no newline is inserted, when the message is empty or
+ * whitespace-only, the key is auto-repeating, or the first action is
+ * disabled, loading, or `aria-disabled`. An Enter that commits an IME
+ * composition (`isComposing`, keyCode 229, or between `compositionstart` and
+ * `compositionend`) is left to the input method. Dispose with the owning
+ * application.
+ */
+declare function wireComposers(root: Root): () => void;
+
+export { wireComposers };
 ```
 
 ## `@kerfjs/ui/select`

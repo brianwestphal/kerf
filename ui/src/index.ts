@@ -195,6 +195,7 @@ export {
   type ComposerProps,
   type ComposerRootAttributes,
 } from './components/forms/composer/composer.js';
+export { wireComposers } from './components/forms/composer/wiring/wire-composers.js';
 export {
   FieldLabel,
   type FieldLabelProps,

@@ -497,8 +497,20 @@ hint is visible only. The field draws no border or outline of its own: the
 frame is its boundary, and while focus is anywhere within the composer the
 frame's border turns brand (`Highlight` in forced-colors mode, with a 2px
 outline). Each trailing action keeps its own name and focus ring. `disabled`
-disables the field only; the app disables its actions. Sending, Enter or
-modifier shortcuts, and announcing a sent message stay with the app.
+disables the field only; the app disables its actions. Sending and
+announcing a sent message stay with the app.
+
+With `submitOnEnter` and `wireComposers`, the field carries
+`aria-keyshortcuts="Enter"`, so assistive technology announces the shortcut.
+Enter and Cmd/Ctrl+Enter activate the first trailing action, the same control
+a pointer or Tab-and-Space user reaches; Shift+Enter inserts a newline. An
+Enter that commits an IME composition (`isComposing`, keyCode 229, or between
+`compositionstart` and `compositionend`) is left to the input method, so
+people composing Japanese, Chinese, or Korean text never send a half-written
+message. An empty or whitespace-only message, an auto-repeating key, a
+disabled field, or a disabled, loading, or `aria-disabled` action sends
+nothing. A visible hint may also state the shortcut when the audience may not
+expect it.
 
 ## TokenSearchField
 

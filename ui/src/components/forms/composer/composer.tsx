@@ -40,6 +40,14 @@ export interface ComposerProps {
   actions: KerfUiContent;
   /** Disable the field; the app disables its own actions. */
   disabled?: boolean;
+  /**
+   * Opt in to Enter-to-send: with `wireComposers` running over an ancestor,
+   * Enter (or Cmd/Ctrl+Enter) in the field activates the first trailing
+   * action, Shift+Enter inserts a newline, and an Enter that commits an IME
+   * composition or meets an empty message does not send. The field announces
+   * the shortcut with `aria-keyshortcuts`.
+   */
+  submitOnEnter?: boolean;
   /** Safe `data-*` identity on the root. */
   rootAttributes?: ComposerRootAttributes;
   className?: string;
@@ -47,7 +55,11 @@ export interface ComposerProps {
   slot?: string;
 }
 
-const COMPOSER_PROTECTED = new Set(['data-component', 'data-disabled']);
+const COMPOSER_PROTECTED = new Set([
+  'data-component',
+  'data-disabled',
+  'data-submit-on-enter',
+]);
 
 function rowCount(value: number, name: string): number {
   if (!Number.isInteger(value) || value < 1)
@@ -59,8 +71,8 @@ function rowCount(value: number, name: string): number {
  * A chat or prompt composer: a raised frame whose border turns brand while
  * focus is within, holding a borderless message field that grows with its
  * content between `minRows` and `maxRows` lines, above an action row with an
- * optional hint and trailing actions. The app owns the value, sending, and
- * any keyboard shortcut.
+ * optional hint and trailing actions. The app owns the value and sending;
+ * `submitOnEnter` with `wireComposers` adds Enter-to-send.
  */
 export function Composer({
   label,
@@ -73,6 +85,7 @@ export function Composer({
   hint,
   actions,
   disabled = false,
+  submitOnEnter = false,
   rootAttributes = {},
   className = '',
   slot,
@@ -88,6 +101,7 @@ export function Composer({
       class={`kui-composer ${className}`.trim()}
       data-component="composer"
       data-disabled={disabled ? 'true' : undefined}
+      data-submit-on-enter={submitOnEnter ? 'true' : undefined}
       style={`--_kui-composer-min-rows:${min};--_kui-composer-max-rows:${max}`}
       slot={slot}
     >
@@ -98,6 +112,7 @@ export function Composer({
         rows={min}
         aria-label={label}
         aria-describedby={hintId || undefined}
+        aria-keyshortcuts={submitOnEnter ? 'Enter' : undefined}
         placeholder={placeholder}
         disabled={disabled}
       >

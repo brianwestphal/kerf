@@ -3953,7 +3953,7 @@
       "state": [{ "id": "value", "owner": "controlled", "required": false }],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireComposers"],
         "obligations": [],
         "stateAttributes": []
       },

@@ -257,8 +257,12 @@ a raised frame whose border turns brand while focus is within, a borderless
 textarea that grows between `minRows` and `maxRows` lines, and an action row
 with an optional `hint` and trailing `actions` (a brand Send button). Pass a
 `name`, a title-style `label`, and an `id` so the hint describes the field;
-read and clear the textarea in the send action. In a chat dialog, slot it into
-a `DialogSurface` floating footer with `footerInset="none"`.
+read and clear the textarea in the send action. For Enter-to-send, set
+`submitOnEnter` and call `wireComposers(root)` from `@kerfjs/ui/wire-composers`
+once: Enter or Cmd/Ctrl+Enter clicks the first trailing action, Shift+Enter
+inserts a newline, and IME commits and empty messages never send. In a chat
+dialog, slot it into a `DialogSurface` floating footer with
+`footerInset="none"`.
 
 For an unavailable Select value, set `SelectChoice.disabled` and optionally
 `disabledReason`. A multiple Select can pass `selectAllLabel` and `clearLabel`

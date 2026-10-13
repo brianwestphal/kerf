@@ -4840,7 +4840,8 @@
       ],
       "purpose": "Write a chat message or prompt in a raised frame whose border turns brand while focus is within, with a field that grows between row bounds and a trailing send action.",
       "publicExports": [
-        "Composer"
+        "Composer",
+        "wireComposers"
       ],
       "useWhen": [
         "Write a chat message, assistant prompt, or comment reply that is sent with a trailing action, especially in a DialogSurface floating footer over a transcript."
@@ -4859,7 +4860,7 @@
       "appOwns": [
         "value",
         "send action",
-        "keyboard shortcuts",
+        "keyboard shortcuts other than the opt-in Enter-to-send",
         "disabled and busy state of its actions",
         "placement"
       ],
@@ -4867,11 +4868,13 @@
         "minRows and maxRows bounds for the growing field",
         "optional hint, described by the field when an id is given",
         "disabled field",
+        "submitOnEnter: Enter or Cmd/Ctrl+Enter activates the first trailing action, Shift+Enter inserts a newline (with wireComposers)",
         "slotted into a DialogSurface floating footer"
       ],
       "accessibility": [
         "The field is a native textarea named by label; with an id, the hint is its accessible description.",
-        "The frame's brand border shows focus within, and the trailing actions keep their own names and focus rings."
+        "The frame's brand border shows focus within, and the trailing actions keep their own names and focus rings.",
+        "With submitOnEnter the field announces aria-keyshortcuts=\"Enter\"; Shift+Enter keeps a newline, and an Enter that commits an IME composition never sends."
       ],
       "geometry": {
         "margin": "none",
@@ -4885,7 +4888,14 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireComposers",
+          "import": "@kerfjs/ui/wire-composers",
+          "required": false,
+          "reason": "Only for submitOnEnter: turns Enter (or Cmd/Ctrl+Enter) in the field into a click on the first trailing action, skipping Shift+Enter, IME composition, empty or whitespace-only messages, auto-repeat, and a disabled or loading action."
+        }
+      ],
       "publicClasses": [
         "kui-composer"
       ],

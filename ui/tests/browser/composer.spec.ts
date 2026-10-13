@@ -116,3 +116,90 @@ test('Composer minRows starts the field taller', async ({ page }) => {
   // Three lines plus the field's 4px block padding on each side.
   expect(metrics.height).toBeCloseTo(3 * metrics.line + 8, 0);
 });
+
+test('Composer submitOnEnter sends on Enter, keeps Shift+Enter newlines, and waits out IME composition', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=composer');
+  const log = page.locator('output.catalog-log');
+  const field = page.getByRole('textbox', { name: 'Message' });
+  await expect(field).toHaveAttribute('aria-keyshortcuts', 'Enter');
+  const initialLog = (await log.textContent()) ?? '';
+  await field.focus();
+
+  // An empty or whitespace-only Enter neither sends nor inserts a newline.
+  await page.keyboard.press('Enter');
+  await expect(field).toHaveValue('');
+  await page.keyboard.type('   ');
+  await page.keyboard.press('Enter');
+  await expect(field).toHaveValue('   ');
+  await expect(log).toHaveText(initialLog);
+
+  // Shift+Enter inserts a newline; Enter sends through the Send action.
+  await field.fill('');
+  await page.keyboard.type('First');
+  await page.keyboard.press('Shift+Enter');
+  await page.keyboard.type('Second');
+  await expect(field).toHaveValue('First\nSecond');
+  await page.keyboard.press('Enter');
+  await expect(log).toHaveText('Sent: First\nSecond');
+  await expect(field).toHaveValue('');
+  await expect(field).toBeFocused();
+
+  // Cmd/Ctrl+Enter also sends.
+  await page.keyboard.type('Shortcut');
+  await page.keyboard.press('ControlOrMeta+Enter');
+  await expect(log).toHaveText('Sent: Shortcut');
+  await expect(field).toHaveValue('');
+
+  // While an IME composition is open, Enter commits it instead of sending.
+  await page.keyboard.type('nihon');
+  await field.evaluate((element) =>
+    element.dispatchEvent(
+      new CompositionEvent('compositionstart', { bubbles: true, data: '' }),
+    ),
+  );
+  await page.keyboard.press('Enter');
+  await expect(field).toHaveValue('nihon\n');
+  await expect(log).toHaveText('Sent: Shortcut');
+  // A keyCode 229 Enter after compositionend (WebKit's order) and an Enter
+  // flagged isComposing are left to the input method too.
+  const ime = await field.evaluate((element) => {
+    element.dispatchEvent(
+      new CompositionEvent('compositionend', { bubbles: true, data: 'にほん' }),
+    );
+    const committing = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    });
+    Object.defineProperty(committing, 'keyCode', { value: 229 });
+    element.dispatchEvent(committing);
+    const composing = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+      isComposing: true,
+    });
+    element.dispatchEvent(composing);
+    return [committing.defaultPrevented, composing.defaultPrevented];
+  });
+  expect(ime).toEqual([false, false]);
+  await expect(log).toHaveText('Sent: Shortcut');
+
+  // Once the composition has ended, Enter sends.
+  await field.fill('にほん');
+  await page.keyboard.press('Enter');
+  await expect(log).toHaveText('Sent: にほん');
+  await expect(field).toHaveValue('');
+
+  // A composer without submitOnEnter keeps Enter as a newline.
+  const prompt = page.getByRole('textbox', { name: 'Prompt' });
+  await expect(prompt).not.toHaveAttribute('aria-keyshortcuts');
+  await prompt.focus();
+  await page.keyboard.type('One');
+  await page.keyboard.press('Enter');
+  await page.keyboard.type('Two');
+  await expect(prompt).toHaveValue('One\nTwo');
+});

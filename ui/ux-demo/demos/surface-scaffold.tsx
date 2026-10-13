@@ -294,6 +294,7 @@ export function SurfaceScaffoldDemo() {
               ))}
             </List>
             <Composer
+              submitOnEnter
               slot="footer"
               id="catalog-chat-message"
               name="catalog-chat-message"

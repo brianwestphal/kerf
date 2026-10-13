@@ -12,9 +12,10 @@ export function ComposerDemo() {
     >
       <CatalogExample
         label="Chat Composer"
-        note="The field grows with each line up to eight, then scrolls; the frame turns brand while focus is within."
+        note="The field grows with each line up to eight, then scrolls; the frame turns brand while focus is within. submitOnEnter sends on Enter; Shift+Enter adds a line."
       >
         <Composer
+          submitOnEnter
           id="composer-demo-chat"
           name="composer-demo-chat"
           label="Message"
