@@ -39,7 +39,10 @@ export interface AnchorPositionOptions {
    * cap (`60%`, `calc()`, `min()`, `clamp()`) is resolved against the
    * element's fixed-position containing block (normally the viewport), and a
    * `max-height` transition on the element neither skews that read nor runs
-   * because of it. Default `false`.
+   * because of it. While an animation or transition is already driving
+   * `max-height` (an expand-from-0 entrance, a `@keyframes` animation), the
+   * cap is the value it is headed to, and it is left running. Default
+   * `false`.
    */
   fitHeight?: boolean;
 }
@@ -179,13 +182,38 @@ const SWAPPED = [
  * transition keeps running. The restored cap is settled before the app's
  * transitions return, so they see no change to animate.
  *
+ * While an animation or transition on `el` drives `max-height`, the cap is
+ * the value it is headed to ({@link animatedMaxHeight}) and nothing is
+ * swapped.
+ *
  * A cap that stays relative after computing (a percentage, `calc()`,
  * `min()`, `clamp()`) is resolved against `el`'s containing block by
  * {@link resolveHeight}; a keyword (`none`, `fit-content`) is no cap.
  */
 function ownMaxHeight(el: HTMLElement): number {
-  const inline = el.style;
   const style = window.getComputedStyle(el);
+  const maxHeight = animatedMaxHeight(el) ?? swappedMaxHeight(el, style);
+  const inset =
+    style.boxSizing === 'border-box'
+      ? 0
+      : VERTICAL_EDGES.reduce(
+          (sum, edge) => sum + (Number.parseFloat(style[edge]) || 0),
+          0,
+        );
+  if (maxHeight.endsWith('px')) return Number.parseFloat(maxHeight) + inset;
+  // A keyword is no cap, and so is a keyframe `var()` that only `el` could
+  // resolve (the probe does not inherit `el`'s custom properties).
+  if (/^[a-z-]+$|var\(/.test(maxHeight)) return Infinity;
+  return resolveHeight(el, maxHeight) + inset;
+}
+
+/**
+ * `el`'s computed `max-height` with the published room swapped out, as
+ * {@link ownMaxHeight} describes: the room and, when `el` has transitions,
+ * the transition longhands are overridden for the read and restored exactly.
+ */
+function swappedMaxHeight(el: HTMLElement, style: CSSStyleDeclaration): string {
+  const inline = el.style;
   const saved = SWAPPED.map((name): [string, string, string] => [
     name,
     inline.getPropertyValue(name),
@@ -211,22 +239,47 @@ function ownMaxHeight(el: HTMLElement): number {
   }
   inline.setProperty(AVAILABLE_HEIGHT, UNBOUNDED_ROOM);
   const maxHeight = style.maxHeight;
-  const inset =
-    style.boxSizing === 'border-box'
-      ? 0
-      : VERTICAL_EDGES.reduce(
-          (sum, edge) => sum + (Number.parseFloat(style[edge]) || 0),
-          0,
-        );
   saved.forEach(([name, value, priority], index) => {
     if (value) inline.setProperty(name, value, priority);
     else inline.removeProperty(name);
     // Settle the restored room before the transitions return.
     if (!index) style.getPropertyValue('max-height');
   });
-  if (maxHeight.endsWith('px')) return Number.parseFloat(maxHeight) + inset;
-  if (/^[a-z-]+$/.test(maxHeight)) return Infinity;
-  return resolveHeight(el, maxHeight) + inset;
+  return maxHeight;
+}
+
+/**
+ * The `max-height` an unfinished animation or transition on `el` is headed
+ * to, or `undefined` when none drives it. While one runs (or is paused), the
+ * computed value is its current frame — part-way through an app's expand
+ * transition, or a `@keyframes` value — not the cap the element settles at,
+ * and lifting the published room could retarget or cancel the app's
+ * transition. So the cap is read from the effect instead: its last
+ * `max-height` keyframe, or its first while the current iteration plays in
+ * reverse. The topmost such effect in composite order wins; a finished one
+ * that still fills already shows its final value in computed style.
+ */
+function animatedMaxHeight(el: HTMLElement): string | undefined {
+  // An engine (or DOM shim) without Web Animations has nothing animating.
+  const animations = el.getAnimations?.() ?? [];
+  for (let index = animations.length - 1; index >= 0; index--) {
+    const animation = animations[index]!;
+    const effect = animation.effect as KeyframeEffect | null;
+    const frames = (effect?.getKeyframes() ?? []).filter(
+      (frame) => frame['maxHeight'] != null,
+    );
+    if (!frames.length) continue;
+    if (animation.playState === 'finished') return undefined;
+    const { direction, currentIteration } = effect!.getComputedTiming();
+    const odd = (currentIteration ?? 0) % 2 === 1;
+    const reversed =
+      (direction === 'reverse' ||
+        (direction === 'alternate' && odd) ||
+        (direction === 'alternate-reverse' && !odd)) !==
+      animation.playbackRate < 0;
+    return String(frames[reversed ? 0 : frames.length - 1]!['maxHeight']);
+  }
+  return undefined;
 }
 
 /**

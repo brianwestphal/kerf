@@ -728,6 +728,136 @@ describe('viewportMargin / fitHeight', () => {
     });
   });
 
+  describe('an animation or transition driving max-height', () => {
+    // happy-dom runs no animations: stand in for `getAnimations()` with the
+    // shape of a running CSS transition or `@keyframes` animation.
+    function animation({
+      frames,
+      playState = 'running',
+      direction = 'normal',
+      currentIteration = 0,
+      playbackRate = 1,
+    }: {
+      frames: Keyframe[];
+      playState?: AnimationPlayState;
+      direction?: PlaybackDirection;
+      currentIteration?: number | null;
+      playbackRate?: number;
+    }): Animation {
+      return {
+        playState,
+        playbackRate,
+        effect: {
+          getKeyframes: () => frames,
+          getComputedTiming: () => ({ direction, currentIteration }),
+        },
+      } as unknown as Animation;
+    }
+    // Room below 800 − 454 = 346; room above 400 − 4 = 396. The element's
+    // computed max-height is the current frame, 120px, which fits below; the
+    // value the animation is headed to, 380px, fits only above.
+    function animatedElement(...animations: Animation[]): {
+      el: HTMLElement;
+      anchor: Element;
+      swapped: () => boolean;
+    } {
+      setViewport(1000, 800);
+      const anchor = anchorAt({ left: 100, right: 150, top: 400, bottom: 450 });
+      const el = cappedElement(80, 500);
+      el.style.maxHeight = '120px';
+      el.getAnimations = () => animations;
+      const setProperty = vi.spyOn(el.style, 'setProperty');
+      const swapped = () =>
+        setProperty.mock.calls.some(([, value]) => value === '9999999px');
+      return { el, anchor, swapped };
+    }
+    const expand = [
+      { offset: 0, maxHeight: '0px' },
+      { offset: 1, maxHeight: '380px' },
+    ];
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('reads the cap a running transition is headed to, without the swap', () => {
+      const { el, anchor, swapped } = animatedElement(
+        animation({ frames: [{ offset: 0, opacity: '0' }] }),
+        animation({ frames: expand }),
+      );
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+      // The published room was never lifted, so the app's transition is
+      // neither retargeted nor canceled.
+      expect(swapped()).toBe(false);
+    });
+
+    it('reads the first keyframe while the current iteration plays in reverse', () => {
+      const reversed = [
+        { offset: 0, maxHeight: '380px' },
+        { offset: 0.5, opacity: '0.5' },
+        { offset: 1, maxHeight: '0px' },
+      ];
+      for (const timing of [
+        { direction: 'reverse' },
+        { direction: 'alternate', currentIteration: 1 },
+        { direction: 'alternate-reverse', currentIteration: null },
+        { playbackRate: -1 },
+      ] as const) {
+        const { el, anchor } = animatedElement(
+          animation({ frames: reversed, ...timing }),
+        );
+        positionAnchored(el, anchor, { fitHeight: true });
+        expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+        el.remove();
+        anchor.remove();
+      }
+      // A forward-playing iteration of the same keyframes heads to 0px.
+      const { el, anchor } = animatedElement(
+        animation({ frames: reversed, direction: 'alternate' }),
+      );
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.top).toBe('454px');
+    });
+
+    it('reads computed style for a finished, filling animation', () => {
+      const { el, anchor, swapped } = animatedElement(
+        animation({ frames: expand }),
+        animation({ frames: expand, playState: 'finished' }),
+      );
+      positionAnchored(el, anchor, { fitHeight: true });
+      // The topmost effect has finished: its fill is the computed 120px.
+      expect(el.style.top).toBe('454px');
+      expect(swapped()).toBe(true);
+    });
+
+    it('treats a keyframe var() as no cap', () => {
+      const { el, anchor } = animatedElement(
+        animation({
+          frames: [
+            { offset: 0, maxHeight: '0px' },
+            { offset: 1, maxHeight: `var(${AVAILABLE})` },
+          ],
+        }),
+      );
+      positionAnchored(el, anchor, { fitHeight: true });
+      // Measured at its full 500px: the roomier side (above) wins.
+      expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+    });
+
+    it('ignores effectless animations and engines without getAnimations', () => {
+      const { el, anchor } = animatedElement({
+        playState: 'running',
+        effect: null,
+      } as unknown as Animation);
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.top).toBe('454px');
+
+      (el as { getAnimations?: unknown }).getAnimations = undefined;
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.top).toBe('454px');
+    });
+  });
+
   it('never reads back the room it published as the element cap', () => {
     setViewport(1000, 800);
     const anchor = anchorAt({ left: 100, right: 150, top: 400, bottom: 450 });

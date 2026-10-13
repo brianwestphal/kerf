@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 367100,
-  "measuredLargestJavaScriptGzip": 149167,
-  "measuredTotalJavaScriptGzip": 367069,
+  "totalJavaScriptGzip": 367300,
+  "measuredLargestJavaScriptGzip": 149359,
+  "measuredTotalJavaScriptGzip": 367265,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4371,6 +4371,22 @@
         "measuredTotalJavaScriptGzip": 367069,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 367100
+      }
+    },
+    {
+      "at": "2026-10-13T16:06:02.687Z",
+      "reason": "KF-YW3PRD: kerfjs/overlay fitHeight reads a running max-height animation end keyframe as the cap instead of its current frame (+0.2 kB gzip via the shared overlay positioning core)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 149167,
+        "measuredTotalJavaScriptGzip": 367069,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 367100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 149359,
+        "measuredTotalJavaScriptGzip": 367265,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 367300
       }
     }
   ]

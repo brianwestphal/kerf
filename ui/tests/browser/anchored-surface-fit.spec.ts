@@ -250,3 +250,88 @@ test('a max-height transition on the surface does not run on reposition', async 
   expect(result.height).toBeCloseTo(before.bottom - before.top, 0);
   expect(result.top).toBeCloseTo(before.top, 0);
 });
+
+// An app animation that drives the surface's `max-height` makes the computed
+// value its current frame, not the cap the surface settles at. Expand the
+// surface (with a transition, or a `@keyframes` animation) towards a cap that
+// fits only above its field (the room above is larger) from a start that fits
+// below, reposition mid-expand, and return the room kerf published, which
+// names the side it chose.
+const repositionMidExpand = async (
+  surface: Locator,
+  rooms: { below: number; above: number },
+  kind: 'transition' | 'keyframes',
+) =>
+  surface.evaluate(
+    async (element, { below, above, kind }) => {
+      const frame = () =>
+        new Promise((resolve) =>
+          globalThis.requestAnimationFrame(() => resolve(null)),
+        );
+      const cap = Math.round((below + above) / 2);
+      if (kind === 'transition') {
+        element.style.transition = 'none';
+        element.style.maxHeight = '0px';
+        globalThis.getComputedStyle(element).getPropertyValue('max-height');
+        element.style.transition = 'max-height 4000ms linear';
+        element.style.maxHeight = `${cap}px`;
+      } else {
+        const style = document.createElement('style');
+        style.textContent = `@keyframes kerf-fit-expand { from { max-height: 0px } to { max-height: ${cap}px } }`;
+        document.head.append(style);
+        element.style.maxHeight = '40px';
+        element.style.animation = 'kerf-fit-expand 4000ms linear';
+      }
+      await frame();
+      await frame();
+      const events: string[] = [];
+      for (const type of [
+        'transitioncancel',
+        'transitionrun',
+        'animationcancel',
+        'animationstart',
+      ])
+        element.addEventListener(type, () => events.push(type));
+      const before = element.getAnimations();
+      const midFrame = Number.parseFloat(
+        globalThis.getComputedStyle(element).maxHeight,
+      );
+      globalThis.dispatchEvent(new Event('resize'));
+      const after = element.getAnimations();
+      await frame();
+      return {
+        cap,
+        midFrame,
+        events,
+        // The app's animation is the same one, still running.
+        kept:
+          before.length > 0 &&
+          before.every((animation) => after.includes(animation)) &&
+          after.every((animation) => animation.playState === 'running'),
+        available: Number.parseFloat(
+          element.style.getPropertyValue('--kerf-anchor-available-height'),
+        ),
+      };
+    },
+    { ...rooms, kind },
+  );
+
+for (const [kind, name] of [
+  ['transition', 'expand transition'],
+  ['keyframes', '@keyframes animation'],
+] as const)
+  test(`a running max-height ${name} is measured at its end value`, async ({
+    page,
+  }) => {
+    const { surface, rooms } = await openBelowMiddle(page);
+    const result = await repositionMidExpand(surface, rooms, kind);
+    // Mid-expand the frame fits below, but the cap it settles at only fits
+    // above: kerf takes the side for that cap, and the app's animation keeps
+    // running untouched.
+    expect(result.midFrame).toBeLessThan(rooms.below);
+    expect(result.cap).toBeGreaterThan(rooms.below);
+    expect(result.cap).toBeLessThan(rooms.above);
+    expect(result.available).toBeCloseTo(rooms.above, 0);
+    expect(result.events).toEqual([]);
+    expect(result.kept).toBe(true);
+  });

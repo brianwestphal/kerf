@@ -199,7 +199,10 @@ const BUDGETS = [
     // (%, calc, min, clamp) with a containing-block probe, and holds off a
     // max-height transition during the cap read (it reported the running
     // value and fired transition events).
-    budgetKb: 22.0,
+    // KF-YW3PRD (+0.20 KB): fitHeight reads a running max-height animation
+    // or transition at the keyframe it is headed to (its current frame
+    // skewed the cap) and skips the room swap so the app's animation runs on.
+    budgetKb: 22.3,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
