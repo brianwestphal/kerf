@@ -2687,7 +2687,7 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
   await expect(sidebar).toBeVisible();
   await expect(
-    sidebar.getByRole('navigation', { name: 'Kerf components' }),
+    sidebar.getByRole('navigation', { name: 'Kerf Components' }),
   ).toBeVisible();
   await expect
     .poll(() =>

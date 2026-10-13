@@ -552,7 +552,7 @@ test.describe('scroll dividers', () => {
     expect(paneBox).toEqual(viewBox);
     await expect(view).not.toHaveAttribute('data-scroll-overflow');
     await expect(content).toHaveAttribute('data-scroll-overflow', 'b');
-    await expect(content).toHaveAttribute('aria-label', 'Pane items');
+    await expect(content).toHaveAttribute('aria-label', 'Pane Items');
     expect(await edge(bottom)).toBe(false);
     expect(await shows(header)).toBe(false);
     expect(await shows(footer)).toBe(true);

@@ -186,7 +186,7 @@ mount(root, () => (
     <div data-case="nav-stack-pane" style="height: 360px; display: grid">
       <NavStack
         id="stack-pane"
-        label="Stack with a pane"
+        label="Stack with a Pane"
         views={[
           {
             key: 'pane',
@@ -195,17 +195,17 @@ mount(root, () => (
             headerList: { gap: 'xs', textInsets: 'rl' },
             footer: <ToolbarText text="24 items" size="small" />,
             footerList: { textInsets: 'rl' },
-            pane: { contentElement: 'main', contentLabel: 'Pane items' },
+            pane: { contentElement: 'main', contentLabel: 'Pane Items' },
             content: items(24),
           },
         ]}
-        bottomToolbar={{ label: 'Pane stack' }}
+        bottomToolbar={{ label: 'Pane Stack' }}
       />
     </div>
     <div data-case="nav-stack-separator" style="height: 300px; display: grid">
       <NavStack
         id="stack-separator"
-        label="Automatic separator"
+        label="Automatic Separator"
         views={separatorStackViews.value}
         bottomToolbar={{ label: 'Status' }}
       />
@@ -216,7 +216,7 @@ mount(root, () => (
     >
       <NavStack
         id="stack-separator-hidden"
-        label="Hidden separator"
+        label="Hidden Separator"
         views={[SUNKEN_SEPARATOR_VIEW]}
         separator="hidden"
         chromeDividers="always"
@@ -263,7 +263,7 @@ mount(root, () => (
               <Pane
                 header={
                   <Toolbar
-                    label="Pane scene header"
+                    label="Pane Scene Header"
                     leading={<ToolbarText text="Filters" size="small" />}
                   />
                 }
@@ -299,7 +299,7 @@ mount(root, () => (
     <div data-case="tab-scaffold-hidden" style="height: 300px; display: grid">
       <TabNavigator
         id="scaffold-hidden"
-        label="Hidden separator"
+        label="Hidden Separator"
         active="only"
         separator="hidden"
         chromeDividers="always"
@@ -359,7 +359,7 @@ mount(root, () => (
       style="height: 240px; display: grid; grid-template-rows: auto minmax(0, 1fr) auto"
     >
       <Toolbar
-        label="Target top"
+        label="Target Top"
         leading={<ToolbarText text="Top" size="small" />}
       />
       <div id="target-scroller" style="overflow: auto">

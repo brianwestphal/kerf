@@ -688,7 +688,12 @@ literals passed to known title-style label props: ToolbarText titles,
 ListHeader, CatalogExample / CatalogExampleStack labels, PopupMenu items, choices, tabs, empty/banner titles, button text,
 FieldLabel, and the accessible names of icon-only controls (IconButton /
 IconToggleButton / PopupMenu `label`, SplitButton `optionsLabel`,
-TokenSearchField `clearLabel`, an icon-only button's `aria-label`). It
+TokenSearchField `clearLabel`, an icon-only button's `aria-label`), panel
+toolbar `toggle: { action, name }` names, region and landmark names (Pane,
+Workbench, Toolbar, ToolbarControlGroup, SunkenPanel, List, TabBar, NavStack,
+CollapsiblePanel, FloatingToolbar, ResizableRegion labels, their nested
+panel/toolbar/pane config labels, and landmark `aria-label`s), and raw
+`wa-input` / `wa-select` / `wa-textarea` / `wa-radio-group` labels. It
 reports words left lowercase against Apple's title-style
 rule (`ui/docs/writing.md`); `ui/tests/unit/ui-doctor-copy-capitalization.test.ts`
 pins the word rules and prop coverage.

@@ -82,7 +82,7 @@ describe('Catalog', () => {
       ),
     ).not.toBeNull();
     expect(html).toContain(
-      '<nav aria-label="Acme UI components" data-catalog-sidebar>',
+      '<nav aria-label="Acme UI Components" data-catalog-sidebar>',
     );
     expect(html).toContain(
       'data-component="toolbar-text" data-size="large" role="heading" aria-level="1"><span class="kui-toolbar-text__text">Acme UI</span>',

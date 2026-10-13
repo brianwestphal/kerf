@@ -8,11 +8,12 @@ import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 // KUI-D040: visible labels that Kerf UI's capitalization rule (docs/writing.md)
 // gives title style — button titles, menu items, segment and pop-up choices,
 // tab labels, field labels, list/group headers (including catalog example
-// labels), view/pane/dialog titles, and panel toggle names —
-// plus the accessible names of icon-only controls, checked against Apple's
-// title-style rule. Only string literals passed to known title-style props
-// are read, so prose, descriptions, placeholders, tooltips, checkbox/switch
-// option text, status lines, region names, and dynamic data are never judged. The check reports lowercase words title style capitalizes; it
+// labels), view/pane/dialog titles, panel toggle names, and region and
+// landmark names — plus the accessible names of icon-only controls, checked
+// against Apple's title-style rule. Only string literals passed to known
+// title-style props are read, so prose, descriptions, placeholders, tooltips,
+// checkbox/switch option text, status lines, LoadingSpinner and Skeleton
+// labels, and dynamic data are never judged. The check reports lowercase words title style capitalizes; it
 // does not report capitalized short words, because Apple capitalizes a
 // preposition of any length inside a phrasal verb ("Log In to the Server").
 
@@ -157,12 +158,90 @@ const titleStyleProps = new Map([
   ['IconButton', { props: ['label'] }],
   ['IconToggleButton', { props: ['label'] }],
   ['TokenSearchField', { props: ['clearLabel'] }],
-  ['NavStack', { props: ['backText'], entries: { views: ['title'] } }],
+  // NavStack view titles and backText, plus the stack's region name and each
+  // view's toolbar and pane region names.
+  [
+    'NavStack',
+    {
+      props: ['backText', 'label'],
+      entries: {
+        views: ['title', 'label', 'contentLabel'],
+        bottomToolbar: ['label'],
+      },
+    },
+  ],
   ['SplitView', { props: ['backLabel'] }],
   ['PopupMenu', { props: ['text', 'label'], entries: { items: ['label'] } }],
   ['SegmentedControl', { entries: { choices: ['label'] } }],
   ['Select', { entries: { choices: ['label'] } }],
   ['TabNavigator', { entries: { tabs: ['label'] } }],
+  // Region and landmark names: the accessible name of a pane, toolbar,
+  // control group, list, tab bar, or layout region names it, so it is title
+  // style ("Ticket Workbench", "View Actions"). Structured-config props carry
+  // the same names on their nested panels, toolbars, and panes.
+  ['Pane', { props: ['label', 'contentLabel'] }],
+  [
+    'Workbench',
+    {
+      props: ['label'],
+      entries: {
+        leftRail: ['label', 'contentLabel'],
+        rightRail: ['label', 'contentLabel'],
+        bottomDrawer: ['label', 'contentLabel'],
+        mainToolbar: ['label'],
+        mainBottomToolbar: ['label'],
+        mainPane: ['contentLabel'],
+      },
+    },
+  ],
+  ['Toolbar', { props: ['label'] }],
+  ['ToolbarControlGroup', { props: ['label'] }],
+  ['SunkenPanel', { props: ['ariaLabel'] }],
+  ['List', { props: ['ariaLabel'] }],
+  ['TabBar', { props: ['label'] }],
+  [
+    'CollapsiblePanel',
+    {
+      props: ['label'],
+      entries: {
+        toolbar: ['label'],
+        bottomToolbar: ['label'],
+        pane: ['contentLabel'],
+      },
+    },
+  ],
+  ['FloatingToolbar', { props: ['label'] }],
+  ['ResizableRegion', { props: ['label'] }],
+]);
+// Landmark elements and landmark roles: their `aria-label` names the region.
+const landmarkTags = new Set([
+  'section',
+  'nav',
+  'aside',
+  'main',
+  'header',
+  'footer',
+  'form',
+  'search',
+]);
+const landmarkRoles = new Set([
+  'region',
+  'navigation',
+  'complementary',
+  'main',
+  'banner',
+  'contentinfo',
+  'form',
+  'search',
+]);
+// A raw Web Awesome field's or radio group's `label` is a field label. The
+// option text of `wa-checkbox`, `wa-switch`, and `wa-radio` is sentence style
+// and is not read.
+const fieldLabelTags = new Set([
+  'wa-input',
+  'wa-select',
+  'wa-textarea',
+  'wa-radio-group',
 ]);
 const titleToolbarTextSizes = new Set(['xlarge', 'xlarge-fixed', 'large']);
 const buttonTags = new Set(['button', 'wa-button']);
@@ -393,6 +472,19 @@ export function titleStyleLabels(fileName, source) {
       if (name === 'ToolbarText' && toolbarTextIsTitle(node)) {
         const literal = literalOf(attributeValueNode(attribute(node, 'text')));
         if (literal) add(literal, 'ToolbarText text');
+      }
+      if (
+        landmarkTags.has(name) ||
+        landmarkRoles.has(textAttribute(node, 'role') ?? '')
+      ) {
+        const literal = literalOf(
+          attributeValueNode(attribute(node, 'aria-label')),
+        );
+        if (literal) add(literal, `<${name}> aria-label`);
+      }
+      if (fieldLabelTags.has(name)) {
+        const literal = literalOf(attributeValueNode(attribute(node, 'label')));
+        if (literal) add(literal, `<${name}> label`);
       }
       const config = titleStyleProps.get(name);
       if (config) {

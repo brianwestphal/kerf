@@ -38,7 +38,7 @@ export function mountCommandPaletteAdapter(
     return (
       <section
         class="app-command-palette kui-content"
-        aria-label="Command palette"
+        aria-label="Command Palette"
       >
         <ContentItem>
           <label for="app-command-query">Search commands</label>
@@ -68,7 +68,7 @@ export function mountCommandPaletteAdapter(
         </ul>
         <footer
           class="kui-control-cluster kui-content-item"
-          aria-label="Command palette actions"
+          aria-label="Command Palette Actions"
         >
           <button type="button" data-action="clear-query">
             Clear Search

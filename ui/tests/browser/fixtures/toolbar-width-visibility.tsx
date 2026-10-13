@@ -16,7 +16,7 @@ mount(root, () => (
   <main data-render={renders.value}>
     <div data-test-toolbar-host style="width:var(--fixture-width, 432px)">
       <Toolbar
-        label="Width fixture"
+        label="Width Fixture"
         leading={<ToolbarText text="Workspace" hideBelow={px(176)} />}
         trailing={[
           <ToolbarControlGroup label="Primary" single>

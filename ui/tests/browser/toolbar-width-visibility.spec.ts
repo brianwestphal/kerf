@@ -188,7 +188,7 @@ test('container thresholds follow equality, tokens, rendering, relocation and di
     content: bundle.outputFiles.find((file) => file.path.endsWith('.js'))!.text,
   });
   const toolbar = page.locator(
-    '[data-component="toolbar"][aria-label="Width fixture"]',
+    '[data-component="toolbar"][aria-label="Width Fixture"]',
   );
   const host = page.locator('[data-test-toolbar-host]');
   const utility = page.getByRole('group', {

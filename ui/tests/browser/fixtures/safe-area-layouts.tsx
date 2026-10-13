@@ -126,7 +126,7 @@ function render() {
       return (
         <Workbench
           id="safe-workbench"
-          label="Safe workbench"
+          label="Safe Workbench"
           leftRail={{
             label: 'Navigator',
             collapsed: leftCollapsed.value,
@@ -145,13 +145,13 @@ function render() {
       return (
         <NavStack
           id="safe-nav-stack"
-          label="Safe stack"
+          label="Safe Stack"
           views={[
             {
               key: 'root',
               toolbar: { title: 'Messages' },
               content: items('Messages'),
-              bottomToolbar: { label: 'Messages bottom', dividerSides: '' },
+              bottomToolbar: { label: 'Messages Bottom', dividerSides: '' },
             },
           ]}
         />
@@ -162,7 +162,7 @@ function render() {
       return (
         <NavStack
           id="safe-nav-stack"
-          label="Safe stack"
+          label="Safe Stack"
           views={[
             {
               key: 'root',

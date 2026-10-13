@@ -1101,7 +1101,7 @@ test(
           'export function DemandSegmentsControl({ visible }: { visible: boolean }) {',
           '  if (!visible) return <></>;',
           '  return (',
-          '    <ToolbarControlGroup label="Demand segments">',
+          '    <ToolbarControlGroup label="Demand Segments">',
           '      <SegmentedControl',
           '        id="demand"',
           '        label="Demand"',

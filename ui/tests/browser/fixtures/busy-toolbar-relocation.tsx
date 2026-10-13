@@ -35,7 +35,7 @@ const root = document.querySelector<HTMLElement>('[data-fixture-root]')!;
 root.dataset.exportCount = '0';
 mount(root, () => {
   const toolbar = {
-    label: 'Navigator actions',
+    label: 'Navigator Actions',
     title: <ToolbarText text="Navigator" />,
     trailing: (
       <ToolbarControlGroup
@@ -55,7 +55,7 @@ mount(root, () => {
   return (
     <List fill>
       <Toolbar
-        label="Work state"
+        label="Work State"
         leading={
           <ToolbarControlGroup content="text" single>
             <button type="button" data-toggle-busy>

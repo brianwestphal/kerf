@@ -12,18 +12,18 @@ const root = document.querySelector<HTMLElement>('[data-fixture-root]')!;
 mount(root, () => (
   <Workbench
     id="quotes-workbench"
-    label="Quotes workspace"
+    label="Quotes Workspace"
     mainLabel="Quotes"
     mainTabIndex={0}
     mainOutlined
     main={
       <Pane
-        label="Quotes pane"
+        label="Quotes Pane"
         appearance="sunken"
         deepInset
         outlined
         tabIndex={0}
-        contentLabel="Quotes content"
+        contentLabel="Quotes Content"
       >
         <div class="edge-list">
           <div class="edge-matrix" data-edge-matrix>

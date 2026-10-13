@@ -30,7 +30,7 @@ mount(root, () => (
         <section
           data-test-search-surface
           data-token-search-keep-open
-          aria-label="Choose updated date"
+          aria-label="Choose Updated Date"
           style="position:absolute;inset-block-start:calc(100% + 8px);inset-inline-start:0;width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--kui-color-neutral-border-normal);border-radius:12px;background:var(--kui-color-surface);color:var(--kui-color-text);z-index:10"
         >
           <strong>Updated before</strong>

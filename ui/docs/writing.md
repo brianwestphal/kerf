@@ -24,6 +24,7 @@ uses sentence style ("Changes sync when you reconnect").
 | Catalog example and stack labels (`CatalogExample`, `CatalogExampleStack`)                          | Title                        | Heading Identity Stays Whole, Icon Trigger in a Group  |
 | Content item titles: the name an item or card shows                                                 | Title                        | Build Output, Work Area, Unsaved Changes               |
 | Field labels (`FieldLabel`, a field's `label`)                                                      | Title                        | Project Name, Release Date                             |
+| Region and landmark names (accessible names of panes, toolbars, groups, lists, tab bars)            | Title                        | Ticket Workbench, View Actions, Open Documents         |
 | Accessible names of icon-only controls                                                              | Title                        | More Actions, Clear Search                             |
 | `EmptyState`, `StateBanner`, alert, and notification titles that are fragments                      | Title, no ending punctuation | No Release Tasks, Migration Needs Review               |
 | The same titles written as complete sentences                                                       | Sentence, with punctuation   | Release tasks could not be refreshed.                  |
@@ -103,13 +104,24 @@ The covered props are:
 - `NavStack` view titles and `backText`, and `SplitView` `backLabel`;
 - `FieldLabel` text and the text of a `button` or `wa-button`;
 - the `name` of a panel toolbar's `toggle: { action, name }`;
+- region and landmark names: the `label` of `Pane`, `Workbench`, `Toolbar`,
+  `ToolbarControlGroup`, `TabBar`, `NavStack`, `CollapsiblePanel`,
+  `FloatingToolbar`, and `ResizableRegion`, the `ariaLabel` of `SunkenPanel`
+  and `List`, a `Pane`'s `contentLabel`, the panel, toolbar, and pane labels
+  inside `Workbench`, `CollapsiblePanel`, and `NavStack` configuration, and
+  the `aria-label` of a landmark element (`section`, `nav`, `aside`, `main`,
+  `header`, `footer`, `form`, `search`) or landmark role;
+- the `label` of a raw `wa-input`, `wa-select`, `wa-textarea`, or
+  `wa-radio-group`;
 - the accessible names of icon-only controls: `IconButton` and
   `IconToggleButton` `label`, `PopupMenu` `label`, `SplitButton`
   `optionsLabel`, `TokenSearchField` `clearLabel`, and the `aria-label` of a
   `button` or `wa-button` whose only content is an icon.
 
-The check never judges sentence-style surfaces, dynamic values, or text ending
-with `.`, `!`, or `?`. It skips tokens containing digits, code, or paths, and
+The check never judges sentence-style surfaces (including `wa-checkbox`,
+`wa-switch`, and `wa-radio` option text and the `LoadingSpinner` and
+`Skeleton` status labels), dynamic values, or text ending with `.`, `!`, or
+`?`. It skips tokens containing digits, code, or paths, and
 lowercase-led brands such as iOS. It does not report capitalized short words,
 because Apple capitalizes a phrasal verb's particle. Suppress `KUI-D040` for a
 lowercase brand or product name. See [the doctor](./ui-doctor.md).

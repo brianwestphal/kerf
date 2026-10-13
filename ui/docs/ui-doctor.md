@@ -170,6 +170,18 @@ covers these string literals:
 - the `name` of a panel toolbar's `toggle: { action, name }` object literal
   (Workbench panels, `CollapsiblePanel`), which names the toggle group and
   completes its "Show …" / "Hide …" label;
+- region and landmark names: the `label` of `Pane`, `Workbench`, `Toolbar`,
+  `ToolbarControlGroup`, `TabBar`, `NavStack`, `CollapsiblePanel`,
+  `FloatingToolbar`, and `ResizableRegion`; the `ariaLabel` of `SunkenPanel`
+  and `List`; a `Pane`'s `contentLabel`; the panel, toolbar, and pane labels
+  in `Workbench` (`leftRail`, `rightRail`, `bottomDrawer`, `mainToolbar`,
+  `mainBottomToolbar`, `mainPane`), `CollapsiblePanel` (`toolbar`,
+  `bottomToolbar`, `pane`), and `NavStack` (`views`, `bottomToolbar`)
+  configuration declared in the same file; and the `aria-label` of a
+  `section`, `nav`, `aside`, `main`, `header`, `footer`, `form`, or `search`
+  element or an element with a landmark `role`;
+- the `label` of a raw `wa-input`, `wa-select`, `wa-textarea`, or
+  `wa-radio-group`, which is a field or group label;
 - the accessible names of icon-only controls, which the rule also gives title
   style: `IconButton` and `IconToggleButton` `label`, `PopupMenu` `label`,
   `SplitButton` `optionsLabel`, `TokenSearchField` `clearLabel`, and the
@@ -183,10 +195,9 @@ The check is deliberately one-directional, to keep false positives rare:
   Server").
 - It leaves text ending in `.`, `!`, or `?` to sentence style.
 - It ignores dynamic values and every sentence-style surface: descriptions,
-  details, placeholders, tooltips, status text, and option text. It also
-  leaves region and group names (`Pane`, `Workbench`, `Toolbar`,
-  `ToolbarControlGroup`, `section`) and raw Web Awesome field labels alone,
-  even though the rule gives those title style too.
+  details, placeholders, tooltips, status text, and option text, including
+  `wa-checkbox`, `wa-switch`, and `wa-radio` labels. It does not read
+  `LoadingSpinner` or `Skeleton` labels, which announce a status.
 - It skips tokens containing digits, code, paths, or URLs, and lowercase-led
   brands such as iOS and macOS.
 - It keeps a minor word inside a longer hyphenated compound lowercase, as

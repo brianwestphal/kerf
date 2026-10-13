@@ -208,7 +208,7 @@ describe('titleStyleLabels', () => {
         );
         const notAPanel = { toggle: { name: 'lowercase setting' } };
         const dynamic = { toggle: { action: 'a', name: title } };
-      `),
+      `).filter((label) => label.startsWith('panel toggle name')),
     ).toEqual([
       'panel toggle name: navigator',
       'panel toggle name: build output',
@@ -216,7 +216,107 @@ describe('titleStyleLabels', () => {
     ]);
   });
 
-  test('never reads sentence-style text, region names, or a labeled button’s aria-label', () => {
+  test('reads region and landmark names', () => {
+    expect(
+      labels(`
+        const views = [
+          {
+            id: 'inbox',
+            title: 'Inbox',
+            toolbar: { label: 'Inbox header' },
+            bottomToolbar: { label: 'Inbox actions' },
+            pane: { contentLabel: 'Inbox messages' },
+          },
+        ];
+        export const View = () => (
+          <main aria-label="Ticket workspace">
+            <Pane label="Workspace pages" contentLabel="Page list" />
+            <Workbench
+              label="Ticket workbench"
+              leftRail={{ label: 'File navigator', toolbar: { label: 'Navigator header' }, pane: { contentLabel: 'Project files' } }}
+              mainToolbar={{ label: 'Editor header' }}
+              mainBottomToolbar={{ label: 'Editor footer' }}
+              mainPane={{ contentLabel: 'Editor content' }}
+            />
+            <Toolbar label="Release toolbar" />
+            <ToolbarControlGroup label="View actions" />
+            <SunkenPanel ariaLabel="Build output" />
+            <List ariaLabel="Saved projects" />
+            <TabBar label="Open documents" />
+            <NavStack label="Mail stack" views={views} bottomToolbar={{ label: 'Mail actions' }} />
+            <CollapsiblePanel id="p" side="left" label="Side navigation" toolbar={{ label: 'Side header' }} bottomToolbar={{ label: 'Side footer' }} pane={{ contentLabel: 'Side content' }} />
+            <FloatingToolbar label="Drawer controls" />
+            <ResizableRegion label="Detail region" />
+            <section aria-label="Task details" />
+            <nav aria-label="Primary navigation" />
+            <aside aria-label="Related tickets" />
+            <div role="region" aria-label="Live preview" />
+            <form aria-label="Search filters" />
+          </main>
+        );
+      `),
+    ).toEqual([
+      '<main> aria-label: Ticket workspace',
+      'Pane label: Workspace pages',
+      'Pane contentLabel: Page list',
+      'Workbench label: Ticket workbench',
+      'Workbench leftRail: File navigator',
+      'Workbench leftRail: Navigator header',
+      'Workbench leftRail: Project files',
+      'Workbench mainToolbar: Editor header',
+      'Workbench mainBottomToolbar: Editor footer',
+      'Workbench mainPane: Editor content',
+      'Toolbar label: Release toolbar',
+      'ToolbarControlGroup label: View actions',
+      'SunkenPanel ariaLabel: Build output',
+      'List ariaLabel: Saved projects',
+      'TabBar label: Open documents',
+      'NavStack label: Mail stack',
+      'NavStack views: Inbox',
+      'NavStack views: Inbox header',
+      'NavStack views: Inbox actions',
+      'NavStack views: Inbox messages',
+      'NavStack bottomToolbar: Mail actions',
+      'CollapsiblePanel label: Side navigation',
+      'CollapsiblePanel toolbar: Side header',
+      'CollapsiblePanel bottomToolbar: Side footer',
+      'CollapsiblePanel pane: Side content',
+      'FloatingToolbar label: Drawer controls',
+      'ResizableRegion label: Detail region',
+      '<section> aria-label: Task details',
+      '<nav> aria-label: Primary navigation',
+      '<aside> aria-label: Related tickets',
+      '<div> aria-label: Live preview',
+      '<form> aria-label: Search filters',
+    ]);
+  });
+
+  test('reads raw Web Awesome field and radio-group labels, not option text', () => {
+    expect(
+      labels(`
+        export const Form = () => (
+          <form>
+            <wa-input label="Project name" placeholder="Search tickets" />
+            <wa-select label="Release channel" />
+            <wa-textarea label="Release notes" />
+            <wa-radio-group label="Notify me">
+              <wa-radio value="all">Every new reply</wa-radio>
+            </wa-radio-group>
+            <wa-checkbox label="Show hidden files" />
+            <wa-switch label="Sync over cellular" />
+            <wa-radio label="Only mentions" />
+          </form>
+        );
+      `),
+    ).toEqual([
+      '<wa-input> label: Project name',
+      '<wa-select> label: Release channel',
+      '<wa-textarea> label: Release notes',
+      '<wa-radio-group> label: Notify me',
+    ]);
+  });
+
+  test('never reads sentence-style text, status labels, or a labeled button’s aria-label', () => {
     expect(
       labels(`
         export const View = ({ name }: { name: string }) => (
@@ -224,7 +324,6 @@ describe('titleStyleLabels', () => {
             <ToolbarText text="Saved just now" size="small" />
             <Toolbar label="Footer" leading={<ToolbarText text="12 updates" size="small" />} />
             <ToolbarText text="Workspace" description="Edit your workspace settings" headingLevel={2} />
-            <Pane label="Workspace pages" />
             <ListItem label="Show hidden files" />
             <SegmentedControl id="v" label="Layout options" value="a" choices={[{ value: 'a', label: 'List', title: 'Show as a list' }]} />
             <StateBanner title={name} detail="Changes sync when you reconnect." />
@@ -232,17 +331,20 @@ describe('titleStyleLabels', () => {
             <wa-button>Hello {name}</wa-button>
             <button type="button" aria-label="Close dialog">Close</button>
             <button type="button" aria-label={label}><LucideIcon node={x} /></button>
-            <section aria-label="Task workspace" />
-            <Workbench label="Ticket workbench" />
-            <ToolbarControlGroup label="View actions" />
-            <wa-input label="Project name" placeholder="Search tickets" />
+            <LoadingSpinner label="Loading tickets" />
+            <Skeleton label="Loading the release list" />
+            <div aria-label="Selection summary" />
+            <Pane label={\`\${name} pages\`} />
+            <section aria-label="The list refreshes when you reconnect." />
           </section>
         );
       `),
     ).toEqual([
+      'Toolbar label: Footer',
       'ToolbarText text: Workspace',
       'SegmentedControl choices: List',
       '<button> text: Close',
+      '<section> aria-label: The list refreshes when you reconnect.',
     ]);
   });
 });

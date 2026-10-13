@@ -98,7 +98,7 @@ const toggle = (side: 'left' | 'right' | 'bottom', name: string) => (
 const workbench = (presentation: 'inline' | 'overlay') => (
   <Workbench
     id="covered-wb"
-    label="Covered workbench"
+    label="Covered Workbench"
     mainMinSize={0}
     leftRail={{
       label: 'Navigator',

@@ -206,6 +206,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- `kerf-ui-doctor`'s `KUI-D040` now also reads region and landmark names, which `ui/docs/writing.md` makes title style, and raw Web Awesome field labels. The new region names are:
+  - the `label` of `Pane`, `Workbench`, `Toolbar`, `ToolbarControlGroup`, `TabBar`, `NavStack`, `CollapsiblePanel`, `FloatingToolbar`, and `ResizableRegion`;
+  - the `ariaLabel` of `SunkenPanel` and `List`;
+  - a `Pane`'s `contentLabel`;
+  - the panel, toolbar, and pane labels in Workbench, CollapsiblePanel, and NavStack configuration;
+  - the `aria-label` of `section`, `nav`, `aside`, `main`, `header`, `footer`, `form`, `search`, or an element with a landmark role.
+
+  The field labels it reads are the `label` of a raw `wa-input`, `wa-select`, `wa-textarea`, or `wa-radio-group`. `wa-checkbox`, `wa-switch`, and `wa-radio` option text, and `LoadingSpinner` and `Skeleton` labels, stay unread. Expect new warnings on lowercase names such as `<Pane label="Workspace pages">` ("Workspace Pages"). The package's own fixtures and examples are fixed. The catalog shell's sidebar navigation is now named "Kerf Components" (it was "Kerf components") (`KF-8JR7EC`).
+
 - A panel toolbar's `toggle: { action, name }` (Workbench panels, `CollapsiblePanel`) now documents `name` as the panel's title-style name. Pass `name: "Navigator"`, not `"navigator"`: `name` labels the toggle group and completes the default "Show …" / "Hide …" label, which kerf never recapitalizes. The docs, demos, and recipes passed lowercase names, which produced sentence-style accessible names such as "Show output". They now pass title-style names. The catalog shell names its sidebar "Kerf Catalog" and its settings rail toggle reads "Hide Settings" (they read "Kerf catalog" and "Hide settings"). `KUI-D040` now reports a lowercase `name` in a `toggle` object literal that also has an `action` (`KF-EJ32ZH`).
 - A `NavStack` root view's title now defaults to the `xlarge` page-heading size, and steps down to `large` once a back control shares the bar. An explicit `titleSize` still wins. A Workbench panel's stack keeps `large` at every depth, so narrow rails stay quieter than the work-area title (`KF-2XWXFR`).
 - The built-in close control of a `wa-dialog` or `wa-drawer` now matches a borderless single `ToolbarControlGroup` button, the close a toolbar-composed dialog uses: a 40px circle with no border and the neutral hover fill, instead of Web Awesome's 35px rounded square (`KF-5B5C4W`).

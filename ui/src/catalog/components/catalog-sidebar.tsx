@@ -31,7 +31,7 @@ export function CatalogSidebar({
   toggleSecondaryAction,
 }: CatalogSidebarProps) {
   return (
-    <nav aria-label={`${brand.title} components`} data-catalog-sidebar>
+    <nav aria-label={`${brand.title} Components`} data-catalog-sidebar>
       <List gap="m" controlInsets="b">
         {brand.subtitle ? (
           <ListInsetText sides="rl">
