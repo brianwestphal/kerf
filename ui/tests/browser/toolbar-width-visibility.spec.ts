@@ -130,7 +130,7 @@ test('invisible visibility state preserves lone-avatar and decorative icon chrom
   const avatar = page.getByRole('group', { name: 'Profile', exact: true });
   await avatar.evaluate((node) => node.setAttribute('data-single', 'false'));
   const tile = page.getByRole('group', {
-    name: 'brand icon tile',
+    name: 'Brand Icon Tile',
     exact: true,
   });
   for (const group of [avatar, tile]) {
