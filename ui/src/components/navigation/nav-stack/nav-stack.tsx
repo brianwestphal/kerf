@@ -63,6 +63,14 @@ export interface NavStackToolbarConfig extends ToolbarConfig {
  */
 export type NavStackChromePresentation = 'docked' | 'overlay';
 
+/**
+ * How a {@link NavStack}'s bottom toolbar relates to the active view:
+ * `docked` below it, or `overlay` laid over its bottom edge on the
+ * translucent chrome material, so the view's content scrolls visibly beneath
+ * it.
+ */
+export type NavStackBottomToolbarPresentation = 'docked' | 'overlay';
+
 export interface NavStackProps {
   id: string;
   /** Accessible name for the stack region. */
@@ -124,6 +132,21 @@ export interface NavStackProps {
    * beneath it; keep any other quiet copy in the view.
    */
   chromePresentation?: NavStackChromePresentation;
+  /**
+   * `docked` (default) gives the bottom toolbar its own band below the
+   * active view. `overlay` lays it over the view's bottom edge on the
+   * translucent chrome material (opaque under the same preferences as
+   * `chromePresentation`), so content scrolls visibly beneath it, as under
+   * an iOS toolbar. `wireNavStack` measures the live bottom toolbar (never a
+   * cross-fading copy) and hands its height (bottom safe area included) to
+   * the viewport as the block-end `--kui-edge-inset-*` context, so a plain
+   * view, a sole `Pane`'s content (or footer), and a nested layout rest their
+   * last item, and anything focused or scrolled into view, clear of it. Until
+   * then, and while no bottom toolbar is shown, it stays docked. Independent
+   * of `chromePresentation`, which governs only the top chrome. An untoned
+   * `ToolbarText` in the toolbar lifts to AA over the content beneath it.
+   */
+  bottomToolbarPresentation?: NavStackBottomToolbarPresentation;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -178,6 +201,7 @@ export function NavStack({
   separator = 'auto',
   chromeDividers = 'scroll',
   chromePresentation = 'docked',
+  bottomToolbarPresentation = 'docked',
   className = '',
   slot,
 }: NavStackProps) {
@@ -217,6 +241,9 @@ export function NavStack({
       }
       data-chrome-presentation={
         chromePresentation === 'overlay' && !hideToolbar ? 'overlay' : undefined
+      }
+      data-bottom-toolbar-presentation={
+        bottomToolbarPresentation === 'overlay' ? 'overlay' : undefined
       }
       aria-label={label}
       slot={slot}

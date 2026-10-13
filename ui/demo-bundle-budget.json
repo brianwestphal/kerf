@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 371700,
-  "measuredLargestJavaScriptGzip": 118701,
-  "measuredTotalJavaScriptGzip": 371618,
+  "totalJavaScriptGzip": 372100,
+  "measuredLargestJavaScriptGzip": 118702,
+  "measuredTotalJavaScriptGzip": 372092,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4483,6 +4483,22 @@
         "measuredTotalJavaScriptGzip": 371618,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 371700
+      }
+    },
+    {
+      "at": "2026-10-13T21:21:40.180Z",
+      "reason": "KF-Z4NSDF: NavStack overlay bottom toolbar (wireNavStack bottom-edge measurement + Overlay Chrome catalog example)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118701,
+        "measuredTotalJavaScriptGzip": 371618,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 371700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118702,
+        "measuredTotalJavaScriptGzip": 372092,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 372100
       }
     }
   ]

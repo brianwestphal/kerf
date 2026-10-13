@@ -247,9 +247,8 @@ Resolved decisions:
   chrome's `inset-inline-end` takes it. It re-measures when the scroller's
   content box changes (a scrollbar appearing or leaving) and on every push or
   pop.
-- **Bottom toolbar.** It always docks; a translucent bottom toolbar is
-  follow-up KF-Z4NSDF (the same measurement routed as the block-end edge
-  inset).
+- **Bottom toolbar.** Shipped separately as `bottomToolbarPresentation`
+  (KF-Z4NSDF, below).
 
 Verification: `ui/tests/unit/nav-stack.test.tsx` covers the markup, publish,
 resize, restore, and dispose. It walks docked → overlay → replaced chrome →
@@ -260,6 +259,79 @@ Firefox, and WebKit and covers geometry for a plain view and a pushed sole
 Pane, mid-push clearance, the safe area, `scrollIntoView`, the divider, the
 unwired fallback, the restore, and contrast in both schemes. In Chromium it
 also covers forced colors and reduced transparency.
+
+**Overlay bottom toolbar (KF-Z4NSDF: a translucent NavStack bottom toolbar
+laid over the active view).** `bottomToolbarPresentation` (`"docked"`, the
+default, or `"overlay"`; the `NavStackBottomToolbarPresentation` type) mirrors
+the overlay chrome at the block-end edge. The root carries
+`data-bottom-toolbar-presentation="overlay"` whenever the prop asks for it; the
+wiring decides whether there is a toolbar to lay over the view. `SplitView`'s
+`compactStack` forwards it, and a Workbench navigation panel's `navStack`
+spreads it through.
+
+Resolved decisions:
+
+- **A separate prop, not a widened `chromePresentation`.** One prop per edge
+  follows `Pane.headerPresentation` and `DialogSurface.footerPresentation`, so
+  `chromePresentation` keeps meaning the top chrome and the change is
+  non-breaking. An app overlays either bar alone or both.
+- **One measurement model for both edges.** `wireNavStack` keeps a table of
+  overlay edges (presentation attribute, live element selector excluding
+  `data-nav-chrome-copy`, gate, published size, scrollbar size, and the sole
+  Pane slot that keeps its scroller clear of that edge). The bottom edge
+  publishes `--_kui-nav-stack-bottom-block-size` with the
+  `data-bottom-toolbar-overlay="measured"` gate, through the same border-box
+  `ResizeObserver` and root `MutationObserver`, so replacement, removal, a
+  stripped gate, and disposal behave exactly as at the top. With no bottom
+  toolbar (a view without one and no stack fallback) it stays docked.
+- **How views clear it.** Measured, the viewport's `--kui-edge-inset-block-end`
+  becomes the toolbar's height, outranking the docked rule that zeroes it
+  while a live toolbar exists. A plain view pads and scroll-pads by it; a sole
+  Pane adds it to its content's block-end inset, or to its footer's when it
+  has one, so the footer rests just above the toolbar; a nested layout hands
+  it on.
+- **Safe area.** The toolbar keeps claiming the bottom safe area and its
+  toolbar pads for it, so the measured border box (with the always-present
+  1px divider border) includes the inset and views clear it exactly once.
+- **TabNavigator.** A scene hands its NavStack a zero block-end inset (the tab
+  bar owns the bottom safe area), so a stack's overlay toolbar inside a tab
+  sits just above the tab bar, measures without a safe area, and clears only
+  its own views. A translucent TabNavigator bar is a separate concern
+  (follow-up KF-C3V8B7: a translucent TabNavigator bar over the active scene).
+- **Classic scrollbars.** The active scroller is measured once; each overlaid
+  edge publishes the scrollbar size only when that scroller's track lies
+  beneath it (`--_kui-nav-stack-bottom-scrollbar-inline-size`). A sole Pane
+  with a footer ends its scroller above the toolbar, so nothing is published
+  for the bottom edge.
+- **A List inside a Pane must not shrink.** A Pane's content is a flex column,
+  and a non-scrolling List there used to shrink to the content box while its
+  rows overflowed it. A scroller's block-end padding follows its in-flow
+  children's boxes, not their overflow, so the last row could never scroll
+  clear of the toolbar (or of a bottom safe area). The List now keeps
+  `flex-shrink: 0` in that context, from its own stylesheet.
+- **Contrast.** An untoned `ToolbarText` lifts as in the top chrome. A
+  default-tone `ToolbarControlGroup`'s quiet control color over its own
+  translucent fill measured about 3.0:1 (light) and 3.5:1 (dark) over the
+  worst-case backdrop, so in either overlaid bar (top chrome included) its
+  controls take `--kui-color-text`, from the group's own stylesheet. In
+  forced colors the toolbar paints `Canvas` and its top border becomes a
+  `CanvasText` edge.
+
+Verification: `ui/tests/unit/nav-stack.test.tsx` covers markup independence
+from `chromePresentation`, publish, resize, both edges at once, no toolbar,
+restore, a docked → overlay → replaced → removed → restored → docked walk, copy
+exclusion, and per-edge scrollbar publication. `ui/tests/unit/nav-stack-css.test.ts`
+pins the declarations. `ui/tests/browser/overlay-nav-stack-bottom.spec.ts`
+runs in Chromium, Firefox, and WebKit: a plain view, a pushed sole Pane holding
+a List, a Pane footer, the bottom safe area, a NavStack inside a TabNavigator
+scene, `scrollIntoView`, the divider, the unwired fallback, the restore, and
+contrast of the status, its description, a control, and the top chrome's back
+control in both schemes; Chromium also covers forced colors and reduced
+transparency, and Chromium and WebKit increased contrast.
+`ui/tests/browser/overlay-nav-stack-classic-scrollbar.spec.ts` covers the
+bottom toolbar's classic-scrollbar edge, and
+`ui/tests/browser/app-layout-catalog.spec.ts` the catalog's Overlay Chrome
+example.
 
 ### 3.2 List-detail (split view) — `SplitView` (`@kerfjs/ui/split-view`)
 

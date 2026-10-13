@@ -185,6 +185,16 @@
     calc(var(--_kui-list-clearance-end) + var(--_kui-list-ring-room));
 }
 
+/* In a Pane's scrolling content, a List that does not scroll itself keeps
+   its full height rather than shrinking to the content box. A shrunken List
+   lets its rows overflow its own box, and the scroller's block-end padding
+   (a bottom safe area, an overlay NavStack bottom toolbar's clearance)
+   follows the List's box, not those rows, so the last row could never
+   scroll clear of the edge. A `flex` basis still grows the List to fill. */
+.kui-pane > .kui-pane__content > .kui-list:not([data-scrollable="true"]) {
+  flex-shrink: 0;
+}
+
 /* A scrollable List owns the overflow, so its rows keep their natural height
    and scroll rather than shrink. Items that clip their own overflow (a
    ListItem) have a zero automatic minimum height, so the default

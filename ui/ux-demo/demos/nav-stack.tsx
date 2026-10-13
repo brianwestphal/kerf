@@ -21,12 +21,14 @@ import {
   ChevronRight,
   FileText,
   Folder,
+  Funnel,
   LayoutGrid,
   List as ListIcon,
   Mail,
   PanelLeft,
   Share,
   ShieldCheck,
+  SquarePen,
 } from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
@@ -215,6 +217,23 @@ const overlayRootView = (): NavStackView => ({
   content: inboxList('open-overlay-nav-stack-message'),
 });
 
+// The stack's bottom toolbar, also laid over the views: content scrolls
+// beneath it, and the last row rests just above it.
+const overlayBottomToolbar = {
+  label: 'Inbox Actions',
+  leading: (
+    <ToolbarControlGroup label="Filter" appearance="borderless" single>
+      {iconButton('Filter Messages', Funnel, 'funnel')}
+    </ToolbarControlGroup>
+  ),
+  center: <ToolbarText text="Updated Just Now" size="small" />,
+  trailing: (
+    <ToolbarControlGroup label="Compose" appearance="borderless" single>
+      {iconButton('New Message', SquarePen, 'square-pen')}
+    </ToolbarControlGroup>
+  ),
+};
+
 // The pushed view is a sole Pane, which clears the chrome the same way.
 const overlayDetailView = (label: string): NavStackView => ({
   key: 'message',
@@ -317,7 +336,7 @@ export function NavStackDemo() {
       </CatalogExample>
       <CatalogExample
         label="Overlay Chrome"
-        note="chromePresentation overlay lays the top chrome over the active view on the translucent chrome material, so messages scroll visibly beneath it. wireNavStack measures the chrome, and each view, the plain list and the pushed message's Pane alike, rests its first row just below it."
+        note="chromePresentation and bottomToolbarPresentation overlay lay the top chrome and the bottom toolbar over the active view on the translucent chrome material, so messages scroll visibly beneath both. wireNavStack measures each bar, and each view, the plain list and the pushed message's Pane alike, rests its first row just below the top chrome and its last row just above the toolbar."
         viewport={{
           layout: 'grid',
           width: 'compact',
@@ -331,6 +350,8 @@ export function NavStackDemo() {
           views={overlayViews.value}
           backLabel="Back to Inbox"
           chromePresentation="overlay"
+          bottomToolbarPresentation="overlay"
+          bottomToolbar={overlayBottomToolbar}
         />
       </CatalogExample>
     </CatalogExampleStack>

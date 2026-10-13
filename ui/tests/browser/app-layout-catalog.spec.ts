@@ -452,3 +452,60 @@ test('the compact split-view example forwards its compactStack configuration', a
   await expect(bottom).toContainText('Received today');
   await expect(bottom.getByRole('button', { name: 'Archive' })).toBeVisible();
 });
+
+// KF-Z4NSDF: the Overlay Chrome example lays both the top chrome and the
+// bottom toolbar over the inbox; each view, the plain list and the pushed
+// message's Pane alike, rests its last row just above the toolbar at the
+// scroll end while rows pass beneath it mid-scroll.
+test('the overlay chrome example rests its last row above the overlay bottom toolbar', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=nav-stack');
+  const stack = page.locator('#catalog-nav-stack-overlay');
+  await expect(stack).toHaveAttribute('data-chrome-overlay', 'measured');
+  await expect(stack).toHaveAttribute(
+    'data-bottom-toolbar-overlay',
+    'measured',
+  );
+  const atEnd = () =>
+    stack.evaluate((element) => {
+      const view = [
+        ...element.querySelectorAll<HTMLElement>(
+          '.kui-nav-stack__view[data-nav-active="true"]',
+        ),
+      ].at(-1)!;
+      const scroller =
+        view.querySelector<HTMLElement>(
+          ':scope > .kui-pane > .kui-pane__content',
+        ) ?? view;
+      scroller.scrollTop = scroller.scrollHeight;
+      const rows = scroller.querySelectorAll('.kui-list-item');
+      const toolbar = element
+        .querySelector(':scope > [data-nav-stack-bottom]')!
+        .getBoundingClientRect();
+      return {
+        last: rows[rows.length - 1]!.getBoundingClientRect().bottom,
+        toolbarTop: toolbar.top,
+        toolbarBottom: toolbar.bottom,
+        stackBottom: element.getBoundingClientRect().bottom,
+      };
+    });
+  const root = await atEnd();
+  expect(Math.round(root.toolbarBottom)).toBe(Math.round(root.stackBottom));
+  expect(root.last).toBeLessThanOrEqual(root.toolbarTop + 0.5);
+  expect(root.last).toBeGreaterThan(root.toolbarTop - 2);
+
+  await stack
+    .locator('[data-action="open-overlay-nav-stack-message"]')
+    .first()
+    .click();
+  await expect(stack).toHaveAttribute('data-depth', '2');
+  await expect(stack).not.toHaveAttribute('data-nav-chrome-transition', 'true');
+  const pushed = await atEnd();
+  expect(pushed.last).toBeLessThanOrEqual(pushed.toolbarTop + 0.5);
+  expect(pushed.last).toBeGreaterThan(pushed.toolbarTop - 2);
+  await expect(
+    stack.getByRole('button', { name: 'New Message' }),
+  ).toBeVisible();
+});

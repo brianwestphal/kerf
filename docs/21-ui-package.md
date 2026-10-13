@@ -414,6 +414,15 @@ slot without mixing authoring rules into the per-entry component catalog.
   clears it automatically. Unwired, the chrome stays docked. See
   `docs/23-app-layouts.md` §3.1 "Overlay chrome" and `ui/docs/nav-stack.md`
   "Overlay chrome".
+- **Translucent NavStack bottom toolbar.** `NavStack.bottomToolbarPresentation`
+  (`docked` default, or `overlay`) does the same for the bottom toolbar, as a
+  separate prop. `wireNavStack` measures the live toolbar and hands its
+  height, bottom safe area included, to the views as their block-end edge
+  inset, so the last item of a plain view or a sole Pane rests just above it.
+  A default-tone `ToolbarControlGroup` in either overlaid bar lifts its
+  controls to the normal text color. See `docs/23-app-layouts.md` §3.1
+  "Overlay bottom toolbar" and `ui/docs/nav-stack.md` "Overlay bottom
+  toolbar".
 
 - A `ListItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete

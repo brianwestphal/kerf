@@ -10,10 +10,44 @@ export interface WireNavStackOptions {
 const DEFAULT_DURATION = 200;
 /** On an overlay-chrome NavStack: the wiring has measured its live chrome. */
 const CHROME_OVERLAY = 'data-chrome-overlay';
-/** The measured live chrome's border-box block size, published on the root. */
-const CHROME_BLOCK_SIZE = '--_kui-nav-stack-chrome-block-size';
-/** The active view's classic vertical scrollbar width, published on the root. */
-const SCROLLBAR_INLINE_SIZE = '--_kui-nav-stack-scrollbar-inline-size';
+/** On an overlay-bottom-toolbar NavStack: the wiring has measured it. */
+const BOTTOM_TOOLBAR_OVERLAY = 'data-bottom-toolbar-overlay';
+/**
+ * One overlay-capable chrome edge of a NavStack: the top chrome
+ * (`chromePresentation`) or the bottom toolbar (`bottomToolbarPresentation`).
+ * Each names the root attribute that opts it in, its live element (never a
+ * cross-fading copy), the border-box block size the wiring publishes on the
+ * root once it has measured that element (beside its gate), the root
+ * property for the classic scrollbar inline size it leaves uncovered, and
+ * the sole-Pane slot that, when present, keeps the Pane's scroller clear of
+ * it.
+ */
+interface OverlayEdge {
+  readonly presentation: string;
+  readonly element: string;
+  readonly blockSize: string;
+  readonly scrollbarInlineSize: string;
+  readonly paneChrome: string;
+}
+
+const OVERLAY_EDGES: readonly OverlayEdge[] = [
+  {
+    presentation: 'data-chrome-presentation',
+    element: ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy])',
+    blockSize: '--_kui-nav-stack-chrome-block-size',
+    scrollbarInlineSize: '--_kui-nav-stack-scrollbar-inline-size',
+    // A Pane header lies beneath the chrome and starts its content below it.
+    paneChrome: ':scope > :is(.kui-pane__header, .kui-pane__toolbar)',
+  },
+  {
+    presentation: 'data-bottom-toolbar-presentation',
+    element: ':scope > [data-nav-stack-bottom]:not([data-nav-chrome-copy])',
+    blockSize: '--_kui-nav-stack-bottom-block-size',
+    scrollbarInlineSize: '--_kui-nav-stack-bottom-scrollbar-inline-size',
+    // A Pane footer lies beneath the toolbar and ends its content above it.
+    paneChrome: ':scope > .kui-pane__footer',
+  },
+];
 /** A layout that, as a view's only child, owns its own chrome and scroller. */
 const NESTED_LAYOUT = ['nav-stack', 'split-view', 'workbench', 'tab-scaffold']
   .map((name) => `[data-component="${name}"]`)
@@ -208,15 +242,27 @@ export function wireNavStack(
     targetView.focus({ preventScroll: true });
   };
 
-  // Overlay chrome (`chromePresentation="overlay"`): measure the live chrome,
-  // never a cross-fading copy, and publish its border-box block size with the
-  // `data-chrome-overlay="measured"` gate that lays it over the viewport. The
-  // size follows the chrome as it wraps, zooms, or changes with the active
+  // Overlay chrome (`chromePresentation="overlay"` for the top chrome,
+  // `bottomToolbarPresentation="overlay"` for the bottom toolbar): measure
+  // each live edge element, never a cross-fading copy, and publish its
+  // border-box block size with the gate that lays it over the viewport. The
+  // size follows the element as it wraps, zooms, or changes with the active
   // view, and a re-render that strips the published state gets it back
-  // before paint. The active view's classic (space-taking) vertical scrollbar
-  // is measured too, so the chrome ends where its track begins.
-  let measuredChrome: HTMLElement | undefined;
-  let chromeSize: number | undefined;
+  // before paint. The active view's classic (space-taking) vertical
+  // scrollbar is measured too, so each overlaid edge ends where its track
+  // begins.
+  interface EdgeState {
+    element?: HTMLElement;
+    size?: number;
+    /** The active scroller's track lies beneath this edge. */
+    covers: boolean;
+  }
+  const edges = OVERLAY_EDGES.map((edge): [OverlayEdge, EdgeState] => [
+    edge,
+    { covers: false },
+  ]);
+  const measuredEdge = (state: EdgeState): boolean =>
+    state.element !== undefined && state.size !== undefined;
   let measuredScroller: HTMLElement | undefined;
   let scrollbarSize = 0;
   const writeProperty = (name: string, value: string): void => {
@@ -225,33 +271,45 @@ export function wireNavStack(
     else section.style.removeProperty(name);
   };
   const publishOverlay = (): void => {
-    const measured = measuredChrome !== undefined && chromeSize !== undefined;
-    writeProperty(CHROME_BLOCK_SIZE, measured ? `${chromeSize}px` : '');
-    writeProperty(
-      SCROLLBAR_INLINE_SIZE,
-      measured && scrollbarSize > 0 ? `${scrollbarSize}px` : '',
-    );
+    for (const [edge, state] of edges) {
+      const measured = measuredEdge(state);
+      writeProperty(edge.blockSize, measured ? `${state.size}px` : '');
+      writeProperty(
+        edge.scrollbarInlineSize,
+        measured && state.covers && scrollbarSize > 0
+          ? `${scrollbarSize}px`
+          : '',
+      );
+    }
     if (section.getAttribute('style') === '') section.removeAttribute('style');
-    if (measured) {
-      if (section.getAttribute(CHROME_OVERLAY) !== 'measured')
-        section.setAttribute(CHROME_OVERLAY, 'measured');
-    } else if (section.hasAttribute(CHROME_OVERLAY))
+    // Each gate changes only when it must, so the root observer settles.
+    const [top, bottom] = edges.map(([, state]) => measuredEdge(state));
+    if (top && section.getAttribute(CHROME_OVERLAY) !== 'measured')
+      section.setAttribute(CHROME_OVERLAY, 'measured');
+    else if (!top && section.hasAttribute(CHROME_OVERLAY))
       section.removeAttribute(CHROME_OVERLAY);
+    if (bottom && section.getAttribute(BOTTOM_TOOLBAR_OVERLAY) !== 'measured')
+      section.setAttribute(BOTTOM_TOOLBAR_OVERLAY, 'measured');
+    else if (!bottom && section.hasAttribute(BOTTOM_TOOLBAR_OVERLAY))
+      section.removeAttribute(BOTTOM_TOOLBAR_OVERLAY);
   };
-  /** The element that scrolls beneath the chrome in the active view. */
-  const activeScroller = (): HTMLElement | undefined => {
+  /**
+   * The element that scrolls beneath the overlaid edges in the active view
+   * (the view itself, or a sole Pane's content), and that sole Pane, whose
+   * own header or footer keeps its scroller clear of the matching edge.
+   */
+  const activeScroller = (): { scroller?: HTMLElement; pane?: Element } => {
     const top = topView(viewport);
     const only = top?.children.length === 1 ? top.children[0] : undefined;
-    if (!only) return top;
+    if (!only) return { scroller: top };
     if (only.matches('.kui-pane'))
-      // A Pane header lies beneath the chrome and starts its content below it.
-      return only.querySelector(
-        ':scope > :is(.kui-pane__header, .kui-pane__toolbar)',
-      )
-        ? undefined
-        : (only.querySelector<HTMLElement>(':scope > .kui-pane__content') ??
-            undefined);
-    return only.matches(NESTED_LAYOUT) ? undefined : top;
+      return {
+        scroller:
+          only.querySelector<HTMLElement>(':scope > .kui-pane__content') ??
+          undefined,
+        pane: only,
+      };
+    return { scroller: only.matches(NESTED_LAYOUT) ? undefined : top };
   };
   const measureScrollbar = (): void => {
     const scroller = measuredScroller;
@@ -270,41 +328,52 @@ export function wireNavStack(
   };
   const chromeObserver = view.ResizeObserver
     ? new view.ResizeObserver((entries) => {
-        for (const entry of entries)
-          if (entry.target === measuredChrome)
-            chromeSize =
+        for (const entry of entries) {
+          const state = edges.find(
+            ([, edgeState]) => edgeState.element === entry.target,
+          )?.[1];
+          if (state)
+            state.size =
               entry.borderBoxSize?.[0]?.blockSize ??
               entry.target.getBoundingClientRect().height;
           else if (entry.target === measuredScroller) measureScrollbar();
+        }
         publishOverlay();
       })
     : undefined;
   const syncOverlay = (): void => {
-    const chrome =
-      section.dataset.chromePresentation === 'overlay'
-        ? section.querySelector<HTMLElement>(
-            ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy])',
-          )
-        : null;
-    if ((chrome ?? undefined) !== measuredChrome) {
-      if (measuredChrome) chromeObserver?.unobserve(measuredChrome);
-      measuredChrome = chrome ?? undefined;
-      if (!measuredChrome) chromeSize = undefined;
+    for (const [edge, state] of edges) {
+      const element =
+        section.getAttribute(edge.presentation) === 'overlay'
+          ? (section.querySelector<HTMLElement>(edge.element) ?? undefined)
+          : undefined;
+      if (element === state.element) continue;
+      if (state.element) chromeObserver?.unobserve(state.element);
+      state.element = element;
+      if (!element) state.size = undefined;
       else {
-        // A replacement chrome keeps the last size until the observer
-        // reports it after layout; a first one (or one with no observer to
-        // report it) is measured at once.
-        if (chromeSize === undefined || !chromeObserver)
-          chromeSize = measuredChrome.getBoundingClientRect().height;
+        // A replacement keeps the last size until the observer reports it
+        // after layout; a first one (or one with no observer to report it)
+        // is measured at once.
+        if (state.size === undefined || !chromeObserver)
+          state.size = element.getBoundingClientRect().height;
         // The border box: a forced-colors edge changes no content box.
-        chromeObserver?.observe(measuredChrome, { box: 'border-box' });
+        chromeObserver?.observe(element, { box: 'border-box' });
       }
     }
     // A scrollbar appearing or leaving resizes the scroller's content box.
-    const scroller = measuredChrome ? activeScroller() : undefined;
-    if (scroller !== measuredScroller) {
+    const { scroller, pane } = activeScroller();
+    for (const [edge, state] of edges)
+      state.covers =
+        state.element !== undefined &&
+        scroller !== undefined &&
+        !pane?.querySelector(edge.paneChrome);
+    const covered = edges.some(([, state]) => state.covers)
+      ? scroller
+      : undefined;
+    if (covered !== measuredScroller) {
       if (measuredScroller) chromeObserver?.unobserve(measuredScroller);
-      measuredScroller = scroller;
+      measuredScroller = covered;
       measureScrollbar();
       if (measuredScroller) chromeObserver?.observe(measuredScroller);
     }
@@ -314,7 +383,12 @@ export function wireNavStack(
   overlayObserver.observe(section, {
     childList: true,
     attributes: true,
-    attributeFilter: ['data-chrome-presentation', CHROME_OVERLAY, 'style'],
+    attributeFilter: [
+      ...OVERLAY_EDGES.map((edge) => edge.presentation),
+      CHROME_OVERLAY,
+      BOTTOM_TOOLBAR_OVERLAY,
+      'style',
+    ],
   });
   syncOverlay();
 
@@ -435,8 +509,11 @@ export function wireNavStack(
     observer.disconnect();
     overlayObserver.disconnect();
     chromeObserver?.disconnect();
-    measuredChrome = undefined;
-    chromeSize = undefined;
+    for (const [, state] of edges) {
+      state.element = undefined;
+      state.size = undefined;
+      state.covers = false;
+    }
     measuredScroller = undefined;
     scrollbarSize = 0;
     publishOverlay();

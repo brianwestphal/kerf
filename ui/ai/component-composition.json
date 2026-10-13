@@ -792,6 +792,11 @@
           "id": "whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -830,6 +835,12 @@
             "meaning": "measured once the helper has measured an overlay chrome (chromePresentation: overlay) and published its border-box height on the stack root; the chrome then lies over the active view, which clears it through the block-start edge context. Both are re-applied if a re-render drops them."
           },
           {
+            "name": "data-bottom-toolbar-overlay",
+            "on": "kui-nav-stack",
+            "helper": "wireNavStack",
+            "meaning": "measured once the helper has measured an overlay bottom toolbar (bottomToolbarPresentation: overlay) and published its border-box height on the stack root; the toolbar then lies over the active view, which clears it through the block-end edge context. Both are re-applied if a re-render drops them."
+          },
+          {
             "name": "data-scroll-overflow",
             "on": "the active kui-nav-stack__view, or the kui-pane__content of a sole Pane in it",
             "helper": "wireScrollDividers",
@@ -859,7 +870,8 @@
           "notes": [
             "The stack owns its full-height chrome and viewport; each view owns its internal content padding and scrollable content.",
             "The top chrome's bottom line and the bottom toolbar's top line are scroll state (wireScrollDividers), drawn as an overlaid 1px pseudo-element on the chrome and the bottom toolbar's always-present 1px top border, so neither moves the chrome or the content.",
-            "chromePresentation overlay: once wireNavStack measures the live chrome (never a cross-fading copy), the chrome lies over the viewport's top edge and its border-box height, top safe area included, becomes the viewport's block-start --kui-edge-inset-* context, so a plain view, a sole Pane, or a nested layout pads and scroll-pads by it automatically; the chrome ends where a classic scrollbar in the active view begins, so its track stays uncovered; unwired, or with hideToolbar, the chrome stays docked."
+            "chromePresentation overlay: once wireNavStack measures the live chrome (never a cross-fading copy), the chrome lies over the viewport's top edge and its border-box height, top safe area included, becomes the viewport's block-start --kui-edge-inset-* context, so a plain view, a sole Pane, or a nested layout pads and scroll-pads by it automatically; the chrome ends where a classic scrollbar in the active view begins, so its track stays uncovered; unwired, or with hideToolbar, the chrome stays docked.",
+            "bottomToolbarPresentation overlay: once wireNavStack measures the live bottom toolbar (never a cross-fading copy), the toolbar lies over the viewport's bottom edge and its border-box height, bottom safe area and divider border included, becomes the viewport's block-end --kui-edge-inset-* context, so a plain view, a sole Pane (its content, or its footer), or a nested layout pads and scroll-pads by it automatically and the last item rests just above the toolbar; it ends where a classic scrollbar in the active view begins; unwired, or while no bottom toolbar is shown, it stays docked. It is independent of chromePresentation, which governs only the top chrome."
           ]
         }
       },
@@ -869,7 +881,8 @@
           "Set toolbarConfig.headingLevel when the view title is the page's or section's heading landmark.",
           "Use wireNavStack so each controlled push moves focus into the new top view and each pop restores the revealed view's remembered descendant.",
           "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target.",
-          "Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter."
+          "Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter.",
+          "An overlay bottom toolbar (bottomToolbarPresentation overlay) keeps the same AA rule: an untoned ToolbarText there lifts its title and description, and a default-tone ToolbarControlGroup in either overlaid bar takes the normal text color for its controls. Its 1px top edge stays visible in forced colors."
         ]
       },
       "cssValueProps": [],
@@ -1001,6 +1014,12 @@
             "on": "kui-nav-stack",
             "helper": "wireNavStack",
             "meaning": "measured once the helper has measured the compact stack's overlay chrome (compactStack.chromePresentation: overlay) and published its border-box height on the stack root. Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-bottom-toolbar-overlay",
+            "on": "kui-nav-stack",
+            "helper": "wireNavStack",
+            "meaning": "measured once the helper has measured the compact stack's overlay bottom toolbar (compactStack.bottomToolbarPresentation: overlay) and published its border-box height on the stack root. Re-applied if a re-render drops it."
           }
         ]
       },
@@ -1764,7 +1783,8 @@
         "obligations": [
           "Name the group when its relationship is not evident from context.",
           "A disabled native button (disabled, or aria-disabled=\"true\" when it must stay focusable) dims to half opacity with the not-allowed cursor and no hover surface; a disabled raw wa-button paints no hover surface either. Do not add disabled styling yourself.",
-          "Name an icon-only button or link with aria-label, not title. Once any help-tag installer is imported (select/register, popup-menu/register, or help-tags/register), it shows an aria-hidden Web Awesome help tag repeating that name after a 500ms hover and at once on keyboard focus, hidden on a press and on Escape, and never joins aria-labelledby. A native title keeps the browser tooltip and gets no second tag."
+          "Name an icon-only button or link with aria-label, not title. Once any help-tag installer is imported (select/register, popup-menu/register, or help-tags/register), it shows an aria-hidden Web Awesome help tag repeating that name after a 500ms hover and at once on keyboard focus, hidden on a press and on Escape, and never joins aria-labelledby. A native title keeps the browser tooltip and gets no second tag.",
+          "In overlay NavStack chrome (chromePresentation=\"overlay\") or an overlay NavStack bottom toolbar (bottomToolbarPresentation=\"overlay\"), a default-tone group (not dark-toned, not an avatar scrim) takes --kui-color-text for its controls, so they keep WCAG AA over content passing beneath the translucent chrome material."
         ]
       },
       "cssValueProps": [
@@ -2122,7 +2142,7 @@
         "obligations": [
           "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
           "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.",
-          "In a Pane header with headerPresentation=\"overlay\" or NavStack chrome with chromePresentation=\"overlay\", or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation=\"floating\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
+          "In a Pane header with headerPresentation=\"overlay\" or NavStack chrome with chromePresentation=\"overlay\" (or its bottom toolbar with bottomToolbarPresentation=\"overlay\"), or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation=\"floating\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
         ]
       },
       "cssValueProps": [
@@ -3008,7 +3028,8 @@
           "notes": [
             "List adds no margin. dividerSides draws selected physical edges without changing geometry; textInsets adds the full 17px content inset and controlInsets adds 8px on selected sides, with text winning on overlap.",
             "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the List block padding and scroll-padding on the opted-in edges; without it the context is ignored.",
-            "frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets), exactly the focus-ring reach, so the first and last rows' rings stay inside the clip; its block scroll padding is that reach plus 2px of slack, so any row focused or scrolled into view stops with its ring inside the clip; maxHeight/minHeight bound the List directly."
+            "frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets), exactly the focus-ring reach, so the first and last rows' rings stay inside the clip; its block scroll padding is that reach plus 2px of slack, so any row focused or scrolled into view stops with its ring inside the clip; maxHeight/minHeight bound the List directly.",
+            "As a direct child of a Pane's scrolling content, a List that does not scroll itself never shrinks below its rows (flex-shrink 0), so the content's block-end padding (a bottom safe area, an overlay NavStack bottom toolbar's clearance) follows its last row."
           ]
         }
       },

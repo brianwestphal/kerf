@@ -664,8 +664,9 @@ pattern). See [`workbench.md`](workbench.md).
 ## Chrome material
 
 Translucent chrome, such as a `Pane` header with
-`headerPresentation="overlay"` or a `NavStack` top bar with
-`chromePresentation="overlay"`, paints `--kui-chrome-material`: the surface at
+`headerPresentation="overlay"`, a `NavStack` top bar with
+`chromePresentation="overlay"`, or a `NavStack` bottom toolbar with
+`bottomToolbarPresentation="overlay"`, paints `--kui-chrome-material`: the surface at
 80% opacity behind a blur-and-saturate backdrop filter
 (`--kui-chrome-material-filter`). Content scrolls visibly beneath it, so the
 backdrop under its text is not a fixed color. The contrast rule measures the
@@ -688,22 +689,30 @@ panel behind it. The same rule and fallbacks apply.
 - **Quiet text does not, so `ToolbarText` lifts it.** `--kui-color-text-quiet`
   falls to about 3.2:1 (light) and 4.1:1 (dark) over the worst case, and the
   default-size title color to about 3.8:1 (light). Inside an overlay `Pane`
-  header or overlay `NavStack` chrome, or slotted as the `label` (or into
+  header or overlay `NavStack` chrome or bottom toolbar, or slotted as the `label` (or into
   `header-actions`) of a `DialogSurface` floating header, an untoned
   `ToolbarText` therefore takes
   `--kui-color-text` for its title at every size, and its `description` mixes
   the quiet color halfway toward the normal one, about 5.9:1 in both themes
   (about 4.9:1 dark over the raised material). That keeps AA while the
-  description still reads as secondary. Any other quiet copy you place in
-  overlay chrome yourself has no such lift; keep it in the content.
+  description still reads as secondary. Controls lift the same way in overlay
+  `NavStack` chrome or bottom toolbar: a default-tone `ToolbarControlGroup`'s
+  quiet control color over its own translucent fill measures about 3.0:1
+  (light) and 3.5:1 (dark) over the worst case, so its controls take
+  `--kui-color-text` there. Any other quiet copy you place in overlay chrome
+  yourself has no such lift; keep it in the content.
 - **The material turns opaque when transparency would hurt.** Under
   `prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and where
   `backdrop-filter` is unsupported, it resolves to the opaque surface. In forced
   colors, the header (or NavStack chrome) paints `Canvas` with a `CanvasText`
-  bottom edge, so content passing beneath it never shows through.
+  bottom edge, and an overlay NavStack bottom toolbar paints `Canvas` with a
+  `CanvasText` top edge, so content passing beneath it never shows through.
 
 `tests/browser/overlay-header.spec.ts` (Pane),
-`tests/browser/overlay-nav-stack.spec.ts` (NavStack), and
+`tests/browser/overlay-nav-stack.spec.ts` (NavStack top chrome),
+`tests/browser/overlay-nav-stack-bottom.spec.ts` (NavStack bottom toolbar,
+which also measures its description, a control, the top chrome's back
+control, and increased contrast), and
 `tests/browser/dialog-floating-header.spec.ts` (DialogSurface) measure the
 title over the material on both worst-case backdrops in Chromium, Firefox, and
 WebKit, and the Pane and DialogSurface specs also measure the description. In

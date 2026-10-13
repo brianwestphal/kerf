@@ -532,7 +532,12 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `chromePresentation="overlay"` on the `NavStack`. `wireNavStack` measures
   the top chrome and hands its height (top safe area included) to the views
   as their block-start inset, so a plain view or a sole `Pane` clears it
-  automatically. Keep its text in the normal text color.
+  automatically. Keep its text in the normal text color. For a translucent
+  bottom toolbar, set `bottomToolbarPresentation="overlay"` (separate from
+  `chromePresentation`); `wireNavStack` hands its height (bottom safe area
+  included) to the views as their block-end inset, so the last item rests
+  just above it. Its `ToolbarText` and default-tone `ToolbarControlGroup`
+  controls lift themselves to AA.
   While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
   overlay, an overlay `CollapsiblePanel` or horizontal `ResizableRegion`), the
   layout hides the covered work area's `FloatingToolbar`s and restore corners

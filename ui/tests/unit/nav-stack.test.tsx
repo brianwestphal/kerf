@@ -1150,3 +1150,251 @@ describe('NavStack overlay chrome', () => {
     dispose();
   });
 });
+
+/** A stack whose live bottom toolbar reports the given border-box height. */
+function overlayBottomStack(
+  props: Partial<Parameters<typeof NavStack>[0]> = {},
+  height = 49,
+) {
+  const root = mountStack([view('home', 'Home')], {
+    bottomToolbarPresentation: 'overlay',
+    bottomToolbar: { label: 'Actions' },
+    ...props,
+  });
+  const bottom = root.querySelector<HTMLElement>('[data-nav-stack-bottom]');
+  if (bottom)
+    bottom.getBoundingClientRect = () => ({ height }) as unknown as DOMRect;
+  return { root, bottom };
+}
+
+const bottomSize = (root: HTMLElement) =>
+  root.style.getPropertyValue('--_kui-nav-stack-bottom-block-size');
+
+describe('NavStack overlay bottom toolbar', () => {
+  const originalResizeObserver = window.ResizeObserver;
+  beforeEach(() => {
+    FakeResizeObserver.instances = [];
+    window.ResizeObserver =
+      FakeResizeObserver as unknown as typeof ResizeObserver;
+  });
+  afterEach(() => {
+    window.ResizeObserver = originalResizeObserver;
+  });
+
+  it('marks an overlay bottom toolbar independently of the top chrome, and docks by default', () => {
+    const render = (props: Partial<Parameters<typeof NavStack>[0]>) =>
+      String(
+        NavStack({
+          id: 'nav',
+          label: 'Flow',
+          views: [view('a', 'A')],
+          bottomToolbar: { label: 'Actions' },
+          ...props,
+        }),
+      );
+    expect(render({})).not.toContain('data-bottom-toolbar-presentation');
+    expect(render({ bottomToolbarPresentation: 'docked' })).not.toContain(
+      'data-bottom-toolbar-presentation',
+    );
+    const bottomOnly = render({ bottomToolbarPresentation: 'overlay' });
+    expect(bottomOnly).toContain('data-bottom-toolbar-presentation="overlay"');
+    // `chromePresentation` stays the top chrome's alone.
+    expect(bottomOnly).not.toContain('data-chrome-presentation');
+    expect(render({ chromePresentation: 'overlay' })).not.toContain(
+      'data-bottom-toolbar-presentation',
+    );
+  });
+
+  it('publishes the live bottom toolbar block size, follows it, and leaves the top chrome docked', () => {
+    const { root, bottom } = overlayBottomStack();
+    const dispose = wireNavStack(root, { duration: 0 });
+    expect(bottomSize(root)).toBe('49px');
+    expect(root.getAttribute('data-bottom-toolbar-overlay')).toBe('measured');
+    expect(root.hasAttribute('data-chrome-overlay')).toBe(false);
+    expect(chromeSize(root)).toBe('');
+    const observer = FakeResizeObserver.instances[0]!;
+    expect(observer.observed.has(bottom!)).toBe(true);
+
+    // A taller toolbar (larger text, a safe area) grows; the border box wins.
+    observer.report(bottom!, 83);
+    expect(bottomSize(root)).toBe('83px');
+    observer.report(bottom!);
+    expect(bottomSize(root)).toBe('49px');
+
+    dispose();
+    expect(bottomSize(root)).toBe('');
+    expect(root.hasAttribute('data-bottom-toolbar-overlay')).toBe(false);
+    expect(observer.observed.size).toBe(0);
+  });
+
+  it('measures both edges independently when both are overlaid', () => {
+    const { root, bottom } = overlayBottomStack({
+      chromePresentation: 'overlay',
+    });
+    const chrome = root.querySelector<HTMLElement>('[data-nav-stack-chrome]')!;
+    const dispose = wireNavStack(root, { duration: 0 });
+    const observer = FakeResizeObserver.instances[0]!;
+    observer.report(chrome, 52);
+    expect(chromeSize(root)).toBe('52px');
+    expect(bottomSize(root)).toBe('49px');
+    observer.report(bottom!, 60);
+    expect(chromeSize(root)).toBe('52px');
+    expect(bottomSize(root)).toBe('60px');
+    dispose();
+    expect(chromeSize(root)).toBe('');
+    expect(bottomSize(root)).toBe('');
+  });
+
+  it('leaves a stack with no bottom toolbar unmeasured', () => {
+    const root = mountStack([view('home', 'Home')], {
+      bottomToolbarPresentation: 'overlay',
+    });
+    const dispose = wireNavStack(root);
+    expect(root.hasAttribute('data-bottom-toolbar-overlay')).toBe(false);
+    expect(bottomSize(root)).toBe('');
+    expect(FakeResizeObserver.instances[0]!.observed.size).toBe(0);
+    dispose();
+  });
+
+  it('restores the published size and gate a re-render strips, before paint', async () => {
+    const { root } = overlayBottomStack();
+    const dispose = wireNavStack(root);
+    root.removeAttribute('style');
+    root.removeAttribute('data-bottom-toolbar-overlay');
+    await tick();
+    expect(bottomSize(root)).toBe('49px');
+    expect(root.getAttribute('data-bottom-toolbar-overlay')).toBe('measured');
+    dispose();
+  });
+
+  it('walks docked → overlay → replaced → removed → restored → docked without a stale size', async () => {
+    const root = mountStack([view('home', 'Home')], {
+      bottomToolbar: { label: 'Actions' },
+    });
+    const dispose = wireNavStack(root, { duration: 0 });
+    const observer = FakeResizeObserver.instances[0]!;
+    const first = root.querySelector<HTMLElement>('[data-nav-stack-bottom]')!;
+    first.getBoundingClientRect = () => ({ height: 44 }) as unknown as DOMRect;
+    expect(root.hasAttribute('data-bottom-toolbar-overlay')).toBe(false);
+
+    root.setAttribute('data-bottom-toolbar-presentation', 'overlay');
+    await tick();
+    expect(bottomSize(root)).toBe('44px');
+
+    // A view with its own bottom toolbar replaces it: the last size holds
+    // until the observer reports the replacement.
+    const replacement = first.cloneNode(true) as HTMLElement;
+    first.replaceWith(replacement);
+    await tick();
+    expect(observer.observed.has(first)).toBe(false);
+    expect(observer.observed.has(replacement)).toBe(true);
+    expect(bottomSize(root)).toBe('44px');
+    observer.report(replacement, 88);
+    expect(bottomSize(root)).toBe('88px');
+    observer.report(first, 10);
+    expect(bottomSize(root)).toBe('88px');
+
+    // A view with no bottom toolbar: nothing lies over the views' bottom.
+    replacement.remove();
+    await tick();
+    expect(root.hasAttribute('data-bottom-toolbar-overlay')).toBe(false);
+    expect(bottomSize(root)).toBe('');
+    expect(observer.observed.size).toBe(0);
+
+    const restored = replacement.cloneNode(true) as HTMLElement;
+    restored.getBoundingClientRect = () =>
+      ({ height: 50 }) as unknown as DOMRect;
+    root.append(restored);
+    await tick();
+    expect(bottomSize(root)).toBe('50px');
+
+    root.removeAttribute('data-bottom-toolbar-presentation');
+    await tick();
+    expect(root.hasAttribute('data-bottom-toolbar-overlay')).toBe(false);
+    expect(bottomSize(root)).toBe('');
+    dispose();
+  });
+
+  it('never measures a cross-fading bottom toolbar copy across a push', async () => {
+    const { root, bottom } = overlayBottomStack();
+    const dispose = wireNavStack(root, { duration: 10 });
+    const observer = FakeResizeObserver.instances[0]!;
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    viewport.querySelector<HTMLElement>(
+      '.kui-nav-stack__view',
+    )!.dataset.navActive = 'false';
+    const next = document.createElement('article');
+    next.className = 'kui-nav-stack__view';
+    next.dataset.navKey = 'detail';
+    next.dataset.navActive = 'true';
+    viewport.append(next);
+    await tick();
+    const copy = root.querySelector<HTMLElement>(
+      '[data-nav-stack-bottom][data-nav-chrome-copy]',
+    );
+    expect(copy).not.toBeNull();
+    expect(observer.observed.has(bottom!)).toBe(true);
+    expect(observer.observed.has(copy!)).toBe(false);
+    expect(bottomSize(root)).toBe('49px');
+    dispose();
+  });
+
+  it('publishes the scrollbar width per edge: a Pane footer keeps its content clear of the toolbar', async () => {
+    const { root } = overlayBottomStack({ chromePresentation: 'overlay' });
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const home = viewport.querySelector<HTMLElement>('.kui-nav-stack__view')!;
+    home.dataset.navActive = 'false';
+    const scrollbar = (element: HTMLElement, width: number) => {
+      Object.defineProperty(element, 'offsetWidth', {
+        configurable: true,
+        get: () => 320,
+      });
+      Object.defineProperty(element, 'clientWidth', {
+        configurable: true,
+        get: () => 320 - width,
+      });
+    };
+    const top = () =>
+      root.style.getPropertyValue('--_kui-nav-stack-scrollbar-inline-size');
+    const bottom = () =>
+      root.style.getPropertyValue(
+        '--_kui-nav-stack-bottom-scrollbar-inline-size',
+      );
+    const pushed = document.createElement('article');
+    pushed.className = 'kui-nav-stack__view';
+    pushed.dataset.navKey = 'detail';
+    pushed.dataset.navActive = 'true';
+    pushed.innerHTML =
+      '<section class="kui-pane"><div class="kui-pane__content"></div></section>';
+    const content = pushed.querySelector<HTMLElement>('.kui-pane__content')!;
+    scrollbar(content, 12);
+    viewport.append(pushed);
+    const dispose = wireNavStack(root, { duration: 0 });
+    const observer = FakeResizeObserver.instances[0]!;
+    // A header-less, footer-less Pane's content scrolls beneath both edges.
+    expect(observer.observed.has(content)).toBe(true);
+    expect(top()).toBe('12px');
+    expect(bottom()).toBe('12px');
+
+    // A footer ends the content above the toolbar; the top still covers it.
+    const footer = document.createElement('div');
+    footer.className = 'kui-pane__footer';
+    content.after(footer);
+    pushed.dataset.navKey = 'detail-footer';
+    await tick();
+    expect(top()).toBe('12px');
+    expect(bottom()).toBe('');
+    expect(observer.observed.has(content)).toBe(true);
+
+    // A header too: neither edge lies over the scroller.
+    const header = document.createElement('div');
+    header.className = 'kui-pane__header';
+    content.before(header);
+    pushed.dataset.navKey = 'detail-both';
+    await tick();
+    expect(top()).toBe('');
+    expect(bottom()).toBe('');
+    expect(observer.observed.has(content)).toBe(false);
+    dispose();
+  });
+});

@@ -1580,7 +1580,7 @@ export { type ListDropPosition, type ListReorder, type ListReorderSource, type L
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackChromePresentation, N as NavStackProps, e as NavStackToolbarConfig, a as NavStackView, f as NavStackViewBottomToolbar, g as NavStackViewToolbar } from './nav-stack-DmQezCkb.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-VXTumzKa.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './list.js';
@@ -1625,7 +1625,7 @@ export { type WireNavStackOptions, wireNavStack };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-DmQezCkb.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-VXTumzKa.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
@@ -1656,11 +1656,11 @@ interface SplitViewResizable extends Pick<ResizableRegionProps, 'separator' | 'h
 type SplitViewCompactViewToolbars = Pick<NavStackView, 'toolbar' | 'bottomToolbar'>;
 /**
  * The compact `NavStack`'s configuration: its toolbar configuration, back
- * control, persistent bottom toolbar, chrome dividers, and chrome
- * presentation forward to the stack, and `list` / `detail` give each view its
- * own toolbar groups.
+ * control, persistent bottom toolbar, chrome dividers, and chrome and
+ * bottom-toolbar presentations forward to the stack, and `list` / `detail`
+ * give each view its own toolbar groups.
  */
-interface SplitViewCompactStack extends Pick<NavStackProps, 'toolbarConfig' | 'backIcon' | 'backText' | 'hideToolbar' | 'bottomToolbar' | 'chromeDividers' | 'chromePresentation'> {
+interface SplitViewCompactStack extends Pick<NavStackProps, 'toolbarConfig' | 'backIcon' | 'backText' | 'hideToolbar' | 'bottomToolbar' | 'chromeDividers' | 'chromePresentation' | 'bottomToolbarPresentation'> {
     /** Toolbar content for the list (root) view. */
     list?: SplitViewCompactViewToolbars;
     /** Toolbar content for the pushed detail view. */
@@ -1887,7 +1887,7 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-DmQezCkb.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-VXTumzKa.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
@@ -2775,7 +2775,7 @@ import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './workbench.js';
-import './nav-stack-DmQezCkb.js';
+import './nav-stack-VXTumzKa.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -2930,7 +2930,7 @@ import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './workbench.js';
-import './nav-stack-DmQezCkb.js';
+import './nav-stack-VXTumzKa.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -2985,7 +2985,7 @@ import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './workbench.js';
-import './nav-stack-DmQezCkb.js';
+import './nav-stack-VXTumzKa.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';

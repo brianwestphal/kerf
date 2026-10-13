@@ -542,8 +542,10 @@ preview/edit transition.
 active view on the shared chrome material. `wireNavStack` measures the live
 chrome and the measured height, top safe area included, becomes the views'
 block-start edge inset, so a plain view or a sole Pane clears it with no prop;
-unwired, the chrome stays docked. The bottom toolbar always docks. See
-`docs/23-app-layouts.md` §3.1.
+unwired, the chrome stays docked. `NavStack.bottomToolbarPresentation="overlay"`
+(shipped, a separate prop) does the same for the bottom toolbar: the measured
+height, bottom safe area included, becomes the views' block-end edge inset.
+See `docs/23-app-layouts.md` §3.1.
 
 `TabNavigator.separator` defaults to `auto`: its bar's top edge separates an
 active sunken scene or nested Pane even when content fits. `hidden` suppresses

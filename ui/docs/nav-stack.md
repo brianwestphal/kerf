@@ -232,16 +232,69 @@ scrolls visibly, blurred, beneath it.
 - **Contrast.** The material keeps normal text at AA over any content. An
   untoned `ToolbarText` in the chrome lifts itself: its title takes the normal
   text color at every size and its `description` mixes the quiet color halfway
-  toward it. Other quiet copy you place in the chrome has no such lift, so keep
-  it in the view (see
+  toward it, and a default-tone `ToolbarControlGroup` takes the normal text
+  color for its controls. Other quiet copy you place in the chrome has no such
+  lift, so keep it in the view (see
   [Accessibility › Chrome material](accessibility.md#chrome-material)). The
   material turns opaque under `prefers-reduced-transparency`,
   `prefers-contrast: more`, or without `backdrop-filter`, and forced colors
   paint `Canvas` with a `CanvasText` bottom edge.
 
 `SplitView`'s `compactStack.chromePresentation` and a Workbench navigation
-panel's `navStack.chromePresentation` forward the same option. The bottom
-toolbar always docks.
+panel's `navStack.chromePresentation` forward the same option.
+`chromePresentation` governs only the top chrome; the bottom toolbar has its
+own option below.
+
+### Overlay bottom toolbar
+
+`bottomToolbarPresentation="overlay"` does the same for the bottom toolbar,
+like an iOS toolbar: it lies over the active view's bottom edge on the same
+chrome material instead of docking below the view (`"docked"`, the default).
+It is a separate prop, so either bar can be overlaid alone, and it mirrors
+`Pane.headerPresentation` and `DialogSurface.footerPresentation` in naming one
+edge.
+
+```tsx
+<NavStack
+  id="mail"
+  label="Mail"
+  views={views.value}
+  chromePresentation="overlay"
+  bottomToolbarPresentation="overlay"
+  bottomToolbar={{ label: 'Mail Actions', trailing: composeGroup }}
+/>
+```
+
+- **`wireNavStack` measures it.** It reads the live bottom toolbar's
+  border-box height (never a cross-fading copy's), publishes it on the stack
+  root, and marks the root `data-bottom-toolbar-overlay="measured"`. Only then
+  does the toolbar leave its band. Unwired, or while no bottom toolbar is
+  shown (a view without one and no stack-level fallback), it stays docked. The
+  measurement follows a view-owned toolbar as views push and pop, and a
+  re-render that strips it gets it back before paint.
+- **Every view clears it automatically.** The measured height becomes the
+  viewport's block-end edge context (`--kui-edge-inset-block-end`). A plain
+  view pads and scroll-pads by it, a sole `Pane` adds it to its content's
+  block-end inset (or its footer's, so the footer rests just above the
+  toolbar), and a nested layout hands it on. The last item rests just above
+  the toolbar, and anything focused or scrolled into view stops clear of it.
+- **Safe area.** The toolbar keeps claiming the bottom safe area (the home
+  indicator), and the measured height includes it, so views clear both exactly
+  once. Inside a `TabNavigator` scene the tab bar owns that edge, so the
+  stack's toolbar sits just above the tab bar and counts no safe area.
+- **Classic scrollbars and dividers.** The toolbar ends where a classic
+  scrollbar's track begins (a sole Pane with a footer ends its scroller above
+  the toolbar, so nothing needs leaving there). With `wireScrollDividers`, the
+  toolbar's top line still appears only while more content lies below.
+- **Contrast.** An untoned `ToolbarText` lifts itself as in the top chrome,
+  and a default-tone `ToolbarControlGroup` in either overlaid bar takes the
+  normal text color for its controls, so labels and icons keep AA over the
+  content beneath. The material has the same opaque fallbacks; in forced
+  colors the toolbar paints `Canvas` and its always-present 1px top border
+  becomes a `CanvasText` edge, which the measurement includes.
+
+`SplitView`'s `compactStack.bottomToolbarPresentation` and a Workbench
+navigation panel's `navStack.bottomToolbarPresentation` forward it too.
 
 ## Safe areas
 

@@ -188,6 +188,7 @@ describe('UX catalog metadata', () => {
           'NavStackToolbarConfig',
           'NavStackProps',
           'NavStackChromePresentation',
+          'NavStackBottomToolbarPresentation',
           'NavStack',
         ],
       },
