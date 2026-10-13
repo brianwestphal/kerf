@@ -409,7 +409,9 @@ beside that pinned tab. `wireTabBars` measures the pinned inset and provides
 enough end scroll room for the last peer to align there; a partial peer can
 still appear at the trailing edge as an overflow cue. This mode also aligns a
 newly selected tab at the pinned edge in LTR and RTL. Set the prop on the bar,
-without styling its strip or tab internals.
+without styling its strip or tab internals. With `snapTabs`, keep the trailing
+zone non-shrinking (the default `--kui-tab-bar-trailing-flex`): the reserved
+end room counts toward the strip's share when both zones shrink.
 Set the public
 `--kui-app-tab-pinned-background` token if the surrounding surface differs from
 the default; the pinned tab must cover peers as they scroll beneath it. Its

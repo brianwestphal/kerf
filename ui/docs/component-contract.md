@@ -807,7 +807,13 @@ whole-tab starts after scroll and selection changes, reserving end room so the
 last peer can align there. That room is scrollable content after the last tab,
 inside the strip, so it lengthens the scroll range without widening the strip:
 the strip still shrinks to its allocation, and `trailing` and `end` stay inside
-the bar. The application still owns selection and tab order.
+the bar. The room is still in-flow content, so it counts toward the strip's
+content-based flex basis: when another zone also shrinks (a trailing zone
+given `--kui-tab-bar-trailing-flex: 0 1 auto` with shrinkable content), the
+strip keeps a proportionally larger share. The share converges within a few
+frames and never pushes `trailing` or `end` out of the bar; keep the trailing
+zone non-shrinking with `snapTabs` to avoid it. The application still owns
+selection and tab order.
 ResizeObserver notifications coalesce snap measurements into the next animation
 frame, so inset writes cannot resize the observed strip during observer delivery.
 `wireTabBars` watches the whole root it is given, but a mutation re-measures only
