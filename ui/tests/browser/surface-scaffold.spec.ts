@@ -578,3 +578,52 @@ test('a host with an explicit dialog role is the only dialog with its name', asy
   ).toEqual([true, null, null]);
   await page.keyboard.press('Escape');
 });
+
+// The built-in close control matches a borderless single ToolbarControlGroup
+// button, the close a toolbar-composed dialog uses: a 40px circle with no
+// border and the neutral hover fill.
+test('the default dialog close control is a toolbar-sized circle', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await page.goto('/?component=surface-scaffold');
+  const demo = page.locator('[data-demo="surface-scaffold"]');
+  await demo.getByRole('button', { name: 'Open dialog' }).click();
+  const dialog = page.locator('#catalog-wa-dialog');
+  await expect(dialog).toHaveAttribute('open', '');
+  const close = dialog.locator('[part~="close-button"]');
+  const geometry = () =>
+    dialog.evaluate((element) => {
+      const button = element.shadowRoot!.querySelector(
+        '[part~="close-button"]',
+      )!;
+      const base = button.shadowRoot!.querySelector('[part~="base"]')!;
+      const box = base.getBoundingClientRect();
+      const style = window.getComputedStyle(base);
+      return {
+        width: box.width,
+        height: box.height,
+        radius: style.borderTopLeftRadius,
+        border: style.borderTopColor,
+        background: style.backgroundColor,
+      };
+    });
+  // The dialog scales in; measure once its show animation settles.
+  await expect.poll(async () => Math.round((await geometry()).width)).toBe(40);
+  const rest = await geometry();
+  expect(rest.width).toBeCloseTo(40, 0);
+  expect(rest.height).toBeCloseTo(40, 0);
+  expect(rest.radius).toBe('50%');
+  expect(rest.border).toBe('rgba(0, 0, 0, 0)');
+  const hoverFill = await page.evaluate(() => {
+    const probe = document.createElement('div');
+    probe.style.backgroundColor = 'var(--kui-color-neutral-fill-normal)';
+    document.body.append(probe);
+    const color = window.getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return color;
+  });
+  await close.hover();
+  await expect.poll(async () => (await geometry()).background).toBe(hoverFill);
+  await page.keyboard.press('Escape');
+});

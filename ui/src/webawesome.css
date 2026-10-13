@@ -484,6 +484,24 @@
     gap: var(--kui-layout-item-gap, remify(8px));
   }
 
+  /* The built-in close control matches a borderless single
+     ToolbarControlGroup button (the close in a toolbar-composed dialog): a
+     40px circle, no border, and the toolbar's neutral hover fill, in place of
+     Web Awesome's 35px rounded square. */
+  :is(wa-dialog, wa-drawer)::part(close-button__base) {
+    width: remify(40px);
+    min-width: remify(40px);
+    height: remify(40px);
+    padding: 0;
+    border-color: transparent;
+    border-radius: var(--kui-radius-circle);
+    justify-content: center;
+  }
+
+  :is(wa-dialog, wa-drawer)::part(close-button__base):hover {
+    background-color: var(--kui-color-neutral-fill-normal);
+  }
+
   /* Dialogs that provide their own dismissal affordance can opt out of Web
      Awesome's header action region without reaching through the shadow root.
      `header-actions` is a directly exported part, so it must be targeted from

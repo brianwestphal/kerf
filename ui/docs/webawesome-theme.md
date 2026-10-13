@@ -190,6 +190,13 @@ a panel, and a Web Awesome card containing details, using public components and
 no demo stylesheet. Browser tests cover repeated layers, actual compositing,
 text contrast, light/dark switching, narrow/wide layouts, and forced colors.
 
+The built-in close control of a `wa-dialog` or `wa-drawer` matches a borderless
+single `ToolbarControlGroup` button, the close a toolbar-composed dialog uses
+(see the list-detail dialog recipe): a 40px circle with no border and the
+neutral hover fill, in place of Web Awesome's 35px rounded square. The theme
+sizes it through the directly exported `close-button__base` part, so the
+default header and a toolbar-composed header present one close affordance.
+
 Add `class="hide-actions"` to a `wa-dialog` when the dialog supplies its own
 dismissal affordance and should omit Web Awesome's header action region. The
 theme sets `display: none` on the directly exported `header-actions` part; it
