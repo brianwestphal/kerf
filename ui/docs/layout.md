@@ -745,8 +745,10 @@ in an app-owned scroller:
 `frame` draws a 1px `--kui-color-neutral-border-normal` border with the
 `--kui-radius-m` control radius and a 4px inset on every side (replacing
 `inset`, `textInsets`, and `controlInsets`). That inset is exactly a row's
-focus-ring reach, and the frame adds it to its scroll padding, so the first and
-last rows' rings stay inside the clip. `maxHeight` and `minHeight` take typed
+focus-ring reach, so the first and last rows' rings stay inside the clip. The
+frame's scroll padding is that reach plus 2px of slack (6px), so a middle row
+focused or scrolled into view also stops with its ring inside the clip, even
+where Chromium's focus scroll stops a pixel short of the padded target. `maxHeight` and `minHeight` take typed
 `CssLength`s from `@kerfjs/ui/css-values` and bound the List directly, with no
 flex-column ancestor; pair `maxHeight` with `scrollable`. A frame of settings
 rows with dividers between them is a `FramedList`, not a framed List.

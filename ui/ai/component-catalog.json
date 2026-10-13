@@ -3680,7 +3680,7 @@
         "notes": [
           "List adds no margin. dividerSides draws selected physical edges without changing geometry; textInsets adds the full 17px content inset and controlInsets adds 8px on selected sides, with text winning on overlap.",
           "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the List block padding and scroll-padding on the opted-in edges; without it the context is ignored.",
-          "frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets) that is also block scroll padding, so the first and last rows' focus rings stay inside the clip; maxHeight/minHeight bound the List directly."
+          "frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets), exactly the focus-ring reach, so the first and last rows' rings stay inside the clip; its block scroll padding is that reach plus 2px of slack, so any row focused or scrolled into view stops with its ring inside the clip; maxHeight/minHeight bound the List directly."
         ]
       },
       "delivery": {

@@ -123,6 +123,76 @@ for (const width of [1280, 390]) {
   });
 }
 
+/**
+ * Scrolls the picker to one extreme and returns the index of the first row
+ * that the opposite edge cuts partly off: the middle row a focus or
+ * scroll-into-view must bring in, where the scroll stop decides whether its
+ * ring meets the clip.
+ */
+async function partlyHiddenRow(page: Page, edge: 'top' | 'bottom') {
+  return page.locator(picker).evaluate((list, hiddenAt) => {
+    list.scrollTop = hiddenAt === 'bottom' ? 0 : list.scrollHeight;
+    const style = globalThis.getComputedStyle(list);
+    const box = list.getBoundingClientRect();
+    const top = box.top + Number.parseFloat(style.borderTopWidth);
+    const bottom = top + list.clientHeight;
+    const rows = [...list.children] as HTMLElement[];
+    const order = hiddenAt === 'bottom' ? rows : [...rows].reverse();
+    const row = order.find((candidate) => {
+      const rect = candidate.getBoundingClientRect();
+      return hiddenAt === 'bottom'
+        ? rect.bottom > bottom && rect.top < bottom
+        : rect.top < top && rect.bottom > top;
+    });
+    return row === undefined ? -1 : rows.indexOf(row);
+  }, edge);
+}
+
+// KF-7CMHET (scroll padding = ring reach + 2px slack): Chromium's focus
+// scroll stops 1px short of the padded target, so with padding equal to the
+// ring reach a middle row's ring was cut by about 1px.
+for (const width of [1280, 390]) {
+  for (const edge of ['bottom', 'top'] as const) {
+    test(`a middle row focused from the ${edge} edge keeps its ring inside the clip at ${width}px`, async ({
+      page,
+      browserName,
+    }) => {
+      // Firefox's focus leaves a partly visible row unscrolled (KF-Z5M10V),
+      // so only the scroll-into-view case below covers it.
+      test.skip(
+        browserName === 'firefox',
+        'Firefox focus does not scroll a partly visible row',
+      );
+      await openDemo(page, width);
+      await page.keyboard.press('Shift');
+      const index = await partlyHiddenRow(page, edge);
+      expect(index).toBeGreaterThan(0);
+      const row = page.locator(`${picker} > .kui-list-item`).nth(index);
+      await row.focus();
+      await expect(row).toBeFocused();
+      expectInside(await focusedRing(page), (await frameGeometry(page)).clip);
+    });
+
+    test(`a middle row scrolled into view from the ${edge} edge keeps its ring inside the clip at ${width}px`, async ({
+      page,
+    }) => {
+      await openDemo(page, width);
+      await page.keyboard.press('Shift');
+      const index = await partlyHiddenRow(page, edge);
+      expect(index).toBeGreaterThan(0);
+      const row = page.locator(`${picker} > .kui-list-item`).nth(index);
+      // Focus without scrolling, then scroll the nearest edge into view: the
+      // frame's scroll padding alone decides where the row stops.
+      await row.evaluate((element) => {
+        element.focus({ preventScroll: true });
+        element.scrollIntoView({ block: 'nearest' });
+      });
+      await expect(row).toBeFocused();
+      expectInside(await focusedRing(page), (await frameGeometry(page)).clip);
+    });
+  }
+}
+
 test('activating a candidate runs its action', async ({ page }) => {
   await openDemo(page);
   await page.locator(`${picker} > .kui-list-item`).nth(1).click();
