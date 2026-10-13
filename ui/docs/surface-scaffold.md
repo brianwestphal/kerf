@@ -123,7 +123,7 @@ needs tighter edges.
 ```tsx
 <DialogSurface height={remify(560)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill-last" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
   <wa-dialog label="Assistant">
-    <StateBanner title="Answers use the latest nightly build" tone="neutral" />
+    <StateBanner title="Answers use the latest nightly build." tone="neutral" />
     <List gap="xs" controlInsets="tb" scrollable>
       {messages.map((message) => (
         <ContentItem bubble={message.mine ? 'end' : 'start'} appearance={message.mine ? 'brand-loud' : 'neutral'}>

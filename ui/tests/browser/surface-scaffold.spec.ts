@@ -699,7 +699,7 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/?component=surface-scaffold');
-  await page.getByRole('button', { name: 'Open assistant' }).click();
+  await page.getByRole('button', { name: 'Open Assistant' }).click();
   await expect(page.locator('#catalog-chat-dialog')).toHaveAttribute(
     'open',
     '',
@@ -770,7 +770,7 @@ test('a phone chat dialog floats its composer 8px from the panel edges', async (
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=surface-scaffold');
-  await page.getByRole('button', { name: 'Open assistant' }).click();
+  await page.getByRole('button', { name: 'Open Assistant' }).click();
   await expect(page.locator('#catalog-chat-dialog')).toHaveAttribute(
     'open',
     '',

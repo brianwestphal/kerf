@@ -267,11 +267,11 @@ export function SurfaceScaffoldDemo() {
             data-action="show-wa-dialog"
             data-dialog-id={CHAT_DIALOG_ID}
           >
-            Open assistant
+            Open Assistant
           </wa-button>
           <wa-dialog id={CHAT_DIALOG_ID} label="Assistant">
             <StateBanner
-              title="Answers use the latest nightly build"
+              title="Answers use the latest nightly build."
               tone="neutral"
             />
             <List
