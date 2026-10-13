@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 357400,
-  "measuredLargestJavaScriptGzip": 140322,
-  "measuredTotalJavaScriptGzip": 357328,
+  "totalJavaScriptGzip": 357500,
+  "measuredLargestJavaScriptGzip": 140393,
+  "measuredTotalJavaScriptGzip": 357403,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3907,6 +3907,22 @@
         "measuredTotalJavaScriptGzip": 357328,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 357400
+      }
+    },
+    {
+      "at": "2026-10-13T04:44:05.635Z",
+      "reason": "NavStack root xlarge title and centered navigation-bar title (KF-2XWXFR, KF-9YD9KV) add a few bytes of title-size and center-zone logic",
+      "old": {
+        "measuredLargestJavaScriptGzip": 140322,
+        "measuredTotalJavaScriptGzip": 357328,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 140393,
+        "measuredTotalJavaScriptGzip": 357403,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357500
       }
     }
   ]

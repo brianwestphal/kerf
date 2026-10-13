@@ -1515,7 +1515,7 @@ export { type ListDropPosition, type ListReorder, type ListReorderSource, type L
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, N as NavStackProps, d as NavStackToolbarConfig, a as NavStackView, e as NavStackViewBottomToolbar, f as NavStackViewToolbar } from './nav-stack-BvSKY448.js';
+export { c as NavStack, N as NavStackProps, d as NavStackToolbarConfig, a as NavStackView, e as NavStackViewBottomToolbar, f as NavStackViewToolbar } from './nav-stack-Cp3Y8kJ9.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './list.js';
@@ -1559,7 +1559,7 @@ export { type WireNavStackOptions, wireNavStack };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-BvSKY448.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-Cp3Y8kJ9.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
@@ -1782,7 +1782,7 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-BvSKY448.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-Cp3Y8kJ9.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
@@ -2662,7 +2662,7 @@ import './toolbar.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './workbench.js';
-import './nav-stack-BvSKY448.js';
+import './nav-stack-Cp3Y8kJ9.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -2800,7 +2800,7 @@ import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './workbench.js';
-import './nav-stack-BvSKY448.js';
+import './nav-stack-Cp3Y8kJ9.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -2854,7 +2854,7 @@ import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './workbench.js';
-import './nav-stack-BvSKY448.js';
+import './nav-stack-Cp3Y8kJ9.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
