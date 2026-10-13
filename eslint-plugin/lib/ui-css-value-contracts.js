@@ -43,27 +43,55 @@ function jsxValue(attribute) {
   return undefined;
 }
 
-function nestedValues(value, tail) {
-  if (!tail) return [value];
-  if (value?.type !== 'ArrayExpression') return [];
-  return value.elements.flatMap((element) => {
-    if (element?.type !== 'ObjectExpression') return [];
-    const property = objectProperty(element, tail);
-    return property ? [property.value] : [];
-  });
+// A catalog `cssValueProps` path is dot-separated object members, each
+// optionally suffixed with `[]` to visit every array element: `gap`,
+// `choices[].swatch`, `iconTile.color`. A member that does not resolve to a
+// literal object or array (a tone string, a variable, a spread) is skipped.
+function pathSegments(path) {
+  return path
+    .split('.')
+    .map((segment) =>
+      segment.endsWith('[]')
+        ? { name: segment.slice(0, -2), each: true }
+        : { name: segment, each: false },
+    );
+}
+
+function expandElements(values, each) {
+  if (!each) return values;
+  return values.flatMap((value) =>
+    value?.type === 'ArrayExpression' ? value.elements : [],
+  );
+}
+
+function nestedValues(value, segments) {
+  let values = expandElements([value], segments[0].each);
+  for (const { name, each } of segments.slice(1))
+    values = expandElements(
+      values.flatMap((item) => {
+        if (item?.type !== 'ObjectExpression') return [];
+        const property = objectProperty(item, name);
+        return property ? [property.value] : [];
+      }),
+      each,
+    );
+  return values;
 }
 
 function contractValuesFromJsx(opening, path) {
-  const [head, tail] = path.split('[].');
-  return nestedValues(jsxValue(jsxAttribute(opening, head)), tail);
+  const segments = pathSegments(path);
+  return nestedValues(
+    jsxValue(jsxAttribute(opening, segments[0].name)),
+    segments,
+  );
 }
 
 function contractValuesFromCall(call, path) {
   const options = call.arguments[0];
   if (options?.type !== 'ObjectExpression') return [];
-  const [head, tail] = path.split('[].');
-  const property = objectProperty(options, head);
-  return property ? nestedValues(property.value, tail) : [];
+  const segments = pathSegments(path);
+  const property = objectProperty(options, segments[0].name);
+  return property ? nestedValues(property.value, segments) : [];
 }
 
 const CONTRACT_MESSAGES = {

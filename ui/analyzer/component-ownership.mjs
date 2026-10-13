@@ -133,7 +133,7 @@ export function componentOwnershipFacts(entries) {
     for (const root of roots) {
       privatePrefixes.push({ prefix: `--_${root}`, entry });
       for (const contract of entry.cssValueProps ?? []) {
-        const [head] = contract.path.split('[].');
+        const [head] = contract.path.split(/\[\]|\./);
         const token = `--${root}-${kebab(head)}`;
         if (tokens.has(token))
           setOnce(typedTokens, token, { entry, path: contract.path });

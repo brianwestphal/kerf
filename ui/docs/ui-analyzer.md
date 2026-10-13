@@ -110,7 +110,9 @@ Catalog entries may also publish `cssValueProps`. Each path names its grammar,
 finite shorthands, canonical and exceptional scale steps, accepted typed
 helpers, expression-only helpers, raw escape policy, and examples. The analyzer
 uses that same metadata for direct component calls and JSX, including nested
-paths such as `choices[].color`; consumer catalogs receive identical checks.
+paths such as `choices[].color` (each array item's member) and
+`iconTile.color` (an object-valued prop's member, skipped when the prop is a
+tone string); consumer catalogs receive identical checks.
 Dynamic values remain a type-system responsibility rather than being guessed.
 
 ## Component ownership (`KUI-L019`–`KUI-L023`)

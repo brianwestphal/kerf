@@ -382,6 +382,92 @@ export const A = () => <ChoiceChips name="c" label="C" value="a" choices={[
     );
   });
 
+  it('flags a foreground color helper passed to a row iconTile fill through object-member paths', async () => {
+    // `iconTile` is a tone string or `{ color, foreground? }`. The catalog path
+    // `iconTile.color` walks into the object literal; a tone string has no
+    // members and is skipped. `foreground` keeps accepting foreground helpers.
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-icon-tile-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/rows.tsx'),
+      `import { ListItem, ListItemLink } from '@kerfjs/ui/list-item';
+import { ListActionRow } from '@kerfjs/ui/list-action-row';
+import * as css from '@kerfjs/ui/css-values';
+import { colorVar, fillColor, foregroundColor, foregroundColorVar, uiColor } from '@kerfjs/ui/css-values';
+export const A = () => <ListItem label="A" iconTile={{ color: foregroundColor('#e5484d') }} />;
+export const B = () => <ListItemLink href="/b" label="B" iconTile={{ color: css.foregroundColor('#e5484d'), foreground: foregroundColor('white') }} />;
+export const C = () => <ListActionRow label="C" iconTile={{ color: foregroundColorVar('--app-ink') }} />;
+export const D = () => <ListItem label="D" iconTile={{ color: fillColor('#e5484d'), foreground: foregroundColor('white') }} />;
+export const E = () => <ListItem label="E" iconTile={{ color: uiColor('brand-fill-loud'), foreground: uiColor('brand-on-loud') }} />;
+export const F = () => <ListItemLink href="/f" label="F" iconTile={{ color: colorVar('--app-tile'), foreground: foregroundColorVar('--app-tile-ink') }} />;
+export const G = () => <ListActionRow label="G" iconTile="brand" />;
+export const H = () => <ListItem label="H" iconTile={'success'} />;
+export const I = () => <ListItem label="I" iconTile={{ color: fillColor('#22c55e'), foreground: fillColor('#ffffff') }} />;
+export const J = () => <ListItem label="J" iconTile={{ color: '#e5484d' }} />;
+export const K = () => ListItem({ label: 'K', iconTile: { color: foregroundColor('#000000') } });
+`,
+    );
+
+    const report = await analyzeUiProject({ root, profile: packageProfile });
+    const tile = report.diagnostics
+      .filter(({ evidence }) =>
+        (evidence as { path?: string } | undefined)?.path?.startsWith(
+          'iconTile.',
+        ),
+      )
+      .map(({ ruleId, location, evidence }) => ({
+        ruleId,
+        line: location.line,
+        path: (evidence as { path: string }).path,
+        helper: (evidence as { helper?: string }).helper,
+      }));
+    expect(tile).toEqual([
+      {
+        ruleId: 'KUI-L014',
+        line: 5,
+        path: 'iconTile.color',
+        helper: 'foregroundColor',
+      },
+      {
+        ruleId: 'KUI-L014',
+        line: 6,
+        path: 'iconTile.color',
+        helper: 'foregroundColor',
+      },
+      {
+        ruleId: 'KUI-L014',
+        line: 7,
+        path: 'iconTile.color',
+        helper: 'foregroundColorVar',
+      },
+      {
+        ruleId: 'KUI-L014',
+        line: 13,
+        path: 'iconTile.foreground',
+        helper: 'fillColor',
+      },
+      {
+        ruleId: 'KUI-L013',
+        line: 14,
+        path: 'iconTile.color',
+        helper: undefined,
+      },
+      {
+        ruleId: 'KUI-L014',
+        line: 15,
+        path: 'iconTile.color',
+        helper: 'foregroundColor',
+      },
+    ]);
+    const first = report.diagnostics.find(
+      ({ evidence }) =>
+        (evidence as { path?: string } | undefined)?.path === 'iconTile.color',
+    );
+    expect(first?.message).toBe(
+      '`foregroundColor()` produces the wrong grammar for `ListItem.iconTile.color`; use `fillColor()` or `uiColor()` or `colorVar()`.',
+    );
+  });
+
   it('never treats a helper export as the component its entry describes', async () => {
     // The selection catalog lists helpers beside the render function
     // (`Select` ships `uiColor`/`colorVar`, `List` ships `flex`/`rem`). A

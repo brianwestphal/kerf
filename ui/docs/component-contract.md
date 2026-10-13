@@ -89,8 +89,12 @@ only cataloged `descendantElements` and composed JSX evidence.
 An entry's optional `cssValueProps` makes CSS-adjacent prop grammar equally
 machine-evaluable. Each path records the property grammar, finite shorthands,
 canonical versus exceptional spacing choices, standalone and expression-only
-helpers, raw/unsafe policy, and serialization examples. Nested paths use the
-bounded `items[].property` form. Consumer catalogs can publish the same facts;
+helpers, raw/unsafe policy, and serialization examples. Nested paths are
+dot-separated object members, each optionally suffixed with `[]` to visit
+every array element: `items[].property` for a value inside each array item,
+`iconTile.color` for a member of an object-valued prop. A member that is not a
+literal object or array (a tone string such as `iconTile="brand"`, a variable)
+is skipped rather than guessed. Consumer catalogs can publish the same facts;
 ESLint, `kerf-ui-analyze`, and `kerf-ui-doctor` then issue the same stable
 `KUI-L013`–`KUI-L017` feedback for application and third-party components.
 

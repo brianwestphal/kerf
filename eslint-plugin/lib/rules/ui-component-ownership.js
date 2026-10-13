@@ -36,7 +36,7 @@ function ownershipFacts(contract) {
     for (const root of roots) {
       privatePrefixes.push({ prefix: `--_${root}`, entry });
       for (const contractProp of entry.cssValueProps ?? []) {
-        const [head] = contractProp.path.split('[].');
+        const [head] = contractProp.path.split(/\[\]|\./);
         const token = `--${root}-${kebab(head)}`;
         if (tokens.has(token) && !typedTokens.has(token))
           typedTokens.set(token, { entry, path: contractProp.path });

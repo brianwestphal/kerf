@@ -3148,6 +3148,34 @@
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
           "examples": ["className=\"app-row\""]
+        },
+        {
+          "path": "iconTile.color",
+          "grammar": "color",
+          "helpers": ["fillColor", "uiColor", "colorVar"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "iconTile={{ color: fillColor(\"#e5484d\") }}",
+            "iconTile={{ color: uiColor(\"brand-fill-loud\") }}",
+            "iconTile={{ color: colorVar(\"--app-category-color\") }}"
+          ]
+        },
+        {
+          "path": "iconTile.foreground",
+          "grammar": "color",
+          "helpers": ["uiColor", "foregroundColorVar", "foregroundColor"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "iconTile={{ color: fillColor(\"#e5484d\"), foreground: foregroundColor(\"white\") }}",
+            "iconTile={{ color: uiColor(\"brand-fill-loud\"), foreground: uiColor(\"brand-on-loud\") }}",
+            "iconTile={{ color: colorVar(\"--app-tile\"), foreground: foregroundColorVar(\"--app-tile-ink\") }}"
+          ]
         }
       ],
       "boundaries": {
@@ -3288,6 +3316,34 @@
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
           "examples": ["className=\"app-row\""]
+        },
+        {
+          "path": "iconTile.color",
+          "grammar": "color",
+          "helpers": ["fillColor", "uiColor", "colorVar"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "iconTile={{ color: fillColor(\"#e5484d\") }}",
+            "iconTile={{ color: uiColor(\"brand-fill-loud\") }}",
+            "iconTile={{ color: colorVar(\"--app-category-color\") }}"
+          ]
+        },
+        {
+          "path": "iconTile.foreground",
+          "grammar": "color",
+          "helpers": ["uiColor", "foregroundColorVar", "foregroundColor"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "iconTile={{ color: fillColor(\"#e5484d\"), foreground: foregroundColor(\"white\") }}",
+            "iconTile={{ color: uiColor(\"brand-fill-loud\"), foreground: uiColor(\"brand-on-loud\") }}",
+            "iconTile={{ color: colorVar(\"--app-tile\"), foreground: foregroundColorVar(\"--app-tile-ink\") }}"
+          ]
         }
       ],
       "boundaries": {

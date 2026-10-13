@@ -99,7 +99,7 @@
       "type": "object",
       "required": ["path", "grammar", "helpers", "shorthands", "canonicalShorthands", "exceptionalShorthands", "rawPolicy", "examples"],
       "properties": {
-        "path": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*(?:\\[\\]\\.[A-Za-z][A-Za-z0-9]*)?$" },
+        "path": { "type": "string", "pattern": "^(?:[A-Za-z][A-Za-z0-9]*(?:\\[\\])?\\.)*[A-Za-z][A-Za-z0-9]*$" },
         "grammar": { "enum": ["length", "size", "flex", "color", "declarations", "media-query", "pixels"] },
         "helpers": { "$ref": "#/$defs/stringList" },
         "nonStandaloneHelpers": { "$ref": "#/$defs/stringList" },

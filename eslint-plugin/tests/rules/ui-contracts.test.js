@@ -1532,8 +1532,29 @@ tester.run('ui-css-values', cssValues, {
       code: "import { uiColor } from '@kerfjs/ui/select'; uiColor({ choices: [{ label: 'A', value: 'a', color: 'red' }] });",
       settings,
     },
+    // Object-member paths (`iconTile.color`) walk into an object literal; a
+    // tone string has no members, and `foreground` takes foreground helpers.
+    {
+      code: "import { ListItem } from '@kerfjs/ui/list-item'; import { fillColor, foregroundColor, uiColor } from '@kerfjs/ui'; <ListItem label=\"A\" iconTile={{ color: fillColor('#e5484d'), foreground: foregroundColor('white') }} />; <ListItem label=\"B\" iconTile={{ color: uiColor('brand-fill-loud') }} />; <ListItem label=\"C\" iconTile=\"brand\" />;",
+      settings: shippedUiSettings,
+    },
   ],
   invalid: [
+    {
+      code: "import { ListItemLink } from '@kerfjs/ui/list-item'; import { foregroundColor } from '@kerfjs/ui'; <ListItemLink href=\"/a\" label=\"A\" iconTile={{ color: foregroundColor('#e5484d') }} />;",
+      settings: shippedUiSettings,
+      errors: [
+        {
+          message:
+            'KUI-L014: `foregroundColor()` produces the wrong grammar for `ListItem.iconTile.color`; use `fillColor()` or `uiColor()` or `colorVar()`.',
+        },
+      ],
+    },
+    {
+      code: "import { ListActionRow } from '@kerfjs/ui/list-action-row'; import { fillColor } from '@kerfjs/ui'; ListActionRow({ label: 'A', iconTile: { color: fillColor('#000000'), foreground: fillColor('#ffffff') } });",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'helper' }],
+    },
     {
       code: 'import { List } from \'@kerfjs/ui\'; <List gap="12px" />;',
       settings,

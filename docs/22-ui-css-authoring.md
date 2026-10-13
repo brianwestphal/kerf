@@ -106,7 +106,8 @@ icons while `fillColor()` returns a plain `CssColor` for fill props — a
 `ChoiceChips` `swatch` or a list row's `iconTile` `color` — so a fill literal
 cannot reach a foreground prop. `CssForegroundColor` stays assignable to
 `CssColor`, so an existing `foregroundColor()` fill still compiles; the
-analyzer flags it on a `ChoiceChips` swatch. Media-query strings remain a separate grammar, and semantic pixel
+analyzer flags it on a `ChoiceChips` swatch and on a row `iconTile` `color`
+(while an `iconTile` `foreground` keeps accepting it). Media-query strings remain a separate grammar, and semantic pixel
 props remain numbers. Raw CSS string compatibility and row-level `style`
 declarations were intentionally removed before 5.0 stable so invalid or
 cross-property values fail at typecheck time. Use row `className`, public

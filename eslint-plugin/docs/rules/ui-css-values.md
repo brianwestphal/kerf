@@ -4,6 +4,10 @@ Checks literal JSX and direct component-function calls against each component's
 cataloged `cssValueProps` contracts. The catalog keeps length, size, flex,
 color, declaration-list, media-query, and numeric-pixel grammars distinct and
 names their accepted helpers, finite shorthands, and raw-value policy.
+A contract path is dot-separated object members, each optionally suffixed with
+`[]` to visit every array element: `gap`, `choices[].swatch`, `iconTile.color`.
+A member that is not a literal object or array (a tone string such as
+`iconTile="brand"`, a variable) is skipped.
 
 Stable diagnostics are `KUI-L013` (raw or unknown shorthand), `KUI-L014`
 (wrong property helper), `KUI-L015` (non-standalone expression), `KUI-L016`

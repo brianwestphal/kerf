@@ -1333,34 +1333,61 @@ function objectProperty(object, name) {
   );
 }
 
-function nestedCssValues(value, tail) {
-  if (!tail) return value ? [value] : [];
-  if (!value || !ts.isArrayLiteralExpression(value)) return [];
-  return value.elements.flatMap((element) => {
-    if (!ts.isObjectLiteralExpression(element)) return [];
-    const property = objectProperty(element, tail);
-    return property ? [property.initializer] : [];
-  });
+// A catalog `cssValueProps` path is dot-separated object members, each
+// optionally suffixed with `[]` to visit every array element: `gap`,
+// `choices[].swatch`, `iconTile.color`. A member that does not resolve to a
+// literal object or array (a tone string, a variable, a spread) is skipped:
+// dynamic values are the type system's job.
+function cssPathSegments(path) {
+  return path
+    .split('.')
+    .map((segment) =>
+      segment.endsWith('[]')
+        ? { name: segment.slice(0, -2), each: true }
+        : { name: segment, each: false },
+    );
+}
+
+function expandCssElements(values, each) {
+  if (!each) return values;
+  return values.flatMap((value) =>
+    ts.isArrayLiteralExpression(value) ? value.elements : [],
+  );
+}
+
+function nestedCssValues(value, segments) {
+  let values = expandCssElements(value ? [value] : [], segments[0].each);
+  for (const { name, each } of segments.slice(1))
+    values = expandCssElements(
+      values.flatMap((item) => {
+        if (!ts.isObjectLiteralExpression(item)) return [];
+        const property = objectProperty(item, name);
+        return property ? [property.initializer] : [];
+      }),
+      each,
+    );
+  return values;
 }
 
 function jsxCssValues(opening, path) {
-  const [head, tail] = path.split('[].');
+  const segments = cssPathSegments(path);
   const attribute = opening.attributes.properties.find(
-    (item) => ts.isJsxAttribute(item) && item.name.getText() === head,
+    (item) =>
+      ts.isJsxAttribute(item) && item.name.getText() === segments[0].name,
   );
   if (!attribute?.initializer) return [];
   const value = ts.isJsxExpression(attribute.initializer)
     ? attribute.initializer.expression
     : attribute.initializer;
-  return nestedCssValues(value, tail);
+  return nestedCssValues(value, segments);
 }
 
 function callCssValues(call, path) {
   const options = call.arguments[0];
   if (!options || !ts.isObjectLiteralExpression(options)) return [];
-  const [head, tail] = path.split('[].');
-  const property = objectProperty(options, head);
-  return property ? nestedCssValues(property.initializer, tail) : [];
+  const segments = cssPathSegments(path);
+  const property = objectProperty(options, segments[0].name);
+  return property ? nestedCssValues(property.initializer, segments) : [];
 }
 
 function cssLiteral(value) {

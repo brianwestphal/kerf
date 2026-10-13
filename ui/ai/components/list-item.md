@@ -58,6 +58,8 @@ Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
 - `style`: declarations grammar; raw values: forbid — e.g. `className="app-row"`
+- `iconTile.color`: color grammar; raw values: forbid; helpers `fillColor`, `uiColor`, `colorVar` — e.g. `iconTile={{ color: fillColor("#e5484d") }}`
+- `iconTile.foreground`: color grammar; raw values: forbid; helpers `uiColor`, `foregroundColorVar`, `foregroundColor` — e.g. `iconTile={{ color: fillColor("#e5484d"), foreground: foregroundColor("white") }}`
 
 ## Composition
 
