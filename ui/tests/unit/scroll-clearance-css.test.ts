@@ -57,7 +57,7 @@ describe('scroll clearance context', () => {
     expect(
       valueOf(
         file,
-        '[data-scroll-clearance], [data-frame',
+        '[data-scroll-clearance], [data-scrollable',
         'scroll-padding-block',
       ),
     ).toBe(
