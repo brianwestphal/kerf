@@ -661,6 +661,37 @@ opened it, else the restore control, else a control whose `aria-controls` names 
 panel; an open overlay panel takes focus and keeps Tab inside it (the ARIA dialog
 pattern). See [`workbench.md`](workbench.md).
 
+## Chrome material
+
+Translucent chrome, such as a `Pane` header with
+`headerPresentation="overlay"`, paints `--kui-chrome-material`: the surface at
+80% opacity behind a blur-and-saturate backdrop filter
+(`--kui-chrome-material-filter`). Content scrolls visibly beneath it, so the
+backdrop under its text is not a fixed color. The contrast rule measures the
+worst case: the material composited over a solid black backdrop in the light
+theme and a solid white backdrop in the dark theme. The blur only averages the
+content, so it can never be darker or lighter than that.
+
+- **Normal text and icons pass AA over any content.** `--kui-color-text`
+  measures about 10.5:1 (light) and 8.3:1 (dark) on that worst case. 80% is
+  above the minimum opacity that keeps 4.5:1 there (about 55% light and 60%
+  dark). A theme that overrides `--kui-chrome-material` must keep its text at
+  4.5:1 or better against the same backdrops.
+- **Quiet text does not.** `--kui-color-text-quiet` falls to about 3.2:1
+  (light) and 4.1:1 (dark) over the worst case. Keep overlay-chrome text in the
+  normal text color, and put secondary copy, such as a `ToolbarText`
+  `description`, in the content.
+- **The material turns opaque when transparency would hurt.** Under
+  `prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and where
+  `backdrop-filter` is unsupported, it resolves to the opaque surface. In forced
+  colors, the header paints `Canvas` with a `CanvasText` bottom edge, so content
+  passing beneath it never shows through.
+
+`tests/browser/overlay-header.spec.ts` measures the title over the material on
+both worst-case backdrops in Chromium, Firefox, and WebKit. In Chromium it also
+checks the opaque fallbacks for reduced transparency, increased contrast, and
+forced colors.
+
 ## Verification matrix
 
 For each changed component, inspect default, hover, focus, disabled, selected/pressed, busy/error, long-content, wide, narrow, light, dark, increased-contrast, reduced-motion, keyboard-only, and 200%-zoom states where applicable. DOM order must match reading and focus order, with no clipping or unreachable action.

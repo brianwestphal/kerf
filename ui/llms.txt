@@ -519,6 +519,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   bar's top edge beside a sunken active scene or nested Pane even when content
   fits; hidden suppresses that edge, including scroll dividers.
   Never add a border, or a permanent `dividerSides`, to fake one.
+  For a header that floats over its scrolling content, set
+  `headerPresentation="overlay"` on the `Pane` (or in `PaneConfig`). It paints
+  the translucent chrome material (`--kui-chrome-material`, opaque under
+  reduced transparency, increased contrast, and forced colors). The same
+  `wireScrollDividers` call measures the header and publishes its height as
+  block-start scroll clearance, which the content clears automatically. Keep
+  overlay-header text in the normal text color.
   While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
   overlay, an overlay `CollapsiblePanel` or horizontal `ResizableRegion`), the
   layout hides the covered work area's `FloatingToolbar`s and restore corners

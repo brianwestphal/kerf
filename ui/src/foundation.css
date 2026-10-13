@@ -165,6 +165,19 @@
   --kui-sunken-surface:
     var(--kui-sunken-texture) 0 0 / 100px 100px repeat,
     var(--kui-color-surface-lowered);
+  /* Translucent chrome material: a bar laid over scrolling content (a Pane's
+     overlay header) lets the content show through, blurred, beneath it.
+     80% of the surface keeps --kui-color-text at AA over any content
+     (about 10:1 light and 8:1 dark against a black or white backdrop). It
+     resolves to the opaque surface under prefers-reduced-transparency or
+     prefers-contrast: more, and where backdrop-filter is unsupported
+     (below). */
+  --kui-chrome-material: color-mix(
+    in srgb,
+    var(--kui-color-surface) 80%,
+    transparent
+  );
+  --kui-chrome-material-filter: blur(20px) saturate(180%);
   --kui-color-text: var(--wa-color-text-normal, light-dark(#1d1d1f, #f5f5f7));
   --kui-color-text-quiet: var(
     --wa-color-text-quiet,
@@ -503,6 +516,22 @@
 :root:dir(rtl) {
   --kui-safe-area-inline-start: env(safe-area-inset-right, 0px);
   --kui-safe-area-inline-end: env(safe-area-inset-left, 0px);
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  :root {
+    --kui-chrome-material: var(--kui-color-surface);
+    --kui-chrome-material-filter: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root {
+    --kui-chrome-material: var(--kui-color-surface);
+    --kui-chrome-material-filter: none;
+  }
 }
 
 @media (prefers-contrast: more) {

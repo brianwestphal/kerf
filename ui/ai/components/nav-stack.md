@@ -72,6 +72,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - `data-nav-exiting` on `kui-nav-stack__view` (`wireNavStack`): "true" on a popped view the helper briefly re-inserts to slide it out.
 - `data-scroll-overflow` on `the active kui-nav-stack__view, or the kui-pane__content of a sole Pane in it` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
 - `data-scroll-divider` on `kui-nav-stack__chrome and kui-nav-stack__bottom` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
+- `data-header-overlay` on `kui-pane` (`wireScrollDividers`): measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it.
 
 ## Geometry
 

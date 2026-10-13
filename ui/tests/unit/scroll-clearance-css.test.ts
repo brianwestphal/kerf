@@ -82,6 +82,72 @@ describe('scroll clearance context', () => {
     ).toContain('var(--_kui-pane-clearance-block-end)');
   });
 
+  it('Pane lays a measured overlay header over its content, which clears it automatically', () => {
+    const file = 'layout/pane/pane.css';
+    const all = declarations(file);
+    const material = all.filter(
+      (decl) =>
+        decl.selector ===
+        '.kui-pane[data-header-presentation="overlay"] > .kui-pane__header',
+    );
+    expect(material.map(({ prop, value }) => `${prop}:${value}`)).toEqual([
+      '-webkit-backdrop-filter:var(--kui-chrome-material-filter)',
+      'backdrop-filter:var(--kui-chrome-material-filter)',
+      'background:var(--kui-chrome-material)',
+      // Forced colors: an opaque system surface and a visible edge.
+      '-webkit-backdrop-filter:none',
+      'backdrop-filter:none',
+      'background:Canvas',
+      'border-block-end:1px solid CanvasText',
+    ]);
+    const measured = (suffix: string) =>
+      all.filter(
+        (decl) =>
+          decl.selector.includes('[data-header-overlay="measured"]') &&
+          decl.selector.includes(':not( [data-chrome-placement="auto"] )') &&
+          decl.selector.endsWith(suffix),
+      );
+    expect(
+      measured('> .kui-pane__header').map(
+        ({ prop, value }) => `${prop}:${value}`,
+      ),
+    ).toEqual([
+      'position:relative',
+      'z-index:1',
+      'align-self:start',
+      'grid-area:content',
+    ]);
+    expect(
+      measured('> .kui-pane__content').map(
+        ({ prop, value }) => `${prop}:${value}`,
+      ),
+    ).toEqual([
+      '--_kui-pane-clearance-block-start:var( --kui-scroll-clearance-block-start, 0px )',
+    ]);
+  });
+
+  it('defines the chrome material, opaque without backdrop-filter or under reduced transparency and increased contrast', () => {
+    const root = postcss.parse(
+      readFileSync(resolve(src, '../foundation.css'), 'utf8'),
+    );
+    const found: string[] = [];
+    root.walkDecls(/^--kui-chrome-material/, (decl) => {
+      const parent = decl.parent as postcss.Rule;
+      const at = parent.parent as postcss.AtRule;
+      found.push(
+        `${at.type === 'atrule' ? `@${at.name} ${at.params.replace(/\s+/g, ' ')} ` : ''}${parent.selector} ${decl.prop}:${decl.value.replace(/\s+/g, ' ')}`,
+      );
+    });
+    expect(found).toEqual([
+      ':root --kui-chrome-material:color-mix( in srgb, var(--kui-color-surface) 80%, transparent )',
+      ':root --kui-chrome-material-filter:blur(20px) saturate(180%)',
+      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root --kui-chrome-material:var(--kui-color-surface)',
+      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root --kui-chrome-material-filter:none',
+      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material:var(--kui-color-surface)',
+      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material-filter:none',
+    ]);
+  });
+
   it('DialogSurface clears the context in its body and publishes the floating footer for an opted-in filling child', () => {
     const file = 'surfaces/surface-scaffold/surface-scaffold.css';
     const all = declarations(file);

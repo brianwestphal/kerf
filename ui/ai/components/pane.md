@@ -17,11 +17,13 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 - A child table or other component needs edge-to-edge decoration with text aligned to other pane content.
 - An opaque edge-to-edge child needs a reserved vertical scrollbar gutter.
 - Scrolling content must pass beneath chrome laid over the pane edge (a DialogSurface floating footer) while its first and last items still rest clear of it (scrollClearance).
+- The header should float over the scrolling content on a translucent material so content scrolls visibly beneath it, with the first item still resting below the header (headerPresentation: overlay, measured by wireScrollDividers).
 
 **Not when:**
 
 - Do not use Pane as a padded card or add a competing scroll owner around its content slot.
 - Do not enable separators merely as decoration; use them only where the pane owns a real boundary.
+- Do not put quiet secondary text (a ToolbarText description) in an overlay header; it can fall below AA over the content passing beneath. Keep it in the content.
 
 **Alternatives:**
 
@@ -50,6 +52,7 @@ Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#k
 - chrome dividers only while scrolled (default, wired by wireScrollDividers)
 - always or no chrome dividers
 - scrollClearance block-start, block-end, or both on the scrolling content
+- overlay header on the translucent chrome material (headerPresentation: overlay)
 
 ## Composition
 
@@ -65,7 +68,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it).
+**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it); whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig).
 
 **Wiring:** `wireScrollDividers` is optional.
 
@@ -73,6 +76,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 - `data-scroll-overflow` on `kui-pane__content` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
 - `data-scroll-divider` on `kui-pane__header and kui-pane__footer` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
+- `data-header-overlay` on `kui-pane` (`wireScrollDividers`): measured once the wiring has measured an overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root; the header then lies over the content, which clears it. Both are re-applied if a re-render drops them.
 
 ## Geometry
 
@@ -84,11 +88,13 @@ Margin: child · border: conditional · padding: child (layout role: structure).
 - deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge.
 - For opaque edge-to-edge children, --kui-pane-scrollbar-gutter: stable reserves a vertical scrollbar gutter outside the published content insets; the default is auto.
 - scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the scrolling content block padding and scroll padding alongside safe areas and deepInset.
+- headerPresentation overlay: once wireScrollDividers measures the header, the header shares the content cell above the scroller, its border-box height is published as --kui-scroll-clearance-block-start on the Pane root, and the content clears it automatically; unwired or with chromePlacement auto, the header stays docked.
 
 ## Accessibility
 
 - Choose semantic root and content elements that match the region and provide labels for landmark elements.
 - Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent.
+- An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.
 
 ## Styling boundary
 
@@ -98,7 +104,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-pane`, `kui-pane__content`, `kui-pane__footer`, `kui-pane__header`, `kui-pane__toolbar` on an element you write; render `Pane` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-edge-inset-block-end`, `--kui-edge-inset-block-start`, `--kui-edge-inset-inline-end`, `--kui-edge-inset-inline-start`, `--kui-pane-separator-color`, `--kui-pane-separator-width`, `--kui-pane-chrome-background`, `--kui-pane-content-inset-inline-start`, `--kui-pane-content-inset-inline-end`, `--kui-pane-scrollbar-gutter`, `--kui-sunken-panel-background`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-edge-inset-block-end`, `--kui-edge-inset-block-start`, `--kui-edge-inset-inline-end`, `--kui-edge-inset-inline-start`, `--kui-pane-separator-color`, `--kui-pane-separator-width`, `--kui-pane-chrome-background`, `--kui-pane-content-inset-inline-start`, `--kui-pane-content-inset-inline-end`, `--kui-pane-scrollbar-gutter`, `--kui-sunken-panel-background`, `--kui-chrome-material`, `--kui-chrome-material-filter`, `--kui-scroll-clearance-block-start`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

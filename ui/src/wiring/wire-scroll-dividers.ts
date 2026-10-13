@@ -54,6 +54,14 @@ const SCROLL_OVERFLOW = 'data-scroll-overflow';
 /** On a chrome element: its sides that currently show a scroll divider. */
 const SCROLL_DIVIDER = 'data-scroll-divider';
 
+/** On a Pane with an overlay header: the wiring has measured that header. */
+const HEADER_OVERLAY = 'data-header-overlay';
+/** The inherited clearance context a measured overlay header publishes. */
+const CLEARANCE_BLOCK_START = '--kui-scroll-clearance-block-start';
+/** A Pane whose header is laid over its content (fixed chrome only). */
+const OVERLAY_PANE =
+  '.kui-pane[data-header-presentation="overlay"]:not([data-chrome-placement="auto"])';
+
 /**
  * Scroll distance, in px, that must be exceeded to count as "away from an
  * edge": `scrollWidth`/`scrollHeight` are rounded to whole pixels while the
@@ -233,6 +241,15 @@ function write(element: Element, name: StateAttribute, value: string) {
  * - each app-owned `targets` pairing: a `Toolbar` or `List` named as chrome
  *   draws the divider on its facing side.
  *
+ * It also measures every `Pane` header laid over its content
+ * (`headerPresentation="overlay"`, with fixed chrome placement): it publishes
+ * the header's border-box block size on the Pane root as the inherited
+ * `--kui-scroll-clearance-block-start` context, and marks the root
+ * `data-header-overlay="measured"`, which moves the header over the content
+ * and has the content clear it. The measurement follows the header as it
+ * wraps, zooms, or changes content, and both are restored before paint if a
+ * re-render drops them.
+ *
  * Structure is re-read after every DOM change below root that can change a
  * pairing — a structural element or target id added, removed, or re-classed;
  * mutations inside scrolled content (a row's class, a list's rows) do not
@@ -307,6 +324,12 @@ function createController(
   const overflow = new Map<HTMLElement, string>();
   /** Every element this wiring has written, with what it wrote. */
   const written = new Map<Element, Map<StateAttribute, string>>();
+  /** Each overlay Pane header, with its Pane. */
+  let overlays = new Map<HTMLElement, HTMLElement>();
+  /** Each overlay header's last measured border-box block size, in px. */
+  const headerSizes = new Map<HTMLElement, number>();
+  /** Each Pane this wiring has published a header clearance on. */
+  const published = new Set<HTMLElement>();
 
   const byId = (root: Root, id: string | undefined) => {
     if (!id) return undefined;
@@ -358,6 +381,55 @@ function createController(
     return found;
   };
 
+  const collectOverlays = () => {
+    const found = new Map<HTMLElement, HTMLElement>();
+    for (const { root } of registrations)
+      for (const pane of within<HTMLElement>(root, OVERLAY_PANE)) {
+        const header = directChild(pane, PANE_CHROME.t);
+        if (header) found.set(header, pane);
+      }
+    return found;
+  };
+
+  /**
+   * Watches only the Panes this wiring published on, so a re-render that
+   * strips the published clearance or gate gets them back before paint.
+   */
+  const overlayObserver = view?.MutationObserver
+    ? new view.MutationObserver(() => {
+        if (!disposed) publish();
+      })
+    : undefined;
+
+  /** Publish each measured overlay header's clearance on its Pane. */
+  const publish = () => {
+    const current = new Map<HTMLElement, string>();
+    for (const [header, pane] of overlays) {
+      const size = headerSizes.get(header);
+      if (size !== undefined) current.set(pane, `${size}px`);
+    }
+    // Disconnect first, so this wiring's own writes are not reported back.
+    overlayObserver?.disconnect();
+    for (const pane of published)
+      if (!current.has(pane)) {
+        pane.style.removeProperty(CLEARANCE_BLOCK_START);
+        if (!pane.getAttribute('style')) pane.removeAttribute('style');
+        pane.removeAttribute(HEADER_OVERLAY);
+      }
+    published.clear();
+    for (const [pane, value] of current) {
+      if (pane.style.getPropertyValue(CLEARANCE_BLOCK_START) !== value)
+        pane.style.setProperty(CLEARANCE_BLOCK_START, value);
+      if (pane.getAttribute(HEADER_OVERLAY) !== 'measured')
+        pane.setAttribute(HEADER_OVERLAY, 'measured');
+      published.add(pane);
+      overlayObserver?.observe(pane, {
+        attributes: true,
+        attributeFilter: ['style', HEADER_OVERLAY],
+      });
+    }
+  };
+
   /** Write every paired element's attributes from the measured overflow. */
   const apply = () => {
     const current = new Map<Element, Map<StateAttribute, string>>();
@@ -405,7 +477,18 @@ function createController(
     ? new view.ResizeObserver((entries) => {
         if (disposed) return;
         const scrollers = new Set(pairings.map(({ scroller }) => scroller));
-        for (const { target } of entries) {
+        let headerResized = false;
+        for (const entry of entries) {
+          const { target } = entry;
+          if (overlays.has(target as HTMLElement)) {
+            headerSizes.set(
+              target as HTMLElement,
+              entry.borderBoxSize?.[0]?.blockSize ??
+                target.getBoundingClientRect().height,
+            );
+            headerResized = true;
+            continue;
+          }
           if (target === probe) {
             probePending = false;
             for (const scroller of overflow.keys())
@@ -419,6 +502,7 @@ function createController(
             overflow.set(scroller, measure(scroller));
         }
         apply();
+        if (headerResized) publish();
       })
     : undefined;
 
@@ -429,6 +513,7 @@ function createController(
       wanted.add(scroller);
       for (const child of scroller.children) wanted.add(child);
     }
+    for (const header of overlays.keys()) wanted.add(header);
     for (const element of observed)
       if (!wanted.has(element)) {
         resizeObserver.unobserve(element);
@@ -457,8 +542,18 @@ function createController(
         scroller,
         previous ? (previous.get(scroller) ?? '') : measure(scroller),
       );
+    overlays = collectOverlays();
+    for (const header of headerSizes.keys())
+      if (!overlays.has(header)) headerSizes.delete(header);
+    // A new overlay header is measured at once unless the ResizeObserver
+    // will report it after this frame's layout.
+    if (!deferred)
+      for (const header of overlays.keys())
+        if (!headerSizes.has(header))
+          headerSizes.set(header, header.getBoundingClientRect().height);
     observeSizes();
     apply();
+    publish();
     if (deferred) scheduleRemeasure();
   };
 
@@ -631,8 +726,11 @@ function createController(
         attributes: true,
         // Old values tell a class or id that stopped being structural.
         attributeOldValue: true,
-        // The shown NavStack view and TabNavigator scene change by attribute.
+        // The shown NavStack view and TabNavigator scene change by attribute,
+        // and a Pane's header presentation by its attributes.
         attributeFilter: [
+          'data-header-presentation',
+          'data-chrome-placement',
           SCROLL_OVERFLOW,
           SCROLL_DIVIDER,
           'id',
@@ -664,6 +762,10 @@ function createController(
         for (const [element, values] of written)
           for (const name of values.keys()) write(element, name, '');
         written.clear();
+        overlays.clear();
+        headerSizes.clear();
+        publish();
+        overlayObserver?.disconnect();
         overflow.clear();
         observed.clear();
         pairings = [];

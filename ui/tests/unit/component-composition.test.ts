@@ -172,11 +172,13 @@ describe('component composition catalog contract', () => {
       'wireSidebar:data-morph-preserve',
       'wireScrollDividers:data-scroll-overflow',
       'wireScrollDividers:data-scroll-divider',
+      'wireScrollDividers:data-header-overlay',
     ]);
     // Chrome a List draws from when named in wireScrollDividers targets.
     expect(owned('list')).toEqual([
       'wireScrollDividers:data-scroll-overflow',
       'wireScrollDividers:data-scroll-divider',
+      'wireScrollDividers:data-header-overlay',
     ]);
   });
 

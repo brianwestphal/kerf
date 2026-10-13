@@ -324,6 +324,7 @@ describe('NavStack markup', () => {
             deepInset: true,
             chromeDividers: 'always',
             scrollClearance: 'block-end',
+            headerPresentation: 'overlay',
           },
           bottomToolbar: {
             label: 'Bottom actions',
@@ -350,6 +351,7 @@ describe('NavStack markup', () => {
     expect(pane.dataset.deepInset).toBe('true');
     expect(pane.dataset.chromeDividers).toBe('always');
     expect(pane.dataset.scrollClearance).toBe('block-end');
+    expect(pane.dataset.headerPresentation).toBe('overlay');
     expect(
       pane.querySelector('main[aria-label="Home content"]')?.textContent,
     ).toBe('Home content');

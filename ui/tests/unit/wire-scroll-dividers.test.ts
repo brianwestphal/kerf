@@ -1111,6 +1111,136 @@ describe('wireScrollDividers — lifecycle', () => {
   });
 });
 
+/** A Pane with an overlay header whose border-box height the test controls. */
+function overlayPane(
+  options: { chromePlacement?: 'fixed' | 'auto'; height?: number } = {},
+) {
+  const root = mountHtml(
+    String(
+      Pane({
+        header: Toolbar({ label: 'Head' }),
+        headerPresentation: 'overlay',
+        chromePlacement: options.chromePlacement,
+        children: body,
+      }),
+    ),
+  );
+  const pane = root.querySelector<HTMLElement>('.kui-pane')!;
+  const header = root.querySelector<HTMLElement>('.kui-pane__header')!;
+  const size = { height: options.height ?? 44 };
+  header.getBoundingClientRect = () =>
+    ({ height: size.height }) as unknown as DOMRect;
+  return { root, pane, header, size };
+}
+
+const clearance = (pane: HTMLElement) =>
+  pane.style.getPropertyValue('--kui-scroll-clearance-block-start');
+const measured = (pane: HTMLElement) =>
+  pane.getAttribute('data-header-overlay');
+
+describe('wireScrollDividers — overlay Pane headers', () => {
+  it('publishes the header block size as block-start clearance and follows it as the header resizes', () => {
+    const { root, pane, header, size } = overlayPane();
+    const dispose = wireScrollDividers(root);
+    expect(clearance(pane)).toBe('44px');
+    expect(measured(pane)).toBe('measured');
+    const observer = FakeResizeObserver.instances[0]!;
+    expect(observer.observed.has(header)).toBe(true);
+
+    // A wrapped title or larger text grows the header; the border box wins.
+    observer.callback(
+      [
+        {
+          target: header,
+          borderBoxSize: [{ blockSize: 72.5, inlineSize: 300 }],
+        } as unknown as ResizeObserverEntry,
+      ],
+      observer as unknown as ResizeObserver,
+    );
+    expect(clearance(pane)).toBe('72.5px');
+    size.height = 40;
+    observer.fire(header);
+    expect(clearance(pane)).toBe('40px');
+
+    dispose();
+    expect(clearance(pane)).toBe('');
+    expect(pane.hasAttribute('style')).toBe(false);
+    expect(measured(pane)).toBeNull();
+    // Still docked chrome for the divider pairing after disposal: nothing left.
+    expect(divider(header)).toBeNull();
+  });
+
+  it('keeps a docked header, an auto-placed header, and a header-less pane unmeasured', () => {
+    const docked = pane({ footer: false });
+    const auto = overlayPane({ chromePlacement: 'auto' });
+    const dispose = wireScrollDividers(document.body);
+    expect(docked.pane.hasAttribute('data-header-overlay')).toBe(false);
+    expect(docked.pane.hasAttribute('style')).toBe(false);
+    expect(measured(auto.pane)).toBeNull();
+    expect(clearance(auto.pane)).toBe('');
+    dispose();
+  });
+
+  it('restores the clearance and gate a re-render strips, before paint', async () => {
+    const { root, pane } = overlayPane();
+    const dispose = wireScrollDividers(root);
+    pane.removeAttribute('style');
+    pane.removeAttribute('data-header-overlay');
+    await settle();
+    expect(clearance(pane)).toBe('44px');
+    expect(measured(pane)).toBe('measured');
+    // An app style on the same root survives the wiring's writes.
+    pane.style.setProperty('color', 'red');
+    await settle();
+    expect(pane.style.getPropertyValue('color')).toBe('red');
+    expect(clearance(pane)).toBe('44px');
+    dispose();
+    expect(pane.getAttribute('style')).toBe('color: red;');
+  });
+
+  it('walks docked → overlay → auto → overlay → removed through re-reads', async () => {
+    const { root, pane, header } = overlayPane();
+    pane.removeAttribute('data-header-presentation');
+    const dispose = wireScrollDividers(root);
+    const observer = FakeResizeObserver.instances[0]!;
+    expect(measured(pane)).toBeNull();
+
+    pane.setAttribute('data-header-presentation', 'overlay');
+    await settle();
+    // A re-read after a mutation waits for the observer's post-layout report.
+    expect(measured(pane)).toBeNull();
+    expect(observer.observed.has(header)).toBe(true);
+    observer.fire(header);
+    expect(clearance(pane)).toBe('44px');
+
+    pane.setAttribute('data-chrome-placement', 'auto');
+    await settle();
+    expect(measured(pane)).toBeNull();
+    expect(clearance(pane)).toBe('');
+    expect(observer.observed.has(header)).toBe(false);
+
+    pane.removeAttribute('data-chrome-placement');
+    await settle();
+    observer.fire(header);
+    expect(clearance(pane)).toBe('44px');
+
+    header.remove();
+    await settle();
+    expect(measured(pane)).toBeNull();
+    dispose();
+  });
+
+  it('measures at once where ResizeObserver is missing', () => {
+    window.ResizeObserver = undefined as unknown as typeof ResizeObserver;
+    const { root, pane } = overlayPane({ height: 52 });
+    const dispose = wireScrollDividers(root);
+    expect(clearance(pane)).toBe('52px');
+    expect(measured(pane)).toBe('measured');
+    dispose();
+    expect(measured(pane)).toBeNull();
+  });
+});
+
 function navStack(
   views: { key: string; content?: ReturnType<typeof raw> }[],
   options: { bottom?: boolean; hideToolbar?: boolean } = {},

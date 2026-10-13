@@ -300,7 +300,7 @@ showLabel?, hideLabel? }`, where `name` is the title-style panel name,
   (KF-SEQV4K: they were hard-coded, so a navigator rail could not make its
   scrolling slot a `nav` landmark without restyling): a panel's `pane` and the
   Workbench's `mainPane` take `PaneConfig` (`contentElement`, `contentLabel`,
-  `separators`, `safeAreaEdges`, `chromeDividers`, and later `appearance`, `deepInset`, `scrollClearance`, `tabIndex`, `outlined`), `mainHeaderList` / `mainFooterList` take
+  `separators`, `safeAreaEdges`, `chromeDividers`, and later `appearance`, `deepInset`, `scrollClearance`, `headerPresentation`, `tabIndex`, `outlined`), `mainHeaderList` / `mainFooterList` take
   `ListConfig` (`gap`, `hAlign`, `vAlign`, `dividerSides`, `textInsets`,
   `controlInsets`), and a `CollapsiblePanel` takes `pane` too. An omitted or
   `undefined` field keeps today's value. Open, a panel's toolbar places its
@@ -1158,6 +1158,31 @@ nested NavStack, and a scene that is a sole Pane), NavStack and TabNavigator
 `chromeDividers` (`always` with fitting content and after the wiring is
 disposed, `none` with the wiring reporting dividers), and targets in Chromium,
 Firefox, and WebKit.
+
+**Overlay Pane headers (KF-DT6C3F: a translucent header that publishes
+block-start scroll clearance).** The same wiring measures every Pane header
+with `headerPresentation="overlay"` and fixed chrome placement. A
+`ResizeObserver` reads the header's border-box block size, and the wiring
+publishes it on the Pane root as the inherited
+`--kui-scroll-clearance-block-start` context. It also writes the wiring-owned
+`data-header-overlay="measured"` gate, declared in every `wireScrollDividers`
+catalog `stateAttributes`. The gate moves the header into the content cell,
+where it paints the translucent `--kui-chrome-material`, and the content adds
+the clearance to its block-start padding and `scroll-padding`.
+
+Unwired, or with `chromePlacement="auto"`, the header stays docked. A
+per-Pane `MutationObserver`, watching only `style` and the gate, restores both
+before paint after a morph strips them. The header's scroll divider follows
+the scroll exactly as a docked header's does.
+
+Verification:
+
+- `ui/tests/unit/wire-scroll-dividers.test.ts` walks docked → overlay → auto →
+  overlay → header removed, and covers the restore and the measure-at-once path
+  without a `ResizeObserver`.
+- `ui/tests/browser/overlay-header.spec.ts` covers geometry, wrap, text zoom,
+  the divider, and contrast in all three engines, and the opaque fallbacks in
+  Chromium.
 
 ## 4. Responsive presentation matrix
 

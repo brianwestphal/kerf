@@ -185,6 +185,54 @@ Firefox, scroll-state container queries only in Chromium, and neither lets
 the pinned chrome — a sibling of the scroller — read the scroller's state on
 its own. One wiring keeps the behavior identical in every engine.
 
+### Overlay header
+
+`headerPresentation="overlay"` lays a Pane's header over the top of its
+scrolling content instead of giving it its own row, the way platform
+navigation bars let content scroll visibly beneath a translucent bar:
+
+```tsx
+<Pane
+  label="Inbox"
+  headerPresentation="overlay"
+  header={<Toolbar label="Inbox" leading={<ToolbarText text="Inbox" size="xlarge" />} />}
+>
+  {messages}
+</Pane>
+```
+
+The header paints the shared chrome material, `--kui-chrome-material` (the
+surface at 80% opacity) behind `--kui-chrome-material-filter` (a blur and
+saturation backdrop filter), so content passing beneath it reads as softened
+color, not as competing text. The material becomes the opaque surface under
+`prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and where
+the browser lacks `backdrop-filter`. In forced colors the header paints
+`Canvas` with a `CanvasText` bottom edge.
+
+`wireScrollDividers` measures each overlay header (its border-box height,
+safe-area padding included) with a `ResizeObserver` and publishes it on the
+Pane as the `--kui-scroll-clearance-block-start` context (see
+[Scroll clearance](#scroll-clearance)). The Pane's content clears it
+automatically, with no `scrollClearance` prop. At rest the first item sits just
+below the header. Mid-scroll, content passes beneath it, and anything focused
+or scrolled into view still comes to rest clear of it. The clearance follows
+the header as its title wraps or its text grows. The header draws its scroll
+divider as a docked header does, once content is scrolled beneath it. The
+wiring also marks the Pane `data-header-overlay="measured"`, and only then
+does the header move over the content. Until the wiring runs, the header stays
+docked in its own row, so it can never cover content it has not measured. A
+re-render that drops the measurement gets it back before paint.
+
+The overlay needs pinned chrome. With `chromePlacement="auto"`, the header
+stays docked. `PaneConfig` carries `headerPresentation`, so a Workbench
+`mainPane` or panel `pane`, a `CollapsiblePanel` `pane`, or a `NavStack` view's
+`pane` can lay its header over its content the same way. Keep overlay-header
+text in the normal text color. Secondary copy, such as a `ToolbarText`
+`description`, belongs in the content (see
+[Accessibility › Chrome material](accessibility.md#chrome-material)). A classic
+(non-overlay) scrollbar runs beneath the header, as it does under platform
+translucent bars.
+
 A pane is safe-area aware. Its background and separators paint through a
 device's unsafe areas while its header, content, and footer pad for each side
 the pane still reaches; the content's block insets are scroll padding, so its
@@ -319,6 +367,7 @@ component's context stays allowed (see `KUI-L019`).
 | Scrolling pane content                   | `.kui-pane__content`         | —                                                                  |
 | Optional logical-edge separators         | `Pane.separators`            | `--kui-pane-separator-width: 1px`                                  |
 | Safe-area sides a pane may pad           | `Pane.safeAreaEdges`         | `--kui-safe-area-*: env(safe-area-inset-*)`, routed by each layout |
+| Header laid over scrolling content       | `Pane.headerPresentation`    | `--kui-chrome-material`, `--kui-chrome-material-filter`            |
 | Major vertical rhythm                    | `.kui-content`               | `--kui-layout-content-gap: 24px`                                   |
 | Self-contained child geometry            | `ContentItem`                | 8px margin + 1px border + 8px padding                              |
 | Pill child                               | `ContentItem shape="pill"`   | `--kui-layout-pill-radius: 22px`                                   |
@@ -665,7 +714,9 @@ example a NavStack view inside a dialog with a floating composer).
 Opt in only the one scroller that reaches the covered edge; a nested scroller
 must not opt in again. `DialogSurface` publishes block-end for its floating
 footer (see `docs/surface-scaffold.md`) and clears the context in every dialog
-body. When an application overlays its own chrome on a region (for example a
+body. A `Pane` with `headerPresentation="overlay"` publishes block-start for
+its own header, once `wireScrollDividers` has measured it, and its content
+clears it without the prop (see [Overlay header](#overlay-header)). When an application overlays its own chrome on a region (for example a
 translucent toolbar laid over the top of a scrolling list), it publishes the
 chrome's block size on that region's container, the one place where an app
 sets this context:

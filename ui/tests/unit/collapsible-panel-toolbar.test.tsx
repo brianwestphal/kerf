@@ -189,6 +189,7 @@ describe('CollapsiblePanel toolbar', () => {
           appearance: 'sunken',
           deepInset: true,
           scrollClearance: 'both',
+          headerPresentation: 'overlay',
         },
         children: raw('<p data-content>files</p>'),
       }),
@@ -202,6 +203,7 @@ describe('CollapsiblePanel toolbar', () => {
     expect(pane.getAttribute('data-appearance')).toBe('sunken');
     expect(pane.getAttribute('data-deep-inset')).toBe('true');
     expect(pane.getAttribute('data-scroll-clearance')).toBe('both');
+    expect(pane.getAttribute('data-header-presentation')).toBe('overlay');
 
     const props = {
       id: 'nav',
@@ -218,6 +220,7 @@ describe('CollapsiblePanel toolbar', () => {
             contentElement: undefined,
             safeAreaEdges: undefined,
             scrollClearance: undefined,
+            headerPresentation: undefined,
           },
         }),
       ).innerHTML,

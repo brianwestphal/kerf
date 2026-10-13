@@ -24,6 +24,8 @@ const paneProtectedAttributes = new Set([
   'data-deep-inset',
   'data-outlined',
   'data-scroll-clearance',
+  'data-header-presentation',
+  'data-header-overlay',
   'data-separator-block-start',
   'data-separator-block-end',
   'data-separator-inline-start',
@@ -58,6 +60,8 @@ type PaneRootAttributes = Readonly<
     'data-deep-inset'?: never;
     'data-outlined'?: never;
     'data-scroll-clearance'?: never;
+    'data-header-presentation'?: never;
+    'data-header-overlay'?: never;
   }
 >;
 
@@ -70,6 +74,13 @@ export type PaneChromePlacement = 'fixed' | 'auto';
  * chrome, as `wireScrollDividers` reports; `always`; or `none`.
  */
 export type PaneChromeDividers = 'scroll' | 'always' | 'none';
+
+/**
+ * How a Pane's header relates to its scrolling content: `docked` in its own
+ * row above the content, or `overlay` laid over the content's top edge on the
+ * translucent chrome material, so content scrolls visibly beneath it.
+ */
+export type PaneHeaderPresentation = 'docked' | 'overlay';
 
 /** Background treatment of the Pane's scrolling work surface. */
 export type PaneAppearance = 'default' | 'sunken';
@@ -100,6 +111,23 @@ export interface PaneProps {
    * The line is drawn inside the chrome, so no state moves the content.
    */
   chromeDividers?: PaneChromeDividers;
+  /**
+   * `docked` (default) gives the header its own row above the scrolling
+   * content. `overlay` lays the header over the content's top edge on the
+   * translucent chrome material (`--kui-chrome-material`, opaque under
+   * `prefers-reduced-transparency`, forced colors, or without
+   * `backdrop-filter`), so content scrolls visibly beneath it. Once
+   * `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above
+   * the pane it measures the header and publishes its height as the
+   * `--kui-scroll-clearance-block-start` context, which the content adds to
+   * its block-start padding and `scroll-padding` without any
+   * `scrollClearance` prop, so the first item, and anything focused or
+   * scrolled into view, rests clear of the header. Until then, and with
+   * `chromePlacement="auto"`, the header stays docked. Keep overlay header
+   * text in the normal text color: quiet text can fall below AA over the
+   * content passing beneath it.
+   */
+  headerPresentation?: PaneHeaderPresentation;
   /** Paint the scrolling work surface with the shared lowered-surface color. */
   appearance?: PaneAppearance;
   /**
@@ -160,6 +188,7 @@ export type PaneConfig = Pick<
   | 'separators'
   | 'safeAreaEdges'
   | 'chromeDividers'
+  | 'headerPresentation'
   | 'appearance'
   | 'deepInset'
   | 'scrollClearance'
@@ -196,6 +225,7 @@ export function Pane({
   footer,
   chromePlacement = 'fixed',
   chromeDividers,
+  headerPresentation = 'docked',
   appearance = 'default',
   deepInset = false,
   scrollClearance,
@@ -254,6 +284,10 @@ export function Pane({
     'data-deep-inset': deepInset ? 'true' : undefined,
     'data-outlined': outlined ? 'true' : undefined,
     'data-scroll-clearance': scrollClearance,
+    'data-header-presentation':
+      headerPresentation === 'overlay' && header !== undefined
+        ? 'overlay'
+        : undefined,
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-chrome-dividers':
       resolvedChromeDividers === 'always' || resolvedChromeDividers === 'none'

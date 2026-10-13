@@ -722,6 +722,7 @@ describe('Workbench panel toolbars', () => {
         chromeDividers: 'always',
         appearance: 'sunken',
         scrollClearance: 'block-end',
+        headerPresentation: 'overlay',
       },
       mainHeaderList: {
         dividerSides: 't',
@@ -749,6 +750,8 @@ describe('Workbench panel toolbars', () => {
     expect(railPane(host).getAttribute('data-chrome-dividers')).toBe('none');
     expect(railPane(host).getAttribute('data-appearance')).toBe('sunken');
     expect(main.getAttribute('data-scroll-clearance')).toBe('block-end');
+    expect(main.getAttribute('data-header-presentation')).toBe('overlay');
+    expect(railPane(host).hasAttribute('data-header-presentation')).toBe(false);
     expect(railPane(host).getAttribute('data-scroll-clearance')).toBe(
       'block-start',
     );
@@ -782,6 +785,7 @@ describe('Workbench panel toolbars', () => {
         safeAreaEdges: undefined,
         chromeDividers: undefined,
         scrollClearance: undefined,
+        headerPresentation: undefined,
       },
       mainHeaderList: { dividerSides: undefined, gap: undefined },
       mainFooterList: {},

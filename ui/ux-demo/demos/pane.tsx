@@ -2,12 +2,43 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
+import { ListItem } from '@kerfjs/ui/list-item';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
+import { Bell, Calendar, Mail, ShieldCheck } from 'lucide';
 
 import { EdgeToEdgeTable } from '../components/edge-to-edge-table.js';
+
+/** Inbox rows for the overlay header example: colored tiles show through it. */
+const inboxMessages = Array.from({ length: 18 }, (_, index) => {
+  const kinds = [
+    {
+      label: 'Design Review',
+      icon: <LucideIcon icon={Calendar} name="calendar" />,
+      tone: 'brand',
+    },
+    {
+      label: 'Backup Complete',
+      icon: <LucideIcon icon={ShieldCheck} name="shield-check" />,
+      tone: 'success',
+    },
+    {
+      label: 'Storage Almost Full',
+      icon: <LucideIcon icon={Bell} name="bell" />,
+      tone: 'warning',
+    },
+    {
+      label: 'Weekly Summary',
+      icon: <LucideIcon icon={Mail} name="mail" />,
+      tone: 'neutral',
+    },
+  ] as const;
+  const kind = kinds[index % kinds.length]!;
+  return { id: `inbox-${String(index + 1)}`, ...kind };
+});
 
 export function PaneDemo() {
   return (
@@ -147,6 +178,41 @@ export function PaneDemo() {
           {Array.from({ length: 12 }, (_, index) => (
             <ContentItem>{`Update ${index + 1}`}</ContentItem>
           ))}
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Overlay Header"
+        note="headerPresentation overlay lays the header over the content on the translucent chrome material, so messages scroll visibly beneath it. wireScrollDividers measures the header, and the first message rests just below it."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <Pane
+          element="section"
+          label="Inbox"
+          headerPresentation="overlay"
+          rootAttributes={{ 'data-overlay-header-demo': 'pane' }}
+          header={
+            <Toolbar
+              label="Inbox Header"
+              leading={<ToolbarText text="Inbox" size="xlarge" />}
+            />
+          }
+        >
+          <List>
+            {inboxMessages.map((message) => (
+              <ListItem
+                action="log-inbox"
+                itemId={message.id}
+                label={message.label}
+                icon={message.icon}
+                iconTile={message.tone}
+              />
+            ))}
+          </List>
         </Pane>
       </CatalogExample>
       <CatalogExample

@@ -409,6 +409,8 @@
         "--kui-color-surface-lowered",
         "--kui-sunken-texture",
         "--kui-sunken-surface",
+        "--kui-chrome-material",
+        "--kui-chrome-material-filter",
         "--kui-color-text",
         "--kui-color-text-quiet",
         "--kui-color-text-link",
@@ -644,11 +646,13 @@
         "A lowered background must cover the scrolling work viewport and blank space after short content without a second scroll container (appearance: sunken).",
         "A child table or other component needs edge-to-edge decoration with text aligned to other pane content.",
         "An opaque edge-to-edge child needs a reserved vertical scrollbar gutter.",
-        "Scrolling content must pass beneath chrome laid over the pane edge (a DialogSurface floating footer) while its first and last items still rest clear of it (scrollClearance)."
+        "Scrolling content must pass beneath chrome laid over the pane edge (a DialogSurface floating footer) while its first and last items still rest clear of it (scrollClearance).",
+        "The header should float over the scrolling content on a translucent material so content scrolls visibly beneath it, with the first item still resting below the header (headerPresentation: overlay, measured by wireScrollDividers)."
       ],
       "avoidWhen": [
         "Do not use Pane as a padded card or add a competing scroll owner around its content slot.",
-        "Do not enable separators merely as decoration; use them only where the pane owns a real boundary."
+        "Do not enable separators merely as decoration; use them only where the pane owns a real boundary.",
+        "Do not put quiet secondary text (a ToolbarText description) in an overlay header; it can fall below AA over the content passing beneath. Keep it in the content."
       ],
       "alternatives": [
         {
@@ -668,7 +672,8 @@
         "default or sunken scrolling work surface (appearance)",
         "whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter)",
         "optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined)",
-        "whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it)"
+        "whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it)",
+        "whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig)"
       ],
       "variants": [
         "content only",
@@ -680,11 +685,13 @@
         "inline-end separator",
         "chrome dividers only while scrolled (default, wired by wireScrollDividers)",
         "always or no chrome dividers",
-        "scrollClearance block-start, block-end, or both on the scrolling content"
+        "scrollClearance block-start, block-end, or both on the scrolling content",
+        "overlay header on the translucent chrome material (headerPresentation: overlay)"
       ],
       "accessibility": [
         "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
-        "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent."
+        "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent.",
+        "An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter."
       ],
       "geometry": {
         "margin": "child",
@@ -696,7 +703,8 @@
           "The scrolling content exposes its resolved logical inline padding to descendants as --kui-pane-content-inset-inline-start/end, including safe areas and deepInset.",
           "deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge.",
           "For opaque edge-to-edge children, --kui-pane-scrollbar-gutter: stable reserves a vertical scrollbar gutter outside the published content insets; the default is auto.",
-          "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the scrolling content block padding and scroll padding alongside safe areas and deepInset."
+          "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the scrolling content block padding and scroll padding alongside safe areas and deepInset.",
+          "headerPresentation overlay: once wireScrollDividers measures the header, the header shares the content cell above the scroller, its border-box height is published as --kui-scroll-clearance-block-start on the Pane root, and the content clears it automatically; unwired or with chromePlacement auto, the header stays docked."
         ]
       },
       "delivery": {
@@ -721,6 +729,11 @@
               "name": "data-scroll-divider",
               "on": "kui-pane__header and kui-pane__footer",
               "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured an overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root; the header then lies over the content, which clears it. Both are re-applied if a re-render drops them."
             }
           ]
         }
@@ -743,7 +756,10 @@
         "--kui-pane-content-inset-inline-start",
         "--kui-pane-content-inset-inline-end",
         "--kui-pane-scrollbar-gutter",
-        "--kui-sunken-panel-background"
+        "--kui-sunken-panel-background",
+        "--kui-chrome-material",
+        "--kui-chrome-material-filter",
+        "--kui-scroll-clearance-block-start"
       ],
       "links": {
         "catalogRoute": "?component=pane",
@@ -883,6 +899,11 @@
               "name": "data-scroll-divider",
               "on": "kui-nav-stack__chrome and kui-nav-stack__bottom",
               "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1144,6 +1165,11 @@
               "name": "data-scroll-divider",
               "on": "kui-tab-scaffold__bar",
               "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1303,6 +1329,11 @@
               "name": "data-scroll-divider",
               "on": "kui-pane__header and kui-pane__footer of each panel and work-area Pane",
               "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1458,6 +1489,11 @@
               "name": "data-scroll-divider",
               "on": "kui-pane__header and kui-pane__footer of each panel and work-area Pane",
               "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1643,6 +1679,11 @@
               "name": "data-scroll-divider",
               "on": "a Toolbar named as targets chrome",
               "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
             }
           ]
         },
@@ -3664,6 +3705,11 @@
               "name": "data-scroll-divider",
               "on": "a List named as targets chrome",
               "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -4745,6 +4791,11 @@
               "name": "data-scroll-divider",
               "on": "chrome named in wireScrollDividers targets (a TabBar strip has none)",
               "meaning": "The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
             }
           ]
         }

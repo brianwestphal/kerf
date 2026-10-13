@@ -212,6 +212,50 @@
   --_kui-pane-clearance-block-end: var(--kui-scroll-clearance-block-end, 0px);
 }
 
+/* `headerPresentation="overlay"`: the header paints the translucent chrome
+   material (opaque under reduced transparency, without `backdrop-filter`, or
+   in forced colors). Once `wireScrollDividers` has measured it
+   (`data-header-overlay="measured"`, with its border-box height published as
+   `--kui-scroll-clearance-block-start` on this root), the header moves into
+   the content cell above the scroller, and the scroller clears it through
+   the same block padding and scroll padding `scrollClearance` uses. Unwired,
+   or with `chromePlacement="auto"`, the header stays docked in its own row,
+   so it never covers content it has not measured. */
+.kui-pane[data-header-presentation="overlay"] > .kui-pane__header {
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+}
+
+.kui-pane[data-header-presentation="overlay"][data-header-overlay="measured"]:not(
+    [data-chrome-placement="auto"]
+  )
+  > .kui-pane__header {
+  position: relative;
+  z-index: 1;
+  align-self: start;
+  grid-area: content;
+}
+
+.kui-pane[data-header-presentation="overlay"][data-header-overlay="measured"]:not(
+    [data-chrome-placement="auto"]
+  )
+  > .kui-pane__content {
+  --_kui-pane-clearance-block-start: var(
+    --kui-scroll-clearance-block-start,
+    0px
+  );
+}
+
+@media (forced-colors: active) {
+  .kui-pane[data-header-presentation="overlay"] > .kui-pane__header {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: Canvas;
+    border-block-end: 1px solid CanvasText;
+  }
+}
+
 /* Add one outer gutter without changing the inherited item-margin token.
    Nested Row, List, and Grid therefore keep their own default 8px insets. */
 .kui-pane[data-deep-inset="true"] > .kui-pane__content {

@@ -23,6 +23,7 @@ export function paneConfigProps(
     separators: config?.separators,
     safeAreaEdges: config?.safeAreaEdges,
     chromeDividers: config?.chromeDividers,
+    headerPresentation: config?.headerPresentation,
     appearance: config?.appearance,
     deepInset: config?.deepInset,
     scrollClearance: config?.scrollClearance,

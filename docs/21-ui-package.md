@@ -340,6 +340,34 @@ slot without mixing authoring rules into the per-entry component catalog.
   or beyond them (`Pane`, `NavStack`, and `TabNavigator` `chromeDividers`:
   `scroll` default, `always`, `none`). See
   [`23-app-layouts.md`](23-app-layouts.md) §3.7.
+- **Translucent chrome over scrolling content.** `Pane.headerPresentation`
+  (`docked` default, or `overlay`; also in `PaneConfig`) lays the header over
+  the content's top edge. The header paints the theme's chrome material:
+  `--kui-chrome-material`, the surface at 80% opacity, plus
+  `--kui-chrome-material-filter`, a blur and saturation backdrop filter.
+  - **Measurement.** `wireScrollDividers` measures the header's border-box
+    height with a `ResizeObserver`. It publishes the height on the Pane root as
+    the inherited `--kui-scroll-clearance-block-start` context, and marks the
+    root `data-header-overlay="measured"`. Only then does the header leave its
+    row; the content adds the clearance to its block-start padding and
+    `scroll-padding`. An unwired Pane, or one with `chromePlacement="auto"`,
+    keeps the header docked. A re-render that strips the published value or the
+    gate gets both back before paint.
+  - **Fallbacks.** The material resolves to the opaque surface under
+    `prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and
+    without `backdrop-filter`. In forced colors the header paints `Canvas` with
+    a `CanvasText` bottom edge.
+  - **Contrast.** Text on the material is measured over a worst-case solid
+    backdrop: black in light, white in dark. Normal text passes AA (about
+    10.5:1 and 8.3:1); quiet text does not (about 3.2:1 and 4.1:1). Overlay
+    header text therefore uses the normal text color, and secondary copy goes
+    in the content.
+  - **Verification.** `ui/tests/browser/overlay-header.spec.ts` runs in
+    Chromium, Firefox, and WebKit.
+
+  See `ui/docs/layout.md` "Overlay header" and `ui/docs/accessibility.md`
+  "Chrome material".
+
 - A `ListItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete
   keyboard model. Menu row/header `rootAttributes` accept only domain `data-*`

@@ -280,6 +280,7 @@ export {
   type PaneConfig,
   type PaneContentElement,
   type PaneElement,
+  type PaneHeaderPresentation,
   type PaneProps,
   type PaneSeparatorSide,
 } from './components/layout/pane/pane.js';

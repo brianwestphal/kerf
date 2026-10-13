@@ -1503,6 +1503,15 @@ type Root = HTMLElement | Document;
  * - each app-owned `targets` pairing: a `Toolbar` or `List` named as chrome
  *   draws the divider on its facing side.
  *
+ * It also measures every `Pane` header laid over its content
+ * (`headerPresentation="overlay"`, with fixed chrome placement): it publishes
+ * the header's border-box block size on the Pane root as the inherited
+ * `--kui-scroll-clearance-block-start` context, and marks the root
+ * `data-header-overlay="measured"`, which moves the header over the content
+ * and has the content clear it. The measurement follows the header as it
+ * wraps, zooms, or changes content, and both are restored before paint if a
+ * re-render drops them.
+ *
  * Structure is re-read after every DOM change below root that can change a
  * pairing — a structural element or target id added, removed, or re-classed;
  * mutations inside scrolled content (a row's class, a list's rows) do not
@@ -1746,6 +1755,8 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-deep-inset'?: never;
     'data-outlined'?: never;
     'data-scroll-clearance'?: never;
+    'data-header-presentation'?: never;
+    'data-header-overlay'?: never;
 }>;
 /** How a Pane's header and footer relate to its scrolling content. */
 type PaneChromePlacement = 'fixed' | 'auto';
@@ -1755,6 +1766,12 @@ type PaneChromePlacement = 'fixed' | 'auto';
  * chrome, as `wireScrollDividers` reports; `always`; or `none`.
  */
 type PaneChromeDividers = 'scroll' | 'always' | 'none';
+/**
+ * How a Pane's header relates to its scrolling content: `docked` in its own
+ * row above the content, or `overlay` laid over the content's top edge on the
+ * translucent chrome material, so content scrolls visibly beneath it.
+ */
+type PaneHeaderPresentation = 'docked' | 'overlay';
 /** Background treatment of the Pane's scrolling work surface. */
 type PaneAppearance = 'default' | 'sunken';
 interface PaneProps {
@@ -1783,6 +1800,23 @@ interface PaneProps {
      * The line is drawn inside the chrome, so no state moves the content.
      */
     chromeDividers?: PaneChromeDividers;
+    /**
+     * `docked` (default) gives the header its own row above the scrolling
+     * content. `overlay` lays the header over the content's top edge on the
+     * translucent chrome material (`--kui-chrome-material`, opaque under
+     * `prefers-reduced-transparency`, forced colors, or without
+     * `backdrop-filter`), so content scrolls visibly beneath it. Once
+     * `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above
+     * the pane it measures the header and publishes its height as the
+     * `--kui-scroll-clearance-block-start` context, which the content adds to
+     * its block-start padding and `scroll-padding` without any
+     * `scrollClearance` prop, so the first item, and anything focused or
+     * scrolled into view, rests clear of the header. Until then, and with
+     * `chromePlacement="auto"`, the header stays docked. Keep overlay header
+     * text in the normal text color: quiet text can fall below AA over the
+     * content passing beneath it.
+     */
+    headerPresentation?: PaneHeaderPresentation;
     /** Paint the scrolling work surface with the shared lowered-surface color. */
     appearance?: PaneAppearance;
     /**
@@ -1835,16 +1869,16 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'appearance' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'headerPresentation' | 'appearance' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, chromeDividers, appearance, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, chromeDividers, headerPresentation, appearance, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide, ScrollClearance };
+export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance };
 ```
 
 ## `@kerfjs/ui/workbench`

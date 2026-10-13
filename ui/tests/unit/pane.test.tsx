@@ -125,6 +125,50 @@ describe('Pane', () => {
     expect(forged).toContain('data-scroll-clearance="block-end"');
   });
 
+  it('opts a header into the protected overlay presentation without changing the default', () => {
+    const header = <span>Head</span>;
+    expect(String(Pane({ header, children: <span>Body</span> }))).not.toContain(
+      'data-header-presentation',
+    );
+    expect(
+      String(
+        Pane({
+          header,
+          headerPresentation: 'docked',
+          children: <span>B</span>,
+        }),
+      ),
+    ).not.toContain('data-header-presentation');
+    expect(
+      String(
+        Pane({
+          header,
+          headerPresentation: 'overlay',
+          children: <span>B</span>,
+        }),
+      ),
+    ).toContain('data-header-presentation="overlay"');
+    // Without a header there is nothing to lay over the content.
+    expect(
+      String(Pane({ headerPresentation: 'overlay', children: <span>B</span> })),
+    ).not.toContain('data-header-presentation');
+    // The presentation and the wiring's measured gate stay Pane-owned.
+    const forged = String(
+      Pane({
+        header,
+        children: <span>Body</span>,
+        rootAttributes: {
+          // @ts-expect-error the Pane owns its header presentation.
+          'data-header-presentation': 'overlay',
+          // @ts-expect-error wireScrollDividers owns the measured gate.
+          'data-header-overlay': 'measured',
+        },
+      }),
+    );
+    expect(forged).not.toContain('data-header-presentation');
+    expect(forged).not.toContain('data-header-overlay');
+  });
+
   it('opts into root focus and a protected persistent outline independently', () => {
     const plain = String(Pane({ children: <span>Body</span> }));
     expect(plain).not.toContain('tabindex=');

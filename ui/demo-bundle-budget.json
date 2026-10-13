@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 366400,
-  "measuredLargestJavaScriptGzip": 148503,
-  "measuredTotalJavaScriptGzip": 366355,
+  "totalJavaScriptGzip": 367100,
+  "measuredLargestJavaScriptGzip": 149167,
+  "measuredTotalJavaScriptGzip": 367069,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4355,6 +4355,22 @@
         "measuredTotalJavaScriptGzip": 366355,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 366400
+      }
+    },
+    {
+      "at": "2026-10-13T14:50:16.147Z",
+      "reason": "Pane overlay header and Overlay Header catalog example (KF-DT6C3F)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 148503,
+        "measuredTotalJavaScriptGzip": 366355,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 366400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 149167,
+        "measuredTotalJavaScriptGzip": 367069,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 367100
       }
     }
   ]
