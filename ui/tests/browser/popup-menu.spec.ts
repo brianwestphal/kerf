@@ -804,3 +804,114 @@ test('a context PopupMenu renders its anchor point and takes no layout space', a
   await page.keyboard.press('Escape');
   await expect(context).not.toHaveAttribute('open', '');
 });
+
+test('a long phone submenu stays inside the viewport and scrolls to every choice', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=popup-menu');
+  const nested = page
+    .locator('[data-demo="popup-menu"]')
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .filter({ has: page.locator('wa-dropdown-item[slot="submenu"]') });
+  const trigger = nested.getByRole('button', { name: 'Decide' });
+  const parent = nested.locator(
+    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
+  );
+  // An app menu with one choice per project: far more rows than a phone
+  // screen holds on either side of the parent menu.
+  await parent.evaluate((item) => {
+    for (let index = 0; index < 20; index++) {
+      const choice = document.createElement('wa-dropdown-item');
+      choice.setAttribute('slot', 'submenu');
+      choice.dataset.action = 'log-decision';
+      choice.dataset.decision = `project-${String(index)}`;
+      choice.textContent = `Project ${String(index)}`;
+      item.append(choice);
+    }
+  });
+  const last = parent.locator('[data-decision="project-19"]');
+  const submenuBox = () =>
+    parent.evaluate((item) => {
+      const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
+      if (!(submenu instanceof HTMLElement))
+        throw new Error('PopupMenu submenu missing');
+      const box = submenu.getBoundingClientRect();
+      return {
+        top: box.top,
+        bottom: box.bottom,
+        scrollable: submenu.scrollHeight > submenu.clientHeight,
+        settled: submenu.getAnimations().length === 0,
+        scrollTop: submenu.scrollTop,
+      };
+    });
+
+  // Below the parent menu (trigger high on the screen), then above it
+  // (trigger low): each side caps the submenu at the space it has.
+  for (const triggerTop of [250, 560]) {
+    await trigger.evaluate((element, top) => {
+      element.scrollIntoView({ block: 'start' });
+      let scroller = element.parentElement;
+      while (
+        scroller &&
+        !(
+          scroller.scrollHeight > scroller.clientHeight &&
+          /auto|scroll/.test(window.getComputedStyle(scroller).overflowY)
+        )
+      )
+        scroller = scroller.parentElement;
+      (scroller ?? document.scrollingElement)?.scrollBy(
+        0,
+        element.getBoundingClientRect().top - top,
+      );
+    }, triggerTop);
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(parent).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(parent).toHaveJSProperty('submenuOpen', true);
+    await expect.poll(async () => (await submenuBox()).scrollable).toBe(true);
+    const placed = await submenuBox();
+    expect(placed.top).toBeGreaterThanOrEqual(8 - 0.5);
+    expect(placed.bottom).toBeLessThanOrEqual(844 - 8 + 0.5);
+
+    // The keyboard walks every choice, scrolling the last one into view.
+    await page.keyboard.press('End');
+    await expect(last).toBeFocused();
+    const lastBox = (await last.boundingBox())!;
+    const scrolled = await submenuBox();
+    expect(lastBox.y).toBeGreaterThanOrEqual(scrolled.top);
+    expect(lastBox.y + lastBox.height).toBeLessThanOrEqual(scrolled.bottom + 1);
+    expect(scrolled.scrollTop).toBeGreaterThan(0);
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
+    await expect(nested).not.toHaveAttribute('open', '');
+  }
+
+  // The wheel scrolls the capped submenu, and a pointer reaches and chooses
+  // the last row.
+  await trigger.click();
+  await parent.hover();
+  await expect(parent).toHaveJSProperty('submenuOpen', true);
+  await expect.poll(async () => (await submenuBox()).scrollable).toBe(true);
+  const opened = await submenuBox();
+  await page.mouse.move(100, opened.top + 40);
+  // Engines apply a wheel delta in different step sizes, so keep scrolling
+  // until the last row lands in view.
+  await expect
+    .poll(async () => {
+      await page.mouse.wheel(0, 400);
+      return last.evaluate((choice) => {
+        const box = choice.getBoundingClientRect();
+        const hit = document.elementFromPoint(
+          box.left + box.width / 2,
+          box.top + box.height / 2,
+        );
+        return hit === choice || choice.contains(hit);
+      });
+    })
+    .toBe(true);
+  expect((await submenuBox()).scrollTop).toBeGreaterThan(0);
+  await last.click();
+  await expect(page.locator('.catalog-log')).toHaveText('Decision: project-19');
+});
