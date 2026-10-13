@@ -31,6 +31,8 @@ Inside a native `<dialog>`, `wa-dialog`, or `wa-drawer`, the surface stays
 interactive and closes with the dialog. It keeps an 8px viewport gutter
 (`viewportMargin`) and fits its height to the room beside the anchor, scrolling
 its content, so do not add media queries or `max-height` overrides.
+`tone: 'dark'` gives a popup anchored to dark media chrome the inverse tone of a
+`ToolbarControlGroup tone="dark"`; its content inherits the matching colors.
 For a public subpath containing several visual components, use a folder with one
 component per source file and one owned stylesheet per visual component. Keep its
 compatibility entrypoints implementation-free: JavaScript/TypeScript only re-exports

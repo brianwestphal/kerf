@@ -32,6 +32,8 @@ function surface() {
 beforeEach(() => {
   document.body.replaceChildren();
   mockedPopover.mockReset();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe('anchored surface contract', () => {
@@ -226,5 +228,67 @@ describe('anchored surface contract', () => {
       openAnchoredSurfaceAt({ x: 1, y: 2 }, content, { label: 'Help' }),
     ).toThrow('placement failed');
     expect(document.querySelector('span')).toBeNull();
+  });
+
+  describe('tone', () => {
+    // happy-dom does not model `color-scheme`; stub the computed value the
+    // browser reports for the anchor.
+    function anchorWithScheme(colorScheme: string) {
+      const anchor = document.createElement('button');
+      document.body.append(anchor);
+      const real = window.getComputedStyle.bind(window);
+      vi.spyOn(window, 'getComputedStyle').mockImplementation((element) =>
+        element === anchor
+          ? ({ colorScheme } as CSSStyleDeclaration)
+          : real(element),
+      );
+      return anchor;
+    }
+    function preferDark(dark: boolean) {
+      vi.stubGlobal(
+        'matchMedia',
+        vi.fn((query: string) => ({
+          matches: dark && query === '(prefers-color-scheme: dark)',
+        })),
+      );
+    }
+    function classNameFor(anchor: Element): string {
+      const handle = surface();
+      mockedPopover.mockReturnValue(handle);
+      openAnchoredSurface(anchor, content, { label: 'Volume', tone: 'dark' });
+      expect(handle.el.dataset.tone).toBe('dark');
+      return mockedPopover.mock.calls[0][2]!.className!;
+    }
+
+    it('the default tone keeps the plain surface class and sets no tone', () => {
+      const handle = surface();
+      mockedPopover.mockReturnValue(handle);
+      openAnchoredSurface(document.createElement('button'), content, {
+        label: 'Help',
+        tone: 'default',
+      });
+      expect(mockedPopover.mock.calls[0][2]!.className).toBe(
+        'kui-anchored-surface',
+      );
+      expect(handle.el.dataset.tone).toBeUndefined();
+    });
+
+    it.each([
+      ['light', false, 'dark'],
+      ['only light', true, 'dark'],
+      ['normal', true, 'dark'],
+      ['dark', false, 'light'],
+      ['only dark', false, 'light'],
+      ['light dark', false, 'dark'],
+      ['light dark', true, 'light'],
+    ] as const)(
+      'an anchor in color-scheme "%s" (prefers dark: %s) opens the dark tone in the %s scheme',
+      (colorScheme, prefersDark, expected) => {
+        preferDark(prefersDark);
+        expect(classNameFor(anchorWithScheme(colorScheme))).toBe(
+          `kui-anchored-surface kui-anchored-surface--scheme-${expected}`,
+        );
+      },
+    );
   });
 });

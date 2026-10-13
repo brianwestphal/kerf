@@ -5749,13 +5749,19 @@
         "element anchor",
         "pointer anchor",
         "top or bottom placement",
-        "modal-dialog host"
+        "modal-dialog host",
+        "tone: 'dark' (the inverse tone of a dark ToolbarControlGroup, for popups anchored to media chrome)"
       ],
       "usageExamples": [
         {
           "title": "Interactive help",
           "description": "The trigger owns when to open; the returned handle closes when an action completes.",
           "code": "const handle = openAnchoredSurface(button, () => <HelpPanel />, { label: 'Field help' });\n// Close from the app's action handler: handle.close();"
+        },
+        {
+          "title": "Popup anchored to dark media chrome",
+          "description": "tone: 'dark' matches a ToolbarControlGroup tone=\"dark\": the surface takes the opposite of the anchor's color scheme, so its content inherits the inverse text, border, and focus colors without overrides.",
+          "code": "openAnchoredSurface(volumeButton, () => <VolumeControls />, {\n  label: 'Volume',\n  tone: 'dark',\n  placement: 'top',\n});"
         }
       ],
       "accessibility": [

@@ -471,7 +471,11 @@ AnchoredSurface is shipped for app-owned interactive help or arbitrary popup
 content near an element or pointer. It provides Kerf UI surface tokens and
 delegates viewport placement, top-layer/modal hosting, focus, and dismissal to
 `kerfjs/overlay`; the app owns content and actions. The catalog and unit plus
-three-engine browser tests cover wide, narrow, and modal use.
+three-engine browser tests cover wide, narrow, and modal use. `tone: 'dark'`
+(shipped) is the inverse tone of a dark `ToolbarControlGroup` for popups
+anchored to media chrome. It flips the surface's `color-scheme` opposite to the
+anchor's, and a browser spec asserts AA text and focus-ring contrast in both
+page schemes.
 Chip presents a short tag with an optional named remove button and delegated
 action. It supports semantic tone, appearance, shape, compact size, and disabled
 state without consumer rules on Web Awesome internals. With `href` (plus optional

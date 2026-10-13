@@ -37,6 +37,7 @@ Exact prop names and types: [`@kerfjs/ui/anchored-surface`](../public-api-signat
 - pointer anchor
 - top or bottom placement
 - modal-dialog host
+- tone: 'dark' (the inverse tone of a dark ToolbarControlGroup, for popups anchored to media chrome)
 
 ## Composition
 
@@ -69,6 +70,18 @@ const handle = openAnchoredSurface(button, () => <HelpPanel />, {
   label: 'Field help',
 });
 // Close from the app's action handler: handle.close();
+```
+
+### Popup anchored to dark media chrome
+
+tone: 'dark' matches a ToolbarControlGroup tone="dark": the surface takes the opposite of the anchor's color scheme, so its content inherits the inverse text, border, and focus colors without overrides.
+
+```tsx
+openAnchoredSurface(volumeButton, () => <VolumeControls />, {
+  label: 'Volume',
+  tone: 'dark',
+  placement: 'top',
+});
 ```
 
 ## Styling boundary

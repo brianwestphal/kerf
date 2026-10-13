@@ -231,6 +231,9 @@ Use `openAnchoredSurfaceAt` with pointer coordinates and the event target as
 `wa-dialog`, or a `wa-drawer`, the surface stays interactive and closes with
 the dialog; pass `container` only for a modal context kerf cannot resolve.
 The handle's `close()` ends the surface; the app owns its content and actions. Import its CSS or `styles.css`.
+For a popup anchored to dark media chrome (a `ToolbarControlGroup tone="dark"`),
+pass `tone: 'dark'`: the surface takes that group's inverse tone and its content
+inherits the matching colors, so the app needs no dark panel CSS.
 See `ui/docs/anchored-surface.md` for focus, dismissal, and dialog host details.
 
 Use `Chip` for a removable tag. Pass `removeAction` and a specific

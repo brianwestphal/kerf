@@ -241,7 +241,10 @@ Kerf UI surface around `kerfjs/overlay`'s placement, top-layer/modal hosting,
 focus, and dismissal lifecycle. The app supplies content and action policy.
 Inside a native `<dialog>`, `wa-dialog`, or `wa-drawer` the surface stays
 interactive and closes with the dialog; an explicit `container` covers any
-other modal context.
+other modal context. `tone: 'dark'` is the inverse tone of a dark
+`ToolbarControlGroup`, for a popup anchored to media chrome: the surface takes
+the opposite of its anchor's color scheme when it opens, so its content
+inherits the inverse `light-dark()` token values.
 See [`ui/docs/anchored-surface.md`](../ui/docs/anchored-surface.md).
 
 `LoadingSpinner.size` shares `LucideIcon`'s `xs`/`s`/`m`/`l`/`xl` steps and

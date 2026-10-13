@@ -985,6 +985,11 @@ dismissal, and modal host selection to `kerfjs/overlay`, adds Kerf UI surface
 styling and a named non-modal dialog role, forwards an explicit `container`,
 places a pointer anchor inside the context's modal (a native `<dialog>` or a
 `wa-dialog` / `wa-drawer` shadow host), and cleans up that anchor on close.
+`tone: 'dark'` adds a creation-time `kui-anchored-surface--scheme-{light|dark}`
+class with the opposite of the anchor's used color scheme, plus
+`data-tone="dark"`, so content inherits inverse `light-dark()` tokens
+(`ui/tests/browser/anchored-surface-tone.spec.ts` covers the tone's contrast in
+both page schemes).
 The catalog demo (help inside a `wa-dialog`) and three-engine browser tests
 cover wide, narrow, pointer, and modal states, including focus, Escape closing
 only the surface, and closing with the dialog.

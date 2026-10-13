@@ -197,7 +197,11 @@ For arbitrary interactive help or popup content beside a control, use
 placement (an 8px viewport gutter, and a height fitted to the room beside the
 anchor with scrolling content), focus, dismissal, and modal-dialog hosting while
 the app owns its content and action policy. Never add media queries or
-`max-height` overrides to make a surface fit a phone. Use `PopupMenu` for a typed command list.
+`max-height` overrides to make a surface fit a phone. For a popup anchored to
+dark media chrome (a `ToolbarControlGroup tone="dark"` over a preview), pass
+`tone: 'dark'` rather than building an app-owned dark panel: the surface takes
+the group's inverse tone and its content inherits the matching colors. Use
+`PopupMenu` for a typed command list.
 
 Kerf UI does not export a command-palette component. Do not invent a package
 command-palette import.

@@ -29,6 +29,34 @@ export interface AnchoredSurfaceOptions extends Pick<
    * cannot resolve; an element inside an open modal closes the surface with it.
    */
   container?: Element;
+  /**
+   * Surface tone. `'default'` follows the anchor's color scheme. `'dark'` is
+   * the loud, inverse tone of a `ToolbarControlGroup` / `ToolbarText`
+   * `tone="dark"`, for a popup anchored to dark media chrome (a volume popup
+   * over a video preview): dark beside a light page and light beside a dark
+   * one, so the popup matches the control group that opened it. The surface
+   * takes the opposite of the anchor's color scheme when it opens, so it and
+   * every Kerf UI or Web Awesome component inside it resolve the same
+   * semantic `light-dark()` tokens to the other side: no new colors, no child
+   * overrides. Default `'default'`.
+   */
+  tone?: AnchoredSurfaceTone;
+}
+
+/** {@link AnchoredSurfaceOptions.tone}: follow the anchor's scheme, or invert it. */
+export type AnchoredSurfaceTone = 'default' | 'dark';
+
+// The color scheme `light-dark()` resolves to at `element`: an explicit single
+// scheme wins; `light dark` follows the user's preference, like the browser.
+function usedColorScheme(element: Element): 'light' | 'dark' {
+  const keywords = window.getComputedStyle(element).colorScheme.split(/\s+/);
+  const light = keywords.includes('light');
+  const dark = keywords.includes('dark');
+  if (light && dark)
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  return dark ? 'dark' : 'light';
 }
 
 /** A viewport pointer location; `context` is the element under the pointer. */
@@ -80,6 +108,7 @@ export function openAnchoredSurface(
     initialFocus = true,
     dismiss = ['escape', 'outside'],
     viewportMargin = 8,
+    tone = 'default',
     ...rest
   } = options;
   if (!label.trim())
@@ -87,9 +116,16 @@ export function openAnchoredSurface(
   // Safari does not focus buttons on pointer press. Make a focusable trigger
   // the overlay's restore target consistently, including that engine.
   if (anchor instanceof HTMLElement && anchor.tabIndex >= 0) anchor.focus();
+  // The dark tone's scheme is a class from creation, so the surface's first
+  // style resolution already has it: flipping it after the content mounts
+  // would run the content's own color transitions on open.
+  const scheme =
+    tone === 'dark'
+      ? ` kui-anchored-surface--scheme-${usedColorScheme(anchor) === 'dark' ? 'light' : 'dark'}`
+      : '';
   const handle = popover(anchor, content, {
     ...rest,
-    className: 'kui-anchored-surface',
+    className: `kui-anchored-surface${scheme}`,
     native: true,
     initialFocus,
     dismiss,
@@ -101,6 +137,7 @@ export function openAnchoredSurface(
   handle.el.setAttribute('role', 'dialog');
   handle.el.setAttribute('aria-label', label);
   handle.el.dataset.component = 'anchored-surface';
+  if (tone === 'dark') handle.el.dataset.tone = 'dark';
   const dialog = anchor.closest('dialog');
   if (dialog?.open) {
     const onClose = () => handle.close();

@@ -4748,7 +4748,21 @@ interface AnchoredSurfaceOptions extends Pick<PopoverOptions, 'placement' | 'ali
      * cannot resolve; an element inside an open modal closes the surface with it.
      */
     container?: Element;
+    /**
+     * Surface tone. `'default'` follows the anchor's color scheme. `'dark'` is
+     * the loud, inverse tone of a `ToolbarControlGroup` / `ToolbarText`
+     * `tone="dark"`, for a popup anchored to dark media chrome (a volume popup
+     * over a video preview): dark beside a light page and light beside a dark
+     * one, so the popup matches the control group that opened it. The surface
+     * takes the opposite of the anchor's color scheme when it opens, so it and
+     * every Kerf UI or Web Awesome component inside it resolve the same
+     * semantic `light-dark()` tokens to the other side: no new colors, no child
+     * overrides. Default `'default'`.
+     */
+    tone?: AnchoredSurfaceTone;
 }
+/** {@link AnchoredSurfaceOptions.tone}: follow the anchor's scheme, or invert it. */
+type AnchoredSurfaceTone = 'default' | 'dark';
 /** A viewport pointer location; `context` is the element under the pointer. */
 interface AnchoredSurfacePoint {
     x: number;
@@ -4778,7 +4792,7 @@ declare function openAnchoredSurface(anchor: Element, content: OverlayContent, o
  */
 declare function openAnchoredSurfaceAt(point: AnchoredSurfacePoint, content: OverlayContent, options: AnchoredSurfaceOptions): OverlayHandle;
 
-export { type AnchoredSurfaceOptions, type AnchoredSurfacePoint, openAnchoredSurface, openAnchoredSurfaceAt };
+export { type AnchoredSurfaceOptions, type AnchoredSurfacePoint, type AnchoredSurfaceTone, openAnchoredSurface, openAnchoredSurfaceAt };
 ```
 
 ## `@kerfjs/ui/icon-button`

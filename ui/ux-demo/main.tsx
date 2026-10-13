@@ -1825,6 +1825,13 @@ const stopAnchoredSurfaceDemo = delegate(
   '[data-anchored-surface-trigger]',
   (event, element) => {
     const trigger = element as HTMLElement;
+    if (trigger.dataset.anchoredSurfaceTrigger === 'media') {
+      // The volume popup and its slider load on first use, not with the shell.
+      void import('./demos/anchored-surface-media.js').then((media) =>
+        media.openMediaVolumeSurface(trigger),
+      );
+      return;
+    }
     const point = trigger.dataset.anchoredSurfaceTrigger === 'pointer';
     const content = () => (
       <div>

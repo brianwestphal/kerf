@@ -57,6 +57,37 @@ Closing the anchor's modal dialog also closes the surface. Escape closes only
 the surface; the dialog beneath stays open. The temporary pointer anchor is
 removed when the surface closes.
 
+## Dark tone for media chrome
+
+A popup anchored to dark media chrome (a volume control in a
+`ToolbarControlGroup tone="dark"` over a video or image preview) passes
+`tone: 'dark'`:
+
+```tsx
+openAnchoredSurface(volumeButton, () => <VolumeControls />, {
+  label: 'Volume',
+  tone: 'dark',
+  placement: 'top',
+});
+```
+
+The tone is the same loud, inverse tone as a dark `ToolbarControlGroup` or
+`ToolbarText`: dark beside a light page and light beside a dark one, so the
+popup matches the group that opened it. When the surface opens it takes the
+opposite of the anchor's color scheme (an explicit `color-scheme` on the anchor
+or an ancestor wins; `light dark` follows the user's preference), and the
+surface is marked `data-tone="dark"`. Nothing else changes. Every semantic
+color token is a `light-dark()` pair, so the surface fill, border, and shadow,
+and the text, borders, and focus rings of the Kerf UI and Web Awesome
+components inside it (a `ListItem` mute row, a `wa-slider`), resolve to the
+other side by inheritance. The content needs no tone props and no overrides.
+Text and focus rings keep WCAG AA in both page schemes. A theme that replaces a
+semantic token with a single color instead of a `light-dark()` pair opts that
+token out of the flip. The scheme is chosen when the surface opens; close and
+reopen it after the page switches schemes.
+
+## Theming
+
 Override `--kui-anchored-surface-inset` and
 `--kui-anchored-surface-radius` for a theme; content can compose any Kerf UI
 components without the surface applying action policy. Prefer `PopupMenu` for

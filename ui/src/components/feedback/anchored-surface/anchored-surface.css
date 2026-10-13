@@ -24,3 +24,18 @@
   box-shadow: var(--kui-shadow-l);
   font: inherit;
 }
+
+/* Dark tone for a popup anchored to dark media chrome: the loud, inverse tone
+   of a dark ToolbarControlGroup, so the surface takes the opposite of its
+   anchor's color scheme (the script picks the class when it opens). It flips
+   only the color scheme: every semantic token is a light-dark() pair, so the
+   surface fill, border, shadow, and the content's text, borders, and focus
+   rings all resolve to the other side by inheritance. No child is styled from
+   here. */
+.kui-anchored-surface--scheme-dark {
+  color-scheme: dark;
+}
+
+.kui-anchored-surface--scheme-light {
+  color-scheme: light;
+}
