@@ -143,7 +143,9 @@ explains when to reuse, compose, extend, or use native HTML.
    Use its component/composition/recipe taxonomy and functional-group,
    importance, alphabetical-tie, and recipes-last ordering policy. Focused
    demos and recipes use public components plus `CatalogExample.viewport`,
-   never local stylesheets, inline styles, or styling-only classes.
+   never local stylesheets, inline styles, or styling-only classes. A frame
+   that a top-layer specimen anchors to takes `viewport.anchorName`, and a
+   centered column takes `viewport.contentWidth` + `contentAlign`.
 5. **Apply the rules below and in** [skill.md](./ai/skill.md).
 6. **Before calling an integration complete**, run
    [`kerf-ui-doctor`](./docs/ui-doctor.md). Its portable JSON report merges

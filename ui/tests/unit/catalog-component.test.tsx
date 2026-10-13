@@ -552,6 +552,92 @@ describe('CatalogExample', () => {
     );
   });
 
+  it('names the frame as a CSS anchor beside its public tokens', () => {
+    const html = asHtml(
+      CatalogExample({
+        label: 'Anchored Popup',
+        viewport: {
+          width: 'full',
+          minHeight: 'app',
+          anchorName: '--app-shell-main',
+          tokens: { '--kui-pane-width': '18rem' },
+        },
+        children: raw('<div popover="manual" />'),
+      }),
+    );
+    expect(html).toContain('data-min-height="app"');
+    expect(html).toContain(
+      'style="--kui-pane-width:18rem;anchor-name:--app-shell-main"',
+    );
+    expect(
+      asHtml(
+        CatalogExample({
+          viewport: { anchorName: '--shell_main-2' },
+          children: raw('<b/>'),
+        }),
+      ),
+    ).toContain('style="anchor-name:--shell_main-2"');
+  });
+
+  it('omits the viewport style when no tokens or anchor are supplied', () => {
+    expect(
+      asHtml(
+        CatalogExample({ viewport: { tokens: {} }, children: raw('<b/>') }),
+      ),
+    ).not.toContain('style=');
+  });
+
+  it.each(['app-shell-main', '--', '--app shell', '--app;color:red', '-app'])(
+    'rejects %j as a viewport anchor name',
+    (anchorName) => {
+      expect(() =>
+        CatalogExample({
+          viewport: { anchorName: anchorName as `--${string}` },
+          children: raw('<b/>'),
+        }),
+      ).toThrow(/anchorName must be a CSS dashed-ident/);
+    },
+  );
+
+  it('renders a content column and aligns it only when a width is set', () => {
+    const centered = asHtml(
+      CatalogExample({
+        viewport: { contentWidth: 'medium', contentAlign: 'center' },
+        children: raw('<b/>'),
+      }),
+    );
+    expect(centered).toContain('data-content-width="medium"');
+    expect(centered).toContain('data-content-align="center"');
+    const alignOnly = asHtml(
+      CatalogExample({
+        viewport: { contentAlign: 'center' },
+        children: raw('<b/>'),
+      }),
+    );
+    expect(alignOnly).not.toContain('data-content-align');
+    expect(alignOnly).not.toContain('data-content-width');
+
+    const css = readFileSync(
+      resolve(
+        import.meta.dirname,
+        '../../src/catalog/components/catalog-example.css',
+      ),
+      'utf8',
+    );
+    const columns = Object.fromEntries(
+      [
+        ...css.matchAll(
+          /\[data-content-width="([a-z]+)"\] \{\s*--_kui-catalog-example-content-width: remify\((\d+)px\);/g,
+        ),
+      ].map(([, name, px]) => [name, Number(px)]),
+    );
+    expect(columns).toEqual({ compact: 440, medium: 640, wide: 864 });
+    expect(css).toMatch(
+      /\[data-min-height="app"\] \{\s*min-height: remify\(592px\);/,
+    );
+    expect(css).toContain('[data-content-width] > :not([popover])');
+  });
+
   it('offers an application-sized specimen frame taller than the component heights', () => {
     expect(
       asHtml(

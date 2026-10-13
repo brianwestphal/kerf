@@ -1,0 +1,32 @@
+/* App-owned top-layer popup: it docks to the bottom of whichever element is
+   named `--demo-shell-main`, inset 16px, at most 480px wide and centered on
+   that anchor. Engines without CSS anchor positioning keep the UA popover
+   placement (centered in the viewport), which is still usable. */
+.anchored-request-popup {
+  box-sizing: border-box;
+  max-width: min(480px, calc(100vw - 32px));
+  padding: var(--kui-space-xs);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface-raised);
+  box-shadow: var(--kui-shadow-l);
+}
+
+.anchored-request-popup:popover-open {
+  display: flex;
+  flex-direction: column;
+}
+
+@supports (anchor-name: --a) {
+  .anchored-request-popup {
+    position-anchor: --demo-shell-main;
+    inset: auto;
+    left: calc(anchor(left) + 16px);
+    right: calc(anchor(right) + 16px);
+    bottom: calc(anchor(bottom) + 16px);
+    margin-block: 0;
+    margin-inline: auto;
+    max-width: 480px;
+  }
+}

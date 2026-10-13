@@ -162,6 +162,44 @@ entry's `tags` array.
   An app frame stands in for the screen: it is the containing block for
   screen-fixed chrome, so a compact `CollapsiblePanel` overlay, its backdrop,
   and restore controls dock to the frame's edges rather than the page's.
+  `minHeight` (`short`, `medium`, or `app` at 592px) is a floor the frame
+  may grow past rather than a definite height.
+- A top-layer specimen (a `popover`, a modal) that production anchors to a
+  named region with CSS anchor positioning anchors to the frame instead when
+  the frame takes that name: `viewport.anchorName` is a CSS dashed-ident
+  (`"--app-shell-main"`, validated; anything else throws) that becomes the
+  frame's `anchor-name`, so the specimen's own `position-anchor` rule resolves
+  to the frame. Do not wrap the specimen in a stage element to name it. Anchor
+  names are document-wide, so give each frame on a page its own. The frame
+  only names the anchor: the specimen keeps owning its placement, and as a
+  top-layer element it is not clipped by the frame or the stage. Chromium,
+  Firefox, and WebKit with CSS anchor positioning place it against the frame;
+  an engine without anchor positioning ignores the name, and the specimen
+  falls back to whatever placement its own CSS gives it there.
+- For a centered reading column inside a wider frame, set
+  `viewport.contentWidth` (`compact` 440px, `medium` 640px, or `wide` 864px,
+  each capped at the frame) and `contentAlign: "center"` (the default is
+  `start`). Each in-flow child fills that column; `[popover]` children keep
+  their own geometry. The column applies to block, `grid`, and `flex-column`
+  frames, and `contentAlign` does nothing without `contentWidth`.
+
+```tsx
+<CatalogExample
+  label="Request Docked to the Main Column"
+  viewport={{
+    layout: "flex-column",
+    width: "full",
+    minHeight: "app",
+    anchorName: "--app-shell-main",
+    contentWidth: "medium",
+    contentAlign: "center",
+  }}
+>
+  <Transcript />
+  <PermissionRequestPopup /> {/* its CSS: position-anchor: --app-shell-main */}
+</CatalogExample>
+```
+
 - The specimen is an immediate child of `CatalogExample`. A focused component
   row should place the component root there, without a decorative card or
   spacing wrapper. A composition row may place the composition root there.

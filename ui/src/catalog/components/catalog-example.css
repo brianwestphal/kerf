@@ -100,6 +100,34 @@
   min-height: remify(320px);
 }
 
+.kui-catalog-example__viewport[data-min-height="app"] {
+  min-height: remify(592px);
+}
+
+/* A content column: each in-flow child fills a capped measure, at the start
+   or centered. Top-layer `[popover]` specimens keep their own geometry (they
+   position against the viewport or a named anchor, not this column). */
+.kui-catalog-example__viewport[data-content-width] > :not([popover]) {
+  width: min(100%, var(--_kui-catalog-example-content-width));
+}
+
+.kui-catalog-example__viewport[data-content-width="compact"] {
+  --_kui-catalog-example-content-width: remify(440px);
+}
+
+.kui-catalog-example__viewport[data-content-width="medium"] {
+  --_kui-catalog-example-content-width: remify(640px);
+}
+
+.kui-catalog-example__viewport[data-content-width="wide"] {
+  --_kui-catalog-example-content-width: remify(864px);
+}
+
+.kui-catalog-example__viewport[data-content-width][data-content-align="center"]
+  > :not([popover]) {
+  margin-inline: auto;
+}
+
 .kui-catalog-example__viewport[data-frame] {
   border: 1px solid var(--kui-color-neutral-border-normal);
 }

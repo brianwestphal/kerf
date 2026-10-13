@@ -23,8 +23,22 @@ export interface CatalogExampleViewport {
   height?: 'short' | 'reduced' | 'medium' | 'tall' | 'app';
   /** A minimum the frame may grow past. It is not a definite height: a child
    *  sized with `height: 100%` falls back to its content height, so use
-   *  `height` when the specimen must fill the frame. */
-  minHeight?: 'short' | 'medium';
+   *  `height` when the specimen must fill the frame. `app` (592px) is the
+   *  application frame's height as a floor, for a stage that hosts a
+   *  frame-anchored top-layer specimen above in-flow content. */
+  minHeight?: 'short' | 'medium' | 'app';
+  /** Names the frame as a CSS anchor (`anchor-name`), so a top-layer
+   *  specimen whose own CSS sets `position-anchor` to this dashed-ident
+   *  positions against the frame as it would against its production anchor.
+   *  Anchor names are document-wide: give each frame on a page its own. */
+  anchorName?: `--${string}`;
+  /** Caps each in-flow child at a centered-or-start content column:
+   *  `compact` (440px), `medium` (640px), or `wide` (864px), each capped at
+   *  the frame. `[popover]` children keep their own geometry. Applies to
+   *  block, `grid`, and `flex-column` flows. */
+  contentWidth?: 'compact' | 'medium' | 'wide';
+  /** Where a `contentWidth` column sits in the frame; default `start`. */
+  contentAlign?: 'start' | 'center';
   frame?: 'solid' | 'dashed';
   surface?: 'default' | 'lowered';
   overflow?: 'hidden' | 'auto-x';
@@ -32,6 +46,27 @@ export interface CatalogExampleViewport {
   shadow?: boolean;
   /** Public component custom properties applied to the specimen viewport. */
   tokens?: Readonly<Record<`--${string}`, string>>;
+}
+
+// A CSS dashed-ident: `--` and at least one name code point.
+const dashedIdent = /^--[\w\-\u0080-\u{10FFFF}]+$/u;
+
+function viewportStyleOf(
+  viewport: CatalogExampleViewport | undefined,
+): string | undefined {
+  if (viewport === undefined) return undefined;
+  const declarations = Object.entries(viewport.tokens ?? {}).map(
+    ([name, value]) => `${name}:${value}`,
+  );
+  const { anchorName } = viewport;
+  if (anchorName !== undefined) {
+    if (!dashedIdent.test(anchorName))
+      throw new TypeError(
+        `CatalogExample viewport.anchorName must be a CSS dashed-ident such as "--app-shell-main"; received ${JSON.stringify(anchorName)}`,
+      );
+    declarations.push(`anchor-name:${anchorName}`);
+  }
+  return declarations.length > 0 ? declarations.join(';') : undefined;
 }
 
 const protectedAttributes = new Set([
@@ -87,11 +122,7 @@ export function CatalogExample({
     rootAttributes,
     protectedAttributes,
   );
-  const viewportStyle = viewport?.tokens
-    ? Object.entries(viewport.tokens)
-        .map(([name, value]) => `${name}:${value}`)
-        .join(';')
-    : undefined;
+  const viewportStyle = viewportStyleOf(viewport);
   if (viewport?.surface === 'lowered') ensureSunkenTexture();
   const specimen = viewport ? (
     <div
@@ -106,6 +137,10 @@ export function CatalogExample({
       data-overflow={viewport.overflow}
       data-responsive={viewport.responsive}
       data-shadow={viewport.shadow ? 'true' : undefined}
+      data-content-width={viewport.contentWidth}
+      data-content-align={
+        viewport.contentWidth === undefined ? undefined : viewport.contentAlign
+      }
       style={viewportStyle}
     >
       {children}
