@@ -500,4 +500,19 @@ describe('UX demo copy', () => {
       titles.filter((title) => titleStyleViolation(title) !== null),
     ).toEqual([]);
   });
+
+  test('demo progress labels are sentence style with a trailing ellipsis', async () => {
+    // writing.md: LoadingSpinner and Skeleton labels name the operation under
+    // way, so they end with "…" — literal or template-literal alike.
+    const labels: string[] = [];
+    for (const file of await demoSources()) {
+      const source = await readFile(file, 'utf8');
+      for (const match of source.matchAll(
+        /<(?:LoadingSpinner|Skeleton)\b[^>]*?\blabel=(?:"([^"]+)"|\{`([^`]+)`\})/g,
+      ))
+        labels.push((match[1] ?? match[2])!);
+    }
+    expect(labels.length).toBeGreaterThan(5);
+    expect(labels.filter((label) => !label.endsWith('…'))).toEqual([]);
+  });
 });

@@ -82,7 +82,7 @@ export function ApplicationTabsDemo() {
             aria-busy={activeTab?.pending ? 'true' : undefined}
           >
             {activeTab?.pending ? (
-              <Skeleton width={em(6)} label={`Loading ${activeTab.name}`} />
+              <Skeleton width={em(6)} label={`Loading ${activeTab.name}…`} />
             ) : (
               activeName
             )}

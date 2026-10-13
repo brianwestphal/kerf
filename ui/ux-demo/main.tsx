@@ -368,7 +368,7 @@ function Stage() {
     const controller = recipeControllers.get(selected.id);
     if (!controller) {
       void ensureRecipe(selected.id);
-      return <LoadingSpinner label={`Loading ${selected.name} recipe`} />;
+      return <LoadingSpinner label={`Loading ${selected.name} recipe…`} />;
     }
     // The catalog frames every recipe in its declared specimen viewport and
     // shows its ownership note on request; the recipe renders only app UI. A
@@ -392,7 +392,7 @@ function Stage() {
   }
   if (needsWebAwesome(selected) && !webAwesomeReady.value) {
     void ensureWebAwesomeDemos();
-    return <LoadingSpinner label={`Loading ${selected.name} preview`} />;
+    return <LoadingSpinner label={`Loading ${selected.name} preview…`} />;
   }
   if (selected.source === 'webawesome')
     return webAwesomeDemos![selected.id as WebAwesomeCatalogId]();
