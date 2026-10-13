@@ -130,7 +130,7 @@ export default defineConfig({
     outDir: '../dist-demo',
     emptyOutDir: true,
     chunkSizeWarningLimit: 800,
-    rollupOptions: { output: { manualChunks: startupVendorChunk() } },
+    rollupOptions: { output: { manualChunks: startupChunks() } },
   },
 });
 
@@ -143,24 +143,50 @@ type ModuleGraph = {
 };
 
 /**
- * Split the third-party code the catalog loads at startup (Web Awesome and its
- * Lit/Floating UI runtime, pulled in eagerly by the select and popup-menu
- * `register` subpaths) out of the entry chunk into a `vendor` chunk. Both still
- * load eagerly with the page, so behavior and load order are unchanged; the
- * split only keeps either chunk far from the demo's largest-chunk budget
- * (`demo-bundle-budget.json`). Only modules statically reachable from the entry
- * qualify: a dependency used solely by a lazily imported chunk (the Web
- * Awesome component demos, the recipes) stays with that chunk instead of
- * being hoisted into startup.
+ * Split the startup code out of the entry chunk into chunks that still load
+ * eagerly with the page (`modulepreload`), so behavior and load order are
+ * unchanged; the split only keeps every chunk far from the demo's
+ * largest-chunk budget (`demo-bundle-budget.json`).
+ *
+ * - `vendor`: third-party code (Web Awesome and its Lit/Floating UI runtime,
+ *   pulled in eagerly by the select and popup-menu `register` subpaths).
+ * - `kerf`: the published code the catalog demonstrates — the built
+ *   `@kerfjs/ui` modules and the kerf core the aliases point at — plus every
+ *   startup stylesheet. A chunk carries the CSS of the modules in it, so
+ *   collecting all startup CSS modules in one chunk keeps the stylesheet
+ *   whole and its cascade order exactly as a single-chunk build emits it;
+ *   putting them beside the library modules that import most of them keeps
+ *   the chunk graph acyclic (`catalog` imports `kerf`, never the reverse).
+ * - `catalog`: the catalog's own demo and shell modules.
+ *
+ * Only modules statically reachable from the entry qualify: a dependency used
+ * solely by a lazily imported chunk (the Web Awesome component demos, the
+ * recipes) stays with that chunk instead of being hoisted into startup.
  */
-function startupVendorChunk() {
+function startupChunks() {
   let startup: Set<string> | undefined;
   return (id: string, graph: ModuleGraph): string | undefined => {
-    if (!id.includes('/node_modules/')) return undefined;
     startup ??= staticallyReachableFromEntries(graph);
-    return startup.has(id) ? 'vendor' : undefined;
+    if (!startup.has(id) || graph.getModuleInfo(id)?.isEntry) return undefined;
+    if (/\.css(?:\?|$)/.test(id)) return 'kerf';
+    if (id.includes('/node_modules/')) return 'vendor';
+    if (
+      id.startsWith(builtPackageDirectory) ||
+      id.startsWith(coreSourceDirectory)
+    )
+      return 'kerf';
+    if (id.startsWith(catalogSourceDirectory)) return 'catalog';
+    return undefined;
   };
 }
+
+const builtPackageDirectory = fileURLToPath(
+  new URL('../dist/', import.meta.url),
+);
+const coreSourceDirectory = fileURLToPath(
+  new URL('../../src/', import.meta.url),
+);
+const catalogSourceDirectory = fileURLToPath(new URL('.', import.meta.url));
 
 function staticallyReachableFromEntries(graph: ModuleGraph): Set<string> {
   const pending = [...graph.getModuleIds()].filter(
