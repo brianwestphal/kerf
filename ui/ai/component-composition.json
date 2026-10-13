@@ -635,7 +635,7 @@
           "required": false
         },
         {
-          "id": "whether the scrolling content clears overlaying chrome on its block edges (scrollClearance)",
+          "id": "whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it)",
           "owner": "application",
           "required": false
         }

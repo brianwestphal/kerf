@@ -1,4 +1,5 @@
 import { List } from '@kerfjs/ui/list';
+import { NavStack } from '@kerfjs/ui/nav-stack';
 import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 
@@ -6,7 +7,8 @@ import { Text } from '@kerfjs/ui/text';
 // scroll owner. Overlaying chrome publishes how far it covers each edge
 // through the inherited `--kui-scroll-clearance-block-*` context; a List or
 // Pane that opts in with `scrollClearance` clears it inside its own scroll
-// area. The chrome itself is app markup, not a kerf component.
+// area, directly or through a composite's `PaneConfig`. The chrome itself is
+// app markup, not a kerf component.
 const rows = (count: number) =>
   Array.from({ length: count }, (_, index) => (
     <Text>{`Message ${index + 1}`}</Text>
@@ -49,6 +51,22 @@ document.querySelector('[data-app]')!.innerHTML = String(
       <Pane scrollClearance="both" safeAreaEdges={[]}>
         {rows(30)}
       </Pane>,
+    )}
+    {region(
+      // A composed Pane opts in through `PaneConfig.scrollClearance`.
+      'navstack-pane-both',
+      <NavStack
+        id="clearance-stack"
+        label="Messages"
+        hideToolbar
+        views={[
+          {
+            key: 'messages',
+            content: rows(30),
+            pane: { scrollClearance: 'both', safeAreaEdges: [] },
+          },
+        ]}
+      />,
     )}
   </>,
 );

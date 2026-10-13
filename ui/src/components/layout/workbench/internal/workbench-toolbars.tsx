@@ -24,6 +24,7 @@ import {
   NavStack,
   type NavStackProps,
 } from '../../../navigation/nav-stack/nav-stack.js';
+import { paneConfigProps } from '../../pane/internal/pane-config-props.js';
 import { Pane, type PaneConfig } from '../../pane/pane.js';
 import {
   type WorkbenchPanelKey,
@@ -364,15 +365,7 @@ export function mainBody({
           ? 'auto'
           : 'fixed'
       }
-      contentElement={mainPane?.contentElement}
-      contentLabel={mainPane?.contentLabel}
-      separators={mainPane?.separators}
-      safeAreaEdges={mainPane?.safeAreaEdges}
-      chromeDividers={mainPane?.chromeDividers}
-      appearance={mainPane?.appearance}
-      deepInset={mainPane?.deepInset}
-      tabIndex={mainPane?.tabIndex}
-      outlined={mainPane?.outlined}
+      {...paneConfigProps(mainPane)}
     >
       {scrollHeader || scrollFooter ? (
         // Chrome that scrolls joins the content in one gapless column that

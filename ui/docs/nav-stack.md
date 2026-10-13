@@ -66,7 +66,8 @@ the view renders a `Pane`: its header and footer stay pinned around the view's
 scrolling content, and slide with that view during navigation. The header and
 footer list configuration forwards to their `List`s; `pane` forwards
 `contentElement`, `contentLabel`, `separators`, `safeAreaEdges`,
-`chromeDividers`, and `appearance` to the Pane. Without those fields, the view
+`chromeDividers`, `appearance`, `deepInset`, `scrollClearance`, `tabIndex`,
+and `outlined` to the Pane. Without those fields, the view
 keeps its simple direct scroll area. Use `pane: { appearance: "sunken" }` for a
 lowered scrolling work surface.
 The back control appears automatically once the stack has more than one entry;

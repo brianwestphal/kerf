@@ -1835,7 +1835,7 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'appearance' | 'deepInset' | 'tabIndex' | 'outlined'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'appearance' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on

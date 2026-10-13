@@ -11,6 +11,7 @@ import {
   type ToolbarTextSize,
 } from '../../actions/toolbar-text/toolbar-text.js';
 import { List, type ListConfig } from '../../collections/list/list.js';
+import { paneConfigProps } from '../../layout/pane/internal/pane-config-props.js';
 import { Pane } from '../../layout/pane/pane.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 
@@ -266,15 +267,7 @@ export function NavStack({
             view.header !== undefined ||
             view.footer !== undefined ? (
               <Pane
-                appearance={view.pane?.appearance}
-                deepInset={view.pane?.deepInset}
-                tabIndex={view.pane?.tabIndex}
-                outlined={view.pane?.outlined}
-                contentElement={view.pane?.contentElement}
-                contentLabel={view.pane?.contentLabel}
-                separators={view.pane?.separators}
-                safeAreaEdges={view.pane?.safeAreaEdges}
-                chromeDividers={view.pane?.chromeDividers}
+                {...paneConfigProps(view.pane)}
                 header={
                   view.header === undefined ? undefined : (
                     <div data-nav-stack-header>

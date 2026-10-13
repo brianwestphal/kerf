@@ -657,7 +657,10 @@ A scroll owner opts in per edge with `scrollClearance` (`"block-start"`,
 published clearance to its own block padding and `scroll-padding`, so content
 scrolls visibly beneath the chrome while the first and last items (and any
 item focused or scrolled into view) still come to rest clear of it. Without
-the prop the context is ignored.
+the prop the context is ignored. `PaneConfig` carries `scrollClearance` too,
+so a composed Pane opts in the same way: a Workbench `mainPane` or panel
+`pane`, a `CollapsiblePanel` `pane`, or a `NavStack` view's `pane` (for
+example a NavStack view inside a dialog with a floating composer).
 
 Opt in only the one scroller that reaches the covered edge; a nested scroller
 must not opt in again. `DialogSurface` publishes block-end for its floating

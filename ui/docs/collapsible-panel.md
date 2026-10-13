@@ -168,7 +168,8 @@ divider of its own unless `dividerSides` says so. The `Pane` under it draws
 the line under the toolbar only while its content is scrolled (see
 [Scroll dividers](./layout.md#scroll-dividers)), and takes the panel's `pane`
 (`PaneConfig`: `contentElement`, `contentLabel`, `separators`,
-`safeAreaEdges`, `chromeDividers`) — for example `{ contentElement: "nav",
+`safeAreaEdges`, `chromeDividers`, `appearance`, `deepInset`,
+`scrollClearance`, `tabIndex`, `outlined`) — for example `{ contentElement: "nav",
 contentLabel: "Sections" }` for a navigation rail. An omitted or `undefined`
 field keeps the `Pane` default; without a `toolbar` there is no `Pane`, so
 `pane` is ignored.

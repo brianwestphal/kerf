@@ -721,6 +721,7 @@ describe('Workbench panel toolbars', () => {
         safeAreaEdges: ['block-end'],
         chromeDividers: 'always',
         appearance: 'sunken',
+        scrollClearance: 'block-end',
       },
       mainHeaderList: {
         dividerSides: 't',
@@ -738,6 +739,7 @@ describe('Workbench panel toolbars', () => {
           contentLabel: 'Files',
           chromeDividers: 'none',
           appearance: 'sunken',
+          scrollClearance: 'block-start',
         },
       },
     });
@@ -746,6 +748,10 @@ describe('Workbench panel toolbars', () => {
     expect(main.getAttribute('data-appearance')).toBe('sunken');
     expect(railPane(host).getAttribute('data-chrome-dividers')).toBe('none');
     expect(railPane(host).getAttribute('data-appearance')).toBe('sunken');
+    expect(main.getAttribute('data-scroll-clearance')).toBe('block-end');
+    expect(railPane(host).getAttribute('data-scroll-clearance')).toBe(
+      'block-start',
+    );
     const content = main.querySelector(':scope > .kui-pane__content')!;
     expect(content.tagName).toBe('SECTION');
     expect(content.getAttribute('aria-label')).toBe('Document');
@@ -775,12 +781,17 @@ describe('Workbench panel toolbars', () => {
         separators: undefined,
         safeAreaEdges: undefined,
         chromeDividers: undefined,
+        scrollClearance: undefined,
       },
       mainHeaderList: { dividerSides: undefined, gap: undefined },
       mainFooterList: {},
       leftRail: {
         ...rail('Files', false),
-        pane: { contentElement: undefined, separators: undefined },
+        pane: {
+          contentElement: undefined,
+          separators: undefined,
+          scrollClearance: undefined,
+        },
       },
     });
     expect(undefinedConfig.innerHTML).toBe(plain.innerHTML);
@@ -790,6 +801,7 @@ describe('Workbench panel toolbars', () => {
     expect(workArea(plain).getAttribute('data-safe-area-block-start')).toBe(
       'true',
     );
+    expect(workArea(plain).hasAttribute('data-scroll-clearance')).toBe(false);
     expect(chrome(plain, 'header').getAttribute('divider-sides')).toBeNull();
     expect(chrome(plain, 'footer').getAttribute('divider-sides')).toBeNull();
     expect(

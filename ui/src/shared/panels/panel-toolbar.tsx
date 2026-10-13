@@ -20,6 +20,7 @@ import {
   List,
   type ListConfig,
 } from '../../components/collections/list/list.js';
+import { paneConfigProps } from '../../components/layout/pane/internal/pane-config-props.js';
 import { Pane, type PaneConfig } from '../../components/layout/pane/pane.js';
 import { LucideIcon } from '../../components/media/lucide-icon/lucide-icon.js';
 import type { KerfUiContent } from '../content/semantic-content.js';
@@ -287,15 +288,7 @@ export function composedPanelBody({
           ? 'auto'
           : 'fixed'
       }
-      contentElement={pane?.contentElement}
-      contentLabel={pane?.contentLabel}
-      separators={pane?.separators}
-      safeAreaEdges={pane?.safeAreaEdges}
-      chromeDividers={pane?.chromeDividers}
-      appearance={pane?.appearance}
-      deepInset={pane?.deepInset}
-      tabIndex={pane?.tabIndex}
-      outlined={pane?.outlined}
+      {...paneConfigProps(pane)}
     >
       {scrollHeader ? panelHeader : null}
       {content}

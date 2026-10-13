@@ -668,7 +668,7 @@
         "default or sunken scrolling work surface (appearance)",
         "whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter)",
         "optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined)",
-        "whether the scrolling content clears overlaying chrome on its block edges (scrollClearance)"
+        "whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it)"
       ],
       "variants": [
         "content only",

@@ -8,7 +8,9 @@ import { build } from 'esbuild';
 // publishes `--kui-scroll-clearance-block-start/end`; a List or Pane that opts
 // in with `scrollClearance` adds it inside its own scroll area, so content
 // passes visibly beneath translucent chrome while the first and last items
-// (and anything scrolled into view) still come to rest clear of it.
+// (and anything scrolled into view) still come to rest clear of it. A
+// composite's Pane opts in through `PaneConfig.scrollClearance` (KF-574HQV:
+// forwarded by Workbench, CollapsiblePanel, and NavStack views).
 
 const fixtureBundle = build({
   entryPoints: [resolve(import.meta.dirname, 'fixtures/scroll-clearance.tsx')],
@@ -19,7 +21,7 @@ const fixtureBundle = build({
   write: false,
 });
 
-const css = ['foundation', 'layout', 'list', 'pane', 'text']
+const css = ['foundation', 'layout', 'list', 'pane', 'text', 'nav-stack']
   .map((name) =>
     readFileSync(
       resolve(import.meta.dirname, `../../dist/styles/${name}.css`),
@@ -37,7 +39,9 @@ async function mountFixture(page: Page): Promise<void> {
   await page.setContent('<body style="margin:0"><div data-app></div></body>');
   await page.addStyleTag({ content: css });
   await page.addScriptTag({ content: javascript.text });
-  await expect(page.locator('[data-region="pane-both"]')).toBeVisible();
+  await expect(
+    page.locator('[data-region="navstack-pane-both"]'),
+  ).toBeVisible();
 }
 
 /** The region's scroller, overlays, first/last rows, and scroll state. */
@@ -85,7 +89,7 @@ test.beforeEach(async ({ page }) => {
   await mountFixture(page);
 });
 
-for (const name of ['list-both', 'pane-both']) {
+for (const name of ['list-both', 'pane-both', 'navstack-pane-both']) {
   test(`${name}: content scrolls beneath both overlays and its ends rest clear of them`, async ({
     page,
   }) => {

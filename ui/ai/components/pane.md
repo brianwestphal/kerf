@@ -65,7 +65,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance).
+**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it).
 
 **Wiring:** `wireScrollDividers` is optional.
 

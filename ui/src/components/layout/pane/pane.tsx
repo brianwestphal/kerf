@@ -162,6 +162,7 @@ export type PaneConfig = Pick<
   | 'chromeDividers'
   | 'appearance'
   | 'deepInset'
+  | 'scrollClearance'
   | 'tabIndex'
   | 'outlined'
 >;

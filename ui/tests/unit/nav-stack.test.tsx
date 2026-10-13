@@ -323,6 +323,7 @@ describe('NavStack markup', () => {
             appearance: 'sunken',
             deepInset: true,
             chromeDividers: 'always',
+            scrollClearance: 'block-end',
           },
           bottomToolbar: {
             label: 'Bottom actions',
@@ -348,6 +349,7 @@ describe('NavStack markup', () => {
     expect(pane.dataset.appearance).toBe('sunken');
     expect(pane.dataset.deepInset).toBe('true');
     expect(pane.dataset.chromeDividers).toBe('always');
+    expect(pane.dataset.scrollClearance).toBe('block-end');
     expect(
       pane.querySelector('main[aria-label="Home content"]')?.textContent,
     ).toBe('Home content');

@@ -300,7 +300,8 @@ The `Pane`s and `List`s the Workbench composes around your content are
 configurable the same way:
 
 - `mainPane` (`PaneConfig`: `contentElement`, `contentLabel`, `separators`,
-  `safeAreaEdges`, `chromeDividers`, `appearance`) configures the work area's
+  `safeAreaEdges`, `chromeDividers`, `appearance`, `deepInset`,
+  `scrollClearance`, `tabIndex`, `outlined`) configures the work area's
   `Pane`, which exists whenever the work area has a toolbar, `mainHeader`, or
   `mainFooter`. Without that chrome, `appearance: "sunken"` paints the main
   region's own scroll surface;
