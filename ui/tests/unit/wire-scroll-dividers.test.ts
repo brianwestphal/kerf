@@ -55,11 +55,14 @@ function scrollTo(element: Element, state: Geometry, next: Partial<Geometry>) {
 class FakeResizeObserver {
   static instances: FakeResizeObserver[] = [];
   readonly observed = new Set<Element>();
+  /** The box each target was last observed with (`undefined`: content box). */
+  readonly boxes = new Map<Element, ResizeObserverBoxOptions | undefined>();
   constructor(readonly callback: ResizeObserverCallback) {
     FakeResizeObserver.instances.push(this);
   }
-  observe(target: Element) {
+  observe(target: Element, options?: ResizeObserverOptions) {
     this.observed.add(target);
+    this.boxes.set(target, options?.box);
   }
   unobserve(target: Element) {
     this.observed.delete(target);
@@ -1148,6 +1151,12 @@ describe('wireScrollDividers — overlay Pane headers', () => {
     expect(measured(pane)).toBe('measured');
     const observer = FakeResizeObserver.instances[0]!;
     expect(observer.observed.has(header)).toBe(true);
+    // The clearance is the border box, so a border-only change (the
+    // forced-colors edge) must report too; scrollers keep the content box.
+    expect(observer.boxes.get(header)).toBe('border-box');
+    const content = pane.querySelector('.kui-pane__content')!;
+    expect(observer.observed.has(content)).toBe(true);
+    expect(observer.boxes.get(content)).toBeUndefined();
 
     // A wrapped title or larger text grows the header; the border box wins.
     observer.callback(

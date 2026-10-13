@@ -327,6 +327,12 @@ test('forced colors paints an opaque system surface with a visible edge', async 
       (header) => globalThis.getComputedStyle(header).borderBottomWidth,
     );
   expect(edge).toBe('1px');
+  // The edge adds only to the border box, so the clearance must follow the
+  // border box for the first item to clear it.
+  await nextFrames(page);
+  const start = await geometry(page, 'wired', 'start');
+  expect(start.clearance).toBeCloseTo(start.header.height, 1);
+  expect(Math.round(start.first)).toBe(Math.round(start.header.bottom));
 });
 
 test('reduced transparency and increased contrast resolve the material to the opaque surface', async ({

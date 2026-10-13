@@ -508,7 +508,8 @@ function createController(
     }
   };
 
-  const observed = new Set<Element>();
+  /** Each observed element, keyed to whether it is observed by border box. */
+  const observed = new Map<Element, boolean>();
   /**
    * A post-layout hook for the content re-measure: an inert zero-height box
    * outside the app tree whose width a content mutation toggles. The
@@ -559,21 +560,26 @@ function createController(
 
   const observeSizes = () => {
     if (!resizeObserver) return;
-    const wanted = new Set<Element>();
+    const wanted = new Map<Element, boolean>();
     for (const { scroller } of pairings) {
-      wanted.add(scroller);
-      for (const child of scroller.children) wanted.add(child);
+      wanted.set(scroller, false);
+      for (const child of scroller.children) wanted.set(child, false);
     }
-    for (const header of overlays.keys()) wanted.add(header);
-    for (const element of observed)
+    // An overlay header's clearance is its border box, so a border alone (the
+    // forced-colors edge) must report a resize too.
+    for (const header of overlays.keys()) wanted.set(header, true);
+    for (const element of observed.keys())
       if (!wanted.has(element)) {
         resizeObserver.unobserve(element);
         observed.delete(element);
       }
-    for (const element of wanted)
-      if (!observed.has(element)) {
-        resizeObserver.observe(element);
-        observed.add(element);
+    for (const [element, borderBox] of wanted)
+      if (observed.get(element) !== borderBox) {
+        resizeObserver.observe(
+          element,
+          borderBox ? { box: 'border-box' } : undefined,
+        );
+        observed.set(element, borderBox);
       }
   };
 
