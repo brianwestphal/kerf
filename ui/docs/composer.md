@@ -129,6 +129,12 @@ field and actions, first action only, disposal). `tests/browser/composer.spec.ts
 the focus-within border, growth up to `maxRows` and then scrolling, the action
 row geometry, and the send flow at wide and phone widths, and, in Chromium,
 Firefox, and WebKit, Enter, Shift+Enter, Cmd/Ctrl+Enter, empty messages, and
-IME composition (dispatched composition events and keyCode 229);
+IME composition (dispatched composition events and keyCode 229). In
+Chromium it also drives a real IME composition through the DevTools protocol
+(`Input.imeSetComposition`, then `Input.insertText` to commit). That test
+asserts the engine's own event order: an Enter keydown flagged `isComposing`
+while composing, the committing `Process` keydown with keyCode 229, then
+`compositionend`. None of those sends, the committed text lands in the field,
+and the next Enter sends it;
 `tests/browser/surface-scaffold.spec.ts` covers the composer in the floating
 footer of the chat dialog, including Enter to send.

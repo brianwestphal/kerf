@@ -203,3 +203,103 @@ test('Composer submitOnEnter sends on Enter, keeps Shift+Enter newlines, and wai
   await page.keyboard.type('Two');
   await expect(prompt).toHaveValue('One\nTwo');
 });
+
+test('Composer submitOnEnter survives a real Chromium IME composition driven through CDP', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== 'chromium',
+    'Only Chromium exposes an IME driver (CDP Input.imeSetComposition).',
+  );
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=composer');
+  const log = page.locator('output.catalog-log');
+  const field = page.getByRole('textbox', { name: 'Message' });
+  const initialLog = (await log.textContent()) ?? '';
+  // Record every keydown after the document-level wiring has seen it, plus
+  // the composition boundaries, so the engine's own order is asserted.
+  await page.evaluate(() => {
+    const events: string[] = [];
+    (window as unknown as { imeEvents: string[] }).imeEvents = events;
+    window.addEventListener('keydown', (event) =>
+      events.push(
+        `keydown ${event.key} ${event.keyCode} composing=${event.isComposing} prevented=${event.defaultPrevented}`,
+      ),
+    );
+    for (const type of ['compositionstart', 'compositionend'])
+      window.addEventListener(type, (event) =>
+        events.push(`${type} ${(event as CompositionEvent).data}`),
+      );
+  });
+  const takeEvents = () =>
+    page.evaluate(() =>
+      (window as unknown as { imeEvents: string[] }).imeEvents.splice(0),
+    );
+  await field.focus();
+  const cdp = await page.context().newCDPSession(page);
+
+  // Open a real composition: the engine fires compositionstart and keeps the
+  // marked text in the field.
+  await cdp.send('Input.imeSetComposition', {
+    text: 'に',
+    selectionStart: 1,
+    selectionEnd: 1,
+  });
+  await cdp.send('Input.imeSetComposition', {
+    text: 'にほん',
+    selectionStart: 3,
+    selectionEnd: 3,
+  });
+  await expect(field).toHaveValue('にほん');
+
+  // An Enter keydown that reaches the page mid-composition carries
+  // isComposing; it is left alone and the composition stays open.
+  await cdp.send('Input.dispatchKeyEvent', {
+    type: 'rawKeyDown',
+    key: 'Enter',
+    code: 'Enter',
+    windowsVirtualKeyCode: 13,
+  });
+  await cdp.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'Enter',
+    code: 'Enter',
+    windowsVirtualKeyCode: 13,
+  });
+  await expect(field).toHaveValue('にほん');
+
+  // The Enter that commits: the IME consumes the key (Process, keyCode 229),
+  // commits the candidate, the engine ends the composition, and only the
+  // keyup reports Enter. Nothing is sent and the committed text lands.
+  await cdp.send('Input.dispatchKeyEvent', {
+    type: 'rawKeyDown',
+    key: 'Process',
+    code: 'Enter',
+    windowsVirtualKeyCode: 229,
+  });
+  await cdp.send('Input.insertText', { text: '日本' });
+  await cdp.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'Enter',
+    code: 'Enter',
+    windowsVirtualKeyCode: 13,
+  });
+  await expect(field).toHaveValue('日本');
+  expect(await takeEvents()).toEqual([
+    'compositionstart ',
+    'keydown Enter 13 composing=true prevented=false',
+    'keydown Process 229 composing=true prevented=false',
+    'compositionend 日本',
+  ]);
+  await expect(log).toHaveText(initialLog);
+
+  // Once the composition has completed, Enter sends the committed text.
+  await page.keyboard.press('Enter');
+  await expect(log).toHaveText('Sent: 日本');
+  await expect(field).toHaveValue('');
+  expect(await takeEvents()).toEqual([
+    'keydown Enter 13 composing=false prevented=true',
+  ]);
+  await cdp.detach();
+});
