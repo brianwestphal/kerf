@@ -1784,7 +1784,8 @@
           "Name the group when its relationship is not evident from context.",
           "A disabled native button (disabled, or aria-disabled=\"true\" when it must stay focusable) dims to half opacity with the not-allowed cursor and no hover surface; a disabled raw wa-button paints no hover surface either. Do not add disabled styling yourself.",
           "Name an icon-only button or link with aria-label, not title. Once any help-tag installer is imported (select/register, popup-menu/register, or help-tags/register), it shows an aria-hidden Web Awesome help tag repeating that name after a 500ms hover and at once on keyboard focus, hidden on a press and on Escape, and never joins aria-labelledby. A native title keeps the browser tooltip and gets no second tag.",
-          "In overlay NavStack chrome (chromePresentation=\"overlay\") or an overlay NavStack bottom toolbar (bottomToolbarPresentation=\"overlay\"), a default-tone group (not dark-toned, not an avatar scrim) takes --kui-color-text for its controls, so they keep WCAG AA over content passing beneath the translucent chrome material."
+          "In overlay NavStack chrome (chromePresentation=\"overlay\") or an overlay NavStack bottom toolbar (bottomToolbarPresentation=\"overlay\"), a default-tone group (not dark-toned, not an avatar scrim) takes --kui-color-text for its controls, so they keep WCAG AA over content passing beneath the translucent chrome material.",
+          "A dark-toned group's hover paints a 14% surface wash over its loud fill, on one control of a group or across a lone control's whole group, so the on-loud icon keeps at least 3:1 over a light page and well above it in dark."
         ]
       },
       "cssValueProps": [

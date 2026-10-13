@@ -66,7 +66,11 @@ describe('ToolbarControlGroup avatar image ownership', () => {
     });
 
     const single = declarations(
-      findRuleWithDeclaration(root, '[data-single="true"]', 'background-image'),
+      findRuleWithDeclaration(
+        root,
+        '[data-content="avatar"]:is(',
+        'background-image',
+      ),
     );
     expect(single['background-image']).toBe('var(--kui-toolbar-avatar-image)');
 
@@ -99,6 +103,36 @@ describe('ToolbarControlGroup avatar image ownership', () => {
       );
       expect(hover).not.toHaveProperty('background');
     }
+  });
+});
+
+describe('ToolbarControlGroup dark lone-control hover', () => {
+  // KF-5YKYTA: a dark lone group keeps its loud fill on hover and paints the
+  // translucent hover tint over it as an image layer, instead of swapping
+  // its fill for the tint; avatar groups keep their image background.
+  it('layers the hover tint over the dark fill and leaves avatar groups alone', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const rule = findRuleWithDeclaration(
+      root,
+      '[data-tone="dark"][data-single="true"]',
+      'background-image',
+    );
+    const selectors = rule.selector.replace(/\s+/g, ' ');
+    expect(selectors).toContain(
+      '.kui-toolbar-control-group[data-tone="dark"][data-single="true"]:not( [data-content="avatar"] )',
+    );
+    expect(selectors).toContain(
+      '.kui-toolbar-control-group[data-tone="dark"]:not( [data-single="true"], [data-content="avatar"] )',
+    );
+    expect(declarations(rule)).toEqual({
+      'background-color': 'var(--kui-toolbar-control-background)',
+      'background-image':
+        'linear-gradient( var(--kui-toolbar-control-hover-background) 0 0 )',
+    });
   });
 });
 
