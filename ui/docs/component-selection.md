@@ -425,8 +425,13 @@ scroll correction.
 - `StateBanner` persists beside affected work; `EmptyState` replaces absent content; `wa-callout` is contextual ecosystem content; `wa-toast` and `wa-toast-item` are transient and must not carry the only copy of important state.
 
 For a banner with multi-line supporting copy, use `copyLayout="stacked"` to put
-the detail below the title and badge. Use `actionPlacement="below"` when its
-action needs a separate trailing row. The default values keep both inline;
+the detail below the title and badge. The default `actionPlacement="trailing"`
+keeps the action beside the copy while the copy has room and moves it to its
+own end-aligned trailing row when the banner is narrow (a phone, a sidebar),
+so a group of buttons never squeezes or covers the title; no breakpoint or
+`actionPlacement` switch is needed for narrow layouts. Use
+`actionPlacement="below"` when the action should always take a separate
+trailing row. The default copy layout keeps the detail inline;
 `--kui-state-banner-copy-gap` and `--kui-state-banner-copy-row-gap` adjust the
 stacked copy's spacing at an instance boundary.
 

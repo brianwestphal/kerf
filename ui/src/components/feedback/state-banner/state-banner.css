@@ -29,7 +29,16 @@
     --kui-state-banner-action-hover-background,
     var(--kui-color-surface)
   );
-  display: grid;
+  /* A wrapping flex row, not a three-track grid: a trailing action stays
+     beside the copy only while the copy keeps its minimum readable width,
+     then wraps onto its own trailing row. The decision follows the banner's
+     own width and content, so it holds on a phone, in a narrow rail on a wide
+     screen, and in an intrinsically sized host such as CornerStatus, where a
+     container query's size containment would collapse the banner. A grid
+     gave the action an `auto` track at its full width and squeezed the copy
+     until its words ran under the action. */
+  display: flex;
+  flex-wrap: wrap;
   min-height: remify(44px);
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
   padding: var(--kui-layout-item-padding, remify(8px));
@@ -37,7 +46,6 @@
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   color: var(--_kui-state-banner-foreground);
   background: var(--_kui-state-banner-background);
-  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--kui-layout-item-gap, remify(8px));
 }
@@ -175,6 +183,7 @@
 }
 .kui-state-banner__icon {
   display: grid;
+  flex: none;
   place-items: center;
 }
 .kui-state-banner__icon svg {
@@ -190,6 +199,9 @@
    gap, so no margin lands at the start of a wrapped line. */
 .kui-state-banner__copy {
   min-width: 0;
+  /* The copy's minimum readable width before a trailing action wraps below
+     it; the copy grows to fill whatever its line leaves. */
+  flex: 1 1 remify(192px);
   /* The title's size, so a wrapped title's lines keep the title's own line
      height instead of the larger inherited strut. */
   font-size: var(--kui-font-xs);
@@ -219,17 +231,11 @@
   overflow: visible;
   text-overflow: clip;
 }
-.kui-state-banner[data-action-placement="below"] {
-  grid-template-columns: auto minmax(0, 1fr);
-}
-.kui-state-banner[data-action-placement="below"]:not(
-    :has(> .kui-state-banner__icon)
-  )
-  > .kui-state-banner__copy {
-  grid-column: 1 / -1;
-}
+/* `below` always gives the action its own end-aligned trailing row. */
 .kui-state-banner[data-action-placement="below"] > .kui-state-banner__action {
-  grid-column: 1 / -1;
+  display: flex;
+  flex-basis: 100%;
+  justify-content: flex-end;
 }
 .kui-state-banner__copy strong {
   margin-inline-end: var(--kui-layout-item-gap, remify(8px));
@@ -254,8 +260,13 @@
   overflow: clip;
   text-overflow: ellipsis;
 }
+/* Content-sized and end-aligned on whichever line it lands; on its own line
+   it may shrink to the line so a wrapping action group (a `Row wrap`) wraps
+   its controls instead of overflowing the banner. */
 .kui-state-banner__action {
-  justify-self: end;
+  max-width: 100%;
+  margin-inline-start: auto;
+  flex: 0 1 auto;
 }
 .kui-state-banner__action button {
   min-height: remify(28.8px);

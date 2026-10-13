@@ -26,7 +26,12 @@ export interface StateBannerProps {
   urgency?: StateBannerUrgency;
   /** Keep the detail beside the title, or give it its own line. */
   copyLayout?: StateBannerCopyLayout;
-  /** Place the action beside the copy or on a separate trailing row. */
+  /**
+   * `trailing` (the default) puts the action beside the copy while the copy
+   * keeps its minimum readable width, and otherwise wraps it onto its own
+   * end-aligned trailing row, at any viewport or container width. `below`
+   * always gives the action that separate trailing row.
+   */
   actionPlacement?: StateBannerActionPlacement;
   /**
    * `card` (the default) is an inset, rounded, fully bordered banner beside

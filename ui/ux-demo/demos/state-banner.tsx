@@ -2,8 +2,9 @@ import '@awesome.me/webawesome/dist/components/button/button.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
-import { Check, CircleHelp } from 'lucide';
+import { Check, CircleAlert, CircleHelp } from 'lucide';
 
 export function StateBannerDemo() {
   const specimens = [
@@ -71,6 +72,37 @@ export function StateBannerDemo() {
           action={<wa-button size="small">Review Projects</wa-button>}
         />
       </CatalogExample>
+      {/* A side action that holds several controls: on a narrow banner the
+          action drops to its own trailing row instead of squeezing the copy,
+          both at phone width and in a narrow container on a wide screen. */}
+      <>
+        {(
+          [
+            ['Side Action Group', undefined],
+            ['Side Action Group · Sidebar Width', 'sidebar'],
+          ] as const
+        ).map(([label, width]) => (
+          <CatalogExample
+            label={label}
+            align="none"
+            viewport={width ? { width } : undefined}
+            rootAttributes={{ 'data-demo-state-banner-action-group': '' }}
+          >
+            <StateBanner
+              tone="danger"
+              urgency="alert"
+              title="Markup was not saved. Retry or discard your changes."
+              icon={<LucideIcon icon={CircleAlert} name="circle-alert" />}
+              action={
+                <Row wrap hAlign="right">
+                  <wa-button size="small">Retry Save</wa-button>
+                  <wa-button size="small">Discard Changes</wa-button>
+                </Row>
+              }
+            />
+          </CatalogExample>
+        ))}
+      </>
       <CatalogExample label="Strip" align="none">
         <StateBanner
           presentation="strip"

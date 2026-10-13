@@ -7853,10 +7853,10 @@ test('ships semantic banner palettes with scoped overrides', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=state-banner');
   const banners = page.locator(
-    '[data-demo="state-banner"] [data-component="state-banner"]:not([data-placeholder="true"]):not([data-copy-layout="stacked"])',
+    '[data-demo="state-banner"] .kui-catalog-example:not([data-demo-state-banner-action-group]) [data-component="state-banner"]:not([data-placeholder="true"]):not([data-copy-layout="stacked"])',
   );
   const articles = page.locator(
-    '[data-demo="state-banner"] .kui-catalog-example:not(:has([data-placeholder="true"], [data-copy-layout="stacked"]))',
+    '[data-demo="state-banner"] .kui-catalog-example:not([data-demo-state-banner-action-group]):not(:has([data-placeholder="true"], [data-copy-layout="stacked"]))',
   );
   const badges = banners.locator('[data-component="badge"]');
   await expect(banners).toHaveCount(7);

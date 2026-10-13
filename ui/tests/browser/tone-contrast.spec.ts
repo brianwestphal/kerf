@@ -88,6 +88,7 @@ function measureToneContrast(page: Page) {
     );
     for (const banner of banners) {
       if (banner.closest('[data-demo-state-banner-override]')) continue;
+      if (banner.closest('[data-demo-state-banner-action-group]')) continue;
       if (banner.dataset.placeholder) continue;
       const tone = banner.dataset.tone!;
       const surface = backdrop(banner);
@@ -211,7 +212,7 @@ test('every tone keeps AA text contrast on its fills in light and dark', async (
   await page.goto('/?component=state-banner');
   await expect(
     page.locator('[data-demo="state-banner"] [data-component="state-banner"]'),
-  ).toHaveCount(2 * TONES.length + 4);
+  ).toHaveCount(2 * TONES.length + 6);
 
   for (const scheme of ['light', 'dark'] as const) {
     if (scheme === 'dark') {
