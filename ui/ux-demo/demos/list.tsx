@@ -178,6 +178,41 @@ export function ListDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
+        label="Shared Row Inset"
+        note="Scope --kui-list-row-padding-inline on a List so ListItem and ListActionRow rows start their leading icons on one edge; it defaults to the 8px item padding."
+        align="none"
+        viewport={{
+          width: 'medium',
+          tokens: { '--kui-list-row-padding-inline': 'var(--kui-space-s)' },
+        }}
+      >
+        <List rootAttributes={{ 'data-demo-row-inset-list': '' }}>
+          <ListItem
+            action="log-inbox"
+            itemId="inset-inbox"
+            label="Inbox"
+            icon={<LucideIcon icon={Inbox} name="inbox" />}
+          />
+          <ListActionRow
+            action="log-projects"
+            itemId="inset-projects"
+            label="Projects"
+            icon={<LucideIcon icon={Folder} name="folder" />}
+            trailingAction="log-settings"
+            trailingActionLabel="Project options"
+            trailingActionIcon={
+              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+            }
+          />
+          <ListItem
+            action="log-settings"
+            itemId="inset-settings"
+            label="Settings"
+            icon={<LucideIcon icon={Settings} name="settings" />}
+          />
+        </List>
+      </CatalogExample>
+      <CatalogExample
         label="Physical-axis alignment"
         note="List keeps its stretch-and-top defaults when omitted; explicit horizontal and vertical alignment use the same vocabulary as Row."
       >

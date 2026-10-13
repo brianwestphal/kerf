@@ -10,6 +10,15 @@
   --kui-list-action-row-trailing-hover-background: var(
     --kui-color-neutral-fill-normal
   );
+  /* The leading (and trailing) content inset. An inherited
+     `--kui-list-row-padding-inline` on the containing List sets it for every
+     ListItem and ListActionRow at once; the +1px wherever it is used stands in
+     for the 1px border ListItem draws and this row paints as a box-shadow, so
+     both row kinds start their leading icons on one edge. */
+  --_kui-list-action-row-padding-inline: var(
+    --kui-list-row-padding-inline,
+    var(--kui-layout-item-padding, remify(8px))
+  );
   display: flex;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-height: remify(44px);
@@ -100,7 +109,7 @@
 .kui-list-action-row[data-drop-position]::after {
   position: absolute;
   z-index: 1;
-  inset-inline: var(--kui-layout-item-padding, remify(8px));
+  inset-inline: var(--_kui-list-action-row-padding-inline);
   height: var(--kui-list-action-row-drop-indicator-width, 2px);
   border-radius: var(--kui-radius-pill);
   background: var(
@@ -138,7 +147,8 @@
   flex: 1 1 auto;
   min-width: remify(44px);
   padding: var(--kui-layout-item-padding, remify(8px));
-  padding-inline-start: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  padding-inline: calc(1px + var(--_kui-list-action-row-padding-inline))
+    var(--_kui-list-action-row-padding-inline);
   text-align: start;
 }
 
@@ -170,7 +180,7 @@
 .kui-list-action-row__icon {
   position: absolute;
   inset-block-start: 50%;
-  inset-inline-start: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  inset-inline-start: calc(1px + var(--_kui-list-action-row-padding-inline));
   display: grid;
   width: remify(24px);
   height: remify(24px);

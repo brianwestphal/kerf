@@ -311,6 +311,12 @@ title minimum height, and border-width tokens for section density.
 Set `--kui-list-group-divider-color` on a containing `List` to give
 `ListHeader`, `ListItem`, and `ListActionRow` the same before/after divider
 color; each row otherwise uses the quiet neutral border tone.
+Set `--kui-list-row-padding-inline` on a containing `List` to give `ListItem`
+and `ListActionRow` rows one leading inline inset: both start their leading
+icons on the same edge at any value, and the token defaults to
+`--kui-layout-item-padding`. `--kui-list-item-padding-inline` still overrides
+it for `ListItem` rows alone, so use the shared token whenever the two row kinds
+share a list.
 For a filled command list, set `--kui-list-item-background` and
 `--kui-list-item-border` on the list or row. Scope `--kui-list-item-color`,
 `--kui-list-item-hover-background`, `--kui-list-item-selected-color`, and

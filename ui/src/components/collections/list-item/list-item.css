@@ -10,7 +10,10 @@
   );
   padding-inline: var(
     --kui-list-item-padding-inline,
-    var(--kui-layout-item-padding, remify(8px))
+    var(
+      --kui-list-row-padding-inline,
+      var(--kui-layout-item-padding, remify(8px))
+    )
   );
   box-sizing: border-box;
   border: var(--kui-list-item-border-width, 1px) solid
@@ -280,7 +283,10 @@
   z-index: 1;
   inset-inline: var(
     --kui-list-item-padding-inline,
-    var(--kui-layout-item-padding, remify(8px))
+    var(
+      --kui-list-row-padding-inline,
+      var(--kui-layout-item-padding, remify(8px))
+    )
   );
   height: var(--kui-list-item-drop-indicator-width, 2px);
   border-radius: var(--kui-radius-pill);

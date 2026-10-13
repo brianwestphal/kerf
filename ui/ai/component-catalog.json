@@ -3877,6 +3877,7 @@
         "--kui-list-action-row-selected-color",
         "--kui-list-action-row-trailing-hover-background",
         "--kui-list-group-divider-color",
+        "--kui-list-row-padding-inline",
         "--kui-font-xs"
       ],
       "links": {
@@ -4055,6 +4056,7 @@
         "--kui-list-item-selected-color",
         "--kui-list-item-trailing-color",
         "--kui-list-group-divider-color",
+        "--kui-list-row-padding-inline",
         "--kui-font-xs",
         "--kui-layout-inline-margin",
         "--kui-layout-item-gap",
