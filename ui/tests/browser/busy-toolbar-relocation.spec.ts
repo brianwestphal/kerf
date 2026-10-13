@@ -41,13 +41,13 @@ for (const width of [1100, 390]) {
     );
     const panel = page.locator('[data-collapsible-panel="busy-nav"]');
     await expect(
-      editor.getByRole('button', { name: 'Export files' }),
+      editor.getByRole('button', { name: 'Export Files' }),
     ).toHaveCount(0);
     await page.getByRole('button', { name: 'Start export' }).click();
     await expect(page.getByRole('status')).toHaveText('Exporting files');
     await page.getByRole('button', { name: 'Hide navigator' }).click();
     await expect(panel).toHaveAttribute('aria-hidden', 'true');
-    const action = editor.locator('button[aria-label="Export files"]');
+    const action = editor.locator('button[aria-label="Export Files"]');
     await expect(action).toBeVisible();
     await expect(action.locator('..')).toHaveAttribute('inert', '');
     await expect(page.getByRole('status')).toHaveCount(1);
@@ -75,10 +75,10 @@ for (const width of [1100, 390]) {
     await expect(root).toHaveAttribute('data-export-count', '2');
     await page.getByRole('button', { name: 'Show navigator' }).click();
     await expect(
-      editor.locator('button[aria-label="Export files"]'),
+      editor.locator('button[aria-label="Export Files"]'),
     ).toHaveCount(0);
     await expect(
-      panel.getByRole('button', { name: 'Export files' }),
+      panel.getByRole('button', { name: 'Export Files' }),
     ).toBeVisible();
     await page.getByRole('button', { name: 'Start export' }).click();
     await page.getByRole('button', { name: 'Hide navigator' }).click();
@@ -86,7 +86,7 @@ for (const width of [1100, 390]) {
     await expect(page.getByRole('status')).toHaveCount(1);
     await page.getByRole('button', { name: 'Show navigator' }).click();
     await expect(
-      panel.locator('button[aria-label="Export files"]').locator('..'),
+      panel.locator('button[aria-label="Export Files"]').locator('..'),
     ).toHaveAttribute('inert', '');
     await expect(page.getByRole('status')).toHaveCount(1);
     if (browserName === 'chromium')
@@ -96,7 +96,7 @@ for (const width of [1100, 390]) {
       });
     await page.getByRole('button', { name: 'Finish export' }).click();
     await expect(page.getByRole('status')).toHaveCount(0);
-    await panel.getByRole('button', { name: 'Export files' }).click();
+    await panel.getByRole('button', { name: 'Export Files' }).click();
     await expect(root).toHaveAttribute('data-export-count', '3');
   });
 }

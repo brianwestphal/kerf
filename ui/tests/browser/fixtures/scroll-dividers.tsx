@@ -140,7 +140,7 @@ const FLAT_SEPARATOR_VIEW: NavStackView = {
 };
 const SUNKEN_SEPARATOR_VIEW: NavStackView = {
   key: 'sunken',
-  toolbar: { title: 'Sunken view' },
+  toolbar: { title: 'Sunken View' },
   pane: { appearance: 'sunken' },
   content: items(1),
 };
@@ -190,7 +190,7 @@ mount(root, () => (
         views={[
           {
             key: 'pane',
-            toolbar: { title: 'Pane view' },
+            toolbar: { title: 'Pane View' },
             header: <ToolbarText text="Filters" size="small" />,
             headerList: { gap: 'xs', textInsets: 'rl' },
             footer: <ToolbarText text="24 items" size="small" />,

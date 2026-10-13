@@ -151,7 +151,10 @@ capitalizes it. For example, `<wa-button>Save draft</wa-button>` should be
 Attention". The action names the repaired label.
 
 The check reads `.tsx` and `.jsx` source text only and skips test modules.
-It covers these string literals:
+Fixture components that tests render (for example
+`tests/browser/fixtures/*.tsx`) are not test modules and are checked: they
+stand in for application screens, so their copy follows the same rule. It
+covers these string literals:
 
 - `ToolbarText` titles: text with `headingLevel`, a large size, or in a
   toolbar or panel `title`, `header`, or (unless small) `leading` slot;

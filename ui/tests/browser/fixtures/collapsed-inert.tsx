@@ -75,16 +75,16 @@ const view = () => (
         collapsed={outputCollapsed.value}
         restoreControl={
           <button type="button" data-action="toggle-output">
-            Show output
+            Show Output
           </button>
         }
       >
         <div class="kui-content">
           <ContentItem>
             <button type="button" data-action="toggle-output">
-              Hide output
+              Hide Output
             </button>
-            <button type="button">Clear output</button>
+            <button type="button">Clear Output</button>
           </ContentItem>
         </div>
       </ResizableRegion>
@@ -109,7 +109,7 @@ wireSidebar(host, {
 // was pressed leaves with the content, so focus moves to its counterpart.
 delegate(host, 'click', '[data-action="toggle-output"]', () => {
   outputCollapsed.value = !outputCollapsed.value;
-  const name = outputCollapsed.value ? 'Show output' : 'Hide output';
+  const name = outputCollapsed.value ? 'Show Output' : 'Hide Output';
   [...host.querySelectorAll<HTMLElement>('[data-action="toggle-output"]')]
     .find((button) => button.textContent?.trim() === name)
     ?.focus();

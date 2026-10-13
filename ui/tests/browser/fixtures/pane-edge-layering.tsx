@@ -29,7 +29,7 @@ mount(root, () => (
           <div class="edge-matrix" data-edge-matrix>
             <div class="edge-matrix__wide">
               <button type="button" data-edge-cell>
-                Select quote
+                Select Quote
               </button>
               <select aria-label="Quote status" data-edge-select>
                 <option>Open</option>

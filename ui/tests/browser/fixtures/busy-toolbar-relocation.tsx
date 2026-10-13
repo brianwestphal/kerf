@@ -45,7 +45,7 @@ mount(root, () => {
         busyLabel="Exporting files"
         relocateOnCollapse
       >
-        <button type="button" aria-label="Export files" data-export>
+        <button type="button" aria-label="Export Files" data-export>
           <LucideIcon icon={Download} name="download" />
         </button>
       </ToolbarControlGroup>

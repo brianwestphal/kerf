@@ -114,7 +114,7 @@ test('measurement probes survive frequent app renders and observer feedback whil
   await more.focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('output')).toHaveText('more');
-  await page.getByRole('button', { name: 'Render again' }).click();
+  await page.getByRole('button', { name: 'Render Again' }).click();
   await expect(more).toBeVisible();
   await more.click();
   await expect(page.locator('output')).toHaveText('more');
@@ -246,7 +246,7 @@ test('container thresholds follow equality, tokens, rendering, relocation and di
   await expect(
     page.getByRole('button', { name: 'More', exact: true }),
   ).toBeFocused();
-  await page.getByRole('button', { name: 'Render again' }).click();
+  await page.getByRole('button', { name: 'Render Again' }).click();
   await expect(utility).toBeHidden();
   await expect(busy).toBeHidden();
   await expect(status).toHaveAttribute('data-toolbar-width-hidden', 'true');
@@ -423,7 +423,7 @@ test('container thresholds follow equality, tokens, rendering, relocation and di
     zone.append(node.querySelector('[aria-label="Utilities"]')!);
   });
   await expect(utility).toBeVisible();
-  await page.getByRole('button', { name: 'Dispose visibility' }).click();
+  await page.getByRole('button', { name: 'Dispose Visibility' }).click();
   await expect(page.locator('[data-toolbar-visibility-probe]')).toHaveCount(0);
   await expect(utility).not.toHaveAttribute(
     'data-toolbar-width-hidden',

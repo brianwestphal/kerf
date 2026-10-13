@@ -114,7 +114,7 @@ export const cases: Record<string, Case> = {
   'list-item-busy': (placeholder) => (
     <ListItem
       action="open"
-      label="Syncing folder"
+      label="Syncing Folder"
       icon={inbox()}
       busy
       placeholder={placeholder}
@@ -169,7 +169,7 @@ export const cases: Record<string, Case> = {
   'list-action-row-busy': (placeholder) => (
     <ListActionRow
       action="open"
-      label="Syncing folder"
+      label="Syncing Folder"
       icon={file()}
       busy
       trailingAction="more"
@@ -350,7 +350,7 @@ export const cases: Record<string, Case> = {
   'state-banner-no-detail': (placeholder) => (
     <StateBanner
       tone="warning"
-      title="Sync paused"
+      title="Sync Paused"
       badge="3"
       icon={file()}
       placeholder={placeholder}
@@ -393,7 +393,7 @@ export const layoutCases: Record<string, () => SafeHtml> = {
   'state-banner-long-title': () => (
     <StateBanner
       tone="danger"
-      title="Deployment blocked by failing required checks"
+      title="Deployment Blocked by Failing Required Checks"
       badge="3"
       detail="Resolve the failing checks on the release branch, then retry the deployment."
       icon={file()}

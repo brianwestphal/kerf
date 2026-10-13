@@ -57,7 +57,7 @@ const leading = () => (
         <span>Library</span>
       </button>
     </ToolbarControlGroup>
-    <ToolbarText text="Project Atlas roadmap" size="large" />
+    <ToolbarText text="Project Atlas Roadmap" size="large" />
   </>
 );
 
@@ -101,7 +101,7 @@ function render() {
             {
               key: 'atlas',
               toolbar: {
-                title: 'Project Atlas roadmap',
+                title: 'Project Atlas Roadmap',
                 center: center(),
                 trailing: trailing(),
               },
@@ -116,7 +116,7 @@ function render() {
           label="Projects"
           mainToolbar={{
             label: 'Project',
-            title: <ToolbarText text="Project Atlas roadmap" size="xlarge" />,
+            title: <ToolbarText text="Project Atlas Roadmap" size="xlarge" />,
             center: center(),
             trailing: trailing(),
           }}

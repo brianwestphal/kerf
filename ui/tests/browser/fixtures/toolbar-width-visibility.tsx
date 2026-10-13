@@ -46,10 +46,10 @@ mount(root, () => (
       />
     </div>
     <button type="button" data-rerender>
-      Render again
+      Render Again
     </button>
     <button type="button" data-dispose>
-      Dispose visibility
+      Dispose Visibility
     </button>
     <output data-test-result />
   </main>

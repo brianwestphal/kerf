@@ -148,7 +148,7 @@ for (const width of [1280, 390]) {
       browserName,
     }) => {
       await expect(outputContent(page)).not.toHaveAttribute('inert');
-      const hide = button(page, 'Hide output');
+      const hide = button(page, 'Hide Output');
       await hide.focus();
       expect(
         await clickAndSampleAnimation(hide, '.kui-resizable-region__content'),
@@ -162,7 +162,7 @@ for (const width of [1280, 390]) {
       await expect(
         page.getByRole('region', { name: 'Output', exact: true }),
       ).toHaveCount(0);
-      const show = button(page, 'Show output');
+      const show = button(page, 'Show Output');
       await expect(show).toBeFocused();
       await expectTabSkipsCollapsed(page, show, browserName);
       await expectTabSkipsCollapsed(page, button(page, 'After'), browserName);
@@ -173,7 +173,7 @@ for (const width of [1280, 390]) {
       await expect(
         page.getByRole('region', { name: 'Output', exact: true }),
       ).toHaveCount(1);
-      await expect(button(page, 'Hide output')).toBeFocused();
+      await expect(button(page, 'Hide Output')).toBeFocused();
     });
   });
 }
