@@ -92,6 +92,55 @@ itself stops scrolling. Combine it with `bodyInset="none"`.
 </DialogSurface>;
 ```
 
+### Chat dialogs: a floating footer over a filling transcript
+
+A chat-style dialog keeps a heading or notices above one scrolling transcript
+and floats its composer over the body's block end. Two props compose it:
+
+- `bodyLayout="fill-last"` stacks the body's children: the leading children
+  keep their natural height, and the last one takes the remaining height and
+  owns its scrolling (a `scrollable` `List` transcript). The body itself stops
+  scrolling. `PopoverDialogSurface` accepts the same layout.
+- `footerPresentation="floating"` lays the footer over the body's block end,
+  `footerOffset` (a branded `CssLength`, default the 16px container inset)
+  from the panel's inline and block-end edges, on a transparent background.
+  The modal panel is its positioning context. The default `docked` footer
+  sits below the body as before.
+
+The register measures the footer (it follows a composer that grows, wraps, or
+hides) and the body reserves that height plus the offset after its own inset,
+with a matching `scroll-padding`. Flowing body content scrolls beneath the
+floating footer and its end stays reachable above it; with `fill` or
+`fill-last` the filling child's scrollport ends at the footer's top. Content
+is never hidden beneath the footer.
+
+Choose the offset like any other responsive value: the scaffold adds no
+breakpoint. An 8px offset lines a composer up with the transcript's
+content-item edges when the body has `bodyInset="none"` and list geometry;
+`viewportGutter` and `footerOffset` can follow `deviceClass()` when a phone
+needs tighter edges.
+
+```tsx
+<DialogSurface height={remify(560)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill-last" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
+  <wa-dialog label="Assistant">
+    <StateBanner title="Answers use the latest nightly build" tone="neutral" />
+    <List gap="xs" controlInsets="tb" scrollable>
+      {messages.map((message) => (
+        <ContentItem bubble={message.mine ? 'end' : 'start'} appearance={message.mine ? 'brand-loud' : 'neutral'}>
+          <Text variant="span">{message.text}</Text>
+        </ContentItem>
+      ))}
+    </List>
+    <Row slot="footer" flex gap="xs" vAlign="bottom">
+      <List flex>
+        <wa-textarea name="message" label="Message" rows="1" resize="auto" />
+      </List>
+      <wa-button variant="brand">Send</wa-button>
+    </Row>
+  </wa-dialog>
+</DialogSurface>;
+```
+
 Treat a dialog body as a `List` by default. When its rows or sections own their
 standard list geometry, set `bodyInset="none"` so the dialog does not add a
 second inset. Bare prose is still a list child: wrap it in `ListInsetText` so its
@@ -109,7 +158,8 @@ hand-built popover with application chrome CSS. It is a native
 `popover="auto"` section with `role="dialog"` that owns Kerf's dialog chrome
 (raised surface, border, large radius and shadow, and a backdrop) and the
 same geometry props as a modal `DialogSurface`: `size`, `preferredWidth`,
-`viewportGutter` (16px by default), `height` / `maxHeight`, and `bodyLayout`.
+`viewportGutter` (16px by default), `height` / `maxHeight`, and `bodyLayout`
+(`flow`, `fill`, or `fill-last`).
 Name it with `label` or `labelledBy`.
 
 Open it with a control's `popoverTarget` (or `showPopover()`); the browser
@@ -136,4 +186,4 @@ preserve `data-morph-skip-children` when its upgraded light-DOM items must retai
 identity across Kerf rerenders. Import `@kerfjs/ui/popup-menu/register` once for
 the focus handoff fix when wrapping a raw `wa-dropdown`.
 
-Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog` and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. A host that is itself an explicit dialog (`role="dialog"` or `"alertdialog"` with its own name) keeps that name alone: the native panel is left unnamed, so one dialog carries the name. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.
+Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog`, measures each surface's footer for a floating footer's body clearance, and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. A host that is itself an explicit dialog (`role="dialog"` or `"alertdialog"` with its own name) keeps that name alone: the native panel is left unnamed, so one dialog carries the name. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.

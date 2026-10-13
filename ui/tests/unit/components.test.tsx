@@ -273,6 +273,45 @@ describe('production UI primitives', () => {
     expect(fixed).toContain('--_kui-dialog-surface-height:640px');
   });
 
+  it('serializes a floating footer, its offset and a fill-last body layout', () => {
+    const plain = asHtml(
+      DialogSurface({ children: <wa-dialog label="Chat">Body</wa-dialog> }),
+    );
+    expect(plain).not.toContain('data-footer-presentation');
+    expect(plain).not.toContain('footer-offset');
+    const docked = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Chat">Body</wa-dialog>,
+        footerPresentation: 'docked',
+      }),
+    );
+    expect(docked).not.toContain('data-footer-presentation');
+    const chat = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Chat">Body</wa-dialog>,
+        footerPresentation: 'floating',
+        footerOffset: px(8),
+        bodyLayout: 'fill-last',
+        rootAttributes: {
+          'data-footer-presentation': 'docked',
+        } as Record<`data-${string}`, string>,
+      }),
+    );
+    expect(chat).toContain('data-footer-presentation="floating"');
+    expect(chat).not.toContain('data-footer-presentation="docked"');
+    expect(chat).toContain('data-body-layout="fill-last"');
+    expect(chat).toContain('style="--_kui-dialog-surface-footer-offset:8px"');
+    expect(
+      asHtml(
+        PopoverDialogSurface({
+          label: 'Chat',
+          bodyLayout: 'fill-last',
+          children: <p>Body</p>,
+        }),
+      ),
+    ).toContain('data-body-layout="fill-last"');
+  });
+
   it('renders a non-modal popover dialog surface, overlay or embedded', () => {
     const overlay = asHtml(
       PopoverDialogSurface({

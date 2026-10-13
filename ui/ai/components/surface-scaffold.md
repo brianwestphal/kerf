@@ -14,6 +14,7 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 - A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText.
 - A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.
 - A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout="fill".
+- A chat-style dialog floats its composer over the transcript with footerPresentation="floating" and keeps a heading or notice above one scrolling transcript with bodyLayout="fill-last".
 
 **Not when:**
 
@@ -38,6 +39,8 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - modal, side-sheet, or fullscreen dialog
 - typed modal preferred width, viewport gutter, and maximum height, including viewport cap
 - definite viewport-bounded modal height and a fill body layout for one child
+- fill-last body layout: fixed rows above one filling, scrolling last child
+- docked or floating footer with a typed footerOffset; the body reserves the measured footer height
 - non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
@@ -46,6 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 
 - `preferredWidth`: length grammar; raw values: forbid; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `preferredWidth={remify(832)}`
 - `viewportGutter`: length grammar; raw values: forbid; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `viewportGutter={remify(8)}`
+- `footerOffset`: length grammar; raw values: forbid; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `footerOffset={remify(8)}`
 - `maxHeight`: length grammar; raw values: forbid; shorthands `viewport`; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `maxHeight="viewport"`
 
 ## Composition

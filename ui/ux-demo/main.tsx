@@ -170,6 +170,12 @@ import {
   toolbarStackSearchOpen,
 } from './demos/state.js';
 import {
+  CHAT_DIALOG_ID,
+  resetSurfaceScaffoldDemo,
+  SEND_CHAT_DIALOG_MESSAGE_ACTION,
+  sendSurfaceScaffoldChatMessage,
+} from './demos/surface-scaffold.js';
+import {
   popNestedTabNavigatorDemo,
   pushNestedTabNavigatorDemo,
   resetTabNavigatorDemo,
@@ -632,6 +638,20 @@ const stopActions = delegateActions(app, 'click', {
       '#choice-chips-dialog',
     );
     if (dialog) dialog.open = false;
+  },
+  [SEND_CHAT_DIALOG_MESSAGE_ACTION]: () => {
+    const dialog = document.getElementById(CHAT_DIALOG_ID);
+    const field = dialog?.querySelector<HTMLElement & { value: string }>(
+      'wa-textarea[name="catalog-chat-message"]',
+    );
+    if (!field || !sendSurfaceScaffoldChatMessage(field.value)) return;
+    field.value = '';
+    actionLog.value = 'Message sent';
+    // The transcript owns its scrolling; show the newest message.
+    window.requestAnimationFrame(() => {
+      const transcript = dialog?.querySelector('[data-demo-chat-transcript]');
+      transcript?.scrollTo({ top: transcript.scrollHeight });
+    });
   },
   'hide-wa-dialog': (_event, target) => {
     actionLog.value = 'Dialog closed';
@@ -1394,6 +1414,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
       });
       return () => stops.forEach((stop) => stop());
     },
+  },
+  'surface-scaffold': {
+    reset: resetSurfaceScaffoldDemo,
+    target: 'canvas',
+    wire: () => () => {},
   },
   'split-view': {
     reset: resetSplitViewDemo,

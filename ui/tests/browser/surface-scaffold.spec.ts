@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 test('registered dialog names survive slotted labels, header changes and repeated opens', async ({
   page,
@@ -625,5 +625,164 @@ test('the default dialog close control is a toolbar-sized circle', async ({
   });
   await close.hover();
   await expect.poll(async () => (await geometry()).background).toBe(hoverFill);
+  await page.keyboard.press('Escape');
+});
+
+/** The chat dialog example's panel, body, footer and transcript boxes. */
+async function chatGeometry(page: Page) {
+  return page.locator('#catalog-chat-dialog').evaluate((element) => {
+    const shadow = element.shadowRoot!;
+    const rect = (node: Element) => {
+      const box = node.getBoundingClientRect();
+      return {
+        top: box.top,
+        right: box.right,
+        bottom: box.bottom,
+        left: box.left,
+        height: box.height,
+      };
+    };
+    const panel = shadow.querySelector('[part~="dialog"]')!;
+    const body = shadow.querySelector('[part~="body"]')!;
+    const footer = shadow.querySelector('[part~="footer"]')!;
+    const banner = element.querySelector('[data-component="state-banner"]')!;
+    const transcript = element.querySelector<HTMLElement>(
+      '[data-demo-chat-transcript]',
+    )!;
+    return {
+      panel: rect(panel),
+      body: rect(body),
+      bodyOverflow: window.getComputedStyle(body).overflowY,
+      footer: rect(footer),
+      footerBackground: window.getComputedStyle(footer).backgroundColor,
+      footerPosition: window.getComputedStyle(footer).position,
+      banner: rect(banner),
+      bannerFlex: window.getComputedStyle(banner).flex,
+      transcript: rect(transcript),
+      transcriptOverflow: window.getComputedStyle(transcript).overflowY,
+      scrollable: transcript.scrollHeight > transcript.clientHeight + 1,
+      last: rect(transcript.lastElementChild!),
+    };
+  });
+}
+
+/** The footer's inline-start, inline-end and block-end offsets in the panel. */
+function footerOffsets({
+  footer,
+  panel,
+}: Awaited<ReturnType<typeof chatGeometry>>) {
+  return [
+    Math.round(footer.left - panel.left),
+    Math.round(panel.right - footer.right),
+    Math.round(panel.bottom - footer.bottom),
+  ];
+}
+
+/** The transcript scrollport's distance above the floating footer. */
+function footerGap({
+  footer,
+  transcript,
+}: Awaited<ReturnType<typeof chatGeometry>>) {
+  return Math.abs(Math.round(footer.top - transcript.bottom));
+}
+
+async function scrollChatToEnd(page: Page) {
+  await page
+    .locator('#catalog-chat-dialog [data-demo-chat-transcript]')
+    .evaluate((transcript) => {
+      transcript.scrollTop = transcript.scrollHeight;
+    });
+}
+
+test('a floating footer lies inset over the body while fill-last fills and scrolls the transcript above it', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=surface-scaffold');
+  await page.getByRole('button', { name: 'Open assistant' }).click();
+  await expect(page.locator('#catalog-chat-dialog')).toHaveAttribute(
+    'open',
+    '',
+  );
+  await expect
+    .poll(async () => Math.round((await chatGeometry(page)).panel.height))
+    .toBe(560);
+  const geometry = await chatGeometry(page);
+  // The footer floats its 8px offset inside the panel's inline and block-end
+  // edges on a transparent background, over the body's block end.
+  expect(geometry.footerPosition).toBe('absolute');
+  expect(geometry.footerBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(footerOffsets(geometry)).toEqual([8, 8, 8]);
+  expect(geometry.footer.top).toBeLessThan(geometry.body.bottom);
+  // The notice keeps its natural height; the transcript takes the rest, owns
+  // the scrolling, and its scrollport ends at the floating footer's top.
+  expect(geometry.bodyOverflow).toBe('hidden');
+  expect(geometry.bannerFlex).toBe('0 0 auto');
+  expect(geometry.transcriptOverflow).toBe('auto');
+  expect(geometry.scrollable).toBe(true);
+  expect(Math.round(geometry.transcript.top)).toBeGreaterThanOrEqual(
+    Math.round(geometry.banner.bottom),
+  );
+  expect(footerGap(geometry)).toBe(0);
+  await scrollChatToEnd(page);
+  const scrolled = await chatGeometry(page);
+  expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.footer.top);
+  expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.transcript.bottom);
+
+  // A taller composer grows the measured clearance: the transcript still
+  // ends above it, and a sent message stays visible above the composer.
+  await page
+    .locator('wa-textarea[name="catalog-chat-message"] textarea')
+    .fill('First line\nSecond line\nThird line');
+  await expect
+    .poll(async () => (await chatGeometry(page)).footer.height)
+    .toBeGreaterThan(geometry.footer.height);
+  const grown = await chatGeometry(page);
+  expect(footerGap(grown)).toBe(0);
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(
+    page.locator('#catalog-chat-dialog [data-demo-chat-transcript]'),
+  ).toContainText('Noted. I will keep that in mind.');
+  await expect
+    .poll(async () => {
+      const sent = await chatGeometry(page);
+      return sent.last.bottom <= sent.footer.top + 0.5 && footerGap(sent) === 0;
+    })
+    .toBe(true);
+
+  // Without footerOffset the footer takes the 16px container inset, and the
+  // body clearance follows it.
+  await page
+    .locator('#catalog-chat-dialog')
+    .evaluate((element) =>
+      element.parentElement!.style.removeProperty(
+        '--_kui-dialog-surface-footer-offset',
+      ),
+    );
+  const defaults = await chatGeometry(page);
+  expect(footerOffsets(defaults)).toEqual([16, 16, 16]);
+  expect(footerGap(defaults)).toBe(0);
+  await page.keyboard.press('Escape');
+});
+
+test('a phone chat dialog floats its composer 8px from the panel edges', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=surface-scaffold');
+  await page.getByRole('button', { name: 'Open assistant' }).click();
+  await expect(page.locator('#catalog-chat-dialog')).toHaveAttribute(
+    'open',
+    '',
+  );
+  await expect
+    .poll(async () => footerOffsets(await chatGeometry(page)))
+    .toEqual([8, 8, 8]);
+  const geometry = await chatGeometry(page);
+  expect(Math.round(geometry.panel.left)).toBe(8);
+  expect(footerGap(geometry)).toBe(0);
+  await scrollChatToEnd(page);
+  const scrolled = await chatGeometry(page);
+  expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.footer.top + 0.5);
   await page.keyboard.press('Escape');
 });

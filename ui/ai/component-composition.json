@@ -1848,6 +1848,26 @@
           "examples": ["viewportGutter={remify(8)}"]
         },
         {
+          "path": "footerOffset",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "remify",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["footerOffset={remify(8)}"]
+        },
+        {
           "path": "maxHeight",
           "grammar": "length",
           "helpers": [

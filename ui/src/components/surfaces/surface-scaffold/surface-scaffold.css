@@ -96,6 +96,72 @@
 .kui-dialog-surface[data-footer-inset="comfortable"] > wa-dialog::part(footer) {
   padding: var(--kui-wa-container-inset, remify(16px));
 }
+/* Fixed rows above one filling row: the leading children keep their natural
+   height and the last unslotted child (the light-DOM children are the body
+   slot's flex items) takes the rest and owns its scrolling. */
+.kui-dialog-surface[data-body-layout="fill-last"] > wa-dialog::part(body) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.kui-dialog-surface[data-body-layout="fill-last"] > wa-dialog > :not([slot]) {
+  flex: none;
+}
+.kui-dialog-surface[data-body-layout="fill-last"]
+  > wa-dialog
+  > :nth-last-child(1 of :not([slot])) {
+  flex: 1 1 0;
+  min-block-size: 0;
+}
+/* A floating footer lies over the body's block end, inset from the panel's
+   inline and block-end edges; the top-layer panel is its positioning
+   context. The register publishes the footer's measured block size on the
+   panel, and the body reserves it (plus the offset) after its own inset, so
+   flowing content scrolls beneath the footer and a filling child's scrollport
+   ends above it: the last content is never hidden. */
+.kui-dialog-surface[data-footer-presentation="floating"] > wa-dialog {
+  --_kui-dialog-surface-footer-resolved-offset: max(
+    0px,
+    var(
+      --_kui-dialog-surface-footer-offset,
+      var(--kui-wa-container-inset, remify(16px))
+    )
+  );
+}
+.kui-dialog-surface[data-footer-presentation="floating"]
+  > wa-dialog::part(footer) {
+  position: absolute;
+  inset-inline: var(--_kui-dialog-surface-footer-resolved-offset);
+  inset-block-end: var(--_kui-dialog-surface-footer-resolved-offset);
+  z-index: 1;
+  background: transparent;
+}
+.kui-dialog-surface[data-footer-presentation="floating"]
+  > wa-dialog::part(body) {
+  --_kui-dialog-surface-footer-clearance: calc(
+    var(--_kui-dialog-surface-footer-block-size, 0px) +
+      var(--_kui-dialog-surface-footer-resolved-offset)
+  );
+  scroll-padding-block-end: var(--_kui-dialog-surface-footer-clearance);
+}
+.kui-dialog-surface[data-footer-presentation="floating"][data-body-inset="none"]
+  > wa-dialog::part(body) {
+  padding-block-end: var(--_kui-dialog-surface-footer-clearance);
+}
+.kui-dialog-surface[data-footer-presentation="floating"][data-body-inset="compact"]
+  > wa-dialog::part(body) {
+  padding-block-end: calc(
+    var(--kui-wa-surface-inset, remify(8px)) +
+      var(--_kui-dialog-surface-footer-clearance)
+  );
+}
+.kui-dialog-surface[data-footer-presentation="floating"][data-body-inset="comfortable"]
+  > wa-dialog::part(body) {
+  padding-block-end: calc(
+    var(--kui-wa-container-inset, remify(16px)) +
+      var(--_kui-dialog-surface-footer-clearance)
+  );
+}
 .kui-dialog-surface[data-presentation="side-sheet"] > wa-dialog::part(dialog) {
   width: min(remify(480px), 100vw);
   max-width: 100vw;
@@ -198,6 +264,22 @@
   display: grid;
   overflow: hidden;
   grid-template-rows: minmax(0, 1fr);
+}
+/* Fixed rows above one filling last child, which owns its scrolling. */
+.kui-popover-dialog-surface[data-body-layout="fill-last"]:is(
+    :popover-open,
+    [data-presentation="embedded"]
+  ) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.kui-popover-dialog-surface[data-body-layout="fill-last"] > * {
+  flex: none;
+}
+.kui-popover-dialog-surface[data-body-layout="fill-last"] > :last-child {
+  flex: 1 1 0;
+  min-block-size: 0;
 }
 /* In flow for a catalog or inline use: the same surface without the top
    layer, never wider than its container. */

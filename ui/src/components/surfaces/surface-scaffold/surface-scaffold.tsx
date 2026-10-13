@@ -11,9 +11,18 @@ export type DialogSurfaceHeight = CssLength | 'viewport';
 /**
  * How the dialog body lays out its children: `flow` (default) scrolls ordinary
  * content in the body; `fill` gives one child the body's whole height and
- * lets it own scrolling (a SplitView, a Pane, an editor).
+ * lets it own scrolling (a SplitView, a Pane, an editor); `fill-last` stacks
+ * the leading children at their natural height and gives the last child the
+ * remaining height to own its scrolling (a heading and notices above a
+ * scrolling transcript).
  */
-export type DialogSurfaceBodyLayout = 'flow' | 'fill';
+export type DialogSurfaceBodyLayout = 'flow' | 'fill' | 'fill-last';
+/**
+ * Where the dialog footer sits: `docked` (default) below the body, or
+ * `floating` over the body's block end, inset from the panel's inline and
+ * block-end edges on a transparent background (a chat composer).
+ */
+export type DialogSurfaceFooterPresentation = 'docked' | 'floating';
 
 /**
  * Application `data-*` identity on the DialogSurface root, such as
@@ -34,6 +43,7 @@ const DIALOG_SURFACE_PROTECTED = new Set([
   'data-max-height',
   'data-height',
   'data-body-layout',
+  'data-footer-presentation',
 ]);
 
 export interface DialogSurfaceProps {
@@ -53,8 +63,23 @@ export interface DialogSurfaceProps {
    * height to fill. Takes precedence over `maxHeight`.
    */
   height?: DialogSurfaceHeight;
-  /** Body layout (default `flow`); `fill` lets one child own the body. */
+  /**
+   * Body layout (default `flow`); `fill` lets one child own the body and
+   * `fill-last` stacks fixed rows above one filling last child.
+   */
   bodyLayout?: DialogSurfaceBodyLayout;
+  /**
+   * Footer placement (default `docked`); `floating` lays the footer over the
+   * body's block end. The body reserves the footer's measured height so its
+   * last content is never hidden beneath it.
+   */
+  footerPresentation?: DialogSurfaceFooterPresentation;
+  /**
+   * A floating footer's clearance from the panel's inline and block-end edges
+   * (default the 16px container inset). Choose a phone value such as
+   * `remify(8)` from `deviceClass()`; the scaffold adds no breakpoint.
+   */
+  footerOffset?: CssLength;
   /**
    * Safe `data-*` identity on the root. Give sibling dialogs distinct
    * `data-key`s so a re-render morphs each surface into itself instead of
@@ -79,6 +104,8 @@ export function DialogSurface({
   maxHeight,
   height,
   bodyLayout = 'flow',
+  footerPresentation = 'docked',
+  footerOffset,
   rootAttributes = {},
   className = '',
   slot,
@@ -96,6 +123,9 @@ export function DialogSurface({
     height === undefined || height === 'viewport'
       ? ''
       : `--_kui-dialog-surface-height:${height}`,
+    footerOffset === undefined
+      ? ''
+      : `--_kui-dialog-surface-footer-offset:${footerOffset}`,
   ]
     .filter(Boolean)
     .join(';');
@@ -112,7 +142,10 @@ export function DialogSurface({
       data-viewport-gutter={viewportGutter === undefined ? undefined : ''}
       data-max-height={maxHeight === undefined ? undefined : ''}
       data-height={height === undefined ? undefined : ''}
-      data-body-layout={bodyLayout === 'fill' ? 'fill' : undefined}
+      data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}
+      data-footer-presentation={
+        footerPresentation === 'floating' ? 'floating' : undefined
+      }
       style={style || undefined}
       slot={slot}
     >
@@ -152,7 +185,10 @@ export type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
   maxHeight?: DialogSurfaceMaxHeight;
   /** Edge clearance on each side of the viewport (default 16px). */
   viewportGutter?: CssLength;
-  /** Body layout (default `flow`); `fill` lets one child own the surface. */
+  /**
+   * Body layout (default `flow`); `fill` lets one child own the surface and
+   * `fill-last` stacks fixed rows above one filling last child.
+   */
   bodyLayout?: DialogSurfaceBodyLayout;
   rootAttributes?: PopoverDialogSurfaceDataAttributes;
   className?: string;
@@ -218,7 +254,7 @@ export function PopoverDialogSurface({
       data-size={size}
       data-height={height === undefined ? undefined : ''}
       data-max-height={maxHeight === undefined ? undefined : ''}
-      data-body-layout={bodyLayout === 'fill' ? 'fill' : undefined}
+      data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}
       popover={presentation === 'overlay' ? 'auto' : undefined}
       role="dialog"
       aria-label={label}

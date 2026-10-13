@@ -1,16 +1,21 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { remify } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
+import { Row } from '@kerfjs/ui/row';
 import { SplitView } from '@kerfjs/ui/split-view';
+import { StateBanner } from '@kerfjs/ui/state-banner';
 import {
   DialogSurface,
   PopoverDialogSurface,
   PopupSurface,
 } from '@kerfjs/ui/surface-scaffold';
+import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { signal } from 'kerfjs';
 
 const PROJECTS = ['Atlas', 'Borealis', 'Cirrus', 'Delta', 'Ember', 'Fjord'];
 
@@ -45,6 +50,57 @@ function projectSplit(id: string) {
       }
     />
   );
+}
+
+/** The chat dialog example's id and its send action. */
+export const CHAT_DIALOG_ID = 'catalog-chat-dialog';
+export const SEND_CHAT_DIALOG_MESSAGE_ACTION = 'send-chat-dialog-message';
+
+interface ChatMessage {
+  readonly from: 'user' | 'assistant';
+  readonly text: string;
+}
+
+const INITIAL_CHAT: readonly ChatMessage[] = [
+  { from: 'user', text: 'Why did the nightly build fail?' },
+  {
+    from: 'assistant',
+    text: 'The bundle budget check failed: the demo bundle grew by 213 bytes after the dialog changes landed.',
+  },
+  { from: 'user', text: 'Which entry grew?' },
+  {
+    from: 'assistant',
+    text: 'The surface scaffold entry. Its stylesheet gained the floating footer and fill-last body rules.',
+  },
+  { from: 'user', text: 'Is that expected?' },
+  {
+    from: 'assistant',
+    text: 'Yes. Rebaseline the budget with a reason that names the new dialog layouts.',
+  },
+  { from: 'user', text: 'Anything else failing?' },
+  {
+    from: 'assistant',
+    text: 'No. Every other gate passed, including the browser suite.',
+  },
+];
+
+const chatMessages = signal<readonly ChatMessage[]>(INITIAL_CHAT);
+
+/** Append the person's message and a short reply to the chat example. */
+export function sendSurfaceScaffoldChatMessage(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  chatMessages.value = [
+    ...chatMessages.value,
+    { from: 'user', text: trimmed },
+    { from: 'assistant', text: 'Noted. I will keep that in mind.' },
+  ];
+  return true;
+}
+
+/** Restore the chat example's opening transcript. */
+export function resetSurfaceScaffoldDemo(): void {
+  chatMessages.value = INITIAL_CHAT;
 }
 
 export function SurfaceScaffoldDemo() {
@@ -190,6 +246,68 @@ export function SurfaceScaffoldDemo() {
           </wa-button>
           <wa-dialog id="catalog-filled-dialog" label="Project details">
             {projectSplit('catalog-filled-dialog-split')}
+          </wa-dialog>
+        </DialogSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Chat dialog"
+        note='footerPresentation="floating" lays the composer over the body, 8px from the panel edges so it aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills and scrolls above the composer.'
+        align="inline-control"
+      >
+        <DialogSurface
+          viewportGutter={remify(8)}
+          height={remify(560)}
+          bodyInset="none"
+          bodyLayout="fill-last"
+          footerPresentation="floating"
+          footerOffset={remify(8)}
+          footerInset="none"
+        >
+          <wa-button
+            data-action="show-wa-dialog"
+            data-dialog-id={CHAT_DIALOG_ID}
+          >
+            Open assistant
+          </wa-button>
+          <wa-dialog id={CHAT_DIALOG_ID} label="Assistant">
+            <StateBanner
+              title="Answers use the latest nightly build"
+              tone="neutral"
+            />
+            <List
+              gap="xs"
+              controlInsets="tb"
+              scrollable
+              rootAttributes={{ 'data-demo-chat-transcript': '' }}
+            >
+              {chatMessages.value.map((message) => (
+                <ContentItem
+                  bubble={message.from === 'user' ? 'end' : 'start'}
+                  appearance={
+                    message.from === 'user' ? 'brand-loud' : 'neutral'
+                  }
+                >
+                  <Text variant="span">{message.text}</Text>
+                </ContentItem>
+              ))}
+            </List>
+            <Row slot="footer" flex gap="xs" vAlign="bottom">
+              <List flex>
+                <wa-textarea
+                  name="catalog-chat-message"
+                  label="Message"
+                  rows="1"
+                  resize="auto"
+                  placeholder="Ask about this build"
+                />
+              </List>
+              <wa-button
+                variant="brand"
+                data-action={SEND_CHAT_DIALOG_MESSAGE_ACTION}
+              >
+                Send
+              </wa-button>
+            </Row>
           </wa-dialog>
         </DialogSurface>
       </CatalogExample>

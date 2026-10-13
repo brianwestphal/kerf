@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 358000,
-  "measuredLargestJavaScriptGzip": 140697,
-  "measuredTotalJavaScriptGzip": 357901,
+  "totalJavaScriptGzip": 359000,
+  "measuredLargestJavaScriptGzip": 141749,
+  "measuredTotalJavaScriptGzip": 358933,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3955,6 +3955,22 @@
         "measuredTotalJavaScriptGzip": 357901,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 358000
+      }
+    },
+    {
+      "at": "2026-10-13T08:54:27.399Z",
+      "reason": "DialogSurface floating footer, fill-last body layout, and the Chat dialog catalog example (KF-913AT2)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 140697,
+        "measuredTotalJavaScriptGzip": 357901,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 358000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 141749,
+        "measuredTotalJavaScriptGzip": 358933,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 359000
       }
     }
   ]

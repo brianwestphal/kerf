@@ -3790,9 +3790,18 @@ type DialogSurfaceHeight = CssLength | 'viewport';
 /**
  * How the dialog body lays out its children: `flow` (default) scrolls ordinary
  * content in the body; `fill` gives one child the body's whole height and
- * lets it own scrolling (a SplitView, a Pane, an editor).
+ * lets it own scrolling (a SplitView, a Pane, an editor); `fill-last` stacks
+ * the leading children at their natural height and gives the last child the
+ * remaining height to own its scrolling (a heading and notices above a
+ * scrolling transcript).
  */
-type DialogSurfaceBodyLayout = 'flow' | 'fill';
+type DialogSurfaceBodyLayout = 'flow' | 'fill' | 'fill-last';
+/**
+ * Where the dialog footer sits: `docked` (default) below the body, or
+ * `floating` over the body's block end, inset from the panel's inline and
+ * block-end edges on a transparent background (a chat composer).
+ */
+type DialogSurfaceFooterPresentation = 'docked' | 'floating';
 /**
  * Application `data-*` identity on the DialogSurface root, such as
  * `data-key`; the surface's own configuration attributes stay protected.
@@ -3815,8 +3824,23 @@ interface DialogSurfaceProps {
      * height to fill. Takes precedence over `maxHeight`.
      */
     height?: DialogSurfaceHeight;
-    /** Body layout (default `flow`); `fill` lets one child own the body. */
+    /**
+     * Body layout (default `flow`); `fill` lets one child own the body and
+     * `fill-last` stacks fixed rows above one filling last child.
+     */
     bodyLayout?: DialogSurfaceBodyLayout;
+    /**
+     * Footer placement (default `docked`); `floating` lays the footer over the
+     * body's block end. The body reserves the footer's measured height so its
+     * last content is never hidden beneath it.
+     */
+    footerPresentation?: DialogSurfaceFooterPresentation;
+    /**
+     * A floating footer's clearance from the panel's inline and block-end edges
+     * (default the 16px container inset). Choose a phone value such as
+     * `remify(8)` from `deviceClass()`; the scaffold adds no breakpoint.
+     */
+    footerOffset?: CssLength;
     /**
      * Safe `data-*` identity on the root. Give sibling dialogs distinct
      * `data-key`s so a re-render morphs each surface into itself instead of
@@ -3829,7 +3853,7 @@ interface DialogSurfaceProps {
     slot?: string;
 }
 /** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
-declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, bodyLayout, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, bodyLayout, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */
@@ -3861,7 +3885,10 @@ type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
     maxHeight?: DialogSurfaceMaxHeight;
     /** Edge clearance on each side of the viewport (default 16px). */
     viewportGutter?: CssLength;
-    /** Body layout (default `flow`); `fill` lets one child own the surface. */
+    /**
+     * Body layout (default `flow`); `fill` lets one child own the surface and
+     * `fill-last` stacks fixed rows above one filling last child.
+     */
     bodyLayout?: DialogSurfaceBodyLayout;
     rootAttributes?: PopoverDialogSurfaceDataAttributes;
     className?: string;
@@ -3887,7 +3914,7 @@ interface PopupSurfaceProps {
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
-export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
+export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
 ```
 
 ## `@kerfjs/ui/text`
