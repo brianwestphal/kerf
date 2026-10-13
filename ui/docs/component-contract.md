@@ -623,8 +623,12 @@ own inset (8px for a raw `wa-dropdown`, the Select listbox's 4px for a
 `PopupMenu`), while `compact` and `list-zero` apply to every nested menu. A
 `PopupMenu` and a `Select` draw one popup: the same caret that turns to face the
 open popup, fade-in surface, surface inset, row height and padding, current-row
-fill, and group titles, all read from one private popup-choice contract in
-`foundation.css`. Checkbox items reserve a check column; plain commands start
+fill, group titles, and scroll cue, all read from one private popup-choice
+contract in `foundation.css`. A capped popup that scrolls (a long listbox, a
+menu, or a phone submenu) shows a soft shadow along each edge with more
+choices beyond it, so overlay scrollbars never leave it looking complete; the
+cue is CSS-only, appears only toward hidden rows, and a popup whose choices
+all fit draws none. Checkbox items reserve a check column; plain commands start
 at the checkmark's leading edge, beside the group title rather than the
 farther-in Select option label. Checked submenu items keep their checkmark and
 label inside the submenu surface. Compact mixed controls retain the standard

@@ -915,3 +915,52 @@ test('a long phone submenu stays inside the viewport and scrolls to every choice
   await last.click();
   await expect(page.locator('.catalog-log')).toHaveText('Decision: project-19');
 });
+
+// A capped popup shows that it scrolls with a shadow along the edge that has
+// more choices beyond it. The menu, a phone submenu, and a Select's listbox
+// all paint the same shared cue: covers that scroll with the content over
+// shadows fixed to the box, so the cue appears only toward hidden rows.
+test('PopupMenu menus and Select listboxes share the scroll-edge cue', async ({
+  page,
+}) => {
+  // The four cue layers lead; an engine may report the base color's layer.
+  const attachments = (layers: string) =>
+    layers
+      .split(',')
+      .map((layer) => layer.trim())
+      .slice(0, 4);
+  const cue = ['local', 'local', 'scroll', 'scroll'];
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=popup-menu');
+  const nested = page
+    .locator('[data-demo="popup-menu"]')
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .filter({ has: page.locator('wa-dropdown-item[slot="submenu"]') });
+  const parent = nested.locator(
+    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
+  );
+  const menuStyle = await nested.evaluate((dropdown) => {
+    const menu = dropdown.shadowRoot?.querySelector('[part~="menu"]');
+    if (!menu) throw new Error('PopupMenu menu missing');
+    return window.getComputedStyle(menu).backgroundAttachment;
+  });
+  expect(attachments(menuStyle)).toEqual(cue);
+  const submenuStyle = await parent.evaluate((item) => {
+    const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
+    if (!submenu) throw new Error('PopupMenu submenu missing');
+    return window.getComputedStyle(submenu).backgroundAttachment;
+  });
+  expect(attachments(submenuStyle)).toEqual(cue);
+
+  await page.goto('/?component=select');
+  const listboxStyle = await page
+    .locator('wa-select.kui-select')
+    .first()
+    .evaluate((select) => {
+      const listbox = select.shadowRoot?.querySelector('[part~="listbox"]');
+      if (!listbox) throw new Error('Select listbox missing');
+      return window.getComputedStyle(listbox).backgroundAttachment;
+    });
+  expect(attachments(listboxStyle)).toEqual(cue);
+});

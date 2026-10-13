@@ -213,6 +213,7 @@
 }
 .kui-select::part(listbox) {
   padding: var(--_kui-popup-inset);
+  background: var(--_kui-popup-scroll-cue);
   width: max-content;
   min-width: 100%;
   max-width: min(remify(320px), calc(100vw - remify(20px)));

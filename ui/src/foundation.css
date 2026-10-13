@@ -104,6 +104,32 @@
   --_kui-popup-row-current-color: var(--kui-color-brand-on-fill);
   --_kui-popup-group-title-padding: remify(3.2px) remify(12px) remify(4.8px);
   --_kui-popup-group-title-font-weight: 750;
+  /* A capped, scrolling popup shows that it scrolls: a soft shadow along an
+     edge while more choices lie beyond it. Covers painted in the surface
+     color scroll with the content (`local`) and hide each shadow (`scroll`,
+     fixed to the box) only while the list rests at that edge, so a popup
+     whose choices all fit, or one scrolled to its end, draws no cue there.
+     CSS alone, so it works in every engine with no listeners, and it leaves
+     the popup's own border, radius, and drop shadow untouched. */
+  --_kui-popup-scroll-cue-color: light-dark(rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.9));
+  --_kui-popup-scroll-cue:
+    linear-gradient(var(--kui-color-surface-raised) 30%, transparent) center
+      top / 100% remify(24px) no-repeat local,
+    linear-gradient(transparent, var(--kui-color-surface-raised) 70%) center
+      bottom / 100% remify(24px) no-repeat local,
+    radial-gradient(
+        farthest-side at 50% 0,
+        var(--_kui-popup-scroll-cue-color),
+        transparent
+      )
+      center top / 100% remify(12px) no-repeat scroll,
+    radial-gradient(
+        farthest-side at 50% 100%,
+        var(--_kui-popup-scroll-cue-color),
+        transparent
+      )
+      center bottom / 100% remify(12px) no-repeat scroll,
+    var(--kui-color-surface-raised);
   --_kui-popup-caret-open-rotation: -180deg;
   --_kui-popup-caret-transition: rotate var(--wa-transition-slow, 0.3s)
     var(--wa-transition-easing, ease);

@@ -28,8 +28,15 @@
    90%. Holding the scale leaves the shared fade. */
 .kui-popup-menu::part(menu) {
   padding: var(--_kui-popup-inset);
+  background: var(--_kui-popup-scroll-cue);
   gap: var(--_kui-popup-row-gap);
   scale: none !important;
+}
+
+/* A submenu capped beside its parent menu (a phone placement) scrolls with
+   the same edge cue as the menu and a Select's listbox. */
+.kui-popup-menu wa-dropdown-item::part(submenu) {
+  background: var(--_kui-popup-scroll-cue);
 }
 
 .kui-popup-menu wa-dropdown-item {
