@@ -64,7 +64,7 @@ const rootView = (): NavStackView => ({
     <List>
       {[
         <ListHeader
-          label="Saved projects"
+          label="Saved Projects"
           count={PROJECTS.length}
           countLabel={`${PROJECTS.length} saved projects`}
         />,

@@ -54,14 +54,14 @@ export function ContentSwapDemo() {
           a={
             <Row controlInsets="trbl">
               <wa-button data-action="content-swap-fade">
-                Show details
+                Show Details
               </wa-button>
             </Row>
           }
           b={
             <Row controlInsets="trbl">
               <wa-button data-action="content-swap-fade" variant="brand">
-                Hide details
+                Hide Details
               </wa-button>
             </Row>
           }

@@ -56,9 +56,9 @@ test('ToolbarText description sits under the title at the same text start', asyn
   }
   // The heading and its accessible name are the title alone; the description
   // is a separate node a dialog can reference with aria-describedby.
-  const heading = example.getByRole('heading', { name: 'Custom commands' });
+  const heading = example.getByRole('heading', { name: 'Custom Commands' });
   await expect(heading).toHaveAttribute('id', 'toolbar-text-description-title');
-  await expect(heading).toHaveAccessibleName('Custom commands');
+  await expect(heading).toHaveAccessibleName('Custom Commands');
   await expect(example.locator('#toolbar-text-description-copy')).toHaveText(
     'Changes save automatically.',
   );

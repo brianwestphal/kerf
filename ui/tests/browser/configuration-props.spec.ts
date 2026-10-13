@@ -87,7 +87,7 @@ for (const { name, width, height } of [
       const demo = page.locator('[data-demo="list-header"]');
       const level3 = demo.getByRole('heading', {
         level: 3,
-        name: 'Needs attention',
+        name: 'Needs Attention',
       });
       await expect(level3).toBeVisible();
       const level2 = demo.getByRole('heading', { level: 2, name: 'Featured' });
@@ -116,14 +116,14 @@ for (const { name, width, height } of [
       const labels = [
         {
           size: 'xs',
-          name: 'Extra small',
+          name: 'Extra Small',
           fontSize: 11,
           transform: 'capitalize',
         },
         { size: 'sm', name: 'Small', fontSize: 12, transform: 'uppercase' },
         { size: 'm', name: 'Medium', fontSize: 16, transform: 'none' },
         { size: 'l', name: 'Large', fontSize: 20, transform: 'none' },
-        { size: 'xl', name: 'Extra large', fontSize: 25, transform: 'none' },
+        { size: 'xl', name: 'Extra Large', fontSize: 25, transform: 'none' },
       ] as const;
       for (const { size, name, fontSize, transform } of labels) {
         const header = gallery.locator(`[data-size="${size}"]`);

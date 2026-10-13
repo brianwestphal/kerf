@@ -21,12 +21,12 @@ const commandRow = (
   overrides: Partial<Parameters<typeof ListActionRow>[0]> = {},
 ) =>
   ListActionRow({
-    label: 'Run tests',
+    label: 'Run Tests',
     action: 'select-command',
     itemId: 'run-tests',
     trailingActionVisibility: 'interaction',
     trailingMenu: {
-      label: 'Actions for Run tests',
+      label: 'Actions for Run Tests',
       icon,
       items: [
         { label: 'Edit', action: 'edit-command' },
@@ -57,7 +57,7 @@ describe('ListActionRow trailing menu', () => {
     expect(trigger.hasAttribute('with-caret')).toBe(false);
     expect(trigger.hasAttribute('disabled')).toBe(false);
     expect(trigger.querySelector('.kui-popup-menu__label')?.textContent).toBe(
-      'Actions for Run tests',
+      'Actions for Run Tests',
     );
     expect(trigger.querySelector('svg')).not.toBe(null);
     const items = [...menu.querySelectorAll('wa-dropdown-item')];

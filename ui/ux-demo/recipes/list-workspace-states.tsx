@@ -51,7 +51,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     if (state.value === 'loading')
       return (
         <EmptyState
-          title="Loading release tasks"
+          title="Loading Release Tasks"
           detail="The current workspace will appear when data is ready."
           busy
           action={
@@ -60,7 +60,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               data-action="recipe-action"
               data-recipe-command="load"
             >
-              Complete load
+              Complete Load
             </button>
           }
         />
@@ -68,7 +68,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     if (state.value === 'empty')
       return (
         <EmptyState
-          title="No release tasks"
+          title="No Release Tasks"
           detail="Create the first task for this milestone."
           action={
             <button
@@ -76,7 +76,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               data-action="recipe-action"
               data-recipe-command="create"
             >
-              Create task
+              Create Task
             </button>
           }
         />
@@ -84,7 +84,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     if (state.value === 'error')
       return (
         <StateBanner
-          title="Release tasks could not be refreshed"
+          title="Release Tasks Could Not Be Refreshed"
           detail="Existing filters are preserved. Try again when the connection recovers."
           tone="danger"
           urgency="alert"
@@ -103,7 +103,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       <>
         {state.value === 'stale' && (
           <StateBanner
-            title="Showing saved results"
+            title="Showing Saved Results"
             detail="Refreshing in the background."
             tone="warning"
             action={
@@ -114,7 +114,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                   data-action="recipe-action"
                   data-recipe-command="finish"
                 >
-                  Finish refresh
+                  Finish Refresh
                 </button>
               </Row>
             }
@@ -139,7 +139,7 @@ export const createRecipe: RecipeFactory = (announce) => {
           responsiveAt="compact"
           leading={
             <ToolbarText
-              text="Release tasks"
+              text="Release Tasks"
               size="xlarge"
               id="recipe-list-title"
             />
@@ -162,7 +162,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                 data-action="recipe-action"
                 data-recipe-command="fail"
               >
-                Simulate failure
+                Simulate Failure
               </button>
               <button
                 type="button"

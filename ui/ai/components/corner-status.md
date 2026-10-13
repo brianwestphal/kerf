@@ -8,7 +8,7 @@ Non-dismissible app-level status pinned to a viewport corner in the top layer, h
 
 ## When to use
 
-Show ongoing app-level progress such as "Loading…" or "Updating tickets… 3 of 12" in a viewport corner above page chrome and any dialog opened before it, without a close button, light dismiss, Escape, or focus change.
+Show ongoing app-level progress such as "Loading…" or "Updating Tickets… 3 of 12" in a viewport corner above page chrome and any dialog opened before it, without a close button, light dismiss, Escape, or focus change.
 
 - Show ongoing app-level progress or status that has no better home beside the affected work and must stay visible until the work ends.
 

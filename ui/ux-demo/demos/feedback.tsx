@@ -22,7 +22,7 @@ export function FeedbackDemo() {
             tone={tone}
             urgency={tone === 'danger' ? 'alert' : 'status'}
             title={
-              tone === 'danger' ? 'Action required' : 'Everything is connected'
+              tone === 'danger' ? 'Action Required' : 'Everything Is Connected'
             }
             detail="State is expressed with text and color."
             icon={
@@ -34,17 +34,17 @@ export function FeedbackDemo() {
             }
             action={
               <button type="button" data-action="cycle-tone">
-                Cycle tone
+                Cycle Tone
               </button>
             }
           />
           <EmptyState
-            title="Nothing here yet"
+            title="Nothing Here Yet"
             detail="Create the first item when you are ready."
             icon={<LucideIcon icon={Search} name="search" />}
             action={
               <button type="button" data-action="log-add">
-                Create item
+                Create Item
               </button>
             }
           />

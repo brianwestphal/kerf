@@ -35,7 +35,7 @@ export function PaneDemo() {
             <>
               <Toolbar
                 label="Pane header"
-                leading={<ToolbarText text="Pane header" size="large" />}
+                leading={<ToolbarText text="Pane Header" size="large" />}
               />
               <ListInsetText>Optional secondary header row</ListInsetText>
             </>

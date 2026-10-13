@@ -79,12 +79,12 @@ export function TextDemo() {
       >
         <div role="group" aria-labelledby="needed-by-label">
           <ListInsetControl sides="trl">
-            <FieldLabel id="needed-by-label">Needed by</FieldLabel>
+            <FieldLabel id="needed-by-label">Needed By</FieldLabel>
           </ListInsetControl>
           <ContentItem>October 16, 2026</ContentItem>
         </div>
         <ListInsetControl sides="trl">
-          <wa-input label="Needed by" value="October 16, 2026" />
+          <wa-input label="Needed By" value="October 16, 2026" />
         </ListInsetControl>
       </CatalogExample>
       <CatalogExample

@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.55.0
+kerf-ui-skill-version: 1.56.0
 ---
 
 # Building with @kerfjs/ui
@@ -226,6 +226,27 @@ or disabled cues for unavailable actions. Align semantic controls, keyboard
 behavior, focus treatment, and disabled state with those cues; a cursor alone
 cannot explain an interaction. See [accessibility contracts](../docs/accessibility.md)
 and [interaction principles](../docs/apple-hig.md#interaction).
+
+### Interface copy capitalization
+
+Follow Apple's split; it is the package default, so never mix styles from
+screen to screen. **Names are title style; descriptions are sentence style.**
+Title style covers button and menu-item labels, popup-menu triggers and group
+headings, segments, `Select` choices, tabs, page/view/pane/dialog/toolbar
+titles, back labels, `ListHeader` and column headings, field labels, the
+accessible name of an icon-only control, and fragment `EmptyState`/`StateBanner`
+titles ("Save Draft", "Back to Inbox", "Needs Attention", "Release Date").
+Sentence style covers body copy, descriptions and details, dialog/alert
+messages, tooltips, placeholders, checkbox/switch/radio option text, and
+status lines or counts ("Saved just now"). A title written as a complete
+sentence takes sentence style and ending punctuation. In title style,
+capitalize the first and last word and every noun, pronoun, verb, adjective,
+adverb, subordinating conjunction, and phrasal-verb particle ("Log In");
+lowercase articles, coordinating conjunctions, `to` in infinitives, `as`, and
+prepositions of four letters or fewer unless first or last. Keep brand
+spellings (iOS, macOS) and never recapitalize user data. `kerf-ui-doctor`
+reports lowercase words in known title-style labels as `KUI-D040`. See
+[Writing interface copy](../docs/writing.md#capitalization).
 
 Quick routing:
 

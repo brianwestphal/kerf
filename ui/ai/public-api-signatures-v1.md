@@ -4676,7 +4676,7 @@ interface CornerStatusProps {
 }
 /**
  * A non-dismissible status surface pinned to a viewport corner — "Loading…",
- * "Updating tickets… 3 of 12" — for app-level progress that has no better
+ * "Updating Tickets… 3 of 12" — for app-level progress that has no better
  * home beside the affected work. The application owns its lifetime: render it
  * while the work runs and remove it when the work ends. It carries no role of
  * its own; the composed `StateBanner` is the polite live region. Use a toast

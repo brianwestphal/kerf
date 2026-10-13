@@ -409,7 +409,7 @@ import { FieldLabel } from "@kerfjs/ui/text";
 
 <div role="group" aria-labelledby="needed-by-label">
   <ListInsetControl sides="trl">
-    <FieldLabel id="needed-by-label">Needed by</FieldLabel>
+    <FieldLabel id="needed-by-label">Needed By</FieldLabel>
   </ListInsetControl>
   <ContentItem>October 16, 2026</ContentItem>
 </div>;

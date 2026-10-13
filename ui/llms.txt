@@ -182,6 +182,23 @@ the cursor; the cursor alone cannot explain an interaction. See
 [accessibility contracts](./docs/accessibility.md) and
 [interaction principles](./docs/apple-hig.md#interaction).
 
+## Interface copy capitalization
+
+Follow Apple's split, the package default: **names are title style;
+descriptions are sentence style.** Title style: buttons, menu items and menu
+headings, popup-menu triggers, segments, `Select` choices, tabs,
+page/view/pane/dialog/toolbar titles, back labels, `ListHeader` and column
+headings, field labels, icon-only control names, and fragment
+`EmptyState`/`StateBanner` titles ("Save Draft", "Back to Inbox"). Sentence
+style: body copy, descriptions, details, messages, tooltips, placeholders,
+checkbox/switch/radio option text, and status lines ("Saved just now"). Title
+style capitalizes the first and last word and phrasal-verb particles ("Log
+In"); it lowercases articles, coordinating conjunctions, `to` in infinitives,
+`as`, and prepositions of four letters or fewer elsewhere. Keep brand spellings
+and user data as written. `kerf-ui-doctor` reports violations in known
+title-style labels as `KUI-D040`. See
+[Writing interface copy](./docs/writing.md#capitalization).
+
 ## Core rules (do the right thing)
 
 - **Prefer a Kerf UI component over a Web Awesome component over a raw HTML
@@ -716,6 +733,7 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 
 - [skill.md](./ai/skill.md): the full rule set + a common-mistakes table (the shipped AI skill).
 - [design-philosophy.md](./docs/design-philosophy.md): why kerf UI is shaped this way — the decision principles behind the rules above.
+- [writing.md](./docs/writing.md): interface copy — the title-style vs. sentence-style capitalization rule per element, from Apple's guidance.
 - [layout.md](./docs/layout.md): the pane/content-item geometry, public roles/tokens, and the spacing scale.
 - [component-contract.md](./docs/component-contract.md): what a component owns vs. what the app owns.
 - [accessibility.md](./docs/accessibility.md): keyboard and ARIA contracts per component.

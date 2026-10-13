@@ -127,7 +127,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-dropdown': () => (
     <wa-dropdown>
       <wa-button slot="trigger" appearance="outlined" with-caret>
-        Project actions
+        Project Actions
       </wa-button>
       <wa-dropdown-item>Rename</wa-dropdown-item>
       <wa-dropdown-item>Duplicate</wa-dropdown-item>
@@ -305,7 +305,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       </Text>
 
       <wa-button slot="footer" appearance="plain">
-        View checklist
+        View Checklist
       </wa-button>
     </wa-card>
   ),
@@ -329,7 +329,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-dialog': () => (
     <List hAlign="center" gap="xs">
       <wa-button variant="brand" data-action="show-wa-dialog">
-        Open dialog
+        Open Dialog
       </wa-button>
       <Text variant="span" tone="quiet" size="compact">
         Footer actions replace the native header action.
@@ -374,7 +374,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-drawer': () => (
     <List hAlign="center" gap="xs">
       <wa-button variant="brand" data-action="show-wa-drawer">
-        Open drawer
+        Open Drawer
       </wa-button>
       <Text variant="span" tone="quiet" size="compact">
         The drawer enters from the trailing edge.
@@ -619,7 +619,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-toast': () => (
     <List hAlign="center" gap="xs">
       <wa-button variant="brand" data-action="show-wa-toast">
-        Show toast
+        Show Toast
       </wa-button>
       <Text variant="span" tone="quiet" size="compact">
         The notification uses Web Awesome's programmatic stack API. Hot Sheet 2
@@ -638,7 +638,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <Text variant="span">Kerf default · no arrow</Text>
       <Row hAlign="center" vAlign="middle" wrap>
         <wa-button id="catalog-tooltip-target" appearance="outlined">
-          Hover or focus
+          Hover or Focus
         </wa-button>
         <wa-tooltip for="catalog-tooltip-target">
           Uses the shared tooltip palette
@@ -753,9 +753,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
               label="Preset"
               choices={[
                 { value: 'bounce', label: 'Bounce' },
-                { value: 'fadeIn', label: 'Fade in' },
+                { value: 'fadeIn', label: 'Fade In' },
                 { value: 'jello', label: 'Jello' },
-                { value: 'shakeX', label: 'Shake horizontally' },
+                { value: 'shakeX', label: 'Shake Horizontally' },
               ]}
             />
             <Select
@@ -765,9 +765,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
               choices={[
                 { value: 'linear', label: 'Linear' },
                 { value: 'ease', label: 'Ease' },
-                { value: 'ease-in', label: 'Ease in' },
-                { value: 'ease-out', label: 'Ease out' },
-                { value: 'ease-in-out', label: 'Ease in and out' },
+                { value: 'ease-in', label: 'Ease In' },
+                { value: 'ease-out', label: 'Ease Out' },
+                { value: 'ease-in-out', label: 'Ease in and Out' },
               ]}
             />
             <label>
@@ -883,7 +883,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         </Text>
         <Row vAlign="middle" hAlign="space-between">
           <wa-button data-action="toggle-wa-intersection">
-            Reveal target
+            Reveal Target
           </wa-button>
           <output data-observer-output aria-live="polite">
             Waiting for an intersection change
@@ -918,7 +918,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         </div>
       </wa-mutation-observer>
       <Row vAlign="middle" hAlign="space-between">
-        <wa-button data-action="mutate-wa-target">Mutate target</wa-button>
+        <wa-button data-action="mutate-wa-target">Mutate Target</wa-button>
         <output data-observer-output aria-live="polite">
           No mutations observed yet
         </output>
@@ -929,7 +929,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     <List hAlign="center" gap="xs">
       <Text variant="span">Kerf default · no arrow</Text>
       <wa-button id="catalog-popover-target" appearance="outlined">
-        Toggle popover
+        Toggle Popover
       </wa-button>
       <wa-popover for="catalog-popover-target" placement="bottom">
         <strong>Popover content</strong>
@@ -960,7 +960,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         <wa-card appearance="sunken">Composition patterns</wa-card>
       </wa-random-content>
       <wa-button appearance="outlined" data-action="randomize-wa-content">
-        Show another
+        Show Another
       </wa-button>
     </List>
   ),
@@ -987,7 +987,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         </wa-resize-observer>
       </div>
       <Row vAlign="middle" hAlign="space-between">
-        <wa-button data-action="resize-wa-target">Resize target</wa-button>
+        <wa-button data-action="resize-wa-target">Resize Target</wa-button>
         <output data-observer-output aria-live="polite">
           Waiting for a resize
         </output>

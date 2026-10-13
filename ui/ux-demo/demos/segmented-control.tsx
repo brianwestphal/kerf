@@ -31,17 +31,17 @@ export function SegmentedControlDemo() {
             choices={[
               {
                 value: 'list',
-                label: 'List view',
+                label: 'List View',
                 content: <LucideIcon icon={List} name="list" />,
               },
               {
                 value: 'columns',
-                label: 'Columns view',
+                label: 'Columns View',
                 content: <LucideIcon icon={Columns3} name="columns-3" />,
               },
               {
                 value: 'settings',
-                label: 'Settings view',
+                label: 'Settings View',
                 content: <LucideIcon icon={Settings} name="settings" />,
               },
             ]}
@@ -130,9 +130,9 @@ export function SegmentedControlDemo() {
           label="Loading view mode"
           value=""
           choices={[
-            { value: 'list', label: 'List view' },
-            { value: 'columns', label: 'Columns view' },
-            { value: 'settings', label: 'Settings view' },
+            { value: 'list', label: 'List View' },
+            { value: 'columns', label: 'Columns View' },
+            { value: 'settings', label: 'Settings View' },
           ]}
           placeholder
         />

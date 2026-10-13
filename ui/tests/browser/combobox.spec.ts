@@ -6,7 +6,7 @@ import { expect, test } from '@playwright/test';
 test('Combobox filters, highlights, creates, and commits', async ({ page }) => {
   await page.goto('/?component=combobox');
   const demo = page.locator('[data-demo="combobox"]');
-  const input = demo.getByRole('combobox', { name: 'Tag name' });
+  const input = demo.getByRole('combobox', { name: 'Tag Name' });
   const listbox = demo.getByRole('listbox');
   const chips = demo.locator('.kui-chip');
   await expect(chips).toHaveText(['bug']);

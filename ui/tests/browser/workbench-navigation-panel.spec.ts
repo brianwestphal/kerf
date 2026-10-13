@@ -20,7 +20,7 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
     const show = workbench.getByRole('button', { name: 'Show tickets' });
     if (await show.isVisible()) await show.click();
 
-    await expect(activeHeader).toContainText('Ticket queue');
+    await expect(activeHeader).toContainText('Ticket Queue');
     await expect(rail.locator('[data-component="toolbar"]')).toHaveCount(1);
     await specimen.screenshot({
       path: `test-results/workbench-navigation-root-${width}.png`,
@@ -29,7 +29,7 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
     await rail.getByRole('button', { name: 'Open ticket T-42' }).click();
     await expect(stack).toHaveAttribute('data-depth', '2');
     await expect(stack.locator('[data-nav-chrome-copy]')).toHaveCount(0);
-    await expect(activeHeader).toContainText('Workspace rail detail');
+    await expect(activeHeader).toContainText('Workspace Rail Detail');
     await expect(rail.locator('[data-component="toolbar"]')).toHaveCount(1);
     await expect(stack.getByRole('button', { name: 'Back' })).toBeVisible();
     const trailing = stack.locator('.kui-toolbar__trailing');
@@ -75,6 +75,6 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
     await stack.getByRole('button', { name: 'Back' }).click();
     await expect(stack).toHaveAttribute('data-depth', '1');
     await expect(stack.locator('[data-nav-chrome-copy]')).toHaveCount(0);
-    await expect(activeHeader).toContainText('Ticket queue');
+    await expect(activeHeader).toContainText('Ticket Queue');
   }
 });

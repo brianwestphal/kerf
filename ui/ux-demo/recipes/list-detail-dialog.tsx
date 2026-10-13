@@ -102,7 +102,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         data-action="recipe-action"
         data-recipe-command="open-record"
       >
-        Open project
+        Open Project
       </wa-button>
     </Row>
   );
@@ -116,7 +116,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       header={
         <Toolbar
           label="Recent projects"
-          leading={<ToolbarText text="Recent projects" />}
+          leading={<ToolbarText text="Recent Projects" />}
         />
       }
     >
@@ -197,7 +197,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               data-action="recipe-action"
               data-recipe-command="open"
             >
-              Open project details
+              Open Project Details
             </wa-button>
             {compact ? (
               <wa-dialog label="Project details" open={open.value} with-footer>
@@ -208,7 +208,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                   detailActive={detailOpen.value}
                   listTitle="Recent projects"
                   detailTitle={records[selected.value].name}
-                  backLabel="Back to projects"
+                  backLabel="Back to Projects"
                   list={<List>{projectRows(true)}</List>}
                   detail={compactDetail()}
                 />
@@ -227,7 +227,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                   data-action="recipe-action"
                   data-recipe-command="open-record"
                 >
-                  Open project
+                  Open Project
                 </wa-button>
               </wa-dialog>
             ) : (

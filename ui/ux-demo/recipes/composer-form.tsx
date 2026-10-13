@@ -66,7 +66,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             label="Publish workspace update"
             leading={
               <ToolbarText
-                text="Publish workspace update"
+                text="Publish Workspace Update"
                 size="xlarge"
                 id="recipe-composer-title"
               />
@@ -80,7 +80,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         </List>
         {status.value === 'error' && (
           <StateBanner
-            title="Add a title before publishing"
+            title="Add a Title Before Publishing"
             detail="The update body and audience are preserved."
             tone="danger"
             urgency="alert"
@@ -88,7 +88,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         )}
         {status.value === 'saved' && (
           <StateBanner
-            title="Update published"
+            title="Update Published"
             detail="The team audience can now read it."
             tone="success"
           />
@@ -115,9 +115,9 @@ export const createRecipe: RecipeFactory = (announce) => {
             value={audience.value}
             label="Audience"
             choices={[
-              { value: 'team', label: 'Workspace team' },
+              { value: 'team', label: 'Workspace Team' },
               { value: 'reviewers', label: 'Reviewers' },
-              { value: 'organization', label: 'Entire organization' },
+              { value: 'organization', label: 'Entire Organization' },
             ]}
           />
         </List>
@@ -136,7 +136,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             data-action="recipe-action"
             data-recipe-command="submit"
           >
-            Publish update
+            Publish Update
           </wa-button>
         </Row>
       </List>

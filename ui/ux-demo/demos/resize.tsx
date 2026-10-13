@@ -73,11 +73,11 @@ export function ResizeDemo() {
         >
           <div class="kui-content">
             <PopupMenu
-              text="Create item"
+              text="Create Item"
               placement="top-start"
               items={[
-                { label: 'New terminal', action: 'create-terminal' },
-                { label: 'New task', action: 'create-task' },
+                { label: 'New Terminal', action: 'create-terminal' },
+                { label: 'New Task', action: 'create-task' },
               ]}
             />
           </div>

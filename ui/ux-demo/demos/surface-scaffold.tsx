@@ -60,7 +60,7 @@ export function SurfaceScaffoldDemo() {
           bodyInset="none"
           footerInset="comfortable"
         >
-          <wa-button data-action="show-wa-dialog">Open dialog</wa-button>
+          <wa-button data-action="show-wa-dialog">Open Dialog</wa-button>
           <wa-dialog id="catalog-wa-dialog" label="Edit workspace">
             <List>
               <ListInsetText>
@@ -96,7 +96,7 @@ export function SurfaceScaffoldDemo() {
             data-action="show-wa-dialog"
             data-dialog-id="catalog-bounded-dialog"
           >
-            Open bounded dialog
+            Open Bounded Dialog
           </wa-button>
           <wa-dialog id="catalog-bounded-dialog" label="Close workspace">
             <List>
@@ -114,7 +114,7 @@ export function SurfaceScaffoldDemo() {
               data-action="hide-wa-dialog"
               data-dialog-id="catalog-bounded-dialog"
             >
-              Keep working
+              Keep Working
             </wa-button>
             <wa-button
               slot="footer"
@@ -122,7 +122,7 @@ export function SurfaceScaffoldDemo() {
               data-action="hide-wa-dialog"
               data-dialog-id="catalog-bounded-dialog"
             >
-              Stop and close
+              Stop and Close
             </wa-button>
           </wa-dialog>
         </DialogSurface>
@@ -142,7 +142,7 @@ export function SurfaceScaffoldDemo() {
             data-action="show-wa-dialog"
             data-dialog-id="catalog-capped-dialog"
           >
-            Open capped dialog
+            Open Capped Dialog
           </wa-button>
           <wa-dialog
             id="catalog-capped-dialog"
@@ -165,7 +165,7 @@ export function SurfaceScaffoldDemo() {
               data-action="hide-wa-dialog"
               data-dialog-id="catalog-capped-dialog"
             >
-              Cancel review
+              Cancel Review
             </wa-button>
           </wa-dialog>
         </DialogSurface>
@@ -186,7 +186,7 @@ export function SurfaceScaffoldDemo() {
             data-action="show-wa-dialog"
             data-dialog-id="catalog-filled-dialog"
           >
-            Open project details
+            Open Project Details
           </wa-button>
           <wa-dialog id="catalog-filled-dialog" label="Project details">
             {projectSplit('catalog-filled-dialog-split')}
@@ -200,12 +200,12 @@ export function SurfaceScaffoldDemo() {
       >
         <ToolbarControlGroup single>
           <button type="button" popoverTarget="catalog-popover-dialog">
-            Open repository status
+            Open Repository Status
           </button>
         </ToolbarControlGroup>
         <PopoverDialogSurface
           id="catalog-popover-dialog"
-          label="Repository status"
+          label="Repository Status"
           preferredWidth={remify(720)}
           height={remify(420)}
           viewportGutter={remify(8)}
@@ -232,7 +232,7 @@ export function SurfaceScaffoldDemo() {
       <CatalogExample label="Zero-inset list popup" align="inline-control">
         <PopupSurface inset="list-zero">
           <PopupMenu
-            text="Choose view"
+            text="Choose View"
             items={[{ label: 'Inbox' }, { label: 'Archive' }]}
           />
         </PopupSurface>

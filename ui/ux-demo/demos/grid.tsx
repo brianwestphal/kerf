@@ -119,7 +119,7 @@ export function GridDemo() {
               >
                 <strong>{name}</strong>
                 <button type="button" data-action="log-card-primary">
-                  Add as quote
+                  Add as Quote
                 </button>
               </ContentItem>
             ),

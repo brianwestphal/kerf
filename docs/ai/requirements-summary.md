@@ -268,6 +268,12 @@ Named and wildcard route parameters are URL-decoded fail-closed: a malformed per
 
 ### §21 `@kerfjs/ui`
 
+**Shipped:** interface copy capitalization (`ui/docs/writing.md`). Following
+Apple's per-element guidance, names of commands, controls, views, and fields
+use title style. Descriptions, messages, tooltips, placeholders, option text,
+and status use sentence style. The doctor reports lowercase words in known
+title-style label literals as `KUI-D040` (warning).
+
 The searchbox keeps its leading icon, first text line, clear action, and trailing
 slot aligned to one fixed row as content wraps. The catalog demonstrates
 first-class empty-and-unfocused toolbar collapse, populated persistence,

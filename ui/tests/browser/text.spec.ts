@@ -39,11 +39,11 @@ test('FieldLabel matches the live form label and names a preview', async ({
   await page.goto('/?component=text');
   const section = page.locator('[data-demo-section="field-label"]');
   const label = section.locator('.kui-text__field-label');
-  const preview = section.getByRole('group', { name: 'Needed by' });
+  const preview = section.getByRole('group', { name: 'Needed By' });
   const input = section.locator('wa-input');
-  await expect(label).toHaveText('Needed by');
+  await expect(label).toHaveText('Needed By');
   await expect(preview).toContainText('October 16, 2026');
-  await expect(input).toHaveAttribute('label', 'Needed by');
+  await expect(input).toHaveAttribute('label', 'Needed By');
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 850 });

@@ -8,7 +8,7 @@ test('element help owns focus, dismissal, and visible surface at wide and narrow
   for (const width of [1180, 390]) {
     await page.setViewportSize({ width, height: 760 });
     await page.goto('/?component=anchored-surface');
-    const trigger = page.getByRole('button', { name: 'Explain this field' });
+    const trigger = page.getByRole('button', { name: 'Explain This Field' });
     // A pointer click must restore focus even in WebKit, which does not focus
     // buttons on pointer press by default.
     await trigger.click();
@@ -16,7 +16,7 @@ test('element help owns focus, dismissal, and visible surface at wide and narrow
     await expect(help).toBeVisible();
     await expect(help).toHaveAttribute('role', 'dialog');
     await expect(help).toHaveAttribute('aria-label', 'Field help');
-    await expect(help.getByRole('button', { name: 'Got it' })).toBeFocused();
+    await expect(help.getByRole('button', { name: 'Got It' })).toBeFocused();
     const rect = await help.boundingBox();
     expect(rect).not.toBeNull();
     expect(rect!.x).toBeGreaterThanOrEqual(0);
@@ -29,7 +29,7 @@ test('element help owns focus, dismissal, and visible surface at wide and narrow
     await expect(help).toHaveCount(0);
     await expect(trigger).toBeFocused();
     await trigger.click();
-    await help.getByRole('button', { name: 'Got it' }).click();
+    await help.getByRole('button', { name: 'Got It' }).click();
     await expect(help).toHaveCount(0);
   }
 });
@@ -39,7 +39,7 @@ test('pointer location clamps into a narrow viewport and dismisses outside', asy
 }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.goto('/?component=anchored-surface');
-  const trigger = page.getByRole('button', { name: 'Open at pointer' });
+  const trigger = page.getByRole('button', { name: 'Open at Pointer' });
   await trigger.click();
   const help = page.locator(surface);
   await expect(help).toBeVisible();
@@ -60,10 +60,10 @@ test('interactive help remains usable inside a Web Awesome dialog', async ({
   for (const width of [1180, 390]) {
     await page.setViewportSize({ width, height: 760 });
     await page.goto('/?component=anchored-surface');
-    await page.getByRole('button', { name: 'Open dialog' }).click();
+    await page.getByRole('button', { name: 'Open Dialog' }).click();
     const modal = page.locator('[data-anchored-surface-modal]');
     await expect(modal).toHaveAttribute('open');
-    const explain = modal.getByRole('button', { name: 'Explain in dialog' });
+    const explain = modal.getByRole('button', { name: 'Explain in Dialog' });
     await explain.click();
     const help = page.locator(surface);
     await expect(help).toBeVisible();
@@ -76,7 +76,7 @@ test('interactive help remains usable inside a Web Awesome dialog', async ({
         ),
       })),
     ).toEqual({ hosted: 'wa-dialog', lightDomOfDialog: true });
-    const gotIt = help.getByRole('button', { name: 'Got it' });
+    const gotIt = help.getByRole('button', { name: 'Got It' });
     await expect(gotIt).toBeFocused(); // inert content cannot take focus
     await page.screenshot({
       path: `test-results/anchored-surface-wa-dialog-${width}-${testInfo.project.name}.png`,
@@ -116,7 +116,7 @@ test('a surface already showing is re-hosted above a Web Awesome dialog that ope
 }) => {
   await page.setViewportSize({ width: 1180, height: 760 });
   await page.goto('/?component=anchored-surface');
-  await page.getByRole('button', { name: 'Explain this field' }).click();
+  await page.getByRole('button', { name: 'Explain This Field' }).click();
   const help = page.locator(surface);
   await expect(help).toBeVisible();
   const modal = page.locator('[data-anchored-surface-modal]');

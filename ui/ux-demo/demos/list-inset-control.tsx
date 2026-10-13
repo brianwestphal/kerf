@@ -33,7 +33,7 @@ export function ListInsetControlDemo() {
         <DemoListInsetPane>
           <StateBanner
             tone="info"
-            title="A content item, for reference"
+            title="A Content Item, for Reference"
             detail="Its edges are the alignment reference."
             icon={<LucideIcon icon={Check} name="check" />}
           />
@@ -73,7 +73,7 @@ export function ListInsetControlDemo() {
               value="review"
               label="Status"
               choices={[
-                { value: 'review', label: 'In review' },
+                { value: 'review', label: 'In Review' },
                 { value: 'ready', label: 'Ready' },
                 { value: 'done', label: 'Done' },
               ]}

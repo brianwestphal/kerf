@@ -30,7 +30,7 @@ test('names plain and custom Select comboboxes without adding visible label geom
   await expect(plain).toHaveValue('Balanced');
   await expect(labeled).toHaveValue('Balanced');
   await expect(toolbar).toHaveValue('Balanced');
-  await expect(navigation).toHaveValue('Balanced navigation workspace');
+  await expect(navigation).toHaveValue('Balanced Navigation Workspace');
   const toolbarHost = demo.locator(
     'wa-select[name="toolbar-rendering-balance"]',
   );

@@ -56,7 +56,7 @@ test('CollapsiblePanel composes the same fixed header under its toolbar', async 
     pane.locator(':scope > .kui-pane__header .kui-toolbar'),
   ).toHaveCount(1);
   await expect(
-    pane.locator(':scope > .kui-pane__header').getByText('Pinned files'),
+    pane.locator(':scope > .kui-pane__header').getByText('Pinned Files'),
   ).toBeVisible();
   await expect(
     pane.locator(':scope > .kui-pane__content').getByText('Files'),

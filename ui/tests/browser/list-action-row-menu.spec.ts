@@ -9,7 +9,7 @@ test('ListActionRow trailing menu opens from its trigger, reveals on interaction
   const row = page.locator('[data-demo-action-row="menu"]');
   const primary = row.locator('.kui-list-action-row__primary');
   const menu = row.locator(':scope > [data-component="popup-menu"]');
-  const trigger = menu.getByRole('button', { name: 'Actions for Run tests' });
+  const trigger = menu.getByRole('button', { name: 'Actions for Run Tests' });
   const log = page.locator('.catalog-log');
   await expect(trigger).toBeAttached();
 

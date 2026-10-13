@@ -53,14 +53,14 @@ export function ToolbarDemo() {
               >
                 <button
                   type="button"
-                  aria-label="Filter workspace"
+                  aria-label="Filter Workspace"
                   data-action="width-filter"
                 >
                   <LucideIcon icon={Filter} name="filter" />
                 </button>
                 <button
                   type="button"
-                  aria-label="Workspace settings"
+                  aria-label="Workspace Settings"
                   data-action="log-settings"
                 >
                   <LucideIcon icon={Settings} name="settings" />
@@ -78,8 +78,8 @@ export function ToolbarDemo() {
                     <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
                   }
                   items={[
-                    { label: 'Filter workspace', action: 'width-filter' },
-                    { label: 'Workspace settings', action: 'log-settings' },
+                    { label: 'Filter Workspace', action: 'width-filter' },
+                    { label: 'Workspace Settings', action: 'log-settings' },
                   ]}
                 />
               </ToolbarControlGroup>
@@ -109,7 +109,7 @@ export function ToolbarDemo() {
                 </button>
               </ToolbarControlGroup>
               <ToolbarText
-                text="A long toolbar identity that can shrink"
+                text="A Long Toolbar Identity That Can Shrink"
                 size="large"
               />
             </>
@@ -147,7 +147,7 @@ export function ToolbarDemo() {
         <Toolbar
           label="Project heading"
           responsive="wrap"
-          leading={<ToolbarText text="Project tickets" size="large" />}
+          leading={<ToolbarText text="Project Tickets" size="large" />}
           trailing={
             <>
               <ToolbarControlGroup label="Other actions" single>
@@ -156,7 +156,7 @@ export function ToolbarDemo() {
                 </button>
               </ToolbarControlGroup>
               <wa-button variant="brand" data-action="log-add">
-                New ticket…
+                New Ticket…
               </wa-button>
             </>
           }
@@ -171,7 +171,7 @@ export function ToolbarDemo() {
         <Toolbar
           label="Recent activity"
           density="compact"
-          leading={<ToolbarText text="Recent activity" />}
+          leading={<ToolbarText text="Recent Activity" />}
           trailing={
             <ToolbarControlGroup
               label="Activity actions"
@@ -196,7 +196,7 @@ export function ToolbarDemo() {
             responsive="center-priority"
             leading={
               <ToolbarControlGroup appearance="borderless" single>
-                <ToolbarText text="Component library" size="large" />
+                <ToolbarText text="Component Library" size="large" />
               </ToolbarControlGroup>
             }
             center={
@@ -370,7 +370,7 @@ export function ToolbarDemo() {
               <ToolbarControlGroup appearance="borderless" single>
                 <LucideIcon icon={FileText} name="file-text" />
               </ToolbarControlGroup>
-              <ToolbarText text="Q3 release" size="xlarge" />
+              <ToolbarText text="Q3 Release" size="xlarge" />
             </>
           }
           trailing={

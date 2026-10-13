@@ -12,6 +12,7 @@ Native Apple applications should use native platform controls and follow the Hum
 - Use one icon family and one metaphor per action. Directional icons may mirror in RTL; checkmarks, logos, and real-world objects do not.
 - Motion is brief, causal, and optional. Honor reduced-motion and reduced-transparency preferences; repeating indicators stop moving under reduced motion.
 - Writing is concise, specific, and action-led. Labels describe the result, not implementation details.
+- Capitalize by element type, consistently: names of commands, controls, views, and fields use title style; descriptions, messages, tooltips, and option text use sentence style. See [Writing interface copy](./writing.md#capitalization).
 
 ## Interaction
 

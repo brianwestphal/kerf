@@ -40,7 +40,7 @@ export const createRecipe: RecipeFactory = (announce) => ({
             responsiveAt="compact"
             leading={
               <ToolbarText
-                text="Accessibility readiness and responsive navigation rollout"
+                text="Accessibility Readiness and Responsive Navigation Rollout"
                 size="xlarge"
                 id="recipe-workspace-title"
                 headingLevel={1}
@@ -66,21 +66,21 @@ export const createRecipe: RecipeFactory = (announce) => ({
                   data-action="recipe-action"
                   data-recipe-command="more"
                 >
-                  More actions
+                  More Actions
                 </button>
                 <button
                   type="button"
                   data-action="recipe-action"
                   data-recipe-command="publish"
                 >
-                  Publish update
+                  Publish Update
                 </button>
               </ToolbarControlGroup>
             }
           />
         </List>
         <StateBanner
-          title="Ready for review"
+          title="Ready for Review"
           detail="All required checks passed 18 minutes ago."
           tone="success"
         />

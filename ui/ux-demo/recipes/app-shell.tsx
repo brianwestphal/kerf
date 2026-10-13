@@ -138,7 +138,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                   data-action="recipe-action"
                   data-recipe-command="new"
                 >
-                  New task
+                  New Task
                 </button>
               </ToolbarControlGroup>
             ),

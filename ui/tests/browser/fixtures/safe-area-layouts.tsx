@@ -237,7 +237,7 @@ function render() {
         </List>
       );
     case 'app-bar-in-header':
-      // A Pane header already owns the top edge: a toolbar there that claims
+      // A Pane Header already owns the top edge: a toolbar there that claims
       // every side must not add the inset a second time.
       return (
         <Pane

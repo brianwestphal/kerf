@@ -12,7 +12,7 @@ test('standalone trailing primary action keeps its chrome and control-band align
   const group = toolbar.locator(
     '.kui-toolbar__trailing > .kui-toolbar-control-group',
   );
-  await expect(button).toHaveText('New ticket…');
+  await expect(button).toHaveText('New Ticket…');
   await expect(button).toHaveAttribute('variant', 'brand');
   await expect(button).toBeVisible();
   const geometry = await toolbar.evaluate((element) => {

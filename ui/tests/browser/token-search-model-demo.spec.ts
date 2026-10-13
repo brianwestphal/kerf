@@ -304,7 +304,7 @@ test('an app helper commits an active grammar value outside suggestions', async 
   const field = demo.locator('[data-component="token-search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with filters' });
   const chips = field.locator('[data-component="token-search-token"]');
-  const helper = demo.getByRole('button', { name: 'Add release tag' });
+  const helper = demo.getByRole('button', { name: 'Add Release Tag' });
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
@@ -354,7 +354,7 @@ test('model chip keys and plain-field clear keep the replacement editor focused'
   const field = demo.locator('[data-component="token-search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with filters' });
   const chips = field.locator('[data-component="token-search-token"]');
-  const helper = demo.getByRole('button', { name: 'Add release tag' });
+  const helper = demo.getByRole('button', { name: 'Add Release Tag' });
   const clear = field.getByRole('button', { name: 'Clear search' });
 
   for (const width of [1100, 390]) {
@@ -403,7 +403,7 @@ test('an app helper replaces DOM-owned draft text from saved search state', asyn
     });
   const field = demo.locator('[data-component="token-search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with filters' });
-  const helper = demo.getByRole('button', { name: 'Load saved search' });
+  const helper = demo.getByRole('button', { name: 'Load Saved Search' });
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });

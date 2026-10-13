@@ -126,7 +126,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             hint="Where this ticket sits in the review workflow."
             placeholder={p}
             choices={[
-              { value: 'review', label: 'In review' },
+              { value: 'review', label: 'In Review' },
               { value: 'ready', label: 'Ready' },
               { value: 'done', label: 'Done' },
             ]}
@@ -176,7 +176,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         {p ? (
           <StateBanner
             tone="info"
-            title="Up to date"
+            title="Up to Date"
             detail="All checks passed on the latest revision."
             icon={icon(FileText, 'file-text')}
             placeholder
@@ -184,7 +184,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         ) : (
           <StateBanner
             tone="success"
-            title="Up to date"
+            title="Up to Date"
             detail="All checks passed on the latest revision."
             icon={icon(FileText, 'file-text')}
           />

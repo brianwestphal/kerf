@@ -93,7 +93,7 @@ function ticketCollectionView(): NavStackView {
     },
     header: (
       <List gap="2xs" textInsets="rl">
-        <ToolbarText text="Ticket queue" headingLevel={3} />
+        <ToolbarText text="Ticket Queue" headingLevel={3} />
         <Text tone="quiet" size="compact">
           Three open tickets
         </Text>
@@ -132,7 +132,7 @@ function ticketDetailView(id: string): NavStackView {
     },
     header: (
       <List gap="2xs" textInsets="rl" controlInsets="rl">
-        <ToolbarText text="Workspace rail detail" headingLevel={3} />
+        <ToolbarText text="Workspace Rail Detail" headingLevel={3} />
         <Text tone="quiet" size="compact">
           Open for review
         </Text>
@@ -406,11 +406,11 @@ export function WorkbenchDemo() {
               <div class="kui-content">
                 <DemoContentItem title="Console" detail="120–320 px tall" />
                 <PopupMenu
-                  text="Create item"
+                  text="Create Item"
                   placement="top-start"
                   items={[
-                    { label: 'New terminal', action: 'create-terminal' },
-                    { label: 'New task', action: 'create-task' },
+                    { label: 'New Terminal', action: 'create-terminal' },
+                    { label: 'New Task', action: 'create-task' },
                   ]}
                 />
               </div>

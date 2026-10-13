@@ -139,6 +139,45 @@ The browser evaluator is different: it runs the application and is disabled by d
 
 An unavailable or failed stage does not prevent independent stages from reporting. Its final exit is still a configuration failure, so a partial run cannot appear clean.
 
+## Interface copy capitalization
+
+The analyzer stage also checks visible label copy against the package
+capitalization rule in [Writing interface copy](./writing.md#capitalization).
+Names of commands, controls, views, and fields use title style, following
+Apple's guidance. `KUI-D040` (warning) reports a string literal passed to a
+known title-style prop that leaves a word lowercase where title style
+capitalizes it. For example, `<wa-button>Save draft</wa-button>` should be
+"Save Draft", and `<ListHeader label="Needs attention" />` should be "Needs
+Attention". The action names the repaired label.
+
+The check reads `.tsx` and `.jsx` source text only and skips test modules.
+It covers these string literals:
+
+- `ToolbarText` titles: text with `headingLevel`, a large size, or in a
+  toolbar or panel `title`, `header`, or (unless small) `leading` slot;
+- `ListHeader`, `ListActionRow`, `SplitButton`, and `Combobox` labels;
+- `EmptyState` and `StateBanner` titles;
+- `PopupMenu` trigger text and item and heading labels, including submenus
+  declared in the same file;
+- `SegmentedControl`, `Select`, and `TabNavigator` choice and tab labels;
+- `NavStack` view titles and `backText`, and `SplitView` `backLabel`;
+- `FieldLabel` text and the static text of a `button` or `wa-button`.
+
+The check is deliberately one-directional, to keep false positives rare:
+
+- It reports only lowercase words. It never reports a capitalized short word,
+  because Apple capitalizes a phrasal verb's particle ("Log In to the
+  Server").
+- It leaves text ending in `.`, `!`, or `?` to sentence style.
+- It ignores dynamic values and every sentence-style surface: descriptions,
+  details, placeholders, tooltips, status text, option text, and
+  accessible-only names.
+- It skips tokens containing digits, code, paths, or URLs, and lowercase-led
+  brands such as iOS and macOS.
+
+Suppress `KUI-D040` for a file whose copy is a lowercase brand or product
+name.
+
 ## Full and changed modes
 
 `--full` is the default and analyzes the selected package. `--changed` reads tracked and untracked paths from Git unless one or more `--path` values are supplied. An empty changed set is a configuration error instead of a false-clean success. With `--package`, workspace-relative Git paths are converted to package-relative paths before TypeScript, ESLint, and analyzer selection; paths outside the selected package are ignored.

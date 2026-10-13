@@ -5,7 +5,7 @@ test('registered dialog names survive slotted labels, header changes and repeate
 }) => {
   await page.goto('/?component=surface-scaffold');
   const dialog = page.locator('#catalog-bounded-dialog');
-  await page.getByRole('button', { name: 'Open bounded dialog' }).click();
+  await page.getByRole('button', { name: 'Open Bounded Dialog' }).click();
   await expect(
     page.getByRole('dialog', { name: 'Close workspace', exact: true }),
   ).toBeVisible();
@@ -47,7 +47,7 @@ test('registered dialog names survive slotted labels, header changes and repeate
   ).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toHaveAttribute('open', '');
-  await page.getByRole('button', { name: 'Open bounded dialog' }).click();
+  await page.getByRole('button', { name: 'Open Bounded Dialog' }).click();
   await expect(
     page.getByRole('dialog', { name: 'Headerless workspace', exact: true }),
   ).toBeVisible();
@@ -68,7 +68,7 @@ test('modal viewport bounds retain actions and native focus across resize and re
 }, testInfo) => {
   await page.setViewportSize({ width: 1100, height: 850 });
   await page.goto('/?component=surface-scaffold');
-  const trigger = page.getByRole('button', { name: 'Open bounded dialog' });
+  const trigger = page.getByRole('button', { name: 'Open Bounded Dialog' });
   await trigger.click();
   const dialog = page.locator('#catalog-bounded-dialog');
   await expect(
@@ -125,7 +125,7 @@ test('modal viewport bounds retain actions and native focus across resize and re
     expect(geometry.maxHeight).toBeCloseTo(viewport.height - 16, 0);
     expect(geometry.bodyOverflow).toBeLessThanOrEqual(1);
     expect(geometry.pageOverflow).toBeLessThanOrEqual(1);
-    for (const name of ['Keep working', 'Stop and close']) {
+    for (const name of ['Keep Working', 'Stop and Close']) {
       const action = dialog.getByRole('button', { name, exact: true });
       await expect(action).toBeVisible();
       const rect = await action.boundingBox();
@@ -152,7 +152,7 @@ test('modal viewport bounds retain actions and native focus across resize and re
   await expect(dialog).not.toHaveAttribute('open', '');
   await expect(trigger).toBeFocused();
   await trigger.click();
-  await dialog.getByRole('button', { name: 'Keep working' }).click();
+  await dialog.getByRole('button', { name: 'Keep Working' }).click();
   await expect(dialog).not.toHaveAttribute('open', '');
 });
 
@@ -161,7 +161,7 @@ test('typed modal cap keeps its footer reachable when the body scrolls', async (
 }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 520 });
   await page.goto('/?component=surface-scaffold');
-  await page.getByRole('button', { name: 'Open capped dialog' }).click();
+  await page.getByRole('button', { name: 'Open Capped Dialog' }).click();
   const dialog = page.locator('#catalog-capped-dialog');
   await expect(dialog).toHaveAttribute('open', '');
   await expect(dialog.getByRole('dialog')).toBeVisible();
@@ -198,13 +198,13 @@ test('typed modal cap keeps its footer reachable when the body scrolls', async (
     )
     .toBe('224px');
   await expect(
-    dialog.getByRole('button', { name: 'Cancel review' }),
+    dialog.getByRole('button', { name: 'Cancel Review' }),
   ).toBeInViewport();
   await page.setViewportSize({ width: 390, height: 520 });
   await page.screenshot({
     path: testInfo.outputPath('capped-modal-phone.png'),
   });
-  await dialog.getByRole('button', { name: 'Cancel review' }).click();
+  await dialog.getByRole('button', { name: 'Cancel Review' }).click();
   await expect(dialog).not.toHaveAttribute('open', '');
 });
 
@@ -214,7 +214,7 @@ test('preferred modal widths override presets without changing side-sheet or ful
   await page.setViewportSize({ width: 1100, height: 850 });
   await page.goto('/?component=surface-scaffold');
   const bounded = page.locator('#catalog-bounded-dialog');
-  await page.getByRole('button', { name: 'Open bounded dialog' }).click();
+  await page.getByRole('button', { name: 'Open Bounded Dialog' }).click();
   await expect(bounded).toHaveAttribute('open', '');
   const panelWidth = (selector: string) =>
     page
@@ -249,7 +249,7 @@ test('preferred modal widths override presets without changing side-sheet or ful
     .toBeCloseTo(1100, 0);
   await page.keyboard.press('Escape');
 
-  await page.getByRole('button', { name: 'Open capped dialog' }).click();
+  await page.getByRole('button', { name: 'Open Capped Dialog' }).click();
   await expect(page.locator('#catalog-capped-dialog')).toHaveAttribute(
     'open',
     '',
@@ -267,7 +267,7 @@ test('applies typed dialog and popup surface geometry', async ({
   const demo = page.locator('[data-demo="surface-scaffold"]');
   await expect(demo).toBeVisible();
 
-  await demo.getByRole('button', { name: 'Open dialog' }).click();
+  await demo.getByRole('button', { name: 'Open Dialog' }).click();
   const dialog = page.locator('#catalog-wa-dialog');
   await expect(dialog).toHaveAttribute('open', '');
   const dialogGeometry = await dialog.evaluate((element) => {
@@ -373,7 +373,7 @@ test('applies typed dialog and popup surface geometry', async ({
   await expect(dialog).not.toHaveAttribute('open', '');
 
   const dropdown = demo.locator('wa-dropdown');
-  await dropdown.getByRole('button', { name: 'Choose view' }).click();
+  await dropdown.getByRole('button', { name: 'Choose View' }).click();
   await expect(dropdown.locator('wa-dropdown-item').first()).toBeVisible();
   expect(
     await dropdown.evaluate(
@@ -440,7 +440,7 @@ test('a definite-height DialogSurface hands its whole body to one filling child'
 }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/?component=surface-scaffold');
-  await page.getByRole('button', { name: 'Open project details' }).click();
+  await page.getByRole('button', { name: 'Open Project Details' }).click();
   const dialog = page.locator('#catalog-filled-dialog');
   await expect(dialog).toHaveAttribute('open', '');
   await expect
@@ -474,9 +474,9 @@ test('PopoverDialogSurface is a centered, bounded, non-modal light-dismiss dialo
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/?component=surface-scaffold');
-    const open = page.getByRole('button', { name: 'Open repository status' });
+    const open = page.getByRole('button', { name: 'Open Repository Status' });
     const surface = page.getByRole('dialog', {
-      name: 'Repository status',
+      name: 'Repository Status',
       exact: true,
     });
     await open.click();
@@ -506,7 +506,7 @@ test('PopoverDialogSurface is a centered, bounded, non-modal light-dismiss dialo
     // Non-modal: the controls behind it are not made inert.
     expect(
       await page
-        .getByRole('button', { name: 'Open project details' })
+        .getByRole('button', { name: 'Open Project Details' })
         .evaluate((element) => element.closest('[inert]') === null),
     ).toBe(true);
     await page.keyboard.press('Escape');
@@ -525,7 +525,7 @@ test('an embedded PopoverDialogSurface renders the same surface in flow', async 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=surface-scaffold');
   const embedded = page.getByRole('dialog', {
-    name: 'Repository status preview',
+    name: 'Repository Status preview',
   });
   await embedded.scrollIntoViewIfNeeded();
   await expect(embedded).toBeVisible();
@@ -563,7 +563,7 @@ test('a host with an explicit dialog role is the only dialog with its name', asy
     element.setAttribute('role', 'dialog');
     element.setAttribute('aria-label', 'Not working');
   });
-  await page.getByRole('button', { name: 'Open bounded dialog' }).click();
+  await page.getByRole('button', { name: 'Open Bounded Dialog' }).click();
   const named = page.getByRole('dialog', { name: 'Not working', exact: true });
   await expect(named).toHaveCount(1);
   expect(
@@ -588,7 +588,7 @@ test('the default dialog close control is a toolbar-sized circle', async ({
   await page.setViewportSize({ width: 1100, height: 850 });
   await page.goto('/?component=surface-scaffold');
   const demo = page.locator('[data-demo="surface-scaffold"]');
-  await demo.getByRole('button', { name: 'Open dialog' }).click();
+  await demo.getByRole('button', { name: 'Open Dialog' }).click();
   const dialog = page.locator('#catalog-wa-dialog');
   await expect(dialog).toHaveAttribute('open', '');
   const close = dialog.locator('[part~="close-button"]');

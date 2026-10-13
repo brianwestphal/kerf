@@ -45,7 +45,7 @@ const profileImageUrl = new URL(
 ).href;
 
 const sortChoices = [
-  { value: 'recent', label: 'Recently updated', icon: CalendarClock },
+  { value: 'recent', label: 'Recently Updated', icon: CalendarClock },
   { value: 'priority', label: 'Priority', icon: Flag },
   { value: 'title', label: 'Title', icon: ArrowDownAZ },
 ];
@@ -121,17 +121,17 @@ export function ToolbarControlGroupDemo() {
             choices={[
               {
                 value: 'list',
-                label: 'List view',
+                label: 'List View',
                 content: <LucideIcon icon={List} name="list" />,
               },
               {
                 value: 'columns',
-                label: 'Columns view',
+                label: 'Columns View',
                 content: <LucideIcon icon={Columns3} name="columns-3" />,
               },
               {
                 value: 'settings',
-                label: 'Settings view',
+                label: 'Settings View',
                 content: <LucideIcon icon={Settings} name="settings" />,
               },
             ]}
@@ -149,7 +149,7 @@ export function ToolbarControlGroupDemo() {
             label="Sort tickets"
             icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
             items={[
-              { label: 'Recently updated', action: 'sort-recent' },
+              { label: 'Recently Updated', action: 'sort-recent' },
               { label: 'Priority', action: 'sort-priority' },
             ]}
           />

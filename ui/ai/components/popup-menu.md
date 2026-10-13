@@ -113,7 +113,7 @@ Headings separate sort dimensions; trailing safe content marks the active comman
 <PopupMenu
   label="Sort chat"
   items={[
-    { kind: 'heading', label: 'Sort by' },
+    { kind: 'heading', label: 'Sort By' },
     {
       label: 'Updated',
       action: 'sort-updated',
@@ -126,7 +126,7 @@ Headings separate sort dimensions; trailing safe content marks the active comman
     },
     { kind: 'heading', label: 'Order' },
     {
-      label: 'Newest first',
+      label: 'Newest First',
       action: 'order-newest',
       details: order === 'newest' ? tick : undefined,
     },

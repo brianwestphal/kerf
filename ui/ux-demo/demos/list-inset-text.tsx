@@ -25,7 +25,7 @@ export function ListInsetTextDemo() {
         <DemoListInsetPane>
           <StateBanner
             tone="neutral"
-            title="A content item, for reference"
+            title="A Content Item, for Reference"
             detail="Note where its title text starts."
             icon={<LucideIcon icon={Check} name="check" />}
           />

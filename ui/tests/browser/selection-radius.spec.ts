@@ -88,7 +88,7 @@ test('keeps toolbar selections concentric with pill and rounded group shapes', a
   const selectedView = demo
     .locator(':scope > [data-catalog-example]')
     .filter({ has: page.getByText('Segmented choices', { exact: true }) })
-    .getByRole('button', { name: 'List view', exact: true });
+    .getByRole('button', { name: 'List View', exact: true });
   const viewGroup = selectedView.locator(
     'xpath=ancestor::*[@data-component="toolbar-control-group"]',
   );

@@ -27,7 +27,7 @@ export function ComboboxDemo() {
           <ListInsetControl sides="rl">
             <Combobox
               id="demo-tag-combobox"
-              label="Tag name"
+              label="Tag Name"
               placeholder="Search or create a tag"
               hint="Press Enter to add"
               suggestions={tagSuggestions.filter((tag) => !tags.includes(tag))}

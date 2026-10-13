@@ -55,7 +55,7 @@ export function ChoiceChipsDemo() {
             data-action="show-wa-dialog"
             data-dialog-id="choice-chips-dialog"
           >
-            Edit command
+            Edit Command
           </wa-button>
           <wa-dialog id="choice-chips-dialog" label="Edit command">
             <form id="choice-chips-dialog-form">

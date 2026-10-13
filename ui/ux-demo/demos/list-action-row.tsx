@@ -42,7 +42,7 @@ export function ListActionRowDemo() {
       </CatalogExample>
       <CatalogExample align="none">
         <ListActionRow
-          label="Run tests"
+          label="Run Tests"
           description="npm test"
           icon={<LucideIcon icon={Terminal} name="terminal" />}
           action="select-list-action-row"
@@ -113,7 +113,7 @@ export function ListActionRowDemo() {
       </CatalogExample>
       <CatalogExample align="none">
         <ListActionRow
-          label="Unavailable primary"
+          label="Unavailable Primary"
           action="select-list-action-row"
           itemId="disabled-primary"
           selected={menuActionCurrent.value === 'disabled-primary'}
@@ -128,7 +128,7 @@ export function ListActionRowDemo() {
       </CatalogExample>
       <CatalogExample align="none">
         <ListActionRow
-          label="Unavailable trailing action"
+          label="Unavailable Trailing Action"
           action="select-list-action-row"
           itemId="disabled-trailing"
           selected={menuActionCurrent.value === 'disabled-trailing'}
@@ -144,7 +144,7 @@ export function ListActionRowDemo() {
       </CatalogExample>
       <CatalogExample align="none">
         <ListActionRow
-          label="Loading file"
+          label="Loading File"
           description="Loading description"
           status="Syncing"
           busy
@@ -187,7 +187,7 @@ export function ListActionRowDemo() {
       <CatalogExample label="Dragging and insertion states" align="none">
         <List>
           <ListActionRow
-            label="Drops above this row"
+            label="Drops Above This Row"
             action="select-list-action-row"
             itemId="reorder-before"
             draggable
@@ -199,7 +199,7 @@ export function ListActionRowDemo() {
             }
           />
           <ListActionRow
-            label="Row being dragged"
+            label="Row Being Dragged"
             action="select-list-action-row"
             itemId="reorder-dragging"
             draggable
@@ -211,7 +211,7 @@ export function ListActionRowDemo() {
             }
           />
           <ListActionRow
-            label="Drops below this row"
+            label="Drops Below This Row"
             action="select-list-action-row"
             itemId="reorder-after"
             draggable
@@ -226,7 +226,7 @@ export function ListActionRowDemo() {
       </CatalogExample>
       <DemoListPopover id="list-action-row-popover" label="File actions">
         <button type="button" data-action="log-more">
-          Open details
+          Open Details
         </button>
       </DemoListPopover>
     </CatalogExampleStack>

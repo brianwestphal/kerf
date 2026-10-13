@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 357800,
-  "measuredLargestJavaScriptGzip": 140571,
-  "measuredTotalJavaScriptGzip": 357703,
+  "totalJavaScriptGzip": 358000,
+  "measuredLargestJavaScriptGzip": 140697,
+  "measuredTotalJavaScriptGzip": 357901,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3939,6 +3939,22 @@
         "measuredTotalJavaScriptGzip": 357703,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 357800
+      }
+    },
+    {
+      "at": "2026-10-13T08:17:37.605Z",
+      "reason": "title-style capitalization of demo labels (KF-6VWSV4) changes gzip compression of demo copy",
+      "old": {
+        "measuredLargestJavaScriptGzip": 140571,
+        "measuredTotalJavaScriptGzip": 357703,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 140697,
+        "measuredTotalJavaScriptGzip": 357901,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 358000
       }
     }
   ]

@@ -163,7 +163,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
     if (id === 'recipe-list-detail-dialog') {
       const dialog = projectDialog(page);
       await activateDialogAndWaitForShow(dialog, () =>
-        recipe.getByRole('button', { name: 'Open project details' }).click(),
+        recipe.getByRole('button', { name: 'Open Project Details' }).click(),
       );
       if (browserName === 'chromium')
         await page.screenshot({
@@ -217,7 +217,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
   const intermediateDialog = projectDialog(page);
   await activateDialogAndWaitForShow(intermediateDialog, () =>
     intermediateDialogRecipe
-      .getByRole('button', { name: 'Open project details' })
+      .getByRole('button', { name: 'Open Project Details' })
       .click(),
   );
   expect(
@@ -289,7 +289,7 @@ test('lays the project dialog out as a workbench on roomy devices and a drill-do
     const recipe = await openRecipe(page, 'recipe-list-detail-dialog');
     const dialog = projectDialog(page);
     await activateDialogAndWaitForShow(dialog, () =>
-      recipe.getByRole('button', { name: 'Open project details' }).click(),
+      recipe.getByRole('button', { name: 'Open Project Details' }).click(),
     );
     expect(
       await page.evaluate(
@@ -433,7 +433,7 @@ test('lays the project dialog out as a workbench on roomy devices and a drill-do
     await expect(
       dialog.locator('.kui-value-table', { hasText: 'Sam Rivera' }),
     ).toBeVisible();
-    await dialog.getByRole('button', { name: 'Back to projects' }).click();
+    await dialog.getByRole('button', { name: 'Back to Projects' }).click();
     await expect(stack).toHaveAttribute('data-depth', '1');
 
     await page.keyboard.press('Escape');
@@ -595,7 +595,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
     );
     await expect(form.locator('[data-component="toolbar"]')).toHaveCount(1);
     await expect(form.locator('#recipe-composer-title')).toHaveText(
-      'Publish workspace update',
+      'Publish Workspace Update',
     );
     await expect(form.locator('#recipe-composer-summary')).toHaveText(
       'Share a concise, actionable update with collaborators.',
@@ -619,7 +619,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
       await expect(form.locator(field)).toBeVisible();
     await expect(form.getByRole('button', { name: 'Reset' })).toBeVisible();
     await expect(
-      form.getByRole('button', { name: 'Publish update' }),
+      form.getByRole('button', { name: 'Publish Update' }),
     ).toBeVisible();
 
     const measured = await geometry();
@@ -686,8 +686,8 @@ test('keeps the composer on one labeled surface with shared field and action gut
     await form.screenshot({ path: 'test-results/composer-layout-dark.png' });
 
   await page.goto('/?component=recipe-composer-form');
-  await form.getByRole('button', { name: 'Publish update' }).click();
-  await expect(form.getByRole('alert')).toContainText('Add a title');
+  await form.getByRole('button', { name: 'Publish Update' }).click();
+  await expect(form.getByRole('alert')).toContainText('Add a Title');
   await expectLayout(1, 'alert');
   if (browserName === 'chromium')
     await form.screenshot({ path: 'test-results/composer-layout-error.png' });
@@ -708,8 +708,8 @@ test('keeps the composer on one labeled surface with shared field and action gut
         new Event('input', { bubbles: true, composed: true }),
       );
     });
-  await form.getByRole('button', { name: 'Publish update' }).click();
-  await expect(form.getByRole('status')).toContainText('Update published');
+  await form.getByRole('button', { name: 'Publish Update' }).click();
+  await expect(form.getByRole('status')).toContainText('Update Published');
   await expectLayout(1, 'status');
   if (browserName === 'chromium')
     await form.screenshot({ path: 'test-results/composer-layout-success.png' });
@@ -764,7 +764,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
     await page.setViewportSize({ width: 1100, height: 1000 });
     await page.goto('/?component=recipe-composer-form');
     await page.emulateMedia({ forcedColors: 'active' });
-    await form.getByRole('button', { name: 'Publish update' }).click();
+    await form.getByRole('button', { name: 'Publish Update' }).click();
     await expectLayout(1, 'alert');
     const forcedBoundaries = await form.evaluate((root) => {
       const banner = root.querySelector<HTMLElement>(
@@ -915,7 +915,7 @@ test('runs dialog focus lifecycle, form validation, and every list transition', 
 }) => {
   const dialogRecipe = await openRecipe(page, 'recipe-list-detail-dialog');
   const launcher = dialogRecipe.getByRole('button', {
-    name: 'Open project details',
+    name: 'Open Project Details',
   });
   await launcher.focus();
   const dialog = projectDialog(page);
@@ -929,8 +929,8 @@ test('runs dialog focus lifecycle, form validation, and every list transition', 
   await expect(launcher).toBeFocused();
 
   const form = await openRecipe(page, 'recipe-composer-form');
-  await form.getByRole('button', { name: 'Publish update' }).click();
-  await expect(form.getByRole('alert')).toContainText('Add a title');
+  await form.getByRole('button', { name: 'Publish Update' }).click();
+  await expect(form.getByRole('alert')).toContainText('Add a Title');
   await form
     .locator('wa-input[name="recipe-title"]')
     .evaluate((element: HTMLElement & { value: string }) => {
@@ -939,24 +939,24 @@ test('runs dialog focus lifecycle, form validation, and every list transition', 
         new Event('input', { bubbles: true, composed: true }),
       );
     });
-  await form.getByRole('button', { name: 'Publish update' }).click();
-  await expect(form.getByRole('status')).toContainText('Update published');
+  await form.getByRole('button', { name: 'Publish Update' }).click();
+  await expect(form.getByRole('status')).toContainText('Update Published');
 
   const list = await openRecipe(page, 'recipe-list-workspace-states');
   for (const [button, state] of [
-    ['Complete load', 'populated'],
+    ['Complete Load', 'populated'],
     ['Refresh', 'stale'],
-    ['Finish refresh', 'populated'],
+    ['Finish Refresh', 'populated'],
     ['Clear', 'empty'],
-    ['Create task', 'populated'],
-    ['Simulate failure', 'error'],
+    ['Create Task', 'populated'],
+    ['Simulate Failure', 'error'],
     ['Retry', 'populated'],
   ] as const) {
     await list.getByRole('button', { name: button }).click();
     await expect(list).toHaveAttribute('data-list-state', state);
   }
   if (browserName === 'chromium') {
-    await list.getByRole('button', { name: 'Simulate failure' }).click();
+    await list.getByRole('button', { name: 'Simulate Failure' }).click();
     await page.locator('[data-action="toggle-contrast"]').click();
     await list.screenshot({
       path: 'test-results/recipe-list-error-contrast.png',
@@ -980,7 +980,7 @@ test('preserves reduced-motion and high-contrast semantics', async ({
       reducedMotion: 'reduce',
     });
     await expect(
-      list.getByRole('button', { name: 'Complete load' }),
+      list.getByRole('button', { name: 'Complete Load' }),
     ).toBeVisible();
   }
 });

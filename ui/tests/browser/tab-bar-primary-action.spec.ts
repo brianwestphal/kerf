@@ -10,8 +10,8 @@ test('standalone tab bar actions stay visible while the tabs scroll', async ({
   const adjacent = bar.locator('.kui-tab-bar__trailing > wa-button');
   const primary = bar.locator('.kui-tab-bar__end > wa-button');
 
-  await expect(adjacent).toHaveText('Add tab');
-  await expect(primary).toHaveText('New ticket…');
+  await expect(adjacent).toHaveText('Add Tab');
+  await expect(primary).toHaveText('New Ticket…');
   await expect(bar.locator('.kui-toolbar-control-group')).toHaveCount(0);
   await bar.evaluate((element) => {
     element.style.width = '680px';

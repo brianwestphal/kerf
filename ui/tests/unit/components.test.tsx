@@ -277,7 +277,7 @@ describe('production UI primitives', () => {
     const overlay = asHtml(
       PopoverDialogSurface({
         id: 'repo-status',
-        label: 'Repository status',
+        label: 'Repository Status',
         height: px(640),
         preferredWidth: px(1024),
         viewportGutter: px(8),
@@ -293,7 +293,7 @@ describe('production UI primitives', () => {
     expect(overlay).toContain('id="repo-status"');
     expect(overlay).toContain('popover="auto"');
     expect(overlay).toContain('role="dialog"');
-    expect(overlay).toContain('aria-label="Repository status"');
+    expect(overlay).toContain('aria-label="Repository Status"');
     expect(overlay).toContain('data-presentation="overlay"');
     expect(overlay).not.toContain('spoofed');
     expect(overlay).toContain('data-view="changes"');
@@ -2071,7 +2071,7 @@ describe('production UI primitives', () => {
 
     const independentlyDisabled = asHtml(
       ListActionRow({
-        label: 'Unavailable primary',
+        label: 'Unavailable Primary',
         action: 'select-disabled',
         disabled: true,
         trailingAction: 'available-actions',

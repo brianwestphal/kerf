@@ -16,7 +16,7 @@ for (const width of [1100, 390]) {
       element
         .querySelector('wa-option')!
         .append(
-          ' — Attention needed for project configuration and deployment settings',
+          ' — Attention Needed for Project Configuration and Deployment Settings',
         );
     });
     for (const left of [0, 86, width - 68]) {

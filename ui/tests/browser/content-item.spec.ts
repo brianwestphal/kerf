@@ -231,7 +231,7 @@ test('multi-select rich rows keep selection and nested controls independent', as
   const second = grid.getByRole('row', { name: 'Demand line B' });
   await expect(grid).toHaveAttribute('aria-multiselectable', 'true');
   await expect(first).toHaveAttribute('aria-selected', 'false');
-  await expect(first.getByRole('gridcell')).toContainText('Open quote');
+  await expect(first.getByRole('gridcell')).toContainText('Open Quote');
   await first.focus();
   await first.press('Enter');
   await expect(first).toHaveAttribute('aria-selected', 'true');
@@ -246,9 +246,9 @@ test('multi-select rich rows keep selection and nested controls independent', as
   await expect(page.locator('.catalog-log')).toHaveText('Decision: approve');
   await expect(first).toHaveAttribute('aria-selected', 'true');
   const menu = first.locator('[data-component="popup-menu"]');
-  await menu.getByRole('button', { name: 'More actions' }).press('Enter');
+  await menu.getByRole('button', { name: 'More Actions' }).press('Enter');
   await expect(first).toHaveAttribute('aria-selected', 'true');
-  await menu.getByRole('menuitem', { name: 'Show details' }).click();
+  await menu.getByRole('menuitem', { name: 'Show Details' }).click();
   await expect(page.locator('.catalog-log')).toHaveText(
     'More actions requested',
   );

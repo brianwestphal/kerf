@@ -60,7 +60,7 @@ export const cases: Record<string, Case> = {
     <ValueTable label="Details">
       <ValueTableRow
         label="Status"
-        value="In review"
+        value="In Review"
         icon={inbox()}
         placeholder={placeholder}
       />
@@ -341,7 +341,7 @@ export const cases: Record<string, Case> = {
   'state-banner': (placeholder) => (
     <StateBanner
       tone="success"
-      title="Up to date"
+      title="Up to Date"
       detail="All checks passed on the latest revision."
       icon={file()}
       placeholder={placeholder}
@@ -364,7 +364,7 @@ export const cases: Record<string, Case> = {
       hint="Where this ticket sits in the review workflow."
       placeholder={placeholder}
       choices={[
-        { value: 'review', label: 'In review' },
+        { value: 'review', label: 'In Review' },
         { value: 'done', label: 'Done' },
       ]}
     />

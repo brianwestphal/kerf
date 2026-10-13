@@ -27,7 +27,7 @@ export function EdgeActivityIndicatorDemo() {
             aria-pressed={edgeActivityMessage.value ? 'true' : 'false'}
             data-action="toggle-edge-activity-message-demo"
           >
-            Status pill
+            Status Pill
           </button>
         </ToolbarControlGroup>
         <EdgeActivityIndicator

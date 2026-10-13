@@ -118,7 +118,7 @@ describe('production composition recipes', () => {
     input.value = 'Shipped';
     form.change?.(input);
     form.action('submit', target());
-    expect(html(form.render())).toContain('Update published');
+    expect(html(form.render())).toContain('Update Published');
 
     const toolbar = createCompactToolbar(() => {});
     toolbar.action('filter', target());
@@ -164,7 +164,7 @@ describe('production composition recipes', () => {
       stack.querySelector(':scope > .kui-list > [data-component="toolbar"]'),
     ).not.toBeNull();
     expect(root.querySelector('#recipe-composer-title')?.textContent).toBe(
-      'Publish workspace update',
+      'Publish Workspace Update',
     );
     expect(root.querySelector('#recipe-composer-summary')?.textContent).toBe(
       'Share a concise, actionable update with collaborators.',
@@ -214,7 +214,7 @@ describe('production composition recipes', () => {
     body.value = 'Updated draft content';
     recipe.change?.(body);
     recipe.action('submit', reset);
-    expect(html(recipe.render())).toContain('Update published');
+    expect(html(recipe.render())).toContain('Update Published');
 
     recipe.action('reset', reset);
     expect(title.value).toBe('');
@@ -223,7 +223,7 @@ describe('production composition recipes', () => {
     expect(resetMarkup).toContain('name="recipe-title"');
     expect(resetMarkup).toContain('name="recipe-body"');
     expect(resetMarkup).not.toContain('Updated draft content');
-    expect(resetMarkup).not.toContain('Update published');
+    expect(resetMarkup).not.toContain('Update Published');
     const template = document.createElement('template');
     template.innerHTML = resetMarkup;
     expect(
@@ -313,8 +313,8 @@ describe('production composition recipes', () => {
     const stop = mountCommandPaletteAdapter(
       root,
       [
-        { id: 'open', label: 'Open project', keywords: ['workspace'] },
-        { id: 'publish', label: 'Publish update' },
+        { id: 'open', label: 'Open Project', keywords: ['workspace'] },
+        { id: 'publish', label: 'Publish Update' },
       ],
       {
         onClose: () => {

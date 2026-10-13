@@ -14,14 +14,14 @@ export function CornerStatusDemo() {
       >
         <ToolbarControlGroup single>
           <button type="button" popoverTarget="catalog-corner-status">
-            Toggle loading status
+            Toggle Loading Status
           </button>
         </ToolbarControlGroup>
         <CornerStatus id="catalog-corner-status">
           <StateBanner
             tone="neutral"
             urgency="status"
-            title="Updating tickets… 3 of 12"
+            title="Updating Tickets… 3 of 12"
             icon={<LoadingSpinner label="Updating tickets" size={16.8} />}
           />
         </CornerStatus>
@@ -41,7 +41,7 @@ export function CornerStatusDemo() {
           <StateBanner
             tone="info"
             urgency="status"
-            title="Syncing 2 providers"
+            title="Syncing 2 Providers"
             icon={<LoadingSpinner label="Syncing providers" size={16.8} />}
           />
         </CornerStatus>

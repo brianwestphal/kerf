@@ -585,6 +585,13 @@ appearing clean. Full traversal applies the same generated-directory boundary
 stages do not import application modules; only the
 explicit browser stage executes a running app. See `ui/docs/ui-doctor.md`.
 
+Interface copy follows one package-wide capitalization rule, adapted from
+Apple's guidance (`ui/docs/writing.md`). Names of commands, controls, views,
+and fields use title style; descriptions, messages, tooltips, placeholders,
+option text, and status use sentence style. The doctor's `KUI-D040` warning
+reports lowercase words in string literals passed to known title-style label
+props. It never judges sentence-style surfaces or dynamic values.
+
 Each catalog entry's `publicClasses` array is the exact stable CSS-anatomy
 boundary. Applications should prefer an equivalent component prop or semantic
 token; composition-specific selectors may join cataloged public classes, but

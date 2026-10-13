@@ -13,12 +13,12 @@ describe('SplitViewDemo', () => {
     let html = String(SplitViewDemo());
     expect(html).toContain('id="catalog-split-view-compact-stack"');
     expect(html).toContain('data-depth="1"');
-    expect(html).not.toContain('Back to inbox');
+    expect(html).not.toContain('Back to Inbox');
 
     selectSplitViewMessage('design-review');
     html = String(SplitViewDemo());
     expect(html).toContain('data-depth="2"');
-    expect(html).toContain('Back to inbox');
+    expect(html).toContain('Back to Inbox');
     expect(html).toContain('Today’s review notes');
 
     clearSplitViewSelection();

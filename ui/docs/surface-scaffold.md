@@ -86,7 +86,7 @@ itself stops scrolling. Combine it with `bodyInset="none"`.
 
 ```tsx
 <DialogSurface size="large" height={remify(640)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill">
-  <wa-dialog label="Repository status">
+  <wa-dialog label="Repository Status">
     <SplitView id="repo-split" label="Changes" listWidth={{ size: 432, maxFraction: 0.5 }} list={list} detail={detail} />
   </wa-dialog>
 </DialogSurface>;
@@ -121,8 +121,8 @@ layer and never wider than its container, for a catalog specimen or an inline
 preview.
 
 ```tsx
-<button type="button" popoverTarget="repository-status">Repository status</button>
-<PopoverDialogSurface id="repository-status" label="Repository status" preferredWidth={remify(1024)} height={remify(640)} viewportGutter={remify(8)} bodyLayout="fill">
+<button type="button" popoverTarget="repository-status">Repository Status</button>
+<PopoverDialogSurface id="repository-status" label="Repository Status" preferredWidth={remify(1024)} height={remify(640)} viewportGutter={remify(8)} bodyLayout="fill">
   <SplitView id="repo-split" label="Changes" list={list} detail={detail} />
 </PopoverDialogSurface>;
 ```

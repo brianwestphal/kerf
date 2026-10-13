@@ -14,11 +14,11 @@ export function ListHeaderDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'list-header' }}>
       <CatalogExample label="Label sizes" align="none">
         <List gap="xs" rootAttributes={{ 'data-demo-list-header-sizes': '' }}>
-          <ListHeader label="Extra small" size="xs" headingLevel={3} />
+          <ListHeader label="Extra Small" size="xs" headingLevel={3} />
           <ListHeader label="Small" size="sm" headingLevel={3} />
           <ListHeader label="Medium" size="m" headingLevel={3} />
           <ListHeader label="Large" size="l" headingLevel={3} />
-          <ListHeader label="Extra large" size="xl" headingLevel={3} />
+          <ListHeader label="Extra Large" size="xl" headingLevel={3} />
         </List>
       </CatalogExample>
       <CatalogExample align="none">
@@ -35,7 +35,7 @@ export function ListHeaderDemo() {
         <Row vAlign="middle">
           <Text variant="span">Queue:</Text>
           <ListHeader
-            label="Inline queue"
+            label="Inline Queue"
             count={12}
             countLabel="12 queued items"
             action="log-add"
@@ -51,7 +51,7 @@ export function ListHeaderDemo() {
       </CatalogExample>
       <CatalogExample align="none">
         <ListHeader
-          label="Needs attention"
+          label="Needs Attention"
           status={<span>3 blocked</span>}
           indicatorTone="danger"
           density="compact"

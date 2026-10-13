@@ -23,7 +23,7 @@ export function LayoutDemo() {
               label="Semantic layout"
               leading={
                 <ToolbarText
-                  text="Semantic layout"
+                  text="Semantic Layout"
                   size="xlarge"
                   id="layout-title"
                 />
@@ -31,7 +31,7 @@ export function LayoutDemo() {
               trailing={
                 <ToolbarControlGroup appearance="borderless" single>
                   <button type="button" data-action="log-add">
-                    New item
+                    New Item
                   </button>
                 </ToolbarControlGroup>
               }
@@ -47,9 +47,9 @@ export function LayoutDemo() {
           </wa-card>
           <Row controlInsets="l">
             <wa-button variant="brand" data-action="log-add">
-              Primary action
+              Primary Action
             </wa-button>
-            <wa-button data-action="log-more">Secondary action</wa-button>
+            <wa-button data-action="log-more">Secondary Action</wa-button>
           </Row>
           <Text>24px major rhythm · 8px internal rhythm</Text>
         </Pane>

@@ -545,7 +545,7 @@ export const COMPONENTS = {
             presentation: 'strip',
             tone: 'warning',
             icon: glyph(TriangleAlert, 'triangle-alert'),
-            title: 'Notifications paused',
+            title: 'Notifications Paused',
             detail: 'Desktop alerts resume when you reconnect.',
             copyLayout: 'stacked',
             action: raw(pushButton('Resume')),
@@ -926,7 +926,7 @@ export const COMPONENTS = {
         id: 'default',
         label: 'Default',
         height: 36,
-        render: () => ToolbarText({ text: 'Workspace settings' }),
+        render: () => ToolbarText({ text: 'Workspace Settings' }),
       },
       {
         id: 'small',

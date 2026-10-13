@@ -317,7 +317,7 @@ test('Pane and the migrated catalog remain coherent at a narrow viewport', async
     });
 });
 
-test('Pane header toolbar and ListHeader trailing actions share one axis', async ({
+test('Pane Header toolbar and ListHeader trailing actions share one axis', async ({
   page,
 }) => {
   for (const width of [1200, 390]) {

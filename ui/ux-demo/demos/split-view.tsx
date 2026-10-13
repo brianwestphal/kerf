@@ -289,7 +289,7 @@ export function SplitViewDemo() {
           detailActive={Boolean(compactSelection)}
           listTitle="Inbox"
           detailTitle={compactSelection?.subject ?? ''}
-          backLabel="Back to inbox"
+          backLabel="Back to Inbox"
           compactStack={{
             toolbarConfig: { headingLevel: 2, dividerSides: 'b' },
             list: {

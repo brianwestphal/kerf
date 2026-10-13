@@ -15,14 +15,14 @@ describe('FieldLabel', () => {
     const html = String(
       FieldLabel({
         id: 'needed-by-label',
-        children: 'Needed by',
+        children: 'Needed By',
         className: 'app-field',
       }),
     );
     expect(html).toContain('<div id="needed-by-label"');
     expect(html).toContain('class="kui-text__field-label app-field"');
     expect(html).toContain('data-component="field-label"');
-    expect(html).toContain('>Needed by</div>');
+    expect(html).toContain('>Needed By</div>');
     expect(html).not.toContain('<label');
   });
 });

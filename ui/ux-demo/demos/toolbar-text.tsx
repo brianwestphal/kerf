@@ -14,17 +14,17 @@ export function ToolbarTextDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'toolbar-text' }}>
       <CatalogExample label="Extra large" align="inline-control">
-        <ToolbarText text="Workspace settings" size="xlarge" />
+        <ToolbarText text="Workspace Settings" size="xlarge" />
       </CatalogExample>
       <CatalogExample label="Fixed extra large" align="inline-control">
         <ToolbarText
-          text="Terminal tickets"
+          text="Terminal Tickets"
           size="xlarge-fixed"
           headingLevel={2}
         />
       </CatalogExample>
       <CatalogExample label="Large" align="inline-control">
-        <ToolbarText text="Component library" size="large" />
+        <ToolbarText text="Component Library" size="large" />
       </CatalogExample>
       <CatalogExample label="Default" align="inline-control">
         <ToolbarText text="Saved just now" />
@@ -72,7 +72,7 @@ export function ToolbarTextDemo() {
           leading={
             <>
               <ToolbarText
-                text="Annual maintenance procurement plan"
+                text="Annual Maintenance Procurement Plan"
                 size="large"
                 action="edit-toolbar-title"
               />
@@ -111,7 +111,7 @@ export function ToolbarTextDemo() {
                 <LucideIcon icon={SquareTerminal} name="square-terminal" />
               </ToolbarControlGroup>
               <ToolbarText
-                text="Custom commands"
+                text="Custom Commands"
                 size="xlarge"
                 headingLevel={2}
                 id="toolbar-text-description-title"
@@ -132,7 +132,7 @@ export function ToolbarTextDemo() {
           label="Repository status heading"
           leading={
             <ToolbarText
-              text="Repository status"
+              text="Repository Status"
               size="xlarge"
               description="Working tree is clean"
             />

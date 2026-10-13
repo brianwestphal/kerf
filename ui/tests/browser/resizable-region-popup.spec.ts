@@ -9,7 +9,7 @@ test('ResizableRegion releases clipping only during its descendant PopupMenu lif
   );
   const content = region.locator(':scope > .kui-resizable-region__content');
   const menu = region.locator('wa-dropdown.kui-popup-menu');
-  const trigger = menu.getByRole('button', { name: 'Create item' });
+  const trigger = menu.getByRole('button', { name: 'Create Item' });
   await expect(region).toHaveAttribute('data-content-overflow', 'clip');
   await expect(content).toHaveCSS('overflow', 'hidden');
   for (let cycle = 0; cycle < 2; cycle++) {
@@ -18,9 +18,9 @@ test('ResizableRegion releases clipping only during its descendant PopupMenu lif
     await expect(region).toHaveCSS('z-index', '5');
     await expect(content).toHaveCSS('overflow', 'visible');
     await expect(
-      menu.getByRole('menuitem', { name: 'New terminal' }),
+      menu.getByRole('menuitem', { name: 'New Terminal' }),
     ).toBeVisible();
-    await menu.getByRole('menuitem', { name: 'New terminal' }).click();
+    await menu.getByRole('menuitem', { name: 'New Terminal' }).click();
     await expect(menu).not.toHaveAttribute('open');
     await expect(content).toHaveCSS('overflow', 'hidden');
   }
@@ -36,7 +36,7 @@ test('resizable Workbench drawer releases rail and content clipping for PopupMen
   );
   const content = drawer.locator(':scope > .kui-workbench__panel-content');
   const menu = drawer.locator('wa-dropdown.kui-popup-menu');
-  const trigger = menu.getByRole('button', { name: 'Create item' });
+  const trigger = menu.getByRole('button', { name: 'Create Item' });
   await expect(drawer).toHaveAttribute('data-content-overflow', 'auto');
   await expect(content).toHaveCSS('overflow', 'auto');
   await trigger.click();
@@ -44,7 +44,7 @@ test('resizable Workbench drawer releases rail and content clipping for PopupMen
   await expect(drawer).toHaveCSS('overflow', 'visible');
   await expect(drawer).toHaveCSS('z-index', '5');
   await expect(content).toHaveCSS('overflow', 'visible');
-  const item = menu.getByRole('menuitem', { name: 'New terminal' });
+  const item = menu.getByRole('menuitem', { name: 'New Terminal' });
   await expect(item).toBeVisible();
   expect((await item.boundingBox())!.y).toBeLessThan(
     (await drawer.boundingBox())!.y,

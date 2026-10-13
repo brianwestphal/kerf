@@ -111,6 +111,14 @@ Use the shortest understandable, recoverable interaction. Avoid modes, dialogs, 
 
 Reuse a component when surfaces share its purpose, anatomy, state model, and interaction behavior—not merely its appearance. Components expose semantic actions and explicit variants. Product-specific copy, transport, persistence, and domain states stay in application adapters.
 
+### Words follow one capitalization rule
+
+Inconsistent capitalization reads as unfinished. Kerf follows Apple's
+per-element convention: anything that names a command, control, view, or
+field is title style ("Save Draft", "Workspace Settings"), and anything that
+describes, explains, or reports is sentence style ("Saved just now"). Apply it
+the same way on every screen; see [Writing interface copy](./writing.md).
+
 ### Use a finite vocabulary
 
 Color, type, spacing, radius, elevation, and motion express semantic roles. Prefer package tokens over raw values in consuming code. State is never communicated by color alone.

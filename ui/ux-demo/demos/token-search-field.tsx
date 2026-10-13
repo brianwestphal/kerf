@@ -99,14 +99,14 @@ export function TokenSearchFieldDemo() {
             appearance="outlined"
             data-action="commit-grammar-release"
           >
-            Add release tag
+            Add Release Tag
           </wa-button>
           <wa-button
             size="small"
             appearance="outlined"
             data-action="replace-grammar-search"
           >
-            Load saved search
+            Load Saved Search
           </wa-button>
           <Text
             variant="span"

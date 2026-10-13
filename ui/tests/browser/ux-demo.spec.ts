@@ -695,7 +695,7 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
   const example = page.locator('[data-demo-toolbar-text-action]');
   const toolbar = example.locator('.kui-toolbar');
   const title = example.getByRole('button', {
-    name: 'Annual maintenance procurement plan',
+    name: 'Annual Maintenance Procurement Plan',
   });
   const chip = example.locator('.kui-chip');
   await expect(
@@ -1296,7 +1296,7 @@ test('aligns the layout demo action buttons with the card border above them', as
   await page.goto('/?component=layout');
   const demo = page.locator('[data-demo="layout"]');
   const surface = demo.locator('wa-card[appearance="outlined"]');
-  const primary = demo.getByRole('button', { name: 'Primary action' });
+  const primary = demo.getByRole('button', { name: 'Primary Action' });
   await expect(surface).toBeVisible();
   const [surfaceLeft, buttonLeft] = await Promise.all([
     surface.evaluate((el) => el.getBoundingClientRect().left),
@@ -2507,7 +2507,7 @@ test('routes the generated application-layout composition at wide and narrow siz
       .locator('.kui-content')
       .evaluate((element) => window.getComputedStyle(element).rowGap),
   );
-  await demo.getByRole('button', { name: 'Primary action' }).click();
+  await demo.getByRole('button', { name: 'Primary Action' }).click();
   await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
   if (browserName === 'chromium') {
     await page.screenshot({
@@ -2534,7 +2534,7 @@ test('routes the generated application-layout composition at wide and narrow siz
   );
   expect(narrowGap).toBe(wideGap);
   await expect(
-    demo.getByRole('button', { name: 'Secondary action' }),
+    demo.getByRole('button', { name: 'Secondary Action' }),
   ).toBeVisible();
   if (browserName === 'chromium')
     await page.screenshot({
@@ -3541,7 +3541,7 @@ test('hides and restores the Dialog header actions through the public host class
 }, testInfo) => {
   await page.setViewportSize({ width: 1100, height: 850 });
   await page.goto('/?component=wa-dialog');
-  await page.getByRole('button', { name: 'Open dialog' }).click();
+  await page.getByRole('button', { name: 'Open Dialog' }).click();
   const dialog = page.locator('#catalog-wa-dialog');
   await expect(dialog).toHaveClass(/\bhide-actions\b/);
 
@@ -3616,7 +3616,7 @@ test('renders and operates representative focused Web Awesome specimens', async 
   }
 
   await page.goto('/?component=wa-dialog');
-  await page.getByRole('button', { name: 'Open dialog' }).click();
+  await page.getByRole('button', { name: 'Open Dialog' }).click();
   await expect(page.locator('#catalog-wa-dialog')).toHaveAttribute('open', '');
   await expect
     .poll(() =>
@@ -3998,7 +3998,7 @@ test('toast specimen creates a visible transient notification', async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-toast');
-  await page.getByRole('button', { name: 'Show toast' }).click();
+  await page.getByRole('button', { name: 'Show Toast' }).click();
   const createdToast = page.locator('#catalog-wa-toast wa-toast-item');
   await expect(createdToast).toContainText('The component catalog is ready.');
   await expect(createdToast).toBeVisible();
@@ -4710,7 +4710,7 @@ test('observer specimens expose visible, user-driven events', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=wa-intersection-observer');
   const intersection = page.locator('[data-observer-demo="intersection"]');
-  await intersection.getByRole('button', { name: 'Reveal target' }).click();
+  await intersection.getByRole('button', { name: 'Reveal Target' }).click();
   await expect(intersection.locator('[data-observer-output]')).toContainText(
     'Target visible',
   );
@@ -4725,7 +4725,7 @@ test('observer specimens expose visible, user-driven events', async ({
 
   await page.goto('/?component=wa-mutation-observer');
   const mutation = page.locator('[data-observer-demo="mutation"]');
-  await mutation.getByRole('button', { name: 'Mutate target' }).click();
+  await mutation.getByRole('button', { name: 'Mutate Target' }).click();
   await expect(mutation.locator('[data-observer-target]')).toHaveAttribute(
     'data-revision',
     '1',
@@ -4743,7 +4743,7 @@ test('observer specimens expose visible, user-driven events', async ({
   const resize = page.locator('[data-observer-demo="resize"]');
   const target = resize.locator('[data-observer-target]');
   const before = (await target.boundingBox())?.width ?? 0;
-  await resize.getByRole('button', { name: 'Resize target' }).click();
+  await resize.getByRole('button', { name: 'Resize Target' }).click();
   await expect
     .poll(async () => (await target.boundingBox())?.width ?? 0)
     .toBeGreaterThan(before);
@@ -5446,7 +5446,7 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
       expect(measured.actionHeight).toBeCloseTo((18 + 16) * scale + 2, 0);
       // The fitted action centers in the 44px toolbar-control slot flush with
       // the root's end, (2 + 42 - 36) / 2 = 4px in, so its glyph shares the
-      // trailing axis of a Pane header's toolbar action.
+      // trailing axis of a Pane Header's toolbar action.
       expect(measured.actionLogicalEnd).toBeCloseTo(4 * scale, 0);
       expect(measured.titleActionOverlap).toBe(0);
       expect(measured.visualInsideAction).toBe(true);
@@ -5919,7 +5919,7 @@ test('renders configured List family density, status, busy, dividers, and intera
 
   await page.goto('/?component=list-header');
   const attention = page.locator('.kui-list-header', {
-    hasText: 'Needs attention',
+    hasText: 'Needs Attention',
   });
   await expect(attention).toHaveAttribute('data-density', 'compact');
   await expect(attention).toHaveAttribute('data-indicator-tone', 'danger');
@@ -6167,7 +6167,7 @@ test('keeps ListActionRow primary and trailing controls independent across inter
     '[data-demo-action-row="disabled-trailing"]',
   );
   const availablePrimary = disabledTrailing.getByRole('button', {
-    name: 'Unavailable trailing action',
+    name: 'Unavailable Trailing Action',
   });
   await expect(availablePrimary).toBeEnabled();
   await expect(
@@ -6855,11 +6855,11 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     ),
   ).toContain('logo');
   await expect(primaryAvatar).toHaveCSS('background-image', 'none');
-  await demo.getByRole('button', { name: 'Columns view' }).click();
+  await demo.getByRole('button', { name: 'Columns View' }).click();
   await expect(
-    demo.getByRole('button', { name: 'Columns view' }),
+    demo.getByRole('button', { name: 'Columns View' }),
   ).toHaveAttribute('aria-pressed', 'true');
-  await expect(demo.getByRole('button', { name: 'Columns view' })).toHaveCSS(
+  await expect(demo.getByRole('button', { name: 'Columns View' })).toHaveCSS(
     'color',
     'rgb(12, 98, 243)',
   );
@@ -8044,7 +8044,7 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
   await expect(
     bar.getByRole('tab', { name: 'Integration patterns' }),
   ).toBeFocused();
-  await bar.getByRole('button', { name: 'Add tab' }).click();
+  await bar.getByRole('button', { name: 'Add Tab' }).click();
   await expect(bar.getByRole('tab')).toHaveCount(8);
   const added = bar.getByRole('tab', { name: 'New tab 8' });
   await expect(added).toHaveAttribute('aria-selected', 'true');
@@ -8089,7 +8089,7 @@ test('opens an added tab pending with a placeholder panel, selectable until it l
   await page.goto('/?component=application-tabs');
   const demo = page.locator('[data-demo="application-tabs"]');
   const bar = demo.locator('[data-tab-bar-id="catalog-tabs"]');
-  await bar.getByRole('button', { name: 'Add tab' }).click();
+  await bar.getByRole('button', { name: 'Add Tab' }).click();
   const root = bar.locator('[data-demo-tab-id="new-8"]');
   const added = root.getByRole('tab', { name: 'New tab 8', exact: true });
 
@@ -8138,7 +8138,7 @@ test('keeps added tab IDs unique after another tab closes', async ({
   const bar = page.locator(
     '[data-demo="application-tabs"] [data-tab-bar-id="catalog-tabs"]',
   );
-  const add = bar.getByRole('button', { name: 'Add tab' });
+  const add = bar.getByRole('button', { name: 'Add Tab' });
 
   await add.click();
   const firstAdded = bar.locator('[data-demo-tab-id="new-8"]');

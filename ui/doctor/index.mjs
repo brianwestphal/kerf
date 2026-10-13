@@ -28,6 +28,7 @@ import {
 } from '../analyzer/index.mjs';
 import { evaluateUi, UI_EVALUATION_RULES } from '../evaluator/index.mjs';
 import { checkComponentStyles } from './component-style-checks.mjs';
+import { checkCopyCapitalization } from './copy-capitalization-checks.mjs';
 import {
   isForeignRuleDefinitionDiagnostic,
   projectConsumerCoreConfig,
@@ -65,6 +66,10 @@ export const UI_DOCTOR_RULES = Object.freeze({
   'KUI-D032': {
     severity: 'error',
     title: 'Stylesheet selects another component class',
+  },
+  'KUI-D040': {
+    severity: 'warning',
+    title: 'Visible label is not title-style capitalized',
   },
 });
 
@@ -534,14 +539,13 @@ async function cacheKey(root, packageRoot, mode, paths, config) {
       }),
     )
     .update(await readFile(fileURLToPath(import.meta.url)));
-  hash.update(
-    await readFile(
-      resolve(
-        dirname(fileURLToPath(import.meta.url)),
-        'component-style-checks.mjs',
-      ),
-    ),
-  );
+  for (const module of [
+    'component-style-checks.mjs',
+    'copy-capitalization-checks.mjs',
+  ])
+    hash.update(
+      await readFile(resolve(dirname(fileURLToPath(import.meta.url)), module)),
+    );
   for (const file of files)
     hash.update(portablePath(root, file)).update(await readFile(file));
   return hash.digest('hex');
@@ -1264,6 +1268,11 @@ export async function runUiDoctor({
                     config.ownershipGroups ?? [],
                     selectedPaths,
                     root,
+                  )),
+                  ...(await checkCopyCapitalization(
+                    packageRoot,
+                    await collectInputs(packageRoot),
+                    selectedPaths,
                   )),
                 ],
               }))(),

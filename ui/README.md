@@ -830,6 +830,7 @@ than default patterns. The detailed rationale lives in the theme contract.
 - [Component selection and composition](./docs/component-selection.md)
 - [Design philosophy](./docs/design-philosophy.md)
 - [Apple HIG translation](./docs/apple-hig.md)
+- [Writing interface copy](./docs/writing.md)
 - [Accessibility and keyboard contracts](./docs/accessibility.md)
 - [Component and integration contract](./docs/component-contract.md)
 - [Spacing and application layout](./docs/layout.md)

@@ -192,7 +192,7 @@ test('shared translucent sunken surfaces compound at each nesting level', async 
     }
   }
   await page.emulateMedia({ forcedColors: 'active' });
-  const button = page.getByRole('button', { name: 'Focus nested control' });
+  const button = page.getByRole('button', { name: 'Focus Nested Control' });
   await button.focus();
   await expect(button).toBeFocused();
   await page

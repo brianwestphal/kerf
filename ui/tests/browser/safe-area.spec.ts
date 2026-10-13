@@ -554,7 +554,7 @@ test('a right rail and a bottom drawer hand their edges to their siblings when t
     .toEqual([INSETS.top, 0, INSETS.bottom, INSETS.left]);
 });
 
-// KF-EEPPQE: a toolbar outside a Pane header only took the inline edges an
+// KF-EEPPQE: a toolbar outside a Pane Header only took the inline edges an
 // owner handed it, so an app shell's top bar never cleared the status area.
 // `Toolbar.safeAreaEdges` lets an app bar or bottom bar claim its screen edges.
 test('an app bar and a bottom bar claim their screen edges with safeAreaEdges', async ({
@@ -605,7 +605,7 @@ test('an app bar and a bottom bar claim their screen edges with safeAreaEdges', 
   ).toEqual([0, INSETS.right, 0, INSETS.left]);
 });
 
-test('a toolbar claiming edges inside a Pane header never double-insets', async ({
+test('a toolbar claiming edges inside a Pane Header never double-insets', async ({
   page,
 }) => {
   await mountFixture(page, 'app-bar-in-header');

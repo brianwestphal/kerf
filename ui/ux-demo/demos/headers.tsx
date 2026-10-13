@@ -23,7 +23,7 @@ export function HeadersDemo() {
             label="UI foundations"
             leading={
               <ToolbarText
-                text="UI foundations"
+                text="UI Foundations"
                 size="xlarge"
                 id="headers-page-title"
                 headingLevel={1}
@@ -32,7 +32,7 @@ export function HeadersDemo() {
             trailing={
               <ToolbarControlGroup appearance="borderless" single>
                 <button type="button" data-action="log-add">
-                  New pattern
+                  New Pattern
                 </button>
               </ToolbarControlGroup>
             }
@@ -45,7 +45,7 @@ export function HeadersDemo() {
                   <LucideIcon icon={Wrench} name="wrench" />
                 </ToolbarControlGroup>
                 <ToolbarText
-                  text="Package details"
+                  text="Package Details"
                   size="xlarge"
                   id="headers-panel-title"
                 />

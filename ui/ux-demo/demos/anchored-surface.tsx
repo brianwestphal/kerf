@@ -9,7 +9,7 @@ export function AnchoredSurfaceDemo() {
     >
       <CatalogExample label="Interactive help" align="inline-control">
         <button type="button" data-anchored-surface-trigger="element">
-          Explain this field
+          Explain This Field
         </button>
       </CatalogExample>
       <CatalogExample
@@ -18,20 +18,20 @@ export function AnchoredSurfaceDemo() {
         align="inline-control"
       >
         <button type="button" data-anchored-surface-trigger="pointer">
-          Open at pointer
+          Open at Pointer
         </button>
       </CatalogExample>
       <CatalogExample label="Help inside a modal" align="inline-control">
         <button type="button" data-anchored-surface-open-modal>
-          Open dialog
+          Open Dialog
         </button>
         <wa-dialog data-anchored-surface-modal label="Field settings">
           <Text>Dialog content can open interactive anchored help.</Text>
           <button type="button" data-anchored-surface-trigger="modal">
-            Explain in dialog
+            Explain in Dialog
           </button>
           <button type="button" slot="footer" data-dialog="close">
-            Close dialog
+            Close Dialog
           </button>
         </wa-dialog>
       </CatalogExample>

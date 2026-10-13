@@ -17,7 +17,7 @@ export function SunkenPanelDemo() {
         note="The default shape uses the shared rounded-rectangle radius."
       >
         <SunkenPanel ariaLabel="Release workspace">
-          <StateBanner tone="neutral" title="Release candidate ready" />
+          <StateBanner tone="neutral" title="Release Candidate Ready" />
           <ValueTable label="Release details">
             <ValueTableRow label="Version" value="5.0.0-beta.2" />
             <ValueTableRow label="Checks" value="Passing" />
@@ -83,7 +83,7 @@ export function SunkenPanelDemo() {
             <Text>Second layer</Text>
             <SunkenPanel ariaLabel="Third layer">
               <Text>Third layer</Text>
-              <wa-button>Focus nested control</wa-button>
+              <wa-button>Focus Nested Control</wa-button>
             </SunkenPanel>
           </SunkenPanel>
         </SunkenPanel>

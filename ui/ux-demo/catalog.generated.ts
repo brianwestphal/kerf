@@ -746,7 +746,7 @@ export const generatedKerfCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "kerf",
-    "description": "Show ongoing app-level progress such as \"Loading…\" or \"Updating tickets… 3 of 12\" in a viewport corner above page chrome and any dialog opened before it, without a close button, light dismiss, Escape, or focus change.",
+    "description": "Show ongoing app-level progress such as \"Loading…\" or \"Updating Tickets… 3 of 12\" in a viewport corner above page chrome and any dialog opened before it, without a close button, light dismiss, Escape, or focus change.",
     "uses": [
       "state-banner"
     ],

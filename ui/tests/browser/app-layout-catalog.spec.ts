@@ -165,14 +165,14 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     'true',
   );
   await expect(
-    compactStack.getByRole('button', { name: 'Back to inbox' }),
+    compactStack.getByRole('button', { name: 'Back to Inbox' }),
   ).toBeVisible();
   await expect(compactStack).toContainText('Today’s review notes');
   if (browserName === 'chromium')
     await compactStack.screenshot({
       path: 'test-results/split-view-detail-wide.png',
     });
-  await compactStack.getByRole('button', { name: 'Back to inbox' }).click();
+  await compactStack.getByRole('button', { name: 'Back to Inbox' }).click();
   await expect(compactStack).toHaveAttribute('data-depth', '1');
   await expect(compactStack.locator('[data-nav-back]')).toHaveCount(0);
 

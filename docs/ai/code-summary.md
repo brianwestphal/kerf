@@ -683,6 +683,12 @@ is reported.
 `ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. The
 `component-style-checks.mjs` pass checks paired JSX/TSX component root classes,
 stylesheet filenames, and foreign component selectors (`KUI-D030`–`KUI-D032`).
+The `copy-capitalization-checks.mjs` pass (`KUI-D040`, warning) reads string
+literals passed to known title-style label props: ToolbarText titles,
+ListHeader, PopupMenu items, choices, tabs, empty/banner titles, button text,
+and FieldLabel. It reports words left lowercase against Apple's title-style
+rule (`ui/docs/writing.md`); `ui/tests/unit/ui-doctor-copy-capitalization.test.ts`
+pins the word rules and prop coverage.
 It resolves guaranteed base classes through templates, concatenation, local
 constants, conditional branches, and joined class arrays; reads local catalog
 `boundaries.rootClass`/`publicClasses` plus `styleSources` for declared aliases;

@@ -78,10 +78,10 @@ export const createRecipe: RecipeFactory = (announce) => {
                   size="compact"
                   focusRingOwner="group"
                   choices={[
-                    { value: 'updated', label: 'Recently updated' },
+                    { value: 'updated', label: 'Recently Updated' },
                     { value: 'priority', label: 'Priority' },
                     { value: 'owner', label: 'Owner' },
-                    { value: 'created', label: 'Created date' },
+                    { value: 'created', label: 'Created Date' },
                   ]}
                 />
               </ToolbarControlGroup>

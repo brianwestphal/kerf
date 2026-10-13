@@ -143,12 +143,12 @@ export function TabBarDemo() {
           trailingPlacement="adjacent"
           trailing={
             <wa-button appearance="plain" data-action="log-more">
-              Add tab
+              Add Tab
             </wa-button>
           }
           end={
             <wa-button variant="brand" data-action="log-add">
-              New ticket…
+              New Ticket…
             </wa-button>
           }
         >

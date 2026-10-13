@@ -1747,7 +1747,7 @@ const stopAnchoredSurfaceDemo = delegate(
       <div>
         <Text>Choose how to use this field in your workspace.</Text>
         <button type="button" data-anchored-surface-action>
-          Got it
+          Got It
         </button>
       </div>
     );

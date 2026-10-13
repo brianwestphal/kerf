@@ -164,7 +164,7 @@ export function CollapsiblePanelDemo() {
             outlined
             collapsed={relocationRailCollapsed.value}
             toolbar={navigatorToolbar}
-            header={<ToolbarText text="Pinned files" size="small" />}
+            header={<ToolbarText text="Pinned Files" size="small" />}
             headerList={{ textInsets: 'trbl' }}
           >
             {content('Files', 'Panel-only New file waits here while closed.')}

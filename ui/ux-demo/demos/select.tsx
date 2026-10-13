@@ -234,7 +234,7 @@ export function SelectDemo() {
           presentation="toolbar-borderless"
           size="compact"
           triggerWidth="fit-content"
-          choices={[{ value: 'long', label: 'A very long workspace name' }]}
+          choices={[{ value: 'long', label: 'A Very Long Workspace Name' }]}
           renderSelected={(choice) => <span>{choice.label}</span>}
         />
       </CatalogExample>
@@ -358,7 +358,7 @@ export function SelectDemo() {
                 {
                   value: 'balanced',
                   label:
-                    'Attention needed for project configuration and deployment settings',
+                    'Attention Needed for Project Configuration and Deployment Settings',
                   icon: SlidersHorizontal,
                 },
                 { value: 'explicit', label: 'Explicit', icon: Wrench },
@@ -377,12 +377,12 @@ export function SelectDemo() {
           size="compact"
           labelMaxWidth={120}
           choices={[
-            { value: 'quiet', label: 'Quiet navigation workspace' },
+            { value: 'quiet', label: 'Quiet Navigation Workspace' },
             {
               value: 'balanced',
-              label: 'Balanced navigation workspace',
+              label: 'Balanced Navigation Workspace',
             },
-            { value: 'explicit', label: 'Explicit navigation workspace' },
+            { value: 'explicit', label: 'Explicit Navigation Workspace' },
           ]}
         />
       </CatalogExample>

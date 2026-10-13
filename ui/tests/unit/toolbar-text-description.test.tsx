@@ -8,7 +8,7 @@ describe('ToolbarText description', () => {
   it('renders quiet supporting copy with its own id', () => {
     const output = html(
       ToolbarText({
-        text: 'Custom commands',
+        text: 'Custom Commands',
         description: 'Changes save automatically.',
         descriptionId: 'hint',
       }),
@@ -22,7 +22,7 @@ describe('ToolbarText description', () => {
   it('moves the id and heading role to the title so names exclude the description', () => {
     const output = html(
       ToolbarText({
-        text: 'Custom commands',
+        text: 'Custom Commands',
         id: 'title',
         headingLevel: 2,
         description: 'Changes save automatically.',
@@ -35,7 +35,7 @@ describe('ToolbarText description', () => {
       /\b(id|role|aria-level)=/,
     );
     expect(output).toContain(
-      '<span class="kui-toolbar-text__text" id="title" role="heading" aria-level="2">Custom commands</span>',
+      '<span class="kui-toolbar-text__text" id="title" role="heading" aria-level="2">Custom Commands</span>',
     );
   });
 

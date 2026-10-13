@@ -167,7 +167,7 @@ export function ListDemo() {
           <ListActionRow
             action="log-projects"
             itemId="divider-action-row"
-            label="Action row"
+            label="Action Row"
             divider="both"
             trailingAction="log-settings"
             trailingActionLabel="Action row options"
@@ -211,7 +211,7 @@ export function ListDemo() {
         <List surface="base" controlInsets="tb" dividerSides="b">
           <StateBanner
             tone="info"
-            title="Codex hooks are not installed"
+            title="Codex Hooks Are Not Installed"
             detail="Install them to sync agent activity."
             icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
           />

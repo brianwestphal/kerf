@@ -12,12 +12,12 @@ export function EmptyStateDemo() {
         align="none"
       >
         <EmptyState
-          title="Nothing here yet"
+          title="Nothing Here Yet"
           detail="Create the first item when you are ready."
           icon={<LucideIcon icon={Search} name="search" />}
           action={
             <button type="button" data-action="log-add">
-              Create item
+              Create Item
             </button>
           }
         />
@@ -28,7 +28,7 @@ export function EmptyStateDemo() {
         align="none"
       >
         <EmptyState
-          title="Loading items"
+          title="Loading Items"
           detail="The current view will remain stable."
           busy
         />

@@ -129,10 +129,10 @@ export function ContentItemDemo() {
           >
             <Row vAlign="middle" wrap>
               <wa-button appearance="plain" data-action="log-card-primary">
-                Open quotation
+                Open Quotation
               </wa-button>
               <wa-button appearance="plain" data-action="log-more">
-                More actions
+                More Actions
               </wa-button>
             </Row>
           </ContentItem>
@@ -225,7 +225,7 @@ export function ContentItemDemo() {
           >
             {itemCopy('Card with action', 'The inner button acts on its own.')}
             <wa-button appearance="plain" data-action="log-more">
-              More actions
+              More Actions
             </wa-button>
           </ContentItem>
           <ContentItem
@@ -280,11 +280,11 @@ export function ContentItemDemo() {
                   'Review the quote and choose a decision.',
                 )}
                 <button type="button" data-action="log-card-primary">
-                  Open quote
+                  Open Quote
                 </button>
                 <PopupMenu
-                  text="More actions"
-                  items={[{ label: 'Show details', action: 'log-more' }]}
+                  text="More Actions"
+                  items={[{ label: 'Show Details', action: 'log-more' }]}
                 />
                 <button
                   type="button"

@@ -7,12 +7,12 @@ import { Check, CircleHelp } from 'lucide';
 
 export function StateBannerDemo() {
   const specimens = [
-    { tone: 'neutral', title: 'Standing by' },
-    { tone: 'info', title: 'Connecting to server' },
-    { tone: 'pop', title: 'Featured workspace' },
-    { tone: 'success', title: 'Everything is connected' },
-    { tone: 'warning', title: 'Connection interrupted' },
-    { tone: 'danger', title: 'Authentication required' },
+    { tone: 'neutral', title: 'Standing By' },
+    { tone: 'info', title: 'Connecting to Server' },
+    { tone: 'pop', title: 'Featured Workspace' },
+    { tone: 'success', title: 'Everything Is Connected' },
+    { tone: 'warning', title: 'Connection Interrupted' },
+    { tone: 'danger', title: 'Authentication Required' },
   ] as const;
   const iconFor = (tone: (typeof specimens)[number]['tone']) =>
     tone === 'danger' ? (
@@ -55,7 +55,7 @@ export function StateBannerDemo() {
       >
         <StateBanner
           tone="info"
-          title="Consumer palette"
+          title="Consumer Palette"
           detail="Only this instance uses the override."
           icon={<LucideIcon icon={Check} name="check" />}
         />
@@ -63,19 +63,19 @@ export function StateBannerDemo() {
       <CatalogExample label="Stacked copy and action" align="none">
         <StateBanner
           tone="warning"
-          title="Migration needs review"
+          title="Migration Needs Review"
           detail="Check the imported projects before removing the old source."
           icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
           copyLayout="stacked"
           actionPlacement="below"
-          action={<wa-button size="small">Review projects</wa-button>}
+          action={<wa-button size="small">Review Projects</wa-button>}
         />
       </CatalogExample>
       <CatalogExample label="Strip" align="none">
         <StateBanner
           presentation="strip"
           tone="warning"
-          title="Notifications paused"
+          title="Notifications Paused"
           detail="Desktop alerts resume when you reconnect."
           icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
           copyLayout="stacked"
@@ -85,7 +85,7 @@ export function StateBannerDemo() {
       <CatalogExample label="Placeholder" align="none">
         <StateBanner
           tone="neutral"
-          title="Syncing workspace"
+          title="Syncing Workspace"
           detail="Fetching the latest changes."
           placeholder
         />
