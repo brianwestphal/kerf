@@ -248,7 +248,7 @@ visible set too large for `SegmentedControl` and the options must wrap, such as
 a labeled color palette. Pass a form `name`, a `label` or `labelledBy`, the
 controlled `value`, and an `action`; handle it with
 `delegateActions(root, 'change', …)`, read the radio `value`, and rerender.
-Lead choices with `swatch: foregroundColor('#3b82f6')` (any `CssColor`) or
+Lead choices with `swatch: fillColor('#3b82f6')` (any `CssColor`) or
 `swatch: 'transparent'` for the struck-through no-color option, or with an
 `icon`. Never wrap a `SegmentedControl` or button-appearance `wa-radio` set.
 Set `multiple` with a `readonly Value[]` `value` when any number may be on

@@ -3,7 +3,7 @@ import '@kerfjs/ui/lucide-icon.css';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ChoiceChips, type ChoiceChipsChoice } from '@kerfjs/ui/choice-chips';
 import { ContentItem } from '@kerfjs/ui/content-item';
-import { foregroundColor, px } from '@kerfjs/ui/css-values';
+import { fillColor, px } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { FieldLabel } from '@kerfjs/ui/text';
@@ -29,11 +29,11 @@ import {
 } from './state.js';
 
 const labelChoices: readonly ChoiceChipsChoice[] = [
-  { value: 'bug', label: 'Bug', swatch: foregroundColor('#ef4444') },
-  { value: 'feature', label: 'Feature', swatch: foregroundColor('#3b82f6') },
-  { value: 'docs', label: 'Docs', swatch: foregroundColor('#22c55e') },
-  { value: 'design', label: 'Design', swatch: foregroundColor('#a855f7') },
-  { value: 'chore', label: 'Chore', swatch: foregroundColor('#6b7280') },
+  { value: 'bug', label: 'Bug', swatch: fillColor('#ef4444') },
+  { value: 'feature', label: 'Feature', swatch: fillColor('#3b82f6') },
+  { value: 'docs', label: 'Docs', swatch: fillColor('#22c55e') },
+  { value: 'design', label: 'Design', swatch: fillColor('#a855f7') },
+  { value: 'chore', label: 'Chore', swatch: fillColor('#6b7280') },
 ];
 
 const intentChoices: readonly ChoiceChipsChoice[] = [
@@ -72,14 +72,14 @@ const intentChoices: readonly ChoiceChipsChoice[] = [
 
 const colorChoices: readonly ChoiceChipsChoice[] = [
   { value: 'transparent', label: 'Transparent', swatch: 'transparent' },
-  { value: 'blue', label: 'Blue', swatch: foregroundColor('#3b82f6') },
-  { value: 'green', label: 'Green', swatch: foregroundColor('#22c55e') },
-  { value: 'orange', label: 'Orange', swatch: foregroundColor('#f97316') },
-  { value: 'red', label: 'Red', swatch: foregroundColor('#ef4444') },
-  { value: 'purple', label: 'Purple', swatch: foregroundColor('#a855f7') },
-  { value: 'pink', label: 'Pink', swatch: foregroundColor('#ec4899') },
-  { value: 'teal', label: 'Teal', swatch: foregroundColor('#14b8a6') },
-  { value: 'gray', label: 'Gray', swatch: foregroundColor('#6b7280') },
+  { value: 'blue', label: 'Blue', swatch: fillColor('#3b82f6') },
+  { value: 'green', label: 'Green', swatch: fillColor('#22c55e') },
+  { value: 'orange', label: 'Orange', swatch: fillColor('#f97316') },
+  { value: 'red', label: 'Red', swatch: fillColor('#ef4444') },
+  { value: 'purple', label: 'Purple', swatch: fillColor('#a855f7') },
+  { value: 'pink', label: 'Pink', swatch: fillColor('#ec4899') },
+  { value: 'teal', label: 'Teal', swatch: fillColor('#14b8a6') },
+  { value: 'gray', label: 'Gray', swatch: fillColor('#6b7280') },
 ];
 
 export function ChoiceChipsDemo() {

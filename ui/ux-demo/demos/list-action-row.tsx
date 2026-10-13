@@ -1,5 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
+import { fillColor, uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -48,28 +48,28 @@ const iconTileCommands = [
     label: 'Run Tests',
     command: 'npm test',
     icon: <LucideIcon icon={Terminal} name="terminal" />,
-    tile: { color: foregroundColor('#30a46c') },
+    tile: { color: fillColor('#30a46c') },
   },
   {
     id: 'tile-deploy-preview',
     label: 'Deploy Preview',
     command: 'npm run deploy',
     icon: <LucideIcon icon={Rocket} name="rocket" />,
-    tile: { color: foregroundColor('#0090ff') },
+    tile: { color: fillColor('#0090ff') },
   },
   {
     id: 'tile-format-code',
     label: 'Format Code',
     command: 'npm run format',
     icon: <LucideIcon icon={Paintbrush} name="paintbrush" />,
-    tile: { color: foregroundColor('#ffc53d') },
+    tile: { color: fillColor('#ffc53d') },
   },
   {
     id: 'tile-clean-build',
     label: 'Clean Build',
     command: 'npm run clean',
     icon: <LucideIcon icon={Trash2} name="trash-2" />,
-    tile: { color: foregroundColor('#e5484d') },
+    tile: { color: fillColor('#e5484d') },
   },
   {
     id: 'tile-open-docs',

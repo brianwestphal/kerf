@@ -122,8 +122,16 @@ declare function foregroundColorVar(name: `--${string}`, fallback?: CssForegroun
  * resolves the color syntax; this checks only that it is one declaration value.
  */
 declare function foregroundColor(value: string): CssForegroundColor;
+/**
+ * Use an application-chosen CSS color as a fill: a `ChoiceChips` swatch, a list
+ * row's `iconTile` color, or any other prop that takes a plain
+ * {@link CssColor}. It returns a `CssColor`, not a {@link CssForegroundColor},
+ * so a fill literal cannot reach a prop that paints text or an icon. The browser
+ * resolves the color syntax; this checks only that it is one declaration value.
+ */
+declare function fillColor(value: string): CssColor;
 
-export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiGap, type UiGapValue, type UiSpaceName, calc, colorVar, em, flex, foregroundColor, foregroundColorVar, lengthVar, pct, plus, px, rem, remify, space, uiColor };
+export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiGap, type UiGapValue, type UiSpaceName, calc, colorVar, em, fillColor, flex, foregroundColor, foregroundColorVar, lengthVar, pct, plus, px, rem, remify, space, uiColor };
 ```
 
 ## `@kerfjs/ui/disclosure-arrow`
@@ -811,8 +819,8 @@ export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, ty
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { L as ListIconTile } from './list-icon-tile-Bo_Diu9o.js';
-export { a as ListIconTileColor, b as ListIconTileTone } from './list-icon-tile-Bo_Diu9o.js';
+import { L as ListIconTile } from './list-icon-tile-B8dr97OW.js';
+export { a as ListIconTileColor, b as ListIconTileTone } from './list-icon-tile-B8dr97OW.js';
 import { PopupMenuEntry, PopupMenuPlacement } from './popup-menu.js';
 import './css-values.js';
 import './semantic-content-BbzjvSu9.js';
@@ -925,8 +933,8 @@ export { ListActionRow, type ListActionRowProps, type ListActionRowTrailingMenu,
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { L as ListIconTile } from './list-icon-tile-Bo_Diu9o.js';
-export { a as ListIconTileColor, b as ListIconTileTone } from './list-icon-tile-Bo_Diu9o.js';
+import { L as ListIconTile } from './list-icon-tile-B8dr97OW.js';
+export { a as ListIconTileColor, b as ListIconTileTone } from './list-icon-tile-B8dr97OW.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './css-values.js';
 
@@ -3044,7 +3052,7 @@ import { CssColor } from './css-values.js';
 type ChoiceChipsSize = 'default' | 'compact';
 /**
  * A leading color dot: a {@link CssColor} from `uiColor()`, `colorVar()`, or
- * `foregroundColor()`, or `'transparent'` for the no-color swatch (an outlined
+ * `fillColor()`, or `'transparent'` for the no-color swatch (an outlined
  * dot struck through by a diagonal line).
  */
 type ChoiceChipsSwatch = CssColor | 'transparent';

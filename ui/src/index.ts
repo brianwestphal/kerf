@@ -399,6 +399,7 @@ export {
   type CssSizeKeyword,
   type CssValue,
   em,
+  fillColor,
   flex,
   foregroundColor,
   foregroundColorVar,

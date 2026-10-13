@@ -9,7 +9,7 @@ export type ListIconTileTone =
 
 /** A list row's leading icon tile filled with an application-chosen color. */
 export interface ListIconTileColor {
-  /** The tile fill: `uiColor()`, `colorVar()`, or `foregroundColor()` for an app color such as `#e5484d`. */
+  /** The tile fill: `uiColor()`, `colorVar()`, or `fillColor()` for an app color such as `#e5484d`. */
   color: CssColor;
   /** The glyph color over the fill. Defaults to black or white, whichever contrasts with `color`. */
   foreground?: CssForegroundColor;

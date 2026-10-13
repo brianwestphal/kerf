@@ -4761,7 +4761,35 @@
       ],
       "purpose": "Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.",
       "publicExports": [
-        "ChoiceChips"
+        "ChoiceChips",
+        "fillColor"
+      ],
+      "publicExportImports": {
+        "fillColor": "@kerfjs/ui/css-values"
+      },
+      "cssValueProps": [
+        {
+          "path": "choices[].swatch",
+          "grammar": "color",
+          "helpers": [
+            "fillColor",
+            "uiColor",
+            "colorVar"
+          ],
+          "shorthands": [
+            "transparent"
+          ],
+          "canonicalShorthands": [
+            "transparent"
+          ],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "swatch: fillColor(\"#3b82f6\")",
+            "swatch: uiColor(\"brand-fill-loud\")",
+            "swatch: colorVar(\"--app-label-color\")"
+          ]
+        }
       ],
       "useWhen": [
         "Expose one exclusive choice among several visible options that must wrap onto more rows, such as a labeled color palette with swatches.",

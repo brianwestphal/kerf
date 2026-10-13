@@ -303,13 +303,29 @@ export function foregroundColorVar(
   return `var(${name}${fallback === undefined ? '' : `, ${fallback}`})` as CssForegroundColor;
 }
 
+/** Trim `value` and check that it is one CSS declaration value. */
+function colorLiteral(value: string, helper: string): string {
+  const color = value.trim();
+  if (!color || /[;{}<>]|\p{Cc}/u.test(color))
+    throw new TypeError(`${helper}() requires one CSS color value.`);
+  return color;
+}
+
 /**
  * Use an application-chosen CSS color for foreground content. The browser
  * resolves the color syntax; this checks only that it is one declaration value.
  */
 export function foregroundColor(value: string): CssForegroundColor {
-  const color = value.trim();
-  if (!color || /[;{}<>]|\p{Cc}/u.test(color))
-    throw new TypeError('foregroundColor() requires one CSS color value.');
-  return color as CssForegroundColor;
+  return colorLiteral(value, 'foregroundColor') as CssForegroundColor;
+}
+
+/**
+ * Use an application-chosen CSS color as a fill: a `ChoiceChips` swatch, a list
+ * row's `iconTile` color, or any other prop that takes a plain
+ * {@link CssColor}. It returns a `CssColor`, not a {@link CssForegroundColor},
+ * so a fill literal cannot reach a prop that paints text or an icon. The browser
+ * resolves the color syntax; this checks only that it is one declaration value.
+ */
+export function fillColor(value: string): CssColor {
+  return colorLiteral(value, 'fillColor') as CssColor;
 }

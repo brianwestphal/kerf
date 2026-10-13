@@ -718,7 +718,7 @@ struck-through no-color dot) or a decorative `icon`:
   action="select-command-color"
   choices={[
     { value: "transparent", label: "Transparent", swatch: "transparent" },
-    { value: "blue", label: "Blue", swatch: foregroundColor("#3b82f6") },
+    { value: "blue", label: "Blue", swatch: fillColor("#3b82f6") },
   ]}
 />
 ```

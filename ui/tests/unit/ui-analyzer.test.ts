@@ -351,6 +351,37 @@ ui.Select({ choices: [{ label: 'C', value: 'c', color: ui.colorVar('--app-color'
     );
   });
 
+  it('flags a foreground color helper passed to a ChoiceChips swatch fill', async () => {
+    // A swatch is a fill: `fillColor()` is the literal builder for it.
+    // `foregroundColor()` still type-checks there (a CssForegroundColor is a
+    // CssColor), so the analyzer is what points the author at the fill twin.
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-swatch-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/swatch.tsx'),
+      `import { ChoiceChips } from '@kerfjs/ui/choice-chips';
+import { fillColor, foregroundColor, uiColor } from '@kerfjs/ui/css-values';
+export const A = () => <ChoiceChips name="c" label="C" value="a" choices={[
+  { value: 'a', label: 'A', swatch: foregroundColor('#3b82f6') },
+  { value: 'b', label: 'B', swatch: fillColor('#22c55e') },
+  { value: 'c', label: 'C', swatch: uiColor('brand-fill-loud') },
+  { value: 'd', label: 'D', swatch: 'transparent' },
+]} />;
+`,
+    );
+
+    const report = await analyzeUiProject({ root, profile: packageProfile });
+    const swatch = report.diagnostics.filter(
+      ({ evidence }) =>
+        (evidence as { path?: string } | undefined)?.path ===
+        'choices[].swatch',
+    );
+    expect(swatch.map(({ ruleId }) => ruleId)).toEqual(['KUI-L014']);
+    expect(swatch[0]?.message).toBe(
+      '`foregroundColor()` produces the wrong grammar for `ChoiceChips.choices[].swatch`; use `transparent` or `fillColor()` or `uiColor()` or `colorVar()`.',
+    );
+  });
+
   it('never treats a helper export as the component its entry describes', async () => {
     // The selection catalog lists helpers beside the render function
     // (`Select` ships `uiColor`/`colorVar`, `List` ships `flex`/`rem`). A

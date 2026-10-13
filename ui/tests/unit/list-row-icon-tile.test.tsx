@@ -14,7 +14,7 @@ import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.j
 import {
   type CssColor,
   type CssForegroundColor,
-  foregroundColor,
+  fillColor,
   uiColor,
 } from '../../src/shared/styles/css-values.js';
 import { componentStylesheet } from './helpers/component-stylesheet.js';
@@ -100,7 +100,7 @@ describe.each(Object.keys(renderers) as (keyof typeof renderers)[])(
 
     it('passes an application fill and foreground to the icon slot', () => {
       const row = render({
-        color: foregroundColor('#30a46c'),
+        color: fillColor('#30a46c'),
         foreground: uiColor('neutral-on-loud'),
       });
       expect(row.dataset.iconTile).toBe('color');
@@ -146,7 +146,7 @@ describe.each(Object.keys(renderers) as (keyof typeof renderers)[])(
 
     it('swaps the fill for a tile-sized skeleton while loading', () => {
       const row = render(
-        { color: foregroundColor('#e5484d') },
+        { color: fillColor('#e5484d') },
         { placeholder: true },
       );
       expect(row.dataset.iconTile).toBe('color');
@@ -163,7 +163,7 @@ describe.each(Object.keys(renderers) as (keyof typeof renderers)[])(
       );
       expect(() =>
         render({
-          color: foregroundColor('#000'),
+          color: fillColor('#000'),
           foreground: '"white"' as CssForegroundColor,
         }),
       ).toThrow(TypeError);

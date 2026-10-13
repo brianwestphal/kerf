@@ -4,6 +4,7 @@ import {
   calc,
   colorVar,
   em,
+  fillColor,
   flex,
   foregroundColor,
   foregroundColorVar,
@@ -88,6 +89,26 @@ describe('typed CSS values', () => {
     expect(foregroundColor('#905ace')).toBe('#905ace');
     expect(() => foregroundColor('red; background:blue')).toThrow(TypeError);
     expect(() => foregroundColor('  ')).toThrow(TypeError);
+  });
+
+  it('builds fill colors with the same single-declaration check', () => {
+    expect(fillColor('  rgb(20 40 60 / 0.8)  ')).toBe('rgb(20 40 60 / 0.8)');
+    expect(fillColor('rebeccapurple')).toBe('rebeccapurple');
+    expect(fillColor('#3b82f6')).toBe('#3b82f6');
+    for (const value of [
+      'red; background:blue',
+      '  ',
+      '',
+      'red}',
+      '<b>',
+      'red\u0000',
+    ])
+      expect(() => fillColor(value)).toThrow(
+        new TypeError('fillColor() requires one CSS color value.'),
+      );
+    expect(() => foregroundColor('{')).toThrow(
+      new TypeError('foregroundColor() requires one CSS color value.'),
+    );
   });
 
   it('rejects invalid flex factors and semantic color names', () => {

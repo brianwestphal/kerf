@@ -338,7 +338,7 @@ track plus the gap does not fit. Its `textInsets` and `controlInsets` mirror Row
 and List with physical sides, 17px text / 8px control spacing, and text
 precedence.
 `CssFlex`, `CssSize`, and `CssForegroundColor` (a `CssColor` subtype minted
-from foreground tokens, `foregroundColorVar()`, or `foregroundColor()` for custom CSS colors) extend the same
+from foreground tokens, `foregroundColorVar()`, or `foregroundColor()` for custom CSS colors; fills such as a `ChoiceChips` swatch or row `iconTile` color take a plain `CssColor`, with `fillColor()` for custom CSS colors) extend the same
 property-specific rule to Row/Grid/List flex, Skeleton geometry, and Select
 choice icons. Row declaration-string
 props are removed before 5.0 stable in favor of classes, public tokens, and

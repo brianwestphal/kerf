@@ -535,7 +535,7 @@ unset.
 
 `ToolbarControlGroup.tileTone` selects `neutral`, `brand`, `success`, `warning`, or `danger` quiet fill, matching quiet border, and on-quiet foreground for a non-interactive icon tile. Compose a contained `single` group whose only child is a direct decorative LucideIcon (`aria-hidden="true"`). Omission preserves the normal group palette. The prop does not recolor interactive, mixed, multi-control, or borderless groups; keep real actions in controls with their existing focus/hover/pressed treatments.
 
-`ListItem`, `ListItemLink`, and `ListActionRow` take `iconTile` to present their leading `icon` in a filled 32px rounded tile holding an 18px glyph, for settings or command rows that identify each entry by color. Pass a tone (`neutral`, `brand`, `success`, `warning`, or `danger`) for the same quiet fill, matching quiet border, and on-quiet foreground as `ToolbarControlGroup.tileTone`, or `{ color, foreground? }` for an application color: `color` is a `CssColor` (`uiColor()`, `colorVar()`, or `foregroundColor('#e5484d')`) and `foreground` a `CssForegroundColor`; without one, the glyph is black or white, whichever contrasts with the fill. The tile sits 6px clear of a standard 44px row (a compact row is at least 42px tall), moves the label to the tile's edge, and keeps its colors when the row is hovered or selected. Never wrap the icon in your own tile or resize the row's icon slot.
+`ListItem`, `ListItemLink`, and `ListActionRow` take `iconTile` to present their leading `icon` in a filled 32px rounded tile holding an 18px glyph, for settings or command rows that identify each entry by color. Pass a tone (`neutral`, `brand`, `success`, `warning`, or `danger`) for the same quiet fill, matching quiet border, and on-quiet foreground as `ToolbarControlGroup.tileTone`, or `{ color, foreground? }` for an application color: `color` is a `CssColor` (`uiColor()`, `colorVar()`, or `fillColor('#e5484d')`) and `foreground` a `CssForegroundColor`; without one, the glyph is black or white, whichever contrasts with the fill. The tile sits 6px clear of a standard 44px row (a compact row is at least 42px tall), moves the label to the tile's edge, and keeps its colors when the row is hovered or selected. Never wrap the icon in your own tile or resize the row's icon slot.
 
 ## Toolbar composition
 
@@ -916,7 +916,8 @@ The pills wrap with the standard 8px control gap; never wrap a
 borders turn ragged across rows.
 
 Lead a choice with `swatch` for a color (a `CssColor` from `uiColor()`,
-`colorVar()`, or `foregroundColor()`), `swatch: 'transparent'` for the
+`colorVar()`, or the `fillColor` helper — `fillColor('#3b82f6')` — for an
+application-chosen CSS color; never `foregroundColor()` for a fill), `swatch: 'transparent'` for the
 no-color option (an outlined dot struck through diagonally), or a decorative
 `icon`. Keep every label visible: the swatch and the selected tint are
 supplementary. Name the group with `label`, or with `labelledBy` pointing at a
@@ -931,8 +932,8 @@ visible `FieldLabel`.
   action="select-command-color"
   choices={[
     { value: 'transparent', label: 'Transparent', swatch: 'transparent' },
-    { value: 'blue', label: 'Blue', swatch: foregroundColor('#3b82f6') },
-    { value: 'green', label: 'Green', swatch: foregroundColor('#22c55e') },
+    { value: 'blue', label: 'Blue', swatch: fillColor('#3b82f6') },
+    { value: 'green', label: 'Green', swatch: fillColor('#22c55e') },
   ]}
 />
 ```

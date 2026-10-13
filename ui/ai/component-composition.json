@@ -3921,7 +3921,22 @@
           "Every choice keeps a visible text label; a swatch or icon is decorative."
         ]
       },
-      "cssValueProps": [],
+      "cssValueProps": [
+        {
+          "path": "choices[].swatch",
+          "grammar": "color",
+          "helpers": ["fillColor", "uiColor", "colorVar"],
+          "shorthands": ["transparent"],
+          "canonicalShorthands": ["transparent"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "swatch: fillColor(\"#3b82f6\")",
+            "swatch: uiColor(\"brand-fill-loud\")",
+            "swatch: colorVar(\"--app-label-color\")"
+          ]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-choice-chips",
         "publicClasses": ["kui-choice-chips"],

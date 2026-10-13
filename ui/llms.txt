@@ -320,7 +320,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   for List flex, typed lengths for Skeleton geometry, and
   foreground colors for choice icons and `LucideIcon.color`: `uiColor()` with an `*-on-*`/text token,
   `foregroundColorVar()`, or `foregroundColor()` for a custom CSS color; fill tokens such as `uiColor('success-fill-quiet')` do not
-  type-check. These brands are intentionally
+  type-check. Fills (a `ChoiceChips` swatch, a row `iconTile` color) take a
+  plain `CssColor`: `fillColor('#3b82f6')` for a custom CSS color, `uiColor()`,
+  or `colorVar()`; never `foregroundColor()` for a fill. These brands are intentionally
   not interchangeable; rows use classes/tokens/props rather than raw `style`.
   Set `LucideIcon.inline` for an icon in `Text` or prose; it changes the SVG
   from block to inline-block without changing its inherited 1em size.
@@ -466,7 +468,7 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   Text supports `controlMargins` with canonical physical Sides for an exterior 8px control gutter; it preserves border/padding and avoids an isolated Row wrapper. Avoid stacking it with parent insets. Inline spans retain native inline margin behavior.
 
   `ToolbarControlGroup.tileTone` selects `neutral`, `brand`, `success`, `warning`, or `danger` quiet fill, matching quiet border, and on-quiet foreground for a non-interactive icon tile. Compose a contained `single` group whose only child is a direct decorative LucideIcon (`aria-hidden="true"`). Omission preserves the normal group palette. The prop does not recolor interactive, mixed, multi-control, or borderless groups; keep real actions in controls with their existing focus/hover/pressed treatments.
-  `ListItem`, `ListItemLink`, and `ListActionRow` take `iconTile` to present their leading `icon` in a filled 32px rounded tile holding an 18px glyph, for settings or command rows that identify each entry by color. Pass a tone (`neutral`, `brand`, `success`, `warning`, or `danger`) for the same quiet fill, matching quiet border, and on-quiet foreground as `ToolbarControlGroup.tileTone`, or `{ color, foreground? }` for an application color: `color` is a `CssColor` (`uiColor()`, `colorVar()`, or `foregroundColor('#e5484d')`) and `foreground` a `CssForegroundColor`; without one, the glyph is black or white, whichever contrasts with the fill. The tile sits 6px clear of a standard 44px row (a compact row is at least 42px tall), moves the label to the tile's edge, and keeps its colors when the row is hovered or selected. Never wrap the icon in your own tile or resize the row's icon slot.
+  `ListItem`, `ListItemLink`, and `ListActionRow` take `iconTile` to present their leading `icon` in a filled 32px rounded tile holding an 18px glyph, for settings or command rows that identify each entry by color. Pass a tone (`neutral`, `brand`, `success`, `warning`, or `danger`) for the same quiet fill, matching quiet border, and on-quiet foreground as `ToolbarControlGroup.tileTone`, or `{ color, foreground? }` for an application color: `color` is a `CssColor` (`uiColor()`, `colorVar()`, or `fillColor('#e5484d')`) and `foreground` a `CssForegroundColor`; without one, the glyph is black or white, whichever contrasts with the fill. The tile sits 6px clear of a standard 44px row (a compact row is at least 42px tall), moves the label to the tile's edge, and keeps its colors when the row is hovered or selected. Never wrap the icon in your own tile or resize the row's icon slot.
   Toolbar zones accept `KerfUiContent` directly. Use `ToolbarText` for identity and `ToolbarControlGroup` for related controls that need its shared chrome; a bare control keeps its own styling and accessibility responsibilities.
   Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-token-search-keep-open` or `collapsible.keepOpenOn` for focus.
 
@@ -707,7 +709,7 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   palette in a 560px dialog), render separate pills backed by native radios:
   one Tab stop, arrow-key selection, and a real form value under `name`. Name
   the group with `label` or `labelledBy`, lead choices with a `swatch`
-  (`CssColor`, or `'transparent'` for the struck-through no-color dot) or an
+  (`CssColor` such as `fillColor('#3b82f6')`, or `'transparent'` for the struck-through no-color dot) or an
   `icon`, and handle the delegated `action` on `change`. Never wrap a
   `SegmentedControl` or button-appearance `wa-radio` set instead. Set
   `multiple` (with a `readonly Value[]` `value`) when any number may be on:

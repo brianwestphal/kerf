@@ -50,6 +50,7 @@ import {
   type CssLength,
   type CssLengthExpression,
   type CssSize,
+  fillColor,
   flex,
   foregroundColor,
   foregroundColorVar,
@@ -136,7 +137,7 @@ ChoiceChips({
   value: 'blue',
   choices: [
     { value: 'transparent', label: 'Transparent', swatch: 'transparent' },
-    { value: 'blue', label: 'Blue', swatch: foregroundColor('#3b82f6') },
+    { value: 'blue', label: 'Blue', swatch: fillColor('#3b82f6') },
   ],
 });
 ChoiceChips({
@@ -339,11 +340,11 @@ const semanticChoiceColor: CssForegroundColor = uiColor('text-quiet');
 const onQuietChoiceColor: CssForegroundColor = uiColor('warning-on-quiet');
 // A foreground color is still a complete color; a fill stays a plain color.
 const foregroundIsColor: CssColor = choiceColor;
-const fillColor: CssColor = colorVar(
+const fillVarColor: CssColor = colorVar(
   '--app-fill-color',
   uiColor('success-fill-quiet'),
 );
-void [semanticChoiceColor, onQuietChoiceColor, foregroundIsColor, fillColor];
+void [semanticChoiceColor, onQuietChoiceColor, foregroundIsColor, fillVarColor];
 List({ flex: listFlex });
 List({ flex: 'none' });
 Row({ flex: listFlex });
@@ -544,6 +545,41 @@ const plainVarChoice: SelectChoice = {
 void plainVarChoice;
 // @ts-expect-error KUI-T013 a foreground fallback cannot be a fill token.
 foregroundColorVar('--app-choice-color', uiColor('warning-fill-quiet'));
+// KUI-T013: fillColor() is a plain CssColor fill. It fills a swatch or an icon
+// tile but is rejected wherever a CssForegroundColor paints text or an icon.
+const fillLiteral: CssColor = fillColor('#3b82f6');
+void fillLiteral;
+const fillLiteralChoice: SelectChoice = {
+  value: 'fill-literal',
+  label: 'Fill literal',
+  // @ts-expect-error KUI-T013 a fillColor() fill is not a foreground; use foregroundColor().
+  color: fillColor('#3b82f6'),
+};
+void fillLiteralChoice;
+// @ts-expect-error KUI-T013 a fillColor() fill is not a foreground; use foregroundColor().
+const fillAsForeground: CssForegroundColor = fillColor('#3b82f6');
+void fillAsForeground;
+// @ts-expect-error KUI-T013 a fillColor() fill is not a foreground; use foregroundColor().
+Text({ children: 'Fill', color: fillColor('#3b82f6') });
+ListItem({
+  label: 'Tests',
+  action: 'open',
+  iconTile: {
+    color: fillColor('#30a46c'),
+    // @ts-expect-error KUI-T013 an icon tile glyph cannot be a fillColor() fill.
+    foreground: fillColor('#ffffff'),
+  },
+});
+// KUI-T013 compatibility: a CssForegroundColor stays assignable to CssColor,
+// so an existing foregroundColor() fill keeps compiling.
+ChoiceChips({
+  name: 'legacy',
+  label: 'Legacy',
+  value: 'blue',
+  choices: [
+    { value: 'blue', label: 'Blue', swatch: foregroundColor('#3b82f6') },
+  ],
+});
 // @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.
 ListItem({ label: 'Item', style: 'color:red' });
 // @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.
@@ -562,7 +598,7 @@ ListItem({
 ListActionRow({
   label: 'Deploy',
   action: 'open',
-  iconTile: { color: foregroundColor('#0090ff') },
+  iconTile: { color: fillColor('#0090ff') },
   trailingAction: 'edit',
   trailingActionLabel: 'Edit Deploy',
   trailingActionIcon: icon,
@@ -573,7 +609,7 @@ ListItem({
   label: 'Tests',
   action: 'open',
   iconTile: {
-    color: foregroundColor('#30a46c'),
+    color: fillColor('#30a46c'),
     // @ts-expect-error KUI-T013 an icon tile glyph cannot be a fill token.
     foreground: uiColor('success-fill-quiet'),
   },

@@ -55,7 +55,7 @@ import {
 import { AppTab } from '../dist/app-tab.js';
 import { ChoiceChips } from '../dist/choice-chips.js';
 import { Composer } from '../dist/composer.js';
-import { em, foregroundColor, px } from '../dist/css-values.js';
+import { em, fillColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
 import { List } from '../dist/list.js';
 import { ListActionRow } from '../dist/list-action-row.js';
@@ -460,7 +460,7 @@ export const COMPONENTS = {
           ListActionRow({
             label: 'Deploy Preview',
             icon: glyph(Rocket, 'rocket'),
-            iconTile: { color: foregroundColor('#0090ff') },
+            iconTile: { color: fillColor('#0090ff') },
             action: 'open',
             itemId: 'deploy-preview',
             trailingAction: 'edit',
@@ -717,42 +717,42 @@ export const COMPONENTS = {
               {
                 value: 'blue',
                 label: 'Blue',
-                swatch: foregroundColor('#3b82f6'),
+                swatch: fillColor('#3b82f6'),
               },
               {
                 value: 'green',
                 label: 'Green',
-                swatch: foregroundColor('#22c55e'),
+                swatch: fillColor('#22c55e'),
               },
               {
                 value: 'orange',
                 label: 'Orange',
-                swatch: foregroundColor('#f97316'),
+                swatch: fillColor('#f97316'),
               },
               {
                 value: 'red',
                 label: 'Red',
-                swatch: foregroundColor('#ef4444'),
+                swatch: fillColor('#ef4444'),
               },
               {
                 value: 'purple',
                 label: 'Purple',
-                swatch: foregroundColor('#a855f7'),
+                swatch: fillColor('#a855f7'),
               },
               {
                 value: 'pink',
                 label: 'Pink',
-                swatch: foregroundColor('#ec4899'),
+                swatch: fillColor('#ec4899'),
               },
               {
                 value: 'teal',
                 label: 'Teal',
-                swatch: foregroundColor('#14b8a6'),
+                swatch: fillColor('#14b8a6'),
               },
               {
                 value: 'gray',
                 label: 'Gray',
-                swatch: foregroundColor('#6b7280'),
+                swatch: fillColor('#6b7280'),
               },
             ],
           }),
@@ -795,27 +795,27 @@ export const COMPONENTS = {
               {
                 value: 'bug',
                 label: 'Bug',
-                swatch: foregroundColor('#ef4444'),
+                swatch: fillColor('#ef4444'),
               },
               {
                 value: 'feature',
                 label: 'Feature',
-                swatch: foregroundColor('#3b82f6'),
+                swatch: fillColor('#3b82f6'),
               },
               {
                 value: 'docs',
                 label: 'Docs',
-                swatch: foregroundColor('#22c55e'),
+                swatch: fillColor('#22c55e'),
               },
               {
                 value: 'design',
                 label: 'Design',
-                swatch: foregroundColor('#a855f7'),
+                swatch: fillColor('#a855f7'),
               },
               {
                 value: 'chore',
                 label: 'Chore',
-                swatch: foregroundColor('#6b7280'),
+                swatch: fillColor('#6b7280'),
               },
             ],
           }),

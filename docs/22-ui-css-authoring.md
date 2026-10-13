@@ -53,7 +53,9 @@ brands plus deterministic builders:
 ```ts
 import {
   calc,
+  fillColor,
   flex,
+  foregroundColor,
   foregroundColorVar,
   pct,
   plus,
@@ -71,6 +73,8 @@ flex(2, 1, rem(20)); // 2 1 20rem
 uiColor("success-on-quiet"); // var(--kui-color-success-on-quiet), a CssForegroundColor
 uiColor("success-fill-quiet"); // var(--kui-color-success-fill-quiet), a CssColor fill
 foregroundColorVar("--app-icon-color"); // var(--app-icon-color), a CssForegroundColor
+foregroundColor("#8b5cf6"); // #8b5cf6, a CssForegroundColor for text or an icon
+fillColor("#3b82f6"); // #3b82f6, a plain CssColor for a swatch or tile fill
 ```
 
 `CssLength` pragmatically includes percentages for dimension-valued UI props.
@@ -94,7 +98,15 @@ for an application-owned property. The bare `success`, `warning`, `danger`,
 `pop`, and `accent` tokens are compatibility aliases for quiet fills; they, the
 other fill/border/surface tokens, and a plain `colorVar()` value stay
 `CssColor` and are rejected there, because a fill paints a nearly invisible
-icon. Media-query strings remain a separate grammar, and semantic pixel
+icon. `foregroundColor()` and `fillColor()` are the literal-color twins: each
+accepts one application-chosen CSS declaration value (`#3b82f6`,
+`rgb(20 40 60 / 0.8)`, `rebeccapurple`) and rejects anything that could break
+out of it, but `foregroundColor()` brands it `CssForegroundColor` for text and
+icons while `fillColor()` returns a plain `CssColor` for fill props — a
+`ChoiceChips` `swatch` or a list row's `iconTile` `color` — so a fill literal
+cannot reach a foreground prop. `CssForegroundColor` stays assignable to
+`CssColor`, so an existing `foregroundColor()` fill still compiles; the
+analyzer flags it on a `ChoiceChips` swatch. Media-query strings remain a separate grammar, and semantic pixel
 props remain numbers. Raw CSS string compatibility and row-level `style`
 declarations were intentionally removed before 5.0 stable so invalid or
 cross-property values fail at typecheck time. Use row `className`, public

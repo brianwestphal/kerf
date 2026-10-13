@@ -28,12 +28,13 @@ Choose one value, or with multiple any number of values, from a visible set too 
 ## Imports
 
 - JavaScript: `@kerfjs/ui/choice-chips` — exports `ChoiceChips`.
+- JavaScript: `@kerfjs/ui/css-values` — exports `fillColor`.
 - CSS: the browser build of `@kerfjs/ui/choice-chips` pulls its CSS automatically; import `@kerfjs/ui/choice-chips.css` manually only without the `browser` export condition.
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures-v1.md#kerfjsuichoice-chips) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures-v1.md#kerfjsuichoice-chips), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -42,6 +43,10 @@ Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures
 - default or compact size
 - disabled group or disabled choices
 - required (single selection only)
+
+**CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
+
+- `choices[].swatch`: color grammar; raw values: forbid; shorthands `transparent`; helpers `fillColor`, `uiColor`, `colorVar` — e.g. `swatch: fillColor("#3b82f6")`
 
 ## Composition
 

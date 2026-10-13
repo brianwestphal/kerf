@@ -10,12 +10,12 @@ import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.j
 import {
   colorVar,
   type CssColor,
-  foregroundColor,
+  fillColor,
 } from '../../src/shared/styles/css-values.js';
 
 const colors: readonly ChoiceChipsChoice[] = [
   { value: 'transparent', label: 'Transparent', swatch: 'transparent' },
-  { value: 'blue', label: 'Blue', swatch: foregroundColor('#3b82f6') },
+  { value: 'blue', label: 'Blue', swatch: fillColor('#3b82f6') },
   { value: 'teal', label: 'Teal', swatch: colorVar('--app-teal') },
   { value: 'gray', label: 'Gray', disabled: true, title: 'Unavailable' },
 ];
@@ -209,7 +209,7 @@ describe('ChoiceChips', () => {
         form: 'annotation-form',
         choices: [
           { value: 'comment', label: 'Comment' },
-          { value: 'bug', label: 'Bug', swatch: foregroundColor('#ef4444') },
+          { value: 'bug', label: 'Bug', swatch: fillColor('#ef4444') },
           {
             value: 'move',
             label: 'Move',

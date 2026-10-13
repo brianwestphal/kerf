@@ -6,7 +6,7 @@ export type ChoiceChipsSize = 'default' | 'compact';
 
 /**
  * A leading color dot: a {@link CssColor} from `uiColor()`, `colorVar()`, or
- * `foregroundColor()`, or `'transparent'` for the no-color swatch (an outlined
+ * `fillColor()`, or `'transparent'` for the no-color swatch (an outlined
  * dot struck through by a diagonal line).
  */
 export type ChoiceChipsSwatch = CssColor | 'transparent';
