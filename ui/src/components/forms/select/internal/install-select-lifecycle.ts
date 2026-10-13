@@ -33,6 +33,22 @@ interface SelectHost extends Pick<
   removeOpenListeners(): void;
 }
 
+/**
+ * WebKit keeps a closed popover's last box in its scroll container's overflow
+ * when the popup leaves the top layer, so a Select in a scrolling dialog body
+ * scrolls into blank space after its listbox closes. Re-laying out the popup's
+ * `display: contents` host for one synchronous layout recomputes that overflow
+ * without hiding the trigger, so focus and the caret stay put.
+ */
+function releaseClosedPopupOverflow(popup: HTMLElement): void {
+  const display = popup.style.getPropertyValue('display');
+  const priority = popup.style.getPropertyPriority('display');
+  popup.style.setProperty('display', 'block');
+  void popup.offsetHeight;
+  if (display) popup.style.setProperty('display', display, priority);
+  else popup.style.removeProperty('display');
+}
+
 /** Install once at the explicit registration boundary, only for Kerf Selects. */
 export function installSelectLifecycle(
   prototype: Pick<WaSelect, 'handleOpenChange' | 'handleDisabledChange'>,
@@ -144,6 +160,9 @@ export function installSelectLifecycle(
       } else {
         host.listbox.hidden = true;
         host.popup.active = false;
+        void host.popup.updateComplete.then(() => {
+          if (!host.open) releaseClosedPopupOverflow(host.popup);
+        });
         host.dispatchEvent(new WaAfterHideEvent());
       }
     } finally {

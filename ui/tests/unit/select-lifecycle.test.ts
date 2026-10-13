@@ -16,13 +16,15 @@ function host() {
     disabled: false,
     updateComplete: Promise.resolve(true),
     listbox: document.createElement('div'),
-    popup: {
+    // The wa-popup host: a `display: contents` element with a Lit update.
+    popup: Object.assign(document.createElement('div'), {
       active: false,
       popup: document.createElement('div'),
       sync: 'width' as 'width' | undefined,
       autoSize: 'vertical' as 'vertical' | 'both',
       shiftPadding: 0,
-    },
+      updateComplete: Promise.resolve(true),
+    }),
     currentOption: undefined as HTMLElement | undefined,
     selectedOptions: [] as HTMLElement[],
     getFirstOption: vi.fn<() => HTMLElement | undefined>(),
@@ -199,6 +201,52 @@ describe('Select lifecycle ownership', () => {
     await first.handleOpenChange();
     expect(first.open).toBe(false);
     expect(first.listbox.hidden).toBe(true);
+  });
+
+  it('relayouts the closed popup host once and restores its inline display', async () => {
+    vi.mocked(animateSelectPopup).mockResolvedValue();
+    const select = host();
+    installSelectLifecycle(select);
+    const writes: string[] = [];
+    const setProperty = select.popup.style.setProperty.bind(select.popup.style);
+    vi.spyOn(select.popup.style, 'setProperty').mockImplementation(
+      (name, value, priority) => {
+        writes.push(`${name}:${String(value)}`);
+        setProperty(name, value, priority);
+      },
+    );
+    select.open = true;
+    await select.handleOpenChange();
+    expect(writes).toEqual([]);
+    select.open = false;
+    await select.handleOpenChange();
+    await select.popup.updateComplete;
+    // Laid out as a box for one synchronous layout, then back to the stylesheet.
+    expect(writes).toEqual(['display:block']);
+    expect(select.popup.style.getPropertyValue('display')).toBe('');
+
+    // An author inline display survives, priority included.
+    writes.length = 0;
+    select.popup.style.setProperty('display', 'contents', 'important');
+    writes.length = 0;
+    select.open = true;
+    await select.handleOpenChange();
+    select.open = false;
+    await select.handleOpenChange();
+    await select.popup.updateComplete;
+    expect(writes).toEqual(['display:block', 'display:contents']);
+    expect(select.popup.style.getPropertyPriority('display')).toBe('important');
+
+    // A Select that reopened before the popup update is left alone.
+    writes.length = 0;
+    select.open = true;
+    await select.handleOpenChange();
+    select.open = false;
+    const closing = select.handleOpenChange();
+    select.open = true;
+    await closing;
+    await select.popup.updateComplete;
+    expect(writes).toEqual([]);
   });
 
   it('closes after the native disabled watcher changes open during an update', async () => {
