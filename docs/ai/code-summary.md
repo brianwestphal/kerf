@@ -983,7 +983,10 @@ cover wide, narrow, pointer, and modal states, including focus, Escape closing
 only the surface, and closing with the dialog.
 `ui/src/components/feedback/chip/chip.tsx` renders a self-styled tag with an optional native remove
 button. It exposes delegated action and item identity, semantic appearance,
-compact geometry, and a disabled state.
+compact geometry, and a disabled state. An `href` makes it a native `<a>` link
+chip (`download`, `external`); `ChipTone` adds `inherit`, which follows the
+surrounding foreground. Tests: `ui/tests/unit/chip-link.test.tsx`,
+`ui/tests/unit/chip-icon-truncate.test.tsx`, `ui/tests/browser/chip.spec.ts`.
 `ui/src/components/forms/choice-chips/choice-chips.tsx` (`@kerfjs/ui/choice-chips`)
 renders a wrapping exclusive choice: separate pill `<label>`s around native
 radios in a `role="radiogroup"`, with optional leading `swatch` (a `CssColor`

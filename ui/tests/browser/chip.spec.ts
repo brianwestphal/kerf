@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { minPaintedTextContrast } from './painted-contrast.js';
+
 test('Chip delegates removal, sizes its compact control, and disables unavailable removal', async ({
   page,
   browserName,
@@ -35,7 +37,7 @@ test('Chip delegates removal, sizes its compact control, and disables unavailabl
   await expect(
     locked.getByRole('button', { name: 'Remove Locked tag' }),
   ).toBeDisabled();
-  await expect(demo.locator('[data-component="chip"]')).toHaveCount(5);
+  await expect(demo.locator('[data-component="chip"]')).toHaveCount(9);
   await expect(
     demo.locator('[data-component="chip"]').last().locator('button'),
   ).toHaveCount(0);
@@ -101,4 +103,143 @@ test('Chip aligns a decorative icon and truncates only its label beside a full p
     (element) => element.getBoundingClientRect().width,
   );
   expect(compactWidth).toBeCloseTo(compactFont, 1);
+});
+
+test('link chips download files, show focus and hover, truncate, and read on transcript bubbles', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=chip');
+  const transcript = page.locator('[data-demo-chip-transcript]');
+  const userFile = transcript
+    .locator('[data-demo-chip-files="user"]')
+    .getByRole('link', { name: 'failing-checks.log' });
+  const longName = 'design-template-drift-report-2026-10-13.md';
+  const assistantLong = transcript
+    .locator('[data-demo-chip-files="assistant"]')
+    .getByRole('link', { name: longName });
+
+  await expect(transcript.locator('a.kui-chip')).toHaveCount(3);
+  await expect(transcript.locator('.kui-chip button')).toHaveCount(0);
+  await expect(userFile).toHaveAttribute('download', 'failing-checks.log');
+  await expect(userFile).toHaveAttribute('data-tone', 'inherit');
+  await expect(userFile).toHaveCSS('text-decoration-line', 'none');
+  await expect(userFile).toHaveCSS('min-height', '28px');
+
+  // The inherit tone follows each bubble's foreground.
+  for (const chip of await transcript.locator('a.kui-chip').all()) {
+    const [chipColor, bubbleColor] = await chip.evaluate((element) => [
+      globalThis.getComputedStyle(element).color,
+      globalThis.getComputedStyle(element.closest('.kui-content-item')!).color,
+    ]);
+    expect(chipColor).toBe(bubbleColor);
+  }
+
+  // A real download starts from the native link.
+  const download = page.waitForEvent('download');
+  await userFile.click();
+  expect((await download).suggestedFilename()).toBe('failing-checks.log');
+
+  // An inherit chip's hover strengthens its border and underlines its label
+  // without painting a fill over the bubble.
+  await page.mouse.move(0, 0);
+  const label = userFile.locator('.kui-chip__label');
+  const restBorder = await userFile.evaluate(
+    (element) => globalThis.getComputedStyle(element).borderTopColor,
+  );
+  await expect(label).toHaveCSS('text-decoration-line', 'none');
+  await userFile.hover();
+  await expect(label).toHaveCSS('text-decoration-line', 'underline');
+  const hovered = await userFile.evaluate((element) => {
+    const style = globalThis.getComputedStyle(element);
+    return {
+      border: style.borderTopColor,
+      color: style.color,
+      background: style.backgroundColor,
+    };
+  });
+  expect(hovered.border).not.toBe(restBorder);
+  expect(hovered.border).toBe(hovered.color);
+  expect(hovered.background).toBe('rgba(0, 0, 0, 0)');
+  await expect(userFile).toHaveCSS('cursor', 'pointer');
+  await userFile.screenshot({
+    path: testInfo.outputPath('chip-link-hover.png'),
+  });
+  await page.mouse.move(0, 0);
+
+  // Keyboard focus draws a currentColor ring on an inherit link chip.
+  await userFile.focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await expect(userFile).toBeFocused();
+  const ring = await userFile.evaluate((element) => {
+    const style = globalThis.getComputedStyle(element);
+    return {
+      matches: element.matches(':focus-visible'),
+      style: style.outlineStyle,
+      width: style.outlineWidth,
+      color: style.outlineColor,
+      text: style.color,
+    };
+  });
+  expect(ring).toMatchObject({ matches: true, style: 'solid', width: '3px' });
+  expect(ring.color).toBe(ring.text);
+  await transcript.screenshot({
+    path: testInfo.outputPath('chip-link-focus.png'),
+  });
+
+  // Text stays readable over the chip fill on both bubbles and themes.
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const labels = transcript.locator('a.kui-chip .kui-chip__label');
+    expect(await minPaintedTextContrast(labels)).toBeGreaterThanOrEqual(4.5);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+
+  // A semantic-tone external link chip announces the new tab, uses the
+  // standard focus ring, and washes its fill on hover.
+  const external = page.getByRole('link', {
+    name: 'Kerf Source (opens in new tab)',
+  });
+  await expect(external).toHaveAttribute('target', '_blank');
+  await expect(external).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(external).not.toHaveAttribute('download');
+  const externalRest = await external.evaluate(
+    (element) => globalThis.getComputedStyle(element).backgroundImage,
+  );
+  await external.hover();
+  await expect
+    .poll(() =>
+      external.evaluate(
+        (element) => globalThis.getComputedStyle(element).backgroundImage,
+      ),
+    )
+    .not.toBe(externalRest);
+  await page.mouse.move(0, 0);
+  await external.focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await expect(external).toBeFocused();
+  await expect(external).toHaveCSS('outline-width', '3px');
+  await expect(external).toHaveCSS('outline-offset', '2px');
+
+  // A long file name truncates inside its bubble at phone width.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(assistantLong).toBeVisible();
+  const geometry = await assistantLong.evaluate((element) => {
+    const label = element.querySelector<HTMLElement>('.kui-chip__label')!;
+    const bubble = element.closest('.kui-content-item')!;
+    return {
+      clipped: label.scrollWidth > label.clientWidth,
+      chipEnd: element.getBoundingClientRect().right,
+      bubbleEnd: bubble.getBoundingClientRect().right,
+      title: label.title,
+    };
+  });
+  expect(geometry.clipped).toBe(true);
+  expect(geometry.title).toBe(longName);
+  expect(geometry.chipEnd).toBeLessThanOrEqual(geometry.bubbleEnd);
+  await transcript.screenshot({
+    path: testInfo.outputPath('chip-link-narrow.png'),
+  });
 });

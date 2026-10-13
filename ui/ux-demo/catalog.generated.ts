@@ -18,7 +18,7 @@ export const generatedKerfCatalog = [
     "category": "Foundation",
     "kind": "component",
     "source": "kerf",
-    "description": "Render removable tags without application rules on Web Awesome internals.",
+    "description": "Render removable tags and file or link chips without application rules on Web Awesome internals or anchor chrome.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/chip.tsx",
     "componentSource": "ui/src/components/feedback/chip/chip.tsx",

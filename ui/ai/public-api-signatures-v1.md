@@ -3691,10 +3691,16 @@ import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 import { BadgeAppearance, BadgeShape, BadgeSize } from './badge.js';
 import './css-values.js';
 
+/**
+ * A chip color role: a shared semantic tone, or `inherit`, which follows the
+ * surrounding foreground (a chip inside a `brand-loud` ContentItem bubble)
+ * and derives its fill, border, and focus ring from `currentColor`.
+ */
+type ChipTone = SemanticTone | 'inherit';
 interface ChipCommonProps {
     /** Decorative leading icon, normally an unsized LucideIcon. */
     icon?: SafeHtml;
-    tone?: SemanticTone;
+    tone?: ChipTone;
     appearance?: BadgeAppearance;
     shape?: BadgeShape;
     size?: BadgeSize;
@@ -3705,24 +3711,50 @@ interface ChipCommonProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-/** A removable chip needs both a delegated action and a specific accessible name. */
-type ChipProps = ChipCommonProps & ({
+type ChipLabelProps = {
     children: SafeHtml | string | number;
     truncate?: false;
 } | {
     children: string;
     truncate: true;
-}) & ({
-    removeAction: string;
-    removeLabel: string;
-} | {
+};
+interface ChipNoLinkProps {
+    href?: never;
+    download?: never;
+    external?: never;
+}
+/**
+ * A link chip renders a native `<a>` with Chip geometry. It cannot also carry
+ * a remove button, because a button inside a link is invalid.
+ */
+interface ChipLinkProps {
+    /** Native destination; the chip renders as an `<a>`. */
+    href: string;
+    /** Download the destination: `true`, or the suggested file name. */
+    download?: string | boolean;
+    /** Open in a new tab with a safe rel and announce that behavior. */
+    external?: boolean;
     removeAction?: never;
     removeLabel?: never;
-});
-/** A short label with an optional native remove button. The application owns removal. */
-declare function Chip({ children, icon, truncate, tone, appearance, shape, size, disabled, itemId, className, slot, ...remove }: ChipProps): SafeHtml;
+}
+/**
+ * A plain chip, a removable chip (a delegated action plus a specific
+ * accessible name), or a link chip (`href`, optional `download`/`external`).
+ */
+type ChipProps = ChipCommonProps & ChipLabelProps & (({
+    removeAction: string;
+    removeLabel: string;
+} & ChipNoLinkProps) | ({
+    removeAction?: never;
+    removeLabel?: never;
+} & ChipNoLinkProps) | ChipLinkProps);
+/**
+ * A short label with an optional native remove button, or a native link when
+ * `href` is set. The application owns removal and the link destination.
+ */
+declare function Chip({ children, icon, truncate, tone, appearance, shape, size, disabled, itemId, className, slot, href, download, external, removeAction, removeLabel, }: ChipProps): SafeHtml;
 
-export { Chip, type ChipProps };
+export { Chip, type ChipProps, type ChipTone };
 ```
 
 ## `@kerfjs/ui/lucide-icon`

@@ -136,7 +136,11 @@ export {
   type BadgeTone,
   type SemanticTone,
 } from './components/feedback/badge/badge.js';
-export { Chip, type ChipProps } from './components/feedback/chip/chip.js';
+export {
+  Chip,
+  type ChipProps,
+  type ChipTone,
+} from './components/feedback/chip/chip.js';
 export {
   CornerStatus,
   type CornerStatusPlacement,

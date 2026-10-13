@@ -73,6 +73,26 @@
   background: transparent;
 }
 
+/* Follows the surrounding foreground, such as the on-loud text of a
+   brand-loud ContentItem bubble. It paints no fill: any currentColor wash
+   over a loud surface lowers the contrast the surface's own text was tuned
+   to, so the chip draws its shape with a currentColor border instead (soft
+   for quiet, full strength for outline and solid). */
+.kui-chip[data-tone="inherit"] {
+  --_kui-chip-border: color-mix(in srgb, currentColor 40%, transparent);
+
+  border-color: var(--_kui-chip-border);
+  color: inherit;
+  background: transparent;
+}
+
+.kui-chip[data-tone="inherit"]:is(
+    [data-appearance="outline"],
+    [data-appearance="solid"]
+  ) {
+  --_kui-chip-border: currentColor;
+}
+
 .kui-chip[data-shape="rounded"] {
   border-radius: var(--kui-radius-s);
 }
@@ -91,6 +111,56 @@
 .kui-chip[data-truncate] {
   max-width: 100%;
   overflow: hidden;
+}
+
+/* Link chip: a native anchor with the same geometry. Hover and press layer a
+   currentColor wash over whichever fill the appearance paints; an inherit
+   chip instead strengthens its border and underlines its label, so the
+   surrounding text contrast holds in every state. */
+.kui-chip[data-link] {
+  --_kui-chip-wash: transparent;
+
+  background-image: linear-gradient(
+    var(--_kui-chip-wash),
+    var(--_kui-chip-wash)
+  );
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.kui-chip[data-link]:hover {
+  --_kui-chip-wash: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.kui-chip[data-link]:active {
+  --_kui-chip-wash: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.kui-chip[data-link][data-tone="inherit"]:is(:hover, :active) {
+  --_kui-chip-wash: transparent;
+  --_kui-chip-border: currentColor;
+}
+
+/* The label clips for its ellipsis; a little block room keeps the hover
+   underline inside that clip without changing the chip's height. */
+.kui-chip[data-link] .kui-chip__label {
+  padding-block: 0.2em;
+}
+
+.kui-chip[data-link][data-tone="inherit"]:is(:hover, :active) .kui-chip__label {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.kui-chip[data-link]:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}
+
+/* The brand focus color can match a brand-loud surface; an inherit chip's
+   ring follows the surrounding foreground instead. */
+.kui-chip[data-link][data-tone="inherit"]:focus-visible {
+  outline: 3px solid currentColor;
 }
 
 .kui-chip__icon {

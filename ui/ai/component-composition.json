@@ -83,6 +83,11 @@
           "owner": "application",
           "required": false
         },
+        {
+          "id": "link destination and download file name",
+          "owner": "application",
+          "required": false
+        },
         { "id": "disabled policy", "owner": "application", "required": false }
       ],
       "wiring": {
@@ -99,6 +104,8 @@
       "accessibility": {
         "obligations": [
           "The remove control is a native button and requires an action and a specific removeLabel. A disabled chip disables that button and removes it from keyboard interaction.",
+          "A link chip is a native anchor named by its visible label; external adds a safe rel, a new tab, and an \"(opens in new tab)\" name suffix, and a disabled link chip drops its destination and leaves the tab order.",
+          "The inherit tone paints no fill, so its label keeps the surrounding text contrast, and its focus ring follows the surrounding foreground.",
           "Keep meaningful tag text visible because tone is supplementary."
         ]
       },

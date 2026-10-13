@@ -474,7 +474,11 @@ delegates viewport placement, top-layer/modal hosting, focus, and dismissal to
 three-engine browser tests cover wide, narrow, and modal use.
 Chip presents a short tag with an optional named remove button and delegated
 action. It supports semantic tone, appearance, shape, compact size, and disabled
-state without consumer rules on Web Awesome internals.
+state without consumer rules on Web Awesome internals. With `href` (plus optional
+`download` and `external`) it renders a native link with the same geometry, icon,
+truncation, focus ring, and hover feedback, for downloadable file chips in chat
+bubbles; `tone="inherit"` follows the surrounding foreground with a
+currentColor border and no fill, so it keeps a brand-loud bubble's text contrast.
 ChoiceChips (shipped) is the wrapping exclusive choice for a visible set too
 large for SegmentedControl: separate pills over native radios (one Tab stop,
 arrow-key selection, real form value), with color swatches including a

@@ -230,7 +230,12 @@ See `ui/docs/anchored-surface.md` for focus, dismissal, and dialog host details.
 Use `Chip` for a removable tag. Pass `removeAction` and a specific
 `removeLabel` together; a delegated handler can read `itemId` from the chip
 root and update the application tag list. `size="compact"` and `disabled`
-cover dense and unavailable tags without custom Web Awesome selectors.
+cover dense and unavailable tags without custom Web Awesome selectors. For a
+downloadable file or a short link, pass `href` (with `download`, a file name or
+`true`, and `external` for a new tab) instead: the chip renders a native `<a>`
+and cannot also carry a remove button. Inside a `brand-loud` or `neutral`
+`ContentItem` bubble, set `tone="inherit"` so the chip follows the bubble's
+foreground.
 
 Use `ChoiceChips` (`@kerfjs/ui/choice-chips`) when one value is chosen from a
 visible set too large for `SegmentedControl` and the options must wrap, such as

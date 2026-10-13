@@ -687,6 +687,11 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `removeAction` and a specific `removeLabel`; the application updates the tag
   list. `itemId` identifies the chip to the action handler. `size="compact"`
   gives a 20px chip and 16px remove button; `disabled` disables removal.
+- **Use a link `Chip` for downloadable files and short links.** `href` renders a
+  native `<a>` with chip geometry; `download` (`true` or a file name) and
+  `external` (new tab, safe rel, announced) are optional, and a link chip has
+  no remove button. Inside a ContentItem bubble set `tone="inherit"` so it
+  follows the bubble's foreground instead of styling an anchor yourself.
 - **Use `ChoiceChips` for a wrapping exclusive choice.** When one value comes
   from a visible set too large for a `SegmentedControl` track (a nine-color
   palette in a 560px dialog), render separate pills backed by native radios:

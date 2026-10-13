@@ -4,18 +4,20 @@
 
 `@kerfjs/ui:chip` · Kerf UI · component · Foundation
 
-A short tag with semantic tone and an optional accessible remove button, including compact and disabled variants.
+A short tag with semantic or inherited tone, an optional accessible remove button, or a native link and download form, including compact and disabled variants.
 
 ## When to use
 
-Render removable tags without application rules on Web Awesome internals.
+Render removable tags and file or link chips without application rules on Web Awesome internals or anchor chrome.
 
 - Show a short tag that the application can remove through a delegated action, including a compact or disabled tag.
+- Show a downloadable file or a short link with chip geometry, such as the referenced files of a chat message; set tone inherit inside a brand-loud or neutral ContentItem bubble.
 
 **Not when:**
 
 - Use Badge for non-interactive status and count metadata.
 - Do not use the remove button without a specific accessible name.
+- Use ListItemLink for a navigation row and ToolbarActionLink for a toolbar link.
 
 ## Imports
 
@@ -29,11 +31,11 @@ Exact prop names and types: [`@kerfjs/ui/chip`](../public-api-signatures-v1.md#k
 
 **Variants (configure, do not restyle):**
 
-- neutral, info, pop, success, warning, or danger tone
+- neutral, info, pop, success, warning, danger, or inherit tone
 - quiet, solid, or outline appearance
 - pill or rounded shape
 - compact or default size
-- removable or plain, enabled or disabled
+- removable, link, or plain, enabled or disabled
 
 ## Composition
 
@@ -43,7 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/chip`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** tag text and identity; remove action and list update; disabled policy.
+**The app owns:** tag text and identity; remove action and list update; link destination and download file name; disabled policy.
 
 No wiring helper.
 
@@ -54,6 +56,8 @@ Margin: none · border: self · padding: self (layout role: foundation). `self` 
 ## Accessibility
 
 - The remove control is a native button and requires an action and a specific removeLabel. A disabled chip disables that button and removes it from keyboard interaction.
+- A link chip is a native anchor named by its visible label; external adds a safe rel, a new tab, and an "(opens in new tab)" name suffix, and a disabled link chip drops its destination and leaves the tab order.
+- The inherit tone paints no fill, so its label keeps the surrounding text contrast, and its focus ring follows the surrounding foreground.
 - Keep meaningful tag text visible because tone is supplementary.
 
 ## Styling boundary

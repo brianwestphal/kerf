@@ -851,6 +851,40 @@ requires a string label so the title cannot lose text hidden inside markup.
 </Chip>
 ```
 
+## File and link chips
+
+Give `Chip` an `href` when a short chip should open or download something,
+such as the files a chat message references. The chip becomes a native `<a>`
+with the same geometry, icon slot, truncation, and focus ring, plus hover
+feedback. `download` is `true` or the suggested file name; `external` opens a
+new tab with `rel="noopener noreferrer"` and announces it, like
+`ListItemLink`. A link chip cannot also carry a remove button. Use
+`ListItemLink` for a navigation row and `ToolbarActionLink` in a toolbar.
+
+Inside a `brand-loud` or `neutral` `ContentItem` bubble, set
+`tone="inherit"`: the chip follows the bubble's foreground and draws its shape
+with a currentColor border (soft for `quiet`, full strength for `outline` and
+`solid`) instead of a fill, so its label keeps the bubble's text contrast.
+Its hover strengthens the border and underlines the label, and its focus ring
+follows the foreground. Semantic tones keep their fills and add a currentColor
+wash on hover. File names are data: keep their spelling.
+
+```tsx
+<Row gap="xs" wrap>
+  {files.map((file) => (
+    <Chip
+      tone="inherit"
+      href={file.url}
+      download={file.name}
+      icon={<LucideIcon icon={FileText} name="file-text" />}
+      truncate
+    >
+      {file.name}
+    </Chip>
+  ))}
+</Row>
+```
+
 ## Wrapping exclusive choices
 
 Use `ChoiceChips` when one value is chosen from a visible set that does not

@@ -122,6 +122,14 @@ Chip({
   removeLabel: 'Remove Urgent tag',
 });
 Chip({ children: 'Backlog', size: 'compact', disabled: true });
+Chip({
+  children: 'report.md',
+  href: '/files/report.md',
+  download: 'report.md',
+  tone: 'inherit',
+  truncate: true,
+});
+Chip({ children: 'Docs', href: 'https://example.com', external: true });
 ChoiceChips({
   name: 'color',
   label: 'Command Color',
@@ -156,6 +164,15 @@ ChoiceChips({
 Chip({ children: 'Unlabeled', removeAction: 'remove-tag' });
 // @ts-expect-error A plain chip cannot carry an orphan remove label.
 Chip({ children: 'Unlabeled', removeLabel: 'Remove tag' });
+// @ts-expect-error A link chip cannot also carry a remove button.
+Chip({
+  children: 'report.md',
+  href: '/files/report.md',
+  removeAction: 'remove-file',
+  removeLabel: 'Remove report.md',
+});
+// @ts-expect-error download needs an href.
+Chip({ children: 'report.md', download: true });
 const textVariant: TextVariant = 'h3';
 const inlineTextVariant: TextVariant = 'span';
 const textTone: TextTone = 'quiet';
