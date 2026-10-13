@@ -1953,7 +1953,11 @@ interface WorkbenchPanelBase {
      * with `wireWorkbench` from `@kerfjs/ui/wire-workbench`.
      */
     resizable?: boolean | WorkbenchPanelResizable;
-    /** Accessible name for the panel region. */
+    /**
+     * Accessible name for the panel region, in title style. A resizable
+     * panel's handle is named "Resize {label}", or "Resize Left Rail" /
+     * "Resize Right Rail" / "Resize Bottom Drawer" without one.
+     */
     label?: string;
     /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the panel region. */
     tabIndex?: 0 | -1;

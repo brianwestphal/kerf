@@ -212,6 +212,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- A resizable `@kerfjs/ui` `Workbench` panel without a `label` now names its resize handle in title style, as `ui/docs/writing.md` asks for region names: "Resize Left Rail", "Resize Right Rail", and "Resize Bottom Drawer" (previously "Resize left rail" and so on). A test or locator that matched the old accessible name needs the new one (`KF-NWS9GB`).
+
 - `kerf-ui-doctor`'s `KUI-D040` now also reads region and landmark names, which `ui/docs/writing.md` makes title style, and raw Web Awesome field labels. The new region names are:
   - the `label` of `Pane`, `Workbench`, `Toolbar`, `ToolbarControlGroup`, `TabBar`, `NavStack`, `CollapsiblePanel`, `FloatingToolbar`, and `ResizableRegion`;
   - the `ariaLabel` of `SunkenPanel` and `List`;

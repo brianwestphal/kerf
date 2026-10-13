@@ -500,9 +500,9 @@ describe('Workbench', () => {
     expect(handle(left).getAttribute('aria-valuemax')).toBe('480');
     expect(handle(left).getAttribute('aria-valuenow')).toBe('280');
     expect(handle(left).getAttribute('tabindex')).toBe('0');
-    expect(handle(right).getAttribute('aria-label')).toBe('Resize right rail');
+    expect(handle(right).getAttribute('aria-label')).toBe('Resize Right Rail');
     expect(handle(drawer).getAttribute('aria-label')).toBe(
-      'Resize bottom drawer',
+      'Resize Bottom Drawer',
     );
     expect(handle(drawer).getAttribute('aria-orientation')).toBe('horizontal');
     expect(handle(drawer).getAttribute('aria-valuemax')).toBe('100');
