@@ -99,7 +99,7 @@ describe('NavStack markup', () => {
     expect(html).toContain('data-nav-back');
     expect(html).toContain('aria-label="Back"');
     expect(html).toContain(
-      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="large" data-fill="true"><span class="kui-toolbar-text__text">Detail</span></span>',
+      '<div class="kui-toolbar__center"><span class="kui-toolbar-text" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Detail</span></span></div>',
     );
     // Non-top views are hidden but kept mounted.
     expect(html).toContain(
@@ -139,17 +139,23 @@ describe('NavStack markup', () => {
     expect(toolbar.className).toBe('kui-toolbar');
     expect(toolbar.hasAttribute('divider-sides')).toBe(false);
     expect(toolbar.hasAttribute('aria-label')).toBe(false);
-    expect(toolbar.dataset.centerAlign).toBe('center');
+    // With a back control, the title centers on a balanced bar.
+    expect(toolbar.dataset.centerAlign).toBe('balanced');
     expect(toolbar.dataset.responsive).toBe('none');
-    expect(toolbar.dataset.hasCenter).toBe('false');
+    expect(toolbar.dataset.hasCenter).toBe('true');
     expect(toolbar.dataset.safeAreaBlockStart).toBe('true');
     expect(toolbar.dataset.safeAreaInlineStart).toBe('true');
     expect(toolbar.dataset.safeAreaInlineEnd).toBe('true');
     expect(toolbar.dataset.safeAreaBlockEnd).toBeUndefined();
 
-    // The back control is the first group of the leading zone, then the title.
+    // The back control leads; the title is the center zone's only child.
     const leading = toolbar.querySelector('.kui-toolbar__leading')!;
-    const [group, title] = Array.from(leading.children) as HTMLElement[];
+    const [group] = Array.from(leading.children) as HTMLElement[];
+    expect(leading.children).toHaveLength(1);
+    const center = toolbar.querySelector('.kui-toolbar__center')!;
+    const [title] = Array.from(center.children) as HTMLElement[];
+    expect(center.children).toHaveLength(1);
+    expect(title.dataset.fill).toBeUndefined();
     expect(group.dataset.component).toBe('toolbar-control-group');
     expect(group.dataset.appearance).toBe('contained');
     expect(group.dataset.shape).toBe('pill');
@@ -160,6 +166,40 @@ describe('NavStack markup', () => {
     expect(title.dataset.component).toBe('toolbar-text');
     expect(title.dataset.size).toBe('large');
     expect(title.hasAttribute('role')).toBe(false);
+  });
+
+  it('leads with a left-aligned title at the root and centers it once it can pop', () => {
+    const toolbarOf = (root: HTMLElement) =>
+      root.querySelector<HTMLElement>(
+        '[data-nav-stack-chrome] > [data-component="toolbar"]',
+      )!;
+    // Root: no back control, so the title fills the leading zone.
+    const rootToolbar = toolbarOf(
+      mountStack([view('home', 'Home')], {
+        toolbarConfig: { centerAlign: 'stretch' },
+      }),
+    );
+    expect(rootToolbar.dataset.centerAlign).toBe('stretch');
+    expect(
+      rootToolbar.querySelector(
+        '.kui-toolbar__leading > .kui-toolbar-text[data-fill="true"]',
+      ),
+    ).not.toBeNull();
+    // Depth: the title centers and the bar balances, overriding a configured
+    // alignment that applies only to view-owned center content.
+    const pushed = toolbarOf(
+      mountStack([view('home', 'Home'), view('detail', 'Detail')], {
+        toolbarConfig: { centerAlign: 'stretch' },
+      }),
+    );
+    expect(pushed.dataset.centerAlign).toBe('balanced');
+    expect(
+      pushed.querySelector('.kui-toolbar__center > .kui-toolbar-text')
+        ?.textContent,
+    ).toBe('Detail');
+    expect(
+      pushed.querySelector('.kui-toolbar__leading .kui-toolbar-text'),
+    ).toBe(null);
   });
 
   it('forwards the toolbar configuration, title size, and heading level', () => {

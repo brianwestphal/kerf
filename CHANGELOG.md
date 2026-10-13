@@ -180,6 +180,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Once a `NavStack` shows a back control, the view title centers on the toolbar like a platform navigation bar. It stays on the midpoint while the sides leave room, moves away from a wider side when they do not, and truncates with an ellipsis before it reaches the back control or a trailing group. At the root, and on a view that supplies `toolbar.center`, the title stays left-aligned. A lone `ToolbarText` in a `centerAlign="balanced"` toolbar gets this navigation-bar layout in any `Toolbar` (`KF-9YD9KV`).
 - The `NavStack` back control is now a contained, bordered `ToolbarControlGroup` (the default pill), so it reads as a real control instead of a bare chevron beside the title (`KF-TBRP2P`).
 - HTML and attribute escaping in the JSX runtime now runs one pass over a value instead of one `replace` pass per special character, about 2x faster on values that need escaping. Output is unchanged (`KF-3SHRTR`).
 

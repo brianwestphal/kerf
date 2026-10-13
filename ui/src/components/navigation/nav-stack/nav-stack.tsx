@@ -157,6 +157,17 @@ export function NavStack({
   const bottom = top?.bottomToolbar ?? bottomToolbar;
   const canPop = views.length > 1;
   const topDensity = topToolbar?.density ?? toolbarConfig.density;
+  // With a back control, the title centers on the bar (iOS-style) unless the
+  // view owns the center zone; at the root it leads and fills, left-aligned.
+  const centerTitle = canPop && topToolbar?.center === undefined;
+  const title = (
+    <ToolbarText
+      text={topToolbar?.title ?? ''}
+      size={topToolbar?.titleSize ?? toolbarConfig.titleSize ?? 'large'}
+      headingLevel={topToolbar?.headingLevel ?? toolbarConfig.headingLevel}
+      fill={!centerTitle}
+    />
+  );
   return (
     <section
       class={`kui-nav-stack ${className}`.trim()}
@@ -181,7 +192,11 @@ export function NavStack({
             dividerSides={
               topToolbar?.dividerSides ?? toolbarConfig.dividerSides
             }
-            centerAlign={topToolbar?.centerAlign ?? toolbarConfig.centerAlign}
+            centerAlign={
+              centerTitle
+                ? 'balanced'
+                : (topToolbar?.centerAlign ?? toolbarConfig.centerAlign)
+            }
             responsive={topToolbar?.responsive ?? toolbarConfig.responsive}
             responsiveAt={
               topToolbar?.responsiveAt ?? toolbarConfig.responsiveAt
@@ -217,19 +232,10 @@ export function NavStack({
                   </ToolbarControlGroup>
                 )}
                 {topToolbar?.leading}
-                <ToolbarText
-                  text={topToolbar?.title ?? ''}
-                  size={
-                    topToolbar?.titleSize ?? toolbarConfig.titleSize ?? 'large'
-                  }
-                  headingLevel={
-                    topToolbar?.headingLevel ?? toolbarConfig.headingLevel
-                  }
-                  fill
-                />
+                {centerTitle ? null : title}
               </>
             }
-            center={topToolbar?.center}
+            center={centerTitle ? title : topToolbar?.center}
             trailing={
               <>
                 {topToolbar?.trailing}

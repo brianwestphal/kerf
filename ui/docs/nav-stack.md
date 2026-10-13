@@ -80,10 +80,21 @@ and layout content.
 The top chrome is a real `Toolbar`, so it follows the same zone,
 group, and responsive rules as every other toolbar. Its leading zone holds the
 back control (a contained, bordered `ToolbarControlGroup`, shown once the stack has
-depth), then `toolbar.leading`, then `toolbar.title` as a `ToolbarText`.
-`toolbar.center` fills the center zone and `toolbar.trailing` fills the
-trailing zone. Give each zone `ToolbarControlGroup`s or `ToolbarText`,
-as in any toolbar.
+depth), then `toolbar.leading`. `toolbar.trailing` fills the trailing zone.
+Give each zone `ToolbarControlGroup`s or `ToolbarText`, as in any toolbar.
+
+Where `toolbar.title` goes depends on the back control:
+
+- **At the root** (no back control) the title is a filling `ToolbarText` at
+  the end of the leading zone, so it reads left-aligned.
+- **Once the stack has depth**, the title is the center zone's only child and
+  the toolbar is `centerAlign="balanced"`, like a platform navigation bar. The
+  title sits on the bar's midpoint while the sides leave room, moves away from
+  a wider side when they do not, and truncates with an ellipsis before it
+  reaches the back control or a trailing group. This overrides a configured
+  `centerAlign`, which applies to view-owned center content.
+- **A view that sets `toolbar.center`** owns the center zone, so its title
+  stays left-aligned in the leading zone at any depth.
 
 Configure the toolbar with `toolbarConfig` instead of styling it:
 

@@ -97,6 +97,25 @@
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 }
 
+/* A lone title in a balanced center (a navigation bar's title beside a back
+   control) centers on the toolbar while the side zones leave room, moves away
+   from a wider side when they do not, and truncates before it reaches a side
+   control: the side tracks keep their content width and the title's track
+   may shrink to nothing, so the title, unlike center controls, gives way
+   first. */
+.kui-toolbar[data-center-align="balanced"][data-has-center="true"]:has(
+    > .kui-toolbar__center > .kui-toolbar-text:only-child
+  ) {
+  grid-template-columns:
+    minmax(max-content, 1fr) minmax(0, max-content)
+    minmax(max-content, 1fr);
+}
+
+.kui-toolbar[data-center-align="balanced"]
+  > .kui-toolbar__center:has(> .kui-toolbar-text:only-child) {
+  min-width: 0;
+}
+
 .kui-toolbar[data-responsive="trailing-priority"][data-has-center="false"]:has(
     > .kui-toolbar__trailing [data-expanded="true"]
   ) {

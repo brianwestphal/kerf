@@ -92,7 +92,7 @@ describe('SplitView', () => {
     expect(html).toContain('data-nav-back');
     expect(html).toContain('aria-label="Threads"');
     expect(html).toContain(
-      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="large" data-fill="true"><span class="kui-toolbar-text__text">Message</span></span>',
+      '<div class="kui-toolbar__center"><span class="kui-toolbar-text" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Message</span></span></div>',
     );
   });
 

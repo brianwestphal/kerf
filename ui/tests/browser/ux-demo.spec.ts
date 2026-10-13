@@ -390,7 +390,7 @@ test('drills through the navigation-stack recipe with animated push/pop and redu
   await expect(nav.locator('[data-nav-back]')).toBeVisible();
   await expect(
     nav.locator(
-      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-toolbar-text[data-fill="true"]',
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) :is(.kui-toolbar__leading > .kui-toolbar-text[data-fill="true"], .kui-toolbar__center > .kui-toolbar-text)',
     ),
   ).toHaveText('App layouts');
   await expect(nav).not.toHaveAttribute('data-nav-chrome-transition', 'true');
@@ -407,7 +407,7 @@ test('drills through the navigation-stack recipe with animated push/pop and redu
   await expect(nav.locator('[data-nav-back]')).toHaveCount(0);
   await expect(
     nav.locator(
-      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-toolbar-text[data-fill="true"]',
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) :is(.kui-toolbar__leading > .kui-toolbar-text[data-fill="true"], .kui-toolbar__center > .kui-toolbar-text)',
     ),
   ).toHaveText('Library');
   await expect(nav).not.toHaveAttribute('data-nav-chrome-transition', 'true');

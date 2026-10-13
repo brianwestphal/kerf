@@ -25,7 +25,7 @@ test('a tab scene keeps its own NavStack toolbar and pane above the tab bar', as
   await expect(stack).not.toHaveAttribute('data-nav-chrome-transition', 'true');
   await expect(
     stack.locator(
-      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-toolbar-text[data-fill="true"]',
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) :is(.kui-toolbar__leading > .kui-toolbar-text[data-fill="true"], .kui-toolbar__center > .kui-toolbar-text)',
     ),
   ).toHaveText('Project Atlas');
   await scaffold.getByRole('tab', { name: 'Search' }).click();
@@ -85,7 +85,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
   await expect(stack.locator('[data-nav-detail-focus]')).toBeFocused();
   await expect(
     stack.locator(
-      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-toolbar-text[data-fill="true"]',
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) :is(.kui-toolbar__leading > .kui-toolbar-text[data-fill="true"], .kui-toolbar__center > .kui-toolbar-text)',
     ),
   ).toHaveText('Project Atlas');
   await expect(
@@ -118,7 +118,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
   );
   await expect(
     stack.locator(
-      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-toolbar-text[data-fill="true"]',
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) :is(.kui-toolbar__leading > .kui-toolbar-text[data-fill="true"], .kui-toolbar__center > .kui-toolbar-text)',
     ),
   ).toHaveText('Library');
   await expect(
@@ -352,7 +352,13 @@ for (const width of [1100, 390]) {
         .locator('.kui-toolbar__trailing')
         .getByRole('button', { name: 'Share project' }),
     ).toBeVisible();
-    await expect(toolbar.locator('.kui-toolbar__center')).toBeHidden();
+    // With a back control and no view center content, the title centers.
+    await expect(
+      toolbar
+        .locator('.kui-toolbar__center')
+        .getByRole('heading', { level: 2, name: 'Project Atlas' }),
+    ).toBeVisible();
+    await expect(toolbar).toHaveAttribute('data-center-align', 'balanced');
     if (browserName === 'chromium')
       await stack.screenshot({
         path: `test-results/nav-stack-configured-detail-${width}.png`,
