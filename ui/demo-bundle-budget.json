@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 372500,
-  "measuredLargestJavaScriptGzip": 118703,
-  "measuredTotalJavaScriptGzip": 372454,
+  "totalJavaScriptGzip": 372700,
+  "measuredLargestJavaScriptGzip": 118704,
+  "measuredTotalJavaScriptGzip": 372649,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4563,6 +4563,22 @@
         "measuredTotalJavaScriptGzip": 372454,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 372500
+      }
+    },
+    {
+      "at": "2026-10-13T22:31:26.787Z",
+      "reason": "dark-tone AnchoredSurface follows a live color-scheme switch (KF-49W7J2)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118703,
+        "measuredTotalJavaScriptGzip": 372454,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 372500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118704,
+        "measuredTotalJavaScriptGzip": 372649,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 372700
       }
     }
   ]

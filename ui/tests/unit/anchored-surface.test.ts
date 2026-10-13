@@ -290,5 +290,149 @@ describe('anchored surface contract', () => {
         );
       },
     );
+
+    // KF-49W7J2: while open, the dark tone follows a live scheme switch.
+    describe('live scheme switch', () => {
+      /** Computed color-scheme per element, mutable as a theme switches. */
+      const schemes = new Map<Element, string>();
+      let mediaListeners: Array<() => void>;
+      let removed: Array<() => void>;
+      let prefersDark: boolean;
+
+      beforeEach(() => {
+        schemes.clear();
+        mediaListeners = [];
+        removed = [];
+        prefersDark = false;
+        vi.stubGlobal(
+          'matchMedia',
+          vi.fn((query: string) => ({
+            get matches() {
+              return prefersDark && query === '(prefers-color-scheme: dark)';
+            },
+            addEventListener: (_type: string, listener: () => void) =>
+              mediaListeners.push(listener),
+            removeEventListener: (_type: string, listener: () => void) =>
+              removed.push(listener),
+          })),
+        );
+        const real = window.getComputedStyle.bind(window);
+        vi.spyOn(window, 'getComputedStyle').mockImplementation((element) => {
+          // color-scheme inherits: the nearest ancestor's (or composed
+          // host's) stubbed value, else "normal".
+          for (let node: Element | null = element; node;) {
+            const value = schemes.get(node);
+            if (value !== undefined)
+              return { colorScheme: value } as CSSStyleDeclaration;
+            const root = node.getRootNode();
+            node =
+              node.parentElement ??
+              (root instanceof ShadowRoot ? root.host : null);
+          }
+          return {
+            ...real(element),
+            colorScheme: 'normal',
+          } as CSSStyleDeclaration;
+        });
+      });
+
+      function openDark(anchor: Element) {
+        const handle = surface();
+        mockedPopover.mockReturnValue(handle);
+        openAnchoredSurface(anchor, content, { label: 'Volume', tone: 'dark' });
+        handle.el.className = mockedPopover.mock.calls.at(-1)![2]!.className!;
+        return handle;
+      }
+
+      const settle = () =>
+        new Promise((done) => globalThis.setTimeout(done, 0));
+
+      it('flips the open surface when an ancestor theme class changes the scheme', async () => {
+        const theme = document.createElement('section');
+        const anchor = document.createElement('button');
+        theme.append(anchor);
+        document.body.append(theme);
+        schemes.set(theme, 'light');
+        const handle = openDark(anchor);
+        expect(handle.el.className).toContain('--scheme-dark');
+        schemes.set(theme, 'dark');
+        theme.className = 'theme-dark';
+        await settle();
+        expect(handle.el.className).toBe(
+          'kui-anchored-surface kui-anchored-surface--scheme-light',
+        );
+        // An attribute change that does not move the scheme leaves it alone.
+        theme.dataset.other = 'x';
+        await settle();
+        expect(handle.el.className).toContain('--scheme-light');
+      });
+
+      it('follows an OS preference change for a `light dark` page', () => {
+        const anchor = document.createElement('button');
+        document.body.append(anchor);
+        schemes.set(document.documentElement, 'light dark');
+        const handle = openDark(anchor);
+        expect(handle.el.className).toContain('--scheme-dark');
+        prefersDark = true;
+        mediaListeners.forEach((listener) => listener());
+        expect(handle.el.className).toContain('--scheme-light');
+      });
+
+      it('watches through a shadow host and stops when the surface closes', async () => {
+        const host = document.createElement('div');
+        document.body.append(host);
+        const anchor = document.createElement('button');
+        host.attachShadow({ mode: 'open' }).append(anchor);
+        schemes.set(host, 'light');
+        const handle = openDark(anchor);
+        schemes.set(host, 'dark');
+        host.setAttribute('data-theme', 'dark');
+        await settle();
+        expect(handle.el.className).toContain('--scheme-light');
+        handle.close();
+        await settle();
+        expect(removed).toEqual(mediaListeners);
+        schemes.set(host, 'light');
+        host.setAttribute('data-theme', 'light');
+        await settle();
+        expect(handle.el.className).toContain('--scheme-light');
+      });
+
+      it('ignores a switch once the scheme source is disconnected', async () => {
+        const anchor = document.createElement('button');
+        document.body.append(anchor);
+        schemes.set(document.documentElement, 'light');
+        const handle = openDark(anchor);
+        anchor.remove();
+        prefersDark = true;
+        schemes.set(document.documentElement, 'dark');
+        mediaListeners.forEach((listener) => listener());
+        expect(handle.el.className).toContain('--scheme-dark');
+      });
+
+      it('openAnchoredSurfaceAt reads the scheme from its context, falling back to its modal scope', () => {
+        const region = document.createElement('section');
+        const target = document.createElement('div');
+        region.append(target);
+        document.body.append(region);
+        schemes.set(document.body, 'light');
+        schemes.set(region, 'dark');
+        const at = (context?: Element) => {
+          const handle = surface();
+          mockedPopover.mockReturnValue(handle);
+          openAnchoredSurfaceAt({ x: 1, y: 2, context }, content, {
+            label: 'Volume',
+            tone: 'dark',
+          });
+          return mockedPopover.mock.calls.at(-1)![2]!.className!;
+        };
+        // The forced-dark region under the pointer, not the light page.
+        expect(at(target)).toContain('--scheme-light');
+        // A detached context (a re-rendered target) and no context use the
+        // temporary anchor's scope: the light page.
+        expect(at(document.createElement('div'))).toContain('--scheme-dark');
+        expect(at()).toContain('--scheme-dark');
+      });
+    });
   });
 });

@@ -153,6 +153,48 @@ for (const [preference, toggle, pageScheme] of [
       await expect(trigger).toBeFocused();
     });
 
+// KF-49W7J2: an open dark-tone surface follows a live scheme switch, both
+// an explicit app theme toggled on an ancestor and the OS preference.
+test('an open dark-tone surface follows a live theme switch and OS preference change', async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/?component=anchored-surface');
+  await page.getByRole('button', { name: 'Volume' }).click();
+  const volume = page.locator(surface);
+  await expect(volume).toBeVisible();
+  const scheme = () =>
+    volume.evaluate((element) => window.getComputedStyle(element).colorScheme);
+  expect(await scheme()).toBe('dark');
+
+  // The app's explicit theme flips while the popup is open.
+  await page.locator('html').evaluate((html) => {
+    html.classList.remove('demo-light');
+    html.classList.add('demo-dark');
+  });
+  await expect.poll(scheme).toBe('light');
+  // A live switch runs the content's color transitions, as the page's do.
+  await expect
+    .poll(async () => {
+      const flipped = await tones(page);
+      return { fill: flipped.fill > 180, text: flipped.text < 80 };
+    })
+    .toEqual({ fill: true, text: true });
+  expect(
+    await minPaintedTextContrast(volume.locator('.kui-list-item__label')),
+  ).toBeGreaterThanOrEqual(4.5);
+
+  // Back to following the OS preference, which then changes.
+  await page.locator('html').evaluate((html) => {
+    html.classList.remove('demo-dark');
+  });
+  await expect.poll(scheme).toBe('dark');
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect.poll(scheme).toBe('light');
+  await expect(volume).toBeVisible();
+});
+
 test('the default tone follows the page scheme and sets no tone', async ({
   page,
 }) => {

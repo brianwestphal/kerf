@@ -83,8 +83,14 @@ components inside it (a `ListItem` mute row, a `wa-slider`), resolve to the
 other side by inheritance. The content needs no tone props and no overrides.
 Text and focus rings keep WCAG AA in both page schemes. A theme that replaces a
 semantic token with a single color instead of a `light-dark()` pair opts that
-token out of the flip. The scheme is chosen when the surface opens; close and
-reopen it after the page switches schemes.
+token out of the flip. While the surface is open it follows a live switch: an
+OS preference change, or a theme class, attribute, or inline `color-scheme`
+changed on the anchor or one of its ancestors, flips it to the new opposite
+(the content's own color transitions run, as the page's do). A scheme changed
+only by swapping a stylesheet is not observed. `openAnchoredSurfaceAt` reads the
+scheme from its `context` (the element under the pointer), so a region with its
+own `color-scheme` is honored; without a connected `context` it reads the modal
+scope's (or the page's).
 
 ## Theming
 

@@ -74,7 +74,7 @@ const handle = openAnchoredSurface(button, () => <HelpPanel />, {
 
 ### Popup anchored to dark media chrome
 
-tone: 'dark' matches a ToolbarControlGroup tone="dark": the surface takes the opposite of the anchor's color scheme, so its content inherits the inverse text, border, and focus colors without overrides.
+tone: 'dark' matches a ToolbarControlGroup tone="dark": the surface takes the opposite of the anchor's color scheme (openAnchoredSurfaceAt reads it from point.context) and follows a live OS-preference or ancestor theme switch while open, so its content inherits the inverse text, border, and focus colors without overrides.
 
 ```tsx
 openAnchoredSurface(volumeButton, () => <VolumeControls />, {

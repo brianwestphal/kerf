@@ -35,10 +35,12 @@ export interface AnchoredSurfaceOptions extends Pick<
    * `tone="dark"`, for a popup anchored to dark media chrome (a volume popup
    * over a video preview): dark beside a light page and light beside a dark
    * one, so the popup matches the control group that opened it. The surface
-   * takes the opposite of the anchor's color scheme when it opens, so it and
-   * every Kerf UI or Web Awesome component inside it resolve the same
-   * semantic `light-dark()` tokens to the other side: no new colors, no child
-   * overrides. Default `'default'`.
+   * takes the opposite of the anchor's color scheme, so it and every Kerf UI
+   * or Web Awesome component inside it resolve the same semantic
+   * `light-dark()` tokens to the other side: no new colors, no child
+   * overrides. While open it follows a live switch of that scheme (the OS
+   * preference, or an app theme class or attribute on an ancestor). Default
+   * `'default'`.
    */
   tone?: AnchoredSurfaceTone;
 }
@@ -59,13 +61,61 @@ function usedColorScheme(element: Element): 'light' | 'dark' {
   return dark ? 'dark' : 'light';
 }
 
+/** The dark tone's surface scheme: the opposite of `element`'s used scheme. */
+function inverseScheme(element: Element): 'light' | 'dark' {
+  return usedColorScheme(element) === 'dark' ? 'light' : 'dark';
+}
+
+/** The flat-tree parent: the parent element, or a shadow root's host. */
+function composedParent(node: Element): Element | null {
+  const root = node.getRootNode();
+  return node.parentElement ?? (root instanceof ShadowRoot ? root.host : null);
+}
+
+/**
+ * Keep an open dark-tone surface's scheme class the inverse of `source`'s
+ * used scheme while the scheme switches live: the OS preference changes, or
+ * an app theme class, attribute, or inline `color-scheme` changes on
+ * `source` or one of its ancestors (the only places an inherited
+ * `color-scheme` comes from). Stops when `closed` settles.
+ */
+function followScheme(
+  surface: HTMLElement,
+  source: Element,
+  initial: 'light' | 'dark',
+  closed: Promise<unknown>,
+): void {
+  let current = initial;
+  const sync = () => {
+    if (!source.isConnected) return;
+    const next = inverseScheme(source);
+    if (next === current) return;
+    surface.classList.replace(
+      `kui-anchored-surface--scheme-${current}`,
+      `kui-anchored-surface--scheme-${next}`,
+    );
+    current = next;
+  };
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  media.addEventListener?.('change', sync);
+  const observer = new MutationObserver(sync);
+  for (let node: Element | null = source; node; node = composedParent(node))
+    observer.observe(node, { attributes: true });
+  void closed.then(() => {
+    media.removeEventListener?.('change', sync);
+    observer.disconnect();
+  });
+}
+
 /** A viewport pointer location; `context` is the element under the pointer. */
 export interface AnchoredSurfacePoint {
   x: number;
   y: number;
   /**
    * Pass the event target when opening from inside a modal dialog, native or
-   * Web Awesome (`wa-dialog`, `wa-drawer`).
+   * Web Awesome (`wa-dialog`, `wa-drawer`). The dark tone also reads its
+   * color scheme from `context`, so a region with its own `color-scheme` is
+   * honored; without it the scheme is the modal scope's (or the page's).
    */
   context?: Element;
 }
@@ -103,6 +153,16 @@ export function openAnchoredSurface(
   content: OverlayContent,
   options: AnchoredSurfaceOptions,
 ): OverlayHandle {
+  return openWithSchemeSource(anchor, content, options, anchor);
+}
+
+/** `openAnchoredSurface`, with the element the dark tone reads its scheme from. */
+function openWithSchemeSource(
+  anchor: Element,
+  content: OverlayContent,
+  options: AnchoredSurfaceOptions,
+  schemeSource: Element,
+): OverlayHandle {
   const {
     label,
     initialFocus = true,
@@ -119,13 +179,10 @@ export function openAnchoredSurface(
   // The dark tone's scheme is a class from creation, so the surface's first
   // style resolution already has it: flipping it after the content mounts
   // would run the content's own color transitions on open.
-  const scheme =
-    tone === 'dark'
-      ? ` kui-anchored-surface--scheme-${usedColorScheme(anchor) === 'dark' ? 'light' : 'dark'}`
-      : '';
+  const scheme = tone === 'dark' ? inverseScheme(schemeSource) : undefined;
   const handle = popover(anchor, content, {
     ...rest,
-    className: `kui-anchored-surface${scheme}`,
+    className: `kui-anchored-surface${scheme ? ` kui-anchored-surface--scheme-${scheme}` : ''}`,
     native: true,
     initialFocus,
     dismiss,
@@ -137,7 +194,10 @@ export function openAnchoredSurface(
   handle.el.setAttribute('role', 'dialog');
   handle.el.setAttribute('aria-label', label);
   handle.el.dataset.component = 'anchored-surface';
-  if (tone === 'dark') handle.el.dataset.tone = 'dark';
+  if (scheme) {
+    handle.el.dataset.tone = 'dark';
+    followScheme(handle.el, schemeSource, scheme, handle.result);
+  }
   const dialog = anchor.closest('dialog');
   if (dialog?.open) {
     const onClose = () => handle.close();
@@ -171,7 +231,12 @@ export function openAnchoredSurfaceAt(
   // out of the event target itself (which may be an input or a custom element).
   modalScope(context).append(anchor);
   try {
-    const handle = openAnchoredSurface(anchor, content, options);
+    const handle = openWithSchemeSource(
+      anchor,
+      content,
+      options,
+      context?.isConnected ? context : anchor,
+    );
     void handle.result.then(() => anchor.remove());
     return handle;
   } catch (error) {

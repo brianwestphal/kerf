@@ -4775,10 +4775,12 @@ interface AnchoredSurfaceOptions extends Pick<PopoverOptions, 'placement' | 'ali
      * `tone="dark"`, for a popup anchored to dark media chrome (a volume popup
      * over a video preview): dark beside a light page and light beside a dark
      * one, so the popup matches the control group that opened it. The surface
-     * takes the opposite of the anchor's color scheme when it opens, so it and
-     * every Kerf UI or Web Awesome component inside it resolve the same
-     * semantic `light-dark()` tokens to the other side: no new colors, no child
-     * overrides. Default `'default'`.
+     * takes the opposite of the anchor's color scheme, so it and every Kerf UI
+     * or Web Awesome component inside it resolve the same semantic
+     * `light-dark()` tokens to the other side: no new colors, no child
+     * overrides. While open it follows a live switch of that scheme (the OS
+     * preference, or an app theme class or attribute on an ancestor). Default
+     * `'default'`.
      */
     tone?: AnchoredSurfaceTone;
 }
@@ -4790,7 +4792,9 @@ interface AnchoredSurfacePoint {
     y: number;
     /**
      * Pass the event target when opening from inside a modal dialog, native or
-     * Web Awesome (`wa-dialog`, `wa-drawer`).
+     * Web Awesome (`wa-dialog`, `wa-drawer`). The dark tone also reads its
+     * color scheme from `context`, so a region with its own `color-scheme` is
+     * honored; without it the scheme is the modal scope's (or the page's).
      */
     context?: Element;
 }

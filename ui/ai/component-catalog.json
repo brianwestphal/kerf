@@ -5788,7 +5788,7 @@
         },
         {
           "title": "Popup anchored to dark media chrome",
-          "description": "tone: 'dark' matches a ToolbarControlGroup tone=\"dark\": the surface takes the opposite of the anchor's color scheme, so its content inherits the inverse text, border, and focus colors without overrides.",
+          "description": "tone: 'dark' matches a ToolbarControlGroup tone=\"dark\": the surface takes the opposite of the anchor's color scheme (openAnchoredSurfaceAt reads it from point.context) and follows a live OS-preference or ancestor theme switch while open, so its content inherits the inverse text, border, and focus colors without overrides.",
           "code": "openAnchoredSurface(volumeButton, () => <VolumeControls />, {\n  label: 'Volume',\n  tone: 'dark',\n  placement: 'top',\n});"
         }
       ],
