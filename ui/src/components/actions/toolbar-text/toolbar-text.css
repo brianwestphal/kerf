@@ -129,6 +129,15 @@ button.kui-toolbar-text:focus-visible {
   font-size: var(--kui-font-2xs);
 }
 
+/* A lone title in a balanced center is a navigation bar's title (a NavStack
+   view beside its back control): it keeps the page-title color it had leading
+   at the root, at whatever size, so the title does not dim as it centers. */
+.kui-toolbar[data-center-align="balanced"]
+  > .kui-toolbar__center
+  > .kui-toolbar-text:only-child:not([data-tone]) {
+  color: var(--kui-color-text);
+}
+
 .kui-toolbar-text[data-tone="dark"] {
   color: var(--kui-color-neutral-on-loud);
 }

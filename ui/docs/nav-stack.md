@@ -91,7 +91,8 @@ Where `toolbar.title` goes depends on the back control:
   the toolbar is `centerAlign="balanced"`, like a platform navigation bar. The
   title sits on the bar's midpoint while the sides leave room, moves away from
   a wider side when they do not, and truncates with an ellipsis before it
-  reaches the back control or a trailing group. This overrides a configured
+  reaches the back control or a trailing group. It keeps the root title's
+  full-strength text color at its smaller size. This overrides a configured
   `centerAlign`, which applies to view-owned center content.
 - **A view that sets `toolbar.center`** owns the center zone, so its title
   stays left-aligned in the leading zone at any depth.

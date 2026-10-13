@@ -158,6 +158,17 @@ for (const width of [1100, 390, 320]) {
   });
 }
 
+test('a centered title keeps the root title color', async ({ page }) => {
+  await mountFixture(page, 390);
+  const color = (name: string) =>
+    page
+      .locator(`[data-case="${name}"] .kui-toolbar-text`)
+      .evaluate((title) => window.getComputedStyle(title).color);
+  const root = await color('root');
+  for (const name of ['short', 'wide-side', 'long'])
+    expect(await color(name), name).toBe(root);
+});
+
 test('a wider trailing side shifts the title toward the back control', async ({
   page,
 }) => {

@@ -146,7 +146,8 @@ slides** (the pattern already used on several `~/Documents/hotsheet2` dialogs).
   `ToolbarControlGroup`) and the active view's `toolbar.leading` groups lead,
   and `toolbar.trailing` fills the trailing zone. The title (`ToolbarText`)
   leads, left-aligned, at the root; once the stack has depth it centers in a
-  `balanced` toolbar and truncates before it reaches a control, unless the
+  `balanced` toolbar, keeps the root title's text color, and truncates before
+  it reaches a control, unless the
   view supplies `toolbar.center`, which keeps the title leading. `toolbarConfig` supplies defaults
   for the `ToolbarConfig`
   (`dividerSides`, `centerAlign`, `responsive`, `responsiveAt`,
