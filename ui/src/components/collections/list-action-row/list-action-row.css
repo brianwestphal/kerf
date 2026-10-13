@@ -60,9 +60,12 @@
   border-end-end-radius: 0;
 }
 
-.kui-list-action-row:not([data-placeholder="true"]):has(
-    .kui-list-action-row__primary:hover
-  ) {
+/* A selected or pressed row keeps its selected tint while hovered. */
+.kui-list-action-row:not(
+    [data-placeholder="true"],
+    [data-selected="true"],
+    [data-pressed="true"]
+  ):has(.kui-list-action-row__primary:hover) {
   --kui-list-action-row-border: var(--kui-list-action-row-hover-border);
   --kui-list-action-row-background: var(--kui-list-action-row-hover-background);
 }
