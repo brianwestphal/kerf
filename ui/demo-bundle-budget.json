@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 363500,
-  "measuredLargestJavaScriptGzip": 145582,
-  "measuredTotalJavaScriptGzip": 363418,
+  "totalJavaScriptGzip": 363600,
+  "measuredLargestJavaScriptGzip": 145748,
+  "measuredTotalJavaScriptGzip": 363584,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4115,6 +4115,22 @@
         "measuredTotalJavaScriptGzip": 363418,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 363500
+      }
+    },
+    {
+      "at": "2026-10-13T11:24:31.271Z",
+      "reason": "KF-AB4ZVD: PopupMenu names its shadow menu panel and submenus for assistive technology",
+      "old": {
+        "measuredLargestJavaScriptGzip": 145582,
+        "measuredTotalJavaScriptGzip": 363418,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 363500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 145748,
+        "measuredTotalJavaScriptGzip": 363584,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 363600
       }
     }
   ]

@@ -114,6 +114,7 @@ export function LegacyPopupMenu({
       data-key={key}
       data-morph-skip-children
       data-trigger={context ? 'context' : 'button'}
+      data-menu-label={text ?? label}
       placement={placement}
       slot={slot}
     >

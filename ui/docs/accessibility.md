@@ -220,7 +220,18 @@ name from its content and ignores an `aria-label` on the host, so an icon-only
 trigger requires `label`, which renders as visually hidden text inside the
 button; a trigger with visible `text` is named by that text. An icon-only
 trigger also shows its `label` as an `aria-hidden` help tag on hover and
-keyboard focus (see [Help tags on icon-only triggers](#help-tags-on-icon-only-triggers)). Group headings
+keyboard focus (see [Help tags on icon-only triggers](#help-tags-on-icon-only-triggers)).
+The open menu carries that same name. Web Awesome renders the `role="menu"`
+panel inside the dropdown's shadow root, where no ID reference can reach the
+trigger (the context anchor is `aria-hidden` light DOM, and a button trigger's
+real `<button>` sits in `wa-button`'s own shadow root). So `PopupMenu` renders
+the name it already knows (a context or icon-only `label`, or the visible
+`text`) as `data-menu-label` on the dropdown, and the register copies it to the
+panel as `aria-label` on first render and on every open. A submenu panel shares
+a shadow root with its parent item's label and is `aria-labelledby` it, so it
+is announced as, for example, "More Actions, menu".
+`tests/browser/popup-menu-accessible-name.spec.ts` finds each panel with
+`getByRole('menu', { name })` in Chromium, Firefox, and WebKit. Group headings
 render as the same uppercase group titles a grouped `Select` shows, and dividers
 are presentational. A keyboard-focused item is the menu's current row, painted
 with the Select's current-option fill rather than a second focus ring inside the

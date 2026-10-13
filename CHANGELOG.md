@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- An open `PopupMenu` is now announced with a name. Web Awesome renders the `role="menu"` panel in a shadow root, and the trigger's name never reached it: a `context` menu's `label` sat only on its `aria-hidden` anchor, and no ID reference can cross into or out of the shadow roots involved. So a screen reader announced an unnamed menu, and `getByRole('menu', { name })` found nothing. The panel now takes the trigger's name (the `context` or icon-only `label`, or the visible `text`), and each submenu is named by its parent item's label (`KF-AB4ZVD`).
+
 - In Safari, closing a `Select` inside a scrolling dialog body no longer leaves blank scroll space below the content. WebKit kept the closed listbox's last box in the body's scrollable overflow, so the body scrolled into an empty band the height of the listbox. The Select now relayouts its popup once after it closes, which keeps focus and the keyboard on the Select (`KF-C3523R`).
 - In a divided list, `ListItem`, `ListItemLink`, and `ListActionRow` corners now follow the row's position. A corner is flat wherever a divider line meets it, whether the row draws that line or its neighbor does, so with lines between rows the first row rounds only its top, middle rows are flat, and the last row rounds only its bottom. Previously each row squared only the edges it drew itself, so in a `divider="after"` list every hovered or selected row was rounded on top and flat on the bottom, including the last. A single divided row is unchanged (`KF-AQN4H7`).
 

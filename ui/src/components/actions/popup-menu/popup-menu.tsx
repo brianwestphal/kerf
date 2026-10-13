@@ -353,6 +353,8 @@ export function PopupMenu({
     });
     cachePopupMenuContent(cacheKey, content);
   }
+  // data-menu-label names the shadow role="menu" panel (the register copies
+  // it there), since no ID reference reaches the trigger across shadow roots.
   // size="m" is Web Awesome's reflected default; rendering it keeps a
   // re-render's morph from stripping it and forcing a Lit update.
   return (
@@ -364,6 +366,7 @@ export function PopupMenu({
       data-key={key}
       data-morph-skip-children
       data-trigger={context ? 'context' : 'button'}
+      data-menu-label={text ?? label}
       style={
         anchor
           ? `--kui-popup-menu-context-x:${anchor.x}px;--kui-popup-menu-context-y:${anchor.y}px`
