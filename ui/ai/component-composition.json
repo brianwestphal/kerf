@@ -3028,7 +3028,8 @@
           "notes": [
             "List adds no margin. dividerSides draws selected physical edges without changing geometry; textInsets adds the full 17px content inset and controlInsets adds 8px on selected sides, with text winning on overlap.",
             "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the List block padding and scroll-padding on the opted-in edges; without it the context is ignored.",
-            "frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets), exactly the focus-ring reach, so the first and last rows' rings stay inside the clip; its block scroll padding is that reach plus 2px of slack, so any row focused or scrolled into view stops with its ring inside the clip; maxHeight/minHeight bound the List directly.",
+            "frame draws a 1px --kui-color-neutral-border-normal border with --kui-radius-m and a 4px --kui-space-2xs inset on every side (replacing inset/textInsets/controlInsets), exactly the focus-ring reach, so the first and last rows' rings stay inside the clip at the scroll extremes; maxHeight/minHeight bound the List directly.",
+            "Every scrollable List's block scroll padding is the focus-ring reach plus 2px of slack (6px, no change at rest), so any row focused or scrolled into view stops with its ring inside the clip; an unframed List's first and last rows still meet the clip at the scroll extremes, so use frame when they must show a whole ring.",
             "As a direct child of a Pane's scrolling content, a List that does not scroll itself never shrinks below its rows (flex-shrink 0), so the content's block-end padding (a bottom safe area, an overlay NavStack bottom toolbar's clearance) follows its last row."
           ]
         }

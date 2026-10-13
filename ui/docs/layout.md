@@ -756,10 +756,14 @@ in an app-owned scroller:
 `frame` draws a 1px `--kui-color-neutral-border-normal` border with the
 `--kui-radius-m` control radius and a 4px inset on every side (replacing
 `inset`, `textInsets`, and `controlInsets`). That inset is exactly a row's
-focus-ring reach, so the first and last rows' rings stay inside the clip. The
-frame's scroll padding is that reach plus 2px of slack (6px), so a middle row
-focused or scrolled into view also stops with its ring inside the clip, even
-where Chromium's focus scroll stops a pixel short of the padded target.
+focus-ring reach, so the first and last rows' rings stay inside the clip at
+the scroll extremes. Every `scrollable` List, framed or not, carries block
+scroll padding of that reach plus 2px of slack (6px; nothing moves at rest),
+so a middle row focused or scrolled into view also stops with its ring inside
+the clip, even where Chromium's focus scroll stops a pixel short of the padded
+target. An unframed scrollable List has no inset, so its first and last rows
+still meet the clip at the scroll extremes; use `frame` when those rows must
+show a whole ring.
 How far `focus()` scrolls a partly visible row is up to the engine: Chromium
 brings it to the nearest edge, Firefox leaves it until about half of it is
 hidden and then centers it, and WebKit leaves a partly visible row where it

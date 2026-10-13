@@ -111,17 +111,13 @@
    every side replaces any side-selected or document inset, and is exactly
    the reach of a row's focus ring (3px ring, 1px offset), so the first and
    last rows' rings stay inside a scrolling frame's clip at the scroll
-   extremes. Its scroll padding is that reach plus 2px of slack, so a row
-   focused or scrolled into view stops with its ring inside the clip rather
-   than flush against the frame: Chromium's focus scroll stops 1px short of
-   the padded target, and a row's fractional position can cost another
-   0.3px. */
+   extremes. (The ring-room scroll padding every scrollable List carries
+   handles a row stopped mid-scroll.) */
 .kui-list[data-frame="true"] {
   --_kui-list-inset-top: var(--kui-space-2xs);
   --_kui-list-inset-right: var(--kui-space-2xs);
   --_kui-list-inset-bottom: var(--kui-space-2xs);
   --_kui-list-inset-left: var(--kui-space-2xs);
-  --_kui-list-ring-room: calc(var(--kui-space-2xs) + 2px);
   border: 1px solid var(--kui-color-neutral-border-normal);
   border-radius: var(--kui-radius-m);
 }
@@ -153,7 +149,15 @@
   justify-content: space-between;
 }
 
+/* A scrollable List's scroll padding is a row's focus-ring reach (3px ring,
+   1px offset) plus 2px of slack, so a row focused or scrolled into view stops
+   with its ring inside the clip rather than flush against it: Chromium's
+   focus scroll stops 1px short of the padded target, and a row's fractional
+   position can cost another 0.3px. Scroll padding moves nothing at rest; at
+   the scroll extremes an unframed List's first and last rows still meet the
+   clip, which is what `frame`'s 4px inset is for. */
 .kui-list[data-scrollable="true"] {
+  --_kui-list-ring-room: calc(var(--kui-space-2xs) + 2px);
   overflow-y: auto;
   overscroll-behavior-y: contain;
 }
@@ -178,7 +182,7 @@
   --_kui-list-clearance-end: var(--kui-scroll-clearance-block-end, 0px);
 }
 
-.kui-list:is([data-scroll-clearance], [data-frame="true"]) {
+.kui-list:is([data-scroll-clearance], [data-scrollable="true"]) {
   scroll-padding-block: calc(
       var(--_kui-list-clearance-start) + var(--_kui-list-ring-room)
     )

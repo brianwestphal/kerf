@@ -197,6 +197,45 @@ for (const width of [1280, 390]) {
   }
 }
 
+// KF-CBDT4Z (ring-room scroll padding on every scrollable List): an unframed
+// scrollable List has no 4px inset, so its edge rows meet the clip at the
+// scroll extremes, but a row scrolled into view from either edge still stops
+// with its whole ring inside the clip.
+for (const edge of ['bottom', 'top'] as const) {
+  test(`an unframed scrollable List stops a row scrolled into view from the ${edge} edge with its ring inside the clip`, async ({
+    page,
+  }) => {
+    await openDemo(page);
+    await page.locator(picker).evaluate((list) => {
+      list.removeAttribute('data-frame');
+    });
+    const geometry = await frameGeometry(page);
+    expect(geometry.border).toBe('0px none');
+    expect(geometry.padding).toBe('0px');
+    expect(geometry.scrolls).toBe(true);
+    expect(
+      await page
+        .locator(picker)
+        .evaluate((list) => globalThis.getComputedStyle(list).scrollPaddingTop),
+    ).toBe('6px');
+    await page.keyboard.press('Shift');
+    const index = await partlyHiddenRow(page, edge);
+    expect(index).toBeGreaterThan(0);
+    const row = page.locator(`${picker} > .kui-list-item`).nth(index);
+    await row.evaluate((element) => {
+      element.focus({ preventScroll: true });
+      element.scrollIntoView({ block: 'nearest' });
+    });
+    await expect(row).toBeFocused();
+    const ring = await focusedRing(page);
+    const { clip } = await frameGeometry(page);
+    // Block axis only: an unframed List's rows span its full width, so their
+    // inline ring edges meet the clip by design (that is `frame`'s job).
+    expect(ring.top).toBeGreaterThanOrEqual(clip.top - 0.5);
+    expect(ring.bottom).toBeLessThanOrEqual(clip.bottom + 0.5);
+  });
+}
+
 test('activating a candidate runs its action', async ({ page }) => {
   await openDemo(page);
   await page.locator(`${picker} > .kui-list-item`).nth(1).click();
