@@ -60,4 +60,4 @@ semantic heading level. Its default `sm` style still matches `FieldLabel`.
 It also shows simultaneous badge and status indicators, with a conditional
 badge expression that may return `undefined`.
 
-Before handoff, inspect the actual captures for readability, context, alignment, clipping, spacing, responsiveness, focus, and obvious defects. Fix and recapture rather than treating the screenshot as proof by itself.
+Before handoff, inspect the actual captures for readability, context, alignment, clipping, spacing, responsiveness, focus, and obvious defects. Fix and recapture rather than treating the screenshot as proof by itself. Firefox and WebKit screenshots leave out `backdrop-filter`, so translucent chrome looks unblurred in them. Check the blur on a `recordVideo` frame instead (see [Accessibility › Chrome material](accessibility.md#chrome-material)).

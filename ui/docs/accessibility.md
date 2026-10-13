@@ -710,6 +710,20 @@ WebKit, and the Pane and DialogSurface specs also measure the description. In
 Chromium they also check the opaque fallbacks for reduced transparency and
 forced colors, and the Pane and DialogSurface specs check increased contrast.
 
+**Firefox and WebKit screenshots omit the blur.** In Playwright's Firefox and
+WebKit, `page.screenshot()` (headless or headed) shows the content beneath the
+material crisp, as if `backdrop-filter` did nothing. Stock Firefox's own
+`--headless --screenshot` does the same. The filter is still applied: a
+`recordVideo` frame of the same page in the same session, which records the
+compositor's output, shows the content blurred. Firefox and WebKit draw
+`backdrop-filter` only when compositing (WebRender in Firefox, Core Animation
+in WebKit), and their snapshot paths repaint the page without it. Chromium's
+screenshot shows the blur. Plain test pages with no kerf CSS behave the same
+way, so no ancestor style in these components is blocking the filter. When
+you review the blur in Firefox or WebKit, use a `recordVideo` frame, not a
+screenshot. A crisp screenshot is not a defect, and contrast is unaffected
+because the rule above already assumes no blur.
+
 ## Verification matrix
 
 For each changed component, inspect default, hover, focus, disabled, selected/pressed, busy/error, long-content, wide, narrow, light, dark, increased-contrast, reduced-motion, keyboard-only, and 200%-zoom states where applicable. DOM order must match reading and focus order, with no clipping or unreachable action.
