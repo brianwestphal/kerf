@@ -3,15 +3,15 @@ import { resolve } from 'node:path';
 
 import { expect, test } from '@playwright/test';
 
-// Hovering a selected or pressed ListActionRow keeps its selected tint; only
-// an unselected row takes the neutral hover tokens.
+// Hovering a selected, current, or pressed list row (ListActionRow, ListItem)
+// keeps its selected tint; only an unselected row takes the hover tokens.
 
 const HOVER_BORDER = 'rgb(160, 50, 90)';
 const HOVER_BACKGROUND = 'rgb(219, 242, 232)';
 const SELECTED_BORDER = 'rgb(20, 80, 160)';
 const SELECTED_BACKGROUND = 'rgb(242, 228, 247)';
 
-test('a selected or pressed row keeps its selected tint while hovered', async ({
+test('a selected or pressed ListActionRow keeps its selected tint while hovered', async ({
   page,
 }) => {
   const css = await readFile(
@@ -55,5 +55,46 @@ test('a selected or pressed row keeps its selected tint while hovered', async ({
     const hovered = await tint(name);
     expect(hovered.background, name).toBe(SELECTED_BACKGROUND);
     expect(hovered.shadow, name).toContain(SELECTED_BORDER);
+  }
+});
+
+test('a selected or current ListItem keeps its selected tint while hovered', async ({
+  page,
+}) => {
+  const css = await readFile(
+    resolve(
+      import.meta.dirname,
+      '../../src/components/collections/list-item/list-item.css',
+    ),
+    'utf8',
+  );
+  const item = (name: string, state: string) =>
+    `<button type="button" class="kui-list-item" data-row="${name}" ${state}>${name}</button>`;
+  await page.setViewportSize({ width: 600, height: 400 });
+  await page.setContent(
+    `<style>:root {
+      --kui-list-item-hover-border: ${HOVER_BORDER};
+      --kui-list-item-hover-background: ${HOVER_BACKGROUND};
+      --kui-list-item-selected-border: ${SELECTED_BORDER};
+      --kui-list-item-selected-background: ${SELECTED_BACKGROUND};
+    }</style>${item('rest', '')}${item('current', 'aria-current="page"')}${item('pressed', 'aria-pressed="true"')}`,
+  );
+  await page.addStyleTag({
+    content: css.replace(
+      /remify\(([\d.]+)px\)/g,
+      (_, pixels: string) => `${String(Number(pixels) / 16)}rem`,
+    ),
+  });
+
+  const rest = page.locator('[data-row="rest"]');
+  await rest.hover();
+  await expect(rest).toHaveCSS('background-color', HOVER_BACKGROUND);
+  await expect(rest).toHaveCSS('border-top-color', HOVER_BORDER);
+
+  for (const name of ['current', 'pressed']) {
+    const row = page.locator(`[data-row="${name}"]`);
+    await row.hover();
+    await expect(row).toHaveCSS('background-color', SELECTED_BACKGROUND);
+    await expect(row).toHaveCSS('border-top-color', SELECTED_BORDER);
   }
 });

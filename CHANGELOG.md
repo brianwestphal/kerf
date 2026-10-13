@@ -85,6 +85,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - A labelled `CatalogExample` now names its `section` with its label, so each specimen is a named region that assistive technology and `getByRole('region', { name })` can address. An unlabeled example stays an ordinary grouping (`KF-ZQMXK1`).
 - `CatalogExampleStack` takes a `width` option: `reading` (default) keeps the 736px reading measure, and `full` lets the stack span the stage so a catalog can show application-width compositions such as boards, app shells, drawers, and split views without clipping them (`KF-HKVT5S`).
+- Hovering a selected (`aria-current`) or pressed `ListItem` likewise keeps its selected tint instead of the neutral hover colors (`KF-84AGE5`).
 - Hovering a selected or pressed `ListActionRow` keeps its selected tint instead of switching to the neutral hover colors, so a freshly selected row no longer looks unselected while the pointer stays on it (`KF-Z737D0`).
 - A `width="full"` `CatalogExampleStack` now spans the whole catalog stage on wide screens; the stage's 1120px canvas cap no longer stops it short of the right edge (`KF-WDSFWH`).
 - **Chat-bubble `ContentItem`s.** `bubble="start" | "end"` lays a `ContentItem` out as a transcript bubble: it fits its message up to 80% of the row, sits at the start (other participants) or end (the person's own messages), and wraps long unbroken text. The new `appearance="brand-loud"` paints the solid brand fill with its on-loud foreground for the person's own messages (`KF-M3HJK8`).

@@ -109,7 +109,12 @@
   grid-column: 2;
 }
 
-.kui-list-item:hover:not([data-placeholder="true"]) {
+/* A selected or current row keeps its selected tint while hovered. */
+.kui-list-item:hover:not(
+    [data-placeholder="true"],
+    [aria-current="page"],
+    [aria-pressed="true"]
+  ) {
   border-color: var(
     --kui-list-item-hover-border,
     var(--kui-color-neutral-border-normal)
