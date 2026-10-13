@@ -757,7 +757,14 @@ in an app-owned scroller:
 focus-ring reach, so the first and last rows' rings stay inside the clip. The
 frame's scroll padding is that reach plus 2px of slack (6px), so a middle row
 focused or scrolled into view also stops with its ring inside the clip, even
-where Chromium's focus scroll stops a pixel short of the padded target. `maxHeight` and `minHeight` take typed
+where Chromium's focus scroll stops a pixel short of the padded target.
+How far `focus()` scrolls a partly visible row is up to the engine: Chromium
+brings it to the nearest edge, Firefox leaves it until about half of it is
+hidden and then centers it, and WebKit leaves a partly visible row where it
+is. `scrollIntoView({ block: 'nearest' })` honors the frame's scroll padding
+in every engine, so an app that moves focus through rows itself (arrow-key
+navigation) can call it after `focus()` to bring the whole row and its ring
+into view everywhere. `maxHeight` and `minHeight` take typed
 `CssLength`s from `@kerfjs/ui/css-values` and bound the List directly, with no
 flex-column ancestor; pair `maxHeight` with `scrollable`. A frame of settings
 rows with dividers between them is a `FramedList`, not a framed List.

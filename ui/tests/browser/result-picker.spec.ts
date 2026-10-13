@@ -157,18 +157,22 @@ for (const width of [1280, 390]) {
       page,
       browserName,
     }) => {
-      // Firefox's focus leaves a partly visible row unscrolled (KF-Z5M10V),
-      // so only the scroll-into-view case below covers it.
+      // Only Chromium's focus() scrolls a partly visible row to the nearest
+      // edge. Firefox scrolls only once about half the row is hidden, and
+      // then centers it; WebKit leaves a partly visible row where it is
+      // (KF-Z5M10V). The scroll-into-view case below covers every engine.
       test.skip(
-        browserName === 'firefox',
-        'Firefox focus does not scroll a partly visible row',
+        browserName !== 'chromium',
+        'only Chromium focus scrolls a partly visible row to the nearest edge',
       );
       await openDemo(page, width);
       await page.keyboard.press('Shift');
       const index = await partlyHiddenRow(page, edge);
       expect(index).toBeGreaterThan(0);
       const row = page.locator(`${picker} > .kui-list-item`).nth(index);
-      await row.focus();
+      // The DOM focus(): Playwright's locator.focus() scrolls the element
+      // into view itself, which would hide the engine's own focus scroll.
+      await row.evaluate((element) => element.focus());
       await expect(row).toBeFocused();
       expectInside(await focusedRing(page), (await frameGeometry(page)).clip);
     });
