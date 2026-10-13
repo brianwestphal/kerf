@@ -1,5 +1,4 @@
 import {
-  helperCall,
   importRegistry,
   isExcepted,
   jsxKey,
@@ -92,6 +91,35 @@ function contractValuesFromCall(call, path) {
   const segments = pathSegments(path);
   const property = objectProperty(options, segments[0].name);
   return property ? nestedValues(property.value, segments) : [];
+}
+
+// The CSS-value helper behind a call, resolved exactly as `kerf-ui-analyze`'s
+// `importedName()` resolves it: a named (possibly aliased) or default import,
+// or a `namespace.helper()` member call, whose module is the inspected entry's
+// package or ANY subpath of it. Helpers are documented at
+// `@kerfjs/ui/css-values` and re-exported from the root and component
+// subpaths, so the import path never decides a helper's identity; only its
+// imported name does. A module outside the entry's package is never a
+// cataloged helper.
+export function cssValueHelper(callee, registry, packageName) {
+  let helper;
+  if (callee.type === 'Identifier') helper = registry.helpers.get(callee.name);
+  else if (
+    callee.type === 'MemberExpression' &&
+    !callee.computed &&
+    callee.object.type === 'Identifier' &&
+    callee.property.type === 'Identifier' &&
+    registry.namespaces.has(callee.object.name)
+  )
+    helper = {
+      imported: callee.property.name,
+      source: registry.namespaces.get(callee.object.name),
+    };
+  if (!helper || typeof packageName !== 'string') return undefined;
+  return helper.source === packageName ||
+    helper.source.startsWith(`${packageName}/`)
+    ? helper.imported
+    : undefined;
 }
 
 const CONTRACT_MESSAGES = {
@@ -212,9 +240,9 @@ function createVisitors(context, report) {
           continue;
         }
         if (value.type !== 'CallExpression') continue;
-        const helper = helperCall(value.callee, registry, loaded);
+        const helper = cssValueHelper(value.callee, registry, entry.package);
         if (!helper) continue;
-        if (cssContract.nonStandaloneHelpers?.includes(helper.imported)) {
+        if (cssContract.nonStandaloneHelpers?.includes(helper)) {
           if (!isExcepted(loaded, CODES.expression, filename))
             report({
               node: value,
@@ -222,12 +250,12 @@ function createVisitors(context, report) {
               data: {
                 component: entry.name,
                 path: cssContract.path,
-                helper: helper.imported,
+                helper,
               },
             });
         } else if (
-          !cssContract.helpers?.includes(helper.imported) &&
-          cssContract.unsafeHelper !== helper.imported
+          !cssContract.helpers?.includes(helper) &&
+          cssContract.unsafeHelper !== helper
         ) {
           if (!isExcepted(loaded, CODES.helper, filename))
             report({
@@ -236,7 +264,7 @@ function createVisitors(context, report) {
               data: {
                 component: entry.name,
                 path: cssContract.path,
-                helper: helper.imported,
+                helper,
                 preferred,
               },
             });

@@ -26,5 +26,26 @@ JSX itself uses to tell a component tag from an intrinsic element; a default
 import keeps its subpath's entry. `@kerfjs/ui`'s catalog check enforces the
 convention for the package, and `kerf-ui-analyze` applies the same rule.
 
+A helper is identified by its imported name when its module is the
+component's package or any subpath of it, the same way `kerf-ui-analyze`
+resolves it. Named, aliased, and namespace imports all count, so these are
+equivalent:
+
+```tsx
+import { ListItem } from '@kerfjs/ui/list-item';
+import { foregroundColor } from '@kerfjs/ui/css-values';
+import { foregroundColor as fg } from '@kerfjs/ui';
+import * as css from '@kerfjs/ui/css-values';
+
+// Each reports KUI-L014: a fill takes `fillColor()`, `uiColor()`, or `colorVar()`.
+<ListItem label="A" iconTile={{ color: foregroundColor('#000') }} />;
+<ListItem label="B" iconTile={{ color: fg('#000') }} />;
+<ListItem label="C" iconTile={{ color: css.foregroundColor('#000') }} />;
+```
+
+A same-named helper from another package (`other-ui/css-values`, or a
+package that only shares the prefix, such as `@kerfjs/ui-extras`) is not a
+cataloged helper, and the rule leaves its call alone.
+
 Third-party component suites can provide the same contracts in a composition
 catalog through `settings.kerfjs.ui.catalog` and its matching selection catalog.

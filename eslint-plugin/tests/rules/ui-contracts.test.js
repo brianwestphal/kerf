@@ -1538,8 +1538,60 @@ tester.run('ui-css-values', cssValues, {
       code: "import { ListItem } from '@kerfjs/ui/list-item'; import { fillColor, foregroundColor, uiColor } from '@kerfjs/ui'; <ListItem label=\"A\" iconTile={{ color: fillColor('#e5484d'), foreground: foregroundColor('white') }} />; <ListItem label=\"B\" iconTile={{ color: uiColor('brand-fill-loud') }} />; <ListItem label=\"C\" iconTile=\"brand\" />;",
       settings: shippedUiSettings,
     },
+    // Helpers resolve from ANY `@kerfjs/ui` subpath — the documented
+    // `@kerfjs/ui/css-values` path included — by named, aliased, default, or
+    // namespace import, exactly as kerf-ui-analyze resolves them.
+    {
+      code: "import { ListItem } from '@kerfjs/ui/list-item'; import { fillColor, foregroundColor as fg } from '@kerfjs/ui/css-values'; import * as css from '@kerfjs/ui/css-values'; <ListItem label=\"A\" iconTile={{ color: fillColor('#e5484d'), foreground: fg('white') }} />; <ListItem label=\"B\" iconTile={{ color: css.uiColor('brand-fill-loud'), foreground: css.foregroundColor('white') }} />;",
+      settings: shippedUiSettings,
+    },
+    {
+      code: "import { List } from '@kerfjs/ui/list'; import { calc, plus, rem, px, flex } from '@kerfjs/ui/css-values'; <List gap={calc(plus(rem(1), px(2)))} flex={flex(1, 1, rem(20))} />;",
+      settings: shippedUiSettings,
+    },
+    // A same-named helper from outside the package (or a package that merely
+    // shares the prefix) is not a cataloged helper.
+    {
+      code: "import { ListItem } from '@kerfjs/ui/list-item'; import { foregroundColor } from 'other-ui/css-values'; import { flex } from '@kerfjs/ui-extras'; <ListItem label=\"A\" iconTile={{ color: foregroundColor('#000') }} />; <ListItem label=\"B\" iconTile={{ color: flex(1) }} />;",
+      settings: shippedUiSettings,
+    },
   ],
   invalid: [
+    {
+      code: "import { ListItem } from '@kerfjs/ui/list-item'; import { foregroundColor } from '@kerfjs/ui/css-values'; <ListItem label=\"A\" iconTile={{ color: foregroundColor('#e5484d') }} />;",
+      settings: shippedUiSettings,
+      errors: [
+        {
+          message:
+            'KUI-L014: `foregroundColor()` produces the wrong grammar for `ListItem.iconTile.color`; use `fillColor()` or `uiColor()` or `colorVar()`.',
+        },
+      ],
+    },
+    {
+      code: "import { ListItem } from '@kerfjs/ui/list-item'; import { foregroundColor as fg } from '@kerfjs/ui/css-values'; <ListItem label=\"A\" iconTile={{ color: fg('#e5484d') }} />;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'helper' }],
+    },
+    {
+      code: "import { ListItem } from '@kerfjs/ui/list-item'; import * as css from '@kerfjs/ui/css-values'; ListItem({ label: 'A', iconTile: { color: css.foregroundColor('#e5484d') } });",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'helper' }],
+    },
+    {
+      code: "import { ChoiceChips } from '@kerfjs/ui/choice-chips'; import { foregroundColor } from '@kerfjs/ui/css-values'; <ChoiceChips choices={[{ label: 'A', value: 'a', swatch: foregroundColor('#000') }]} />;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'helper' }],
+    },
+    {
+      code: "import { List } from '@kerfjs/ui/list'; import { plus, rem, px } from '@kerfjs/ui/css-values'; <List gap={plus(rem(1), px(2))} />;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'expression' }],
+    },
+    {
+      code: "import { List } from '@kerfjs/ui/list'; import * as css from '@kerfjs/ui/css-values'; List({ gap: css.plus(css.rem(1), css.px(2)) });",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'expression' }],
+    },
     {
       code: "import { ListItemLink } from '@kerfjs/ui/list-item'; import { foregroundColor } from '@kerfjs/ui'; <ListItemLink href=\"/a\" label=\"A\" iconTile={{ color: foregroundColor('#e5484d') }} />;",
       settings: shippedUiSettings,
