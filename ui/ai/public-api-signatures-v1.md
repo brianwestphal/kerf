@@ -165,6 +165,7 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { PaneSeparatorSide } from './pane.js';
+import './scroll-clearance-BikHljTc.js';
 
 type ToolbarPosition = 'header' | 'footer';
 /** Control-band density: `default` (60px with 44px groups) or `compact`. */
@@ -722,6 +723,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
 import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
+import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
 export { CssLength, UiGapValue, UiSpaceName } from './css-values.js';
@@ -734,6 +736,7 @@ type ListRootAttributes = StructuralRootAttributes & Readonly<{
     'data-h-align'?: never;
     'data-v-align'?: never;
     'data-scrollable'?: never;
+    'data-scroll-clearance'?: never;
     'data-surface'?: never;
     'data-inset'?: never;
     'data-text-insets'?: never;
@@ -779,6 +782,16 @@ interface ListProps {
      */
     scrollable?: boolean;
     /**
+     * Clear chrome that lies over this scrollable List's block-start and/or
+     * block-end edge, such as a `DialogSurface` floating footer. The List adds
+     * the inherited `--kui-scroll-clearance-block-*` context that chrome
+     * publishes to its own block padding and `scroll-padding`, so its rows
+     * scroll visibly beneath the chrome while the first and last rows (and any
+     * row focused or scrolled into view) can still rest clear of it. Opt in only
+     * the one scroller that reaches the covered edge. Defaults to none.
+     */
+    scrollClearance?: ScrollClearance;
+    /**
      * Paint a solid surface behind the stack, including its insets: for a strip
      * of chrome (a banner above a sunken work area) that must not show the
      * lowered tint around its content. Omitted, the List is transparent.
@@ -810,9 +823,9 @@ interface ListProps {
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, surface, inset, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, surface, inset, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, Sides, UiGap };
+export { CssFlex, CssFlexKeyword, HorizontalAlignment, List, type ListConfig, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -1544,6 +1557,7 @@ import './semantic-content-BbzjvSu9.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './scroll-clearance-BikHljTc.js';
 import './sides-BPSWde0A.js';
 import './css-values.js';
 import './pane.js';
@@ -1587,6 +1601,7 @@ import { ResizableRegionProps } from './resizable-region.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './scroll-clearance-BikHljTc.js';
 import './sides-BPSWde0A.js';
 import './css-values.js';
 import './pane.js';
@@ -1684,6 +1699,7 @@ export { SplitView, type SplitViewCompactStack, type SplitViewCompactViewToolbar
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
 
 /**
  * Logical pane sides: where a {@link Pane} can show a separator and where it can
@@ -1709,6 +1725,7 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-appearance'?: never;
     'data-deep-inset'?: never;
     'data-outlined'?: never;
+    'data-scroll-clearance'?: never;
 }>;
 /** How a Pane's header and footer relate to its scrolling content. */
 type PaneChromePlacement = 'fixed' | 'auto';
@@ -1748,6 +1765,16 @@ interface PaneProps {
     chromeDividers?: PaneChromeDividers;
     /** Paint the scrolling work surface with the shared lowered-surface color. */
     appearance?: PaneAppearance;
+    /**
+     * Clear chrome that lies over the scrolling content's block-start and/or
+     * block-end edge, such as a `DialogSurface` floating footer over a filling
+     * Pane. The content scroller adds the inherited
+     * `--kui-scroll-clearance-block-*` context that chrome publishes to its block
+     * padding and `scroll-padding`, so content scrolls visibly beneath the chrome
+     * while its first and last items (and anything focused or scrolled into
+     * view) can still rest clear of it. Defaults to none.
+     */
+    scrollClearance?: ScrollClearance;
     /** Add 8px to every side of scrolling content (default: false). */
     deepInset?: boolean;
     /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root. */
@@ -1795,9 +1822,9 @@ type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separator
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, chromeDividers, appearance, deepInset, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, chromeDividers, appearance, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
+export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide, ScrollClearance };
 ```
 
 ## `@kerfjs/ui/workbench`
@@ -1815,6 +1842,7 @@ import './toolbar-text.js';
 import './css-values.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './scroll-clearance-BikHljTc.js';
 import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -2214,6 +2242,7 @@ import './css-values.js';
 import './sides-BPSWde0A.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
+import './scroll-clearance-BikHljTc.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 type CollapsiblePanelSide = PanelSide;
@@ -2420,6 +2449,7 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { PaneAppearance } from './pane.js';
+import './scroll-clearance-BikHljTc.js';
 
 interface TabNavigatorTabBase<Id extends string> {
     id: Id;
@@ -2684,6 +2714,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
+import './scroll-clearance-BikHljTc.js';
 import './workbench.js';
 import './nav-stack-iIoPrO7e.js';
 import './list.js';
@@ -2824,6 +2855,7 @@ import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
+import './scroll-clearance-BikHljTc.js';
 import './workbench.js';
 import './nav-stack-iIoPrO7e.js';
 import './list.js';
@@ -2878,6 +2910,7 @@ import './toolbar.js';
 import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
+import './scroll-clearance-BikHljTc.js';
 import './workbench.js';
 import './nav-stack-iIoPrO7e.js';
 import './list.js';
@@ -3999,7 +4032,11 @@ interface DialogSurfaceProps {
     /**
      * Footer placement (default `docked`); `floating` lays the footer over the
      * body's block end. The body reserves the footer's measured height so its
-     * last content is never hidden beneath it.
+     * last content is never hidden beneath it. A `fill`/`fill-last` child that
+     * opts into block-end `scrollClearance` (a `List` or `Pane`) takes that
+     * clearance inside its own scroll area instead, published as
+     * `--kui-scroll-clearance-block-end`, so its content scrolls visibly beneath
+     * the transparent footer.
      */
     footerPresentation?: DialogSurfaceFooterPresentation;
     /**

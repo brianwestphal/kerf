@@ -758,7 +758,8 @@ Enter-to-send, set `submitOnEnter` and call `wireComposers(root)` from
 trailing action, Shift+Enter inserts a newline, and an IME composition commit
 or an empty message never sends. Put it in a `DialogSurface` with
 `footerPresentation="floating"` (`slot="footer"`) to float it over a
-transcript.
+transcript, and give the transcript `scrollClearance="block-end"` so it
+scrolls beneath the composer while its last message still rests above it.
 
 `TokenSearchField` is a token-controlled contenteditable searchbox that keeps
 free text and ordered filter chips in one field. Its editable text stays

@@ -253,7 +253,7 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Chat Dialog"
-        note='footerPresentation="floating" lays a Composer over the body, 8px from the panel edges so its text aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills and scrolls above the composer.'
+        note='footerPresentation="floating" lays a Composer over the body, 8px from the panel edges so its text aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills the rest; with scrollClearance="block-end" the transcript scrolls beneath the composer and its last message still rests above it.'
         align="inline-control"
       >
         <DialogSurface
@@ -280,6 +280,7 @@ export function SurfaceScaffoldDemo() {
               gap="xs"
               controlInsets="tb"
               scrollable
+              scrollClearance="block-end"
               rootAttributes={{ 'data-demo-chat-transcript': '' }}
             >
               {chatMessages.value.map((message) => (

@@ -398,7 +398,10 @@ The documented exceptions live with their reasons in
 check, so the list only shrinks. The layout regions' inherited edge-inset
 context (`--kui-edge-inset-*` handed to a sole Pane or layout child and cleared
 for any other content, and a Toolbar clearing it for its zones) is the one
-design exception; the others name the open fix ticket.
+design exception; the others name the open fix ticket. The scroll-clearance
+context (`--kui-scroll-clearance-block-*`) needs no exception: overlaying
+chrome publishes it on its own element (a `DialogSurface` on its dialog body),
+and a scroll owner reads it only through its own `scrollClearance` prop.
 
 Applications and component packages built on the package follow the same
 rules, and the downstream tools enforce them against the composition catalog

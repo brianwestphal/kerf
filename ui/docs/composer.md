@@ -101,15 +101,18 @@ composer into the footer:
 <DialogSurface height={remify(560)} bodyInset="none" bodyLayout="fill-last" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
   <wa-dialog id="assistant" label="Assistant">
     <StateBanner title="Answers use the latest nightly build." tone="neutral" />
-    <List gap="xs" controlInsets="tb" scrollable>{messages}</List>
+    <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">{messages}</List>
     <Composer submitOnEnter slot="footer" id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={send} />
   </wa-dialog>
 </DialogSurface>;
 ```
 
 The floating footer is transparent, so the composer's own frame and shadow
-lift it over the transcript, and the dialog body reserves its measured height
-as it grows.
+lift it over the transcript. The transcript's `scrollClearance="block-end"`
+lets messages scroll visibly beneath the composer while the last one still
+comes to rest above it, following the composer's measured height as it grows.
+Without the opt-in, the dialog body reserves that height below the transcript
+instead.
 
 ## Do not
 

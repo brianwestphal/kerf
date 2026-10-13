@@ -162,6 +162,31 @@
       var(--_kui-dialog-surface-footer-clearance)
   );
 }
+/* Scroll clearance. A dialog body starts a new scroll context, so it clears
+   any `--kui-scroll-clearance-*` a page region published around the dialog.
+   With a floating footer over a filling child that opts into block-end
+   `scrollClearance` (a transcript List or Pane), the body stops reserving the
+   footer below that child: the child reaches the panel's block end, the body
+   publishes the footer's clearance for it, and the child adds it inside its
+   own scroll area, so content scrolls visibly beneath the transparent footer
+   while its last item still comes to rest above it. */
+.kui-dialog-surface > wa-dialog::part(body) {
+  --kui-scroll-clearance-block-start: 0px;
+  --kui-scroll-clearance-block-end: 0px;
+}
+.kui-dialog-surface[data-footer-presentation="floating"]:is(
+    [data-body-layout="fill"],
+    [data-body-layout="fill-last"]
+  )
+  > wa-dialog:has(
+    > :nth-last-child(1 of :not([slot])):is(
+        [data-scroll-clearance="block-end"],
+        [data-scroll-clearance="both"]
+      )
+  )::part(body) {
+  --kui-scroll-clearance-block-end: var(--_kui-dialog-surface-footer-clearance);
+  padding-block-end: 0;
+}
 .kui-dialog-surface[data-presentation="side-sheet"] > wa-dialog::part(dialog) {
   width: min(remify(480px), 100vw);
   max-width: 100vw;

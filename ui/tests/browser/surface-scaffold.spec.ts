@@ -686,12 +686,50 @@ function footerOffsets({
   ];
 }
 
-/** The transcript scrollport's distance above the floating footer. */
-function footerGap({
-  footer,
+/**
+ * How far the transcript's scrollport stops short of the body's block end.
+ * The transcript opts into block-end `scrollClearance`, so the body stops
+ * reserving the floating footer below it and it reaches the panel's end.
+ */
+function transcriptEndGap({
+  body,
   transcript,
 }: Awaited<ReturnType<typeof chatGeometry>>) {
-  return Math.abs(Math.round(footer.top - transcript.bottom));
+  return Math.abs(Math.round(body.bottom - transcript.bottom));
+}
+
+/**
+ * The space left between the transcript's last message and the floating
+ * footer once scrolled to the end: the published footer clearance rests the
+ * last message above the composer by the List's 8px control inset.
+ */
+function lastMessageClearance({
+  footer,
+  last,
+}: Awaited<ReturnType<typeof chatGeometry>>) {
+  return Math.round(footer.top - last.bottom);
+}
+
+/** Messages that pass beneath the floating footer inside the scrollport. */
+async function messagesBeneathFooter(page: Page) {
+  return page.locator('#catalog-chat-dialog').evaluate((element) => {
+    const footer = element
+      .shadowRoot!.querySelector('[part~="footer"]')!
+      .getBoundingClientRect();
+    const transcript = element
+      .querySelector('[data-demo-chat-transcript]')!
+      .getBoundingClientRect();
+    return [
+      ...element.querySelectorAll('[data-demo-chat-transcript] > *'),
+    ].filter((message) => {
+      const box = message.getBoundingClientRect();
+      return (
+        box.bottom > footer.top + 1 &&
+        box.top < footer.bottom &&
+        box.top < transcript.bottom
+      );
+    }).length;
+  });
 }
 
 async function scrollChatToEnd(page: Page) {
@@ -702,7 +740,7 @@ async function scrollChatToEnd(page: Page) {
     });
 }
 
-test('a floating footer lies inset over the body while fill-last fills and scrolls the transcript above it', async ({
+test('a floating footer lies inset over the body while a fill-last transcript scrolls beneath it', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -722,8 +760,9 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
   expect(geometry.footerBackground).toBe('rgba(0, 0, 0, 0)');
   expect(footerOffsets(geometry)).toEqual([8, 8, 8]);
   expect(geometry.footer.top).toBeLessThan(geometry.body.bottom);
-  // The notice keeps its natural height; the transcript takes the rest, owns
-  // the scrolling, and its scrollport ends at the floating footer's top.
+  // The notice keeps its natural height; the transcript takes the rest and
+  // owns the scrolling. It opts into block-end scrollClearance, so its
+  // scrollport reaches the panel's end, beneath the floating footer.
   expect(geometry.bodyOverflow).toBe('hidden');
   expect(geometry.bannerFlex).toBe('0 0 auto');
   expect(geometry.transcriptOverflow).toBe('auto');
@@ -731,14 +770,39 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
   expect(Math.round(geometry.transcript.top)).toBeGreaterThanOrEqual(
     Math.round(geometry.banner.bottom),
   );
-  await expect.poll(async () => footerGap(await chatGeometry(page))).toBe(0);
-  await scrollChatToEnd(page);
-  const scrolled = await chatGeometry(page);
-  expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.footer.top);
-  expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.transcript.bottom);
+  expect(transcriptEndGap(geometry)).toBe(0);
+  expect(geometry.transcript.bottom).toBeGreaterThan(geometry.footer.bottom);
 
-  // A taller composer grows the measured clearance: the transcript still
-  // ends above it, and a sent message stays visible above the composer.
+  // Mid-scroll, messages pass visibly beneath the transparent footer.
+  await page
+    .locator('#catalog-chat-dialog [data-demo-chat-transcript]')
+    .evaluate((transcript) => {
+      transcript.scrollTop =
+        (transcript.scrollHeight - transcript.clientHeight) / 2;
+    });
+  expect(await messagesBeneathFooter(page)).toBeGreaterThan(0);
+
+  // Scrolled to the end, the last message rests above the composer.
+  await expect
+    .poll(async () => {
+      await scrollChatToEnd(page);
+      return lastMessageClearance(await chatGeometry(page));
+    })
+    .toBe(8);
+
+  // The clearance is scroll padding too: scrolling the last message into view
+  // from the top brings it to rest above the composer, not beneath it.
+  await page
+    .locator('#catalog-chat-dialog [data-demo-chat-transcript]')
+    .evaluate((transcript) => {
+      transcript.scrollTop = 0;
+      transcript.lastElementChild!.scrollIntoView({ block: 'end' });
+    });
+  const revealed = await chatGeometry(page);
+  expect(revealed.last.bottom).toBeLessThanOrEqual(revealed.footer.top + 0.5);
+
+  // A taller composer grows the measured clearance: a sent message still
+  // comes to rest above it.
   await page
     .locator('#catalog-chat-dialog textarea[name="catalog-chat-message"]')
     .fill('First line\nSecond line\nThird line');
@@ -747,7 +811,12 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
     .toBeGreaterThan(geometry.footer.height);
   // The footer grows first; the measured clearance follows on the next
   // ResizeObserver delivery, so wait for it rather than sampling once.
-  await expect.poll(async () => footerGap(await chatGeometry(page))).toBe(0);
+  await expect
+    .poll(async () => {
+      await scrollChatToEnd(page);
+      return lastMessageClearance(await chatGeometry(page));
+    })
+    .toBe(8);
   await page.getByRole('button', { name: 'Send' }).click();
   await expect(
     page.locator('#catalog-chat-dialog [data-demo-chat-transcript]'),
@@ -755,12 +824,12 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
   await expect
     .poll(async () => {
       const sent = await chatGeometry(page);
-      return sent.last.bottom <= sent.footer.top + 0.5 && footerGap(sent) === 0;
+      return sent.last.bottom <= sent.footer.top + 0.5;
     })
     .toBe(true);
 
   // Without footerOffset the footer takes the 16px container inset, and the
-  // body clearance follows it.
+  // published clearance follows it.
   await page
     .locator('#catalog-chat-dialog')
     .evaluate((element) =>
@@ -768,9 +837,42 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
         '--_kui-dialog-surface-footer-offset',
       ),
     );
-  const defaults = await chatGeometry(page);
-  expect(footerOffsets(defaults)).toEqual([16, 16, 16]);
-  expect(footerGap(defaults)).toBe(0);
+  await expect
+    .poll(async () => footerOffsets(await chatGeometry(page)))
+    .toEqual([16, 16, 16]);
+  await expect
+    .poll(async () => {
+      await scrollChatToEnd(page);
+      return lastMessageClearance(await chatGeometry(page));
+    })
+    .toBe(8);
+  expect(transcriptEndGap(await chatGeometry(page))).toBe(0);
+  await page.keyboard.press('Escape');
+});
+
+test('without scrollClearance a fill-last transcript ends at the floating footer', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=surface-scaffold');
+  await page.getByRole('button', { name: 'Open Assistant' }).click();
+  await expect(page.locator('#catalog-chat-dialog')).toHaveAttribute(
+    'open',
+    '',
+  );
+  // Remove the opt-in: the body reserves the footer below the transcript
+  // again, and the transcript's scrollport ends at the footer's top.
+  await page
+    .locator('#catalog-chat-dialog [data-demo-chat-transcript]')
+    .evaluate((transcript) =>
+      transcript.removeAttribute('data-scroll-clearance'),
+    );
+  await expect
+    .poll(async () => {
+      const geometry = await chatGeometry(page);
+      return Math.round(geometry.footer.top - geometry.transcript.bottom);
+    })
+    .toBe(0);
   await page.keyboard.press('Escape');
 });
 
@@ -791,12 +893,16 @@ test('a phone chat dialog floats its composer 8px from the panel edges', async (
   await expect
     .poll(async () => Math.round((await chatGeometry(page)).panel.left))
     .toBe(8);
-  // The body clearance follows the measured footer on a ResizeObserver
+  // The transcript reaches the panel's end beneath the composer; the
+  // published clearance follows the measured footer on a ResizeObserver
   // delivery after the dialog opens, so wait for it rather than sampling once.
-  await expect.poll(async () => footerGap(await chatGeometry(page))).toBe(0);
-  await scrollChatToEnd(page);
-  const scrolled = await chatGeometry(page);
-  expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.footer.top + 0.5);
+  expect(transcriptEndGap(await chatGeometry(page))).toBe(0);
+  await expect
+    .poll(async () => {
+      await scrollChatToEnd(page);
+      return lastMessageClearance(await chatGeometry(page));
+    })
+    .toBe(8);
   await page.keyboard.press('Escape');
 });
 

@@ -114,6 +114,20 @@ floating footer and its end stays reachable above it; with `fill` or
 `fill-last` the filling child's scrollport ends at the footer's top. Content
 is never hidden beneath the footer.
 
+To let a filling transcript scroll visibly beneath the floating footer, opt
+its scroller in with `scrollClearance="block-end"` (a `scrollable` `List`, or a
+`Pane`, as the `fill` or last `fill-last` child). The body then stops
+reserving the footer below that child, so the child reaches the panel's block
+end, and publishes the footer's clearance (measured height plus offset) as the
+inherited `--kui-scroll-clearance-block-end` context. The child adds it to its
+own block-end padding and `scroll-padding`: messages pass beneath the
+transparent footer mid-scroll, the last message rests above the composer at
+the end, and focus or `scrollIntoView` never leaves an item hidden beneath it.
+The context is general: chrome that overlays a region's block-start or
+block-end edge publishes `--kui-scroll-clearance-block-start` / `-end`, and a
+scroll owner opts in per edge (see `docs/layout.md` "Scroll clearance"). A
+dialog body clears any clearance inherited from the page.
+
 Choose the offset like any other responsive value: the scaffold adds no
 breakpoint. An 8px offset lines a composer up with the transcript's
 content-item edges when the body has `bodyInset="none"` and list geometry;
@@ -127,7 +141,7 @@ transcript, and its field grows the measured footer. With `submitOnEnter` and
 <DialogSurface height={remify(560)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill-last" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
   <wa-dialog label="Assistant">
     <StateBanner title="Answers use the latest nightly build." tone="neutral" />
-    <List gap="xs" controlInsets="tb" scrollable>
+    <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">
       {messages.map((message) => (
         <ContentItem bubble={message.mine ? 'end' : 'start'} appearance={message.mine ? 'brand-loud' : 'neutral'}>
           <Text variant="span">{message.text}</Text>

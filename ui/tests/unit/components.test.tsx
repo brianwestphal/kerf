@@ -950,6 +950,22 @@ describe('production UI primitives', () => {
       'data-gap="false" data-flex="false" data-h-align="full" data-v-align="top" data-scrollable="false"',
     );
     expect(defaults).not.toContain('data-surface');
+    expect(defaults).not.toContain('data-scroll-clearance');
+    for (const scrollClearance of ['block-start', 'block-end', 'both'] as const)
+      expect(asHtml(List({ scrollable: true, scrollClearance }))).toContain(
+        `data-scrollable="true" data-scroll-clearance="${scrollClearance}"`,
+      );
+    expect(
+      asHtml(
+        List({
+          scrollClearance: 'block-end',
+          rootAttributes: {
+            // @ts-expect-error the List owns its scroll clearance state.
+            'data-scroll-clearance': 'both',
+          },
+        }),
+      ).match(/data-scroll-clearance=/g),
+    ).toHaveLength(1);
     expect(asHtml(List({ surface: 'base' }))).toContain(
       'data-scrollable="false" data-surface="base"',
     );

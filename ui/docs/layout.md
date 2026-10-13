@@ -646,6 +646,34 @@ When it has focus it draws the theme focus ring inset by the ring width and
 rounded with `--kui-radius-m`, so a rounded or `overflow: hidden` parent
 never clips it. Do not style `.kui-list` focus yourself.
 
+### Scroll clearance
+
+Chrome that lies over a scroll owner's block edge (a `DialogSurface` floating
+footer over a transcript, or translucent chrome over a scrolling region)
+publishes how far it covers that edge through an inherited context:
+`--kui-scroll-clearance-block-start` and `--kui-scroll-clearance-block-end`.
+A scroll owner opts in per edge with `scrollClearance` (`"block-start"`,
+`"block-end"`, or `"both"`) on a `scrollable` `List` or a `Pane`. It adds the
+published clearance to its own block padding and `scroll-padding`, so content
+scrolls visibly beneath the chrome while the first and last items (and any
+item focused or scrolled into view) still come to rest clear of it. Without
+the prop the context is ignored.
+
+Opt in only the one scroller that reaches the covered edge; a nested scroller
+must not opt in again. `DialogSurface` publishes block-end for its floating
+footer (see `docs/surface-scaffold.md`) and clears the context in every dialog
+body. When an application overlays its own chrome on a region (for example a
+translucent toolbar laid over the top of a scrolling list), it publishes the
+chrome's block size on that region's container, the one place where an app
+sets this context:
+
+```tsx
+<section style="position:relative;display:grid;--kui-scroll-clearance-block-start:48px">
+  <List scrollable scrollClearance="block-start">{rows}</List>
+  {translucentToolbar}
+</section>;
+```
+
 For long reading content, such as a reader view, pass `inset="document"`: 24px
 block and 32px inline on all four sides, narrowing to 16px inline below 576px.
 It replaces any `textInsets`/`controlInsets` on that List.

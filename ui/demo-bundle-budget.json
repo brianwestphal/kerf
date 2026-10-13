@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 364700,
-  "measuredLargestJavaScriptGzip": 146829,
-  "measuredTotalJavaScriptGzip": 364650,
+  "totalJavaScriptGzip": 364800,
+  "measuredLargestJavaScriptGzip": 146918,
+  "measuredTotalJavaScriptGzip": 364767,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4227,6 +4227,38 @@
         "measuredTotalJavaScriptGzip": 364650,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 364700
+      }
+    },
+    {
+      "at": "2026-10-13T12:46:15.575Z",
+      "reason": "List/Pane scrollClearance and the DialogSurface scroll-clearance context (KF-ET0EX8: a fill-last transcript scrolls beneath a floating composer)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146829,
+        "measuredTotalJavaScriptGzip": 364650,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146900,
+        "measuredTotalJavaScriptGzip": 364753,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364800
+      }
+    },
+    {
+      "at": "2026-10-13T13:08:07.774Z",
+      "reason": "scroll clearance for List and Pane under a floating footer (KF-ET0EX8)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146900,
+        "measuredTotalJavaScriptGzip": 364753,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146918,
+        "measuredTotalJavaScriptGzip": 364767,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364800
       }
     }
   ]

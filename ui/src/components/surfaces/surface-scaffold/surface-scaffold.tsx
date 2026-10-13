@@ -71,7 +71,11 @@ export interface DialogSurfaceProps {
   /**
    * Footer placement (default `docked`); `floating` lays the footer over the
    * body's block end. The body reserves the footer's measured height so its
-   * last content is never hidden beneath it.
+   * last content is never hidden beneath it. A `fill`/`fill-last` child that
+   * opts into block-end `scrollClearance` (a `List` or `Pane`) takes that
+   * clearance inside its own scroll area instead, published as
+   * `--kui-scroll-clearance-block-end`, so its content scrolls visibly beneath
+   * the transparent footer.
    */
   footerPresentation?: DialogSurfaceFooterPresentation;
   /**

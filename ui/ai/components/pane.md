@@ -16,6 +16,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 - A lowered background must cover the scrolling work viewport and blank space after short content without a second scroll container (appearance: sunken).
 - A child table or other component needs edge-to-edge decoration with text aligned to other pane content.
 - An opaque edge-to-edge child needs a reserved vertical scrollbar gutter.
+- Scrolling content must pass beneath chrome laid over the pane edge (a DialogSurface floating footer) while its first and last items still rest clear of it (scrollClearance).
 
 **Not when:**
 
@@ -48,6 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#k
 - inline-end separator
 - chrome dividers only while scrolled (default, wired by wireScrollDividers)
 - always or no chrome dividers
+- scrollClearance block-start, block-end, or both on the scrolling content
 
 ## Composition
 
@@ -63,7 +65,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined).
+**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance).
 
 **Wiring:** `wireScrollDividers` is optional.
 
@@ -81,6 +83,7 @@ Margin: child · border: conditional · padding: child (layout role: structure).
 - The scrolling content exposes its resolved logical inline padding to descendants as --kui-pane-content-inset-inline-start/end, including safe areas and deepInset.
 - deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge.
 - For opaque edge-to-edge children, --kui-pane-scrollbar-gutter: stable reserves a vertical scrollbar gutter outside the published content insets; the default is auto.
+- scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the scrolling content block padding and scroll padding alongside safe areas and deepInset.
 
 ## Accessibility
 

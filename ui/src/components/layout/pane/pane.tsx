@@ -1,5 +1,6 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 
 /**
@@ -22,6 +23,7 @@ const paneProtectedAttributes = new Set([
   'data-appearance',
   'data-deep-inset',
   'data-outlined',
+  'data-scroll-clearance',
   'data-separator-block-start',
   'data-separator-block-end',
   'data-separator-inline-start',
@@ -55,6 +57,7 @@ type PaneRootAttributes = Readonly<
     'data-appearance'?: never;
     'data-deep-inset'?: never;
     'data-outlined'?: never;
+    'data-scroll-clearance'?: never;
   }
 >;
 
@@ -99,6 +102,16 @@ export interface PaneProps {
   chromeDividers?: PaneChromeDividers;
   /** Paint the scrolling work surface with the shared lowered-surface color. */
   appearance?: PaneAppearance;
+  /**
+   * Clear chrome that lies over the scrolling content's block-start and/or
+   * block-end edge, such as a `DialogSurface` floating footer over a filling
+   * Pane. The content scroller adds the inherited
+   * `--kui-scroll-clearance-block-*` context that chrome publishes to its block
+   * padding and `scroll-padding`, so content scrolls visibly beneath the chrome
+   * while its first and last items (and anything focused or scrolled into
+   * view) can still rest clear of it. Defaults to none.
+   */
+  scrollClearance?: ScrollClearance;
   /** Add 8px to every side of scrolling content (default: false). */
   deepInset?: boolean;
   /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root. */
@@ -184,6 +197,7 @@ export function Pane({
   chromeDividers,
   appearance = 'default',
   deepInset = false,
+  scrollClearance,
   tabIndex,
   outlined = false,
   element = 'div',
@@ -238,6 +252,7 @@ export function Pane({
     'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
     'data-deep-inset': deepInset ? 'true' : undefined,
     'data-outlined': outlined ? 'true' : undefined,
+    'data-scroll-clearance': scrollClearance,
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-chrome-dividers':
       resolvedChromeDividers === 'always' || resolvedChromeDividers === 'none'
@@ -264,3 +279,5 @@ export function Pane({
   if (element === 'section') return <section {...attributes}>{body}</section>;
   return <div {...attributes}>{body}</div>;
 }
+
+export type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';

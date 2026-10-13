@@ -103,6 +103,28 @@ describe('Pane', () => {
     expect(html.match(/data-deep-inset=/g)).toHaveLength(1);
   });
 
+  it('opts into protected scroll clearance without changing the default', () => {
+    expect(String(Pane({ children: <span>Body</span> }))).not.toContain(
+      'data-scroll-clearance',
+    );
+    for (const scrollClearance of ['block-start', 'block-end', 'both'] as const)
+      expect(
+        String(Pane({ children: <span>Body</span>, scrollClearance })),
+      ).toContain(`data-scroll-clearance="${scrollClearance}"`);
+    const forged = String(
+      Pane({
+        children: <span>Body</span>,
+        scrollClearance: 'block-end',
+        rootAttributes: {
+          // @ts-expect-error the Pane owns its scroll clearance state.
+          'data-scroll-clearance': 'both',
+        },
+      }),
+    );
+    expect(forged.match(/data-scroll-clearance=/g)).toHaveLength(1);
+    expect(forged).toContain('data-scroll-clearance="block-end"');
+  });
+
   it('opts into root focus and a protected persistent outline independently', () => {
     const plain = String(Pane({ children: <span>Body</span> }));
     expect(plain).not.toContain('tabindex=');

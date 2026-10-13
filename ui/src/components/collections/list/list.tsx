@@ -10,6 +10,7 @@ import {
   verticalAlignment,
 } from '../../../shared/layout/flex-alignment.js';
 import { gapLength } from '../../../shared/layout/gap.js';
+import type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
 import type { Sides } from '../../../shared/layout/sides.js';
 import {
   type CssFlex,
@@ -28,6 +29,7 @@ const listProtectedAttributes = new Set([
   'data-h-align',
   'data-v-align',
   'data-scrollable',
+  'data-scroll-clearance',
   'data-surface',
   'data-inset',
   'data-text-insets',
@@ -43,6 +45,7 @@ type ListRootAttributes = StructuralRootAttributes &
     'data-h-align'?: never;
     'data-v-align'?: never;
     'data-scrollable'?: never;
+    'data-scroll-clearance'?: never;
     'data-surface'?: never;
     'data-inset'?: never;
     'data-text-insets'?: never;
@@ -91,6 +94,16 @@ export interface ListProps {
    */
   scrollable?: boolean;
   /**
+   * Clear chrome that lies over this scrollable List's block-start and/or
+   * block-end edge, such as a `DialogSurface` floating footer. The List adds
+   * the inherited `--kui-scroll-clearance-block-*` context that chrome
+   * publishes to its own block padding and `scroll-padding`, so its rows
+   * scroll visibly beneath the chrome while the first and last rows (and any
+   * row focused or scrolled into view) can still rest clear of it. Opt in only
+   * the one scroller that reaches the covered edge. Defaults to none.
+   */
+  scrollClearance?: ScrollClearance;
+  /**
    * Paint a solid surface behind the stack, including its insets: for a strip
    * of chrome (a banner above a sunken work area) that must not show the
    * lowered tint around its content. Omitted, the List is transparent.
@@ -137,6 +150,7 @@ export function List({
   hAlign = 'full',
   vAlign = 'top',
   scrollable = false,
+  scrollClearance,
   surface,
   inset,
   dividerSides = '',
@@ -188,6 +202,7 @@ export function List({
       data-h-align={horizontalAlignment(hAlign)}
       data-v-align={verticalAlignment(vAlign)}
       data-scrollable={String(scrollable)}
+      data-scroll-clearance={scrollClearance}
       data-surface={surface}
       data-inset={inset}
       divider-sides={dividerSides || undefined}
@@ -206,6 +221,7 @@ export type {
   ListVerticalAlignment,
   VerticalAlignment,
 } from '../../../shared/layout/flex-alignment.js';
+export type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
 export type { Sides } from '../../../shared/layout/sides.js';
 export type {
   CssFlex,

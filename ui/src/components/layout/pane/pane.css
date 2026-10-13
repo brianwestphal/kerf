@@ -159,14 +159,17 @@
   --kui-pane-content-inset-inline-start: var(--_kui-pane-safe-inline-start);
   --kui-pane-content-inset-inline-end: var(--_kui-pane-safe-inline-end);
   --_kui-pane-deep-block-inset: 0px;
+  --_kui-pane-clearance-block-start: 0px;
+  --_kui-pane-clearance-block-end: 0px;
   --_kui-pane-content-safe-block-start: var(--_kui-pane-safe-block-start);
   --_kui-pane-content-safe-block-end: var(--_kui-pane-safe-block-end);
   --_kui-pane-content-block-start: calc(
     var(--_kui-pane-content-safe-block-start) +
-      var(--_kui-pane-deep-block-inset)
+      var(--_kui-pane-deep-block-inset) + var(--_kui-pane-clearance-block-start)
   );
   --_kui-pane-content-block-end: calc(
-    var(--_kui-pane-content-safe-block-end) + var(--_kui-pane-deep-block-inset)
+    var(--_kui-pane-content-safe-block-end) +
+      var(--_kui-pane-deep-block-inset) + var(--_kui-pane-clearance-block-end)
   );
   min-width: 0;
   min-height: 0;
@@ -182,6 +185,31 @@
     var(--kui-pane-content-inset-inline-end);
   padding-block: var(--_kui-pane-content-block-start)
     var(--_kui-pane-content-block-end);
+}
+
+/* `scrollClearance`: chrome lying over the content's block edge (a dialog's
+   floating footer) publishes how far it covers that edge through the
+   inherited `--kui-scroll-clearance-block-*` context. The content scroller
+   adds it to the block padding and scroll padding above, so content scrolls
+   visibly beneath that chrome yet its first and last items can always rest
+   clear of it. */
+.kui-pane:is(
+    [data-scroll-clearance="block-start"],
+    [data-scroll-clearance="both"]
+  )
+  > .kui-pane__content {
+  --_kui-pane-clearance-block-start: var(
+    --kui-scroll-clearance-block-start,
+    0px
+  );
+}
+
+.kui-pane:is(
+    [data-scroll-clearance="block-end"],
+    [data-scroll-clearance="both"]
+  )
+  > .kui-pane__content {
+  --_kui-pane-clearance-block-end: var(--kui-scroll-clearance-block-end, 0px);
 }
 
 /* Add one outer gutter without changing the inherited item-margin token.

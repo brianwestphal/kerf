@@ -81,6 +81,7 @@ export {
   type ListProps,
   type ListSurface,
   type ListVerticalAlignment,
+  type ScrollClearance,
   type Sides,
 } from './components/collections/list/list.js';
 export {

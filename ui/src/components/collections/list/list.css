@@ -8,10 +8,12 @@
   --_kui-list-column-gap: var(--_kui-list-gap);
   --_kui-list-row-gap: var(--_kui-list-gap);
   --_kui-list-flex: 0 1 auto;
-  --_kui-list-inset-top: 0;
-  --_kui-list-inset-right: 0;
-  --_kui-list-inset-bottom: 0;
-  --_kui-list-inset-left: 0;
+  --_kui-list-inset-top: 0px;
+  --_kui-list-inset-right: 0px;
+  --_kui-list-inset-bottom: 0px;
+  --_kui-list-inset-left: 0px;
+  --_kui-list-clearance-start: 0px;
+  --_kui-list-clearance-end: 0px;
   --_kui-list-divider-top: transparent;
   --_kui-list-divider-right: transparent;
   --_kui-list-divider-bottom: transparent;
@@ -21,8 +23,12 @@
   min-width: 0;
   min-height: 0;
   box-sizing: border-box;
-  padding: var(--_kui-list-inset-top, 0) var(--_kui-list-inset-right, 0)
-    var(--_kui-list-inset-bottom, 0) var(--_kui-list-inset-left, 0);
+  padding: calc(
+      var(--_kui-list-inset-top, 0px) + var(--_kui-list-clearance-start)
+    )
+    var(--_kui-list-inset-right, 0)
+    calc(var(--_kui-list-inset-bottom, 0px) + var(--_kui-list-clearance-end))
+    var(--_kui-list-inset-left, 0);
   flex: var(--_kui-list-flex, initial);
   flex-direction: column;
   align-items: stretch;
@@ -127,6 +133,31 @@
 .kui-list[data-scrollable="true"] {
   overflow-y: auto;
   overscroll-behavior-y: contain;
+}
+
+/* `scrollClearance`: chrome lying over the List's block edge (a dialog's
+   floating footer) publishes how far it covers that edge through the
+   inherited `--kui-scroll-clearance-block-*` context. The List adds it to its
+   own block padding and scroll padding, so rows scroll visibly beneath the
+   chrome while the first and last rows, and anything focused or scrolled into
+   view, still come to rest clear of it. */
+.kui-list:is(
+  [data-scroll-clearance="block-start"],
+  [data-scroll-clearance="both"]
+) {
+  --_kui-list-clearance-start: var(--kui-scroll-clearance-block-start, 0px);
+}
+
+.kui-list:is(
+  [data-scroll-clearance="block-end"],
+  [data-scroll-clearance="both"]
+) {
+  --_kui-list-clearance-end: var(--kui-scroll-clearance-block-end, 0px);
+}
+
+.kui-list[data-scroll-clearance] {
+  scroll-padding-block: var(--_kui-list-clearance-start)
+    var(--_kui-list-clearance-end);
 }
 
 /* A scrollable List owns the overflow, so its rows keep their natural height

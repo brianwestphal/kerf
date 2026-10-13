@@ -130,6 +130,16 @@ single scrolling slot; the negative margins change only its inline reach. The
 [`Pane` UX catalog example](../ux-demo/demos/pane.tsx) shows both `deepInset`
 states with the same table component.
 
+### Scrolling beneath overlaying chrome
+
+`Pane.scrollClearance` (`"block-start"`, `"block-end"`, or `"both"`) lets the
+scrolling slot pass beneath chrome laid over the pane's edge, such as a
+`DialogSurface` floating footer over a filling Pane. The slot adds the
+inherited `--kui-scroll-clearance-block-*` context that the chrome publishes to
+its block padding and `scroll-padding`, alongside the safe-area and
+`deepInset` insets, so its first and last items still rest clear of the
+chrome. See `docs/layout.md` "Scroll clearance".
+
 ## Decision matrix
 
 | Situation                                                                    | Layout                                                                                           | Device threshold                                                                                                                   |

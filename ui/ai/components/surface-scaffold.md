@@ -41,6 +41,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - definite viewport-bounded modal height and a fill body layout for one child
 - fill-last body layout: fixed rows above one filling, scrolling last child
 - docked or floating footer with a typed footerOffset; the body reserves the measured footer height
+- floating footer over a filling child that opts into block-end scrollClearance: content scrolls beneath the footer through the published --kui-scroll-clearance-block-end
 - non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow, named by label or labelledBy and described by describedBy
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
