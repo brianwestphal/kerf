@@ -584,6 +584,15 @@ describe('CatalogExample', () => {
     expect(html).toContain('<b data-specimen />');
   });
 
+  it('names a labelled example as a region and leaves an unlabeled one generic', () => {
+    const labelled = asHtml(
+      CatalogExample({ label: 'Default', children: raw('<i/>') }),
+    );
+    expect(labelled).toMatch(/<section[^>]*aria-label="Default"/);
+    const unlabeled = asHtml(CatalogExample({ children: raw('<i/>') }));
+    expect(unlabeled).not.toContain('aria-label');
+  });
+
   it('stacks examples under a labeled region', () => {
     const html = asHtml(
       CatalogExampleStack({ label: 'Variants', children: raw('<section/>') }),

@@ -2726,7 +2726,11 @@ interface CatalogExampleProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-/** A labeled catalog specimen with optional explanatory text and alignment. */
+/**
+ * A labeled catalog specimen with optional explanatory text and alignment. A
+ * supplied `label` also names the rendered `section`, so each specimen is an
+ * addressable region; an unlabeled example stays an ordinary grouping.
+ */
 declare function CatalogExample({ label, note, align, viewport, compactFallback, rootAttributes, className, children, slot, }: CatalogExampleProps): SafeHtml;
 
 type CatalogExampleStackRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {

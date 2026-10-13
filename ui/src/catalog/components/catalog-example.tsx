@@ -64,7 +64,11 @@ export interface CatalogExampleProps {
   slot?: string;
 }
 
-/** A labeled catalog specimen with optional explanatory text and alignment. */
+/**
+ * A labeled catalog specimen with optional explanatory text and alignment. A
+ * supplied `label` also names the rendered `section`, so each specimen is an
+ * addressable region; an unlabeled example stays an ordinary grouping.
+ */
 export function CatalogExample({
   label,
   note,
@@ -113,6 +117,7 @@ export function CatalogExample({
       class={`kui-catalog-example ${className}`.trim()}
       data-catalog-example
       data-align={align}
+      aria-label={label}
       slot={slot}
     >
       {label !== undefined ? (

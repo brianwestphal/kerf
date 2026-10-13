@@ -50,6 +50,9 @@ test('published guidance produces the sanctioned focused-component structure', a
   const rows = stack.locator(':scope > [data-catalog-example]');
   await expect(rows).toHaveCount(2);
   await expect(
+    stack.getByRole('region', { name: 'Default', exact: true }),
+  ).toHaveCount(1);
+  await expect(
     rows.first().locator(':scope > [data-component="state-banner"]'),
   ).toHaveCount(1);
   await expect(

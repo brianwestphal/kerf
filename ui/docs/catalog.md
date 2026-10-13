@@ -139,7 +139,9 @@ entry's `tags` array.
 - `CatalogExample` is one row: optional generated `ListHeader` label, optional
   generated note, then one specimen or one intentionally coupled specimen
   cluster. Use one row per variant/state; do not hand-author the helper's private
-  classes.
+  classes. A supplied `label` also names the row's `section`, so each specimen
+  is a named region that assistive technology and
+  `getByRole("region", { name })` can address.
 - Focused demos do not import local stylesheets, use inline `style`, or invent
   styling-only `demo-*` classes. Prefer a public Kerf component, then a Web
   Awesome surface when Kerf has no equivalent, then ordinary semantic HTML.
