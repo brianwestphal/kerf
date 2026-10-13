@@ -2071,9 +2071,9 @@ test('fills the preview scroller for short Catalog specimens across backgrounds 
     { width: 390, height: 1200 },
   ]) {
     await page.setViewportSize(viewport);
-    // Chip stays shorter than the stage at both widths (Badge no longer does
-    // since its settings playground row was added).
-    await page.goto('/?component=chip');
+    // DisclosureArrow stays shorter than the stage at both widths (Badge and
+    // Chip no longer do since their settings and link examples were added).
+    await page.goto('/?component=disclosure-arrow');
     const scroller = page.locator(
       '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__content',
     );
