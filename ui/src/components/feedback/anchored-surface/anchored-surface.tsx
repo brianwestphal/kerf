@@ -16,6 +16,12 @@ export interface AnchoredSurfaceOptions extends Pick<
   /** Accessible name for the non-modal dialog. */
   label: string;
   /**
+   * Gutter in px kept between the surface and the viewport edges when it is
+   * clamped horizontally and fitted vertically. Default `8`, the same gutter as
+   * the surface's maximum size.
+   */
+  viewportMargin?: number;
+  /**
    * Where to append the surface. Default: inside the anchor's open modal
    * dialog — a native `<dialog>`'s host slot, or a slot kerf creates in a
    * `wa-dialog` / `wa-drawer` — so the surface stays interactive there;
@@ -56,6 +62,10 @@ function modalScope(context: Element | undefined): Element {
 /**
  * Open app-owned content beside an element. The surface owns its Kerf UI chrome;
  * kerfjs/overlay owns positioning, top-layer/modal hosting, focus, and dismissal.
+ * The surface stays `viewportMargin` inside the viewport edges and fits its
+ * height to the room beside the anchor (the roomier side when neither holds it),
+ * scrolling its content; `--kui-anchored-surface-available-height` exposes that
+ * room to the content, updated as the page scrolls or resizes.
  * The caller owns content, action policy, and calling `close()` when an action
  * completes. `initialFocus` defaults to the first focusable descendant; set it
  * to `false` for read-only help that should leave focus on its trigger.
@@ -69,6 +79,7 @@ export function openAnchoredSurface(
     label,
     initialFocus = true,
     dismiss = ['escape', 'outside'],
+    viewportMargin = 8,
     ...rest
   } = options;
   if (!label.trim())
@@ -82,6 +93,10 @@ export function openAnchoredSurface(
     native: true,
     initialFocus,
     dismiss,
+    viewportMargin,
+    // The surface scrolls: fit it to the room beside the anchor, on the
+    // roomier side when neither fits, refreshed on every reposition.
+    fitHeight: true,
   });
   handle.el.setAttribute('role', 'dialog');
   handle.el.setAttribute('aria-label', label);

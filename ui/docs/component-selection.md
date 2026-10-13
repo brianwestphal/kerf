@@ -194,8 +194,10 @@ selection entries.
 For arbitrary interactive help or popup content beside a control, use
 [`openAnchoredSurface`](anchored-surface.md) with an accessible label; use
 `openAnchoredSurfaceAt` for pointer coordinates. It owns the Kerf UI surface,
-placement, focus, dismissal, and modal-dialog hosting while the app owns its
-content and action policy. Use `PopupMenu` for a typed command list.
+placement (an 8px viewport gutter, and a height fitted to the room beside the
+anchor with scrolling content), focus, dismissal, and modal-dialog hosting while
+the app owns its content and action policy. Never add media queries or
+`max-height` overrides to make a surface fit a phone. Use `PopupMenu` for a typed command list.
 
 Kerf UI does not export a command-palette component. Do not invent a package
 command-palette import.

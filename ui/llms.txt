@@ -28,7 +28,9 @@ For arbitrary interactive help or popup content, use `openAnchoredSurface` or
 `openAnchoredSurfaceAt` from `@kerfjs/ui/anchored-surface`; see
 [AnchoredSurface](./docs/anchored-surface.md). The app owns content and actions.
 Inside a native `<dialog>`, `wa-dialog`, or `wa-drawer`, the surface stays
-interactive and closes with the dialog.
+interactive and closes with the dialog. It keeps an 8px viewport gutter
+(`viewportMargin`) and fits its height to the room beside the anchor, scrolling
+its content, so do not add media queries or `max-height` overrides.
 For a public subpath containing several visual components, use a folder with one
 component per source file and one owned stylesheet per visual component. Keep its
 compatibility entrypoints implementation-free: JavaScript/TypeScript only re-exports

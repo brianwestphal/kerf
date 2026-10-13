@@ -23,10 +23,15 @@ focusable anchor on close (or the previously focused element for a nonfocusable
 anchor). Pass `initialFocus: false` for read-only
 help that leaves focus on its trigger. Escape and an outside press dismiss it;
 `dismiss`, `onDismiss`, and `outsideIgnore` can customize that behavior.
-`placement` (`bottom` or `top`), `align` (`start` or `end`), and `gap` feed the
-shared `kerfjs/overlay` positioning core: it flips vertically when the other
-side fits, clamps horizontally, and follows scroll and resize. Content taller
-than the viewport scrolls inside the surface.
+`placement` (`bottom` or `top`), `align` (`start` or `end`), `gap`, and
+`viewportMargin` feed the shared `kerfjs/overlay` positioning core: it flips
+vertically when the other side fits, keeps the surface `viewportMargin` (default
+8px) inside the viewport edges, and follows scroll and resize. The surface fits
+its height to the room beside the anchor: when neither side holds it, it opens
+on the roomier side, caps its height to that room, and scrolls its content.
+The room is exposed to the content as `--kui-anchored-surface-available-height`
+and refreshed on every reposition, so a tall help surface fits beside a field on
+a phone without application media queries or `max-height` overrides.
 
 ```tsx
 openAnchoredSurfaceAt(

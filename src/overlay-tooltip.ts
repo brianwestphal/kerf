@@ -54,6 +54,8 @@ export function tooltip(
     placement = 'top',
     align = 'start',
     gap = 4,
+    viewportMargin,
+    fitHeight,
     native = false,
   } = options;
 
@@ -94,7 +96,13 @@ export function tooltip(
     handle.el.setAttribute('role', role);
     let stop: () => void;
     try {
-      stop = autoReposition(handle.el, anchor, { placement, align, gap });
+      stop = autoReposition(handle.el, anchor, {
+        placement,
+        align,
+        gap,
+        viewportMargin,
+        fitHeight,
+      });
     } catch (error) {
       // Not yet tracked in `current`, so `hide()` could never reach it.
       handle.close();

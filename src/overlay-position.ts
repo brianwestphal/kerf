@@ -18,7 +18,27 @@ export interface AnchorPositionOptions {
   align?: 'start' | 'end';
   /** Gap in px between the anchor and the element. Default `4`. */
   gap?: number;
+  /**
+   * Gutter in px kept between the element and the viewport edges: the
+   * horizontal clamp stops this far inside the left and right edges, and a
+   * side fits only when the element ends this far inside the top or bottom
+   * edge. Default `0` (the bare viewport edge).
+   */
+  viewportMargin?: number;
+  /**
+   * The element's height can shrink (it scrolls its overflow). When neither
+   * side has room for its full height, it takes the side with more room, and
+   * that room — from the gap to the viewport margin, in `el`'s CSS px — is
+   * published on `el` as the `--kerf-anchor-available-height` custom property
+   * on every reposition. Cap the element with it, for example
+   * `max-height: var(--kerf-anchor-available-height); overflow: auto`. Default
+   * `false`.
+   */
+  fitHeight?: boolean;
 }
+
+/** The custom property `fitHeight` publishes on the positioned element. */
+const AVAILABLE_HEIGHT = '--kerf-anchor-available-height';
 
 /**
  * One-shot: position `el` relative to `anchor` — below by default, flipping above
@@ -28,7 +48,9 @@ export interface AnchorPositionOptions {
  * ancestor makes itself the containing block for fixed descendants (a
  * `transform`, `filter`, `perspective`, or `contain` on a wrapping `<dialog>`),
  * `left`/`top` are translated (and unscaled) into that box's coordinates so `el`
- * still lands next to the anchor. This is
+ * still lands next to the anchor. `viewportMargin` keeps a gutter from the
+ * viewport edges; `fitHeight` publishes the room on the chosen side so CSS can
+ * cap a scrolling element to it. This is
  * `popover()`'s placement core, usable on any element (an inline hint, a tooltip) —
  * no overlay lifecycle. Pair with {@link autoReposition} to keep it glued while open.
  */
@@ -37,7 +59,13 @@ export function positionAnchored(
   anchor: Element,
   options: AnchorPositionOptions = {},
 ): void {
-  const { placement = 'bottom', align = 'start', gap = 4 } = options;
+  const {
+    placement = 'bottom',
+    align = 'start',
+    gap = 4,
+    viewportMargin = 0,
+    fitHeight = false,
+  } = options;
   // Fix `el` FIRST, then measure it. Measuring a still-`display:block` wrapper
   // reports the full body-content width (≈ viewport minus body margins), which
   // collapses the horizontal clamp below and lands the element at the body's left
@@ -49,23 +77,25 @@ export function positionAnchored(
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
 
-  // Vertical: preferred side, flipped only if it overflows and the other side fits.
+  // Vertical: preferred side, flipped only if it overflows and the other side
+  // fits. A height-flexible element that fits neither side takes the roomier one.
+  const height = fitHeight ? fullHeight(el, elementRect) : elementRect.height;
   const belowTop = anchorRect.bottom + gap;
-  const aboveTop = anchorRect.top - gap - elementRect.height;
+  const roomBelow = viewportHeight - viewportMargin - belowTop;
+  const roomAbove = anchorRect.top - gap - viewportMargin;
   let below = placement !== 'top';
-  if (below && belowTop + elementRect.height > viewportHeight && aboveTop >= 0)
-    below = false;
-  else if (
-    !below &&
-    aboveTop < 0 &&
-    belowTop + elementRect.height <= viewportHeight
-  )
-    below = true;
+  if (height > roomBelow && height > roomAbove) {
+    if (fitHeight) below = roomBelow >= roomAbove;
+  } else if (below && height > roomBelow) below = false;
+  else if (!below && height > roomAbove) below = true;
 
-  // Horizontal: align to an anchor edge, then clamp into the viewport.
+  // Horizontal: align to an anchor edge, then clamp inside the viewport gutter.
   let left =
     align === 'end' ? anchorRect.right - elementRect.width : anchorRect.left;
-  left = Math.max(0, Math.min(left, viewportWidth - elementRect.width));
+  left = Math.max(
+    viewportMargin,
+    Math.min(left, viewportWidth - viewportMargin - elementRect.width),
+  );
 
   // `left`/`top` so far are viewport coordinates. They are only the CSS values
   // too when `el`'s fixed-position containing block is the viewport; an
@@ -73,8 +103,29 @@ export function positionAnchored(
   // modal `<dialog>` holding an overlay host slot) captures fixed descendants,
   // so map the coordinates into that box's space.
   const [originX, originY, scaleX, scaleY] = fixedOrigin(el);
+  let placedHeight = height;
+  if (fitHeight) {
+    const room = Math.max(0, below ? roomBelow : roomAbove);
+    el.style.setProperty(AVAILABLE_HEIGHT, `${room / scaleY}px`);
+    // Above, the element hangs from its bottom edge: use the height its CSS
+    // cap actually lays out.
+    if (!below) placedHeight = el.getBoundingClientRect().height;
+  }
+  const top = below ? belowTop : anchorRect.top - gap - placedHeight;
   el.style.left = `${(left - originX) / scaleX}px`;
-  el.style.top = `${((below ? belowTop : aboveTop) - originY) / scaleY}px`;
+  el.style.top = `${(top - originY) / scaleY}px`;
+}
+
+/**
+ * The height `el` would take without the cap a previous reposition published:
+ * its laid-out height plus whatever it currently scrolls. Read from scroll
+ * metrics rather than by lifting the cap, which would reset the element's own
+ * scroll position — and every scroll inside it repositions it. Scroll metrics
+ * are CSS px, so they are scaled into the viewport px of `rect`.
+ */
+function fullHeight(el: HTMLElement, rect: DOMRect): number {
+  const scale = el.offsetHeight ? rect.height / el.offsetHeight : 1;
+  return rect.height + Math.max(0, el.scrollHeight - el.clientHeight) * scale;
 }
 
 /**

@@ -5,6 +5,7 @@ import {
   autoReposition,
   popover,
   positionAnchored,
+  tooltip,
 } from '../../src/overlay.js';
 import { anchorAt, rectFn, setViewport } from './overlay-test-helpers.js';
 
@@ -407,5 +408,141 @@ describe('positionAnchored() / autoReposition()', () => {
       expect(el.style.left).toBe('100px');
       expect(el.style.top).toBe('224px');
     });
+  });
+});
+
+describe('viewportMargin / fitHeight', () => {
+  const AVAILABLE = '--kerf-anchor-available-height';
+
+  // Stand in for CSS `max-height: var(--kerf-anchor-available-height)`: the
+  // element lays out at its natural height, capped by the published room.
+  function cappedElement(width: number, naturalHeight: number): HTMLElement {
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+    const laidOut = () => {
+      const cap = Number.parseFloat(el.style.getPropertyValue(AVAILABLE));
+      return Number.isNaN(cap) ? naturalHeight : Math.min(naturalHeight, cap);
+    };
+    el.getBoundingClientRect = () =>
+      rectFn({ width, height: laidOut() * scale })();
+    // A capped element scrolls the rest of its content.
+    Object.defineProperties(el, {
+      offsetHeight: { get: () => (scale === 1 ? 0 : laidOut()) },
+      clientHeight: { get: laidOut },
+      scrollHeight: { get: () => naturalHeight },
+    });
+    return el;
+  }
+  let scale = 1;
+  afterEach(() => {
+    scale = 1;
+  });
+
+  it('clamps horizontally inside the viewport margin on both edges', () => {
+    setViewport(400, 800);
+    const right = anchorAt({ left: 380, right: 400, top: 100, bottom: 120 });
+    const el = cappedElement(120, 40);
+    positionAnchored(el, right, { viewportMargin: 8 });
+    expect(el.style.left).toBe('272px'); // 400 − 8 − 120
+    const leftEdge = anchorAt({ left: 0, right: 20, top: 100, bottom: 120 });
+    positionAnchored(el, leftEdge, { align: 'end', viewportMargin: 8 });
+    expect(el.style.left).toBe('8px'); // 20 − 120 = −100 → margin
+  });
+
+  it('counts the margin when deciding whether the preferred side fits', () => {
+    setViewport(1000, 300);
+    // Below: 204 + 90 = 294 fits the bare edge but not a 10px gutter (290).
+    const anchor = anchorAt({ left: 100, right: 150, top: 180, bottom: 200 });
+    const el = cappedElement(80, 90);
+    positionAnchored(el, anchor, {});
+    expect(el.style.top).toBe('204px');
+    positionAnchored(el, anchor, { viewportMargin: 10 });
+    expect(el.style.top).toBe('86px'); // above: 180 − 4 − 90
+    // Without fitHeight nothing is published.
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('');
+  });
+
+  it('keeps the preferred side when neither fits unless fitHeight is set', () => {
+    setViewport(1000, 400);
+    // Room below 400 − 8 − 224 = 168; room above 200 − 4 − 8 = 188.
+    const anchor = anchorAt({ left: 100, right: 150, top: 200, bottom: 220 });
+    const el = cappedElement(80, 500);
+    positionAnchored(el, anchor, { viewportMargin: 8 });
+    expect(el.style.top).toBe('224px'); // legacy: stays below and overflows
+
+    positionAnchored(el, anchor, { viewportMargin: 8, fitHeight: true });
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('188px');
+    // Above, hanging from the capped 188px height: 200 − 4 − 188 = 8.
+    expect(el.style.top).toBe('8px');
+  });
+
+  it('publishes the room on the chosen side and refreshes it on reposition', () => {
+    setViewport(1000, 800);
+    const anchor = anchorAt({ left: 100, right: 150, top: 100, bottom: 120 });
+    const el = cappedElement(80, 200);
+    const stop = autoReposition(el, anchor, {
+      viewportMargin: 8,
+      fitHeight: true,
+    });
+    // Fits below: room 800 − 8 − 124 = 668, natural height kept.
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('668px');
+    expect(el.style.top).toBe('124px');
+
+    setViewport(1000, 300);
+    window.dispatchEvent(new Event('resize'));
+    // Measured at its full 200px (laid out plus scrolled content):
+    // room below 168, above 88, so it stays below with a 168px cap.
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('168px');
+    expect(el.style.top).toBe('124px');
+    stop();
+  });
+
+  it('takes the roomier side and publishes zero room rather than a negative height', () => {
+    setViewport(1000, 100);
+    const anchor = anchorAt({ left: 0, right: 10, top: 90, bottom: 110 });
+    const el = cappedElement(80, 50);
+    positionAnchored(el, anchor, { fitHeight: true, placement: 'bottom' });
+    // Room below 100 − 114 < 0; above 86 → above wins with 86px.
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('86px');
+    const offscreen = anchorAt({ left: 0, right: 10, top: -50, bottom: 200 });
+    positionAnchored(el, offscreen, { fitHeight: true });
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('0px');
+  });
+
+  it('reads the full height of a capped, scrolled element without lifting its cap', () => {
+    setViewport(1000, 800);
+    const anchor = anchorAt({ left: 100, right: 150, top: 100, bottom: 120 });
+    const el = cappedElement(80, 300);
+    el.style.setProperty(AVAILABLE, '120px'); // a previous, tighter fit
+    scale = 2; // a 2x containing block: CSS px are 2 viewport px
+    positionAnchored(el, anchor, { fitHeight: true, placement: 'top' });
+    // Full height 120×2 + (300 − 120)×2 = 600 viewport px: no room above
+    // (96) or below (676 fits), so it flips below and is never uncapped.
+    expect(el.style.top).toBe('124px');
+    expect(el.style.getPropertyValue(AVAILABLE)).toBe('676px');
+  });
+
+  it('forwards the options through popover() and tooltip()', () => {
+    vi.useFakeTimers();
+    setViewport(400, 400);
+    const anchor = anchorAt({ left: 380, right: 400, top: 200, bottom: 220 });
+    const h = popover(anchor, raw('<div/>'), {
+      viewportMargin: 8,
+      fitHeight: true,
+    });
+    expect(h.el.style.getPropertyValue(AVAILABLE)).toBe('168px'); // 400 − 8 − 224
+    h.close();
+
+    const dispose = tooltip(anchor, 'tip', {
+      delay: 0,
+      placement: 'top',
+      viewportMargin: 8,
+      fitHeight: true,
+    });
+    anchor.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(0);
+    const tip = document.querySelector<HTMLElement>('.kerf-tooltip')!;
+    expect(tip.style.getPropertyValue(AVAILABLE)).toBe('188px'); // 200 − 4 − 8
+    dispose();
   });
 });

@@ -191,7 +191,9 @@ const BUDGETS = [
     // and closing a surface with the modal dialog it sits in.
     // KF-1FGTX1 (+0.12 KB): open-shadow-root scan so a wa-dialog's shadow
     // modal counts for the lift and re-host (with per-root toggle watching).
-    budgetKb: 21.35,
+    // KF-K4GE6K (+0.17 KB): positionAnchored viewportMargin + fitHeight
+    // (gutter clamp, roomier-side choice, published available height).
+    budgetKb: 21.6,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

@@ -64,6 +64,8 @@ describe('anchored surface contract', () => {
       native: true,
       initialFocus: true,
       dismiss: ['escape', 'outside'],
+      viewportMargin: 8,
+      fitHeight: true,
     });
     expect(handle.el.getAttribute('role')).toBe('dialog');
     expect(handle.el.getAttribute('aria-label')).toBe('Help');
@@ -71,7 +73,7 @@ describe('anchored surface contract', () => {
     expect(document.activeElement).toBe(anchor);
   });
 
-  it('forwards explicit focus and dismissal policy', () => {
+  it('forwards explicit focus, dismissal, and viewport-margin policy', () => {
     const anchor = document.createElement('button');
     mockedPopover.mockReturnValue(surface());
     const onDismiss = vi.fn();
@@ -80,6 +82,7 @@ describe('anchored surface contract', () => {
       initialFocus: false,
       dismiss: false,
       onDismiss,
+      viewportMargin: 16,
     });
     expect(mockedPopover).toHaveBeenCalledWith(
       anchor,
@@ -88,6 +91,8 @@ describe('anchored surface contract', () => {
         initialFocus: false,
         dismiss: false,
         onDismiss,
+        viewportMargin: 16,
+        fitHeight: true,
       }),
     );
   });

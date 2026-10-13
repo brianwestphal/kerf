@@ -1,9 +1,20 @@
 .kui-anchored-surface {
+  /* The room beside the anchor on the side the surface opened, which
+     kerfjs/overlay publishes and refreshes on every reposition. Read-only for
+     content that sizes an inner scroller to it. */
+  --kui-anchored-surface-available-height: var(
+    --kerf-anchor-available-height,
+    calc(100dvh - 2 * var(--kui-space-xs, 8px))
+  );
+
   box-sizing: border-box;
   inset: auto;
   width: max-content;
   max-width: calc(100vw - 2 * var(--kui-space-xs, 8px));
-  max-height: calc(100dvh - 2 * var(--kui-space-xs, 8px));
+  max-height: min(
+    calc(100dvh - 2 * var(--kui-space-xs, 8px)),
+    var(--kui-anchored-surface-available-height)
+  );
   overflow: auto;
   padding: var(--kui-anchored-surface-inset, var(--kui-space-xs, 8px));
   border: 1px solid var(--kui-color-neutral-border-normal);

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 364500,
-  "measuredLargestJavaScriptGzip": 146653,
-  "measuredTotalJavaScriptGzip": 364486,
+  "totalJavaScriptGzip": 364700,
+  "measuredLargestJavaScriptGzip": 146829,
+  "measuredTotalJavaScriptGzip": 364650,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4211,6 +4211,22 @@
         "measuredTotalJavaScriptGzip": 364486,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 364500
+      }
+    },
+    {
+      "at": "2026-10-13T12:19:36.263Z",
+      "reason": "anchored surface viewport gutter and fit height (KF-K4GE6K)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146653,
+        "measuredTotalJavaScriptGzip": 364486,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146829,
+        "measuredTotalJavaScriptGzip": 364650,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364700
       }
     }
   ]

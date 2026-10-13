@@ -30,6 +30,15 @@ export interface PopoverOptions {
   align?: 'start' | 'end';
   /** Gap in px between the anchor and the popover. Default `4`. */
   gap?: number;
+  /** Gutter in px kept from the viewport edges. See `AnchorPositionOptions.viewportMargin`. Default `0`. */
+  viewportMargin?: number;
+  /**
+   * Fit a scrolling popover to the room beside the anchor: take the roomier
+   * side when neither fits and publish that room as
+   * `--kerf-anchor-available-height`. See `AnchorPositionOptions.fitHeight`.
+   * Default `false`.
+   */
+  fitHeight?: boolean;
   /**
    * Which user actions dismiss the popover. Default `['outside']` (a click
    * outside the popover, the anchor exempt). Pass `false` to close only via `close()`.
@@ -71,6 +80,8 @@ export function popover(
     placement = 'bottom',
     align = 'start',
     gap = 4,
+    viewportMargin,
+    fitHeight,
     dismiss = ['outside'],
     initialFocus = false,
     outsideIgnore,
@@ -105,6 +116,8 @@ export function popover(
       placement,
       align,
       gap,
+      viewportMargin,
+      fitHeight,
     });
   } catch (error) {
     handle.close();
