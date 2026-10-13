@@ -423,6 +423,13 @@ slot without mixing authoring rules into the per-entry component catalog.
   controls to the normal text color. See `docs/23-app-layouts.md` §3.1
   "Overlay bottom toolbar" and `ui/docs/nav-stack.md` "Overlay bottom
   toolbar".
+- **Translucent TabNavigator bar.** `TabNavigator.barPresentation` (`docked`
+  default, or `overlay`) lays the tab bar over the active scene on the same
+  material. `wireTabNavigator` measures the live bar and the scenes hand its
+  height, bottom safe area included, to their content as the block-end edge
+  inset, so a plain scene, a sole Pane, or a NavStack rests its last item just
+  above it. Its labels lift to AA. See `docs/23-app-layouts.md` §3.4
+  "Overlay tab bar" and `ui/docs/tab-navigator.md` "Translucent bar".
 
 - A `ListItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete

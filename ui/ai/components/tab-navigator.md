@@ -44,6 +44,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 - bar divider only while the active scene continues below it (wired by wireScrollDividers)
 - permanent or no bar divider (chromeDividers always or none)
 - sunken active-scene separator (separator auto or hidden)
+- translucent tab bar laid over the active scene (barPresentation overlay, measured by wireTabNavigator)
 
 ## Composition
 
@@ -72,6 +73,7 @@ Margin: none · border: conditional · padding: self (layout role: structure). `
 
 - The navigator owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.
 - The bar's reserved 1px top edge separates a sunken active scene or nested Pane by default; on flat surfaces it follows scroll state (wireScrollDividers). separator=hidden suppresses it.
+- barPresentation=overlay: once wireTabNavigator has measured the live bar (data-bar-overlay=measured), the bar is absolutely positioned over the scenes on --kui-chrome-material and the scenes route its border-box height (bottom safe area included) as the block-end --kui-edge-inset-\* context, so a plain scene pads and scroll-pads by it and a sole Pane or NavStack clears it; unwired it stays docked.
 
 ## Accessibility
 
@@ -79,6 +81,7 @@ Margin: none · border: conditional · padding: self (layout role: structure). `
 - Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.
 - A focusable scene is a tabpanel named by its tab label; optional scene tabIndex applies only while active.
 - A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes "\<label>, \<badgeLabel>" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required.
+- Over the overlay bar's translucent material, unselected labels lift halfway toward --kui-color-text and the selected label mixes 40% of it into the brand color, so both keep 4.5:1 over worst-case content; the material turns opaque under reduced transparency or increased contrast and paints Canvas with a CanvasText edge in forced colors.
 
 ## Styling boundary
 

@@ -50,7 +50,10 @@ the layouts handle the insets for you. There is nothing to configure:
   [Navigation stack › Overlay chrome](nav-stack.md#overlay-chrome)). Its
   `bottomToolbarPresentation="overlay"` does the same at the bottom: the
   measured toolbar height (bottom safe area included) becomes the views'
-  block-end inset, so the last item rests just above the toolbar.
+  block-end inset, so the last item rests just above the toolbar. A
+  `TabNavigator` with `barPresentation="overlay"` does the same for its tab
+  bar: the measured bar height (bottom safe area included) becomes the
+  scenes' block-end inset.
 - **No double inset.** Whichever region applies an inset clears it for its
   descendants. A layout region whose only child is a `Pane` or another layout
   lets that child own the insets. That child fills the region — a `Workbench`

@@ -16,6 +16,8 @@ const tabs: TabNavigatorTab[] = [
 
 afterEach(() => {
   document.body.innerHTML = '';
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe('TabNavigator markup', () => {
@@ -300,5 +302,173 @@ describe('wireTabNavigator', () => {
   it('returns a no-op disposer when no scaffold is present', () => {
     const root = document.createElement('div');
     expect(() => wireTabNavigator(root, { onSelect: vi.fn() })()).not.toThrow();
+  });
+});
+
+// KF-C3V8B7: barPresentation="overlay" lays the bar over the scenes once
+// wireTabNavigator has measured it.
+describe('TabNavigator overlay bar', () => {
+  it('marks only an overlay bar presentation on the root', () => {
+    const overlay = String(
+      TabNavigator({
+        id: 'app',
+        label: 'Sections',
+        tabs,
+        active: 'home',
+        barPresentation: 'overlay',
+      }),
+    );
+    expect(overlay).toContain('data-bar-presentation="overlay"');
+    expect(
+      String(
+        TabNavigator({
+          id: 'app',
+          label: 'Sections',
+          tabs,
+          active: 'home',
+          barPresentation: 'docked',
+        }),
+      ),
+    ).not.toContain('data-bar-presentation');
+  });
+
+  /** A ResizeObserver whose callback the test drives. */
+  function fakeResizeObserver() {
+    const observers: Array<{
+      callback: ResizeObserverCallback;
+      targets: Set<Element>;
+    }> = [];
+    class FakeResizeObserver {
+      private readonly entry: (typeof observers)[number];
+      constructor(callback: ResizeObserverCallback) {
+        this.entry = { callback, targets: new Set() };
+        observers.push(this.entry);
+      }
+      observe(target: Element) {
+        this.entry.targets.add(target);
+      }
+      unobserve(target: Element) {
+        this.entry.targets.delete(target);
+      }
+      disconnect() {
+        this.entry.targets.clear();
+      }
+    }
+    vi.stubGlobal('ResizeObserver', FakeResizeObserver);
+    const report = (target: Element, blockSize?: number) => {
+      for (const { callback, targets } of observers)
+        if (targets.has(target))
+          callback(
+            [
+              {
+                target,
+                borderBoxSize:
+                  blockSize === undefined
+                    ? undefined
+                    : [{ blockSize, inlineSize: 0 }],
+              } as unknown as ResizeObserverEntry,
+            ],
+            {} as ResizeObserver,
+          );
+    };
+    const observing = (target: Element) =>
+      observers.some(({ targets }) => targets.has(target));
+    return { report, observing };
+  }
+
+  const settle = () => new Promise((done) => globalThis.setTimeout(done, 0));
+
+  function render(barPresentation: 'docked' | 'overlay' = 'overlay') {
+    document.body.innerHTML = String(
+      TabNavigator({
+        id: 'app',
+        label: 'Sections',
+        tabs,
+        active: 'home',
+        barPresentation,
+      }),
+    );
+    const section = document.querySelector<HTMLElement>('#app')!;
+    const bar = () =>
+      section.querySelector<HTMLElement>(':scope > .kui-tab-scaffold__bar')!;
+    return { section, bar };
+  }
+
+  it('measures the live bar and publishes its border-box size with the gate', async () => {
+    const { report, observing } = fakeResizeObserver();
+    const { section, bar } = render();
+    vi.spyOn(bar(), 'getBoundingClientRect').mockReturnValue({
+      height: 60,
+    } as DOMRect);
+    const dispose = wireTabNavigator(section, { onSelect: vi.fn() });
+    expect(section.getAttribute('data-bar-overlay')).toBe('measured');
+    expect(
+      section.style.getPropertyValue('--_kui-tab-scaffold-bar-block-size'),
+    ).toBe('60px');
+    // The observer's border-box size wins once it reports.
+    report(bar(), 82);
+    expect(
+      section.style.getPropertyValue('--_kui-tab-scaffold-bar-block-size'),
+    ).toBe('82px');
+    // Without a border-box size it falls back to the bar's rect.
+    report(bar());
+    expect(
+      section.style.getPropertyValue('--_kui-tab-scaffold-bar-block-size'),
+    ).toBe('60px');
+    // A re-render that strips the published state gets it back.
+    section.removeAttribute('data-bar-overlay');
+    section.removeAttribute('style');
+    await settle();
+    expect(section.getAttribute('data-bar-overlay')).toBe('measured');
+    expect(
+      section.style.getPropertyValue('--_kui-tab-scaffold-bar-block-size'),
+    ).toBe('60px');
+    // A replaced bar keeps the last size until it is observed.
+    const old = bar();
+    const replacement = old.cloneNode(true) as HTMLElement;
+    old.replaceWith(replacement);
+    await settle();
+    expect(observing(old)).toBe(false);
+    expect(observing(replacement)).toBe(true);
+    report(replacement, 70);
+    expect(
+      section.style.getPropertyValue('--_kui-tab-scaffold-bar-block-size'),
+    ).toBe('70px');
+    // Another element resizing does not move the measurement.
+    report(section, 999);
+    dispose();
+    expect(section.hasAttribute('data-bar-overlay')).toBe(false);
+    expect(section.hasAttribute('style')).toBe(false);
+    expect(observing(replacement)).toBe(false);
+  });
+
+  it('switches with the presentation and leaves a docked bar unmeasured', async () => {
+    fakeResizeObserver();
+    const { section } = render('docked');
+    const dispose = wireTabNavigator(section, { onSelect: vi.fn() });
+    expect(section.hasAttribute('data-bar-overlay')).toBe(false);
+    section.setAttribute('data-bar-presentation', 'overlay');
+    await settle();
+    expect(section.getAttribute('data-bar-overlay')).toBe('measured');
+    section.removeAttribute('data-bar-presentation');
+    await settle();
+    expect(section.hasAttribute('data-bar-overlay')).toBe(false);
+    expect(
+      section.style.getPropertyValue('--_kui-tab-scaffold-bar-block-size'),
+    ).toBe('');
+    dispose();
+  });
+
+  it('measures the bar directly where ResizeObserver is missing', () => {
+    vi.stubGlobal('ResizeObserver', undefined);
+    const { section, bar } = render();
+    vi.spyOn(bar(), 'getBoundingClientRect').mockReturnValue({
+      height: 54,
+    } as DOMRect);
+    const dispose = wireTabNavigator(section, { onSelect: vi.fn() });
+    expect(
+      section.style.getPropertyValue('--_kui-tab-scaffold-bar-block-size'),
+    ).toBe('54px');
+    dispose();
   });
 });

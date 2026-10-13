@@ -190,6 +190,7 @@ import {
   pushNestedTabNavigatorDemo,
   resetTabNavigatorDemo,
   selectNestedTabNavigatorDemo,
+  selectOverlayTabNavigatorDemo,
   selectTabNavigatorDemo,
 } from './demos/tab-navigator.js';
 import {
@@ -1050,6 +1051,10 @@ const stopActions = delegateActions(app, 'click', {
   'log-settings': () => {
     actionLog.value = 'Settings selected';
   },
+  'log-tab-scaffold-message': (_event, element) => {
+    const itemId = (element as HTMLElement).dataset.itemId ?? '';
+    actionLog.value = `${itemId} opened`;
+  },
   'log-result-picker': (_event, element) => {
     const itemId = (element as HTMLElement).dataset.itemId ?? '';
     actionLog.value = `Duplicate candidate ${itemId} selected`;
@@ -1489,6 +1494,7 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: (canvas) => {
       const first = canvas.querySelector('#catalog-tab-scaffold');
       const nested = canvas.querySelector('#catalog-tab-scaffold-nested');
+      const overlay = canvas.querySelector('#catalog-tab-scaffold-overlay');
       const stack = canvas.querySelector('#catalog-tab-scaffold-project-stack');
       const stops = [
         first
@@ -1496,6 +1502,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
           : () => {},
         nested
           ? wireTabNavigator(nested, { onSelect: selectNestedTabNavigatorDemo })
+          : () => {},
+        overlay
+          ? wireTabNavigator(overlay, {
+              onSelect: selectOverlayTabNavigatorDemo,
+            })
           : () => {},
         stack
           ? wireNavStack(stack, { onBack: popNestedTabNavigatorDemo })

@@ -2581,6 +2581,12 @@ interface TabNavigatorTabDotBadge {
 }
 /** One bottom-bar destination: its label, optional icon and badge, and content. */
 type TabNavigatorTab<Id extends string = string> = TabNavigatorTabBase<Id> & (TabNavigatorTabCountBadge | TabNavigatorTabDotBadge);
+/**
+ * How a {@link TabNavigator}'s tab bar relates to the active scene: `docked`
+ * below it, or `overlay` laid over its bottom edge on the translucent chrome
+ * material, so the scene's content scrolls visibly beneath the bar.
+ */
+type TabNavigatorBarPresentation = 'docked' | 'overlay';
 interface TabNavigatorProps<Id extends string = string> {
     id: string;
     /** Accessible name for the tab bar. */
@@ -2605,6 +2611,20 @@ interface TabNavigatorProps<Id extends string = string> {
      * is the bar's own 1px top border, so no state moves the bar or a tab.
      */
     chromeDividers?: 'scroll' | 'always' | 'none';
+    /**
+     * `docked` (default) gives the tab bar its own band below the scenes.
+     * `overlay` lays it over the active scene's bottom edge on the translucent
+     * chrome material (opaque under reduced transparency, increased contrast,
+     * or without `backdrop-filter`; `Canvas` in forced colors), so content
+     * scrolls visibly beneath it, as under an iOS tab bar. `wireTabNavigator`
+     * measures the live bar (bottom safe area included) and the scenes hand
+     * its height to their content as the block-end `--kui-edge-inset-*`
+     * context, so a plain scene, a sole `Pane`, or a `NavStack` (and its own
+     * bottom toolbar, which then sits above the bar) rests its last item clear
+     * of it. Until then it stays docked. Unselected tab labels lift halfway
+     * toward the normal text color to keep AA over the content beneath.
+     */
+    barPresentation?: TabNavigatorBarPresentation;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -2617,9 +2637,9 @@ interface TabNavigatorProps<Id extends string = string> {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
+declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
 
-export { TabNavigator, type TabNavigatorProps, type TabNavigatorTab };
+export { TabNavigator, type TabNavigatorBarPresentation, type TabNavigatorProps, type TabNavigatorTab };
 ```
 
 ## `@kerfjs/ui/wire-tab-navigator`
@@ -2631,7 +2651,9 @@ interface WireTabNavigatorOptions {
 }
 /**
  * Wire a `TabNavigator`'s bottom tab bar: clicking a tab calls `onSelect` with its
- * id (the app then updates its controlled `active`). Returns a disposer.
+ * id (the app then updates its controlled `active`). With
+ * `barPresentation="overlay"` it also measures the live bar and lays it over
+ * the scenes (see `TabNavigatorProps.barPresentation`). Returns a disposer.
  */
 declare function wireTabNavigator(root: Element, options: WireTabNavigatorOptions): () => void;
 

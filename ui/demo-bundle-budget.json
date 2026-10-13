@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 372700,
-  "measuredLargestJavaScriptGzip": 118704,
-  "measuredTotalJavaScriptGzip": 372649,
+  "totalJavaScriptGzip": 373400,
+  "measuredLargestJavaScriptGzip": 118706,
+  "measuredTotalJavaScriptGzip": 373358,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4579,6 +4579,38 @@
         "measuredTotalJavaScriptGzip": 372649,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 372700
+      }
+    },
+    {
+      "at": "2026-10-13T22:43:17.839Z",
+      "reason": "TabNavigator overlay bar measurement in wireTabNavigator (KF-C3V8B7)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118704,
+        "measuredTotalJavaScriptGzip": 372649,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 372700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118702,
+        "measuredTotalJavaScriptGzip": 372964,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 373000
+      }
+    },
+    {
+      "at": "2026-10-13T22:46:23.594Z",
+      "reason": "TabNavigator overlay bar: wiring plus the Translucent Tab Bar catalog example (KF-C3V8B7)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118702,
+        "measuredTotalJavaScriptGzip": 372964,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 373000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118706,
+        "measuredTotalJavaScriptGzip": 373358,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 373400
       }
     }
   ]

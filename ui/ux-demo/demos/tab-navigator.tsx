@@ -12,7 +12,14 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
 import { TabNavigator, type TabNavigatorTab } from '@kerfjs/ui/tab-navigator';
 import { signal } from 'kerfjs';
-import { ChevronRight, FolderKanban, Search, Settings } from 'lucide';
+import {
+  ChevronRight,
+  FolderKanban,
+  Inbox,
+  Search,
+  Send,
+  Settings,
+} from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
 
@@ -57,6 +64,20 @@ const tabs: readonly TabNavigatorTab<DemoTabId>[] = [
 ];
 
 const activeTab = signal<DemoTabId>('projects');
+const overlayActiveTab = signal<'inbox' | 'sent'>('inbox');
+
+const messageRows = (prefix: string) => (
+  <List>
+    {Array.from({ length: 24 }, (_, index) => (
+      <ListItem
+        action="log-tab-scaffold-message"
+        itemId={`${prefix}-${String(index + 1)}`}
+        label={`${prefix === 'inbox' ? 'Message' : 'Sent message'} ${String(index + 1)}`}
+        description="Scrolls visibly beneath the translucent tab bar."
+      />
+    ))}
+  </List>
+);
 const nestedActiveTab = signal<'projects' | 'search'>('projects');
 
 const projectRoot = (): NavStackView => ({
@@ -96,6 +117,7 @@ const nestedViews = signal<NavStackView[]>([projectRoot()]);
 
 export function resetTabNavigatorDemo(): void {
   activeTab.value = 'projects';
+  overlayActiveTab.value = 'inbox';
   nestedActiveTab.value = 'projects';
   nestedViews.value = [projectRoot()];
 }
@@ -107,6 +129,10 @@ export function selectTabNavigatorDemo(id: string): void {
 
 export function selectNestedTabNavigatorDemo(id: string): void {
   if (id === 'projects' || id === 'search') nestedActiveTab.value = id;
+}
+
+export function selectOverlayTabNavigatorDemo(id: string): void {
+  if (id === 'inbox' || id === 'sent') overlayActiveTab.value = id;
 }
 
 export function pushNestedTabNavigatorDemo(): void {
@@ -174,6 +200,37 @@ export function TabNavigatorDemo() {
               label: 'Search',
               icon: <LucideIcon icon={Search} name="search" />,
               content: scene('Search', 'The Projects stack remains mounted.'),
+            },
+          ]}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Translucent Tab Bar"
+        note='barPresentation="overlay" lays the tab bar over the active scene on the translucent chrome material, so rows scroll visibly beneath it. wireTabNavigator measures the bar, and the last row rests just above it.'
+        viewport={{
+          layout: 'grid',
+          width: 'compact',
+          height: 'tall',
+          frame: 'solid',
+        }}
+      >
+        <TabNavigator
+          id="catalog-tab-scaffold-overlay"
+          label="Mail Sections"
+          barPresentation="overlay"
+          active={overlayActiveTab.value}
+          tabs={[
+            {
+              id: 'inbox',
+              label: 'Inbox',
+              icon: <LucideIcon icon={Inbox} name="inbox" />,
+              content: messageRows('inbox'),
+            },
+            {
+              id: 'sent',
+              label: 'Sent',
+              icon: <LucideIcon icon={Send} name="send" />,
+              content: messageRows('sent'),
             },
           ]}
         />

@@ -169,6 +169,42 @@ so it never moves the bar or a tab.
 the wiring reports content below. It does not suppress the sunken-surface
 separator; use `separator="hidden"` for that.
 
+## Translucent bar
+
+`barPresentation="overlay"` lays the tab bar over the active scene's bottom
+edge on the translucent chrome material (`--kui-chrome-material` behind
+`--kui-chrome-material-filter`), so the scene's content scrolls visibly beneath
+it, as under an iOS tab bar. The default, `docked`, gives the bar its own band.
+
+```tsx
+<TabNavigator
+  id="mail"
+  label="Mail Sections"
+  barPresentation="overlay"
+  active={active.value}
+  tabs={tabs}
+/>;
+```
+
+`wireTabNavigator` measures the live bar's border box (bottom safe area and its
+1px top edge included), publishes it on the root, and marks the root
+`data-bar-overlay="measured"`. The scenes then hand that height to their
+content as the block-end `--kui-edge-inset-*` context: a plain scene pads and
+scroll-pads by it, and a sole `Pane` or `NavStack` clears it itself, so the
+last item, and anything focused or scrolled into view, rests just above the
+bar. A `NavStack` with its own bottom toolbar pads that toolbar for the bar as
+it would for a bottom safe area: the toolbar's controls sit just above the tab
+bar while its material runs on beneath it. Until the wiring runs, the bar stays
+docked.
+
+Over the material, unselected labels lift halfway toward the normal text color
+and the selected label mixes 40% of it into the brand color, so both keep AA
+over any content beneath. The material turns opaque under reduced
+transparency, increased contrast, or without `backdrop-filter`, and paints
+`Canvas` with a `CanvasText` top edge in forced colors. The scroll divider still
+shows only while more content lies below. A classic (space-taking) scrollbar's
+bottom end runs beneath the bar.
+
 ## Tab badges
 
 Give a tab a `badge` (a count or short string such as `3`, `"99+"`, or

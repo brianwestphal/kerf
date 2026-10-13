@@ -296,8 +296,9 @@ Resolved decisions:
 - **TabNavigator.** A scene hands its NavStack a zero block-end inset (the tab
   bar owns the bottom safe area), so a stack's overlay toolbar inside a tab
   sits just above the tab bar, measures without a safe area, and clears only
-  its own views. A translucent TabNavigator bar is a separate concern
-  (follow-up KF-C3V8B7: a translucent TabNavigator bar over the active scene).
+  its own views. With an overlay tab bar (KF-C3V8B7, below), the scene hands
+  the bar's height on instead, and the stack's toolbar pads for it as for a
+  safe area: its controls sit just above the tab bar.
 - **Classic scrollbars.** The active scroller is measured once; each overlaid
   edge publishes the scrollbar size only when that scroller's track lies
   beneath it (`--_kui-nav-stack-bottom-scrollbar-inline-size`). A sole Pane
@@ -822,6 +823,50 @@ const active = signal<"home" | "search">("home");
 
 **Implementation:** ticket **TabNavigator (bottom tabs) layout**. Depends on
 NavStack.
+
+**Overlay tab bar (KF-C3V8B7: a translucent TabNavigator bar over the active
+scene).** `barPresentation` (`"docked"`, the default, or `"overlay"`; the
+`TabNavigatorBarPresentation` type) lays `.kui-tab-scaffold__bar` over the
+scenes on `--kui-chrome-material`, mirroring the NavStack overlay bottom
+toolbar. The root carries `data-bar-presentation="overlay"` whenever the prop
+asks for it.
+
+Resolved decisions:
+
+- **Prop name.** `barPresentation`, one prop for the one bar, named like
+  `Pane.headerPresentation` and `NavStack.bottomToolbarPresentation`.
+- **Measurement.** `wireTabNavigator` (which already wires the bar's clicks)
+  measures the live bar's border box with a `ResizeObserver` and publishes
+  `--_kui-tab-scaffold-bar-block-size` with the `data-bar-overlay="measured"`
+  gate. A root `MutationObserver` re-applies both when a re-render strips
+  them or replaces the bar, and follows a presentation change; disposal
+  clears them. Unwired, the bar stays docked.
+- **How scenes clear it.** Measured, the bar is absolutely positioned at the
+  root's bottom edge and the scenes' `--kui-edge-inset-block-end` becomes its
+  height (docked, it is `0px`, since the bar owns the bottom safe area). A
+  plain scene pads and scroll-pads by it (its `deepInset` adds the gutter on
+  top); a sole Pane or layout clears it itself.
+- **Two translucent bars.** A scene's NavStack overlay bottom toolbar pads for
+  the inherited inset as for a safe area, so its controls sit just above the
+  tab bar while its material runs on beneath the bar, where the two materials
+  stack. Its views clear the toolbar's full measured height.
+- **Contrast.** Unselected labels lift halfway toward `--kui-color-text`
+  (quiet text measured about 3.2:1 over the worst case), and the selected
+  label mixes 40% of `--kui-color-text` into `--kui-color-brand-on-quiet`
+  (about 3.2:1 in light before), both clearing 4.5:1.
+- **Fallbacks.** Opaque under reduced transparency, increased contrast, or
+  without `backdrop-filter` (the material tokens); `Canvas` with a
+  `CanvasText` top edge in forced colors.
+- **Not covered.** A classic scrollbar's bottom end runs beneath the bar
+  (unlike the NavStack bars, the tab bar spans the full width).
+
+Verification: `ui/tests/unit/tab-navigator.test.tsx` (markup, publish,
+observer fallback, replacement, strip and restore, presentation switch,
+dispose), `ui/tests/unit/tab-navigator-css.test.ts`, and the three-engine
+`ui/tests/browser/overlay-tab-navigator.spec.ts` (plain, sole Pane, and
+NavStack scenes, safe area, unwired fallback, restore, label contrast in both
+schemes; forced colors, reduced transparency, and increased contrast in
+Chromium), plus the catalog "Translucent Tab Bar" example.
 
 ### 3.5 Standalone collapsible panel — `CollapsiblePanel` + `wireSidebar` (`@kerfjs/ui/collapsible-panel`, `@kerfjs/ui/wire-sidebar`)
 

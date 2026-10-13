@@ -666,7 +666,8 @@ pattern). See [`workbench.md`](workbench.md).
 Translucent chrome, such as a `Pane` header with
 `headerPresentation="overlay"`, a `NavStack` top bar with
 `chromePresentation="overlay"`, or a `NavStack` bottom toolbar with
-`bottomToolbarPresentation="overlay"`, paints `--kui-chrome-material`: the surface at
+`bottomToolbarPresentation="overlay"`, or a `TabNavigator` tab bar with
+`barPresentation="overlay"`, paints `--kui-chrome-material`: the surface at
 80% opacity behind a blur-and-saturate backdrop filter
 (`--kui-chrome-material-filter`). Content scrolls visibly beneath it, so the
 backdrop under its text is not a fixed color. The contrast rule measures the
@@ -700,7 +701,10 @@ panel behind it. The same rule and fallbacks apply.
   `DialogSurface` floating header's `header-actions`: a default-tone
   `ToolbarControlGroup`'s quiet control color over its own translucent fill
   measures about 3.0:1 (light) and 3.5:1 (dark) over the worst case, so its
-  controls take `--kui-color-text` there. `wa-dialog`'s own close button is an
+  controls take `--kui-color-text` there. An overlay `TabNavigator` bar's
+  unselected labels lift halfway toward `--kui-color-text`, and its selected
+  label mixes 40% of it into the brand color: the plain brand color measured
+  about 3.2:1 (light) over the worst case. `wa-dialog`'s own close button is an
   icon, held to the 3:1 non-text bar, and measures about 3.8:1 (light) and
   4.1:1 (dark) over the raised material. Any other quiet copy you place in
   overlay chrome yourself has no such lift; keep it in the content.

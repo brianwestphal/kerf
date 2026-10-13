@@ -509,3 +509,47 @@ test('the overlay chrome example rests its last row above the overlay bottom too
     stack.getByRole('button', { name: 'New Message' }),
   ).toBeVisible();
 });
+
+// KF-C3V8B7: the catalog's translucent tab bar example.
+test('the translucent tab bar example lets rows pass beneath the bar and rests the last row above it', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=tab-navigator');
+  const scaffold = page.locator('#catalog-tab-scaffold-overlay');
+  await scaffold.scrollIntoViewIfNeeded();
+  await expect(scaffold).toHaveAttribute('data-bar-overlay', 'measured');
+  const measure = (position: 'middle' | 'end') =>
+    scaffold.evaluate((element, at) => {
+      const scene = element.querySelector<HTMLElement>(
+        '.kui-tab-scaffold__scene[data-active="true"]',
+      )!;
+      scene.scrollTop =
+        at === 'end' ? scene.scrollHeight : scene.scrollHeight / 2;
+      const bar = element
+        .querySelector(':scope > .kui-tab-scaffold__bar')!
+        .getBoundingClientRect();
+      const rows = [...scene.querySelectorAll('.kui-list-item')].map((row) =>
+        row.getBoundingClientRect(),
+      );
+      return {
+        beneath: rows.filter(
+          (row) => row.top < bar.bottom && row.bottom > bar.top,
+        ).length,
+        last: rows.at(-1)!.bottom,
+        barTop: bar.top,
+      };
+    }, position);
+  expect((await measure('middle')).beneath).toBeGreaterThan(0);
+  const end = await measure('end');
+  expect(end.last).toBeLessThanOrEqual(end.barTop + 0.5);
+  await scaffold.getByRole('tab', { name: 'Sent' }).click();
+  await expect(
+    scaffold.locator('[data-tab-scaffold-scene="sent"]'),
+  ).toHaveAttribute('data-active', 'true');
+  await scaffold
+    .locator('[data-tab-scaffold-scene="sent"] .kui-list-item')
+    .first()
+    .click();
+  await expect(page.getByText('sent-1 opened')).toBeVisible();
+});

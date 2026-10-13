@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.60.0
+kerf-ui-skill-version: 1.61.0
 ---
 
 # Building with @kerfjs/ui
@@ -451,7 +451,7 @@ titles at every size; default tone retains existing identity and heading colors.
 
 Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.
 
-For a tab scene with drill-down, place a `NavStack` directly in `TabNavigatorTab.content`. Give its views structured `toolbar` and `pane` configuration and omit both stack and view `bottomToolbar`; the navigator bar remains the only bottom chrome. Wire the navigator and stack on their respective roots. See `docs/tab-navigator.md` and the catalog's **NavStack inside a tab** example.
+For a tab scene with drill-down, place a `NavStack` directly in `TabNavigatorTab.content`. Give its views structured `toolbar` and `pane` configuration and omit both stack and view `bottomToolbar`; the navigator bar remains the only bottom chrome. Wire the navigator and stack on their respective roots. See `docs/tab-navigator.md` and the catalog's **NavStack inside a tab** example. For an iOS-style translucent tab bar, set `barPresentation="overlay"`: `wireTabNavigator` measures the bar and the scenes clear it as their block-end inset; do not pad scenes for it yourself.
 
 Use `Pane.deepInset` (also in `PaneConfig`) or `TabNavigatorTab.deepInset` for a plain scene when its scrolling content needs an extra 8px on all four sides, giving ordinary items a 16px inline gutter. The extra 8px is applied to the scroll surface, while nested Row/List/Grid item margins stay 8px. When a tab scene is a sole Pane or NavStack, configure deep inset on that child's Pane; the tab bar and top toolbar stay full width.
 An edge-to-edge table or similar Pane child can read `--kui-pane-content-inset-inline-start` and `--kui-pane-content-inset-inline-end`: negate them for the child's logical margins, then add them to the child's text padding. The inherited values include routed safe areas and `deepInset`; keep the child in the Pane's single scroll slot. See `docs/app-layouts.md` for the CSS recipe.

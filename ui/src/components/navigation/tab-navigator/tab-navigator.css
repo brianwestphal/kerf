@@ -69,10 +69,12 @@
       ):only-child
   )
 ) {
-  padding-block-start: var(--kui-edge-inset-block-start);
+  padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
   padding-inline: var(--kui-edge-inset-inline-start)
     var(--kui-edge-inset-inline-end);
-  scroll-padding-block-start: var(--kui-edge-inset-block-start);
+  scroll-padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
 }
 
 /* A plain scene adds one outer gutter; a sole Pane or layout keeps ownership
@@ -91,13 +93,15 @@
   padding-block-start: calc(
     var(--kui-edge-inset-block-start) + var(--kui-space-xs)
   );
-  padding-block-end: var(--kui-space-xs);
+  padding-block-end: calc(
+    var(--kui-edge-inset-block-end) + var(--kui-space-xs)
+  );
   padding-inline: calc(var(--kui-edge-inset-inline-start) + var(--kui-space-xs))
     calc(var(--kui-edge-inset-inline-end) + var(--kui-space-xs));
   scroll-padding-block: calc(
       var(--kui-edge-inset-block-start) + var(--kui-space-xs)
     )
-    var(--kui-space-xs);
+    calc(var(--kui-edge-inset-block-end) + var(--kui-space-xs));
 }
 
 .kui-tab-scaffold__scene
@@ -164,6 +168,49 @@
   --_kui-tab-scaffold-bar-divider: var(--kui-color-neutral-border-normal);
 }
 
+/* `barPresentation="overlay"`: the bar paints the translucent chrome
+   material. Once `wireTabNavigator` has measured the live bar
+   (`data-bar-overlay="measured"`, with its border-box block size, bottom safe
+   area and 1px top edge included, published on this root), the bar lies over
+   the scenes' bottom edge and the scenes hand that size to their content as
+   the block-end edge context (outranking the docked 0px above): a plain scene
+   pads and scroll-pads by it, and a sole Pane or layout (a NavStack, whose own
+   bottom toolbar then sits just above the bar) clears it itself. Content
+   scrolls visibly beneath the bar while its last item rests clear of it.
+   Unwired, the bar stays docked. */
+.kui-tab-scaffold[data-bar-presentation="overlay"] > .kui-tab-scaffold__bar {
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+}
+
+.kui-tab-scaffold[data-bar-presentation="overlay"][data-bar-overlay="measured"] {
+  position: relative;
+}
+
+.kui-tab-scaffold[data-bar-presentation="overlay"][data-bar-overlay="measured"]
+  > .kui-tab-scaffold__bar {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: 0;
+  inset-inline: 0;
+}
+
+.kui-tab-scaffold[data-bar-presentation="overlay"][data-bar-overlay="measured"]
+  > .kui-tab-scaffold__scenes {
+  --kui-edge-inset-block-end: var(--_kui-tab-scaffold-bar-block-size, 0px);
+}
+
+@media (forced-colors: active) {
+  /* Its always-present 1px top border becomes the visible edge. */
+  .kui-tab-scaffold[data-bar-presentation="overlay"] > .kui-tab-scaffold__bar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: Canvas;
+    border-block-start-color: CanvasText;
+  }
+}
+
 .kui-tab-scaffold__tab {
   display: flex;
   flex: 1 1 0;
@@ -183,6 +230,32 @@
 
 .kui-tab-scaffold__tab[aria-selected="true"] {
   color: var(--kui-color-brand-on-quiet);
+}
+
+/* Over the material, content of any color passes beneath the bar. Both label
+   colors fall below AA over the worst case (the material over black in light,
+   white in dark): the quiet unselected color, and in light the brand selected
+   color (about 3.2:1). An unselected tab lifts halfway toward the normal text
+   color, as an overlaid ToolbarText description does, and the selected tab
+   mixes 40% of it into the brand color, staying plainly the brand hue. */
+.kui-tab-scaffold[data-bar-presentation="overlay"]
+  > .kui-tab-scaffold__bar
+  > .kui-tab-scaffold__tab:not([aria-selected="true"]) {
+  color: color-mix(
+    in srgb,
+    var(--kui-color-text-quiet),
+    var(--kui-color-text) 50%
+  );
+}
+
+.kui-tab-scaffold[data-bar-presentation="overlay"]
+  > .kui-tab-scaffold__bar
+  > .kui-tab-scaffold__tab[aria-selected="true"] {
+  color: color-mix(
+    in srgb,
+    var(--kui-color-brand-on-quiet),
+    var(--kui-color-text) 40%
+  );
 }
 
 .kui-tab-scaffold__tab:focus-visible {

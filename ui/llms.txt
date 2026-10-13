@@ -541,7 +541,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `chromePresentation`); `wireNavStack` hands its height (bottom safe area
   included) to the views as their block-end inset, so the last item rests
   just above it. Its `ToolbarText` and default-tone `ToolbarControlGroup`
-  controls lift themselves to AA.
+  controls lift themselves to AA. For a translucent tab bar, set
+  `barPresentation="overlay"` on the `TabNavigator`; `wireTabNavigator`
+  measures the bar and the scenes hand its height to their content as the
+  block-end inset. Its tab labels lift themselves to AA.
   While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
   overlay, an overlay `CollapsiblePanel` or horizontal `ResizableRegion`), the
   layout hides the covered work area's `FloatingToolbar`s and restore corners

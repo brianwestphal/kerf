@@ -379,6 +379,7 @@ component's context stays allowed (see `KUI-L019`).
 | Dialog title bar laid over its body      | `DialogSurface.headerPresentation`   | `--kui-chrome-material-raised`, `--kui-chrome-material-filter`     |
 | Stack top bar laid over the active view  | `NavStack.chromePresentation`        | `--kui-chrome-material`, `--kui-chrome-material-filter`            |
 | Stack bottom toolbar laid over the view  | `NavStack.bottomToolbarPresentation` | `--kui-chrome-material`, `--kui-chrome-material-filter`            |
+| Tab bar laid over the active scene       | `TabNavigator.barPresentation`       | `--kui-chrome-material`, `--kui-chrome-material-filter`            |
 | Major vertical rhythm                    | `.kui-content`                       | `--kui-layout-content-gap: 24px`                                   |
 | Self-contained child geometry            | `ContentItem`                        | 8px margin + 1px border + 8px padding                              |
 | Pill child                               | `ContentItem shape="pill"`           | `--kui-layout-pill-radius: 22px`                                   |

@@ -61,6 +61,13 @@ export type TabNavigatorTab<Id extends string = string> =
   TabNavigatorTabBase<Id> &
     (TabNavigatorTabCountBadge | TabNavigatorTabDotBadge);
 
+/**
+ * How a {@link TabNavigator}'s tab bar relates to the active scene: `docked`
+ * below it, or `overlay` laid over its bottom edge on the translucent chrome
+ * material, so the scene's content scrolls visibly beneath the bar.
+ */
+export type TabNavigatorBarPresentation = 'docked' | 'overlay';
+
 export interface TabNavigatorProps<Id extends string = string> {
   id: string;
   /** Accessible name for the tab bar. */
@@ -85,6 +92,20 @@ export interface TabNavigatorProps<Id extends string = string> {
    * is the bar's own 1px top border, so no state moves the bar or a tab.
    */
   chromeDividers?: 'scroll' | 'always' | 'none';
+  /**
+   * `docked` (default) gives the tab bar its own band below the scenes.
+   * `overlay` lays it over the active scene's bottom edge on the translucent
+   * chrome material (opaque under reduced transparency, increased contrast,
+   * or without `backdrop-filter`; `Canvas` in forced colors), so content
+   * scrolls visibly beneath it, as under an iOS tab bar. `wireTabNavigator`
+   * measures the live bar (bottom safe area included) and the scenes hand
+   * its height to their content as the block-end `--kui-edge-inset-*`
+   * context, so a plain scene, a sole `Pane`, or a `NavStack` (and its own
+   * bottom toolbar, which then sits above the bar) rests its last item clear
+   * of it. Until then it stays docked. Unselected tab labels lift halfway
+   * toward the normal text color to keep AA over the content beneath.
+   */
+  barPresentation?: TabNavigatorBarPresentation;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -105,6 +126,7 @@ export function TabNavigator<Id extends string>({
   active,
   separator = 'auto',
   chromeDividers = 'scroll',
+  barPresentation = 'docked',
   className = '',
   slot,
 }: TabNavigatorProps<Id>) {
@@ -120,6 +142,9 @@ export function TabNavigator<Id extends string>({
         chromeDividers === 'always' || chromeDividers === 'none'
           ? chromeDividers
           : undefined
+      }
+      data-bar-presentation={
+        barPresentation === 'overlay' ? 'overlay' : undefined
       }
       slot={slot}
     >
