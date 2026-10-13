@@ -33,6 +33,7 @@ uses sentence style ("Changes sync when you reconnect").
 | Tooltips and help text                                                                              | Sentence                     | Copy the link to this ticket                           |
 | Placeholders                                                                                        | Sentence                     | Search tickets                                         |
 | Status lines, counts, and timestamps (`ToolbarText` status, `Badge`, `CornerStatus`)                | Sentence                     | Saved just now, 3 of 12 updated                        |
+| Progress labels (`LoadingSpinner` and `Skeleton` `label`): the operation under way                  | Sentence, trailing ellipsis  | Loading preview…, Refreshing release tasks…            |
 
 A name that a component composes into a longer label is a name too, so pass
 it in title style. A panel toolbar's `toggle: { action, name }` labels the

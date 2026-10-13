@@ -108,7 +108,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             tone="warning"
             action={
               <Row gap="xs" vAlign="middle">
-                <LoadingSpinner label="Refreshing Release Tasks" />
+                <LoadingSpinner label="Refreshing release tasks…" />
                 <button
                   type="button"
                   data-action="recipe-action"

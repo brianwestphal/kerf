@@ -49,7 +49,7 @@ export function FeedbackDemo() {
             }
           />
           <Row vAlign="middle" wrap>
-            <LoadingSpinner label="Loading Preview" />
+            <LoadingSpinner label="Loading preview…" />
             <span>Meaningfully labeled progress</span>
             <LoadingSpinner />
             <span>Decorative progress</span>

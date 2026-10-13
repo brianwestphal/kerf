@@ -22,7 +22,7 @@ export function CornerStatusDemo() {
             tone="neutral"
             urgency="status"
             title="Updating Tickets… 3 of 12"
-            icon={<LoadingSpinner label="Updating Tickets" size={16.8} />}
+            icon={<LoadingSpinner label="Updating tickets…" size={16.8} />}
           />
         </CornerStatus>
       </CatalogExample>
@@ -36,13 +36,13 @@ export function CornerStatusDemo() {
             tone="neutral"
             urgency="status"
             title="Loading…"
-            icon={<LoadingSpinner label="Loading Project" size={16.8} />}
+            icon={<LoadingSpinner label="Loading project…" size={16.8} />}
           />
           <StateBanner
             tone="info"
             urgency="status"
             title="Syncing 2 Providers"
-            icon={<LoadingSpinner label="Syncing Providers" size={16.8} />}
+            icon={<LoadingSpinner label="Syncing providers…" size={16.8} />}
           />
         </CornerStatus>
       </CatalogExample>

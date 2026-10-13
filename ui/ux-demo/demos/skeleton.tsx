@@ -16,7 +16,7 @@ export function SkeletonDemo() {
           <Skeleton width={em(12)} />
           <Skeleton width={em(8)} height={em(1.5)} radius={em(0.75)} />
           <Skeleton lines={3} />
-          <Skeleton width={em(6)} label="Loading Value" />
+          <Skeleton width={em(6)} label="Loading value…" />
         </List>
       </CatalogExample>
       <CatalogExample
