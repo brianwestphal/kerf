@@ -343,6 +343,79 @@ for (const [scheme, backdrop] of [
     await page.keyboard.press('Escape');
   });
 
+// KF-NT49NB: a default-tone ToolbarControlGroup in the floating header's
+// actions sits on the raised chrome material, where its quiet control color
+// over its own translucent fill fell below AA over the worst case; it takes
+// the normal text color there. wa-dialog's own close button is an icon (3:1
+// non-text bar), which it clears in both schemes.
+for (const [scheme, backdrop] of [
+  ['light', 'black'],
+  ['dark', 'white'],
+] as const)
+  test(`${scheme}: a header-actions control group and the close button stay at AA over worst-case content`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await openThread(page);
+    const painted = await page.locator(DIALOG).evaluate((element, color) => {
+      // A default-tone group as ToolbarControlGroup renders it.
+      const group = document.createElement('div');
+      group.className = 'kui-toolbar-control-group';
+      group.dataset.component = 'toolbar-control-group';
+      group.slot = 'header-actions';
+      group.innerHTML = '<button type="button" data-pin>Pin</button>';
+      element.append(group);
+      const shadow = element.shadowRoot!;
+      const header = shadow.querySelector('[part~="header"]')!;
+      const close = shadow
+        .querySelector('[part~="close-button"]')!
+        .shadowRoot!.querySelector('[part~="base"]')!;
+      const context = document
+        .createElement('canvas')
+        .getContext('2d', { willReadFrequently: true })!;
+      context.canvas.width = 1;
+      context.canvas.height = 1;
+      const paint = (fill: string) => {
+        context.fillStyle = fill;
+        context.fillRect(0, 0, 1, 1);
+      };
+      const pixel = () => [
+        ...context.getImageData(0, 0, 1, 1).data.slice(0, 3),
+      ];
+      const over = (fills: string[], foreground: string) => {
+        context.clearRect(0, 0, 1, 1);
+        paint(color);
+        paint(globalThis.getComputedStyle(header).backgroundColor);
+        fills.forEach(paint);
+        const background = pixel();
+        paint(foreground);
+        return { background, foreground: pixel() };
+      };
+      const button = group.querySelector('button')!;
+      const result = {
+        pin: over(
+          [group, button].map(
+            (node) => globalThis.getComputedStyle(node).backgroundColor,
+          ),
+          globalThis.getComputedStyle(button).color,
+        ),
+        close: over(
+          [globalThis.getComputedStyle(close).backgroundColor],
+          globalThis.getComputedStyle(close).color,
+        ),
+      };
+      group.remove();
+      return result;
+    }, backdrop);
+    expect(
+      contrastRatio(painted.pin.foreground, painted.pin.background)!,
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(
+      contrastRatio(painted.close.foreground, painted.close.background)!,
+    ).toBeGreaterThanOrEqual(3);
+    await page.keyboard.press('Escape');
+  });
+
 test('forced colors paints an opaque system surface with a visible edge', async ({
   page,
   browserName,

@@ -387,15 +387,30 @@
   background: transparent;
 }
 
-/* In overlay NavStack chrome (`chromePresentation="overlay"`) or an overlay
+/* In overlay NavStack chrome (`chromePresentation="overlay"`), an overlay
    NavStack bottom toolbar (`bottomToolbarPresentation="overlay"`), cross-fading
-   copies included, the group sits on the translucent chrome material with
-   arbitrary content scrolling beneath it. Its quiet control color over its
-   own translucent fill falls below AA there over the worst-case backdrop
-   (about 3.0:1 in light over black, 3.5:1 in dark over white), so an untoned
-   group's controls take the normal text color (well above 4.5:1 in both),
-   as an untoned ToolbarText's title does. A dark-toned group (or an avatar
-   scrim) keeps its own loud colors. */
+   copies included, an overlay Pane header (`headerPresentation="overlay"`), or
+   a DialogSurface floating header's actions (`headerPresentation="floating"`),
+   the group sits on the translucent chrome material with arbitrary content
+   scrolling beneath it. Its quiet control color over its own translucent fill
+   falls below AA there over the worst-case backdrop (about 3.0:1 in light
+   over black, 3.5:1 in dark over white), so an untoned group's controls take
+   the normal text color (well above 4.5:1 in both), as an untoned
+   ToolbarText's title does. A dark-toned group (or an avatar scrim) keeps its
+   own loud colors. */
+.kui-pane[data-header-presentation="overlay"]
+  > .kui-pane__header
+  .kui-toolbar-control-group:not([data-tone="dark"], [data-scrim="true"]),
+.kui-dialog-surface[data-header-presentation="floating"]
+  > wa-dialog
+  > .kui-toolbar-control-group[slot="header-actions"]:not(
+    [data-tone="dark"],
+    [data-scrim="true"]
+  ),
+.kui-dialog-surface[data-header-presentation="floating"]
+  > wa-dialog
+  > [slot="header-actions"]
+  .kui-toolbar-control-group:not([data-tone="dark"], [data-scrim="true"]),
 .kui-nav-stack[data-chrome-presentation="overlay"]
   > .kui-nav-stack__chrome
   .kui-toolbar-control-group:not([data-tone="dark"], [data-scrim="true"]),

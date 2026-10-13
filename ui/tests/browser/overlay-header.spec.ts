@@ -29,6 +29,7 @@ const css = [
   'pane',
   'toolbar',
   'toolbar-text',
+  'toolbar-control-group',
 ]
   .map((name) =>
     readFileSync(
@@ -257,6 +258,16 @@ async function material(
         context.clearRect(0, 0, 1, 1);
         paint(backdropColor);
         paint(style.backgroundColor);
+        // Any fill between the material and the text (a control group's own
+        // background) composites over the material, as it paints.
+        const fills: string[] = [];
+        for (
+          let node: Element | null = title;
+          node && node !== header;
+          node = node.parentElement
+        )
+          fills.unshift(globalThis.getComputedStyle(node).backgroundColor);
+        fills.forEach(paint);
         const background = pixel();
         paint(globalThis.getComputedStyle(title).color);
         return { background, foreground: pixel(), filter, alpha };
@@ -307,6 +318,24 @@ for (const [scheme, backdrop] of [
     expect(title.contrast).toBeGreaterThanOrEqual(4.5);
     expect(description.contrast).toBeGreaterThanOrEqual(4.5);
     expect(description.contrast).toBeLessThan(title.contrast - 2);
+  });
+
+// KF-NT49NB: a default-tone ToolbarControlGroup's quiet control color over
+// its own translucent fill falls below AA over the worst-case backdrop on the
+// chrome material; inside an overlay Pane header its controls take the
+// normal text color, as in overlay NavStack chrome.
+for (const [scheme, backdrop] of [
+  ['light', 'black'],
+  ['dark', 'white'],
+] as const)
+  test(`${scheme}: a header control group's controls stay at AA over worst-case content`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    for (const control of ['[data-compose]', '[data-archive]']) {
+      const result = await material(page, backdrop, 'controls', control);
+      expect(result.contrast).toBeGreaterThanOrEqual(4.5);
+    }
   });
 
 test('forced colors paints an opaque system surface with a visible edge', async ({

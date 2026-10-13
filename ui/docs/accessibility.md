@@ -695,12 +695,15 @@ panel behind it. The same rule and fallbacks apply.
   `--kui-color-text` for its title at every size, and its `description` mixes
   the quiet color halfway toward the normal one, about 5.9:1 in both themes
   (about 4.9:1 dark over the raised material). That keeps AA while the
-  description still reads as secondary. Controls lift the same way in overlay
-  `NavStack` chrome or bottom toolbar: a default-tone `ToolbarControlGroup`'s
-  quiet control color over its own translucent fill measures about 3.0:1
-  (light) and 3.5:1 (dark) over the worst case, so its controls take
-  `--kui-color-text` there. Any other quiet copy you place in overlay chrome
-  yourself has no such lift; keep it in the content.
+  description still reads as secondary. Controls lift the same way in an
+  overlay `Pane` header, overlay `NavStack` chrome or bottom toolbar, and a
+  `DialogSurface` floating header's `header-actions`: a default-tone
+  `ToolbarControlGroup`'s quiet control color over its own translucent fill
+  measures about 3.0:1 (light) and 3.5:1 (dark) over the worst case, so its
+  controls take `--kui-color-text` there. `wa-dialog`'s own close button is an
+  icon, held to the 3:1 non-text bar, and measures about 3.8:1 (light) and
+  4.1:1 (dark) over the raised material. Any other quiet copy you place in
+  overlay chrome yourself has no such lift; keep it in the content.
 - **The material turns opaque when transparency would hurt.** Under
   `prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and where
   `backdrop-filter` is unsupported, it resolves to the opaque surface. In forced
@@ -715,7 +718,8 @@ which also measures its description, a control, the top chrome's back
 control, and increased contrast), and
 `tests/browser/dialog-floating-header.spec.ts` (DialogSurface) measure the
 title over the material on both worst-case backdrops in Chromium, Firefox, and
-WebKit, and the Pane and DialogSurface specs also measure the description. In
+WebKit, and the Pane and DialogSurface specs also measure the description and
+a header control group (DialogSurface also its close button). In
 Chromium they also check the opaque fallbacks for reduced transparency and
 forced colors, and the Pane and DialogSurface specs check increased contrast.
 

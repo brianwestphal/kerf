@@ -1,6 +1,7 @@
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { Pane } from '@kerfjs/ui/pane';
 import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { wireScrollDividers } from '@kerfjs/ui/wire-scroll-dividers';
 
@@ -19,6 +20,7 @@ const region = (
   name: string,
   wired: boolean,
   title = <ToolbarText text="Messages" size="xlarge" wrap />,
+  trailing?: Parameters<typeof Toolbar>[0]['trailing'],
 ) => (
   <section
     data-region={name}
@@ -29,7 +31,9 @@ const region = (
       label="Messages"
       headerPresentation="overlay"
       safeAreaEdges={[]}
-      header={<Toolbar label="Messages Header" leading={title} />}
+      header={
+        <Toolbar label="Messages Header" leading={title} trailing={trailing} />
+      }
     >
       {rows(30)}
     </Pane>
@@ -45,6 +49,19 @@ app.innerHTML = String(
       'described',
       true,
       <ToolbarText text="Messages" description="3 unread" />,
+    )}
+    {region(
+      'controls',
+      true,
+      undefined,
+      <ToolbarControlGroup label="Message Actions">
+        <button type="button" data-compose>
+          Compose
+        </button>
+        <button type="button" data-archive>
+          Archive
+        </button>
+      </ToolbarControlGroup>,
     )}
   </>,
 );
