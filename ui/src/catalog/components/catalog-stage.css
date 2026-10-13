@@ -52,3 +52,10 @@
   box-sizing: border-box;
   place-items: start;
 }
+
+/* An application-width example stack spans the whole stage, so the canvas
+   lifts its own width cap for it. The stack is matched by its public
+   `data-catalog-example-stack` marker: the canvas styles only itself. */
+.kui-catalog__canvas:has(> [data-catalog-example-stack][data-width="full"]) {
+  width: 100%;
+}

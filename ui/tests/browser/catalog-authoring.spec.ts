@@ -87,16 +87,23 @@ test('published guidance renders a composition without highlight layers', async 
 test('a full-width stack spans the stage instead of the reading measure', async ({
   page,
 }) => {
-  const css = await readFile(
-    resolve(
-      import.meta.dirname,
-      '../../src/catalog/components/catalog-example-stack.css',
-    ),
-    'utf8',
-  );
-  await page.setViewportSize({ width: 1440, height: 900 });
+  const css = (
+    await Promise.all(
+      ['catalog-stage.css', 'catalog-example-stack.css'].map((file) =>
+        readFile(
+          resolve(import.meta.dirname, '../../src/catalog/components', file),
+          'utf8',
+        ),
+      ),
+    )
+  ).join('\n');
+  await page.setViewportSize({ width: 1600, height: 900 });
+  // Each stack sits in the real stage + canvas, on a stage wider than the
+  // canvas's 1120px cap, so a cap on either layer shows up.
+  const stage = (name: string, width: string) =>
+    `<section class="kui-catalog__stage" data-stage="${name}" style="width:1312px"><div class="kui-catalog__canvas"><section class="kui-catalog-example-stack" data-catalog-example-stack ${width} data-stack="${name}"></section></div></section>`;
   await page.setContent(
-    '<div style="width:1200px"><section class="kui-catalog-example-stack" data-catalog-example-stack data-stack="reading"></section><section class="kui-catalog-example-stack" data-catalog-example-stack data-width="full" data-stack="full"></section></div>',
+    `<style>:root { --kui-space-m: 16px; }</style>${stage('reading', '')}${stage('full', 'data-width="full"')}`,
   );
   await page.addStyleTag({
     content: css.replace(
@@ -104,10 +111,15 @@ test('a full-width stack spans the stage instead of the reading measure', async 
       (_, pixels: string) => `${String(Number(pixels) / 16)}rem`,
     ),
   });
-  const width = (name: string) =>
-    page
-      .locator(`[data-stack="${name}"]`)
-      .evaluate((stack) => stack.getBoundingClientRect().width);
-  expect(await width('reading')).toBe(736);
-  expect(await width('full')).toBe(1200);
+  const box = (selector: string) =>
+    page.locator(selector).evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width };
+    });
+  expect((await box('[data-stack="reading"]')).width).toBe(736);
+  // The full stack spans the stage less the canvas's 16px padding.
+  const fullStage = await box('[data-stage="full"]');
+  const full = await box('[data-stack="full"]');
+  expect(full.left).toBe(fullStage.left + 16);
+  expect(full.right).toBe(fullStage.right - 16);
 });
