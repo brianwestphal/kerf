@@ -13,7 +13,10 @@ export type CatalogExampleAlign =
 
 export interface CatalogExampleViewport {
   layout?: 'grid' | 'flex' | 'flex-column';
-  width?: 'full' | 'compact' | 'medium' | 'wide' | 'text' | 'control';
+  /** Specimen width. `sidebar` (272px, capped at the stage) shows a sidebar
+   *  pane's content at a production rail's width. */
+  width?:
+    'full' | 'sidebar' | 'compact' | 'medium' | 'wide' | 'text' | 'control';
   /** Fixed specimen height; `app` frames an application-sized recipe or layout.
    *  A fixed height is definite, so a child that fills with `height: 100%`
    *  (a horizontal `ResizableRegion`, say) spans the whole frame. */

@@ -504,6 +504,17 @@ describe('CatalogExample', () => {
     expect(html).not.toContain('kui-catalog-example__note');
   });
 
+  it('renders the sidebar-width viewport', () => {
+    const html = asHtml(
+      CatalogExample({
+        label: 'Project summary',
+        viewport: { width: 'sidebar' },
+        children: raw('<div data-sidebar-specimen />'),
+      }),
+    );
+    expect(html).toContain('data-width="sidebar"');
+  });
+
   it('renders catalog-owned viewport constraints and compact guidance', () => {
     const html = asHtml(
       CatalogExample({

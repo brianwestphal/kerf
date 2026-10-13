@@ -36,6 +36,11 @@
   width: 100%;
 }
 
+/* A production sidebar rail's width, for sidebar-pane specimens. */
+.kui-catalog-example__viewport[data-width="sidebar"] {
+  width: min(100%, remify(272px));
+}
+
 .kui-catalog-example__viewport[data-width="compact"] {
   width: min(100%, remify(440px));
 }

@@ -148,6 +148,9 @@ entry's `tags` array.
   Use `CatalogExample.viewport` for bounded specimen width, height, frame,
   surface, overflow, responsive visibility, and public custom-property values;
   keep those constraints catalog-owned instead of recreating a demo stylesheet.
+  Widths run `sidebar` (272px, a production rail, for sidebar-pane content),
+  `compact` (440px), `medium` (640px), and `wide` (864px), each capped at the
+  stage, plus `full`; `text` and `control` size a single label or control.
   Component heights run `short` (220px) through `tall` (360px); frame an app
   shell, whole-screen layout, or other application-sized recipe with
   `height: "app"` (592px), and give its root `fill` rather than a frame `Pane`.

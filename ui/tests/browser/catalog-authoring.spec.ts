@@ -123,3 +123,31 @@ test('a full-width stack spans the stage instead of the reading measure', async 
   expect(full.left).toBe(fullStage.left + 16);
   expect(full.right).toBe(fullStage.right - 16);
 });
+
+test('a sidebar-width viewport matches a production rail, capped at the stage', async ({
+  page,
+}) => {
+  const css = await readFile(
+    resolve(
+      import.meta.dirname,
+      '../../src/catalog/components/catalog-example.css',
+    ),
+    'utf8',
+  );
+  await page.setViewportSize({ width: 1100, height: 600 });
+  await page.setContent(
+    '<div style="width:900px"><div class="kui-catalog-example__viewport" data-width="sidebar" data-case="roomy"></div></div><div style="width:200px"><div class="kui-catalog-example__viewport" data-width="sidebar" data-case="narrow"></div></div>',
+  );
+  await page.addStyleTag({
+    content: css.replace(
+      /remify\(([\d.]+)px\)/g,
+      (_, pixels: string) => `${String(Number(pixels) / 16)}rem`,
+    ),
+  });
+  const width = (name: string) =>
+    page
+      .locator(`[data-case="${name}"]`)
+      .evaluate((element) => element.getBoundingClientRect().width);
+  expect(await width('roomy')).toBe(272);
+  expect(await width('narrow')).toBe(200);
+});
