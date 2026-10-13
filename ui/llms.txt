@@ -707,11 +707,21 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   inverse chrome, place the chips in a dark appearance scope (`.wa-dark`)
   instead of restyling them.
 
+- **Use `Composer` for a chat or prompt composer.** `@kerfjs/ui/composer`
+  renders a raised frame (standard border, large radius, `shadow-l`) whose
+  border turns brand while focus is within, a borderless textarea that grows
+  between `minRows` (default 1) and `maxRows` (default 8) lines and then
+  scrolls, and an action row with an optional quiet `hint` and the trailing
+  `actions` (a brand Send button). Name it with a title-style `label`; give it
+  an `id` so the hint describes the field. Slot it into a `DialogSurface`
+  floating footer (`footerInset="none"`) over a transcript. Never rebuild
+  composer chrome around a `wa-textarea` with app CSS.
+
 ## Public exports
 
 `Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `FloatingToolbar`, `ToolbarText`, `Text`,
 `ListItem`, `ListActionRow` (+ `wireListReorder`, `reorderListItems`), `ListHeader`, `ListInsetControl`,
-`ListInsetText`, `SegmentedControl`, `ChoiceChips`,
+`ListInsetText`, `SegmentedControl`, `ChoiceChips`, `Composer`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `wireScrollDividers` (scroll-state dividers for every `Pane`, `NavStack`,

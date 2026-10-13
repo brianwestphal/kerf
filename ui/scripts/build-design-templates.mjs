@@ -54,6 +54,7 @@ import {
 
 import { AppTab } from '../dist/app-tab.js';
 import { ChoiceChips } from '../dist/choice-chips.js';
+import { Composer } from '../dist/composer.js';
 import { em, foregroundColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
 import { List } from '../dist/list.js';
@@ -104,6 +105,8 @@ const iconButton = (g, name, label) =>
   `<button type="button" class="dt-icon-button" aria-label="${label}">${icon(g, name)}</button>`;
 const pushButton = (label) =>
   `<button type="button" class="dt-button">${label}</button>`;
+const brandButton = (label) =>
+  `<button type="button" class="dt-button" data-variant="brand">${label}</button>`;
 
 // Representative sample data — realistic placeholders, never lorem ipsum.
 export const COMPONENTS = {
@@ -819,6 +822,43 @@ export const COMPONENTS = {
       },
     ],
   },
+  composer: {
+    css: ['foundation', 'layout', 'text', 'composer'],
+    selector: '#frame',
+    width: 600,
+    frameWidth: 560,
+    variants: [
+      {
+        id: 'chat',
+        label: 'Chat Composer with Hint',
+        height: 120,
+        render: () =>
+          Composer({
+            id: 'message',
+            name: 'message',
+            label: 'Message',
+            placeholder: 'Ask about this build',
+            hint: 'Answers use the latest nightly build.',
+            actions: raw(brandButton('Send')),
+          }),
+      },
+      {
+        id: 'prompt',
+        label: 'Prompt with Taller Bounds',
+        height: 168,
+        render: () =>
+          Composer({
+            id: 'prompt',
+            name: 'prompt',
+            label: 'Prompt',
+            placeholder: 'Describe the change you want',
+            minRows: 3,
+            maxRows: 12,
+            actions: raw(brandButton('Generate')),
+          }),
+      },
+    ],
+  },
   'tab-bar': {
     css: ['foundation', 'layout', 'lucide-icon', 'tab-bar', 'app-tab'],
     selector: '#frame',
@@ -1035,6 +1075,7 @@ const frameCss = (theme) => `
 * { box-sizing: border-box; }
 body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-family: system-ui, -apple-system, sans-serif; }
 .dt-button { min-height: 32px; padding: 0 12px; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-pill); color: var(--kui-color-text); background: var(--kui-color-surface-raised); font: inherit; cursor: pointer; }
+.dt-button[data-variant="brand"] { border-color: var(--kui-color-brand-border-loud); color: var(--kui-color-brand-on-loud); background: var(--kui-color-brand-fill-loud); }
 .dt-icon-button { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: var(--kui-radius-m); color: var(--kui-color-text); background: transparent; cursor: pointer; }
 .dt-icon-button svg { width: 18px; height: 18px; }
 `;

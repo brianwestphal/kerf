@@ -731,7 +731,7 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
   expect(Math.round(geometry.transcript.top)).toBeGreaterThanOrEqual(
     Math.round(geometry.banner.bottom),
   );
-  expect(footerGap(geometry)).toBe(0);
+  await expect.poll(async () => footerGap(await chatGeometry(page))).toBe(0);
   await scrollChatToEnd(page);
   const scrolled = await chatGeometry(page);
   expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.footer.top);
@@ -740,7 +740,7 @@ test('a floating footer lies inset over the body while fill-last fills and scrol
   // A taller composer grows the measured clearance: the transcript still
   // ends above it, and a sent message stays visible above the composer.
   await page
-    .locator('wa-textarea[name="catalog-chat-message"] textarea')
+    .locator('#catalog-chat-dialog textarea[name="catalog-chat-message"]')
     .fill('First line\nSecond line\nThird line');
   await expect
     .poll(async () => (await chatGeometry(page)).footer.height)
@@ -787,9 +787,13 @@ test('a phone chat dialog floats its composer 8px from the panel edges', async (
   await expect
     .poll(async () => footerOffsets(await chatGeometry(page)))
     .toEqual([8, 8, 8]);
-  const geometry = await chatGeometry(page);
-  expect(Math.round(geometry.panel.left)).toBe(8);
-  expect(footerGap(geometry)).toBe(0);
+  // The panel scales in; measure its edge once the show animation settles.
+  await expect
+    .poll(async () => Math.round((await chatGeometry(page)).panel.left))
+    .toBe(8);
+  // The body clearance follows the measured footer on a ResizeObserver
+  // delivery after the dialog opens, so wait for it rather than sampling once.
+  await expect.poll(async () => footerGap(await chatGeometry(page))).toBe(0);
   await scrollChatToEnd(page);
   const scrolled = await chatGeometry(page);
   expect(scrolled.last.bottom).toBeLessThanOrEqual(scrolled.footer.top + 0.5);

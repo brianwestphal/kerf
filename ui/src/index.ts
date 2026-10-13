@@ -191,6 +191,11 @@ export {
   type WireComboboxesOptions,
 } from './components/forms/combobox/wiring/wire-comboboxes.js';
 export {
+  Composer,
+  type ComposerProps,
+  type ComposerRootAttributes,
+} from './components/forms/composer/composer.js';
+export {
   FieldLabel,
   type FieldLabelProps,
 } from './components/forms/field-label/field-label.js';

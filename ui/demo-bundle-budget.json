@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 362600,
-  "measuredLargestJavaScriptGzip": 144762,
-  "measuredTotalJavaScriptGzip": 362591,
+  "totalJavaScriptGzip": 363500,
+  "measuredLargestJavaScriptGzip": 145582,
+  "measuredTotalJavaScriptGzip": 363418,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4099,6 +4099,22 @@
         "measuredTotalJavaScriptGzip": 362591,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 362600
+      }
+    },
+    {
+      "at": "2026-10-13T10:57:26.305Z",
+      "reason": "Composer component and its catalog route; Chat Dialog uses it (KF-S5EG5K)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 144762,
+        "measuredTotalJavaScriptGzip": 362591,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 362600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 145582,
+        "measuredTotalJavaScriptGzip": 363418,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 363500
       }
     }
   ]

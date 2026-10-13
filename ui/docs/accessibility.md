@@ -477,6 +477,18 @@ in the application. Every chip color is a theme token resolved through
 or any `color-scheme: dark` ancestor) the pills, labels, checked tint, and
 focus ring read on inverse chrome without overrides.
 
+## Composer
+
+`Composer`'s message field is a native `<textarea>` named by `label`
+(`aria-label`, title style). With an `id`, the `hint` renders with the id
+`<id>-hint` and becomes the field's `aria-describedby`; without an `id`, the
+hint is visible only. The field draws no border or outline of its own: the
+frame is its boundary, and while focus is anywhere within the composer the
+frame's border turns brand (`Highlight` in forced-colors mode, with a 2px
+outline). Each trailing action keeps its own name and focus ring. `disabled`
+disables the field only; the app disables its actions. Sending, Enter or
+modifier shortcuts, and announcing a sent message stay with the app.
+
 ## TokenSearchField
 
 Use `presentation="form-field"` when a structured search query sits beside

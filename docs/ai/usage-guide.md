@@ -252,6 +252,14 @@ read the checked boxes by name in the change handler. A multiple group takes no
 `required`. On dark inverse chrome, place the chips in a dark appearance scope
 (`.wa-dark`) instead of restyling them.
 
+Use `Composer` (`@kerfjs/ui/composer`) for a chat message or assistant prompt:
+a raised frame whose border turns brand while focus is within, a borderless
+textarea that grows between `minRows` and `maxRows` lines, and an action row
+with an optional `hint` and trailing `actions` (a brand Send button). Pass a
+`name`, a title-style `label`, and an `id` so the hint describes the field;
+read and clear the textarea in the send action. In a chat dialog, slot it into
+a `DialogSurface` floating footer with `footerInset="none"`.
+
 For an unavailable Select value, set `SelectChoice.disabled` and optionally
 `disabledReason`. A multiple Select can pass `selectAllLabel` and `clearLabel`
 to show localized bulk actions. Listen for its ordinary `change` event and

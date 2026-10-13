@@ -49,6 +49,7 @@ const curatedEntries = [
   ['@kerfjs/ui/wire-catalog', 'dist/wire-catalog.d.ts'],
   ['@kerfjs/ui/segmented-control', 'dist/segmented-control.d.ts'],
   ['@kerfjs/ui/choice-chips', 'dist/choice-chips.d.ts'],
+  ['@kerfjs/ui/composer', 'dist/composer.d.ts'],
   ['@kerfjs/ui/select', 'dist/select.d.ts'],
   ['@kerfjs/ui/state-banner', 'dist/state-banner.d.ts'],
   ['@kerfjs/ui/empty-state', 'dist/empty-state.d.ts'],

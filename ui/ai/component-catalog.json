@@ -4829,6 +4829,74 @@
       }
     },
     {
+      "id": "composer",
+      "name": "Composer",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A raised chat or prompt composer: a framed message field that grows with its content above an action row with a hint and a send button.",
+      "uses": [
+        "text"
+      ],
+      "purpose": "Write a chat message or prompt in a raised frame whose border turns brand while focus is within, with a field that grows between row bounds and a trailing send action.",
+      "publicExports": [
+        "Composer"
+      ],
+      "useWhen": [
+        "Write a chat message, assistant prompt, or comment reply that is sent with a trailing action, especially in a DialogSurface floating footer over a transcript."
+      ],
+      "avoidWhen": [
+        "Use wa-textarea with a FieldLabel for an ordinary form field that is submitted with the rest of a form.",
+        "Do not wrap it in another framed ContentItem or card; it owns its frame, padding, and shadow."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-textarea",
+          "relationship": "prefer-over",
+          "when": "Use Composer instead of a wa-textarea and a button in app-styled chrome for a chat or prompt composer; it owns the raised frame, focus-within border, auto-grow, and action row."
+        }
+      ],
+      "appOwns": [
+        "value",
+        "send action",
+        "keyboard shortcuts",
+        "disabled and busy state of its actions",
+        "placement"
+      ],
+      "variants": [
+        "minRows and maxRows bounds for the growing field",
+        "optional hint, described by the field when an id is given",
+        "disabled field",
+        "slotted into a DialogSurface floating footer"
+      ],
+      "accessibility": [
+        "The field is a native textarea named by label; with an id, the hint is its accessible description.",
+        "The frame's brand border shows focus within, and the trailing actions keep their own names and focus rings."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/composer",
+        "manualCssImport": "@kerfjs/ui/composer.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-composer"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=composer",
+        "documentation": "docs/composer.md",
+        "recipe": "docs/accessibility.md#composer"
+      }
+    },
+    {
       "id": "token-search-field",
       "name": "TokenSearchField",
       "category": "Controls",

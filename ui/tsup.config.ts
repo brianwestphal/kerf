@@ -56,6 +56,7 @@ const entries = [
   'select',
   'segmented-control',
   'choice-chips',
+  'composer',
   'token-search-field',
   'token-search-model',
   'wire-token-search-fields',

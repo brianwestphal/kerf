@@ -118,7 +118,9 @@ Choose the offset like any other responsive value: the scaffold adds no
 breakpoint. An 8px offset lines a composer up with the transcript's
 content-item edges when the body has `bodyInset="none"` and list geometry;
 `viewportGutter` and `footerOffset` can follow `deviceClass()` when a phone
-needs tighter edges.
+needs tighter edges. Put a [`Composer`](./composer.md) in the floating footer
+with `footerInset="none"`: its raised frame and shadow lift it over the
+transcript, and its field grows the measured footer.
 
 ```tsx
 <DialogSurface height={remify(560)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill-last" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
@@ -131,12 +133,7 @@ needs tighter edges.
         </ContentItem>
       ))}
     </List>
-    <Row slot="footer" flex gap="xs" vAlign="bottom">
-      <List flex>
-        <wa-textarea name="message" label="Message" rows="1" resize="auto" />
-      </List>
-      <wa-button variant="brand">Send</wa-button>
-    </Row>
+    <Composer slot="footer" id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={<wa-button variant="brand">Send</wa-button>} />
   </wa-dialog>
 </DialogSurface>;
 ```

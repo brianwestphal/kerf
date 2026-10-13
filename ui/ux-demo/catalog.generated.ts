@@ -567,6 +567,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "composer",
+    "name": "Composer",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Write a chat message or prompt in a raised frame whose border turns brand while focus is within, with a field that grows between row bounds and a trailing send action.",
+    "uses": [
+      "text"
+    ],
+    "demoSource": "ui/ux-demo/demos/composer.tsx",
+    "componentSource": "ui/src/components/forms/composer/composer.tsx",
+    "designTemplate": "ui/docs/design/templates/composer.svg",
+    "documentation": "ui/docs/composer.md"
+  },
+  {
     "id": "token-search-field",
     "name": "TokenSearchField",
     "category": "Controls",

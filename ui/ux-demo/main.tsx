@@ -91,6 +91,7 @@ import {
   RESTORE_DRAWER_ID,
   restoreDrawerCollapsed,
 } from './demos/collapsible-panel.js';
+import { SEND_COMPOSER_DEMO_ACTION } from './demos/composer.js';
 import {
   popConfiguredNavStackDemo,
   popNavStackDemo,
@@ -644,8 +645,8 @@ const stopActions = delegateActions(app, 'click', {
   },
   [SEND_CHAT_DIALOG_MESSAGE_ACTION]: () => {
     const dialog = document.getElementById(CHAT_DIALOG_ID);
-    const field = dialog?.querySelector<HTMLElement & { value: string }>(
-      'wa-textarea[name="catalog-chat-message"]',
+    const field = dialog?.querySelector<HTMLTextAreaElement>(
+      'textarea[name="catalog-chat-message"]',
     );
     if (!field || !sendSurfaceScaffoldChatMessage(field.value)) return;
     field.value = '';
@@ -655,6 +656,15 @@ const stopActions = delegateActions(app, 'click', {
       const transcript = dialog?.querySelector('[data-demo-chat-transcript]');
       transcript?.scrollTo({ top: transcript.scrollHeight });
     });
+  },
+  [SEND_COMPOSER_DEMO_ACTION]: (_event, target) => {
+    const id = target.getAttribute('data-composer-id') ?? '';
+    const field = document.getElementById(id);
+    if (!(field instanceof HTMLTextAreaElement)) return;
+    const text = field.value.trim();
+    actionLog.value = text ? `Sent: ${text}` : 'Nothing to send';
+    if (text) field.value = '';
+    field.focus();
   },
   'hide-wa-dialog': (_event, target) => {
     actionLog.value = 'Dialog closed';

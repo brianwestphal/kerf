@@ -8,6 +8,7 @@ import { ChoiceChipsDemo } from './choice-chips.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { ColumnTrackDemo } from './column-track.js';
 import { ComboboxDemo } from './combobox.js';
+import { ComposerDemo } from './composer.js';
 import { ContentItemDemo } from './content-item.js';
 import { ContentSwapDemo } from './content-swap.js';
 import { CornerStatusDemo } from './corner-status.js';
@@ -73,6 +74,7 @@ export const demos = {
   'floating-toolbar': FloatingToolbarDemo,
   'segmented-control': SegmentedControlDemo,
   'choice-chips': ChoiceChipsDemo,
+  composer: ComposerDemo,
   'token-search-field': TokenSearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
   text: TextDemo,

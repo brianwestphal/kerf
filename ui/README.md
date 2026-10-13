@@ -257,6 +257,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `Select`                                                            | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                  |
 | `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |
 | `ChoiceChips`                                                       | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |
+| `Composer`                                                          | `@kerfjs/ui/composer`                   | `@kerfjs/ui/composer.css`                |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`      |
 | `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                        |
 | `createTokenSearchModel`                                            | `@kerfjs/ui/token-search-model`         | —                                        |
@@ -732,6 +733,28 @@ every checked value submits under `name`. Read the checked boxes by name in the
 change handler. A multiple group takes no `required`. On dark inverse chrome,
 place the chips in a dark appearance scope (`.wa-dark`) instead of restyling
 them.
+
+`Composer` is the chat or prompt composer: a raised frame (the standard
+border, large radius, and `shadow-l`) whose border turns brand while focus is
+within. Its borderless message field grows with its content between `minRows`
+(default 1) and `maxRows` (default 8) lines, then scrolls, above an action row
+with an optional quiet `hint` and the trailing `actions`:
+
+```tsx
+<Composer
+  id="assistant-message"
+  name="message"
+  label="Message"
+  placeholder="Ask about this build"
+  hint="Answers use the latest nightly build."
+  actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>}
+/>
+```
+
+The app reads and clears the textarea from its send action and owns any
+keyboard shortcut. Put it in a `DialogSurface` with
+`footerPresentation="floating"` (`slot="footer"`) to float it over a
+transcript.
 
 `TokenSearchField` is a token-controlled contenteditable searchbox that keeps
 free text and ordered filter chips in one field. Its editable text stays

@@ -996,6 +996,12 @@ or the struck-through `'transparent'` dot) or `icon`. The CSS paints checked
 and focus-visible state on the pill through `:has()`; the browser owns keyboard
 selection and the form value. Tests: `ui/tests/unit/choice-chips.test.tsx`,
 `ui/tests/browser/choice-chips.spec.ts`.
+`ui/src/components/forms/composer/composer.tsx` (`@kerfjs/ui/composer`) renders
+the chat or prompt composer: a raised frame with a focus-within brand border, a
+borderless native textarea sized by `field-sizing: content` between
+`minRows`/`maxRows` lines, and an action row (hint + trailing actions). Its
+requirements live in `ui/docs/composer.md`. Tests:
+`ui/tests/unit/composer.test.tsx`, `ui/tests/browser/composer.spec.ts`.
 `ui/src/components/forms/select/select.tsx` renders disabled choices and opt-in multiple-select action
 buttons. `ui/src/components/forms/select/internal/install-select-actions.ts`
 applies select-all or clear through

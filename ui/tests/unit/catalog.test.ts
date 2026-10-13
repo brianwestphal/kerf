@@ -534,6 +534,7 @@ describe('UX catalog metadata', () => {
       'TabBar',
       'SegmentedControl',
       'ChoiceChips',
+      'Composer',
       'TokenSearchField',
       'ResizableRegion',
       'Select',

@@ -488,6 +488,14 @@ With `multiple` (array `value`, typed by a discriminated union) the same pills
 are native checkboxes in a `role="group"`: each a Tab stop that Space toggles,
 every checked value submitted under `name`, no `required`; the token palette
 follows a dark appearance scope (`.wa-dark`) for inverse chrome.
+
+Composer (shipped, `ui/docs/composer.md`) is the chat or prompt composer: a
+raised frame (standard border, large radius, `shadow-l`) whose border turns
+brand while focus is within, a borderless native textarea that grows with
+`field-sizing: content` between `minRows` and `maxRows` lines (a fixed
+three-line scrolling fallback elsewhere), and an action row with an optional
+hint (the field's description when an `id` is given) and trailing actions.
+The app owns the value, sending, and keyboard shortcuts.
 Select choices can be disabled with an optional reason. Multiple Selects can
 show localized select-all and clear actions that preserve controlled values,
 skip disabled choices, and report changes through ordinary events.

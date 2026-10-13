@@ -258,6 +258,26 @@
       ]
     }
   },
+  "@kerfjs/ui:composer": {
+    "_source": "docs/accessibility.md#composer",
+    "contexts": ["chat-composer", "dialog-floating-footer"],
+    "zones": [
+      {
+        "id": "actions",
+        "jsx": { "prop": "actions" },
+        "accepts": ["KerfUiContent"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ],
+    "state": [{ "id": "value", "owner": "controlled", "required": false }],
+    "accessibility": {
+      "obligations": [
+        "Name the message field with label in title style; give it an id so a hint becomes its accessible description.",
+        "Give every trailing action a visible or accessible name, such as a Send button."
+      ]
+    }
+  },
   "@kerfjs/ui:token-search-field": {
     "_source": "docs/accessibility.md#tokensearchfield",
     "contexts": ["structured-search-editor"],

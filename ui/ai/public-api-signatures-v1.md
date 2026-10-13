@@ -3121,6 +3121,65 @@ declare function ChoiceChips<Value extends string>(props: ChoiceChipsProps<Value
 export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsProps, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch };
 ```
 
+## `@kerfjs/ui/composer`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+/**
+ * Application `data-*` identity on the Composer root, such as `data-key`;
+ * the composer's own configuration attributes stay protected.
+ */
+type ComposerRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+interface ComposerProps {
+    /** The message field's accessible name, in title style ("Message"). */
+    label: string;
+    /** Native textarea `name`: the form field the message submits under. */
+    name: string;
+    /**
+     * The textarea id. With a `hint`, the hint takes `<id>-hint` and becomes
+     * the field's accessible description.
+     */
+    id?: string;
+    /** The field's text: a draft to restore, or `''` after sending. */
+    value?: string;
+    /** Sentence-style example of what to write ("Ask about this build"). */
+    placeholder?: string;
+    /**
+     * Visible lines while the field is empty or short (default 1). The field
+     * grows with its content from here.
+     */
+    minRows?: number;
+    /**
+     * Lines the field grows to before it scrolls (default 8). At least
+     * `minRows`.
+     */
+    maxRows?: number;
+    /** Quiet, sentence-style supporting copy at the start of the action row. */
+    hint?: string;
+    /** Trailing controls in the action row, normally one brand Send button. */
+    actions: KerfUiContent;
+    /** Disable the field; the app disables its own actions. */
+    disabled?: boolean;
+    /** Safe `data-*` identity on the root. */
+    rootAttributes?: ComposerRootAttributes;
+    className?: string;
+    /** Native named-slot assignment, such as a `wa-dialog`'s `footer`. */
+    slot?: string;
+}
+/**
+ * A chat or prompt composer: a raised frame whose border turns brand while
+ * focus is within, holding a borderless message field that grows with its
+ * content between `minRows` and `maxRows` lines, above an action row with an
+ * optional hint and trailing actions. The app owns the value, sending, and
+ * any keyboard shortcut.
+ */
+declare function Composer({ label, name, id, value, placeholder, minRows, maxRows, hint, actions, disabled, rootAttributes, className, slot, }: ComposerProps): kerfjs.SafeHtml;
+
+export { Composer, type ComposerProps, type ComposerRootAttributes };
+```
+
 ## `@kerfjs/ui/select`
 
 ```ts
