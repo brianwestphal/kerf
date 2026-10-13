@@ -5473,7 +5473,7 @@
         {
           "title": "Pointer anchored context menu",
           "description": "Keep the row's visible disabled action separate from the context menu anchor. Find the menu root with a stable data attribute.",
-          "code": "<PopupMenu\n  context\n  label=\"Demand actions\"\n  rootAttributes={{ 'data-demand-menu': '' }}\n  items={[{ label: 'Open', action: 'open-demand' }]}\n/>\n// In the app's row wiring:\nrow.addEventListener('contextmenu', (event) => {\n  event.preventDefault();\n  const menu = row.querySelector('[data-demand-menu]') as PopupMenuElement;\n  openPopupMenuAt(menu, event.clientX, event.clientY);\n});\n// Call closePopupMenu(menu) when the app needs to dismiss it."
+          "code": "<PopupMenu\n  context\n  label=\"Demand Actions\"\n  rootAttributes={{ 'data-demand-menu': '' }}\n  items={[{ label: 'Open', action: 'open-demand' }]}\n/>\n// In the app's row wiring:\nrow.addEventListener('contextmenu', (event) => {\n  event.preventDefault();\n  const menu = row.querySelector('[data-demand-menu]') as PopupMenuElement;\n  openPopupMenuAt(menu, event.clientX, event.clientY);\n});\n// Call closePopupMenu(menu) when the app needs to dismiss it."
         }
       ],
       "accessibility": [

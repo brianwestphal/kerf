@@ -32,10 +32,10 @@ export function PopupMenuDemo() {
       >
         <ToolbarControlGroup single nestedDropdown menuInset="compact">
           <PopupMenu
-            label="Sort tickets"
+            label="Sort Tickets"
             icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
             items={[
-              { label: 'Recently updated', action: 'sort-recent' },
+              { label: 'Recently Updated', action: 'sort-recent' },
               { label: 'Priority', action: 'sort-priority' },
             ]}
           />
@@ -79,12 +79,12 @@ export function PopupMenuDemo() {
       </CatalogExample>
       <CatalogExample label="Trailing toolbar menu" align="none">
         <Toolbar
-          label="Ticket view"
+          label="Ticket View"
           leading={<ToolbarText text="Tickets" size="xlarge" />}
           trailing={
             <ToolbarControlGroup single nestedDropdown menuInset="compact">
               <PopupMenu
-                label="More actions"
+                label="More Actions"
                 icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
                 placement="bottom-end"
                 items={[
@@ -102,7 +102,7 @@ export function PopupMenuDemo() {
         align="text-trigger"
       >
         <PopupMenu
-          text="Sort choices"
+          text="Sort Choices"
           rootAttributes={{ 'data-popup-checked-menu': '' }}
           items={[
             {
@@ -116,7 +116,7 @@ export function PopupMenuDemo() {
               checked: popupSortChoice.value === 'priority',
             },
             { kind: 'divider' },
-            { label: 'More sort options', action: 'log-more' },
+            { label: 'More Sort Options', action: 'log-more' },
           ]}
         />
       </CatalogExample>
@@ -175,8 +175,8 @@ export function PopupMenuDemo() {
         <ToolbarControlGroup single>
           <button
             type="button"
-            aria-label="Demand actions"
-            title="Demand actions"
+            aria-label="Demand Actions"
+            title="Demand Actions"
             data-action="open-demand-actions"
           >
             <LucideIcon icon={MoreHorizontal} name="actions" />
@@ -184,14 +184,14 @@ export function PopupMenuDemo() {
         </ToolbarControlGroup>
         <PopupMenu
           context
-          label="Demand actions"
+          label="Demand Actions"
           anchor={popupContextAnchor.value}
           rootAttributes={{ 'data-popup-context-menu': '' }}
           items={[
             { label: 'Open', action: 'log-context-open' },
             {
-              label: 'More actions',
-              submenu: [{ label: 'Copy reference', action: 'log-more' }],
+              label: 'More Actions',
+              submenu: [{ label: 'Copy Reference', action: 'log-more' }],
             },
             { label: 'Archive', action: 'log-more', tone: 'danger' },
           ]}
@@ -203,7 +203,7 @@ export function PopupMenuDemo() {
       >
         <PopupSurface inset="list-zero">
           <PopupMenu
-            text="Choose view"
+            text="Choose View"
             items={[
               { label: 'Inbox', action: 'log-more' },
               { label: 'Archive', action: 'log-more' },

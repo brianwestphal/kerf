@@ -34,7 +34,7 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   await page.goto('/?component=popup-menu');
   const demo = page.locator('[data-demo="popup-menu"]');
   const sort = demo.locator('[data-component="popup-menu"]').first();
-  const trigger = sort.getByRole('button', { name: 'Sort tickets' });
+  const trigger = sort.getByRole('button', { name: 'Sort Tickets' });
   await expect(trigger).toBeVisible();
 
   // The toolbar group sizes the trigger as a 40px toolbar control.
@@ -51,7 +51,7 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   // Keyboard: Enter opens the menu, arrows move, Enter chooses.
   await trigger.focus();
   await page.keyboard.press('Enter');
-  const recent = sort.getByRole('menuitem', { name: 'Recently updated' });
+  const recent = sort.getByRole('menuitem', { name: 'Recently Updated' });
   await expect(recent).toBeFocused();
   await page.keyboard.press('ArrowDown');
   await expect(sort.getByRole('menuitem', { name: 'Priority' })).toBeFocused();
@@ -267,7 +267,7 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await row.click({ button: 'right', position: { x: 20, y: 12 } });
   const rowBox = await row.boundingBox();
   await expect(context).toHaveAttribute('open', '');
-  const contextButton = demo.getByRole('button', { name: 'Demand actions' });
+  const contextButton = demo.getByRole('button', { name: 'Demand Actions' });
   await expect(contextButton).toBeEnabled();
   const anchorBox = await context.locator('[slot="trigger"]').boundingBox();
   expect(Math.abs(anchorBox!.x - (rowBox!.x + 20))).toBeLessThanOrEqual(2);
@@ -368,7 +368,7 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
 }) => {
   await page.goto('/?component=popup-menu');
   const menu = page.locator('[data-popup-checked-menu]');
-  const trigger = menu.getByRole('button', { name: 'Sort choices' });
+  const trigger = menu.getByRole('button', { name: 'Sort Choices' });
   const updated = menu.getByRole('menuitemcheckbox', { name: 'Updated' });
   const priority = menu.getByRole('menuitemcheckbox', { name: 'Priority' });
   for (const width of [1100, 390]) {
@@ -377,7 +377,7 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
     await trigger.click();
     await expect(updated).toHaveAttribute('aria-checked', 'true');
     await expect(priority).toHaveAttribute('aria-checked', 'false');
-    const plain = menu.getByRole('menuitem', { name: 'More sort options' });
+    const plain = menu.getByRole('menuitem', { name: 'More Sort Options' });
     // The plain command shares the choices' check column: its label starts
     // where theirs do.
     const labelX = (item: typeof plain) =>
@@ -545,7 +545,7 @@ test('keyboard navigation during the dropdown show animation survives its focus 
 }) => {
   await page.goto('/?component=popup-menu');
   const menu = page.locator('[data-popup-checked-menu]');
-  const trigger = menu.getByRole('button', { name: 'Sort choices' });
+  const trigger = menu.getByRole('button', { name: 'Sort Choices' });
   const priority = menu.getByRole('menuitemcheckbox', { name: 'Priority' });
   await menu.evaluate((element) => {
     (element as HTMLElement & { menu?: HTMLElement }).menu?.style.setProperty(
@@ -722,7 +722,7 @@ test('context PopupMenu dismisses when clicking outside after either opening pat
   const demo = page.locator('[data-demo="popup-menu"]');
   const context = demo.locator('[data-popup-context-menu]');
   const row = demo.locator('[data-popup-menu-context-target]');
-  const button = demo.getByRole('button', { name: 'Demand actions' });
+  const button = demo.getByRole('button', { name: 'Demand Actions' });
   const heading = demo.locator('[data-catalog-example-label]', {
     hasText: 'Context menu',
   });
@@ -799,7 +799,7 @@ test('context menu and nested commands stay within each viewport corner', async 
 
       if (x === width - 5 && y === height - 5) {
         const parent = context.locator('wa-dropdown-item', {
-          hasText: 'More actions',
+          hasText: 'More Actions',
         });
         await parent.hover();
         await expect(parent).toHaveJSProperty('submenuOpen', true);

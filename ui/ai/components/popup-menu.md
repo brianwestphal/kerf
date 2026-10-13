@@ -141,7 +141,7 @@ Keep the row's visible disabled action separate from the context menu anchor. Fi
 ```tsx
 <PopupMenu
   context
-  label="Demand actions"
+  label="Demand Actions"
   rootAttributes={{ 'data-demand-menu': '' }}
   items={[{ label: 'Open', action: 'open-demand' }]}
 />;

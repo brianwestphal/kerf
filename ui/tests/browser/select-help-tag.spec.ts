@@ -207,11 +207,11 @@ test('an icon-only PopupMenu names its trigger; a text trigger has no tag', asyn
   const menu = page
     .locator('[data-demo="popup-menu"] wa-dropdown.kui-popup-menu')
     .first();
-  const trigger = menu.getByRole('button', { name: 'Sort tickets' });
+  const trigger = menu.getByRole('button', { name: 'Sort Tickets' });
   await trigger.hover();
   await expect(tagBody(menu)).toBeVisible();
-  await expect(helpTag(menu)).toHaveText('Sort tickets');
-  await expect(trigger).toHaveAccessibleName('Sort tickets');
+  await expect(helpTag(menu)).toHaveText('Sort Tickets');
+  await expect(trigger).toHaveAccessibleName('Sort Tickets');
   const box = await trigger.boundingBox();
   await page.screenshot({
     path: 'test-results/popup-menu-help-tag-hover-wide.png',

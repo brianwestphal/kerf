@@ -52,7 +52,7 @@ describe('PopupMenu', () => {
             },
             { kind: 'divider' },
             {
-              label: 'Newest first',
+              label: 'Newest First',
               action: 'sort',
               checked: true,
             },
@@ -85,7 +85,7 @@ describe('PopupMenu', () => {
     expect(children[1].getAttribute('title')).toBe('Needs a price');
     expect(children[1].hasAttribute('disabled')).toBe(true);
     const checked = [...menu.querySelectorAll('wa-dropdown-item')].find(
-      (item) => item.textContent === 'Newest first',
+      (item) => item.textContent === 'Newest First',
     )!;
     expect(checked.getAttribute('type')).toBe('checkbox');
     expect(checked.hasAttribute('checked')).toBe(true);
@@ -179,7 +179,7 @@ describe('PopupMenu', () => {
       asHtml(
         PopupMenu({
           context: true,
-          label: 'Demand actions',
+          label: 'Demand Actions',
           rootAttributes: { 'data-demand-menu': 'd-1' },
           items: [
             {
@@ -194,7 +194,7 @@ describe('PopupMenu', () => {
     expect(menu.dataset.trigger).toBe('context');
     expect(menu.dataset.demandMenu).toBe('d-1');
     const anchor = menu.querySelector('button[slot="trigger"]')!;
-    expect(anchor.getAttribute('aria-label')).toBe('Demand actions');
+    expect(anchor.getAttribute('aria-label')).toBe('Demand Actions');
     expect(anchor.getAttribute('tabindex')).toBe('-1');
     openPopupMenuAt(menu, 123, 456);
     expect(menu.open).toBe(true);
@@ -270,10 +270,10 @@ describe('PopupMenu', () => {
     const menu = render(
       asHtml(
         PopupMenu({
-          label: 'Sort tickets',
+          label: 'Sort Tickets',
           icon: <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />,
           items: [
-            { label: 'Recently updated', action: 'sort-recent' },
+            { label: 'Recently Updated', action: 'sort-recent' },
             { label: 'Priority', action: 'sort-priority', value: 'priority' },
           ],
         }),
@@ -292,7 +292,7 @@ describe('PopupMenu', () => {
     // Web Awesome names its button from slotted content, not a host aria-label.
     expect(trigger.hasAttribute('aria-label')).toBe(false);
     expect(trigger.querySelector('.kui-popup-menu__label')?.textContent).toBe(
-      'Sort tickets',
+      'Sort Tickets',
     );
     expect(trigger.getAttribute('appearance')).toBe('plain');
     expect(trigger.hasAttribute('with-caret')).toBe(true);
@@ -302,7 +302,7 @@ describe('PopupMenu', () => {
 
     const items = [...menu.querySelectorAll(':scope > wa-dropdown-item')];
     expect(items.map((item) => item.textContent)).toEqual([
-      'Recently updated',
+      'Recently Updated',
       'Priority',
     ]);
     expect(items.map((item) => item.getAttribute('data-action'))).toEqual([
