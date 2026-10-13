@@ -11,6 +11,7 @@ interface PopupMenuParentItem extends HTMLElement {
 }
 
 const installed = new WeakSet<object>();
+const inputEvents = ['keydown', 'pointerdown'] as const;
 
 /** Preserve a rapid keyboard move past Web Awesome's late first-item focus. */
 export function installPopupMenuSubmenuFocus(prototype: object): void {
@@ -69,7 +70,17 @@ export function installPopupMenuSubmenuFocus(prototype: object): void {
       submenu.classList.remove('show');
     }
 
+    // Web Awesome hands focus to the first submenu item from a timer it queues
+    // once the show animation settles. Browsers may dispatch a keypress
+    // between that timer being queued and running, so the handoff can land
+    // after the user's own choice. Track the choice until a timer queued
+    // behind Web Awesome's runs; a first-item focus outside any key or pointer
+    // dispatch is that handoff, not a choice.
     let desired: SubmenuItem | undefined;
+    let input: Event | undefined;
+    const trackInput = (event: Event) => {
+      input = event;
+    };
     const trackFocus = (event: FocusEvent) => {
       const item = event
         .composedPath()
@@ -79,31 +90,38 @@ export function installPopupMenuSubmenuFocus(prototype: object): void {
             node.localName === 'wa-dropdown-item' &&
             node.getAttribute('slot') === 'submenu',
         );
-      if (item && this.getSubmenuItems().includes(item)) desired = item;
+      const items = this.getSubmenuItems();
+      if (!item || !items.includes(item)) return;
+      const fromInput = input !== undefined && input.eventPhase !== Event.NONE;
+      if (item !== items[0] || fromInput) desired = item;
     };
+    for (const type of inputEvents)
+      document.addEventListener(type, trackInput, true);
     submenu.addEventListener('focusin', trackFocus);
     try {
       await openSubmenu.call(this);
     } finally {
-      submenu.removeEventListener('focusin', trackFocus);
+      // This timer follows Web Awesome's queued first-item focus, restoring a
+      // user's later choice only if that queued focus actually reset it.
+      // Pointer/blur/close paths are left alone.
+      window.setTimeout(() => {
+        for (const type of inputEvents)
+          document.removeEventListener(type, trackInput, true);
+        submenu.removeEventListener('focusin', trackFocus);
+        const items = this.getSubmenuItems();
+        const selected = desired;
+        if (
+          !selected ||
+          selected === items[0] ||
+          !this.isConnected ||
+          !this.submenuOpen ||
+          submenu.hidden ||
+          document.activeElement !== items[0]
+        )
+          return;
+        items.forEach((item) => (item.active = item === selected));
+        selected.focus({ preventScroll: true });
+      }, 0);
     }
-
-    const items = this.getSubmenuItems();
-    if (!desired || desired === items[0]) return;
-    const selected = desired;
-    // Web Awesome queues its first-item focus after the show animation. This
-    // timer follows that one, restoring a user's later arrow choice only if
-    // the queued focus actually reset it. Pointer/blur/close paths are left alone.
-    window.setTimeout(() => {
-      if (
-        !this.isConnected ||
-        !this.submenuOpen ||
-        submenu.hidden ||
-        document.activeElement !== items[0]
-      )
-        return;
-      items.forEach((item) => (item.active = item === selected));
-      selected.focus({ preventScroll: true });
-    }, 0);
   };
 }

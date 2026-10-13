@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 365900,
-  "measuredLargestJavaScriptGzip": 147949,
-  "measuredTotalJavaScriptGzip": 365804,
+  "totalJavaScriptGzip": 366000,
+  "measuredLargestJavaScriptGzip": 148052,
+  "measuredTotalJavaScriptGzip": 365902,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4307,6 +4307,22 @@
         "measuredTotalJavaScriptGzip": 365804,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 365900
+      }
+    },
+    {
+      "at": "2026-10-13T13:58:39.538Z",
+      "reason": "PopupMenu submenu focus tracking window (KF-XMDR2Q)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 147949,
+        "measuredTotalJavaScriptGzip": 365804,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 365900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 148052,
+        "measuredTotalJavaScriptGzip": 365902,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 366000
       }
     }
   ]

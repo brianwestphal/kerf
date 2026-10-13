@@ -103,6 +103,57 @@ describe('PopupMenu submenu focus repair', () => {
     expect(last.active).toBe(true);
   });
 
+  it('restores a key choice dispatched between the queued handoff and its timer', async () => {
+    vi.useFakeTimers();
+    const { parent, first, last } = fixture();
+    const focusLast = () => last.focus();
+    document.addEventListener('keydown', focusLast);
+    const opening = parent.openSubmenu();
+    // The show settles: Web Awesome queues its first-item focus, then a key
+    // dispatched ahead of that timer moves to the last item.
+    parent.finish();
+    await opening;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'End' }));
+    expect(document.activeElement).toBe(last);
+    await vi.runAllTimersAsync();
+    document.removeEventListener('keydown', focusLast);
+
+    expect(document.activeElement).toBe(last);
+    expect(first.active).toBe(false);
+    expect(last.active).toBe(true);
+  });
+
+  it('keeps a key choice of the first item made during the handoff window', async () => {
+    vi.useFakeTimers();
+    const { parent, first, last } = fixture();
+    const focusFirst = () => first.focus();
+    document.addEventListener('keydown', focusFirst);
+    const opening = parent.openSubmenu();
+    last.focus();
+    parent.finish();
+    await opening;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home' }));
+    await vi.runAllTimersAsync();
+    document.removeEventListener('keydown', focusFirst);
+
+    expect(document.activeElement).toBe(first);
+  });
+
+  it('stops tracking after the handoff window closes', async () => {
+    vi.useFakeTimers();
+    const { parent, first, last } = fixture();
+    const opening = parent.openSubmenu();
+    parent.finish();
+    await opening;
+    await vi.runAllTimersAsync();
+    expect(document.activeElement).toBe(first);
+    // A later programmatic move is the app's own business, not repaired.
+    last.focus();
+    first.focus();
+    await vi.runAllTimersAsync();
+    expect(document.activeElement).toBe(first);
+  });
+
   it('keeps the native first-item handoff when no later item was chosen', async () => {
     vi.useFakeTimers();
     const { parent, first } = fixture();
