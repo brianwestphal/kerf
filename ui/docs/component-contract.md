@@ -578,6 +578,10 @@ close motion: its flex size animates while a collapsible `TokenSearchField`
 inside fills it on every frame, laid out at least basis-wide and clipped by the
 group, so a query never wraps or leaves an empty band mid-transition. At 480px
 container width or less, and under reduced motion, it opens in one frame.
+A plain collapsible search group (no `sizing`) animates its own width the same
+way: the `TokenSearchField` follows the group on every frame and keeps its
+query on one line until the opening ends, so it never shows an empty band or a
+query wrapped in a narrow, still-opening field.
 Use `sizing="fill"` for a group, including a non-search segmented control,
 that spans its wrapping row. Set `visibility="hide-collapsed-tiny"` on a
 collapsible group to omit its closed icon at 224px or less; expanded content

@@ -284,12 +284,12 @@
      no-grow / may-shrink behavior a toolbar row wants without leaking the width
      into the cross axis. */
   flex: 0 1 auto;
-  /* A grow search group animates the open/close itself and sets this duration
-     to 0s: the field is the group's width on every frame instead of running a
-     second, lagging width transition that left an empty band beside a wrapped
-     query (KF-50K0JM). */
+  /* A search toolbar group animates the open/close itself and sets this
+     duration to 0s: the field is the group's width on every frame instead of
+     running a second, lagging width transition that left an empty band beside
+     a wrapped query (KF-50K0JM, KF-CXQB30). */
   transition:
-    width var(--_kui-toolbar-group-grow-search-width-duration, 0.25s) ease,
+    width var(--_kui-toolbar-group-search-width-duration, 0.25s) ease,
     background-color 0.2s ease,
     border-color 0.2s ease;
 }
@@ -299,6 +299,24 @@
    query instead of re-wrapping it every frame. Elsewhere this is 0px. */
 .kui-token-search[data-collapsible="true"][data-expanded="true"] {
   min-width: var(--_kui-toolbar-group-grow-search-min-width, 0px);
+}
+
+/* While a search group opens, keep the query on one line: the group's clip
+   reveals it instead of re-wrapping it in the narrow, still-growing field.
+   Wrapping returns when the opening ends. The duration is 0s (no effect)
+   outside a search group and under reduced motion. */
+.kui-token-search[data-collapsible="true"][data-expanded="true"]
+  > .kui-token-search__editor {
+  animation: kui-token-search-reveal
+    var(--_kui-toolbar-group-search-reveal-duration, 0s) linear;
+}
+
+@keyframes kui-token-search-reveal {
+  from,
+  to {
+    overflow-wrap: normal;
+    white-space: pre;
+  }
 }
 
 .kui-token-search[data-collapsible="true"][data-expanded="true"][data-fill="true"] {

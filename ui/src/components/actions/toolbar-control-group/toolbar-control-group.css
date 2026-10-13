@@ -173,6 +173,13 @@
   align-self: center;
 }
 .kui-toolbar-control-group[data-content="search"] {
+  /* The group owns the open/close width motion, and a collapsible search
+     inside follows it on every frame (no second, lagging width transition,
+     which left an empty band). For the length of the opening it also asks the
+     search to keep its query on one line, so the group's clip reveals the
+     query instead of re-wrapping it every frame (KF-CXQB30). */
+  --_kui-toolbar-group-search-width-duration: 0s;
+  --_kui-toolbar-group-search-reveal-duration: 0.25s;
   width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
   max-width: 100%;
   height: auto;
@@ -232,9 +239,9 @@
    inside animated, leaving an empty band (KF-50K0JM). The collapsed state names
    a definite basis and minimum so all three flex lengths interpolate. */
 .kui-toolbar-control-group[data-content="search"][data-sizing="grow"] {
-  /* The group owns this motion; a collapsible search inside follows it on
-     every frame rather than running its own width transition. */
-  --_kui-toolbar-group-grow-search-width-duration: 0s;
+  /* The group's flex size owns this motion; its basis-wide minimum (above)
+     already keeps the query on one line. */
+  --_kui-toolbar-group-search-reveal-duration: 0s;
   transition-property:
     width, flex-basis, flex-grow, min-width, background-color, border-color;
   transition-duration: 0.25s, 0.25s, 0.25s, 0.25s, 0.2s, 0.2s;
@@ -845,6 +852,7 @@
 @media (prefers-reduced-motion: reduce) {
   .kui-toolbar-control-group[data-content="search"],
   .kui-toolbar-control-group[data-content="search"][data-sizing="grow"] {
+    --_kui-toolbar-group-search-reveal-duration: 0s;
     transition-duration: 0s;
   }
 
