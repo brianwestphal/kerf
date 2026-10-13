@@ -41,10 +41,10 @@ export const createRecipe: RecipeFactory = (announce) => {
   const filtered = signal(false);
   const device = deviceClass();
   const render = () => (
-    <section data-recipe="recipe-compact-toolbar" aria-label="Task workspace">
+    <section data-recipe="recipe-compact-toolbar" aria-label="Task Workspace">
       <List gap="l" controlInsets="b">
         <Toolbar
-          label="Task workspace controls"
+          label="Task Workspace Controls"
           responsive="stack"
           responsiveAt="compact"
           leading={<ToolbarText text="Tasks" size="small" />}
@@ -72,7 +72,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                 <Select<string>
                   name="recipe-sort"
                   value={sort.value}
-                  ariaLabel="Sort tasks"
+                  ariaLabel="Sort Tasks"
                   fitMenu
                   presentation="toolbar-borderless"
                   size="compact"
@@ -85,10 +85,10 @@ export const createRecipe: RecipeFactory = (announce) => {
                   ]}
                 />
               </ToolbarControlGroup>
-              <ToolbarControlGroup label="Task actions" buttonAppearance="push">
+              <ToolbarControlGroup label="Task Actions" buttonAppearance="push">
                 <button
                   type="button"
-                  aria-label="Toggle filters"
+                  aria-label="Toggle Filters"
                   aria-pressed={String(filtered.value)}
                   data-action="recipe-action"
                   data-recipe-command="filter"
@@ -97,17 +97,17 @@ export const createRecipe: RecipeFactory = (announce) => {
                 </button>
                 <button
                   type="button"
-                  aria-label="Refresh tasks"
+                  aria-label="Refresh Tasks"
                   data-action="recipe-action"
                   data-recipe-command="refresh"
                 >
                   <LucideIcon icon={RefreshCw} name="refresh-cw" />
                 </button>
               </ToolbarControlGroup>
-              <ToolbarControlGroup label="More task actions" single>
+              <ToolbarControlGroup label="More Task Actions" single>
                 <button
                   type="button"
-                  aria-label="More task actions"
+                  aria-label="More Task Actions"
                   data-action="recipe-action"
                   data-recipe-command="more"
                 >

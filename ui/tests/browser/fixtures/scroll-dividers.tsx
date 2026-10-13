@@ -104,7 +104,7 @@ const tabBar = (
         id={name}
         label={name}
         presentation={presentation}
-        leading={iconGroup('Show sidebar', PanelLeft, 'panel-left')}
+        leading={iconGroup('Show Sidebar', PanelLeft, 'panel-left')}
         trailing={iconGroup('Add Tab', Plus, 'plus')}
       >
         {NAMES.map((label, index) => (

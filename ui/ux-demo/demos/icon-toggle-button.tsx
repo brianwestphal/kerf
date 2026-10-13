@@ -16,7 +16,7 @@ export function IconToggleButtonDemo() {
         <IconToggleButton
           icon={MessageSquare}
           iconName="message-square"
-          label="Show conversation"
+          label="Show Conversation"
           pressed={iconToggleConversationOpen.value}
           action="toggle-icon-toggle-demo"
         />
@@ -26,21 +26,21 @@ export function IconToggleButtonDemo() {
           <IconToggleButton
             icon={PanelRight}
             iconName="panel-right"
-            label="Inspector (rounded, pressed)"
+            label="Inspector (Rounded, Pressed)"
             pressed
             shape="rounded"
           />
           <IconToggleButton
             icon={PanelRight}
             iconName="panel-right"
-            label="Inspector (rounded)"
+            label="Inspector (Rounded)"
             pressed={false}
             shape="rounded"
           />
           <IconToggleButton
             icon={PanelRight}
             iconName="panel-right"
-            label="Inspector (disabled)"
+            label="Inspector (Disabled)"
             pressed={false}
             disabled
           />

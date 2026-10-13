@@ -33,10 +33,10 @@ test('avatar imagery belongs to the group or selected highlight', async ({
   await single.getByRole('button').hover();
   expect(await avatarPaint()).toEqual(restingPaint);
 
-  const choices = page.getByRole('group', { name: 'Profile view' });
-  const primary = choices.getByRole('button', { name: 'Primary profile' });
+  const choices = page.getByRole('group', { name: 'Profile View' });
+  const primary = choices.getByRole('button', { name: 'Primary Profile' });
   const secondary = choices.getByRole('button', {
-    name: 'Secondary profile',
+    name: 'Secondary Profile',
   });
   await expect(choices).toHaveCSS('background-image', 'none');
   expect(

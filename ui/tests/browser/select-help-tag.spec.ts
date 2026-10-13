@@ -31,7 +31,7 @@ test('hovering an icon-only filter shows its name and chosen labels after a dela
   const select = page.locator('wa-select[name="ticket-label-filter"]');
   await select.scrollIntoViewIfNeeded();
   const combobox = select.getByRole('combobox');
-  await expect(combobox).toHaveAccessibleName('Filter by label: Bug, Docs');
+  await expect(combobox).toHaveAccessibleName('Filter by Label: Bug, Docs');
   const group = select.locator(
     'xpath=ancestor::*[contains(@class,"kui-toolbar-control-group")][1]',
   );
@@ -45,7 +45,7 @@ test('hovering an icon-only filter shows its name and chosen labels after a dela
   const shownEarly = await tagBody(select).isVisible();
   if (Date.now() - hoveredAt < 450) expect(shownEarly).toBe(false);
   await expect(tagBody(select)).toBeVisible();
-  await expect(helpTag(select)).toHaveText('Filter by label: Bug, Docs');
+  await expect(helpTag(select)).toHaveText('Filter by Label: Bug, Docs');
   await expect(helpTag(select)).toHaveAttribute('aria-hidden', 'true');
   // It sits below the trigger, clear of it.
   const [tagBox, triggerBox] = await Promise.all([
@@ -56,7 +56,7 @@ test('hovering an icon-only filter shows its name and chosen labels after a dela
 
   // The accessible name is unchanged and announced once: the tag is neither
   // part of the name nor exposed in the accessibility tree.
-  await expect(combobox).toHaveAccessibleName('Filter by label: Bug, Docs');
+  await expect(combobox).toHaveAccessibleName('Filter by Label: Bug, Docs');
   expect(await combobox.getAttribute('aria-labelledby')).not.toContain(
     await helpTag(select).getAttribute('id'),
   );
@@ -104,7 +104,7 @@ test('opening the popup hides the tag, and the tag follows the selection', async
   await moveAway(page);
   await select.hover();
   await expect(tagBody(select)).toBeVisible();
-  await expect(helpTag(select)).toHaveText('Filter by label: Docs');
+  await expect(helpTag(select)).toHaveText('Filter by Label: Docs');
 });
 
 test('keyboard focus shows the tag at once; a click focus does not', async ({
@@ -115,14 +115,14 @@ test('keyboard focus shows the tag at once; a click focus does not', async ({
   const select = page.locator('wa-select[name="toolbar-ticket-label-filter"]');
   await select.scrollIntoViewIfNeeded();
   const pin = page.locator(
-    '[data-demo="select"] button[aria-label="Pin view"]',
+    '[data-demo="select"] button[aria-label="Pin View"]',
   );
   await pin.focus();
   await page.keyboard.press('Tab');
   const combobox = select.getByRole('combobox');
   await expect(combobox).toBeFocused();
   await expect(tagBody(select)).toBeVisible({ timeout: 300 });
-  await expect(helpTag(select)).toHaveText('Filter by label: Bug, Docs');
+  await expect(helpTag(select)).toHaveText('Filter by Label: Bug, Docs');
   const box = await combobox.boundingBox();
   await page.screenshot({
     path: 'test-results/select-help-tag-focus-narrow.png',
@@ -172,7 +172,7 @@ test('a single icon-only Select names its control and current choice', async ({
   await select.hover();
   await expect(tagBody(select)).toBeVisible();
   await expect(helpTag(select)).toHaveText(
-    'Default toolbar rendering balance: Balanced',
+    'Default Toolbar Rendering Balance: Balanced',
   );
   await select.click();
   await expect(tagBody(select)).toBeHidden();
@@ -181,7 +181,7 @@ test('a single icon-only Select names its control and current choice', async ({
   await moveAway(page);
   await select.hover();
   await expect(helpTag(select)).toHaveText(
-    'Default toolbar rendering balance: Quiet',
+    'Default Toolbar Rendering Balance: Quiet',
   );
   await expect(tagBody(select)).toBeVisible();
   expect(
@@ -190,7 +190,7 @@ test('a single icon-only Select names its control and current choice', async ({
     ),
   ).toBe(name);
   await expect(combobox).toHaveAccessibleName(
-    'Default toolbar rendering balance',
+    'Default Toolbar Rendering Balance',
   );
   // A labeled (not icon-only) Select has no tag.
   const labeled = page.locator('wa-select[name="labeled-rendering-balance"]');

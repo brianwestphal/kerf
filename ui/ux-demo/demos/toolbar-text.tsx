@@ -48,12 +48,12 @@ export function ToolbarTextDemo() {
         rootAttributes={{ 'data-demo-toolbar-text-dark': '' }}
       >
         <Toolbar
-          label="Attachment gallery"
+          label="Attachment Gallery"
           leading={<ToolbarText text="Quarterly report.pdf" tone="dark" />}
           trailing={
             <ToolbarControlGroup tone="dark" single content="text">
               <ToolbarText
-                text="Rename file"
+                text="Rename File"
                 tone="dark"
                 action="edit-toolbar-title"
               />
@@ -68,7 +68,7 @@ export function ToolbarTextDemo() {
         rootAttributes={{ 'data-demo-toolbar-text-action': '' }}
       >
         <Toolbar
-          label="Demand toolbar"
+          label="Demand Toolbar"
           leading={
             <>
               <ToolbarText
@@ -88,7 +88,7 @@ export function ToolbarTextDemo() {
             >
               <TokenSearchField
                 id="toolbar-text-demand-search"
-                label="Search demands"
+                label="Search Demands"
                 placeholder="Search demands"
                 presentation="toolbar-group"
                 fill
@@ -104,7 +104,7 @@ export function ToolbarTextDemo() {
         rootAttributes={{ 'data-demo-toolbar-text-description': '' }}
       >
         <Toolbar
-          label="Command editor heading"
+          label="Command Editor Heading"
           leading={
             <>
               <ToolbarControlGroup single tileTone="brand" label="Commands">
@@ -129,7 +129,7 @@ export function ToolbarTextDemo() {
           }
         />
         <Toolbar
-          label="Repository status heading"
+          label="Repository Status Heading"
           leading={
             <ToolbarText
               text="Repository Status"

@@ -72,12 +72,12 @@ export const cases: Record<string, Case> = {
     </ValueTable>
   ),
   'list-item': (placeholder) => (
-    <ListItem action="open" label="Reassign ticket" placeholder={placeholder} />
+    <ListItem action="open" label="Reassign Ticket" placeholder={placeholder} />
   ),
   'list-item-icon': (placeholder) => (
     <ListItem
       action="open"
-      label="Reassign ticket"
+      label="Reassign Ticket"
       icon={inbox()}
       placeholder={placeholder}
     />
@@ -85,7 +85,7 @@ export const cases: Record<string, Case> = {
   'list-item-description': (placeholder) => (
     <ListItem
       action="open"
-      label="Build checks"
+      label="Build Checks"
       description="Updated a moment ago"
       icon={file()}
       placeholder={placeholder}
@@ -94,7 +94,7 @@ export const cases: Record<string, Case> = {
   'list-item-compact-description': (placeholder) => (
     <ListItem
       action="open"
-      label="Build checks"
+      label="Build Checks"
       description="Updated a moment ago"
       density="compact"
       placeholder={placeholder}

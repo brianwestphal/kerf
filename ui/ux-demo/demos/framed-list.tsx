@@ -11,7 +11,7 @@ import { Pencil, RotateCcw } from 'lucide';
 const shortcuts = [
   {
     id: 'new-ticket',
-    name: 'New ticket',
+    name: 'New Ticket',
     detail: 'Create a ticket in the current project.',
     keys: 'N',
   },
@@ -23,7 +23,7 @@ const shortcuts = [
   },
   {
     id: 'complete',
-    name: 'Complete ticket',
+    name: 'Complete Ticket',
     detail: 'Mark the selected ticket done.',
     keys: '⌘ ↵',
   },
@@ -37,7 +37,7 @@ export function FramedListDemo() {
         note="One rounded frame with dividers between rows of arbitrary content; the highlighted row is the one being edited."
         viewport={{ width: 'medium' }}
       >
-        <FramedList label="Keyboard shortcuts">
+        <FramedList label="Keyboard Shortcuts">
           {shortcuts.map((shortcut) => (
             <FramedListRow highlighted={shortcut.id === 'search'}>
               <Row gap="s" vAlign="middle">

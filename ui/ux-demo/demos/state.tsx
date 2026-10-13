@@ -15,12 +15,12 @@ export interface DemoTab {
 }
 export const tabBarTabs = signal<DemoTab[]>([
   { id: 'components', name: 'Components' },
-  { id: 'design-guidance', name: 'Design guidance' },
-  { id: 'accessibility', name: 'Accessibility contracts' },
-  { id: 'integration', name: 'Integration patterns' },
-  { id: 'release-notes', name: 'Release notes' },
-  { id: 'migration', name: 'Hot Sheet migration' },
-  { id: 'examples', name: 'Consumer examples' },
+  { id: 'design-guidance', name: 'Design Guidance' },
+  { id: 'accessibility', name: 'Accessibility Contracts' },
+  { id: 'integration', name: 'Integration Patterns' },
+  { id: 'release-notes', name: 'Release Notes' },
+  { id: 'migration', name: 'Hot Sheet Migration' },
+  { id: 'examples', name: 'Consumer Examples' },
 ]);
 export const selectedChoice = signal('balanced');
 export const selectViewTitle = signal<'queue' | 'active' | 'archive'>('queue');
@@ -135,10 +135,10 @@ export interface DemoReorderRow {
   label: string;
 }
 export const reorderCommands = signal<DemoReorderRow[]>([
-  { id: 'run-tests', label: 'Run tests' },
-  { id: 'build', label: 'Build package' },
-  { id: 'lint', label: 'Lint sources' },
-  { id: 'deploy-preview', label: 'Deploy preview' },
+  { id: 'run-tests', label: 'Run Tests' },
+  { id: 'build', label: 'Build Package' },
+  { id: 'lint', label: 'Lint Sources' },
+  { id: 'deploy-preview', label: 'Deploy Preview' },
 ]);
 export const reorderFiles = signal<DemoReorderRow[]>([
   { id: 'readme', label: 'README.md' },

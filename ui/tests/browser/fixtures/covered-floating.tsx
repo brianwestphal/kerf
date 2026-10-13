@@ -47,7 +47,7 @@ const drawerCollapsed = signal(true);
 
 const toolbar = (where: 'main' | 'overlay') => (
   <FloatingToolbar
-    label={where === 'main' ? 'Work area actions' : 'Overlay actions'}
+    label={where === 'main' ? 'Work Area actions' : 'Overlay actions'}
     position="bottom-end"
   >
     <ToolbarControlGroup label="Actions" single>
@@ -67,7 +67,7 @@ const main = () => (
   <div style="position:relative;display:flex;flex:1 1 0;min-width:0;min-height:0">
     <Pane>
       <div class="kui-content">
-        <ContentItem>Work area</ContentItem>
+        <ContentItem>Work Area</ContentItem>
       </div>
     </Pane>
     {toolbar('main')}

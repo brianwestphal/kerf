@@ -16,7 +16,7 @@ Pointer and keyboard-operable split region with a customizable handle icon.
 
 **Alternatives:**
 
-- [Application layout](./layout.md) (nearest)
+- [Application Layout](./layout.md) (nearest)
 - [Split Panel](./wa-split-panel.md) (prefer-over)
 
 ## Imports
@@ -101,6 +101,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [Application layout](./layout.md), [Split Panel](./wa-split-panel.md).
+- Components: [LucideIcon](./lucide-icon.md), [Application Layout](./layout.md), [Split Panel](./wa-split-panel.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/accessibility.md#resizableregion`](../../docs/accessibility.md#resizableregion).
 - UX catalog route: `?component=resize`.

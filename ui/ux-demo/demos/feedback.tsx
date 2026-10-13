@@ -13,7 +13,7 @@ export function FeedbackDemo() {
   const tone = bannerTone.value;
   return (
     <CatalogExampleStack
-      label="Feedback composition"
+      label="Feedback Composition"
       rootAttributes={{ 'data-demo': 'feedback' }}
     >
       <CatalogExample label="Persistent, empty, and loading feedback">
@@ -49,7 +49,7 @@ export function FeedbackDemo() {
             }
           />
           <Row vAlign="middle" wrap>
-            <LoadingSpinner label="Loading preview" />
+            <LoadingSpinner label="Loading Preview" />
             <span>Meaningfully labeled progress</span>
             <LoadingSpinner />
             <span>Decorative progress</span>

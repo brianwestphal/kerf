@@ -4,7 +4,7 @@ export const WebAwesomeRecipe = () => (
   <wa-dialog label="Create project" without-header>
     <wa-input
       name="project-name"
-      label="Project name"
+      label="Project Name"
       hint="Use a short, recognizable name."
       required
     />

@@ -246,10 +246,10 @@ product that genuinely needs one of these elements records a narrow `KUI-L301`
 profile exception for the file that renders it.
 
 Catalog detail footers use one standard resource vocabulary and order. Build
-them with `catalogResources()` from `@kerfjs/ui/catalog-resources`: `Demo source`
-first, optional `Component source` and `Design template`, then `Guidance`.
+them with `catalogResources()` from `@kerfjs/ui/catalog-resources`: `Demo Source`
+first, optional `Component Source` and `Design Template`, then `Guidance`.
 Third-party entries use the typed `integrationGuidance` kind, which renders
-`Integration guidance`, and omit `Component source` when the implementation is
+`Integration Guidance`, and omit `Component Source` when the implementation is
 not owned by the catalog's project. Prefer these semantic kinds over local labels
 such as “View source” or “Read UI guidance”; the helper makes that convention a
 compile-time choice while still returning ordinary `CatalogResource[]` values.

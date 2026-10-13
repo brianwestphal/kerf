@@ -16,10 +16,10 @@ export function SplitButtonDemo() {
         viewport={{ width: 'compact' }}
       >
         <SplitButton
-          label={running ? 'Codex running' : 'Drive with Codex'}
+          label={running ? 'Codex Running' : 'Drive with Codex'}
           action="toggle-split-button-demo"
           icon={<LucideIcon icon={Play} name="play" />}
-          optionsLabel="Choose Drive provider, model, and effort"
+          optionsLabel="Choose Drive Provider, Model, and Effort"
           optionsAction="toggle-split-button-options-demo"
           optionsExpanded={splitButtonOptionsOpen.value}
           tone={running ? 'neutral' : 'success'}
@@ -33,20 +33,20 @@ export function SplitButtonDemo() {
             label="Deploy"
             action="log-deploy"
             icon={<LucideIcon icon={Rocket} name="rocket" />}
-            optionsLabel="Deploy options"
+            optionsLabel="Deploy Options"
             optionsAction="log-deploy-options"
           />
           <SplitButton
             label="Delete"
             action="log-delete"
-            optionsLabel="Delete options"
+            optionsLabel="Delete Options"
             optionsAction="log-delete-options"
             tone="danger"
           />
           <SplitButton
             label="Publish"
             action="log-publish"
-            optionsLabel="Publish options"
+            optionsLabel="Publish Options"
             optionsAction="log-publish-options"
             disabled
             title="Nothing to publish"

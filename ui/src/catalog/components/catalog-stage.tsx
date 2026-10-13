@@ -34,7 +34,7 @@ export function CatalogStage({
       class="kui-catalog__stage"
       data-catalog-stage
       data-background-style={backgroundStyle}
-      aria-label={`${name} preview`}
+      aria-label={`${name} Preview`}
     >
       <div class="kui-catalog__canvas">{content}</div>
     </section>

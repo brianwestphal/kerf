@@ -74,7 +74,7 @@ test('related Components selector fits its trigger and popup content', async ({
     expect(triggerFit?.left).toBeGreaterThanOrEqual(8);
     expect(triggerFit?.right).toBeGreaterThanOrEqual(8);
 
-    // Toolbar controls never wrap: the icon and label share one row, the icon
+    // Toolbar Controls never wrap: the icon and label share one row, the icon
     // leading the label, and the trigger stays a single control height.
     const row = await trigger.evaluate((element) => {
       const [icon, label] = [...element.children]

@@ -87,7 +87,11 @@ The covered props are:
 - `PopupMenu` `text` and item and heading labels, including submenus;
 - `SegmentedControl`, `Select`, and `TabNavigator` choice and tab labels;
 - `NavStack` view titles and `backText`, and `SplitView` `backLabel`;
-- `FieldLabel` text and the text of a `button` or `wa-button`.
+- `FieldLabel` text and the text of a `button` or `wa-button`;
+- the accessible names of icon-only controls: `IconButton` and
+  `IconToggleButton` `label`, `PopupMenu` `label`, `SplitButton`
+  `optionsLabel`, `TokenSearchField` `clearLabel`, and the `aria-label` of a
+  `button` or `wa-button` whose only content is an icon.
 
 The check never judges sentence-style surfaces, dynamic values, or text ending
 with `.`, `!`, or `?`. It skips tokens containing digits, code, or paths, and

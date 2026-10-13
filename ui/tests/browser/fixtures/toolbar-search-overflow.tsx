@@ -20,7 +20,7 @@ mount(root, () => (
     >
       <TokenSearchField
         id="search-anchor"
-        label="Search views"
+        label="Search Views"
         presentation="toolbar-group"
         collapsible
         expanded={open.value}

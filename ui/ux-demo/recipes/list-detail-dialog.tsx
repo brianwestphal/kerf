@@ -112,10 +112,10 @@ export const createRecipe: RecipeFactory = (announce) => {
   // control, and the record actions, and runs the full dialog height too.
   const sidebar = () => (
     <Pane
-      label="Recent projects"
+      label="Recent Projects"
       header={
         <Toolbar
-          label="Recent projects"
+          label="Recent Projects"
           leading={<ToolbarText text="Recent Projects" />}
         />
       }
@@ -131,7 +131,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         label={record.name}
         header={
           <Toolbar
-            label="Project details"
+            label="Project Details"
             leading={
               <ToolbarText
                 text={record.name}
@@ -152,7 +152,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         footer={recordActions()}
       >
         <List controlInsets="tb">
-          <ValueTable label="Project details">
+          <ValueTable label="Project Details">
             <ValueTableRow label="Owner" value={record.owner} />
             <ValueTableRow label="Status" value={record.state} />
             <ValueTableRow label="Updated" value={record.updated} />
@@ -166,7 +166,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     const record = records[selected.value];
     return (
       <List>
-        <ValueTable label="Project details">
+        <ValueTable label="Project Details">
           <ValueTableRow label="Owner" value={record.owner} />
           <ValueTableRow label="Status" value={record.state} />
           <ValueTableRow label="Updated" value={record.updated} />
@@ -180,7 +180,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     return (
       <section
         data-recipe="recipe-list-detail-dialog"
-        aria-label="Project details dialog"
+        aria-label="Project Details Dialog"
       >
         <Row hAlign="center">
           <DialogSurface
@@ -200,7 +200,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               Open Project Details
             </wa-button>
             {compact ? (
-              <wa-dialog label="Project details" open={open.value} with-footer>
+              <wa-dialog label="Project Details" open={open.value} with-footer>
                 <SplitView
                   id="recipe-projects"
                   label="Projects"
@@ -232,7 +232,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               </wa-dialog>
             ) : (
               <wa-dialog
-                label="Project details"
+                label="Project Details"
                 open={open.value}
                 without-header
               >

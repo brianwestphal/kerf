@@ -29,7 +29,7 @@ const colorChoices: readonly ChoiceChipsChoice[] = [
 export function ChoiceChipsDemo() {
   return (
     <CatalogExampleStack
-      label="ChoiceChips variants"
+      label="ChoiceChips Variants"
       rootAttributes={{ 'data-demo': 'choice-chips' }}
     >
       <CatalogExample
@@ -39,7 +39,7 @@ export function ChoiceChipsDemo() {
         <ChoiceChips
           id="choice-chips-color"
           name="command-color"
-          label="Command color"
+          label="Command Color"
           value={choiceChipsColor.value}
           action="choice-chips-demo"
           choices={colorChoices}
@@ -57,7 +57,7 @@ export function ChoiceChipsDemo() {
           >
             Edit Command
           </wa-button>
-          <wa-dialog id="choice-chips-dialog" label="Edit command">
+          <wa-dialog id="choice-chips-dialog" label="Edit Command">
             <form id="choice-chips-dialog-form">
               <FieldLabel id="choice-chips-dialog-label">Color</FieldLabel>
               <ChoiceChips
@@ -93,7 +93,7 @@ export function ChoiceChipsDemo() {
         <ChoiceChips<string>
           id="choice-chips-view"
           name="board-view"
-          label="Board view"
+          label="Board View"
           size="compact"
           value={choiceChipsView.value}
           action="choice-chips-demo"

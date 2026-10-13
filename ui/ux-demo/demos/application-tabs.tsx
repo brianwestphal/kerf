@@ -18,7 +18,7 @@ export function ApplicationTabsDemo() {
   const activeTab = tabBarTabs.value.find((tab) => tab.id === activeName);
   return (
     <CatalogExampleStack
-      label="Application tab composition"
+      label="Application Tab Composition"
       rootAttributes={{ 'data-demo': 'application-tabs' }}
     >
       <CatalogExample
@@ -34,12 +34,12 @@ export function ApplicationTabsDemo() {
           <TabBar
             slot="header"
             id="catalog-tabs"
-            label="Open catalog pages"
+            label="Open Catalog Pages"
             leading={
               <ToolbarControlGroup appearance="borderless" single>
                 <button
                   type="button"
-                  aria-label="Show navigation"
+                  aria-label="Show Navigation"
                   data-action="log-sidebar"
                 >
                   <LucideIcon icon={PanelLeft} name="panel-left" />
@@ -50,7 +50,7 @@ export function ApplicationTabsDemo() {
               <ToolbarControlGroup appearance="borderless" single>
                 <button
                   type="button"
-                  aria-label="Add tab"
+                  aria-label="Add Tab"
                   data-action="add-demo-tab"
                 >
                   <LucideIcon icon={Plus} name="plus" />

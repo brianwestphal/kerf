@@ -332,7 +332,7 @@ test('caret-free icon-only Select is a round value trigger with keyboard access'
 
     await select.hover();
     await expect(select.locator('wa-tooltip.kui-help-tag')).toHaveText(
-      'Workspace sort: Balanced',
+      'Workspace Sort: Balanced',
     );
     await select.getByRole('combobox').focus();
     await page.keyboard.press('Enter');

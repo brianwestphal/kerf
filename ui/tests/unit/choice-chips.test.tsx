@@ -37,7 +37,7 @@ describe('ChoiceChips', () => {
       ChoiceChips({
         id: 'color',
         name: 'color',
-        label: 'Command color',
+        label: 'Command Color',
         value: 'blue',
         action: 'pick-color',
         choices: colors,
@@ -49,7 +49,7 @@ describe('ChoiceChips', () => {
     expect(group.className).toBe('kui-choice-chips command-color');
     expect(group.id).toBe('color');
     expect(group.getAttribute('role')).toBe('radiogroup');
-    expect(group.getAttribute('aria-label')).toBe('Command color');
+    expect(group.getAttribute('aria-label')).toBe('Command Color');
     expect(group.hasAttribute('aria-labelledby')).toBe(false);
     expect(group.dataset.component).toBe('choice-chips');
     expect(group.dataset.size).toBe('default');

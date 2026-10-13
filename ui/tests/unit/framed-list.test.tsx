@@ -9,16 +9,16 @@ describe('FramedList', () => {
   it('renders a labeled list of rows on the lowered surface by default', () => {
     const html = String(
       FramedList({
-        label: 'Keyboard shortcuts',
+        label: 'Keyboard Shortcuts',
         children: [
-          FramedListRow({ children: <span>New ticket</span> }),
+          FramedListRow({ children: <span>New Ticket</span> }),
           FramedListRow({ children: <span>Search</span>, highlighted: true }),
         ],
       }),
     );
     expect(html).toBe(
-      '<ul class="kui-framed-list" data-component="framed-list" data-surface="lowered" role="list" aria-label="Keyboard shortcuts">' +
-        '<li class="kui-framed-list__row" data-component="framed-list-row"><span>New ticket</span></li>' +
+      '<ul class="kui-framed-list" data-component="framed-list" data-surface="lowered" role="list" aria-label="Keyboard Shortcuts">' +
+        '<li class="kui-framed-list__row" data-component="framed-list-row"><span>New Ticket</span></li>' +
         '<li class="kui-framed-list__row" data-component="framed-list-row" data-highlighted="true"><span>Search</span></li>' +
         '</ul>',
     );

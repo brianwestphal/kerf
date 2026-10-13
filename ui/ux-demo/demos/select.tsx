@@ -49,7 +49,7 @@ export function SelectDemo() {
           <Select<string>
             name="rendering-balance"
             value={selectedChoice.value}
-            ariaLabel="Rendering balance"
+            ariaLabel="Rendering Balance"
             choices={[
               {
                 value: 'quiet',
@@ -119,7 +119,7 @@ export function SelectDemo() {
           name="item-types"
           multiple
           value={itemTypes.value}
-          label="Item types"
+          label="Item Types"
           placeholderText="No types"
           selectAllLabel="Select all"
           clearLabel="Clear"
@@ -142,7 +142,7 @@ export function SelectDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup
-          label="Label filter"
+          label="Label Filter"
           content="icon"
           focusRing="outline"
           single
@@ -151,7 +151,7 @@ export function SelectDemo() {
             name="ticket-label-filter"
             multiple
             value={ticketLabelFilter.value}
-            ariaLabel="Filter by label"
+            ariaLabel="Filter by Label"
             presentation="toolbar-borderless"
             selectedPresentation="icon-only"
             triggerIcon={<LucideIcon icon={Funnel} name="funnel" />}
@@ -165,22 +165,22 @@ export function SelectDemo() {
         note="The pin button, filter, and menu each show their name as a help tag on hover or keyboard focus."
         align="inline-control"
       >
-        <ToolbarControlGroup label="Ticket view">
-          <button type="button" aria-label="Pin view" data-action="log-pin">
+        <ToolbarControlGroup label="Ticket View">
+          <button type="button" aria-label="Pin View" data-action="log-pin">
             <LucideIcon icon={Pin} name="pin" />
           </button>
           <Select<string>
             name="toolbar-ticket-label-filter"
             multiple
             value={ticketLabelFilter.value}
-            ariaLabel="Filter by label"
+            ariaLabel="Filter by Label"
             presentation="toolbar-borderless"
             selectedPresentation="icon-only"
             triggerIcon={<LucideIcon icon={Funnel} name="funnel" />}
             choices={labelChoices}
           />
           <PopupMenu
-            label="More actions"
+            label="More Actions"
             icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
             items={[{ label: 'Archive', action: 'log-more' }]}
           />
@@ -193,7 +193,7 @@ export function SelectDemo() {
         <Select<string>
           name="plain-rendering-balance"
           value={selectedChoice.value}
-          ariaLabel="Plain rendering balance"
+          ariaLabel="Plain Rendering Balance"
           choices={[
             { value: 'quiet', label: 'Quiet' },
             { value: 'balanced', label: 'Balanced' },
@@ -205,7 +205,7 @@ export function SelectDemo() {
         <Select<string>
           name="labeled-rendering-balance"
           value={selectedChoice.value}
-          label="Rendering preference"
+          label="Rendering Preference"
           triggerWidth="fill"
           hint="Controls how much rendering detail is shown."
           choices={[
@@ -244,7 +244,7 @@ export function SelectDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup
-          label="Rendering mode"
+          label="Rendering Mode"
           content="icon"
           focusRing="outline"
           single
@@ -252,7 +252,7 @@ export function SelectDemo() {
           <Select<string>
             name="toolbar-default-rendering-balance"
             value={selectedChoice.value}
-            ariaLabel="Default toolbar rendering balance"
+            ariaLabel="Default Toolbar Rendering Balance"
             presentation="toolbar-borderless"
             selectedPresentation="icon-only"
             focusRingOwner="group"
@@ -266,7 +266,7 @@ export function SelectDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup
-          label="Workspace sort"
+          label="Workspace Sort"
           content="icon"
           focusRing="outline"
           shape="pill"
@@ -275,7 +275,7 @@ export function SelectDemo() {
           <Select<string>
             name="toolbar-round-rendering-balance"
             value={selectedChoice.value}
-            ariaLabel="Workspace sort"
+            ariaLabel="Workspace Sort"
             presentation="toolbar-borderless"
             selectedPresentation="icon-only"
             caret={false}
@@ -290,7 +290,7 @@ export function SelectDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup
-          label="Custom workspace sort"
+          label="Custom Workspace Sort"
           content="icon"
           focusRing="outline"
           shape="pill"
@@ -299,7 +299,7 @@ export function SelectDemo() {
           <Select<string>
             name="toolbar-round-custom-rendering-balance"
             value={selectedChoice.value}
-            ariaLabel="Custom workspace sort"
+            ariaLabel="Custom Workspace Sort"
             presentation="toolbar-borderless"
             selectedPresentation="icon-only"
             caret={false}
@@ -316,7 +316,7 @@ export function SelectDemo() {
       </CatalogExample>
       <CatalogExample label="Compact toolbar icon" align="inline-control">
         <ToolbarControlGroup
-          label="Rendering mode"
+          label="Rendering Mode"
           size="compact"
           content="icon"
           focusRing="outline"
@@ -325,7 +325,7 @@ export function SelectDemo() {
           <Select<string>
             name="toolbar-rendering-balance"
             value={selectedChoice.value}
-            ariaLabel="Toolbar rendering balance"
+            ariaLabel="Toolbar Rendering Balance"
             presentation="toolbar-borderless"
             size="compact"
             selectedPresentation="icon-only"
@@ -340,7 +340,7 @@ export function SelectDemo() {
       >
         <Row hAlign="right">
           <ToolbarControlGroup
-            label="Project attention"
+            label="Project Attention"
             size="compact"
             content="icon"
             single
@@ -348,7 +348,7 @@ export function SelectDemo() {
             <Select<string>
               name="viewport-attention"
               value={selectedChoice.value}
-              ariaLabel="Project attention"
+              ariaLabel="Project Attention"
               presentation="toolbar-borderless"
               size="compact"
               selectedPresentation="icon-only"
@@ -371,7 +371,7 @@ export function SelectDemo() {
         <Select<string>
           name="navigation-rendering-balance"
           value={selectedChoice.value}
-          ariaLabel="Navigation rendering balance"
+          ariaLabel="Navigation Rendering Balance"
           presentation="navigation"
           triggerWidth="max-content"
           size="compact"
@@ -398,7 +398,7 @@ export function SelectDemo() {
                 <Select<string>
                   name="view-title-demo"
                   value={selectViewTitle.value}
-                  ariaLabel="Ticket view"
+                  ariaLabel="Ticket View"
                   presentation="title"
                   focusRingInset
                   choices={[
@@ -412,10 +412,10 @@ export function SelectDemo() {
           />
           <List gap="none">
             <ListItem
-              label="Review incoming tickets"
+              label="Review Incoming Tickets"
               action="select-demo-ticket"
             />
-            <ListItem label="Check assigned work" action="select-demo-ticket" />
+            <ListItem label="Check Assigned Work" action="select-demo-ticket" />
           </List>
         </div>
       </CatalogExample>
@@ -446,8 +446,8 @@ export function SelectDemo() {
         <Select
           name="select-placeholder"
           value=""
-          label="Rendering balance"
-          ariaLabel="Rendering balance"
+          label="Rendering Balance"
+          ariaLabel="Rendering Balance"
           hint="Loading selection options."
           choices={[]}
           placeholder

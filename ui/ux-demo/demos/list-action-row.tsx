@@ -51,7 +51,7 @@ export function ListActionRowDemo() {
           accessibleLabel="Select Run tests"
           trailingActionVisibility="interaction"
           trailingMenu={{
-            label: 'Actions for Run tests',
+            label: 'Actions for Run Tests',
             icon: <LucideIcon icon={MoreHorizontal} name="more-horizontal" />,
             items: [
               {
@@ -224,7 +224,7 @@ export function ListActionRowDemo() {
           />
         </List>
       </CatalogExample>
-      <DemoListPopover id="list-action-row-popover" label="File actions">
+      <DemoListPopover id="list-action-row-popover" label="File Actions">
         <button type="button" data-action="log-more">
           Open Details
         </button>

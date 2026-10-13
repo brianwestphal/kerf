@@ -124,7 +124,7 @@ Chip({
 Chip({ children: 'Backlog', size: 'compact', disabled: true });
 ChoiceChips({
   name: 'color',
-  label: 'Command color',
+  label: 'Command Color',
   value: 'blue',
   choices: [
     { value: 'transparent', label: 'Transparent', swatch: 'transparent' },
@@ -386,7 +386,7 @@ Select<'bug' | 'docs'>({
   name: 'label-filter',
   multiple: true,
   value: ['bug'],
-  ariaLabel: 'Filter by label',
+  ariaLabel: 'Filter by Label',
   presentation: 'toolbar-borderless',
   selectedPresentation: 'icon-only',
   triggerIcon: filterIcon,
@@ -812,7 +812,7 @@ TokenSearchField({
 TokenSearchField({ id: 'search', label: 'Search' });
 TokenSearchField({
   id: 'saved-query',
-  label: 'Search query',
+  label: 'Search Query',
   presentation: 'form-field',
   hint: 'Add filters.',
   required: true,
@@ -1007,7 +1007,7 @@ ContentItem({ rootAttributes: { 'data-component': 'spoof' } });
 List({
   children: icon,
   selectionMode: 'multiple',
-  ariaLabel: 'Demand lines',
+  ariaLabel: 'Demand Lines',
   gap: true,
   flex: flex(1, 1, px(0)),
   scrollable: true,

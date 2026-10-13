@@ -166,7 +166,7 @@ export function TokenSearchField({
   editAction = 'edit-search-token',
   removeAction = 'remove-search-token',
   clearAction = 'clear-token-search',
-  clearLabel = 'Clear search',
+  clearLabel = 'Clear Search',
   clearIcon,
   className = '',
   editorAttributes = {},

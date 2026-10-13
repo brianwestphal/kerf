@@ -52,7 +52,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "foundation",
-    "name": "Foundation tokens",
+    "name": "Foundation Tokens",
     "category": "Foundation",
     "kind": "composition",
     "source": "kerf",
@@ -63,7 +63,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "document-baseline",
-    "name": "Document baseline",
+    "name": "Document Baseline",
     "category": "Foundation",
     "kind": "composition",
     "source": "kerf",
@@ -74,7 +74,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "layout",
-    "name": "Application layout",
+    "name": "Application Layout",
     "category": "Foundation",
     "kind": "composition",
     "source": "kerf",
@@ -218,7 +218,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "surface-scaffold",
-    "name": "Surface scaffolds",
+    "name": "Surface Scaffolds",
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
@@ -490,7 +490,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "application-tabs",
-    "name": "Application tabs",
+    "name": "Application Tabs",
     "category": "Navigation",
     "kind": "composition",
     "source": "kerf",
@@ -809,7 +809,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-app-shell",
-    "name": "Desktop application shell",
+    "name": "Desktop Application Shell",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -831,7 +831,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-navigation-sidebar",
-    "name": "Navigation sidebar",
+    "name": "Navigation Sidebar",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -853,7 +853,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-workspace-header",
-    "name": "Workspace header",
+    "name": "Workspace Header",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -896,7 +896,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-composer-form",
-    "name": "Composer form",
+    "name": "Composer Form",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -920,7 +920,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-list-workspace-states",
-    "name": "List workspace states",
+    "name": "List Workspace States",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -942,7 +942,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-compact-toolbar",
-    "name": "Compact toolbar choices and actions",
+    "name": "Compact Toolbar Choices and Actions",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -964,7 +964,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-navigation-stack",
-    "name": "Navigation stack",
+    "name": "Navigation Stack",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -985,7 +985,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-loading-inspector",
-    "name": "Loading inspector",
+    "name": "Loading Inspector",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
@@ -1011,7 +1011,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "recipe-collapsible-sidebar",
-    "name": "Collapsible sidebar",
+    "name": "Collapsible Sidebar",
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",

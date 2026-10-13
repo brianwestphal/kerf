@@ -51,7 +51,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
   await page.goto('/?component=nav-stack');
   const navDemo = page.locator('[data-demo="nav-stack"]');
   const stack = page.getByRole('region', {
-    name: 'Project library',
+    name: 'Project Library',
     exact: true,
   });
   await expect(stack).toHaveAttribute('data-depth', '1');
@@ -109,7 +109,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
   await stack.evaluate((element) => {
     delete (element as HTMLElement).dataset.testSawChromeTransition;
   });
-  await page.getByRole('button', { name: 'Back to library' }).click();
+  await page.getByRole('button', { name: 'Back to Library' }).click();
   await expect(stack).toHaveAttribute('data-depth', '1');
   await expect(atlas).toBeFocused();
   await expect(stack).toHaveAttribute(
@@ -132,7 +132,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/?component=nav-stack');
     const narrowStack = page.getByRole('region', {
-      name: 'Project library',
+      name: 'Project Library',
       exact: true,
     });
     await narrowStack.getByText('Project Relay', { exact: true }).click();
@@ -151,7 +151,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
 
   await page.setViewportSize({ width: 1100, height: 820 });
   await page.goto('/?component=split-view');
-  const compactStack = page.getByRole('region', { name: 'Compact messages' });
+  const compactStack = page.getByRole('region', { name: 'Compact Messages' });
   await expect(compactStack).toHaveAttribute('data-depth', '1');
   await expect(compactStack.locator('[data-nav-back]')).toHaveCount(0);
   if (browserName === 'chromium')
@@ -180,7 +180,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/?component=split-view');
     const narrowStack = page.getByRole('region', {
-      name: 'Compact messages',
+      name: 'Compact Messages',
     });
     await narrowStack.getByText('Launch plan', { exact: true }).click();
     await expect(narrowStack).toHaveAttribute('data-depth', '2');
@@ -206,13 +206,13 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
   const panels = page.locator('[data-demo="collapsible-panel"]');
   await expect(panels.getByRole('complementary')).toHaveCount(3);
   await expect(
-    page.getByRole('complementary', { name: 'Project navigator' }),
+    page.getByRole('complementary', { name: 'Project Navigator' }),
   ).toHaveClass(/kui-collapsible-panel--left/);
   await expect(
-    page.getByRole('complementary', { name: 'Selection inspector' }),
+    page.getByRole('complementary', { name: 'Selection Inspector' }),
   ).toHaveClass(/kui-collapsible-panel--right/);
   await expect(
-    page.getByRole('complementary', { name: 'Build output' }),
+    page.getByRole('complementary', { name: 'Build Output' }),
   ).toHaveClass(/kui-collapsible-panel--bottom/);
 });
 
@@ -302,7 +302,7 @@ for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=nav-stack');
     const stack = page.getByRole('region', {
-      name: 'Configured project library',
+      name: 'Configured Project Library',
     });
     const toolbar = stack.locator(
       ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) [data-component="toolbar"]',
@@ -314,12 +314,12 @@ for (const width of [1100, 390]) {
     await expect(
       toolbar
         .locator('.kui-toolbar__leading')
-        .getByRole('button', { name: 'Show sidebar' }),
+        .getByRole('button', { name: 'Show Sidebar' }),
     ).toBeVisible();
     await expect(
       toolbar
         .locator('.kui-toolbar__center')
-        .getByRole('button', { name: 'List layout' }),
+        .getByRole('button', { name: 'List Layout' }),
     ).toHaveAttribute('aria-pressed', 'true');
     // The center group sits clear of the leading identity.
     const leadingBox = (await toolbar
@@ -350,7 +350,7 @@ for (const width of [1100, 390]) {
     await expect(
       toolbar
         .locator('.kui-toolbar__trailing')
-        .getByRole('button', { name: 'Share project' }),
+        .getByRole('button', { name: 'Share Project' }),
     ).toBeVisible();
     // With a back control and no view center content, the title centers.
     await expect(
@@ -398,10 +398,10 @@ test('the resizable split-view example resizes, collapses, and restores its list
       path: 'test-results/split-view-resizable-open-wide.png',
     });
 
-  await split.getByRole('button', { name: 'Hide threads' }).click();
+  await split.getByRole('button', { name: 'Hide Threads' }).click();
   await expect(region).toHaveAttribute('data-collapsed', 'true');
   await expect(region).toHaveAttribute('inert', '');
-  const restore = split.getByRole('button', { name: 'Show threads' });
+  const restore = split.getByRole('button', { name: 'Show Threads' });
   await expect(restore).toBeVisible();
   // The restore control docks in the split's bottom-start corner.
   const splitBox = (await split.boundingBox())!;
@@ -428,7 +428,7 @@ test('the compact split-view example forwards its compactStack configuration', a
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=split-view');
-  const stack = page.getByRole('region', { name: 'Compact messages' });
+  const stack = page.getByRole('region', { name: 'Compact Messages' });
   const toolbar = stack.locator(
     ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) [data-component="toolbar"]',
   );

@@ -7,10 +7,10 @@ test('compact toolbar independent action matches adjacent pill geometry', async 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=recipe-compact-toolbar');
   const recipe = page.locator('[data-recipe="recipe-compact-toolbar"]');
-  const more = recipe.getByRole('button', { name: 'More task actions' });
+  const more = recipe.getByRole('button', { name: 'More Task Actions' });
   const moreGroup = more.locator('xpath=..');
   const filterGroup = recipe
-    .getByRole('group', { name: 'Task actions' })
+    .getByRole('group', { name: 'Task Actions' })
     .first();
 
   const geometry = await Promise.all(
@@ -52,7 +52,7 @@ test('compact toolbar independent action matches adjacent pill geometry', async 
     await expect(moreGroup).toBeVisible();
   }
   if (browserName === 'chromium')
-    await recipe.locator('[aria-label="Task workspace controls"]').screenshot({
+    await recipe.locator('[aria-label="Task Workspace Controls"]').screenshot({
       path: 'test-results/compact-toolbar-narrow.png',
     });
 });

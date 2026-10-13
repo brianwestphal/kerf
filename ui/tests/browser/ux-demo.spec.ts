@@ -101,12 +101,12 @@ test('theme action follows the effective OS appearance and explicitly switches e
     .locator('body')
     .evaluate((element) => window.getComputedStyle(element).backgroundColor);
   await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
-  await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use Dark Theme');
   await expect(themeButton).not.toHaveAttribute('aria-pressed', /.*/);
 
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(themeButton).toHaveAttribute('data-theme-preview', 'dark');
-  await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use Light Theme');
   await expect(themeButton).toContainText('Light');
   await expect(page.locator('html')).not.toHaveClass(/demo-(?:light|dark)/);
   const darkBackground = await page
@@ -116,7 +116,7 @@ test('theme action follows the effective OS appearance and explicitly switches e
 
   await themeButton.click();
   await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
-  await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use Dark Theme');
   await expect(themeButton).toContainText('Dark');
   await expect(page.locator('html')).toHaveClass(/demo-light/);
   await expect(page.locator('html')).not.toHaveClass(/demo-dark/);
@@ -152,12 +152,12 @@ test('theme action follows the effective OS appearance and explicitly switches e
 
   await page.reload();
   await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
-  await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use Dark Theme');
   await expect(page.locator('html')).toHaveClass(/demo-light/);
 
   await page.emulateMedia({ colorScheme: 'light' });
   await expect(themeButton).toHaveAttribute('data-theme-preview', 'light');
-  await expect(themeButton).toHaveAttribute('aria-label', 'Use dark theme');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use Dark Theme');
   await themeButton.click();
   await expect(themeButton).toHaveAttribute('data-theme-preview', 'dark');
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
@@ -219,7 +219,7 @@ test('restores display choices across reloads and keeps them independent', async
   await expect(page.locator('html')).toHaveClass(/demo-contrast/);
   await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
-  await expect(theme).toHaveAttribute('aria-label', 'Use light theme');
+  await expect(theme).toHaveAttribute('aria-label', 'Use Light Theme');
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/catalog-saved-display-wide.png',
@@ -263,16 +263,16 @@ test('omits the removed command-palette recipe and safely falls back from its st
     const rows = recipes.locator('[data-component="list-item"]');
     await expect(rows).toHaveCount(10);
     await expect(rows).toHaveText([
-      /Desktop application shell/,
-      /Navigation sidebar/,
-      /Workspace header/,
+      /Desktop Application Shell/,
+      /Navigation Sidebar/,
+      /Workspace Header/,
       /List-detail dialog/,
-      /Composer form/,
-      /List workspace states/,
-      /Compact toolbar choices and actions/,
-      /Navigation stack/,
-      /Loading inspector/,
-      /Collapsible sidebar/,
+      /Composer Form/,
+      /List Workspace States/,
+      /Compact Toolbar Choices and Actions/,
+      /Navigation Stack/,
+      /Loading Inspector/,
+      /Collapsible Sidebar/,
     ]);
     await expect(
       page.locator('[data-item-id="recipe-command-palette"]'),
@@ -392,7 +392,7 @@ test('drills through the navigation-stack recipe with animated push/pop and redu
     nav.locator(
       ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) :is(.kui-toolbar__leading > .kui-toolbar-text[data-fill="true"], .kui-toolbar__center > .kui-toolbar-text)',
     ),
-  ).toHaveText('App layouts');
+  ).toHaveText('App Layouts');
   await expect(nav).not.toHaveAttribute('data-nav-chrome-transition', 'true');
   await expect(nav).toHaveAttribute('data-test-saw-chrome-transition', 'true');
   await expect(nav).toHaveAttribute('data-test-max-chrome-copies', '1');
@@ -503,7 +503,7 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
         return r ? { w: Math.round(r.width), h: Math.round(r.height) } : null;
       });
 
-  const favorite = await basePart('wa-button[aria-label="Favorite view"]');
+  const favorite = await basePart('wa-button[aria-label="Favorite View"]');
   expect(favorite).not.toBeNull();
   expect(favorite!.h).toBeGreaterThan(0);
   expect(favorite!.w).toBeGreaterThanOrEqual(favorite!.h); // square or wider, never a vertical oval
@@ -512,12 +512,12 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
   const sort = await basePart(
     page
       .locator('wa-button[slot="trigger"]')
-      .filter({ hasText: 'Sort tickets' }),
+      .filter({ hasText: 'Sort Tickets' }),
   );
   expect(sort!.w).toBeGreaterThan(sort!.h); // caret content grows past the square floor
 
   if (browserName === 'chromium') {
-    await page.locator('wa-button[aria-label="Favorite view"]').hover();
+    await page.locator('wa-button[aria-label="Favorite View"]').hover();
     await page
       .locator('.kui-catalog-example', {
         has: page.locator('.kui-list-header:has-text("Button group")'),
@@ -540,9 +540,9 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
   const soloGroup = page
     .locator('[data-demo="toolbar-control-group"]')
     .locator('.kui-toolbar-control-group[data-single="true"]')
-    .filter({ has: page.locator('wa-button[aria-label="Pin view"]') })
+    .filter({ has: page.locator('wa-button[aria-label="Pin View"]') })
     .first();
-  const soloButton = soloGroup.locator('wa-button[aria-label="Pin view"]');
+  const soloButton = soloGroup.locator('wa-button[aria-label="Pin View"]');
   const transparent = 'rgba(0, 0, 0, 0)';
   await soloButton.hover();
   await expect
@@ -559,11 +559,11 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
   await page.goto('/?component=toolbar-control-group');
   const multiGroup = page
     .locator(
-      '.kui-toolbar-control-group[label="View actions"], .kui-toolbar-control-group',
+      '.kui-toolbar-control-group[label="View Actions"], .kui-toolbar-control-group',
     )
-    .filter({ has: page.locator('wa-button[aria-label="Favorite view"]') })
+    .filter({ has: page.locator('wa-button[aria-label="Favorite View"]') })
     .first();
-  const favorite = multiGroup.locator('wa-button[aria-label="Favorite view"]');
+  const favorite = multiGroup.locator('wa-button[aria-label="Favorite View"]');
   await favorite.hover();
   await expect
     .poll(() =>
@@ -602,7 +602,7 @@ test('shows a visible hover background on borderless toolbar-group buttons', asy
   await expect.poll(groupBackground).not.toBe('rgb(255, 255, 255)');
 });
 
-test('the ToolbarControlGroup demo shape toggle switches each shape-controlled specimen', async ({
+test('the ToolbarControlGroup Demo shape toggle switches each shape-controlled specimen', async ({
   page,
 }) => {
   await page.goto('/?component=toolbar-control-group');
@@ -621,7 +621,7 @@ test('the ToolbarControlGroup demo shape toggle switches each shape-controlled s
   const shapeControlledCount = await shapeControlledGroups.count();
   const sampleGroup = demo
     .locator('.kui-toolbar-control-group')
-    .filter({ has: page.locator('wa-button[aria-label="Pin view"]') })
+    .filter({ has: page.locator('wa-button[aria-label="Pin View"]') })
     .first();
 
   // Default: every group is pill (22px), none rounded.
@@ -699,7 +699,7 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
   });
   const chip = example.locator('.kui-chip');
   await expect(
-    example.getByRole('searchbox', { name: 'Search demands' }),
+    example.getByRole('searchbox', { name: 'Search Demands' }),
   ).toBeVisible();
   await expect(example.locator('input')).toHaveCount(0);
   expect(
@@ -891,7 +891,7 @@ test('ToolbarText overflow modes: single-line ellipsis, wrap, and capped line-cl
   expect(cappedHeight).toBeLessThan(wrapped);
 });
 
-test('the FloatingToolbar demo toggles a dark floating toolbar and auto-hides on leave', async ({
+test('the FloatingToolbar Demo toggles a dark floating toolbar and auto-hides on leave', async ({
   page,
 }) => {
   await page.goto('/?component=floating-toolbar');
@@ -900,7 +900,7 @@ test('the FloatingToolbar demo toggles a dark floating toolbar and auto-hides on
   );
   await expect(floating).toHaveCount(0);
 
-  await page.getByRole('button', { name: 'Show floating toolbar' }).click();
+  await page.getByRole('button', { name: 'Show Floating Toolbar' }).click();
   await expect(floating).toHaveCount(1);
   await expect(floating).toHaveAttribute('role', 'toolbar');
   await expect(floating).toHaveAttribute('data-position', 'bottom-end');
@@ -1035,7 +1035,7 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   );
   await expect(examples.nth(1).locator('svg[data-lucide]')).toHaveAttribute(
     'aria-label',
-    'Notifications ready',
+    'Notifications Ready',
   );
   const glyphs = await examples
     .locator('svg[data-lucide]')
@@ -1333,7 +1333,7 @@ test('links catalog details to their first-party source and existing guidance', 
     ],
     [
       'recipe-app-shell',
-      'Desktop application shell',
+      'Desktop Application Shell',
       'ui/ux-demo/recipes/app-shell.tsx',
       undefined,
       'ui/docs/recipes.md#desktop-application-shell',
@@ -1346,7 +1346,7 @@ test('links catalog details to their first-party source and existing guidance', 
       'ui/ux-demo/webawesome-demos.tsx',
       undefined,
       'ui/docs/webawesome-theme.md#coverage',
-      'Integration guidance',
+      'Integration Guidance',
       undefined,
     ],
   ] as const) {
@@ -1355,13 +1355,13 @@ test('links catalog details to their first-party source and existing guidance', 
       name: `${name} resources`,
     });
     const source = resources.getByRole('link', {
-      name: `${name}: Demo source (opens in new tab)`,
+      name: `${name}: Demo Source (opens in new tab)`,
     });
     const componentSource = resources.getByRole('link', {
-      name: `${name}: Component source (opens in new tab)`,
+      name: `${name}: Component Source (opens in new tab)`,
     });
     const designTemplate = resources.getByRole('link', {
-      name: `${name}: Design template (opens in new tab)`,
+      name: `${name}: Design Template (opens in new tab)`,
     });
     const guidance = resources.getByRole('link', {
       name: `${name}: ${guidanceLabel} (opens in new tab)`,
@@ -2129,7 +2129,7 @@ test('keeps Catalog display controls fully visible and usable across widths', as
       page.locator('[data-action="toggle-contrast"]'),
     ).toHaveAttribute('aria-pressed', String(contrastOn));
     const controls = page.locator(
-      '[data-component="toolbar-control-group"][aria-label="Catalog display settings"]',
+      '[data-component="toolbar-control-group"][aria-label="Catalog Display Settings"]',
     );
     await expect(controls).toHaveAttribute('data-overflow', 'wrap');
     for (const locator of [
@@ -2175,8 +2175,8 @@ test('switches catalog background patterns and surfaces across entries and theme
   await expect(stage).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
 
   const choices = [
-    ['vertical-stripes', 'Vertical stripes', '16px 16px', true],
-    ['layout-guide', 'Layout guide', 'auto', true],
+    ['vertical-stripes', 'Vertical Stripes', '16px 16px', true],
+    ['layout-guide', 'Layout Guide', 'auto', true],
     ['surface', 'Surface', 'auto', false],
     ['sunken', 'Sunken', 'auto', false],
     ['checkerboard', 'Checkerboard', '16px 16px', true],
@@ -2577,13 +2577,13 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
   await expect(
     pageHeader.getByRole('heading', {
       level: 2,
-      name: 'Desktop application shell',
+      name: 'Desktop Application Shell',
     }),
   ).toBeVisible();
   await expect(pageHeader.getByText('Recipes', { exact: true })).toHaveCount(0);
   await expect(
     footer.getByRole('group', {
-      name: 'Desktop application shell resources',
+      name: 'Desktop Application Shell Resources',
     }),
   ).toBeVisible();
   await expect(footer.locator('.catalog-log')).toHaveText('Catalog ready');
@@ -2645,7 +2645,7 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
     shellGeometry.overflow.includes('b') ? 't' : '',
   );
 
-  await page.getByRole('button', { name: 'Show recipe notes' }).click();
+  await page.getByRole('button', { name: 'Show Recipe Notes' }).click();
   await expect(page.locator('[data-demo-stage-inner]')).toHaveAttribute(
     'data-recipe-notes-visible',
     'true',
@@ -2904,7 +2904,7 @@ test('keeps ValueTableRow block padding root-scaled and separators aligned', asy
       });
     }
     const rows = demo.locator(
-      '[data-component="value-table"][aria-label="Package metadata"] .kui-value-table__row:not([data-placeholder="true"])',
+      '[data-component="value-table"][aria-label="Package Metadata"] .kui-value-table__row:not([data-placeholder="true"])',
     );
     await expect(rows).toHaveCount(3);
 
@@ -2977,7 +2977,7 @@ test('keeps token-search focus and caret when Delete removes a controlled token'
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=token-search-field');
   const demo = page.locator('[data-demo="token-search-field"]');
-  const editor = demo.getByRole('searchbox', { name: 'Search tickets' });
+  const editor = demo.getByRole('searchbox', { name: 'Search Tickets' });
   await editor.evaluate((element) => {
     const text = element.querySelector('[data-token-search-text]')!.firstChild!;
     const range = document.createRange();
@@ -3038,7 +3038,7 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=token-search-field');
   const demo = page.locator('[data-demo="token-search-field"]');
-  const editor = demo.getByRole('searchbox', { name: 'Search tickets' });
+  const editor = demo.getByRole('searchbox', { name: 'Search Tickets' });
   const selectAll = 'ControlOrMeta+A';
 
   // Plain text: type fresh content, select all, Delete. A contenteditable host
@@ -3088,7 +3088,7 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
 
   // Tokened: select-all + Delete also removes every chip and leaves no artifact.
   await page.goto('/?component=token-search-field');
-  const editor2 = demo.getByRole('searchbox', { name: 'Search tickets' });
+  const editor2 = demo.getByRole('searchbox', { name: 'Search Tickets' });
   await editor2.focus();
   await page.keyboard.press(selectAll);
   await page.keyboard.press('Delete');
@@ -3112,12 +3112,12 @@ test('edits, removes, and clears controlled token search content', async ({
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=token-search-field');
   const demo = page.locator('[data-demo="token-search-field"]');
-  const editor = demo.getByRole('searchbox', { name: 'Search tickets' });
+  const editor = demo.getByRole('searchbox', { name: 'Search Tickets' });
   await expect(editor).toBeFocused();
   await expect(
     editor.locator('[data-component="token-search-token"]'),
   ).toHaveCount(2);
-  const disabled = demo.getByRole('searchbox', { name: 'Saved search' });
+  const disabled = demo.getByRole('searchbox', { name: 'Saved Search' });
   await expect(disabled).toHaveAttribute('contenteditable', 'false');
   await expect(disabled.locator('button')).toHaveCount(2);
   await expect(disabled.locator('button').first()).toBeDisabled();
@@ -3172,7 +3172,7 @@ test('edits, removes, and clears controlled token search content', async ({
 
   await demo
     .locator('[data-token-search-id="catalog-search"]')
-    .getByRole('button', { name: 'Clear search' })
+    .getByRole('button', { name: 'Clear Search' })
     .click();
   await expect(editor).toHaveText('');
   await expect(editor).toHaveAttribute('data-placeholder', 'Search');
@@ -3255,7 +3255,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   const toolbar = page.locator(
     '[data-demo="toolbar"] [data-component="toolbar"][data-responsive="center-priority"]',
   );
-  const editor = toolbar.getByRole('searchbox', { name: 'Find in workspace' });
+  const editor = toolbar.getByRole('searchbox', { name: 'Find in Workspace' });
   const trigger = toolbar.getByRole('button', { name: 'Open find' });
   const field = toolbar.locator('[data-component="token-search-field"]');
   const group = field.locator('..');
@@ -3372,7 +3372,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
     });
   await editor.pressSequentially('priority');
   await expect(
-    toolbar.getByRole('button', { name: 'Clear search' }),
+    toolbar.getByRole('button', { name: 'Clear Search' }),
   ).toBeVisible();
   const trailingCenterAfterInput = await field
     .locator('.kui-token-search__trailing')
@@ -3396,7 +3396,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   await expect(editor).toBeVisible();
   await expect(toolbar.locator('.kui-toolbar__leading')).toBeHidden();
   await expect(toolbar.locator('.kui-toolbar__trailing')).toBeHidden();
-  await toolbar.getByRole('button', { name: 'Clear search' }).click();
+  await toolbar.getByRole('button', { name: 'Clear Search' }).click();
   await expect(editor).toBeVisible();
   await expect(editor).toBeFocused();
   await outsideControl.focus();
@@ -4678,7 +4678,7 @@ test('animation specimen exposes settings, transport, lifecycle, and reduced-mot
       fullPage: true,
     });
 
-  await page.getByRole('button', { name: 'Reduce motion' }).click();
+  await page.getByRole('button', { name: 'Reduce Motion' }).click();
   await page
     .locator('[data-animation-demo]')
     .getByRole('button', { name: 'Play' })
@@ -4782,13 +4782,13 @@ test('labels composition entries without repeating the kind in their names', asy
   ).toHaveCount(6);
   await expect(
     page.locator('[data-item-id="document-baseline"] .kui-list-item__label'),
-  ).toHaveText('Document baseline');
+  ).toHaveText('Document Baseline');
   await expect(
     page.locator('[data-item-id="application-tabs"] .kui-list-item__status'),
   ).toHaveText('Composition');
   await expect(
     page.locator('[data-item-id="application-tabs"] .kui-list-item__label'),
-  ).toHaveText('Application tabs');
+  ).toHaveText('Application Tabs');
   await expect(
     page.locator('[data-item-id="headers"] .kui-list-item__label'),
   ).toHaveText('Headers');
@@ -4960,7 +4960,7 @@ test('catalog supports its stateful controls', async ({
   await menuRelationships.locator('wa-button[slot="trigger"]').click();
   await expect(
     menuRelationships.locator('.kui-popup-menu__heading', {
-      hasText: 'Used by',
+      hasText: 'Used By',
     }),
   ).toBeVisible();
   await page.keyboard.press('Escape');
@@ -4976,7 +4976,7 @@ test('catalog supports its stateful controls', async ({
   const themeButton = page.locator('[data-action="toggle-theme"]');
   await themeButton.click();
   await expect(themeButton).toHaveAttribute('data-theme-preview', 'dark');
-  await expect(themeButton).toHaveAttribute('aria-label', 'Use light theme');
+  await expect(themeButton).toHaveAttribute('aria-label', 'Use Light Theme');
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
   await page.locator('[data-action="toggle-contrast"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-contrast/);
@@ -4989,7 +4989,7 @@ test('catalog supports its stateful controls', async ({
   ).toHaveAttribute('data-tab-bar-id', 'app-tab-selected');
   await expect(
     page.locator('[data-demo="tabs"] [data-kui-tab-list]').first(),
-  ).toHaveAttribute('aria-label', 'Selected AppTab specimen');
+  ).toHaveAttribute('aria-label', 'Selected AppTab Specimen');
   const guidelinesRoot = page.locator(
     '[data-demo="tabs"] .kui-app-tab[data-tab-id="guidelines"]',
   );
@@ -6734,7 +6734,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   await menu.evaluate((node) => node.removeAttribute('dir'));
 
   await page.goto('/?component=toolbar-control-group');
-  const demo = page.getByRole('region', { name: 'ToolbarControlGroup demo' });
+  const demo = page.getByRole('region', { name: 'ToolbarControlGroup Demo' });
   await expect
     .poll(() =>
       page.evaluate(() => customElements.get('wa-dropdown') !== undefined),
@@ -6772,7 +6772,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     nodes.map((node) => node.getBoundingClientRect().height),
   );
   expect(new Set(heights).size).toBe(1);
-  const compact = demo.getByRole('group', { name: 'Compact formatting' });
+  const compact = demo.getByRole('group', { name: 'Compact Formatting' });
   await expect(compact).toHaveAttribute('data-content', 'mixed');
   expect(
     Math.round(
@@ -6833,12 +6833,12 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'background-image',
     'none',
   );
-  const avatarChoices = demo.getByRole('group', { name: 'Profile view' });
+  const avatarChoices = demo.getByRole('group', { name: 'Profile View' });
   const primaryAvatar = avatarChoices.getByRole('button', {
-    name: 'Primary profile',
+    name: 'Primary Profile',
   });
   const secondaryAvatar = avatarChoices.getByRole('button', {
-    name: 'Secondary profile',
+    name: 'Secondary Profile',
   });
   await expect(avatarChoices).toHaveCSS('background-image', 'none');
   expect(
@@ -6874,7 +6874,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   await expect(dropdownItems.first()).toBeHidden();
   await demo
     .locator('wa-button[slot="trigger"]')
-    .filter({ hasText: 'Sort tickets' })
+    .filter({ hasText: 'Sort Tickets' })
     .click();
   await expect(dropdownItems.first()).toBeVisible();
   await dropdownItems.filter({ hasText: 'Priority' }).click();
@@ -6898,9 +6898,9 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     )
     .toBe(true);
   await expect(
-    demo.getByRole('button', { name: 'Pressed comparison' }).locator('..'),
+    demo.getByRole('button', { name: 'Pressed Comparison' }).locator('..'),
   ).toHaveCSS('background-color', 'rgb(72, 72, 74)');
-  await expect(demo.getByRole('group', { name: 'Dark navigation' })).toHaveCSS(
+  await expect(demo.getByRole('group', { name: 'Dark Navigation' })).toHaveCSS(
     'border-color',
     'rgb(53, 53, 54)',
   );
@@ -6993,8 +6993,8 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
       page.evaluate(() => customElements.get('wa-dropdown') !== undefined),
     )
     .toBe(true);
-  const demo = page.getByRole('region', { name: 'ToolbarControlGroup demo' });
-  const group = demo.getByRole('group', { name: 'Compact formatting' });
+  const demo = page.getByRole('region', { name: 'ToolbarControlGroup Demo' });
+  const group = demo.getByRole('group', { name: 'Compact Formatting' });
 
   const expectTriggerContentContained = async (
     trigger: Locator,
@@ -7031,7 +7031,7 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
 
   const popupTrigger = demo
     .locator('wa-button[slot="trigger"]')
-    .filter({ hasText: 'Sort tickets' });
+    .filter({ hasText: 'Sort Tickets' });
   const relatedTrigger = page
     .locator('[data-catalog-related]')
     .locator('wa-button[slot="trigger"]');
@@ -7298,7 +7298,7 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
   await expect(grip).toHaveAttribute('data-lucide', 'custom-resize-handle');
   await expect(grip).toHaveAttribute('aria-hidden', 'true');
   await expect(handle).toHaveAttribute('role', 'separator');
-  await expect(handle).toHaveAttribute('aria-label', 'Resize Catalog panel');
+  await expect(handle).toHaveAttribute('aria-label', 'Resize Catalog Panel');
   const separator = await handle.evaluate((element) => {
     const style = window.getComputedStyle(element, '::before');
     const probe = document.createElement('span');
@@ -7599,10 +7599,10 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
   const splitBar = tabBars.locator('[data-tab-bar-id="inspector-tab-bar"]');
   const splitTabs = splitBar.locator('[data-kui-tab-list]');
   const adjacentAction = splitBar.getByRole('button', {
-    name: 'Add inspector section',
+    name: 'Add Inspector Section',
   });
   const endAction = splitBar.getByRole('button', {
-    name: 'Create workspace item',
+    name: 'Create Workspace Item',
   });
   await expect(adjacentAction).toBeVisible();
   await expect(endAction).toBeVisible();
@@ -7724,7 +7724,7 @@ test('communicates preferred Kerf patterns on ecosystem alternatives', async ({
   }
 });
 
-test('renders controlled toolbar, rounded, and pill SegmentedControl variants', async ({
+test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', async ({
   page,
   browserName,
 }) => {
@@ -8034,15 +8034,15 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
   expect(
     await strip.evaluate((node) => node.scrollWidth > node.clientWidth),
   ).toBe(true);
-  const integration = bar.getByRole('tab', { name: 'Integration patterns' });
+  const integration = bar.getByRole('tab', { name: 'Integration Patterns' });
   await integration.click();
   await expect(integration).toHaveAttribute('aria-selected', 'true');
   await integration.press('Alt+Shift+ArrowRight');
   await expect(page.locator('[data-tab-order]')).toContainText(
-    'Release notes · Integration patterns',
+    'Release Notes · Integration Patterns',
   );
   await expect(
-    bar.getByRole('tab', { name: 'Integration patterns' }),
+    bar.getByRole('tab', { name: 'Integration Patterns' }),
   ).toBeFocused();
   await bar.getByRole('button', { name: 'Add Tab' }).click();
   await expect(bar.getByRole('tab')).toHaveCount(8);
@@ -8065,7 +8065,7 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
   await expect.poll(() => strip.evaluate((node) => node.scrollLeft)).toBe(0);
   await source.dragTo(target, { targetPosition: { x: 100, y: 16 } });
   await expect(page.locator('[data-tab-order]')).toContainText(
-    'Design guidance · Components',
+    'Design Guidance · Components',
   );
   if (browserName === 'chromium')
     await page.screenshot({

@@ -31,7 +31,7 @@ test('ChoiceChips selects with native radio keyboard semantics and wraps as sepa
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=choice-chips');
   const demo = page.locator('[data-demo="choice-chips"]');
-  const group = demo.getByRole('radiogroup', { name: 'Command color' });
+  const group = demo.getByRole('radiogroup', { name: 'Command Color' });
   await expect(group.getByRole('radio')).toHaveCount(9);
   await expect(group.getByRole('radio', { name: 'Blue' })).toBeChecked();
 
@@ -65,7 +65,7 @@ test('ChoiceChips selects with native radio keyboard semantics and wraps as sepa
   await expect(page.locator('.catalog-log')).toHaveText('Choice: purple');
 
   // A disabled choice is skipped and cannot be chosen.
-  const view = demo.getByRole('radiogroup', { name: 'Board view' });
+  const view = demo.getByRole('radiogroup', { name: 'Board View' });
   await expect(view.getByRole('radio', { name: 'Calendar' })).toBeDisabled();
 
   if (browserName === 'chromium')

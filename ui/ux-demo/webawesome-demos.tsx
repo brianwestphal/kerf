@@ -107,7 +107,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </Row>
   ),
   'wa-button-group': () => (
-    <wa-button-group label="Text alignment">
+    <wa-button-group label="Text Alignment">
       <wa-button appearance="outlined">Start</wa-button>
       <wa-button appearance="outlined">Center</wa-button>
       <wa-button appearance="outlined">End</wa-button>
@@ -163,7 +163,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-color-picker': () => (
     <wa-color-picker
-      label="Workspace accent"
+      label="Workspace Accent"
       value="#0088ff"
       format="hex"
       with-opacity
@@ -172,7 +172,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-input': () => (
     <List gap="xs">
       <wa-input
-        label="Project name"
+        label="Project Name"
         value="Component library"
         hint="Visible to collaborators"
         with-clear
@@ -182,14 +182,14 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-known-date': () => (
     <wa-known-date
-      label="Release date"
+      label="Release Date"
       value="2026-09-11"
       hint="Enter the date you already know."
     />
   ),
   'wa-number-input': () => (
     <wa-number-input
-      label="Review limit"
+      label="Review Limit"
       value="12"
       min="1"
       max="50"
@@ -197,7 +197,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     />
   ),
   'wa-option': () => (
-    <wa-select label="Option states" value="selected">
+    <wa-select label="Option States" value="selected">
       <wa-option value="available">Available option</wa-option>
       <wa-option value="selected">Selected option</wa-option>
       <wa-option value="disabled" disabled>
@@ -207,14 +207,14 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-otp-input': () => (
     <wa-otp-input
-      label="Verification code"
+      label="Verification Code"
       value="274816"
       format="### ###"
       hint="Six-digit code"
     />
   ),
   'wa-radio': () => (
-    <div role="group" aria-label="Radio states">
+    <div role="group" aria-label="Radio States">
       <List gap="xs">
         <wa-radio value="selected" checked>
           Selected choice
@@ -227,13 +227,13 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </div>
   ),
   'wa-radio-group': () => (
-    <wa-radio-group label="Layout density" value="balanced">
+    <wa-radio-group label="Layout Density" value="balanced">
       <wa-radio value="compact">Compact</wa-radio>
       <wa-radio value="balanced">Balanced</wa-radio>
       <wa-radio value="roomy">Roomy</wa-radio>
     </wa-radio-group>
   ),
-  'wa-rating': () => <wa-rating label="Component quality" value="4" />,
+  'wa-rating': () => <wa-rating label="Component Quality" value="4" />,
   'wa-select': () => (
     <wa-select label="Priority" value="high" hint="Used to order the queue">
       <wa-option value="normal">Normal</wa-option>
@@ -253,7 +253,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-textarea': () => (
     <wa-textarea
-      label="Release note"
+      label="Release Note"
       rows="4"
       value="Every free component has a focused catalog route."
       hint="Markdown is supported."
@@ -261,7 +261,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-time-input': () => (
     <wa-time-input
-      label="Review time"
+      label="Review Time"
       value="14:30"
       hour-format="24"
       with-now
@@ -271,17 +271,17 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-accordion': () => (
     <List gap="xs">
       <wa-accordion appearance="sunken">
-        <wa-accordion-item label="Sunken disclosure" expanded>
+        <wa-accordion-item label="Sunken Disclosure" expanded>
           The lowered surface follows the same framed geometry.
         </wa-accordion-item>
       </wa-accordion>
       <wa-accordion appearance="outlined">
-        <wa-accordion-item label="Outlined disclosure" expanded>
+        <wa-accordion-item label="Outlined Disclosure" expanded>
           The framed header uses the roomier container inset.
         </wa-accordion-item>
       </wa-accordion>
       <wa-accordion appearance="plain">
-        <wa-accordion-item label="Plain disclosure" expanded>
+        <wa-accordion-item label="Plain Disclosure" expanded>
           Header and body align directly with surrounding content.
         </wa-accordion-item>
       </wa-accordion>
@@ -289,7 +289,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-accordion-item': () => (
     <wa-accordion>
-      <wa-accordion-item label="Focused accordion item" expanded>
+      <wa-accordion-item label="Focused Accordion Item" expanded>
         This item remains usable inside its required parent composition.
       </wa-accordion-item>
     </wa-accordion>
@@ -311,17 +311,17 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-details': () => (
     <List gap="xs">
-      <wa-details appearance="sunken" summary="Sunken compatibility notes" open>
+      <wa-details appearance="sunken" summary="Sunken Compatibility Notes" open>
         <Text>The lowered surface follows the same framed geometry.</Text>
       </wa-details>
       <wa-details
         appearance="outlined"
-        summary="Outlined compatibility notes"
+        summary="Outlined Compatibility Notes"
         open
       >
         <Text>The framed header uses the roomier container inset.</Text>
       </wa-details>
-      <wa-details appearance="plain" summary="Plain compatibility notes" open>
+      <wa-details appearance="plain" summary="Plain Compatibility Notes" open>
         <Text>Header and body align directly with surrounding content.</Text>
       </wa-details>
     </List>
@@ -337,7 +337,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-dialog
         id="catalog-wa-dialog"
         class="hide-actions"
-        label="Publish component library"
+        label="Publish Component Library"
         with-footer
       >
         <Text>Review the version and release notes before publishing.</Text>
@@ -388,7 +388,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </List>
   ),
   'wa-page': () => (
-    <SunkenPanel ariaLabel="Compact page example">
+    <SunkenPanel ariaLabel="Compact Page Example">
       <wa-page mobile-breakpoint="0">
         <Text variant="span" slot="header">
           <strong>Workspace</strong>
@@ -416,7 +416,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </wa-scroller>
   ),
   'wa-split-panel': () => (
-    <SunkenPanel ariaLabel="Resizable split panel example">
+    <SunkenPanel ariaLabel="Resizable Split Panel Example">
       <wa-split-panel position="42">
         <List hAlign="center" vAlign="middle" gap="xs" slot="start">
           <strong>Navigator</strong>
@@ -435,14 +435,14 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 
   'wa-breadcrumb': () => (
-    <wa-breadcrumb label="Current location">
+    <wa-breadcrumb label="Current Location">
       <wa-breadcrumb-item href="#workspace">Workspace</wa-breadcrumb-item>
       <wa-breadcrumb-item href="#components">Components</wa-breadcrumb-item>
       <wa-breadcrumb-item>Theme</wa-breadcrumb-item>
     </wa-breadcrumb>
   ),
   'wa-breadcrumb-item': () => (
-    <wa-breadcrumb label="Breadcrumb item states">
+    <wa-breadcrumb label="Breadcrumb Item States">
       <wa-breadcrumb-item href="#parent">Parent link</wa-breadcrumb-item>
       <wa-breadcrumb-item>Current page</wa-breadcrumb-item>
     </wa-breadcrumb>
@@ -454,7 +454,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       page="8"
       with-edges
       with-summary
-      label="Component results"
+      label="Component Results"
     />
   ),
   'wa-tab': () => (
@@ -577,15 +577,15 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-progress-bar': () => (
     <List gap="xs">
-      <wa-progress-bar value="72" label="Build progress">
+      <wa-progress-bar value="72" label="Build Progress">
         72%
       </wa-progress-bar>
-      <wa-progress-bar label="Checking dependencies" />
+      <wa-progress-bar label="Checking Dependencies" />
     </List>
   ),
   'wa-progress-ring': () => (
     <Row hAlign="center" vAlign="middle" wrap>
-      <wa-progress-ring value="72" label="Build progress">
+      <wa-progress-ring value="72" label="Build Progress">
         72%
       </wa-progress-ring>
       <wa-progress-ring label="Loading" />
@@ -653,15 +653,15 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 
   'wa-animated-image': () => (
-    <SunkenPanel ariaLabel="Animated image example">
+    <SunkenPanel ariaLabel="Animated Image Example">
       <wa-animated-image src={demoImage} alt="Blue geometric Kerf preview" />
     </SunkenPanel>
   ),
   'wa-avatar': () => (
     <Row hAlign="center" vAlign="middle" wrap>
-      <wa-avatar initials="KW" label="Kerf workspace" />
-      <wa-avatar initials="UI" label="UI team" />
-      <wa-avatar label="Fallback icon" />
+      <wa-avatar initials="KW" label="Kerf Workspace" />
+      <wa-avatar initials="UI" label="UI Team" />
+      <wa-avatar label="Fallback Icon" />
     </Row>
   ),
   'wa-carousel': () => (
@@ -716,10 +716,10 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </List>
   ),
   'wa-qr-code': () => (
-    <wa-qr-code value="https://kerfjs.dev" label="Kerf website" size="160" />
+    <wa-qr-code value="https://kerfjs.dev" label="Kerf Website" size="160" />
   ),
   'wa-zoomable-frame': () => (
-    <SunkenPanel ariaLabel="Zoomable frame example">
+    <SunkenPanel ariaLabel="Zoomable Frame Example">
       <wa-zoomable-frame srcdoc={demoFrame} zoom="1" loading="eager" />
     </SunkenPanel>
   ),
@@ -727,7 +727,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-animation': () => (
     <div data-animation-demo>
       <List gap="xl">
-        <SunkenPanel ariaLabel="Animation preview">
+        <SunkenPanel ariaLabel="Animation Preview">
           <wa-animation
             name="bounce"
             duration="900"
@@ -745,7 +745,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
             Ready to play
           </output>
         </SunkenPanel>
-        <section aria-label="Animation settings">
+        <section aria-label="Animation Settings">
           <List gap="m">
             <Select
               name="animation-preset"
@@ -814,7 +814,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </div>
   ),
   'wa-format-bytes': () => (
-    <ValueTable label="Byte formatting examples">
+    <ValueTable label="Byte Formatting Examples">
       <ValueTableRow
         label="Binary"
         value={<wa-format-bytes value="10485760" />}
@@ -826,7 +826,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </ValueTable>
   ),
   'wa-format-date': () => (
-    <ValueTable label="Date formatting examples">
+    <ValueTable label="Date Formatting Examples">
       <ValueTableRow
         label="Date"
         value={
@@ -853,7 +853,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </ValueTable>
   ),
   'wa-format-number': () => (
-    <ValueTable label="Number formatting examples">
+    <ValueTable label="Number Formatting Examples">
       <ValueTableRow label="Number" value={<wa-format-number value="1284" />} />
       <ValueTableRow
         label="Percent"
@@ -894,7 +894,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           intersect-class="is-intersecting"
         >
           <div data-observer-target hidden>
-            <SunkenPanel ariaLabel="Observed intersection target">
+            <SunkenPanel ariaLabel="Observed Intersection Target">
               <strong>Observed intersection target</strong>
               <Text variant="span" tone="quiet" size="compact">
                 The helper emits when this surface enters or leaves its root.
@@ -909,7 +909,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     <div data-observer-demo="mutation">
       <wa-mutation-observer attr="data-revision" child-list>
         <div data-observer-target data-revision="0">
-          <SunkenPanel ariaLabel="Observed mutation target">
+          <SunkenPanel ariaLabel="Observed Mutation Target">
             <strong>Observed mutation target</strong>
             <Text variant="span" tone="quiet" size="compact" data-observer-copy>
               The helper reports attribute and child-list changes.
@@ -943,7 +943,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </List>
   ),
   'wa-popup': () => (
-    <SunkenPanel ariaLabel="Positioned popup example">
+    <SunkenPanel ariaLabel="Positioned Popup Example">
       <wa-popup active placement="bottom" distance="10" arrow>
         <wa-button slot="anchor" appearance="outlined">
           Anchor
@@ -977,7 +977,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <div>
         <wa-resize-observer>
           <div data-observer-target>
-            <SunkenPanel ariaLabel="Observed resize target">
+            <SunkenPanel ariaLabel="Observed Resize Target">
               <strong>Observed resize target</strong>
               <Text variant="span" tone="quiet" size="compact">
                 The helper emits when this preview changes dimensions.

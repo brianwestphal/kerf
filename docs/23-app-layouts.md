@@ -854,7 +854,7 @@ it down. Covered by `ui/tests/browser/covered-floating-toolbar.spec.ts`
 breakpoint crossings, bottom drawers hiding nothing) and the updated
 `restore-anchor.spec.ts` / `workbench-catalog.spec.ts` assertions.
 
-**Implementation:** shipped (KF-T17Q1X). UX-demo recipe (the "Collapsible sidebar"
+**Implementation:** shipped (KF-T17Q1X). UX-demo recipe (the "Collapsible Sidebar"
 recipe: a left rail + bottom drawer with toggles, compact overlay, and persistence)
 and three-engine Playwright coverage of collapse/expand, focus move/restore, the
 compact overlay + Escape/backdrop dismiss, and Tab trap shipped in KF-JP6KVY

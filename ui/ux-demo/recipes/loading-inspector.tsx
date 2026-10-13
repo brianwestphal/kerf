@@ -50,7 +50,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     return (
       <Pane
         element="section"
-        label="Ticket inspector"
+        label="Ticket Inspector"
         rootAttributes={{
           'data-recipe': 'recipe-loading-inspector',
           'data-inspector-loading': String(p),
@@ -58,7 +58,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         header={
           <>
             <Toolbar
-              label="Ticket inspector"
+              label="Ticket Inspector"
               responsive="wrap"
               leading={
                 <>
@@ -84,7 +84,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                     data-action="recipe-action"
                     data-recipe-command="toggle"
                   >
-                    {p ? 'Show loaded' : 'Show loading'}
+                    {p ? 'Show Loaded' : 'Show Loading'}
                   </button>
                 </ToolbarControlGroup>
               }
@@ -102,7 +102,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         }
       >
         <section>
-          <ValueTable label="Ticket details">
+          <ValueTable label="Ticket Details">
             <ValueTableRow
               label="Status"
               value="In review"
@@ -133,7 +133,7 @@ export const createRecipe: RecipeFactory = (announce) => {
           />
           <SegmentedControl
             id="recipe-inspector-view"
-            label="Inspector view"
+            label="Inspector View"
             value="details"
             appearance="toolbar"
             shape="pill"
@@ -162,14 +162,14 @@ export const createRecipe: RecipeFactory = (announce) => {
           <ListItem
             action="recipe-action"
             itemId="reassign"
-            label="Reassign ticket"
+            label="Reassign Ticket"
             icon={icon(Inbox, 'inbox')}
             placeholder={p}
           />
           <ListItem
             action="recipe-action"
             itemId="watch"
-            label="Watch for changes"
+            label="Watch for Changes"
             placeholder={p}
           />
         </section>

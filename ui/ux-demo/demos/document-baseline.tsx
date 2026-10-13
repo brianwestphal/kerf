@@ -28,7 +28,7 @@ export function DocumentBaselineDemo() {
         <div class="kui-app-root" data-document-baseline-root>
           <SplitView
             id="catalog-document-baseline-split"
-            label="Application shell"
+            label="Application Shell"
             listTitle="Mailboxes"
             detailTitle="Inbox"
             list={

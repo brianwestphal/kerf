@@ -28,7 +28,7 @@ async function openSelectDemo(page: Page, width: number) {
   await page.setViewportSize({ width, height: 800 });
   await page.goto('/?component=select');
   const pin = page.locator(
-    '[data-demo="select"] button[aria-label="Pin view"]',
+    '[data-demo="select"] button[aria-label="Pin View"]',
   );
   await pin.scrollIntoViewIfNeeded();
   const group = pin.locator(
@@ -41,7 +41,7 @@ test('hovering an icon-only toolbar button shows its name after a delay', async 
   page,
 }) => {
   const { pin, group } = await openSelectDemo(page, 1100);
-  await expect(pin).toHaveAccessibleName('Pin view');
+  await expect(pin).toHaveAccessibleName('Pin View');
   const before = await group.ariaSnapshot();
 
   const hoveredAt = Date.now();
@@ -49,26 +49,26 @@ test('hovering an icon-only toolbar button shows its name after a delay', async 
   // Not at once: the tag waits 500ms for the pointer to rest. Only judge
   // "not yet" while the delay has really not elapsed, so a loaded machine
   // that stretches the check past it cannot fail the test.
-  const shownEarly = await layerTagBody(page, 'Pin view').isVisible();
+  const shownEarly = await layerTagBody(page, 'Pin View').isVisible();
   if (Date.now() - hoveredAt < 450) expect(shownEarly).toBe(false);
-  await expect(layerTagBody(page, 'Pin view')).toBeVisible();
-  await expect(layerTag(page, 'Pin view')).toHaveAttribute(
+  await expect(layerTagBody(page, 'Pin View')).toBeVisible();
+  await expect(layerTag(page, 'Pin View')).toHaveAttribute(
     'aria-hidden',
     'true',
   );
   // Below the button, clear of it, in the theme's help-tag palette.
   const [tagBox, pinBox] = await Promise.all([
-    layerTagBody(page, 'Pin view').boundingBox(),
+    layerTagBody(page, 'Pin View').boundingBox(),
     pin.boundingBox(),
   ]);
   expect(tagBox!.y).toBeGreaterThanOrEqual(pinBox!.y + pinBox!.height);
-  const background = await layerTagBody(page, 'Pin view').evaluate(
+  const background = await layerTagBody(page, 'Pin View').evaluate(
     (body) => window.getComputedStyle(body).backgroundColor,
   );
   expect(background).not.toBe('rgba(0, 0, 0, 0)');
 
   // The name is unchanged and the toolbar's accessibility tree is identical.
-  await expect(pin).toHaveAccessibleName('Pin view');
+  await expect(pin).toHaveAccessibleName('Pin View');
   expect(await pin.getAttribute('aria-describedby')).toBeNull();
   expect(await group.ariaSnapshot()).toBe(before);
 
@@ -78,18 +78,18 @@ test('hovering an icon-only toolbar button shows its name after a delay', async 
   await expect(
     filter.locator('wa-tooltip.kui-help-tag [part~="body"]'),
   ).toBeVisible({ timeout: 300 });
-  await expect(layerTagBody(page, 'Pin view')).toBeHidden();
+  await expect(layerTagBody(page, 'Pin View')).toBeHidden();
   await pin.hover();
-  await expect(layerTagBody(page, 'Pin view')).toBeVisible({ timeout: 300 });
+  await expect(layerTagBody(page, 'Pin View')).toBeVisible({ timeout: 300 });
 
   // A press hides it and it stays hidden while the pointer stays.
   await pin.click();
-  await expect(layerTagBody(page, 'Pin view')).toBeHidden();
+  await expect(layerTagBody(page, 'Pin View')).toBeHidden();
   await page.waitForTimeout(700);
-  await expect(layerTagBody(page, 'Pin view')).toBeHidden();
+  await expect(layerTagBody(page, 'Pin View')).toBeHidden();
 
   await page.mouse.move(2, 2);
-  await expect(layerTagBody(page, 'Pin view')).toBeHidden();
+  await expect(layerTagBody(page, 'Pin View')).toBeHidden();
 });
 
 test('keyboard focus shows the tag at once; a click focus and Escape hide it', async ({
@@ -102,19 +102,19 @@ test('keyboard focus shows the tag at once; a click focus and Escape hide it', a
   await filter.getByRole('combobox').focus();
   await keyboardFocus(page, pin, 'Shift+Tab');
   await expect(pin).toBeFocused();
-  await expect(layerTagBody(page, 'Pin view')).toBeVisible({ timeout: 300 });
-  const box = await layerTagBody(page, 'Pin view').boundingBox();
+  await expect(layerTagBody(page, 'Pin View')).toBeVisible({ timeout: 300 });
+  const box = await layerTagBody(page, 'Pin View').boundingBox();
   // A tag near the narrow viewport's edge keeps 8px clear of it.
   expect(box!.x).toBeGreaterThanOrEqual(8);
   expect(box!.x + box!.width).toBeLessThanOrEqual(390 - 8);
 
   await page.keyboard.press('Escape');
-  await expect(layerTagBody(page, 'Pin view')).toBeHidden();
+  await expect(layerTagBody(page, 'Pin View')).toBeHidden();
   // It returns once focus leaves and comes back.
   await page.keyboard.press('Tab');
   await keyboardFocus(page, pin, 'Shift+Tab');
   await expect(pin).toBeFocused();
-  await expect(layerTagBody(page, 'Pin view')).toBeVisible({ timeout: 300 });
+  await expect(layerTagBody(page, 'Pin View')).toBeVisible({ timeout: 300 });
 
   // A pointer press focuses without a tag.
   await page.mouse.move(2, 2);
@@ -122,7 +122,7 @@ test('keyboard focus shows the tag at once; a click focus and Escape hide it', a
   await pin.click();
   // WebKit never focuses a button on a click; elsewhere the click focuses it.
   if (browserName !== 'webkit') await expect(pin).toBeFocused();
-  await expect(layerTagBody(page, 'Pin view')).toBeHidden();
+  await expect(layerTagBody(page, 'Pin View')).toBeHidden();
 });
 
 test('a toolbar button with a native title keeps it and gets no second tag', async ({
@@ -130,11 +130,11 @@ test('a toolbar button with a native title keeps it and gets no second tag', asy
 }) => {
   const { pin } = await openSelectDemo(page, 1100);
   await pin.evaluate((button) => {
-    button.setAttribute('title', 'Pin view');
+    button.setAttribute('title', 'Pin View');
   });
   await pin.hover();
   await page.waitForTimeout(800);
-  await expect(layerTag(page, 'Pin view')).toHaveCount(0);
+  await expect(layerTag(page, 'Pin View')).toHaveCount(0);
   await pin.focus();
-  await expect(layerTag(page, 'Pin view')).toHaveCount(0);
+  await expect(layerTag(page, 'Pin View')).toHaveCount(0);
 });

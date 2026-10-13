@@ -6,7 +6,7 @@ test('TokenSearchField trailing action fills its slot and activates by pointer a
 }) => {
   await page.goto('/?component=token-search-field');
   const demo = page.locator('[data-demo="token-search-field"]');
-  const button = demo.getByRole('button', { name: 'Search help' });
+  const button = demo.getByRole('button', { name: 'Search Help' });
   await page.evaluate(() => {
     document.body.dataset.searchHelpClicks = '0';
     document.addEventListener('click', (event) => {
@@ -42,7 +42,7 @@ test('TokenSearchField trailing action fills its slot and activates by pointer a
       appearance: 'none',
       padding: '0px',
       borderWidth: '0px',
-      label: 'Search help',
+      label: 'Search Help',
       action: 'show-token-search-help',
     });
     if (browserName === 'chromium')

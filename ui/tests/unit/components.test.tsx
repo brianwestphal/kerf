@@ -887,10 +887,10 @@ describe('production UI primitives', () => {
 
     const defaults = asHtml(List({ children: <span>Only</span> }));
     const grid = asHtml(
-      List({ selectionMode: 'multiple', ariaLabel: 'Demand lines' }),
+      List({ selectionMode: 'multiple', ariaLabel: 'Demand Lines' }),
     );
     expect(grid).toContain('role="grid"');
-    expect(grid).toContain('aria-label="Demand lines"');
+    expect(grid).toContain('aria-label="Demand Lines"');
     expect(grid).toContain('aria-multiselectable="true"');
     expect(() => List({ selectionMode: 'multiple' })).toThrow(
       'requires an ariaLabel',
@@ -900,14 +900,14 @@ describe('production UI primitives', () => {
         inset: 'document',
         rootAttributes: {
           role: 'region',
-          'aria-label': 'Ticket inspector',
+          'aria-label': 'Ticket Inspector',
           'aria-busy': 'true',
           'data-panel': 'inspector',
         },
       }),
     );
     expect(region).toContain(
-      'role="region" aria-label="Ticket inspector" aria-busy="true" class="kui-list"',
+      'role="region" aria-label="Ticket Inspector" aria-busy="true" class="kui-list"',
     );
     expect(region).toContain('data-inset="document"');
     expect(
@@ -923,7 +923,7 @@ describe('production UI primitives', () => {
     const ownedGrid = asHtml(
       List({
         selectionMode: 'multiple',
-        ariaLabel: 'Demand lines',
+        ariaLabel: 'Demand Lines',
         rootAttributes: {
           role: 'region',
           'aria-label': 'Overridden',
@@ -932,7 +932,7 @@ describe('production UI primitives', () => {
       }),
     );
     expect(ownedGrid).toContain(
-      'aria-describedby="hint" role="grid" aria-label="Demand lines" aria-multiselectable="true"',
+      'aria-describedby="hint" role="grid" aria-label="Demand Lines" aria-multiselectable="true"',
     );
     expect(ownedGrid).not.toContain('Overridden');
     expect(defaults).toContain(
@@ -1978,7 +1978,7 @@ describe('production UI primitives', () => {
       ListHeader({
         label: 'Workspace',
         action: 'add',
-        actionLabel: 'Add workspace',
+        actionLabel: 'Add Workspace',
         actionIcon: icon,
         rootAttributes: widenedHeaderRoot,
         triggerAttributes: widenedTrigger,
@@ -2010,7 +2010,7 @@ describe('production UI primitives', () => {
     expect(trigger?.getAttribute('popovertargetaction')).toBe('show');
     expect(trigger?.getAttribute('aria-controls')).toBe('workspace-popover');
     expect(trigger?.getAttribute('aria-haspopup')).toBe('dialog');
-    expect(trigger?.getAttribute('aria-label')).toBe('Add workspace');
+    expect(trigger?.getAttribute('aria-label')).toBe('Add Workspace');
     expect(trigger?.getAttribute('role')).toBeNull();
     expect(trigger?.disabled).toBe(false);
   });
@@ -2619,7 +2619,7 @@ describe('production UI primitives', () => {
       Select({
         name: 'round-icon',
         value: 'quiet',
-        ariaLabel: 'Workspace sort',
+        ariaLabel: 'Workspace Sort',
         selectedPresentation: 'icon-only',
         caret: false,
         choices: [{ value: 'quiet', label: 'Quiet', icon: Check }],
@@ -2630,7 +2630,7 @@ describe('production UI primitives', () => {
       Select({
         name: 'custom-round-icon',
         value: 'quiet',
-        ariaLabel: 'Workspace sort',
+        ariaLabel: 'Workspace Sort',
         selectedPresentation: 'icon-only',
         caret: false,
         renderSelected: () => <strong>Sort icon</strong>,
@@ -2700,7 +2700,7 @@ describe('production UI primitives', () => {
       Select({
         name: 'view',
         value: 'queue',
-        ariaLabel: 'Ticket view',
+        ariaLabel: 'Ticket View',
         presentation: 'title',
         focusRingInset: true,
         choices: [{ value: 'queue', label: 'Queue' }],
@@ -2777,7 +2777,7 @@ describe('production UI primitives', () => {
         name: 'types',
         multiple: true,
         value: ['files'],
-        label: 'Item types',
+        label: 'Item Types',
         choices: [
           { value: 'files', label: 'Files' },
           {
@@ -2796,7 +2796,7 @@ describe('production UI primitives', () => {
     );
     expect(multiple).toContain('data-select-action="all"');
     expect(multiple).toContain('data-select-action="clear"');
-    expect(multiple).toContain('role="group" aria-label="Item types"');
+    expect(multiple).toContain('role="group" aria-label="Item Types"');
     const single = asHtml(
       Select({
         name: 'type',
@@ -2874,7 +2874,7 @@ describe('production UI primitives', () => {
           name: 'label-filter',
           multiple: true,
           value,
-          ariaLabel: 'Filter by label',
+          ariaLabel: 'Filter by Label',
           presentation: 'toolbar-borderless',
           selectedPresentation: 'icon-only',
           triggerIcon: <LucideIcon icon={Circle} name="funnel" />,
@@ -2903,7 +2903,7 @@ describe('production UI primitives', () => {
     expect(count.getAttribute('aria-hidden')).toBe('true');
     expect(count.textContent).toBe('2');
     const name = select.querySelector(':scope > [slot="label"]')!;
-    expect(name.textContent).toBe('Filter by label');
+    expect(name.textContent).toBe('Filter by Label');
     const summary = name.querySelector('.kui-select__name-summary')!;
     expect(summary.hasAttribute('data-morph-skip')).toBe(true);
     expect(select.classList.contains('kui-select--label-hidden')).toBe(true);
@@ -2968,7 +2968,7 @@ describe('production UI primitives', () => {
     const control = asHtml(
       SegmentedControl({
         id: 'inspector-section',
-        label: 'Inspector section',
+        label: 'Inspector Section',
         value: 'activity',
         action: 'choose-section',
         appearance: 'outlined',
@@ -2981,7 +2981,7 @@ describe('production UI primitives', () => {
           {
             value: 'activity',
             label: 'Activity',
-            content: <strong>Recent activity</strong>,
+            content: <strong>Recent Activity</strong>,
             title: 'Show recent activity',
           },
           { value: 'files', label: 'Files', disabled: true },
@@ -2990,7 +2990,7 @@ describe('production UI primitives', () => {
     );
     expect(control).toContain('class="kui-segmented-control scoped-palette"');
     expect(control).toContain(
-      'data-segmented-control-id="inspector-section" data-value="activity" data-appearance="outlined" data-shape="pill" data-size="small" data-layout="equal" role="group" aria-label="Inspector section"',
+      'data-segmented-control-id="inspector-section" data-value="activity" data-appearance="outlined" data-shape="pill" data-size="small" data-layout="equal" role="group" aria-label="Inspector Section"',
     );
     expect(control).toContain(
       'data-action="choose-section" data-segment-value="summary" data-selected="false" aria-label="Summary" aria-pressed="false"',
@@ -2998,7 +2998,7 @@ describe('production UI primitives', () => {
     expect(control).toContain(
       'data-segment-value="activity" data-selected="true" aria-label="Activity" aria-pressed="true" title="Show recent activity"',
     );
-    expect(control).toContain('<strong>Recent activity</strong>');
+    expect(control).toContain('<strong>Recent Activity</strong>');
     expect(control).toContain(
       'data-segment-value="files" data-selected="false" aria-label="Files" aria-pressed="false" disabled tabindex="0"',
     );

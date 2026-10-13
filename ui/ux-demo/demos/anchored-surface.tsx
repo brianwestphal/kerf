@@ -4,7 +4,7 @@ import { Text } from '@kerfjs/ui/text';
 export function AnchoredSurfaceDemo() {
   return (
     <CatalogExampleStack
-      label="AnchoredSurface demo"
+      label="AnchoredSurface Demo"
       rootAttributes={{ 'data-demo': 'anchored-surface' }}
     >
       <CatalogExample label="Interactive help" align="inline-control">
@@ -25,7 +25,7 @@ export function AnchoredSurfaceDemo() {
         <button type="button" data-anchored-surface-open-modal>
           Open Dialog
         </button>
-        <wa-dialog data-anchored-surface-modal label="Field settings">
+        <wa-dialog data-anchored-surface-modal label="Field Settings">
           <Text>Dialog content can open interactive anchored help.</Text>
           <button type="button" data-anchored-surface-trigger="modal">
             Explain in Dialog

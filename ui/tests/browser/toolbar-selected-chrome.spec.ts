@@ -18,7 +18,7 @@ test('a pressed control can opt out of selected chrome, per control or per group
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=toolbar-control-group');
   const demo = page.locator('[data-demo="toolbar-control-group"]');
-  const optedOut = demo.getByRole('button', { name: 'Up next' });
+  const optedOut = demo.getByRole('button', { name: 'Up Next' });
   const selected = demo.getByRole('button', { name: 'Featured' });
   await expect(optedOut).toHaveAttribute('aria-pressed', 'true');
   await expect(selected).toHaveAttribute('aria-pressed', 'true');

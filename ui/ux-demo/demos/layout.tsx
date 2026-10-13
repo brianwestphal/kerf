@@ -12,7 +12,7 @@ import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 export function LayoutDemo() {
   return (
     <CatalogExampleStack
-      label="Semantic layout composition"
+      label="Semantic Layout Composition"
       rootAttributes={{ 'data-demo': 'layout' }}
     >
       <CatalogExample label="Pane with child-owned content geometry">
@@ -20,7 +20,7 @@ export function LayoutDemo() {
           contentElement="section"
           header={
             <Toolbar
-              label="Semantic layout"
+              label="Semantic Layout"
               leading={
                 <ToolbarText
                   text="Semantic Layout"

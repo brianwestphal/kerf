@@ -6,7 +6,7 @@ test('SunkenPanel owns one lowered 8px inset and vertical content stack', async 
 }) => {
   await page.goto('/?component=sunken-panel');
 
-  const named = page.getByRole('region', { name: 'Release workspace' });
+  const named = page.getByRole('region', { name: 'Release Workspace' });
   await expect(named).toBeVisible();
   const geometry = await named.evaluate((element) => {
     const style = window.window.getComputedStyle(element);
@@ -48,9 +48,9 @@ test('SunkenPanel fills a frame and takes remaining flex space without a wrapper
   page,
 }, testInfo) => {
   await page.goto('/?component=sunken-panel');
-  const growing = page.getByRole('region', { name: 'Growing work surface' });
+  const growing = page.getByRole('region', { name: 'Growing Work Surface' });
   const fullHeight = page.getByRole('region', {
-    name: 'Full-height work surface',
+    name: 'Full-Height Work Surface',
   });
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 850 });
@@ -58,10 +58,10 @@ test('SunkenPanel fills a frame and takes remaining flex space without a wrapper
     await expect(fullHeight).toHaveAttribute('data-fill', 'true');
     const geometry = await page.evaluate(() => {
       const growing = document.querySelector<HTMLElement>(
-        '[aria-label="Growing work surface"]',
+        '[aria-label="Growing Work Surface"]',
       )!;
       const fullHeight = document.querySelector<HTMLElement>(
-        '[aria-label="Full-height work surface"]',
+        '[aria-label="Full-Height Work Surface"]',
       )!;
       return {
         growingHeight: growing.getBoundingClientRect().height,
@@ -96,13 +96,13 @@ test('shared translucent sunken surfaces compound at each nesting level', async 
     if (theme === 'dark')
       await page.locator('[data-action="toggle-theme"]').click();
     await expect(
-      page.getByRole('region', { name: 'First layer', exact: true }),
+      page.getByRole('region', { name: 'First Layer', exact: true }),
     ).toHaveCSS(
       'color',
       theme === 'dark' ? 'rgb(245, 245, 247)' : 'rgb(29, 29, 31)',
     );
     const result = await page.evaluate(() => {
-      const panels = ['First layer', 'Second layer', 'Third layer'].map(
+      const panels = ['First Layer', 'Second Layer', 'Third Layer'].map(
         (name) =>
           document.querySelector<HTMLElement>(`[aria-label="${name}"]`)!,
       );
@@ -145,7 +145,7 @@ test('shared translucent sunken surfaces compound at each nesting level', async 
         };
       });
       const pane = document.querySelector(
-        '[aria-label="Layered pane"] .kui-pane__content',
+        '[aria-label="Layered Pane"] .kui-pane__content',
       )!;
       const card = document.querySelector(
         '[data-demo="sunken-panel"] wa-card',
@@ -179,7 +179,7 @@ test('shared translucent sunken surfaces compound at each nesting level', async 
     for (const width of [1200, 390]) {
       await page.setViewportSize({ width, height: 900 });
       const specimen = page.getByRole('region', {
-        name: 'First layer',
+        name: 'First Layer',
         exact: true,
       });
       await expect(specimen).toBeVisible();
@@ -196,7 +196,7 @@ test('shared translucent sunken surfaces compound at each nesting level', async 
   await button.focus();
   await expect(button).toBeFocused();
   await page
-    .getByRole('region', { name: 'First layer', exact: true })
+    .getByRole('region', { name: 'First Layer', exact: true })
     .screenshot({ path: testInfo.outputPath('sunken-forced-colors.png') });
 });
 
@@ -206,7 +206,7 @@ test('sunken surfaces carry the generated grain texture, which an app can opt ou
   for (const colorScheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme });
     await page.goto('/?component=sunken-panel');
-    const panel = page.getByRole('region', { name: 'Release workspace' });
+    const panel = page.getByRole('region', { name: 'Release Workspace' });
     await expect(panel).toBeVisible();
     const painted = await panel.evaluate((element) => {
       const style = window.getComputedStyle(element);
@@ -231,7 +231,7 @@ test('sunken surfaces carry the generated grain texture, which an app can opt ou
   await expect
     .poll(() =>
       page
-        .getByRole('region', { name: 'Release workspace' })
+        .getByRole('region', { name: 'Release Workspace' })
         .evaluate(
           (element) => window.getComputedStyle(element).backgroundImage,
         ),

@@ -36,7 +36,7 @@ test('dark toolbar titles remain readable and actionable across themes and width
       await page.setViewportSize({ width, height: 900 });
       await expect(titles.first()).toBeVisible();
       expect(await minPaintedTextContrast(titles)).toBeGreaterThanOrEqual(4.5);
-      const action = example.getByRole('button', { name: 'Rename file' });
+      const action = example.getByRole('button', { name: 'Rename File' });
       await action.focus();
       await expect(action).toBeFocused();
       await action.press('Enter');

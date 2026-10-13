@@ -249,7 +249,7 @@ toggle, so it never depends on a control it covers. An app's own
       label: "Navigator",
       title: <ToolbarText text="Navigator" />,
       leading: <NewFileGroup />,
-      trailing: <ToolbarControlGroup relocateOnCollapse label="Search files"><SearchButton /></ToolbarControlGroup>,
+      trailing: <ToolbarControlGroup relocateOnCollapse label="Search Files"><SearchButton /></ToolbarControlGroup>,
       toggle: { action: "toggle-navigator", name: "navigator" },
     },
     content: <Files />,

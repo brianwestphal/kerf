@@ -22,6 +22,6 @@ test('ListItemLink navigates as an anchor with shared row geometry', async ({
   await expect(external).toHaveAttribute('rel', 'noopener noreferrer');
   await expect(external).toHaveAttribute(
     'aria-label',
-    'Open external example (opens in new tab)',
+    'Open External Example (opens in new tab)',
   );
 });

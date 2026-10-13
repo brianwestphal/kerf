@@ -24,7 +24,7 @@ import {
 export function TokenSearchFieldDemo() {
   return (
     <CatalogExampleStack
-      label="TokenSearchField states"
+      label="TokenSearchField States"
       rootAttributes={{ 'data-demo': 'token-search-field' }}
     >
       <CatalogExample
@@ -35,14 +35,14 @@ export function TokenSearchFieldDemo() {
       >
         <List gap="m" rootAttributes={{ 'data-demo-token-form': '' }}>
           <wa-input
-            label="View name"
+            label="View Name"
             hint="Name this saved view."
             required
             value="Open procurement"
           />
           <TokenSearchField
             id="saved-view-query"
-            label="Search query"
+            label="Search Query"
             presentation="form-field"
             hint="Add filters to narrow the view."
             required
@@ -59,13 +59,13 @@ export function TokenSearchFieldDemo() {
         <List gap="xs">
           <TokenSearchField
             id="catalog-search"
-            label="Search tickets"
+            label="Search Tickets"
             query={tokenSearchQuery.value}
             tokens={tokenSearchTokens.value}
             autofocus
             trailingAction={{
               icon: <LucideIcon icon={CircleHelp} name="circle-help" />,
-              label: 'Search help',
+              label: 'Search Help',
               action: 'show-token-search-help',
               id: 'catalog-token-search-help',
             }}
@@ -91,7 +91,7 @@ export function TokenSearchFieldDemo() {
         <List gap="xs">
           <TokenSearchField
             id="grammar-search"
-            label="Search with filters"
+            label="Search with Filters"
             model={grammarSearchModel}
           />
           <wa-button
@@ -132,7 +132,7 @@ export function TokenSearchFieldDemo() {
       >
         <TokenSearchField
           id="collapsible-search"
-          label="Find records"
+          label="Find Records"
           collapsible
           expanded={collapsibleSearchOpen.value}
           placeholder="Find records"
@@ -151,7 +151,7 @@ export function TokenSearchFieldDemo() {
       >
         <TokenSearchField
           id="disabled-search"
-          label="Saved search"
+          label="Saved Search"
           query="release"
           tokens={[
             {
@@ -182,7 +182,7 @@ export function TokenSearchFieldDemo() {
           <TokenSearchField
             id="adoption-search"
             clearAction="clear-adoption-search"
-            label="Filter records"
+            label="Filter Records"
             collapsible
             expanded={adoptionOpen.value}
             query={adoptionQuery.value}
@@ -195,7 +195,7 @@ export function TokenSearchFieldDemo() {
           <div
             data-token-search-keep-open
             role="group"
-            aria-label="Filter suggestions"
+            aria-label="Filter Suggestions"
           >
             <Row wrap>
               {ADOPTION_SUGGESTIONS.map((suggestion) => (

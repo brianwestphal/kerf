@@ -40,7 +40,7 @@ test('SummaryRow selects, clamps, and rounds by presentation', async ({
     expect(geometry[2]!.opacity).toBe('0.55');
 
     const card = page
-      .getByRole('listbox', { name: 'Board column' })
+      .getByRole('listbox', { name: 'Board Column' })
       .getByRole('option')
       .first();
     expect(

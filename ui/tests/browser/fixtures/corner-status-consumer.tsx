@@ -14,7 +14,7 @@ mount(root, () =>
       <StateBanner
         tone="neutral"
         urgency="status"
-        title={`Updating tickets… ${progress.value} of 12`}
+        title={`Updating Tickets… ${progress.value} of 12`}
       />
     </CornerStatus>
   ),

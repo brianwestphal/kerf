@@ -42,7 +42,7 @@ export function ListDemo() {
     {
       action: 'log-drafts',
       itemId: 'drafts',
-      label: 'Drafts without a visible icon',
+      label: 'Drafts Without a Visible Icon',
     },
   ];
   return (
@@ -55,13 +55,13 @@ export function ListDemo() {
           <Pane
             header={
               <Toolbar
-                label="Sidebar toolbar"
+                label="Sidebar Toolbar"
                 leading={<ToolbarText text="Workspace" size="small" />}
                 trailing={
                   <ToolbarControlGroup appearance="borderless" single>
                     <button
                       type="button"
-                      aria-label="Add workspace"
+                      aria-label="Add Workspace"
                       data-action="log-add"
                     >
                       <LucideIcon icon={Plus} name="plus" />
@@ -72,13 +72,13 @@ export function ListDemo() {
             }
             footer={
               <Toolbar
-                label="Sidebar footer"
+                label="Sidebar Footer"
                 leading={<ToolbarText text="Ready" size="small" />}
                 trailing={
                   <ToolbarControlGroup appearance="borderless" single>
                     <button
                       type="button"
-                      aria-label="Sidebar settings"
+                      aria-label="Sidebar Settings"
                       data-action="log-settings"
                     >
                       <LucideIcon icon={Settings} name="settings" />
@@ -161,7 +161,7 @@ export function ListDemo() {
           <ListItem
             action="log-inbox"
             itemId="divider-row"
-            label="Regular row"
+            label="Regular Row"
             divider="both"
           />
           <ListActionRow
@@ -196,7 +196,7 @@ export function ListDemo() {
         <wa-card appearance="sunken">
           <List gap="xs" textInsets="l" controlInsets="rb">
             <wa-tag>Text-aligned left edge</wa-tag>
-            <wa-input label="Inset list control" value="Control edge" />
+            <wa-input label="Inset List Control" value="Control edge" />
             <List textInsets="t">
               <wa-tag>Nested text-aligned top edge</wa-tag>
             </List>

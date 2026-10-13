@@ -29,11 +29,11 @@ describe('SunkenPanel', () => {
     expect(
       String(
         SunkenPanel({
-          ariaLabel: 'Release workspace',
+          ariaLabel: 'Release Workspace',
           children: <span>Ready</span>,
         }),
       ),
-    ).toContain('role="region" aria-label="Release workspace"');
+    ).toContain('role="region" aria-label="Release Workspace"');
   });
 
   it('opts into root focus and a persistent outline independently', () => {
@@ -78,7 +78,7 @@ describe('SunkenPanel', () => {
     );
     expect(demo).not.toContain('--kui-');
     expect(demo).not.toContain('sunken-prototype');
-    expect(demo).toContain('ariaLabel="Third layer"');
+    expect(demo).toContain('ariaLabel="Third Layer"');
     expect(demo).toContain('appearance="sunken"');
   });
 });

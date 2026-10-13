@@ -90,7 +90,7 @@ test('the StateBanner demo shows a badged placeholder in every tone', async ({
   ]);
 });
 
-test('the Loading inspector recipe composes placeholder chrome and swaps to loaded', async ({
+test('the Loading Inspector recipe composes placeholder chrome and swaps to loaded', async ({
   page,
   browserName,
 }) => {
@@ -159,7 +159,7 @@ test('the Loading inspector recipe composes placeholder chrome and swaps to load
     });
 
   // Toggling shows the populated record with the same chrome.
-  await inspector.getByRole('button', { name: 'Show loaded' }).click();
+  await inspector.getByRole('button', { name: 'Show Loaded' }).click();
   await expect(inspector).toHaveAttribute('data-inspector-loading', 'false');
   await expect(
     inspector.locator('.kui-value-table__row[data-placeholder="true"]'),
@@ -238,7 +238,7 @@ test('a placeholder Select keeps the live control’s chrome; only the value is 
       };
     });
   const loading = await chrome();
-  await inspector.getByRole('button', { name: 'Show loaded' }).click();
+  await inspector.getByRole('button', { name: 'Show Loaded' }).click();
   await expect(select).not.toHaveAttribute('data-placeholder', 'true');
   expect(await chrome()).toEqual(loading);
 });

@@ -16,7 +16,7 @@ export function SkeletonDemo() {
           <Skeleton width={em(12)} />
           <Skeleton width={em(8)} height={em(1.5)} radius={em(0.75)} />
           <Skeleton lines={3} />
-          <Skeleton width={em(6)} label="Loading value" />
+          <Skeleton width={em(6)} label="Loading Value" />
         </List>
       </CatalogExample>
       <CatalogExample
@@ -29,7 +29,7 @@ export function SkeletonDemo() {
           </>
         }
       >
-        <ValueTable label="Placeholder rows">
+        <ValueTable label="Placeholder Rows">
           <ValueTableRow label="Status" value="" placeholder />
           <ValueTableRow label="Owner" value="" placeholder />
         </ValueTable>

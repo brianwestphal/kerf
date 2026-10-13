@@ -12,7 +12,7 @@ test('long suggestions scroll in a rounded list and clear uses a pill highlight'
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
   const suggestions = field.locator('.kui-token-search__suggestions');
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
@@ -69,13 +69,13 @@ test('long suggestions scroll in a rounded list and clear uses a pill highlight'
 
     await editor.fill('tag:cl');
     await field.getByRole('button', { name: 'tag:client' }).click();
-    const clear = field.getByRole('button', { name: 'Clear search' });
+    const clear = field.getByRole('button', { name: 'Clear Search' });
     await clear.hover();
     const radius = await clear.evaluate((element) =>
       Number.parseFloat(window.getComputedStyle(element).borderTopLeftRadius),
     );
     expect(radius).toBeGreaterThanOrEqual(20);
-    await field.getByRole('button', { name: 'Clear search' }).click();
+    await field.getByRole('button', { name: 'Clear Search' }).click();
   }
 });
 
@@ -91,7 +91,7 @@ test('suggestions stay in the viewport and track their field while scrolling', a
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
   const suggestions = field.locator('.kui-token-search__suggestions');
 
   for (const width of [1100, 390]) {
@@ -133,7 +133,7 @@ test('suggestions stay in the viewport and track their field while scrolling', a
     await expect(
       field.locator('[data-component="token-search-token"]'),
     ).toHaveCount(1);
-    await field.getByRole('button', { name: 'Clear search' }).click();
+    await field.getByRole('button', { name: 'Clear Search' }).click();
 
     await field.evaluate((element) => {
       element.removeAttribute('style');
@@ -177,7 +177,7 @@ test('suggestions stay in the viewport and track their field while scrolling', a
       })
       .toBeLessThan(8);
     expect((await suggestions.boundingBox())!.y).not.toBe(before.popup.y);
-    await field.getByRole('button', { name: 'Clear search' }).click();
+    await field.getByRole('button', { name: 'Clear Search' }).click();
   }
 });
 
@@ -237,7 +237,7 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
   const chips = field.locator('[data-component="token-search-token"]');
   const result = demo.locator('[data-demo-grammar-result]');
 
@@ -281,11 +281,11 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
     await editor.press('End');
     await editor.press('Space');
     await expect(chips).toHaveCount(2);
-    await field.getByRole('button', { name: 'Clear search' }).click();
+    await field.getByRole('button', { name: 'Clear Search' }).click();
     await expect(chips).toHaveCount(0);
     await expect(result).toHaveText('No free text · 0 filters');
     await editor.pressSequentially('plain text');
-    await field.getByRole('button', { name: 'Clear search' }).click();
+    await field.getByRole('button', { name: 'Clear Search' }).click();
     await expect(editor).toHaveText('');
   }
 });
@@ -302,7 +302,7 @@ test('an app helper commits an active grammar value outside suggestions', async 
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
   const chips = field.locator('[data-component="token-search-token"]');
   const helper = demo.getByRole('button', { name: 'Add Release Tag' });
 
@@ -314,7 +314,7 @@ test('an app helper commits an active grammar value outside suggestions', async 
       'data-token-value',
       'tag:release',
     );
-    await field.getByRole('button', { name: 'Clear search' }).click();
+    await field.getByRole('button', { name: 'Clear Search' }).click();
     await expect(chips).toHaveCount(0);
     await editor.click();
     await editor.pressSequentially('tag:rel');
@@ -335,7 +335,7 @@ test('an app helper commits an active grammar value outside suggestions', async 
     });
     await helper.click();
     await expect(chips).toHaveCount(1);
-    await field.getByRole('button', { name: 'Clear search' }).click();
+    await field.getByRole('button', { name: 'Clear Search' }).click();
     await expect(chips).toHaveCount(0);
   }
 });
@@ -352,10 +352,10 @@ test('model chip keys and plain-field clear keep the replacement editor focused'
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
   const chips = field.locator('[data-component="token-search-token"]');
   const helper = demo.getByRole('button', { name: 'Add Release Tag' });
-  const clear = field.getByRole('button', { name: 'Clear search' });
+  const clear = field.getByRole('button', { name: 'Clear Search' });
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
@@ -402,7 +402,7 @@ test('an app helper replaces DOM-owned draft text from saved search state', asyn
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
   const helper = demo.getByRole('button', { name: 'Load Saved Search' });
 
   for (const width of [1100, 390]) {
@@ -421,7 +421,7 @@ test('an app helper replaces DOM-owned draft text from saved search state', asyn
     await expect(editor).toHaveText('roadmap next');
     await helper.click();
     await expect(editor).toHaveText('roadmap');
-    await field.getByRole('button', { name: 'Clear search' }).click();
+    await field.getByRole('button', { name: 'Clear Search' }).click();
     await expect(editor).toHaveText('');
   }
 });

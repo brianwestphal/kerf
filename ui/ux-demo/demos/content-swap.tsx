@@ -18,7 +18,7 @@ export function ContentSwapDemo() {
         viewport={{ width: 'compact', frame: 'solid' }}
       >
         <ContentSwap
-          label="Connect a project"
+          label="Connect a Project"
           active={step}
           direction={step === 'b' ? 'forward' : 'backward'}
           a={

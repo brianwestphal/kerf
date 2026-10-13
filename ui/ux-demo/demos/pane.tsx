@@ -24,7 +24,7 @@ export function PaneDemo() {
       >
         <Pane
           element="section"
-          label="Pane anatomy"
+          label="Pane Anatomy"
           separators={[
             'block-start',
             'block-end',
@@ -34,7 +34,7 @@ export function PaneDemo() {
           header={
             <>
               <Toolbar
-                label="Pane header"
+                label="Pane Header"
                 leading={<ToolbarText text="Pane Header" size="large" />}
               />
               <ListInsetText>Optional secondary header row</ListInsetText>
@@ -42,7 +42,7 @@ export function PaneDemo() {
           }
           footer={
             <Toolbar
-              label="Pane footer"
+              label="Pane Footer"
               leading={<ToolbarText text="Optional footer" size="small" />}
             />
           }
@@ -58,7 +58,7 @@ export function PaneDemo() {
       >
         <Pane
           element="section"
-          label="Drop target pane"
+          label="Drop Target Pane"
           tabIndex={0}
           outlined
           rootAttributes={{ 'data-demo-focus-pane': '' }}
@@ -77,11 +77,11 @@ export function PaneDemo() {
         }}
       >
         <Pane
-          label="Deep inset example"
+          label="Deep Inset Example"
           deepInset
           header={
             <Toolbar
-              label="Deep inset header"
+              label="Deep Inset Header"
               leading={<ToolbarText text="Projects" size="large" />}
             />
           }
@@ -128,18 +128,18 @@ export function PaneDemo() {
       >
         <Pane
           element="section"
-          label="Scrolling pane"
+          label="Scrolling Pane"
           appearance="sunken"
           rootAttributes={{ 'data-scroll-divider-demo': 'pane' }}
           header={
             <Toolbar
-              label="Activity header"
+              label="Activity Header"
               leading={<ToolbarText text="Activity" size="large" />}
             />
           }
           footer={
             <Toolbar
-              label="Activity footer"
+              label="Activity Footer"
               leading={<ToolbarText text="12 updates" size="small" />}
             />
           }
@@ -161,7 +161,7 @@ export function PaneDemo() {
       >
         <Workbench
           id="sunken-chat"
-          label="Chat workspace"
+          label="Chat Workspace"
           mainPane={{ appearance: 'sunken' }}
           main={<ContentItem>Welcome to the conversation</ContentItem>}
           mainFooter={
@@ -184,7 +184,7 @@ export function PaneDemo() {
         <Pane
           appearance="sunken"
           chromePlacement="auto"
-          label="Sunken auto workspace"
+          label="Sunken Auto Workspace"
           header={<Toolbar label="Header" leading={<span>Header</span>} />}
           footer={<Toolbar label="Footer" leading={<span>Footer</span>} />}
         >
@@ -205,7 +205,7 @@ export function PaneDemo() {
       >
         <Workbench
           id="sunken-raw-workbench"
-          label="Bare work regions"
+          label="Bare Work Regions"
           mainPane={{ appearance: 'sunken' }}
           main={<ContentItem>Main work area</ContentItem>}
           leftRail={{

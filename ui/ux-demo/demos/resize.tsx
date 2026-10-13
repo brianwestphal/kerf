@@ -15,7 +15,7 @@ import { regionSize } from './state.js';
 export function ResizeDemo() {
   return (
     <CatalogExampleStack
-      label="Resizable region"
+      label="Resizable Region"
       rootAttributes={{ 'data-demo': 'resize' }}
     >
       <CatalogExample
@@ -33,7 +33,7 @@ export function ResizeDemo() {
       >
         <ResizableRegion
           id="catalog-panel"
-          label="Catalog panel"
+          label="Catalog Panel"
           size={regionSize.value}
           min={180}
           max={420}
@@ -64,7 +64,7 @@ export function ResizeDemo() {
       >
         <ResizableRegion
           id="catalog-menu-drawer"
-          label="Menu drawer"
+          label="Menu Drawer"
           axis="vertical"
           edge="start"
           size={120}
@@ -96,16 +96,16 @@ export function ResizeDemo() {
       >
         <ResizableRegion
           id="catalog-collapsed-panel"
-          label="Collapsed panel"
+          label="Collapsed Panel"
           size={240}
           min={180}
           max={420}
           collapsed
           restorePosition="top-end"
           restoreControl={
-            <FloatingToolbar label="Restore collapsed panel" placement="inline">
-              <ToolbarControlGroup label="Restore panel" single>
-                <button type="button" aria-label="Restore panel">
+            <FloatingToolbar label="Restore Collapsed Panel" placement="inline">
+              <ToolbarControlGroup label="Restore Panel" single>
+                <button type="button" aria-label="Restore Panel">
                   <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
                 </button>
               </ToolbarControlGroup>

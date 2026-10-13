@@ -36,7 +36,7 @@ export function CatalogUxReviewLink({
           title: `${name}: ${entry.name}`,
           context: `${name} catalog\nSelected ${category}: ${entry.name} (${entry.id})`,
         })}
-        label="Capture region"
+        label="Capture Region"
         ariaLabel={`Capture ${entry.name} in UX Review`}
         icon={<LucideIcon icon={Scan} name="scan" />}
       />

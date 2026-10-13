@@ -71,7 +71,7 @@ export function mountCommandPaletteAdapter(
           aria-label="Command palette actions"
         >
           <button type="button" data-action="clear-query">
-            Clear search
+            Clear Search
           </button>
           <button type="button" data-action="close-palette">
             Close

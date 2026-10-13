@@ -7,7 +7,7 @@ import { Pane } from '@kerfjs/ui/pane';
 export function EdgeToEdgeTable({ deepInset }: { deepInset: boolean }) {
   return (
     <Pane
-      label={deepInset ? 'Inset procurement table' : 'Plain procurement table'}
+      label={deepInset ? 'Inset Procurement Table' : 'Plain Procurement Table'}
       deepInset={deepInset}
       rootAttributes={{ 'data-edge-table': deepInset ? 'deep' : 'plain' }}
     >

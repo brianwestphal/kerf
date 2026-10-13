@@ -21,7 +21,7 @@ Add one independently collapsible peripheral panel without adopting the complete
 **Alternatives:**
 
 - [Workbench](./workbench.md) (larger-composition) — Use Workbench when the central work area coordinates multiple peripheral panels.
-- [Collapsible sidebar](./recipe-collapsible-sidebar.md) (recipe) — Use the production recipe for collapse, restore, compact overlay, focus, and persistence ownership.
+- [Collapsible Sidebar](./recipe-collapsible-sidebar.md) (recipe) — Use the production recipe for collapse, restore, compact overlay, focus, and persistence ownership.
 
 ## Imports
 
@@ -97,6 +97,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [Workbench](./workbench.md), [Collapsible sidebar](./recipe-collapsible-sidebar.md).
+- Components: [LucideIcon](./lucide-icon.md), [Workbench](./workbench.md), [Collapsible Sidebar](./recipe-collapsible-sidebar.md).
 - Docs: [`docs/collapsible-panel.md`](../../docs/collapsible-panel.md), [`docs/collapsible-panel.md#recipe-and-coverage`](../../docs/collapsible-panel.md#recipe-and-coverage).
 - UX catalog route: `?component=collapsible-panel`.

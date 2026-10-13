@@ -12,7 +12,7 @@ const panel = {
   headerList: { gap: 'xs' as const, textInsets: 'trbl' as const },
   footer: chrome('status'),
   footerList: { controlInsets: 'trbl' as const },
-  bottomToolbar: { label: 'Inspector actions', trailing: chrome('actions') },
+  bottomToolbar: { label: 'Inspector Actions', trailing: chrome('actions') },
   content: chrome('body'),
 };
 

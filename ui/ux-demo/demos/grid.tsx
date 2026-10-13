@@ -51,8 +51,8 @@ export function GridDemo() {
         viewport={{ width: 'wide' }}
       >
         <Grid minColumnWidth={px(376)} gap="m">
-          <wa-input label="Provider name" value="Example provider" />
-          <wa-input label="API endpoint" value="https://example.test" />
+          <wa-input label="Provider Name" value="Example provider" />
+          <wa-input label="API Endpoint" value="https://example.test" />
         </Grid>
       </CatalogExample>
       <CatalogExample

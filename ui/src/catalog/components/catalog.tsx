@@ -115,7 +115,7 @@ export function Catalog({
           collapsed,
           toolbar: {
             ...sidebar.toolbar,
-            label: `${catalogName} header`,
+            label: `${catalogName} Header`,
             title: (
               <>
                 {brand.logoUrl ? (
@@ -138,12 +138,12 @@ export function Catalog({
             <ListInsetControl sides="rbl">
               <TokenSearchField
                 id={`${id}-filter`}
-                label="Filter catalog"
+                label="Filter Catalog"
                 placeholder="Filter items or headings"
                 editorAttributes={{ 'data-catalog-filter': '' }}
                 trailingAction={{
                   icon: <LucideIcon icon={X} name="x" />,
-                  label: 'Clear filter',
+                  label: 'Clear Filter',
                   action: 'catalog-clear-filter',
                 }}
               />
@@ -175,7 +175,7 @@ export function Catalog({
                 collapsed: settingsCollapsed,
                 toolbar: {
                   ...settingsPanel.toolbar,
-                  label: `${settingsTitle} header`,
+                  label: `${settingsTitle} Header`,
                   // A peripheral rail beside the xl entry title takes the
                   // default title size, so it never truncates at 288px.
                   title: <ToolbarText text={settingsTitle} headingLevel={2} />,
@@ -190,7 +190,7 @@ export function Catalog({
         }
         mainToolbar={{
           ...mainToolbar,
-          label: `${name} header`,
+          label: `${name} Header`,
           // The entry title stays whole; actions wrap below it when narrow.
           responsive: mainToolbar?.responsive ?? 'wrap',
           title: <ToolbarText text={name} size="xlarge" headingLevel={2} />,
@@ -211,7 +211,7 @@ export function Catalog({
                   size="compact"
                   overflow="wrap"
                   buttonAppearance="push"
-                  label="Catalog display settings"
+                  label="Catalog Display Settings"
                 >
                   {increasedContrast !== undefined ? (
                     <button
@@ -230,7 +230,7 @@ export function Catalog({
                       aria-pressed={String(reducedMotion)}
                     >
                       <LucideIcon icon={ZapOff} name="zap-off" />
-                      <span>Reduce motion</span>
+                      <span>Reduce Motion</span>
                     </button>
                   ) : null}
                   {backgroundControl ? (
@@ -241,9 +241,9 @@ export function Catalog({
                         { value: 'checkerboard', label: 'Checkerboard' },
                         {
                           value: 'vertical-stripes',
-                          label: 'Vertical stripes',
+                          label: 'Vertical Stripes',
                         },
-                        { value: 'layout-guide', label: 'Layout guide' },
+                        { value: 'layout-guide', label: 'Layout Guide' },
                         { value: 'surface', label: 'Surface' },
                         { value: 'sunken', label: 'Sunken' },
                       ].map(({ value, label }) => ({
@@ -258,7 +258,7 @@ export function Catalog({
                     <button
                       type="button"
                       data-action={toggleThemeAction}
-                      aria-label={`Use ${nextTheme} theme`}
+                      aria-label={`Use ${nextTheme === 'dark' ? 'Dark' : 'Light'} Theme`}
                       data-theme-preview={theme}
                     >
                       {nextTheme === 'dark' ? (

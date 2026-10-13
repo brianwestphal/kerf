@@ -78,15 +78,15 @@ const consoleToolbar: CollapsiblePanelToolbar = {
 
 const navigatorToolbar: CollapsiblePanelToolbar = {
   label: 'Navigator',
-  leading: iconGroup('New file', FilePlus, 'file-plus'),
-  trailing: iconGroup('Search files', Search, 'search', true),
+  leading: iconGroup('New File', FilePlus, 'file-plus'),
+  trailing: iconGroup('Search Files', Search, 'search', true),
   toggle: { action: RELOCATION_RAIL_ACTION, name: 'navigator' },
 };
 
 export function CollapsiblePanelDemo() {
   return (
     <CatalogExampleStack
-      label="Collapsible panel dock positions"
+      label="Collapsible Panel Dock Positions"
       rootAttributes={{ 'data-demo': 'collapsible-panel' }}
     >
       <CatalogExample
@@ -98,7 +98,7 @@ export function CollapsiblePanelDemo() {
           id="catalog-panel-left"
           side="left"
           size={280}
-          label="Project navigator"
+          label="Project Navigator"
           tabIndex={0}
           outlined
         >
@@ -117,7 +117,7 @@ export function CollapsiblePanelDemo() {
           id="catalog-panel-right"
           side="right"
           size={280}
-          label="Selection inspector"
+          label="Selection Inspector"
         >
           {content(
             'Inspector',
@@ -133,7 +133,7 @@ export function CollapsiblePanelDemo() {
           id="catalog-panel-bottom"
           side="bottom"
           size={180}
-          label="Build output"
+          label="Build Output"
         >
           {content(
             'Build output',

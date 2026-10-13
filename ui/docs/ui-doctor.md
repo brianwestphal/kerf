@@ -161,7 +161,12 @@ It covers these string literals:
   declared in the same file;
 - `SegmentedControl`, `Select`, and `TabNavigator` choice and tab labels;
 - `NavStack` view titles and `backText`, and `SplitView` `backLabel`;
-- `FieldLabel` text and the static text of a `button` or `wa-button`.
+- `FieldLabel` text and the static text of a `button` or `wa-button`;
+- the accessible names of icon-only controls, which the rule also gives title
+  style: `IconButton` and `IconToggleButton` `label`, `PopupMenu` `label`,
+  `SplitButton` `optionsLabel`, `TokenSearchField` `clearLabel`, and the
+  `aria-label` of a `button` or `wa-button` whose only content is an icon. A
+  button with visible text is judged by that text, never by its `aria-label`.
 
 The check is deliberately one-directional, to keep false positives rare:
 
@@ -170,8 +175,10 @@ The check is deliberately one-directional, to keep false positives rare:
   Server").
 - It leaves text ending in `.`, `!`, or `?` to sentence style.
 - It ignores dynamic values and every sentence-style surface: descriptions,
-  details, placeholders, tooltips, status text, option text, and
-  accessible-only names.
+  details, placeholders, tooltips, status text, and option text. It also
+  leaves region and group names (`Pane`, `Workbench`, `Toolbar`,
+  `ToolbarControlGroup`, `section`) and raw Web Awesome field labels alone,
+  even though the rule gives those title style too.
 - It skips tokens containing digits, code, paths, or URLs, and lowercase-led
   brands such as iOS and macOS.
 

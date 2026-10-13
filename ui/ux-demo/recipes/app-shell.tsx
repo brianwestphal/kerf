@@ -57,7 +57,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         <ListItem
           action="recipe-action"
           itemId="projects"
-          label="Projects with a deliberately wrapping title"
+          label="Projects with a Deliberately Wrapping Title"
           icon={<LucideIcon icon={Folder} name="folder" />}
           selected={selected.value === 'projects'}
           multiline
@@ -69,14 +69,14 @@ export const createRecipe: RecipeFactory = (announce) => {
   const render = () => (
     <List fill rootAttributes={{ 'data-recipe': 'recipe-app-shell' }}>
       <Toolbar
-        label="Atlas workspace"
+        label="Atlas Workspace"
         safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
         dividerSides="b"
         leading={<ToolbarText text="Atlas" />}
         trailing={
           <ToolbarControlGroup
             appearance="borderless"
-            label="Workspace controls"
+            label="Workspace Controls"
           >
             <button
               type="button"
@@ -100,7 +100,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       <List flex>
         <Workbench
           id="recipe-shell"
-          label="Atlas workspace panes"
+          label="Atlas Workspace Panes"
           leftRail={{
             label: 'Navigation',
             size: navigationSize.value,
@@ -114,13 +114,13 @@ export const createRecipe: RecipeFactory = (announce) => {
             content: navigation(),
           }}
           mainToolbar={{
-            label: 'Current workspace view',
+            label: 'Current Workspace View',
             title: (
               <ToolbarText
                 text={
                   selected.value === 'inbox'
-                    ? 'Inbox triage'
-                    : 'Active projects'
+                    ? 'Inbox Triage'
+                    : 'Active Projects'
                 }
                 size="xlarge"
                 id="recipe-shell-main-title"
@@ -167,7 +167,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               toggle: { action: INSPECTOR_ACTION, name: 'inspector' },
             },
             content: (
-              <ValueTable label="Selected task">
+              <ValueTable label="Selected Task">
                 <ValueTableRow label="Status" value="In review" />
                 <ValueTableRow label="Owner" value="Mara Chen" />
                 <ValueTableRow label="Priority" value="High" />

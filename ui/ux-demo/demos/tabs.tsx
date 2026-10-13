@@ -18,7 +18,7 @@ export function TabsDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'tabs' }}>
       <CatalogExample label="Selected and closable" align="none">
-        <TabBar id="app-tab-selected" label="Selected AppTab specimen">
+        <TabBar id="app-tab-selected" label="Selected AppTab Specimen">
           <AppTab
             id="guidelines"
             name="Guidelines"
@@ -32,7 +32,7 @@ export function TabsDemo() {
       <CatalogExample label="Compact and segmented" align="none">
         <TabBar
           id="app-tab-compact"
-          label="Compact AppTab specimen"
+          label="Compact AppTab Specimen"
           presentation="segmented"
         >
           <AppTab
@@ -54,10 +54,10 @@ export function TabsDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample label="Truncated label" align="none">
-        <TabBar id="app-tab-truncated" label="Truncated AppTab specimen">
+        <TabBar id="app-tab-truncated" label="Truncated AppTab Specimen">
           <AppTab
             id="long-label"
-            name="A deliberately long document name"
+            name="A Deliberately Long Document Name"
             selected
             closable={false}
             labelMaxWidth={120}
@@ -69,16 +69,16 @@ export function TabsDemo() {
         note="The drop-target state paints a brand ring. A visible name expands instead of clipping an inline loading treatment."
         align="none"
       >
-        <TabBar id="app-tab-drop-target" label="Drop-target AppTab specimen">
+        <TabBar id="app-tab-drop-target" label="Drop-Target AppTab Specimen">
           <AppTab
             id="project-grid"
-            name="Project grid"
+            name="Project Grid"
             selected
             closable={false}
           />
           <AppTab
             id="accounting"
-            name="Accounting project"
+            name="Accounting Project"
             closable={false}
             dropTarget
             labelMaxWidth={80}
@@ -87,7 +87,7 @@ export function TabsDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample label="Placeholder" align="none">
-        <TabBar id="app-tab-placeholder" label="Loading AppTab specimen">
+        <TabBar id="app-tab-placeholder" label="Loading AppTab Specimen">
           <AppTab id="loading" name="" placeholder />
         </TabBar>
       </CatalogExample>
@@ -96,7 +96,7 @@ export function TabsDemo() {
         note="A known tab that is still opening keeps its quiet name and a trailing spinner. It stays selectable so its panel can show placeholders, and has the live tab's geometry, so it swaps in place."
         align="none"
       >
-        <TabBar id="app-tab-pending" label="Pending AppTab specimen">
+        <TabBar id="app-tab-pending" label="Pending AppTab Specimen">
           <AppTab id="hot-sheet" name="hot-sheet" selected />
           <AppTab
             id="alpha"

@@ -32,15 +32,15 @@ const iconButton = (label: string, icon: typeof List, name: string) => (
 );
 
 const center = () => (
-  <ToolbarControlGroup label="Project layout">
-    {iconButton('List layout', List, 'list')}
-    {iconButton('Grid layout', LayoutGrid, 'layout-grid')}
+  <ToolbarControlGroup label="Project Layout">
+    {iconButton('List Layout', List, 'list')}
+    {iconButton('Grid Layout', LayoutGrid, 'layout-grid')}
   </ToolbarControlGroup>
 );
 
 const trailing = () => (
   <ToolbarControlGroup label="Share" appearance="borderless" single>
-    {iconButton('Share project', Share, 'share')}
+    {iconButton('Share Project', Share, 'share')}
   </ToolbarControlGroup>
 );
 

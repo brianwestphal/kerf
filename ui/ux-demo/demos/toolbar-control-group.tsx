@@ -54,7 +54,7 @@ export function ToolbarControlGroupDemo() {
   const shape = toolbarGroupShape.value;
   return (
     <CatalogExampleStack
-      label="ToolbarControlGroup demo"
+      label="ToolbarControlGroup Demo"
       rootAttributes={{ 'data-demo': 'toolbar-control-group' }}
     >
       <CatalogExample
@@ -95,7 +95,7 @@ export function ToolbarControlGroupDemo() {
         <ToolbarControlGroup>
           <SegmentedControl
             id="toolbar-group-shape"
-            label="Group shape"
+            label="Group Shape"
             value={shape}
             action="select-segment-demo"
             appearance="toolbar"
@@ -112,7 +112,7 @@ export function ToolbarControlGroupDemo() {
         <ToolbarControlGroup shape={shape}>
           <SegmentedControl
             id="toolbar-view"
-            label="View mode"
+            label="View Mode"
             value={toolbarChoice.value}
             action="select-segment-demo"
             appearance="toolbar"
@@ -146,7 +146,7 @@ export function ToolbarControlGroupDemo() {
           menuInset="compact"
         >
           <PopupMenu
-            label="Sort tickets"
+            label="Sort Tickets"
             icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
             items={[
               { label: 'Recently Updated', action: 'sort-recent' },
@@ -170,17 +170,17 @@ export function ToolbarControlGroupDemo() {
         note="Name an icon-only button with aria-label; hover or keyboard focus shows that name as a help tag."
         align="inline-control"
       >
-        <ToolbarControlGroup label="View actions" shape={shape}>
+        <ToolbarControlGroup label="View Actions" shape={shape}>
           <wa-button
             appearance="plain"
-            aria-label="Favorite view"
+            aria-label="Favorite View"
             data-action="log-favorite"
           >
             <LucideIcon icon={Star} name="star" />
           </wa-button>
           <wa-button
             appearance="plain"
-            aria-label="More actions"
+            aria-label="More Actions"
             data-action="log-more"
           >
             <LucideIcon icon={MoreHorizontal} name="ellipsis" />
@@ -192,10 +192,10 @@ export function ToolbarControlGroupDemo() {
         note="An icon-only Select shares the group's inset, hover, and per-control focus ring with its sibling buttons."
         align="inline-control"
       >
-        <ToolbarControlGroup label="Ticket view" shape={shape}>
+        <ToolbarControlGroup label="Ticket View" shape={shape}>
           <button
             type="button"
-            aria-label="Pin view"
+            aria-label="Pin View"
             aria-pressed="true"
             data-action="log-pin"
           >
@@ -204,13 +204,13 @@ export function ToolbarControlGroupDemo() {
           <Select<string>
             name="toolbar-group-sort"
             value={toolbarSort.value}
-            ariaLabel="Sort tickets"
+            ariaLabel="Sort Tickets"
             presentation="toolbar-borderless"
             selectedPresentation="icon-only"
             choices={sortChoices}
           />
           <PopupMenu
-            label="More actions"
+            label="More Actions"
             icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
             items={[{ label: 'Archive', action: 'log-more' }]}
           />
@@ -220,7 +220,7 @@ export function ToolbarControlGroupDemo() {
         <ToolbarControlGroup single shape={shape}>
           <wa-button
             appearance="plain"
-            aria-label="Pin view"
+            aria-label="Pin View"
             data-action="log-pin"
           >
             <LucideIcon icon={Pin} name="pin" />
@@ -240,7 +240,7 @@ export function ToolbarControlGroupDemo() {
         >
           <button
             type="button"
-            aria-label="Run pricing check"
+            aria-label="Run Pricing Check"
             data-action="log-pricing-check"
           >
             <LucideIcon icon={GitCompare} name="git-compare" />
@@ -254,7 +254,7 @@ export function ToolbarControlGroupDemo() {
         <ToolbarControlGroup appearance="borderless" single shape={shape}>
           <button
             type="button"
-            aria-label="Show sidebar"
+            aria-label="Show Sidebar"
             data-action="log-sidebar"
           >
             <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
@@ -265,7 +265,7 @@ export function ToolbarControlGroupDemo() {
         <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
           <button
             type="button"
-            aria-label="Resting comparison"
+            aria-label="Resting Comparison"
             aria-pressed="false"
             data-action="log-resting"
           >
@@ -277,7 +277,7 @@ export function ToolbarControlGroupDemo() {
         <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
           <button
             type="button"
-            aria-label="Pressed comparison"
+            aria-label="Pressed Comparison"
             aria-pressed="true"
             data-action="log-pressed"
           >
@@ -287,7 +287,7 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample label="Pop selected tone" align="inline-control">
         <ToolbarControlGroup
-          label="Featured action"
+          label="Featured Action"
           selectedChrome="filled"
           selectedTone="pop"
           shape={shape}
@@ -307,10 +307,10 @@ export function ToolbarControlGroupDemo() {
         note='The filled star already shows the pressed state, so data-selected-chrome="none" keeps that one button from painting selected chrome; selectedChrome="none" does the same for a whole group.'
         align="inline-control"
       >
-        <ToolbarControlGroup label="Ticket actions" shape={shape}>
+        <ToolbarControlGroup label="Ticket Actions" shape={shape}>
           <button
             type="button"
-            aria-label="Up next"
+            aria-label="Up Next"
             aria-pressed="true"
             data-selected-chrome="none"
             data-action="log-up-next"
@@ -323,7 +323,7 @@ export function ToolbarControlGroupDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Dark group" align="inline-control">
-        <ToolbarControlGroup label="Dark navigation" tone="dark" shape={shape}>
+        <ToolbarControlGroup label="Dark Navigation" tone="dark" shape={shape}>
           <button
             type="button"
             aria-label="Previous"
@@ -338,7 +338,7 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample label="Compact mixed controls" align="inline-control">
         <ToolbarControlGroup
-          label="Compact formatting"
+          label="Compact Formatting"
           size="compact"
           content="mixed"
           nestedDropdown
@@ -360,12 +360,12 @@ export function ToolbarControlGroupDemo() {
           shape={shape}
           avatarImage={profileImageUrl}
         >
-          <button type="button" aria-label="Open Brian profile" />
+          <button type="button" aria-label="Open Brian Profile" />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Avatar selection" align="inline-control">
         <ToolbarControlGroup
-          label="Profile view"
+          label="Profile View"
           content="avatar"
           selectedTone="neutral"
           avatarImage={profileImageUrl}
@@ -373,14 +373,14 @@ export function ToolbarControlGroupDemo() {
         >
           <button
             type="button"
-            aria-label="Primary profile"
+            aria-label="Primary Profile"
             aria-pressed={String(toolbarAvatarChoice.value === 'primary')}
             data-action="select-avatar-demo"
             data-avatar-value="primary"
           />
           <button
             type="button"
-            aria-label="Secondary profile"
+            aria-label="Secondary Profile"
             aria-pressed={String(toolbarAvatarChoice.value === 'secondary')}
             data-action="select-avatar-demo"
             data-avatar-value="secondary"
@@ -414,7 +414,7 @@ export function ToolbarControlGroupDemo() {
           >
             <TokenSearchField
               id="toolbar-group-search"
-              label="Search views"
+              label="Search Views"
               collapsible
               expanded={toolbarGroupSearchOpen.value}
               presentation="toolbar-group"
@@ -445,7 +445,7 @@ export function ToolbarControlGroupDemo() {
                 >
                   <TokenSearchField
                     id="toolbar-group-grow-search"
-                    label="Search tickets"
+                    label="Search Tickets"
                     collapsible
                     expanded
                     presentation="toolbar-group"
@@ -453,12 +453,12 @@ export function ToolbarControlGroupDemo() {
                   />
                 </ToolbarControlGroup>
                 <ToolbarControlGroup label="View" single>
-                  <button type="button" aria-label="List view">
+                  <button type="button" aria-label="List View">
                     <LucideIcon icon={List} name="list" />
                   </button>
                 </ToolbarControlGroup>
                 <ToolbarControlGroup label="Sort" single>
-                  <button type="button" aria-label="Sort tickets">
+                  <button type="button" aria-label="Sort Tickets">
                     <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
                   </button>
                 </ToolbarControlGroup>
@@ -469,10 +469,10 @@ export function ToolbarControlGroupDemo() {
             responsive="stack"
             trailing={
               <>
-                <ToolbarControlGroup sizing="fill" label="Rail view">
+                <ToolbarControlGroup sizing="fill" label="Rail View">
                   <SegmentedControl
                     id="toolbar-group-fill-view"
-                    label="Rail view"
+                    label="Rail View"
                     value="list"
                     action="select-segment-demo"
                     appearance="toolbar"
@@ -483,7 +483,7 @@ export function ToolbarControlGroupDemo() {
                   />
                 </ToolbarControlGroup>
                 <ToolbarControlGroup label="Sort" single>
-                  <button type="button" aria-label="Sort tickets">
+                  <button type="button" aria-label="Sort Tickets">
                     <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
                   </button>
                 </ToolbarControlGroup>
@@ -498,7 +498,7 @@ export function ToolbarControlGroupDemo() {
                 >
                   <TokenSearchField
                     id="toolbar-stack-search"
-                    label="Search tickets"
+                    label="Search Tickets"
                     collapsible
                     expanded={toolbarStackSearchOpen.value}
                     fill={toolbarStackSearchOpen.value}

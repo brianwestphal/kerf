@@ -124,6 +124,13 @@ describe('titleStyleLabels', () => {
             <wa-button>Open dialog</wa-button>
             <button type="button"><LucideIcon node={plus} />New task</button>
             <FieldLabel>Needed by</FieldLabel>
+            <button type="button" aria-label="Add project"><LucideIcon node={plus} /></button>
+            <wa-button aria-label="Refresh tickets"><LucideIcon node={refresh} /></wa-button>
+            <IconButton label="Browse for a folder" icon={folder} action="browse" />
+            <IconToggleButton label="Show conversation" icon={chat} pressed={false} action="chat" />
+            <PopupMenu label="More actions" items={items} />
+            <SplitButton label="Publish" optionsLabel="Publish options" action="a" optionsAction="b" />
+            <TokenSearchField id="s" label="Search" clearLabel="Clear search" />
           </section>
         );
       `),
@@ -142,10 +149,22 @@ describe('titleStyleLabels', () => {
       '<wa-button> text: Open dialog',
       '<button> text: New task',
       'FieldLabel: Needed by',
+      '<button> aria-label: Add project',
+      '<wa-button> aria-label: Refresh tickets',
+      'IconButton label: Browse for a folder',
+      'IconToggleButton label: Show conversation',
+      'PopupMenu label: More actions',
+      'PopupMenu items: Copy link',
+      'PopupMenu items: Sort by',
+      'PopupMenu items: More',
+      'PopupMenu items: Move to trash',
+      'SplitButton label: Publish',
+      'SplitButton optionsLabel: Publish options',
+      'TokenSearchField clearLabel: Clear search',
     ]);
   });
 
-  test('never reads sentence-style or accessible-only text', () => {
+  test('never reads sentence-style text, region names, or a labeled button’s aria-label', () => {
     expect(
       labels(`
         export const View = ({ name }: { name: string }) => (
@@ -159,7 +178,11 @@ describe('titleStyleLabels', () => {
             <StateBanner title={name} detail="Changes sync when you reconnect." />
             <wa-checkbox>Notify me about replies</wa-checkbox>
             <wa-button>Hello {name}</wa-button>
-            <PopupMenu label="More actions" items={[]} />
+            <button type="button" aria-label="Close dialog">Close</button>
+            <button type="button" aria-label={label}><LucideIcon node={x} /></button>
+            <section aria-label="Task workspace" />
+            <Workbench label="Ticket workbench" />
+            <ToolbarControlGroup label="View actions" />
             <wa-input label="Project name" placeholder="Search tickets" />
           </section>
         );
@@ -167,6 +190,7 @@ describe('titleStyleLabels', () => {
     ).toEqual([
       'ToolbarText text: Workspace',
       'SegmentedControl choices: List',
+      '<button> text: Close',
     ]);
   });
 });

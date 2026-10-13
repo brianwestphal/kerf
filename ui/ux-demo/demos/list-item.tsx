@@ -13,7 +13,7 @@ export function ListItemDemo() {
         <ListItem
           action="log-projects"
           itemId="status"
-          label="Build checks"
+          label="Build Checks"
           description="Updated a moment ago"
           status="Passing"
           density="compact"
@@ -67,12 +67,12 @@ export function ListItemDemo() {
           <ListItem
             action="log-projects"
             itemId="tone-rest"
-            label="New project"
+            label="New Project"
           />
           <ListItem
             action="log-projects"
             itemId="tone-selected"
-            label="Current project"
+            label="Current Project"
             selected
           />
         </List>
@@ -81,7 +81,7 @@ export function ListItemDemo() {
         <ListItem
           action="log-projects"
           itemId="busy"
-          label="Refreshing results"
+          label="Refreshing Results"
           description="Keeping the current result visible"
           busy
         />
@@ -90,7 +90,7 @@ export function ListItemDemo() {
         <ListItem
           action="log-inbox"
           itemId="selected"
-          label="Selected item"
+          label="Selected Item"
           icon={<LucideIcon icon={Inbox} name="inbox" />}
           trailing={<span>12</span>}
           selected
@@ -101,7 +101,7 @@ export function ListItemDemo() {
         <ListItemLink
           href="#list-item-link-target"
           itemId="link"
-          label="Jump to list destination"
+          label="Jump to List Destination"
           icon={<LucideIcon icon={Folder} name="folder" />}
           trailing={<span>Link</span>}
         />
@@ -111,7 +111,7 @@ export function ListItemDemo() {
         <ListItemLink
           href="https://example.com"
           itemId="external-link"
-          label="Open external example"
+          label="Open External Example"
           external
         />
       </CatalogExample>
@@ -119,7 +119,7 @@ export function ListItemDemo() {
         <ListItem
           action="log-projects"
           itemId="default"
-          label="Default item"
+          label="Default Item"
           icon={<LucideIcon icon={Folder} name="folder" />}
         />
       </CatalogExample>
@@ -136,7 +136,7 @@ export function ListItemDemo() {
         <ListItem
           action="log-settings"
           itemId="spacious"
-          label="Create a project from an existing repository with a longer name"
+          label="Create a Project from an Existing Repository with a Longer Name"
           icon={<LucideIcon icon={Wrench} name="wrench" />}
           trailing={<span>Open</span>}
           density="spacious"
@@ -149,7 +149,7 @@ export function ListItemDemo() {
         <ListItem
           action="log-projects"
           itemId="drag-target"
-          label="Move ticket here"
+          label="Move Ticket Here"
           state="drag-target"
         />
       </CatalogExample>
@@ -176,21 +176,21 @@ export function ListItemDemo() {
           <ListItem
             action="log-projects"
             itemId="reorder-before"
-            label="Drops above this row"
+            label="Drops Above This Row"
             draggable
             dropPosition="before"
           />
           <ListItem
             action="log-projects"
             itemId="reorder-dragging"
-            label="Row being dragged"
+            label="Row Being Dragged"
             draggable
             dragging
           />
           <ListItem
             action="log-projects"
             itemId="reorder-after"
-            label="Drops below this row"
+            label="Drops Below This Row"
             draggable
             dropPosition="after"
           />
@@ -200,7 +200,7 @@ export function ListItemDemo() {
         <ListItem
           action="disabled"
           itemId="disabled"
-          label="Unavailable item"
+          label="Unavailable Item"
           icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
           disabled
         />
@@ -209,7 +209,7 @@ export function ListItemDemo() {
         <ListItem
           action="log-projects"
           itemId="placeholder"
-          label="Loading item"
+          label="Loading Item"
           description="Loading description"
           icon={<LucideIcon icon={Folder} name="folder" />}
           trailing={<span>0</span>}
@@ -220,7 +220,7 @@ export function ListItemDemo() {
         <ListItem
           action="log-projects"
           itemId="busy-placeholder"
-          label="Refreshing results"
+          label="Refreshing Results"
           status="Updating"
           busy
           placeholder
@@ -230,7 +230,7 @@ export function ListItemDemo() {
         <ListItem
           action="disabled"
           itemId="disabled-placeholder"
-          label="Unavailable item"
+          label="Unavailable Item"
           icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
           disabled
           placeholder

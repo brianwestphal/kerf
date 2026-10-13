@@ -8,10 +8,10 @@ import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 // KUI-D040: visible labels that Kerf UI's capitalization rule (docs/writing.md)
 // gives title style — button titles, menu items, segment and pop-up choices,
 // tab labels, field labels, list/group headers, and view/pane/dialog titles —
-// checked against Apple's title-style rule. Only string literals passed to
-// known title-style props are read, so prose, descriptions, placeholders,
-// tooltips, checkbox/switch option text, status lines, and dynamic data are
-// never judged. The check reports lowercase words title style capitalizes; it
+// plus the accessible names of icon-only controls, checked against Apple's
+// title-style rule. Only string literals passed to known title-style props
+// are read, so prose, descriptions, placeholders, tooltips, checkbox/switch
+// option text, status lines, region names, and dynamic data are never judged. The check reports lowercase words title style capitalizes; it
 // does not report capitalized short words, because Apple capitalizes a
 // preposition of any length inside a phrasal verb ("Log In to the Server").
 
@@ -129,20 +129,25 @@ export function titleStyleViolation(text) {
   return { words: flagged, suggestion: tokens.join('') };
 }
 
-// Component props whose string is a visible title-style label. `props` names
-// a direct string prop; `entries` names an array prop whose object entries
-// carry the label under one of `keys` (walked through nested arrays such as a
-// PopupMenu `submenu`).
+// Component props whose string is a visible title-style label, or the
+// accessible name of an icon-only control (docs/writing.md gives those title
+// style too: "More Actions", "Clear Search"). `props` names a direct string
+// prop; `entries` names an array prop whose object entries carry the label
+// under one of `keys` (walked through nested arrays such as a PopupMenu
+// `submenu`).
 const titleStyleProps = new Map([
   ['ListHeader', { props: ['label'] }],
   ['ListActionRow', { props: ['label'] }],
   ['EmptyState', { props: ['title'] }],
   ['StateBanner', { props: ['title'] }],
-  ['SplitButton', { props: ['label'] }],
+  ['SplitButton', { props: ['label', 'optionsLabel'] }],
   ['Combobox', { props: ['label'] }],
+  ['IconButton', { props: ['label'] }],
+  ['IconToggleButton', { props: ['label'] }],
+  ['TokenSearchField', { props: ['clearLabel'] }],
   ['NavStack', { props: ['backText'], entries: { views: ['title'] } }],
   ['SplitView', { props: ['backLabel'] }],
-  ['PopupMenu', { props: ['text'], entries: { items: ['label'] } }],
+  ['PopupMenu', { props: ['text', 'label'], entries: { items: ['label'] } }],
   ['SegmentedControl', { entries: { choices: ['label'] } }],
   ['Select', { entries: { choices: ['label'] } }],
   ['TabNavigator', { entries: { tabs: ['label'] } }],
@@ -330,6 +335,13 @@ export function titleStyleLabels(fileName, source) {
             literal: { text, node: node.children.find(ts.isJsxText) },
             owner: name === 'FieldLabel' ? 'FieldLabel' : `<${name}> text`,
           });
+        // An icon-only button's accessible name is its label.
+        if (!text && onlyText && name !== 'FieldLabel') {
+          const literal = literalOf(
+            attributeValueNode(attribute(node.openingElement, 'aria-label')),
+          );
+          if (literal) add(literal, `<${name}> aria-label`);
+        }
       }
     }
     if (ts.isJsxSelfClosingElement(node) || ts.isJsxOpeningElement(node)) {

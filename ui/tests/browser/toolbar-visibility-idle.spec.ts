@@ -41,11 +41,11 @@ test('toolbar width probes become idle after real transitions', async ({
   const specimen = page.locator('[data-demo-toolbar-width-visibility]');
   const toolbar = specimen.locator('[data-component="toolbar"]');
   const utility = specimen.getByRole('group', {
-    name: 'Workspace utilities',
+    name: 'Workspace Utilities',
     includeHidden: true,
   });
   const overflow = specimen.getByRole('group', {
-    name: 'More workspace actions',
+    name: 'More Workspace Actions',
     includeHidden: true,
   });
   await expect(utility).toBeVisible();
@@ -100,7 +100,7 @@ test('toolbar width probes become idle after real transitions', async ({
       path: testInfo.outputPath('toolbar-observer-idle-narrow.png'),
       animations: 'disabled',
     });
-  await toolbar.getByRole('button', { name: 'Refresh workspace' }).click();
+  await toolbar.getByRole('button', { name: 'Refresh Workspace' }).click();
   await expect(page.locator('.catalog-log')).toContainText(
     'Workspace refreshed',
   );

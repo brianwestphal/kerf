@@ -64,14 +64,14 @@ export function TabBarDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'tab-bar' }}>
       <CatalogExample label="Rail · intrinsic allocation" align="none">
-        <TabBar id="rail-tab-bar" label="Rail tab bar">
+        <TabBar id="rail-tab-bar" label="Rail Tab Bar">
           {tabs()}
         </TabBar>
       </CatalogExample>
       <CatalogExample label="Segmented · fill allocation" align="none">
         <TabBar
           id="segmented-tab-bar"
-          label="Segmented tab bar"
+          label="Segmented Tab Bar"
           presentation="segmented"
           allocation="fill"
         >
@@ -85,7 +85,7 @@ export function TabBarDemo() {
       >
         <TabBar
           id="responsive-icon-tab-bar"
-          label="Responsive project tabs"
+          label="Responsive Project Tabs"
           presentation="segmented"
           iconOnlyAt="wide"
         >
@@ -111,19 +111,19 @@ export function TabBarDemo() {
       <CatalogExample label="Inspector · adjacent and end actions" align="none">
         <TabBar
           id="inspector-tab-bar"
-          label="Inspector tab bar"
+          label="Inspector Tab Bar"
           presentation="inspector"
           trailingPlacement="adjacent"
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Add inspector section">
+              <button type="button" aria-label="Add Inspector Section">
                 <LucideIcon icon={Plus} name="plus" />
               </button>
             </ToolbarControlGroup>
           }
           end={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Create workspace item">
+              <button type="button" aria-label="Create Workspace Item">
                 <LucideIcon icon={SquarePlus} name="square-plus" />
               </button>
             </ToolbarControlGroup>
@@ -139,7 +139,7 @@ export function TabBarDemo() {
       >
         <TabBar
           id="raw-action-tab-bar"
-          label="Project tabs with primary action"
+          label="Project Tabs with Primary Action"
           trailingPlacement="adjacent"
           trailing={
             <wa-button appearance="plain" data-action="log-more">
@@ -171,7 +171,7 @@ export function TabBarDemo() {
           },
         }}
       >
-        <TabBar id="compact-project-tab-bar" label="Compact project tabs">
+        <TabBar id="compact-project-tab-bar" label="Compact Project Tabs">
           <AppTab
             id="compact-inspector"
             name="Inspector"
@@ -182,7 +182,7 @@ export function TabBarDemo() {
           />
           <AppTab
             id="compact-attention"
-            name="A project with a longer name"
+            name="A Project with a Longer Name"
             size="compact"
             labelMaxWidth={112}
             attention
@@ -197,17 +197,17 @@ export function TabBarDemo() {
       >
         <TabBar
           id="overflow-tab-bar"
-          label="Overflowing tab bar"
+          label="Overflowing Tab Bar"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Show sidebar">
+              <button type="button" aria-label="Show Sidebar">
                 <LucideIcon icon={PanelLeft} name="panel-left" />
               </button>
             </ToolbarControlGroup>
           }
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Add tab">
+              <button type="button" aria-label="Add Tab">
                 <LucideIcon icon={Plus} name="plus" />
               </button>
             </ToolbarControlGroup>
@@ -228,10 +228,10 @@ export function TabBarDemo() {
           },
         }}
       >
-        <TabBar id="pinned-tab-bar" label="Pinned project tabs">
+        <TabBar id="pinned-tab-bar" label="Pinned Project Tabs">
           <AppTab
             id="project-grid"
-            name="Project grid"
+            name="Project Grid"
             pinned
             selected
             closable={false}

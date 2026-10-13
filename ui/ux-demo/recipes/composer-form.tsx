@@ -63,7 +63,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         {/* The title and its supporting line are one heading unit. */}
         <List>
           <Toolbar
-            label="Publish workspace update"
+            label="Publish Workspace Update"
             leading={
               <ToolbarText
                 text="Publish Workspace Update"
@@ -96,7 +96,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         <List gap="xs" controlInsets="rl">
           <wa-input
             name="recipe-title"
-            label="Update title"
+            label="Update Title"
             hint="Summarize the outcome in one line."
             required
             value={title.value}

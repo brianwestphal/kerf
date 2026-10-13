@@ -79,7 +79,7 @@ test('catalog resource links wrap as whole actions at compact widths', async ({
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=toolbar');
-  const wide = page.getByRole('group', { name: 'Toolbar resources' });
+  const wide = page.getByRole('group', { name: 'Toolbar Resources' });
   const wideActions = wide.locator('[data-component="toolbar-action-link"]');
   await expect(wideActions).toHaveCount(4);
   expect(
@@ -99,7 +99,7 @@ test('catalog resource links wrap as whole actions at compact widths', async ({
   await page.locator('html').evaluate((element) => {
     element.style.fontSize = '200%';
   });
-  const zoomed = page.getByRole('group', { name: 'Button resources' });
+  const zoomed = page.getByRole('group', { name: 'Button Resources' });
   await expect(zoomed).toBeVisible();
   expect(
     await zoomed.evaluate(

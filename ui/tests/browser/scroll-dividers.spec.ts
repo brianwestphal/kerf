@@ -560,7 +560,7 @@ test.describe('scroll dividers', () => {
 
     // Scrolling the content keeps the header pinned: the header draws the
     // line under itself, the stack's chrome does not double it, and the
-    // Pane footer draws the lower line, so the stack does not double it.
+    // Pane Footer draws the lower line, so the stack does not double it.
     await scroll(content, 'middle');
     expect(await shows(header)).toBe(true);
     expect(await shows(chrome, '::after')).toBe(false);

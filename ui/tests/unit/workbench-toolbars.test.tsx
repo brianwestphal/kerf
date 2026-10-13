@@ -92,7 +92,7 @@ describe('Workbench panel toolbars', () => {
       },
       navStack: {
         id: 'ticket-nav',
-        label: 'Ticket navigation',
+        label: 'Ticket Navigation',
         views: views.slice(0, depth),
       },
       collapsed,

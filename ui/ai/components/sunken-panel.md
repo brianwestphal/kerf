@@ -19,7 +19,7 @@ Group a vertical list of application content on a visually lowered surface with 
 
 **Alternatives:**
 
-- [Application layout](./layout.md) (composes-with) — Use layout roles for pane, toolbar, scroll, and ordinary content-stack ownership.
+- [Application Layout](./layout.md) (composes-with) — Use layout roles for pane, toolbar, scroll, and ordinary content-stack ownership.
 
 ## Imports
 
@@ -74,6 +74,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Application layout](./layout.md).
+- Components: [Application Layout](./layout.md).
 - Docs: [`docs/sunken-panel.md`](../../docs/sunken-panel.md), [`docs/sunken-panel.md#ownership`](../../docs/sunken-panel.md#ownership).
 - UX catalog route: `?component=sunken-panel`.

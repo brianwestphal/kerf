@@ -20,7 +20,7 @@ Present a selectable list and its detail together when space permits, with a one
 
 **Alternatives:**
 
-- [Navigation stack](./recipe-navigation-stack.md) (responsive-alternative) — SplitView renders the one-pane navigation-stack form on compact device classes.
+- [Navigation Stack](./recipe-navigation-stack.md) (responsive-alternative) — SplitView renders the one-pane navigation-stack form on compact device classes.
 - [Workbench](./workbench.md) (nearest) — Use Workbench when a desktop-class tool needs more than the list and detail regions.
 
 ## Imports
@@ -98,6 +98,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [NavStack](./nav-stack.md), [ResizableRegion](./resize.md), [Navigation stack](./recipe-navigation-stack.md), [Workbench](./workbench.md).
+- Components: [NavStack](./nav-stack.md), [ResizableRegion](./resize.md), [Navigation Stack](./recipe-navigation-stack.md), [Workbench](./workbench.md).
 - Docs: [`docs/split-view.md`](../../docs/split-view.md), [`docs/app-layouts.md#decision-matrix`](../../docs/app-layouts.md#decision-matrix).
 - UX catalog route: `?component=split-view`.

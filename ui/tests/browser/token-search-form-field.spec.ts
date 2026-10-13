@@ -8,7 +8,7 @@ test('TokenSearchField form presentation matches Web Awesome field geometry and 
     await page.goto('/?component=token-search-field');
     const pair = page.locator('[data-demo-token-form]');
     const field = pair.locator('[data-token-search-form-field]');
-    const editor = field.getByRole('searchbox', { name: 'Search query' });
+    const editor = field.getByRole('searchbox', { name: 'Search Query' });
     await expect(editor).toHaveAttribute('aria-required', 'true');
     await expect(editor).toHaveAttribute(
       'aria-describedby',

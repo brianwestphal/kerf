@@ -104,7 +104,7 @@ test('Text renders semantic variants with standard padded geometry', async ({
   const paragraph = page.locator('#text-demo-paragraph');
   await expect(paragraph).toHaveAttribute('lang', 'en');
   await expect(paragraph).toHaveAttribute('data-demo-copy', 'paragraph');
-  await expect(paragraph).toHaveAttribute('aria-label', 'Example paragraph');
+  await expect(paragraph).toHaveAttribute('aria-label', 'Example Paragraph');
   await expect(paragraph).toHaveAttribute('data-tone', 'default');
   await expect(paragraph).toHaveAttribute('data-size', 'default');
   await expect(paragraph).toHaveAttribute('data-font', 'default');

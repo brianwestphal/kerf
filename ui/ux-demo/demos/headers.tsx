@@ -14,13 +14,13 @@ export function HeadersDemo() {
   // as ordinary content below the toolbar.
   return (
     <CatalogExampleStack
-      label="Heading compositions"
+      label="Heading Compositions"
       rootAttributes={{ 'data-demo': 'headers' }}
     >
       <CatalogExample label="Page and panel headings">
         <List gap="none">
           <Toolbar
-            label="UI foundations"
+            label="UI Foundations"
             leading={
               <ToolbarText
                 text="UI Foundations"
@@ -38,7 +38,7 @@ export function HeadersDemo() {
             }
           />
           <Toolbar
-            label="Package details"
+            label="Package Details"
             leading={
               <>
                 <ToolbarControlGroup appearance="borderless" single>
@@ -62,7 +62,7 @@ export function HeadersDemo() {
           <ListInsetText sides="rl">
             Production-backed primitives with explicit contracts.
           </ListInsetText>
-          <ValueTable label="Package metadata">
+          <ValueTable label="Package Metadata">
             <ValueTableRow label="Package" value="@kerfjs/ui" />
             <ValueTableRow label="Rendering" value="Kerf SafeHtml" />
             <ValueTableRow label="Styles" value="Explicit CSS subpaths" />

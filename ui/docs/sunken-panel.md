@@ -8,7 +8,7 @@ issue tracker or component catalog.
 ```tsx
 import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
 
-<SunkenPanel ariaLabel="Release workspace">
+<SunkenPanel ariaLabel="Release Workspace">
   <ReleaseSummary />
   <ReleaseChecks />
 </SunkenPanel>;
@@ -33,7 +33,7 @@ can shrink with its parent. Like `Grid`, `flex` accepts `true` (equivalent to
 
 ```tsx
 <List fill>
-  <Toolbar label="Work area" />
+  <Toolbar label="Work Area" />
   <SunkenPanel flex>
     <WorkArea />
   </SunkenPanel>

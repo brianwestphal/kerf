@@ -12,9 +12,9 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Chip](./chip.md) — Render removable tags without application rules on Web Awesome internals.
 - [LucideIcon](./lucide-icon.md) — Decorative and meaningfully labeled Lucide-compatible icons.
 - [DisclosureArrow](./disclosure-arrow.md) — Indicate whether a disclosure control is open with an overridable 18px root-scaled visual and shortest-path rotation behavior.
-- [Foundation tokens](./foundation.md) — Provide the shared semantic token foundation for application themes and every styled Kerf UI component.
-- [Document baseline](./document-baseline.md) — Let an application opt into Kerf UI-owned document defaults and a definite full-height chain for a percentage-height application shell.
-- [Application layout](./layout.md) — Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.
+- [Foundation Tokens](./foundation.md) — Provide the shared semantic token foundation for application themes and every styled Kerf UI component.
+- [Document Baseline](./document-baseline.md) — Let an application opt into Kerf UI-owned document defaults and a definite full-height chain for a percentage-height application shell.
+- [Application Layout](./layout.md) — Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.
 
 ## Kerf UI — Structure
 
@@ -27,7 +27,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [SunkenPanel](./sunken-panel.md) — Group a vertical list of application content on a visually lowered surface with one owned 8px inset and an explicit rounded or square-corner shape.
 - [Toolbar](./toolbar.md) — Leading, centered, and trailing toolbar composition.
 - [ToolbarControlGroup](./toolbar-control-group.md) — Provide complete toolbar action geometry through configuration, including semantic anchors, overflow containment, and dropdown menu insets without application CSS.
-- [Surface scaffolds](./surface-scaffold.md) — Configure recurring dialog and popup geometry without consumer ::part() overrides.
+- [Surface Scaffolds](./surface-scaffold.md) — Configure recurring dialog and popup geometry without consumer ::part() overrides.
 - [FloatingToolbar](./floating-toolbar.md) — A transparent, forced-dark toolbar that floats over its container's content.
 - [ToolbarText](./toolbar-text.md) — Extra-large through extra-small toolbar identity text.
 - [Text](./text.md) — Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.
@@ -50,7 +50,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ListHeader](./list-header.md) — Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and optional count or combined badge/status indicators from a logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.
 - [ListActionRow](./list-action-row.md) — Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.
 - [ListItem](./list-item.md) — Selectable, disabled, trailing, and multiline action or link rows.
-- [Application tabs](./application-tabs.md) — Show AppTab and TabBar in a complete controlled composition.
+- [Application Tabs](./application-tabs.md) — Show AppTab and TabBar in a complete controlled composition.
 - [AppTab](./tabs.md) — Render a controlled application tab with compact or icon-only presentation, a visible drop target, optional full-name display, and an optional pinned leading position.
 - [TabBar](./tab-bar.md) — Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.
 
@@ -172,13 +172,13 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 ## Kerf UI — Recipes
 
-- [Desktop application shell](./recipe-app-shell.md) — App bar above a Workbench with resizable navigation and inspector rails, relocated rail toggles, narrow-container overlays, and explicit pane scroll owners.
-- [Navigation sidebar](./recipe-navigation-sidebar.md) — Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.
-- [Workspace header](./recipe-workspace-header.md) — Page identity with primary, secondary, and overflow actions that relocate at narrow widths.
+- [Desktop Application Shell](./recipe-app-shell.md) — App bar above a Workbench with resizable navigation and inspector rails, relocated rail toggles, narrow-container overlays, and explicit pane scroll owners.
+- [Navigation Sidebar](./recipe-navigation-sidebar.md) — Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.
+- [Workspace Header](./recipe-workspace-header.md) — Page identity with primary, secondary, and overflow actions that relocate at narrow widths.
 - [List-detail dialog](./recipe-list-detail-dialog.md) — Production modal laid out as a workbench: a full-height SplitView list sidebar with its own toolbar beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.
-- [Composer form](./recipe-composer-form.md) — One visible publishing-form surface with Toolbar heading hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.
-- [List workspace states](./recipe-list-workspace-states.md) — Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.
-- [Compact toolbar choices and actions](./recipe-compact-toolbar.md) — A compact toolbar that distinguishes grouped commands, a visible exclusive choice, a longer Select, and one ordinary action.
-- [Navigation stack](./recipe-navigation-stack.md) — A push/pop navigation stack drill-down with animated slides and a live device class.
-- [Loading inspector](./recipe-loading-inspector.md) — A record inspector whose per-record values load asynchronously — every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.
-- [Collapsible sidebar](./recipe-collapsible-sidebar.md) — A mini app frame whose left navigation rail and bottom activity drawer are standalone CollapsiblePanels driven by wireSidebar: per-side collapse/expand toggles, focus move-in and restore, a dismissable compact overlay, and per-panel persistence.
+- [Composer Form](./recipe-composer-form.md) — One visible publishing-form surface with Toolbar heading hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.
+- [List Workspace States](./recipe-list-workspace-states.md) — Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.
+- [Compact Toolbar Choices and Actions](./recipe-compact-toolbar.md) — A compact toolbar that distinguishes grouped commands, a visible exclusive choice, a longer Select, and one ordinary action.
+- [Navigation Stack](./recipe-navigation-stack.md) — A push/pop navigation stack drill-down with animated slides and a live device class.
+- [Loading Inspector](./recipe-loading-inspector.md) — A record inspector whose per-record values load asynchronously — every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.
+- [Collapsible Sidebar](./recipe-collapsible-sidebar.md) — A mini app frame whose left navigation rail and bottom activity drawer are standalone CollapsiblePanels driven by wireSidebar: per-side collapse/expand toggles, focus move-in and restore, a dismissable compact overlay, and per-panel persistence.

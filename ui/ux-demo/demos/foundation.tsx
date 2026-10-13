@@ -18,7 +18,7 @@ const tones = [
 export function FoundationDemo() {
   return (
     <CatalogExampleStack
-      label="Foundation token examples"
+      label="Foundation Token Examples"
       rootAttributes={{ 'data-demo': 'foundation' }}
     >
       <CatalogExample

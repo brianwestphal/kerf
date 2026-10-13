@@ -55,7 +55,7 @@ export function ContentItemDemo() {
         }
         align="none"
       >
-        <Pane label="Content items">
+        <Pane label="Content Items">
           <ContentItem rootAttributes={{ 'data-demo-item': 'plain' }}>
             {itemCopy(
               'Workspace details',
@@ -78,7 +78,7 @@ export function ContentItemDemo() {
         note="A static item may enter the tab order without becoming an action. outlined keeps the same ring visible for a drop target."
         align="none"
       >
-        <Pane label="Drop target items" deepInset>
+        <Pane label="Drop Target Items" deepInset>
           <ContentItem
             tabIndex={0}
             outlined
@@ -117,7 +117,7 @@ export function ContentItemDemo() {
         note="Flush removes block padding and borders. A rich card keeps its primary and secondary buttons as siblings inside a static item."
         align="none"
       >
-        <Pane label="Quotation preview">
+        <Pane label="Quotation Preview">
           <ContentItem flush rootAttributes={{ 'data-demo-item': 'flush' }}>
             <Text variant="p">
               A compact markdown preview can reach the item's block edges.
@@ -151,7 +151,7 @@ export function ContentItemDemo() {
         align="none"
         viewport={{ width: 'medium' }}
       >
-        <Pane label="Assistant conversation">
+        <Pane label="Assistant Conversation">
           <List gap="xs" rootAttributes={{ 'data-demo-transcript': '' }}>
             <ContentItem
               bubble="end"
@@ -186,7 +186,7 @@ export function ContentItemDemo() {
         }
         align="none"
       >
-        <Pane label="Pill content item">
+        <Pane label="Pill Content Item">
           <ContentItem
             frame="framed"
             shape="pill"
@@ -201,7 +201,7 @@ export function ContentItemDemo() {
         note="Enter and Space activate the focused card; selection keeps the reserved border geometry."
         align="none"
       >
-        <Pane label="Interactive content items" appearance="sunken">
+        <Pane label="Interactive Content Items" appearance="sunken">
           <ContentItem
             interactive
             action="toggle-content-card"
@@ -263,7 +263,7 @@ export function ContentItemDemo() {
         note="Each card is a focusable grid row. Its buttons and decision control keep independent actions; the app owns multi-selection."
         align="none"
       >
-        <List selectionMode="multiple" ariaLabel="Demand lines">
+        <List selectionMode="multiple" ariaLabel="Demand Lines">
           {(['demand-a', 'demand-b'] as const).map((id) => (
             <ContentItem
               interactive

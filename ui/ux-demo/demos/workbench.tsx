@@ -89,7 +89,7 @@ function ticketCollectionView(): NavStackView {
     key: 'collection',
     toolbar: {
       title: 'Tickets',
-      leading: iconGroup('Choose project', Search, 'search'),
+      leading: iconGroup('Choose Project', Search, 'search'),
     },
     header: (
       <List gap="2xs" textInsets="rl">
@@ -128,7 +128,7 @@ function ticketDetailView(id: string): NavStackView {
     key: id,
     toolbar: {
       title: id,
-      trailing: iconGroup('Ticket action', FilePlus, 'file-plus'),
+      trailing: iconGroup('Ticket Action', FilePlus, 'file-plus'),
     },
     header: (
       <List gap="2xs" textInsets="rl" controlInsets="rl">
@@ -138,7 +138,7 @@ function ticketDetailView(id: string): NavStackView {
         </Text>
         <SegmentedControl
           id="workbench-ticket-sections"
-          label="Ticket sections"
+          label="Ticket Sections"
           value={workbenchTicketSection.value}
           choices={[
             { value: 'overview', label: 'Overview' },
@@ -249,7 +249,7 @@ export function WorkbenchDemo() {
       >
         <Workbench
           id={NAVIGATION_WORKBENCH_ID}
-          label="Ticket workbench"
+          label="Ticket Workbench"
           mainToolbar={{ label: 'Workspace', title: mainTitle('Workspace') }}
           main={region('Workspace', 'Open a ticket in the right rail.')}
           rightRail={{
@@ -257,7 +257,7 @@ export function WorkbenchDemo() {
             size: 360,
             collapsed: workbenchTicketRailCollapsed.value,
             toolbar: {
-              label: 'Ticket rail toolbar',
+              label: 'Ticket Rail Toolbar',
               toggle: {
                 action: 'toggle-workbench-ticket-rail',
                 name: 'tickets',
@@ -265,7 +265,7 @@ export function WorkbenchDemo() {
             },
             navStack: {
               id: NAVIGATION_STACK_ID,
-              label: 'Ticket navigation',
+              label: 'Ticket Navigation',
               views: [
                 ticketCollectionView(),
                 ...workbenchTicketStack.value.map(ticketDetailView),
@@ -290,7 +290,7 @@ export function WorkbenchDemo() {
       >
         <Workbench
           id="catalog-workbench-full"
-          label="Project workbench"
+          label="Project Workbench"
           mainLabel="Editor"
           mainTabIndex={0}
           mainOutlined
@@ -327,7 +327,7 @@ export function WorkbenchDemo() {
       >
         <Workbench
           id={RESIZABLE_WORKBENCH_ID}
-          label="Resizable workbench"
+          label="Resizable Workbench"
           overlayBackdrop
           mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
           main={
@@ -382,8 +382,8 @@ export function WorkbenchDemo() {
             footer: <ToolbarText text="Updated just now" size="small" />,
             footerList: { textInsets: 'trbl' },
             bottomToolbar: {
-              label: 'Inspector actions',
-              trailing: iconGroup('Search inspector', Search, 'search'),
+              label: 'Inspector Actions',
+              trailing: iconGroup('Search Inspector', Search, 'search'),
             },
             content: (
               <div class="kui-content">
@@ -435,11 +435,11 @@ export function WorkbenchDemo() {
       >
         <Workbench
           id={RESPONSIVE_DRAWER_WORKBENCH_ID}
-          label="Responsive drawer workbench"
+          label="Responsive Drawer Workbench"
           overlayBackdrop
           mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
           mainBottomToolbar={{
-            label: 'Editor status',
+            label: 'Editor Status',
             leading: <ToolbarText text="Ready" size="small" />,
           }}
           main={region(
@@ -479,7 +479,7 @@ export function WorkbenchDemo() {
       >
         <Workbench
           id={COLLAPSED_WORKBENCH_ID}
-          label="Focused editor workbench"
+          label="Focused Editor Workbench"
           mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
           main={region(
             'The app owns every collapsed flag',
@@ -489,8 +489,8 @@ export function WorkbenchDemo() {
             label: 'Navigator',
             toolbar: {
               label: 'Navigator',
-              leading: iconGroup('New file', FilePlus, 'file-plus'),
-              trailing: iconGroup('Search files', Search, 'search', true),
+              leading: iconGroup('New File', FilePlus, 'file-plus'),
+              trailing: iconGroup('Search Files', Search, 'search', true),
               toggle: {
                 action: 'toggle-workbench-collapsed-navigator',
                 name: 'navigator',

@@ -7,23 +7,23 @@ test('names plain and custom Select comboboxes without adding visible label geom
   await page.goto('/?component=select');
   const demo = page.locator('[data-demo="select"]');
   const custom = demo.getByRole('combobox', {
-    name: 'Rendering balance',
+    name: 'Rendering Balance',
     exact: true,
   });
   const plain = demo.getByRole('combobox', {
-    name: 'Plain rendering balance',
+    name: 'Plain Rendering Balance',
     exact: true,
   });
   const labeled = demo.getByRole('combobox', {
-    name: 'Rendering preference',
+    name: 'Rendering Preference',
     exact: true,
   });
   const toolbar = demo.getByRole('combobox', {
-    name: 'Toolbar rendering balance',
+    name: 'Toolbar Rendering Balance',
     exact: true,
   });
   const navigation = demo.getByRole('combobox', {
-    name: 'Navigation rendering balance',
+    name: 'Navigation Rendering Balance',
     exact: true,
   });
   await expect(custom).toHaveValue('Balanced');
@@ -158,8 +158,8 @@ test('names plain and custom Select comboboxes without adding visible label geom
   await expect(plain).toHaveValue('Explicit');
   await page.setViewportSize({ width: 390, height: 844 });
   await demo.scrollIntoViewIfNeeded();
-  await expect(custom).toHaveAccessibleName('Rendering balance');
-  await expect(plain).toHaveAccessibleName('Plain rendering balance');
+  await expect(custom).toHaveAccessibleName('Rendering Balance');
+  await expect(plain).toHaveAccessibleName('Plain Rendering Balance');
   await page.screenshot({
     path: testInfo.outputPath('select-name-narrow.png'),
     fullPage: true,

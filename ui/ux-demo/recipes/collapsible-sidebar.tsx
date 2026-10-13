@@ -79,7 +79,7 @@ export const createRecipe: RecipeFactory = (announce) => {
   // rail's leads the main toolbar, the drawer's floats in its container's
   // bottom-end corner. wireSidebar hands focus between the two positions.
   const railToolbar: CollapsiblePanelToolbar = {
-    label: 'Workspace navigation',
+    label: 'Workspace Navigation',
     title: <ToolbarText text="Atlas" />,
     toggle: { action: RAIL_ACTION, name: 'navigation' },
   };
@@ -95,7 +95,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       side="left"
       size={232}
       collapsed={railCollapsed.value}
-      label="Workspace navigation"
+      label="Workspace Navigation"
       toolbar={railToolbar}
     >
       <nav aria-label="Workspace">
@@ -119,7 +119,7 @@ export const createRecipe: RecipeFactory = (announce) => {
           <ListItem
             action="recipe-action"
             itemId="shared"
-            label="Shared with me"
+            label="Shared with Me"
             icon={<LucideIcon icon={Users} name="users" />}
             selected={selected.value === 'shared'}
           />
@@ -133,7 +133,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       element="main"
       header={
         <Toolbar
-          label="Current navigation view"
+          label="Current Navigation View"
           leading={
             <>
               <CollapsiblePanelRelocated
@@ -175,7 +175,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       label="Activity"
       toolbar={drawerToolbar}
       restoreControl={
-        <FloatingToolbar label="Activity drawer">
+        <FloatingToolbar label="Activity Drawer">
           <CollapsiblePanelRelocated
             panelId="sidebar-console"
             side="bottom"
@@ -185,7 +185,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         </FloatingToolbar>
       }
     >
-      <ValueTable label="Recent activity">
+      <ValueTable label="Recent Activity">
         <ValueTableRow
           label="Deploy finished"
           value="2m ago"

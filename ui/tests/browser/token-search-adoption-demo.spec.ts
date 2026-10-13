@@ -13,7 +13,7 @@ test('select-all deletion keeps a controlled search open before delayed frames a
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Filter records' });
+  const editor = field.getByRole('searchbox', { name: 'Filter Records' });
   const chips = editor.locator('[data-component="token-search-token"]');
   const outside = page.locator('[data-action="toggle-theme"]').first();
   for (const width of [1100, 390]) {
@@ -100,7 +100,7 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
       }),
     })
     .locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Filter records' });
+  const editor = field.getByRole('searchbox', { name: 'Filter Records' });
   const readout = page.locator('[data-demo-adoption-readout]');
   const chips = field.locator('[data-component="token-search-token"]');
   const suggestion = (name: string) =>
@@ -147,7 +147,7 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
   await field.getByRole('button', { name: 'Open filter' }).click();
   for (let repetition = 0; repetition < 5; repetition += 1) {
     if (repetition > 0) {
-      await field.getByRole('button', { name: 'Clear search' }).click();
+      await field.getByRole('button', { name: 'Clear Search' }).click();
       await expect(chips).toHaveCount(0);
     }
     await suggestion('status:open').click();
@@ -214,8 +214,8 @@ test('managed clear keeps immediate typing and later focus ownership before dela
       }),
     });
   const field = demo.locator('[data-component="token-search-field"]');
-  const editor = field.getByRole('searchbox', { name: 'Filter records' });
-  const clear = field.getByRole('button', { name: 'Clear search' });
+  const editor = field.getByRole('searchbox', { name: 'Filter Records' });
+  const clear = field.getByRole('button', { name: 'Clear Search' });
   const outside = page.locator('[data-action="toggle-theme"]').first();
   // Exercise next-input-before-frame deterministically without slowing input or
   // waiting for the helper to focus. Native pointer delivery is unchanged.

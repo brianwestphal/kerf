@@ -201,7 +201,7 @@ for (const { name, width, height } of [
       const disabled = page.locator(
         '[data-token-search-id="disabled-search"] .kui-token-search__clear',
       );
-      await expect(disabled).toHaveAccessibleName('Clear search');
+      await expect(disabled).toHaveAccessibleName('Clear Search');
       await expect(
         disabled.locator('svg[data-lucide="circle-x"]'),
       ).toBeVisible();

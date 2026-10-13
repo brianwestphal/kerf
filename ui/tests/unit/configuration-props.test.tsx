@@ -140,7 +140,7 @@ describe('props that replace raw token overrides', () => {
     );
     expect(clear(custom)).toContain('data-lucide="circle"');
     expect(clear(custom)).not.toContain('data-lucide="x"');
-    expect(custom).toContain('aria-label="Clear search"');
+    expect(custom).toContain('aria-label="Clear Search"');
   });
 
   it('accepts only typed lengths for the length props', () => {

@@ -103,7 +103,7 @@ describe('ListActionRow trailing menu', () => {
         label: 'File',
         action: 'select-file',
         trailingAction: 'file-actions',
-        trailingActionLabel: 'File actions',
+        trailingActionLabel: 'File Actions',
         trailingActionIcon: icon,
       }),
     );

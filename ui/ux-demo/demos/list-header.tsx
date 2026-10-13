@@ -123,7 +123,7 @@ export function ListHeaderDemo() {
       </CatalogExample>
       <DemoListPopover
         id="list-header-attachments-popover"
-        label="Attachment action details"
+        label="Attachment Action Details"
       >
         Application-owned popover content.
       </DemoListPopover>

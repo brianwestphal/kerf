@@ -122,7 +122,7 @@ export function popNestedTabNavigatorDemo(): void {
 export function TabNavigatorDemo() {
   return (
     <CatalogExampleStack
-      label="Compact application tabs"
+      label="Compact Application Tabs"
       rootAttributes={{ 'data-demo': 'tab-navigator' }}
     >
       <CatalogExample
@@ -137,7 +137,7 @@ export function TabNavigatorDemo() {
       >
         <TabNavigator
           id="catalog-tab-scaffold"
-          label="Application sections"
+          label="Application Sections"
           tabs={tabs}
           active={activeTab.value}
         />
@@ -154,7 +154,7 @@ export function TabNavigatorDemo() {
       >
         <TabNavigator
           id="catalog-tab-scaffold-nested"
-          label="Project sections"
+          label="Project Sections"
           active={nestedActiveTab.value}
           tabs={[
             {
@@ -164,7 +164,7 @@ export function TabNavigatorDemo() {
               content: (
                 <NavStack
                   id="catalog-tab-scaffold-project-stack"
-                  label="Projects navigation"
+                  label="Projects Navigation"
                   views={nestedViews.value}
                 />
               ),

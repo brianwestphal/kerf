@@ -8,7 +8,7 @@ describe('SplitButton', () => {
       SplitButton({
         label: 'Deploy',
         action: 'deploy',
-        optionsLabel: 'Deploy options',
+        optionsLabel: 'Deploy Options',
         optionsAction: 'deploy-options',
       }),
     );
@@ -19,7 +19,7 @@ describe('SplitButton', () => {
       '<button type="button" class="kui-split-button__primary" data-action="deploy"><span class="kui-split-button__label">Deploy</span></button>',
     );
     expect(html).toContain(
-      'class="kui-split-button__options" data-action="deploy-options" aria-label="Deploy options" aria-haspopup="menu" aria-expanded="false" title="Deploy options">',
+      'class="kui-split-button__options" data-action="deploy-options" aria-label="Deploy Options" aria-haspopup="menu" aria-expanded="false" title="Deploy Options">',
     );
     expect(html).not.toContain('disabled');
     expect(html).not.toContain('aria-busy');
@@ -28,7 +28,7 @@ describe('SplitButton', () => {
   it('reflects tone, fill, busy, expanded, controls, disabled halves, and metadata', () => {
     const html = String(
       SplitButton({
-        label: 'Codex running',
+        label: 'Codex Running',
         accessibleLabel: 'Codex workflow is running',
         action: 'drive',
         icon: <svg />,

@@ -215,14 +215,14 @@ test('traps Tab focus within the open compact overlay', async ({ page }) => {
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
 
   // Focus the last control in the rail; Tab wraps back to the first.
-  await railPanel(page).getByRole('button', { name: 'Shared with me' }).focus();
+  await railPanel(page).getByRole('button', { name: 'Shared with Me' }).focus();
   await page.keyboard.press('Tab');
   await expect(railInnerToggle(page)).toBeFocused();
 
   // Shift+Tab from the first control wraps to the last.
   await page.keyboard.press('Shift+Tab');
   await expect(
-    railPanel(page).getByRole('button', { name: 'Shared with me' }),
+    railPanel(page).getByRole('button', { name: 'Shared with Me' }),
   ).toBeFocused();
 });
 

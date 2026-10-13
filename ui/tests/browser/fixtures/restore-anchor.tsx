@@ -248,14 +248,14 @@ const drawers = () => (
     >
       {panel('restore-sibling-nav')}
       <div style="display:flex;min-width:0;min-height:0">
-        {content('Work area')}
+        {content('Work Area')}
       </div>
       {drawer('restore-sibling-drawer')}
     </div>
     <div data-restore-host="column-drawer" style={hostStyle('display:flex')}>
       {panel('restore-column-nav')}
       <div style="display:flex;flex-direction:column;flex:1;min-width:0;overflow:hidden">
-        {fill('Work area')}
+        {fill('Work Area')}
         {openRegion()}
       </div>
     </div>
@@ -284,7 +284,7 @@ const railRestore = (side: 'left' | 'right', name: string) => (
 const workbench = (
   id: string,
   drawerPanel?: { responsive?: boolean },
-  main = content('Work area'),
+  main = content('Work Area'),
 ) => (
   <Workbench
     id={id}

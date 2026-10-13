@@ -52,7 +52,7 @@ afterEach(() => {
 });
 
 function select({
-  name = 'Filter by label',
+  name = 'Filter by Label',
   iconOnly = true,
   multipleSummary,
   choice,
@@ -98,7 +98,7 @@ function select({
 }
 
 function popupMenu({
-  label = 'Sort tickets',
+  label = 'Sort Tickets',
   shadow = true,
 }: { label?: string | null; shadow?: boolean } = {}) {
   fakeTime();
@@ -185,7 +185,7 @@ describe('icon-only trigger help tags', () => {
     vi.advanceTimersByTime(1);
     const tag = tagOf(host)!;
     expect(tag.open).toBe(true);
-    expect(tag.textContent).toBe('Filter by label: Bug, Docs');
+    expect(tag.textContent).toBe('Filter by Label: Bug, Docs');
     expect(tag.anchor).toBe(combobox);
     // Aria-hidden and not wired through `for`, so it never renames the trigger.
     expect(tag.getAttribute('aria-hidden')).toBe('true');
@@ -220,7 +220,7 @@ describe('icon-only trigger help tags', () => {
     pointerOver(input);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     const tag = tagOf(host)!;
-    expect(tag.textContent).toBe('Filter by label');
+    expect(tag.textContent).toBe('Filter by Label');
     tag.dispatchEvent(new Event('wa-show', { bubbles: true, composed: true }));
     tag.dispatchEvent(
       new Event('wa-after-hide', { bubbles: true, composed: true }),
@@ -232,24 +232,24 @@ describe('icon-only trigger help tags', () => {
 
   it('names a single Select and its current choice, and follows a change', () => {
     const { host, input } = select({
-      name: 'Rendering balance',
+      name: 'Rendering Balance',
       choice: { label: 'Balanced' },
     });
     pointerOver(input);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     const tag = tagOf(host)!;
-    expect(tag.textContent).toBe('Rendering balance: Balanced');
+    expect(tag.textContent).toBe('Rendering Balance: Balanced');
     host.selectedOptions![0]!.label = 'Quiet';
     host.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(tag.textContent).toBe('Rendering balance: Quiet');
+    expect(tag.textContent).toBe('Rendering Balance: Quiet');
     host.selectedOptions![0]!.label = 'Explicit';
     host.dispatchEvent(new Event('input', { bubbles: true }));
-    expect(tag.textContent).toBe('Rendering balance: Explicit');
+    expect(tag.textContent).toBe('Rendering Balance: Explicit');
     // A change on another control leaves the tag alone.
     const other = select({ name: 'Other', choice: { label: 'A' } });
     other.host.dispatchEvent(new Event('change', { bubbles: true }));
     document.body.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(tag.textContent).toBe('Rendering balance: Explicit');
+    expect(tag.textContent).toBe('Rendering Balance: Explicit');
   });
 
   it('falls back to option text and to the bare name', () => {
@@ -298,7 +298,7 @@ describe('icon-only trigger help tags', () => {
     pointerOver(trigger);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     const tag = tagOf(host)!;
-    expect(tag.textContent).toBe('Sort tickets');
+    expect(tag.textContent).toBe('Sort Tickets');
     expect(tag.anchor).toBe(trigger);
 
     const bare = popupMenu({ shadow: false });
@@ -509,7 +509,7 @@ describe('icon-only trigger help tags', () => {
 });
 
 function toolbarControl({
-  label = 'Pin view' as string | null,
+  label = 'Pin View' as string | null,
   element = 'button',
   href = '#pin' as string | null,
   text = '',
@@ -571,7 +571,7 @@ describe('icon-only toolbar button help tags', () => {
     vi.advanceTimersByTime(1);
     const [tag] = buttonTags();
     expect(tag!.open).toBe(true);
-    expect(tag!.textContent).toBe('Pin view');
+    expect(tag!.textContent).toBe('Pin View');
     expect(tag!.anchor).toBe(control);
     expect(tag!.getAttribute('aria-hidden')).toBe('true');
     expect(tag!.getAttribute('trigger')).toBe('manual');
@@ -585,7 +585,7 @@ describe('icon-only toolbar button help tags', () => {
     expect(layer.hasAttribute('data-morph-skip')).toBe(true);
     expect(layer.style.position).toBe('fixed');
     // The button keeps its own name and gains no relationship to the tag.
-    expect(control.getAttribute('aria-label')).toBe('Pin view');
+    expect(control.getAttribute('aria-label')).toBe('Pin View');
     expect(control.hasAttribute('aria-labelledby')).toBe(false);
     expect(control.hasAttribute('aria-describedby')).toBe(false);
 
@@ -659,7 +659,7 @@ describe('icon-only toolbar button help tags', () => {
     pointerOver(share.control);
     const tags = buttonTags();
     expect(tags.map((tag) => [tag.textContent, tag.open])).toEqual([
-      ['Pin view', false],
+      ['Pin View', false],
       ['Share', true],
     ]);
     pointerOver(filter.input);
@@ -685,7 +685,7 @@ describe('icon-only toolbar button help tags', () => {
   it('ignores controls with visible text, a title, their own tooltip, or no toolbar', () => {
     const skipped = [
       toolbarControl({ text: 'Pin' }),
-      toolbarControl({ title: 'Pin view' }),
+      toolbarControl({ title: 'Pin View' }),
       toolbarControl({ label: null }),
       toolbarControl({ label: '   ' }),
       toolbarControl({ inGroup: false }),

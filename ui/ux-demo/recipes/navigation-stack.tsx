@@ -37,19 +37,19 @@ interface LibraryItem {
 const ITEMS: LibraryItem[] = [
   {
     id: 'tokens',
-    label: 'Design tokens',
+    label: 'Design Tokens',
     detail:
       'Semantic color, spacing, and radius scales shared across every surface.',
   },
   {
     id: 'controls',
-    label: 'Toolbar controls',
+    label: 'Toolbar Controls',
     detail:
       'Control groups and segmented controls with their hover and pressed contracts.',
   },
   {
     id: 'layouts',
-    label: 'App layouts',
+    label: 'App Layouts',
     detail:
       'Navigation stacks, split views, workbench, and bottom-tab scaffolds.',
   },
@@ -104,9 +104,9 @@ export const createRecipe: RecipeFactory = (announce) => {
   const render = () => (
     <section
       data-recipe="recipe-navigation-stack"
-      aria-label="Component library"
+      aria-label="Component Library"
     >
-      <NavStack id="recipe-nav" label="Component library" views={views.value} />
+      <NavStack id="recipe-nav" label="Component Library" views={views.value} />
     </section>
   );
 

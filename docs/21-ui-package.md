@@ -363,7 +363,7 @@ components before `Composition`-tagged composition demos, and use alphabetical
 display-name order to break importance ties; the final Recipes group follows
 the same within-group rule. The
 local Vite dev/preview server exposes its project folder to the demo,
-which then shows a **Capture region** header link to UX Review. The link starts
+which then shows a **Capture Region** header link to UX Review. The link starts
 a region screenshot with the current project, selected entry, and demo URL as
 review context. All three pieces ship in the package, so any catalog built on
 `@kerfjs/ui/catalog` gets the same link: the Node-only `uxReviewPlugin`
@@ -376,7 +376,7 @@ framework-neutral form of the same endpoint), `wireCatalog`'s
 submitted. Static hosting has no local project folder, so it hides the link;
 the browser cannot reliably detect whether the `uxreview:` app is installed.
 Catalog metadata declares direct component dependencies; the
-detail view derives one grouped `Uses` / `Used by` selector from that graph and
+detail view derives one grouped `Uses` / `Used By` selector from that graph and
 omits the relationship footer when neither group exists. Each detail also shows
 the repository-relative first-party demo source and existing guidance path as
 deploy-safe absolute GitHub links. First-party component details also link the

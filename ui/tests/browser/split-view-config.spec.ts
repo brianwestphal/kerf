@@ -78,7 +78,7 @@ test('forwards the list region configuration, including collapse and its restore
   await expect.poll(async () => (await region.boundingBox())?.width).toBe(0);
   const detail = page.locator('[data-split-detail]');
   expect((await detail.boundingBox())?.width).toBe(1100);
-  const restore = page.getByRole('button', { name: 'Show threads' });
+  const restore = page.getByRole('button', { name: 'Show Threads' });
   await expect(restore).toBeVisible();
   const restoreBox = (await restore.boundingBox())!;
   expect(restoreBox.x).toBeLessThan(100);
@@ -97,7 +97,7 @@ test('forwards the compact NavStack toolbar configuration and per-view toolbars'
 }) => {
   await page.setViewportSize({ width: 390, height: 700 });
   await mountFixture(page, 'compact');
-  const stack = page.getByRole('region', { name: 'Compact messages' });
+  const stack = page.getByRole('region', { name: 'Compact Messages' });
   const toolbar = stack.locator(
     ':scope > [data-nav-stack-chrome] > [data-component="toolbar"]',
   );

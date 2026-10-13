@@ -51,7 +51,7 @@ test('an icon-only multiple Select names its selection, counts it, and stays ope
   await select.scrollIntoViewIfNeeded();
   const combobox = select.getByRole('combobox');
 
-  await expect(combobox).toHaveAccessibleName('Filter by label: Bug, Docs');
+  await expect(combobox).toHaveAccessibleName('Filter by Label: Bug, Docs');
   let current = await trigger(select);
   expect(current.icon).toBe('funnel');
   expect(current.count).toBe('2');
@@ -78,16 +78,16 @@ test('an icon-only multiple Select names its selection, counts it, and stays ope
   await select.click();
   await expect(select).toHaveAttribute('open', '');
   await select.locator('wa-option[value="bug"]').click();
-  await expect(combobox).toHaveAccessibleName('Filter by label: Docs');
+  await expect(combobox).toHaveAccessibleName('Filter by Label: Docs');
   expect((await trigger(select)).count).toBe('1');
   await expect(select).toHaveAttribute('open', '');
   // The other filter renders the same application value.
   await expect(sibling.getByRole('combobox')).toHaveAccessibleName(
-    'Filter by label: Docs',
+    'Filter by Label: Docs',
   );
 
   await select.locator('wa-option[value="docs"]').click();
-  await expect(combobox).toHaveAccessibleName('Filter by label');
+  await expect(combobox).toHaveAccessibleName('Filter by Label');
   current = await trigger(select);
   expect(current.count).toBe(null);
   expect(current.caret.left - current.iconBox.right).toBeCloseTo(caretGap, 0);
@@ -107,7 +107,7 @@ test('an icon-only multiple Select beside actions toggles from the keyboard and 
   await expect(select).toBeVisible();
   await select.scrollIntoViewIfNeeded();
   const pin = page.locator(
-    '[data-demo="select"] button[aria-label="Pin view"]',
+    '[data-demo="select"] button[aria-label="Pin View"]',
   );
   await pin.focus();
   await page.keyboard.press('Tab');
@@ -136,7 +136,7 @@ test('an icon-only multiple Select beside actions toggles from the keyboard and 
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
   await expect(combobox).toHaveAccessibleName(
-    'Filter by label: Bug, Feature, Docs',
+    'Filter by Label: Bug, Feature, Docs',
   );
   expect((await trigger(select)).count).toBe('3');
   await expect(select).toHaveAttribute('open', '');

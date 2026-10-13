@@ -11,7 +11,7 @@ test('SplitButton exposes native halves and follows its controlled state', async
     const demo = page.locator('[data-demo="split-button"]');
     const primary = demo.getByRole('button', { name: 'Drive with Codex' });
     const options = demo.getByRole('button', {
-      name: 'Choose Drive provider, model, and effort',
+      name: 'Choose Drive Provider, Model, and Effort',
     });
     await expect(options).toHaveAttribute('aria-expanded', 'false');
     const split = demo.locator('.kui-split-button').first();
@@ -35,12 +35,12 @@ test('SplitButton exposes native halves and follows its controlled state', async
     await primary.click();
     await expect(split).toHaveAttribute('data-tone', 'neutral');
     await expect(
-      demo.getByRole('button', { name: 'Codex running' }),
+      demo.getByRole('button', { name: 'Codex Running' }),
     ).toHaveAttribute('aria-busy', 'true');
     await options.click();
     await expect(options).toHaveAttribute('aria-expanded', 'true');
     await options.click();
-    await demo.getByRole('button', { name: 'Codex running' }).click();
+    await demo.getByRole('button', { name: 'Codex Running' }).click();
     await expect(split).toHaveAttribute('data-tone', 'success');
   }
 });

@@ -26,7 +26,7 @@ export function TextDemo() {
           id="text-demo-paragraph"
           lang="en"
           data-demo-copy="paragraph"
-          aria-label="Example paragraph"
+          aria-label="Example Paragraph"
         >
           Paragraph text keeps native semantics and accepts ordinary global,
           data, and ARIA attributes.

@@ -15,7 +15,7 @@ test('element help owns focus, dismissal, and visible surface at wide and narrow
     const help = page.locator(surface);
     await expect(help).toBeVisible();
     await expect(help).toHaveAttribute('role', 'dialog');
-    await expect(help).toHaveAttribute('aria-label', 'Field help');
+    await expect(help).toHaveAttribute('aria-label', 'Field Help');
     await expect(help.getByRole('button', { name: 'Got It' })).toBeFocused();
     const rect = await help.boundingBox();
     expect(rect).not.toBeNull();

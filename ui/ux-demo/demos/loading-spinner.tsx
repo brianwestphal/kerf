@@ -11,7 +11,7 @@ export function LoadingSpinnerDemo() {
         note="Exposes its supplied label to assistive technology."
         align="glyph"
       >
-        <LoadingSpinner label="Loading preview" />
+        <LoadingSpinner label="Loading Preview" />
       </CatalogExample>
       <CatalogExample
         label="Decorative"

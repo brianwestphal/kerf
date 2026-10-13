@@ -7,7 +7,7 @@ test('registered dialog names survive slotted labels, header changes and repeate
   const dialog = page.locator('#catalog-bounded-dialog');
   await page.getByRole('button', { name: 'Open Bounded Dialog' }).click();
   await expect(
-    page.getByRole('dialog', { name: 'Close workspace', exact: true }),
+    page.getByRole('dialog', { name: 'Close Workspace', exact: true }),
   ).toBeVisible();
   for (const name of [
     'First explicit workspace',
@@ -21,7 +21,7 @@ test('registered dialog names survive slotted labels, header changes and repeate
   }
   await dialog.evaluate((element) => element.removeAttribute('aria-label'));
   await expect(
-    page.getByRole('dialog', { name: 'Close workspace', exact: true }),
+    page.getByRole('dialog', { name: 'Close Workspace', exact: true }),
   ).toBeVisible();
   await dialog.evaluate((element) => {
     const title = document.createElement('span');
@@ -72,7 +72,7 @@ test('modal viewport bounds retain actions and native focus across resize and re
   await trigger.click();
   const dialog = page.locator('#catalog-bounded-dialog');
   await expect(
-    page.getByRole('dialog', { name: 'Close workspace', exact: true }),
+    page.getByRole('dialog', { name: 'Close Workspace', exact: true }),
   ).toBeVisible();
   await expect
     .poll(() =>
@@ -525,7 +525,7 @@ test('an embedded PopoverDialogSurface renders the same surface in flow', async 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=surface-scaffold');
   const embedded = page.getByRole('dialog', {
-    name: 'Repository Status preview',
+    name: 'Repository Status Preview',
   });
   await embedded.scrollIntoViewIfNeeded();
   await expect(embedded).toBeVisible();

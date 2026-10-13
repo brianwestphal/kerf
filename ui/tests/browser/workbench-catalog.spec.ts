@@ -14,26 +14,26 @@ test('panel group marked for collapse moves to the main toolbar and returns when
   );
   const rail = workbench.locator('[data-workbench-rail="left"]');
   await expect(
-    mainToolbar.getByRole('button', { name: 'Search files' }),
+    mainToolbar.getByRole('button', { name: 'Search Files' }),
   ).toBeVisible();
   await expect(
-    mainToolbar.getByRole('button', { name: 'New file' }),
+    mainToolbar.getByRole('button', { name: 'New File' }),
   ).toHaveCount(0);
 
   await mainToolbar.getByRole('button', { name: 'Show navigator' }).click();
   await expect(rail).toHaveAttribute('data-collapsed', 'false');
   await expect(
-    rail.getByRole('button', { name: 'Search files' }),
+    rail.getByRole('button', { name: 'Search Files' }),
   ).toBeVisible();
-  await expect(rail.getByRole('button', { name: 'New file' })).toBeVisible();
+  await expect(rail.getByRole('button', { name: 'New File' })).toBeVisible();
   await expect(
-    mainToolbar.getByRole('button', { name: 'Search files' }),
+    mainToolbar.getByRole('button', { name: 'Search Files' }),
   ).toHaveCount(0);
 
   await rail.getByRole('button', { name: 'Hide navigator' }).click();
   await expect(rail).toHaveAttribute('data-collapsed', 'true');
   await expect(
-    mainToolbar.getByRole('button', { name: 'Search files' }),
+    mainToolbar.getByRole('button', { name: 'Search Files' }),
   ).toBeVisible();
 });
 
@@ -1494,7 +1494,7 @@ test('the responsive drawer example is inline when wide and a transient overlay 
   expect(
     Math.abs(box.y + box.height - (narrow.y + narrow.height)),
   ).toBeLessThanOrEqual(1);
-  await expect(drawer.getByText('Build output')).toBeInViewport();
+  await expect(drawer.getByText('Build Output')).toBeInViewport();
   if (testInfo.project.name === 'chromium')
     await workbench.screenshot({
       path: 'test-results/workbench-responsive-drawer-narrow-open.png',

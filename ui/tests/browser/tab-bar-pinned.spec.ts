@@ -110,7 +110,7 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     const buttons = strip.getByRole('tab');
     await expect(buttons).toHaveCount(9);
     await expect(pinned).toHaveAttribute('data-pinned', 'true');
-    await expect(buttons.first()).toHaveAccessibleName('Project grid');
+    await expect(buttons.first()).toHaveAccessibleName('Project Grid');
     await expect(buttons.first()).toHaveAttribute('aria-selected', 'true');
 
     const before = await strip.evaluate((element) => ({

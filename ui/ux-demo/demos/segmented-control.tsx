@@ -11,7 +11,7 @@ import { displayDensity, inspectorSection, toolbarChoice } from './state.js';
 export function SegmentedControlDemo() {
   return (
     <CatalogExampleStack
-      label="SegmentedControl variants"
+      label="SegmentedControl Variants"
       rootAttributes={{ 'data-demo': 'segmented-control' }}
     >
       <CatalogExample
@@ -22,7 +22,7 @@ export function SegmentedControlDemo() {
         <ToolbarControlGroup>
           <SegmentedControl
             id="standalone-toolbar-view"
-            label="Toolbar view mode"
+            label="Toolbar View Mode"
             value={toolbarChoice.value}
             action="select-segment-demo"
             appearance="toolbar"
@@ -56,7 +56,7 @@ export function SegmentedControlDemo() {
       >
         <SegmentedControl<string>
           id="inspector-section"
-          label="Inspector section"
+          label="Inspector Section"
           value={inspectorSection.value}
           action="select-segment-demo"
           shape="rounded"
@@ -102,7 +102,7 @@ export function SegmentedControlDemo() {
       >
         <SegmentedControl
           id="display-density"
-          label="Display density"
+          label="Display Density"
           value={displayDensity.value}
           action="select-segment-demo"
           appearance="outlined"
@@ -127,7 +127,7 @@ export function SegmentedControlDemo() {
       >
         <SegmentedControl<string>
           id="segmented-placeholder"
-          label="Loading view mode"
+          label="Loading View Mode"
           value=""
           choices={[
             { value: 'list', label: 'List View' },

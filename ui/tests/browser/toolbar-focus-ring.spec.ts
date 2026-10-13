@@ -10,9 +10,9 @@ test('focused controls paint a complete ring in every Toolbar zone', async ({
     const viewport = specimen.locator('[data-catalog-example-viewport]');
 
     for (const [zoneName, action] of [
-      ['leading', 'Leading action'],
-      ['center', 'Center action'],
-      ['trailing', 'Trailing action'],
+      ['leading', 'Leading Action'],
+      ['center', 'Center Action'],
+      ['trailing', 'Trailing Action'],
     ] as const) {
       const zone = viewport.locator(`.kui-toolbar__${zoneName}`);
       const button = zone.getByRole('button', { name: action });

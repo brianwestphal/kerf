@@ -22,7 +22,7 @@ const view = (
   },
   bottomToolbar: bottomToolbar
     ? {
-        label: 'View actions',
+        label: 'View Actions',
         leading: bottomToolbar as NavStackView['content'],
       }
     : undefined,
@@ -280,7 +280,7 @@ describe('NavStack markup', () => {
         },
         {
           ...view('detail', 'Ticket', raw('<button>Actions</button>')),
-          header: raw('<h2>Ticket header</h2>'),
+          header: raw('<h2>Ticket Header</h2>'),
         },
       ],
       { panelToggle: raw('<button data-toggle>Toggle</button>') },
@@ -291,7 +291,7 @@ describe('NavStack markup', () => {
       root.querySelector(
         '.kui-nav-stack__view[data-nav-active="true"] [data-nav-stack-header]',
       )?.textContent,
-    ).toBe('Ticket header');
+    ).toBe('Ticket Header');
     expect(
       Array.from(chrome.querySelectorAll('.kui-toolbar__trailing button')).map(
         (button) => button.textContent,

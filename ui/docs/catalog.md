@@ -85,7 +85,7 @@ action. Filtering does not change the selected
 entry or its preview.
 
 Per-entry `resources` render as "open in new tab" links in the footer, and
-`related` renders a "Related entries" `PopupMenu` in a `single`
+`related` renders a "Related Entries" `PopupMenu` in a `single`
 `ToolbarControlGroup` (grouped by each entry's `group`), so register its elements
 with `@kerfjs/ui/popup-menu/register` when you use it.
 
@@ -502,7 +502,7 @@ revealCatalogEntry(app, initial, { block: "center" });
 
 ## UX Review capture
 
-On a local Vite dev or preview server the catalog can offer a **Capture region**
+On a local Vite dev or preview server the catalog can offer a **Capture Region**
 header link that starts a UX Review region screenshot, preset with the project
 and the active entry. Static hosting has no local project, so the link never
 appears there. Three pieces wire it:

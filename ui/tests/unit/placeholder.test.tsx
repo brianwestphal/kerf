@@ -50,9 +50,9 @@ describe('Skeleton primitive', () => {
   });
 
   it('announces itself when labeled', () => {
-    const html = asHtml(Skeleton({ label: 'Loading value' }));
+    const html = asHtml(Skeleton({ label: 'Loading Value' }));
     expect(html).toContain('role="img"');
-    expect(html).toContain('aria-label="Loading value"');
+    expect(html).toContain('aria-label="Loading Value"');
     expect(html).not.toContain('aria-hidden');
   });
 

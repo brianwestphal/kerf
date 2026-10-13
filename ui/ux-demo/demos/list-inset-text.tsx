@@ -8,7 +8,7 @@ import { DemoListInsetPane } from './demo-list-inset-pane.js';
 export function ListInsetTextDemo() {
   return (
     <CatalogExampleStack
-      label="ListInsetText demo"
+      label="ListInsetText Demo"
       rootAttributes={{ 'data-demo': 'list-inset-text' }}
     >
       <CatalogExample

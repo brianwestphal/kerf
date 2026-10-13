@@ -686,7 +686,10 @@ stylesheet filenames, and foreign component selectors (`KUI-D030`–`KUI-D032`).
 The `copy-capitalization-checks.mjs` pass (`KUI-D040`, warning) reads string
 literals passed to known title-style label props: ToolbarText titles,
 ListHeader, PopupMenu items, choices, tabs, empty/banner titles, button text,
-and FieldLabel. It reports words left lowercase against Apple's title-style
+FieldLabel, and the accessible names of icon-only controls (IconButton /
+IconToggleButton / PopupMenu `label`, SplitButton `optionsLabel`,
+TokenSearchField `clearLabel`, an icon-only button's `aria-label`). It
+reports words left lowercase against Apple's title-style
 rule (`ui/docs/writing.md`); `ui/tests/unit/ui-doctor-copy-capitalization.test.ts`
 pins the word rules and prop coverage.
 It resolves guaranteed base classes through templates, concatenation, local
@@ -874,7 +877,7 @@ inside the closed control, and loading placeholders retain the visible hint.
 Placeholders change only their unknown values: `ui/src/skeleton.css` keeps a
 `[data-placeholder="true"]` control `disabled` but undimmed (including Web
 Awesome's native `button:disabled`), `ui/tests/browser/placeholder-chrome.spec.ts`
-diffs the Loading inspector recipe's loading and loaded chrome, and
+diffs the Loading Inspector recipe's loading and loaded chrome, and
 `ui/tests/browser/placeholder-fixture.spec.ts` renders every placeholder
 component live and as a placeholder from identical props
 (`ui/tests/browser/fixtures/placeholder-chrome-cases.tsx`) and diffs each

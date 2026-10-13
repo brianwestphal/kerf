@@ -16,7 +16,7 @@ test('renders conditional and mapped List children without a Fragment', async ({
     3,
   );
   await expect(workspace.locator('[data-component="list-item"]')).toContainText(
-    ['Inbox', 'Projects', 'Drafts without a visible icon'],
+    ['Inbox', 'Projects', 'Drafts Without a Visible Icon'],
   );
 
   if (browserName === 'chromium') {

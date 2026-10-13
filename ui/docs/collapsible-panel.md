@@ -187,7 +187,7 @@ inert; avoid duplicate `id` attributes on marked groups.
 const toolbar: CollapsiblePanelToolbar = {
   label: "Navigator",
   leading: <NewFileGroup />,
-  trailing: <ToolbarControlGroup relocateOnCollapse label="Search files"><SearchButton /></ToolbarControlGroup>,
+  trailing: <ToolbarControlGroup relocateOnCollapse label="Search Files"><SearchButton /></ToolbarControlGroup>,
   toggle: { action: "toggle-nav", name: "navigator" },
 };
 
@@ -362,7 +362,7 @@ sizes, content, and any per-project persistence — exactly as with the other la
 
 ## Recipe and coverage
 
-The catalog ships a runnable **Collapsible sidebar** recipe — a left rail and a
+The catalog ships a runnable **Collapsible Sidebar** recipe — a left rail and a
 bottom drawer with the standard toggles, the compact overlay, and per-panel
 persistence: [open it](../ux-demo/?component=recipe-collapsible-sidebar) or read
 [`recipes.md`](recipes.md#collapsible-sidebar) · [TSX source](../ux-demo/recipes/collapsible-sidebar.tsx).

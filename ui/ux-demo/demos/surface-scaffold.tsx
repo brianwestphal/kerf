@@ -106,7 +106,7 @@ export function resetSurfaceScaffoldDemo(): void {
 export function SurfaceScaffoldDemo() {
   return (
     <CatalogExampleStack
-      label="Surface scaffold demo"
+      label="Surface Scaffold Demo"
       rootAttributes={{ 'data-demo': 'surface-scaffold' }}
     >
       <CatalogExample label="Medium dialog" align="inline-control">
@@ -117,7 +117,7 @@ export function SurfaceScaffoldDemo() {
           footerInset="comfortable"
         >
           <wa-button data-action="show-wa-dialog">Open Dialog</wa-button>
-          <wa-dialog id="catalog-wa-dialog" label="Edit workspace">
+          <wa-dialog id="catalog-wa-dialog" label="Edit Workspace">
             <List>
               <ListInsetText>
                 Dialog content uses list-owned item geometry.
@@ -154,7 +154,7 @@ export function SurfaceScaffoldDemo() {
           >
             Open Bounded Dialog
           </wa-button>
-          <wa-dialog id="catalog-bounded-dialog" label="Close workspace">
+          <wa-dialog id="catalog-bounded-dialog" label="Close Workspace">
             <List>
               <ListInsetText>
                 Closing this workspace stops its running tasks. Saved files
@@ -202,7 +202,7 @@ export function SurfaceScaffoldDemo() {
           </wa-button>
           <wa-dialog
             id="catalog-capped-dialog"
-            label="Review workspace changes"
+            label="Review Workspace Changes"
           >
             <List>
               {[
@@ -244,7 +244,7 @@ export function SurfaceScaffoldDemo() {
           >
             Open Project Details
           </wa-button>
-          <wa-dialog id="catalog-filled-dialog" label="Project details">
+          <wa-dialog id="catalog-filled-dialog" label="Project Details">
             {projectSplit('catalog-filled-dialog-split')}
           </wa-dialog>
         </DialogSurface>
@@ -338,7 +338,7 @@ export function SurfaceScaffoldDemo() {
         align="inline-control"
       >
         <PopoverDialogSurface
-          label="Repository status preview"
+          label="Repository Status Preview"
           presentation="embedded"
           preferredWidth={remify(560)}
           height={remify(280)}

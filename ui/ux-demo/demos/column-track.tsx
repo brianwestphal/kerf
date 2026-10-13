@@ -8,10 +8,10 @@ import { DemoContentItem } from './demo-content-item.js';
 const columns = [
   {
     id: 'todo',
-    title: 'To do',
+    title: 'To Do',
     cards: ['Draft release notes', 'Audit tokens'],
   },
-  { id: 'doing', title: 'In progress', cards: ['Paged board snapping'] },
+  { id: 'doing', title: 'In Progress', cards: ['Paged board snapping'] },
   { id: 'review', title: 'Review', cards: ['ColumnTrack demo', 'Docs pass'] },
   { id: 'done', title: 'Done', cards: ['Ship IconButton'] },
   { id: 'later', title: 'Later', cards: ['File drop zone'] },
@@ -51,7 +51,7 @@ export function ColumnTrackDemo() {
       >
         <ColumnTrack
           layout="paged"
-          rootAttributes={{ 'aria-label': 'Paged board' }}
+          rootAttributes={{ 'aria-label': 'Paged Board' }}
         >
           {board()}
         </ColumnTrack>

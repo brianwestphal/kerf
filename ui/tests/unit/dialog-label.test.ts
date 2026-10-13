@@ -15,7 +15,7 @@ function fixture(scoped = true) {
   const panel = document.createElement('dialog');
   shadow.append(panel);
   host.dialog = panel;
-  host.label = 'Edit workspace';
+  host.label = 'Edit Workspace';
   host.withoutHeader = false;
   const update = vi.fn((changed: unknown) => {
     let title = shadow.getElementById('title');
@@ -67,7 +67,7 @@ describe('Web Awesome dialog naming adapter', () => {
     host.update(undefined);
     expect(panel.getAttribute('aria-label')).toBe('Explicit workspace name');
     host.removeAttribute('aria-label');
-    host.label = 'Edit workspace';
+    host.label = 'Edit Workspace';
     host.withoutHeader = false;
     host.update(undefined);
     expect(panel.getAttribute('aria-labelledby')).toBe('title');
@@ -136,7 +136,7 @@ describe('Web Awesome dialog naming adapter', () => {
         expect(panel.hasAttribute('aria-labelledby')).toBe(false);
       panel.removeAttribute(attribute);
       host.update(undefined);
-      expect(panel.getAttribute('aria-label')).toBe('Edit workspace');
+      expect(panel.getAttribute('aria-label')).toBe('Edit Workspace');
     },
   );
 

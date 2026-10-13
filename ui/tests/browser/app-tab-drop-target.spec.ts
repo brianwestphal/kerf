@@ -25,7 +25,7 @@ test('app tab drop target and visible name keep selection independent', async ({
     await expect(target).toHaveAttribute('data-drop-target', 'true');
     await expect(target).toHaveAttribute('data-name-overflow', 'visible');
     await expect(target.getByRole('tab')).toHaveAccessibleName(
-      'Accounting project',
+      'Accounting Project',
     );
 
     const appearance = await target.evaluate((element) => {

@@ -121,7 +121,7 @@ describe('wireTokenSearchFields', () => {
       String(
         TokenSearchField({
           id: 'query',
-          label: 'Search query',
+          label: 'Search Query',
           presentation: 'form-field',
         }),
       ) +
@@ -1005,7 +1005,7 @@ function mountCollapsibleField(boundTo?: Signal<boolean>): MountedField {
   mount(root, () =>
     TokenSearchField({
       id: 'find',
-      label: 'Find in workspace',
+      label: 'Find in Workspace',
       collapsible: true,
       expanded: expandedSignal.value,
       query: query.value,

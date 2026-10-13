@@ -16,7 +16,7 @@ test('the TokenSearchField demo shows and drives the collapsible state', async (
     });
   const field = example.locator('[data-component="token-search-field"]');
   const trigger = field.getByRole('button', { name: 'Open find' });
-  const editor = field.getByRole('searchbox', { name: 'Find records' });
+  const editor = field.getByRole('searchbox', { name: 'Find Records' });
 
   // Starts collapsed to one iconic action.
   await expect(field).toHaveAttribute('data-collapsible', 'true');
@@ -73,7 +73,7 @@ test('empty blur waits for the pressed control click before collapsing a shiftin
   const field = example.locator('[data-component="token-search-field"]');
   await field.getByRole('button', { name: 'Open find' }).click();
   await expect(
-    field.getByRole('searchbox', { name: 'Find records' }),
+    field.getByRole('searchbox', { name: 'Find Records' }),
   ).toBeFocused();
   await example.evaluate((node) => {
     const search = node.querySelector<HTMLElement>(
@@ -162,7 +162,7 @@ test('disposing the demo wiring cancels pending collapsible focus restoration', 
     if (transition === 'close') {
       await field.getByRole('button', { name: 'Open find' }).click();
       await expect(
-        field.getByRole('searchbox', { name: 'Find records' }),
+        field.getByRole('searchbox', { name: 'Find Records' }),
       ).toBeFocused();
     }
     await page.evaluate((kind) => {

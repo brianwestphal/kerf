@@ -99,7 +99,7 @@ export function SummaryRowDemo() {
         note='presentation="card" is a borderless rounded card that allows four title lines.'
         viewport={{ width: 'compact', surface: 'lowered', frame: 'solid' }}
       >
-        <div role="listbox" aria-label="Board column">
+        <div role="listbox" aria-label="Board Column">
           <List gap="xs" controlInsets="trbl">
             {rows('card')}
           </List>

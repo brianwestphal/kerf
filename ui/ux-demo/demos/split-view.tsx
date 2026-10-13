@@ -221,7 +221,7 @@ export function SplitViewDemo() {
       >
         <SplitView
           id="catalog-split-view-resizable"
-          label="Resizable messages"
+          label="Resizable Messages"
           listTitle="Threads"
           detailTitle={roomySelection.subject}
           list={
@@ -231,7 +231,7 @@ export function SplitViewDemo() {
                   label="Threads"
                   leading={<ToolbarText text="Threads" />}
                   trailing={iconGroup(
-                    'Hide threads',
+                    'Hide Threads',
                     PanelLeftClose,
                     'panel-left-close',
                     TOGGLE_SPLIT_VIEW_LIST_ACTION,
@@ -260,7 +260,7 @@ export function SplitViewDemo() {
                 <ToolbarControlGroup label="Threads" single>
                   <button
                     type="button"
-                    aria-label="Show threads"
+                    aria-label="Show Threads"
                     data-action={TOGGLE_SPLIT_VIEW_LIST_ACTION}
                   >
                     <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
@@ -284,7 +284,7 @@ export function SplitViewDemo() {
       >
         <SplitView
           id="catalog-split-view-compact"
-          label="Compact messages"
+          label="Compact Messages"
           compact
           detailActive={Boolean(compactSelection)}
           listTitle="Inbox"
@@ -300,7 +300,7 @@ export function SplitViewDemo() {
             detail: {
               toolbar: { trailing: iconGroup('Reply', Reply, 'reply') },
               bottomToolbar: {
-                label: 'Message actions',
+                label: 'Message Actions',
                 leading: <ToolbarText text="Received today" size="small" />,
                 trailing: iconGroup('Archive', Archive, 'archive'),
               },

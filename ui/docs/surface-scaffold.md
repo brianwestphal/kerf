@@ -54,7 +54,7 @@ import { remify } from '@kerfjs/ui/css-values';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 
 <DialogSurface preferredWidth={remify(832)} viewportGutter={remify(8)} maxHeight="viewport" bodyInset="none">
-  <wa-dialog label="Close workspace">{/* Application-owned content and footer */}</wa-dialog>
+  <wa-dialog label="Close Workspace">{/* Application-owned content and footer */}</wa-dialog>
 </DialogSurface>;
 ```
 

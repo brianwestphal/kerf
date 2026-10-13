@@ -27,7 +27,7 @@ Render one self-contained .kui-content child that owns its 8px inline margin, re
 
 - [ListInsetText](./list-inset-text.md) (nearest) — Use ListInsetText when bare text only needs to align with neighboring content items.
 - [SunkenPanel](./sunken-panel.md) (nearest) — Use SunkenPanel for a lowered, filled surface around a vertical stack.
-- [Application layout](./layout.md) (composes-with) — Place ContentItem children in a Pane or .kui-content stack, which owns the 24px major rhythm.
+- [Application Layout](./layout.md) (composes-with) — Place ContentItem children in a Pane or .kui-content stack, which owns the 24px major rhythm.
 
 ## Imports
 
@@ -93,6 +93,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [ListInsetText](./list-inset-text.md), [SunkenPanel](./sunken-panel.md), [Application layout](./layout.md).
+- Components: [ListInsetText](./list-inset-text.md), [SunkenPanel](./sunken-panel.md), [Application Layout](./layout.md).
 - Docs: [`docs/layout.md`](../../docs/layout.md), [`docs/layout.md#content-items`](../../docs/layout.md#content-items).
 - UX catalog route: `?component=content-item`.

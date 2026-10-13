@@ -19,7 +19,7 @@ test('relocates a collapsed rail’s marked groups and toggle into the editor to
   await example.scrollIntoViewIfNeeded();
 
   // Collapsed on arrival: search then the toggle lead the editor toolbar,
-  // before its title; the panel-only New file group is not relocated.
+  // before its title; the panel-only New File group is not relocated.
   await expect(rail).toHaveAttribute('data-collapsed', 'true');
   const leading = editor.locator('.kui-toolbar__leading');
   const labels = await leading
@@ -29,8 +29,8 @@ test('relocates a collapsed rail’s marked groups and toggle into the editor to
         (node) => node.getAttribute('aria-label') ?? node.textContent?.trim(),
       ),
     );
-  expect(labels).toEqual(['Search files', 'Show navigator', 'Editor']);
-  await expect(editor.getByRole('button', { name: 'New file' })).toHaveCount(0);
+  expect(labels).toEqual(['Search Files', 'Show navigator', 'Editor']);
+  await expect(editor.getByRole('button', { name: 'New File' })).toHaveCount(0);
 
   // Open: the toggle moves into the rail's toolbar, last; focus enters the rail.
   await leading.getByRole('button', { name: 'Show navigator' }).focus();

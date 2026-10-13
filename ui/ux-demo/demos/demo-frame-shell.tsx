@@ -11,5 +11,5 @@ interface DemoFrameShellProps {
  * flexible space sets it on the catalog example (`viewport={{ width }}`).
  */
 export function DemoFrameShell({ children }: DemoFrameShellProps) {
-  return <SunkenPanel ariaLabel="Layout example">{children}</SunkenPanel>;
+  return <SunkenPanel ariaLabel="Layout Example">{children}</SunkenPanel>;
 }

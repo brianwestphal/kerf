@@ -73,7 +73,7 @@ export function CatalogResourceFooter({
       ) : null}
       <Toolbar
         position="footer"
-        label={`${name} resources`}
+        label={`${name} Resources`}
         density={toolbar?.density}
         dividerSides={toolbar?.dividerSides}
         centerAlign={toolbar?.centerAlign}
@@ -83,7 +83,7 @@ export function CatalogResourceFooter({
         leading={
           resources.length > 0 ? (
             <ToolbarControlGroup
-              label={`${name} resources`}
+              label={`${name} Resources`}
               content="mixed"
               size="compact"
               overflow="wrap"
@@ -109,7 +109,7 @@ export function CatalogResourceFooter({
               nestedDropdown
               menuInset="compact"
               size="compact"
-              label="Related entries"
+              label="Related Entries"
             >
               <PopupMenu
                 text="Components"

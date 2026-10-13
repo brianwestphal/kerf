@@ -48,7 +48,7 @@ const PROJECTS: Project[] = [
 ];
 
 const footer = (text: string) => ({
-  label: 'View status',
+  label: 'View Status',
   leading: <ToolbarText text={text} size="small" />,
 });
 
@@ -128,13 +128,13 @@ const configuredRootView = (): NavStackView => ({
     title: 'Library',
     leading: (
       <ToolbarControlGroup label="Sidebar" appearance="borderless" single>
-        {iconButton('Show sidebar', PanelLeft, 'panel-left')}
+        {iconButton('Show Sidebar', PanelLeft, 'panel-left')}
       </ToolbarControlGroup>
     ),
     center: (
-      <ToolbarControlGroup label="Project layout">
-        {iconButton('List layout', ListIcon, 'list', true)}
-        {iconButton('Grid layout', LayoutGrid, 'layout-grid', false)}
+      <ToolbarControlGroup label="Project Layout">
+        {iconButton('List Layout', ListIcon, 'list', true)}
+        {iconButton('Grid Layout', LayoutGrid, 'layout-grid', false)}
       </ToolbarControlGroup>
     ),
   },
@@ -159,7 +159,7 @@ const configuredDetailView = (project: Project): NavStackView => ({
     title: project.label,
     trailing: (
       <ToolbarControlGroup label="Share" appearance="borderless" single>
-        {iconButton('Share project', Share, 'share')}
+        {iconButton('Share Project', Share, 'share')}
       </ToolbarControlGroup>
     ),
   },
@@ -214,7 +214,7 @@ export function popNavStackDemo(): void {
 export function NavStackDemo() {
   return (
     <CatalogExampleStack
-      label="Navigation stack states"
+      label="Navigation Stack States"
       rootAttributes={{ 'data-demo': 'nav-stack' }}
     >
       <CatalogExample
@@ -229,9 +229,9 @@ export function NavStackDemo() {
       >
         <NavStack
           id="catalog-nav-stack"
-          label="Project library"
+          label="Project Library"
           views={demoViews.value}
-          backLabel="Back to library"
+          backLabel="Back to Library"
         />
       </CatalogExample>
       <CatalogExample
@@ -246,7 +246,7 @@ export function NavStackDemo() {
       >
         <NavStack
           id="catalog-nav-stack-configured"
-          label="Configured project library"
+          label="Configured Project Library"
           views={configuredViews.value}
           backText={configuredViews.value.at(-2)?.toolbar?.title}
           toolbarConfig={{ headingLevel: 2, dividerSides: 'b' }}

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 359000,
-  "measuredLargestJavaScriptGzip": 141749,
-  "measuredTotalJavaScriptGzip": 358933,
+  "totalJavaScriptGzip": 359200,
+  "measuredLargestJavaScriptGzip": 141914,
+  "measuredTotalJavaScriptGzip": 359163,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3971,6 +3971,22 @@
         "measuredTotalJavaScriptGzip": 358933,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 359000
+      }
+    },
+    {
+      "at": "2026-10-13T09:08:44.298Z",
+      "reason": "title-style accessible names, catalog shell strings, and entry names (KF-ZAD6EJ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 141749,
+        "measuredTotalJavaScriptGzip": 358933,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 359000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 141914,
+        "measuredTotalJavaScriptGzip": 359163,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 359200
       }
     }
   ]

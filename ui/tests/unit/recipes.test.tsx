@@ -140,7 +140,7 @@ describe('production composition recipes', () => {
     );
     expect(more?.parentElement?.getAttribute('data-single')).toBe('true');
     expect(more?.parentElement?.getAttribute('aria-label')).toBe(
-      'More task actions',
+      'More Task Actions',
     );
   });
 

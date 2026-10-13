@@ -30,7 +30,7 @@ export function LucideIconDemo() {
         <LucideIcon
           icon={Bell}
           name="notification"
-          label="Notifications ready"
+          label="Notifications Ready"
         />
       </CatalogExample>
       <CatalogExample

@@ -14,9 +14,9 @@ describe('catalog resources', () => {
         guidance: { href: '/guidance', detail: 'docs/button.md' },
       }),
     ).toEqual([
-      { label: 'Demo source', href: '/demo', detail: 'demos/button.tsx' },
+      { label: 'Demo Source', href: '/demo', detail: 'demos/button.tsx' },
       {
-        label: 'Component source',
+        label: 'Component Source',
         href: '/component',
         detail: 'src/button.tsx',
       },
@@ -33,9 +33,9 @@ describe('catalog resources', () => {
         guidanceKind: 'integrationGuidance',
       }),
     ).toEqual([
-      { label: 'Demo source', href: '/demo' },
-      { label: 'Design template', href: '/template' },
-      { label: 'Integration guidance', href: '/integration' },
+      { label: 'Demo Source', href: '/demo' },
+      { label: 'Design Template', href: '/template' },
+      { label: 'Integration Guidance', href: '/integration' },
     ]);
   });
 

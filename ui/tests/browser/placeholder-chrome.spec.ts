@@ -152,7 +152,7 @@ test('placeholder components keep the live chrome; only values are skeletons', a
     ),
   ).toEqual([]);
 
-  await inspector.getByRole('button', { name: 'Show loaded' }).click();
+  await inspector.getByRole('button', { name: 'Show Loaded' }).click();
   await expect(inspector).toHaveAttribute('data-inspector-loading', 'false');
   expect(await chrome(inspector)).toEqual(loading);
 });

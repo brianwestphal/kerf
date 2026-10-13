@@ -24,7 +24,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 
 **Alternatives:**
 
-- [Application layout](./layout.md) (composes-with) — Use the layout content-item and control classes inside Pane when children need shared geometry.
+- [Application Layout](./layout.md) (composes-with) — Use the layout content-item and control classes inside Pane when children need shared geometry.
 
 ## Imports
 
@@ -101,6 +101,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Application layout](./layout.md).
+- Components: [Application Layout](./layout.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/layout.md#anatomy`](../../docs/layout.md#anatomy).
 - UX catalog route: `?component=pane`.

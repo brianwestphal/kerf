@@ -88,7 +88,7 @@ function render() {
           restorePosition: 'bottom-start',
           restoreControl: (
             <FloatingToolbar label="Threads" position="bottom-start">
-              {iconButton('Show threads', PanelLeftOpen, 'panel-left-open')}
+              {iconButton('Show Threads', PanelLeftOpen, 'panel-left-open')}
             </FloatingToolbar>
           ),
         }}
@@ -97,7 +97,7 @@ function render() {
   return (
     <SplitView
       id="split-config-compact"
-      label="Compact messages"
+      label="Compact Messages"
       compact
       detailActive={detailActive.value}
       listTitle="Inbox"
@@ -113,7 +113,7 @@ function render() {
         detail: {
           toolbar: { trailing: iconButton('Reply', Reply, 'reply') },
           bottomToolbar: {
-            label: 'Message actions',
+            label: 'Message Actions',
             dividerSides: '',
             leading: <ToolbarText text="Updated just now" size="small" />,
             trailing: iconButton('Archive', Archive, 'archive'),

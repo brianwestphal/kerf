@@ -98,7 +98,7 @@ test('deepInset adds one outer gutter while nested List items keep 8px spacing',
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=pane');
     const pane = page.locator(
-      '[data-demo="pane"] [data-component="pane"][aria-label="Deep inset example"]',
+      '[data-demo="pane"] [data-component="pane"][aria-label="Deep Inset Example"]',
     );
     await expect(pane).toHaveAttribute('data-deep-inset', 'true');
     const edges = await pane.evaluate((element) => {
@@ -415,7 +415,7 @@ test('sunken Pane paints short and long scroll viewports with fixed and auto chr
     );
 
     const auto = page.locator(
-      '[data-component="pane"][aria-label="Sunken auto workspace"]',
+      '[data-component="pane"][aria-label="Sunken Auto Workspace"]',
     );
     await expect(auto).toHaveAttribute('data-appearance', 'sunken');
     const autoGeometry = await auto.evaluate((pane) => {

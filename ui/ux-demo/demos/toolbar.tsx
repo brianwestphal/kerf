@@ -34,21 +34,21 @@ export function ToolbarDemo() {
         rootAttributes={{ 'data-demo-toolbar-width-visibility': '' }}
       >
         <Toolbar
-          label="Workspace width visibility"
+          label="Workspace Width Visibility"
           leading={<ToolbarText text="Workspace" hideBelow={px(176)} />}
           trailing={
             <>
-              <ToolbarControlGroup label="Refresh workspace" single>
+              <ToolbarControlGroup label="Refresh Workspace" single>
                 <button
                   type="button"
-                  aria-label="Refresh workspace"
+                  aria-label="Refresh Workspace"
                   data-action="width-refresh"
                 >
                   <LucideIcon icon={RefreshCw} name="refresh-cw" />
                 </button>
               </ToolbarControlGroup>
               <ToolbarControlGroup
-                label="Workspace utilities"
+                label="Workspace Utilities"
                 hideBelow={px(416)}
               >
                 <button
@@ -67,13 +67,13 @@ export function ToolbarDemo() {
                 </button>
               </ToolbarControlGroup>
               <ToolbarControlGroup
-                label="More workspace actions"
+                label="More Workspace Actions"
                 single
                 nestedDropdown
                 showBelow={px(416)}
               >
                 <PopupMenu
-                  label="More workspace actions"
+                  label="More Workspace Actions"
                   icon={
                     <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
                   }
@@ -94,17 +94,17 @@ export function ToolbarDemo() {
         rootAttributes={{ 'data-demo-toolbar-focus-zones': '' }}
       >
         <Toolbar
-          label="Focus ring zones"
+          label="Focus Ring Zones"
           responsive="stack"
           responsiveAt="compact"
           leading={
             <>
               <ToolbarControlGroup
-                label="Leading action"
+                label="Leading Action"
                 focusRing="outline"
                 single
               >
-                <button type="button" aria-label="Leading action">
+                <button type="button" aria-label="Leading Action">
                   <LucideIcon icon={Filter} name="filter" />
                 </button>
               </ToolbarControlGroup>
@@ -116,22 +116,22 @@ export function ToolbarDemo() {
           }
           center={
             <ToolbarControlGroup
-              label="Center action"
+              label="Center Action"
               focusRing="outline"
               single
             >
-              <button type="button" aria-label="Center action">
+              <button type="button" aria-label="Center Action">
                 <LucideIcon icon={RefreshCw} name="refresh-cw" />
               </button>
             </ToolbarControlGroup>
           }
           trailing={
             <ToolbarControlGroup
-              label="Trailing action"
+              label="Trailing Action"
               focusRing="outline"
               single
             >
-              <button type="button" aria-label="Trailing action">
+              <button type="button" aria-label="Trailing Action">
                 <LucideIcon icon={Settings} name="settings" />
               </button>
             </ToolbarControlGroup>
@@ -145,13 +145,13 @@ export function ToolbarDemo() {
         rootAttributes={{ 'data-demo-toolbar-primary-action': '' }}
       >
         <Toolbar
-          label="Project heading"
+          label="Project Heading"
           responsive="wrap"
           leading={<ToolbarText text="Project Tickets" size="large" />}
           trailing={
             <>
-              <ToolbarControlGroup label="Other actions" single>
-                <button type="button" aria-label="Refresh tickets">
+              <ToolbarControlGroup label="Other Actions" single>
+                <button type="button" aria-label="Refresh Tickets">
                   <LucideIcon icon={RefreshCw} name="refresh-cw" />
                 </button>
               </ToolbarControlGroup>
@@ -169,19 +169,19 @@ export function ToolbarDemo() {
         rootAttributes={{ 'data-demo-toolbar-compact': '' }}
       >
         <Toolbar
-          label="Recent activity"
+          label="Recent Activity"
           density="compact"
           leading={<ToolbarText text="Recent Activity" />}
           trailing={
             <ToolbarControlGroup
-              label="Activity actions"
+              label="Activity Actions"
               size="compact"
               content="icon"
             >
-              <button type="button" aria-label="Refresh activity">
+              <button type="button" aria-label="Refresh Activity">
                 <LucideIcon icon={RefreshCw} name="refresh-cw" />
               </button>
-              <button type="button" aria-label="Filter activity">
+              <button type="button" aria-label="Filter Activity">
                 <LucideIcon icon={Filter} name="filter" />
               </button>
             </ToolbarControlGroup>
@@ -191,7 +191,7 @@ export function ToolbarDemo() {
       <CatalogExample viewport={{ width: 'wide', frame: 'solid' }}>
         <List gap="xs">
           <Toolbar
-            label="Document controls"
+            label="Document Controls"
             centerAlign="stretch"
             responsive="center-priority"
             leading={
@@ -208,7 +208,7 @@ export function ToolbarDemo() {
               >
                 <TokenSearchField
                   id="toolbar-find"
-                  label="Find in workspace"
+                  label="Find in Workspace"
                   query={toolbarFindQuery.value}
                   collapsible
                   expanded={toolbarFindOpen.value}
@@ -224,12 +224,12 @@ export function ToolbarDemo() {
             }
             trailing={
               <ToolbarControlGroup
-                label="View controls"
+                label="View Controls"
                 buttonAppearance="push"
               >
                 <button
                   type="button"
-                  aria-label="Toggle inspector"
+                  aria-label="Toggle Inspector"
                   aria-pressed="true"
                 >
                   <LucideIcon
@@ -244,7 +244,7 @@ export function ToolbarDemo() {
             }
           />
           <Toolbar
-            label="Compact toolbar"
+            label="Compact Toolbar"
             dividerSides="trbl"
             leading={
               <ToolbarControlGroup appearance="borderless" single>
@@ -267,15 +267,15 @@ export function ToolbarDemo() {
         viewport={{ width: 'wide', frame: 'solid' }}
       >
         <Toolbar
-          label="Ticket header"
+          label="Ticket Header"
           centerAlign="balanced"
           center={<ToolbarText text="TICKET-123" size="large" />}
           trailing={
             <ToolbarControlGroup appearance="borderless">
-              <button type="button" aria-label="Refresh ticket">
+              <button type="button" aria-label="Refresh Ticket">
                 <LucideIcon icon={RefreshCw} name="refresh-cw" />
               </button>
-              <button type="button" aria-label="Ticket settings">
+              <button type="button" aria-label="Ticket Settings">
                 <LucideIcon icon={Settings} name="settings" />
               </button>
             </ToolbarControlGroup>
@@ -291,7 +291,7 @@ export function ToolbarDemo() {
         }}
       >
         <Toolbar
-          label="Inset-free toolbar"
+          label="Inset-Free Toolbar"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
               <button type="button" aria-label="Filters">
@@ -315,13 +315,13 @@ export function ToolbarDemo() {
         rootAttributes={{ 'data-demo-toolbar-overflow': 'stack' }}
       >
         <Toolbar
-          label="Stacked editor controls"
+          label="Stacked Editor Controls"
           responsive="stack"
           responsiveAt="compact"
           leading={<ToolbarText text="Draft" size="small" />}
           trailing={
             <>
-              <ToolbarControlGroup label="Text style" buttonAppearance="push">
+              <ToolbarControlGroup label="Text Style" buttonAppearance="push">
                 <button type="button" aria-label="Bold" aria-pressed="false">
                   <LucideIcon icon={Bold} name="bold" />
                 </button>
@@ -337,18 +337,18 @@ export function ToolbarDemo() {
                 </button>
               </ToolbarControlGroup>
               <ToolbarControlGroup
-                label="Draft actions"
+                label="Draft Actions"
                 buttonAppearance="push"
               >
-                <button type="button" aria-label="Filter drafts">
+                <button type="button" aria-label="Filter Drafts">
                   <LucideIcon icon={Filter} name="filter" />
                 </button>
-                <button type="button" aria-label="Refresh drafts">
+                <button type="button" aria-label="Refresh Drafts">
                   <LucideIcon icon={RefreshCw} name="refresh-cw" />
                 </button>
               </ToolbarControlGroup>
-              <ToolbarControlGroup label="More draft actions" single>
-                <button type="button" aria-label="More draft actions">
+              <ToolbarControlGroup label="More Draft Actions" single>
+                <button type="button" aria-label="More Draft Actions">
                   <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
                 </button>
               </ToolbarControlGroup>
@@ -363,7 +363,7 @@ export function ToolbarDemo() {
         rootAttributes={{ 'data-demo-toolbar-overflow': 'wrap' }}
       >
         <Toolbar
-          label="Q3 release"
+          label="Q3 Release"
           responsive="wrap"
           leading={
             <>
@@ -389,7 +389,7 @@ export function ToolbarDemo() {
         rootAttributes={{ 'data-demo-toolbar-overflow': 'trailing-priority' }}
       >
         <Toolbar
-          label="Search tickets"
+          label="Search Tickets"
           responsive="trailing-priority"
           leading={<ToolbarText text="Tickets" size="large" />}
           trailing={
@@ -397,7 +397,7 @@ export function ToolbarDemo() {
               <ToolbarControlGroup content="search" expanded>
                 <TokenSearchField
                   id="trailing-priority-search"
-                  label="Search tickets"
+                  label="Search Tickets"
                   collapsible
                   expanded
                   presentation="toolbar-group"
@@ -409,7 +409,7 @@ export function ToolbarDemo() {
                 single
                 visibility="yield-to-expanded-sibling"
               >
-                <button type="button" aria-label="List view">
+                <button type="button" aria-label="List View">
                   <LucideIcon icon={FileText} name="file-text" />
                 </button>
               </ToolbarControlGroup>
@@ -418,7 +418,7 @@ export function ToolbarDemo() {
                 single
                 visibility="yield-to-expanded-sibling"
               >
-                <button type="button" aria-label="More actions">
+                <button type="button" aria-label="More Actions">
                   <LucideIcon icon={MoreHorizontal} name="ellipsis" />
                 </button>
               </ToolbarControlGroup>

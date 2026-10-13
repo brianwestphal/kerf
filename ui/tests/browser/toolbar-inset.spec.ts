@@ -7,8 +7,8 @@ test('Toolbar outer inset is independent of zone gap and safe-area padding', asy
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/?component=toolbar');
     const demo = page.locator('[data-demo="toolbar"]');
-    const defaultToolbar = demo.locator('[aria-label="Document controls"]');
-    const embedded = demo.locator('[aria-label="Inset-free toolbar"]');
+    const defaultToolbar = demo.locator('[aria-label="Document Controls"]');
+    const embedded = demo.locator('[aria-label="Inset-Free Toolbar"]');
     await expect(embedded).toBeVisible();
     const geometry = await Promise.all(
       [defaultToolbar, embedded].map((toolbar) =>

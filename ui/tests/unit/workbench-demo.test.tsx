@@ -126,9 +126,9 @@ describe('WorkbenchDemo', () => {
     ].map(
       (node) => node.getAttribute('aria-label') ?? node.textContent!.trim(),
     );
-    expect(labels).toEqual(['Search files', 'Show navigator', 'Editor']);
-    // The panel-only "New file" group stays in the closed navigator.
-    expect(pane.innerHTML).not.toContain('New file');
+    expect(labels).toEqual(['Search Files', 'Show navigator', 'Editor']);
+    // The panel-only "New File" group stays in the closed navigator.
+    expect(pane.innerHTML).not.toContain('New File');
     expect(pane.querySelector(':scope > .kui-pane__footer')).toBeNull();
     const corner = workbench.querySelector<HTMLElement>(
       '.kui-workbench__restore[data-panel="bottom"]',

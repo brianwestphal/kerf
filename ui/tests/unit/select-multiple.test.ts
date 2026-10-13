@@ -66,7 +66,7 @@ function build(
     const name = document.createElement('span');
     name.slot = 'label';
     name.innerHTML =
-      'Filter by label<span class="kui-select__name-summary"></span>';
+      'Filter by Label<span class="kui-select__name-summary"></span>';
     host.append(name);
   }
   Object.assign(host, {
@@ -133,12 +133,12 @@ describe('Select multiple boundary', () => {
     const name = host.querySelector('[slot="label"]')!;
     host.selectedOptions = [options[2]!, options[0]!];
     host.selectionChanged();
-    expect(name.textContent).toBe('Filter by label: Bug, Design');
+    expect(name.textContent).toBe('Filter by Label: Bug, Design');
     // The hidden value text would only repeat the name.
     expect(host.displayLabel).toBe('');
     host.selectedOptions = [];
     host.selectionChanged();
-    expect(name.textContent).toBe('Filter by label');
+    expect(name.textContent).toBe('Filter by Label');
     expect(host.displayLabel).toBe('');
   });
 
@@ -158,7 +158,7 @@ describe('Select multiple boundary', () => {
     labeled.host.selectionChanged();
     expect(labeled.host.displayLabel).toBe('Bug');
     expect(labeled.host.querySelector('[slot="label"]')!.textContent).toBe(
-      'Filter by label',
+      'Filter by Label',
     );
   });
 

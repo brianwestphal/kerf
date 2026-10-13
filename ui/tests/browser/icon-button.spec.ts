@@ -9,7 +9,7 @@ test('IconButton is a control-height square level with its field and named by it
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/?component=icon-button');
     const demo = page.locator('[data-demo="icon-button"]');
-    const browse = demo.getByRole('button', { name: 'Browse for a folder' });
+    const browse = demo.getByRole('button', { name: 'Browse for a Folder' });
     await expect(browse).toBeVisible();
     const geometry = await demo.evaluate((root) => {
       const part = (host: Element) =>

@@ -131,7 +131,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await expect(left).toHaveAttribute('data-collapsed', 'true');
       await expect(right).toHaveAttribute('data-collapsed', 'true');
       const showNavigation = main.getByRole('button', {
-        name: 'Show navigation',
+        name: 'Show Navigation',
       });
       await showNavigation.focus();
       await showNavigation.press('Enter');
@@ -144,7 +144,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await hideNavigation.press('Enter');
       await expect(left).toHaveAttribute('data-collapsed', 'true');
       await expect(
-        main.getByRole('button', { name: 'Show navigation' }),
+        main.getByRole('button', { name: 'Show Navigation' }),
       ).toBeFocused();
       await main.getByRole('button', { name: 'Show inspector' }).click();
       await expect(right).toHaveAttribute('data-collapsed', 'false');
@@ -152,7 +152,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await expect(left).toHaveAttribute('data-collapsed', 'true');
       await expect(
         right.locator(
-          '[data-component="value-table"][aria-label="Selected task"]',
+          '[data-component="value-table"][aria-label="Selected Task"]',
         ),
       ).toBeVisible();
       await right.getByRole('button', { name: 'Hide inspector' }).click();
@@ -194,7 +194,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
   const intermediateMain = intermediateShell.locator('[data-workbench-main]');
   await expect(
     intermediateMain.locator('.kui-toolbar__leading').getByRole('button', {
-      name: 'Show navigation',
+      name: 'Show Navigation',
     }),
   ).toBeVisible();
   await expect(
@@ -254,7 +254,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
     ).toBeLessThanOrEqual(1);
     if (id === 'recipe-app-shell') {
       const navigation = recipe.getByRole('button', {
-        name: 'Show navigation',
+        name: 'Show Navigation',
       });
       await expect(navigation).toBeVisible();
       // 200% text shrinks the container below the narrow breakpoint, so
@@ -894,13 +894,13 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
     ],
   });
   const drafts = sidebar.getByRole('button', {
-    name: 'Drafts without an icon',
+    name: 'Drafts Without an Icon',
   });
   await drafts.click();
   await expect(drafts).toHaveAttribute('aria-current', 'page');
 
   const toolbar = await openRecipe(page, 'recipe-compact-toolbar');
-  const filter = toolbar.getByRole('button', { name: 'Toggle filters' });
+  const filter = toolbar.getByRole('button', { name: 'Toggle Filters' });
   await filter.click();
   await expect(filter).toHaveAttribute('aria-pressed', 'true');
   await toolbar.getByRole('button', { name: 'Board' }).click();

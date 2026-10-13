@@ -33,17 +33,17 @@ export const createRecipe: RecipeFactory = (announce) => {
   const render = () => (
     <Pane
       element="aside"
-      label="Workspace navigation"
+      label="Workspace Navigation"
       rootAttributes={{ 'data-recipe': 'recipe-navigation-sidebar' }}
       footer={
         <Toolbar
-          label="Sidebar actions"
+          label="Sidebar Actions"
           dividerSides="t"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
               <button
                 type="button"
-                aria-label="Add project"
+                aria-label="Add Project"
                 data-action="recipe-action"
                 data-recipe-command="add"
               >
@@ -55,7 +55,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             <ToolbarControlGroup appearance="borderless" single>
               <button
                 type="button"
-                aria-label="Workspace settings"
+                aria-label="Workspace Settings"
                 data-action="recipe-action"
                 data-recipe-command="settings"
               >
@@ -86,14 +86,14 @@ export const createRecipe: RecipeFactory = (announce) => {
         <ListItem
           action="recipe-action"
           itemId="shared"
-          label="Shared with me"
+          label="Shared with Me"
           icon={<LucideIcon icon={Users} name="users" />}
           selected={selected.value === 'shared'}
         />
         <ListItem
           action="recipe-action"
           itemId="drafts"
-          label="Drafts without an icon"
+          label="Drafts Without an Icon"
           selected={selected.value === 'drafts'}
         />
       </section>

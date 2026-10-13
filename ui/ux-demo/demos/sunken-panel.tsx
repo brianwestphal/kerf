@@ -16,9 +16,9 @@ export function SunkenPanelDemo() {
         label="Rounded application work area"
         note="The default shape uses the shared rounded-rectangle radius."
       >
-        <SunkenPanel ariaLabel="Release workspace">
+        <SunkenPanel ariaLabel="Release Workspace">
           <StateBanner tone="neutral" title="Release Candidate Ready" />
-          <ValueTable label="Release details">
+          <ValueTable label="Release Details">
             <ValueTableRow label="Version" value="5.0.0-beta.2" />
             <ValueTableRow label="Checks" value="Passing" />
           </ValueTable>
@@ -28,7 +28,7 @@ export function SunkenPanelDemo() {
         label="Focusable outlined surface"
         note="tabIndex makes the surface a keyboard stop; outlined can keep its ring visible for a selected or drop-target state."
       >
-        <SunkenPanel ariaLabel="Selected work surface" tabIndex={0} outlined>
+        <SunkenPanel ariaLabel="Selected Work Surface" tabIndex={0} outlined>
           <Text>Selected work surface</Text>
         </SunkenPanel>
       </CatalogExample>
@@ -58,7 +58,7 @@ export function SunkenPanelDemo() {
             <Text>Work area</Text>
           </ContentItem>
 
-          <SunkenPanel flex ariaLabel="Growing work surface">
+          <SunkenPanel flex ariaLabel="Growing Work Surface">
             <Text>Content stays at the top while the surface fills space.</Text>
           </SunkenPanel>
         </List>
@@ -69,7 +69,7 @@ export function SunkenPanelDemo() {
         align="none"
         viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
       >
-        <SunkenPanel fill ariaLabel="Full-height work surface">
+        <SunkenPanel fill ariaLabel="Full-Height Work Surface">
           <Text>Full-height surface</Text>
         </SunkenPanel>
       </CatalogExample>
@@ -77,11 +77,11 @@ export function SunkenPanelDemo() {
         label="Nested surfaces"
         note="The shared translucent lowered color composites naturally at every depth. No per-layer styling is needed."
       >
-        <SunkenPanel ariaLabel="First layer">
+        <SunkenPanel ariaLabel="First Layer">
           <Text>First layer</Text>
-          <SunkenPanel ariaLabel="Second layer">
+          <SunkenPanel ariaLabel="Second Layer">
             <Text>Second layer</Text>
-            <SunkenPanel ariaLabel="Third layer">
+            <SunkenPanel ariaLabel="Third Layer">
               <Text>Third layer</Text>
               <wa-button>Focus Nested Control</wa-button>
             </SunkenPanel>
@@ -92,8 +92,8 @@ export function SunkenPanelDemo() {
         label="Pane and nested panel"
         viewport={{ layout: 'grid', width: 'medium', height: 'app' }}
       >
-        <Pane appearance="sunken" label="Layered pane">
-          <SunkenPanel ariaLabel="Pane content layer">
+        <Pane appearance="sunken" label="Layered Pane">
+          <SunkenPanel ariaLabel="Pane Content Layer">
             <Text>The same lowered token paints both surfaces.</Text>
           </SunkenPanel>
         </Pane>
@@ -101,7 +101,7 @@ export function SunkenPanelDemo() {
       <CatalogExample label="Web Awesome nested surfaces">
         <wa-card appearance="sunken">
           <Text>Web Awesome card</Text>
-          <wa-details appearance="sunken" summary="Nested details" open>
+          <wa-details appearance="sunken" summary="Nested Details" open>
             <Text>Shared theme colors compound here too.</Text>
           </wa-details>
         </wa-card>

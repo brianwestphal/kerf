@@ -6,7 +6,7 @@ test('balanced Toolbar centers its middle zone with an empty leading zone', asyn
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/?component=toolbar');
   const toolbar = page.locator(
-    '[data-component="toolbar"][aria-label="Ticket header"]',
+    '[data-component="toolbar"][aria-label="Ticket Header"]',
   );
   const center = toolbar.locator(':scope > .kui-toolbar__center');
   const trailing = toolbar.locator(':scope > .kui-toolbar__trailing');

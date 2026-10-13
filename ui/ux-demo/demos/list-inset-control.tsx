@@ -14,7 +14,7 @@ import { DemoListInsetPane } from './demo-list-inset-pane.js';
 export function ListInsetControlDemo() {
   return (
     <CatalogExampleStack
-      label="ListInsetControl demo"
+      label="ListInsetControl Demo"
       rootAttributes={{ 'data-demo': 'list-inset-control' }}
     >
       <CatalogExample
@@ -39,7 +39,7 @@ export function ListInsetControlDemo() {
           />
           <ListInsetControl>
             <wa-input
-              label="Filter records"
+              label="Filter Records"
               placeholder="An input that owns its border and padding"
             />
           </ListInsetControl>
@@ -54,7 +54,7 @@ export function ListInsetControlDemo() {
         <DemoListInsetPane>
           <ListInsetControl sides="rb">
             <wa-input
-              label="Filter selected sides"
+              label="Filter Selected Sides"
               placeholder="Right and bottom inset"
             />
           </ListInsetControl>

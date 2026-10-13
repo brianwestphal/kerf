@@ -39,7 +39,7 @@ const sections: CatalogSection[] = [
           },
         ],
         related: [
-          { id: 'button', name: 'Button', group: 'Used by' },
+          { id: 'button', name: 'Button', group: 'Used By' },
           { id: 'banner', name: 'Banner', group: 'Uses' },
         ],
       },
@@ -130,7 +130,7 @@ describe('Catalog', () => {
     expect(html).toContain('<span>Components</span>');
     // Group headings are the Select's group titles, not slotted h3s.
     expect(html).toContain(
-      '<div class="kui-popup-menu__heading">Used by</div>',
+      '<div class="kui-popup-menu__heading">Used By</div>',
     );
     expect(html).toContain('<div class="kui-popup-menu__heading">Uses</div>');
     expect(html).toContain('<wa-divider></wa-divider>');
@@ -139,7 +139,7 @@ describe('Catalog', () => {
     );
     // Theme toggle present (theme set), previews the opposite theme
     expect(html).toContain('data-action="catalog-toggle-theme"');
-    expect(html).toContain('Use dark theme');
+    expect(html).toContain('Use Dark Theme');
   });
 
   it('omits the theme toggle, subtitle, logo, and footer links when not provided', () => {
@@ -415,7 +415,7 @@ describe('Catalog UX Review link', () => {
     expect(found.link.getAttribute('aria-label')).toBe(
       'Capture Banner in UX Review',
     );
-    expect(found.link.textContent).toContain('Capture region');
+    expect(found.link.textContent).toContain('Capture Region');
     expect(Object.fromEntries(found.url.searchParams)).toEqual({
       kind: 'screenshot',
       target: 'region',
@@ -1069,10 +1069,10 @@ describe('wireCatalog', () => {
     expect(defaults.rail.dataset.responsiveOverlayAt).toBe('narrow');
     expect(defaults.rail.dataset.compactOverlay).toBe('inset');
     expect(
-      defaults.toolbar('X catalog header').hasAttribute('divider-sides'),
+      defaults.toolbar('X catalog Header').hasAttribute('divider-sides'),
     ).toBe(false);
-    expect(defaults.toolbar('Select header').dataset.responsive).toBe('wrap');
-    const footer = defaults.toolbar('Select resources');
+    expect(defaults.toolbar('Select Header').dataset.responsive).toBe('wrap');
+    const footer = defaults.toolbar('Select Resources');
     expect(footer.hasAttribute('divider-sides')).toBe(false);
     expect(footer.dataset.responsive).toBe('stack');
     expect(footer.dataset.responsiveAt).toBe('narrow');
@@ -1104,12 +1104,12 @@ describe('wireCatalog', () => {
     expect(configured.rail.dataset.compactOverlay).toBe('full');
     expect(configured.rail.dataset.collapseMotion).toBe('none');
     // The Catalog keeps its own labels whatever the configuration says.
-    const sidebarToolbar = configured.toolbar('X catalog header');
+    const sidebarToolbar = configured.toolbar('X catalog Header');
     expect(sidebarToolbar.getAttribute('divider-sides')).toBe('b');
-    const main = configured.toolbar('Select header');
+    const main = configured.toolbar('Select Header');
     expect(main.dataset.responsive).toBe('stack');
     expect(main.getAttribute('divider-sides')).toBe('t');
-    const configuredFooter = configured.toolbar('Select resources');
+    const configuredFooter = configured.toolbar('Select Resources');
     expect(configuredFooter.getAttribute('divider-sides')).toBe('t');
     expect(configuredFooter.dataset.responsive).toBe('none');
     expect(configuredFooter.dataset.responsiveAt).toBe('compact');
@@ -1121,10 +1121,10 @@ describe('wireCatalog', () => {
       mainToolbar: { responsive: undefined },
       footerToolbar: { responsive: undefined },
     });
-    expect(undefinedPolicy.toolbar('Select header').dataset.responsive).toBe(
+    expect(undefinedPolicy.toolbar('Select Header').dataset.responsive).toBe(
       'wrap',
     );
-    expect(undefinedPolicy.toolbar('Select resources').dataset.responsive).toBe(
+    expect(undefinedPolicy.toolbar('Select Resources').dataset.responsive).toBe(
       'stack',
     );
   });

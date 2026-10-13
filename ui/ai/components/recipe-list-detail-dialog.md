@@ -28,7 +28,7 @@ No props: this entry has no JavaScript API.
 - Parents: used at the root of a screen or reference, not nested.
 - Contexts: `application-reference`.
 - Children: unrestricted.
-- Built from: [Surface scaffolds](./surface-scaffold.md), [SplitView](./split-view.md), [NavStack](./nav-stack.md), [Row](./row.md), [List](./list.md), [ListHeader](./list-header.md), [ListItem](./list-item.md), [ValueTable](./value-table.md), [LucideIcon](./lucide-icon.md), [Dialog](./wa-dialog.md), [Button](./wa-button.md).
+- Built from: [Surface Scaffolds](./surface-scaffold.md), [SplitView](./split-view.md), [NavStack](./nav-stack.md), [Row](./row.md), [List](./list.md), [ListHeader](./list-header.md), [ListItem](./list-item.md), [ValueTable](./value-table.md), [LucideIcon](./lucide-icon.md), [Dialog](./wa-dialog.md), [Button](./wa-button.md).
 
 ## State and wiring
 
@@ -52,6 +52,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Surface scaffolds](./surface-scaffold.md), [SplitView](./split-view.md), [NavStack](./nav-stack.md), [Row](./row.md), [List](./list.md), [ListHeader](./list-header.md), [ListItem](./list-item.md), [ValueTable](./value-table.md), [LucideIcon](./lucide-icon.md), [Dialog](./wa-dialog.md), [Button](./wa-button.md).
+- Components: [Surface Scaffolds](./surface-scaffold.md), [SplitView](./split-view.md), [NavStack](./nav-stack.md), [Row](./row.md), [List](./list.md), [ListHeader](./list-header.md), [ListItem](./list-item.md), [ValueTable](./value-table.md), [LucideIcon](./lucide-icon.md), [Dialog](./wa-dialog.md), [Button](./wa-button.md).
 - Docs: [`docs/recipes.md#list-detail-dialog`](../../docs/recipes.md#list-detail-dialog).
 - UX catalog route: `?component=recipe-list-detail-dialog`.

@@ -12,7 +12,7 @@ test('FramedList rows sit flush with inset dividers between them', async ({
     const list = page
       .locator('[data-demo="framed-list"] .kui-framed-list')
       .first();
-    await expect(list).toHaveAttribute('aria-label', 'Keyboard shortcuts');
+    await expect(list).toHaveAttribute('aria-label', 'Keyboard Shortcuts');
     const geometry = await list.evaluate((frame) => {
       const box = frame.getBoundingClientRect();
       const rows = [...frame.querySelectorAll(':scope > li')].map((row) => {

@@ -26,7 +26,7 @@ The adapter is delivered as reference source, not a new package runtime export.
 `delegate()` remains a valid alternative when an application needs selector-
 specific dispatch; either way, wire once at a stable root and retain disposal.
 
-## Desktop application shell
+## Desktop Application Shell
 
 [Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx)
 
@@ -52,7 +52,7 @@ whole width). The app owns each rail's collapsed and size signals — which
 routing, persistence, and data. Adapt only public `--kui-layout-*` and
 component variables.
 
-## Navigation sidebar
+## Navigation Sidebar
 
 [Open the recipe](../ux-demo/?component=recipe-navigation-sidebar) · [TSX source](../ux-demo/recipes/navigation-sidebar.tsx)
 
@@ -65,7 +65,7 @@ permissions, labels, selection, valid section counts and their localized
 content. A toggled `ListHeader` supplies the production `DisclosureArrow` when
 no custom `actionIcon` is needed; ordinary navigation rows stay chevron-free.
 
-## Workspace header
+## Workspace Header
 
 [Open the recipe](../ux-demo/?component=recipe-workspace-header) · [TSX source](../ux-demo/recipes/workspace-header.tsx)
 
@@ -99,7 +99,7 @@ application owns open state, selection, the pushed detail, dismissal policy,
 and record actions. Do not put the primary title in a header spanning both
 columns, rebuild the dialog, or reach into private shadow parts.
 
-## Composer form
+## Composer Form
 
 [Open the recipe](../ux-demo/?component=recipe-composer-form) · [TSX source](../ux-demo/recipes/composer-form.tsx)
 
@@ -118,7 +118,7 @@ Because upgraded Web Awesome fields retain live value properties, controlled
 resets synchronize both those properties and the rendered value attributes;
 the Reset action also announces `Draft reset` through the catalog live region.
 
-## List workspace states
+## List Workspace States
 
 [Open the recipe](../ux-demo/?component=recipe-list-workspace-states) · [TSX source](../ux-demo/recipes/list-workspace-states.tsx)
 
@@ -127,7 +127,7 @@ populated, stale/background refresh, and error/retry states. The recipe owns
 feedback placement; the app owns fetching, cache age, retry policy, and domain
 rows.
 
-## Compact toolbar choices and actions
+## Compact Toolbar Choices and Actions
 
 [Open the recipe](../ux-demo/?component=recipe-compact-toolbar) · [TSX source](../ux-demo/recipes/compact-toolbar.tsx)
 
@@ -140,7 +140,7 @@ widths the toolbar stacks its zones and wraps whole trailing groups onto another
 row, so the last action is never clipped. The app owns values, actions,
 persistence, and responsive priority.
 
-## Navigation stack
+## Navigation Stack
 
 [Open the recipe](../ux-demo/?component=recipe-navigation-stack) · [TSX source](../ux-demo/recipes/navigation-stack.tsx)
 
@@ -152,7 +152,7 @@ layout guide
 [`app-layouts.md`](app-layouts.md) for choosing among `NavStack`, `SplitView`,
 `Workbench`, and `TabNavigator`.
 
-## Loading inspector
+## Loading Inspector
 
 [Open the recipe](../ux-demo/?component=recipe-loading-inspector) · [TSX source](../ux-demo/recipes/loading-inspector.tsx)
 
@@ -166,7 +166,7 @@ the populated record — no separate skeleton markup. The composition is the poi
 record title instead of truncating it. The app owns the loading lifecycle and
 which values are still unknown.
 
-## Collapsible sidebar
+## Collapsible Sidebar
 
 [Open the recipe](../ux-demo/?component=recipe-collapsible-sidebar) · [TSX source](../ux-demo/recipes/collapsible-sidebar.tsx)
 

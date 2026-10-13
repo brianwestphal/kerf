@@ -171,7 +171,7 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await page.setViewportSize({ width: 1100, height: 820 });
   await page.goto('/?component=badge');
   const sidebar = page.locator('#kui-catalog-left-rail');
-  const filter = sidebar.getByRole('searchbox', { name: 'Filter catalog' });
+  const filter = sidebar.getByRole('searchbox', { name: 'Filter Catalog' });
   await expect(sidebar.getByText('UI components', { exact: true })).toHaveCount(
     0,
   );
@@ -233,7 +233,7 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await field.screenshot({
     path: testInfo.outputPath(`catalog-filter-after-narrow-${browserName}.png`),
   });
-  await sidebar.getByRole('button', { name: 'Clear filter' }).click();
+  await sidebar.getByRole('button', { name: 'Clear Filter' }).click();
   await expect(filter).toBeEmpty();
   await expect(sidebar.locator('[data-item-id="badge"]')).toBeVisible();
   await expect(sidebar.locator('[data-catalog-secondary]')).toBeHidden();

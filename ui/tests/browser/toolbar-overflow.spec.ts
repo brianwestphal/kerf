@@ -63,8 +63,8 @@ test('the stacked compact-toolbar recipe wraps its trailing action at 390px', as
   const recipe = page.locator('[data-recipe="recipe-compact-toolbar"]');
   const toolbar = recipe.locator('[data-component="toolbar"]');
   const frame = page.locator('[data-catalog-example-viewport]').first();
-  const more = recipe.getByRole('button', { name: 'More task actions' });
-  const refresh = recipe.getByRole('button', { name: 'Refresh tasks' });
+  const more = recipe.getByRole('button', { name: 'More Task Actions' });
+  const refresh = recipe.getByRole('button', { name: 'Refresh Tasks' });
   await expect(more).toBeVisible();
   await expectNoClippedControls(toolbar, frame);
   // Whether More fits beside the filter group depends on each engine's Select
@@ -100,8 +100,8 @@ test('the loading-inspector heading keeps its whole title beside or above its ac
     await open(page, width, 'recipe-loading-inspector');
     const recipe = page.locator('[data-recipe="recipe-loading-inspector"]');
     const toolbar = recipe.locator('[data-component="toolbar"]').first();
-    await recipe.getByRole('button', { name: 'Show loaded' }).click();
-    const toggle = recipe.getByRole('button', { name: 'Show loading' });
+    await recipe.getByRole('button', { name: 'Show Loaded' }).click();
+    const toggle = recipe.getByRole('button', { name: 'Show Loading' });
     const title = recipe.locator(
       '#recipe-inspector-title .kui-toolbar-text__text',
     );
@@ -142,7 +142,7 @@ test('the focused Toolbar demo shows stacked wrapping and the wrap policy', asyn
       stackedToolbar,
       stacked.locator('[data-catalog-example-viewport]'),
     );
-    const more = stacked.getByRole('button', { name: 'More draft actions' });
+    const more = stacked.getByRole('button', { name: 'More Draft Actions' });
     const bold = stacked.getByRole('button', { name: 'Bold' });
     expect(await topOf(more)).toBeGreaterThan(await topOf(bold));
 
@@ -196,7 +196,7 @@ test('center-priority gives an expanded center control the whole row at 390px', 
 
   await toolbar.getByRole('button', { name: 'Open find' }).click();
   await expect(
-    toolbar.getByRole('searchbox', { name: 'Find in workspace' }),
+    toolbar.getByRole('searchbox', { name: 'Find in Workspace' }),
   ).toBeFocused();
   await expect(toolbar.locator('.kui-toolbar__leading')).toBeHidden();
   await expect(toolbar.locator('.kui-toolbar__trailing')).toBeHidden();

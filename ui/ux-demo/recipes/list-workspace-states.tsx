@@ -36,7 +36,7 @@ export const presentation: RecipePresentation = {
 export const createRecipe: RecipeFactory = (announce) => {
   const state = signal<ListState>('loading');
   const populated = () => (
-    <section aria-label="Release task list">
+    <section aria-label="Release Task List">
       {items.map(([title, detail]) => (
         <ListItem
           action="recipe-action"
@@ -108,7 +108,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             tone="warning"
             action={
               <Row gap="xs" vAlign="middle">
-                <LoadingSpinner label="Refreshing release tasks" />
+                <LoadingSpinner label="Refreshing Release Tasks" />
                 <button
                   type="button"
                   data-action="recipe-action"
@@ -127,14 +127,14 @@ export const createRecipe: RecipeFactory = (announce) => {
   const render = () => (
     <Pane
       element="section"
-      label="Release tasks"
+      label="Release Tasks"
       rootAttributes={{
         'data-recipe': 'recipe-list-workspace-states',
         'data-list-state': state.value,
       }}
       header={
         <Toolbar
-          label="Release tasks"
+          label="Release Tasks"
           responsive="stack"
           responsiveAt="compact"
           leading={

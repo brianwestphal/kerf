@@ -23,7 +23,7 @@ test('application surfaces expose opt-in focus and persistent outline', async ({
       await pane.screenshot({ path: testInfo.outputPath(`pane-${width}.png`) });
 
     await page.goto('/?component=sunken-panel');
-    const sunken = page.getByRole('region', { name: 'Selected work surface' });
+    const sunken = page.getByRole('region', { name: 'Selected Work Surface' });
     await expect(sunken).toHaveAttribute('tabindex', '0');
     await expectOutlined(sunken);
     if (testInfo.project.name === 'chromium')

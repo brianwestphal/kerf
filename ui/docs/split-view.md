@@ -114,7 +114,7 @@ compactStack={{
   list: { toolbar: { trailing: <ComposeGroup /> } },
   detail: {
     toolbar: { trailing: <ReplyGroup /> },
-    bottomToolbar: { label: "Message actions", leading: <MessageActions /> },
+    bottomToolbar: { label: "Message Actions", leading: <MessageActions /> },
   },
 }}
 ```

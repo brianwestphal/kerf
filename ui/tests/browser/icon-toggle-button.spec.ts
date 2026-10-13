@@ -9,7 +9,7 @@ test('IconToggleButton toggles and raises a full-size face when pressed', async 
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=icon-toggle-button');
   const demo = page.locator('[data-demo="icon-toggle-button"]');
-  const toggle = demo.getByRole('button', { name: 'Show conversation' });
+  const toggle = demo.getByRole('button', { name: 'Show Conversation' });
   await expect(toggle).toHaveAttribute('aria-pressed', 'false');
   const face = (pressed: boolean) =>
     demo

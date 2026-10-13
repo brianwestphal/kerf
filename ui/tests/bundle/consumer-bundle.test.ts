@@ -540,7 +540,7 @@ describe('consumer bundle boundaries', () => {
     const js = output(result, '.js');
     expect(inputs).toContain('dist/catalog-resources.js');
     expect(inputs).not.toContain('dist/catalog.js');
-    expect(js).toContain('Demo source');
+    expect(js).toContain('Demo Source');
     expect(js).toContain('Guidance');
   });
 

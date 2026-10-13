@@ -14,13 +14,13 @@ export function EdgeActivityIndicatorDemo() {
         note="The strip pins to the top of the page and allocates no layout. Start the activity to see the wave and the optional status pill; it stops when you leave this demo."
         align="inline-control"
       >
-        <ToolbarControlGroup label="Edge activity">
+        <ToolbarControlGroup label="Edge Activity">
           <button
             type="button"
             aria-pressed={edgeActivityBusy.value ? 'true' : 'false'}
             data-action="toggle-edge-activity-demo"
           >
-            {edgeActivityBusy.value ? 'Stop activity' : 'Start activity'}
+            {edgeActivityBusy.value ? 'Stop Activity' : 'Start Activity'}
           </button>
           <button
             type="button"

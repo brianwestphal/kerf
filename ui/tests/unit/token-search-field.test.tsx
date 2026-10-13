@@ -23,7 +23,7 @@ describe('TokenSearchField', () => {
     const html = asHtml(
       TokenSearchField({
         id: 'saved-query',
-        label: 'Search query',
+        label: 'Search Query',
         presentation: 'form-field',
         hint: 'Add filters to narrow the view.',
         required: true,
@@ -39,7 +39,7 @@ describe('TokenSearchField', () => {
     expect(html).toContain('aria-labelledby="saved-query-label"');
     expect(html).toContain('aria-describedby="saved-query-hint"');
     expect(html).toContain('aria-required="true"');
-    expect(html).not.toContain('aria-label="Search query"');
+    expect(html).not.toContain('aria-label="Search Query"');
     expect(html).not.toContain('kui-toolbar');
 
     const optional = asHtml(
@@ -90,7 +90,7 @@ describe('TokenSearchField', () => {
     const html = asHtml(
       TokenSearchField({
         id: 'tickets',
-        label: 'Search tickets',
+        label: 'Search Tickets',
         query: 'NOT  AND parser',
         tokens,
         autofocus: true,
@@ -105,7 +105,7 @@ describe('TokenSearchField', () => {
     );
     expect(html).toContain('data-has-trailing="false"');
     expect(html).toContain(
-      'role="searchbox" aria-label="Search tickets" contenteditable="true" spellcheck="false" autofocus',
+      'role="searchbox" aria-label="Search Tickets" contenteditable="true" spellcheck="false" autofocus',
     );
     expect(html).toMatch(
       /data-token-value="is:active".*NOT .*data-token-value="tag:server".* AND parser/s,
@@ -113,7 +113,7 @@ describe('TokenSearchField', () => {
     expect(html).toContain('aria-label="Edit server tag"');
     expect(html).toContain('aria-label="Remove server tag"');
     expect(html).toContain(
-      'data-action="clear-token-search" aria-label="Clear search"',
+      'data-action="clear-token-search" aria-label="Clear Search"',
     );
   });
 
@@ -170,7 +170,7 @@ describe('TokenSearchField', () => {
         leading: <span>Filter</span>,
         trailingAction: {
           icon: <LucideIcon icon={CircleHelp} name="help" />,
-          label: 'Saved search help',
+          label: 'Saved Search Help',
           action: 'show-saved-search-help',
           id: 'saved-search-help',
         },
@@ -194,7 +194,7 @@ describe('TokenSearchField', () => {
     expect(html).toContain('data-lucide="help"');
     expect(html).toContain('data-has-trailing="true"');
     expect(html).toContain(
-      'class="kui-token-search__trailing-action" id="saved-search-help" data-action="show-saved-search-help" aria-label="Saved search help" title="Saved search help" disabled',
+      'class="kui-token-search__trailing-action" id="saved-search-help" data-action="show-saved-search-help" aria-label="Saved Search Help" title="Saved Search Help" disabled',
     );
     expect(
       asHtml(
@@ -212,10 +212,10 @@ describe('TokenSearchField', () => {
         TokenSearchField({
           id: 'empty',
           label: 'Search',
-          placeholder: 'Find records',
+          placeholder: 'Find Records',
         }),
       ),
-    ).toContain('data-placeholder="Find records"');
+    ).toContain('data-placeholder="Find Records"');
   });
 
   it('pins leading, first-line, clear, and trailing content to one fixed alignment slot', async () => {
@@ -249,7 +249,7 @@ describe('TokenSearchField', () => {
     const collapsed = asHtml(
       TokenSearchField({
         id: 'find',
-        label: 'Find records',
+        label: 'Find Records',
         collapsible: true,
         expandAction: 'open-find',
       }),
@@ -258,14 +258,14 @@ describe('TokenSearchField', () => {
       'data-component="token-search-field" data-token-search-id="find" data-disabled="false" data-collapsible="true" data-expanded="false"',
     );
     expect(collapsed).toContain(
-      'class="kui-token-search__expand" data-action="open-find" aria-label="Find records" title="Find records"',
+      'class="kui-token-search__expand" data-action="open-find" aria-label="Find Records" title="Find Records"',
     );
     expect(collapsed).not.toContain('role="searchbox"');
 
     const focused = asHtml(
       TokenSearchField({
         id: 'find',
-        label: 'Find records',
+        label: 'Find Records',
         collapsible: true,
         expanded: true,
         presentation: 'toolbar-group',
@@ -297,7 +297,7 @@ describe('TokenSearchField', () => {
     const populated = asHtml(
       TokenSearchField({
         id: 'find',
-        label: 'Find records',
+        label: 'Find Records',
         collapsible: true,
         query: 'priority',
       }),
@@ -359,7 +359,7 @@ describe('TokenSearchField', () => {
     document.body.innerHTML = asHtml(
       TokenSearchField({
         id: 'tickets',
-        label: 'Search tickets',
+        label: 'Search Tickets',
         query: 'NOT  AND parser',
         tokens: [{ value: 'tag:server', label: 'tag:server', offset: 4 }],
       }),
@@ -438,7 +438,7 @@ describe('TokenSearchField', () => {
     document.body.innerHTML = asHtml(
       TokenSearchField({
         id: 'tickets',
-        label: 'Search tickets',
+        label: 'Search Tickets',
         query: 'beforeafter',
         tokens: [{ value: 'tag:server', label: 'tag:server', offset: 6 }],
       }),

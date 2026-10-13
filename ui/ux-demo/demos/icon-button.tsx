@@ -16,11 +16,11 @@ export function IconButtonDemo() {
         viewport={{ width: 'medium' }}
       >
         <ListInsetControl>
-          <wa-input label="Project path" value="~/Documents/projects/atlas" />
+          <wa-input label="Project Path" value="~/Documents/projects/atlas" />
           <IconButton
             icon={FolderOpen}
             iconName="folder-open"
-            label="Browse for a folder"
+            label="Browse for a Folder"
             action="log-browse"
           />
         </ListInsetControl>
@@ -36,7 +36,7 @@ export function IconButtonDemo() {
           <IconButton
             icon={RefreshCw}
             iconName="refresh-cw"
-            label="Refresh (plain)"
+            label="Refresh (Plain)"
             appearance="plain"
             action="log-refresh"
           />
@@ -51,7 +51,7 @@ export function IconButtonDemo() {
           <IconButton
             icon={Trash2}
             iconName="trash-2"
-            label="Delete (disabled)"
+            label="Delete (Disabled)"
             variant="danger"
             disabled
           />

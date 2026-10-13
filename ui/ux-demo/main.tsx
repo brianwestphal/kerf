@@ -427,7 +427,7 @@ function toCatalogRelated(entry: CatalogEntry): CatalogRelated[] {
   const usedBy = catalogEntriesUsing(entry.id).map((related) => ({
     id: related.id,
     name: related.name,
-    group: 'Used by',
+    group: 'Used By',
   }));
   return [...uses, ...usedBy];
 }
@@ -532,8 +532,8 @@ mount(app, () => {
                 data-action="toggle-recipe-notes"
                 aria-label={
                   recipeNotesVisible.value
-                    ? 'Hide recipe notes'
-                    : 'Show recipe notes'
+                    ? 'Hide Recipe Notes'
+                    : 'Show Recipe Notes'
                 }
                 aria-pressed={String(recipeNotesVisible.value)}
               >
@@ -1272,8 +1272,8 @@ const stopCatalog = wireCatalog(app, {
     actionLog.value = `Background: ${
       {
         checkerboard: 'Checkerboard',
-        'vertical-stripes': 'Vertical stripes',
-        'layout-guide': 'Layout guide',
+        'vertical-stripes': 'Vertical Stripes',
+        'layout-guide': 'Layout Guide',
         surface: 'Surface',
         sunken: 'Sunken',
       }[style]
@@ -1776,7 +1776,7 @@ const stopAnchoredSurfaceDemo = delegate(
         </button>
       </div>
     );
-    const options = { label: 'Field help' };
+    const options = { label: 'Field Help' };
     const handle = point
       ? openAnchoredSurfaceAt(
           {
@@ -1803,7 +1803,7 @@ const stopAnchoredSurfaceContextDemo = delegate(
     const handle = openAnchoredSurfaceAt(
       { x: mouse.clientX, y: mouse.clientY, context: element },
       () => <Text>Right-click help at this location.</Text>,
-      { label: 'Pointer help', initialFocus: false },
+      { label: 'Pointer Help', initialFocus: false },
     );
     void handle.result;
   },

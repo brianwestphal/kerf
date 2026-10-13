@@ -442,12 +442,12 @@ test('production toolbar demo keeps primary and overflow actions reachable', asy
     node.style.width = '320px';
   });
   await expect(
-    demo.getByRole('button', { name: 'Refresh workspace' }),
+    demo.getByRole('button', { name: 'Refresh Workspace' }),
   ).toBeVisible();
   await expect(
     demo.getByRole('button', { name: 'Filter Workspace', exact: true }),
   ).toBeHidden();
-  await demo.getByRole('button', { name: 'More workspace actions' }).click();
+  await demo.getByRole('button', { name: 'More Workspace Actions' }).click();
   await demo.getByRole('menuitem', { name: 'Filter Workspace' }).click();
   await expect(page.locator('.catalog-log')).toContainText(
     'Workspace filter requested',
@@ -458,7 +458,7 @@ test('production toolbar demo keeps primary and overflow actions reachable', asy
   await expect(
     demo.getByRole('button', { name: 'Filter Workspace', exact: true }),
   ).toBeVisible();
-  await demo.getByRole('button', { name: 'Refresh workspace' }).click();
+  await demo.getByRole('button', { name: 'Refresh Workspace' }).click();
   await expect(page.locator('.catalog-log')).toContainText(
     'Workspace refreshed',
   );
@@ -479,7 +479,7 @@ test('production toolbar demo keeps primary and overflow actions reachable', asy
           .toBe(width - 2);
         if (width === 320)
           await expect(
-            demo.getByRole('button', { name: 'More workspace actions' }),
+            demo.getByRole('button', { name: 'More Workspace Actions' }),
           ).toBeVisible();
         else
           await expect(

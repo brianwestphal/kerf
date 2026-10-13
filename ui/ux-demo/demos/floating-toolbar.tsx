@@ -15,7 +15,7 @@ export function FloatingToolbarDemo() {
   const open = floatingToolbarOpen.value;
   return (
     <CatalogExampleStack
-      label="FloatingToolbar demo"
+      label="FloatingToolbar Demo"
       rootAttributes={{ 'data-demo': 'floating-toolbar' }}
     >
       <CatalogExample
@@ -41,7 +41,7 @@ export function FloatingToolbarDemo() {
         }}
       >
         <Toolbar
-          label="Work area"
+          label="Work Area"
           dividerSides="b"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
@@ -55,7 +55,7 @@ export function FloatingToolbarDemo() {
                 data-action="toggle-floating-toolbar"
                 aria-pressed={String(open)}
                 aria-label={
-                  open ? 'Hide floating toolbar' : 'Show floating toolbar'
+                  open ? 'Hide Floating Toolbar' : 'Show Floating Toolbar'
                 }
               >
                 <LucideIcon
@@ -70,11 +70,11 @@ export function FloatingToolbarDemo() {
           Scrolling content sits behind the floating toolbar.
         </ContentItem>
         {open ? (
-          <FloatingToolbar label="Terminal drawer">
-            <ToolbarControlGroup label="Terminal drawer" single>
+          <FloatingToolbar label="Terminal Drawer">
+            <ToolbarControlGroup label="Terminal Drawer" single>
               <button
                 type="button"
-                aria-label="Restore terminal drawer"
+                aria-label="Restore Terminal Drawer"
                 data-action="log-restore-drawer"
               >
                 <LucideIcon icon={Terminal} name="terminal" />
@@ -84,9 +84,9 @@ export function FloatingToolbarDemo() {
         ) : null}
       </CatalogExample>
       <CatalogExample label="Inline restore cluster" align="none">
-        <FloatingToolbar label="Inline drawer restore" placement="inline">
-          <ToolbarControlGroup label="Restore drawer" single>
-            <button type="button" aria-label="Restore drawer">
+        <FloatingToolbar label="Inline Drawer Restore" placement="inline">
+          <ToolbarControlGroup label="Restore Drawer" single>
+            <button type="button" aria-label="Restore Drawer">
               <LucideIcon icon={Terminal} name="terminal" />
             </button>
           </ToolbarControlGroup>

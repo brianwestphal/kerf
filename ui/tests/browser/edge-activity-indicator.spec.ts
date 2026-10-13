@@ -9,7 +9,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     await page.emulateMedia({ reducedMotion });
     await page.setViewportSize({ width: 1100, height: 700 });
     await page.goto('/?component=edge-activity-indicator');
-    const start = page.getByRole('button', { name: 'Start activity' });
+    const start = page.getByRole('button', { name: 'Start Activity' });
     const before = await start.boundingBox();
     await start.click();
     const host = page.locator('[data-component="edge-activity-indicator"]');
@@ -17,9 +17,9 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     await expect(
       page.getByRole('status').filter({ hasText: 'Syncing' }),
     ).toHaveText('Syncing 3 providers…');
-    // The same control, now "Stop activity", has not moved.
+    // The same control, now "Stop Activity", has not moved.
     const after = (await page
-      .getByRole('button', { name: 'Stop activity' })
+      .getByRole('button', { name: 'Stop Activity' })
       .boundingBox())!;
     expect([after.x, after.y]).toEqual([before!.x, before!.y]);
     // Let the scale-in transition finish.
@@ -63,7 +63,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       expect(strip.animation).toBe('kui-edge-activity-indicator-wave');
       expect(strip.mask).not.toBe('none');
     }
-    await page.getByRole('button', { name: 'Stop activity' }).click();
+    await page.getByRole('button', { name: 'Stop Activity' }).click();
     await expect(host).toHaveAttribute('data-busy', 'false');
   });
 }

@@ -511,7 +511,7 @@ describe('UX catalog metadata', () => {
       'SunkenPanel',
       'Toolbar',
       'ToolbarControlGroup',
-      'Surface scaffolds',
+      'Surface Scaffolds',
       'FloatingToolbar',
       'ToolbarText',
       'Text',
@@ -556,11 +556,11 @@ describe('UX catalog metadata', () => {
         .filter((entry) => entry.kind === 'composition')
         .map((entry) => [entry.id, entry.name]),
     ).toEqual([
-      ['foundation', 'Foundation tokens'],
-      ['document-baseline', 'Document baseline'],
-      ['layout', 'Application layout'],
+      ['foundation', 'Foundation Tokens'],
+      ['document-baseline', 'Document Baseline'],
+      ['layout', 'Application Layout'],
       ['headers', 'Headers'],
-      ['application-tabs', 'Application tabs'],
+      ['application-tabs', 'Application Tabs'],
       ['feedback', 'Feedback'],
     ]);
     expect(

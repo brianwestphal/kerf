@@ -41,19 +41,19 @@ export function catalogResources(
   input: CatalogResourcesInput,
 ): CatalogResource[] {
   const resources: CatalogResource[] = [
-    { label: 'Demo source', ...input.demoSource },
+    { label: 'Demo Source', ...input.demoSource },
   ];
   if (input.componentSource)
     resources.push({
-      label: 'Component source',
+      label: 'Component Source',
       ...input.componentSource,
     });
   if (input.designTemplate)
-    resources.push({ label: 'Design template', ...input.designTemplate });
+    resources.push({ label: 'Design Template', ...input.designTemplate });
   resources.push({
     label:
       input.guidanceKind === 'integrationGuidance'
-        ? 'Integration guidance'
+        ? 'Integration Guidance'
         : 'Guidance',
     ...input.guidance,
   });
