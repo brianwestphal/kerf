@@ -378,17 +378,19 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
     await expect(updated).toHaveAttribute('aria-checked', 'true');
     await expect(priority).toHaveAttribute('aria-checked', 'false');
     const plain = menu.getByRole('menuitem', { name: 'More sort options' });
-    const checkX = await updated.evaluate(
-      (element) =>
-        element.shadowRoot?.querySelector('#check')?.getBoundingClientRect().x,
-    );
-    const plainLabelX = await plain.evaluate(
-      (element) =>
-        element.shadowRoot?.querySelector('#label')?.getBoundingClientRect().x,
-    );
-    expect(checkX).toBeDefined();
+    // The plain command shares the choices' check column: its label starts
+    // where theirs do.
+    const labelX = (item: typeof plain) =>
+      item.evaluate(
+        (element) =>
+          element.shadowRoot?.querySelector('#label')?.getBoundingClientRect()
+            .x,
+      );
+    const checkedLabelX = await labelX(updated);
+    const plainLabelX = await labelX(plain);
+    expect(checkedLabelX).toBeDefined();
     expect(plainLabelX).toBeDefined();
-    expect(Math.abs(checkX! - plainLabelX!)).toBeLessThanOrEqual(1);
+    expect(Math.abs(checkedLabelX! - plainLabelX!)).toBeLessThanOrEqual(1);
     if (browserName === 'chromium') {
       await menu.evaluate(async (element) => {
         await Promise.all(
@@ -412,6 +414,80 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
     await trigger.click();
     await expect(updated).toHaveAttribute('aria-checked', 'true');
     await expect(priority).toHaveAttribute('aria-checked', 'false');
+    await page.keyboard.press('Escape');
+  }
+});
+
+test('a level with a checkbox choice aligns plain items to its check column', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const nested = page
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .filter({
+      has: page.locator('wa-dropdown-item[slot="submenu"]'),
+    });
+  const trigger = nested.getByRole('button', { name: 'Decide' });
+  const parent = nested.locator(
+    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
+  );
+  const columns = (item: typeof parent) =>
+    item.evaluate((element) => {
+      const x = (node: Element | null | undefined) =>
+        node ? node.getBoundingClientRect().x : null;
+      return {
+        check: x(element.shadowRoot?.querySelector('#check')),
+        icon: x(element.querySelector(':scope > .kui-popup-menu__icon')),
+        label: x(element.shadowRoot?.querySelector('#label')),
+      };
+    });
+  const near = (a: number | null, b: number | null, what: string) => {
+    expect(a, what).not.toBeNull();
+    expect(b, what).not.toBeNull();
+    expect(Math.abs(a! - b!), what).toBeLessThanOrEqual(1);
+  };
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await trigger.click();
+    // The top level holds no choice: its plain item keeps the compact start.
+    await expect(parent).not.toHaveAttribute('data-check-space', /./);
+    await expect(
+      parent.locator(':scope > .kui-popup-menu__check-space'),
+    ).toHaveCount(0);
+
+    // The submenu mixes a checked choice with plain commands (one disabled):
+    // all share one icon column and one label column.
+    await parent.hover();
+    const approve = parent.locator('[data-decision="approve"]');
+    await expect(approve).toBeVisible();
+    // Measure the settled panel, not its scale-in animation.
+    await parent.evaluate(async (element) => {
+      const submenu = (
+        element as HTMLElement & { submenuElement?: HTMLElement }
+      ).submenuElement;
+      await Promise.all(
+        (submenu?.getAnimations() ?? []).map((animation) =>
+          animation.finished.catch(() => undefined),
+        ),
+      );
+    });
+    const checked = await columns(approve);
+    expect(checked.check).not.toBeNull();
+    for (const decision of ['reject', 'other']) {
+      const row = await columns(
+        parent.locator(`[data-decision="${decision}"]`),
+      );
+      expect(row.check, decision).toBeNull();
+      near(row.icon, checked.icon, `${decision} icon`);
+      near(row.label, checked.label, `${decision} label`);
+    }
+    if (browserName === 'chromium')
+      await page.screenshot({
+        path: `test-results/popup-menu-mixed-${width}.png`,
+      });
+    await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
   }
 });

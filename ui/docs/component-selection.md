@@ -673,8 +673,11 @@ items shape covers single-line and batch actions; compute each batch child's
 For a flat command menu with persistent sort choices, group commands under
 `heading` entries and set `checked` explicitly on each choice. Checked rows
 show a checkmark; the background marks the current keyboard row, as in `Select`.
-Only items with `checked: true` or `checked: false` reserve checkmark space.
-Omit `checked` for a plain command, including one beside checkbox items.
+Items with `checked: true` or `checked: false` reserve checkmark space, and so
+does every plain command in a menu level (the top menu or one submenu) that
+holds such an item, so icons and labels line up across the level; a level
+without a choice keeps the compact start. Omit `checked` for a plain command,
+including one beside checkbox items.
 Commands still dispatch their own `data-action` once on pointer and keyboard
 selection.
 

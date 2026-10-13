@@ -111,7 +111,21 @@ export type PopupMenuProps = PopupMenuTrigger & {
   slot?: string;
 };
 
-function renderEntry(entry: PopupMenuEntry, nested = false) {
+/** Whether a menu level holds a checkbox choice, so its plain items reserve the check column. */
+function hasChoice(entries: readonly PopupMenuEntry[]): boolean {
+  return entries.some(
+    (entry) =>
+      entry.kind !== 'heading' &&
+      entry.kind !== 'divider' &&
+      entry.checked !== undefined,
+  );
+}
+
+function renderEntry(
+  entry: PopupMenuEntry,
+  nested = false,
+  levelHasChoice = false,
+) {
   if (entry.kind === 'divider')
     return <wa-divider slot={nested ? 'submenu' : undefined} />;
   // A group title styled like the Select's group title. It is not a slotted
@@ -125,10 +139,15 @@ function renderEntry(entry: PopupMenuEntry, nested = false) {
         {entry.label}
       </div>
     );
+  // A plain command beside checkbox choices keeps their check column, so its
+  // icon and label line up with theirs.
+  const reserveCheck = levelHasChoice && entry.checked === undefined;
+  const submenuHasChoice = entry.submenu ? hasChoice(entry.submenu) : false;
   return (
     <wa-dropdown-item
       {...(entry.attributes ?? {})}
       slot={nested ? 'submenu' : undefined}
+      data-check-space={reserveCheck ? 'reserved' : undefined}
       data-action={entry.action}
       value={entry.value}
       type={entry.checked === undefined ? undefined : 'checkbox'}
@@ -137,6 +156,13 @@ function renderEntry(entry: PopupMenuEntry, nested = false) {
       disabled={entry.disabled}
       title={entry.disabled ? entry.disabledReason : undefined}
     >
+      {reserveCheck ? (
+        <span
+          slot="icon"
+          class="kui-popup-menu__check-space"
+          aria-hidden="true"
+        />
+      ) : null}
       {entry.icon ? (
         <span slot="icon" class="kui-popup-menu__icon">
           {entry.icon}
@@ -150,7 +176,9 @@ function renderEntry(entry: PopupMenuEntry, nested = false) {
       ) : entry.submenu ? (
         <span slot="details" />
       ) : null}
-      {entry.submenu?.map((child) => renderEntry(child, true))}
+      {entry.submenu?.map((child) =>
+        renderEntry(child, true, submenuHasChoice),
+      )}
     </wa-dropdown-item>
   );
 }
@@ -237,6 +265,7 @@ function renderContent({
   disabled,
   items,
 }: PopupMenuContentProps): SafeHtml {
+  const levelHasChoice = hasChoice(items);
   return (
     <>
       {context ? (
@@ -263,7 +292,7 @@ function renderContent({
           )}
         </wa-button>
       )}
-      {items.map((entry) => renderEntry(entry))}
+      {items.map((entry) => renderEntry(entry, false, levelHasChoice))}
     </>
   );
 }

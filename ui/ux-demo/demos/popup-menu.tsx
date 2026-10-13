@@ -12,6 +12,8 @@ import {
   Copy,
   Gavel,
   MoreHorizontal,
+  ThumbsDown,
+  ThumbsUp,
   Trash2,
 } from 'lucide';
 
@@ -96,7 +98,7 @@ export function PopupMenuDemo() {
       </CatalogExample>
       <CatalogExample
         label="Checked choices"
-        note="Open the menu to compare a checked choice, an unchecked choice that keeps the checkmark space, and a plain command with no checkmark space. Choosing a sort option updates the checks."
+        note="Open the menu to compare a checked choice, an unchecked choice that keeps the checkmark space, and a plain command that keeps it too because its menu holds choices. Choosing a sort option updates the checks."
         align="text-trigger"
       >
         <PopupMenu
@@ -118,7 +120,11 @@ export function PopupMenuDemo() {
           ]}
         />
       </CatalogExample>
-      <CatalogExample label="Nested decisions" align="text-trigger">
+      <CatalogExample
+        label="Nested decisions"
+        note="The Decide submenu mixes a checked choice with plain commands, so every row keeps the check column and icons line up; the top level holds no choice and keeps the compact start."
+        align="text-trigger"
+      >
         <PopupMenu
           text="Decide"
           items={[
@@ -130,12 +136,14 @@ export function PopupMenuDemo() {
                 {
                   label: 'Approve',
                   action: 'log-decision',
+                  icon: <LucideIcon icon={ThumbsUp} name="approve" />,
                   checked: true,
                   attributes: { 'data-decision': 'approve' },
                 },
                 {
                   label: 'Reject',
                   action: 'log-decision',
+                  icon: <LucideIcon icon={ThumbsDown} name="reject" />,
                   tone: 'danger',
                   disabled: true,
                   disabledReason: 'A price is required',
@@ -146,6 +154,7 @@ export function PopupMenuDemo() {
                 {
                   label: 'Other…',
                   action: 'log-decision',
+                  icon: <LucideIcon icon={MoreHorizontal} name="other" />,
                   attributes: { 'data-decision': 'other' },
                 },
               ],

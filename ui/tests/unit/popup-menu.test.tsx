@@ -94,6 +94,86 @@ describe('PopupMenu', () => {
     );
   });
 
+  it('reserves the check column on plain items only in levels that hold a choice', () => {
+    const menu = render(
+      asHtml(
+        PopupMenu({
+          text: 'Drive options',
+          items: [
+            { label: 'Default', action: 'default', checked: true },
+            { kind: 'heading', label: 'Settings' },
+            {
+              label: 'Model',
+              icon: <LucideIcon icon={Copy} name="model" />,
+              submenu: [
+                { label: 'GPT-5.6', action: 'model', checked: false },
+                { label: 'Other…', action: 'model-other' },
+              ],
+            },
+            {
+              label: 'Provider',
+              submenu: [{ label: 'OpenAI', action: 'provider' }],
+            },
+          ],
+        }),
+      ),
+    );
+    const item = (label: string) =>
+      [...menu.querySelectorAll('wa-dropdown-item')].find(
+        (element) =>
+          [...element.childNodes]
+            .filter((node) => node.nodeType === Node.TEXT_NODE)
+            .map((node) => node.textContent)
+            .join('')
+            .trim() === label,
+      )!;
+    const spacer = (label: string) =>
+      item(label).querySelector(':scope > .kui-popup-menu__check-space');
+
+    // The top level holds a choice: its plain items reserve the column, and
+    // the spacer precedes the item icon in the icon slot.
+    for (const label of ['Model', 'Provider']) {
+      expect(item(label).getAttribute('data-check-space'), label).toBe(
+        'reserved',
+      );
+      expect(spacer(label)?.getAttribute('slot'), label).toBe('icon');
+      expect(spacer(label)?.getAttribute('aria-hidden'), label).toBe('true');
+    }
+    expect(
+      item('Model').querySelector(':scope > [slot="icon"]')?.className,
+    ).toBe('kui-popup-menu__check-space');
+    // Choices never reserve a second column.
+    expect(item('Default').hasAttribute('data-check-space')).toBe(false);
+    expect(spacer('Default')).toBeNull();
+    expect(item('GPT-5.6').hasAttribute('data-check-space')).toBe(false);
+    // Each submenu is its own level.
+    expect(item('Other…').getAttribute('data-check-space')).toBe('reserved');
+    expect(spacer('Other…')).not.toBeNull();
+    expect(item('OpenAI').hasAttribute('data-check-space')).toBe(false);
+    expect(spacer('OpenAI')).toBeNull();
+  });
+
+  it('keeps the compact start in a level without a choice', () => {
+    const menu = render(
+      asHtml(
+        PopupMenu({
+          text: 'Actions',
+          items: [
+            { label: 'Open', action: 'open' },
+            {
+              label: 'Sort',
+              submenu: [{ label: 'Newest', action: 'sort', checked: true }],
+            },
+          ],
+        }),
+      ),
+    );
+    expect(menu.querySelectorAll('[data-check-space]')).toHaveLength(0);
+    expect(menu.querySelectorAll('.kui-popup-menu__check-space')).toHaveLength(
+      0,
+    );
+  });
+
   it('renders a context anchor and controls its open state at pointer coordinates', () => {
     const menu = render(
       asHtml(

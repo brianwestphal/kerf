@@ -85,6 +85,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - A labelled `CatalogExample` now names its `section` with its label, so each specimen is a named region that assistive technology and `getByRole('region', { name })` can address. An unlabeled example stays an ordinary grouping (`KF-ZQMXK1`).
 - `CatalogExampleStack` takes a `width` option: `reading` (default) keeps the 736px reading measure, and `full` lets the stack span the stage so a catalog can show application-width compositions such as boards, app shells, drawers, and split views without clipping them (`KF-HKVT5S`).
+- In a `PopupMenu` level (the top menu or one submenu) that holds a checkbox choice, plain commands now reserve the check column too, so check, icon, and label columns line up across checked, unchecked, and plain rows; a level without a choice keeps the compact start. Submenu checkbox rows drop an extra 1em label inset, so their icon-to-label gap matches the top level (`KF-31QHPE`).
 - Hovering a selected (`aria-current`) or pressed `ListItem` likewise keeps its selected tint instead of the neutral hover colors (`KF-84AGE5`).
 - Hovering a selected or pressed `ListActionRow` keeps its selected tint instead of switching to the neutral hover colors, so a freshly selected row no longer looks unselected while the pointer stays on it (`KF-Z737D0`).
 - A `width="full"` `CatalogExampleStack` now spans the whole catalog stage on wide screens; the stage's 1120px canvas cap no longer stops it short of the right edge (`KF-WDSFWH`).

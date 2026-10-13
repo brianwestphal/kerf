@@ -628,10 +628,14 @@ contract in `foundation.css`. A capped popup that scrolls (a long listbox, a
 menu, or a phone submenu) shows a soft shadow along each edge with more
 choices beyond it, so overlay scrollbars never leave it looking complete; the
 cue is CSS-only, appears only toward hidden rows, and a popup whose choices
-all fit draws none. Checkbox items reserve a check column; plain commands start
-at the checkmark's leading edge, beside the group title rather than the
-farther-in Select option label. Checked submenu items keep their checkmark and
-label inside the submenu surface. Compact mixed controls retain the standard
+all fit draws none. Checkbox items reserve a check column, and so does every
+plain command in a level (the top menu or one submenu) that holds a checkbox
+item, through an `aria-hidden` icon-slot spacer, so check, icon, and label
+columns align across the level. A level without a checkbox item keeps the
+compact start: plain commands begin at the checkmark's leading edge, beside the
+group title rather than the farther-in Select option label. Checked submenu
+items keep their checkmark inside the submenu surface with the same check-column
+advance as the top level. Compact mixed controls retain the standard
 item padding, omit an internal separator, and let the raised selected item paint
 over the outer border instead of shrinking to an inset highlight. The Web
 Awesome trigger's shadow base owns max-content sizing, so icons, localized text,

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 357500,
-  "measuredLargestJavaScriptGzip": 140393,
-  "measuredTotalJavaScriptGzip": 357403,
+  "totalJavaScriptGzip": 357800,
+  "measuredLargestJavaScriptGzip": 140571,
+  "measuredTotalJavaScriptGzip": 357703,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3923,6 +3923,22 @@
         "measuredTotalJavaScriptGzip": 357403,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 357500
+      }
+    },
+    {
+      "at": "2026-10-13T07:07:33.542Z",
+      "reason": "PopupMenu mixed-level check-column reservation (KF-31QHPE): per-level choice detection plus thumbs-up/down icons in the nested-decisions demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 140393,
+        "measuredTotalJavaScriptGzip": 357403,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 140571,
+        "measuredTotalJavaScriptGzip": 357703,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357800
       }
     }
   ]

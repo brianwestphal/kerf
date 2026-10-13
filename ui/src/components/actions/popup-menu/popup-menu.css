@@ -13,7 +13,9 @@
 
 /* PopupMenu shares the Select's caret motion, surface inset, row rhythm,
    current-row fill, and group titles from the popup-choice contract in
-   foundation.css. Only checkbox items reserve a check column. */
+   foundation.css. Checkbox items reserve a check column, and so do the
+   plain items in any level that holds one; a level without a choice keeps the
+   compact start. */
 
 /* The trigger caret turns to face the open menu, like the Select's. */
 .kui-popup-menu > wa-button::part(caret) {
@@ -56,13 +58,21 @@
   );
 }
 /* Web Awesome's nested submenu owns its item host padding. Move its exposed
-   checkmark inside the panel and leave room for the label beside it. */
+   checkmark inside the panel: in flow, the checkmark and its gap advance the
+   row's content by the same check column as at the top level. */
 .kui-popup-menu
   wa-dropdown-item[slot="submenu"][type="checkbox"]::part(checkmark) {
   margin-inline-start: 0;
 }
-.kui-popup-menu wa-dropdown-item[slot="submenu"][type="checkbox"]::part(label) {
-  padding-inline-start: 1em;
+/* A plain item beside checkbox choices holds their check column with an empty
+   icon-slot spacer, at either level. Web Awesome sizes a slotted icon in its
+   smaller font and spaces it 0.75em (!important) from the next item; with
+   that gap, 1em of width equals the 1.25em checkmark plus its 0.5em gap. */
+.kui-popup-menu__check-space {
+  display: block;
+  width: 1em;
+  height: 1px;
+  flex: none;
 }
 .kui-popup-menu wa-dropdown-item::part(label) {
   padding-block: var(--_kui-popup-row-label-padding-block);
