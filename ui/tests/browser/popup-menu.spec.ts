@@ -952,13 +952,22 @@ test('a long phone submenu stays inside the viewport and scrolls to every choice
     expect(placed.bottom).toBeLessThanOrEqual(844 - 8 + 0.5);
 
     // The keyboard walks every choice, scrolling the last one into view.
+    // Focus lands before the engine finishes scrolling it into view (a
+    // loaded full run once read the box mid-scroll), so poll the geometry
+    // until the last choice rests inside the scrolled submenu.
     await page.keyboard.press('End');
     await expect(last).toBeFocused();
-    const lastBox = (await last.boundingBox())!;
-    const scrolled = await submenuBox();
-    expect(lastBox.y).toBeGreaterThanOrEqual(scrolled.top);
-    expect(lastBox.y + lastBox.height).toBeLessThanOrEqual(scrolled.bottom + 1);
-    expect(scrolled.scrollTop).toBeGreaterThan(0);
+    await expect
+      .poll(async () => {
+        const lastBox = (await last.boundingBox())!;
+        const scrolled = await submenuBox();
+        return {
+          topInside: lastBox.y >= scrolled.top,
+          bottomInside: lastBox.y + lastBox.height <= scrolled.bottom + 1,
+          scrolled: scrolled.scrollTop > 0,
+        };
+      })
+      .toEqual({ topInside: true, bottomInside: true, scrolled: true });
     await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
     await expect(nested).not.toHaveAttribute('open', '');
