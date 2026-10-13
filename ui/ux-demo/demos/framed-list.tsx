@@ -53,14 +53,14 @@ export function FramedListDemo() {
                 <IconButton
                   icon={Pencil}
                   iconName="pencil"
-                  label={`Edit ${shortcut.name} shortcut`}
+                  label={`Edit ${shortcut.name} Shortcut`}
                   appearance="plain"
                   action="log-edit-shortcut"
                 />
                 <IconButton
                   icon={RotateCcw}
                   iconName="rotate-ccw"
-                  label={`Reset ${shortcut.name} shortcut`}
+                  label={`Reset ${shortcut.name} Shortcut`}
                   appearance="plain"
                   action="log-reset-shortcut"
                 />

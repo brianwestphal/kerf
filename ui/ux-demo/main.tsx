@@ -809,7 +809,7 @@ const stopActions = delegateActions(app, 'click', {
     // until its simulated load completes.
     tabBarTabs.value = [
       ...tabBarTabs.value,
-      { id, name: `New tab ${tabNumber}`, pending: true },
+      { id, name: `New Tab ${tabNumber}`, pending: true },
     ];
     tabBarActive.value = id;
     actionLog.value = `Opening ${id}`;

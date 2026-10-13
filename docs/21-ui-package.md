@@ -596,8 +596,9 @@ Interface copy follows one package-wide capitalization rule, adapted from
 Apple's guidance (`ui/docs/writing.md`). Names of commands, controls, views,
 and fields use title style; descriptions, messages, tooltips, placeholders,
 option text, and status use sentence style. The doctor's `KUI-D040` warning
-reports lowercase words in string literals passed to known title-style label
-props. It never judges sentence-style surfaces or dynamic values.
+reports lowercase words in string literals, and the static words of template
+literals, passed to known title-style label props. It never judges
+sentence-style surfaces or interpolated and other dynamic values.
 
 Each catalog entry's `publicClasses` array is the exact stable CSS-anatomy
 boundary. Applications should prefer an equivalent component prop or semantic

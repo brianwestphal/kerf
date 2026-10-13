@@ -26,7 +26,7 @@ test('Workbench rail navigates with one toolbar, fixed per-view header, one scro
       path: `test-results/workbench-navigation-root-${width}.png`,
     });
 
-    await rail.getByRole('button', { name: 'Open ticket T-42' }).click();
+    await rail.getByRole('button', { name: 'Open Ticket T-42' }).click();
     await expect(stack).toHaveAttribute('data-depth', '2');
     await expect(stack.locator('[data-nav-chrome-copy]')).toHaveCount(0);
     await expect(activeHeader).toContainText('Workspace Rail Detail');

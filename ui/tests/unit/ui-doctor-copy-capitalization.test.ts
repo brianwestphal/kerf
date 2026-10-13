@@ -35,7 +35,12 @@ const { checkCopyCapitalization, titleStyleLabels, titleStyleViolation } =
     titleStyleLabels: (
       file: string,
       source: string,
-    ) => { text: string; owner: string; line: number }[];
+    ) => {
+      text: string;
+      display?: string;
+      owner: string;
+      line: number;
+    }[];
     titleStyleViolation: (
       text: string,
     ) => { words: string[]; suggestion: string } | null;
@@ -112,7 +117,7 @@ describe('titleStyleViolation', () => {
 describe('titleStyleLabels', () => {
   const labels = (source: string) =>
     titleStyleLabels('view.tsx', source).map(
-      ({ owner, text }) => `${owner}: ${text}`,
+      ({ owner, text, display }) => `${owner}: ${display ?? text}`,
     );
 
   test('reads title-style props, entries, and button text', () => {
@@ -190,7 +195,42 @@ describe('titleStyleLabels', () => {
     ).toEqual([
       'CatalogExampleStack label: Toolbar variants',
       'CatalogExample label: Heading identity stays whole',
+      'CatalogExample label: ${name} distribution',
     ]);
+  });
+
+  test('reads template literals and judges only their static words', () => {
+    const found = titleStyleLabels(
+      'view.tsx',
+      `
+        export const View = () => (
+          <>
+            <IconButton label={\`Edit \${shortcut.name} shortcut\`} />
+            <IconButton label={\`Reset \${shortcut.name} Shortcut\`} />
+            <Toolbar label={\`\${name} for \${owner}\`} />
+            <ListHeader label={\`\${count}s in the \${place}\`} />
+            <section aria-label={\`the \${region}\`} />
+            <StateBanner title={\`\${tone} banner\`} />
+            <EmptyState title={\`\${count} tasks could not load.\`} />
+            <LoadingSpinner label={\`Loading \${name} preview\`} />
+          </>
+        );
+      `,
+    );
+    expect(found.map(({ owner, display }) => `${owner}: ${display}`)).toEqual([
+      'IconButton label: Edit ${shortcut.name} shortcut',
+      'IconButton label: Reset ${shortcut.name} Shortcut',
+      'Toolbar label: ${name} for ${owner}',
+      'ListHeader label: ${count}s in the ${place}',
+      '<section> aria-label: the ${region}',
+      'StateBanner title: ${tone} banner',
+      'EmptyState title: ${count} tasks could not load.',
+    ]);
+    // Interpolated values are never judged and a word touching one is
+    // skipped, while static words keep their first/last position rules.
+    expect(
+      found.map(({ text }) => titleStyleViolation(text)?.words ?? null),
+    ).toEqual([['shortcut'], null, null, null, ['the'], ['banner'], null]);
   });
 
   test('reads panel toolbar toggle names from object literals and JSX', () => {
@@ -334,7 +374,7 @@ describe('titleStyleLabels', () => {
             <LoadingSpinner label="Loading tickets" />
             <Skeleton label="Loading the release list" />
             <div aria-label="Selection summary" />
-            <Pane label={\`\${name} pages\`} />
+            <Pane label={name} />
             <section aria-label="The list refreshes when you reconnect." />
           </section>
         );
@@ -374,6 +414,10 @@ describe('checkCopyCapitalization', () => {
           'src/panel.tsx',
           "export const panel = { toggle: { action: 'toggle-output', name: 'output' } };",
         ],
+        [
+          'src/template.tsx',
+          'export const Row = () => <IconButton label={`Edit ${shortcut.name} shortcut`} />;',
+        ],
       ] as const;
       for (const [name, source] of files)
         await writeFile(resolve(root, name), source);
@@ -388,6 +432,7 @@ describe('checkCopyCapitalization', () => {
         'KUI-D040 warning src/view.tsx:3',
         'KUI-D040 warning src/other.tsx:1',
         'KUI-D040 warning src/panel.tsx:1',
+        'KUI-D040 warning src/template.tsx:1',
       ]);
       expect(findings[2]?.message).toBe(
         'panel toggle name "output" is not title-style capitalized ("output").',
@@ -396,6 +441,12 @@ describe('checkCopyCapitalization', () => {
         '<wa-button> text "Save draft" is not title-style capitalized ("draft").',
       );
       expect(findings[0]?.action).toContain('Use "Save Draft"');
+      expect(findings[3]?.message).toBe(
+        'IconButton label "Edit ${shortcut.name} shortcut" is not title-style capitalized ("shortcut").',
+      );
+      expect(findings[3]?.action).toContain(
+        'Use "Edit ${shortcut.name} Shortcut"',
+      );
       expect(
         (await checkCopyCapitalization(root, inputs, ['src/view.tsx'])).map(
           (item) => item.location.file,

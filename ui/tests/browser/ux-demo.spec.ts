@@ -8046,7 +8046,7 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
   ).toBeFocused();
   await bar.getByRole('button', { name: 'Add Tab' }).click();
   await expect(bar.getByRole('tab')).toHaveCount(8);
-  const added = bar.getByRole('tab', { name: 'New tab 8' });
+  const added = bar.getByRole('tab', { name: 'New Tab 8' });
   await expect(added).toHaveAttribute('aria-selected', 'true');
   await expect
     .poll(() => strip.evaluate((node) => node.scrollLeft))
@@ -8091,7 +8091,7 @@ test('opens an added tab pending with a placeholder panel, selectable until it l
   const bar = demo.locator('[data-tab-bar-id="catalog-tabs"]');
   await bar.getByRole('button', { name: 'Add Tab' }).click();
   const root = bar.locator('[data-demo-tab-id="new-8"]');
-  const added = root.getByRole('tab', { name: 'New tab 8', exact: true });
+  const added = root.getByRole('tab', { name: 'New Tab 8', exact: true });
 
   // Pending: selected, busy, undimmed, with a spinner; the panel shows a
   // placeholder instead of content.
@@ -8166,7 +8166,7 @@ test('keeps added tab IDs unique after another tab closes', async ({
   await expect(firstAddedTab).toHaveAttribute('aria-selected', 'true');
   await firstAddedTab.press('Alt+Shift+ArrowRight');
   await expect(page.locator('[data-tab-order]')).toContainText(
-    'New tab 9 · New tab 8',
+    'New Tab 9 · New Tab 8',
   );
   await expect(firstAddedTab).toBeFocused();
 

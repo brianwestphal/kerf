@@ -10,8 +10,9 @@ import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 // tab labels, field labels, list/group headers (including catalog example
 // labels), view/pane/dialog titles, panel toggle names, and region and
 // landmark names — plus the accessible names of icon-only controls, checked
-// against Apple's title-style rule. Only string literals passed to known
-// title-style props are read, so prose, descriptions, placeholders, tooltips,
+// against Apple's title-style rule. Only string and template literals passed
+// to known title-style props are read (a template literal's static words, never
+// its interpolated values), so prose, descriptions, placeholders, tooltips,
 // checkbox/switch option text, status lines, LoadingSpinner and Skeleton
 // labels, and dynamic data are never judged. The check reports lowercase words title style capitalizes; it
 // does not report capitalized short words, because Apple capitalizes a
@@ -264,10 +265,42 @@ function attribute(element, name) {
   );
 }
 
+// A template literal's interpolation stands in the checked text as a token
+// with no letters, so title style never judges the interpolated data, and a
+// word that touches an interpolation (`${count}s`) carries the token's digit
+// and is skipped too. The static words keep their positions, so a lowercase
+// word that ends the label (`Edit ${name} shortcut`) is still the last word.
+const holeToken = (index) => `\u2045${index}\u2046`;
+const holePattern = /\u2045(\d+)\u2046/g;
+
+/**
+ * A template literal with interpolations, read as a label whose static words
+ * are checked: `text` holds hole tokens for `title-style` judgment, `display`
+ * is the source spelling, and `restore` maps a repaired text back to source.
+ */
+function templateLabel(node) {
+  const holes = node.templateSpans.map(
+    (span) => `\${${span.expression.getText()}}`,
+  );
+  const text =
+    node.head.text +
+    node.templateSpans
+      .map((span, index) => holeToken(index) + span.literal.text)
+      .join('');
+  return {
+    text,
+    node,
+    display: text.replace(holePattern, (_, index) => holes[Number(index)]),
+    restore: (value) =>
+      value.replace(holePattern, (_, index) => holes[Number(index)]),
+  };
+}
+
 function literalOf(node) {
   if (!node) return undefined;
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node))
     return node;
+  if (ts.isTemplateExpression(node)) return templateLabel(node);
   if (ts.isJsxExpression(node)) return literalOf(node.expression);
   if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node))
     return literalOf(node.expression);
@@ -509,6 +542,9 @@ export function titleStyleLabels(fileName, source) {
     const { line, character } = sourceFile.getLineAndCharacterOfPosition(start);
     return {
       text: literal.text,
+      ...(literal.display === undefined
+        ? {}
+        : { display: literal.display, restore: literal.restore }),
       owner,
       line: line + 1,
       column: character + 1,
@@ -535,13 +571,17 @@ export async function checkCopyCapitalization(
     for (const label of titleStyleLabels(file, source)) {
       const violation = titleStyleViolation(label.text);
       if (!violation) continue;
+      const shown = label.display ?? label.text;
+      const suggestion = label.restore
+        ? label.restore(violation.suggestion)
+        : violation.suggestion;
       diagnostics.push({
         id: 'KUI-D040',
         severity: 'warning',
         stage: 'analyzer',
-        message: `${label.owner} "${label.text}" is not title-style capitalized (${violation.words.map((word) => `"${word}"`).join(', ')}).`,
+        message: `${label.owner} "${shown}" is not title-style capitalized (${violation.words.map((word) => `"${word}"`).join(', ')}).`,
         location: { file: path, line: label.line, column: label.column },
-        action: `Use "${violation.suggestion}": capitalize every word except articles, coordinating conjunctions, and prepositions of four letters or fewer, and always capitalize the first and last word. A complete sentence ends with punctuation and stays sentence style. Suppress KUI-D040 for a lowercase brand or product name.`,
+        action: `Use "${suggestion}": capitalize every word except articles, coordinating conjunctions, and prepositions of four letters or fewer, and always capitalize the first and last word. A complete sentence ends with punctuation and stays sentence style. Suppress KUI-D040 for a lowercase brand or product name.`,
         documentation: '@kerfjs/ui/docs/writing.md#capitalization',
         meaning: 'Visible label is not title-style capitalized',
       });

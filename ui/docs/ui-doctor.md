@@ -144,8 +144,8 @@ An unavailable or failed stage does not prevent independent stages from reportin
 The analyzer stage also checks visible label copy against the package
 capitalization rule in [Writing interface copy](./writing.md#capitalization).
 Names of commands, controls, views, and fields use title style, following
-Apple's guidance. `KUI-D040` (warning) reports a string literal passed to a
-known title-style prop that leaves a word lowercase where title style
+Apple's guidance. `KUI-D040` (warning) reports a string or template literal
+passed to a known title-style prop that leaves a word lowercase where title style
 capitalizes it. For example, `<wa-button>Save draft</wa-button>` should be
 "Save Draft", and `<ListHeader label="Needs attention" />` should be "Needs
 Attention". The action names the repaired label.
@@ -194,7 +194,10 @@ The check is deliberately one-directional, to keep false positives rare:
   because Apple capitalizes a phrasal verb's particle ("Log In to the
   Server").
 - It leaves text ending in `.`, `!`, or `?` to sentence style.
-- It ignores dynamic values and every sentence-style surface: descriptions,
+- It judges only a template literal's static words, so
+  `` `Edit ${name} shortcut` `` is reported and the interpolated value never
+  is. A word joined to an interpolation (`` `${count}s` ``) is skipped.
+- It ignores other dynamic values and every sentence-style surface: descriptions,
   details, placeholders, tooltips, status text, and option text, including
   `wa-checkbox`, `wa-switch`, and `wa-radio` labels. It does not read
   `LoadingSpinner` or `Skeleton` labels, which announce a status.

@@ -106,7 +106,7 @@ function ticketCollectionView(): NavStackView {
             interactive
             action="open-workbench-ticket"
             itemId={id}
-            ariaLabel={`Open ticket ${id}`}
+            ariaLabel={`Open Ticket ${id}`}
           >
             <List gap="2xs">
               <Text variant="span">

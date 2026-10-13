@@ -684,7 +684,8 @@ is reported.
 `component-style-checks.mjs` pass checks paired JSX/TSX component root classes,
 stylesheet filenames, and foreign component selectors (`KUI-D030`–`KUI-D032`).
 The `copy-capitalization-checks.mjs` pass (`KUI-D040`, warning) reads string
-literals passed to known title-style label props: ToolbarText titles,
+and template literals (static words only; interpolations stand in as
+letterless hole tokens) passed to known title-style label props: ToolbarText titles,
 ListHeader, CatalogExample / CatalogExampleStack labels, PopupMenu items, choices, tabs, empty/banner titles, button text,
 FieldLabel, and the accessible names of icon-only controls (IconButton /
 IconToggleButton / PopupMenu `label`, SplitButton `optionsLabel`,

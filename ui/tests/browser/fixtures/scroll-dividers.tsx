@@ -64,13 +64,13 @@ const pane = (
       chromeDividers={chromeDividers}
       header={
         <Toolbar
-          label={`${name} header`}
+          label={`${name} Header`}
           leading={<ToolbarText text="Header" size="large" />}
         />
       }
       footer={
         <Toolbar
-          label={`${name} footer`}
+          label={`${name} Footer`}
           leading={<ToolbarText text="Footer" size="small" />}
         />
       }

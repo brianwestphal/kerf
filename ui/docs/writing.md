@@ -91,9 +91,11 @@ Tooltips may omit the final period.
 
 ## Diagnostics
 
-`kerf-ui-doctor` reports `KUI-D040` (warning) when a string literal passed to a
-known title-style prop leaves a word lowercase that title style capitalizes.
-The covered props are:
+`kerf-ui-doctor` reports `KUI-D040` (warning) when a string or template
+literal passed to a known title-style prop leaves a word lowercase that title
+style capitalizes. In a template literal it judges only the static words:
+`` `Edit ${name} shortcut` `` should be `` `Edit ${name} Shortcut` ``, and the
+interpolated value keeps its own spelling. The covered props are:
 
 - `ToolbarText` `text` when the text is a title: it has `headingLevel`, a
   large size, or sits in a toolbar or panel `title`, `header`, or (unless small) `leading` slot;
@@ -121,8 +123,8 @@ The covered props are:
 
 The check never judges sentence-style surfaces (including `wa-checkbox`,
 `wa-switch`, and `wa-radio` option text and the `LoadingSpinner` and
-`Skeleton` status labels), dynamic values, or text ending with `.`, `!`, or
-`?`. It skips tokens containing digits, code, or paths, and
+`Skeleton` status labels), interpolated or other dynamic values, or text
+ending with `.`, `!`, or `?`. It skips a word joined to an interpolation, tokens containing digits, code, or paths, and
 lowercase-led brands such as iOS. It does not report capitalized short words,
 because Apple capitalizes a phrasal verb's particle. Suppress `KUI-D040` for a
 lowercase brand or product name. See [the doctor](./ui-doctor.md).

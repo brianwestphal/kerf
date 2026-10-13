@@ -49,7 +49,7 @@ host.innerHTML = String(
     {TONES.map((tone) => (
       <StateBanner
         tone={semanticTone(tone)}
-        title={`${tone} banner`}
+        title={`${tone} Banner`}
         badge="3"
         detail="Supporting detail"
       />

@@ -97,7 +97,7 @@ const detailView = (project: Project): NavStackView => ({
         title={project.label}
         detail={project.summary}
         leading={<LucideIcon icon={FileText} name="file-text" />}
-        ariaLabel={`${project.label} details`}
+        ariaLabel={project.label}
         focusTarget
         rootAttributes={{ 'data-nav-focus': '', 'data-nav-detail-focus': '' }}
       />
@@ -169,7 +169,7 @@ const configuredDetailView = (project: Project): NavStackView => ({
         title={project.label}
         detail={project.summary}
         leading={<LucideIcon icon={FileText} name="file-text" />}
-        ariaLabel={`${project.label} details`}
+        ariaLabel={project.label}
         focusTarget
         rootAttributes={{ 'data-nav-focus': '' }}
       />
