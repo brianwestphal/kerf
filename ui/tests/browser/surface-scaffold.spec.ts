@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 test('registered dialog names survive slotted labels, header changes and repeated opens', async ({
   page,
@@ -259,6 +259,16 @@ test('preferred modal widths override presets without changing side-sheet or ful
     .toBeCloseTo(480, 0);
 });
 
+/** Whether a wa-dialog's panel has no running (show) animation. */
+function panelSettled(dialog: Locator) {
+  return dialog.evaluate((element) =>
+    element
+      .shadowRoot!.querySelector('[part~="dialog"]')!
+      .getAnimations()
+      .every((animation) => animation.playState === 'finished'),
+  );
+}
+
 test('applies typed dialog and popup surface geometry', async ({
   page,
 }, testInfo) => {
@@ -270,6 +280,9 @@ test('applies typed dialog and popup surface geometry', async ({
   await demo.getByRole('button', { name: 'Open Dialog' }).click();
   const dialog = page.locator('#catalog-wa-dialog');
   await expect(dialog).toHaveAttribute('open', '');
+  // The panel scales in; a panel measured mid-animation reads a pixel off
+  // (KF-46M124: panelLeft 21 instead of 20 under a loaded full run).
+  await expect.poll(() => panelSettled(dialog)).toBe(true);
   const dialogGeometry = await dialog.evaluate((element) => {
     const root = element.shadowRoot!;
     const panel = root.querySelector('[part~="dialog"]')!;
@@ -332,6 +345,19 @@ test('applies typed dialog and popup surface geometry', async ({
     clip: wideClip,
   });
   await page.setViewportSize({ width: 390, height: 844 });
+  // Let the resize lay out (and any panel animation finish) before measuring.
+  await expect.poll(() => panelSettled(dialog)).toBe(true);
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) =>
+        Math.round(
+          element
+            .shadowRoot!.querySelector('[part~="dialog"]')!
+            .getBoundingClientRect().left,
+        ),
+      ),
+    )
+    .toBe(20);
   const narrowGeometry = await dialog.evaluate((element) => {
     const panel = element.shadowRoot!.querySelector('[part~="dialog"]')!;
     const text = element.querySelector('[data-component="list-inset-text"]')!;
