@@ -24,6 +24,24 @@ import {
   reorderSelection,
 } from './state.js';
 
+const compactCommands = [
+  {
+    id: 'compact-open-folder',
+    label: 'Open Folder',
+    icon: <LucideIcon icon={Folder} name="folder" />,
+  },
+  {
+    id: 'compact-run-tests',
+    label: 'Run Tests',
+    icon: <LucideIcon icon={Terminal} name="terminal" />,
+  },
+  {
+    id: 'compact-read-docs',
+    label: 'Read Docs',
+    icon: <LucideIcon icon={BookOpen} name="book-open" />,
+  },
+] as const;
+
 const iconTileCommands = [
   {
     id: 'tile-run-tests',
@@ -225,6 +243,31 @@ export function ListActionRowDemo() {
               trailingAction="open-list-action-row-actions"
               trailingActionLabel={`Edit ${command.label}`}
               trailingActionIcon={<LucideIcon icon={Pencil} name="pencil" />}
+              trailingActionVisibility="interaction"
+            />
+          ))}
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Compact Rows"
+        note='density="compact" makes 36px rows for a dense command list, the same height as a compact ListItem.'
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <List rootAttributes={{ 'data-demo-compact-rows': 'list-action-row' }}>
+          {compactCommands.map((command) => (
+            <ListActionRow
+              label={command.label}
+              icon={command.icon}
+              density="compact"
+              action="select-list-action-row"
+              itemId={command.id}
+              selected={menuActionCurrent.value === command.id}
+              trailingAction="open-list-action-row-actions"
+              trailingActionLabel={`Actions for ${command.label}`}
+              trailingActionIcon={
+                <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+              }
               trailingActionVisibility="interaction"
             />
           ))}

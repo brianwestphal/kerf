@@ -883,6 +883,7 @@ interface ListActionRowCommonProps {
     description?: string | SafeHtml;
     status?: string | SafeHtml;
     busy?: boolean;
+    /** Row height: `standard` is 44px; `compact` is 36px (42px with `iconTile`), the height of a compact `ListItem`. */
     density?: 'standard' | 'compact';
     divider?: 'none' | 'before' | 'after' | 'both';
     /** Decorative dormant content for the primary button. Must not contain interactive descendants. */

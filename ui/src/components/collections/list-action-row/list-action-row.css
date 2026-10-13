@@ -23,9 +23,17 @@
      `--kui-list-row-icon-size` on the containing List, so a mixed list keeps
      its labels on one edge. It defaults to ListItem's 18px row icon. */
   --_kui-list-action-row-icon-size: var(--kui-list-row-icon-size, remify(18px));
+  /* The row's minimum height and the primary button's block padding follow
+     density together, so a single-line label never holds a compact row
+     taller than its minimum (the label's own minimum is the difference). */
+  --_kui-list-action-row-min-height: remify(44px);
+  --_kui-list-action-row-padding-block: var(
+    --kui-layout-item-padding,
+    remify(8px)
+  );
   display: flex;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
-  min-height: remify(44px);
+  min-height: var(--_kui-list-action-row-min-height);
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   color: var(--kui-list-action-row-color);
@@ -35,12 +43,8 @@
 }
 
 .kui-list-action-row[data-density="compact"] {
-  min-height: remify(36px);
-}
-
-.kui-list-action-row[data-density="compact"]
-  :is(.kui-list-action-row__primary, .kui-list-action-row__trailing-action) {
-  min-height: remify(36px);
+  --_kui-list-action-row-min-height: remify(36px);
+  --_kui-list-action-row-padding-block: remify(4px);
 }
 
 .kui-list-action-row[data-divider="before"],
@@ -135,7 +139,7 @@
 .kui-list-action-row__primary,
 .kui-list-action-row__trailing-action {
   height: auto !important;
-  min-height: remify(44px);
+  min-height: var(--_kui-list-action-row-min-height);
   padding: 0;
   border: 0;
   appearance: none;
@@ -150,7 +154,7 @@
   display: block;
   flex: 1 1 auto;
   min-width: remify(44px);
-  padding: var(--kui-layout-item-padding, remify(8px));
+  padding-block: var(--_kui-list-action-row-padding-block);
   padding-inline: calc(1px + var(--_kui-list-action-row-padding-inline))
     var(--_kui-list-action-row-padding-inline);
   text-align: start;
@@ -203,7 +207,8 @@
   display: grid;
   min-width: 0;
   min-height: calc(
-    remify(44px) - (2 * var(--kui-layout-item-padding, remify(8px)))
+    var(--_kui-list-action-row-min-height) -
+      (2 * var(--_kui-list-action-row-padding-block))
   );
   overflow: hidden;
   white-space: nowrap;
@@ -262,7 +267,7 @@
 
 .kui-list-action-row[data-multiline="true"] .kui-list-action-row__icon {
   inset-block-start: calc(
-    var(--kui-layout-item-padding, remify(8px)) + (1lh / 2)
+    var(--_kui-list-action-row-padding-block) + (1lh / 2)
   );
 }
 
@@ -317,10 +322,8 @@
   --_kui-list-action-row-icon-tile-size: remify(32px);
 }
 
-.kui-list-action-row[data-icon-tile][data-density="compact"],
-.kui-list-action-row[data-icon-tile][data-density="compact"]
-  :is(.kui-list-action-row__primary, .kui-list-action-row__trailing-action) {
-  min-height: remify(42px);
+.kui-list-action-row[data-icon-tile][data-density="compact"] {
+  --_kui-list-action-row-min-height: remify(42px);
 }
 
 .kui-list-action-row[data-icon-tile] .kui-list-action-row__icon {

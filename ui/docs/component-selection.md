@@ -743,6 +743,9 @@ remain siblings. `trailingActionVisibility="interaction"` keeps the action
 available on hover and keyboard focus and automatically leaves it visible on
 non-hover devices. These props own presentation only—the application still
 owns labels, status meaning, action policy, selection, and domain metadata.
+`density="compact"` makes a single-line row 36px tall (42px with `iconTile`),
+the same height as a compact `ListItem`, so the two row kinds stay level in a
+dense mixed list; a standard row is 44px.
 
 When the trailing control is an overflow menu ("…" with Edit, Delete, …),
 pass `trailingMenu: { label, icon, items, placement?, disabled? }` instead of

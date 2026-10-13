@@ -198,7 +198,7 @@ test.describe('filled leading icon tiles', () => {
     }
   });
 
-  test('compact tile rows hold at least 42px and keep the tile centered', async ({
+  test('compact tile rows are 42px and keep the tile centered', async ({
     page,
   }) => {
     for (const kind of ['list-action-row', 'list-item'] as const) {
@@ -210,15 +210,9 @@ test.describe('filled leading icon tiles', () => {
       );
       const geometry = await tileGeometry(row, kind);
       expectTileBox(geometry);
-      if (kind === 'list-item') {
-        expect(geometry.rowHeight).toBeCloseTo(42, 0);
-        expect(geometry.topClearance).toBeCloseTo(5, 0);
-      } else {
-        // A compact ListActionRow's label stack still holds the row at 44px
-        // (tracked separately); the tile rule guarantees at least 42px.
-        expect(geometry.rowHeight).toBeGreaterThanOrEqual(42);
-        expect(geometry.topClearance).toBeGreaterThanOrEqual(5);
-      }
+      expect(geometry.rowHeight).toBeCloseTo(42, 0);
+      expect(geometry.topClearance).toBeCloseTo(5, 0);
+      expect(geometry.bottomClearance).toBeCloseTo(5, 0);
     }
   });
 

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 364100,
-  "measuredLargestJavaScriptGzip": 146181,
-  "measuredTotalJavaScriptGzip": 364023,
+  "totalJavaScriptGzip": 364200,
+  "measuredLargestJavaScriptGzip": 146338,
+  "measuredTotalJavaScriptGzip": 364179,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4179,6 +4179,22 @@
         "measuredTotalJavaScriptGzip": 364023,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 364100
+      }
+    },
+    {
+      "at": "2026-10-13T12:09:45.595Z",
+      "reason": "compact ListActionRow density and Compact Rows example (KF-4Q5MJ5)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146181,
+        "measuredTotalJavaScriptGzip": 364023,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146338,
+        "measuredTotalJavaScriptGzip": 364179,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364200
       }
     }
   ]

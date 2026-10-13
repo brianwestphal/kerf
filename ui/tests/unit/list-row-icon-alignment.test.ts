@@ -92,7 +92,48 @@ describe('menu row icon alignment contract', () => {
       ),
     ).resolves.toEqual({
       'inset-block-start':
-        'calc( var(--kui-layout-item-padding, remify(8px)) + (1lh / 2) )',
+        'calc( var(--_kui-list-action-row-padding-block) + (1lh / 2) )',
+    });
+  });
+
+  it('derives the ListActionRow label minimum from the density height and padding', async () => {
+    await expect(
+      declarationsFor('list-action-row.css', '.kui-list-action-row'),
+    ).resolves.toMatchObject({
+      '--_kui-list-action-row-min-height': 'remify(44px)',
+      '--_kui-list-action-row-padding-block':
+        'var( --kui-layout-item-padding, remify(8px) )',
+      'min-height': 'var(--_kui-list-action-row-min-height)',
+    });
+    // Compact matches a compact ListItem: a 36px row with 4px block padding,
+    // so a single-line label (one 1.45 line box) never holds it taller.
+    await expect(
+      declarationsFor(
+        'list-action-row.css',
+        '.kui-list-action-row[data-density="compact"]',
+      ),
+    ).resolves.toEqual({
+      '--_kui-list-action-row-min-height': 'remify(36px)',
+      '--_kui-list-action-row-padding-block': 'remify(4px)',
+    });
+    await expect(
+      declarationsFor(
+        'list-action-row.css',
+        '.kui-list-action-row[data-icon-tile][data-density="compact"]',
+      ),
+    ).resolves.toEqual({
+      '--_kui-list-action-row-min-height': 'remify(42px)',
+    });
+    await expect(
+      declarationsFor('list-action-row.css', '.kui-list-action-row__label'),
+    ).resolves.toMatchObject({
+      'min-height':
+        'calc( var(--_kui-list-action-row-min-height) - (2 * var(--_kui-list-action-row-padding-block)) )',
+    });
+    await expect(
+      declarationsFor('list-action-row.css', '.kui-list-action-row__primary'),
+    ).resolves.toMatchObject({
+      'padding-block': 'var(--_kui-list-action-row-padding-block)',
     });
   });
 });
