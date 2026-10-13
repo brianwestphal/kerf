@@ -142,10 +142,13 @@ describe('scroll clearance context', () => {
     });
     expect(found).toEqual([
       ':root --kui-chrome-material:color-mix( in srgb, var(--kui-color-surface) 80%, transparent )',
+      ':root --kui-chrome-material-raised:color-mix( in srgb, var(--kui-color-surface-raised) 80%, transparent )',
       ':root --kui-chrome-material-filter:blur(20px) saturate(180%)',
       '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root --kui-chrome-material:var(--kui-color-surface)',
+      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root --kui-chrome-material-raised:var(--kui-color-surface-raised)',
       '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root --kui-chrome-material-filter:none',
       '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material:var(--kui-color-surface)',
+      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material-raised:var(--kui-color-surface-raised)',
       '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material-filter:none',
     ]);
   });
@@ -162,13 +165,73 @@ describe('scroll clearance context', () => {
       '--kui-scroll-clearance-block-start:0px',
       '--kui-scroll-clearance-block-end:0px',
     ]);
-    const published = all.filter((decl) => decl.selector.includes(':has('));
+    const published = all.filter(
+      (decl) =>
+        decl.selector.includes(':has(') &&
+        decl.selector.includes('[data-footer-presentation="floating"]'),
+    );
     expect(published.map(({ prop, value }) => `${prop}:${value}`)).toEqual([
       '--kui-scroll-clearance-block-end:var(--_kui-dialog-surface-footer-clearance)',
       'padding-block-end:0',
     ]);
+  });
+
+  it('DialogSurface floats a measured header over the body, which reserves it unless an only filling child opts in', () => {
+    const file = 'surfaces/surface-scaffold/surface-scaffold.css';
+    const all = declarations(file);
+    const floating = '.kui-dialog-surface[data-header-presentation="floating"]';
+    const rule = (selector: string) =>
+      all
+        .filter((decl) => decl.selector === selector)
+        .map(({ prop, value }) => `${prop}:${value}`);
+    expect(rule(`${floating} > wa-dialog::part(header)`)).toEqual([
+      'position:relative',
+      'z-index:1',
+      // The measured height, given back so the body starts beneath it; an
+      // unmeasured header resolves to 0px and stays docked.
+      'margin-block-end:calc( -1 * var(--_kui-dialog-surface-header-block-size, 0px) )',
+      '-webkit-backdrop-filter:var(--kui-chrome-material-filter)',
+      'backdrop-filter:var(--kui-chrome-material-filter)',
+      'background:var(--kui-chrome-material-raised)',
+      // Forced colors: an opaque system surface and a visible edge.
+      '-webkit-backdrop-filter:none',
+      'backdrop-filter:none',
+      'background:Canvas',
+      'border-block-end:1px solid CanvasText',
+    ]);
+    expect(rule(`${floating} > wa-dialog::part(body)`)).toEqual([
+      '--_kui-dialog-surface-header-clearance:var( --_kui-dialog-surface-header-block-size, 0px )',
+      'scroll-padding-block-start:var(--_kui-dialog-surface-header-clearance)',
+    ]);
+    expect(
+      rule(`${floating}[data-body-inset="none"] > wa-dialog::part(body)`),
+    ).toEqual([
+      'padding-block-start:var(--_kui-dialog-surface-header-clearance)',
+    ]);
+    expect(
+      rule(`${floating}[data-body-inset="compact"] > wa-dialog::part(body)`),
+    ).toEqual([
+      'padding-block-start:calc( var(--kui-wa-surface-inset, remify(8px)) + var(--_kui-dialog-surface-header-clearance) )',
+    ]);
+    expect(
+      rule(
+        `${floating}[data-body-inset="comfortable"] > wa-dialog::part(body)`,
+      ),
+    ).toEqual([
+      'padding-block-start:calc( var(--kui-wa-container-inset, remify(16px)) + var(--_kui-dialog-surface-header-clearance) )',
+    ]);
+    const published = all.filter(
+      (decl) =>
+        decl.selector.includes(':has(') && decl.selector.startsWith(floating),
+    );
+    expect(published.map(({ prop, value }) => `${prop}:${value}`)).toEqual([
+      '--kui-scroll-clearance-block-start:var( --_kui-dialog-surface-header-clearance )',
+      'padding-block-start:0',
+    ]);
+    // Only the body's sole unslotted child reaches beneath the header: a
+    // leading fill-last child would otherwise sit under it.
     expect(published[0]!.selector).toContain(
-      '[data-footer-presentation="floating"]',
+      ':nth-child(1 of :not([slot])):nth-last-child(1 of :not([slot]))',
     );
   });
 });

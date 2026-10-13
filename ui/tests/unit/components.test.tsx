@@ -273,6 +273,33 @@ describe('production UI primitives', () => {
     expect(fixed).toContain('--_kui-dialog-surface-height:640px');
   });
 
+  it('serializes a floating header and keeps its attribute protected', () => {
+    const plain = asHtml(
+      DialogSurface({ children: <wa-dialog label="Chat">Body</wa-dialog> }),
+    );
+    expect(plain).not.toContain('data-header-presentation');
+    const docked = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Chat">Body</wa-dialog>,
+        headerPresentation: 'docked',
+      }),
+    );
+    expect(docked).not.toContain('data-header-presentation');
+    const floating = asHtml(
+      DialogSurface({
+        children: <wa-dialog label="Chat">Body</wa-dialog>,
+        headerPresentation: 'floating',
+        footerPresentation: 'floating',
+        rootAttributes: {
+          'data-header-presentation': 'docked',
+        } as Record<`data-${string}`, string>,
+      }),
+    );
+    expect(floating).toContain('data-header-presentation="floating"');
+    expect(floating).not.toContain('data-header-presentation="docked"');
+    expect(floating).toContain('data-footer-presentation="floating"');
+  });
+
   it('serializes a floating footer, its offset and a fill-last body layout', () => {
     const plain = asHtml(
       DialogSurface({ children: <wa-dialog label="Chat">Body</wa-dialog> }),

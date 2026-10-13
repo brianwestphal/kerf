@@ -410,6 +410,7 @@
         "--kui-sunken-texture",
         "--kui-sunken-surface",
         "--kui-chrome-material",
+        "--kui-chrome-material-raised",
         "--kui-chrome-material-filter",
         "--kui-color-text",
         "--kui-color-text-quiet",
@@ -1984,11 +1985,13 @@
         "A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText.",
         "A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.",
         "A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout=\"fill\".",
-        "A chat-style dialog floats its composer over the transcript with footerPresentation=\"floating\" and keeps a heading or notice above one scrolling transcript with bodyLayout=\"fill-last\"."
+        "A chat-style dialog floats its composer over the transcript with footerPresentation=\"floating\" and keeps a heading or notice above one scrolling transcript with bodyLayout=\"fill-last\".",
+        "A dialog's title bar should float over the body on the translucent chrome material so a transcript scrolls visibly beneath both the title bar and a floating composer (headerPresentation=\"floating\" with bodyLayout=\"fill\" and a List or Pane that opts into scrollClearance=\"both\")."
       ],
       "avoidWhen": [
         "Do not use it as a generic layout wrapper or to replace application-owned modal state and focus lifecycle.",
-        "Do not stack a dialog body inset around children that already own List or content-item geometry; use bodyInset none."
+        "Do not stack a dialog body inset around children that already own List or content-item geometry; use bodyInset none.",
+        "Do not put quiet secondary text of your own in a floating dialog header; it can fall below AA over the content passing beneath. A ToolbarText slotted as the dialog's label (or into header-actions) is fine: its title takes the normal text color and its description lifts halfway toward it, keeping AA."
       ],
       "alternatives": [],
       "appOwns": [
@@ -2007,6 +2010,8 @@
         "fill-last body layout: fixed rows above one filling, scrolling last child",
         "docked or floating footer with a typed footerOffset; the body reserves the measured footer height",
         "floating footer over a filling child that opts into block-end scrollClearance: content scrolls beneath the footer through the published --kui-scroll-clearance-block-end",
+        "docked or floating header (headerPresentation) on the translucent chrome material; the body reserves the measured header height",
+        "floating header over a filling only child that opts into block-start scrollClearance: content scrolls beneath the title bar through the published --kui-scroll-clearance-block-start",
         "non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow, named by label or labelledBy and described by describedBy",
         "none, compact, or comfortable body and footer inset",
         "standard, compact, or zero-inset popup menu"
@@ -2014,6 +2019,7 @@
       "accessibility": [
         "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",
         "Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.",
+        "A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
         "Use popup surfaces only for real dropdown menus with named triggers."
       ],
       "geometry": {
@@ -2039,7 +2045,11 @@
       "publicTokens": [
         "--kui-radius-l",
         "--kui-wa-container-inset",
-        "--kui-wa-surface-inset"
+        "--kui-wa-surface-inset",
+        "--kui-chrome-material-raised",
+        "--kui-chrome-material-filter",
+        "--kui-scroll-clearance-block-start",
+        "--kui-scroll-clearance-block-end"
       ],
       "links": {
         "catalogRoute": "?component=surface-scaffold",
@@ -2302,7 +2312,7 @@
       "accessibility": [
         "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
         "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.",
-        "In a Pane header with headerPresentation=\"overlay\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
+        "In a Pane header with headerPresentation=\"overlay\", or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation=\"floating\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
       ],
       "geometry": {
         "margin": "none",

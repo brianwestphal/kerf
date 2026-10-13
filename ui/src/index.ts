@@ -362,6 +362,7 @@ export {
   DialogSurface,
   type DialogSurfaceBodyLayout,
   type DialogSurfaceFooterPresentation,
+  type DialogSurfaceHeaderPresentation,
   type DialogSurfaceHeight,
   type DialogSurfaceMaxHeight,
   type DialogSurfacePresentation,

@@ -338,6 +338,7 @@
           "--kui-sunken-texture",
           "--kui-sunken-surface",
           "--kui-chrome-material",
+          "--kui-chrome-material-raised",
           "--kui-chrome-material-filter",
           "--kui-color-text",
           "--kui-color-text-quiet",
@@ -1865,6 +1866,7 @@
         "obligations": [
           "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",
           "Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.",
+          "A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
           "Use popup surfaces only for real dropdown menus with named triggers."
         ]
       },
@@ -1960,7 +1962,11 @@
         "publicTokens": [
           "--kui-radius-l",
           "--kui-wa-container-inset",
-          "--kui-wa-surface-inset"
+          "--kui-wa-surface-inset",
+          "--kui-chrome-material-raised",
+          "--kui-chrome-material-filter",
+          "--kui-scroll-clearance-block-start",
+          "--kui-scroll-clearance-block-end"
         ]
       },
       "diagnostics": [],
@@ -2097,7 +2103,7 @@
         "obligations": [
           "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
           "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.",
-          "In a Pane header with headerPresentation=\"overlay\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
+          "In a Pane header with headerPresentation=\"overlay\", or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation=\"floating\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
         ]
       },
       "cssValueProps": [

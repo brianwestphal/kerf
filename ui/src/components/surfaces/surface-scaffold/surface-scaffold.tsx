@@ -23,6 +23,12 @@ export type DialogSurfaceBodyLayout = 'flow' | 'fill' | 'fill-last';
  * block-end edges on a transparent background (a chat composer).
  */
 export type DialogSurfaceFooterPresentation = 'docked' | 'floating';
+/**
+ * Where the dialog header sits: `docked` (default) above the body, or
+ * `floating` over the body's block-start edge on the translucent chrome
+ * material, so content scrolls visibly beneath the title bar.
+ */
+export type DialogSurfaceHeaderPresentation = 'docked' | 'floating';
 
 /**
  * Application `data-*` identity on the DialogSurface root, such as
@@ -44,6 +50,7 @@ const DIALOG_SURFACE_PROTECTED = new Set([
   'data-height',
   'data-body-layout',
   'data-footer-presentation',
+  'data-header-presentation',
 ]);
 
 export interface DialogSurfaceProps {
@@ -68,6 +75,22 @@ export interface DialogSurfaceProps {
    * `fill-last` stacks fixed rows above one filling last child.
    */
   bodyLayout?: DialogSurfaceBodyLayout;
+  /**
+   * Header placement (default `docked`); `floating` lays the dialog's header
+   * (its title and close control) over the body's block-start edge on the
+   * translucent chrome material (`--kui-chrome-material-raised`, opaque under
+   * `prefers-reduced-transparency`, increased contrast, forced colors, or
+   * without `backdrop-filter`). The `/register` entry measures the header;
+   * the body reserves that height before its own inset, so its first content
+   * rests below the title bar. A `fill`/`fill-last` child that is the body's
+   * only child and opts into block-start `scrollClearance` (a `List` or
+   * `Pane`) takes the clearance inside its own scroll area instead, published
+   * as `--kui-scroll-clearance-block-start`, so its content scrolls visibly
+   * beneath the header. Unmeasured (without the register), the header stays
+   * docked. Keep header text in the normal text color: quiet text can fall
+   * below AA over the content passing beneath it.
+   */
+  headerPresentation?: DialogSurfaceHeaderPresentation;
   /**
    * Footer placement (default `docked`); `floating` lays the footer over the
    * body's block end. The body reserves the footer's measured height so its
@@ -108,6 +131,7 @@ export function DialogSurface({
   maxHeight,
   height,
   bodyLayout = 'flow',
+  headerPresentation = 'docked',
   footerPresentation = 'docked',
   footerOffset,
   rootAttributes = {},
@@ -147,6 +171,9 @@ export function DialogSurface({
       data-max-height={maxHeight === undefined ? undefined : ''}
       data-height={height === undefined ? undefined : ''}
       data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}
+      data-header-presentation={
+        headerPresentation === 'floating' ? 'floating' : undefined
+      }
       data-footer-presentation={
         footerPresentation === 'floating' ? 'floating' : undefined
       }

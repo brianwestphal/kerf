@@ -153,6 +153,55 @@ transcript, and its field grows the measured footer. With `submitOnEnter` and
 </DialogSurface>;
 ```
 
+### A floating title bar
+
+`headerPresentation="floating"` lays the dialog's header (its title and close
+control) over the body's block-start edge on the translucent chrome material,
+`--kui-chrome-material-raised` (the raised panel surface at 80% opacity)
+behind `--kui-chrome-material-filter` (a blur and saturation backdrop filter).
+Content passing beneath the title bar reads as softened color, not as
+competing text. The default `docked` header sits above the body as before.
+
+The register measures the header the same way it measures the footer (it
+follows a title that wraps, text that grows, or a `without-header` toggle).
+The body reserves the measured height before its own inset, with a matching
+`scroll-padding`, so flowing content starts below the title bar and scrolls
+beneath it. A dialog without the register has no measurement, so its header
+stays docked rather than covering content.
+
+To let a filling transcript scroll visibly beneath the title bar, make it the
+body's only child (`bodyLayout="fill"`, or `fill-last` with no leading rows)
+and opt its scroller in with block-start `scrollClearance`. The body then
+stops reserving the header, so the child reaches the panel's block-start
+edge, and publishes the header's height as `--kui-scroll-clearance-block-start`.
+Leading `fill-last` rows (a notice above the transcript) keep the body's
+reservation: they never sit beneath the title bar. Combined with a floating
+composer and `scrollClearance="both"`, the transcript scrolls beneath both:
+
+```tsx
+<DialogSurface height={remify(560)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill" headerPresentation="floating" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
+  <wa-dialog label="Release Thread">
+    <ToolbarText slot="label" text="Release Thread" size="xlarge" description="Engineering · 5.2 candidate" />
+    <List gap="xs" controlInsets="tb" scrollable scrollClearance="both">
+      {bubbles}
+    </List>
+    <Composer submitOnEnter slot="footer" id="thread-message" name="message" label="Message" placeholder="Reply to the thread" actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>} />
+  </wa-dialog>
+</DialogSurface>;
+```
+
+The material turns opaque under `prefers-reduced-transparency: reduce` or
+`prefers-contrast: more`, and where the browser lacks `backdrop-filter`; in
+forced colors the header paints `Canvas` with a `CanvasText` bottom edge.
+
+For a title with a short supporting line, slot a `ToolbarText` as the label
+(`<ToolbarText slot="label" text="Release Thread" size="xlarge" description="Engineering · 5.2 candidate" />`).
+On the floating title bar an untoned `ToolbarText` keeps AA by itself: its
+title takes the normal text color and its description lifts halfway toward
+it. Any other quiet copy you place there can fall below AA over the content
+passing beneath it, so keep it in the body (see
+[Accessibility › Chrome material](accessibility.md#chrome-material)).
+
 Treat a dialog body as a `List` by default. When its rows or sections own their
 standard list geometry, set `bodyInset="none"` so the dialog does not add a
 second inset. Bare prose is still a list child: wrap it in `ListInsetText` so its

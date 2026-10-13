@@ -760,6 +760,9 @@ or an empty message never sends. Put it in a `DialogSurface` with
 `footerPresentation="floating"` (`slot="footer"`) to float it over a
 transcript, and give the transcript `scrollClearance="block-end"` so it
 scrolls beneath the composer while its last message still rests above it.
+Add `headerPresentation="floating"` with a `fill` body and
+`scrollClearance="both"` to let the transcript scroll beneath a translucent
+title bar as well.
 
 `TokenSearchField` is a token-controlled contenteditable searchbox that keeps
 free text and ordered filter chips in one field. Its editable text stays

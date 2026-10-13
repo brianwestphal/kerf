@@ -651,12 +651,15 @@ const stopActions = delegateActions(app, 'click', {
     );
     if (dialog) dialog.open = false;
   },
-  [SEND_CHAT_DIALOG_MESSAGE_ACTION]: () => {
-    const dialog = document.getElementById(CHAT_DIALOG_ID);
+  [SEND_CHAT_DIALOG_MESSAGE_ACTION]: (_event, target) => {
+    // The chat and floating title bar examples share this action.
+    const dialog =
+      target.closest('wa-dialog') ?? document.getElementById(CHAT_DIALOG_ID);
     const field = dialog?.querySelector<HTMLTextAreaElement>(
-      'textarea[name="catalog-chat-message"]',
+      '[slot="footer"] textarea',
     );
-    if (!field || !sendSurfaceScaffoldChatMessage(field.value)) return;
+    if (!field || !sendSurfaceScaffoldChatMessage(field.value, dialog?.id))
+      return;
     field.value = '';
     actionLog.value = 'Message sent';
     // The transcript owns its scrolling; show the newest message.

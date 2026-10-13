@@ -86,23 +86,78 @@ const INITIAL_CHAT: readonly ChatMessage[] = [
   },
 ];
 
-const chatMessages = signal<readonly ChatMessage[]>(INITIAL_CHAT);
+/** The floating title bar example's id; it shares the send action. */
+export const THREAD_DIALOG_ID = 'catalog-thread-dialog';
 
-/** Append the person's message and a short reply to the chat example. */
-export function sendSurfaceScaffoldChatMessage(text: string): boolean {
+const INITIAL_THREAD: readonly ChatMessage[] = [
+  { from: 'user', text: 'Is the 5.2 release candidate ready to tag?' },
+  {
+    from: 'assistant',
+    text: 'Almost. The changelog still lists the floating dialog header under Unreleased.',
+  },
+  { from: 'user', text: 'Move it under 5.2, then. What about the docs?' },
+  {
+    from: 'assistant',
+    text: 'The accessibility guide gained the chrome-material contrast rule, and the catalog shows the new title bar.',
+  },
+  { from: 'user', text: 'Did the browser suite pass in every engine?' },
+  {
+    from: 'assistant',
+    text: 'Chromium, Firefox, and WebKit all passed. Forced colors paints the title bar opaque with a visible edge.',
+  },
+  { from: 'user', text: 'And reduced transparency?' },
+  {
+    from: 'assistant',
+    text: 'The title bar turns opaque, and the transcript still starts below it.',
+  },
+  { from: 'user', text: 'Great. Tag it after lunch.' },
+  {
+    from: 'assistant',
+    text: 'Scheduled. I will post the release notes here once the tag is pushed.',
+  },
+];
+
+/** Each chat-style example's transcript, by its dialog id. */
+const transcripts = {
+  [CHAT_DIALOG_ID]: signal<readonly ChatMessage[]>(INITIAL_CHAT),
+  [THREAD_DIALOG_ID]: signal<readonly ChatMessage[]>(INITIAL_THREAD),
+} as const;
+
+/** Append the person's message and a short reply to a chat-style example. */
+export function sendSurfaceScaffoldChatMessage(
+  text: string,
+  dialogId: string = CHAT_DIALOG_ID,
+): boolean {
+  const transcript =
+    dialogId === THREAD_DIALOG_ID
+      ? transcripts[THREAD_DIALOG_ID]
+      : transcripts[CHAT_DIALOG_ID];
   const trimmed = text.trim();
   if (!trimmed) return false;
-  chatMessages.value = [
-    ...chatMessages.value,
+  transcript.value = [
+    ...transcript.value,
     { from: 'user', text: trimmed },
     { from: 'assistant', text: 'Noted. I will keep that in mind.' },
   ];
   return true;
 }
 
-/** Restore the chat example's opening transcript. */
+/** Restore the chat-style examples' opening transcripts. */
 export function resetSurfaceScaffoldDemo(): void {
-  chatMessages.value = INITIAL_CHAT;
+  transcripts[CHAT_DIALOG_ID].value = INITIAL_CHAT;
+  transcripts[THREAD_DIALOG_ID].value = INITIAL_THREAD;
+}
+
+/** A transcript's message bubbles. */
+function chatBubbles(messages: readonly ChatMessage[]) {
+  return messages.map((message) => (
+    <ContentItem
+      bubble={message.from === 'user' ? 'end' : 'start'}
+      appearance={message.from === 'user' ? 'brand-loud' : 'neutral'}
+    >
+      <Text variant="span">{message.text}</Text>
+    </ContentItem>
+  ));
 }
 
 export function SurfaceScaffoldDemo() {
@@ -283,16 +338,7 @@ export function SurfaceScaffoldDemo() {
               scrollClearance="block-end"
               rootAttributes={{ 'data-demo-chat-transcript': '' }}
             >
-              {chatMessages.value.map((message) => (
-                <ContentItem
-                  bubble={message.from === 'user' ? 'end' : 'start'}
-                  appearance={
-                    message.from === 'user' ? 'brand-loud' : 'neutral'
-                  }
-                >
-                  <Text variant="span">{message.text}</Text>
-                </ContentItem>
-              ))}
+              {chatBubbles(transcripts[CHAT_DIALOG_ID].value)}
             </List>
             <Composer
               submitOnEnter
@@ -301,6 +347,62 @@ export function SurfaceScaffoldDemo() {
               name="catalog-chat-message"
               label="Message"
               placeholder="Ask about this build"
+              actions={
+                <wa-button
+                  variant="brand"
+                  data-action={SEND_CHAT_DIALOG_MESSAGE_ACTION}
+                >
+                  Send
+                </wa-button>
+              }
+            />
+          </wa-dialog>
+        </DialogSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Floating Title Bar"
+        note='headerPresentation="floating" lays the title bar over the body on the translucent chrome material. With bodyLayout="fill" and scrollClearance="both", the transcript scrolls visibly beneath both the title bar and the floating composer, while its first and last messages rest clear of them.'
+        align="inline-control"
+      >
+        <DialogSurface
+          viewportGutter={remify(8)}
+          height={remify(560)}
+          bodyInset="none"
+          bodyLayout="fill"
+          headerPresentation="floating"
+          footerPresentation="floating"
+          footerOffset={remify(8)}
+          footerInset="none"
+        >
+          <wa-button
+            data-action="show-wa-dialog"
+            data-dialog-id={THREAD_DIALOG_ID}
+          >
+            Open Release Thread
+          </wa-button>
+          <wa-dialog id={THREAD_DIALOG_ID} label="Release Thread">
+            <ToolbarText
+              slot="label"
+              text="Release Thread"
+              size="xlarge"
+              description="Engineering · 5.2 candidate"
+            />
+            <List
+              gap="xs"
+              controlInsets="tb"
+              scrollable
+              scrollClearance="both"
+              rootAttributes={{ 'data-demo-chat-transcript': '' }}
+            >
+              {chatBubbles(transcripts[THREAD_DIALOG_ID].value)}
+            </List>
+            <Composer
+              submitOnEnter
+              slot="footer"
+              id="catalog-thread-message"
+              name="catalog-thread-message"
+              label="Message"
+              placeholder="Reply to the thread"
               actions={
                 <wa-button
                   variant="brand"

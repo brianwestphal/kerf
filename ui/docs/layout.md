@@ -369,20 +369,21 @@ component's context stays allowed (see `KUI-L019`).
 
 ## Public roles and tokens
 
-| Need                                     | Class                        | Token / default                                                    |
-| ---------------------------------------- | ---------------------------- | ------------------------------------------------------------------ |
-| Unpadded header/content/footer structure | `Pane`, `.kui-pane`          | —                                                                  |
-| Scrolling pane content                   | `.kui-pane__content`         | —                                                                  |
-| Optional logical-edge separators         | `Pane.separators`            | `--kui-pane-separator-width: 1px`                                  |
-| Safe-area sides a pane may pad           | `Pane.safeAreaEdges`         | `--kui-safe-area-*: env(safe-area-inset-*)`, routed by each layout |
-| Header laid over scrolling content       | `Pane.headerPresentation`    | `--kui-chrome-material`, `--kui-chrome-material-filter`            |
-| Major vertical rhythm                    | `.kui-content`               | `--kui-layout-content-gap: 24px`                                   |
-| Self-contained child geometry            | `ContentItem`                | 8px margin + 1px border + 8px padding                              |
-| Pill child                               | `ContentItem shape="pill"`   | `--kui-layout-pill-radius: 22px`                                   |
-| Visibly framed child                     | `ContentItem frame="framed"` | neutral 1px border, same geometry                                  |
-| Related controls                         | `.kui-control-cluster`       | `--kui-layout-control-gap: 8px`                                    |
-| Inline metadata                          | `.kui-inline-metadata`       | `--kui-layout-metadata-gap: 4px`                                   |
-| Explicit scroll owner outside a pane     | `.kui-scroll-owner`          | `overflow: auto`                                                   |
+| Need                                     | Class                              | Token / default                                                    |
+| ---------------------------------------- | ---------------------------------- | ------------------------------------------------------------------ |
+| Unpadded header/content/footer structure | `Pane`, `.kui-pane`                | —                                                                  |
+| Scrolling pane content                   | `.kui-pane__content`               | —                                                                  |
+| Optional logical-edge separators         | `Pane.separators`                  | `--kui-pane-separator-width: 1px`                                  |
+| Safe-area sides a pane may pad           | `Pane.safeAreaEdges`               | `--kui-safe-area-*: env(safe-area-inset-*)`, routed by each layout |
+| Header laid over scrolling content       | `Pane.headerPresentation`          | `--kui-chrome-material`, `--kui-chrome-material-filter`            |
+| Dialog title bar laid over its body      | `DialogSurface.headerPresentation` | `--kui-chrome-material-raised`, `--kui-chrome-material-filter`     |
+| Major vertical rhythm                    | `.kui-content`                     | `--kui-layout-content-gap: 24px`                                   |
+| Self-contained child geometry            | `ContentItem`                      | 8px margin + 1px border + 8px padding                              |
+| Pill child                               | `ContentItem shape="pill"`         | `--kui-layout-pill-radius: 22px`                                   |
+| Visibly framed child                     | `ContentItem frame="framed"`       | neutral 1px border, same geometry                                  |
+| Related controls                         | `.kui-control-cluster`             | `--kui-layout-control-gap: 8px`                                    |
+| Inline metadata                          | `.kui-inline-metadata`             | `--kui-layout-metadata-gap: 4px`                                   |
+| Explicit scroll owner outside a pane     | `.kui-scroll-owner`                | `overflow: auto`                                                   |
 
 The component layer applies the same contract to `Toolbar`, `ListHeader`,
 `ListItem`, `Toolbar`, `StateBanner`, `ValueTable`,
@@ -721,8 +722,8 @@ example a NavStack view inside a dialog with a floating composer).
 
 Opt in only the one scroller that reaches the covered edge; a nested scroller
 must not opt in again. `DialogSurface` publishes block-end for its floating
-footer (see `docs/surface-scaffold.md`) and clears the context in every dialog
-body. A `Pane` with `headerPresentation="overlay"` publishes block-start for
+footer and block-start for its floating header (see
+`docs/surface-scaffold.md`), and clears the context in every dialog body. A `Pane` with `headerPresentation="overlay"` publishes block-start for
 its own header, once `wireScrollDividers` has measured it, and its content
 clears it without the prop (see [Overlay header](#overlay-header)). When an application overlays its own chrome on a region (for example a
 translucent toolbar laid over the top of a scrolling list), it publishes the

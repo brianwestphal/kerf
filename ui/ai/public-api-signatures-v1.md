@@ -4080,6 +4080,12 @@ type DialogSurfaceBodyLayout = 'flow' | 'fill' | 'fill-last';
  */
 type DialogSurfaceFooterPresentation = 'docked' | 'floating';
 /**
+ * Where the dialog header sits: `docked` (default) above the body, or
+ * `floating` over the body's block-start edge on the translucent chrome
+ * material, so content scrolls visibly beneath the title bar.
+ */
+type DialogSurfaceHeaderPresentation = 'docked' | 'floating';
+/**
  * Application `data-*` identity on the DialogSurface root, such as
  * `data-key`; the surface's own configuration attributes stay protected.
  */
@@ -4106,6 +4112,22 @@ interface DialogSurfaceProps {
      * `fill-last` stacks fixed rows above one filling last child.
      */
     bodyLayout?: DialogSurfaceBodyLayout;
+    /**
+     * Header placement (default `docked`); `floating` lays the dialog's header
+     * (its title and close control) over the body's block-start edge on the
+     * translucent chrome material (`--kui-chrome-material-raised`, opaque under
+     * `prefers-reduced-transparency`, increased contrast, forced colors, or
+     * without `backdrop-filter`). The `/register` entry measures the header;
+     * the body reserves that height before its own inset, so its first content
+     * rests below the title bar. A `fill`/`fill-last` child that is the body's
+     * only child and opts into block-start `scrollClearance` (a `List` or
+     * `Pane`) takes the clearance inside its own scroll area instead, published
+     * as `--kui-scroll-clearance-block-start`, so its content scrolls visibly
+     * beneath the header. Unmeasured (without the register), the header stays
+     * docked. Keep header text in the normal text color: quiet text can fall
+     * below AA over the content passing beneath it.
+     */
+    headerPresentation?: DialogSurfaceHeaderPresentation;
     /**
      * Footer placement (default `docked`); `floating` lays the footer over the
      * body's block end. The body reserves the footer's measured height so its
@@ -4134,7 +4156,7 @@ interface DialogSurfaceProps {
     slot?: string;
 }
 /** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
-declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, bodyLayout, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */
@@ -4201,7 +4223,7 @@ interface PopupSurfaceProps {
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
-export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
+export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
 ```
 
 ## `@kerfjs/ui/text`

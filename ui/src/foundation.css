@@ -177,6 +177,15 @@
     var(--kui-color-surface) 80%,
     transparent
   );
+  /* The same material over a raised surface (a dialog panel's floating
+     header): 80% of surface-raised keeps --kui-color-text at AA over any
+     content (about 10:1 light and 6.7:1 dark against a black or white
+     backdrop), with the same opaque fallbacks. */
+  --kui-chrome-material-raised: color-mix(
+    in srgb,
+    var(--kui-color-surface-raised) 80%,
+    transparent
+  );
   --kui-chrome-material-filter: blur(20px) saturate(180%);
   --kui-color-text: var(--wa-color-text-normal, light-dark(#1d1d1f, #f5f5f7));
   --kui-color-text-quiet: var(
@@ -523,6 +532,7 @@
 ) {
   :root {
     --kui-chrome-material: var(--kui-color-surface);
+    --kui-chrome-material-raised: var(--kui-color-surface-raised);
     --kui-chrome-material-filter: none;
   }
 }
@@ -530,6 +540,7 @@
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root {
     --kui-chrome-material: var(--kui-color-surface);
+    --kui-chrome-material-raised: var(--kui-color-surface-raised);
     --kui-chrome-material-filter: none;
   }
 }

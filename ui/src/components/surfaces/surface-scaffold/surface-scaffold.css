@@ -187,6 +187,82 @@
   --kui-scroll-clearance-block-end: var(--_kui-dialog-surface-footer-clearance);
   padding-block-end: 0;
 }
+/* A floating header lies over the body's block-start edge on the
+   translucent chrome material (opaque under reduced transparency, increased
+   contrast, or without backdrop-filter; a system surface in forced colors).
+   The register publishes the header's measured block size on the panel; the
+   header gives that height back as a negative block-end margin, so the body
+   starts at the panel's block-start edge beneath it, and the body reserves it
+   again before its own inset (with a matching scroll-padding): flowing
+   content rests below the title bar and scrolls beneath it. Unmeasured, the
+   size resolves to 0px and the header stays docked. */
+.kui-dialog-surface[data-header-presentation="floating"]
+  > wa-dialog::part(header) {
+  position: relative;
+  z-index: 1;
+  margin-block-end: calc(
+    -1 * var(--_kui-dialog-surface-header-block-size, 0px)
+  );
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material-raised);
+}
+.kui-dialog-surface[data-header-presentation="floating"]
+  > wa-dialog::part(body) {
+  --_kui-dialog-surface-header-clearance: var(
+    --_kui-dialog-surface-header-block-size,
+    0px
+  );
+  scroll-padding-block-start: var(--_kui-dialog-surface-header-clearance);
+}
+.kui-dialog-surface[data-header-presentation="floating"][data-body-inset="none"]
+  > wa-dialog::part(body) {
+  padding-block-start: var(--_kui-dialog-surface-header-clearance);
+}
+.kui-dialog-surface[data-header-presentation="floating"][data-body-inset="compact"]
+  > wa-dialog::part(body) {
+  padding-block-start: calc(
+    var(--kui-wa-surface-inset, remify(8px)) +
+      var(--_kui-dialog-surface-header-clearance)
+  );
+}
+.kui-dialog-surface[data-header-presentation="floating"][data-body-inset="comfortable"]
+  > wa-dialog::part(body) {
+  padding-block-start: calc(
+    var(--kui-wa-container-inset, remify(16px)) +
+      var(--_kui-dialog-surface-header-clearance)
+  );
+}
+/* A filling child that is the body's only child and opts into block-start
+   `scrollClearance` reaches the panel's block-start edge beneath the floating
+   header: the body publishes the header's clearance for it, and the child
+   adds it inside its own scroll area, so content scrolls visibly beneath the
+   title bar while its first item still rests below it. Leading children of
+   `fill-last` keep the body's reservation instead. */
+.kui-dialog-surface[data-header-presentation="floating"]:is(
+    [data-body-layout="fill"],
+    [data-body-layout="fill-last"]
+  )
+  > wa-dialog:has(
+    > :nth-child(1 of :not([slot])):nth-last-child(1 of :not([slot])):is(
+        [data-scroll-clearance="block-start"],
+        [data-scroll-clearance="both"]
+      )
+  )::part(body) {
+  --kui-scroll-clearance-block-start: var(
+    --_kui-dialog-surface-header-clearance
+  );
+  padding-block-start: 0;
+}
+@media (forced-colors: active) {
+  .kui-dialog-surface[data-header-presentation="floating"]
+    > wa-dialog::part(header) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: Canvas;
+    border-block-end: 1px solid CanvasText;
+  }
+}
 .kui-dialog-surface[data-presentation="side-sheet"] > wa-dialog::part(dialog) {
   width: min(remify(480px), 100vw);
   max-width: 100vw;

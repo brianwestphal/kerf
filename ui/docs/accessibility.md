@@ -672,17 +672,26 @@ worst case: the material composited over a solid black backdrop in the light
 theme and a solid white backdrop in the dark theme. The blur only averages the
 content, so it can never be darker or lighter than that.
 
+Chrome on a raised surface, such as a `DialogSurface` title bar with
+`headerPresentation="floating"`, paints `--kui-chrome-material-raised`
+instead: the raised surface at the same 80%, so the bar matches the dialog
+panel behind it. The same rule and fallbacks apply.
+
 - **Normal text and icons pass AA over any content.** `--kui-color-text`
-  measures about 10.5:1 (light) and 8.3:1 (dark) on that worst case. 80% is
+  measures about 10.5:1 (light) and 8.3:1 (dark) on that worst case, and
+  about 10.5:1 (light) and 6.7:1 (dark) over the raised material. 80% is
   above the minimum opacity that keeps 4.5:1 there (about 55% light and 60%
-  dark). A theme that overrides `--kui-chrome-material` must keep its text at
-  4.5:1 or better against the same backdrops.
+  dark). A theme that overrides `--kui-chrome-material` or
+  `--kui-chrome-material-raised` must keep its text at 4.5:1 or better
+  against the same backdrops.
 - **Quiet text does not, so `ToolbarText` lifts it.** `--kui-color-text-quiet`
   falls to about 3.2:1 (light) and 4.1:1 (dark) over the worst case, and the
   default-size title color to about 3.8:1 (light). Inside an overlay `Pane`
-  header, an untoned `ToolbarText` therefore takes `--kui-color-text` for its
-  title at every size, and its `description` mixes the quiet color halfway
-  toward the normal one, about 5.9:1 in both themes. That keeps AA while the
+  header, or slotted as the `label` (or into `header-actions`) of a
+  `DialogSurface` floating header, an untoned `ToolbarText` therefore takes
+  `--kui-color-text` for its title at every size, and its `description` mixes
+  the quiet color halfway toward the normal one, about 5.9:1 in both themes
+  (about 4.9:1 dark over the raised material). That keeps AA while the
   description still reads as secondary. Any other quiet copy you place in
   overlay chrome yourself has no such lift; keep it in the content.
 - **The material turns opaque when transparency would hurt.** Under
@@ -691,10 +700,11 @@ content, so it can never be darker or lighter than that.
   colors, the header paints `Canvas` with a `CanvasText` bottom edge, so content
   passing beneath it never shows through.
 
-`tests/browser/overlay-header.spec.ts` measures the title over the material on
-both worst-case backdrops in Chromium, Firefox, and WebKit. In Chromium it also
-checks the opaque fallbacks for reduced transparency, increased contrast, and
-forced colors.
+`tests/browser/overlay-header.spec.ts` (Pane) and
+`tests/browser/dialog-floating-header.spec.ts` (DialogSurface) measure the
+title and description over the material on both worst-case backdrops in
+Chromium, Firefox, and WebKit. In Chromium they also check the opaque
+fallbacks for reduced transparency, increased contrast, and forced colors.
 
 ## Verification matrix
 
