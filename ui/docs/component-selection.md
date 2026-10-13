@@ -517,8 +517,13 @@ To apply a saved search or restore a query programmatically, call `model.replace
 When one root contains both kinds of field, a registered model enables chip keyboard behavior only for its own field. Other fields keep native editing unless the root opts into `keyboard` with an application removal callback.
 For an icon action at the end of the field, pass `trailingAction` with `icon`,
 accessible `label`, and delegated `action` (plus optional `id`). The component
-renders a button that fills the trailing hit target. Reserve `trailing` for
-passive content such as a shortcut hint.
+renders a compact button beside the clear button, with the same size, hover,
+focus ring, and cursor, in every presentation. For a help toggle that opens a
+surface, set `expanded` (and `haspopup`, plus `controls` while it is open); for
+an on/off toggle, set `pressed`. The open or pressed state keeps the hover fill.
+Put domain `data-*` metadata in `attributes`. Never style your own button into
+the `trailing` slot; reserve `trailing` for passive content such as a shortcut
+hint.
 Set `fill` on a collapsible `TokenSearchField` in a stretched Toolbar center to
 use the available width when expanded; the field and its search group retain
 their compact widths when collapsed.

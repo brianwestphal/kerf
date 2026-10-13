@@ -7,6 +7,7 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
+import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { CircleHelp, CircleX } from 'lucide';
 
 import {
@@ -17,9 +18,27 @@ import {
   adoptionTokens,
   collapsibleSearchOpen,
   grammarSearchModel,
+  tokenSearchHelpOpen,
   tokenSearchQuery,
   tokenSearchTokens,
 } from './state.js';
+
+export const TOKEN_SEARCH_HELP_SURFACE_ID = 'catalog-token-search-help-surface';
+
+/** Syntax help the Structured Ticket Search help toggle opens. */
+export function TokenSearchHelp() {
+  return (
+    <ValueTable label="Search Syntax" density="compact">
+      <ValueTableRow label="tag:name" value="Tickets with that tag" />
+      <ValueTableRow label="is:open" value="Open tickets only" />
+      <ValueTableRow label="is:closed" value="Closed tickets only" />
+      <ValueTableRow label="NOT term" value="Exclude a word or filter" />
+      <ValueTableRow label="a AND b" value="Both terms must match" />
+      <ValueTableRow label="a OR b" value="Either term may match" />
+      <ValueTableRow label='"a b"' value="The exact phrase" />
+    </ValueTable>
+  );
+}
 
 export function TokenSearchFieldDemo() {
   return (
@@ -53,7 +72,7 @@ export function TokenSearchFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Structured Ticket Search"
-        note="Text and atomic filters remain in one keyboard-focusable editor."
+        note="Text and atomic filters remain in one keyboard-focusable editor. The trailing help toggle reports its open state and opens syntax help beside the field."
         align="inline-control"
       >
         <List gap="xs">
@@ -66,8 +85,13 @@ export function TokenSearchFieldDemo() {
             trailingAction={{
               icon: <LucideIcon icon={CircleHelp} name="circle-help" />,
               label: 'Search Help',
-              action: 'show-token-search-help',
+              action: 'toggle-token-search-help',
               id: 'catalog-token-search-help',
+              expanded: tokenSearchHelpOpen.value,
+              haspopup: 'dialog',
+              controls: tokenSearchHelpOpen.value
+                ? TOKEN_SEARCH_HELP_SURFACE_ID
+                : undefined,
             }}
             editorAttributes={{ 'data-demo-token-search': 'true' }}
           />

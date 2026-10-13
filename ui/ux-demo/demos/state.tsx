@@ -31,6 +31,7 @@ export const disclosureOpen = signal(false);
 export const customDisclosureOpen = signal(false);
 export const sizedDisclosureOpen = signal(false);
 export const menuToolsOpen = signal(true);
+export const tokenSearchHelpOpen = signal(false);
 export const tokenSearchQuery = signal('NOT  AND parser');
 export const tokenSearchTokens = signal<TokenSearchToken[]>([
   {

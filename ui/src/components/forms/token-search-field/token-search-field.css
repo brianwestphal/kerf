@@ -172,8 +172,17 @@
 .kui-token-search__clear:hover,
 .kui-token-search__clear:focus-visible,
 .kui-token-search__trailing-action:hover,
-.kui-token-search__trailing-action:focus-visible {
+.kui-token-search__trailing-action:focus-visible,
+.kui-token-search__trailing-action[aria-expanded="true"],
+.kui-token-search__trailing-action[aria-pressed="true"] {
   background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+/* An open disclosure or an on toggle keeps the hover fill and reads at full
+   text strength, so its state stays visible after the pointer leaves. */
+.kui-token-search__trailing-action[aria-expanded="true"],
+.kui-token-search__trailing-action[aria-pressed="true"] {
+  color: var(--kui-color-text);
 }
 
 .kui-token-search__token button:focus-visible,
@@ -386,7 +395,9 @@
   box-shadow: none;
 }
 
-.kui-token-search[data-presentation="toolbar-group"] .kui-token-search__clear {
+.kui-token-search[data-presentation="toolbar-group"] .kui-token-search__clear,
+.kui-token-search[data-presentation="toolbar-group"]
+  .kui-token-search__trailing-action {
   border-radius: var(--kui-control-highlight-radius);
 }
 

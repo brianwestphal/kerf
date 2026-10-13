@@ -527,7 +527,10 @@ form-control tokens, so the two controls read as one form.
 
 `TokenSearchField` exposes the editable surface as a named `searchbox`. Each
 chip is atomic (`contenteditable="false"`) and contains separately named edit
-and remove buttons; the clear action is also named. Disabled fields publish
+and remove buttons; the clear action is also named. A `trailingAction` is a
+named button whose `label` is also its tooltip; a help toggle sets `expanded`
+(`aria-expanded`, with `haspopup` and `controls` for the surface it opens) and
+an on/off toggle sets `pressed` (`aria-pressed`). Disabled fields publish
 `aria-disabled` and stop editing without hiding the current expression. The
 application owns query parsing and must announce result-count or loading
 changes separately when that feedback is useful. Use `readTokenSearchField()`

@@ -248,6 +248,7 @@ export {
   type TokenSearchFieldValue,
   type TokenSearchToken,
   type TokenSearchTrailingAction,
+  type TokenSearchTrailingActionAttributes,
 } from './components/forms/token-search-field/token-search-field.js';
 export {
   type TokenSearchCollapsibleOptions,

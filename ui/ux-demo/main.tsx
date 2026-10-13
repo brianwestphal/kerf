@@ -60,6 +60,7 @@ import {
   signal,
 } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
+import type { OverlayHandle } from 'kerfjs/overlay';
 import { StickyNote } from 'lucide';
 
 import {
@@ -162,6 +163,7 @@ import {
   tabBarTabs,
   ticketLabelFilter,
   ticketLabels,
+  tokenSearchHelpOpen,
   tokenSearchQuery,
   tokenSearchTokens,
   toolbarAvatarChoice,
@@ -187,6 +189,10 @@ import {
   selectNestedTabNavigatorDemo,
   selectTabNavigatorDemo,
 } from './demos/tab-navigator.js';
+import {
+  TOKEN_SEARCH_HELP_SURFACE_ID,
+  TokenSearchHelp,
+} from './demos/token-search-field.js';
 import {
   COLLAPSED_WORKBENCH_ID,
   NAVIGATION_STACK_ID,
@@ -255,6 +261,7 @@ let nextDemoTabNumber = tabBarTabs.value.length + 1;
 /** How long a newly added application tab stays pending in the demo. */
 const DEMO_TAB_LOAD_MS = 1200;
 const actionLog = signal('Catalog ready');
+let tokenSearchHelp: OverlayHandle | undefined;
 const uxReviewProject = signal<string | null>(null);
 let displayStorage: Storage | null = null;
 try {
@@ -904,8 +911,24 @@ const stopActions = delegateActions(app, 'click', {
   'replace-grammar-search': () => {
     grammarSearchModel.replace({ query: 'roadmap', tokens: [] });
   },
-  'show-token-search-help': () => {
-    actionLog.value = 'Search help requested';
+  'toggle-token-search-help': (_event, element) => {
+    if (tokenSearchHelp) {
+      tokenSearchHelp.close();
+      return;
+    }
+    const handle = openAnchoredSurface(element, () => <TokenSearchHelp />, {
+      label: 'Search Syntax',
+      align: 'end',
+      initialFocus: false,
+    });
+    handle.el.id = TOKEN_SEARCH_HELP_SURFACE_ID;
+    tokenSearchHelp = handle;
+    tokenSearchHelpOpen.value = true;
+    actionLog.value = 'Search help opened';
+    void handle.result.then(() => {
+      if (tokenSearchHelp === handle) tokenSearchHelp = undefined;
+      tokenSearchHelpOpen.value = false;
+    });
   },
   'edit-search-token': (_event, element) => {
     const value = element.getAttribute('data-token-value');

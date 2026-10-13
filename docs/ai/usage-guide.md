@@ -204,6 +204,12 @@ a delayed animation-frame caret reset. The editor's text is DOM-owned, so a new
 `revision` when the app sets the text itself (reseeding a dialog on reopen,
 applying a saved search).
 
+For a compact icon button beside the clear button, such as a search-syntax
+help glyph, pass `TokenSearchField.trailingAction` with `icon`, `label`, and
+`action`. Set `expanded` for a disclosure (with `haspopup`, and `controls` while
+open) or `pressed` for a toggle. Put domain `data-*` in `attributes`. It matches
+the clear button in every presentation, so the app writes no button CSS.
+
 For a model-managed field, use `model.replace({ query, tokens })` instead: it
 publishes parsed state and advances the editor revision even without a chip
 change.

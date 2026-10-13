@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 364200,
-  "measuredLargestJavaScriptGzip": 146338,
-  "measuredTotalJavaScriptGzip": 364179,
+  "totalJavaScriptGzip": 364500,
+  "measuredLargestJavaScriptGzip": 146653,
+  "measuredTotalJavaScriptGzip": 364486,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4195,6 +4195,22 @@
         "measuredTotalJavaScriptGzip": 364179,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 364200
+      }
+    },
+    {
+      "at": "2026-10-13T12:18:50.865Z",
+      "reason": "TokenSearchField stateful help trailing action and syntax help demo (KF-R056AJ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146338,
+        "measuredTotalJavaScriptGzip": 364179,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146653,
+        "measuredTotalJavaScriptGzip": 364486,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364500
       }
     }
   ]

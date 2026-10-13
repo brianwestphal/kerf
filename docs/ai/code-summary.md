@@ -938,6 +938,7 @@ value rule (never true on a placeholder). Unit coverage in
 `ui/tests/unit/wire-list-reorder.test.ts` and
 `ui/tests/unit/list-row-reorder-props.test.ts`; Chromium drag/keyboard and
 geometry coverage in `ui/tests/browser/list-reorder.spec.ts`.
+`TokenSearchField.trailingAction` renders the compact clear-button-matched trailing icon button with optional `expanded`/`pressed` (exclusive) ARIA state, `controls`, `haspopup`, and domain `data-*` `attributes`; `ui/tests/browser/token-search-trailing-presentations.spec.ts` (fixture `fixtures/token-search-trailing-presentations.tsx`) pins its geometry and state across the standalone, form-field, and toolbar-group presentations.
 `wireTokenSearchFields` captures managed clear before app handlers, suppresses the
 transient replacement blur, and restores the current editor at its mutation checkpoint
 before the next input task, without app reopen code or frame-delayed focus.

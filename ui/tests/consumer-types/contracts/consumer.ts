@@ -932,6 +932,57 @@ TokenSearchField({
   },
 });
 
+// A stateful trailing action: a disclosure (expanded) or a toggle (pressed),
+// never both, with domain data-* metadata but no replacement data-action.
+TokenSearchField({
+  id: 'search',
+  label: 'Search',
+  trailingAction: {
+    icon,
+    label: 'Search Help',
+    action: 'toggle-search-help',
+    expanded: true,
+    controls: 'search-help',
+    haspopup: 'dialog',
+    attributes: { 'data-help-topic': 'syntax' },
+  },
+});
+TokenSearchField({
+  id: 'search',
+  label: 'Search',
+  trailingAction: {
+    icon,
+    label: 'Match Case',
+    action: 'toggle-match-case',
+    pressed: false,
+  },
+});
+TokenSearchField({
+  id: 'search',
+  label: 'Search',
+  trailingAction: {
+    icon,
+    label: 'Search Help',
+    action: 'toggle-search-help',
+    expanded: true,
+    // @ts-expect-error A trailing action is a disclosure or a toggle, not both.
+    pressed: true,
+  },
+});
+TokenSearchField({
+  id: 'search',
+  label: 'Search',
+  trailingAction: {
+    icon,
+    label: 'Search Help',
+    action: 'toggle-search-help',
+    attributes: {
+      // @ts-expect-error The trailing action owns its data-action.
+      'data-action': 'replacement',
+    },
+  },
+});
+
 // KUI-T007 positive: line caps require wrapping.
 ToolbarText({ text: 'Long title', wrap: true, maxLines: 2 });
 // @ts-expect-error KUI-T007 maxLines is ignored unless wrap is enabled.

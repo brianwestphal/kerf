@@ -749,7 +749,12 @@ propagating before the window, or a press without a click, collapses in the
 next task instead.
 `TokenSearchField.trailingAction` supplies an icon, accessible `label`, delegated
 `action`, and optional `id`; the field renders a 24px wide button that fills its
-34px line slot, including the hit target, disabled state, hover, and focus ring.
+34px line slot (32px in `toolbar-group`), including the hit target, disabled
+state, hover, focus ring, and the clear button's radius in each presentation.
+`expanded` renders `aria-expanded` and `pressed` renders `aria-pressed` (one or
+the other, never both); either `true` state keeps the hover fill at full text
+strength. `controls` and `haspopup` render `aria-controls` and `aria-haspopup`,
+and `attributes` carries domain `data-*` metadata but never `data-action`.
 Use `trailing` for passive content. The two props are mutually exclusive.
 For a collapsible search in a stretched Toolbar center, `fill` lets the expanded
 field and its enclosing search `ToolbarControlGroup` consume the available width;

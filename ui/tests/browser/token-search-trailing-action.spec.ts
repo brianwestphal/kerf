@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('TokenSearchField trailing action fills its slot and activates by pointer and keyboard', async ({
+test('TokenSearchField help toggle fills its slot and opens syntax help by pointer and keyboard', async ({
   page,
   browserName,
 }) => {
@@ -43,18 +43,31 @@ test('TokenSearchField trailing action fills its slot and activates by pointer a
       padding: '0px',
       borderWidth: '0px',
       label: 'Search Help',
-      action: 'show-token-search-help',
+      action: 'toggle-token-search-help',
     });
     if (browserName === 'chromium')
       await page.screenshot({
         path: `test-results/token-search-trailing-action-${width}.png`,
       });
+    await expect(button).toHaveAttribute('aria-expanded', 'false');
     await button.click();
-    await expect(page.locator('.catalog-log')).toHaveText(
-      'Search help requested',
+    await expect(page.locator('.catalog-log')).toHaveText('Search help opened');
+    await expect(button).toHaveAttribute('aria-expanded', 'true');
+    const surface = page.getByRole('dialog', { name: 'Search Syntax' });
+    await expect(surface).toBeVisible();
+    await expect(button).toHaveAttribute(
+      'aria-controls',
+      (await surface.getAttribute('id')) ?? '',
     );
+    if (browserName === 'chromium')
+      await page.screenshot({
+        path: `test-results/token-search-help-open-${width}.png`,
+      });
+    // The help is read-only, so focus stays on the toggle; Enter closes it.
     await button.focus();
     await button.press('Enter');
+    await expect(surface).toHaveCount(0);
+    await expect(button).toHaveAttribute('aria-expanded', 'false');
     await expect(page.locator('body')).toHaveAttribute(
       'data-search-help-clicks',
       String((index + 1) * 2),

@@ -160,6 +160,61 @@ describe('TokenSearchField', () => {
     expect(collapsed).toContain('class="kui-token-search__expand"');
   });
 
+  it('renders a stateful trailing action with ARIA state and domain metadata', () => {
+    const disclosure = asHtml(
+      TokenSearchField({
+        id: 'help',
+        label: 'Search',
+        query: 'status:open',
+        trailingAction: {
+          icon: <LucideIcon icon={CircleHelp} name="help" />,
+          label: 'Search Help',
+          action: 'toggle-search-help',
+          expanded: true,
+          controls: 'search-help-surface',
+          haspopup: 'dialog',
+          attributes: { 'data-help-topic': 'syntax' },
+        },
+      }),
+    );
+    expect(disclosure).toContain(
+      '<button data-help-topic="syntax" type="button" class="kui-token-search__trailing-action" data-action="toggle-search-help" aria-label="Search Help" aria-expanded="true" aria-controls="search-help-surface" aria-haspopup="dialog" title="Search Help">',
+    );
+    expect(disclosure).not.toContain('aria-pressed');
+    // The clear button precedes the trailing action in the same row.
+    expect(disclosure.indexOf('kui-token-search__clear')).toBeLessThan(
+      disclosure.indexOf('kui-token-search__trailing-action'),
+    );
+    const collapsedDisclosure = asHtml(
+      TokenSearchField({
+        id: 'help',
+        label: 'Search',
+        presentation: 'form-field',
+        trailingAction: {
+          icon: <LucideIcon icon={CircleHelp} name="help" />,
+          label: 'Search Help',
+          action: 'toggle-search-help',
+          expanded: false,
+        },
+      }),
+    );
+    expect(collapsedDisclosure).toContain('aria-expanded="false"');
+    const toggle = asHtml(
+      TokenSearchField({
+        id: 'case',
+        label: 'Search',
+        trailingAction: {
+          icon: <LucideIcon icon={CircleHelp} name="help" />,
+          label: 'Match Case',
+          action: 'toggle-match-case',
+          pressed: false,
+        },
+      }),
+    );
+    expect(toggle).toContain('aria-pressed="false"');
+    expect(toggle).not.toContain('aria-expanded');
+  });
+
   it('supports custom actions, adornments, disabled state, and token-aware placeholders', () => {
     const html = asHtml(
       TokenSearchField({

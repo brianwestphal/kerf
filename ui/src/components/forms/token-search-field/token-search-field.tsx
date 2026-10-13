@@ -12,12 +12,44 @@ export interface TokenSearchToken {
   accessibleLabel?: string;
 }
 
-export interface TokenSearchTrailingAction {
+/**
+ * Domain `data-*` metadata for a trailing action button. The component owns
+ * `data-action` (pass `action`) and its state attributes.
+ */
+export type TokenSearchTrailingActionAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-action'?: never;
+    'data-component'?: never;
+    'data-key'?: never;
+  }
+>;
+
+interface TokenSearchTrailingActionBase {
+  /** Decorative glyph, such as a `LucideIcon`. */
   icon: SafeHtml;
+  /** Accessible name and tooltip, in title style ("Search Help"). */
   label: string;
+  /** Delegated `data-action` value. */
   action: string;
   id?: string;
+  /** `aria-controls`: the id of the surface this button opens or toggles. */
+  controls?: string;
+  /** `aria-haspopup` for a button that opens a dialog, menu, or listbox. */
+  haspopup?: 'dialog' | 'menu' | 'listbox' | 'true';
+  /** Domain `data-*` metadata for the app's delegated handler. */
+  attributes?: TokenSearchTrailingActionAttributes;
 }
+
+/**
+ * A compact icon button in the field's trailing slot, sized and styled like
+ * the clear button. Pass `expanded` for a disclosure (a help surface it opens)
+ * or `pressed` for a toggle; the button shows the state with its hover fill.
+ */
+export type TokenSearchTrailingAction = TokenSearchTrailingActionBase &
+  (
+    | { expanded?: boolean; pressed?: never }
+    | { expanded?: never; pressed?: boolean }
+  );
 
 export type TokenSearchEditorAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
@@ -294,11 +326,24 @@ export function TokenSearchField({
           )}
           {trailingAction ? (
             <button
+              {...trailingAction.attributes}
               type="button"
               class="kui-token-search__trailing-action"
               id={trailingAction.id}
               data-action={trailingAction.action}
               aria-label={trailingAction.label}
+              aria-expanded={
+                trailingAction.expanded === undefined
+                  ? undefined
+                  : String(trailingAction.expanded)
+              }
+              aria-pressed={
+                trailingAction.pressed === undefined
+                  ? undefined
+                  : String(trailingAction.pressed)
+              }
+              aria-controls={trailingAction.controls}
+              aria-haspopup={trailingAction.haspopup}
               title={trailingAction.label}
               disabled={disabled}
             >
