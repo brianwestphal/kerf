@@ -472,8 +472,106 @@ describe('viewportMargin / fitHeight', () => {
 
     positionAnchored(el, anchor, { viewportMargin: 8, fitHeight: true });
     expect(el.style.getPropertyValue(AVAILABLE)).toBe('188px');
-    // Above, hanging from the capped 188px height: 200 − 4 − 188 = 8.
-    expect(el.style.top).toBe('8px');
+    // Above, hanging from its bottom edge at the anchor gap: 400 − (200 − 4).
+    expect(el.style.top).toBe('auto');
+    expect(el.style.bottom).toBe('204px');
+  });
+
+  describe('an above placement hangs from its bottom edge', () => {
+    // Room below 800 − 454 = 346; room above 400 − 4 = 396, so a 500px
+    // element takes the room above.
+    const anchorRect = { left: 100, right: 150, top: 400, bottom: 450 };
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('pins bottom, so a height that changes after placement grows away from the anchor', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt(anchorRect);
+      // An element whose 500px of content is clipped to whatever height an
+      // expand-from-0 entrance has reached (`frame`), scrolling the rest.
+      let frame = 396;
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      el.getBoundingClientRect = () => rectFn({ width: 80, height: frame })();
+      Object.defineProperties(el, {
+        clientHeight: { get: () => frame },
+        scrollHeight: { get: () => 500 },
+      });
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+      expect(el.style.top).toBe('auto');
+      expect(el.style.bottom).toBe('404px'); // 800 − (400 − 4)
+
+      // Mid-expand the element lays out far shorter than the height it
+      // settles at, and it keeps growing after this reposition. The
+      // placement never depends on that frame height: the bottom edge stays
+      // at the anchor gap, so the element grows upward, away from the anchor.
+      frame = 30;
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.top).toBe('auto');
+      expect(el.style.bottom).toBe('404px');
+    });
+
+    it('switches between bottom and top as the side flips', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt(anchorRect);
+      const el = cappedElement(80, 500);
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect([el.style.top, el.style.bottom]).toEqual(['auto', '404px']);
+
+      el.style.maxHeight = '300px'; // fits below now
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect([el.style.top, el.style.bottom]).toEqual(['454px', 'auto']);
+
+      el.style.maxHeight = 'none';
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect([el.style.top, el.style.bottom]).toEqual(['auto', '404px']);
+    });
+
+    it('leaves bottom alone without fitHeight', () => {
+      setViewport(1000, 300);
+      const anchor = anchorAt({ left: 100, right: 150, top: 180, bottom: 200 });
+      const el = cappedElement(80, 90);
+      positionAnchored(el, anchor, { viewportMargin: 10 });
+      expect(el.style.top).toBe('86px'); // above: 180 − 4 − 90
+      expect(el.style.bottom).toBe('');
+    });
+
+    it('measures the bottom edge of a transformed containing block with a probe', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt(anchorRect);
+      const el = cappedElement(80, 500);
+      // A containing block whose `left:0; top:0` lands at (20, 24), scaled 2×
+      // vertically, and whose bottom edge lands at viewport y 780.
+      const probes: string[] = [];
+      vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(
+        function (this: Element) {
+          const pinned = (this as HTMLElement).style.bottom === '0px';
+          probes.push(pinned ? 'bottom' : 'origin');
+          return rectFn(
+            pinned
+              ? { left: 20, top: 778, bottom: 780, width: 1, height: 2 }
+              : { left: 20, top: 24, bottom: 26, width: 1, height: 2 },
+          )();
+        },
+      );
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(probes).toEqual(['origin', 'bottom']);
+      expect(el.style.getPropertyValue(AVAILABLE)).toBe('198px'); // 396 / 2
+      expect(el.style.bottom).toBe('192px'); // (780 − 396) / 2
+      expect(el.parentElement!.children).toHaveLength(2); // probes removed
+    });
+
+    it('falls back to the viewport bottom for a detached element', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt(anchorRect);
+      const el = cappedElement(80, 500);
+      el.remove();
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.bottom).toBe('404px');
+    });
   });
 
   it('publishes the room on the chosen side and refreshes it on reposition', () => {

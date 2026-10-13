@@ -41,8 +41,11 @@ export interface AnchorPositionOptions {
    * `max-height` transition on the element neither skews that read nor runs
    * because of it. While an animation or transition is already driving
    * `max-height` (an expand-from-0 entrance, a `@keyframes` animation), the
-   * cap is the value it is headed to, and it is left running. Default
-   * `false`.
+   * cap is the value it is headed to, and it is left running. An above
+   * placement is pinned by its bottom edge (`bottom`, with `top: auto`), so
+   * the element grows and shrinks upward, away from the anchor, as its height
+   * changes between repositions; a below placement sets `top` with
+   * `bottom: auto`. Default `false`.
    */
   fitHeight?: boolean;
 }
@@ -60,7 +63,8 @@ const AVAILABLE_HEIGHT = '--kerf-anchor-available-height';
  * `left`/`top` are translated (and unscaled) into that box's coordinates so `el`
  * still lands next to the anchor. `viewportMargin` keeps a gutter from the
  * viewport edges; `fitHeight` publishes the room on the chosen side so CSS can
- * cap a scrolling element to it. This is
+ * cap a scrolling element to it, and pins an above placement by `bottom`
+ * (with `top: auto`) so the element grows upward from the anchor. This is
  * `popover()`'s placement core, usable on any element (an inline hint, a tooltip) —
  * no overlay lifecycle. Pair with {@link autoReposition} to keep it glued while open.
  */
@@ -113,16 +117,24 @@ export function positionAnchored(
   // modal `<dialog>` holding an overlay host slot) captures fixed descendants,
   // so map the coordinates into that box's space.
   const [originX, originY, scaleX, scaleY] = fixedOrigin(el);
-  let placedHeight = height;
+  el.style.left = `${(left - originX) / scaleX}px`;
   if (fitHeight) {
     const room = Math.max(0, below ? roomBelow : roomAbove);
     el.style.setProperty(AVAILABLE_HEIGHT, `${room / scaleY}px`);
-    // Above, the element hangs from its bottom edge: use the height its CSS
-    // cap actually lays out.
-    if (!below) placedHeight = el.getBoundingClientRect().height;
+    if (!below) {
+      // Above, a height-flexible element hangs from its bottom edge. Pin
+      // `bottom` instead of deriving `top` from a height measured now, so
+      // whatever height it goes on to lay out (the cap from the room just
+      // published, a `max-height` expand still running, content that grows)
+      // grows and shrinks upward, away from the anchor, never over it.
+      const edge = anchorRect.top - gap;
+      el.style.top = 'auto';
+      el.style.bottom = `${(fixedBottom(el, originY, scaleY) - edge) / scaleY}px`;
+      return;
+    }
+    el.style.bottom = 'auto';
   }
-  const top = below ? belowTop : anchorRect.top - gap - placedHeight;
-  el.style.left = `${(left - originX) / scaleX}px`;
+  const top = below ? belowTop : anchorRect.top - gap - height;
   el.style.top = `${(top - originY) / scaleY}px`;
 }
 
@@ -344,6 +356,26 @@ function fixedOrigin(el: HTMLElement): [number, number, number, number] {
       return [rect.left, rect.top, rect.width || 1, rect.height || 1];
     },
     [0, 0, 1, 1],
+  );
+}
+
+/**
+ * The viewport y of the bottom edge of `el`'s fixed-position containing block
+ * (where `bottom: 0` lands), measured with a 1px probe pinned there. A
+ * detached `el`, or a containing block with no layout (a DOM without layout,
+ * a `scale(0)` animation), falls back to the viewport height below the origin
+ * {@link fixedOrigin} measured, at its scale.
+ */
+function fixedBottom(el: HTMLElement, originY: number, scaleY: number): number {
+  const fallback = originY + window.innerHeight * scaleY;
+  return withFixedProbe(
+    el,
+    'width:1px;height:1px;top:auto;bottom:0',
+    (probe) => {
+      const rect = probe.getBoundingClientRect();
+      return rect.height ? rect.bottom : fallback;
+    },
+    fallback,
   );
 }
 

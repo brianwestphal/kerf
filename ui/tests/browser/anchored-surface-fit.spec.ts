@@ -335,3 +335,46 @@ for (const [kind, name] of [
     expect(result.events).toEqual([]);
     expect(result.kept).toBe(true);
   });
+
+// Placed above while an expand-from-0 entrance is still running, the surface
+// must hang from its bottom edge: as it keeps growing after that reposition
+// it grows upward, away from its field, with its bottom edge held at the gap
+// above the field instead of sliding down over it.
+test('an above placement mid-expand grows upward from its anchor', async ({
+  page,
+}) => {
+  const { surface, rooms } = await openBelowMiddle(page);
+  // `rooms.above` runs from the 4px gap above the field to the 8px gutter.
+  const edge = rooms.above + 8;
+  const samples = await surface.evaluate(async (element, { below, above }) => {
+    const frame = () =>
+      new Promise((resolve) =>
+        globalThis.requestAnimationFrame(() => resolve(null)),
+      );
+    const cap = Math.round((below + above) / 2);
+    element.style.transition = 'none';
+    element.style.maxHeight = '0px';
+    globalThis.getComputedStyle(element).getPropertyValue('max-height');
+    element.style.transition = 'max-height 1500ms linear';
+    element.style.maxHeight = `${cap}px`;
+    await frame();
+    await frame();
+    // Reposition early in the expand: the cap it settles at fits only
+    // above, so kerf places it there.
+    globalThis.dispatchEvent(new Event('resize'));
+    const rects: { top: number; bottom: number }[] = [];
+    for (let index = 0; index < 12; index++) {
+      await frame();
+      await frame();
+      const rect = element.getBoundingClientRect();
+      rects.push({ top: rect.top, bottom: rect.bottom });
+    }
+    return rects;
+  }, rooms);
+  const first = samples[0]!;
+  const last = samples.at(-1)!;
+  // It kept growing after the reposition…
+  expect(last.bottom - last.top).toBeGreaterThan(first.bottom - first.top + 20);
+  // …upward: every frame's bottom edge stays at the gap above the field.
+  for (const sample of samples) expect(sample.bottom).toBeCloseTo(edge, 0);
+});
