@@ -484,6 +484,10 @@ large for SegmentedControl: separate pills over native radios (one Tab stop,
 arrow-key selection, real form value), with color swatches including a
 struck-through transparent swatch, or icons; `label`/`labelledBy`, controlled
 `value`, delegated `change` action, compact size, required, and disabled.
+With `multiple` (array `value`, typed by a discriminated union) the same pills
+are native checkboxes in a `role="group"`: each a Tab stop that Space toggles,
+every checked value submitted under `name`, no `required`; the token palette
+follows a dark appearance scope (`.wa-dark`) for inverse chrome.
 Select choices can be disabled with an optional reason. Multiple Selects can
 show localized select-all and clear actions that preserve controlled values,
 skip disabled choices, and report changes through ordinary events.

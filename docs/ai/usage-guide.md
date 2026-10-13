@@ -245,6 +245,12 @@ controlled `value`, and an `action`; handle it with
 Lead choices with `swatch: foregroundColor('#3b82f6')` (any `CssColor`) or
 `swatch: 'transparent'` for the struck-through no-color option, or with an
 `icon`. Never wrap a `SegmentedControl` or button-appearance `wa-radio` set.
+Set `multiple` with a `readonly Value[]` `value` when any number may be on
+(label filters, annotation intents): the pills become native checkboxes, each
+a Tab stop that Space toggles, and every checked value submits under `name`;
+read the checked boxes by name in the change handler. A multiple group takes no
+`required`. On dark inverse chrome, place the chips in a dark appearance scope
+(`.wa-dark`) instead of restyling them.
 
 For an unavailable Select value, set `SelectChoice.disabled` and optionally
 `disabledReason`. A multiple Select can pass `selectAllLabel` and `clearLabel`

@@ -466,6 +466,17 @@ focused radio, and the checked pill adds a second pixel of border so the
 selection does not rely on hue alone; forced-colors mode paints it with
 `Highlight`.
 
+With `multiple`, the group renders `role="group"` with the same naming, and
+each choice is a native `<input type="checkbox">` inside its pill. Every pill
+is its own Tab stop, Space toggles it, assistive technology reads its native
+checked state, and every checked box submits its value under `name`
+(`FormData.getAll(name)`). Native `required` on a checkbox demands that one
+box, so a multiple group takes no `required`; validate an "at least one" rule
+in the application. Every chip color is a theme token resolved through
+`light-dark()`, so inside a dark appearance scope (`.wa-dark`, `.wa-invert`,
+or any `color-scheme: dark` ancestor) the pills, labels, checked tint, and
+focus ring read on inverse chrome without overrides.
+
 ## TokenSearchField
 
 Use `presentation="form-field"` when a structured search query sits beside

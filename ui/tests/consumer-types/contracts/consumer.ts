@@ -154,6 +154,53 @@ ChoiceChips<'board' | 'list'>({
 });
 // @ts-expect-error A radio group needs exactly one name source.
 ChoiceChips({ name: 'view', choices: [{ value: 'board', label: 'Board' }] });
+ChoiceChips<'bug' | 'question'>({
+  name: 'intents',
+  label: 'Intents',
+  multiple: true,
+  value: ['bug', 'question'],
+  choices: [
+    { value: 'bug', label: 'Bug' },
+    { value: 'question', label: 'Question' },
+  ],
+});
+ChoiceChips({
+  name: 'intents',
+  labelledBy: 'intents-label',
+  multiple: true,
+  choices: [{ value: 'bug', label: 'Bug' }],
+});
+ChoiceChips({
+  name: 'intents',
+  label: 'Intents',
+  multiple: true,
+  // @ts-expect-error A multiple ChoiceChips value is an array of choice values.
+  value: 'bug',
+  choices: [{ value: 'bug', label: 'Bug' }],
+});
+ChoiceChips({
+  name: 'view',
+  label: 'View',
+  // @ts-expect-error A single ChoiceChips value is one choice value, not an array.
+  value: ['board'],
+  choices: [{ value: 'board', label: 'Board' }],
+});
+ChoiceChips<'bug' | 'question'>({
+  name: 'intents',
+  label: 'Intents',
+  multiple: true,
+  // @ts-expect-error Every checked value must be one of the choice values.
+  value: ['change'],
+  choices: [{ value: 'bug', label: 'Bug' }],
+});
+// @ts-expect-error Native required on a checkbox demands that one box, so a multiple group cannot be required.
+ChoiceChips({
+  name: 'intents',
+  label: 'Intents',
+  multiple: true,
+  required: true,
+  choices: [{ value: 'bug', label: 'Bug' }],
+});
 ChoiceChips({
   name: 'color',
   label: 'Color',

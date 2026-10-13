@@ -3046,41 +3046,65 @@ interface ChoiceChipsChoice<Value extends string = string> {
     disabled?: boolean;
 }
 interface ChoiceChipsCommonProps<Value extends string> {
-    /** Native radio `name`: the form field the selected value submits under. */
+    /**
+     * Native input `name`: the form field the selected value (or, with
+     * `multiple`, every checked value) submits under.
+     */
     name: string;
-    /** The selected value. Omit (or pass `undefined`) for no selection. */
-    value?: NoInfer<Value>;
     choices: readonly ChoiceChipsChoice<Value>[];
-    /** Delegated `data-action` on every radio; listen for `change`. */
+    /** Delegated `data-action` on every input; listen for `change`. */
     action?: string;
     size?: ChoiceChipsSize;
     /** Disable the whole group. */
     disabled?: boolean;
-    /** Require a selection for native form validation. */
-    required?: boolean;
-    /** Associate the radios with a form outside their ancestor chain. */
+    /** Associate the inputs with a form outside their ancestor chain. */
     form?: string;
     id?: string;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-/** A radio group is named either by a string or by a visible heading's id. */
-type ChoiceChipsProps<Value extends string = string> = ChoiceChipsCommonProps<Value> & ({
+/** One exclusive value (the default), backed by native radios. */
+interface ChoiceChipsSingleProps<Value extends string = string> {
+    multiple?: false;
+    /** The selected value. Omit (or pass `undefined`) for no selection. */
+    value?: NoInfer<Value>;
+    /** Require a selection for native form validation. */
+    required?: boolean;
+}
+/**
+ * Any number of values, backed by native checkboxes: each pill is its own Tab
+ * stop, Space toggles it, and every checked value submits under `name`.
+ */
+interface ChoiceChipsMultipleProps<Value extends string = string> {
+    multiple: true;
+    /** The checked values. Omit (or pass `[]`) for none. */
+    value?: readonly NoInfer<Value>[];
+    /**
+     * Native `required` on a checkbox demands that one box, so a multiple group
+     * has no "at least one" requirement; validate the checked set in the app.
+     */
+    required?: never;
+}
+/** A group is named either by a string or by a visible heading's id. */
+type ChoiceChipsNaming = {
     label: string;
     labelledBy?: never;
 } | {
     labelledBy: string;
     label?: never;
-});
+};
+type ChoiceChipsProps<Value extends string = string> = ChoiceChipsCommonProps<Value> & (ChoiceChipsSingleProps<Value> | ChoiceChipsMultipleProps<Value>) & ChoiceChipsNaming;
 /**
- * An exclusive, wrapping set of pill chips backed by native radios: one Tab
- * stop, arrow-key selection, and a real form value. Each choice may lead with
- * a color swatch (including a struck-through transparent swatch) or an icon.
+ * A wrapping set of pill chips backed by native inputs. By default it is an
+ * exclusive radio group: one Tab stop, arrow-key selection, and a real form
+ * value. With `multiple` it is a checkbox group: each pill toggles on its own
+ * and every checked value submits. Each choice may lead with a color swatch
+ * (including a struck-through transparent swatch) or an icon.
  */
-declare function ChoiceChips<Value extends string>({ name, value, choices, action, size, disabled, required, form, id, className, slot, label, labelledBy, }: ChoiceChipsProps<Value>): SafeHtml;
+declare function ChoiceChips<Value extends string>(props: ChoiceChipsProps<Value>): SafeHtml;
 
-export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsProps, type ChoiceChipsSize, type ChoiceChipsSwatch };
+export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsProps, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch };
 ```
 
 ## `@kerfjs/ui/select`

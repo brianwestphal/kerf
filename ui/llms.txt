@@ -699,7 +699,12 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   the group with `label` or `labelledBy`, lead choices with a `swatch`
   (`CssColor`, or `'transparent'` for the struck-through no-color dot) or an
   `icon`, and handle the delegated `action` on `change`. Never wrap a
-  `SegmentedControl` or button-appearance `wa-radio` set instead.
+  `SegmentedControl` or button-appearance `wa-radio` set instead. Set
+  `multiple` (with a `readonly Value[]` `value`) when any number may be on:
+  the same pills become native checkboxes in a `role="group"`, each a Tab stop
+  that Space toggles, and every checked value submits under `name`. On dark
+  inverse chrome, place the chips in a dark appearance scope (`.wa-dark`)
+  instead of restyling them.
 
 ## Public exports
 

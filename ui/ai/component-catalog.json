@@ -4725,21 +4725,22 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "An exclusive, wrapping set of separated pill chips backed by native radios, with optional leading color swatches or icons.",
+      "description": "A wrapping set of separated pill chips backed by native radios (one exclusive value) or, with multiple, native checkboxes (any number of values), with optional leading color swatches or icons.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Choose one value from a visible set too large for a segmented track, such as a color palette with labeled swatches.",
+      "purpose": "Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.",
       "publicExports": [
         "ChoiceChips"
       ],
       "useWhen": [
-        "Expose one exclusive choice among several visible options that must wrap onto more rows, such as a labeled color palette with swatches."
+        "Expose one exclusive choice among several visible options that must wrap onto more rows, such as a labeled color palette with swatches.",
+        "Set multiple when the person may turn any number of visible, wrapping options on or off, such as label filters or annotation intents."
       ],
       "avoidWhen": [
         "Use SegmentedControl for a few compact choices on one track.",
-        "Use Select when the choice list is long or space is tight.",
-        "Do not use it for removable tags (Chip) or for multiple selection."
+        "Use Select when the choice list is long or space is tight; a multiple Select keeps a long multi-value list behind one trigger.",
+        "Do not use it for removable tags (Chip)."
       ],
       "alternatives": [
         {
@@ -4765,13 +4766,16 @@
       ],
       "variants": [
         "color swatch, transparent (struck-through) swatch, icon, or text-only choices",
+        "single (radios) or multiple (checkboxes) selection",
         "default or compact size",
         "disabled group or disabled choices",
-        "required"
+        "required (single selection only)"
       ],
       "accessibility": [
-        "The group is a named role=\"radiogroup\" of native radios: one Tab stop, arrow keys move the selection, and the checked radio submits the form value.",
-        "Every choice keeps a visible text label; the swatch is decorative and the selection adds a heavier border, so neither relies on color alone."
+        "The single group is a named role=\"radiogroup\" of native radios: one Tab stop, arrow keys move the selection, and the checked radio submits the form value.",
+        "A multiple group is a named role=\"group\" of native checkboxes: each pill is a Tab stop, Space toggles it, its checked state is native, and every checked value submits under name.",
+        "Every choice keeps a visible text label; the swatch is decorative and the selection adds a heavier border, so neither relies on color alone.",
+        "Every color is a theme token, so a dark appearance scope (.wa-dark, .wa-invert, or any color-scheme: dark ancestor) restyles the chips for inverse chrome."
       ],
       "geometry": {
         "margin": "none",

@@ -2,17 +2,73 @@ import '@kerfjs/ui/lucide-icon.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ChoiceChips, type ChoiceChipsChoice } from '@kerfjs/ui/choice-chips';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { foregroundColor, px } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { FieldLabel } from '@kerfjs/ui/text';
-import { Calendar, Columns3, List as ListIcon } from 'lucide';
+import {
+  Bug,
+  Calendar,
+  CircleQuestionMark,
+  Columns3,
+  List as ListIcon,
+  MessageSquare,
+  Minus,
+  Move,
+  Pencil,
+  Plus,
+} from 'lucide';
 
 import {
   choiceChipsColor,
   choiceChipsDialogColor,
+  choiceChipsIntents,
+  choiceChipsLabels,
   choiceChipsView,
 } from './state.js';
+
+const labelChoices: readonly ChoiceChipsChoice[] = [
+  { value: 'bug', label: 'Bug', swatch: foregroundColor('#ef4444') },
+  { value: 'feature', label: 'Feature', swatch: foregroundColor('#3b82f6') },
+  { value: 'docs', label: 'Docs', swatch: foregroundColor('#22c55e') },
+  { value: 'design', label: 'Design', swatch: foregroundColor('#a855f7') },
+  { value: 'chore', label: 'Chore', swatch: foregroundColor('#6b7280') },
+];
+
+const intentChoices: readonly ChoiceChipsChoice[] = [
+  {
+    value: 'comment',
+    label: 'Comment',
+    icon: <LucideIcon icon={MessageSquare} name="message-square" />,
+  },
+  { value: 'bug', label: 'Bug', icon: <LucideIcon icon={Bug} name="bug" /> },
+  {
+    value: 'change',
+    label: 'Change',
+    icon: <LucideIcon icon={Pencil} name="pencil" />,
+  },
+  {
+    value: 'insert',
+    label: 'Insert',
+    icon: <LucideIcon icon={Plus} name="plus" />,
+  },
+  {
+    value: 'remove',
+    label: 'Remove',
+    icon: <LucideIcon icon={Minus} name="minus" />,
+  },
+  {
+    value: 'move',
+    label: 'Move',
+    icon: <LucideIcon icon={Move} name="move" />,
+  },
+  {
+    value: 'question',
+    label: 'Question',
+    icon: <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />,
+  },
+];
 
 const colorChoices: readonly ChoiceChipsChoice[] = [
   { value: 'transparent', label: 'Transparent', swatch: 'transparent' },
@@ -117,6 +173,37 @@ export function ChoiceChipsDemo() {
             },
           ]}
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Multiple Selection"
+        note="With multiple, each pill is a checkbox: Tab reaches every pill, Space toggles it, and every checked value submits."
+      >
+        <ChoiceChips
+          id="choice-chips-labels"
+          name="labels"
+          label="Labels"
+          multiple
+          value={choiceChipsLabels.value}
+          action="choice-chips-demo"
+          choices={labelChoices}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="On Dark Chrome"
+        note="Inside a .wa-dark appearance scope the chips resolve every color from the dark palette, so they read on inverse chrome such as a media viewer."
+      >
+        <ContentItem appearance="surface" className="wa-dark">
+          <ChoiceChips
+            id="choice-chips-intents"
+            name="intents"
+            label="Annotation Intents"
+            multiple
+            size="compact"
+            value={choiceChipsIntents.value}
+            action="choice-chips-demo"
+            choices={intentChoices}
+          />
+        </ContentItem>
       </CatalogExample>
     </CatalogExampleStack>
   );

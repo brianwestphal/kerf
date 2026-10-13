@@ -4,19 +4,20 @@
 
 `@kerfjs/ui:choice-chips` · Kerf UI · component · Controls
 
-An exclusive, wrapping set of separated pill chips backed by native radios, with optional leading color swatches or icons.
+A wrapping set of separated pill chips backed by native radios (one exclusive value) or, with multiple, native checkboxes (any number of values), with optional leading color swatches or icons.
 
 ## When to use
 
-Choose one value from a visible set too large for a segmented track, such as a color palette with labeled swatches.
+Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.
 
 - Expose one exclusive choice among several visible options that must wrap onto more rows, such as a labeled color palette with swatches.
+- Set multiple when the person may turn any number of visible, wrapping options on or off, such as label filters or annotation intents.
 
 **Not when:**
 
 - Use SegmentedControl for a few compact choices on one track.
-- Use Select when the choice list is long or space is tight.
-- Do not use it for removable tags (Chip) or for multiple selection.
+- Use Select when the choice list is long or space is tight; a multiple Select keeps a long multi-value list behind one trigger.
+- Do not use it for removable tags (Chip).
 
 **Alternatives:**
 
@@ -37,14 +38,15 @@ Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures
 **Variants (configure, do not restyle):**
 
 - color swatch, transparent (struck-through) swatch, icon, or text-only choices
+- single (radios) or multiple (checkboxes) selection
 - default or compact size
 - disabled group or disabled choices
-- required
+- required (single selection only)
 
 ## Composition
 
 - Parents: any.
-- Contexts: `wrapping-exclusive-choice`.
+- Contexts: `wrapping-exclusive-choice`, `wrapping-multiple-choice`.
 - Children: unrestricted.
 - Built from: [LucideIcon](./lucide-icon.md).
 
@@ -60,7 +62,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 
 ## Accessibility
 
-- Name the radio group with label or with labelledBy pointing at a visible heading.
+- Name the radio group (or, with multiple, the checkbox group) with label or with labelledBy pointing at a visible heading.
 - Every choice keeps a visible text label; a swatch or icon is decorative.
 
 ## Styling boundary

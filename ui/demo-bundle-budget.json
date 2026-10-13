@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 360400,
-  "measuredLargestJavaScriptGzip": 143072,
-  "measuredTotalJavaScriptGzip": 360371,
+  "totalJavaScriptGzip": 361000,
+  "measuredLargestJavaScriptGzip": 143652,
+  "measuredTotalJavaScriptGzip": 360994,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4051,6 +4051,22 @@
         "measuredTotalJavaScriptGzip": 360371,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 360400
+      }
+    },
+    {
+      "at": "2026-10-13T10:30:50.973Z",
+      "reason": "multi-select ChoiceChips and its catalog examples (KF-6VV36X)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 143072,
+        "measuredTotalJavaScriptGzip": 360371,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 360400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 143652,
+        "measuredTotalJavaScriptGzip": 360994,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 361000
       }
     }
   ]

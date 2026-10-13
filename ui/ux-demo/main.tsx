@@ -118,6 +118,8 @@ import {
   bannerTone,
   choiceChipsColor,
   choiceChipsDialogColor,
+  choiceChipsIntents,
+  choiceChipsLabels,
   choiceChipsView,
   collapsibleSearchOpen,
   comboboxTags,
@@ -1852,6 +1854,18 @@ const stopChoiceChipsDemo = delegateActions(app, 'change', {
     if (group === 'choice-chips-dialog-color')
       choiceChipsDialogColor.value = input.value;
     if (group === 'choice-chips-view') choiceChipsView.value = input.value;
+    if (input.type === 'checkbox') {
+      // A multiple group's value is its checked set, in choice order.
+      const checked = [
+        ...(input
+          .closest('[data-component="choice-chips"]')
+          ?.querySelectorAll<HTMLInputElement>('input:checked') ?? []),
+      ].map((box) => box.value);
+      if (group === 'choice-chips-labels') choiceChipsLabels.value = checked;
+      if (group === 'choice-chips-intents') choiceChipsIntents.value = checked;
+      actionLog.value = `Checked: ${checked.join(', ') || 'none'}`;
+      return;
+    }
     actionLog.value = `Choice: ${input.value}`;
   },
 });

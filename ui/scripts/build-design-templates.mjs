@@ -749,6 +749,45 @@ export const COMPONENTS = {
             ],
           }),
       },
+      {
+        id: 'multiple',
+        label: 'Multiple Selection',
+        height: 48,
+        render: () =>
+          ChoiceChips({
+            name: 'labels',
+            label: 'Labels',
+            multiple: true,
+            value: ['bug', 'docs'],
+            choices: [
+              {
+                value: 'bug',
+                label: 'Bug',
+                swatch: foregroundColor('#ef4444'),
+              },
+              {
+                value: 'feature',
+                label: 'Feature',
+                swatch: foregroundColor('#3b82f6'),
+              },
+              {
+                value: 'docs',
+                label: 'Docs',
+                swatch: foregroundColor('#22c55e'),
+              },
+              {
+                value: 'design',
+                label: 'Design',
+                swatch: foregroundColor('#a855f7'),
+              },
+              {
+                value: 'chore',
+                label: 'Chore',
+                swatch: foregroundColor('#6b7280'),
+              },
+            ],
+          }),
+      },
     ],
   },
   'tab-bar': {

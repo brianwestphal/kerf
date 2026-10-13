@@ -725,6 +725,14 @@ Listen for `change` on the supplied action (for example
 `delegateActions(root, "change", { "select-command-color": … })`), read the
 radio's `value`, and re-render.
 
+Set `multiple` when any number of the options may be on, such as label filters
+or annotation intents. `value` is then a `readonly Value[]`, the pills are
+native checkboxes in a `role="group"` (each a Tab stop that Space toggles), and
+every checked value submits under `name`. Read the checked boxes by name in the
+change handler. A multiple group takes no `required`. On dark inverse chrome,
+place the chips in a dark appearance scope (`.wa-dark`) instead of restyling
+them.
+
 `TokenSearchField` is a token-controlled contenteditable searchbox that keeps
 free text and ordered filter chips in one field. Its editable text stays
 DOM-owned between token changes so typing does not replace the caret. Tokens

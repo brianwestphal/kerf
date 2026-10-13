@@ -196,6 +196,126 @@ describe('ChoiceChips', () => {
     dispose();
   });
 
+  it('renders a multiple group of native checkboxes with every controlled value checked', () => {
+    const host = render(
+      ChoiceChips({
+        id: 'intents',
+        name: 'intents',
+        label: 'Intents',
+        multiple: true,
+        value: ['bug', 'question'],
+        action: 'toggle-intent',
+        size: 'compact',
+        form: 'annotation-form',
+        choices: [
+          { value: 'comment', label: 'Comment' },
+          { value: 'bug', label: 'Bug', swatch: foregroundColor('#ef4444') },
+          {
+            value: 'move',
+            label: 'Move',
+            icon: LucideIcon({ icon: Circle, name: 'circle' }),
+            disabled: true,
+          },
+          { value: 'question', label: 'Question' },
+        ],
+      }),
+    );
+    const group = host.querySelector<HTMLElement>('.kui-choice-chips')!;
+    expect(group.getAttribute('role')).toBe('group');
+    expect(group.getAttribute('aria-label')).toBe('Intents');
+    expect(group.hasAttribute('aria-required')).toBe(false);
+    expect(group.dataset.size).toBe('compact');
+    const boxes = [...group.querySelectorAll<HTMLInputElement>('input')];
+    expect(boxes.map((box) => box.type)).toEqual([
+      'checkbox',
+      'checkbox',
+      'checkbox',
+      'checkbox',
+    ]);
+    expect(boxes.every((box) => box.name === 'intents')).toBe(true);
+    expect(boxes.map((box) => box.checked)).toEqual([false, true, false, true]);
+    expect(boxes.every((box) => !box.required)).toBe(true);
+    expect(boxes.every((box) => box.dataset.action === 'toggle-intent')).toBe(
+      true,
+    );
+    expect(
+      boxes.every((box) => box.getAttribute('form') === 'annotation-form'),
+    ).toBe(true);
+    expect(boxes[2]!.disabled).toBe(true);
+    expect(boxes[1]!.closest('label')?.textContent).toBe('Bug');
+    expect(
+      group.querySelectorAll(
+        '.kui-choice-chips__swatch, .kui-choice-chips__icon',
+      ),
+    ).toHaveLength(2);
+  });
+
+  it('checks nothing when a multiple group has no value, and submits every checked value', () => {
+    const empty = render(
+      ChoiceChips({
+        name: 'intents',
+        label: 'Intents',
+        multiple: true,
+        choices: colors,
+      }),
+    );
+    expect(empty.querySelectorAll('input:checked')).toHaveLength(0);
+    document.body.replaceChildren();
+
+    const host = render(
+      `<form>${String(
+        ChoiceChips({
+          name: 'colors',
+          labelledBy: 'colors-label',
+          multiple: true,
+          value: ['transparent', 'teal'],
+          choices: colors,
+        }),
+      )}</form>`,
+    );
+    const form = host.querySelector('form')!;
+    expect(new FormData(form).getAll('colors')).toEqual([
+      'transparent',
+      'teal',
+    ]);
+    // Toggling a box changes the submitted set without touching the others.
+    host.querySelector<HTMLInputElement>('input[value="blue"]')!.click();
+    host.querySelector<HTMLInputElement>('input[value="teal"]')!.click();
+    expect(new FormData(form).getAll('colors')).toEqual([
+      'transparent',
+      'blue',
+    ]);
+  });
+
+  it('follows a controlled multiple value across rerenders', () => {
+    const host = document.createElement('div');
+    document.body.append(host);
+    const value = signal<readonly string[]>(['blue']);
+    const dispose = mount(host, () =>
+      ChoiceChips({
+        name: 'colors',
+        label: 'Colors',
+        multiple: true,
+        value: value.value,
+        choices: colors,
+      }),
+    );
+    const checked = () =>
+      [...host.querySelectorAll<HTMLInputElement>('input:checked')].map(
+        (box) => box.value,
+      );
+    expect(checked()).toEqual(['blue']);
+    value.value = ['transparent', 'blue', 'teal'];
+    expect(checked()).toEqual(['transparent', 'blue', 'teal']);
+    // A user toggle the app adopts stays as toggled after the rerender.
+    host.querySelector<HTMLInputElement>('input[value="blue"]')!.click();
+    value.value = ['transparent', 'teal'];
+    expect(checked()).toEqual(['transparent', 'teal']);
+    value.value = [];
+    expect(checked()).toEqual([]);
+    dispose();
+  });
+
   it('rejects a swatch that is not one CSS color value, and a choice with both a swatch and an icon', () => {
     for (const swatch of ['', ' ', 'red; display: none', 'url("x")'])
       expect(() =>

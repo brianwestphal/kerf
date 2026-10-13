@@ -100,3 +100,97 @@ test('ChoiceChips selects with native radio keyboard semantics and wraps as sepa
   if (browserName === 'chromium')
     await demo.screenshot({ path: 'test-results/choice-chips-narrow.png' });
 });
+
+test('A multiple ChoiceChips group toggles native checkboxes by pointer and Space and submits every checked value', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=choice-chips');
+  const demo = page.locator('[data-demo="choice-chips"]');
+  const group = demo.getByRole('group', { name: 'Labels', exact: true });
+  await expect(group.getByRole('checkbox')).toHaveCount(5);
+  // The controlled value checks several boxes at once.
+  await expect(group.getByRole('checkbox', { name: 'Bug' })).toBeChecked();
+  await expect(group.getByRole('checkbox', { name: 'Docs' })).toBeChecked();
+  await expect(
+    group.getByRole('checkbox', { name: 'Feature' }),
+  ).not.toBeChecked();
+
+  // Pointer: the pill toggles its checkbox without touching the others.
+  await group.locator('[data-choice-value="feature"]').click();
+  await expect(group.getByRole('checkbox', { name: 'Feature' })).toBeChecked();
+  await expect(group.locator('input:checked')).toHaveCount(3);
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'Checked: bug, feature, docs',
+  );
+  await group.locator('[data-choice-value="bug"]').click();
+  await expect(group.getByRole('checkbox', { name: 'Bug' })).not.toBeChecked();
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'Checked: feature, docs',
+  );
+
+  // Keyboard: every pill is its own Tab stop and Space toggles it.
+  const feature = group.getByRole('checkbox', { name: 'Feature' });
+  await feature.focus();
+  await page.keyboard.press('Tab');
+  const docs = group.getByRole('checkbox', { name: 'Docs' });
+  await expect(docs).toBeFocused();
+  await page.keyboard.press('Space');
+  await expect(docs).not.toBeChecked();
+  await page.keyboard.press('Space');
+  await expect(docs).toBeChecked();
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'Checked: feature, docs',
+  );
+  const focus = await docs.evaluate((input) => {
+    const pill = globalThis.getComputedStyle(input.closest('label')!);
+    return {
+      visible: input.matches(':focus-visible'),
+      ring: pill.outlineStyle,
+      background: pill.backgroundColor,
+    };
+  });
+  // WebKit never treats a native checkbox as focus-visible by default.
+  expect(focus.ring).toBe(focus.visible ? 'solid' : 'none');
+  if (browserName !== 'webkit') expect(focus.visible).toBe(true);
+  // The checked pill paints its state; the unchecked pill does not.
+  const unchecked = await group
+    .locator('[data-choice-value="chore"]')
+    .evaluate((pill) => globalThis.getComputedStyle(pill).backgroundColor);
+  expect(focus.background).not.toBe(unchecked);
+
+  // Every checked value submits under the group's name.
+  const submitted = await group.evaluate((element) => {
+    const form = document.createElement('form');
+    form.append(element.cloneNode(true));
+    return new FormData(form).getAll('labels');
+  });
+  expect(submitted).toEqual(['feature', 'docs']);
+
+  // On dark chrome the chips resolve the dark palette from the scope.
+  const intents = demo.getByRole('group', { name: 'Annotation Intents' });
+  await expect(intents.getByRole('checkbox')).toHaveCount(7);
+  await intents.locator('[data-choice-value="question"]').click();
+  await expect(
+    intents.getByRole('checkbox', { name: 'Question' }),
+  ).toBeChecked();
+  await expect(intents.locator('input:checked')).toHaveCount(2);
+  const pill = await intents
+    .locator('[data-choice-value="move"]')
+    .evaluate((element) => ({
+      scheme: globalThis.getComputedStyle(element).colorScheme,
+      color: globalThis.getComputedStyle(element).color,
+    }));
+  expect(pill.scheme).toBe('dark');
+  // The dark palette's text color, not the light page's.
+  expect(pill.color).toBe('rgb(245, 245, 247)');
+
+  if (browserName === 'chromium')
+    await demo.screenshot({ path: 'test-results/choice-chips-multiple.png' });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const narrow = await pillRows(intents);
+  expect(narrow.rows).toBeGreaterThan(1);
+  expect(narrow.overflow).toBe(false);
+});

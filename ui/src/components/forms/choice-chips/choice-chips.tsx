@@ -25,19 +25,18 @@ export interface ChoiceChipsChoice<Value extends string = string> {
 }
 
 interface ChoiceChipsCommonProps<Value extends string> {
-  /** Native radio `name`: the form field the selected value submits under. */
+  /**
+   * Native input `name`: the form field the selected value (or, with
+   * `multiple`, every checked value) submits under.
+   */
   name: string;
-  /** The selected value. Omit (or pass `undefined`) for no selection. */
-  value?: NoInfer<Value>;
   choices: readonly ChoiceChipsChoice<Value>[];
-  /** Delegated `data-action` on every radio; listen for `change`. */
+  /** Delegated `data-action` on every input; listen for `change`. */
   action?: string;
   size?: ChoiceChipsSize;
   /** Disable the whole group. */
   disabled?: boolean;
-  /** Require a selection for native form validation. */
-  required?: boolean;
-  /** Associate the radios with a form outside their ancestor chain. */
+  /** Associate the inputs with a form outside their ancestor chain. */
   form?: string;
   id?: string;
   className?: string;
@@ -45,13 +44,38 @@ interface ChoiceChipsCommonProps<Value extends string> {
   slot?: string;
 }
 
-/** A radio group is named either by a string or by a visible heading's id. */
+/** One exclusive value (the default), backed by native radios. */
+export interface ChoiceChipsSingleProps<Value extends string = string> {
+  multiple?: false;
+  /** The selected value. Omit (or pass `undefined`) for no selection. */
+  value?: NoInfer<Value>;
+  /** Require a selection for native form validation. */
+  required?: boolean;
+}
+
+/**
+ * Any number of values, backed by native checkboxes: each pill is its own Tab
+ * stop, Space toggles it, and every checked value submits under `name`.
+ */
+export interface ChoiceChipsMultipleProps<Value extends string = string> {
+  multiple: true;
+  /** The checked values. Omit (or pass `[]`) for none. */
+  value?: readonly NoInfer<Value>[];
+  /**
+   * Native `required` on a checkbox demands that one box, so a multiple group
+   * has no "at least one" requirement; validate the checked set in the app.
+   */
+  required?: never;
+}
+
+/** A group is named either by a string or by a visible heading's id. */
+export type ChoiceChipsNaming =
+  { label: string; labelledBy?: never } | { labelledBy: string; label?: never };
+
 export type ChoiceChipsProps<Value extends string = string> =
   ChoiceChipsCommonProps<Value> &
-    (
-      | { label: string; labelledBy?: never }
-      | { labelledBy: string; label?: never }
-    );
+    (ChoiceChipsSingleProps<Value> | ChoiceChipsMultipleProps<Value>) &
+    ChoiceChipsNaming;
 
 const unsafeSwatch = /[;{}<>"'\\]|\p{Cc}/u;
 
@@ -64,27 +88,37 @@ function swatchStyle(swatch: ChoiceChipsSwatch): string | undefined {
 }
 
 /**
- * An exclusive, wrapping set of pill chips backed by native radios: one Tab
- * stop, arrow-key selection, and a real form value. Each choice may lead with
- * a color swatch (including a struck-through transparent swatch) or an icon.
+ * A wrapping set of pill chips backed by native inputs. By default it is an
+ * exclusive radio group: one Tab stop, arrow-key selection, and a real form
+ * value. With `multiple` it is a checkbox group: each pill toggles on its own
+ * and every checked value submits. Each choice may lead with a color swatch
+ * (including a struck-through transparent swatch) or an icon.
  */
-export function ChoiceChips<Value extends string>({
-  name,
-  value,
-  choices,
-  action,
-  size = 'default',
-  disabled = false,
-  required = false,
-  form,
-  id,
-  className = '',
-  slot,
-  label,
-  labelledBy,
-}: ChoiceChipsProps<Value>) {
+export function ChoiceChips<Value extends string>(
+  props: ChoiceChipsProps<Value>,
+) {
+  const {
+    name,
+    choices,
+    action,
+    size = 'default',
+    disabled = false,
+    form,
+    id,
+    className = '',
+    slot,
+    label,
+    labelledBy,
+  } = props;
   if (choices.some((choice) => choice.swatch !== undefined && choice.icon))
     throw new TypeError('A ChoiceChips choice takes a swatch or an icon.');
+  const multiple = props.multiple === true;
+  const required = !props.multiple && props.required === true;
+  const checked: readonly Value[] = props.multiple
+    ? (props.value ?? [])
+    : props.value === undefined
+      ? []
+      : [props.value];
   return (
     <div
       id={id}
@@ -92,7 +126,7 @@ export function ChoiceChips<Value extends string>({
       data-component="choice-chips"
       data-size={size}
       data-disabled={disabled ? '' : undefined}
-      role="radiogroup"
+      role={multiple ? 'group' : 'radiogroup'}
       aria-label={label}
       aria-labelledby={labelledBy}
       aria-required={required ? 'true' : undefined}
@@ -110,10 +144,10 @@ export function ChoiceChips<Value extends string>({
           >
             <input
               class="kui-choice-chips__input"
-              type="radio"
+              type={multiple ? 'checkbox' : 'radio'}
               name={name}
               value={choice.value}
-              checked={choice.value === value}
+              checked={checked.includes(choice.value)}
               disabled={unavailable}
               required={required}
               form={form}

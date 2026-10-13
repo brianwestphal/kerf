@@ -3874,7 +3874,7 @@
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
-      "contexts": ["wrapping-exclusive-choice"],
+      "contexts": ["wrapping-exclusive-choice", "wrapping-multiple-choice"],
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [{ "id": "value", "owner": "controlled", "required": false }],
@@ -3891,7 +3891,7 @@
       },
       "accessibility": {
         "obligations": [
-          "Name the radio group with label or with labelledBy pointing at a visible heading.",
+          "Name the radio group (or, with multiple, the checkbox group) with label or with labelledBy pointing at a visible heading.",
           "Every choice keeps a visible text label; a swatch or icon is decorative."
         ]
       },

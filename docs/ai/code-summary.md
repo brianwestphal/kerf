@@ -988,8 +988,10 @@ chip (`download`, `external`); `ChipTone` adds `inherit`, which follows the
 surrounding foreground. Tests: `ui/tests/unit/chip-link.test.tsx`,
 `ui/tests/unit/chip-icon-truncate.test.tsx`, `ui/tests/browser/chip.spec.ts`.
 `ui/src/components/forms/choice-chips/choice-chips.tsx` (`@kerfjs/ui/choice-chips`)
-renders a wrapping exclusive choice: separate pill `<label>`s around native
-radios in a `role="radiogroup"`, with optional leading `swatch` (a `CssColor`
+renders a wrapping choice: separate pill `<label>`s around native radios in a
+`role="radiogroup"` (or, with `multiple` and an array `value`, native
+checkboxes in a `role="group"`; a discriminated props union keeps the value
+shape sound), with optional leading `swatch` (a `CssColor`
 or the struck-through `'transparent'` dot) or `icon`. The CSS paints checked
 and focus-visible state on the pill through `:has()`; the browser owns keyboard
 selection and the form value. Tests: `ui/tests/unit/choice-chips.test.tsx`,

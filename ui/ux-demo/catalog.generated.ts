@@ -557,7 +557,7 @@ export const generatedKerfCatalog = [
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
-    "description": "Choose one value from a visible set too large for a segmented track, such as a color palette with labeled swatches.",
+    "description": "Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.",
     "uses": [
       "lucide-icon"
     ],
