@@ -286,6 +286,11 @@ export function wireTabBars(
     if (Math.abs(extra - previousExtra) >= 0.5) {
       strip.style.setProperty('--kui-tab-bar-snap-end-extra', `${extra}px`);
       snapExtras.set(strip, extra);
+      // The room is scroll content after the last tab, so writing it never
+      // resizes the strip and no ResizeObserver notification follows. A room
+      // measured mid-settle (a WebKit pinned tab still displaced by the
+      // scroll) is re-measured next frame until it holds.
+      scheduleSnapSync();
     }
   };
   /** Release observers and inline geometry of strips that left the root. */

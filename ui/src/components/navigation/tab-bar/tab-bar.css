@@ -48,10 +48,21 @@
 .kui-tab-bar__tabs[data-snap-tabs="true"] {
   scroll-snap-type: x mandatory;
   scroll-padding-inline-start: var(--kui-tab-bar-snap-inset, 0px);
-  padding-inline-end: calc(
-    var(--kui-tab-bar-strip-padding, 1px) +
-      var(--kui-tab-bar-snap-end-extra, 0px)
-  );
+}
+/* The snap end room is scrollable content after the last tab, not padding on
+   the strip: padding is part of the strip's box, which a flex item cannot
+   shrink below, so a room measured at one width would hold the strip open
+   past its allocation when it narrows and push the trailing and end zones out
+   of the bar. As content it lengthens only the scroll range, and the strip
+   still shrinks to its allocation. The start margin gives back the strip gap,
+   so an empty room adds no width. */
+.kui-tab-bar__tabs[data-snap-tabs="true"]::after {
+  content: "";
+  inline-size: var(--kui-tab-bar-snap-end-extra, 0px);
+  margin-inline-start: calc(-1 * var(--kui-tab-bar-strip-gap, 0px));
+  pointer-events: none;
+  align-self: stretch;
+  flex: none;
 }
 .kui-tab-bar[data-icon-only-at] .kui-tab-bar__tabs {
   container: kui-tab-bar-tabs / inline-size;

@@ -792,7 +792,10 @@ When a leading AppTab is pinned, the leading scroll divider appears at that
 tab's trailing edge while peer tabs scroll beneath it, including in RTL.
 With `snapTabs`, `wireTabBars` measures the pinned tab and settles peers at
 whole-tab starts after scroll and selection changes, reserving end room so the
-last peer can align there. The application still owns selection and tab order.
+last peer can align there. That room is scrollable content after the last tab,
+inside the strip, so it lengthens the scroll range without widening the strip:
+the strip still shrinks to its allocation, and `trailing` and `end` stay inside
+the bar. The application still owns selection and tab order.
 ResizeObserver notifications coalesce snap measurements into the next animation
 frame, so inset writes cannot resize the observed strip during observer delivery.
 `wireTabBars` watches the whole root it is given, but a mutation re-measures only

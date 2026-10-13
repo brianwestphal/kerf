@@ -785,6 +785,52 @@ describe('TabBar wiring', () => {
       expect(disconnected).toHaveBeenCalledOnce();
     });
 
+    it('re-measures a newly written end room next frame until it holds', () => {
+      const frames: FrameRequestCallback[] = [];
+      const requestFrame = vi
+        .spyOn(window, 'requestAnimationFrame')
+        .mockImplementation((callback) => {
+          frames.push(callback);
+          return frames.length;
+        });
+      // The room is scroll content, so writing it resizes nothing and no
+      // ResizeObserver report would trigger the follow-up measurement.
+      vi.stubGlobal('ResizeObserver', undefined);
+      const root = bar('settling', true);
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const tabs = [...strip.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      tabs[0]!.dataset.pinned = 'true';
+      const extra = () =>
+        strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra');
+      Object.defineProperty(strip, 'scrollWidth', {
+        get: () => 260 + (Number.parseFloat(extra()) || 0),
+      });
+      Object.defineProperty(strip, 'clientWidth', { value: 180 });
+      const rect = (left: number, right: number) =>
+        ({ left, right }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
+      // A pinned tab still displaced mid-settle reports the wrong edge first.
+      let pinnedRight = 40;
+      vi.spyOn(tabs[0]!, 'getBoundingClientRect').mockImplementation(() =>
+        rect(0, pinnedRight),
+      );
+      vi.spyOn(tabs[2]!, 'getBoundingClientRect').mockReturnValue(
+        rect(180, 260),
+      );
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      expect(extra()).toBe('60px');
+      expect(requestFrame).toHaveBeenCalledOnce();
+      pinnedRight = 60;
+      frames.at(-1)!(0);
+      expect(extra()).toBe('40px');
+      expect(requestFrame).toHaveBeenCalledTimes(2);
+      // An unchanged measurement writes nothing and schedules no more frames.
+      frames.at(-1)!(0);
+      expect(extra()).toBe('40px');
+      expect(requestFrame).toHaveBeenCalledTimes(2);
+      stop();
+    });
+
     it('aligns RTL snap peers and handles empty and unpinned strips', async () => {
       const root = bar('rtl-snap', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 364000,
-  "measuredLargestJavaScriptGzip": 146150,
-  "measuredTotalJavaScriptGzip": 363986,
+  "totalJavaScriptGzip": 364100,
+  "measuredLargestJavaScriptGzip": 146154,
+  "measuredTotalJavaScriptGzip": 364005,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4147,6 +4147,22 @@
         "measuredTotalJavaScriptGzip": 363986,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 364000
+      }
+    },
+    {
+      "at": "2026-10-13T12:01:02.041Z",
+      "reason": "TabBar snap end spacer (KF-3Q98FJ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146150,
+        "measuredTotalJavaScriptGzip": 363986,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146154,
+        "measuredTotalJavaScriptGzip": 364005,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 364100
       }
     }
   ]
