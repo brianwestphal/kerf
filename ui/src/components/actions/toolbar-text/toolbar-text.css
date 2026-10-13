@@ -138,6 +138,32 @@ button.kui-toolbar-text:focus-visible {
   color: var(--kui-color-text);
 }
 
+/* In an overlay Pane header (`headerPresentation="overlay"`), the title sits
+   on the translucent chrome material with arbitrary content scrolling beneath
+   it. Quiet colors fall below AA there over the worst-case backdrop (the
+   material over black in light, white in dark): the default title color
+   measures about 3.8:1 (light) and the description about 3.2:1 (light) and
+   4.1:1 (dark). The title takes the normal text color (about 10.5:1 and
+   8.3:1), and the description lifts halfway toward it (about 5.9:1 in both
+   themes), so it still reads as secondary but keeps AA. See
+   docs/accessibility.md "Chrome material". */
+.kui-pane[data-header-presentation="overlay"]
+  > .kui-pane__header
+  .kui-toolbar-text:not([data-tone]) {
+  color: var(--kui-color-text);
+}
+
+.kui-pane[data-header-presentation="overlay"]
+  > .kui-pane__header
+  .kui-toolbar-text:not([data-tone])
+  .kui-toolbar-text__description {
+  color: color-mix(
+    in srgb,
+    var(--kui-color-text-quiet),
+    var(--kui-color-text) 50%
+  );
+}
+
 .kui-toolbar-text[data-tone="dark"] {
   color: var(--kui-color-neutral-on-loud);
 }

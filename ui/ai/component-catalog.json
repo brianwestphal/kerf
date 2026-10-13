@@ -652,7 +652,7 @@
       "avoidWhen": [
         "Do not use Pane as a padded card or add a competing scroll owner around its content slot.",
         "Do not enable separators merely as decoration; use them only where the pane owns a real boundary.",
-        "Do not put quiet secondary text (a ToolbarText description) in an overlay header; it can fall below AA over the content passing beneath. Keep it in the content."
+        "A ToolbarText description in an overlay header is fine: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it, keeping AA over the content passing beneath. Do not put other quiet secondary text in an overlay header; keep it in the content."
       ],
       "alternatives": [
         {
@@ -2301,7 +2301,8 @@
       ],
       "accessibility": [
         "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
-        "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap."
+        "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.",
+        "In a Pane header with headerPresentation=\"overlay\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
       ],
       "geometry": {
         "margin": "none",

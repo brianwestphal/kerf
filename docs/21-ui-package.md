@@ -359,9 +359,13 @@ slot without mixing authoring rules into the per-entry component catalog.
     a `CanvasText` bottom edge.
   - **Contrast.** Text on the material is measured over a worst-case solid
     backdrop: black in light, white in dark. Normal text passes AA (about
-    10.5:1 and 8.3:1); quiet text does not (about 3.2:1 and 4.1:1). Overlay
-    header text therefore uses the normal text color, and secondary copy goes
-    in the content.
+    10.5:1 and 8.3:1); quiet text does not (about 3.2:1 and 4.1:1, and the
+    default-size title color about 3.8:1 in light). An untoned `ToolbarText`
+    in an overlay header therefore styles itself for that context: its title
+    takes the normal text color at every size, and its `description` mixes
+    the quiet color halfway toward it (about 5.9:1 in both themes), so it
+    stays at AA and still reads as secondary. Other quiet copy goes in the
+    content.
   - **Verification.** `ui/tests/browser/overlay-header.spec.ts` runs in
     Chromium, Firefox, and WebKit.
 

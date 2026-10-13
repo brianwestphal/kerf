@@ -216,42 +216,53 @@ test('a re-render that strips the measurement gets it back before paint', async 
   expect(restored.clearance).toMatch(/px$/);
 });
 
-/** The header's material and the title's contrast over a solid backdrop. */
-async function material(page: Page, backdrop: string) {
+/**
+ * The header's material and a text element's contrast over a solid backdrop
+ * (by default the wired region's title).
+ */
+async function material(
+  page: Page,
+  backdrop: string,
+  region = 'wired',
+  text = '.kui-toolbar-text',
+) {
   const painted = await page
-    .locator('[data-region="wired"] .kui-pane__header')
-    .evaluate((header, backdropColor) => {
-      const context = document
-        .createElement('canvas')
-        .getContext('2d', { willReadFrequently: true })!;
-      context.canvas.width = 1;
-      context.canvas.height = 1;
-      const paint = (color: string) => {
-        context.fillStyle = color;
-        context.fillRect(0, 0, 1, 1);
-      };
-      const pixel = () => [
-        ...context.getImageData(0, 0, 1, 1).data.slice(0, 3),
-      ];
-      const style = globalThis.getComputedStyle(header);
-      const title = header.querySelector('.kui-toolbar-text')!;
-      const filter =
-        style.backdropFilter ||
-        (style as unknown as { webkitBackdropFilter?: string })
-          .webkitBackdropFilter ||
-        'none';
-      // The material's own opacity.
-      context.clearRect(0, 0, 1, 1);
-      paint(style.backgroundColor);
-      const alpha = context.getImageData(0, 0, 1, 1).data[3]!;
-      // Worst-case content passing beneath the header: a solid backdrop.
-      context.clearRect(0, 0, 1, 1);
-      paint(backdropColor);
-      paint(style.backgroundColor);
-      const background = pixel();
-      paint(globalThis.getComputedStyle(title).color);
-      return { background, foreground: pixel(), filter, alpha };
-    }, backdrop);
+    .locator(`[data-region="${region}"] .kui-pane__header`)
+    .evaluate(
+      (header, [backdropColor, textSelector]) => {
+        const context = document
+          .createElement('canvas')
+          .getContext('2d', { willReadFrequently: true })!;
+        context.canvas.width = 1;
+        context.canvas.height = 1;
+        const paint = (color: string) => {
+          context.fillStyle = color;
+          context.fillRect(0, 0, 1, 1);
+        };
+        const pixel = () => [
+          ...context.getImageData(0, 0, 1, 1).data.slice(0, 3),
+        ];
+        const style = globalThis.getComputedStyle(header);
+        const title = header.querySelector(textSelector!)!;
+        const filter =
+          style.backdropFilter ||
+          (style as unknown as { webkitBackdropFilter?: string })
+            .webkitBackdropFilter ||
+          'none';
+        // The material's own opacity.
+        context.clearRect(0, 0, 1, 1);
+        paint(style.backgroundColor);
+        const alpha = context.getImageData(0, 0, 1, 1).data[3]!;
+        // Worst-case content passing beneath the header: a solid backdrop.
+        context.clearRect(0, 0, 1, 1);
+        paint(backdropColor);
+        paint(style.backgroundColor);
+        const background = pixel();
+        paint(globalThis.getComputedStyle(title).color);
+        return { background, foreground: pixel(), filter, alpha };
+      },
+      [backdrop, text],
+    );
   return {
     ...painted,
     contrast: contrastRatio(painted.foreground, painted.background)!,
@@ -272,6 +283,30 @@ for (const [scheme, backdrop] of [
     expect(result.alpha).toBeLessThan(215);
     expect(result.filter).toContain('blur');
     expect(result.contrast).toBeGreaterThanOrEqual(4.5);
+  });
+
+// KF-XAEP3W: a default-size title and a ToolbarText description are quiet
+// colors that fall below AA over the worst case. Inside an overlay header the
+// title takes the normal text color and the description lifts halfway toward
+// it, staying visibly quieter than the title.
+for (const [scheme, backdrop] of [
+  ['light', 'black'],
+  ['dark', 'white'],
+] as const)
+  test(`${scheme}: a default-size title and its description stay at AA over worst-case content`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    const title = await material(page, backdrop, 'described');
+    const description = await material(
+      page,
+      backdrop,
+      'described',
+      '.kui-toolbar-text__description',
+    );
+    expect(title.contrast).toBeGreaterThanOrEqual(4.5);
+    expect(description.contrast).toBeGreaterThanOrEqual(4.5);
+    expect(description.contrast).toBeLessThan(title.contrast - 2);
   });
 
 test('forced colors paints an opaque system surface with a visible edge', async ({

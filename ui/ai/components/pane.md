@@ -23,7 +23,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 
 - Do not use Pane as a padded card or add a competing scroll owner around its content slot.
 - Do not enable separators merely as decoration; use them only where the pane owns a real boundary.
-- Do not put quiet secondary text (a ToolbarText description) in an overlay header; it can fall below AA over the content passing beneath. Keep it in the content.
+- A ToolbarText description in an overlay header is fine: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it, keeping AA over the content passing beneath. Do not put other quiet secondary text in an overlay header; keep it in the content.
 
 **Alternatives:**
 

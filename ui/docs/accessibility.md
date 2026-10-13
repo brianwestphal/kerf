@@ -677,10 +677,14 @@ content, so it can never be darker or lighter than that.
   above the minimum opacity that keeps 4.5:1 there (about 55% light and 60%
   dark). A theme that overrides `--kui-chrome-material` must keep its text at
   4.5:1 or better against the same backdrops.
-- **Quiet text does not.** `--kui-color-text-quiet` falls to about 3.2:1
-  (light) and 4.1:1 (dark) over the worst case. Keep overlay-chrome text in the
-  normal text color, and put secondary copy, such as a `ToolbarText`
-  `description`, in the content.
+- **Quiet text does not, so `ToolbarText` lifts it.** `--kui-color-text-quiet`
+  falls to about 3.2:1 (light) and 4.1:1 (dark) over the worst case, and the
+  default-size title color to about 3.8:1 (light). Inside an overlay `Pane`
+  header, an untoned `ToolbarText` therefore takes `--kui-color-text` for its
+  title at every size, and its `description` mixes the quiet color halfway
+  toward the normal one, about 5.9:1 in both themes. That keeps AA while the
+  description still reads as secondary. Any other quiet copy you place in
+  overlay chrome yourself has no such lift; keep it in the content.
 - **The material turns opaque when transparency would hurt.** Under
   `prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and where
   `backdrop-filter` is unsupported, it resolves to the opaque surface. In forced
