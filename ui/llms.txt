@@ -526,6 +526,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `wireScrollDividers` call measures the header and publishes its height as
   block-start scroll clearance, which the content clears automatically. Keep
   overlay-header text in the normal text color.
+  For a translucent stack bar laid over the active view, set
+  `chromePresentation="overlay"` on the `NavStack`. `wireNavStack` measures
+  the top chrome and hands its height (top safe area included) to the views
+  as their block-start inset, so a plain view or a sole `Pane` clears it
+  automatically. Keep its text in the normal text color.
   While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
   overlay, an overlay `CollapsiblePanel` or horizontal `ResizableRegion`), the
   layout hides the covered work area's `FloatingToolbar`s and restore corners

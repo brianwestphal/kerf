@@ -8,6 +8,16 @@ export interface WireNavStackOptions {
 }
 
 const DEFAULT_DURATION = 200;
+/** On an overlay-chrome NavStack: the wiring has measured its live chrome. */
+const CHROME_OVERLAY = 'data-chrome-overlay';
+/** The measured live chrome's border-box block size, published on the root. */
+const CHROME_BLOCK_SIZE = '--_kui-nav-stack-chrome-block-size';
+/** The active view's classic vertical scrollbar width, published on the root. */
+const SCROLLBAR_INLINE_SIZE = '--_kui-nav-stack-scrollbar-inline-size';
+/** A layout that, as a view's only child, owns its own chrome and scroller. */
+const NESTED_LAYOUT = ['nav-stack', 'split-view', 'workbench', 'tab-scaffold']
+  .map((name) => `[data-component="${name}"]`)
+  .join(', ');
 const FOCUSABLE_SELECTOR = [
   'a[href]',
   'button:not([disabled])',
@@ -198,6 +208,116 @@ export function wireNavStack(
     targetView.focus({ preventScroll: true });
   };
 
+  // Overlay chrome (`chromePresentation="overlay"`): measure the live chrome,
+  // never a cross-fading copy, and publish its border-box block size with the
+  // `data-chrome-overlay="measured"` gate that lays it over the viewport. The
+  // size follows the chrome as it wraps, zooms, or changes with the active
+  // view, and a re-render that strips the published state gets it back
+  // before paint. The active view's classic (space-taking) vertical scrollbar
+  // is measured too, so the chrome ends where its track begins.
+  let measuredChrome: HTMLElement | undefined;
+  let chromeSize: number | undefined;
+  let measuredScroller: HTMLElement | undefined;
+  let scrollbarSize = 0;
+  const writeProperty = (name: string, value: string): void => {
+    if (section.style.getPropertyValue(name) === value) return;
+    if (value) section.style.setProperty(name, value);
+    else section.style.removeProperty(name);
+  };
+  const publishOverlay = (): void => {
+    const measured = measuredChrome !== undefined && chromeSize !== undefined;
+    writeProperty(CHROME_BLOCK_SIZE, measured ? `${chromeSize}px` : '');
+    writeProperty(
+      SCROLLBAR_INLINE_SIZE,
+      measured && scrollbarSize > 0 ? `${scrollbarSize}px` : '',
+    );
+    if (section.getAttribute('style') === '') section.removeAttribute('style');
+    if (measured) {
+      if (section.getAttribute(CHROME_OVERLAY) !== 'measured')
+        section.setAttribute(CHROME_OVERLAY, 'measured');
+    } else if (section.hasAttribute(CHROME_OVERLAY))
+      section.removeAttribute(CHROME_OVERLAY);
+  };
+  /** The element that scrolls beneath the chrome in the active view. */
+  const activeScroller = (): HTMLElement | undefined => {
+    const top = topView(viewport);
+    const only = top?.children.length === 1 ? top.children[0] : undefined;
+    if (!only) return top;
+    if (only.matches('.kui-pane'))
+      // A Pane header lies beneath the chrome and starts its content below it.
+      return only.querySelector(
+        ':scope > :is(.kui-pane__header, .kui-pane__toolbar)',
+      )
+        ? undefined
+        : (only.querySelector<HTMLElement>(':scope > .kui-pane__content') ??
+            undefined);
+    return only.matches(NESTED_LAYOUT) ? undefined : top;
+  };
+  const measureScrollbar = (): void => {
+    const scroller = measuredScroller;
+    if (!scroller) {
+      scrollbarSize = 0;
+      return;
+    }
+    const style = view.getComputedStyle(scroller);
+    scrollbarSize = Math.max(
+      0,
+      scroller.offsetWidth -
+        scroller.clientWidth -
+        (Number.parseFloat(style.borderLeftWidth) || 0) -
+        (Number.parseFloat(style.borderRightWidth) || 0),
+    );
+  };
+  const chromeObserver = view.ResizeObserver
+    ? new view.ResizeObserver((entries) => {
+        for (const entry of entries)
+          if (entry.target === measuredChrome)
+            chromeSize =
+              entry.borderBoxSize?.[0]?.blockSize ??
+              entry.target.getBoundingClientRect().height;
+          else if (entry.target === measuredScroller) measureScrollbar();
+        publishOverlay();
+      })
+    : undefined;
+  const syncOverlay = (): void => {
+    const chrome =
+      section.dataset.chromePresentation === 'overlay'
+        ? section.querySelector<HTMLElement>(
+            ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy])',
+          )
+        : null;
+    if ((chrome ?? undefined) !== measuredChrome) {
+      if (measuredChrome) chromeObserver?.unobserve(measuredChrome);
+      measuredChrome = chrome ?? undefined;
+      if (!measuredChrome) chromeSize = undefined;
+      else {
+        // A replacement chrome keeps the last size until the observer
+        // reports it after layout; a first one (or one with no observer to
+        // report it) is measured at once.
+        if (chromeSize === undefined || !chromeObserver)
+          chromeSize = measuredChrome.getBoundingClientRect().height;
+        // The border box: a forced-colors edge changes no content box.
+        chromeObserver?.observe(measuredChrome, { box: 'border-box' });
+      }
+    }
+    // A scrollbar appearing or leaving resizes the scroller's content box.
+    const scroller = measuredChrome ? activeScroller() : undefined;
+    if (scroller !== measuredScroller) {
+      if (measuredScroller) chromeObserver?.unobserve(measuredScroller);
+      measuredScroller = scroller;
+      measureScrollbar();
+      if (measuredScroller) chromeObserver?.observe(measuredScroller);
+    }
+    publishOverlay();
+  };
+  const overlayObserver = new MutationObserver(syncOverlay);
+  overlayObserver.observe(section, {
+    childList: true,
+    attributes: true,
+    attributeFilter: ['data-chrome-presentation', CHROME_OVERLAY, 'style'],
+  });
+  syncOverlay();
+
   const onFocusIn = (event: Event): void =>
     rememberFocusedView(event.target as Element | null);
   section.addEventListener('focusin', onFocusIn);
@@ -299,6 +419,8 @@ export function wireNavStack(
     }
 
     activeKey = currentKey;
+    // The active view, and so the scroller beneath the chrome, may change.
+    syncOverlay();
   });
   observer.observe(viewport, {
     childList: true,
@@ -311,6 +433,13 @@ export function wireNavStack(
     disposeBack();
     section.removeEventListener('focusin', onFocusIn);
     observer.disconnect();
+    overlayObserver.disconnect();
+    chromeObserver?.disconnect();
+    measuredChrome = undefined;
+    chromeSize = undefined;
+    measuredScroller = undefined;
+    scrollbarSize = 0;
+    publishOverlay();
     finishTransition();
     for (const [element, previousTabIndex] of generatedFallbacks) {
       if (!element.isConnected || element.tabIndex !== -1) continue;

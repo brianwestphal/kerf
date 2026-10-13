@@ -191,6 +191,76 @@ const views = signal<NavStackView[]>([{ key: 'home', toolbar: { title: 'Home' },
 
 **Implementation:** ticket **NavStack layout**.
 
+**Overlay chrome (KF-1N0S19: a translucent NavStack top bar laid over the
+active view).** `chromePresentation` (`"docked"`, the default, or `"overlay"`;
+the `NavStackChromePresentation` type) is the NavStack counterpart of
+`Pane.headerPresentation` (§3.7) and reuses its chrome material, fallbacks,
+and contrast rule (`ui/docs/accessibility.md` "Chrome material"). The root
+carries `data-chrome-presentation="overlay"` only while the top toolbar is
+shown. `SplitView`'s `compactStack` forwards it, and a Workbench navigation
+panel's `navStack` spreads it through.
+
+Resolved decisions:
+
+- **Vocabulary.** `docked` / `overlay`, matching the Pane, rather than a new
+  `translucent` value: the two presentations are one family, and the material
+  is a token any theme can make opaque.
+- **Who measures: `wireNavStack`, not `wireScrollDividers`.** The NavStack
+  helper already owns the chrome lifecycle, including the cross-fade copies it
+  creates. Every interactive stack already wires it for the back control, and
+  measurement stays independent of whether scroll dividers are wired. A
+  `ResizeObserver` reads the live chrome's border box (the border box, so a
+  forced-colors edge counts). The helper publishes it on the root as the
+  stack-private `--_kui-nav-stack-chrome-block-size`, with the wiring-owned
+  `data-chrome-overlay="measured"` gate. A first chrome is measured at once; a
+  replacement chrome keeps the last size until the observer reports it after
+  layout. A `MutationObserver` on the root (its child list and its
+  presentation, gate, and `style` attributes) follows `hideToolbar` toggles,
+  presentation changes, and a re-render that strips the published state, and
+  restores it before paint. Unwired, or with `hideToolbar`, the chrome stays
+  docked.
+- **How views clear it: the edge context, not scroll clearance.** Measured,
+  the viewport's `--kui-edge-inset-block-start` becomes the chrome's height
+  (docked, it is `0px` because the chrome owns that edge). This is UIKit's
+  model, where a translucent bar extends the child's safe area. A plain view
+  pads and scroll-pads by it, and a sole Pane, the case the ticket asked about,
+  clears it automatically through its own safe-area start (its content, or its
+  header when it has one). A nested layout hands it on. Using
+  `--kui-scroll-clearance-block-start` instead would have needed an opt-in on
+  every child and double-counted with an app's own `scrollClearance`.
+- **Safe area.** The chrome keeps claiming the top safe area, and its toolbar
+  pads for it. The measured border box therefore already includes the inset,
+  and views clear chrome plus safe area exactly once.
+- **Cross-fade copies.** Copies are never measured. They are already
+  absolutely positioned over the top edge and carry the chrome class, so they
+  paint the same material while they fade. The clearance follows the live,
+  incoming chrome, so the incoming view settles at its final position. Both
+  depths' chromes measure the same (a 44px control band with 8px above and
+  below), so the outgoing view does not shift mid-slide.
+- **Classic scrollbars.** Like the overlay Pane header (KF-ZZAVRW: an overlay
+  header leaves a classic scrollbar uncovered), the chrome stops short of a
+  space-taking scrollbar. `wireNavStack` measures the active scroller's
+  scrollbar (`offsetWidth - clientWidth - borders`): the view itself, or a sole
+  header-less Pane's content. A Pane with a header, or a nested layout, starts
+  its scroller below the chrome, so there is nothing to clear. The helper
+  publishes it as `--_kui-nav-stack-scrollbar-inline-size`, and the measured
+  chrome's `inset-inline-end` takes it. It re-measures when the scroller's
+  content box changes (a scrollbar appearing or leaving) and on every push or
+  pop.
+- **Bottom toolbar.** It always docks; a translucent bottom toolbar is
+  follow-up KF-Z4NSDF (the same measurement routed as the block-end edge
+  inset).
+
+Verification: `ui/tests/unit/nav-stack.test.tsx` covers the markup, publish,
+resize, restore, and dispose. It walks docked → overlay → replaced chrome →
+removed → restored → docked, and covers copy exclusion and the
+no-`ResizeObserver` path. `ui/tests/unit/nav-stack-css.test.ts` pins the
+declarations. `ui/tests/browser/overlay-nav-stack.spec.ts` runs in Chromium,
+Firefox, and WebKit and covers geometry for a plain view and a pushed sole
+Pane, mid-push clearance, the safe area, `scrollIntoView`, the divider, the
+unwired fallback, the restore, and contrast in both schemes. In Chromium it
+also covers forced colors and reduced transparency.
+
 ### 3.2 List-detail (split view) — `SplitView` (`@kerfjs/ui/split-view`)
 
 Two panes — a list and a detail — side by side, with an **optionally resizable

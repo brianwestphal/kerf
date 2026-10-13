@@ -41,8 +41,13 @@ the layouts handle the insets for you. There is nothing to configure:
   status bar or home indicator but its first and last items can always be
   scrolled clear.
 - **Interior edges get nothing.** A `Workbench` center next to an expanded rail,
-  a `SplitView` detail beside its list, or a `NavStack` view under its chrome is
-  not inset on that edge. Collapse the rail and the center picks up the edge.
+  a `SplitView` detail beside its list, or a `NavStack` view under its docked
+  chrome is not inset on that edge. Collapse the rail and the center picks up
+  the edge. A `NavStack` with `chromePresentation="overlay"` is the exception
+  by design: its views reach under the translucent chrome, and the measured
+  chrome height (top safe area included) becomes their block-start inset, so
+  content scrolls beneath the bar yet rests clear of it (see
+  [Navigation stack › Overlay chrome](nav-stack.md#overlay-chrome)).
 - **No double inset.** Whichever region applies an inset clears it for its
   descendants. A layout region whose only child is a `Pane` or another layout
   lets that child own the insets. That child fills the region — a `Workbench`

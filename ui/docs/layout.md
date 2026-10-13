@@ -377,6 +377,7 @@ component's context stays allowed (see `KUI-L019`).
 | Safe-area sides a pane may pad           | `Pane.safeAreaEdges`               | `--kui-safe-area-*: env(safe-area-inset-*)`, routed by each layout |
 | Header laid over scrolling content       | `Pane.headerPresentation`          | `--kui-chrome-material`, `--kui-chrome-material-filter`            |
 | Dialog title bar laid over its body      | `DialogSurface.headerPresentation` | `--kui-chrome-material-raised`, `--kui-chrome-material-filter`     |
+| Stack top bar laid over the active view  | `NavStack.chromePresentation`      | `--kui-chrome-material`, `--kui-chrome-material-filter`            |
 | Major vertical rhythm                    | `.kui-content`                     | `--kui-layout-content-gap: 24px`                                   |
 | Self-contained child geometry            | `ContentItem`                      | 8px margin + 1px border + 8px padding                              |
 | Pill child                               | `ContentItem shape="pill"`         | `--kui-layout-pill-radius: 22px`                                   |

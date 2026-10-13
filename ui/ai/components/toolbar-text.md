@@ -79,7 +79,7 @@ Margin: none · border: none · padding: none (layout role: structure). `self` m
 
 - Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.
 - Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.
-- In a Pane header with headerPresentation="overlay", or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation="floating", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it.
+- In a Pane header with headerPresentation="overlay" or NavStack chrome with chromePresentation="overlay", or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation="floating", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it.
 
 ## Styling boundary
 

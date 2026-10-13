@@ -187,6 +187,62 @@ top Toolbar's own `dividerSides`.
 <NavStack id="settings" label="Settings" views={views.value} chromeDividers="always" />
 ```
 
+## Overlay chrome
+
+`chromePresentation="overlay"` lays the top chrome over the active view's top
+edge, like an iOS navigation bar, instead of docking it above the view
+(`"docked"`, the default). The chrome paints the shared chrome material,
+`--kui-chrome-material` behind `--kui-chrome-material-filter`, so content
+scrolls visibly, blurred, beneath it.
+
+```tsx
+<NavStack id="mail" label="Mail" views={views.value} chromePresentation="overlay" />
+```
+
+- **`wireNavStack` measures it.** The helper you already call for transitions
+  reads the live chrome's border-box height with a `ResizeObserver`, publishes
+  it on the stack root, and marks the root `data-chrome-overlay="measured"`.
+  Only then does the chrome leave its band. Unwired, or with `hideToolbar`, the
+  chrome stays docked, so it never covers content it has not measured. The
+  measurement follows the chrome as its title wraps, text grows, or a pushed
+  view changes its toolbar. A re-render that strips the measurement gets it
+  back before paint.
+- **Every view clears it automatically.** The measured height becomes the
+  viewport's block-start edge context (`--kui-edge-inset-block-start`), the
+  same context that carries safe areas. A plain view pads and scroll-pads by
+  it, a sole `Pane` adds it to its content's (or its header's) block-start
+  inset, and a nested layout hands it on. The first item rests just below the
+  chrome, and anything focused or scrolled into view stops clear of it. No
+  `scrollClearance` prop is involved, so a Pane that also opts into
+  `scrollClearance` does not clear the chrome twice.
+- **Safe area.** The chrome keeps claiming the top safe area: its toolbar pads
+  for it while the material paints through it. The measured height already
+  includes that padding, so views clear the chrome and the safe area exactly
+  once.
+- **Transitions.** Only the live chrome is measured, never a cross-fading
+  copy. The copy keeps painting over the top edge with the same material while
+  it fades, and the incoming view settles at the incoming chrome's clearance.
+- **Classic scrollbars.** Where the active view's scroller (the view, or a
+  sole header-less Pane's content) shows a classic, space-taking scrollbar,
+  `wireNavStack` measures it and the chrome ends where its track begins, so
+  the thumb and arrows stay visible and usable. An overlay scrollbar takes no
+  space and passes beneath the material like the content.
+- **Dividers.** With `wireScrollDividers`, the line under the chrome still
+  appears only while content is scrolled beneath it.
+- **Contrast.** The material keeps normal text at AA over any content. An
+  untoned `ToolbarText` in the chrome lifts itself: its title takes the normal
+  text color at every size and its `description` mixes the quiet color halfway
+  toward it. Other quiet copy you place in the chrome has no such lift, so keep
+  it in the view (see
+  [Accessibility › Chrome material](accessibility.md#chrome-material)). The
+  material turns opaque under `prefers-reduced-transparency`,
+  `prefers-contrast: more`, or without `backdrop-filter`, and forced colors
+  paint `Canvas` with a `CanvasText` bottom edge.
+
+`SplitView`'s `compactStack.chromePresentation` and a Workbench navigation
+panel's `navStack.chromePresentation` forward the same option. The bottom
+toolbar always docks.
+
 ## Safe areas
 
 The stack paints through a device's unsafe areas. Its chrome pads for the top

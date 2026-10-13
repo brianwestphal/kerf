@@ -26,7 +26,7 @@ Present a single linear or drill-down flow while preserving each prior view's st
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/nav-stack` — exports `NavStackView`, `NavStackToolbarConfig`, `NavStackProps`, `NavStack`.
+- JavaScript: `@kerfjs/ui/nav-stack` — exports `NavStackView`, `NavStackToolbarConfig`, `NavStackProps`, `NavStackChromePresentation`, `NavStack`.
 - CSS: the browser build of `@kerfjs/ui/nav-stack` pulls its CSS automatically; import `@kerfjs/ui/nav-stack.css` manually only without the `browser` export condition.
 - Wiring: `wireNavStack` from `@kerfjs/ui/wire-nav-stack` (required).
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
@@ -48,6 +48,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - persistent bottom-toolbar fallback
 - chrome and bottom-toolbar dividers only while the active view scrolls beneath them (wired by wireScrollDividers)
 - permanent or no chrome dividers (chromeDividers always or none)
+- translucent top chrome laid over the active view (chromePresentation overlay, measured by wireNavStack)
 
 ## Composition
 
@@ -58,7 +59,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 
 ## State and wiring
 
-**The app owns:** ordered view stack and stable keys; view content and structured top and bottom toolbar configurations; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar or a persistent structured fallback; per-view leading, center, and trailing top-toolbar groups; per-view header and footer with List and Pane configuration; top-toolbar defaults, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers).
+**The app owns:** ordered view stack and stable keys; view content and structured top and bottom toolbar configurations; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar or a persistent structured fallback; per-view leading, center, and trailing top-toolbar groups; per-view header and footer with List and Pane configuration; top-toolbar defaults, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers); whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation).
 
 **Wiring:** `wireNavStack`, `wireScrollDividers` is required.
 
@@ -70,6 +71,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - `data-nav-chrome-copy` on `kui-nav-stack__chrome-copy` (`wireNavStack`): Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade.
 - `data-nav-revealed` on `kui-nav-stack__view` (`wireNavStack`): "true" on the preserved, aria-hidden previous view while an incoming view slides over it.
 - `data-nav-exiting` on `kui-nav-stack__view` (`wireNavStack`): "true" on a popped view the helper briefly re-inserts to slide it out.
+- `data-chrome-overlay` on `kui-nav-stack` (`wireNavStack`): measured once the helper has measured an overlay chrome (chromePresentation: overlay) and published its border-box height on the stack root; the chrome then lies over the active view, which clears it through the block-start edge context. Both are re-applied if a re-render drops them.
 - `data-scroll-overflow` on `the active kui-nav-stack__view, or the kui-pane__content of a sole Pane in it` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
 - `data-scroll-divider` on `kui-nav-stack__chrome and kui-nav-stack__bottom` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
 - `data-header-overlay` on `kui-pane` (`wireScrollDividers`): measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it.
@@ -80,6 +82,7 @@ Margin: none · border: conditional · padding: child (layout role: structure). 
 
 - The stack owns its full-height chrome and viewport; each view owns its internal content padding and scrollable content.
 - The top chrome's bottom line and the bottom toolbar's top line are scroll state (wireScrollDividers), drawn as an overlaid 1px pseudo-element on the chrome and the bottom toolbar's always-present 1px top border, so neither moves the chrome or the content.
+- chromePresentation overlay: once wireNavStack measures the live chrome (never a cross-fading copy), the chrome lies over the viewport's top edge and its border-box height, top safe area included, becomes the viewport's block-start --kui-edge-inset-\* context, so a plain view, a sole Pane, or a nested layout pads and scroll-pads by it automatically; the chrome ends where a classic scrollbar in the active view begins, so its track stays uncovered; unwired, or with hideToolbar, the chrome stays docked.
 
 ## Accessibility
 
@@ -87,6 +90,7 @@ Margin: none · border: conditional · padding: child (layout role: structure). 
 - Set toolbarConfig.headingLevel when the view title is the page's or section's heading landmark.
 - Use wireNavStack so each controlled push moves focus into the new top view and each pop restores the revealed view's remembered descendant.
 - Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target.
+- Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter.
 
 ## Styling boundary
 

@@ -787,6 +787,11 @@
           "id": "whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -819,6 +824,12 @@
             "meaning": "\"true\" on a popped view the helper briefly re-inserts to slide it out."
           },
           {
+            "name": "data-chrome-overlay",
+            "on": "kui-nav-stack",
+            "helper": "wireNavStack",
+            "meaning": "measured once the helper has measured an overlay chrome (chromePresentation: overlay) and published its border-box height on the stack root; the chrome then lies over the active view, which clears it through the block-start edge context. Both are re-applied if a re-render drops them."
+          },
+          {
             "name": "data-scroll-overflow",
             "on": "the active kui-nav-stack__view, or the kui-pane__content of a sole Pane in it",
             "helper": "wireScrollDividers",
@@ -847,7 +858,8 @@
           "padding": "child",
           "notes": [
             "The stack owns its full-height chrome and viewport; each view owns its internal content padding and scrollable content.",
-            "The top chrome's bottom line and the bottom toolbar's top line are scroll state (wireScrollDividers), drawn as an overlaid 1px pseudo-element on the chrome and the bottom toolbar's always-present 1px top border, so neither moves the chrome or the content."
+            "The top chrome's bottom line and the bottom toolbar's top line are scroll state (wireScrollDividers), drawn as an overlaid 1px pseudo-element on the chrome and the bottom toolbar's always-present 1px top border, so neither moves the chrome or the content.",
+            "chromePresentation overlay: once wireNavStack measures the live chrome (never a cross-fading copy), the chrome lies over the viewport's top edge and its border-box height, top safe area included, becomes the viewport's block-start --kui-edge-inset-* context, so a plain view, a sole Pane, or a nested layout pads and scroll-pads by it automatically; the chrome ends where a classic scrollbar in the active view begins, so its track stays uncovered; unwired, or with hideToolbar, the chrome stays docked."
           ]
         }
       },
@@ -856,7 +868,8 @@
           "Give the stack region an accessible label and every back control a stable action label; visible backText names the control itself.",
           "Set toolbarConfig.headingLevel when the view title is the page's or section's heading landmark.",
           "Use wireNavStack so each controlled push moves focus into the new top view and each pop restores the revealed view's remembered descendant.",
-          "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target."
+          "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target.",
+          "Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter."
         ]
       },
       "cssValueProps": [],
@@ -982,6 +995,12 @@
             "on": "kui-nav-stack__view",
             "helper": "wireNavStack",
             "meaning": "\"true\" on a popped view the helper briefly re-inserts to slide it out."
+          },
+          {
+            "name": "data-chrome-overlay",
+            "on": "kui-nav-stack",
+            "helper": "wireNavStack",
+            "meaning": "measured once the helper has measured the compact stack's overlay chrome (compactStack.chromePresentation: overlay) and published its border-box height on the stack root. Re-applied if a re-render drops it."
           }
         ]
       },
@@ -2103,7 +2122,7 @@
         "obligations": [
           "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title.",
           "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.",
-          "In a Pane header with headerPresentation=\"overlay\", or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation=\"floating\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
+          "In a Pane header with headerPresentation=\"overlay\" or NavStack chrome with chromePresentation=\"overlay\", or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation=\"floating\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
         ]
       },
       "cssValueProps": [

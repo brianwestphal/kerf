@@ -1,5 +1,5 @@
 import { raw } from 'kerfjs';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   NavStack,
@@ -862,5 +862,291 @@ describe('wireNavStack', () => {
       false,
     );
     expect(document.activeElement).not.toBe(next);
+  });
+});
+
+class FakeResizeObserver {
+  static instances: FakeResizeObserver[] = [];
+  readonly observed = new Set<Element>();
+  constructor(readonly callback: ResizeObserverCallback) {
+    FakeResizeObserver.instances.push(this);
+  }
+  observe(target: Element) {
+    this.observed.add(target);
+  }
+  unobserve(target: Element) {
+    this.observed.delete(target);
+  }
+  disconnect() {
+    this.observed.clear();
+  }
+  report(target: Element, blockSize?: number) {
+    this.callback(
+      [
+        (blockSize === undefined
+          ? { target }
+          : {
+              target,
+              borderBoxSize: [{ blockSize, inlineSize: 320 }],
+            }) as unknown as ResizeObserverEntry,
+      ],
+      this as unknown as ResizeObserver,
+    );
+  }
+}
+
+/** A stack whose live chrome reports the given border-box height. */
+function overlayStack(
+  props: Partial<Parameters<typeof NavStack>[0]> = {},
+  height = 52,
+) {
+  const root = mountStack([view('home', 'Home')], {
+    chromePresentation: 'overlay',
+    ...props,
+  });
+  const chrome = root.querySelector<HTMLElement>('[data-nav-stack-chrome]');
+  if (chrome)
+    chrome.getBoundingClientRect = () => ({ height }) as unknown as DOMRect;
+  return { root, chrome };
+}
+
+const chromeSize = (root: HTMLElement) =>
+  root.style.getPropertyValue('--_kui-nav-stack-chrome-block-size');
+
+describe('NavStack overlay chrome', () => {
+  const originalResizeObserver = window.ResizeObserver;
+  beforeEach(() => {
+    FakeResizeObserver.instances = [];
+    window.ResizeObserver =
+      FakeResizeObserver as unknown as typeof ResizeObserver;
+  });
+  afterEach(() => {
+    window.ResizeObserver = originalResizeObserver;
+  });
+
+  it('marks overlay chrome only when the top toolbar is shown, and docks by default', () => {
+    const render = (props: Partial<Parameters<typeof NavStack>[0]>) =>
+      String(
+        NavStack({
+          id: 'nav',
+          label: 'Flow',
+          views: [view('a', 'A')],
+          ...props,
+        }),
+      );
+    expect(render({})).not.toContain('data-chrome-presentation');
+    expect(render({ chromePresentation: 'docked' })).not.toContain(
+      'data-chrome-presentation',
+    );
+    expect(render({ chromePresentation: 'overlay' })).toContain(
+      'data-chrome-presentation="overlay"',
+    );
+    expect(
+      render({ chromePresentation: 'overlay', hideToolbar: true }),
+    ).not.toContain('data-chrome-presentation');
+  });
+
+  it('publishes the live chrome block size and follows it as the chrome resizes', () => {
+    const { root, chrome } = overlayStack();
+    const dispose = wireNavStack(root, { duration: 0 });
+    expect(chromeSize(root)).toBe('52px');
+    expect(root.getAttribute('data-chrome-overlay')).toBe('measured');
+    const observer = FakeResizeObserver.instances[0]!;
+    expect(observer.observed.has(chrome!)).toBe(true);
+
+    // A wrapped title or larger text grows the chrome; the border box wins.
+    observer.report(chrome!, 96.5);
+    expect(chromeSize(root)).toBe('96.5px');
+    // Without a border-box entry the rect is read instead.
+    observer.report(chrome!);
+    expect(chromeSize(root)).toBe('52px');
+
+    dispose();
+    expect(chromeSize(root)).toBe('');
+    expect(root.hasAttribute('data-chrome-overlay')).toBe(false);
+    expect(observer.observed.size).toBe(0);
+  });
+
+  it('leaves a docked stack and a toolbar-less overlay stack unmeasured', () => {
+    const docked = mountStack([view('home', 'Home')]);
+    const disposeDocked = wireNavStack(docked);
+    expect(docked.hasAttribute('data-chrome-overlay')).toBe(false);
+    expect(chromeSize(docked)).toBe('');
+    disposeDocked();
+
+    const { root } = overlayStack({ hideToolbar: true });
+    const dispose = wireNavStack(root);
+    expect(root.hasAttribute('data-chrome-overlay')).toBe(false);
+    expect(FakeResizeObserver.instances[1]!.observed.size).toBe(0);
+    dispose();
+  });
+
+  it('restores the published size and gate a re-render strips, before paint', async () => {
+    const { root } = overlayStack();
+    const dispose = wireNavStack(root);
+    root.removeAttribute('style');
+    root.removeAttribute('data-chrome-overlay');
+    await tick();
+    expect(chromeSize(root)).toBe('52px');
+    expect(root.getAttribute('data-chrome-overlay')).toBe('measured');
+    dispose();
+    expect(chromeSize(root)).toBe('');
+    expect(root.hasAttribute('data-chrome-overlay')).toBe(false);
+  });
+
+  it('walks docked → overlay → replaced chrome → removed → restored → docked without a stale size', async () => {
+    const root = mountStack([view('home', 'Home')]);
+    const dispose = wireNavStack(root, { duration: 0 });
+    const observer = FakeResizeObserver.instances[0]!;
+    const first = root.querySelector<HTMLElement>('[data-nav-stack-chrome]')!;
+    first.getBoundingClientRect = () => ({ height: 44 }) as unknown as DOMRect;
+    expect(root.hasAttribute('data-chrome-overlay')).toBe(false);
+
+    // Docked → overlay: a first chrome is measured at once.
+    root.setAttribute('data-chrome-presentation', 'overlay');
+    await tick();
+    expect(chromeSize(root)).toBe('44px');
+    expect(observer.observed.has(first)).toBe(true);
+
+    // A re-render replaces the chrome: the last size holds until the
+    // observer reports the replacement after layout.
+    const replacement = first.cloneNode(true) as HTMLElement;
+    first.replaceWith(replacement);
+    await tick();
+    expect(observer.observed.has(first)).toBe(false);
+    expect(observer.observed.has(replacement)).toBe(true);
+    expect(chromeSize(root)).toBe('44px');
+    observer.report(replacement, 60);
+    expect(chromeSize(root)).toBe('60px');
+
+    // A late report for the chrome no longer measured changes nothing.
+    observer.report(first, 10);
+    expect(chromeSize(root)).toBe('60px');
+
+    // The toolbar goes away: nothing is laid over the views.
+    replacement.remove();
+    await tick();
+    expect(root.hasAttribute('data-chrome-overlay')).toBe(false);
+    expect(chromeSize(root)).toBe('');
+    expect(observer.observed.size).toBe(0);
+
+    // It comes back: measured afresh, never with the stale size.
+    const restored = replacement.cloneNode(true) as HTMLElement;
+    restored.getBoundingClientRect = () =>
+      ({ height: 48 }) as unknown as DOMRect;
+    root.prepend(restored);
+    await tick();
+    expect(chromeSize(root)).toBe('48px');
+
+    // Overlay → docked releases the gate.
+    root.removeAttribute('data-chrome-presentation');
+    await tick();
+    expect(root.hasAttribute('data-chrome-overlay')).toBe(false);
+    expect(chromeSize(root)).toBe('');
+    dispose();
+  });
+
+  it('never measures a cross-fading chrome copy across a push', async () => {
+    const { root, chrome } = overlayStack();
+    const dispose = wireNavStack(root, { duration: 10 });
+    const observer = FakeResizeObserver.instances[0]!;
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    viewport.querySelector<HTMLElement>(
+      '.kui-nav-stack__view',
+    )!.dataset.navActive = 'false';
+    const next = document.createElement('article');
+    next.className = 'kui-nav-stack__view';
+    next.dataset.navKey = 'detail';
+    next.dataset.navActive = 'true';
+    viewport.append(next);
+    await tick();
+    const copy = root.querySelector<HTMLElement>('[data-nav-chrome-copy]');
+    expect(copy).not.toBeNull();
+    expect(observer.observed.has(chrome!)).toBe(true);
+    expect(observer.observed.has(copy!)).toBe(false);
+    expect(chromeSize(root)).toBe('52px');
+    dispose();
+  });
+
+  it("publishes the active scroller's classic scrollbar width and follows it across pushes", async () => {
+    const { root } = overlayStack();
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const home = viewport.querySelector<HTMLElement>('.kui-nav-stack__view')!;
+    const scrollbar = (element: HTMLElement, width: number) => {
+      Object.defineProperty(element, 'offsetWidth', {
+        configurable: true,
+        get: () => 320,
+      });
+      Object.defineProperty(element, 'clientWidth', {
+        configurable: true,
+        get: () => 320 - width,
+      });
+    };
+    const size = () =>
+      root.style.getPropertyValue('--_kui-nav-stack-scrollbar-inline-size');
+    scrollbar(home, 15);
+    const dispose = wireNavStack(root, { duration: 0 });
+    const observer = FakeResizeObserver.instances[0]!;
+    // A plain view is its own scroller.
+    expect(observer.observed.has(home)).toBe(true);
+    expect(size()).toBe('15px');
+    // Content that stops overflowing drops the scrollbar.
+    scrollbar(home, 0);
+    observer.report(home);
+    expect(size()).toBe('');
+
+    // Push a view whose sole Pane's content scrolls beneath the chrome.
+    home.dataset.navActive = 'false';
+    const pushed = document.createElement('article');
+    pushed.className = 'kui-nav-stack__view';
+    pushed.dataset.navKey = 'detail';
+    pushed.dataset.navActive = 'true';
+    pushed.innerHTML =
+      '<section class="kui-pane"><div class="kui-pane__content"></div></section>';
+    const content = pushed.querySelector<HTMLElement>('.kui-pane__content')!;
+    scrollbar(content, 12);
+    viewport.append(pushed);
+    await tick();
+    expect(observer.observed.has(home)).toBe(false);
+    expect(observer.observed.has(content)).toBe(true);
+    expect(size()).toBe('12px');
+
+    // A Pane header starts its content below the chrome: nothing to clear.
+    const header = document.createElement('div');
+    header.className = 'kui-pane__header';
+    content.before(header);
+    pushed.dataset.navKey = 'detail-2';
+    await tick();
+    expect(observer.observed.has(content)).toBe(false);
+    expect(size()).toBe('');
+
+    // A nested layout owns its own chrome and scroller.
+    pushed.innerHTML = '<section data-component="nav-stack"></section>';
+    pushed.dataset.navKey = 'nested';
+    await tick();
+    expect(size()).toBe('');
+
+    // An empty view is its own scroller again.
+    pushed.innerHTML = '';
+    scrollbar(pushed, 9);
+    pushed.dataset.navKey = 'empty';
+    await tick();
+    expect(size()).toBe('9px');
+    dispose();
+    expect(size()).toBe('');
+  });
+
+  it('measures at once where ResizeObserver is missing', async () => {
+    window.ResizeObserver = undefined as unknown as typeof ResizeObserver;
+    const { root, chrome } = overlayStack();
+    const dispose = wireNavStack(root);
+    expect(chromeSize(root)).toBe('52px');
+    const replacement = chrome!.cloneNode(true) as HTMLElement;
+    replacement.getBoundingClientRect = () =>
+      ({ height: 70 }) as unknown as DOMRect;
+    chrome!.replaceWith(replacement);
+    await tick();
+    expect(chromeSize(root)).toBe('70px');
+    dispose();
   });
 });

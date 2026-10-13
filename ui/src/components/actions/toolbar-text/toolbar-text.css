@@ -138,10 +138,12 @@ button.kui-toolbar-text:focus-visible {
   color: var(--kui-color-text);
 }
 
-/* In an overlay Pane header (`headerPresentation="overlay"`), the title sits
-   on the translucent chrome material with arbitrary content scrolling beneath
-   it. Quiet colors fall below AA there over the worst-case backdrop (the
-   material over black in light, white in dark): the default title color
+/* In an overlay Pane header (`headerPresentation="overlay"`) or overlay
+   NavStack chrome (`chromePresentation="overlay"`, cross-fading copies
+   included), the title sits on the translucent chrome material with
+   arbitrary content scrolling beneath it. Quiet colors fall below AA there
+   over the worst-case backdrop (the material over black in light, white in
+   dark): the default title color
    measures about 3.8:1 (light) and the description about 3.2:1 (light) and
    4.1:1 (dark). The title takes the normal text color (about 10.5:1 and
    8.3:1), and the description lifts halfway toward it (about 5.9:1 in both
@@ -161,6 +163,9 @@ button.kui-toolbar-text:focus-visible {
 .kui-dialog-surface[data-header-presentation="floating"]
   > wa-dialog
   > :is([slot="label"], [slot="header-actions"])
+  .kui-toolbar-text:not([data-tone]),
+.kui-nav-stack[data-chrome-presentation="overlay"]
+  > .kui-nav-stack__chrome
   .kui-toolbar-text:not([data-tone]) {
   color: var(--kui-color-text);
 }
@@ -178,6 +183,10 @@ button.kui-toolbar-text:focus-visible {
 .kui-dialog-surface[data-header-presentation="floating"]
   > wa-dialog
   > :is([slot="label"], [slot="header-actions"])
+  .kui-toolbar-text:not([data-tone])
+  .kui-toolbar-text__description,
+.kui-nav-stack[data-chrome-presentation="overlay"]
+  > .kui-nav-stack__chrome
   .kui-toolbar-text:not([data-tone])
   .kui-toolbar-text__description {
   color: color-mix(

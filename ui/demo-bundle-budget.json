@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "largestJavaScriptGzip": 150300,
-  "totalJavaScriptGzip": 368200,
-  "measuredLargestJavaScriptGzip": 150253,
-  "measuredTotalJavaScriptGzip": 368159,
+  "largestJavaScriptGzip": 151400,
+  "totalJavaScriptGzip": 369300,
+  "measuredLargestJavaScriptGzip": 151308,
+  "measuredTotalJavaScriptGzip": 369208,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4419,6 +4419,22 @@
         "measuredTotalJavaScriptGzip": 368159,
         "largestJavaScriptGzip": 150300,
         "totalJavaScriptGzip": 368200
+      }
+    },
+    {
+      "at": "2026-10-13T16:42:24.968Z",
+      "reason": "KF-1N0S19: NavStack overlay chrome (wireNavStack measurement + Overlay Chrome catalog example) on top of KF-REH2T2; startup chunk passes 150 kB, follow-up KF-NWE2F9 splits it back under 150000",
+      "old": {
+        "measuredLargestJavaScriptGzip": 150253,
+        "measuredTotalJavaScriptGzip": 368159,
+        "largestJavaScriptGzip": 150300,
+        "totalJavaScriptGzip": 368200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 151308,
+        "measuredTotalJavaScriptGzip": 369208,
+        "largestJavaScriptGzip": 151400,
+        "totalJavaScriptGzip": 369300
       }
     }
   ]

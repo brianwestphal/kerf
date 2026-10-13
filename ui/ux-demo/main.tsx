@@ -97,8 +97,10 @@ import { SEND_COMPOSER_DEMO_ACTION } from './demos/composer.js';
 import {
   popConfiguredNavStackDemo,
   popNavStackDemo,
+  popOverlayNavStackDemo,
   pushConfiguredNavStackDemo,
   pushNavStackDemo,
+  pushOverlayNavStackDemo,
   resetNavStackDemo,
 } from './demos/nav-stack.js';
 import { demos, demoSettings } from './demos/registry.js';
@@ -1187,6 +1189,11 @@ const stopActions = delegateActions(app, 'click', {
     pushConfiguredNavStackDemo(projectId);
     actionLog.value = `Opened ${projectId}`;
   },
+  'open-overlay-nav-stack-message': (_event, element) => {
+    const messageId = (element as HTMLElement).dataset.itemId ?? '';
+    pushOverlayNavStackDemo(messageId);
+    actionLog.value = `Opened ${messageId}`;
+  },
   'open-tab-scaffold-project': () => {
     pushNestedTabNavigatorDemo();
     actionLog.value = 'Opened Project Atlas';
@@ -1456,6 +1463,7 @@ const routeWires: Partial<Record<string, RouteWire>> = {
       const stacks: [string, () => void][] = [
         ['#catalog-nav-stack', popNavStackDemo],
         ['#catalog-nav-stack-configured', popConfiguredNavStackDemo],
+        ['#catalog-nav-stack-overlay', popOverlayNavStackDemo],
       ];
       const stops = stacks.map(([selector, onBack]) => {
         const stack = canvas.querySelector(selector);

@@ -398,6 +398,14 @@ slot without mixing authoring rules into the per-entry component catalog.
   - **Verification.** `ui/tests/browser/dialog-floating-header.spec.ts` runs
     in Chromium, Firefox, and WebKit against the catalog's "Floating Title
     Bar" example.
+- **Translucent NavStack top bar.** `NavStack.chromePresentation` (`docked`
+  default, or `overlay`) lays the stack's top chrome over the active view on
+  the same chrome material, fallbacks, and contrast rule. `wireNavStack`
+  measures the live chrome and hands its height, top safe area included, to
+  the views as their block-start edge inset, so a plain view or a sole Pane
+  clears it automatically. Unwired, the chrome stays docked. See
+  `docs/23-app-layouts.md` §3.1 "Overlay chrome" and `ui/docs/nav-stack.md`
+  "Overlay chrome".
 
 - A `ListItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete

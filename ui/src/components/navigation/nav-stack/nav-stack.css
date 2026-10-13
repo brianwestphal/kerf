@@ -188,6 +188,50 @@
   position: relative;
 }
 
+/* `chromePresentation="overlay"`: the top chrome (and any copy cross-fading
+   out of it) paints the translucent chrome material (opaque under reduced
+   transparency or increased contrast, without `backdrop-filter`, or in
+   forced colors). Once `wireNavStack` has measured the live chrome
+   (`data-chrome-overlay="measured"`, with its border-box block size, top
+   safe area included, published on this root), the chrome lies over the
+   viewport's top edge and the viewport hands that size to its views as the
+   block-start edge context, so a plain view, a sole Pane, or a nested layout
+   pads and scroll-pads by it: content scrolls beneath the chrome yet rests
+   clear of it. Unwired, the chrome stays docked in its own band, so it never
+   covers content it has not measured. */
+.kui-nav-stack[data-chrome-presentation="overlay"] > .kui-nav-stack__chrome {
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+}
+
+.kui-nav-stack[data-chrome-presentation="overlay"][data-chrome-overlay="measured"]
+  > .kui-nav-stack__chrome:not(.kui-nav-stack__chrome-copy) {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 0;
+  /* A classic (space-taking) vertical scrollbar in the active view stays
+     uncovered: `wireNavStack` publishes its inline size, so the chrome ends
+     where the track begins and its thumb and arrows stay usable. An overlay
+     scrollbar takes no space and passes beneath the material like the
+     content. */
+  inset-inline: 0 var(--_kui-nav-stack-scrollbar-inline-size, 0px);
+}
+
+.kui-nav-stack[data-chrome-presentation="overlay"][data-chrome-overlay="measured"]
+  > .kui-nav-stack__viewport {
+  --kui-edge-inset-block-start: var(--_kui-nav-stack-chrome-block-size, 0px);
+}
+
+@media (forced-colors: active) {
+  .kui-nav-stack[data-chrome-presentation="overlay"] > .kui-nav-stack__chrome {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: Canvas;
+    border-block-end: 1px solid CanvasText;
+  }
+}
+
 /* Chrome dividers: with `chromeDividers="scroll"` (the default, no
    attribute) the top chrome draws a line along its bottom edge while the
    active view's content is scrolled beneath it, and the bottom toolbar

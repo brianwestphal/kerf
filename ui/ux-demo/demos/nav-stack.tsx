@@ -16,13 +16,17 @@ import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 import {
+  Bell,
+  Calendar,
   ChevronRight,
   FileText,
   Folder,
   LayoutGrid,
   List as ListIcon,
+  Mail,
   PanelLeft,
   Share,
+  ShieldCheck,
 } from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
@@ -177,12 +181,71 @@ const configuredDetailView = (project: Project): NavStackView => ({
   ),
 });
 
+/** Inbox rows for the overlay chrome example: colored tiles show through it. */
+const INBOX = Array.from({ length: 18 }, (_, index) => {
+  const [label, icon, name, tone] = (
+    [
+      ['Design Review', Calendar, 'calendar', 'brand'],
+      ['Backup Complete', ShieldCheck, 'shield-check', 'success'],
+      ['Storage Almost Full', Bell, 'bell', 'warning'],
+      ['Weekly Summary', Mail, 'mail', 'neutral'],
+    ] as const
+  )[index % 4]!;
+  return { id: `overlay-inbox-${String(index + 1)}`, label, icon, name, tone };
+});
+
+/** The inbox as a List whose rows run `action`. */
+const inboxList = (action: string) => (
+  <List>
+    {INBOX.map((message) => (
+      <ListItem
+        action={action}
+        itemId={message.id}
+        label={message.label}
+        icon={<LucideIcon icon={message.icon} name={message.name} />}
+        iconTile={message.tone}
+      />
+    ))}
+  </List>
+);
+
+const overlayRootView = (): NavStackView => ({
+  key: 'inbox',
+  toolbar: { title: 'Inbox' },
+  content: inboxList('open-overlay-nav-stack-message'),
+});
+
+// The pushed view is a sole Pane, which clears the chrome the same way.
+const overlayDetailView = (label: string): NavStackView => ({
+  key: 'message',
+  toolbar: { title: label },
+  pane: {},
+  content: inboxList('log-inbox'),
+});
+
 const demoViews = signal<NavStackView[]>([rootView()]);
 const configuredViews = signal<NavStackView[]>([configuredRootView()]);
+const overlayViews = signal<NavStackView[]>([overlayRootView()]);
 
 export function resetNavStackDemo(): void {
   demoViews.value = [rootView()];
   configuredViews.value = [configuredRootView()];
+  overlayViews.value = [overlayRootView()];
+}
+
+export function pushOverlayNavStackDemo(messageId: string): void {
+  if (overlayViews.value.length > 1) return;
+  const message = INBOX.find(({ id }) => id === messageId);
+  if (message)
+    overlayViews.value = [
+      ...overlayViews.value,
+      overlayDetailView(message.label),
+    ];
+}
+
+export function popOverlayNavStackDemo(): void {
+  if (overlayViews.value.length > 1)
+    overlayViews.value = overlayViews.value.slice(0, -1);
 }
 
 export function pushConfiguredNavStackDemo(projectId: string): void {
@@ -250,6 +313,24 @@ export function NavStackDemo() {
           views={configuredViews.value}
           backText={configuredViews.value.at(-2)?.toolbar?.title}
           toolbarConfig={{ headingLevel: 2, dividerSides: 'b' }}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Overlay Chrome"
+        note="chromePresentation overlay lays the top chrome over the active view on the translucent chrome material, so messages scroll visibly beneath it. wireNavStack measures the chrome, and each view, the plain list and the pushed message's Pane alike, rests its first row just below it."
+        viewport={{
+          layout: 'grid',
+          width: 'compact',
+          height: 'tall',
+          frame: 'solid',
+        }}
+      >
+        <NavStack
+          id="catalog-nav-stack-overlay"
+          label="Overlay Inbox"
+          views={overlayViews.value}
+          backLabel="Back to Inbox"
+          chromePresentation="overlay"
         />
       </CatalogExample>
     </CatalogExampleStack>

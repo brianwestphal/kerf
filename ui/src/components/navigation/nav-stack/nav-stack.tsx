@@ -56,6 +56,13 @@ export interface NavStackToolbarConfig extends ToolbarConfig {
   headingLevel?: HeadingLevel;
 }
 
+/**
+ * How a {@link NavStack}'s top chrome relates to the active view: `docked`
+ * above it, or `overlay` laid over its top edge on the translucent chrome
+ * material, so the view's content scrolls visibly beneath it.
+ */
+export type NavStackChromePresentation = 'docked' | 'overlay';
+
 export interface NavStackProps {
   id: string;
   /** Accessible name for the stack region. */
@@ -100,6 +107,23 @@ export interface NavStackProps {
    * own and is unaffected.
    */
   chromeDividers?: 'scroll' | 'always' | 'none';
+  /**
+   * `docked` (default) gives the top chrome its own band above the active
+   * view. `overlay` lays the chrome over the view's top edge on the
+   * translucent chrome material (`--kui-chrome-material`, opaque under
+   * `prefers-reduced-transparency`, `prefers-contrast: more`, forced colors,
+   * or without `backdrop-filter`), so content scrolls visibly beneath it, as
+   * an iOS navigation bar does. `wireNavStack` measures the live chrome and
+   * hands its height (top safe area included) to the viewport as the
+   * block-start `--kui-edge-inset-*` context, so every view clears it with no
+   * prop: a plain view, a sole `Pane`'s content (or header), and a nested
+   * layout all pad and `scroll-padding` by it, so the first item, and anything
+   * focused or scrolled into view, rests clear of the bar. Until then, and
+   * with `hideToolbar`, the chrome stays docked. An untoned `ToolbarText` in
+   * the chrome lifts its title and description to AA over the content passing
+   * beneath it; keep any other quiet copy in the view.
+   */
+  chromePresentation?: NavStackChromePresentation;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -153,6 +177,7 @@ export function NavStack({
   bottomToolbar,
   separator = 'auto',
   chromeDividers = 'scroll',
+  chromePresentation = 'docked',
   className = '',
   slot,
 }: NavStackProps) {
@@ -189,6 +214,9 @@ export function NavStack({
         chromeDividers === 'always' || chromeDividers === 'none'
           ? chromeDividers
           : undefined
+      }
+      data-chrome-presentation={
+        chromePresentation === 'overlay' && !hideToolbar ? 'overlay' : undefined
       }
       aria-label={label}
       slot={slot}
