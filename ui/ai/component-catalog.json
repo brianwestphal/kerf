@@ -733,7 +733,7 @@
             {
               "name": "data-header-overlay",
               "on": "kui-pane",
-              "meaning": "measured once the wiring has measured an overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root; the header then lies over the content, which clears it. Both are re-applied if a re-render drops them."
+              "meaning": "measured once the wiring has measured an overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root (and a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered); the header then lies over the content, which clears it. Both are re-applied if a re-render drops them."
             }
           ]
         }
@@ -903,7 +903,7 @@
             {
               "name": "data-header-overlay",
               "on": "kui-pane",
-              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1169,7 +1169,7 @@
             {
               "name": "data-header-overlay",
               "on": "kui-pane",
-              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1333,7 +1333,7 @@
             {
               "name": "data-header-overlay",
               "on": "kui-pane",
-              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1493,7 +1493,7 @@
             {
               "name": "data-header-overlay",
               "on": "kui-pane",
-              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1683,7 +1683,7 @@
             {
               "name": "data-header-overlay",
               "on": "kui-pane",
-              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
             }
           ]
         },
@@ -3710,7 +3710,7 @@
             {
               "name": "data-header-overlay",
               "on": "kui-pane",
-              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -4796,7 +4796,7 @@
             {
               "name": "data-header-overlay",
               "on": "kui-pane",
-              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it."
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
             }
           ]
         }

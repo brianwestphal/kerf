@@ -76,7 +76,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 - `data-scroll-overflow` on `kui-pane__content` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
 - `data-scroll-divider` on `kui-pane__header and kui-pane__footer` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
-- `data-header-overlay` on `kui-pane` (`wireScrollDividers`): measured once the wiring has measured an overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root; the header then lies over the content, which clears it. Both are re-applied if a re-render drops them.
+- `data-header-overlay` on `kui-pane` (`wireScrollDividers`): measured once the wiring has measured an overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root (and a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered); the header then lies over the content, which clears it. Both are re-applied if a re-render drops them.
 
 ## Geometry
 

@@ -353,6 +353,11 @@ slot without mixing authoring rules into the per-entry component catalog.
     `scroll-padding`. An unwired Pane, or one with `chromePlacement="auto"`,
     keeps the header docked. A re-render that strips the published value or the
     gate gets both back before paint.
+  - **Classic scrollbars.** The wiring also measures the content's vertical
+    scrollbar and publishes a classic (space-taking) one's inline size as
+    `--kui-pane-scrollbar-inline-size`, and the header ends where its track
+    begins, so the thumb and arrow buttons stay visible. An overlay scrollbar
+    takes no space and passes beneath the header like the content.
   - **Fallbacks.** The material resolves to the opaque surface under
     `prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and
     without `backdrop-filter`. In forced colors the header paints `Canvas` with

@@ -1137,6 +1137,8 @@ const clearance = (pane: HTMLElement) =>
   pane.style.getPropertyValue('--kui-scroll-clearance-block-start');
 const measured = (pane: HTMLElement) =>
   pane.getAttribute('data-header-overlay');
+const scrollbarInset = (pane: HTMLElement) =>
+  pane.style.getPropertyValue('--kui-pane-scrollbar-inline-size');
 
 describe('wireScrollDividers — overlay Pane headers', () => {
   it('publishes the header block size as block-start clearance and follows it as the header resizes', () => {
@@ -1238,6 +1240,90 @@ describe('wireScrollDividers — overlay Pane headers', () => {
     expect(measured(pane)).toBe('measured');
     dispose();
     expect(measured(pane)).toBeNull();
+  });
+
+  // KF-ZZAVRW: a classic (space-taking) scrollbar is left uncovered by the
+  // header; an overlay scrollbar (no inline size) publishes nothing.
+  it('publishes a classic scrollbar inline size and follows it as the scrollbar comes and goes', async () => {
+    const { root, pane, header } = overlayPane();
+    const content = pane.querySelector<HTMLElement>('.kui-pane__content')!;
+    const box = { offset: 300, client: 285 };
+    Object.defineProperty(content, 'offsetWidth', { get: () => box.offset });
+    Object.defineProperty(content, 'clientWidth', { get: () => box.client });
+    content.style.borderLeft = '1px solid';
+    content.style.borderRight = '1px solid';
+    const dispose = wireScrollDividers(root);
+    const observer = FakeResizeObserver.instances[0]!;
+    expect(scrollbarInset(pane)).toBe('13px');
+
+    // The content stops overflowing: the scrollbar goes, and so does the inset.
+    box.client = 298;
+    observer.fire(content);
+    expect(scrollbarInset(pane)).toBe('');
+    expect(clearance(pane)).toBe('44px');
+
+    // It overflows again; a header resize alone does not re-read it.
+    box.client = 283;
+    observer.fire(header);
+    expect(scrollbarInset(pane)).toBe('');
+    observer.fire(content);
+    expect(scrollbarInset(pane)).toBe('15px');
+
+    // A re-render that strips the root's style gets both values back.
+    pane.removeAttribute('style');
+    await settle();
+    expect(scrollbarInset(pane)).toBe('15px');
+    expect(clearance(pane)).toBe('44px');
+
+    // After a structural re-read, the post-layout probe re-reads it.
+    pane.setAttribute('data-chrome-placement', 'fixed');
+    await settle();
+    box.client = 290;
+    const probe = [...observer.observed].find(
+      (element) => !root.contains(element),
+    )!;
+    observer.fire(probe);
+    expect(scrollbarInset(pane)).toBe('8px');
+
+    // Back to auto placement: the header is docked, so nothing is published.
+    pane.setAttribute('data-chrome-placement', 'auto');
+    await settle();
+    expect(scrollbarInset(pane)).toBe('');
+
+    dispose();
+    expect(scrollbarInset(pane)).toBe('');
+  });
+
+  it('publishes no scrollbar inset for an overlay header over no content element', () => {
+    const { root, pane } = overlayPane();
+    pane.querySelector('.kui-pane__content')!.remove();
+    const dispose = wireScrollDividers(root);
+    expect(clearance(pane)).toBe('44px');
+    expect(scrollbarInset(pane)).toBe('');
+    dispose();
+  });
+
+  it('re-reads the scrollbar in the next frame where ResizeObserver is missing', async () => {
+    window.ResizeObserver = undefined as unknown as typeof ResizeObserver;
+    const { root, pane } = overlayPane();
+    const content = pane.querySelector<HTMLElement>('.kui-pane__content')!;
+    const box = { client: 300 };
+    Object.defineProperty(content, 'offsetWidth', { get: () => 300 });
+    Object.defineProperty(content, 'clientWidth', { get: () => box.client });
+    const dispose = wireScrollDividers(root);
+    expect(scrollbarInset(pane)).toBe('');
+    // Rows arrive and the content overflows into a classic scrollbar.
+    box.client = 285;
+    content.append(document.createElement('p'));
+    await settle();
+    await new Promise((resolve) => globalThis.requestAnimationFrame(resolve));
+    expect(scrollbarInset(pane)).toBe('15px');
+    // A frame with no change leaves it alone.
+    content.append(document.createElement('p'));
+    await settle();
+    await new Promise((resolve) => globalThis.requestAnimationFrame(resolve));
+    expect(scrollbarInset(pane)).toBe('15px');
+    dispose();
   });
 });
 

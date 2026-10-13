@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 367300,
-  "measuredLargestJavaScriptGzip": 149359,
-  "measuredTotalJavaScriptGzip": 367265,
+  "totalJavaScriptGzip": 367500,
+  "measuredLargestJavaScriptGzip": 149585,
+  "measuredTotalJavaScriptGzip": 367479,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4387,6 +4387,22 @@
         "measuredTotalJavaScriptGzip": 367265,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 367300
+      }
+    },
+    {
+      "at": "2026-10-13T16:28:07.769Z",
+      "reason": "KF-ZZAVRW: wireScrollDividers measures a classic Pane content scrollbar so an overlay header leaves it uncovered",
+      "old": {
+        "measuredLargestJavaScriptGzip": 149359,
+        "measuredTotalJavaScriptGzip": 367265,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 367300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 149585,
+        "measuredTotalJavaScriptGzip": 367479,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 367500
       }
     }
   ]

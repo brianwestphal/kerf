@@ -78,7 +78,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 - `data-tab-autoscroll` on `kui-tab-bar__tabs` (`wireTabBars`): "start" or "end" while a drag near that edge auto-scrolls the strip.
 - `data-scroll-overflow` on `kui-tab-bar__tabs` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
 - `data-scroll-divider` on `chrome named in wireScrollDividers targets (a TabBar strip has none)` (`wireScrollDividers`): The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it.
-- `data-header-overlay` on `kui-pane` (`wireScrollDividers`): measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root. Re-applied if a re-render drops it.
+- `data-header-overlay` on `kui-pane` (`wireScrollDividers`): measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it.
 
 ## Geometry
 

@@ -1168,7 +1168,14 @@ publishes it on the Pane root as the inherited
 `data-header-overlay="measured"` gate, declared in every `wireScrollDividers`
 catalog `stateAttributes`. The gate moves the header into the content cell,
 where it paints the translucent `--kui-chrome-material`, and the content adds
-the clearance to its block-start padding and `scroll-padding`.
+the clearance to its block-start padding and `scroll-padding`. The wiring also
+measures the content's classic (space-taking) vertical scrollbar
+(`offsetWidth` beyond `clientWidth` and the borders) on every content resize
+and post-layout re-read, and publishes it as
+`--kui-pane-scrollbar-inline-size` (KF-ZZAVRW: the header leaves a classic
+scrollbar uncovered); the measured header ends where the track begins. An
+overlay scrollbar measures 0, publishes nothing, and passes beneath the
+header like the content.
 
 Unwired, or with `chromePlacement="auto"`, the header stays docked. A
 per-Pane `MutationObserver`, watching only `style` and the gate, restores both

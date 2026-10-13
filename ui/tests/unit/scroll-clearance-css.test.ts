@@ -116,6 +116,8 @@ describe('scroll clearance context', () => {
       'z-index:1',
       'align-self:start',
       'grid-area:content',
+      // A classic scrollbar's strip stays uncovered (KF-ZZAVRW).
+      'margin-inline-end:var(--kui-pane-scrollbar-inline-size, 0px)',
     ]);
     expect(
       measured('> .kui-pane__content').map(

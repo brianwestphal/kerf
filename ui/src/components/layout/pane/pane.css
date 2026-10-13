@@ -218,7 +218,8 @@
    (`data-header-overlay="measured"`, with its border-box height published as
    `--kui-scroll-clearance-block-start` on this root), the header moves into
    the content cell above the scroller, and the scroller clears it through
-   the same block padding and scroll padding `scrollClearance` uses. Unwired,
+   the same block padding and scroll padding `scrollClearance` uses, and the
+   header leaves a classic scrollbar uncovered. Unwired,
    or with `chromePlacement="auto"`, the header stays docked in its own row,
    so it never covers content it has not measured. */
 .kui-pane[data-header-presentation="overlay"] > .kui-pane__header {
@@ -235,6 +236,12 @@
   z-index: 1;
   align-self: start;
   grid-area: content;
+  /* A classic (space-taking) vertical scrollbar stays uncovered: the wiring
+     publishes its inline size, so the header ends where the scrollbar's
+     track begins and its thumb and arrow buttons stay visible and usable.
+     An overlay scrollbar takes no space and leaves this unset, so it passes
+     beneath the material like the content. */
+  margin-inline-end: var(--kui-pane-scrollbar-inline-size, 0px);
 }
 
 .kui-pane[data-header-presentation="overlay"][data-header-overlay="measured"]:not(

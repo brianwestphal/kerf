@@ -58,6 +58,12 @@ const SCROLL_DIVIDER = 'data-scroll-divider';
 const HEADER_OVERLAY = 'data-header-overlay';
 /** The inherited clearance context a measured overlay header publishes. */
 const CLEARANCE_BLOCK_START = '--kui-scroll-clearance-block-start';
+/**
+ * On a Pane with a measured overlay header: the inline size of its content's
+ * classic vertical scrollbar, which the header leaves uncovered. Unset for an
+ * overlay scrollbar, which takes no space.
+ */
+const SCROLLBAR_INLINE_SIZE = '--kui-pane-scrollbar-inline-size';
 /** A Pane whose header is laid over its content (fixed chrome only). */
 const OVERLAY_PANE =
   '.kui-pane[data-header-presentation="overlay"]:not([data-chrome-placement="auto"])';
@@ -328,6 +334,8 @@ function createController(
   let overlays = new Map<HTMLElement, HTMLElement>();
   /** Each overlay header's last measured border-box block size, in px. */
   const headerSizes = new Map<HTMLElement, number>();
+  /** Each overlay header's Pane content scrollbar inline size, in px. */
+  const scrollbarSizes = new Map<HTMLElement, number>();
   /** Each Pane this wiring has published a header clearance on. */
   const published = new Set<HTMLElement>();
 
@@ -392,6 +400,34 @@ function createController(
   };
 
   /**
+   * Re-read the classic vertical scrollbar of each overlay Pane's content (its
+   * `offsetWidth` beyond `clientWidth` and the borders; 0 for an overlay
+   * scrollbar). Returns whether any changed.
+   */
+  const measureScrollbars = () => {
+    let changed = false;
+    for (const [header, pane] of overlays) {
+      const scroller = directChild(pane, '.kui-pane__content');
+      let size = 0;
+      if (scroller) {
+        const style =
+          scroller.ownerDocument.defaultView!.getComputedStyle(scroller);
+        size = Math.max(
+          0,
+          scroller.offsetWidth -
+            scroller.clientWidth -
+            (Number.parseFloat(style.borderLeftWidth) || 0) -
+            (Number.parseFloat(style.borderRightWidth) || 0),
+        );
+      }
+      if (scrollbarSizes.get(header) === size) continue;
+      scrollbarSizes.set(header, size);
+      changed = true;
+    }
+    return changed;
+  };
+
+  /**
    * Watches only the Panes this wiring published on, so a re-render that
    * strips the published clearance or gate gets them back before paint.
    */
@@ -401,25 +437,35 @@ function createController(
       })
     : undefined;
 
-  /** Publish each measured overlay header's clearance on its Pane. */
+  /**
+   * Publish each measured overlay header's clearance on its Pane, with the
+   * inline size of a classic scrollbar the header must leave uncovered.
+   */
   const publish = () => {
-    const current = new Map<HTMLElement, string>();
+    const current = new Map<HTMLElement, [string, string]>();
     for (const [header, pane] of overlays) {
       const size = headerSizes.get(header);
-      if (size !== undefined) current.set(pane, `${size}px`);
+      const scrollbar = scrollbarSizes.get(header);
+      if (size !== undefined)
+        current.set(pane, [`${size}px`, scrollbar ? `${scrollbar}px` : '']);
     }
     // Disconnect first, so this wiring's own writes are not reported back.
     overlayObserver?.disconnect();
     for (const pane of published)
       if (!current.has(pane)) {
         pane.style.removeProperty(CLEARANCE_BLOCK_START);
+        pane.style.removeProperty(SCROLLBAR_INLINE_SIZE);
         if (!pane.getAttribute('style')) pane.removeAttribute('style');
         pane.removeAttribute(HEADER_OVERLAY);
       }
     published.clear();
-    for (const [pane, value] of current) {
+    for (const [pane, [value, scrollbar]] of current) {
       if (pane.style.getPropertyValue(CLEARANCE_BLOCK_START) !== value)
         pane.style.setProperty(CLEARANCE_BLOCK_START, value);
+      if (pane.style.getPropertyValue(SCROLLBAR_INLINE_SIZE) !== scrollbar) {
+        if (scrollbar) pane.style.setProperty(SCROLLBAR_INLINE_SIZE, scrollbar);
+        else pane.style.removeProperty(SCROLLBAR_INLINE_SIZE);
+      }
       if (pane.getAttribute(HEADER_OVERLAY) !== 'measured')
         pane.setAttribute(HEADER_OVERLAY, 'measured');
       published.add(pane);
@@ -478,6 +524,9 @@ function createController(
         if (disposed) return;
         const scrollers = new Set(pairings.map(({ scroller }) => scroller));
         let headerResized = false;
+        // A scroller resized (a classic scrollbar appeared or went away) or
+        // the post-layout probe reported: the scrollbars may have changed.
+        let scrollersResized = false;
         for (const entry of entries) {
           const { target } = entry;
           if (overlays.has(target as HTMLElement)) {
@@ -489,6 +538,7 @@ function createController(
             headerResized = true;
             continue;
           }
+          scrollersResized = true;
           if (target === probe) {
             probePending = false;
             for (const scroller of overflow.keys())
@@ -501,6 +551,7 @@ function createController(
           if (scroller && scrollers.has(scroller))
             overflow.set(scroller, measure(scroller));
         }
+        if (scrollersResized && measureScrollbars()) headerResized = true;
         apply();
         if (headerResized) publish();
       })
@@ -543,14 +594,16 @@ function createController(
         previous ? (previous.get(scroller) ?? '') : measure(scroller),
       );
     overlays = collectOverlays();
-    for (const header of headerSizes.keys())
-      if (!overlays.has(header)) headerSizes.delete(header);
+    for (const sizes of [headerSizes, scrollbarSizes])
+      for (const header of sizes.keys())
+        if (!overlays.has(header)) sizes.delete(header);
     // A new overlay header is measured at once unless the ResizeObserver
     // will report it after this frame's layout.
     if (!deferred)
       for (const header of overlays.keys())
         if (!headerSizes.has(header))
           headerSizes.set(header, header.getBoundingClientRect().height);
+    if (!deferred) measureScrollbars();
     observeSizes();
     apply();
     publish();
@@ -567,6 +620,7 @@ function createController(
       changed = true;
     }
     if (changed) apply();
+    if (measureScrollbars()) publish();
   };
 
   let remeasureFrame: number | undefined;
@@ -764,6 +818,7 @@ function createController(
         written.clear();
         overlays.clear();
         headerSizes.clear();
+        scrollbarSizes.clear();
         publish();
         overlayObserver?.disconnect();
         overflow.clear();

@@ -226,12 +226,20 @@ re-render that drops the measurement gets it back before paint.
 The overlay needs pinned chrome. With `chromePlacement="auto"`, the header
 stays docked. `PaneConfig` carries `headerPresentation`, so a Workbench
 `mainPane` or panel `pane`, a `CollapsiblePanel` `pane`, or a `NavStack` view's
-`pane` can lay its header over its content the same way. Keep overlay-header
-text in the normal text color. Secondary copy, such as a `ToolbarText`
-`description`, belongs in the content (see
-[Accessibility › Chrome material](accessibility.md#chrome-material)). A classic
-(non-overlay) scrollbar runs beneath the header, as it does under platform
-translucent bars.
+`pane` can lay its header over its content the same way. Overlay-header text
+must stay at AA over whatever passes beneath: an untoned `ToolbarText` there
+takes the normal text color for its title and lifts its `description` toward
+it, and other quiet secondary copy belongs in the content (see
+[Accessibility › Chrome material](accessibility.md#chrome-material)).
+
+An overlay scrollbar (macOS by default) passes beneath the header like the
+content. A classic, space-taking scrollbar (Windows and Linux, or macOS with
+"always show scrollbars") stays uncovered: the wiring also measures the
+content's vertical scrollbar (`offsetWidth` beyond `clientWidth`) and publishes
+its inline size on the Pane as `--kui-pane-scrollbar-inline-size`, and the
+header ends where the scrollbar's track begins, so its thumb and arrow buttons
+remain visible and usable. The measurement follows the scrollbar as content
+starts or stops overflowing.
 
 A pane is safe-area aware. Its background and separators paint through a
 device's unsafe areas while its header, content, and footer pad for each side
