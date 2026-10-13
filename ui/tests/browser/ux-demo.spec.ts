@@ -5108,10 +5108,10 @@ test('renders self-styled Badge variants without app CSS', async ({
   await page.goto('/?component=badge');
   const demo = page.locator('[data-demo="badge"]');
   const allBadges = demo.locator('[data-component="badge"]');
-  // The settings-driven playground badge, five text badges, and the text-free
+  // The settings-driven playground badge, six text badges, and the text-free
   // dot, whose 8px geometry is covered by tab-navigator-badge.spec.ts; the
   // text-badge checks below skip it.
-  await expect(allBadges).toHaveCount(7);
+  await expect(allBadges).toHaveCount(8);
   await expect(
     demo.locator('[data-badge-playground] [data-component="badge"]'),
   ).toHaveAttribute('data-tone', 'info');
@@ -5121,7 +5121,7 @@ test('renders self-styled Badge variants without app CSS', async ({
   const badges = demo.locator(
     '[data-component="badge"]:not([data-size="dot"])',
   );
-  await expect(badges).toHaveCount(6);
+  await expect(badges).toHaveCount(7);
   await expect(badges.nth(1)).toHaveAttribute('data-tone', 'success');
   await expect(badges.nth(2)).toHaveAttribute('aria-label', '12 unread items');
   await expect(badges.nth(2)).toHaveAttribute('role', 'img');
@@ -5143,6 +5143,8 @@ test('renders self-styled Badge variants without app CSS', async ({
   expect(iconGap).toBeCloseTo(4, 0);
   await expect(badges.nth(4)).toHaveAttribute('data-shape', 'rounded');
   await expect(badges.nth(4)).toHaveAttribute('data-appearance', 'outline');
+  // The long-text badge truncates (badge.spec.ts covers its geometry).
+  await expect(badges.nth(5)).toHaveAttribute('data-truncate', 'true');
   expect(
     await badges.evaluateAll((nodes) =>
       nodes.every((node) => {
