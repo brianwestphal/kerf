@@ -548,10 +548,184 @@ describe('viewportMargin / fitHeight', () => {
     el.style.boxSizing = 'border-box';
     positionAnchored(el, anchor, { fitHeight: true });
     expect(el.style.getPropertyValue(AVAILABLE)).toBe('346px');
-    // A cap that does not resolve to px is no cap.
-    el.style.maxHeight = '50%';
+    // A keyword cap is no cap.
+    el.style.maxHeight = 'none';
     positionAnchored(el, anchor, { fitHeight: true });
     expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+  });
+
+  describe('a cap that stays relative after computing', () => {
+    // happy-dom has no layout: stand in for the engine's used height of the
+    // resolution probe, a percentage of an 800px-tall containing block.
+    const realComputedStyle = window.getComputedStyle.bind(window);
+    function resolvePercentProbes(): Element[] {
+      const probes: Element[] = [];
+      vi.spyOn(window, 'getComputedStyle').mockImplementation((target) => {
+        const style = realComputedStyle(target);
+        const height = (target as HTMLElement).style.height;
+        if (!(target as HTMLElement).style.visibility) return style;
+        probes.push(target);
+        return new Proxy(style, {
+          get: (base, key) =>
+            key === 'height'
+              ? `${(Number.parseFloat(height) / 100) * 800}px`
+              : Reflect.get(base, key),
+        });
+      });
+      return probes;
+    }
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('resolves a percentage cap against the containing block with a probe beside the element', () => {
+      setViewport(1000, 800);
+      // Room below 800 − 454 = 346; room above 400 − 4 = 396.
+      const anchor = anchorAt({ left: 100, right: 150, top: 400, bottom: 450 });
+      const el = cappedElement(80, 500);
+      const probes = resolvePercentProbes();
+      // 40% of 800 = 320 fits below, so the preferred side holds.
+      el.style.maxHeight = '40%';
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.top).toBe('454px');
+      expect(el.style.getPropertyValue(AVAILABLE)).toBe('346px');
+      expect(probes).toHaveLength(1);
+      expect(probes[0]!.isConnected).toBe(false);
+      expect(document.body.children).toHaveLength(2); // anchor + el only
+
+      // A content-box cap adds the vertical padding: 320 + 2×20 = 360 no
+      // longer fits below, so it goes above.
+      el.style.padding = '20px 0';
+      el.style.boxSizing = 'content-box';
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+    });
+
+    it('treats a height the probe cannot take, or a detached element, as no cap', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt({ left: 100, right: 150, top: 400, bottom: 450 });
+      const el = cappedElement(80, 500);
+      resolvePercentProbes();
+      // happy-dom computes `min()` but rejects it as an inline height.
+      el.style.maxHeight = 'min(300px, 40%)';
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+
+      el.style.maxHeight = '40%';
+      el.remove();
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(el.style.getPropertyValue(AVAILABLE)).toBe('396px');
+    });
+  });
+
+  describe('an app transition on the element', () => {
+    const realComputedStyle = window.getComputedStyle.bind(window);
+    const LONGHANDS = [
+      'transition-property',
+      'transition-duration',
+      'transition-delay',
+    ];
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    // happy-dom computes no transitions: report the element's transitions
+    // from its inline longhands (or a stylesheet's `opacity 1s, max-height
+    // 2s`), and, like an engine, report a running transition's value — the
+    // published room — for `max-height` unless the read disables it.
+    function emulateTransitions(el: HTMLElement): {
+      atRead: string[];
+    } {
+      const atRead: string[] = [];
+      vi.spyOn(window, 'getComputedStyle').mockImplementation((target) => {
+        const style = realComputedStyle(target);
+        if (target !== el) return style;
+        const stylesheet: Record<string, string> = {
+          'transition-property': 'opacity, max-height',
+          'transition-duration': '1s, 2s',
+          'transition-delay': '0s',
+        };
+        const getPropertyValue = (name: string): string =>
+          name in stylesheet
+            ? el.style.getPropertyValue(name) || stylesheet[name]!
+            : style.getPropertyValue(name);
+        return new Proxy(style, {
+          get: (base, key) => {
+            switch (key) {
+              case 'getPropertyValue':
+                return getPropertyValue;
+              case 'maxHeight': {
+                for (const name of LONGHANDS)
+                  atRead.push(
+                    `${el.style.getPropertyValue(name).replace(/\s/g, '')}|${el.style.getPropertyPriority(name)}`,
+                  );
+                const settled = el.style
+                  .getPropertyValue('transition-property')
+                  .match(/max-height$|^none$/);
+                return settled ? '300px' : el.style.getPropertyValue(AVAILABLE);
+              }
+              default: {
+                const value: unknown = Reflect.get(base, key);
+                return typeof value === 'function' ? value.bind(base) : value;
+              }
+            }
+          },
+        });
+      });
+      return { atRead };
+    }
+
+    it('reads the cap with max-height transitions off and restores the inline transitions', () => {
+      setViewport(1000, 800);
+      // Room below 800 − 454 = 346; room above 400 − 4 = 396.
+      const anchor = anchorAt({ left: 100, right: 150, top: 400, bottom: 450 });
+      const el = cappedElement(80, 500);
+      // A previous placement published 450px; a running max-height transition
+      // would report that, which fits neither side.
+      el.style.setProperty(AVAILABLE, '450px');
+      const { atRead } = emulateTransitions(el);
+      positionAnchored(el, anchor, { fitHeight: true });
+      // Read as the 300px cap instead: fits below.
+      expect(el.style.top).toBe('454px');
+      // `max-height` appended with no duration or delay; every other
+      // transition paired with its own duration and delay as before.
+      expect(atRead).toEqual([
+        'opacity,max-height,max-height|important',
+        '1s,2s,0s|important',
+        '0s,0s,0s|important',
+      ]);
+      for (const name of LONGHANDS)
+        expect(el.style.getPropertyValue(name)).toBe('');
+
+      // Inline longhands, with their priorities, come back exactly.
+      el.style.setProperty('transition-property', 'opacity');
+      el.style.setProperty('transition-duration', '150ms', 'important');
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(atRead.slice(3)).toEqual([
+        'opacity,max-height|important',
+        '150ms,0s|important',
+        '0s,0s|important',
+      ]);
+      expect(el.style.getPropertyValue('transition-property')).toBe('opacity');
+      expect(el.style.getPropertyPriority('transition-property')).toBe('');
+      expect(el.style.getPropertyValue('transition-duration')).toBe('150ms');
+      expect(el.style.getPropertyPriority('transition-duration')).toBe(
+        'important',
+      );
+      expect(el.style.getPropertyValue('transition-delay')).toBe('');
+    });
+
+    it('leaves an element without transitions untouched', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt({ left: 100, right: 150, top: 400, bottom: 450 });
+      const el = cappedElement(80, 500);
+      el.style.maxHeight = '300px';
+      el.style.setProperty('transition-property', 'none');
+      const { atRead } = emulateTransitions(el);
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(atRead).toEqual(['none|', '|', '|']);
+      expect(el.style.getPropertyValue('transition-property')).toBe('none');
+    });
   });
 
   it('never reads back the room it published as the element cap', () => {

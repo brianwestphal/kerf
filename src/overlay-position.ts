@@ -35,8 +35,11 @@ export interface AnchorPositionOptions {
    * height measured for that choice honors the element's own `max-height`
    * (read without the published property, so `max-height: min(300px,
    * var(--kerf-anchor-available-height))` counts as a 300px cap), so an
-   * app-capped element that fits the preferred side stays there. Default
-   * `false`.
+   * app-capped element that fits the preferred side stays there. A relative
+   * cap (`60%`, `calc()`, `min()`, `clamp()`) is resolved against the
+   * element's fixed-position containing block (normally the viewport), and a
+   * `max-height` transition on the element neither skews that read nor runs
+   * because of it. Default `false`.
    */
   fitHeight?: boolean;
 }
@@ -152,17 +155,61 @@ const VERTICAL_EDGES = [
 const UNBOUNDED_ROOM = '9999999px';
 
 /**
+ * The inline properties {@link ownMaxHeight} overrides around its read, in
+ * restore order: the published room, then the transition longhands.
+ */
+const SWAPPED = [
+  AVAILABLE_HEIGHT,
+  'transition-property',
+  'transition-duration',
+  'transition-delay',
+];
+
+/**
  * `el`'s own border-box `max-height` in CSS px, excluding the room kerf
  * itself published. The published property is swapped for an unbounded room
  * only around a computed-style read (a style recalc, no layout, so nothing
  * reflows or scrolls) and restored at once, so kerf never reads its own last
- * cap back as the element's. A `max-height` that does not resolve to px
- * (`none`, a percentage) is no cap.
+ * cap back as the element's.
+ *
+ * A `max-height` transition would report its running value for that read (the
+ * published room, not the cap) and start a transition on the swap, so for the
+ * read `max-height` is appended to the element's transition list with no
+ * duration or delay (the last entry for a property wins); every other running
+ * transition keeps running. The restored cap is settled before the app's
+ * transitions return, so they see no change to animate.
+ *
+ * A cap that stays relative after computing (a percentage, `calc()`,
+ * `min()`, `clamp()`) is resolved against `el`'s containing block by
+ * {@link resolveHeight}; a keyword (`none`, `fit-content`) is no cap.
  */
 function ownMaxHeight(el: HTMLElement): number {
-  const published = el.style.getPropertyValue(AVAILABLE_HEIGHT);
-  el.style.setProperty(AVAILABLE_HEIGHT, UNBOUNDED_ROOM);
+  const inline = el.style;
   const style = window.getComputedStyle(el);
+  const saved = SWAPPED.map((name): [string, string, string] => [
+    name,
+    inline.getPropertyValue(name),
+    inline.getPropertyPriority(name),
+  ]);
+  // The computed transition lists, read before any of them is overridden.
+  const lists = SWAPPED.map((name) => style.getPropertyValue(name).split(','));
+  const transitions = lists[1]!;
+  if (transitions[0] && transitions[0] !== 'none') {
+    // Repeat the duration and delay lists to the property list's length, as
+    // CSS does, so appending an entry leaves every existing pairing intact.
+    for (let index = 1; index < 4; index++) {
+      const items = lists[index]!;
+      inline.setProperty(
+        SWAPPED[index]!,
+        [
+          ...transitions.map((_, entry) => items[entry % items.length]),
+          index > 1 ? '0s' : 'max-height',
+        ].join(),
+        'important',
+      );
+    }
+  }
+  inline.setProperty(AVAILABLE_HEIGHT, UNBOUNDED_ROOM);
   const maxHeight = style.maxHeight;
   const inset =
     style.boxSizing === 'border-box'
@@ -171,10 +218,58 @@ function ownMaxHeight(el: HTMLElement): number {
           (sum, edge) => sum + (Number.parseFloat(style[edge]) || 0),
           0,
         );
-  if (published) el.style.setProperty(AVAILABLE_HEIGHT, published);
-  else el.style.removeProperty(AVAILABLE_HEIGHT);
-  if (!maxHeight.endsWith('px')) return Infinity;
-  return Number.parseFloat(maxHeight) + inset;
+  saved.forEach(([name, value, priority], index) => {
+    if (value) inline.setProperty(name, value, priority);
+    else inline.removeProperty(name);
+    // Settle the restored room before the transitions return.
+    if (!index) style.getPropertyValue('max-height');
+  });
+  if (maxHeight.endsWith('px')) return Number.parseFloat(maxHeight) + inset;
+  if (/^[a-z-]+$/.test(maxHeight)) return Infinity;
+  return resolveHeight(el, maxHeight) + inset;
+}
+
+/**
+ * Resolve a computed but still relative height (`60%`, `calc(50% - 1rem)`,
+ * `min(300px, 60%)`) to CSS px against `el`'s fixed-position containing block
+ * — the viewport, or a transformed ancestor: a fixed probe beside `el` takes it
+ * as its `height`, and the probe's used height is read back. `el` itself is
+ * never touched, so its scroll position and layout are unaffected. A height
+ * the probe cannot take, or a detached `el`, is no cap.
+ */
+function resolveHeight(el: HTMLElement, height: string): number {
+  return withFixedProbe(
+    el,
+    'width:0;box-sizing:content-box;min-height:0;max-height:none;visibility:hidden',
+    (probe) => {
+      probe.style.height = height;
+      if (!probe.style.height) return Infinity;
+      return Number.parseFloat(window.getComputedStyle(probe).height);
+    },
+    Infinity,
+  );
+}
+
+/**
+ * Run `measure` on a fixed-position probe at `left: 0; top: 0`, inserted just
+ * before `el` so it shares `el`'s containing block, then remove it. The probe
+ * is inserted and removed synchronously, so it is never painted. A detached
+ * `el` has no containing block to share, so `detached` is returned instead.
+ */
+function withFixedProbe<T>(
+  el: HTMLElement,
+  css: string,
+  measure: (probe: HTMLElement) => T,
+  detached: T,
+): T {
+  const parent = el.parentNode;
+  if (!parent) return detached;
+  const probe = el.ownerDocument.createElement('div');
+  probe.style.cssText = `position:fixed;left:0;top:0;display:block;margin:0;padding:0;border:0;${css}`;
+  parent.insertBefore(probe, el);
+  const result = measure(probe);
+  probe.remove();
+  return result;
 }
 
 /**
@@ -182,22 +277,21 @@ function ownMaxHeight(el: HTMLElement): number {
  * parent, plus that containing block's scale — `[x, y, scaleX, scaleY]`, which
  * is `[0, 0, 1, 1]` when the viewport is the containing block. Measured with a
  * 1px probe rather than `el` itself so `el`'s own transform or running entrance
- * animation cannot skew it. The probe is inserted and removed synchronously, so
- * it is never painted. Translation and scale are compensated; a rotated or
- * skewed containing block is not.
+ * animation cannot skew it. Translation and scale are compensated; a rotated
+ * or skewed containing block is not.
  */
 function fixedOrigin(el: HTMLElement): [number, number, number, number] {
-  const parent = el.parentNode;
-  if (!parent) return [0, 0, 1, 1];
-  const probe = el.ownerDocument.createElement('div');
-  probe.style.cssText =
-    'position:fixed;left:0;top:0;width:1px;height:1px;margin:0;padding:0;border:0';
-  parent.insertBefore(probe, el);
-  const rect = probe.getBoundingClientRect();
-  probe.remove();
-  // A zero size (a containing block mid `scale(0)` animation, or a DOM without
-  // layout) would divide by zero; treat it as unscaled.
-  return [rect.left, rect.top, rect.width || 1, rect.height || 1];
+  return withFixedProbe(
+    el,
+    'width:1px;height:1px',
+    (probe): [number, number, number, number] => {
+      const rect = probe.getBoundingClientRect();
+      // A zero size (a containing block mid `scale(0)` animation, or a DOM
+      // without layout) would divide by zero; treat it as unscaled.
+      return [rect.left, rect.top, rect.width || 1, rect.height || 1];
+    },
+    [0, 0, 1, 1],
+  );
 }
 
 /**

@@ -195,7 +195,11 @@ const BUDGETS = [
     // (gutter clamp, roomier-side choice, published available height).
     // KF-878W6T (+0.09 KB): fitHeight measures against the element's own
     // max-height (read with the published room swapped out).
-    budgetKb: 21.7,
+    // KF-53GEGN (+0.31 KB): fitHeight resolves a relative max-height cap
+    // (%, calc, min, clamp) with a containing-block probe, and holds off a
+    // max-height transition during the cap read (it reported the running
+    // value and fired transition events).
+    budgetKb: 22.0,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

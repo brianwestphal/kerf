@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 366000,
-  "measuredLargestJavaScriptGzip": 148052,
-  "measuredTotalJavaScriptGzip": 365902,
+  "totalJavaScriptGzip": 366300,
+  "measuredLargestJavaScriptGzip": 148353,
+  "measuredTotalJavaScriptGzip": 366205,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4323,6 +4323,22 @@
         "measuredTotalJavaScriptGzip": 365902,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 366000
+      }
+    },
+    {
+      "at": "2026-10-13T14:22:55.966Z",
+      "reason": "KF-53GEGN: kerfjs/overlay fitHeight resolves relative max-height caps (containing-block probe) and holds off a max-height transition during the cap read (+0.2 kB gzip via the shared overlay positioning core)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 148052,
+        "measuredTotalJavaScriptGzip": 365902,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 366000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 148353,
+        "measuredTotalJavaScriptGzip": 366205,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 366300
       }
     }
   ]

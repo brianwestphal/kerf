@@ -1,4 +1,4 @@
-import { expect, type Locator, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 const GUTTER = 8;
 
@@ -139,4 +139,114 @@ test('an app-capped surface that fits the preferred side stays there', async ({
     return element.scrollTop;
   });
   expect(scrolled).toBe(40);
+});
+
+// Put the token search field a little below the middle of a short phone
+// viewport (so the room above is larger), open its help surface, and return
+// the room on each side.
+const openBelowMiddle = async (page: Page) => {
+  await page.setViewportSize({ width: 390, height: 520 });
+  await page.goto('/?component=token-search-field');
+  const button = page
+    .locator('[data-demo="token-search-field"]')
+    .getByRole('button', { name: 'Search Help' });
+  await button.evaluate((element) => {
+    element.scrollIntoView({ block: 'center' });
+    let scroller = element.parentElement;
+    while (scroller && scroller.scrollHeight <= scroller.clientHeight)
+      scroller = scroller.parentElement;
+    (scroller ?? document.scrollingElement)?.scrollBy(0, -60);
+  });
+  await button.click();
+  const surface = page.getByRole('dialog', { name: 'Search Syntax' });
+  await expect(surface).toBeVisible();
+  const rooms = await button.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      below: globalThis.innerHeight - 8 - (rect.bottom + 4),
+      above: rect.top - 4 - 8,
+      anchorBottom: rect.bottom,
+    };
+  });
+  expect(rooms.above).toBeGreaterThan(rooms.below);
+  return { surface, rooms };
+};
+
+// A cap that stays relative after computing (here a percentage, which a
+// fixed surface resolves against the viewport) is resolved against the
+// containing block, so a surface whose capped height fits below its field
+// stays below.
+test('a percentage-capped surface that fits the preferred side stays there', async ({
+  page,
+}) => {
+  const { surface, rooms } = await openBelowMiddle(page);
+  const full = await surface.evaluate((element) => element.scrollHeight);
+  expect(full).toBeGreaterThan(rooms.below);
+
+  const percent = await surface.evaluate((element, below) => {
+    const value = ((below - 20) / globalThis.innerHeight) * 100;
+    element.style.maxHeight = `${value}%`;
+    globalThis.dispatchEvent(new Event('resize'));
+    return value;
+  }, rooms.below);
+  await expect
+    .poll(() =>
+      surface.evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeCloseTo(rooms.anchorBottom + 4, 0);
+  const box = await geometry(surface);
+  expect(box.bottom - box.top).toBeLessThanOrEqual(
+    (percent / 100) * box.viewportHeight + 0.5,
+  );
+  expect(box.bottom).toBeLessThanOrEqual(box.viewportHeight - GUTTER + 0.5);
+});
+
+// An app `max-height` transition on a surface capped by the published room
+// must not run when kerf reads the surface's own cap on a reposition (the
+// read briefly lifts the published room), and an unrelated running
+// transition must keep running.
+test('a max-height transition on the surface does not run on reposition', async ({
+  page,
+}) => {
+  const { surface } = await openBelowMiddle(page);
+  await expect.poll(() => fits(surface)).toBe(true);
+  const before = await geometry(surface);
+  expect(before.scrollHeight).toBeGreaterThan(before.clientHeight);
+
+  const result = await surface.evaluate(async (element) => {
+    const frame = () =>
+      new Promise((resolve) =>
+        globalThis.requestAnimationFrame(() => resolve(null)),
+      );
+    element.style.transition = 'max-height 400ms linear, opacity 400ms linear';
+    await frame();
+    await frame();
+    const events: string[] = [];
+    for (const type of ['transitionrun', 'transitionstart'])
+      element.addEventListener(type, (event) => {
+        events.push(`${type}:${(event as TransitionEvent).propertyName}`);
+      });
+    element.style.opacity = '0.5'; // an unrelated running transition
+    globalThis.getComputedStyle(element).getPropertyValue('opacity');
+    globalThis.dispatchEvent(new Event('resize'));
+    const running = element
+      .getAnimations()
+      .map((animation) => (animation as CSSTransition).transitionProperty);
+    await frame();
+    await frame();
+    return {
+      events,
+      running,
+      inline: element.style.transition,
+      height: element.getBoundingClientRect().height,
+      top: element.getBoundingClientRect().top,
+    };
+  });
+  expect(result.events.filter((event) => event.endsWith('max-height'))).toEqual(
+    [],
+  );
+  expect(result.running).toEqual(['opacity']);
+  expect(result.inline).toBe('max-height 400ms linear, opacity 400ms linear');
+  expect(result.height).toBeCloseTo(before.bottom - before.top, 0);
+  expect(result.top).toBeCloseTo(before.top, 0);
 });
