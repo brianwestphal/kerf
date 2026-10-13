@@ -264,6 +264,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   main, and bottom toolbars, CollapsiblePanel, NavStack, SplitView) and size
   the groups they compose (panel toggles, the back button) to match; pass
   `density` to `CollapsiblePanelRelocated` when its toolbar is compact.
+- **Name panel toggles in title style.** A panel toolbar's
+  `toggle: { action, name }` uses `name` as the toggle group's accessible name
+  and in the default "Show …" / "Hide …" label, so pass a title-style panel
+  name (`name: "Navigator"` gives "Show Navigator"); it is never recapitalized.
 - **Position region restore controls declaratively.** A ResizableRegion has a
   background token, `contentOverflow="visible"` for an anchored popup,
   top/bottom `restorePosition`, typed `restoreInset`, and

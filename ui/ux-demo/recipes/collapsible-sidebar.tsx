@@ -81,12 +81,12 @@ export const createRecipe: RecipeFactory = (announce) => {
   const railToolbar: CollapsiblePanelToolbar = {
     label: 'Workspace Navigation',
     title: <ToolbarText text="Atlas" />,
-    toggle: { action: RAIL_ACTION, name: 'navigation' },
+    toggle: { action: RAIL_ACTION, name: 'Navigation' },
   };
   const drawerToolbar: CollapsiblePanelToolbar = {
     label: 'Activity',
     title: <ToolbarText text="Activity" size="small" />,
-    toggle: { action: DRAWER_ACTION, name: 'activity' },
+    toggle: { action: DRAWER_ACTION, name: 'Activity' },
   };
 
   const rail = () => (

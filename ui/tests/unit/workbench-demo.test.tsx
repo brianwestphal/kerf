@@ -40,7 +40,7 @@ describe('WorkbenchDemo', () => {
     const own = drawer.querySelector<HTMLButtonElement>(
       '[data-action="toggle-workbench-output"]',
     )!;
-    expect(own.getAttribute('aria-label')).toBe('Hide output');
+    expect(own.getAttribute('aria-label')).toBe('Hide Output');
     expect(own.getAttribute('aria-expanded')).toBe('true');
     expect(
       workbench.querySelector(
@@ -63,7 +63,7 @@ describe('WorkbenchDemo', () => {
     const moved = workbench.querySelector<HTMLButtonElement>(
       '.kui-workbench__main > [data-component="pane"] > .kui-pane__footer .kui-toolbar__trailing [data-action="toggle-workbench-output"]',
     )!;
-    expect(moved.getAttribute('aria-label')).toBe('Show output');
+    expect(moved.getAttribute('aria-label')).toBe('Show Output');
     expect(moved.getAttribute('aria-expanded')).toBe('false');
     expect(workbench.querySelector('.kui-workbench__restore')).toBeNull();
 
@@ -92,7 +92,7 @@ describe('WorkbenchDemo', () => {
       navigator
         .querySelector('[data-action="toggle-workbench-navigator"]')!
         .getAttribute('aria-label'),
-    ).toBe('Hide navigator');
+    ).toBe('Hide Navigator');
     expect(
       editor.querySelector('[data-action="toggle-workbench-navigator"]'),
     ).toBeNull();
@@ -103,7 +103,7 @@ describe('WorkbenchDemo', () => {
       ),
     ];
     expect(trailing.map((button) => button.getAttribute('aria-label'))).toEqual(
-      ['Show inspector'],
+      ['Show Inspector'],
     );
     expect(
       editor.querySelector('.kui-toolbar__leading [data-workbench-toggle]'),
@@ -126,7 +126,7 @@ describe('WorkbenchDemo', () => {
     ].map(
       (node) => node.getAttribute('aria-label') ?? node.textContent!.trim(),
     );
-    expect(labels).toEqual(['Search Files', 'Show navigator', 'Editor']);
+    expect(labels).toEqual(['Search Files', 'Show Navigator', 'Editor']);
     // The panel-only "New File" group stays in the closed navigator.
     expect(pane.innerHTML).not.toContain('New File');
     expect(pane.querySelector(':scope > .kui-pane__footer')).toBeNull();
@@ -137,7 +137,7 @@ describe('WorkbenchDemo', () => {
       corner
         .querySelector('[data-action="toggle-workbench-console"]')!
         .getAttribute('aria-label'),
-    ).toBe('Show console');
+    ).toBe('Show Console');
     expect(
       corner.querySelector('[data-component="floating-toolbar"]'),
     ).not.toBeNull();

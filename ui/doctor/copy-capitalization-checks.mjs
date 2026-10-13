@@ -8,7 +8,7 @@ import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 // KUI-D040: visible labels that Kerf UI's capitalization rule (docs/writing.md)
 // gives title style — button titles, menu items, segment and pop-up choices,
 // tab labels, field labels, list/group headers (including catalog example
-// labels), and view/pane/dialog titles —
+// labels), view/pane/dialog titles, and panel toggle names —
 // plus the accessible names of icon-only controls, checked against Apple's
 // title-style rule. Only string literals passed to known title-style props
 // are read, so prose, descriptions, placeholders, tooltips, checkbox/switch
@@ -312,6 +312,36 @@ function entryLiterals(node, keys, bindings, seen = new Set(), found = []) {
   return found;
 }
 
+/**
+ * A panel toolbar's `toggle: { action, name }` (Workbench, CollapsiblePanel,
+ * and catalog panels): `name` is the toggle group's accessible name and
+ * completes the composed "Show …" / "Hide …" label, so it is a title-style
+ * panel name. Requiring `action` keeps unrelated `toggle` objects out.
+ */
+function panelToggleName(node, bindings) {
+  const name =
+    (ts.isPropertyAssignment(node) || ts.isJsxAttribute(node)) &&
+    (ts.isIdentifier(node.name) || ts.isStringLiteral(node.name))
+      ? node.name.text
+      : undefined;
+  if (name !== 'toggle') return undefined;
+  const value = unwrap(
+    ts.isJsxAttribute(node) ? attributeValueNode(node) : node.initializer,
+    bindings,
+    new Set(),
+  );
+  if (!value || !ts.isObjectLiteralExpression(value)) return undefined;
+  const property = (key) =>
+    value.properties.find(
+      (item) =>
+        ts.isPropertyAssignment(item) &&
+        (ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)) &&
+        item.name.text === key,
+    );
+  if (!property('action')) return undefined;
+  return literalOf(property('name')?.initializer);
+}
+
 /** Visible title-style label literals rendered by one JSX/TSX source file. */
 export function titleStyleLabels(fileName, source) {
   const sourceFile = ts.createSourceFile(
@@ -356,6 +386,8 @@ export function titleStyleLabels(fileName, source) {
         }
       }
     }
+    const toggleName = panelToggleName(node, bindings);
+    if (toggleName) add(toggleName, 'panel toggle name');
     if (ts.isJsxSelfClosingElement(node) || ts.isJsxOpeningElement(node)) {
       const name = tagName(node);
       if (name === 'ToolbarText' && toolbarTextIsTitle(node)) {

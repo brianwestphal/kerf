@@ -12,7 +12,7 @@ test('responsive rail backdrop absorbs a press over a work-area card', async ({
   const underlay = workbench.locator('[data-demo-underlay]');
   await expect(backdrop).toBeHidden();
 
-  await workbench.getByRole('button', { name: 'Show navigator' }).click();
+  await workbench.getByRole('button', { name: 'Show Navigator' }).click();
   await expect(left).toHaveAttribute('data-collapsed', 'false');
   await expect(backdrop).toBeVisible();
   await expect(backdrop).toHaveCSS('background-color', /rgba?\(/);
@@ -50,11 +50,11 @@ test('responsive drawer backdrop closes the drawer without covering its controls
   const drawer = workbench.locator('[data-workbench-drawer]');
   const backdrop = workbench.locator('[data-workbench-backdrop]');
   await expect(drawer).toHaveAttribute('data-collapsed', 'true');
-  await workbench.getByRole('button', { name: 'Show output' }).click();
+  await workbench.getByRole('button', { name: 'Show Output' }).click();
   await expect(drawer).toHaveAttribute('data-collapsed', 'false');
   await expect(backdrop).toBeVisible();
   await expect(
-    drawer.getByRole('button', { name: 'Hide output' }),
+    drawer.getByRole('button', { name: 'Hide Output' }),
   ).toBeVisible();
   const bounds = await backdrop.boundingBox();
   await page.mouse.click(bounds!.x + bounds!.width / 2, bounds!.y + 10);

@@ -271,7 +271,7 @@ describe('Catalog', () => {
     );
     expect(collapsed).toContain('data-sidebar-collapsed="true"');
     // The Workbench moves the sidebar's standard toggle into the entry toolbar.
-    expect(collapsed).toContain('aria-label="Show X catalog"');
+    expect(collapsed).toContain('aria-label="Show X Catalog"');
     expect(collapsed).toContain('data-action="catalog-toggle-sidebar"');
     const open = asHtml(
       Catalog({
@@ -281,8 +281,8 @@ describe('Catalog', () => {
         content: raw('<b/>'),
       }),
     );
-    expect(open).not.toContain('Show X catalog');
-    expect(open).toContain('aria-label="Hide X catalog"');
+    expect(open).not.toContain('Show X Catalog');
+    expect(open).toContain('aria-label="Hide X Catalog"');
   });
 
   it('renders an empty title when the active id is not in any section', () => {
@@ -1069,7 +1069,7 @@ describe('wireCatalog', () => {
     expect(defaults.rail.dataset.responsiveOverlayAt).toBe('narrow');
     expect(defaults.rail.dataset.compactOverlay).toBe('inset');
     expect(
-      defaults.toolbar('X catalog Header').hasAttribute('divider-sides'),
+      defaults.toolbar('X Catalog Header').hasAttribute('divider-sides'),
     ).toBe(false);
     expect(defaults.toolbar('Select Header').dataset.responsive).toBe('wrap');
     const footer = defaults.toolbar('Select Resources');
@@ -1104,7 +1104,7 @@ describe('wireCatalog', () => {
     expect(configured.rail.dataset.compactOverlay).toBe('full');
     expect(configured.rail.dataset.collapseMotion).toBe('none');
     // The Catalog keeps its own labels whatever the configuration says.
-    const sidebarToolbar = configured.toolbar('X catalog Header');
+    const sidebarToolbar = configured.toolbar('X Catalog Header');
     expect(sidebarToolbar.getAttribute('divider-sides')).toBe('b');
     const main = configured.toolbar('Select Header');
     expect(main.dataset.responsive).toBe('stack');
@@ -1184,7 +1184,7 @@ describe('wireCatalog', () => {
     const hide = pane.querySelector<HTMLElement>(
       '[data-action="catalog-toggle-settings"]',
     )!;
-    expect(hide.getAttribute('aria-label')).toBe('Hide settings');
+    expect(hide.getAttribute('aria-label')).toBe('Hide Settings');
 
     // Collapsed, the standard toggle moves to the end of the entry toolbar.
     host.innerHTML = asHtml(
@@ -1205,7 +1205,7 @@ describe('wireCatalog', () => {
       host
         .querySelector('[data-action="inspector-toggle"]')!
         .getAttribute('aria-label'),
-    ).toBe('Show inspector');
+    ).toBe('Show Inspector');
 
     // Without settings: no pane, no toggle, no state attribute.
     for (const settings of [undefined, null, false] as const) {

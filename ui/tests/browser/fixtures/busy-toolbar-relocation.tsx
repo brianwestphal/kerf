@@ -50,7 +50,7 @@ mount(root, () => {
         </button>
       </ToolbarControlGroup>
     ),
-    toggle: { action: 'toggle-navigator', name: 'navigator' },
+    toggle: { action: 'toggle-navigator', name: 'Navigator' },
   };
   return (
     <List fill>

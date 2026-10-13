@@ -167,6 +167,9 @@ covers these string literals:
 - `SegmentedControl`, `Select`, and `TabNavigator` choice and tab labels;
 - `NavStack` view titles and `backText`, and `SplitView` `backLabel`;
 - `FieldLabel` text and the static text of a `button` or `wa-button`;
+- the `name` of a panel toolbar's `toggle: { action, name }` object literal
+  (Workbench panels, `CollapsiblePanel`), which names the toggle group and
+  completes its "Show …" / "Hide …" label;
 - the accessible names of icon-only controls, which the rule also gives title
   style: `IconButton` and `IconToggleButton` `label`, `PopupMenu` `label`,
   `SplitButton` `optionsLabel`, `TokenSearchField` `clearLabel`, and the

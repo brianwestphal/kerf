@@ -20,7 +20,7 @@ test('panel group marked for collapse moves to the main toolbar and returns when
     mainToolbar.getByRole('button', { name: 'New File' }),
   ).toHaveCount(0);
 
-  await mainToolbar.getByRole('button', { name: 'Show navigator' }).click();
+  await mainToolbar.getByRole('button', { name: 'Show Navigator' }).click();
   await expect(rail).toHaveAttribute('data-collapsed', 'false');
   await expect(
     rail.getByRole('button', { name: 'Search Files' }),
@@ -30,7 +30,7 @@ test('panel group marked for collapse moves to the main toolbar and returns when
     mainToolbar.getByRole('button', { name: 'Search Files' }),
   ).toHaveCount(0);
 
-  await rail.getByRole('button', { name: 'Hide navigator' }).click();
+  await rail.getByRole('button', { name: 'Hide Navigator' }).click();
   await expect(rail).toHaveAttribute('data-collapsed', 'true');
   await expect(
     mainToolbar.getByRole('button', { name: 'Search Files' }),
@@ -440,7 +440,7 @@ test.describe('resizable Workbench panels', () => {
 
     // An open rail's toggle lives in its own toolbar; closing it moves the
     // toggle to the editor toolbar.
-    await rail.getByRole('button', { name: 'Hide navigator' }).click();
+    await rail.getByRole('button', { name: 'Hide Navigator' }).click();
     await expect(rail).toHaveAttribute('data-collapsed', 'true');
     await expect(rail).toHaveCSS('width', '0px');
     await expect(handle).toBeHidden();
@@ -452,7 +452,7 @@ test.describe('resizable Workbench panels', () => {
       ),
     );
 
-    await workbench.getByRole('button', { name: 'Show navigator' }).click();
+    await workbench.getByRole('button', { name: 'Show Navigator' }).click();
     await expect(rail).toHaveAttribute('data-collapsed', 'false');
     await expect(rail).toHaveCSS('width', '304px');
     await expect(handle).toHaveAttribute('tabindex', '0');
@@ -494,7 +494,7 @@ test.describe('resizable Workbench panels', () => {
     const width = async (locator: typeof left) =>
       (await locator.boundingBox())!.width;
     await workbench.scrollIntoViewIfNeeded();
-    await workbench.getByRole('button', { name: 'Show inspector' }).click();
+    await workbench.getByRole('button', { name: 'Show Inspector' }).click();
     await expect(right).toHaveAttribute('data-collapsed', 'false');
     await expect(right).toHaveCSS('width', '160px');
 
@@ -657,7 +657,7 @@ test.describe('resizable Workbench panels', () => {
     // The rendered presentation stays inline; only the container decides.
     await expect(left).toHaveAttribute('data-presentation', 'inline');
 
-    await workbench.getByRole('button', { name: 'Show navigator' }).click();
+    await workbench.getByRole('button', { name: 'Show Navigator' }).click();
     await expect(left).toHaveAttribute('data-collapsed', 'false');
     await expect(left).toHaveCSS('width', '240px');
     await expect(left).not.toHaveCSS('box-shadow', 'none');
@@ -737,7 +737,7 @@ test.describe('resizable Workbench panels', () => {
     const navigator = workbench.locator('[data-workbench-rail="left"]');
     await workbench.scrollIntoViewIfNeeded();
     await expect(navigator).toHaveAttribute('data-collapsed', 'true');
-    await workbench.getByRole('button', { name: 'Show navigator' }).click();
+    await workbench.getByRole('button', { name: 'Show Navigator' }).click();
     await expect(navigator).toHaveAttribute('data-collapsed', 'false');
 
     await page.evaluate(() => {
@@ -864,7 +864,7 @@ test.describe('resizable Workbench panels', () => {
     // Escape closes the open overlay and focus returns to the control that
     // opened it, including from inside the overlay.
     const showNavigator = workbench.getByRole('button', {
-      name: 'Show navigator',
+      name: 'Show Navigator',
     });
     await showNavigator.focus();
     await page.keyboard.press('Enter');
@@ -912,13 +912,13 @@ test.describe('resizable Workbench panels', () => {
     // The rail's own toggle still closes an open overlay exactly once.
     await showNavigator.click();
     await expect(left).toHaveAttribute('data-collapsed', 'false');
-    await left.getByRole('button', { name: 'Hide navigator' }).click();
+    await left.getByRole('button', { name: 'Hide Navigator' }).click();
     await expect(left).toHaveAttribute('data-collapsed', 'true');
 
     // The open inspector overlay has taken its toggle into its own toolbar;
     // Escape still closes it and focus returns to the editor toolbar.
     const showInspector = workbench.getByRole('button', {
-      name: 'Show inspector',
+      name: 'Show Inspector',
     });
     await showInspector.click();
     await expect(right).toHaveAttribute('data-collapsed', 'false');
@@ -933,8 +933,8 @@ test.describe('resizable Workbench panels', () => {
     const workbench = page.locator('#catalog-workbench-resizable');
     const left = workbench.locator('[data-workbench-rail="left"]');
     const toolbar = workbench.locator('.kui-workbench__main');
-    const toggle = toolbar.getByRole('button', { name: 'Show navigator' });
-    const own = left.getByRole('button', { name: 'Hide navigator' });
+    const toggle = toolbar.getByRole('button', { name: 'Show Navigator' });
+    const own = left.getByRole('button', { name: 'Hide Navigator' });
     await workbench.scrollIntoViewIfNeeded();
 
     // Wide, the rail is inline and open, its toggle in its own toolbar.
@@ -957,7 +957,7 @@ test.describe('resizable Workbench panels', () => {
     await toggle.focus();
     await page.keyboard.press('Enter');
     await expect(left).toHaveAttribute('data-collapsed', 'false');
-    const close = left.getByRole('button', { name: 'Hide navigator' });
+    const close = left.getByRole('button', { name: 'Hide Navigator' });
     await expect(close).toBeFocused();
     await expect(close).toBeInViewport();
     // The rail's content never scrolled to reveal it mid-slide.
@@ -998,7 +998,7 @@ test.describe('resizable Workbench panels', () => {
     await page.keyboard.press('Escape');
     await expect(left).toHaveAttribute('data-collapsed', 'true');
     await expect(toggle).toBeFocused();
-    await expect(toggle).toHaveAccessibleName('Show navigator');
+    await expect(toggle).toHaveAccessibleName('Show Navigator');
   });
 
   test('overlay rails stack above an overlay drawer, the right rail above the left', async ({
@@ -1019,7 +1019,7 @@ test.describe('resizable Workbench panels', () => {
     // an overlay too.
     await workbench
       .locator('.kui-workbench__main')
-      .getByRole('button', { name: 'Show inspector' })
+      .getByRole('button', { name: 'Show Inspector' })
       .focus();
     await page.keyboard.press('Enter');
     await expect(right).toHaveAttribute('data-collapsed', 'false');
@@ -1091,7 +1091,7 @@ test.describe('resizable Workbench panels', () => {
     // Located by label: while the overlay is open the control is hidden, so
     // a role query would not find it.
     const restore = workbench.locator(
-      '.kui-workbench__restore button[aria-label="Show console"]',
+      '.kui-workbench__restore button[aria-label="Show Console"]',
     );
     await workbench.scrollIntoViewIfNeeded();
     await expect(restore).toBeVisible();
@@ -1158,16 +1158,16 @@ test.describe('resizable Workbench panels', () => {
     // By keyboard, which is no outside press: only exclusivity closes the
     // navigator when the inspector opens.
     const showNavigator = toolbar.getByRole('button', {
-      name: 'Show navigator',
+      name: 'Show Navigator',
     });
     await showNavigator.focus();
     await page.keyboard.press('Enter');
     await expect(left).toHaveAttribute('data-collapsed', 'false');
-    await toolbar.getByRole('button', { name: 'Show inspector' }).focus();
+    await toolbar.getByRole('button', { name: 'Show Inspector' }).focus();
     await page.keyboard.press('Enter');
     await expect(right).toHaveAttribute('data-collapsed', 'false');
     await expect(left).toHaveAttribute('data-collapsed', 'true');
-    const close = right.getByRole('button', { name: 'Hide inspector' });
+    const close = right.getByRole('button', { name: 'Hide Inspector' });
     await expect(close).toBeInViewport();
     if (testInfo.project.name === 'chromium')
       await workbench.screenshot({
@@ -1179,7 +1179,7 @@ test.describe('resizable Workbench panels', () => {
     await page.keyboard.press('Enter');
     await expect(left).toHaveAttribute('data-collapsed', 'false');
     await expect(right).toHaveAttribute('data-collapsed', 'true');
-    const hideNavigator = left.getByRole('button', { name: 'Hide navigator' });
+    const hideNavigator = left.getByRole('button', { name: 'Hide Navigator' });
     // Once the rails' slides settle, the control is the navigator's own.
     await expect
       .poll(async () => {
@@ -1200,7 +1200,7 @@ test.describe('resizable Workbench panels', () => {
     // Wide, the rails are inline and stay open together.
     await page.setViewportSize({ width: 1440, height: 900 });
     await expect(left).toHaveCSS('position', 'relative');
-    await toolbar.getByRole('button', { name: 'Show inspector' }).click();
+    await toolbar.getByRole('button', { name: 'Show Inspector' }).click();
     await expect(left).toHaveAttribute('data-collapsed', 'false');
     await expect(right).toHaveAttribute('data-collapsed', 'false');
   });
@@ -1213,7 +1213,7 @@ test.describe('resizable Workbench panels', () => {
     const right = workbench.locator('[data-workbench-rail="right"]');
     const editorToggle = workbench
       .locator('.kui-workbench__main')
-      .getByRole('button', { name: 'Show inspector' });
+      .getByRole('button', { name: 'Show Inspector' });
     await workbench.scrollIntoViewIfNeeded();
     await editorToggle.focus();
     await page.keyboard.press('Enter');
@@ -1227,7 +1227,7 @@ test.describe('resizable Workbench panels', () => {
         .locator('.kui-workbench__main')
         .locator('[data-workbench-toggle="right"]'),
     ).toHaveCount(0);
-    const close = right.getByRole('button', { name: 'Hide inspector' });
+    const close = right.getByRole('button', { name: 'Hide Inspector' });
     await expect(close).toBeInViewport();
     if (testInfo.project.name === 'chromium')
       await workbench.screenshot({
@@ -1237,7 +1237,7 @@ test.describe('resizable Workbench panels', () => {
     await expect(right).toHaveAttribute('data-collapsed', 'true');
     // Focus leaves the hidden rail for the toggle that opened it.
     await expect(editorToggle).toBeFocused();
-    await expect(editorToggle).toHaveAccessibleName('Show inspector');
+    await expect(editorToggle).toHaveAccessibleName('Show Inspector');
 
     // By keyboard too: focus the rail's close control and activate it.
     await page.keyboard.press('Enter');
@@ -1262,7 +1262,7 @@ test.describe('resizable Workbench panels', () => {
     // Wide, the inline navigator hides from its own header's control: its
     // content still slides out, becomes inert, and focus returns to the
     // editor toolbar's toggle rather than staying on a control that left.
-    const hide = left.getByRole('button', { name: 'Hide navigator' });
+    const hide = left.getByRole('button', { name: 'Hide Navigator' });
     await hide.focus();
     const animating = await hide.evaluate((button: HTMLElement) => {
       button.click();
@@ -1283,7 +1283,7 @@ test.describe('resizable Workbench panels', () => {
       workbench.getByRole('complementary', { name: leftLabel, exact: true }),
     ).toHaveCount(0);
     const navigatorToggle = toolbar.getByRole('button', {
-      name: 'Show navigator',
+      name: 'Show Navigator',
     });
     await expect(navigatorToggle).toBeFocused();
     await navigatorToggle.press('Enter');
@@ -1308,7 +1308,7 @@ test.describe('resizable Workbench panels', () => {
           ) != null,
       );
     for (const key of ['Tab', 'Shift+Tab']) {
-      await toolbar.getByRole('button', { name: 'Show inspector' }).focus();
+      await toolbar.getByRole('button', { name: 'Show Inspector' }).focus();
       for (let step = 0; step < 6; step += 1) {
         await page.keyboard.press(key);
         expect(await inCollapsedPanel()).toBe(false);
@@ -1332,7 +1332,7 @@ test.describe('resizable Workbench panels', () => {
     await expect(content(drawer)).toHaveAttribute('inert', '');
     const outputToggle = drawerWorkbench
       .locator('.kui-workbench__main')
-      .getByRole('button', { name: 'Show output' });
+      .getByRole('button', { name: 'Show Output' });
     for (const key of ['Tab', 'Shift+Tab']) {
       await outputToggle.focus();
       for (let step = 0; step < 3; step += 1) {
@@ -1345,7 +1345,7 @@ test.describe('resizable Workbench panels', () => {
     await expect(drawer).toHaveAttribute('data-collapsed', 'false');
     await expect(content(drawer)).not.toHaveAttribute('inert');
     await expect(
-      drawer.getByRole('button', { name: 'Hide output' }),
+      drawer.getByRole('button', { name: 'Hide Output' }),
     ).toBeFocused();
   });
 
@@ -1361,14 +1361,14 @@ test.describe('resizable Workbench panels', () => {
       'id',
       'catalog-workbench-resizable-left-rail',
     );
-    const own = left.getByRole('button', { name: 'Hide navigator' });
+    const own = left.getByRole('button', { name: 'Hide Navigator' });
     await expect(own).toHaveAttribute(
       'aria-controls',
       'catalog-workbench-resizable-left-rail',
     );
     const toggle = workbench
       .locator('.kui-workbench__main')
-      .getByRole('button', { name: /navigator$/ });
+      .getByRole('button', { name: /Navigator$/ });
 
     await own.focus();
     await page.keyboard.press('Enter');
@@ -1380,7 +1380,7 @@ test.describe('resizable Workbench panels', () => {
       'catalog-workbench-resizable-left-rail',
     );
     await expect(toggle).toBeFocused();
-    await expect(toggle).toHaveAccessibleName('Show navigator');
+    await expect(toggle).toHaveAccessibleName('Show Navigator');
   });
 
   test('the collapsed console restores from its corner control', async ({
@@ -1428,14 +1428,14 @@ test.describe('resizable Workbench panels', () => {
     const box = (await group.boundingBox())!;
     expect(Math.round(moved.y + moved.height - (box.y + box.height))).toBe(16);
 
-    await restore.getByRole('button', { name: 'Show console' }).click();
+    await restore.getByRole('button', { name: 'Show Console' }).click();
     await expect(drawer).toHaveAttribute('data-collapsed', 'false');
     await expect(drawer).toHaveCSS('height', '120px');
     await expect(restore).toHaveCount(0);
-    await workbench.getByRole('button', { name: 'Hide console' }).click();
+    await workbench.getByRole('button', { name: 'Hide Console' }).click();
     await expect(drawer).toHaveAttribute('data-collapsed', 'true');
     await expect(
-      workbench.getByRole('button', { name: 'Show console' }),
+      workbench.getByRole('button', { name: 'Show Console' }),
     ).toBeVisible();
   });
 });
@@ -1448,7 +1448,7 @@ test('the responsive drawer example is inline when wide and a transient overlay 
   const workbench = page.locator('#catalog-workbench-responsive-drawer');
   const drawer = workbench.locator('[data-workbench-drawer]');
   const main = workbench.locator('.kui-workbench__main');
-  const editorToggle = main.getByRole('button', { name: 'Show output' });
+  const editorToggle = main.getByRole('button', { name: 'Show Output' });
   await workbench.scrollIntoViewIfNeeded();
 
   // Wide: the drawer opens inline in its own 180 px track below the editor.
@@ -1462,7 +1462,7 @@ test('the responsive drawer example is inline when wide and a transient overlay 
   );
   // Open, its toggle lives in its own toolbar, not the editor's.
   await expect(
-    drawer.getByRole('button', { name: 'Hide output' }),
+    drawer.getByRole('button', { name: 'Hide Output' }),
   ).toBeVisible();
   await expect(main.locator('[data-workbench-toggle]')).toHaveCount(0);
   if (testInfo.project.name === 'chromium')
@@ -1499,7 +1499,7 @@ test('the responsive drawer example is inline when wide and a transient overlay 
     await workbench.screenshot({
       path: 'test-results/workbench-responsive-drawer-narrow-open.png',
     });
-  await drawer.getByRole('button', { name: 'Hide output' }).click();
+  await drawer.getByRole('button', { name: 'Hide Output' }).click();
   await expect(drawer).toHaveAttribute('data-collapsed', 'true');
   await expect(editorToggle).toBeFocused();
 
@@ -1541,7 +1541,7 @@ test('at phone widths an overlay rail fills the Workbench less a dismiss strip, 
     return { left: rect.left + start, right: rect.right - end };
   });
 
-  await main.getByRole('button', { name: 'Show navigator' }).click();
+  await main.getByRole('button', { name: 'Show Navigator' }).click();
   await expect(left).toHaveAttribute('data-collapsed', 'false');
   await expect(left).toHaveCSS('position', 'absolute');
   await expect
@@ -1560,7 +1560,7 @@ test('at phone widths an overlay rail fills the Workbench less a dismiss strip, 
 
   // The right rail leaves its strip on the other side, and opening it keeps
   // the navigator closed: one rail at a time.
-  await main.getByRole('button', { name: 'Show inspector' }).click();
+  await main.getByRole('button', { name: 'Show Inspector' }).click();
   await expect(right).toHaveAttribute('data-collapsed', 'false');
   await expect(left).toHaveAttribute('data-collapsed', 'true');
   await expect

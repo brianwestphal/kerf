@@ -161,7 +161,7 @@ test('the collapsible-sidebar recipe root fills the app frame with edge-docked p
   expect(rail.bottom).toBeCloseTo(root.bottom, 0);
 
   // The drawer opens from the root's bottom edge and the main pane shrinks.
-  await page.getByRole('button', { name: 'Show activity' }).first().click();
+  await page.getByRole('button', { name: 'Show Activity' }).first().click();
   const drawer = page.locator('[data-collapsible-panel="sidebar-console"]');
   await expect(drawer).toHaveAttribute('data-collapsed', 'false');
   await expect

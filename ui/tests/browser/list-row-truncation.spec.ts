@@ -123,7 +123,7 @@ for (const viewport of VIEWPORTS) {
   }) => {
     await openRoute(page, 'list-item', viewport);
     if (viewport.width < 600) {
-      await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
+      await page.getByRole('button', { name: 'Show Kerf Catalog' }).click();
     }
     const row = page
       .locator(
@@ -182,7 +182,7 @@ for (const viewport of VIEWPORTS) {
   }) => {
     await openRoute(page, 'list-item', viewport);
     if (viewport.width < 600) {
-      await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
+      await page.getByRole('button', { name: 'Show Kerf Catalog' }).click();
     }
     const row = page
       .locator(

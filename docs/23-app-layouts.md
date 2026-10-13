@@ -286,7 +286,10 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
   the catalog showed each rail toggle twice while the rails were open and
   put toggles where the guidance does not).** A panel may take a `toolbar`
   (`title`, `leading`, `center`, `trailing`, `toggle: { action, name,
-showLabel?, hideLabel? }`) and the work area a `mainToolbar` /
+showLabel?, hideLabel? }`, where `name` is the title-style panel name,
+  such as "Navigator", that labels the toggle group and completes "Show
+  Navigator" / "Hide Navigator" — KF-EJ32ZH: lowercase names produced
+  sentence-style accessible names) and the work area a `mainToolbar` /
   `mainBottomToolbar`, each also taking the `Toolbar`'s configuration
   (`ToolbarConfig`: `dividerSides`, `centerAlign`, `responsive`,
   `responsiveAt`, `safeAreaEdges` — KF-A29R9B: the dividers were hard-coded,

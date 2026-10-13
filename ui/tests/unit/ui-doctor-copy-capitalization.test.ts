@@ -193,6 +193,29 @@ describe('titleStyleLabels', () => {
     ]);
   });
 
+  test('reads panel toolbar toggle names from object literals and JSX', () => {
+    expect(
+      labels(`
+        const drawer = { action: 'toggle-output', name: 'build output' };
+        export const View = () => (
+          <Workbench
+            leftRail={{ label: 'Navigator', toolbar: { label: 'Navigator Header', toggle: { action: 'toggle-nav', name: 'navigator' } } }}
+            bottomDrawer={{ label: 'Output', toolbar: { label: 'Output Header', toggle: drawer } }}
+          />
+        );
+        export const Panel = () => (
+          <CollapsiblePanel id="p" side="left" toggle={{ action: 'toggle-p', name: 'Inspector' }} />
+        );
+        const notAPanel = { toggle: { name: 'lowercase setting' } };
+        const dynamic = { toggle: { action: 'a', name: title } };
+      `),
+    ).toEqual([
+      'panel toggle name: navigator',
+      'panel toggle name: build output',
+      'panel toggle name: Inspector',
+    ]);
+  });
+
   test('never reads sentence-style text, region names, or a labeled button’s aria-label', () => {
     expect(
       labels(`
@@ -245,6 +268,10 @@ describe('checkCopyCapitalization', () => {
         ['src/view.test.tsx', '<wa-button>Save draft</wa-button>;'],
         ['src/view.ts', 'export const label = "save draft";'],
         ['src/other.tsx', '<ListHeader label="Needs attention" />;'],
+        [
+          'src/panel.tsx',
+          "export const panel = { toggle: { action: 'toggle-output', name: 'output' } };",
+        ],
       ] as const;
       for (const [name, source] of files)
         await writeFile(resolve(root, name), source);
@@ -258,7 +285,11 @@ describe('checkCopyCapitalization', () => {
       ).toEqual([
         'KUI-D040 warning src/view.tsx:3',
         'KUI-D040 warning src/other.tsx:1',
+        'KUI-D040 warning src/panel.tsx:1',
       ]);
+      expect(findings[2]?.message).toBe(
+        'panel toggle name "output" is not title-style capitalized ("output").',
+      );
       expect(findings[0]?.message).toBe(
         '<wa-button> text "Save draft" is not title-style capitalized ("draft").',
       );

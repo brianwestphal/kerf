@@ -90,7 +90,7 @@ const toggle = (side: 'left' | 'right' | 'bottom', name: string) => (
   <CollapsiblePanelToggle
     side={side}
     collapsed
-    action={`toggle-${name}`}
+    action={`toggle-${name.toLowerCase()}`}
     label={`Show ${name}`}
   />
 );
@@ -104,7 +104,7 @@ const workbench = (presentation: 'inline' | 'overlay') => (
       label: 'Navigator',
       content: overlayContent('Navigator'),
       collapsed: leftCollapsed.value,
-      restoreControl: toggle('left', 'navigator'),
+      restoreControl: toggle('left', 'Navigator'),
     }}
     main={main()}
     rightRail={{
@@ -112,14 +112,14 @@ const workbench = (presentation: 'inline' | 'overlay') => (
       content: overlayContent('Inspector'),
       collapsed: rightCollapsed.value,
       presentation,
-      restoreControl: toggle('right', 'inspector'),
+      restoreControl: toggle('right', 'Inspector'),
     }}
     bottomDrawer={{
       label: 'Console',
       content: overlayContent('Console'),
       collapsed: drawerCollapsed.value,
       responsiveOverlayAt: 'never',
-      restoreControl: toggle('bottom', 'console'),
+      restoreControl: toggle('bottom', 'Console'),
     }}
   />
 );
@@ -150,7 +150,7 @@ const panels = (presentation: 'inline' | 'overlay') =>
         collapsed={leftCollapsed.value}
         label="Navigator"
         presentation={presentation}
-        restoreControl={toggle('left', 'navigator')}
+        restoreControl={toggle('left', 'Navigator')}
       >
         {overlayContent('Navigator')}
       </CollapsiblePanel>
@@ -162,7 +162,7 @@ const panels = (presentation: 'inline' | 'overlay') =>
           size={120}
           collapsed={drawerCollapsed.value}
           label="Console"
-          restoreControl={toggle('bottom', 'console')}
+          restoreControl={toggle('bottom', 'Console')}
         >
           {overlayContent('Console')}
         </CollapsiblePanel>
@@ -190,7 +190,7 @@ const regions = () =>
         max={320}
         presentation="overlay"
         collapsed={leftCollapsed.value}
-        restoreControl={toggle('left', 'navigator')}
+        restoreControl={toggle('left', 'Navigator')}
       >
         {overlayContent('Navigator')}
       </ResizableRegion>

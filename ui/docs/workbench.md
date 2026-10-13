@@ -198,7 +198,7 @@ and calls `wireNavStack` for animated push/pop and focus movement. See
   rightRail={{
     label: "Tickets",
     collapsed: ticketsCollapsed.value,
-    toolbar: { toggle: { action: "toggle-tickets", name: "tickets" } },
+    toolbar: { toggle: { action: "toggle-tickets", name: "Tickets" } },
     navStack: { id: "ticket-stack", label: "Tickets", views: ticketViews.value },
   }}
 />
@@ -221,7 +221,10 @@ and close. A panel's `toolbar` has these parts:
   toggle, which the Workbench renders: the per-side panel glyph,
   `aria-controls` naming the panel, `aria-expanded`, a "Show …"/"Hide …"
   label (or your localized `showLabel` / `hideLabel`), and the `data-action`
-  the app handles. It is always the last group.
+  the app handles. It is always the last group. `name` is the panel's
+  title-style name ("Navigator", "Build Output"): it becomes the toggle
+  group's accessible name and completes the "Show Navigator" / "Hide
+  Navigator" label, so it follows [the capitalization rule](./writing.md#capitalization).
 
 While a panel is closed, marked groups follow their open-panel zone order
 (`leading`, `center`, `trailing`), followed by its toggle:
@@ -250,7 +253,7 @@ toggle, so it never depends on a control it covers. An app's own
       title: <ToolbarText text="Navigator" />,
       leading: <NewFileGroup />,
       trailing: <ToolbarControlGroup relocateOnCollapse label="Search Files"><SearchButton /></ToolbarControlGroup>,
-      toggle: { action: "toggle-navigator", name: "navigator" },
+      toggle: { action: "toggle-navigator", name: "Navigator" },
     },
     content: <Files />,
     collapsed: navCollapsed.value,
@@ -500,7 +503,7 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
     data-action="toggle-navigator"
     aria-controls="editor-left-rail"
     aria-expanded={String(!navCollapsed.value)}
-    aria-label={navCollapsed.value ? "Show navigator" : "Hide navigator"}
+    aria-label={navCollapsed.value ? "Show Navigator" : "Hide Navigator"}
   >
     <LucideIcon {...collapsiblePanelToggleIcon("left", navCollapsed.value)} />
   </button>

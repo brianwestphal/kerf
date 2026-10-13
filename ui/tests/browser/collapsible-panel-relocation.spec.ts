@@ -29,20 +29,20 @@ test('relocates a collapsed rail’s marked groups and toggle into the editor to
         (node) => node.getAttribute('aria-label') ?? node.textContent?.trim(),
       ),
     );
-  expect(labels).toEqual(['Search Files', 'Show navigator', 'Editor']);
+  expect(labels).toEqual(['Search Files', 'Show Navigator', 'Editor']);
   await expect(editor.getByRole('button', { name: 'New File' })).toHaveCount(0);
 
   // Open: the toggle moves into the rail's toolbar, last; focus enters the rail.
-  await leading.getByRole('button', { name: 'Show navigator' }).focus();
+  await leading.getByRole('button', { name: 'Show Navigator' }).focus();
   await page.keyboard.press('Enter');
   await expect(rail).toHaveAttribute('data-collapsed', 'false');
   await expect(
-    leading.getByRole('button', { name: 'Show navigator' }),
+    leading.getByRole('button', { name: 'Show Navigator' }),
   ).toHaveCount(0);
   const railTrailing = rail.locator('.kui-toolbar__trailing button');
   await expect(railTrailing.last()).toHaveAttribute(
     'aria-label',
-    'Hide navigator',
+    'Hide Navigator',
   );
   await expect
     .poll(() =>
@@ -57,10 +57,10 @@ test('relocates a collapsed rail’s marked groups and toggle into the editor to
     .toBe(true);
 
   // Close from the rail's own toggle: focus follows it back to the editor.
-  await rail.getByRole('button', { name: 'Hide navigator' }).focus();
+  await rail.getByRole('button', { name: 'Hide Navigator' }).focus();
   await page.keyboard.press('Enter');
   await expect(rail).toHaveAttribute('data-collapsed', 'true');
   await expect(
-    leading.getByRole('button', { name: 'Show navigator' }),
+    leading.getByRole('button', { name: 'Show Navigator' }),
   ).toBeFocused();
 });

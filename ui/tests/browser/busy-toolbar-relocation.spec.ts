@@ -45,7 +45,7 @@ for (const width of [1100, 390]) {
     ).toHaveCount(0);
     await page.getByRole('button', { name: 'Start export' }).click();
     await expect(page.getByRole('status')).toHaveText('Exporting files');
-    await page.getByRole('button', { name: 'Hide navigator' }).click();
+    await page.getByRole('button', { name: 'Hide Navigator' }).click();
     await expect(panel).toHaveAttribute('aria-hidden', 'true');
     const action = editor.locator('button[aria-label="Export Files"]');
     await expect(action).toBeVisible();
@@ -73,7 +73,7 @@ for (const width of [1100, 390]) {
     await action.focus();
     await action.press('Enter');
     await expect(root).toHaveAttribute('data-export-count', '2');
-    await page.getByRole('button', { name: 'Show navigator' }).click();
+    await page.getByRole('button', { name: 'Show Navigator' }).click();
     await expect(
       editor.locator('button[aria-label="Export Files"]'),
     ).toHaveCount(0);
@@ -81,10 +81,10 @@ for (const width of [1100, 390]) {
       panel.getByRole('button', { name: 'Export Files' }),
     ).toBeVisible();
     await page.getByRole('button', { name: 'Start export' }).click();
-    await page.getByRole('button', { name: 'Hide navigator' }).click();
+    await page.getByRole('button', { name: 'Hide Navigator' }).click();
     await expect(action.locator('..')).toHaveAttribute('inert', '');
     await expect(page.getByRole('status')).toHaveCount(1);
-    await page.getByRole('button', { name: 'Show navigator' }).click();
+    await page.getByRole('button', { name: 'Show Navigator' }).click();
     await expect(
       panel.locator('button[aria-label="Export Files"]').locator('..'),
     ).toHaveAttribute('inert', '');

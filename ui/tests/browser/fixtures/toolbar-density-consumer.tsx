@@ -27,7 +27,7 @@ const render = (collapsed: boolean) =>
             label: 'Files',
             density: 'compact',
             title: <ToolbarText text="Files" />,
-            toggle: { action: 'toggle-files', name: 'files' },
+            toggle: { action: 'toggle-files', name: 'Files' },
           },
         }}
       />

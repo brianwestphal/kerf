@@ -6,7 +6,7 @@ test('Workbench inspector header stays pinned above its one scroll owner', async
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=workbench');
   const workbench = page.locator('#catalog-workbench-resizable');
-  await workbench.getByRole('button', { name: 'Show inspector' }).click();
+  await workbench.getByRole('button', { name: 'Show Inspector' }).click();
   const inspector = workbench.locator('[data-workbench-rail="right"]');
   const pane = inspector.locator('[data-component="pane"]');
   const header = pane.locator(':scope > .kui-pane__header');
@@ -37,7 +37,7 @@ test('Workbench inspector header stays pinned above its one scroll owner', async
   await page.setViewportSize({ width: 390, height: 844 });
   await workbench.scrollIntoViewIfNeeded();
   await expect(inspector).toHaveCSS('position', 'absolute');
-  await workbench.getByRole('button', { name: 'Show inspector' }).click();
+  await workbench.getByRole('button', { name: 'Show Inspector' }).click();
   await expect(header.getByText('Ticket #42')).toBeVisible();
   await expect(footer.getByText('Updated just now')).toBeVisible();
 });
@@ -47,7 +47,7 @@ test('CollapsiblePanel composes the same fixed header under its toolbar', async 
 }) => {
   await page.goto('/?component=collapsible-panel');
   const example = page.locator('[data-catalog-panel-relocation-example]');
-  await example.getByRole('button', { name: 'Show navigator' }).click();
+  await example.getByRole('button', { name: 'Show Navigator' }).click();
   const panel = example.locator(
     '[data-collapsible-panel="catalog-panel-relocation"]',
   );

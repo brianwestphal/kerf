@@ -255,7 +255,7 @@ for (const width of [1100, 390]) {
     const restore = example.locator(
       '[data-panel-restore="catalog-panel-restore"]',
     );
-    const show = restore.getByRole('button', { name: 'Show console' });
+    const show = restore.getByRole('button', { name: 'Show Console' });
 
     // Collapsed on arrival: the control floats in the frame's bottom-end
     // corner, inset from the frame's padding box (inside its border).
@@ -278,7 +278,7 @@ for (const width of [1100, 390]) {
     await show.click();
     await expect(drawer).toHaveAttribute('data-collapsed', 'false');
     await expect(restore).toHaveCount(0);
-    const hide = drawer.getByRole('button', { name: 'Hide console' });
+    const hide = drawer.getByRole('button', { name: 'Hide Console' });
     await expect(hide).toBeVisible();
     await expect(hide).toBeFocused();
 

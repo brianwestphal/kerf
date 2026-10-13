@@ -80,7 +80,7 @@ export function Catalog({
   const selected = found?.entry;
   const name = selected?.name ?? '';
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
-  const catalogName = `${brand.title} catalog`;
+  const catalogName = `${brand.title} Catalog`;
   const displayControls =
     increasedContrast !== undefined ||
     reducedMotion !== undefined ||
@@ -181,7 +181,7 @@ export function Catalog({
                   title: <ToolbarText text={settingsTitle} headingLevel={2} />,
                   toggle: {
                     action: toggleSettingsAction,
-                    name: settingsTitle.toLocaleLowerCase(),
+                    name: settingsTitle,
                   },
                 },
                 content: settings,

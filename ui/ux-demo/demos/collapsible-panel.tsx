@@ -73,14 +73,14 @@ function iconGroup(
 const consoleToolbar: CollapsiblePanelToolbar = {
   label: 'Console',
   title: <ToolbarText text="Console" />,
-  toggle: { action: RESTORE_DRAWER_ACTION, name: 'console' },
+  toggle: { action: RESTORE_DRAWER_ACTION, name: 'Console' },
 };
 
 const navigatorToolbar: CollapsiblePanelToolbar = {
   label: 'Navigator',
   leading: iconGroup('New File', FilePlus, 'file-plus'),
   trailing: iconGroup('Search Files', Search, 'search', true),
-  toggle: { action: RELOCATION_RAIL_ACTION, name: 'navigator' },
+  toggle: { action: RELOCATION_RAIL_ACTION, name: 'Navigator' },
 };
 
 export function CollapsiblePanelDemo() {

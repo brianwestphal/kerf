@@ -138,7 +138,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await expect(left).toHaveAttribute('data-collapsed', 'false');
       await expect(left).toHaveCSS('position', 'absolute');
       const hideNavigation = left.getByRole('button', {
-        name: 'Hide navigation',
+        name: 'Hide Navigation',
       });
       await expect(hideNavigation).toBeFocused();
       await hideNavigation.press('Enter');
@@ -146,7 +146,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await expect(
         main.getByRole('button', { name: 'Show Navigation' }),
       ).toBeFocused();
-      await main.getByRole('button', { name: 'Show inspector' }).click();
+      await main.getByRole('button', { name: 'Show Inspector' }).click();
       await expect(right).toHaveAttribute('data-collapsed', 'false');
       await expect(right).toHaveCSS('position', 'absolute');
       await expect(left).toHaveAttribute('data-collapsed', 'true');
@@ -155,7 +155,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
           '[data-component="value-table"][aria-label="Selected Task"]',
         ),
       ).toBeVisible();
-      await right.getByRole('button', { name: 'Hide inspector' }).click();
+      await right.getByRole('button', { name: 'Hide Inspector' }).click();
       await expect(right).toHaveAttribute('data-collapsed', 'true');
     }
     if (id === 'recipe-compact-toolbar')
@@ -199,7 +199,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
   ).toBeVisible();
   await expect(
     intermediateMain.locator('.kui-toolbar__trailing').getByRole('button', {
-      name: 'Show inspector',
+      name: 'Show Inspector',
     }),
   ).toBeVisible();
   await expectOneScrollOwnerPerPane(intermediateShell, 3);
@@ -264,8 +264,8 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
         'data-collapsed',
         'false',
       );
-      await recipe.getByRole('button', { name: 'Hide navigation' }).click();
-      await recipe.getByRole('button', { name: 'Show inspector' }).click();
+      await recipe.getByRole('button', { name: 'Hide Navigation' }).click();
+      await recipe.getByRole('button', { name: 'Show Inspector' }).click();
       await expect(recipe.locator('#recipe-shell-right-rail')).toHaveAttribute(
         'data-collapsed',
         'false',

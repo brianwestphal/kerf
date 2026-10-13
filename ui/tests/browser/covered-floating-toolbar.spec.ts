@@ -97,8 +97,8 @@ test('a compact Workbench rail overlay hides the work area floating controls unt
   await page.setViewportSize({ width: 390, height: 780 });
   await mountFixture(page, 'workbench');
   const main = mainAction(page);
-  const leftRestore = control(page, 'Show navigator');
-  const drawerRestore = control(page, 'Show console');
+  const leftRestore = control(page, 'Show Navigator');
+  const drawerRestore = control(page, 'Show Console');
   await expectShown(main);
   await expectShown(leftRestore);
   await expectShown(drawerRestore);
@@ -120,10 +120,10 @@ test('a compact Workbench rail overlay hides the work area floating controls unt
   // The other side, then both closed again: the flag follows every crossing.
   await setPanel(page, 'left', false);
   await expectCovered(main);
-  await expectCovered(control(page, 'Show inspector'));
+  await expectCovered(control(page, 'Show Inspector'));
   await setPanel(page, 'left', true);
   await expectShown(main);
-  await expectShown(control(page, 'Show inspector'));
+  await expectShown(control(page, 'Show Inspector'));
 
   // An open bottom drawer is not a side overlay: nothing hides.
   await setPanel(page, 'drawer', false);
@@ -143,7 +143,7 @@ test('an inline Workbench rail on a wide Workbench leaves the work area controls
   const center = (await page.locator('.kui-workbench__center').boundingBox())!;
   expect(center.x + center.width).toBeLessThanOrEqual(rail.x + 1);
   await expectShown(mainAction(page));
-  await expectShown(control(page, 'Show navigator'));
+  await expectShown(control(page, 'Show Navigator'));
 
   // Narrowing across the breakpoint turns the open rail into an overlay.
   await page.setViewportSize({ width: 600, height: 800 });
@@ -170,7 +170,7 @@ test('a wireSidebar compact side overlay hides the content floating controls', a
   await page.setViewportSize({ width: 390, height: 780 });
   await mountFixture(page, 'sidebar');
   const main = mainAction(page);
-  const consoleRestore = control(page, 'Show console');
+  const consoleRestore = control(page, 'Show Console');
   await expectShown(main);
   await expectShown(consoleRestore);
 
@@ -219,7 +219,7 @@ test('an overlay ResizableRegion side panel hides the work area floating control
   await page.setViewportSize({ width: 390, height: 780 });
   await mountFixture(page, 'region');
   const main = mainAction(page);
-  const navigator = control(page, 'Show navigator');
+  const navigator = control(page, 'Show Navigator');
   await expectShown(main);
   await expectShown(navigator);
 

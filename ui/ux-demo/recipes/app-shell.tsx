@@ -109,7 +109,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             toolbar: {
               label: 'Navigation',
               title: <ToolbarText text="Workspace" />,
-              toggle: { action: NAVIGATION_ACTION, name: 'navigation' },
+              toggle: { action: NAVIGATION_ACTION, name: 'Navigation' },
             },
             content: navigation(),
           }}
@@ -164,7 +164,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             toolbar: {
               label: 'Inspector',
               title: <ToolbarText text="Inspector" />,
-              toggle: { action: INSPECTOR_ACTION, name: 'inspector' },
+              toggle: { action: INSPECTOR_ACTION, name: 'Inspector' },
             },
             content: (
               <ValueTable label="Selected Task">

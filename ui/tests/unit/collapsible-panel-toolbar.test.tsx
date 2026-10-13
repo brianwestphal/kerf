@@ -21,7 +21,7 @@ const toolbar: CollapsiblePanelToolbar = {
   title: raw('<h2 data-component="toolbar-text">Navigator</h2>'),
   leading: group('only'),
   trailing: group('constant', true),
-  toggle: { action: 'toggle-nav', name: 'navigator' },
+  toggle: { action: 'toggle-nav', name: 'Navigator' },
 };
 
 const html = (value: unknown) => {
@@ -54,7 +54,7 @@ describe('CollapsiblePanel toolbar', () => {
     const toggle = trailing.querySelector<HTMLButtonElement>(
       '[data-action="toggle-nav"]',
     )!;
-    expect(toggle.getAttribute('aria-label')).toBe('Hide navigator');
+    expect(toggle.getAttribute('aria-label')).toBe('Hide Navigator');
     expect(toggle.getAttribute('data-collapsible-target')).toBe('nav');
     expect(toggle.getAttribute('data-key')).toBe('nav-toggle');
     expect(toggle.querySelector('svg')!.getAttribute('data-lucide')).toBe(
@@ -103,7 +103,7 @@ describe('CollapsiblePanel toolbar', () => {
     expect(host.querySelector('[data-group="constant"]')).not.toBeNull();
     expect(host.querySelector('[data-group="only"]')).toBeNull();
     const toggle = host.querySelector('[data-action="toggle-nav"]')!;
-    expect(toggle.getAttribute('aria-label')).toBe('Show navigator');
+    expect(toggle.getAttribute('aria-label')).toBe('Show Navigator');
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
     expect(toggle.querySelector('svg')!.getAttribute('data-lucide')).toBe(
       'panel-right-open',
@@ -116,7 +116,7 @@ describe('CollapsiblePanel toolbar', () => {
       leading: [group('first', true), group('local')],
       center: [false, [group('middle', true)]],
       trailing: [group('last', true), group('other-local')],
-      toggle: { action: 'toggle-nav', name: 'navigator' },
+      toggle: { action: 'toggle-nav', name: 'Navigator' },
     };
     const open = html(
       CollapsiblePanel({

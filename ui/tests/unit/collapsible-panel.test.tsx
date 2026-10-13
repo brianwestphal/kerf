@@ -86,8 +86,8 @@ describe('CollapsiblePanel', () => {
           side: 'bottom',
           label: 'Console',
           collapsed,
-          restoreControl: raw('<button type="button">Show console</button>'),
-          children: raw('<button type="button">Hide console</button>'),
+          restoreControl: raw('<button type="button">Show Console</button>'),
+          children: raw('<button type="button">Hide Console</button>'),
         }),
       );
       return root;
@@ -104,13 +104,13 @@ describe('CollapsiblePanel', () => {
     expect(panel.hasAttribute('inert')).toBe(true);
     expect(panel.getAttribute('aria-hidden')).toBe('true');
     const hide = [...collapsed.querySelectorAll('button')].find(
-      (button) => button.textContent === 'Hide console',
+      (button) => button.textContent === 'Hide Console',
     )!;
     expect(hide.closest('[inert]')).toBe(panel);
     const restore = collapsed.querySelector<HTMLElement>(
       '[data-panel-restore="console"]',
     )!;
-    expect(restore.textContent).toBe('Show console');
+    expect(restore.textContent).toBe('Show Console');
     expect(restore.closest('[inert]')).toBe(null);
 
     // Expanded: nothing is inert.
@@ -317,7 +317,7 @@ describe('CollapsiblePanel', () => {
         collapseMotion: 'fade-slide',
         contentOverflow: 'visible',
         presentation: 'overlay',
-        restoreControl: raw('<button>Show console</button>'),
+        restoreControl: raw('<button>Show Console</button>'),
         children: raw('<x/>'),
       }),
     );
@@ -384,11 +384,11 @@ describe('CollapsiblePanel', () => {
         side: 'left',
         collapsed: true,
         action: 'toggle-nav',
-        label: 'Show navigator',
+        label: 'Show Navigator',
       }),
     );
     expect(expand).toContain('aria-expanded="false"');
-    expect(expand).toContain('aria-label="Show navigator"');
+    expect(expand).toContain('aria-label="Show Navigator"');
     expect(expand).toContain('data-lucide="panel-left-open"');
   });
 });

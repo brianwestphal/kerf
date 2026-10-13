@@ -24,7 +24,7 @@ const headerGeometry = async (page: Page) =>
       );
     };
     const collapse = rect(
-      '#kui-catalog-left-rail .kui-pane__header [aria-label="Hide Kerf catalog"]',
+      '#kui-catalog-left-rail .kui-pane__header [aria-label="Hide Kerf Catalog"]',
     );
     const centerY = (value: DOMRect) => value.top + value.height / 2;
     return {
@@ -70,15 +70,15 @@ test('uses the Kerf identity and relocates sidebar restore into the detail toolb
   expect(wideGeometry.collapseTitleCenterDelta).toBeLessThanOrEqual(1);
   expect(wideGeometry.logoTitleCenterDelta).toBeLessThanOrEqual(1);
 
-  await sidebar.getByRole('button', { name: 'Hide Kerf catalog' }).click();
+  await sidebar.getByRole('button', { name: 'Hide Kerf Catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
   await expect(sidebar).toBeHidden();
   await expect(
-    sidebar.getByRole('button', { name: 'Hide Kerf catalog' }),
+    sidebar.getByRole('button', { name: 'Hide Kerf Catalog' }),
   ).toHaveCount(0);
 
   const restore = detail.getByRole('button', {
-    name: 'Show Kerf catalog',
+    name: 'Show Kerf Catalog',
   });
   await expect(restore).toBeVisible();
   await expect(restore).toBeFocused();
@@ -109,14 +109,14 @@ test('uses the Kerf identity and relocates sidebar restore into the detail toolb
   // breakpoint applies and opens over the stage from the entry toolbar.
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
-  await detail.getByRole('button', { name: 'Show Kerf catalog' }).click();
+  await detail.getByRole('button', { name: 'Show Kerf Catalog' }).click();
   await expect(sidebar).toHaveCSS('position', 'absolute');
   expect(await headerGeometry(page)).toMatchObject({
     filterBelowTitle: true,
   });
-  await sidebar.getByRole('button', { name: 'Hide Kerf catalog' }).click();
+  await sidebar.getByRole('button', { name: 'Hide Kerf Catalog' }).click();
   await expect(
-    detail.getByRole('button', { name: 'Show Kerf catalog' }),
+    detail.getByRole('button', { name: 'Show Kerf Catalog' }),
   ).toBeVisible();
   await expect
     .poll(() =>
@@ -142,7 +142,7 @@ test('at phone width the catalog sidebar overlays the stage, one tap from the en
   await expect(
     toolbar.getByRole('heading', { level: 2, name: 'Badge' }),
   ).toBeVisible();
-  await toolbar.getByRole('button', { name: 'Show Kerf catalog' }).click();
+  await toolbar.getByRole('button', { name: 'Show Kerf Catalog' }).click();
   await expect(sidebar).toHaveCSS('position', 'absolute');
   // It covers the stage, leaving a 44px strip that dismisses it.
   const [box, viewport] = [
@@ -227,7 +227,7 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   });
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
+  await page.getByRole('button', { name: 'Show Kerf Catalog' }).click();
   await expect(filter).toHaveText('Toolbar');
   await expect(field).toHaveAttribute('data-placeholder-visible', 'false');
   await field.screenshot({
@@ -266,21 +266,21 @@ test('an entry with settings shows a settings pane that drives its preview, coll
   await page.locator('wa-option[value="success"]').first().click();
   await expect(playground).toHaveAttribute('data-tone', 'success');
 
-  await settings.getByRole('button', { name: 'Hide settings' }).click();
+  await settings.getByRole('button', { name: 'Hide Settings' }).click();
   await expect(shell).toHaveAttribute('data-settings-collapsed', 'true');
   await expect(settings).toBeHidden();
-  await detail.getByRole('button', { name: 'Show settings' }).click();
+  await detail.getByRole('button', { name: 'Show Settings' }).click();
   await expect(settings).toBeVisible();
 
   // An entry without settings renders neither the pane nor its toggle.
   await page.locator('#kui-catalog-left-rail [data-item-id="chip"]').click();
   await expect(settings).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /settings$/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Settings$/ })).toHaveCount(0);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=badge');
   await expect(shell).toHaveAttribute('data-settings-collapsed', 'true');
-  const show = detail.getByRole('button', { name: 'Show settings' });
+  const show = detail.getByRole('button', { name: 'Show Settings' });
   await show.click();
   await expect(shell).toHaveAttribute('data-settings-collapsed', 'false');
   await expect(settings).toBeVisible();

@@ -220,21 +220,21 @@ describe('Workbench', () => {
           label: 'Studio',
           main,
           leftRail: {
-            content: raw('<button type="button">Hide navigator</button>'),
+            content: raw('<button type="button">Hide Navigator</button>'),
             collapsed,
             restoreControl: raw(
-              '<button type="button">Show navigator</button>',
+              '<button type="button">Show Navigator</button>',
             ),
           },
           rightRail: {
-            content: raw('<button type="button">Hide inspector</button>'),
+            content: raw('<button type="button">Hide Inspector</button>'),
             collapsed,
             responsiveOverlayAt: 'narrow',
           },
           bottomDrawer: {
-            content: raw('<button type="button">Hide console</button>'),
+            content: raw('<button type="button">Hide Console</button>'),
             collapsed,
-            restoreControl: raw('<button type="button">Show console</button>'),
+            restoreControl: raw('<button type="button">Show Console</button>'),
           },
         }),
       );
@@ -363,7 +363,7 @@ describe('Workbench', () => {
           collapseMotion: 'fade-slide',
           contentOverflow: 'visible',
           presentation: 'overlay',
-          restoreControl: raw('<button>Show console</button>'),
+          restoreControl: raw('<button>Show Console</button>'),
         },
       }),
     );
@@ -374,7 +374,7 @@ describe('Workbench', () => {
     expect(html).toContain(
       'class="kui-workbench__restore" data-panel="bottom" data-position="bottom-end"',
     );
-    expect(html).toContain('<button>Show console</button>');
+    expect(html).toContain('<button>Show Console</button>');
   });
 
   it('supports per-edge restore positions and hidden responsive replacements', () => {
@@ -391,7 +391,7 @@ describe('Workbench', () => {
         rightRail: {
           content: panel('inspector'),
           collapsed: true,
-          restoreControl: raw('<button>Show inspector</button>'),
+          restoreControl: raw('<button>Show Inspector</button>'),
         },
         bottomDrawer: {
           content: panel('console'),
@@ -405,7 +405,7 @@ describe('Workbench', () => {
       'data-panel="left" data-position="bottom-start"><button>Show nav</button>',
     );
     expect(html).toContain(
-      'data-panel="right" data-position="bottom-end"><button>Show inspector</button>',
+      'data-panel="right" data-position="bottom-end"><button>Show Inspector</button>',
     );
     expect(html).toContain('data-presentation="hidden" aria-hidden="true"');
     expect(html).not.toContain('Suppressed');

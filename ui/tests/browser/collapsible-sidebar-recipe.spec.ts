@@ -22,7 +22,7 @@ const railToggles = (page: Page) =>
   page.locator('[data-collapsible-target="sidebar-rail"]');
 // The rail's own toolbar carries its standard hide toggle.
 const railInnerToggle = (page: Page) =>
-  railPanel(page).getByRole('button', { name: 'Hide navigation' });
+  railPanel(page).getByRole('button', { name: 'Hide Navigation' });
 const backdrop = (page: Page) =>
   page.locator('.kui-collapsible-panel__backdrop');
 
@@ -70,7 +70,7 @@ test('expands and collapses the bottom drawer independently', async ({
   ).toHaveCount(0);
 
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'true');
-  await page.getByRole('button', { name: 'Show activity' }).first().click();
+  await page.getByRole('button', { name: 'Show Activity' }).first().click();
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'false');
   // The rail is unaffected by the drawer toggle.
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
@@ -79,10 +79,10 @@ test('expands and collapses the bottom drawer independently', async ({
   await expect(
     page.locator('[data-collapsible-target="sidebar-console"]'),
   ).toHaveCount(1);
-  await page.getByRole('button', { name: 'Hide activity' }).click();
+  await page.getByRole('button', { name: 'Hide Activity' }).click();
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'true');
   await expect(
-    page.getByRole('button', { name: 'Show activity' }),
+    page.getByRole('button', { name: 'Show Activity' }),
   ).toBeFocused();
 });
 
@@ -141,7 +141,7 @@ test('opens the bottom drawer monotonically from its stable bottom edge', async 
     }
     return { sawMotion, settled, frames, maxPanelScroll };
   });
-  await page.getByRole('button', { name: 'Show activity' }).first().click();
+  await page.getByRole('button', { name: 'Show Activity' }).first().click();
   const samples = await samplesPromise;
 
   expect(samples.settled).toBe(true);
@@ -260,11 +260,11 @@ test('routes screen-edge safe-area insets between the rail, drawer, and main pan
     bottom: '34px',
   });
   // Collapsing the rail hands the left edge back to the main pane.
-  await page.getByRole('button', { name: 'Hide navigation' }).first().click();
+  await page.getByRole('button', { name: 'Hide Navigation' }).first().click();
   await expect(root).toHaveAttribute('data-rail-collapsed', 'true');
   await expect.poll(mainPadding).toMatchObject({ left: '47px' });
   // Opening the drawer takes the bottom edge from the main pane.
-  await page.getByRole('button', { name: 'Show activity' }).first().click();
+  await page.getByRole('button', { name: 'Show Activity' }).first().click();
   await expect(root).toHaveAttribute('data-drawer-collapsed', 'false');
   await expect.poll(mainPadding).toMatchObject({ bottom: '0px' });
 });
@@ -369,7 +369,7 @@ test('keeps the compact overlay rail, drawer, and backdrop inside the 390px app 
   // The drawer overlay docks to the frame's bottom edge the same way.
   await page.keyboard.press('Escape');
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
-  await page.getByRole('button', { name: 'Show activity' }).first().click();
+  await page.getByRole('button', { name: 'Show Activity' }).first().click();
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'false');
   await expect
     .poll(async () => (await inside('sidebar-console')).panel.bottom)

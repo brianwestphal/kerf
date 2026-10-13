@@ -31,7 +31,7 @@ const navToggle = () => (
     collapsed={navCollapsed.value}
     action="toggle-nav"
     panelId="nav"
-    label={navCollapsed.value ? 'Show navigator' : 'Hide navigator'}
+    label={navCollapsed.value ? 'Show Navigator' : 'Hide Navigator'}
   />
 );
 

@@ -77,7 +77,7 @@ test('an embedded collapsed panel floats its restore control in its own containe
   await mountFixture(page, 'embedded');
   const host = page.locator('[data-restore-host="panel"]');
   const restore = panelRestore(page);
-  const button = restore.getByRole('button', { name: 'Show navigator' });
+  const button = restore.getByRole('button', { name: 'Show Navigator' });
   await expect(button).toBeVisible();
   await expect(restore).toHaveCSS('position', 'absolute');
 
@@ -137,7 +137,7 @@ test('narrow embedded restore controls stay inside their containers', async ({
   expect(
     await insets(
       panelHost,
-      panelRestore(page).getByRole('button', { name: 'Show navigator' }),
+      panelRestore(page).getByRole('button', { name: 'Show Navigator' }),
     ),
   ).toMatchObject({ start: 16, bottom: 16 });
   expect(
@@ -154,7 +154,7 @@ test('a full-viewport shell still floats restore controls in the screen corners'
   await page.setViewportSize({ width: 1280, height: 800 });
   await mountFixture(page, 'viewport');
   const button = panelRestore(page).getByRole('button', {
-    name: 'Show navigator',
+    name: 'Show Navigator',
   });
   const group = regionRestore(page).locator(
     '[data-component="toolbar-control-group"]',
@@ -185,7 +185,7 @@ const collapseDrawers = (page: Page, value: boolean) =>
 const navButton = (page: Page, id: string) =>
   page
     .locator(`[data-panel-restore="${id}"]`)
-    .getByRole('button', { name: 'Show navigator' });
+    .getByRole('button', { name: 'Show Navigator' });
 
 /** Distance (px) from the control's bottom to the drawer's top edge. */
 const clearance = async (control: Locator, drawer: Locator) => {
@@ -276,10 +276,10 @@ test('the lifted restore corner returns to the container corner when the drawer 
 const overlayControl = (page: Page, scenario: 'overlay' | 'region-overlay') =>
   scenario === 'overlay'
     ? page.locator(
-        '[data-panel-restore="overlay-inspector"] button[aria-label="Show inspector"]',
+        '[data-panel-restore="overlay-inspector"] button[aria-label="Show Inspector"]',
       )
     : page.locator(
-        '[data-region-restore="overlay-rail"] button[aria-label="Show navigator"]',
+        '[data-region-restore="overlay-rail"] button[aria-label="Show Navigator"]',
       );
 
 /** What the topmost element at the control's center belongs to. */

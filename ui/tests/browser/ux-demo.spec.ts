@@ -454,7 +454,7 @@ test('slides the catalog sidebar out and back via a composited transform, not a 
       path: 'test-results/catalog-sidebar-expanded.png',
     });
 
-  await sidebar.getByRole('button', { name: 'Hide Kerf catalog' }).click();
+  await sidebar.getByRole('button', { name: 'Hide Kerf Catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
   await expect(sidebar).toHaveAttribute('data-collapsed', 'true');
   await expect(sidebar).toHaveAttribute('inert', '');
@@ -473,7 +473,7 @@ test('slides the catalog sidebar out and back via a composited transform, not a 
     });
 
   // The restore is the relocated toggle in the entry toolbar.
-  await detail.getByRole('button', { name: 'Show Kerf catalog' }).click();
+  await detail.getByRole('button', { name: 'Show Kerf Catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
   await expect
     .poll(() =>
@@ -2660,11 +2660,11 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
   expect(noteBox.y + noteBox.height).toBeLessThanOrEqual(specimenBox.y + 1);
   await expect(page.locator('.catalog-log')).toHaveText('Recipe notes shown');
 
-  await page.getByRole('button', { name: 'Hide Kerf catalog' }).click();
+  await page.getByRole('button', { name: 'Hide Kerf Catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
   await expect(sidebar).toBeHidden();
   await expect(
-    pageHeader.getByRole('button', { name: 'Show Kerf catalog' }),
+    pageHeader.getByRole('button', { name: 'Show Kerf Catalog' }),
   ).toBeVisible();
   await expect
     .poll(
@@ -2683,7 +2683,7 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
       path: 'test-results/catalog-application-shell-collapsed-wide.png',
       fullPage: true,
     });
-  await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
+  await page.getByRole('button', { name: 'Show Kerf Catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
   await expect(sidebar).toBeVisible();
   await expect(

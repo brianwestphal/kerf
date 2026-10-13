@@ -59,7 +59,12 @@ export function collapsiblePanelToggleIcon(
 export interface PanelToggle {
   /** The `data-action` the toggle button carries. */
   action: string;
-  /** The panel's short name, for the accessible "Show …" / "Hide …" label. */
+  /**
+   * The panel's short title-style name ("Navigator", "Build Output"). It is
+   * the toggle group's accessible name and completes the default "Show …" /
+   * "Hide …" label ("Show Navigator"), so it follows the title-style rule in
+   * `docs/writing.md`; it is never recapitalized.
+   */
   name: string;
   /** Accessible label while the panel is collapsed. Defaults to `Show {name}`. */
   showLabel?: string;

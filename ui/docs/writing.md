@@ -33,6 +33,11 @@ uses sentence style ("Changes sync when you reconnect").
 | Placeholders                                                                                        | Sentence                     | Search tickets                                         |
 | Status lines, counts, and timestamps (`ToolbarText` status, `Badge`, `CornerStatus`)                | Sentence                     | Saved just now, 3 of 12 updated                        |
 
+A name that a component composes into a longer label is a name too, so pass
+it in title style. A panel toolbar's `toggle: { action, name }` labels the
+toggle group with `name` and completes "Show …" / "Hide …" with it:
+`name: "Navigator"` gives "Show Navigator". Kerf UI never recapitalizes it.
+
 Data is never recapitalized. Names that a person or a system supplies keep
 their own spelling: file names, ticket titles, user names, and tags. So do
 code identifiers shown as text, such as a prop value a specimen is labeled
@@ -97,6 +102,7 @@ The covered props are:
 - `SegmentedControl`, `Select`, and `TabNavigator` choice and tab labels;
 - `NavStack` view titles and `backText`, and `SplitView` `backLabel`;
 - `FieldLabel` text and the text of a `button` or `wa-button`;
+- the `name` of a panel toolbar's `toggle: { action, name }`;
 - the accessible names of icon-only controls: `IconButton` and
   `IconToggleButton` `label`, `PopupMenu` `label`, `SplitButton`
   `optionsLabel`, `TokenSearchField` `clearLabel`, and the `aria-label` of a

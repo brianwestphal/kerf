@@ -77,7 +77,7 @@ const panel = (id = 'restore-nav') => (
         side="left"
         collapsed
         action="toggle-restore-nav"
-        label="Show navigator"
+        label="Show Navigator"
       />
     }
   >
@@ -129,7 +129,7 @@ const region = () => (
             side="bottom"
             collapsed
             action="toggle-restore-console"
-            label="Show console"
+            label="Show Console"
           />
         </ToolbarControlGroup>
       </FloatingToolbar>
@@ -168,7 +168,7 @@ const compactOverlay = () => (
           side="right"
           collapsed
           action="toggle-overlay-inspector"
-          label="Show inspector"
+          label="Show Inspector"
         />
       }
     >
@@ -194,7 +194,7 @@ const regionOverlay = () => (
           side="left"
           collapsed
           action="toggle-overlay-rail"
-          label="Show navigator"
+          label="Show Navigator"
         />
       }
     >

@@ -77,7 +77,7 @@ describe('production composition recipes', () => {
       [...workbench.querySelectorAll('[data-workbench-toggle]')].map((button) =>
         button.getAttribute('aria-label'),
       ),
-    ).toEqual(['Hide navigation', 'Hide inspector']);
+    ).toEqual(['Hide Navigation', 'Hide Inspector']);
   });
 
   it('moves through every list workspace state deterministically', () => {

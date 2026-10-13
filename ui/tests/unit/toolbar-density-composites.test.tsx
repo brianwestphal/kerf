@@ -28,7 +28,7 @@ describe('Toolbar density through composites', () => {
       toolbar: {
         label: 'Files',
         density: 'compact' as const,
-        toggle: { action: 'toggle-files', name: 'files' },
+        toggle: { action: 'toggle-files', name: 'Files' },
       },
       bottomToolbar: { label: 'File status', density: 'compact' as const },
     });
@@ -95,7 +95,7 @@ describe('Toolbar density through composites', () => {
           toolbar: {
             label: 'Tickets',
             density: 'compact',
-            toggle: { action: 'toggle-tickets', name: 'tickets' },
+            toggle: { action: 'toggle-tickets', name: 'Tickets' },
           },
           navStack: {
             id: 'nav',
@@ -166,7 +166,7 @@ describe('Toolbar density through composites', () => {
   it('sizes CollapsiblePanelRelocated toggles to the destination density', () => {
     const toolbar = {
       label: 'Files',
-      toggle: { action: 'toggle-files', name: 'files' },
+      toggle: { action: 'toggle-files', name: 'Files' },
     };
     const props = {
       panelId: 'files',

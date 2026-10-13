@@ -147,7 +147,9 @@ top toolbar over a `Pane`:
   place groups wherever the open panel needs them;
 - a `ToolbarControlGroup` marked `relocateOnCollapse` stays available in the
   work area when the panel closes; the standard `toggle: { action, name,
-showLabel?, hideLabel? }` is always the final group.
+showLabel?, hideLabel? }` is always the final group. Give `name` as the
+  panel's title-style name ("Navigator"), which labels the toggle group and
+  completes "Show Navigator" / "Hide Navigator".
 
 Busy groups keep their inert control, spinner, and adjacent live status together
 when relocated. Clearing `busy` restores the same action in its current toolbar;
@@ -188,7 +190,7 @@ const toolbar: CollapsiblePanelToolbar = {
   label: "Navigator",
   leading: <NewFileGroup />,
   trailing: <ToolbarControlGroup relocateOnCollapse label="Search Files"><SearchButton /></ToolbarControlGroup>,
-  toggle: { action: "toggle-nav", name: "navigator" },
+  toggle: { action: "toggle-nav", name: "Navigator" },
 };
 
 <Row fill gap="none">
@@ -307,7 +309,7 @@ mount(app, () => (
           side="left"
           collapsed
           action="toggle-nav"
-          label="Show navigator"
+          label="Show Navigator"
         />
       )}
       {/* content */}

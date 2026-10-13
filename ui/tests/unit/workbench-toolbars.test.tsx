@@ -31,7 +31,11 @@ const rail = (
     title: title(name),
     leading: group(`${name}-only`),
     trailing: group(`${name}-constant`, true),
-    toggle: { action: `toggle-${name}`, name },
+    // A panel toggle name is title style: "Show Navigator".
+    toggle: {
+      action: `toggle-${name}`,
+      name: `${name.charAt(0).toUpperCase()}${name.slice(1)}`,
+    },
   },
   ...extra,
 });
@@ -88,7 +92,7 @@ describe('Workbench panel toolbars', () => {
       label: 'Tickets',
       toolbar: {
         label: 'Ticket rail',
-        toggle: { action: 'toggle-tickets', name: 'tickets' },
+        toggle: { action: 'toggle-tickets', name: 'Tickets' },
       },
       navStack: {
         id: 'ticket-nav',
@@ -131,14 +135,14 @@ describe('Workbench panel toolbars', () => {
     ).toBe('Detail header');
     expect(order(detailRail.querySelector('.kui-toolbar__trailing'))).toEqual([
       'detail-share',
-      'toggle:Hide tickets',
+      'toggle:Hide Tickets',
     ]);
     expect(detailRail.querySelectorAll('.kui-nav-stack__view')).toHaveLength(2);
 
     const collapsed = render(props(2, true));
     expect(order(mainZone(collapsed, 'trailing'))).toEqual([
       'detail-share',
-      'toggle:Show tickets',
+      'toggle:Show Tickets',
     ]);
     expect(
       collapsed.querySelector(
@@ -148,11 +152,11 @@ describe('Workbench panel toolbars', () => {
 
     const emptied = render(props(0, true));
     expect(order(mainZone(emptied, 'trailing'))).toEqual([
-      'toggle:Show tickets',
+      'toggle:Show Tickets',
     ]);
     const refilled = render(props(1, true));
     expect(order(mainZone(refilled, 'trailing'))).toEqual([
-      'toggle:Show tickets',
+      'toggle:Show Tickets',
     ]);
   });
 
@@ -171,7 +175,7 @@ describe('Workbench panel toolbars', () => {
     ]);
     expect(order(toolbar!.querySelector('.kui-toolbar__trailing'))).toEqual([
       'navigator-constant',
-      'toggle:Hide navigator',
+      'toggle:Hide Navigator',
     ]);
     const toggle = toolbar!.querySelector('[data-workbench-toggle]')!;
     expect(toggle.getAttribute('data-action')).toBe('toggle-navigator');
@@ -204,7 +208,7 @@ describe('Workbench panel toolbars', () => {
     });
     expect(order(mainZone(host, 'leading'))).toEqual([
       'navigator-constant',
-      'toggle:Show navigator',
+      'toggle:Show Navigator',
       'Editor',
       'editor-leading',
     ]);
@@ -238,7 +242,7 @@ describe('Workbench panel toolbars', () => {
     expect(order(mainZone(host, 'trailing'))).toEqual([
       'editor-trailing',
       'inspector-constant',
-      'toggle:Show inspector',
+      'toggle:Show Inspector',
     ]);
   });
 
@@ -249,7 +253,7 @@ describe('Workbench panel toolbars', () => {
       leading: [group('leading-persistent', true), group('leading-local')],
       center: [group('center-local'), [group('center-persistent', true)]],
       trailing: [group('trailing-persistent', true), group('trailing-local')],
-      toggle: { action: 'toggle-navigator', name: 'navigator' },
+      toggle: { action: 'toggle-navigator', name: 'Navigator' },
     };
     const props = (collapsed: boolean, side: 'left' | 'right') => ({
       id: 'wb',
@@ -282,7 +286,7 @@ describe('Workbench panel toolbars', () => {
     expect(order(panel.querySelector('.kui-toolbar__trailing'))).toEqual([
       'trailing-persistent',
       'trailing-local',
-      'toggle:Hide navigator',
+      'toggle:Hide Navigator',
     ]);
     expect(order(mainToolbar(open))).toEqual(['Editor', 'editor-trailing']);
 
@@ -291,7 +295,7 @@ describe('Workbench panel toolbars', () => {
       'leading-persistent',
       'center-persistent',
       'trailing-persistent',
-      'toggle:Show navigator',
+      'toggle:Show Navigator',
       'Editor',
     ]);
     expect(order(mainZone(leftClosed, 'trailing'))).toEqual([
@@ -303,7 +307,7 @@ describe('Workbench panel toolbars', () => {
       'leading-persistent',
       'center-persistent',
       'trailing-persistent',
-      'toggle:Show navigator',
+      'toggle:Show Navigator',
     ]);
     expect(order(mainToolbar(render(props(false, 'right'))))).toEqual([
       'Editor',
@@ -326,11 +330,11 @@ describe('Workbench panel toolbars', () => {
     expect(states[0]).toEqual([
       'Editor',
       'inspector-constant',
-      'toggle:Show inspector',
+      'toggle:Show Inspector',
     ]);
     expect(states[1]).toEqual([
       'navigator-constant',
-      'toggle:Show navigator',
+      'toggle:Show Navigator',
       'Editor',
     ]);
     expect(states[2]).toEqual(states[0]);
@@ -343,7 +347,7 @@ describe('Workbench panel toolbars', () => {
       toolbar: {
         label: 'Console',
         title: title('Console'),
-        toggle: { action: 'toggle-console', name: 'console' },
+        toggle: { action: 'toggle-console', name: 'Console' },
       },
     });
     const withBottom = render({
@@ -356,7 +360,7 @@ describe('Workbench panel toolbars', () => {
     const footer = withBottom.querySelector(
       '[data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar__trailing',
     );
-    expect(order(footer)).toEqual(['status', 'toggle:Show console']);
+    expect(order(footer)).toEqual(['status', 'toggle:Show Console']);
     expect(
       withBottom.querySelector('.kui-workbench__restore[data-panel="bottom"]'),
     ).toBeNull();
@@ -373,7 +377,7 @@ describe('Workbench panel toolbars', () => {
     expect(
       corner!.querySelector('[data-component="floating-toolbar"]'),
     ).not.toBeNull();
-    expect(order(corner)).toEqual(['toggle:Show console']);
+    expect(order(corner)).toEqual(['toggle:Show Console']);
 
     // Open: the close toggle trails the drawer's own toolbar, nothing floats.
     const open = render({
@@ -384,7 +388,7 @@ describe('Workbench panel toolbars', () => {
     });
     expect(order(panelToolbar(open, '[data-workbench-drawer]'))).toEqual([
       'Console',
-      'toggle:Hide console',
+      'toggle:Hide Console',
     ]);
     expect(open.querySelector('.kui-workbench__restore')).toBeNull();
   });
@@ -401,7 +405,7 @@ describe('Workbench panel toolbars', () => {
     );
     expect(order(corner)).toEqual([
       'navigator-constant',
-      'toggle:Show navigator',
+      'toggle:Show Navigator',
     ]);
     expect(
       corner!

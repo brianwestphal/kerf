@@ -260,7 +260,7 @@ export function WorkbenchDemo() {
               label: 'Ticket Rail Toolbar',
               toggle: {
                 action: 'toggle-workbench-ticket-rail',
-                name: 'tickets',
+                name: 'Tickets',
               },
             },
             navStack: {
@@ -354,7 +354,7 @@ export function WorkbenchDemo() {
               title: title('Navigator'),
               toggle: {
                 action: 'toggle-workbench-navigator',
-                name: 'navigator',
+                name: 'Navigator',
               },
             },
             content: region('Files and Symbols', '180–400 px wide'),
@@ -369,7 +369,7 @@ export function WorkbenchDemo() {
               title: title('Inspector'),
               toggle: {
                 action: 'toggle-workbench-inspector',
-                name: 'inspector',
+                name: 'Inspector',
               },
             },
             header: (
@@ -451,7 +451,7 @@ export function WorkbenchDemo() {
             toolbar: {
               label: 'Output',
               title: title('Output'),
-              toggle: { action: 'toggle-workbench-output', name: 'output' },
+              toggle: { action: 'toggle-workbench-output', name: 'Output' },
             },
             content: region(
               'Build Output',
@@ -493,7 +493,7 @@ export function WorkbenchDemo() {
               trailing: iconGroup('Search Files', Search, 'search', true),
               toggle: {
                 action: 'toggle-workbench-collapsed-navigator',
-                name: 'navigator',
+                name: 'Navigator',
               },
             },
             content: region('Navigator', 'Still mounted'),
@@ -508,7 +508,7 @@ export function WorkbenchDemo() {
             toolbar: {
               label: 'Console',
               title: title('Console'),
-              toggle: { action: 'toggle-workbench-console', name: 'console' },
+              toggle: { action: 'toggle-workbench-console', name: 'Console' },
             },
             content: region('Console', 'Still mounted'),
             collapsed: workbenchConsoleCollapsed.value,

@@ -98,13 +98,13 @@ test('CollapsiblePanel root focus and outline follow collapse and overlay state'
   const rail = example.locator(
     '[data-collapsible-panel="catalog-panel-relocation"]',
   );
-  const open = example.getByRole('button', { name: 'Show navigator' });
+  const open = example.getByRole('button', { name: 'Show Navigator' });
   await expect(rail).toHaveAttribute('tabindex', '-1');
   await expect(rail).not.toHaveAttribute('data-outlined');
   await open.click();
   await expect(rail).toHaveAttribute('tabindex', '0');
   await expectOutlined(rail);
-  await rail.getByRole('button', { name: 'Hide navigator' }).click();
+  await rail.getByRole('button', { name: 'Hide Navigator' }).click();
   await expect(rail).toHaveAttribute('tabindex', '-1');
   await expect(rail).not.toHaveAttribute('data-outlined');
 

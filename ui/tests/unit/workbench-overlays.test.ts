@@ -1080,7 +1080,7 @@ describe('wireWorkbench toolbar toggle focus', () => {
           collapsed: collapsed.value,
           toolbar: {
             label: 'Navigator',
-            toggle: { action: 'toggle-nav', name: 'navigator' },
+            toggle: { action: 'toggle-nav', name: 'Navigator' },
           },
         },
       }),
@@ -1117,7 +1117,7 @@ describe('wireWorkbench toolbar toggle focus', () => {
     expect(app.toggle()).toBeNull();
     await flush();
     expect(document.activeElement).toBe(app.railToggle());
-    expect(app.railToggle().getAttribute('aria-label')).toBe('Hide navigator');
+    expect(app.railToggle().getAttribute('aria-label')).toBe('Hide Navigator');
     // Closing from the rail hands focus back to the relocated toggle.
     app.railToggle().click();
     await flush();
