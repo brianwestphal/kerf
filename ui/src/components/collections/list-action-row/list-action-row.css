@@ -46,6 +46,20 @@
   border-end-end-radius: 0;
 }
 
+/* In a divided list, a corner is flat wherever its edge carries a divider
+   line, whichever row draws it (see ListItem). */
+:is([data-divider="after"], [data-divider="both"]) + .kui-list-action-row {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+
+.kui-list-action-row:has(
+  + :is([data-divider="before"], [data-divider="both"])
+) {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
 .kui-list-action-row:not([data-placeholder="true"]):has(
     .kui-list-action-row__primary:hover
   ) {

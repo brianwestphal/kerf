@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 357100,
-  "measuredLargestJavaScriptGzip": 140046,
-  "measuredTotalJavaScriptGzip": 357057,
+  "totalJavaScriptGzip": 357300,
+  "measuredLargestJavaScriptGzip": 140242,
+  "measuredTotalJavaScriptGzip": 357250,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -3875,6 +3875,22 @@
         "measuredTotalJavaScriptGzip": 357057,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 357100
+      }
+    },
+    {
+      "at": "2026-10-13T01:20:56.866Z",
+      "reason": "Divided list catalog example (KF-AQN4H7)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 140046,
+        "measuredTotalJavaScriptGzip": 357057,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 140242,
+        "measuredTotalJavaScriptGzip": 357250,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 357300
       }
     }
   ]

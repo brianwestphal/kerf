@@ -21,6 +21,27 @@ export function ListItemDemo() {
         />
       </CatalogExample>
       <CatalogExample
+        label="Divided list"
+        note="Every row but the last divides after itself, so lines sit only between rows. Corners round only on the outer edges of the group, so a hovered or selected first, middle, or last row keeps the right shape."
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <List rootAttributes={{ 'data-demo-divided-list': '' }}>
+          {['Ana Ruiz', 'Ben Okafor', 'Chen Wei', 'Dana Holt'].map(
+            (name, index, names) => (
+              <ListItem
+                action="log-projects"
+                itemId={`member-${index}`}
+                label={name}
+                description="Member"
+                selected={index === 1}
+                divider={index < names.length - 1 ? 'after' : 'none'}
+              />
+            ),
+          )}
+        </List>
+      </CatalogExample>
+      <CatalogExample
         label="Filled command rows"
         note="Public color, fill, and border tokens let a list carry its own resting, hover, and selected tones without a wrapper."
         align="none"

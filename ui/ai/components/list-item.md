@@ -51,6 +51,7 @@ Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1
 - description and status
 - busy while retaining content
 - before, after, or paired group divider
+- position-aware divided-list corners: flat wherever a divider line (this row's or a neighbor's) meets the edge
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 

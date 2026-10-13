@@ -68,6 +68,20 @@
   border-end-end-radius: 0;
 }
 
+/* In a divided list, a corner is flat wherever its edge carries a divider
+   line, whichever row draws it: the previous row's after line squares this
+   row's top, and the next row's before line squares its bottom. So first,
+   middle, last, and only rows round just their outer corners. */
+:is([data-divider="after"], [data-divider="both"]) + .kui-list-item {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+
+.kui-list-item:has(+ :is([data-divider="before"], [data-divider="both"])) {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
 .kui-list-item[data-has-icon="true"] {
   grid-template-columns: var(
     --kui-list-item-columns,

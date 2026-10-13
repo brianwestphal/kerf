@@ -254,7 +254,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   gives option rows more room. `multiline` wraps labels, with
   `multilineIconAlign="center"` when the icon should center on the whole copy.
   `divider` owns row separators and `state="drag-target"` paints the drop
-  target. For a reorderable list, set `draggable` + `itemId` on `ListItem`,
+  target. For lines only between rows, give every row but the last
+  `divider="after"` (the last `"none"`); a row's corners are flat wherever a
+  divider line meets them, so the group rounds only its outer corners on
+  hover and selection. For a reorderable list, set `draggable` + `itemId` on `ListItem`,
   `ListItemLink`, or `ListActionRow` rows and call `wireListReorder` (from
   `@kerfjs/ui/wire-list-reorder`) once; it paints the dimmed dragging rows and
   the before/after insertion line, supports Alt+Shift+ArrowUp/ArrowDown, and

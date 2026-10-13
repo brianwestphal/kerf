@@ -49,6 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/list-action-row`](../public-api-signatu
 - interaction-revealed trailing action
 - trailing overflow menu
 - before, after, or paired group divider
+- position-aware divided-list corners: flat wherever a divider line (this row's or a neighbor's) meets the edge
 - draggable row with dragging and drop-before / drop-after insertion states
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
