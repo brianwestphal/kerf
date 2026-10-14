@@ -78,8 +78,9 @@ const ARTWORK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200"
 <path d="M0 960 L260 850 L480 940 L720 840 L940 960 L1180 880 L1400 970 L1600 900 V1200 H0Z" fill="#2a1a3d"/>
 </svg>`;
 
-// A blob URL rather than a data URL: kerf screens `data:image/svg+xml` out of
-// URL attributes because an SVG document can carry script. Created once and
+// A blob URL rather than a data URL: older kerf releases this package still
+// supports screen `data:image/svg+xml` out of every URL attribute; current kerf
+// allows it in `<img src>`. Created once and
 // reused, so re-renders do not leak blob URLs.
 let artworkUrl: string | undefined;
 const artwork = () =>

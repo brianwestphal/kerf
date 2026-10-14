@@ -123,7 +123,7 @@ Two attributes are absent for the same reason: **`<select value>` and `<textarea
 
 ### Dangerous URL filter
 
-Plain-string values written to URL-bearing attributes are screened by scheme. If a value resolves to a `javascript:` or `vbscript:` scheme, or a script-executing `data:` document type (`data:text/html`, `data:image/svg+xml`, XHTML/XML), kerf **drops the attribute entirely**. The screen runs on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`, and `data` (the `<object data>` attribute).
+Plain-string values written to URL-bearing attributes are screened by scheme. If a value resolves to a `javascript:` or `vbscript:` scheme, or a script-executing `data:` document type (`data:text/html`, `data:image/svg+xml`, XHTML/XML), kerf **drops the attribute entirely**. The screen runs on these attribute names: `href`, `src`, `xlink:href`, `formaction`, `action`, and `data` (the `<object data>` attribute). An SVG data URL is the one sink-aware exception: in `<img src>` and in SVG `<image href>` / `<image xlink:href>`, where the browser renders the SVG as an image in secure static mode and runs no script, `data:image/svg+xml` is kept; everywhere else (`<iframe src>`, `<embed src>`, `<object data>`, `<a href>`, …) it is still dropped.
 
 Attribute-name matching is ASCII-case-insensitive, matching HTML semantics, so author spellings such as `HREF`, `Src`, and `XLINK:HREF` cannot bypass the screen.
 

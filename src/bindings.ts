@@ -511,7 +511,7 @@ function setBoundAttr(el: Element, name: string, value: unknown): void {
     return;
   }
   const str = String(value);
-  if (isDangerousUrlValue(name, str)) {
+  if (isDangerousUrlValue(name, str, el.localName)) {
     // KF-340: throw in dev (fail loudly), warn+drop in prod.
     reportDangerousUrl('kerf binding', name, str);
     el.removeAttribute(name);

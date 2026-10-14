@@ -124,10 +124,14 @@ export function html(
       if (id !== null) {
         (pendingBindIds ??= []).push(id);
       } else {
-        buf += _renderAttrVerbatim(hole.name, (value as Signal<unknown>).value);
+        buf += _renderAttrVerbatim(
+          hole.name,
+          (value as Signal<unknown>).value,
+          hole.tag,
+        );
       }
     } else {
-      buf += _renderAttrVerbatim(hole.name, value);
+      buf += _renderAttrVerbatim(hole.name, value, hole.tag);
     }
   }
   if (buf !== '' || parts.length === 0)

@@ -106,6 +106,30 @@ describe('fine-grained bindings — bound-attribute security: throws in dev (KF-
     ).toThrow(/dropped dangerous URL value for src/);
   });
 
+  it('lets an SVG data URL through an image sink on every path', async () => {
+    // KF-KFGXA5: an SVG loaded as an image renders in secure static mode, so
+    // <img src> and SVG <image href> accept it; <iframe src> above still throws.
+    const art = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
+    expect(String(jsx('img', { src: art, alt: '' }))).toContain(
+      'src="data:image/svg+xml',
+    );
+    expect(
+      String(jsx('svg', { children: jsx('image', { href: art }) })),
+    ).toContain('href="data:image/svg+xml');
+    const { html } = await import('../../src/html.js');
+    expect(String(html`<img alt="" src=${art}>`)).toContain(
+      'src="data:image/svg+xml',
+    );
+    // The same value in a document sink still fails loudly in dev.
+    expect(() => String(html`<iframe src=${art}></iframe>`)).toThrow(
+      /dropped dangerous URL value for src/,
+    );
+    const live = signal(art);
+    const dispose = mount(root, () => jsx('img', { id: 'img', src: live }));
+    expect(root.querySelector('#img')!.getAttribute('src')).toBe(art);
+    dispose();
+  });
+
   it('throws on the hardened screen — <object data> document load', () => {
     // KF-312: <object data> screened (loads its target as a document).
     expect(() =>

@@ -16,8 +16,9 @@ export const TILE = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="
 <rect width="48" height="48" fill="#2f4a7a"/><path d="M0 24 L24 0 L48 24 L24 48Z" fill="#3c5e96"/><circle cx="24" cy="24" r="5" fill="#f4b36b"/>
 </svg>`;
 
-// A blob URL rather than a data URL: kerf screens `data:image/svg+xml` out of
-// URL attributes because an SVG document can carry script.
+// A blob URL rather than a data URL: older kerf releases this package still
+// supports screen `data:image/svg+xml` out of every URL attribute; current kerf
+// allows it in `<img src>`.
 // Created on first render and reused, so re-renders do not leak blob URLs.
 const urls = new Map<string, string>();
 export const svgUrl = (svg: string) => {

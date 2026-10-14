@@ -30,6 +30,13 @@
  *     allowlist the inert media families (raster images, fonts, audio, video,
  *     plain text/css) and drop every other `data:` — so a novel dangerous
  *     subtype fails closed.
+ *
+ *   - **SVG is safe in an image sink only.** An SVG loaded as an image
+ *     (`<img src>`, SVG `<image href>`) renders in the browser's secure static
+ *     mode: no script, no external loads, no interaction. So
+ *     `data:image/svg+xml` passes there (`isImageUrlSink`) and stays blocked
+ *     everywhere else (`<iframe src>`, `<embed src>`, `<object data>`, `<a
+ *     href>`, …), where it loads as a script-capable document.
  */
 
 import { devHooks } from '../dev-hooks.js';
@@ -124,12 +131,14 @@ function schemeOf(normalized: string): string | null {
  * are all treated as dangerous, while `data:image/png` / fonts / audio / video
  * / plain text pass.
  */
-function isDangerousDataUrl(normalized: string): boolean {
+function isDangerousDataUrl(normalized: string, imageSink: boolean): boolean {
   const media =
     /^data:([^;,]*)/.exec(normalized.toLowerCase())?.[1].trim() ?? '';
   if (media === '' || media === 'text/plain' || media === 'text/css')
     return false;
-  if (media === 'image/svg+xml') return true; // SVG can carry <script>
+  // SVG can carry <script>, which runs when it loads as a document; as an
+  // image it renders in secure static mode and runs nothing.
+  if (media === 'image/svg+xml') return !imageSink;
   if (media.startsWith('image/')) return false;
   if (media.startsWith('font/') || media.startsWith('application/font'))
     return false;
@@ -151,16 +160,41 @@ export function isUrlAttrName(name: string): boolean {
   return URL_ATTRS.has(/[A-Z]/.test(name) ? name.toLowerCase() : name);
 }
 
-/** True if `value` is a dangerous URL for the URL-bearing attribute `name`. */
-export function isDangerousUrlValue(name: string, value: string): boolean {
-  return isUrlAttrName(name) && isDangerousUrl(value);
+/**
+ * True if attribute `name` on element `tag` loads its URL as an image, where
+ * an SVG renders in secure static mode and runs no script: `<img src>` and
+ * SVG `<image href>` / `<image xlink:href>`. Tag and attribute names compare
+ * case-insensitively.
+ */
+export function isImageUrlSink(tag: string, name: string): boolean {
+  const element = tag.toLowerCase();
+  const attribute = name.toLowerCase();
+  if (element === 'img') return attribute === 'src';
+  return (
+    element === 'image' && (attribute === 'href' || attribute === 'xlink:href')
+  );
+}
+
+/**
+ * True if `value` is a dangerous URL for the URL-bearing attribute `name` on
+ * element `tag` (omit `tag` when it is unknown; the screen then treats the
+ * attribute as a document sink).
+ */
+export function isDangerousUrlValue(
+  name: string,
+  value: string,
+  tag = '',
+): boolean {
+  return (
+    isUrlAttrName(name) && isDangerousUrl(value, isImageUrlSink(tag, name))
+  );
 }
 
 /**
  * True if `value`, written into a URL-bearing attribute (see `isUrlAttrName`),
  * would resolve to a script-executing URL.
  */
-export function isDangerousUrl(value: string): boolean {
+export function isDangerousUrl(value: string, imageSink = false): boolean {
   // No `:` → no scheme, so nothing to screen: a relative URL (`/a/b`, `#x`,
   // `?q`, `logo.png`) is the common case in a large page. Exact: normalization
   // only ever REMOVES characters, so it can never introduce the `:` that
@@ -174,7 +208,7 @@ export function isDangerousUrl(value: string): boolean {
   if (DANGEROUS_SCHEMES.has(scheme)) {
     return !INERT_JAVASCRIPT_URLS.has(normalized.trimEnd().toLowerCase());
   }
-  return scheme === 'data' && isDangerousDataUrl(normalized);
+  return scheme === 'data' && isDangerousDataUrl(normalized, imageSink);
 }
 
 /**
@@ -186,7 +220,8 @@ export function dangerousUrlWarning(name: string, value: string): string {
   return (
     `dropped dangerous URL value for ${name}=${JSON.stringify(value.slice(0, DANGEROUS_URL_DIAGNOSTIC_VALUE_LENGTH))}. ` +
     'kerf blocks javascript:, vbscript:, and script-executing data: URLs ' +
-    '(text/html, image/svg+xml, xml) in href/src/data/formaction/action/xlink:href by default. ' +
+    '(text/html, image/svg+xml, xml) in href/src/data/formaction/action/xlink:href by default ' +
+    '(an SVG data URL is allowed in <img src> and SVG <image href>, where it cannot run script). ' +
     'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitize upstream.'
   );
 }

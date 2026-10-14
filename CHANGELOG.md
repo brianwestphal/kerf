@@ -255,6 +255,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **SVG data URLs are allowed where they load as images.** The URL screen now keeps `data:image/svg+xml` in `<img src>` and in SVG `<image href>` / `<image xlink:href>`, where the browser renders the SVG as an image in secure static mode and runs no script, on the JSX, `html` tagged template, and live-binding paths. Every other sink (`<iframe src>`, `<embed src>`, `<object data>`, `<a href>`, …) still drops it, and no other scheme or `data:` rule changes. Generated SVG artwork no longer needs a `blob:` URL or `raw()`.
 - `@kerfjs/ui` dialog corners are now concentric with a pill `ToolbarControlGroup` (22px) resting at the body inset, in place of Web Awesome's 12px panel radius: 30px by default (a bare `wa-dialog`, `PopoverDialogSurface`, and `DialogSurface` with a `compact` or `none` body inset) and 38px for `bodyInset="comfortable"`. A side sheet's leading corners follow the same radius (`KF-1FNWQG`).
 
 - A resizable `@kerfjs/ui` `Workbench` panel without a `label` now names its resize handle in title style, as `ui/docs/writing.md` asks for region names: "Resize Left Rail", "Resize Right Rail", and "Resize Bottom Drawer" (previously "Resize left rail" and so on). A test or locator that matched the old accessible name needs the new one (`KF-NWS9GB`).

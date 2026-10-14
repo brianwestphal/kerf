@@ -22,6 +22,8 @@ export interface AttrHole {
   name: string;
   /** The surrounding quote character, or null for an unquoted `attr=${v}`. */
   quote: '"' | "'" | null;
+  /** The element's tag name, lowercased, for sink-aware URL screening. */
+  tag: string;
 }
 
 export interface TextHole {
@@ -74,6 +76,7 @@ export function parseTemplate(strings: readonly string[]): ParsedTemplate {
   const tagClose: number[] = new Array<number>(strings.length).fill(-1);
   let mode: 'text' | 'tag' | 'comment' = 'text';
   let quote: '"' | "'" | null = null;
+  let tagName = '';
 
   for (let i = 0; i < strings.length; i++) {
     let s = strings[i];
@@ -98,6 +101,9 @@ export function parseTemplate(strings: readonly string[]): ParsedTemplate {
             j += 3;
           } else if (j + 1 < s.length && /[a-zA-Z!/?]/.test(s[j + 1])) {
             mode = 'tag';
+            tagName = (
+              /^[a-zA-Z][^\s/>]*/.exec(s.slice(j + 1))?.[0] ?? ''
+            ).toLowerCase();
           }
         }
       } else if (mode === 'tag') {
@@ -136,7 +142,12 @@ export function parseTemplate(strings: readonly string[]): ParsedTemplate {
           // Inside a quoted attribute value: only valid if the quote opened
           // as the chunk's very last character (i.e. the hole IS the value).
           if (m === null || m[3] === undefined) throw partialValueError(s);
-          holes[i] = { kind: 'attr', name: m[2], quote: m[3] as '"' | "'" };
+          holes[i] = {
+            kind: 'attr',
+            name: m[2],
+            quote: m[3] as '"' | "'",
+            tag: tagName,
+          };
           s = s.slice(0, s.length - m[0].length);
           quote = null;
         } else if (m !== null && m[3] === undefined) {
@@ -148,7 +159,7 @@ export function parseTemplate(strings: readonly string[]): ParsedTemplate {
               ? /^[\s>/]/.test(next)
               : i + 1 === strings.length - 1;
           if (!validNext) throw partialValueError(s);
-          holes[i] = { kind: 'attr', name: m[2], quote: null };
+          holes[i] = { kind: 'attr', name: m[2], quote: null, tag: tagName };
           s = s.slice(0, s.length - m[0].length);
         } else if (/<\/?$/.test(s)) {
           // The tag opened as the chunk's last characters (`</${…}`).

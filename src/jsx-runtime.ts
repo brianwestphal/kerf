@@ -37,6 +37,7 @@ import { escapeAttr, escapeHtml } from './utils/escapeHtml.js';
 import { ATTR_ALIASES } from './utils/jsx-attr-aliases.js';
 import {
   isDangerousUrl,
+  isImageUrlSink,
   isUrlAttrName,
   reportDangerousUrl,
 } from './utils/url-screen.js';
@@ -359,8 +360,8 @@ function checkAttrName(key: string, name: string, isFn: boolean): boolean {
   return isUrl;
 }
 
-function renderAttr(key: string, value: unknown): string {
-  return renderAttrNamed(key, ATTR_ALIASES[key] ?? key, value);
+function renderAttr(key: string, value: unknown, tag: string): string {
+  return renderAttrNamed(key, ATTR_ALIASES[key] ?? key, value, tag);
 }
 
 /**
@@ -368,7 +369,12 @@ function renderAttr(key: string, value: unknown): string {
  * error messages); `name` is the final emitted attribute name — post-alias for
  * JSX, verbatim for the `kerfjs/html` tagged-template path.
  */
-function renderAttrNamed(key: string, name: string, value: unknown): string {
+function renderAttrNamed(
+  key: string,
+  name: string,
+  value: unknown,
+  tag: string,
+): string {
   if (value == null || value === false) return '';
   const isUrlAttr = checkAttrName(key, name, typeof value === 'function');
   if (value === true) return ` ${name}`;
@@ -381,7 +387,7 @@ function renderAttrNamed(key: string, name: string, value: unknown): string {
     // URL-screening shared with the fine-grained binding writer (KF-297).
     // `SafeHtml` values (raw()) skip this — they hit the branch above.
     // KF-340: throw in dev (fail loudly), warn+drop in prod.
-    if (isUrlAttr && isDangerousUrl(value)) {
+    if (isUrlAttr && isDangerousUrl(value, isImageUrlSink(tag, name))) {
       reportDangerousUrl('JSX', name, value);
       return '';
     }
@@ -430,10 +436,10 @@ export function jsx(
         (bindIds ??= []).push(id);
         continue;
       }
-      attrStr += renderAttr(k, (v as Signal<unknown>).value);
+      attrStr += renderAttr(k, (v as Signal<unknown>).value, tag);
       continue;
     }
-    attrStr += renderAttr(k, v);
+    attrStr += renderAttr(k, v, tag);
   }
   // All signal attrs on one element share a scope, so the marker attr name is
   // fetched once (avoids a per-attr object alloc from bindAttr).
@@ -504,8 +510,12 @@ export function _toSegment(child: unknown): Segment {
   return toSegment(child as JSXChildren);
 }
 
-export function _renderAttrVerbatim(name: string, value: unknown): string {
-  return renderAttrNamed(name, name, value);
+export function _renderAttrVerbatim(
+  name: string,
+  value: unknown,
+  tag: string,
+): string {
+  return renderAttrNamed(name, name, value, tag);
 }
 
 export { assertEmittableAttrName as _assertEmittableAttrName };
