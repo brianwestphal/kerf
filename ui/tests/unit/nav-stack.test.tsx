@@ -1,4 +1,4 @@
-import { raw } from 'kerfjs';
+import { mount, raw, signal } from 'kerfjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -845,6 +845,123 @@ describe('wireNavStack', () => {
     dispose();
     expect(replacement.hasAttribute('tabindex')).toBe(false);
     expect(second.getAttribute('tabindex')).toBe('-2');
+  });
+
+  it('keeps fallback focus when a re-render strips the generated tabindex, then hands it to arriving content', async () => {
+    // KF-ADYAY9: a consumer render morphs the view without the generated
+    // tabindex, which made it unfocusable and dropped focus to the body.
+    const root = mountStack([view('home', 'Home')]);
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const dispose = wireNavStack(root, { duration: 0 });
+    const home = viewport.querySelector<HTMLElement>('[data-nav-key="home"]')!;
+    home.dataset.navActive = 'false';
+    const loading = document.createElement('article');
+    loading.className = 'kui-nav-stack__view';
+    loading.dataset.navKey = 'ticket';
+    loading.dataset.navActive = 'true';
+    loading.innerHTML = '<div inert><button>Loading row</button></div>';
+    viewport.append(loading);
+    await tick();
+    expect(document.activeElement).toBe(loading);
+
+    // The morph removes the attribute; the element blurs to the body.
+    loading.removeAttribute('tabindex');
+    loading.blur();
+    await tick();
+    expect(loading.getAttribute('tabindex')).toBe('-1');
+    expect(document.activeElement).toBe(loading);
+
+    // The loaded detail replaces the inert partial under the same key.
+    loading.innerHTML = '<button id="loaded">Edit ticket</button>';
+    await tick();
+    expect(document.activeElement).toBe(loading.querySelector('#loaded'));
+
+    // Once focus has moved on, a later strip of the attribute is left alone.
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    outside.focus();
+    loading.removeAttribute('tabindex');
+    await tick();
+    expect(document.activeElement).toBe(outside);
+    outside.remove();
+    dispose();
+  });
+
+  it('survives a real mount re-render that morphs the fallback tabindex away', async () => {
+    const pushed = signal(false);
+    const loaded = signal(false);
+    const label = signal('Rail');
+    const app = document.createElement('div');
+    document.body.append(app);
+    const unmount = mount(app, () =>
+      NavStack({
+        id: 'rail',
+        label: label.value,
+        views: [
+          { key: 'list', content: <button id="open">Open</button> },
+          ...(pushed.value
+            ? [
+                {
+                  key: 'ticket',
+                  content: loaded.value ? (
+                    <button id="loaded">Edit ticket</button>
+                  ) : (
+                    <div inert>
+                      <button>Loading row</button>
+                    </div>
+                  ),
+                },
+              ]
+            : []),
+        ],
+      }),
+    );
+    const dispose = wireNavStack(
+      app.querySelector<HTMLElement>('[data-component="nav-stack"]')!,
+      { duration: 0 },
+    );
+    const ticket = () =>
+      app.querySelector<HTMLElement>('[data-nav-key="ticket"]')!;
+    pushed.value = true;
+    await tick();
+    expect(document.activeElement).toBe(ticket());
+    // An unrelated re-render morphs the view from markup without the
+    // generated tabindex.
+    label.value = 'Ticket Rail';
+    await tick();
+    expect(ticket().getAttribute('tabindex')).toBe('-1');
+    expect(document.activeElement).toBe(ticket());
+    // The loaded detail replaces the inert partial under the same key.
+    loaded.value = true;
+    await tick();
+    expect(document.activeElement).toBe(app.querySelector('#loaded'));
+    dispose();
+    unmount();
+    app.remove();
+  });
+
+  it('does not reclaim focus the user moved away from a fallback view', async () => {
+    const root = mountStack([view('home', 'Home')]);
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const dispose = wireNavStack(root, { duration: 0 });
+    viewport.querySelector<HTMLElement>(
+      '[data-nav-key="home"]',
+    )!.dataset.navActive = 'false';
+    const empty = document.createElement('article');
+    empty.className = 'kui-nav-stack__view';
+    empty.dataset.navKey = 'empty';
+    empty.dataset.navActive = 'true';
+    viewport.append(empty);
+    await tick();
+    expect(document.activeElement).toBe(empty);
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    outside.focus();
+    empty.removeAttribute('tabindex');
+    await tick();
+    expect(document.activeElement).toBe(outside);
+    outside.remove();
+    dispose();
   });
 
   it('stops animating after dispose', async () => {

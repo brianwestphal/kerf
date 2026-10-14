@@ -150,7 +150,11 @@ focusable descendant, and finally the view container itself. Use
 `data-nav-focus` for a heading or primary control when DOM order is not the best
 initial reading position; it may use `tabindex="-1"` for programmatic focus.
 When a remembered control was removed during the controlled rerender, the same
-fallback order applies. Disposing the helper stops future transitions and
+fallback order applies. While focus rests on the view container itself (it
+had nothing focusable, such as an inert loading placeholder), a later
+re-render that morphs away the temporary `tabindex` keeps it there, and once
+content with a focus target arrives under the same key, focus moves to it;
+focus the person moved elsewhere is never reclaimed. Disposing the helper stops future transitions and
 cleans up any temporary fallback `tabindex` it added.
 
 ## Separators and scroll dividers

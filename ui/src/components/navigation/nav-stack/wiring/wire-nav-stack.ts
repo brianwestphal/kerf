@@ -210,7 +210,14 @@ export function wireNavStack(
       rememberedFocus.set(key, target);
   };
 
-  const focusInto = (targetView: HTMLElement): void => {
+  /**
+   * The view focused through the generated `tabindex="-1"` fallback (it had
+   * no focusable descendant), while it still holds that focus.
+   */
+  let fallbackView: HTMLElement | undefined;
+
+  /** The view's first available focus target, or undefined. */
+  const focusTargetIn = (targetView: HTMLElement): HTMLElement | undefined => {
     const key = targetView.dataset.navKey;
     const remembered = key ? rememberedFocus.get(key) : undefined;
     const preferred = Array.from(
@@ -219,12 +226,47 @@ export function wireNavStack(
     const first = Array.from(
       targetView.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
     ).find(availableFocusTarget);
-    const target =
+    return (
       (availableFocusTarget(remembered) && targetView.contains(remembered)
         ? remembered
         : undefined) ??
       preferred ??
-      first;
+      first
+    );
+  };
+
+  /**
+   * Keep fallback focus across re-renders: a consumer render morphs the view
+   * from markup without the generated `tabindex`, which made the view
+   * unfocusable and dropped focus to the body. Once content with a focus
+   * target arrives, focus moves to it; until then the fallback is restored.
+   */
+  const keepFallbackFocus = (): void => {
+    const view = fallbackView;
+    if (!view) return;
+    const active = view.ownerDocument.activeElement;
+    const body = view.ownerDocument.body;
+    if (
+      !view.isConnected ||
+      view !== topView(viewport) ||
+      (active !== view && active !== body && active !== null)
+    ) {
+      fallbackView = undefined;
+      return;
+    }
+    const target = focusTargetIn(view);
+    if (target) {
+      fallbackView = undefined;
+      target.focus({ preventScroll: true });
+      return;
+    }
+    if (view.getAttribute('tabindex') !== '-1') view.tabIndex = -1;
+    if (active !== view) view.focus({ preventScroll: true });
+  };
+
+  const focusInto = (targetView: HTMLElement): void => {
+    fallbackView = undefined;
+    const target = focusTargetIn(targetView);
     if (target) {
       target.focus({ preventScroll: true });
       return;
@@ -240,6 +282,7 @@ export function wireNavStack(
       targetView.tabIndex = -1;
     }
     targetView.focus({ preventScroll: true });
+    fallbackView = targetView;
   };
 
   // Overlay chrome (`chromePresentation="overlay"` for the top chrome,
@@ -493,6 +536,7 @@ export function wireNavStack(
     }
 
     activeKey = currentKey;
+    keepFallbackFocus();
     // The active view, and so the scroller beneath the chrome, may change.
     syncOverlay();
   });
@@ -500,7 +544,7 @@ export function wireNavStack(
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['data-nav-key', 'data-nav-active'],
+    attributeFilter: ['data-nav-key', 'data-nav-active', 'tabindex'],
   });
 
   return () => {
@@ -524,6 +568,7 @@ export function wireNavStack(
       else element.setAttribute('tabindex', previousTabIndex);
     }
     generatedFallbacks.clear();
+    fallbackView = undefined;
     rememberedFocus.clear();
     if (previousDuration)
       section.style.setProperty(
