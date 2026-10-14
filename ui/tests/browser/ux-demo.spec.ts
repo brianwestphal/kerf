@@ -3397,10 +3397,9 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   await expect(editor).toBeVisible();
   await expect(toolbar.locator('.kui-toolbar__leading')).toBeHidden();
   await expect(toolbar.locator('.kui-toolbar__trailing')).toBeHidden();
+  // Focus is outside the field (on outsideControl), so clearing it collapses
+  // the emptied field instead of re-expanding it.
   await toolbar.getByRole('button', { name: 'Clear Search' }).click();
-  await expect(editor).toBeVisible();
-  await expect(editor).toBeFocused();
-  await outsideControl.focus();
   await expect(editor).toBeHidden();
   await expect(trigger).toBeVisible();
   await expect
