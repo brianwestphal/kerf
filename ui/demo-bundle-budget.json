@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 379900,
-  "measuredLargestJavaScriptGzip": 118681,
-  "measuredTotalJavaScriptGzip": 379808,
+  "totalJavaScriptGzip": 380000,
+  "measuredLargestJavaScriptGzip": 118680,
+  "measuredTotalJavaScriptGzip": 379910,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4755,6 +4755,22 @@
         "measuredTotalJavaScriptGzip": 379808,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 379900
+      }
+    },
+    {
+      "at": "2026-10-14T05:55:03.066Z",
+      "reason": "KF-R9P699: glass ToolbarControlGroup demo over BackdropImage artwork (shared sample artwork helper)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 379808,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 379900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 379910,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 380000
       }
     }
   ]
