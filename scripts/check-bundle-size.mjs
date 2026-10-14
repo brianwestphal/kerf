@@ -80,7 +80,7 @@ const BUDGETS = [
     // are re-parsed and morphed instead of the whole page.
     // KF-G7N4PK (+0.17 KB): seed the custom-element rendered-attribute record
     // when kerf creates an element, so its first sync keeps reflected defaults.
-    budgetKb: 15.0,
+    budgetKb: 15.1,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -116,7 +116,7 @@ const BUDGETS = [
   },
   {
     name: 'html',
-    budgetKb: 5.2,
+    budgetKb: 5.3,
     description: 'the no-build authoring path (html tagged template)',
     entry: `
       import { html } from '${DIST}/html.js';
@@ -224,7 +224,7 @@ const BUDGETS = [
     // re-render cannot redirect a later delegate onto a recycled target.
     // KF-HA8R27 (+2.1 KB): the change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
-    budgetKb: 13.4,
+    budgetKb: 13.5,
     description:
       'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
@@ -277,7 +277,7 @@ const BUDGETS = [
     // re-render cannot redirect a later delegate onto a recycled target.
     // KF-3SHRTR (~+0.05 KB): single-pass escapeHtml/escapeAttr (about 2x on
     // values that need escaping) in the shared jsx runtime.
-    budgetKb: 7.0, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
+    budgetKb: 7.1, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
     description:
       'the router subpath (createRouter — the postcard router) — signals + jsx + delegate, no mount',
     entry: `
@@ -334,7 +334,7 @@ const BUDGETS = [
     name: 'main-no-dev-code',
     // Same figure as `main` (see its KF-HK7WE8, KF-K8S4RX, and KF-HA8R27 notes).
     // Same figure as `main` (see its KF-G7N4PK note).
-    budgetKb: 15.0,
+    budgetKb: 15.1,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [

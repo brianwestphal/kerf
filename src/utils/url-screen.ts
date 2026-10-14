@@ -167,12 +167,7 @@ export function isUrlAttrName(name: string): boolean {
  * case-insensitively.
  */
 export function isImageUrlSink(tag: string, name: string): boolean {
-  const element = tag.toLowerCase();
-  const attribute = name.toLowerCase();
-  if (element === 'img') return attribute === 'src';
-  return (
-    element === 'image' && (attribute === 'href' || attribute === 'xlink:href')
-  );
+  return /^(?:img:src|image:(?:xlink:)?href)$/i.test(`${tag}:${name}`);
 }
 
 /**
@@ -220,8 +215,7 @@ export function dangerousUrlWarning(name: string, value: string): string {
   return (
     `dropped dangerous URL value for ${name}=${JSON.stringify(value.slice(0, DANGEROUS_URL_DIAGNOSTIC_VALUE_LENGTH))}. ` +
     'kerf blocks javascript:, vbscript:, and script-executing data: URLs ' +
-    '(text/html, image/svg+xml, xml) in href/src/data/formaction/action/xlink:href by default ' +
-    '(an SVG data URL is allowed in <img src> and SVG <image href>, where it cannot run script). ' +
+    '(text/html, image/svg+xml, xml) in href/src/data/formaction/action/xlink:href by default. ' +
     'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitize upstream.'
   );
 }
