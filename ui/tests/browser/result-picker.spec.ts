@@ -132,11 +132,16 @@ for (const width of [1280, 390]) {
     for (const row of [rows.first(), rows.last(), rows.first()]) {
       await row.evaluate((element) => element.focus());
       await expect(row).toBeFocused();
+      // The poll reports both boxes, so a failure shows the overshoot.
       await expect
-        .poll(async () =>
-          ringInside(await focusedRing(page), (await frameGeometry(page)).clip),
-        )
-        .toBe(true);
+        .poll(async () => {
+          const ring = await focusedRing(page);
+          const { clip } = await frameGeometry(page);
+          return ringInside(ring, clip)
+            ? 'inside'
+            : JSON.stringify({ ring, clip });
+        })
+        .toBe('inside');
       expectInside(await focusedRing(page), (await frameGeometry(page)).clip);
     }
   });
