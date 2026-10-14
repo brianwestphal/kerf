@@ -864,21 +864,60 @@ export function overlay(
     removers.push(() => document.removeEventListener('keydown', onTab, true));
   }
 
-  function applyInitialFocus(): void {
-    if (initialFocus !== false) {
-      if (typeof initialFocus === 'string') {
-        wrapper.querySelector<HTMLElement>(initialFocus)?.focus();
-      } else {
-        const first = focusable(wrapper)[0];
-        if (first !== undefined) {
-          first.focus();
-        } else {
-          wrapper.tabIndex = -1;
-          wrapper.focus();
-        }
-      }
-    }
+  function focusWrapper(): void {
+    wrapper.tabIndex = -1;
+    wrapper.focus();
   }
+
+  function applyInitialFocus(): void {
+    if (initialFocus === false) return;
+    const target =
+      typeof initialFocus === 'string'
+        ? wrapper.querySelector<HTMLElement>(initialFocus)
+        : (focusable(wrapper)[0] ?? null);
+    if (target === null) {
+      if (initialFocus === true) focusWrapper();
+      return;
+    }
+    if (tryFocus(target) || !isCustomElement(target)) return;
+    // A custom element that is not defined or has not rendered yet (a Web
+    // Awesome `wa-button` whose `focus()` reaches into a shadow root it has
+    // not built) cannot take focus now, and may throw trying. Hold focus on
+    // the overlay itself, then hand it over once the element renders — unless
+    // the overlay closed or the user moved focus in the meantime.
+    focusWrapper();
+    void whenRendered(target).then(() => {
+      if (!state.closed && activeIn(wrapper) === wrapper) tryFocus(target);
+    });
+  }
+}
+
+function isCustomElement(el: Element): boolean {
+  return el.localName.includes('-');
+}
+
+// Focus `el`; true when it now holds focus. A custom element's `focus()`
+// override may throw before it has rendered.
+function tryFocus(el: HTMLElement): boolean {
+  try {
+    el.focus();
+  } catch {
+    return false;
+  }
+  return activeIn(el) === el;
+}
+
+// The focused element as `el`'s own tree sees it (a shadow root retargets).
+function activeIn(el: Element): Element | null {
+  return (el.getRootNode() as Document | ShadowRoot).activeElement;
+}
+
+// Settles once a custom element is defined, its update cycle (Lit's
+// `updateComplete`) has settled, and a frame has passed.
+async function whenRendered(el: HTMLElement): Promise<void> {
+  await globalThis.customElements.whenDefined(el.localName);
+  await (el as { updateComplete?: unknown }).updateComplete;
+  await new Promise((resolve) => globalThis.requestAnimationFrame(resolve));
 }
 
 /**

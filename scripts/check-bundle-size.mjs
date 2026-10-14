@@ -208,7 +208,7 @@ const BUDGETS = [
     // KF-WAK1TW (+0.21 KB): opt-in exit motion — exitClass / exitDuration defer
     // only the node's removal (early-out on the subtree's finite animations,
     // reduced-motion skip), close(_, { instant }), and the dialogs thread it.
-    budgetKb: 22.9,
+    budgetKb: 23.0,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

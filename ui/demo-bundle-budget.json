@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 381900,
-  "measuredLargestJavaScriptGzip": 118681,
-  "measuredTotalJavaScriptGzip": 381844,
+  "totalJavaScriptGzip": 382100,
+  "measuredLargestJavaScriptGzip": 118682,
+  "measuredTotalJavaScriptGzip": 382029,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4867,6 +4867,22 @@
         "measuredTotalJavaScriptGzip": 381844,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 381900
+      }
+    },
+    {
+      "at": "2026-10-14T09:17:39.892Z",
+      "reason": "kerfjs/overlay initialFocus defers to a custom element that has not rendered yet (whenDefined + updateComplete + a frame)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 381844,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 381900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118682,
+        "measuredTotalJavaScriptGzip": 382029,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 382100
       }
     }
   ]
