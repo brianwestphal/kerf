@@ -75,6 +75,12 @@
   background: transparent;
 }
 
+/* `tint`: the pane paints its re-derived surface, under a sunken pane's
+   lowered layer, unless an explicit `background` already paints it. */
+.kui-pane[data-kui-tint]:not([data-background]) {
+  background: var(--kui-color-surface);
+}
+
 @media (forced-colors: active) {
   .kui-pane[data-background] {
     background: Canvas;

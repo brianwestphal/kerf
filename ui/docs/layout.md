@@ -136,6 +136,44 @@ The app owns contrast: keep text at AA over the color you choose. A dark
 color needs dark-tone controls or a scoped tint for its content. In forced
 colors every background paints `Canvas`.
 
+### Tinted surfaces
+
+Set `tint` when a whole region should take on a color, the way a media detail
+page takes on its artwork's color: `tint={{ color, scheme }}`. `color` is a
+`@kerfjs/ui/css-values` color, usually one the app already knows about its
+artwork, and `scheme` says whether that color reads as a `'light'` or a
+`'dark'` surface. Kerf does no color detection; the app declares the scheme.
+
+```tsx
+import { fillColor } from "@kerfjs/ui/css-values";
+
+<Pane tint={{ color: fillColor(album.bottomColor), scheme: "dark" }} header={<AlbumToolbar />}>
+  <AlbumTracks />
+</Pane>;
+```
+
+The pane paints its tinted surface, and everything inside it re-derives from
+the color: the surface and raised surface, normal and quiet text, link and
+brand text, and everything built on them (quiet fills, the lowered surface,
+the chrome material behind overlay headers, popup rows). Each token's
+lightness is clamped into a band that keeps text at WCAG AA over any color: a
+light tint's surface stays at or above 90% OKLCH lightness under dark text,
+and a dark tint's surface at or below 30% under light text. Chroma is capped,
+so text stays near-neutral and the surface reads as a tint of the color. A
+seed sweep across hue and lightness holds every text token at 4.5:1 or better
+over the surface, raised surface, and quiet fills, with and without the Web
+Awesome theme (`tests/browser/tone-contrast.spec.ts`).
+
+The scope also takes the declared `color-scheme` and the Web Awesome
+`wa-light` / `wa-dark` class, so Web Awesome components inside it re-derive
+their own fills. Without relative color syntax, and under
+`prefers-contrast: more`, the scope keeps the plain palette in its declared
+scheme. `tint` and `background` combine: `background` paints the pane, and
+`tint` still re-derives the tokens for its content.
+
+`PaneConfig.tint` forwards like `background`. `NavStack`, `TabNavigator`, and
+each `TabNavigatorTab` take `tint` for the stack, the navigator, or one scene.
+
 Pass any combination of logical sides to `separators`: `block-start`,
 `block-end`, `inline-start`, and `inline-end`. Every line is off by default and
 each enabled side uses `--kui-pane-separator-width` (1px) and

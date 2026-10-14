@@ -46,6 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 - sunken active-scene separator (separator auto or hidden)
 - translucent tab bar laid over the active scene (barPresentation overlay, measured by wireTabNavigator)
 - app-chosen navigator or per-scene background color (background, tab.background); the overlay bar keeps the chrome material
+- scoped tint (tint)
 
 ## Composition
 
@@ -56,7 +57,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 
 ## State and wiring
 
-**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers); whether the bar's top separator follows a sunken active surface or stays hidden (separator); optional active-scene focus (tabIndex) and persistent outline (outlined); an optional app-chosen color for the navigator and its docked bar (background) and per scene (tab.background), each a typed CssColor that replaces the default or sunken fill.
+**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers); whether the bar's top separator follows a sunken active surface or stays hidden (separator); optional active-scene focus (tabIndex) and persistent outline (outlined); an optional app-chosen color for the navigator and its docked bar (background) and per scene (tab.background), each a typed CssColor that replaces the default or sunken fill; an optional scoped tint for the navigator (tint) or one scene (tab.tint): tint: { color, scheme } re-derives surface and text tokens from an app color with text kept at AA.
 
 **Wiring:** `wireTabNavigator`, `wireScrollDividers` is required.
 

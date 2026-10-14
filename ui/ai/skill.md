@@ -70,6 +70,13 @@ default or sunken fill, overlay chrome keeps its material, and forced colors
 paint `Canvas`. Never select `.kui-pane` or a layout class to recolor it. You
 own the contrast of the content over the color.
 
+For a region that takes on a color, such as a media page in its artwork's
+color, set `tint={{ color, scheme }}` on the same components (and
+`TabNavigatorTab`, `PaneConfig`) instead: you declare whether the color is a
+`'light'` or `'dark'` surface, and the scope re-derives surface, text, quiet
+text, link, fills, and chrome material from it with lightness clamped to keep
+text at WCAG AA. Never restyle tokens by hand inside a tinted region.
+
 ## Components own their styles; configure, never override
 
 This is the rule every Kerf UI surface follows, and applications and

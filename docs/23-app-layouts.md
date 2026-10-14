@@ -443,7 +443,7 @@ showLabel?, hideLabel? }`, where `name` is the title-style panel name,
   (KF-SEQV4K: they were hard-coded, so a navigator rail could not make its
   scrolling slot a `nav` landmark without restyling): a panel's `pane` and the
   Workbench's `mainPane` take `PaneConfig` (`contentElement`, `contentLabel`,
-  `separators`, `safeAreaEdges`, `chromeDividers`, and later `appearance`, `background`, `deepInset`, `scrollClearance`, `headerPresentation`, `tabIndex`, `outlined`), `mainHeaderList` / `mainFooterList` take
+  `separators`, `safeAreaEdges`, `chromeDividers`, and later `appearance`, `background`, `tint`, `deepInset`, `scrollClearance`, `headerPresentation`, `tabIndex`, `outlined`), `mainHeaderList` / `mainFooterList` take
   `ListConfig` (`gap`, `hAlign`, `vAlign`, `dividerSides`, `textInsets`,
   `controlInsets`), and a `CollapsiblePanel` takes `pane` too. An omitted or
   `undefined` field keeps today's value. Open, a panel's toolbar places its

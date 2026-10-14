@@ -63,6 +63,10 @@
   --_kui-tab-scaffold-background: initial;
 }
 
+.kui-tab-scaffold__scene[data-kui-tint]:not([data-background]) {
+  background: var(--kui-color-surface);
+}
+
 .kui-tab-scaffold__scene[data-background] {
   background: var(--_kui-tab-scaffold-scene-background);
 }

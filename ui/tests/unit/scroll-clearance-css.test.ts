@@ -137,25 +137,26 @@ describe('scroll clearance context', () => {
       const parent = decl.parent as postcss.Rule;
       const at = parent.parent as postcss.AtRule;
       found.push(
-        `${at.type === 'atrule' ? `@${at.name} ${at.params.replace(/\s+/g, ' ')} ` : ''}${parent.selector} ${decl.prop}:${decl.value.replace(/\s+/g, ' ')}`,
+        `${at.type === 'atrule' ? `@${at.name} ${at.params.replace(/\s+/g, ' ')} ` : ''}${parent.selector.replace(/\s+/g, ' ')} ${decl.prop}:${decl.value.replace(/\s+/g, ' ')}`,
       );
     });
     expect(found).toEqual([
-      ':root --kui-chrome-material:color-mix( in srgb, var(--kui-color-surface) 80%, transparent )',
-      ':root --kui-chrome-material-raised:color-mix( in srgb, var(--kui-color-surface-raised) 80%, transparent )',
-      ':root --kui-chrome-material-filter:blur(20px) saturate(180%)',
-      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root --kui-chrome-material:var(--kui-color-surface)',
-      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root --kui-chrome-material-raised:var(--kui-color-surface-raised)',
-      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root --kui-chrome-material-filter:none',
-      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material:var(--kui-color-surface)',
-      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material-raised:var(--kui-color-surface-raised)',
-      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material-filter:none',
-      ':root[data-kui-effects="static"] --kui-chrome-material:var(--kui-color-surface)',
-      ':root[data-kui-effects="static"] --kui-chrome-material-raised:var(--kui-color-surface-raised)',
-      ':root[data-kui-effects="static"] --kui-chrome-material-filter:none',
-      '@media (update: slow) :root --kui-chrome-material:var(--kui-color-surface)',
-      '@media (update: slow) :root --kui-chrome-material-raised:var(--kui-color-surface-raised)',
-      '@media (update: slow) :root --kui-chrome-material-filter:none',
+      ':root, [data-kui-tint] --kui-chrome-material:color-mix( in srgb, var(--kui-color-surface) 80%, transparent )',
+      ':root, [data-kui-tint] --kui-chrome-material-raised:color-mix( in srgb, var(--kui-color-surface-raised) 80%, transparent )',
+      ':root, [data-kui-tint] --kui-chrome-material-filter:blur(20px) saturate(180%)',
+      '[data-kui-tint] --kui-chrome-material-filter:blur(20px)',
+      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root, [data-kui-tint] --kui-chrome-material:var(--kui-color-surface)',
+      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root, [data-kui-tint] --kui-chrome-material-raised:var(--kui-color-surface-raised)',
+      '@supports not ( (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) ) :root, [data-kui-tint] --kui-chrome-material-filter:none',
+      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root, [data-kui-tint] --kui-chrome-material:var(--kui-color-surface)',
+      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root, [data-kui-tint] --kui-chrome-material-raised:var(--kui-color-surface-raised)',
+      '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root, [data-kui-tint] --kui-chrome-material-filter:none',
+      ':root[data-kui-effects="static"], :root[data-kui-effects="static"] [data-kui-tint] --kui-chrome-material:var(--kui-color-surface)',
+      ':root[data-kui-effects="static"], :root[data-kui-effects="static"] [data-kui-tint] --kui-chrome-material-raised:var(--kui-color-surface-raised)',
+      ':root[data-kui-effects="static"], :root[data-kui-effects="static"] [data-kui-tint] --kui-chrome-material-filter:none',
+      '@media (update: slow) :root, [data-kui-tint] --kui-chrome-material:var(--kui-color-surface)',
+      '@media (update: slow) :root, [data-kui-tint] --kui-chrome-material-raised:var(--kui-color-surface-raised)',
+      '@media (update: slow) :root, [data-kui-tint] --kui-chrome-material-filter:none',
     ]);
   });
 

@@ -12,6 +12,10 @@ import { describe, expect, it } from 'vitest';
 
 const srcRoot = resolve(import.meta.dirname, '../../src');
 const STATIC_ROOT = ':root[data-kui-effects="static"]';
+// A scoped tint re-declares the palette on its element, so every switch also
+// names the tint scope.
+const STATIC_SELECTOR = `${STATIC_ROOT}, ${STATIC_ROOT} [data-kui-tint]`;
+const PALETTE_SELECTOR = ':root, [data-kui-tint]';
 
 function cssFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -59,14 +63,16 @@ const foundation = declarations(resolve(srcRoot, 'foundation.css'));
 function staticValue(prop: string): string | undefined {
   return foundation.find(
     (decl) =>
-      decl.selector === STATIC_ROOT && decl.media === '' && decl.prop === prop,
+      decl.selector === STATIC_SELECTOR &&
+      decl.media === '' &&
+      decl.prop === prop,
   )?.value;
 }
 
 function slowValue(prop: string): string | undefined {
   return foundation.find(
     (decl) =>
-      decl.selector === ':root' &&
+      decl.selector === PALETTE_SELECTOR &&
       decl.media === '@media (update: slow)' &&
       decl.prop === prop,
   )?.value;

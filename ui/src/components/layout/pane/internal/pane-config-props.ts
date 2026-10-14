@@ -26,6 +26,7 @@ export function paneConfigProps(
     headerPresentation: config?.headerPresentation,
     appearance: config?.appearance,
     background: config?.background,
+    tint: config?.tint,
     deepInset: config?.deepInset,
     scrollClearance: config?.scrollClearance,
     tabIndex: config?.tabIndex,

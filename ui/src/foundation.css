@@ -98,12 +98,30 @@
   --_kui-popup-row-icon-gap: remify(8px);
   --_kui-popup-row-label-padding-block: remify(5.6px);
   --_kui-popup-row-label-line-height: 1.25;
+  --_kui-popup-group-title-padding: remify(3.2px) remify(12px) remify(4.8px);
+  --_kui-popup-group-title-font-weight: 750;
+  --_kui-popup-caret-open-rotation: -180deg;
+  /* The theme's brand text color as the root resolves it. A scoped tint
+     clamps its lightness for links and brand text (below); it lives outside
+     the palette block, so a tint inherits the root's brand rather than
+     re-deriving from itself. */
+  --_kui-tint-brand-source: var(--kui-color-brand-on-quiet);
+  --_kui-popup-caret-transition: rotate var(--wa-transition-slow, 0.3s)
+    var(--wa-transition-easing, ease);
+}
+
+/* The palette. A scoped tint ([data-kui-tint], below) re-declares this whole
+   block on its element: an unregistered custom property substitutes its var()
+   references where it is declared, so a derived token (the chrome material, a
+   quiet fill mixed into the surface, a popup's current row) resolved at the
+   root would keep the root's colors inside the tint. Only color tokens live
+   here, so a tint never resets an app's spacing or geometry override. */
+:root,
+[data-kui-tint] {
   --_kui-popup-row-current-background: var(--kui-color-brand-fill-normal);
   /* Current row text sits on the brand fill; the darker on-fill accent clears
      WCAG AA there (brand-on-quiet is 4.26:1 over that fill). */
   --_kui-popup-row-current-color: var(--kui-color-brand-on-fill);
-  --_kui-popup-group-title-padding: remify(3.2px) remify(12px) remify(4.8px);
-  --_kui-popup-group-title-font-weight: 750;
   /* A capped, scrolling popup shows that it scrolls: a soft shadow along an
      edge while more choices lie beyond it. Covers painted in the surface
      color scroll with the content (`local`) and hide each shadow (`scroll`,
@@ -130,9 +148,6 @@
       )
       center bottom / 100% remify(12px) no-repeat scroll,
     var(--kui-color-surface-raised);
-  --_kui-popup-caret-open-rotation: -180deg;
-  --_kui-popup-caret-transition: rotate var(--wa-transition-slow, 0.3s)
-    var(--wa-transition-easing, ease);
   /* macOS Tahoe light semantics used by Hot Sheet 2, with a compatible dark extension. */
   /* Every --kui-color-* token (and the focus-ring color) that reads a --wa-*
      token falls back to the value src/webawesome.css assigns to that token,
@@ -527,10 +542,90 @@
   --kui-safe-area-inline-end: env(safe-area-inset-left, 0px);
 }
 
+/* Scoped tint. A Pane, NavStack, or TabNavigator `tint` ({ color, scheme })
+   marks its root `data-kui-tint="<scheme>"` with the color in
+   `--_kui-tint-color`. The app declares the scheme (there is no automatic
+   color detection), and the scope re-derives the base surface and text
+   tokens from the color; the palette block above then re-derives everything
+   built on them (raised and lowered surfaces, quiet fills, the chrome
+   material). Relative color syntax clamps each token's lightness to a band
+   that holds WCAG AA whatever the color: a light tint's surface stays at or
+   above 90% OKLCH lightness under 24% text, 44% quiet text, and brand text
+   at most 45%, and a dark tint's surface at or below 30% under 97% text, 80%
+   quiet text, and brand text at least 80%. Chroma is capped so
+   text stays near-neutral and a surface stays a tint, not a fill.
+   Without relative color syntax, and under `prefers-contrast: more`, the
+   scope keeps the plain palette in its declared scheme. */
+[data-kui-tint="light"] {
+  color-scheme: light;
+}
+
+[data-kui-tint="dark"] {
+  color-scheme: dark;
+}
+
+/* Inside a tint the chrome material keeps its blur but drops the saturation
+   boost: over the scope's own colored surface, saturating it would paint a
+   visibly brighter band (and a lighter edge) under an overlay header at
+   rest, where the header should read as the same surface. */
+[data-kui-tint] {
+  color: var(--kui-color-text);
+  --kui-chrome-material-filter: blur(20px);
+}
+
+@supports (color: oklch(from red l c h)) {
+  @media not (prefers-contrast: more) {
+    [data-kui-tint="light"] {
+      --wa-color-surface-default: oklch(
+        from var(--_kui-tint-color) clamp(0.9, l, 0.985) min(c, 0.08) h
+      );
+      --wa-color-surface-raised: oklch(
+        from var(--_kui-tint-color) min(1, calc(clamp(0.9, l, 0.985) + 0.03))
+          min(c, 0.05) h
+      );
+      --wa-color-text-normal: oklch(
+        from var(--_kui-tint-color) 0.24 min(c, 0.03) h
+      );
+      --wa-color-text-quiet: oklch(
+        from var(--_kui-tint-color) 0.44 min(c, 0.04) h
+      );
+      --wa-color-neutral-on-quiet: oklch(
+        from var(--_kui-tint-color) 0.42 min(c, 0.04) h
+      );
+      --wa-color-brand-on-quiet: oklch(
+        from var(--_kui-tint-brand-source) min(l, 0.45) c h
+      );
+    }
+
+    [data-kui-tint="dark"] {
+      --wa-color-surface-default: oklch(
+        from var(--_kui-tint-color) clamp(0.16, l, 0.3) min(c, 0.1) h
+      );
+      --wa-color-surface-raised: oklch(
+        from var(--_kui-tint-color) calc(clamp(0.16, l, 0.3) + 0.06)
+          min(c, 0.08) h
+      );
+      --wa-color-text-normal: oklch(
+        from var(--_kui-tint-color) 0.97 min(c, 0.02) h
+      );
+      --wa-color-text-quiet: oklch(
+        from var(--_kui-tint-color) 0.8 min(c, 0.04) h
+      );
+      --wa-color-neutral-on-quiet: oklch(
+        from var(--_kui-tint-color) 0.82 min(c, 0.04) h
+      );
+      --wa-color-brand-on-quiet: oklch(
+        from var(--_kui-tint-brand-source) max(l, 0.8) c h
+      );
+    }
+  }
+}
+
 @supports not (
   (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
 ) {
-  :root {
+  :root,
+  [data-kui-tint] {
     --kui-chrome-material: var(--kui-color-surface);
     --kui-chrome-material-raised: var(--kui-color-surface-raised);
     --kui-chrome-material-filter: none;
@@ -538,7 +633,8 @@
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  :root {
+  :root,
+  [data-kui-tint] {
     --kui-chrome-material: var(--kui-color-surface);
     --kui-chrome-material-raised: var(--kui-color-surface-raised);
     --kui-chrome-material-filter: none;
@@ -552,14 +648,16 @@
    on its own. Either way every backdrop effect turns opaque here, and every
    scroll-driven animation a component owns stops in that component's CSS
    (tests/unit/static-effects.test.ts holds each one to it). */
-:root[data-kui-effects="static"] {
+:root[data-kui-effects="static"],
+:root[data-kui-effects="static"] [data-kui-tint] {
   --kui-chrome-material: var(--kui-color-surface);
   --kui-chrome-material-raised: var(--kui-color-surface-raised);
   --kui-chrome-material-filter: none;
 }
 
 @media (update: slow) {
-  :root {
+  :root,
+  [data-kui-tint] {
     --kui-chrome-material: var(--kui-color-surface);
     --kui-chrome-material-raised: var(--kui-color-surface-raised);
     --kui-chrome-material-filter: none;
@@ -567,7 +665,8 @@
 }
 
 @media (prefers-contrast: more) {
-  :root {
+  :root,
+  [data-kui-tint] {
     --kui-color-pop-fill-quiet: Canvas;
     --kui-color-pop-fill-normal: Canvas;
     --kui-color-pop-fill-loud: Highlight;

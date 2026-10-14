@@ -649,7 +649,8 @@
         "An opaque edge-to-edge child needs a reserved vertical scrollbar gutter.",
         "Scrolling content must pass beneath chrome laid over the pane edge (a DialogSurface floating footer) while its first and last items still rest clear of it (scrollClearance).",
         "The header should float over the scrolling content on a translucent material so content scrolls visibly beneath it, with the first item still resting below the header (headerPresentation: overlay, measured by wireScrollDividers).",
-        "A pane needs an app-chosen surface color, such as a media detail page painted in its artwork's color (background, a typed CssColor; also in PaneConfig)."
+        "A pane needs an app-chosen surface color, such as a media detail page painted in its artwork's color (background, a typed CssColor; also in PaneConfig).",
+        "A region should take on an app color (a media page in its artwork's color) with its text, quiet text, links, fills, and chrome material re-derived to keep AA (tint: { color, scheme }; also in PaneConfig)."
       ],
       "avoidWhen": [
         "Do not use Pane as a padded card or add a competing scroll owner around its content slot.",
@@ -676,7 +677,8 @@
         "optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined)",
         "whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it)",
         "whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig)",
-        "an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it)"
+        "an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it)",
+        "an optional scoped tint (tint: { color, scheme }, also in PaneConfig): the color and the declared light or dark scheme it belongs to; Kerf does no color detection"
       ],
       "variants": [
         "content only",
@@ -690,13 +692,15 @@
         "always or no chrome dividers",
         "scrollClearance block-start, block-end, or both on the scrolling content",
         "overlay header on the translucent chrome material (headerPresentation: overlay)",
-        "app-chosen background color (background), replacing the default or sunken fill"
+        "app-chosen background color (background), replacing the default or sunken fill",
+        "scoped tint re-deriving surface and text tokens from an app color (tint)"
       ],
       "accessibility": [
         "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
         "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent.",
         "An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
-        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
+        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.",
+        "A tint clamps the re-derived surface and text lightness so normal, quiet, link, and neutral-on-quiet text keep 4.5:1 over the tinted surface, raised surface, and quiet fills for any color; under prefers-contrast: more or without relative color syntax the scope keeps the plain palette in its declared scheme."
       ],
       "geometry": {
         "margin": "child",
@@ -830,7 +834,8 @@
         "whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers)",
         "whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation)",
         "whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation)",
-        "an optional app-chosen color for the stack, its docked chrome and bottom toolbar, and every view (background, a typed CssColor); one view's own color goes in its pane: { background }"
+        "an optional app-chosen color for the stack, its docked chrome and bottom toolbar, and every view (background, a typed CssColor); one view's own color goes in its pane: { background }",
+        "an optional scoped tint for the stack, its chrome, and views: tint: { color, scheme } re-derives surface and text tokens from an app color with text kept at AA"
       ],
       "variants": [
         "single root view",
@@ -845,7 +850,8 @@
         "permanent or no chrome dividers (chromeDividers always or none)",
         "translucent top chrome laid over the active view (chromePresentation overlay, measured by wireNavStack)",
         "translucent bottom toolbar laid over the active view (bottomToolbarPresentation overlay, measured by wireNavStack)",
-        "app-chosen stack background color (background); overlay chrome keeps the chrome material"
+        "app-chosen stack background color (background); overlay chrome keeps the chrome material",
+        "scoped tint (tint)"
       ],
       "accessibility": [
         "Give the stack region an accessible label and every back control a stable action label; visible backText names the control itself.",
@@ -1150,7 +1156,8 @@
         "whether the bar divider follows the scroll, always shows, or never shows (chromeDividers)",
         "whether the bar's top separator follows a sunken active surface or stays hidden (separator)",
         "optional active-scene focus (tabIndex) and persistent outline (outlined)",
-        "an optional app-chosen color for the navigator and its docked bar (background) and per scene (tab.background), each a typed CssColor that replaces the default or sunken fill"
+        "an optional app-chosen color for the navigator and its docked bar (background) and per scene (tab.background), each a typed CssColor that replaces the default or sunken fill",
+        "an optional scoped tint for the navigator (tint) or one scene (tab.tint): tint: { color, scheme } re-derives surface and text tokens from an app color with text kept at AA"
       ],
       "variants": [
         "text-only tabs",
@@ -1161,7 +1168,8 @@
         "permanent or no bar divider (chromeDividers always or none)",
         "sunken active-scene separator (separator auto or hidden)",
         "translucent tab bar laid over the active scene (barPresentation overlay, measured by wireTabNavigator)",
-        "app-chosen navigator or per-scene background color (background, tab.background); the overlay bar keeps the chrome material"
+        "app-chosen navigator or per-scene background color (background, tab.background); the overlay bar keeps the chrome material",
+        "scoped tint (tint)"
       ],
       "accessibility": [
         "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",

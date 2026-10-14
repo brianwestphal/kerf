@@ -4,6 +4,11 @@ import type { KerfUiContent } from '../../../shared/content/semantic-content.js'
 import type { NavPane } from '../../../shared/panels/nav-pane.js';
 import type { PanelBottomToolbar } from '../../../shared/panels/panel-toolbar.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
+import {
+  joinStyles,
+  type SurfaceTint,
+  surfaceTintAttributes,
+} from '../../../shared/styles/surface-tint.js';
 import { Toolbar, type ToolbarConfig } from '../../actions/toolbar/toolbar.js';
 import { ToolbarControlGroup } from '../../actions/toolbar-control-group/toolbar-control-group.js';
 import {
@@ -155,6 +160,12 @@ export interface NavStackProps {
    * color goes in its `pane: { background }`. Forced colors paint `Canvas`.
    */
   background?: CssColor;
+  /**
+   * A scoped tint (`{ color, scheme }`) for the stack, its chrome, bottom toolbar, and views: its surfaces and every
+   * descendant re-derive their surface and text tokens from the app's color
+   * in the declared scheme, with lightness clamped to keep text at WCAG AA.
+   */
+  tint?: SurfaceTint;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -211,9 +222,11 @@ export function NavStack({
   chromePresentation = 'docked',
   bottomToolbarPresentation = 'docked',
   background,
+  tint,
   className = '',
   slot,
 }: NavStackProps) {
+  const tinted = surfaceTintAttributes(tint);
   const topIndex = views.length - 1;
   const top = views[topIndex];
   const topToolbar = top?.toolbar;
@@ -237,7 +250,9 @@ export function NavStack({
   );
   return (
     <section
-      class={`kui-nav-stack ${className}`.trim()}
+      class={`kui-nav-stack ${tinted.className} ${className}`
+        .replace(/\s+/g, ' ')
+        .trim()}
       id={id}
       data-component="nav-stack"
       data-nav-stack-id={id}
@@ -255,11 +270,13 @@ export function NavStack({
         bottomToolbarPresentation === 'overlay' ? 'overlay' : undefined
       }
       data-background={background === undefined ? undefined : ''}
-      style={
+      data-kui-tint={tinted['data-kui-tint']}
+      style={joinStyles(
         background === undefined
           ? undefined
-          : `--_kui-nav-stack-background:${background}`
-      }
+          : `--_kui-nav-stack-background:${background}`,
+        tinted.style,
+      )}
       aria-label={label}
       slot={slot}
     >

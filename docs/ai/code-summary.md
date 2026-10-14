@@ -1053,6 +1053,19 @@ while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 
+Scoped tint (KF-RYZ0HJ, a region re-derived from an app color):
+`ui/src/shared/styles/surface-tint.ts` defines `SurfaceTint` (`{ color, scheme }`,
+re-exported from the Pane module and the barrel) and `surfaceTintAttributes()`,
+which `Pane`, `NavStack`, `TabNavigator`, and each tab scene render as
+`data-kui-tint="<scheme>"`, a `wa-<scheme>` class, and `--_kui-tint-color`.
+`ui/src/foundation.css` declares the palette on `:root, [data-kui-tint]` (so
+derived tokens re-resolve in the scope) and, behind `@supports` relative color
+syntax and `not (prefers-contrast: more)`, overrides the base Web Awesome
+surface/text/brand tokens with lightness-clamped `oklch(from …)` values; every
+material fallback also names the tint scope. `ui/tests/unit/surface-tint.test.tsx`
+pins markup and rules, and `ui/tests/browser/tone-contrast.spec.ts` sweeps seeds
+for AA (fixture `ui/tests/browser/fixtures/tint-sweep.tsx`).
+
 Layout backgrounds (KF-C7GSDQ, app-chosen surface colors): `Pane.background`
 (also `PaneConfig`, forwarded by `paneConfigProps`), `NavStack.background`,
 `TabNavigator.background`, and `TabNavigatorTab.background` take a

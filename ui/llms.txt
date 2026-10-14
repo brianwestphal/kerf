@@ -30,6 +30,9 @@ For an app-chosen surface color, set the typed `background` prop (a
 replaces the default or sunken fill; overlay chrome keeps its material; forced
 colors paint `Canvas`. Keep content at AA over the color. See
 [Background colors](./docs/layout.md#background-colors).
+For a region that takes on a color with text kept at AA automatically, set
+`tint={{ color, scheme }}` (the app declares the scheme; no color detection);
+see [Tinted surfaces](./docs/layout.md#tinted-surfaces).
 
 For arbitrary interactive help or popup content, use `openAnchoredSurface` or
 `openAnchoredSurfaceAt` from `@kerfjs/ui/anchored-surface`; see

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 374000,
+  "totalJavaScriptGzip": 374300,
   "measuredLargestJavaScriptGzip": 118683,
-  "measuredTotalJavaScriptGzip": 373923,
+  "measuredTotalJavaScriptGzip": 374275,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4659,6 +4659,22 @@
         "measuredTotalJavaScriptGzip": 373923,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 374000
+      }
+    },
+    {
+      "at": "2026-10-14T04:48:04.660Z",
+      "reason": "KF-RYZ0HJ: scoped tint props and the Pane Tinted Surface demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118683,
+        "measuredTotalJavaScriptGzip": 373923,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 374000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118683,
+        "measuredTotalJavaScriptGzip": 374275,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 374300
       }
     }
   ]

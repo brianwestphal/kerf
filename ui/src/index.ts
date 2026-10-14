@@ -285,6 +285,8 @@ export {
   type PaneHeaderPresentation,
   type PaneProps,
   type PaneSeparatorSide,
+  type SurfaceTint,
+  type SurfaceTintScheme,
 } from './components/layout/pane/pane.js';
 export {
   clampRegionSize,

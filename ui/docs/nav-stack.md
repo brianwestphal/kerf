@@ -200,6 +200,10 @@ at AA over the color; forced colors paint `Canvas`. See
 <NavStack id="music" label="Music" views={views.value} background={uiColor("surface-raised")} />
 ```
 
+`tint={{ color, scheme }}` re-derives the stack's surface and text tokens from
+an app color instead, so its chrome, views, and content all take on the color
+with text kept at AA. See [Tinted surfaces](layout.md#tinted-surfaces).
+
 ## Overlay chrome
 
 `chromePresentation="overlay"` lays the top chrome over the active view's top

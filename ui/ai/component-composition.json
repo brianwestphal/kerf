@@ -651,6 +651,11 @@
           "id": "an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "an optional scoped tint (tint: { color, scheme }, also in PaneConfig): the color and the declared light or dark scheme it belongs to; Kerf does no color detection",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -701,7 +706,8 @@
           "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
           "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent.",
           "An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
-          "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
+          "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.",
+          "A tint clamps the re-derived surface and text lightness so normal, quiet, link, and neutral-on-quiet text keep 4.5:1 over the tinted surface, raised surface, and quiet fills for any color; under prefers-contrast: more or without relative color syntax the scope keeps the plain palette in its declared scheme."
         ]
       },
       "cssValueProps": [],
@@ -806,6 +812,11 @@
         },
         {
           "id": "an optional app-chosen color for the stack, its docked chrome and bottom toolbar, and every view (background, a typed CssColor); one view's own color goes in its pane: { background }",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "an optional scoped tint for the stack, its chrome, and views: tint: { color, scheme } re-derives surface and text tokens from an app color with text kept at AA",
           "owner": "application",
           "required": false
         }
@@ -1124,6 +1135,11 @@
         },
         {
           "id": "an optional app-chosen color for the navigator and its docked bar (background) and per scene (tab.background), each a typed CssColor that replaces the default or sunken fill",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "an optional scoped tint for the navigator (tint) or one scene (tab.tint): tint: { color, scheme } re-derives surface and text tokens from an app color with text kept at AA",
           "owner": "application",
           "required": false
         }

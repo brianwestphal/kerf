@@ -51,6 +51,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - translucent top chrome laid over the active view (chromePresentation overlay, measured by wireNavStack)
 - translucent bottom toolbar laid over the active view (bottomToolbarPresentation overlay, measured by wireNavStack)
 - app-chosen stack background color (background); overlay chrome keeps the chrome material
+- scoped tint (tint)
 
 ## Composition
 
@@ -61,7 +62,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 
 ## State and wiring
 
-**The app owns:** ordered view stack and stable keys; view content and structured top and bottom toolbar configurations; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar or a persistent structured fallback; per-view leading, center, and trailing top-toolbar groups; per-view header and footer with List and Pane configuration; top-toolbar defaults, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers); whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation); whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation); an optional app-chosen color for the stack, its docked chrome and bottom toolbar, and every view (background, a typed CssColor); one view's own color goes in its pane: { background }.
+**The app owns:** ordered view stack and stable keys; view content and structured top and bottom toolbar configurations; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar or a persistent structured fallback; per-view leading, center, and trailing top-toolbar groups; per-view header and footer with List and Pane configuration; top-toolbar defaults, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers); whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation); whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation); an optional app-chosen color for the stack, its docked chrome and bottom toolbar, and every view (background, a typed CssColor); one view's own color goes in its pane: { background }; an optional scoped tint for the stack, its chrome, and views: tint: { color, scheme } re-derives surface and text tokens from an app color with text kept at AA.
 
 **Wiring:** `wireNavStack`, `wireScrollDividers` is required.
 

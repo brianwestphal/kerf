@@ -3,6 +3,11 @@ import { filterDataAttributes } from '../../../shared/dom/extension-attributes.j
 import type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
+import {
+  joinStyles,
+  type SurfaceTint,
+  surfaceTintAttributes,
+} from '../../../shared/styles/surface-tint.js';
 
 /**
  * Logical pane sides: where a {@link Pane} can show a separator and where it can
@@ -23,6 +28,7 @@ const paneProtectedAttributes = new Set([
   'data-chrome-dividers',
   'data-appearance',
   'data-background',
+  'data-kui-tint',
   'data-deep-inset',
   'data-outlined',
   'data-scroll-clearance',
@@ -60,6 +66,7 @@ type PaneRootAttributes = Readonly<
     'data-chrome-dividers'?: never;
     'data-appearance'?: never;
     'data-background'?: never;
+    'data-kui-tint'?: never;
     'data-deep-inset'?: never;
     'data-outlined'?: never;
     'data-scroll-clearance'?: never;
@@ -144,6 +151,16 @@ export interface PaneProps {
    */
   background?: CssColor;
   /**
+   * A scoped tint: `{ color, scheme }`, the app's color and the scheme it
+   * belongs to. The pane paints the tinted surface (unless `background` is
+   * set) and its whole subtree, chrome material and quiet fills included,
+   * re-derives its surface and text tokens from the color with lightness
+   * clamped to keep text at WCAG AA. Without relative color syntax, or under
+   * `prefers-contrast: more`, the scope keeps the plain palette in the
+   * declared scheme.
+   */
+  tint?: SurfaceTint;
+  /**
    * Clear chrome that lies over the scrolling content's block-start and/or
    * block-end edge, such as a `DialogSurface` floating footer over a filling
    * Pane. The content scroller adds the inherited
@@ -204,6 +221,7 @@ export type PaneConfig = Pick<
   | 'headerPresentation'
   | 'appearance'
   | 'background'
+  | 'tint'
   | 'deepInset'
   | 'scrollClearance'
   | 'tabIndex'
@@ -242,6 +260,7 @@ export function Pane({
   headerPresentation = 'docked',
   appearance = 'default',
   background,
+  tint,
   deepInset = false,
   scrollClearance,
   tabIndex,
@@ -274,6 +293,7 @@ export function Pane({
     chromeDividers ?? (appearance === 'sunken' ? 'always' : 'scroll');
   if (appearance === 'sunken' && background === undefined)
     ensureSunkenTexture();
+  const tinted = surfaceTintAttributes(tint);
   const body = (
     <>
       {header === undefined ? null : (
@@ -293,15 +313,20 @@ export function Pane({
   );
   const attributes = {
     ...safeRootAttributes,
-    class: `kui-pane ${className}`.trim(),
+    class: `kui-pane ${tinted.className} ${className}`
+      .replace(/\s+/g, ' ')
+      .trim(),
     id,
     'data-component': 'pane',
     'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
     'data-background': background === undefined ? undefined : '',
-    style:
+    'data-kui-tint': tinted['data-kui-tint'],
+    style: joinStyles(
       background === undefined
         ? undefined
         : `--_kui-pane-background:${background}`,
+      tinted.style,
+    ),
     'data-deep-inset': deepInset ? 'true' : undefined,
     'data-outlined': outlined ? 'true' : undefined,
     'data-scroll-clearance': scrollClearance,
@@ -337,3 +362,7 @@ export function Pane({
 }
 
 export type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
+export type {
+  SurfaceTint,
+  SurfaceTintScheme,
+} from '../../../shared/styles/surface-tint.js';

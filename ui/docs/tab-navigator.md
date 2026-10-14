@@ -189,6 +189,10 @@ over the colors you choose; forced colors paint `Canvas`. See
 />
 ```
 
+`tint={{ color, scheme }}` on the navigator, or on one tab for its scene,
+re-derives the surface and text tokens from an app color, keeping text at AA.
+See [Tinted surfaces](layout.md#tinted-surfaces).
+
 ## Translucent bar
 
 `barPresentation="overlay"` lays the tab bar over the active scene's bottom

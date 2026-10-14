@@ -712,3 +712,190 @@ test('forced colors paints glass toolbar groups on an opaque system surface', as
   expect(glass.filter).toBe('none');
   expect(glass.shadow).toBe('none');
 });
+
+// KF-RYZ0HJ scoped tint: a Pane `tint` re-derives the surface and text tokens
+// from an app color in its declared scheme. Sweep seeds across hue and
+// lightness, in both declared schemes and both page schemes, and hold normal
+// text, quiet text, neutral-on-quiet, and link text to AA over the tinted
+// surface, the raised surface, and the lowered and quiet fills composited on
+// it.
+const tintBundle = build({
+  entryPoints: [resolve(import.meta.dirname, 'fixtures/tint-sweep.tsx')],
+  bundle: true,
+  format: 'iife',
+  outdir: 'out',
+  platform: 'browser',
+  write: false,
+});
+
+const tintCss = ['foundation', 'layout', 'pane']
+  .map((name) =>
+    readFileSync(
+      resolve(import.meta.dirname, `../../dist/styles/${name}.css`),
+      'utf8',
+    ),
+  )
+  .join('\n');
+
+// With Kerf's Web Awesome theme loaded, a tint's `wa-<scheme>` class makes the
+// theme re-derive its own fills from the tinted base tokens too. The theme's
+// `@import` of Web Awesome's base stylesheet is inlined for `setContent`.
+const webAwesomeStyles = resolve(
+  import.meta.dirname,
+  '../../node_modules/@awesome.me/webawesome/dist/styles',
+);
+const webAwesomeCss = ['layers.css', 'themes/default.css']
+  .map((file) => readFileSync(resolve(webAwesomeStyles, file), 'utf8'))
+  .join('\n')
+  .replace(/@import[^;]+;/g, '');
+const themedTintCss = [
+  webAwesomeCss,
+  readFileSync(
+    resolve(import.meta.dirname, '../../dist/styles/webawesome.css'),
+    'utf8',
+  ).replace(/@import[^;]+;/, ''),
+  tintCss,
+].join('\n');
+
+for (const [pageScheme, theme] of [
+  ['light', 'plain'],
+  ['dark', 'plain'],
+  ['light', 'webawesome'],
+  ['dark', 'webawesome'],
+] as const) {
+  test(`${pageScheme} page, ${theme} theme: tinted surfaces keep text at AA for every seed`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: pageScheme });
+    const result = await tintBundle;
+    const javascript = result.outputFiles.find((file) =>
+      file.path.endsWith('.js'),
+    )!;
+    await page.setViewportSize({ width: 900, height: 900 });
+    await page.setContent('<body style="margin:0"><div data-app></div></body>');
+    await page.addStyleTag({
+      content: theme === 'webawesome' ? themedTintCss : tintCss,
+    });
+    await page.addScriptTag({ content: javascript.text });
+
+    const failures = await page.evaluate((minimum) => {
+      const context = document
+        .createElement('canvas')
+        .getContext('2d', { willReadFrequently: true })!;
+      context.canvas.width = 1;
+      context.canvas.height = 1;
+      const paint = (...colors: string[]) => {
+        context.clearRect(0, 0, 1, 1);
+        for (const color of colors) {
+          context.fillStyle = color;
+          context.fillRect(0, 0, 1, 1);
+        }
+        return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+      };
+      const luminance = (rgb: number[]) => {
+        const [r = 0, g = 0, b = 0] = rgb.map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045
+            ? value / 12.92
+            : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const ratio = (a: number[], b: number[]) => {
+        const [light, dark] = [luminance(a), luminance(b)].sort(
+          (x, y) => y - x,
+        );
+        return (light! + 0.05) / (dark! + 0.05);
+      };
+      const found: string[] = [];
+      for (const region of document.querySelectorAll<HTMLElement>(
+        '[data-seed]',
+      )) {
+        const read = (name: string, prop: 'color' | 'backgroundColor') =>
+          window.getComputedStyle(
+            region.querySelector(`[data-probe="${name}"]`)!,
+          )[prop];
+        const pane = region.querySelector<HTMLElement>('.kui-pane')!;
+        const surface = window.getComputedStyle(pane).backgroundColor;
+        const backdrops = {
+          surface: paint(surface),
+          raised: paint(read('raised', 'backgroundColor')),
+          lowered: paint(surface, read('lowered', 'backgroundColor')),
+          'fill-quiet': paint(surface, read('fill-quiet', 'backgroundColor')),
+        };
+        const inherited = window.getComputedStyle(
+          region.querySelector('[data-text]')!,
+        ).color;
+        const texts = {
+          inherited,
+          text: read('text', 'color'),
+          quiet: read('quiet', 'color'),
+          'neutral-on-quiet': read('neutral-on-quiet', 'color'),
+          link: read('link', 'color'),
+        };
+        for (const [backdropName, backdrop] of Object.entries(backdrops))
+          for (const [textName, text] of Object.entries(texts)) {
+            const value = ratio(paint(text), backdrop);
+            if (value < minimum)
+              found.push(
+                `${region.dataset.seed} ${region.dataset.scheme}: ${textName} over ${backdropName} = ${value.toFixed(2)}`,
+              );
+          }
+      }
+      return found;
+    }, TEXT_AA);
+    expect(failures).toEqual([]);
+
+    // The tint really applies: a surface takes its seed's hue, not the plain
+    // palette's neutral.
+    const surface = (seed: string, scheme: string) =>
+      page
+        .locator(`[data-seed="${seed}"][data-scheme="${scheme}"] .kui-pane`)
+        .evaluate((pane) => {
+          // Computed tints serialize as oklch(); a canvas resolves them to sRGB.
+          const context = document
+            .createElement('canvas')
+            .getContext('2d', { willReadFrequently: true })!;
+          context.fillStyle = window.getComputedStyle(pane).backgroundColor;
+          context.fillRect(0, 0, 1, 1);
+          return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+        });
+    const [blueR, , blueB] = await surface('#2962ff', 'dark');
+    expect(blueB!).toBeGreaterThan(blueR! + 20);
+    const [yellowR, yellowG, yellowB] = await surface('#ffd60a', 'light');
+    expect(Math.min(yellowR!, yellowG!)).toBeGreaterThan(yellowB! + 10);
+  });
+}
+
+test('increased contrast collapses a tint to the plain palette in its declared scheme', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== 'chromium',
+    'prefers-contrast emulation is Chromium-only',
+  );
+  const session = await page.context().newCDPSession(page);
+  await session.send('Emulation.setEmulatedMedia', {
+    features: [{ name: 'prefers-contrast', value: 'more' }],
+  });
+  const result = await tintBundle;
+  const javascript = result.outputFiles.find((file) =>
+    file.path.endsWith('.js'),
+  )!;
+  await page.setContent('<body style="margin:0"><div data-app></div></body>');
+  await page.addStyleTag({ content: tintCss });
+  await page.addScriptTag({ content: javascript.text });
+  const surfaces = await page.evaluate(() =>
+    ['light', 'dark'].map(
+      (scheme) =>
+        window.getComputedStyle(
+          document.querySelector(
+            `[data-seed="#2962ff"][data-scheme="${scheme}"] .kui-pane`,
+          )!,
+        ).backgroundColor,
+    ),
+  );
+  // The plain surfaces: white in a light scope, #1c1c1e in a dark one.
+  expect(surfaces).toEqual(['rgb(255, 255, 255)', 'rgb(28, 28, 30)']);
+});

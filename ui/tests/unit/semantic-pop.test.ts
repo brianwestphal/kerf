@@ -24,7 +24,8 @@ function declarations(ruleNode: Rule): Record<string, string> {
 
 function findRule(root: Root | AtRule, selector: string): Rule {
   const match = root.nodes?.find(
-    (node): node is Rule => node.type === 'rule' && node.selector === selector,
+    (node): node is Rule =>
+      node.type === 'rule' && node.selector.replace(/\s+/g, ' ') === selector,
   );
   if (!match) throw new Error(`Missing ${selector}`);
   return match;
@@ -33,7 +34,7 @@ function findRule(root: Root | AtRule, selector: string): Rule {
 describe('pop semantic color', () => {
   it('ships a complete light/dark role family and increased-contrast overrides', async () => {
     const root = await cssRoot('foundation.css');
-    const base = declarations(findRule(root, ':root'));
+    const base = declarations(findRule(root, ':root, [data-kui-tint]'));
     expect(base).toMatchObject({
       '--kui-color-pop-fill-loud': 'light-dark(#af34d4, #da8fff)',
       '--kui-color-pop-fill-quiet': expect.stringContaining(
@@ -58,7 +59,9 @@ describe('pop semantic color', () => {
         node.params === '(prefers-contrast: more)',
     );
     if (!contrast) throw new Error('Missing increased-contrast palette');
-    expect(declarations(findRule(contrast, ':root'))).toMatchObject({
+    expect(
+      declarations(findRule(contrast, ':root, [data-kui-tint]')),
+    ).toMatchObject({
       '--kui-color-pop-fill-quiet': 'Canvas',
       '--kui-color-pop-fill-normal': 'Canvas',
       '--kui-color-pop-fill-loud': 'Highlight',

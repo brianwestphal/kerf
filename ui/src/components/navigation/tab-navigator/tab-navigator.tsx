@@ -3,6 +3,11 @@ import type { SafeHtml } from 'kerfjs';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
+import {
+  joinStyles,
+  type SurfaceTint,
+  surfaceTintAttributes,
+} from '../../../shared/styles/surface-tint.js';
 import { Badge } from '../../feedback/badge/badge.js';
 import type { PaneAppearance } from '../../layout/pane/pane.js';
 
@@ -20,6 +25,12 @@ interface TabNavigatorTabBase<Id extends string> {
    * builder). It replaces the appearance's fill. Forced colors paint `Canvas`.
    */
   background?: CssColor;
+  /**
+   * A scoped tint (`{ color, scheme }`) for this scene: its surfaces and every
+   * descendant re-derive their surface and text tokens from the app's color
+   * in the declared scheme, with lightness clamped to keep text at WCAG AA.
+   */
+  tint?: SurfaceTint;
   /** Add 8px to every side of a plain scene's scrolling content. */
   deepInset?: boolean;
   /** Opt into keyboard (`0`) or programmatic (`-1`) focus on this scene. */
@@ -118,6 +129,12 @@ export interface TabNavigatorProps<Id extends string = string> {
    * `background` paints its scene. Forced colors paint `Canvas`.
    */
   background?: CssColor;
+  /**
+   * A scoped tint (`{ color, scheme }`) for the navigator, its bar, and every scene: its surfaces and every
+   * descendant re-derive their surface and text tokens from the app's color
+   * in the declared scheme, with lightness clamped to keep text at WCAG AA.
+   */
+  tint?: SurfaceTint;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -140,9 +157,11 @@ export function TabNavigator<Id extends string>({
   chromeDividers = 'scroll',
   barPresentation = 'docked',
   background,
+  tint,
   className = '',
   slot,
 }: TabNavigatorProps<Id>) {
+  const tinted = surfaceTintAttributes(tint);
   if (
     tabs.some(
       (tab) => tab.appearance === 'sunken' && tab.background === undefined,
@@ -151,7 +170,9 @@ export function TabNavigator<Id extends string>({
     ensureSunkenTexture();
   return (
     <section
-      class={`kui-tab-scaffold ${className}`.trim()}
+      class={`kui-tab-scaffold ${tinted.className} ${className}`
+        .replace(/\s+/g, ' ')
+        .trim()}
       id={id}
       data-component="tab-scaffold"
       data-tab-scaffold-id={id}
@@ -165,17 +186,19 @@ export function TabNavigator<Id extends string>({
         barPresentation === 'overlay' ? 'overlay' : undefined
       }
       data-background={background === undefined ? undefined : ''}
-      style={
+      data-kui-tint={tinted['data-kui-tint']}
+      style={joinStyles(
         background === undefined
           ? undefined
-          : `--_kui-tab-scaffold-background:${background}`
-      }
+          : `--_kui-tab-scaffold-background:${background}`,
+        tinted.style,
+      )}
       slot={slot}
     >
       <div class="kui-tab-scaffold__scenes">
         {tabs.map((tab) => (
           <div
-            class="kui-tab-scaffold__scene"
+            class={`kui-tab-scaffold__scene ${surfaceTintAttributes(tab.tint).className}`.trim()}
             data-tab-scaffold-scene={tab.id}
             data-active={String(tab.id === active)}
             data-appearance={
@@ -184,11 +207,13 @@ export function TabNavigator<Id extends string>({
                 : undefined
             }
             data-background={tab.background === undefined ? undefined : ''}
-            style={
+            data-kui-tint={surfaceTintAttributes(tab.tint)['data-kui-tint']}
+            style={joinStyles(
               tab.background === undefined
                 ? undefined
-                : `--_kui-tab-scaffold-scene-background:${tab.background}`
-            }
+                : `--_kui-tab-scaffold-scene-background:${tab.background}`,
+              surfaceTintAttributes(tab.tint).style,
+            )}
             data-deep-inset={tab.deepInset ? 'true' : undefined}
             data-outlined={
               tab.id === active && tab.outlined ? 'true' : undefined

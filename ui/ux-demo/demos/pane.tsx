@@ -211,6 +211,49 @@ export function PaneDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample
+        label="Tinted Surface"
+        note="tint re-derives the pane's surface, text, quiet text, fills, and overlay material from an app color in the scheme the app declares, keeping text at AA for any color."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <Pane
+          element="section"
+          label="Album"
+          tint={{ color: fillColor('#5b2a86'), scheme: 'dark' }}
+          headerPresentation="overlay"
+          rootAttributes={{ 'data-tint-demo': 'pane' }}
+          header={
+            <Toolbar
+              label="Album Header"
+              leading={
+                <ToolbarText
+                  text="Night Drive"
+                  description="12 songs, 48 minutes"
+                  size="xlarge"
+                />
+              }
+            />
+          }
+        >
+          {[
+            'Overture',
+            'Neon Rain',
+            'Coastline',
+            'Last Exit',
+            'Afterglow',
+            'Static',
+            'Slow Burn',
+            'Homeward',
+          ].map((title, index) => (
+            <ContentItem>{`${index + 1}. ${title}`}</ContentItem>
+          ))}
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
         label="Overlay Header"
         note="headerPresentation overlay lays the header over the content on the translucent chrome material, so messages scroll visibly beneath it. wireScrollDividers measures the header, and the first message rests just below it."
         viewport={{
