@@ -564,6 +564,10 @@ Applications set `expanded` while the field is focused, move focus from the
 trigger into the revealed editor, and clear `expanded` only after focus leaves
 the complete component. Text or tokens keep the field expanded even when that
 transient state is false. Width animation is disabled under reduced motion.
+Clearing with ✕ follows where focus was when it was pressed: from inside the
+field (the editor, or ✕ reached by keyboard) the caret returns to the emptied
+editor; with focus elsewhere, `wireTokenSearchFields` leaves focus where it is
+and collapses the emptied field, as it would on blur.
 
 When the field is composed with a caller-owned surface rendered outside it — a
 suggestions listbox, date picker, or help popover — mark that surface (or wrap

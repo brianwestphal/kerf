@@ -207,3 +207,28 @@ test('disposing the demo wiring cancels pending collapsible focus restoration', 
     ).toBeFocused();
   }
 });
+
+test('clearing a blurred, expanded field with ✕ collapses it without taking focus', async ({
+  page,
+}) => {
+  // KF-77TPZ2: the ✕ press keeps focus where it was; an emptied field used to
+  // stay expanded until it was focused and blurred again.
+  await page.setViewportSize({ width: 1100, height: 700 });
+  await page.goto('/?component=token-search-field');
+  const field = page.locator(
+    '[data-component="token-search-field"][data-token-search-id="adoption-search"]',
+  );
+  const trigger = field.getByRole('button', { name: 'Open filter' });
+  const editor = field.locator('[data-token-search-editor]');
+  // This field starts expanded.
+  await editor.click();
+  await editor.pressSequentially('priority');
+  const outside = page.locator('[data-action="toggle-theme"]').first();
+  await outside.focus();
+  await expect(editor).toBeVisible();
+
+  await field.locator('.kui-token-search__clear').click();
+  await expect(field).toHaveAttribute('data-expanded', 'false');
+  await expect(trigger).toBeVisible();
+  await expect(outside).toBeFocused();
+});

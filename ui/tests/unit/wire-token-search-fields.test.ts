@@ -1410,6 +1410,106 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     unmount();
   });
 
+  it('collapses an emptied field cleared while focus is elsewhere, without taking focus', async () => {
+    // KF-77TPZ2: a pointer press on ✕ keeps focus where it was. Clearing an
+    // unfocused, expanded field used to re-expand it and leave it open until
+    // a later focus and blur.
+    const expanded = signal(true);
+    const tokens = signal([{ value: 'tag:client', label: 'Client' }]);
+    const root = document.createElement('div');
+    const outside = document.createElement('button');
+    document.body.append(root, outside);
+    const unmount = mount(root, () =>
+      TokenSearchField({
+        id: 'find',
+        label: 'Find',
+        collapsible: true,
+        expanded: expanded.value,
+        tokens: tokens.value,
+      }),
+    );
+    root.addEventListener('click', (event) => {
+      if ((event.target as Element).closest('.kui-token-search__clear'))
+        tokens.value = [];
+    });
+    const handle = wireTokenSearchFields(root, {
+      collapsible: { signals: { find: expanded } },
+    });
+    outside.focus();
+    root.querySelector<HTMLButtonElement>('.kui-token-search__clear')!.click();
+    await micro();
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(expanded.value).toBe(false);
+    expect(document.activeElement).toBe(outside);
+    handle();
+    unmount();
+    outside.remove();
+  });
+
+  it('records focus at the ✕ press, so a WebKit focus drop before the click still returns the caret', async () => {
+    const expanded = signal(true);
+    const tokens = signal([{ value: 'tag:client', label: 'Client' }]);
+    const root = document.createElement('div');
+    document.body.append(root);
+    const unmount = mount(root, () =>
+      TokenSearchField({
+        id: 'find',
+        label: 'Find',
+        collapsible: true,
+        expanded: expanded.value,
+        tokens: tokens.value,
+      }),
+    );
+    root.addEventListener('click', (event) => {
+      if ((event.target as Element).closest('.kui-token-search__clear'))
+        tokens.value = [];
+    });
+    const handle = wireTokenSearchFields(root, {
+      collapsible: { signals: { find: expanded } },
+    });
+    const editor = () =>
+      root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    editor().focus();
+    const clear = root.querySelector<HTMLButtonElement>(
+      '.kui-token-search__clear',
+    )!;
+    clear.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    // WebKit does not focus a pressed button and drops focus to the body.
+    editor().blur();
+    clear.click();
+    await micro();
+    expect(expanded.value).toBe(true);
+    expect(document.activeElement).toBe(editor());
+    handle();
+    unmount();
+  });
+
+  it('keeps an unfocused field open when the clear leaves it non-empty', async () => {
+    const expanded = signal(true);
+    const tokens = signal([{ value: 'tag:client', label: 'Client' }]);
+    const root = document.createElement('div');
+    document.body.append(root);
+    const unmount = mount(root, () =>
+      TokenSearchField({
+        id: 'find',
+        label: 'Find',
+        collapsible: true,
+        expanded: expanded.value,
+        tokens: tokens.value,
+      }),
+    );
+    // The app ignores this clear, so the field keeps its token.
+    const handle = wireTokenSearchFields(root, {
+      collapsible: { signals: { find: expanded } },
+    });
+    (document.activeElement as HTMLElement | null)?.blur();
+    root.querySelector<HTMLButtonElement>('.kui-token-search__clear')!.click();
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(expanded.value).toBe(true);
+    handle();
+    unmount();
+  });
+
   it('returns keyboard clear activation to an editor that survives the clear', async () => {
     const field = mountCollapsibleField(signal(true));
     field.query.value = 'query';

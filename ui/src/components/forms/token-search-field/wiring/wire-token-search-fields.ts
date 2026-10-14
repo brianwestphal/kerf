@@ -568,6 +568,8 @@ export function wireTokenSearchFields(
   };
 
   const clearing = new Map<string, () => void>();
+  /** Whether a token search field held focus when its ✕ was pressed. */
+  const focusAtClearPress = new WeakMap<Element, boolean>();
   const pending = new Map<string, PendingTokenDeletion>();
   const deleting = new Map<string, () => void>();
   const selectAllIntents = new WeakSet<HTMLElement>();
@@ -997,6 +999,20 @@ export function wireTokenSearchFields(
       },
       delegateCapture(
         root,
+        'pointerdown',
+        '.kui-token-search__clear',
+        (_event, element) => {
+          const field = element.closest(
+            '[data-component="token-search-field"]',
+          );
+          focusAtClearPress.set(
+            element,
+            !!field?.contains(root.ownerDocument.activeElement),
+          );
+        },
+      ),
+      delegateCapture(
+        root,
         'click',
         '.kui-token-search__clear',
         (_event, element) => {
@@ -1012,6 +1028,25 @@ export function wireTokenSearchFields(
             return;
           const editor = replacementEditor(root, id);
           clearing.get(id)?.();
+          // Whether the field held focus when ✕ was pressed. A pointer press
+          // is recorded at pointerdown, before WebKit drops focus to the body
+          // for a button it does not focus; keyboard activation focuses ✕
+          // itself. When focus was outside the field, the clear must not pull
+          // focus or the caret in: an emptied collapsible field collapses
+          // instead, as it would on blur.
+          const pressed = focusAtClearPress.get(element);
+          focusAtClearPress.delete(element);
+          const focusedBefore =
+            pressed ?? field.contains(root.ownerDocument.activeElement);
+          const collapseIfEmpty = () => {
+            const current = replacementEditor(root, id);
+            if (
+              field.dataset.collapsible === 'true' &&
+              current &&
+              editorIsEmpty(current)
+            )
+              setExpanded(id, false);
+          };
           const stop = () => {
             observer.disconnect();
             view().clearTimeout(timeout);
@@ -1030,14 +1065,20 @@ export function wireTokenSearchFields(
             const replacement = replacementEditor(root, id);
             if (!replacement || replacement === editor) return;
             stop();
-            if (ownsFocus(replacement)) placeTokenSearchCaret(replacement);
+            if (!focusedBefore) collapseIfEmpty();
+            else if (ownsFocus(replacement)) placeTokenSearchCaret(replacement);
           });
           // Native clicks can drain microtasks between capture and bubble listeners.
           // Observe the actual controlled replacement before the app clears; a frame
           // is too late because the next shortcut-letter input may reach the page.
           observer.observe(root, { childList: true, subtree: true });
-          const timeout = view().setTimeout(stop, 0);
+          const timeout = view().setTimeout(() => {
+            stop();
+            // A clear that re-rendered in place (no replacement editor).
+            if (!focusedBefore) collapseIfEmpty();
+          }, 0);
           clearing.set(id, stop);
+          if (!focusedBefore) return;
           if (field.dataset.collapsible === 'true') setExpanded(id, true);
           const current = replacementEditor(root, id);
           // Keyboard activation may start on the clear button. Own the current
