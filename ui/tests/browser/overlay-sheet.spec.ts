@@ -113,3 +113,25 @@ test('reduced motion removes the sheet without an exit', async ({ page }) => {
   await page.keyboard.press('Escape');
   expect(await sheet(page)).toBeNull();
 });
+
+test('Web Awesome buttons as the wired controls take focus once rendered', async ({
+  page,
+}) => {
+  await mount(page);
+  await page.evaluate(() =>
+    (
+      globalThis as unknown as { openWaButtonSheet(): void }
+    ).openWaButtonSheet(),
+  );
+  await expect.poll(() => sheet(page)).not.toBeNull();
+  const ok = page.locator('.kerf-overlay wa-button[data-confirm="ok"]');
+  await expect(ok).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        (globalThis as unknown as { sheetResult(): unknown }).sheetResult(),
+      ),
+    )
+    .toBe(true);
+});

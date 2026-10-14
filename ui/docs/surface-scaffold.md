@@ -186,8 +186,11 @@ confirm("Discard this draft?", {
 });
 ```
 
-Use native buttons for the wired controls: the core focuses the OK control
-as it opens, before a Web Awesome button has rendered its inner control.
+The wired controls can be native buttons, as here, or Web Awesome buttons.
+With kerfjs 5.0 or later, the core holds focus on the sheet until a Web
+Awesome OK button has rendered, then moves focus to it. On kerfjs 4.x, use
+native buttons for the wired controls: the core's first focus reaches a Web
+Awesome button before it has rendered and aborts the open.
 
 A core sheet can also be resizable, like a `resizable` `DialogSurface` sheet.
 Add the `kui-overlay-sheet-resizable` class next to the default wrapper class,
