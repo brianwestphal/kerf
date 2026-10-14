@@ -544,11 +544,13 @@ test('keeps the composer on one labeled surface with shared field and action gut
         };
       };
       return {
+        // Half a pixel of slack: Firefox lays a zoomed row out at subpixel
+        // offsets that overshoot its end by a rounding error.
         actionsInsideFooter:
-          actions.left >= footer.left &&
-          actions.right <= footer.right &&
-          actions.top >= footer.top &&
-          actions.bottom <= footer.bottom,
+          actions.left >= footer.left - 0.5 &&
+          actions.right <= footer.right + 0.5 &&
+          actions.top >= footer.top - 0.5 &&
+          actions.bottom <= footer.bottom + 0.5,
         actionStart: actions.left - rootBounds.left,
         directGap: parseFloat(window.getComputedStyle(stack).rowGap),
         documentOverflow:

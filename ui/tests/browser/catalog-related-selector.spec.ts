@@ -149,8 +149,10 @@ test('related Components selector fits its trigger and popup content', async ({
       ),
     ).toBeLessThanOrEqual(2);
     expect(popupSpacing?.itemRight).toBeGreaterThanOrEqual(8);
-    expect(popupSpacing?.menuLeft).toBeGreaterThanOrEqual(10);
-    expect(popupSpacing?.menuRight).toBeLessThanOrEqual(viewport.width - 10);
+    // Half a pixel of slack for subpixel layout (Firefox on Linux places the
+    // menu at 1430.00006 for a 1430 limit).
+    expect(popupSpacing?.menuLeft).toBeGreaterThanOrEqual(9.5);
+    expect(popupSpacing?.menuRight).toBeLessThanOrEqual(viewport.width - 9.5);
     expect(
       await page.evaluate(
         () =>
