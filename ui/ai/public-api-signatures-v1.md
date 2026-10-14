@@ -4236,6 +4236,7 @@ type BackdropImageRootAttributes = StructuralRootAttributes & Readonly<{
     'data-scrim'?: never;
     'data-fade'?: never;
     'data-repeat'?: never;
+    'data-under-chrome'?: never;
 }>;
 interface BackdropImageCommonProps {
     /** Image URL. */
@@ -4262,6 +4263,16 @@ interface BackdropImageCommonProps {
      * statically blurred copy. Static (unblurred) wherever parallax is.
      */
     blur?: BackdropImageBlur;
+    /**
+     * Run the image up beneath the scroller's block-start inset: an overlay or
+     * clear Pane header, NavStack chrome handed to a view's Pane, and the top
+     * safe area, the way a media page's artwork fills the screen behind
+     * transparent chrome. The visible image keeps `height` below that inset,
+     * and `overlay` content stays clear of the chrome. Place the image first in
+     * the Pane's content; it reads the Pane's
+     * `--kui-pane-content-inset-block-start`. Default `false`.
+     */
+    underChrome?: boolean;
     /** Dim the image under `overlay` content. Default `none`. */
     scrim?: BackdropImageScrim;
     /** Content laid over the image's block end, such as a title and actions. */

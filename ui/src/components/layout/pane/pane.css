@@ -184,6 +184,9 @@
      pane edge while keeping their own content aligned with ordinary items. */
   --kui-pane-content-inset-inline-start: var(--_kui-pane-safe-inline-start);
   --kui-pane-content-inset-inline-end: var(--_kui-pane-safe-inline-end);
+  /* The resolved block-start inset (safe area, deep inset, and the clearance
+     of overlay or clear chrome), so a first child can run up beneath it. */
+  --kui-pane-content-inset-block-start: var(--_kui-pane-content-block-start);
   --_kui-pane-deep-block-inset: 0px;
   --_kui-pane-clearance-block-start: 0px;
   --_kui-pane-clearance-block-end: 0px;

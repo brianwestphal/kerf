@@ -17,6 +17,7 @@
     --kui-pane-content-inset-inline-end,
     0px
   );
+  --_kui-backdrop-image-bleed-block-start: 0px;
   display: flow-root;
   position: relative;
   min-width: 0;
@@ -26,12 +27,35 @@
   isolation: isolate;
 }
 
+/* `underChrome`: the block runs up beneath the scroller's block-start inset
+   (overlay or clear chrome clearance plus the top safe area, as the Pane
+   publishes it) and the hero grows by the same amount, so the visible image
+   keeps its height below the chrome and the overlay stays where it was. */
+.kui-backdrop-image[data-under-chrome="true"] {
+  --_kui-backdrop-image-bleed-block-start: var(
+    --kui-pane-content-inset-block-start,
+    0px
+  );
+  margin-block-start: calc(-1 * var(--_kui-backdrop-image-bleed-block-start));
+}
+
+/* The view timeline's inset defaults to the scroller's scroll padding, which
+   is the chrome clearance this image now runs beneath; measured from there,
+   the parallax would start part-way through at rest and shift the image
+   down. Measure from the scroller's real edge instead. */
+.kui-backdrop-image[data-under-chrome="true"] .kui-backdrop-image__hero {
+  view-timeline-inset: 0px;
+}
+
 /* The hero is the scroll-timeline subject: its own block of scroll drives
    the parallax, whatever sits above it and however tall it is. */
 .kui-backdrop-image__hero {
   display: grid;
   position: relative;
-  min-height: var(--_kui-backdrop-image-height);
+  min-height: calc(
+    var(--_kui-backdrop-image-height) +
+      var(--_kui-backdrop-image-bleed-block-start)
+  );
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   view-timeline: --kui-backdrop-image block;
 }

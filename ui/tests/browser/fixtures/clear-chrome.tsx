@@ -1,4 +1,6 @@
+import { BackdropImage } from '@kerfjs/ui/backdrop-image';
 import { ContentItem } from '@kerfjs/ui/content-item';
+import { remify, uiColor } from '@kerfjs/ui/css-values';
 import { NavStack } from '@kerfjs/ui/nav-stack';
 import { Pane } from '@kerfjs/ui/pane';
 import { TabNavigator } from '@kerfjs/ui/tab-navigator';
@@ -105,6 +107,28 @@ app.innerHTML = String(
           { id: 'search', label: 'Search', content: rows('Result', 3) },
         ]}
       />,
+    )}
+    {region(
+      'under',
+      <Pane
+        label="Artist"
+        safeAreaEdges={[]}
+        headerPresentation="clear"
+        scrollEdge="material"
+        header={<Toolbar label="Artist Header" trailing={glass} />}
+      >
+        <BackdropImage
+          src="./missing-artwork.png"
+          alt=""
+          height={remify(200)}
+          fadeTo={uiColor('surface')}
+          parallax="subtle"
+          underChrome
+          overlay={<ToolbarText text="Night Harbor" size="xlarge" />}
+        >
+          {rows('Song', 20)}
+        </BackdropImage>
+      </Pane>,
     )}
   </div>,
 );

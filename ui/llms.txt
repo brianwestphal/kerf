@@ -28,7 +28,7 @@ For chrome laid over imagery, use the `clear` presentation (Pane
 `headerPresentation`, NavStack `chromePresentation` /
 `bottomToolbarPresentation`, TabNavigator `barPresentation`) with glass
 control groups, and `scrollEdge="material"` to fade the material in once
-content scrolls beneath; see [Clear header](./docs/layout.md#clear-header).
+content scrolls beneath (a first `BackdropImage` with `underChrome` runs its artwork beneath the header); see [Clear header](./docs/layout.md#clear-header).
 
 For an app-chosen surface color, set the typed `background` prop (a
 `@kerfjs/ui/css-values` color) on `Pane` (also `PaneConfig`), `NavStack`,

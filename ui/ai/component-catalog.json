@@ -716,7 +716,8 @@
           "deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge.",
           "For opaque edge-to-edge children, --kui-pane-scrollbar-gutter: stable reserves a vertical scrollbar gutter outside the published content insets; the default is auto.",
           "scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the scrolling content block padding and scroll padding alongside safe areas and deepInset.",
-          "headerPresentation overlay: once wireScrollDividers measures the header, the header shares the content cell above the scroller, its border-box height is published as --kui-scroll-clearance-block-start on the Pane root, and the content clears it automatically; unwired or with chromePlacement auto, the header stays docked."
+          "headerPresentation overlay: once wireScrollDividers measures the header, the header shares the content cell above the scroller, its border-box height is published as --kui-scroll-clearance-block-start on the Pane root, and the content clears it automatically; unwired or with chromePlacement auto, the header stays docked.",
+          "The scrolling content also publishes its resolved block-start padding (safe area, deepInset, and overlay or clear header clearance) as --kui-pane-content-inset-block-start, so a first child such as an underChrome BackdropImage can run up beneath it."
         ]
       },
       "delivery": {
@@ -1694,7 +1695,8 @@
         "the image, its alt text (empty for a decorative image), and responsive candidates",
         "the fade color, whether the image lags the scroll, and whether it blurs (and any pre-blurred asset)",
         "overlay content and its contrast against the image and scrim",
-        "the content below the image"
+        "the content below the image",
+        "whether the image runs up beneath overlay or clear chrome and the top safe area (underChrome); it must then be the first child of the Pane's content"
       ],
       "variants": [
         "fitted image (cover, contain, fill) with a focal position",
@@ -1702,7 +1704,8 @@
         "parallax none, subtle, or a 0 to 1 lag factor",
         "progressive blur from a once-filtered copy or an app-supplied blurred asset, with an optional dim",
         "fade into a color that also paints below",
-        "bottom or full scrim under overlay content"
+        "bottom or full scrim under overlay content",
+        "image running beneath clear or overlay chrome (underChrome)"
       ],
       "accessibility": [
         "alt describes a meaningful image; pass an empty alt for a decorative one. A tiled image with alt text is exposed as role=\"img\". Parallax and the progressive blur run only with prefers-reduced-motion: no-preference and scroll-driven animation support, and are off under data-kui-effects=\"static\" and on slow-update displays, leaving a static, sharp image; the blurred copy is decorative and aria-hidden. Reduced transparency or increased contrast replaces the fade with a hard edge on solid fadeTo and puts overlay content on a solid fadeTo band. Overlay text needs a scrim or fade color that keeps it at AA."

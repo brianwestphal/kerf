@@ -42,6 +42,7 @@ Exact prop names and types: [`@kerfjs/ui/backdrop-image`](../public-api-signatur
 - progressive blur from a once-filtered copy or an app-supplied blurred asset, with an optional dim
 - fade into a color that also paints below
 - bottom or full scrim under overlay content
+- image running beneath clear or overlay chrome (underChrome)
 
 ## Composition
 
@@ -51,7 +52,7 @@ Exact prop names and types: [`@kerfjs/ui/backdrop-image`](../public-api-signatur
 
 ## State and wiring
 
-**The app owns:** the image, its alt text (empty for a decorative image), and responsive candidates; the fade color, whether the image lags the scroll, and whether it blurs (and any pre-blurred asset); overlay content and its contrast against the image and scrim; the content below the image.
+**The app owns:** the image, its alt text (empty for a decorative image), and responsive candidates; the fade color, whether the image lags the scroll, and whether it blurs (and any pre-blurred asset); overlay content and its contrast against the image and scrim; the content below the image; whether the image runs up beneath overlay or clear chrome and the top safe area (underChrome); it must then be the first child of the Pane's content.
 
 No wiring helper.
 

@@ -30,6 +30,7 @@ const css = [
   'toolbar',
   'toolbar-text',
   'toolbar-control-group',
+  'backdrop-image',
 ]
   .map((name) =>
     readFileSync(
@@ -181,4 +182,31 @@ test('the static-effects switch keeps the scroll-edge fade from animating', asyn
     ),
   );
   expect(transitions).toEqual(['0s', '0s']);
+});
+
+test('an underChrome BackdropImage runs up beneath a clear header and keeps its visible height', async ({
+  page,
+}) => {
+  await mountFixture(page);
+  const geometry = await page.evaluate(() => {
+    const region = document.querySelector('[data-region="under"]')!;
+    const rect = (selector: string) =>
+      region.querySelector(selector)!.getBoundingClientRect();
+    return {
+      pane: rect('.kui-pane'),
+      header: rect('.kui-pane__header'),
+      hero: rect('.kui-backdrop-image__hero'),
+      overlay: rect('.kui-backdrop-image__overlay'),
+      // At rest the parallax layer has not moved (its view timeline is
+      // measured from the scroller's edge, not the chrome's clearance).
+      layers: rect('.kui-backdrop-image__layers'),
+    };
+  });
+  // The image starts at the pane's top edge, beneath the header…
+  expect(geometry.hero.top).toBeCloseTo(geometry.pane.top, 0);
+  // …and keeps its 200px below the header.
+  expect(geometry.hero.bottom - geometry.header.bottom).toBeCloseTo(200, 0);
+  // The overlay title stays clear of the header.
+  expect(geometry.overlay.top).toBeGreaterThanOrEqual(geometry.header.bottom);
+  expect(geometry.layers.top).toBeCloseTo(geometry.hero.top, 0);
 });

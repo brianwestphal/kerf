@@ -119,7 +119,7 @@ export function BackdropImageDemo() {
       </CatalogExample>
       <CatalogExample
         label="Clear Header"
-        note='headerPresentation="clear" lays the header over the content fully transparent, so its glass control groups float over the artwork. scrollEdge="material" fades the chrome material in behind the header once content scrolls beneath it, and out again at the top.'
+        note='headerPresentation="clear" lays the header over the content fully transparent, so its glass control groups float over the artwork. scrollEdge="material" fades the chrome material in behind the header once content scrolls beneath it, and out again at the top. underChrome runs the artwork up beneath the header.'
         viewport={{
           layout: 'grid',
           width: 'medium',
@@ -180,6 +180,7 @@ export function BackdropImageDemo() {
             src={svgUrl(SKYLINE)}
             alt=""
             parallax="subtle"
+            underChrome
             fadeTo={uiColor('surface')}
             overlay={
               <Toolbar

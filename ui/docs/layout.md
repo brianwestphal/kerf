@@ -345,7 +345,9 @@ measuring, placement, and scroll clearance as `overlay`, but fully
 transparent, for a header laid over imagery such as a `BackdropImage` hero.
 The header is not what keeps its controls legible over the image: put them
 in glass control groups (`ToolbarControlGroup material="glass"`), or give the
-content a scrim. A clear header draws no scroll divider.
+content a scrim. A clear header draws no scroll divider. Set `underChrome` on a
+`BackdropImage` that opens the content to run its artwork up beneath the
+header.
 
 Add `scrollEdge="material"` to fade the chrome material in behind the header
 once content scrolls beneath it, and out again at the top, like the
@@ -361,7 +363,7 @@ in every engine with no extra wiring.
   scrollEdge="material"
   header={<Toolbar label="Album" leading={<BackGroup />} trailing={<AlbumActions />} />}
 >
-  <BackdropImage src={art} alt="" fadeTo={uiColor("surface")}>
+  <BackdropImage src={art} alt="" fadeTo={uiColor("surface")} underChrome>
     <Tracks />
   </BackdropImage>
 </Pane>

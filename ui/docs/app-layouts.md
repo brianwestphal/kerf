@@ -117,6 +117,13 @@ area on the corresponding side, plus the extra 8px when `deepInset` is true.
 An app component can use them to let a row background or divider reach the
 Pane edge while its text stays on the ordinary content axis:
 
+It also publishes its resolved block-start padding as
+`--kui-pane-content-inset-block-start`: the top safe area, `deepInset`, and
+the clearance of an overlay or clear header (or of NavStack chrome handed to
+a view's Pane). A first child can run up beneath that inset with a matching
+negative margin; `BackdropImage`'s `underChrome` does this for artwork behind
+clear chrome.
+
 ```css
 .orders-table {
   margin-inline-start: calc(-1 * var(--kui-pane-content-inset-inline-start));

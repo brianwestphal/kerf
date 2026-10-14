@@ -95,6 +95,7 @@ Margin: child · border: conditional · padding: child (layout role: structure).
 - For opaque edge-to-edge children, --kui-pane-scrollbar-gutter: stable reserves a vertical scrollbar gutter outside the published content insets; the default is auto.
 - scrollClearance adds the inherited --kui-scroll-clearance-block-start/end context, published by overlaying chrome, to the scrolling content block padding and scroll padding alongside safe areas and deepInset.
 - headerPresentation overlay: once wireScrollDividers measures the header, the header shares the content cell above the scroller, its border-box height is published as --kui-scroll-clearance-block-start on the Pane root, and the content clears it automatically; unwired or with chromePlacement auto, the header stays docked.
+- The scrolling content also publishes its resolved block-start padding (safe area, deepInset, and overlay or clear header clearance) as --kui-pane-content-inset-block-start, so a first child such as an underChrome BackdropImage can run up beneath it.
 
 ## Accessibility
 

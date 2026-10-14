@@ -55,6 +55,13 @@ import { remify, uiColor } from '@kerfjs/ui/css-values';
   `full` dims the image evenly. The app keeps overlay text at AA with the scrim
   or fade color it chooses.
 - `overlay` is laid over the image's block end; `children` continue below it.
+- `underChrome` runs the image up beneath the Pane's block-start inset (an
+  overlay or clear header's clearance, NavStack chrome handed to a view's
+  Pane, and the top safe area), so artwork fills the screen behind clear
+  chrome. The visible image keeps `height` below the chrome, and `overlay`
+  content stays clear of it. It reads the Pane's
+  `--kui-pane-content-inset-block-start`, so the image must be the first child
+  of the Pane's content.
 
 ## Layout and ownership
 

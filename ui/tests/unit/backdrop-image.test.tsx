@@ -63,6 +63,33 @@ describe('BackdropImage', () => {
     expect(html).toContain('<div class="kui-backdrop-image__scrim"></div>');
   });
 
+  it('runs up beneath the Pane block-start inset only when underChrome is set', () => {
+    const html = String(
+      BackdropImage({
+        src: '/hero.jpg',
+        alt: '',
+        underChrome: true,
+        // @ts-expect-error data-under-chrome is component-owned
+        rootAttributes: { 'data-under-chrome': 'false' },
+      }),
+    );
+    expect(html).toContain('data-under-chrome="true"');
+    expect(html).not.toContain('data-under-chrome="false"');
+    expect(String(BackdropImage({ src: '/hero.jpg', alt: '' }))).not.toContain(
+      'data-under-chrome',
+    );
+    expect(css).toMatch(
+      /\.kui-backdrop-image\[data-under-chrome="true"\] \{\s*--_kui-backdrop-image-bleed-block-start: var\(\s*--kui-pane-content-inset-block-start,\s*0px\s*\);\s*margin-block-start: calc\(-1 \* var\(--_kui-backdrop-image-bleed-block-start\)\);/,
+    );
+    const pane = readFileSync(
+      resolve(import.meta.dirname, '../../src/components/layout/pane/pane.css'),
+      'utf8',
+    );
+    expect(pane).toContain(
+      '--kui-pane-content-inset-block-start: var(--_kui-pane-content-block-start);',
+    );
+  });
+
   it('accepts a numeric lag factor and treats 0 as no parallax', () => {
     expect(
       String(BackdropImage({ src: '/a.jpg', alt: '', parallax: 0.6 })),

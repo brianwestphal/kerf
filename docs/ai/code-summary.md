@@ -1064,6 +1064,12 @@ while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 
+BackdropImage under chrome (KF-5QKCCT, artwork behind transparent chrome):
+`BackdropImage.underChrome` (`data-under-chrome`) negates the Pane's new public
+`--kui-pane-content-inset-block-start` (its resolved block-start padding) and
+grows the hero by the same amount; `ui/tests/browser/clear-chrome.spec.ts`
+checks the geometry under a clear header.
+
 Clear chrome (KF-TQ3NHD, transparent bars over imagery): `clear` presentations
 render the existing overlay attribute (so measuring, clearance, and the
 overlay AA lifts are reused) plus `data-header-material` /
