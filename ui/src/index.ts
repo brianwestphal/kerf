@@ -49,6 +49,7 @@ export {
   type ToolbarControlGroupContent,
   type ToolbarControlGroupDensity,
   type ToolbarControlGroupExpandedOverflow,
+  type ToolbarControlGroupMaterial,
   type ToolbarControlGroupMenuInset,
   type ToolbarControlGroupOverflow,
   type ToolbarControlGroupProps,

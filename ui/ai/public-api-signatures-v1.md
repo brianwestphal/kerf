@@ -327,6 +327,8 @@ import { CssLength } from './css-values.js';
 
 type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 type ToolbarControlGroupTone = 'default' | 'dark';
+/** Surface material: the opaque `solid` fill (default) or translucent `glass`. */
+type ToolbarControlGroupMaterial = 'solid' | 'glass';
 /** Quiet palette for a contained, single decorative icon tile. */
 type ToolbarControlGroupTileTone = 'neutral' | 'brand' | 'success' | 'warning' | 'danger';
 type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
@@ -367,6 +369,15 @@ interface ToolbarControlGroupProps {
     single?: boolean;
     appearance?: ToolbarControlGroupAppearance;
     tone?: ToolbarControlGroupTone;
+    /**
+     * `glass` paints the group on the translucent chrome material (backdrop
+     * blur and saturation) with a specular edge and a soft shadow, for a group
+     * floating over imagery or a clear toolbar. Controls take the normal text
+     * color so they keep AA over any content; the fill turns opaque under
+     * reduced transparency, increased contrast, static effects, or without
+     * backdrop-filter support. A borderless group has no surface and ignores it.
+     */
+    material?: ToolbarControlGroupMaterial;
     /** Quiet fill, matching border and foreground for a contained single group whose only child is a decorative SVG. Ignored for interactive or mixed content. */
     tileTone?: ToolbarControlGroupTileTone;
     buttonAppearance?: ToolbarControlGroupButtonAppearance;
@@ -422,9 +433,9 @@ interface ToolbarControlGroupProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, tileTone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, expandedOverflow, visibility, hideBelow, showBelow, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, material, tileTone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, expandedOverflow, visibility, hideBelow, showBelow, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
-export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupExpandedOverflow, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupPlacement, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTileTone, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
+export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupExpandedOverflow, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMaterial, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupPlacement, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTileTone, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
 
 ## `@kerfjs/ui/floating-toolbar`

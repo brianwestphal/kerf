@@ -722,6 +722,20 @@ panel behind it. The same rule and fallbacks apply.
   component owns stops at its resting state. A display that cannot animate
   smoothly (`@media (update: slow)`, such as e-ink) gets the same result on
   its own. Removing the attribute restores the effects.
+- **A glass `ToolbarControlGroup` (`material="glass"`) carries the material
+  with it.** A group floating over imagery or a clear toolbar paints
+  `--kui-chrome-material` behind its own controls. The same quiet-color shortfall
+  applies, so its controls always take `--kui-color-text`. A raised or outline
+  selection paints an opaque surface pill, so the brand selected color keeps AA:
+  over the bare 80% material it measured about 3.2:1 (light, over black). The
+  group's hover mixes a text-color tint into the material, so a lone control's
+  whole-group hover never drops the fill. The specular edge gives way to the
+  normal group border wherever the material turns opaque, including static
+  effects. A dark-toned glass group's loud fill turns opaque there too. In
+  forced colors the group paints `Canvas` with a `CanvasText` border and drops
+  its filter and shadow. `tests/browser/tone-contrast.spec.ts` measures rest,
+  hover, and selected controls on both worst-case backdrops in all three
+  engines, and checks the opaque and forced-color fallbacks in Chromium.
 
 `tests/browser/overlay-header.spec.ts` (Pane),
 `tests/browser/overlay-nav-stack.spec.ts` (NavStack top chrome),

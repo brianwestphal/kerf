@@ -1185,6 +1185,9 @@ const stopActions = delegateActions(app, 'click', {
   'log-next': () => {
     actionLog.value = 'Next requested';
   },
+  'log-share': () => {
+    actionLog.value = 'Share requested';
+  },
   'open-nav-stack-project': (_event, element) => {
     const projectId = (element as HTMLElement).dataset.itemId ?? '';
     pushNavStackDemo(projectId);

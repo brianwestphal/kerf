@@ -5,6 +5,8 @@ import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.j
 
 export type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 export type ToolbarControlGroupTone = 'default' | 'dark';
+/** Surface material: the opaque `solid` fill (default) or translucent `glass`. */
+export type ToolbarControlGroupMaterial = 'solid' | 'glass';
 /** Quiet palette for a contained, single decorative icon tile. */
 export type ToolbarControlGroupTileTone =
   'neutral' | 'brand' | 'success' | 'warning' | 'danger';
@@ -83,6 +85,15 @@ export interface ToolbarControlGroupProps {
   single?: boolean;
   appearance?: ToolbarControlGroupAppearance;
   tone?: ToolbarControlGroupTone;
+  /**
+   * `glass` paints the group on the translucent chrome material (backdrop
+   * blur and saturation) with a specular edge and a soft shadow, for a group
+   * floating over imagery or a clear toolbar. Controls take the normal text
+   * color so they keep AA over any content; the fill turns opaque under
+   * reduced transparency, increased contrast, static effects, or without
+   * backdrop-filter support. A borderless group has no surface and ignores it.
+   */
+  material?: ToolbarControlGroupMaterial;
   /** Quiet fill, matching border and foreground for a contained single group whose only child is a decorative SVG. Ignored for interactive or mixed content. */
   tileTone?: ToolbarControlGroupTileTone;
   buttonAppearance?: ToolbarControlGroupButtonAppearance;
@@ -147,6 +158,7 @@ export function ToolbarControlGroup({
   single = false,
   appearance = 'contained',
   tone = 'default',
+  material = 'solid',
   tileTone,
   buttonAppearance = 'plain',
   shape = 'pill',
@@ -187,6 +199,7 @@ export function ToolbarControlGroup({
       aria-label={label}
       data-appearance={appearance}
       data-tone={tone}
+      data-material={material === 'glass' ? 'glass' : undefined}
       data-tile-tone={tileTone}
       data-button-appearance={buttonAppearance}
       data-expanded={String(expanded)}

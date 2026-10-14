@@ -16,6 +16,7 @@ Provide complete toolbar action geometry through configuration, including semant
 - For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight.
 - In a Workbench or CollapsiblePanel toolbar, mark a group relocateOnCollapse to keep it available in the work-area toolbar when the panel closes; place it directly or in an array in any toolbar zone.
 - Use tileTone for a contained single group containing only a direct decorative SVG icon; interactive or mixed groups retain their existing control chrome.
+- Set material=glass on a group floating over imagery or a clear (transparent) toolbar: it paints the translucent, blurred chrome material with a specular edge, controls keep AA in the normal text color, and the fill turns opaque under reduced transparency, increased contrast, or static effects. Keep the solid default on an opaque toolbar.
 - Set expandedOverflow=visible on an expanded search to anchor application suggestions, date pickers, or help below the group without overriding its geometry.
 - Use typed hideBelow/showBelow lengths with wireToolbarVisibility(root) for per-item toolbar priority; keep primary actions available and provide a showBelow overflow alternative.
 

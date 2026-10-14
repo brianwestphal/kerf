@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 374000,
-  "measuredLargestJavaScriptGzip": 118705,
-  "measuredTotalJavaScriptGzip": 373998,
+  "measuredLargestJavaScriptGzip": 118683,
+  "measuredTotalJavaScriptGzip": 373923,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4641,6 +4641,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 118705,
         "measuredTotalJavaScriptGzip": 373998,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 374000
+      }
+    },
+    {
+      "at": "2026-10-14T04:34:37.571Z",
+      "reason": "Integrate KF-0AGJ5W bottom-sheet DialogSurface and KF-4B5M05 glass ToolbarControlGroup demos and runtime",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118705,
+        "measuredTotalJavaScriptGzip": 373998,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 374000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118683,
+        "measuredTotalJavaScriptGzip": 373923,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 374000
       }

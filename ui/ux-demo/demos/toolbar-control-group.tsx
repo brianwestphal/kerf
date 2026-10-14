@@ -1,9 +1,11 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
+import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -335,6 +337,67 @@ export function ToolbarControlGroupDemo() {
             <LucideIcon icon={ChevronRight} name="chevron-right" />
           </button>
         </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample
+        label="Glass Material"
+        note={
+          <>
+            <code>material="glass"</code> paints a group on the translucent,
+            blurred chrome material with a specular edge, for controls floating
+            over imagery or a clear toolbar. Controls keep the normal text color
+            so they stay legible over any content; the fill turns opaque under
+            reduced transparency or increased contrast. Here the groups float
+            over scrolling content in a FloatingToolbar.
+          </>
+        }
+        align="none"
+        rootAttributes={{ 'data-demo-section': 'glass-material' }}
+        viewport={{
+          layout: 'flex-column',
+          width: 'full',
+          height: 'medium',
+          frame: 'solid',
+          overflow: 'hidden',
+        }}
+      >
+        {(['danger', 'warning', 'success', 'info', 'pop'] as const).map(
+          (tone) => (
+            <StateBanner
+              presentation="strip"
+              tone={tone}
+              title={`${tone.charAt(0).toUpperCase() + tone.slice(1)} Content`}
+              detail="Passes beneath the floating glass controls."
+            />
+          ),
+        )}
+        <FloatingToolbar label="Glass Controls" position="top">
+          <ToolbarControlGroup
+            label="Glass Navigation"
+            material="glass"
+            shape={shape}
+          >
+            <button
+              type="button"
+              aria-label="Previous"
+              data-action="log-previous"
+            >
+              <LucideIcon icon={ChevronLeft} name="chevron-left" />
+            </button>
+            <button type="button" aria-label="Next" data-action="log-next">
+              <LucideIcon icon={ChevronRight} name="chevron-right" />
+            </button>
+          </ToolbarControlGroup>
+          <ToolbarControlGroup
+            label="Glass Share"
+            material="glass"
+            single
+            shape={shape}
+          >
+            <button type="button" aria-label="Share" data-action="log-share">
+              <LucideIcon icon={Share2} name="share-2" />
+            </button>
+          </ToolbarControlGroup>
+        </FloatingToolbar>
       </CatalogExample>
       <CatalogExample label="Compact Mixed Controls" align="inline-control">
         <ToolbarControlGroup

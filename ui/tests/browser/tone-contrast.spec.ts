@@ -494,3 +494,221 @@ for (const colorScheme of ['light', 'dark'] as const) {
     }
   });
 }
+
+/**
+ * Glass ToolbarControlGroups (`material="glass"`) over light, dark, and busy
+ * backdrops. The group is translucent and blurred, so its controls are held
+ * to AA over the worst-case content that can pass beneath it: a solid black
+ * backdrop in light (the material darkens most) and solid white in dark.
+ */
+const glassBundle = build({
+  entryPoints: [
+    resolve(import.meta.dirname, 'fixtures/glass-toolbar-group.tsx'),
+  ],
+  bundle: true,
+  format: 'iife',
+  outdir: 'out',
+  platform: 'browser',
+  write: false,
+});
+const glassCss = [
+  'foundation',
+  'layout',
+  'lucide-icon',
+  'toolbar-control-group',
+]
+  .map((name) =>
+    readFileSync(
+      resolve(import.meta.dirname, `../../dist/styles/${name}.css`),
+      'utf8',
+    ),
+  )
+  .join('\n');
+
+async function mountGlass(page: Page) {
+  const result = await glassBundle;
+  const javascript = result.outputFiles.find((file) =>
+    file.path.endsWith('.js'),
+  )!;
+  await page.setViewportSize({ width: 720, height: 720 });
+  await page.setContent('<body style="margin:0"><div data-app></div></body>');
+  await page.addStyleTag({ content: glassCss });
+  await page.addScriptTag({ content: javascript.text });
+}
+
+type GlassPaint = {
+  /** Text over the group fill (and the control's own fill) over the backdrop. */
+  contrast: number;
+  /** The group fill's alpha, 0–255. */
+  alpha: number;
+  filter: string;
+  shadow: string;
+  border: string;
+};
+
+/**
+ * Composites the worst-case backdrop, the group's fill, and the control's own
+ * fill (hover or selection) on a canvas, then the control's text color, as
+ * painted. Blur only averages the backdrop, so a solid backdrop is the worst
+ * case for any content beneath the group.
+ */
+function paintGlass(
+  page: Page,
+  scene: string,
+  control: string,
+  backdrop: string,
+): Promise<GlassPaint> {
+  return page
+    .locator(`[data-scene="${scene}"] ${control}`)
+    .evaluate((button, backdropColor) => {
+      const group = button.closest<HTMLElement>('.kui-toolbar-control-group')!;
+      const context = document
+        .createElement('canvas')
+        .getContext('2d', { willReadFrequently: true })!;
+      context.canvas.width = 1;
+      context.canvas.height = 1;
+      const paint = (color: string) => {
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+      };
+      const pixel = () => [
+        ...context.getImageData(0, 0, 1, 1).data.slice(0, 3),
+      ];
+      const groupStyle = globalThis.getComputedStyle(group);
+      context.clearRect(0, 0, 1, 1);
+      paint(groupStyle.backgroundColor);
+      const alpha = context.getImageData(0, 0, 1, 1).data[3]!;
+      context.clearRect(0, 0, 1, 1);
+      paint(backdropColor);
+      paint(groupStyle.backgroundColor);
+      paint(globalThis.getComputedStyle(button).backgroundColor);
+      const background = pixel();
+      paint(globalThis.getComputedStyle(button).color);
+      const foreground = pixel();
+      const luminance = (rgb: number[]) => {
+        const [r = 0, g = 0, b = 0] = rgb.map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045
+            ? value / 12.92
+            : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const [light, dark] = [luminance(foreground), luminance(background)].sort(
+        (x, y) => y - x,
+      );
+      return {
+        contrast: (light! + 0.05) / (dark! + 0.05),
+        alpha,
+        filter:
+          groupStyle.backdropFilter ||
+          (groupStyle as unknown as { webkitBackdropFilter?: string })
+            .webkitBackdropFilter ||
+          'none',
+        shadow: groupStyle.boxShadow,
+        border: groupStyle.borderTopColor,
+      };
+    }, backdrop);
+}
+
+for (const [scheme, backdrop] of [
+  ['light', 'black'],
+  ['dark', 'white'],
+] as const)
+  test(`${scheme}: glass toolbar groups keep AA at rest, hover, and selection over worst-case content`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await mountGlass(page);
+    for (const scene of ['light', 'dark', 'busy']) {
+      const rest = await paintGlass(page, scene, '[data-grid]', backdrop);
+      // Translucent (the 80% chrome material), blurred, lifted by a shadow,
+      // with the specular edge in place of the solid group's gray border.
+      expect(rest.alpha, `${scene} glass alpha`).toBeGreaterThan(195);
+      expect(rest.alpha, `${scene} glass alpha`).toBeLessThan(215);
+      expect(rest.filter).toContain('blur');
+      expect(rest.shadow).not.toBe('none');
+      expect(rest.border).toMatch(/rgba\(255, 255, 255, 0\.\d+\)/);
+      const where = `${scheme} over ${backdrop} (${scene} scene)`;
+      expect(rest.contrast, `${where} rest icon`).toBeGreaterThanOrEqual(
+        TEXT_AA,
+      );
+      for (const control of ['[data-unread]', '[data-share]'])
+        expect(
+          (await paintGlass(page, scene, control, backdrop)).contrast,
+          `${where} rest ${control}`,
+        ).toBeGreaterThanOrEqual(TEXT_AA);
+      // Raised and outline selections paint an opaque surface pill.
+      for (const control of ['[data-list]', '[data-all]'])
+        expect(
+          (await paintGlass(page, scene, control, backdrop)).contrast,
+          `${where} selected ${control}`,
+        ).toBeGreaterThanOrEqual(TEXT_AA);
+      // A control's hover tints its own pill; a lone control's hover tints
+      // the whole group, which keeps the material beneath the tint.
+      await page.hover(`[data-scene="${scene}"] [data-grid]`);
+      const hovered = await paintGlass(page, scene, '[data-grid]', backdrop);
+      expect(hovered.contrast, `${where} hovered control`).toBeGreaterThan(
+        TEXT_AA,
+      );
+      await page.hover(`[data-scene="${scene}"] [data-share]`);
+      const lone = await paintGlass(page, scene, '[data-share]', backdrop);
+      expect(lone.alpha, `${where} hovered lone group`).toBeGreaterThan(195);
+      expect(lone.alpha, `${where} hovered lone group`).not.toBe(rest.alpha);
+      expect(lone.contrast, `${where} hovered lone group`).toBeGreaterThan(
+        TEXT_AA,
+      );
+      await page.mouse.move(0, 0);
+    }
+  });
+
+test('glass toolbar groups turn opaque under reduced transparency, increased contrast, and static effects', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== 'chromium',
+    'prefers-reduced-transparency emulation needs the Chromium DevTools protocol',
+  );
+  await mountGlass(page);
+  const session = await page.context().newCDPSession(page);
+  for (const feature of [
+    { name: 'prefers-reduced-transparency', value: 'reduce' },
+    { name: 'prefers-contrast', value: 'more' },
+  ]) {
+    await session.send('Emulation.setEmulatedMedia', { features: [feature] });
+    const glass = await paintGlass(page, 'busy', '[data-grid]', 'black');
+    expect(glass.alpha, feature.name).toBe(255);
+    expect(glass.filter, feature.name).toBe('none');
+    // The specular edge gives way to the group's normal border.
+    expect(glass.border, feature.name).not.toMatch(/rgba\(255, 255, 255/);
+    const dark = await paintGlass(page, 'busy', '[data-next]', 'white');
+    expect(dark.alpha, `${feature.name} dark glass`).toBe(255);
+  }
+  await session.send('Emulation.setEmulatedMedia', { features: [] });
+  // The document-level static-effects switch drops the dark glass group's
+  // translucency and the edge too; the shared material tokens follow the
+  // same switch in foundation.css.
+  await page.evaluate(() =>
+    document.documentElement.setAttribute('data-kui-effects', 'static'),
+  );
+  const staticDark = await paintGlass(page, 'busy', '[data-next]', 'white');
+  expect(staticDark.alpha).toBe(255);
+  expect(staticDark.border).not.toMatch(/rgba\(255, 255, 255/);
+});
+
+test('forced colors paints glass toolbar groups on an opaque system surface', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== 'chromium',
+    'forced-colors emulation is Chromium-only',
+  );
+  await page.emulateMedia({ forcedColors: 'active' });
+  await mountGlass(page);
+  const glass = await paintGlass(page, 'busy', '[data-grid]', 'black');
+  expect(glass.alpha).toBe(255);
+  expect(glass.filter).toBe('none');
+  expect(glass.shadow).toBe('none');
+});

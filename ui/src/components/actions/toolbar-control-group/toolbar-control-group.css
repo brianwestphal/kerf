@@ -420,6 +420,134 @@
   --kui-toolbar-control-color: var(--kui-color-text);
 }
 
+/* `material="glass"`: the group floats over imagery or a clear toolbar on the
+   translucent chrome material (foundation.css), blurred and saturated, the
+   per-control glass pills of overlay chrome. The fill and filter come from the
+   shared tokens, so the group inherits every opaque fallback they carry
+   (reduced transparency, increased contrast, static effects, no
+   backdrop-filter). The group's own 1px border becomes the specular edge, a
+   translucent white highlight, instead of a gray border plus a highlight; a
+   soft two-layer shadow lifts it off the content beneath.
+
+   Controls take the normal text color: over its own 80% surface material the
+   quiet control color falls below AA over the worst-case backdrop, while the
+   text color stays well above it (about 10:1 light over black, 8:1 dark over
+   white). Hover mixes a text-color tint into the material itself, so a lone
+   control's whole-group hover keeps a fill rather than replacing it with a
+   bare tint. A raised or outline selection paints an opaque surface pill, so
+   the brand selected color keeps AA over any content. A borderless group has
+   no surface and ignores the material. */
+.kui-toolbar-control-group[data-material="glass"]:not(
+    [data-appearance="borderless"]
+  ) {
+  --kui-toolbar-control-border: light-dark(
+    rgb(255 255 255 / 0.72),
+    rgb(255 255 255 / 0.16)
+  );
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  box-shadow:
+    0 remify(1px) remify(3px) light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.32)),
+    0 remify(6px) remify(18px) light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.28));
+}
+
+.kui-toolbar-control-group[data-material="glass"]:not(
+    [data-appearance="borderless"],
+    [data-tone="dark"],
+    [data-scrim="true"]
+  ) {
+  --kui-toolbar-control-background: var(--kui-chrome-material);
+  --kui-toolbar-control-color: var(--kui-color-text);
+  --kui-toolbar-control-hover-background: color-mix(
+    in srgb,
+    var(--kui-color-text) 12%,
+    var(--kui-chrome-material)
+  );
+}
+
+/* A dark glass group keeps its loud translucent fill and on-loud colors; its
+   edge is a faint white rim in either scheme. */
+.kui-toolbar-control-group[data-material="glass"][data-tone="dark"]:not(
+    [data-appearance="borderless"]
+  ) {
+  --kui-toolbar-control-border: rgb(255 255 255 / 0.18);
+}
+
+.kui-toolbar-control-group[data-material="glass"][data-selected-chrome="outline"] {
+  --kui-toolbar-control-selected-background: var(--kui-color-surface);
+}
+
+/* Wherever the chrome material turns opaque, the glass edge returns to the
+   group's normal border and a dark glass group to its opaque loud fill. The
+   default glass fill already follows the material tokens. */
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .kui-toolbar-control-group[data-material="glass"]:not(
+      [data-appearance="borderless"]
+    ) {
+    --kui-toolbar-control-border: var(--kui-color-neutral-border-normal);
+  }
+
+  .kui-toolbar-control-group[data-material="glass"][data-tone="dark"]:not(
+      [data-appearance="borderless"]
+    ) {
+    --kui-toolbar-control-background: var(--kui-color-neutral-fill-loud);
+    --kui-toolbar-control-border: var(
+      --kui-toolbar-control-dark-border,
+      #353536
+    );
+  }
+}
+
+@media (prefers-reduced-transparency: reduce),
+  (prefers-contrast: more),
+  (update: slow) {
+  .kui-toolbar-control-group[data-material="glass"]:not(
+      [data-appearance="borderless"]
+    ) {
+    --kui-toolbar-control-border: var(--kui-color-neutral-border-normal);
+  }
+
+  .kui-toolbar-control-group[data-material="glass"][data-tone="dark"]:not(
+      [data-appearance="borderless"]
+    ) {
+    --kui-toolbar-control-background: var(--kui-color-neutral-fill-loud);
+    --kui-toolbar-control-border: var(
+      --kui-toolbar-control-dark-border,
+      #353536
+    );
+  }
+}
+
+:root[data-kui-effects="static"]
+  .kui-toolbar-control-group[data-material="glass"]:not(
+    [data-appearance="borderless"]
+  ) {
+  --kui-toolbar-control-border: var(--kui-color-neutral-border-normal);
+}
+
+:root[data-kui-effects="static"]
+  .kui-toolbar-control-group[data-material="glass"][data-tone="dark"]:not(
+    [data-appearance="borderless"]
+  ) {
+  --kui-toolbar-control-background: var(--kui-color-neutral-fill-loud);
+  --kui-toolbar-control-border: var(--kui-toolbar-control-dark-border, #353536);
+}
+
+@media (forced-colors: active) {
+  .kui-toolbar-control-group[data-material="glass"]:not(
+      [data-appearance="borderless"]
+    ) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: CanvasText;
+    color: CanvasText;
+    background-color: Canvas;
+    box-shadow: none;
+  }
+}
+
 /* `selectedChrome="none"`: a pressed control paints like its unpressed
    neighbors, for an icon-state toggle whose glyph already shows the state.
    One button opts out alone with `data-selected-chrome="none"`. After the

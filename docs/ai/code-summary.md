@@ -607,6 +607,14 @@ token and the focus ring keep the themed appearance; `ui/tests/browser/tone-cont
 bundles `ui/tests/browser/fixtures/tone-text-cases.tsx` with and without the
 bridge and asserts parity for every `--kui-color-*` token it parses from
 `foundation.css` (plus the focus ring) in both schemes, and AA toned text.
+The same spec bundles `ui/tests/browser/fixtures/glass-toolbar-group.tsx`
+(glass `ToolbarControlGroup`s, `material="glass"`, over light, dark, and busy
+backdrops) and holds rest, hover, and selected controls to AA over the
+worst-case backdrop in three engines, plus the opaque reduced-transparency /
+increased-contrast / static-effects and forced-colors fallbacks in Chromium;
+`ui/tests/unit/toolbar-control-group-glass.test.tsx` pins the markup and CSS
+contract (the glass fill reuses `--kui-chrome-material` /
+`--kui-chrome-material-filter`).
 
 UI palette browser checks share `ui/tests/browser/painted-contrast.ts`, which
 composites solid ancestor/component fills and foreground alpha in a browser
