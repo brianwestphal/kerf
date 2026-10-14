@@ -348,6 +348,17 @@ export {
   type WireTabBarsOptions,
 } from './components/navigation/tab-bar/wiring/wire-tab-bars.js';
 export {
+  BackdropImage,
+  type BackdropImageFit,
+  type BackdropImageParallax,
+  type BackdropImagePosition,
+  type BackdropImageProps,
+  type BackdropImageRepeat,
+  type BackdropImageScrim,
+  type BackdropImageSingleProps,
+  type BackdropImageTiledProps,
+} from './components/surfaces/backdrop-image/backdrop-image.js';
+export {
   ContentItem,
   type ContentItemAppearance,
   type ContentItemBubble,

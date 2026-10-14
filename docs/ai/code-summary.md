@@ -1019,6 +1019,16 @@ compact geometry, and a disabled state. An `href` makes it a native `<a>` link
 chip (`download`, `external`); `ChipTone` adds `inherit`, which follows the
 surrounding foreground. Tests: `ui/tests/unit/chip-link.test.tsx`,
 `ui/tests/unit/chip-icon-truncate.test.tsx`, `ui/tests/browser/chip.spec.ts`.
+`ui/src/components/surfaces/backdrop-image/backdrop-image.tsx` (`@kerfjs/ui/backdrop-image`)
+renders a scrolling view's hero or tiled image: a hero block (a named
+`view-timeline`) holding a clipped, masked backdrop whose `__layers` animate
+only `transform` over the block's `exit-crossing` range for parallax, an
+optional scrim, an `overlay` slot over its block end, and `children` below on
+the root's `fadeTo` color. The root bleeds to the Pane's resolved inline
+insets and hands them back. Static fallbacks: no `animation-timeline`
+support, reduced motion, `:root[data-kui-effects="static"]`, `update: slow`;
+reduced transparency/increased contrast drop the mask. Tests:
+`ui/tests/unit/backdrop-image.test.tsx`, `ui/tests/browser/backdrop-image.spec.ts`.
 `ui/src/components/forms/choice-chips/choice-chips.tsx` (`@kerfjs/ui/choice-chips`)
 renders a wrapping choice: separate pill `<label>`s around native radios in a
 `role="radiogroup"` (or, with `multiple` and an array `value`, native

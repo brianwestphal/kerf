@@ -484,6 +484,15 @@ state without consumer rules on Web Awesome internals. With `href` (plus optiona
 truncation, focus ring, and hover feedback, for downloadable file chips in chat
 bubbles; `tone="inherit"` follows the surrounding foreground with a
 currentColor border and no fill, so it keeps a brand-loud bubble's text contrast.
+BackdropImage (shipped) opens a scrolling Pane or NavStack view with a hero or
+tiled image (`src`/`srcset`/`alt`, `fit`, `position`, `repeat`, typed
+`height`): `parallax` (`none`, `subtle`, or a 0 to 1 factor) lags it on a
+compositor-only scroll-driven timeline, typed `fadeTo` dissolves it through a
+mask into a color that also paints under its `children`, and `overlay` content
+sits over its block end with an optional `scrim`. Static without scroll-driven
+animation support (Firefox today), under reduced motion, the
+`data-kui-effects="static"` switch, or `update: slow`; a hard edge over solid
+`fadeTo` under reduced transparency or increased contrast.
 ChoiceChips (shipped) is the wrapping exclusive choice for a visible set too
 large for SegmentedControl: separate pills over native radios (one Tab stop,
 arrow-key selection, real form value), with color swatches including a

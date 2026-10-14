@@ -33,6 +33,7 @@
 @import "./corner-status.css";
 @import "./column-track.css";
 @import "./content-swap.css";
+@import "./backdrop-image.css";
 @import "./file-picker.css";
 @import "./combobox.css";
 @import "./edge-activity-indicator.css";

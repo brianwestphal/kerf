@@ -1,0 +1,233 @@
+import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterRootAttributes,
+  type StructuralRootAttributes,
+} from '../../../shared/dom/extension-attributes.js';
+import type { CssColor, CssLength } from '../../../shared/styles/css-values.js';
+
+/** How a single image fills the backdrop (`object-fit`). */
+export type BackdropImageFit = 'cover' | 'contain' | 'fill';
+
+/** Which part of the image stays in view when it is cropped. */
+export type BackdropImagePosition =
+  | 'center'
+  | 'top'
+  | 'bottom'
+  | 'left'
+  | 'right'
+  | 'top left'
+  | 'top right'
+  | 'bottom left'
+  | 'bottom right';
+
+/** Tile the image as a background instead of fitting one copy. */
+export type BackdropImageRepeat = 'repeat' | 'repeat-x' | 'repeat-y';
+
+/**
+ * How far the image lags the scroll: `none` scrolls with the content,
+ * `subtle` lags by 35%, and a number from 0 to 1 is the lag factor (0.5
+ * moves the image at half the scroll speed).
+ */
+export type BackdropImageParallax = 'none' | 'subtle' | number;
+
+/**
+ * A dimming layer under `overlay` content: `bottom` darkens toward the
+ * block end where a title sits, `full` dims the whole image evenly.
+ */
+export type BackdropImageScrim = 'none' | 'bottom' | 'full';
+
+const backdropImageProtected = new Set([
+  'data-component',
+  'data-parallax',
+  'data-scrim',
+  'data-fade',
+  'data-repeat',
+]);
+
+type BackdropImageRootAttributes = StructuralRootAttributes &
+  Readonly<{
+    'data-component'?: never;
+    'data-parallax'?: never;
+    'data-scrim'?: never;
+    'data-fade'?: never;
+    'data-repeat'?: never;
+  }>;
+
+interface BackdropImageCommonProps {
+  /** Image URL. */
+  src: string;
+  /**
+   * Accessible description of the image. Pass `''` for a decorative image
+   * that only sets a mood; assistive technology then skips it.
+   */
+  alt: string;
+  /** Which part of a cropped image stays in view. Default `center`. */
+  position?: BackdropImagePosition;
+  /** Height of the image block. Default 320px (`remify(320)`). */
+  height?: CssLength;
+  /** How far the image lags the scroll. Default `none`. */
+  parallax?: BackdropImageParallax;
+  /**
+   * The color the image fades into at its block end. It also paints the
+   * whole surface, so `children` below the image sit on the same color and
+   * the page reads as one surface. Omit for a hard edge with no surface.
+   */
+  fadeTo?: CssColor;
+  /** Dim the image under `overlay` content. Default `none`. */
+  scrim?: BackdropImageScrim;
+  /** Content laid over the image's block end, such as a title and actions. */
+  overlay?: KerfUiContent;
+  /** Content that continues below the image on the `fadeTo` surface. */
+  children?: KerfUiContent;
+  id?: string;
+  className?: string;
+  /** Safe `data-*`, `aria-*`, and structural `role` metadata on the root. */
+  rootAttributes?: BackdropImageRootAttributes;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
+}
+
+/** One fitted image, with optional responsive candidates. */
+export interface BackdropImageSingleProps extends BackdropImageCommonProps {
+  repeat?: undefined;
+  /** Responsive image candidates (`srcset`). */
+  srcset?: string;
+  /** Rendered-size hints for `srcset` (`sizes`). */
+  sizes?: string;
+  /** How the image fills the block. Default `cover`. */
+  fit?: BackdropImageFit;
+}
+
+/** A tiled background image at its natural size. */
+export interface BackdropImageTiledProps extends BackdropImageCommonProps {
+  repeat: BackdropImageRepeat;
+  srcset?: never;
+  sizes?: never;
+  fit?: never;
+}
+
+export type BackdropImageProps =
+  BackdropImageSingleProps | BackdropImageTiledProps;
+
+const SUBTLE_PARALLAX = 0.35;
+
+function parallaxFactor(parallax: BackdropImageParallax): number {
+  if (parallax === 'none') return 0;
+  if (parallax === 'subtle') return SUBTLE_PARALLAX;
+  if (!Number.isFinite(parallax) || parallax < 0 || parallax > 1)
+    throw new RangeError(
+      'BackdropImage parallax must be none, subtle, or a number from 0 to 1.',
+    );
+  return parallax;
+}
+
+const unsafeStyleValue = /[;{}<>"'\\]|\p{Cc}/u;
+
+function styleValue(value: string, prop: string): string {
+  const trimmed = value.trim();
+  if (!trimmed || unsafeStyleValue.test(trimmed))
+    throw new TypeError(`BackdropImage ${prop} requires one CSS value.`);
+  return trimmed;
+}
+
+/** A CSS `url("…")` for the tiled form; quotes and backslashes are escaped. */
+function cssUrl(src: string): string {
+  if (/\p{Cc}/u.test(src))
+    throw new TypeError(
+      'BackdropImage src must not contain control characters.',
+    );
+  return `url("${src.replace(/["\\]/g, (char) => `\\${char}`)}")`;
+}
+
+/**
+ * An image backdrop at the top of a scrolling Pane or NavStack view: the
+ * image can lag the scroll (parallax on a scroll-driven, compositor-only
+ * transform), fade through a mask into `fadeTo`, and that color keeps
+ * painting under `children` so the page reads as one surface. Kerf owns the
+ * static fallbacks: no parallax without scroll-driven animation support,
+ * under reduced motion, under `data-kui-effects="static"`, or on a
+ * slow-update display, and a hard edge onto solid `fadeTo` under reduced
+ * transparency.
+ */
+export function BackdropImage(props: BackdropImageProps) {
+  const {
+    src,
+    alt,
+    position = 'center',
+    height,
+    parallax = 'none',
+    fadeTo,
+    scrim = 'none',
+    overlay,
+    children,
+    id,
+    className = '',
+    rootAttributes = {},
+    slot,
+  } = props;
+  const factor = parallaxFactor(parallax);
+  const style = [
+    height === undefined
+      ? ''
+      : `--_kui-backdrop-image-height:${styleValue(height, 'height')}`,
+    fadeTo === undefined
+      ? ''
+      : `--_kui-backdrop-image-fade-to:${styleValue(fadeTo, 'fadeTo')}`,
+    factor === 0 ? '' : `--_kui-backdrop-image-parallax:${String(factor)}`,
+    position === 'center' ? '' : `--_kui-backdrop-image-position:${position}`,
+    props.fit === undefined || props.fit === 'cover'
+      ? ''
+      : `--_kui-backdrop-image-fit:${props.fit}`,
+  ]
+    .filter(Boolean)
+    .join(';');
+  const media =
+    props.repeat === undefined ? (
+      <img
+        class="kui-backdrop-image__media"
+        src={src}
+        srcSet={props.srcset}
+        sizes={props.sizes}
+        alt={alt}
+        decoding="async"
+      />
+    ) : (
+      <div
+        class="kui-backdrop-image__media"
+        role={alt ? 'img' : undefined}
+        aria-label={alt || undefined}
+        style={`background-image:${cssUrl(src)};background-repeat:${props.repeat}`}
+      />
+    );
+  const hasOverlay =
+    overlay !== undefined && overlay !== null && overlay !== false;
+  const hasChildren =
+    children !== undefined && children !== null && children !== false;
+  return (
+    <div
+      {...filterRootAttributes(rootAttributes, backdropImageProtected)}
+      id={id}
+      class={`kui-backdrop-image ${className}`.trim()}
+      data-component="backdrop-image"
+      data-parallax={factor === 0 ? 'none' : 'scroll'}
+      data-fade={fadeTo === undefined ? undefined : 'true'}
+      data-scrim={scrim === 'none' ? undefined : scrim}
+      data-repeat={props.repeat}
+      style={style || undefined}
+      slot={slot}
+    >
+      <div class="kui-backdrop-image__hero">
+        <div class="kui-backdrop-image__backdrop">
+          <div class="kui-backdrop-image__layers">{media}</div>
+          {scrim === 'none' ? null : <div class="kui-backdrop-image__scrim" />}
+        </div>
+        {hasOverlay ? (
+          <div class="kui-backdrop-image__overlay">{overlay}</div>
+        ) : null}
+      </div>
+      {hasChildren ? (
+        <div class="kui-backdrop-image__content">{children}</div>
+      ) : null}
+    </div>
+  );
+}

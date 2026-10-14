@@ -4152,6 +4152,104 @@ declare function LucideIcon({ icon, name, appearance, className, color, inline, 
 export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
 ```
 
+## `@kerfjs/ui/backdrop-image`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
+import { CssLength, CssColor } from './css-values.js';
+
+/** How a single image fills the backdrop (`object-fit`). */
+type BackdropImageFit = 'cover' | 'contain' | 'fill';
+/** Which part of the image stays in view when it is cropped. */
+type BackdropImagePosition = 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top left' | 'top right' | 'bottom left' | 'bottom right';
+/** Tile the image as a background instead of fitting one copy. */
+type BackdropImageRepeat = 'repeat' | 'repeat-x' | 'repeat-y';
+/**
+ * How far the image lags the scroll: `none` scrolls with the content,
+ * `subtle` lags by 35%, and a number from 0 to 1 is the lag factor (0.5
+ * moves the image at half the scroll speed).
+ */
+type BackdropImageParallax = 'none' | 'subtle' | number;
+/**
+ * A dimming layer under `overlay` content: `bottom` darkens toward the
+ * block end where a title sits, `full` dims the whole image evenly.
+ */
+type BackdropImageScrim = 'none' | 'bottom' | 'full';
+type BackdropImageRootAttributes = StructuralRootAttributes & Readonly<{
+    'data-component'?: never;
+    'data-parallax'?: never;
+    'data-scrim'?: never;
+    'data-fade'?: never;
+    'data-repeat'?: never;
+}>;
+interface BackdropImageCommonProps {
+    /** Image URL. */
+    src: string;
+    /**
+     * Accessible description of the image. Pass `''` for a decorative image
+     * that only sets a mood; assistive technology then skips it.
+     */
+    alt: string;
+    /** Which part of a cropped image stays in view. Default `center`. */
+    position?: BackdropImagePosition;
+    /** Height of the image block. Default 320px (`remify(320)`). */
+    height?: CssLength;
+    /** How far the image lags the scroll. Default `none`. */
+    parallax?: BackdropImageParallax;
+    /**
+     * The color the image fades into at its block end. It also paints the
+     * whole surface, so `children` below the image sit on the same color and
+     * the page reads as one surface. Omit for a hard edge with no surface.
+     */
+    fadeTo?: CssColor;
+    /** Dim the image under `overlay` content. Default `none`. */
+    scrim?: BackdropImageScrim;
+    /** Content laid over the image's block end, such as a title and actions. */
+    overlay?: KerfUiContent;
+    /** Content that continues below the image on the `fadeTo` surface. */
+    children?: KerfUiContent;
+    id?: string;
+    className?: string;
+    /** Safe `data-*`, `aria-*`, and structural `role` metadata on the root. */
+    rootAttributes?: BackdropImageRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/** One fitted image, with optional responsive candidates. */
+interface BackdropImageSingleProps extends BackdropImageCommonProps {
+    repeat?: undefined;
+    /** Responsive image candidates (`srcset`). */
+    srcset?: string;
+    /** Rendered-size hints for `srcset` (`sizes`). */
+    sizes?: string;
+    /** How the image fills the block. Default `cover`. */
+    fit?: BackdropImageFit;
+}
+/** A tiled background image at its natural size. */
+interface BackdropImageTiledProps extends BackdropImageCommonProps {
+    repeat: BackdropImageRepeat;
+    srcset?: never;
+    sizes?: never;
+    fit?: never;
+}
+type BackdropImageProps = BackdropImageSingleProps | BackdropImageTiledProps;
+/**
+ * An image backdrop at the top of a scrolling Pane or NavStack view: the
+ * image can lag the scroll (parallax on a scroll-driven, compositor-only
+ * transform), fade through a mask into `fadeTo`, and that color keeps
+ * painting under `children` so the page reads as one surface. Kerf owns the
+ * static fallbacks: no parallax without scroll-driven animation support,
+ * under reduced motion, under `data-kui-effects="static"`, or on a
+ * slow-update display, and a hard edge onto solid `fadeTo` under reduced
+ * transparency.
+ */
+declare function BackdropImage(props: BackdropImageProps): kerfjs.SafeHtml;
+
+export { BackdropImage, type BackdropImageFit, type BackdropImageParallax, type BackdropImagePosition, type BackdropImageProps, type BackdropImageRepeat, type BackdropImageScrim, type BackdropImageSingleProps, type BackdropImageTiledProps };
+```
+
 ## `@kerfjs/ui/wire-toolbar-visibility`
 
 ```ts

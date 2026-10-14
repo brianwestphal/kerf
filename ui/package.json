@@ -412,6 +412,11 @@
       "types": "./dist/wire-file-pickers.d.ts",
       "import": "./dist/wire-file-pickers.js"
     },
+    "./backdrop-image": {
+      "types": "./dist/backdrop-image.d.ts",
+      "browser": "./dist/browser/backdrop-image.js",
+      "import": "./dist/backdrop-image.js"
+    },
     "./content-swap": {
       "types": "./dist/content-swap.d.ts",
       "browser": "./dist/browser/content-swap.js",
@@ -499,6 +504,7 @@
     "./corner-status.css": "./dist/styles/corner-status.css",
     "./column-track.css": "./dist/styles/column-track.css",
     "./content-swap.css": "./dist/styles/content-swap.css",
+    "./backdrop-image.css": "./dist/styles/backdrop-image.css",
     "./file-picker.css": "./dist/styles/file-picker.css",
     "./combobox.css": "./dist/styles/combobox.css",
     "./edge-activity-indicator.css": "./dist/styles/edge-activity-indicator.css",

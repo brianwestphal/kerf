@@ -1,0 +1,2 @@
+/* Public stylesheet entry; implementation is colocated with the component. */
+@import "./components/surfaces/backdrop-image/backdrop-image.css";

@@ -255,6 +255,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `LoadingSpinner`                                                    | `@kerfjs/ui/loading-spinner`            | `@kerfjs/ui/loading-spinner.css`         |
 | `Skeleton`                                                          | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`                |
 | `SunkenPanel`                                                       | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`            |
+| `BackdropImage`                                                     | `@kerfjs/ui/backdrop-image`             | `@kerfjs/ui/backdrop-image.css`          |
 | `Select`                                                            | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                  |
 | `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |
 | `ChoiceChips`                                                       | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |

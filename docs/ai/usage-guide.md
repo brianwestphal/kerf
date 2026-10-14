@@ -246,6 +246,15 @@ and cannot also carry a remove button. Inside a `brand-loud` or `neutral`
 `ContentItem` bubble, set `tone="inherit"` so the chip follows the bubble's
 foreground.
 
+Use `BackdropImage` (`@kerfjs/ui/backdrop-image`) as the first child of a
+scrolling Pane or NavStack view that opens with a large image (an artist,
+album, or place page). Set `parallax="subtle"` (or a 0 to 1 factor) for a
+compositor-only scroll lag, `fadeTo={uiColor('surface')}` (any `CssColor`) to
+dissolve it into a color that keeps painting under its `children`, and
+`overlay` for a title over its block end with an optional `scrim`. Pass
+`alt=""` for a decorative image. Never hand-roll scroll listeners,
+`background-attachment: fixed`, or mask gradients.
+
 Use `ChoiceChips` (`@kerfjs/ui/choice-chips`) when one value is chosen from a
 visible set too large for `SegmentedControl` and the options must wrap, such as
 a labeled color palette. Pass a form `name`, a `label` or `labelledBy`, the

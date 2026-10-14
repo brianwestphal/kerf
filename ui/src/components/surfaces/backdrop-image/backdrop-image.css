@@ -1,0 +1,145 @@
+/* An image block at the top of a scrolling Pane or NavStack view. The root
+   paints fadeTo, so the image fades into it and the content below sits on the
+   same color. It bleeds to the Pane's resolved inline insets (the safe area)
+   and hands them back to its overlay and content, so their own items keep
+   the ordinary text axis. */
+.kui-backdrop-image {
+  --_kui-backdrop-image-height: remify(320px);
+  --_kui-backdrop-image-fade-to: transparent;
+  --_kui-backdrop-image-parallax: 0;
+  --_kui-backdrop-image-position: center;
+  --_kui-backdrop-image-fit: cover;
+  --_kui-backdrop-image-inset-start: var(
+    --kui-pane-content-inset-inline-start,
+    0px
+  );
+  --_kui-backdrop-image-inset-end: var(
+    --kui-pane-content-inset-inline-end,
+    0px
+  );
+  display: flow-root;
+  position: relative;
+  min-width: 0;
+  margin-inline: calc(-1 * var(--_kui-backdrop-image-inset-start))
+    calc(-1 * var(--_kui-backdrop-image-inset-end));
+  background-color: var(--_kui-backdrop-image-fade-to);
+  isolation: isolate;
+}
+
+/* The hero is the scroll-timeline subject: its own block of scroll drives
+   the parallax, whatever sits above it and however tall it is. */
+.kui-backdrop-image__hero {
+  display: grid;
+  position: relative;
+  min-height: var(--_kui-backdrop-image-height);
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  view-timeline: --kui-backdrop-image block;
+}
+
+.kui-backdrop-image__backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+/* The fade is a mask on the backdrop, not a painted gradient, so the image
+   dissolves into whatever fadeTo is without a visible band. */
+.kui-backdrop-image[data-fade="true"] .kui-backdrop-image__backdrop {
+  mask-image: linear-gradient(to bottom, #000 50%, transparent);
+}
+
+/* The moving layer: everything that lags the scroll. */
+.kui-backdrop-image__layers {
+  position: absolute;
+  inset: 0;
+}
+
+.kui-backdrop-image__media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--_kui-backdrop-image-fit);
+  object-position: var(--_kui-backdrop-image-position);
+  background-position: var(--_kui-backdrop-image-position);
+}
+
+.kui-backdrop-image__scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.kui-backdrop-image[data-scrim="bottom"] .kui-backdrop-image__scrim {
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0) 35%, rgb(0 0 0 / 0.5));
+}
+
+.kui-backdrop-image[data-scrim="full"] .kui-backdrop-image__scrim {
+  background: rgb(0 0 0 / 0.35);
+}
+
+.kui-backdrop-image__overlay {
+  position: relative;
+  min-width: 0;
+  align-self: end;
+  padding-inline: var(--_kui-backdrop-image-inset-start)
+    var(--_kui-backdrop-image-inset-end);
+}
+
+.kui-backdrop-image__content {
+  min-width: 0;
+  padding-inline: var(--_kui-backdrop-image-inset-start)
+    var(--_kui-backdrop-image-inset-end);
+}
+
+/* Parallax: as the hero scrolls out past the scroller's start edge, the
+   layer slides down by the lag factor of that distance, so the image moves
+   slower than the content. Only transform animates, on a scroll-driven
+   timeline the compositor runs; there is no scroll listener and no
+   background-attachment: fixed. Without scroll-driven animations (Firefox
+   today) or with reduced motion the image stays static. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .kui-backdrop-image[data-parallax="scroll"] .kui-backdrop-image__layers {
+      animation: kui-backdrop-image-parallax linear both;
+      animation-timeline: --kui-backdrop-image;
+      animation-range: exit-crossing 0% exit-crossing 100%;
+    }
+  }
+}
+
+@keyframes kui-backdrop-image-parallax {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(calc(var(--_kui-backdrop-image-parallax) * 100%));
+  }
+}
+
+/* The document-wide static-effects switch and slow-update displays (e-ink,
+   print) get the same static image as reduced motion. */
+:root[data-kui-effects="static"]
+  .kui-backdrop-image[data-parallax="scroll"]
+  .kui-backdrop-image__layers {
+  animation: none;
+}
+
+@media (update: slow) {
+  .kui-backdrop-image[data-parallax="scroll"] .kui-backdrop-image__layers {
+    animation: none;
+  }
+}
+
+/* Reduced transparency or increased contrast: no dissolve. The image ends on
+   a hard edge over solid fadeTo, and overlay content sits on a solid fadeTo
+   band instead of the image, so text chosen for the fade color stays
+   legible. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .kui-backdrop-image[data-fade="true"] .kui-backdrop-image__backdrop {
+    mask-image: none;
+  }
+
+  .kui-backdrop-image[data-fade="true"] .kui-backdrop-image__overlay {
+    background-color: var(--_kui-backdrop-image-fade-to);
+  }
+}

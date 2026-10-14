@@ -2,6 +2,7 @@ import type { KerfCatalogId } from '../catalog.js';
 import type { RecipeId } from '../recipes/loaders.js';
 import { AnchoredSurfaceDemo } from './anchored-surface.js';
 import { ApplicationTabsDemo } from './application-tabs.js';
+import { BackdropImageDemo } from './backdrop-image.js';
 import { BadgeDemo, BadgeSettings } from './badge.js';
 import { ChipDemo } from './chip.js';
 import { ChoiceChipsDemo } from './choice-chips.js';
@@ -108,6 +109,7 @@ export const demos = {
   'corner-status': CornerStatusDemo,
   'column-track': ColumnTrackDemo,
   'content-swap': ContentSwapDemo,
+  'backdrop-image': BackdropImageDemo,
   'file-picker': FilePickerDemo,
   combobox: ComboboxDemo,
   'summary-row': SummaryRowDemo,

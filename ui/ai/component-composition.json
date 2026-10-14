@@ -1587,6 +1587,76 @@
       }
     },
     {
+      "key": "@kerfjs/ui:backdrop-image",
+      "package": "@kerfjs/ui",
+      "id": "backdrop-image",
+      "name": "BackdropImage",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the image, its alt text (empty for a decorative image), and responsive candidates",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the fade color and whether the image lags the scroll",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "overlay content and its contrast against the image and scrim",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the content below the image",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "The root bleeds to the Pane's resolved inline insets (the safe area) and hands them back to its overlay and content, so their items keep the ordinary text axis.",
+            "The image block is height tall (default 320px) and grows with taller overlay content."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "alt describes a meaningful image; pass an empty alt for a decorative one. A tiled image with alt text is exposed as role=\"img\". Parallax runs only with prefers-reduced-motion: no-preference and scroll-driven animation support, and is off under data-kui-effects=\"static\" and on slow-update displays. Reduced transparency or increased contrast replaces the fade with a hard edge on solid fadeTo and puts overlay content on a solid fadeTo band. Overlay text needs a scrim or fade color that keeps it at AA."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-backdrop-image",
+        "publicClasses": ["kui-backdrop-image"],
+        "rootElement": "div",
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:toolbar",
       "package": "@kerfjs/ui",
       "id": "toolbar",

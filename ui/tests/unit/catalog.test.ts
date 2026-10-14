@@ -511,6 +511,7 @@ describe('UX catalog metadata', () => {
       'Workbench',
       'CollapsiblePanel',
       'SunkenPanel',
+      'BackdropImage',
       'Toolbar',
       'ToolbarControlGroup',
       'Surface Scaffolds',

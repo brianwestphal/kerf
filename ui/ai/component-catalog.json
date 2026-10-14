@@ -1651,6 +1651,83 @@
       }
     },
     {
+      "id": "backdrop-image",
+      "name": "BackdropImage",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "An image block at the top of a scrolling view that can lag the scroll, fade into an app color, and keep painting that color under the content below.",
+      "uses": [],
+      "purpose": "Open a scrolling Pane or NavStack view with a hero or tiled backdrop image (an artist, album, or place page) that lags the scroll on a compositor-only scroll timeline, dissolves through a mask into an app-chosen color, and continues that color under the following content, with Kerf-owned static fallbacks.",
+      "publicExports": [
+        "BackdropImage"
+      ],
+      "useWhen": [
+        "A scrolling view opens with a large mood or identity image (an artist, album, place, or collection header) whose page should read as one surface with it.",
+        "The image should lag the scroll (parallax) or dissolve into a color without app scroll listeners or background-attachment: fixed."
+      ],
+      "avoidWhen": [
+        "Do not use for inline content images, thumbnails, avatars, or media a person inspects; render an img or the matching media component.",
+        "Do not hand-roll scroll listeners, background-attachment: fixed, or mask gradients around an image in app CSS.",
+        "Do not put it in a region that does not scroll vertically; parallax needs a scroll container ancestor."
+      ],
+      "alternatives": [
+        {
+          "id": "pane",
+          "relationship": "composes-with",
+          "when": "Place BackdropImage first in a Pane's scrolling content (or a NavStack view) so its scroller drives the parallax."
+        },
+        {
+          "id": "sunken-panel",
+          "relationship": "nearest",
+          "when": "Use SunkenPanel for a lowered work surface without imagery."
+        }
+      ],
+      "appOwns": [
+        "the image, its alt text (empty for a decorative image), and responsive candidates",
+        "the fade color and whether the image lags the scroll",
+        "overlay content and its contrast against the image and scrim",
+        "the content below the image"
+      ],
+      "variants": [
+        "fitted image (cover, contain, fill) with a focal position",
+        "tiled background (repeat, repeat-x, repeat-y)",
+        "parallax none, subtle, or a 0 to 1 lag factor",
+        "fade into a color that also paints below",
+        "bottom or full scrim under overlay content"
+      ],
+      "accessibility": [
+        "alt describes a meaningful image; pass an empty alt for a decorative one. A tiled image with alt text is exposed as role=\"img\". Parallax runs only with prefers-reduced-motion: no-preference and scroll-driven animation support, and is off under data-kui-effects=\"static\" and on slow-update displays. Reduced transparency or increased contrast replaces the fade with a hard edge on solid fadeTo and puts overlay content on a solid fadeTo band. Overlay text needs a scrim or fade color that keeps it at AA."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "The root bleeds to the Pane's resolved inline insets (the safe area) and hands them back to its overlay and content, so their items keep the ordinary text axis.",
+          "The image block is height tall (default 320px) and grows with taller overlay content."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/backdrop-image",
+        "manualCssImport": "@kerfjs/ui/backdrop-image.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-backdrop-image"
+      ],
+      "publicTokens": [],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=backdrop-image",
+        "documentation": "docs/backdrop-image.md",
+        "recipe": "docs/backdrop-image.md#fallbacks"
+      }
+    },
+    {
       "id": "toolbar",
       "name": "Toolbar",
       "category": "Structure",

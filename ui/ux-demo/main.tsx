@@ -1039,6 +1039,9 @@ const stopActions = delegateActions(app, 'click', {
   'edit-toolbar-title': () => {
     actionLog.value = 'Edit toolbar title requested';
   },
+  'log-backdrop-track': () => {
+    actionLog.value = 'Track selected';
+  },
   'log-inbox': () => {
     actionLog.value = 'Inbox selected';
   },
