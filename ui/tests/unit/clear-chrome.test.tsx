@@ -89,6 +89,22 @@ describe('clear chrome', () => {
     expect(stack).toContain('data-bottom-toolbar-material="clear"');
     expect(stack).toContain('data-scroll-edge="material"');
 
+    // Over imagery the stack's own back control rides on a glass group.
+    const pushed = String(
+      NavStack({
+        id: 'stack',
+        label: 'Music',
+        chromePresentation: 'clear',
+        views: [
+          { key: 'home', content: <span>Home</span> },
+          { key: 'album', content: <span>Album</span> },
+        ],
+      }),
+    );
+    expect(pushed).toMatch(
+      /<div class="kui-toolbar-control-group[^"]*"[^>]*data-material="glass"[^>]*>\s*<button[^>]*data-nav-back/,
+    );
+
     const hidden = String(
       NavStack({
         id: 'stack',

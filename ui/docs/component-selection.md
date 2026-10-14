@@ -180,6 +180,7 @@ application boundary:
 | Navigation stack                    | [Catalog](../ux-demo/) · `?component=recipe-navigation-stack`      |
 | Loading inspector                   | [Catalog](../ux-demo/) · `?component=recipe-loading-inspector`     |
 | Collapsible sidebar                 | [Catalog](../ux-demo/) · `?component=recipe-collapsible-sidebar`   |
+| Media detail page                   | [Catalog](../ux-demo/) · `?component=recipe-media-detail`          |
 
 Recipes use public production exports and show ownership boundaries; they are
 copyable reference compositions, not new monolithic components.

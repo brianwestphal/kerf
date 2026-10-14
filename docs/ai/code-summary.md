@@ -1064,6 +1064,12 @@ while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 
+Media Detail recipe (KF-HZM8BT, the backgrounds family composed):
+`ui/ux-demo/recipes/media-detail.tsx` (`recipe-media-detail`, eleventh in
+`loaders.ts` and `scripts/check-recipes.mjs`) with
+`ui/tests/browser/media-detail-recipe.spec.ts`; a clear-chrome `NavStack`
+renders its back group with `material="glass"`.
+
 BackdropImage under chrome (KF-5QKCCT, artwork behind transparent chrome):
 `BackdropImage.underChrome` (`data-under-chrome`) negates the Pane's new public
 `--kui-pane-content-inset-block-start` (its resolved block-start padding) and

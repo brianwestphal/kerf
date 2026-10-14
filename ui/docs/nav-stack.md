@@ -318,7 +318,8 @@ navigation panel's `navStack.bottomToolbarPresentation` forward it too.
 `chromePresentation="clear"` and `bottomToolbarPresentation="clear"` lay the
 bars over the active view like `overlay`, with the same measuring and edge
 insets, but fully transparent, for chrome over imagery. Keep their controls
-in glass control groups (`ToolbarControlGroup material="glass"`). With
+in glass control groups (`ToolbarControlGroup material="glass"`); the stack's
+own back control is one automatically under clear chrome. With
 `scrollEdge="material"`, the chrome material fades in (opacity only) behind
 the top chrome once the view's content scrolls beneath it, and behind the
 bottom toolbar while content continues below it. Clear bars draw no scroll

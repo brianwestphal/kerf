@@ -309,7 +309,8 @@ selection set and each tile's nested controls.
 adds 8px. Text insets win on any overlapping side, matching Row and List.
 
 For a complete shell, sidebar, workspace header, list-detail dialog, composer
-form, list-state lifecycle, or mixed-control toolbar, start from the runnable
+form, list-state lifecycle, mixed-control toolbar, or a media detail page
+(clear chrome, tint, and artwork), start from the runnable
 reference in [`docs/recipes.md`](../docs/recipes.md). Preserve its production
 primitives and semantic ownership; replace application state, policy, and copy.
 

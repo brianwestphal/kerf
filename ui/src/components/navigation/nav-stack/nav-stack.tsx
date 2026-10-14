@@ -145,7 +145,9 @@ export interface NavStackProps {
    * focused or scrolled into view, rests clear of the bar. Until then, and
    * with `hideToolbar`, the chrome stays docked. An untoned `ToolbarText` in
    * the chrome lifts its title and description to AA over the content passing
-   * beneath it; keep any other quiet copy in the view.
+   * beneath it; keep any other quiet copy in the view. With `clear`, the
+   * stack's own back control sits in a glass control group
+   * (`material="glass"`), so it stays legible over imagery.
    */
   chromePresentation?: NavStackChromePresentation;
   /**
@@ -338,6 +340,9 @@ export function NavStack({
                   <ToolbarControlGroup
                     content={backText ? 'mixed' : 'icon'}
                     size={topDensity === 'compact' ? 'compact' : 'default'}
+                    material={
+                      chromePresentation === 'clear' ? 'glass' : undefined
+                    }
                     single
                   >
                     <button

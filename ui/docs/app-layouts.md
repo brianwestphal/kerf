@@ -194,6 +194,12 @@ chrome. See `docs/layout.md` "Scroll clearance".
 - **Social app (tabbed):** `TabNavigator` with Home / Search / Profile tabs, each
   `content` a `NavStack`. On a tablet/desktop, render the same sections as a
   `Workbench` left rail instead of a bottom bar.
+- **Media detail page (album, artist, film):** a `NavStack` with
+  `chromePresentation="clear"` and `scrollEdge="material"`, a scoped `tint`
+  from the artwork's bottom color, and a view Pane that opens with an
+  `underChrome` `BackdropImage` (parallax, progressive blur, `fadeTo` the
+  tinted surface). Keep chrome controls in glass control groups. The
+  [Media Detail recipe](recipes.md#media-detail) composes all of it.
 
 Whatever the layout, call `wireScrollDividers(appRoot)` from
 `@kerfjs/ui/wire-scroll-dividers` once: every `Pane` a layout renders, every

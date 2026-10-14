@@ -1613,7 +1613,7 @@ export { wireListFocusScroll };
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-BT9vy4vV.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-fXJaN7k4.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './pane.js';
@@ -1658,7 +1658,7 @@ export { type WireNavStackOptions, wireNavStack };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-BT9vy4vV.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-fXJaN7k4.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
@@ -1978,7 +1978,7 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-BT9vy4vV.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-fXJaN7k4.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
@@ -2924,7 +2924,7 @@ import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './workbench.js';
-import './nav-stack-BT9vy4vV.js';
+import './nav-stack-fXJaN7k4.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -3079,7 +3079,7 @@ import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './workbench.js';
-import './nav-stack-BT9vy4vV.js';
+import './nav-stack-fXJaN7k4.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -3134,7 +3134,7 @@ import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './workbench.js';
-import './nav-stack-BT9vy4vV.js';
+import './nav-stack-fXJaN7k4.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';

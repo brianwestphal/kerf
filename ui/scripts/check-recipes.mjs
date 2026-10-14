@@ -42,6 +42,7 @@ const expected = [
   'recipe-navigation-stack',
   'recipe-loading-inspector',
   'recipe-collapsible-sidebar',
+  'recipe-media-detail',
 ];
 const recipes = artifact.entries.filter((entry) => entry.kind === 'recipe');
 const failures = [];
@@ -49,7 +50,7 @@ const fail = (message) => failures.push(message);
 if (
   JSON.stringify(recipes.map((entry) => entry.id)) !== JSON.stringify(expected)
 )
-  fail('canonical catalog must contain the ten recipes in documented order');
+  fail('canonical catalog must contain the eleven recipes in documented order');
 const packageSubpath = (specifier) =>
   `.${specifier.slice('@kerfjs/ui'.length)}`;
 const hasStableRecipeMarker = (source, id) =>
@@ -165,5 +166,5 @@ if (failures.length) {
   process.exitCode = 1;
 } else
   console.log(
-    '[check-recipes] OK — ten lazy production-backed recipes, routes, imports, and guidance are synchronized.',
+    '[check-recipes] OK — eleven lazy production-backed recipes, routes, imports, and guidance are synchronized.',
   );

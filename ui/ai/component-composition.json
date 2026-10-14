@@ -8860,6 +8860,68 @@
         "selection": "ai/component-catalog.json",
         "composition": "generated-permissive-default"
       }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-media-detail",
+      "package": "@kerfjs/ui",
+      "id": "recipe-media-detail",
+      "name": "Media Detail",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the artwork and its accessible description",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the artwork's bottom color and the scheme it belongs to (the tint)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the stack (a signal of views)",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "playback", "owner": "application", "required": false },
+        { "id": "data", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Glass control groups keep every chrome control at AA over the artwork; the tint clamps text to AA over the tinted surface; parallax, blur, and the scroll-edge fade go static under reduced motion or the static-effects switch, and the chrome and fade go opaque under reduced transparency and increased contrast."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
     }
   ]
 }

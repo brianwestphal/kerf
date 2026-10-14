@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 377300,
-  "measuredLargestJavaScriptGzip": 118681,
-  "measuredTotalJavaScriptGzip": 377281,
+  "totalJavaScriptGzip": 379800,
+  "measuredLargestJavaScriptGzip": 118680,
+  "measuredTotalJavaScriptGzip": 379797,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4723,6 +4723,22 @@
         "measuredTotalJavaScriptGzip": 377281,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 377300
+      }
+    },
+    {
+      "at": "2026-10-14T05:25:42.108Z",
+      "reason": "KF-HZM8BT: media detail recipe (lazy chunk) and the NavStack clear-chrome glass back control",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 377281,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 377300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 379797,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 379800
       }
     }
   ]

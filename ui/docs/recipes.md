@@ -200,6 +200,30 @@ ephemeral interaction. For a full three-pane shell use `Workbench` instead — s
 [`app-layouts.md`](app-layouts.md). This recipe is covered end-to-end across
 Chromium, Firefox, and WebKit by `tests/browser/collapsible-sidebar-recipe.spec.ts`.
 
+## Media Detail
+
+[Open the recipe](../ux-demo/?component=recipe-media-detail) · [TSX source](../ux-demo/recipes/media-detail.tsx)
+
+An Apple-Music-style album page composed only from components. A `NavStack`
+with `chromePresentation="clear"` and `scrollEdge="material"` lays its bar
+over the album, fully transparent at rest; its back control and the album
+actions are glass control groups (`ToolbarControlGroup material="glass"`), so
+they stay legible over the artwork, and the chrome material fades in once the
+songs scroll beneath the bar. The stack takes a scoped `tint` from the
+artwork's bottom color with `scheme: 'dark'`, so the surface, text, quiet
+text, and the chrome material all re-derive from it at AA. The album view's
+Pane opens with a `BackdropImage` that runs `underChrome` up beneath the clear
+bar, lags the scroll (`parallax="subtle"`), blurs progressively as it scrolls
+away, and fades into the tinted surface (`fadeTo={uiColor('surface')}`) that
+continues under the song list. Every effect has the components' own
+fallbacks: static under reduced motion, the static-effects switch, or without
+scroll-driven animations; opaque under reduced transparency and increased
+contrast; system colors in forced colors. The app owns the artwork and the
+two colors it already knows about it (the tint and its scheme), the stack,
+playback, and the data; the recipe's `wire` installs `wireScrollDividers` for
+the scroll-edge state. See [`app-layouts.md`](app-layouts.md) for the layout
+and [`backdrop-image.md`](backdrop-image.md) for the image.
+
 ## Rules shared by every recipe
 
 - Import `@kerfjs/ui/layout.css`; keep every pane unpadded and use exactly one

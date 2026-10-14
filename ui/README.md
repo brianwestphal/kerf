@@ -50,7 +50,7 @@ geometry inspection, and metadata ownership. AI tools can discover that
 contract and its public imports through the shipped
 [`catalog-authoring.json`](./ai/catalog-authoring.json) artifact.
 
-For connective application patterns, use the ten [production composition
+For connective application patterns, use the eleven [production composition
 recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
 customization boundaries. The composer recipe demonstrates one coherent form

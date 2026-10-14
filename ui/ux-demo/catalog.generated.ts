@@ -1062,6 +1062,30 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/recipes/collapsible-sidebar.tsx",
     "documentation": "ui/docs/recipes.md#collapsible-sidebar"
+  },
+  {
+    "id": "recipe-media-detail",
+    "name": "Media Detail",
+    "category": "Recipes",
+    "kind": "recipe",
+    "source": "kerf",
+    "description": "An Apple-Music-style album page: clear NavStack chrome with the scroll-edge material, a scoped tint from the artwork's color, an underChrome BackdropImage with parallax and progressive blur, and glass control groups.",
+    "uses": [
+      "nav-stack",
+      "pane",
+      "backdrop-image",
+      "toolbar",
+      "toolbar-text",
+      "toolbar-control-group",
+      "list",
+      "list-header",
+      "list-item",
+      "text",
+      "lucide-icon",
+      "layout"
+    ],
+    "demoSource": "ui/ux-demo/recipes/media-detail.tsx",
+    "documentation": "ui/docs/recipes.md#media-detail"
   }
 ] as const;
 
