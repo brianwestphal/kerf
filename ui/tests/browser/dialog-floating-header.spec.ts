@@ -89,6 +89,15 @@ test('the transcript reaches beneath the floating title bar, and its first messa
   page,
 }) => {
   await openThread(page);
+  // The header's height is measured and published asynchronously (a resize
+  // observer), so wait for the published value to catch up with the header
+  // as it renders before reading the geometry.
+  await expect
+    .poll(async () => {
+      const sample = await threadGeometry(page, 'start');
+      return Math.abs(sample.published - sample.header!.height) < 0.05;
+    })
+    .toBe(true);
   const start = await threadGeometry(page, 'start');
   const header = start.header!;
   // The body and its filling transcript start at the panel's top, beneath

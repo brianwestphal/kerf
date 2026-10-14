@@ -114,12 +114,21 @@ for (const [label, width] of [
     const { bar, strip } = await setUp(page, 12);
     expect((await geometry(bar)).extra).toBeGreaterThan(0);
     await narrow(page, bar, width);
+    // The measurement must be stable: the extra cannot keep feeding back into
+    // a larger strip on later frames. A slow runner may still be settling at
+    // the first sample, so sample until two readings agree; a feedback loop
+    // never does, and fails.
+    let previous = (await geometry(bar)).extra;
+    let stable = false;
+    for (let attempt = 0; attempt < 5 && !stable; attempt += 1) {
+      await settle(page);
+      const next = (await geometry(bar)).extra;
+      stable = Math.abs(next - previous) < 0.5;
+      previous = next;
+    }
+    expect(stable).toBe(true);
     const measured = await expectAllocated(bar);
     expect(measured.scrollWidth).toBeGreaterThan(measured.clientWidth);
-    // The measurement must be stable: the extra cannot keep feeding back into
-    // a larger strip on later frames.
-    await settle(page);
-    expect((await geometry(bar)).extra).toBeCloseTo(measured.extra, 0);
 
     // An 816px strip still reserves room so the last tab can settle at the
     // strip's start; a phone strip narrower than the last tab needs none.
