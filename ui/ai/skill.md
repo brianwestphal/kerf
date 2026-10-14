@@ -71,6 +71,14 @@ Put its controls in `ToolbarControlGroup material="glass"` groups, and add
 stays clear otherwise); give the opening `BackdropImage` `underChrome` so its artwork runs beneath the clear header. A clear bar draws no divider and turns opaque under reduced
 transparency, increased contrast, and forced colors on its own.
 
+### Core dialogs as bottom sheets
+
+For a `kerfjs/overlay` `confirm` / `prompt` / `form` / `choice` (or `overlay()`)
+with `presentation: 'bottom-sheet'`, import `@kerfjs/ui/overlay-sheet.css` once
+instead of writing sheet CSS, pass `exitClass: 'kui-overlay-sheet-exit'` with an
+`exitDuration` for the slide out, and compose the content through the dialog's
+`render` slot with native buttons for the wired controls.
+
 ### App-chosen surface colors
 
 For a surface in its own color (a media page in its artwork's color), set the

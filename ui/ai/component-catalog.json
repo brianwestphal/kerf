@@ -2143,7 +2143,8 @@
         "focus lifecycle",
         "dismissal policy",
         "content",
-        "outer placement"
+        "outer placement",
+        "whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out)"
       ],
       "variants": [
         "small, medium, or large dialog",
@@ -2160,7 +2161,8 @@
         "floating header divider as scroll state: a hairline under the title bar only while the body or a filling child beneath it is scrolled away from its top",
         "non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow, named by label or labelledBy and described by describedBy",
         "none, compact, or comfortable body and footer inset",
-        "standard, compact, or zero-inset popup menu"
+        "standard, compact, or zero-inset popup menu",
+        "core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css"
       ],
       "accessibility": [
         "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",

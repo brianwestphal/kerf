@@ -9,6 +9,7 @@ const globalRootStyles = new Set([
   'document.css',
   'foundation.css',
   'layout.css',
+  'overlay-sheet.css',
   'styles.css',
   'webawesome.css',
 ]);

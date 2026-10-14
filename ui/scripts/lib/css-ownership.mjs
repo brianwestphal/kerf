@@ -33,6 +33,9 @@ export {
 /** Stylesheets whose class roots do not follow `kui-<basename>`. */
 export const packageClassRoots = new Map([
   ['document.css', ['kui-app-root']],
+  // Styles the core kerfjs/overlay host (`.kerf-overlay`), which no kerf UI
+  // component owns.
+  ['overlay-sheet.css', ['kerf-overlay', 'kui-overlay-sheet-exit']],
   [
     'layout.css',
     [

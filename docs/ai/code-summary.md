@@ -1068,6 +1068,13 @@ while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 
+Core overlay bottom-sheet styles (KF-CV6GG5): `ui/src/overlay-sheet.css` (root
+global style entry, export `@kerfjs/ui/overlay-sheet.css`, class roots
+`kerf-overlay` / `kui-overlay-sheet-exit` in `scripts/lib/css-ownership.mjs`)
+styles `.kerf-overlay[data-presentation="bottom-sheet"]` on the plain and native
+hosts; `ui/tests/browser/overlay-sheet.spec.ts` (fixture imports the repo core)
+checks geometry, keyboard padding, the exit, and reduced motion.
+
 Media Detail recipe (KF-HZM8BT, the backgrounds family composed):
 `ui/ux-demo/recipes/media-detail.tsx` (`recipe-media-detail`, eleventh in
 `loaders.ts` and `scripts/check-recipes.mjs`) with

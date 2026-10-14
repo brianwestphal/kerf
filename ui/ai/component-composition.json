@@ -2009,7 +2009,12 @@
         { "id": "focus lifecycle", "owner": "application", "required": false },
         { "id": "dismissal policy", "owner": "application", "required": false },
         { "id": "content", "owner": "application", "required": false },
-        { "id": "outer placement", "owner": "application", "required": false }
+        { "id": "outer placement", "owner": "application", "required": false },
+        {
+          "id": "whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out)",
+          "owner": "application",
+          "required": false
+        }
       ],
       "wiring": {
         "required": false,

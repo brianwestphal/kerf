@@ -10,6 +10,7 @@ import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
+import { Row } from '@kerfjs/ui/row';
 import { SplitView } from '@kerfjs/ui/split-view';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import {
@@ -22,6 +23,7 @@ import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
+import { confirm } from 'kerfjs/overlay';
 
 const PROJECTS = ['Atlas', 'Borealis', 'Cirrus', 'Delta', 'Ember', 'Fjord'];
 
@@ -131,6 +133,40 @@ const transcripts = {
 } as const;
 
 /** Append the person's message and a short reply to a chat-style example. */
+/**
+ * A core `confirm()` presented as a bottom sheet (styled by
+ * `@kerfjs/ui/overlay-sheet.css`), its content composed from components with
+ * the wiring slots spread onto the controls.
+ */
+export function discardDraftSheet(): Promise<boolean> {
+  return confirm('Discard this draft? Its changes are not saved.', {
+    presentation: 'bottom-sheet',
+    exitClass: 'kui-overlay-sheet-exit',
+    exitDuration: 400,
+    render: ({ message, ok, cancel }) => (
+      <List gap="xs">
+        <Toolbar
+          label="Discard Draft"
+          leading={
+            <ToolbarText text="Discard Draft" size="xlarge" headingLevel={2} />
+          }
+        />
+        <ListInsetText>{message}</ListInsetText>
+        <Row hAlign="right" controlInsets="rl">
+          <ToolbarControlGroup label="Discard Draft Actions" content="text">
+            <button type="button" {...cancel}>
+              Keep Editing
+            </button>
+            <button type="button" {...ok}>
+              Discard
+            </button>
+          </ToolbarControlGroup>
+        </Row>
+      </List>
+    ),
+  });
+}
+
 export function sendSurfaceScaffoldChatMessage(
   text: string,
   dialogId: string = CHAT_DIALOG_ID,
@@ -457,6 +493,17 @@ export function SurfaceScaffoldDemo() {
             </List>
           </wa-dialog>
         </DialogSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Core Dialog as a Bottom Sheet"
+        note="kerfjs/overlay's confirm, prompt, form, and choice take presentation: 'bottom-sheet'. Import @kerfjs/ui/overlay-sheet.css once and the sheet gets this package's geometry: the bottom edge, square bottom corners, the safe area and keyboard as bottom padding, and a slide up."
+        align="inline-control"
+      >
+        <ToolbarControlGroup single>
+          <button type="button" data-action="open-overlay-sheet">
+            Discard Draft
+          </button>
+        </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
         label="Non-Modal Popover Dialog"

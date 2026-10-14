@@ -1,5 +1,6 @@
 import '@kerfjs/ui/surface-scaffold/register';
 import '@kerfjs/ui/document.css';
+import '@kerfjs/ui/overlay-sheet.css';
 import '@kerfjs/ui/help-tags/register';
 import '@kerfjs/ui/popup-menu/register';
 import '@kerfjs/ui/select/register';
@@ -181,6 +182,7 @@ import {
 } from './demos/state.js';
 import {
   CHAT_DIALOG_ID,
+  discardDraftSheet,
   resetSurfaceScaffoldDemo,
   SEND_CHAT_DIALOG_MESSAGE_ACTION,
   sendSurfaceScaffoldChatMessage,
@@ -636,6 +638,11 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = recipeNotesVisible.value
       ? 'Recipe notes shown'
       : 'Recipe notes hidden';
+  },
+  'open-overlay-sheet': () => {
+    void discardDraftSheet().then((discard) => {
+      actionLog.value = discard ? 'Draft discarded' : 'Kept editing';
+    });
   },
   'show-wa-dialog': (_event, target) => {
     actionLog.value = 'Dialog opened';

@@ -457,6 +457,7 @@
     },
     "./foundation.css": "./dist/styles/foundation.css",
     "./document.css": "./dist/styles/document.css",
+    "./overlay-sheet.css": "./dist/styles/overlay-sheet.css",
     "./layout.css": "./dist/styles/layout.css",
     "./webawesome.css": "./dist/styles/webawesome.css",
     "./styles.css": "./dist/styles/styles.css",

@@ -141,6 +141,54 @@ padding, shows no grabber, and opens with Web Awesome's own animation.
 `preferredWidth`, `bodyLayout`, the floating header and footer, and the
 insets compose with a bottom sheet as they do with a modal.
 
+### Core dialogs as bottom sheets
+
+The core `kerfjs/overlay` surfaces (`overlay()` and the `confirm`, `prompt`,
+`form`, and `choice` promise dialogs) take `presentation: 'bottom-sheet'`, but
+the core ships no CSS. Import `@kerfjs/ui/overlay-sheet.css` once to give
+them this package's bottom-sheet geometry:
+
+- the bottom edge, full width up to 560px and centered beyond;
+- square bottom corners under the dialog radius;
+- the 8px surface inset, padded at the block end by the larger of the safe
+  area and the `--kerf-keyboard-inset` the core publishes;
+- a cap below the top safe area;
+- a slide up as it opens.
+
+Pass `exitClass: 'kui-overlay-sheet-exit'` (with an `exitDuration` cap such as
+`400`) to slide it back down as it closes. The stylesheet covers the plain
+host and `native: true`, honors reduced motion and the static-effects switch,
+and paints `Canvas` in forced colors.
+
+The core renders bare default markup, so compose the content from components
+through the dialog's `render` slot and spread the wiring slots onto native
+buttons:
+
+```tsx
+import "@kerfjs/ui/overlay-sheet.css";
+
+confirm("Discard this draft?", {
+  presentation: "bottom-sheet",
+  exitClass: "kui-overlay-sheet-exit",
+  exitDuration: 400,
+  render: ({ message, ok, cancel }) => (
+    <List gap="xs">
+      <Toolbar label="Discard Draft" leading={<ToolbarText text="Discard Draft" size="xlarge" headingLevel={2} />} />
+      <ListInsetText>{message}</ListInsetText>
+      <Row hAlign="right" controlInsets="rl">
+        <ToolbarControlGroup label="Discard Draft Actions" content="text">
+          <button type="button" {...cancel}>Keep Editing</button>
+          <button type="button" {...ok}>Discard</button>
+        </ToolbarControlGroup>
+      </Row>
+    </List>
+  ),
+});
+```
+
+Use native buttons for the wired controls: the core focuses the OK control
+as it opens, before a Web Awesome button has rendered its inner control.
+
 ### Filling the dialog
 
 `maxHeight` caps a modal that sizes to its content. A layout that fills the

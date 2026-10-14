@@ -1,0 +1,149 @@
+/* Bottom-sheet presentation for the core `kerfjs/overlay` surfaces: `overlay()`
+   and the `confirm` / `prompt` / `form` / `choice` promise dialogs opened with
+   `presentation: 'bottom-sheet'`. The core ships no CSS; it marks the overlay
+   `data-presentation="bottom-sheet"` and publishes the virtual keyboard's
+   overlap as `--kerf-keyboard-inset`. This opt-in stylesheet gives those
+   sheets the geometry of a `DialogSurface` bottom sheet: resting on the
+   bottom edge with square bottom corners and the dialog radius on top,
+   capped below the top safe area, padded at its block end by the larger of
+   the safe area and the keyboard so its content stays above both, and
+   sliding up as it opens. It styles the plain path (the wrapper is the
+   backdrop and its content the sheet) and the `native: true` path (the
+   `<dialog>` is the sheet). */
+div.kerf-overlay[data-presentation="bottom-sheet"] {
+  position: fixed;
+  z-index: var(--kui-overlay-sheet-z-index, 1000);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(
+    --wa-color-overlay-modal,
+    light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
+  );
+  inset: 0;
+}
+
+dialog.kerf-overlay[data-presentation="bottom-sheet"]::backdrop {
+  background: var(
+    --wa-color-overlay-modal,
+    light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
+  );
+}
+
+div.kerf-overlay[data-presentation="bottom-sheet"] > *,
+dialog.kerf-overlay[data-presentation="bottom-sheet"] {
+  --_kui-overlay-sheet-clearance: max(
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px)),
+    var(--kerf-keyboard-inset, 0px)
+  );
+  box-sizing: border-box;
+  width: min(100%, remify(560px));
+  max-width: 100%;
+  max-height: calc(
+    100dvh - var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px)) -
+      remify(16px)
+  );
+  margin: 0;
+  /* The 8px surface inset of a DialogSurface body: content items and lists
+     inside own their own inset from there. */
+  padding: var(--kui-space-xs) var(--kui-space-xs)
+    calc(var(--kui-space-xs) + var(--_kui-overlay-sheet-clearance));
+  overflow: auto;
+  border: 0;
+  /* Concentric with a pill control group at the 8px surface inset, like a
+     DialogSurface. */
+  border-radius: calc(
+      var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
+        var(--kui-wa-surface-inset, remify(8px))
+    )
+    calc(
+      var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
+        var(--kui-wa-surface-inset, remify(8px))
+    )
+    0 0;
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface-raised);
+  box-shadow: var(--kui-shadow-l);
+  overscroll-behavior: contain;
+}
+
+/* The native <dialog> keeps its top-layer placement; only the UA centering
+   gives way to the bottom edge. */
+dialog.kerf-overlay[data-presentation="bottom-sheet"] {
+  margin: auto auto 0;
+}
+
+@keyframes kui-overlay-sheet-slide {
+  from {
+    translate: 0 100%;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-kui-effects="static"])
+    div.kerf-overlay[data-presentation="bottom-sheet"]
+    > *,
+  :root:not([data-kui-effects="static"])
+    dialog.kerf-overlay[data-presentation="bottom-sheet"] {
+    animation: kui-overlay-sheet-slide var(--wa-transition-slow, 300ms)
+      cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+/* Exit motion: pass `exitClass: 'kui-overlay-sheet-exit'` (with an
+   `exitDuration` cap such as 400) to the overlay or promise dialog, and the
+   sheet slides back down while the backdrop fades. The core removes the node
+   once the animations finish, and skips the exit under reduced motion; the
+   static-effects switch leaves nothing running, so it is removed at once. A
+   closed native <dialog> is `display: none`, so the class keeps it painted
+   at the bottom edge for the exit. */
+@keyframes kui-overlay-sheet-slide-out {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 100%;
+  }
+}
+
+@keyframes kui-overlay-sheet-backdrop-out {
+  to {
+    background-color: transparent;
+  }
+}
+
+dialog.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit {
+  display: block;
+  position: fixed;
+  z-index: var(--kui-overlay-sheet-z-index, 1000);
+  inset: auto 0 0;
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-kui-effects="static"])
+    div.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit {
+    animation: kui-overlay-sheet-backdrop-out var(--wa-transition-slow, 300ms)
+      ease both;
+  }
+
+  :root:not([data-kui-effects="static"])
+    div.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit
+    > *,
+  :root:not([data-kui-effects="static"])
+    dialog.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit {
+    animation: kui-overlay-sheet-slide-out var(--wa-transition-slow, 300ms)
+      cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+}
+
+@media (forced-colors: active) {
+  div.kerf-overlay[data-presentation="bottom-sheet"] > *,
+  dialog.kerf-overlay[data-presentation="bottom-sheet"] {
+    border-block-start: 1px solid CanvasText;
+    background: Canvas;
+  }
+}

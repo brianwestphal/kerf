@@ -31,6 +31,10 @@ control groups, and `scrollEdge="material"` (or `"surface"`) to fade a
 backing in gradually over `scrollEdgeDistance` (default 60px) as content
 scrolls beneath (a first `BackdropImage` with `underChrome` runs its artwork beneath the header); see [Clear header](./docs/layout.md#clear-header).
 
+For a `kerfjs/overlay` dialog with `presentation: 'bottom-sheet'`, import
+`@kerfjs/ui/overlay-sheet.css` once (and pass `exitClass: 'kui-overlay-sheet-exit'`
+for the slide out); see [Core dialogs as bottom sheets](./docs/surface-scaffold.md#core-dialogs-as-bottom-sheets).
+
 For an app-chosen surface color, set the typed `background` prop (a
 `@kerfjs/ui/css-values` color) on `Pane` (also `PaneConfig`), `NavStack`,
 `TabNavigator`, or a `TabNavigatorTab` instead of styling the component. It

@@ -52,6 +52,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow, named by label or labelledBy and described by describedBy
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
+- core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -70,7 +71,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 
 ## State and wiring
 
-**The app owns:** open state; focus lifecycle; dismissal policy; content; outer placement.
+**The app owns:** open state; focus lifecycle; dismissal policy; content; outer placement; whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out).
 
 No wiring helper.
 

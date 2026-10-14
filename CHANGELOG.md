@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`@kerfjs/ui/overlay-sheet.css`.** An opt-in stylesheet for core `kerfjs/overlay` dialogs presented with `presentation: 'bottom-sheet'`, matching `DialogSurface`'s sheet:
+  - the bottom edge, full width up to 560px and centered beyond;
+  - square bottom corners under the dialog radius;
+  - the 8px surface inset, padded by the larger of the safe area and the core's `--kerf-keyboard-inset`;
+  - a cap below the top safe area;
+  - a slide up as it opens.
+
+  The `kui-overlay-sheet-exit` class (passed as `exitClass`) slides it back down as it closes. It covers the plain and `native: true` hosts and honors reduced motion, the static-effects switch, and forced colors.
+
 - **Tint accents.** A `@kerfjs/ui` `tint` takes an optional `accent`: `{ color, scheme, accent }`. Inside the scope, the brand ramp re-derives from it: loud fills and their on-loud text, brand text and links, text on brand fills, and the focus ring. Lightness is clamped so every pair keeps WCAG AA for any accent; an accent seed sweep checks this in Chromium, Firefox, and WebKit.
 - **`npm run dev:lan` for device checks.** From the repo root or `ui/`, it serves the `@kerfjs/ui` development catalog on every network interface. It prints the LAN and Tailscale URLs and accepts Tailscale MagicDNS (`*.ts.net`) and mDNS (`*.local`) host names, so a phone can test what a desktop browser cannot: the virtual keyboard, safe areas, and touch. Plain `npm run dev` stays on `127.0.0.1`. The catalog page now sets `viewport-fit=cover`, so a notched phone reports its real safe-area insets. The device checks are listed in `ui/docs/manual-test-plan.md`.
 - **Exit motion for `kerfjs/overlay` dialogs.** `overlay()`, `confirm()`, `prompt()`, `form()`, and `choice()` take `exitClass` / `exitDuration`, named and defaulted like `toast()`'s, so CSS can animate an overlay out (for example, slide a bottom sheet down). On `close()` everything else still happens immediately: the result settles, the overlay leaves the stack (an overlay opened during the exit is topmost), a `native` dialog leaves the top layer, the wrapper turns `inert`, and focus returns. Only the node's removal waits, until the exit's CSS animations finish or `exitDuration` passes, whichever is first. `prefers-reduced-motion: reduce` skips the exit. `OverlayHandle.close(result, { instant: true })` (new `OverlayCloseOptions` type) skips the exit or ends one in progress. A second `close()` is still a no-op. Without the new options, behavior is unchanged.
