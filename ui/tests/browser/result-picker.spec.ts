@@ -32,7 +32,9 @@ async function frameGeometry(page: Page) {
       clip: {
         top: box.top + border,
         left: box.left + border,
-        bottom: box.top + border + list.clientHeight,
+        // The bottom from the fractional border box: clientHeight rounds to
+        // whole pixels, which put the clip up to half a pixel short.
+        bottom: box.bottom - Number.parseFloat(style.borderBottomWidth),
         right: box.left + border + list.clientWidth,
       },
     };
