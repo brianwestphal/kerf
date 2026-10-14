@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import {
   mkdir,
   mkdtemp,
@@ -27,6 +28,7 @@ import {
 import * as traversalExclusions from '../../traversal-exclusions.mjs';
 
 const {
+  createUiTraversalFilter,
   isUiTraversalExcluded,
   UI_TRAVERSAL_ESLINT_IGNORES,
   UI_TRAVERSAL_IGNORED_DIRECTORY_NAMES,
@@ -87,6 +89,35 @@ describe('Kerf UI doctor', () => {
     expect(isUiTraversalExcluded(root, resolve(root, 'src/view.tsx'))).toBe(
       false,
     );
+  });
+
+  it('excludes gitignored paths from traversal and the ESLint boundary', async () => {
+    const root = await fixture();
+    const outside = await fixture();
+    execFileSync('git', ['init', '--quiet'], { cwd: root });
+    await mkdir(resolve(root, 'reports/trace'), { recursive: true });
+    await writeFile(
+      resolve(root, '.gitignore'),
+      'reports/\nscratch\\[1\\].tsx\n',
+    );
+    await writeFile(resolve(root, 'reports/trace/module.css'), '.a {}\n');
+    await writeFile(resolve(root, 'scratch[1].tsx'), 'export {};\n');
+    const excluded = await createUiTraversalFilter(root);
+    expect(excluded(resolve(root, 'reports'))).toBe(true);
+    expect(excluded(resolve(root, 'reports/trace/module.css'))).toBe(true);
+    expect(excluded(resolve(root, 'scratch[1].tsx'))).toBe(true);
+    expect(excluded(resolve(root, 'src/view.tsx'))).toBe(false);
+    expect(excluded(resolve(root, 'dist/view.js'))).toBe(true);
+    expect(excluded.eslintIgnores).toEqual([
+      ...UI_TRAVERSAL_ESLINT_IGNORES,
+      'reports/**',
+      'scratch\\[1\\].tsx',
+    ]);
+    // Outside a Git work tree only the named directories apply.
+    const plain = await createUiTraversalFilter(outside);
+    expect(plain(resolve(outside, 'reports/trace/module.css'))).toBe(false);
+    expect(plain(resolve(outside, 'playwright-report/index.html'))).toBe(true);
+    expect(plain.eslintIgnores).toEqual([...UI_TRAVERSAL_ESLINT_IGNORES]);
   });
 
   it('publishes schemas that accept the runtime config and report', async () => {

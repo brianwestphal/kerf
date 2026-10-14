@@ -33,10 +33,7 @@ import {
   isForeignRuleDefinitionDiagnostic,
   projectConsumerCoreConfig,
 } from './eslint-diagnostics.mjs';
-import {
-  isUiTraversalExcluded,
-  UI_TRAVERSAL_ESLINT_IGNORES,
-} from '../traversal-exclusions.mjs';
+import { createUiTraversalFilter } from '../traversal-exclusions.mjs';
 
 export const UI_DOCTOR_SCHEMA_VERSION = 1;
 export const UI_DOCTOR_EXIT = Object.freeze({
@@ -447,8 +444,9 @@ export async function resolveUiDoctorPackage(root, selector) {
 
 async function collectInputs(root, paths) {
   const result = [];
+  const excluded = await createUiTraversalFilter(root);
   const visit = async (path) => {
-    if (isUiTraversalExcluded(root, path)) return;
+    if (excluded(path)) return;
     let details;
     try {
       details = await stat(path);
@@ -508,6 +506,7 @@ async function cacheKey(root, packageRoot, mode, paths, config) {
       'tsconfig.json',
       '.kerf-ui-profile.json',
       '.kerf-ui-doctor.json',
+      '.gitignore',
     ]) {
       const path = resolve(directory, name);
       if (!files.includes(path) && (await exists(path))) files.push(path);
@@ -875,8 +874,9 @@ async function runTypeScript({ packageRoot, paths }) {
   const selected = paths?.length
     ? new Set(paths.map((path) => resolve(packageRoot, path)))
     : undefined;
+  const excluded = await createUiTraversalFilter(packageRoot);
   parsed.fileNames = parsed.fileNames.filter((file) => {
-    if (isUiTraversalExcluded(packageRoot, file)) return false;
+    if (excluded(file)) return false;
     if (!selected || selected.has(file)) return true;
     return /\.d\.(?:ts|mts|cts)$/.test(file);
   });
@@ -966,7 +966,10 @@ async function runEslint({
       },
     },
   };
-  const configs = [{ ignores: UI_TRAVERSAL_ESLINT_IGNORES }, base];
+  const configs = [
+    { ignores: (await createUiTraversalFilter(packageRoot)).eslintIgnores },
+    base,
+  ];
   if (usesTypeScript) {
     const parserModule = await importFrom(
       packageRoot,

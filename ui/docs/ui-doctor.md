@@ -215,11 +215,15 @@ name.
 `--full` is the default and analyzes the selected package. `--changed` reads tracked and untracked paths from Git unless one or more `--path` values are supplied. An empty changed set is a configuration error instead of a false-clean success. With `--package`, workspace-relative Git paths are converted to package-relative paths before TypeScript, ESLint, and analyzer selection; paths outside the selected package are ignored.
 
 Full traversal treats generated/tool-owned directories (`dist`, `coverage`,
-`node_modules`, `.git`, `.kerf-cache`, `kerf-ui-evidence`, and nested
-`.claude/worktrees` checkouts) as outside application source. Their files are
-excluded consistently from TypeScript, the isolated ESLint pass, analyzer
-discovery, and cache inputs, even when one lives below another application
-directory.
+`node_modules`, `.git`, `.kerf-cache`, `kerf-ui-evidence`, Playwright's
+`playwright-report`, `test-results`, and `blob-report`, and nested
+`.claude/worktrees` checkouts) as outside application source. Inside a Git work
+tree it also skips every path the project's ignore rules (`.gitignore`,
+`.git/info/exclude`, and the global excludes file) ignore, so a local test run
+that writes gitignored reports or caches never changes the doctor result.
+These files are excluded consistently from TypeScript, the isolated ESLint
+pass, analyzer discovery, and cache inputs, even when one lives below another
+application directory; a `.gitignore` change invalidates the cache.
 
 TypeScript constructs the selected package's program so compiler options retain their real meaning. In changed mode, its root inputs are narrowed to changed source files plus the tsconfig's declaration roots, so ambient globals still participate; reported source diagnostics stay scoped to the changed files. Use `--full` for release gates.
 

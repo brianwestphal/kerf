@@ -13,7 +13,7 @@ import postcss from 'postcss';
 import ts from 'typescript';
 
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
-import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
+import { createUiTraversalFilter } from '../traversal-exclusions.mjs';
 import {
   classOwnerFor,
   componentLabel,
@@ -127,8 +127,9 @@ const spacingProperties = /^(?:margin|padding|gap|inset)(?:-|$)/;
 const approvedSpacing = new Set([0, 4, 8, 16, 24]);
 async function collectFiles(root, paths) {
   const files = [];
+  const excluded = await createUiTraversalFilter(root);
   const visit = async (path) => {
-    if (isUiTraversalExcluded(root, path)) return;
+    if (excluded(path)) return;
     const details = await stat(path);
     if (details.isFile()) {
       if (sourceExtensions.has(extname(path)) || path.endsWith('.css'))
@@ -139,6 +140,7 @@ async function collectFiles(root, paths) {
     for (const entry of entries) {
       const child = resolve(path, entry.name);
       if (entry.isDirectory()) await visit(child);
+      else if (excluded(child)) continue;
       else if (
         sourceExtensions.has(extname(entry.name)) ||
         entry.name.endsWith('.css')

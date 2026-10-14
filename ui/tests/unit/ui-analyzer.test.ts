@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -596,6 +597,36 @@ export const App = () => <StateBanner title="Ready" />;`,
     });
     expect(explicitlyTargeted.files).toEqual([]);
     expect(explicitlyTargeted.diagnostics).toEqual([]);
+  });
+
+  it('excludes gitignored and Playwright-generated output from recursive source discovery', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-gitignore-'));
+    execFileSync('git', ['init', '--quiet'], { cwd: root });
+    await mkdir(join(root, 'src'), { recursive: true });
+    await mkdir(join(root, 'generated-report/trace'), { recursive: true });
+    await mkdir(join(root, 'playwright-report/trace'), { recursive: true });
+    await writeFile(
+      join(root, '.gitignore'),
+      'generated-report/\n*.local.css\n',
+    );
+    await writeFile(
+      join(root, 'src/app.css'),
+      '.app { padding: var(--kui-layout-item-padding); }',
+    );
+    const offending = '.copied { color: var(--kui-not-public); padding: 7px; }';
+    await writeFile(join(root, 'generated-report/trace/module.css'), offending);
+    await writeFile(join(root, 'src/scratch.local.css'), offending);
+    // Not gitignored here: the Playwright report directory name alone
+    // excludes it, which also covers projects outside a Git work tree.
+    await writeFile(
+      join(root, 'playwright-report/trace/module.css'),
+      offending,
+    );
+
+    const report = await analyzeUiProject({ root });
+
+    expect(report.files).toEqual(['src/app.css']);
+    expect(report.diagnostics).toEqual([]);
   });
 
   it('accepts an individual source path and enforces the five-step spacing scale', async () => {

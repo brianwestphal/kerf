@@ -655,7 +655,10 @@ exit behavior, generated/tool-owned directory exclusion, and a
 zero-false-positive repository fixture. `ui/traversal-exclusions.mjs` is the
 shared internal directory boundary used by analyzer discovery and every doctor
 static/cache traversal, including ESLint global-ignore patterns derived from
-the same directory-name source. `ui/analyzer/loud-pairs.mjs` owns `KUI-L018`:
+the same directory-name source; `createUiTraversalFilter(root)` adds every
+Git-ignored path (`git ls-files --ignored --directory`) to that boundary, so
+gitignored generated output such as a local Playwright report never changes a
+full scan. `ui/analyzer/loud-pairs.mjs` owns `KUI-L018`:
 it resolves which `--wa-color-{tone}-on-loud` governs each loud-fill override
 (same or ancestor scope, in the stylesheet or one co-loaded by the same entry),
 computes per-scheme WCAG contrast for literal pairs, and accepts an unpaired
