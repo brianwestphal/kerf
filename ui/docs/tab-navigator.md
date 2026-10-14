@@ -230,6 +230,16 @@ shows only while more content lies below. Like the NavStack overlay bars, the
 tab bar ends where a classic (space-taking) scrollbar's track begins, so the
 active scene's thumb and buttons stay visible and usable.
 
+### Clear bar
+
+`barPresentation="clear"` lays the bar over the active scene like `overlay`
+but fully transparent, for a bar over imagery. With `scrollEdge="material"`
+the chrome material fades in (opacity only) while the scene continues
+beneath the bar and clears once it is scrolled to its end. A clear bar draws
+no scroll divider, turns opaque under reduced transparency or increased
+contrast, and paints `Canvas` in forced colors. See
+[Clear header](layout.md#clear-header).
+
 ## Tab badges
 
 Give a tab a `badge` (a count or short string such as `3`, `"99+"`, or

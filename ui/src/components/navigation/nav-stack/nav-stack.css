@@ -291,6 +291,160 @@
   }
 }
 
+/* `clear` chrome and bottom toolbar: overlay bars (the same measuring,
+   placement, and edge insets as above) that are fully transparent, for
+   chrome over imagery. With `scrollEdge="material"` a pseudo-element
+   carrying the chrome material fades in (opacity only) while the active
+   view's content lies beneath the bar, as `wireScrollDividers` reports, and
+   out at rest. Clear bars draw no scroll divider. */
+.kui-nav-stack[data-chrome-material="clear"] > .kui-nav-stack__chrome {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: transparent;
+}
+
+:where(
+    .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+  )
+  > .kui-nav-stack__chrome:not(.kui-nav-stack__chrome-copy) {
+  position: relative;
+  isolation: isolate;
+}
+
+.kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+  > .kui-nav-stack__chrome::before {
+  position: absolute;
+  z-index: -1;
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--wa-transition-normal, 250ms) ease;
+}
+
+.kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+  > .kui-nav-stack__chrome[data-scroll-divider*="b"]::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+    > .kui-nav-stack__chrome::before {
+    transition: none;
+  }
+}
+
+:root[data-kui-effects="static"]
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+  > .kui-nav-stack__chrome::before {
+  transition: none;
+}
+
+@media (update: slow) {
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+    > .kui-nav-stack__chrome::before {
+    transition: none;
+  }
+}
+
+/* Clear chrome turns opaque where transparency would hurt, like the
+   material itself. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .kui-nav-stack[data-chrome-material="clear"] > .kui-nav-stack__chrome {
+    background: var(--kui-chrome-material);
+  }
+}
+
+@media (forced-colors: active) {
+  .kui-nav-stack[data-chrome-material="clear"] > .kui-nav-stack__chrome {
+    background: Canvas;
+    border-block-end: 1px solid CanvasText;
+  }
+
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+    > .kui-nav-stack__chrome::before {
+    content: none;
+  }
+}
+
+.kui-nav-stack[data-bottom-toolbar-material="clear"] > .kui-nav-stack__bottom {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: transparent;
+}
+
+:where(
+    .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+  )
+  > .kui-nav-stack__bottom:not(.kui-nav-stack__chrome-copy) {
+  position: relative;
+  isolation: isolate;
+}
+
+.kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+  > .kui-nav-stack__bottom::before {
+  position: absolute;
+  z-index: -1;
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--wa-transition-normal, 250ms) ease;
+}
+
+.kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+  > .kui-nav-stack__bottom[data-scroll-divider*="t"]::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+    > .kui-nav-stack__bottom::before {
+    transition: none;
+  }
+}
+
+:root[data-kui-effects="static"]
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+  > .kui-nav-stack__bottom::before {
+  transition: none;
+}
+
+@media (update: slow) {
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+    > .kui-nav-stack__bottom::before {
+    transition: none;
+  }
+}
+
+/* Clear chrome turns opaque where transparency would hurt, like the
+   material itself. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .kui-nav-stack[data-bottom-toolbar-material="clear"]
+    > .kui-nav-stack__bottom {
+    background: var(--kui-chrome-material);
+  }
+}
+
+@media (forced-colors: active) {
+  .kui-nav-stack[data-bottom-toolbar-material="clear"]
+    > .kui-nav-stack__bottom {
+    background: Canvas;
+    border-block-start-color: CanvasText;
+  }
+
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+    > .kui-nav-stack__bottom::before {
+    content: none;
+  }
+}
+
 /* Chrome dividers: with `chromeDividers="scroll"` (the default, no
    attribute) the top chrome draws a line along its bottom edge while the
    active view's content is scrolled beneath it, and the bottom toolbar
@@ -309,7 +463,10 @@
       > [data-component="pane"][data-appearance="sunken"]
   )
   > .kui-nav-stack__chrome::after,
-.kui-nav-stack[data-separator="auto"]:not([data-chrome-dividers])
+.kui-nav-stack[data-separator="auto"]:not(
+    [data-chrome-dividers],
+    [data-chrome-material="clear"]
+  )
   > .kui-nav-stack__chrome[data-scroll-divider*="b"]::after,
 .kui-nav-stack[data-separator="auto"][data-chrome-dividers="always"]
   > .kui-nav-stack__chrome::after {
@@ -328,7 +485,10 @@
       > [data-component="pane"][data-appearance="sunken"]
   )
   > .kui-nav-stack__bottom,
-.kui-nav-stack[data-separator="auto"]:not([data-chrome-dividers])
+.kui-nav-stack[data-separator="auto"]:not(
+    [data-chrome-dividers],
+    [data-bottom-toolbar-material="clear"]
+  )
   > .kui-nav-stack__bottom[data-scroll-divider*="t"],
 .kui-nav-stack[data-separator="auto"][data-chrome-dividers="always"]
   > .kui-nav-stack__bottom {

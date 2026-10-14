@@ -5,10 +5,13 @@ import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { ChevronLeft, Ellipsis, Share } from 'lucide';
 
 // Generated artwork, so the catalog needs no network or binary assets: a dusk
 // sky, a sun, and three ridge lines whose depth makes the parallax legible.
@@ -100,6 +103,87 @@ export function BackdropImageDemo() {
             overlay={
               <Toolbar
                 label="Artist"
+                leading={
+                  <ToolbarText
+                    text="Night Harbor"
+                    size="xlarge"
+                    headingLevel={2}
+                  />
+                }
+              />
+            }
+          >
+            <TrackList />
+          </BackdropImage>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Clear Header"
+        note='headerPresentation="clear" lays the header over the content fully transparent, so its glass control groups float over the artwork. scrollEdge="material" fades the chrome material in behind the header once content scrolls beneath it, and out again at the top.'
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <Pane
+          label="Album"
+          headerPresentation="clear"
+          scrollEdge="material"
+          rootAttributes={{ 'data-backdrop-demo': 'clear-header' }}
+          header={
+            <Toolbar
+              label="Album Header"
+              leading={
+                <ToolbarControlGroup
+                  label="Navigation"
+                  content="icon"
+                  material="glass"
+                  single
+                >
+                  <button
+                    type="button"
+                    aria-label="Back"
+                    data-action="log-backdrop-track"
+                  >
+                    <LucideIcon icon={ChevronLeft} name="chevron-left" />
+                  </button>
+                </ToolbarControlGroup>
+              }
+              trailing={
+                <ToolbarControlGroup
+                  label="Album Actions"
+                  content="icon"
+                  material="glass"
+                >
+                  <button
+                    type="button"
+                    aria-label="Share"
+                    data-action="log-backdrop-track"
+                  >
+                    <LucideIcon icon={Share} name="share" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="More"
+                    data-action="log-backdrop-track"
+                  >
+                    <LucideIcon icon={Ellipsis} name="ellipsis" />
+                  </button>
+                </ToolbarControlGroup>
+              }
+            />
+          }
+        >
+          <BackdropImage
+            src={svgUrl(SKYLINE)}
+            alt=""
+            parallax="subtle"
+            fadeTo={uiColor('surface')}
+            overlay={
+              <Toolbar
+                label="Album"
                 leading={
                   <ToolbarText
                     text="Night Harbor"

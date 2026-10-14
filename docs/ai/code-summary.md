@@ -1064,6 +1064,18 @@ while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 
+Clear chrome (KF-TQ3NHD, transparent bars over imagery): `clear` presentations
+render the existing overlay attribute (so measuring, clearance, and the
+overlay AA lifts are reused) plus `data-header-material` /
+`data-chrome-material` / `data-bottom-toolbar-material` / `data-bar-material`
+`="clear"`; `scrollEdge="material"` (`ui/src/shared/layout/scroll-edge.ts`,
+`ScrollEdge`) adds `data-scroll-edge`, and each bar's `::before` carries the
+chrome material and fades its opacity on the existing `data-scroll-divider`
+state. `ui/tests/unit/clear-chrome.test.tsx` pins markup and rules;
+`ui/tests/browser/clear-chrome.spec.ts` (fixture
+`ui/tests/browser/fixtures/clear-chrome.tsx`) checks the fade at rest,
+mid-scroll, and at the end, and the opaque and forced-color fallbacks.
+
 Scoped tint (KF-RYZ0HJ, a region re-derived from an app color):
 `ui/src/shared/styles/surface-tint.ts` defines `SurfaceTint` (`{ color, scheme }`,
 re-exported from the Pane module and the barrel) and `surfaceTintAttributes()`,

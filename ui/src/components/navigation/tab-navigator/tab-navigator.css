@@ -186,7 +186,10 @@
       > [data-component="pane"][data-appearance="sunken"]
   )
   > .kui-tab-scaffold__bar,
-.kui-tab-scaffold[data-separator="auto"]:not([data-chrome-dividers])
+.kui-tab-scaffold[data-separator="auto"]:not(
+    [data-chrome-dividers],
+    [data-bar-material="clear"]
+  )
   > .kui-tab-scaffold__bar[data-scroll-divider*="t"],
 .kui-tab-scaffold[data-separator="auto"][data-chrome-dividers="always"]
   > .kui-tab-scaffold__bar {
@@ -235,6 +238,85 @@
     backdrop-filter: none;
     background: Canvas;
     border-block-start-color: CanvasText;
+  }
+}
+
+/* `barPresentation="clear"`: an overlay bar (the same measuring and edge
+   inset as above) that is fully transparent, for a bar over imagery. With
+   `scrollEdge="material"` a pseudo-element carrying the chrome material
+   fades in (opacity only) while the active scene continues beneath the bar,
+   and out once it is scrolled to its end. A clear bar draws no scroll
+   divider. */
+.kui-tab-scaffold[data-bar-material="clear"] > .kui-tab-scaffold__bar {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: transparent;
+}
+
+:where(
+    .kui-tab-scaffold[data-bar-material="clear"][data-scroll-edge="material"]
+  )
+  > .kui-tab-scaffold__bar {
+  position: relative;
+  isolation: isolate;
+}
+
+.kui-tab-scaffold[data-bar-material="clear"][data-scroll-edge="material"]
+  > .kui-tab-scaffold__bar::before {
+  position: absolute;
+  z-index: -1;
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--wa-transition-normal, 250ms) ease;
+}
+
+.kui-tab-scaffold[data-bar-material="clear"][data-scroll-edge="material"]
+  > .kui-tab-scaffold__bar[data-scroll-divider*="t"]::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-tab-scaffold[data-bar-material="clear"][data-scroll-edge="material"]
+    > .kui-tab-scaffold__bar::before {
+    transition: none;
+  }
+}
+
+:root[data-kui-effects="static"]
+  .kui-tab-scaffold[data-bar-material="clear"][data-scroll-edge="material"]
+  > .kui-tab-scaffold__bar::before {
+  transition: none;
+}
+
+@media (update: slow) {
+  .kui-tab-scaffold[data-bar-material="clear"][data-scroll-edge="material"]
+    > .kui-tab-scaffold__bar::before {
+    transition: none;
+  }
+}
+
+/* Clear chrome turns opaque where transparency would hurt, like the
+   material itself. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .kui-tab-scaffold[data-bar-material="clear"] > .kui-tab-scaffold__bar {
+    background: var(--kui-chrome-material);
+  }
+}
+
+@media (forced-colors: active) {
+  .kui-tab-scaffold[data-bar-material="clear"] > .kui-tab-scaffold__bar {
+    background: Canvas;
+    border-block-start-color: CanvasText;
+  }
+
+  .kui-tab-scaffold[data-bar-material="clear"][data-scroll-edge="material"]
+    > .kui-tab-scaffold__bar::before {
+    content: none;
   }
 }
 

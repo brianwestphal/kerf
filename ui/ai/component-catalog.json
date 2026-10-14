@@ -650,7 +650,8 @@
         "Scrolling content must pass beneath chrome laid over the pane edge (a DialogSurface floating footer) while its first and last items still rest clear of it (scrollClearance).",
         "The header should float over the scrolling content on a translucent material so content scrolls visibly beneath it, with the first item still resting below the header (headerPresentation: overlay, measured by wireScrollDividers).",
         "A pane needs an app-chosen surface color, such as a media detail page painted in its artwork's color (background, a typed CssColor; also in PaneConfig).",
-        "A region should take on an app color (a media page in its artwork's color) with its text, quiet text, links, fills, and chrome material re-derived to keep AA (tint: { color, scheme }; also in PaneConfig)."
+        "A region should take on an app color (a media page in its artwork's color) with its text, quiet text, links, fills, and chrome material re-derived to keep AA (tint: { color, scheme }; also in PaneConfig).",
+        "The header lies over imagery and must be fully transparent, with glass control groups for legibility and the material fading back in once content scrolls beneath (headerPresentation: clear, scrollEdge: material)."
       ],
       "avoidWhen": [
         "Do not use Pane as a padded card or add a competing scroll owner around its content slot.",
@@ -693,14 +694,16 @@
         "scrollClearance block-start, block-end, or both on the scrolling content",
         "overlay header on the translucent chrome material (headerPresentation: overlay)",
         "app-chosen background color (background), replacing the default or sunken fill",
-        "scoped tint re-deriving surface and text tokens from an app color (tint)"
+        "scoped tint re-deriving surface and text tokens from an app color (tint)",
+        "clear (transparent) overlay header, optionally with the scroll-edge material (headerPresentation: clear, scrollEdge: material)"
       ],
       "accessibility": [
         "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
         "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent.",
         "An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
         "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.",
-        "A tint clamps the re-derived surface and text lightness so normal, quiet, link, and neutral-on-quiet text keep 4.5:1 over the tinted surface, raised surface, and quiet fills for any color; under prefers-contrast: more or without relative color syntax the scope keeps the plain palette in its declared scheme."
+        "A tint clamps the re-derived surface and text lightness so normal, quiet, link, and neutral-on-quiet text keep 4.5:1 over the tinted surface, raised surface, and quiet fills for any color; under prefers-contrast: more or without relative color syntax the scope keeps the plain palette in its declared scheme.",
+        "A clear header has no material of its own: keep its controls in glass ToolbarControlGroups and a title over imagery on a scrim; it turns opaque under reduced transparency or increased contrast and paints Canvas in forced colors."
       ],
       "geometry": {
         "margin": "child",
@@ -851,7 +854,8 @@
         "translucent top chrome laid over the active view (chromePresentation overlay, measured by wireNavStack)",
         "translucent bottom toolbar laid over the active view (bottomToolbarPresentation overlay, measured by wireNavStack)",
         "app-chosen stack background color (background); overlay chrome keeps the chrome material",
-        "scoped tint (tint)"
+        "scoped tint (tint)",
+        "clear (transparent) bars with an optional scroll-edge material (chromePresentation / bottomToolbarPresentation: clear, scrollEdge: material)"
       ],
       "accessibility": [
         "Give the stack region an accessible label and every back control a stable action label; visible backText names the control itself.",
@@ -860,7 +864,8 @@
         "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target.",
         "Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter.",
         "An overlay bottom toolbar (bottomToolbarPresentation overlay) keeps the same AA rule: an untoned ToolbarText there lifts its title and description, and a default-tone ToolbarControlGroup in either overlaid bar takes the normal text color for its controls. Its 1px top edge stays visible in forced colors.",
-        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
+        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.",
+        "Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors."
       ],
       "geometry": {
         "margin": "none",
@@ -1169,7 +1174,8 @@
         "sunken active-scene separator (separator auto or hidden)",
         "translucent tab bar laid over the active scene (barPresentation overlay, measured by wireTabNavigator)",
         "app-chosen navigator or per-scene background color (background, tab.background); the overlay bar keeps the chrome material",
-        "scoped tint (tint)"
+        "scoped tint (tint)",
+        "clear (transparent) bars with an optional scroll-edge material (barPresentation: clear, scrollEdge: material)"
       ],
       "accessibility": [
         "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
@@ -1177,7 +1183,8 @@
         "A focusable scene is a tabpanel named by its tab label; optional scene tabIndex applies only while active.",
         "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required.",
         "Over the overlay bar's translucent material, unselected labels lift halfway toward --kui-color-text and the selected label mixes 40% of it into the brand color, so both keep 4.5:1 over worst-case content; the material turns opaque under reduced transparency or increased contrast and paints Canvas with a CanvasText edge in forced colors.",
-        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
+        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.",
+        "Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors."
       ],
       "geometry": {
         "margin": "none",

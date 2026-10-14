@@ -24,6 +24,12 @@ depth; avoid a wrapper or extra background that paints the same visual surface
 twice. Check contrast in both color schemes over the actual backdrop. See
 [contextual transparency](./docs/webawesome-theme.md#contextual-transparency).
 
+For chrome laid over imagery, use the `clear` presentation (Pane
+`headerPresentation`, NavStack `chromePresentation` /
+`bottomToolbarPresentation`, TabNavigator `barPresentation`) with glass
+control groups, and `scrollEdge="material"` to fade the material in once
+content scrolls beneath; see [Clear header](./docs/layout.md#clear-header).
+
 For an app-chosen surface color, set the typed `background` prop (a
 `@kerfjs/ui/css-values` color) on `Pane` (also `PaneConfig`), `NavStack`,
 `TabNavigator`, or a `TabNavigatorTab` instead of styling the component. It

@@ -52,6 +52,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - translucent bottom toolbar laid over the active view (bottomToolbarPresentation overlay, measured by wireNavStack)
 - app-chosen stack background color (background); overlay chrome keeps the chrome material
 - scoped tint (tint)
+- clear (transparent) bars with an optional scroll-edge material (chromePresentation / bottomToolbarPresentation: clear, scrollEdge: material)
 
 ## Composition
 
@@ -98,6 +99,7 @@ Margin: none · border: conditional · padding: child (layout role: structure). 
 - Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter.
 - An overlay bottom toolbar (bottomToolbarPresentation overlay) keeps the same AA rule: an untoned ToolbarText there lifts its title and description, and a default-tone ToolbarControlGroup in either overlaid bar takes the normal text color for its controls. Its 1px top edge stays visible in forced colors.
 - A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.
+- Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors.
 
 ## Styling boundary
 

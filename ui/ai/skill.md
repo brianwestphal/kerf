@@ -59,6 +59,17 @@ twice through a wrapper, a second background, or an unnecessary override.
 Check the resulting contrast in both color schemes, especially over a custom
 backdrop. See `../docs/webawesome-theme.md#contextual-transparency`.
 
+### Clear chrome over imagery
+
+For a header or bar laid over imagery (an Apple-Music-style detail page), use
+the `clear` presentation (`Pane headerPresentation`, `NavStack
+chromePresentation` / `bottomToolbarPresentation`, `TabNavigator
+barPresentation`) instead of making `overlay` chrome transparent with CSS.
+Put its controls in `ToolbarControlGroup material="glass"` groups, and add
+`scrollEdge="material"` to fade the material back in once content scrolls
+beneath the bar. A clear bar draws no divider and turns opaque under reduced
+transparency, increased contrast, and forced colors on its own.
+
 ### App-chosen surface colors
 
 For a surface in its own color (a media page in its artwork's color), set the

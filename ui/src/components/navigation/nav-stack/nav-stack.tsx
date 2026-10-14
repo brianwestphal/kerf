@@ -1,6 +1,7 @@
 import { ChevronLeft } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import type { ScrollEdge } from '../../../shared/layout/scroll-edge.js';
 import type { NavPane } from '../../../shared/panels/nav-pane.js';
 import type { PanelBottomToolbar } from '../../../shared/panels/panel-toolbar.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
@@ -66,16 +67,25 @@ export interface NavStackToolbarConfig extends ToolbarConfig {
  * How a {@link NavStack}'s top chrome relates to the active view: `docked`
  * above it, or `overlay` laid over its top edge on the translucent chrome
  * material, so the view's content scrolls visibly beneath it.
+ * `clear` lays it over
+ * the same edge fully transparent, for chrome over imagery: legibility comes
+ * from glass control groups or a scrim, and with `scrollEdge="material"` the
+ * chrome material fades in once content scrolls beneath it.
  */
-export type NavStackChromePresentation = 'docked' | 'overlay';
+export type NavStackChromePresentation = 'docked' | 'overlay' | 'clear';
 
 /**
  * How a {@link NavStack}'s bottom toolbar relates to the active view:
  * `docked` below it, or `overlay` laid over its bottom edge on the
  * translucent chrome material, so the view's content scrolls visibly beneath
  * it.
+ * `clear` lays it over
+ * the same edge fully transparent, for chrome over imagery: legibility comes
+ * from glass control groups or a scrim, and with `scrollEdge="material"` the
+ * chrome material fades in once content scrolls beneath
+ * it, until the view scrolls to its end.
  */
-export type NavStackBottomToolbarPresentation = 'docked' | 'overlay';
+export type NavStackBottomToolbarPresentation = 'docked' | 'overlay' | 'clear';
 
 export interface NavStackProps {
   id: string;
@@ -154,6 +164,12 @@ export interface NavStackProps {
    */
   bottomToolbarPresentation?: NavStackBottomToolbarPresentation;
   /**
+   * For `clear` chrome or bottom toolbar, `material` fades the chrome
+   * material in while the active view's content lies beneath it (default
+   * `none`).
+   */
+  scrollEdge?: ScrollEdge;
+  /**
    * Paint the stack, its docked chrome and bottom toolbar, and every view in
    * an app-chosen color (a `@kerfjs/ui/css-values` color builder) instead of
    * the surface. Overlay chrome keeps the chrome material; one view's own
@@ -221,6 +237,7 @@ export function NavStack({
   chromeDividers = 'scroll',
   chromePresentation = 'docked',
   bottomToolbarPresentation = 'docked',
+  scrollEdge = 'none',
   background,
   tint,
   className = '',
@@ -264,10 +281,23 @@ export function NavStack({
           : undefined
       }
       data-chrome-presentation={
-        chromePresentation === 'overlay' && !hideToolbar ? 'overlay' : undefined
+        chromePresentation !== 'docked' && !hideToolbar ? 'overlay' : undefined
+      }
+      data-chrome-material={
+        chromePresentation === 'clear' && !hideToolbar ? 'clear' : undefined
       }
       data-bottom-toolbar-presentation={
-        bottomToolbarPresentation === 'overlay' ? 'overlay' : undefined
+        bottomToolbarPresentation !== 'docked' ? 'overlay' : undefined
+      }
+      data-bottom-toolbar-material={
+        bottomToolbarPresentation === 'clear' ? 'clear' : undefined
+      }
+      data-scroll-edge={
+        scrollEdge === 'material' &&
+        ((chromePresentation === 'clear' && !hideToolbar) ||
+          bottomToolbarPresentation === 'clear')
+          ? 'material'
+          : undefined
       }
       data-background={background === undefined ? undefined : ''}
       data-kui-tint={tinted['data-kui-tint']}

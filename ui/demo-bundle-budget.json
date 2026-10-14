@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 376800,
-  "measuredLargestJavaScriptGzip": 118682,
-  "measuredTotalJavaScriptGzip": 376795,
+  "totalJavaScriptGzip": 377300,
+  "measuredLargestJavaScriptGzip": 118681,
+  "measuredTotalJavaScriptGzip": 377234,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4691,6 +4691,22 @@
         "measuredTotalJavaScriptGzip": 376795,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 376800
+      }
+    },
+    {
+      "at": "2026-10-14T05:10:55.077Z",
+      "reason": "KF-TQ3NHD: clear chrome presentation and scroll edge, plus the BackdropImage Clear Header demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118682,
+        "measuredTotalJavaScriptGzip": 376795,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 376800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 377234,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 377300
       }
     }
   ]

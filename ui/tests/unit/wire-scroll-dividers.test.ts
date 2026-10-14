@@ -289,7 +289,9 @@ describe('NavStack and TabScaffold chromeDividers', () => {
       const selectors: string[] = [];
       css.walkRules((rule) => {
         for (const selector of rule.selectors)
-          if (marker.test(selector))
+          // A clear bar's scroll-edge material reads the same state but
+          // paints material, not a divider (tests/unit/clear-chrome.test.tsx).
+          if (marker.test(selector) && !selector.includes('data-scroll-edge'))
             selectors.push(selector.replace(/\s+/g, ' '));
       });
       return selectors;
@@ -297,16 +299,16 @@ describe('NavStack and TabScaffold chromeDividers', () => {
     // Every selector that draws a layout chrome divider is gated on the
     // layout root's chromeDividers: the scroll state only for the default,
     // `always` unconditionally, and never for `none`. Both layouts also
-    // require their separator to remain enabled.
+    // require their separator to remain enabled, and a clear bar draws none.
     expect(
       await drawing(
         'nav-stack.css',
         /data-scroll-divider|data-chrome-dividers/,
       ),
     ).toEqual([
-      '.kui-nav-stack[data-separator="auto"]:not([data-chrome-dividers]) > .kui-nav-stack__chrome[data-scroll-divider*="b"]::after',
+      '.kui-nav-stack[data-separator="auto"]:not( [data-chrome-dividers], [data-chrome-material="clear"] ) > .kui-nav-stack__chrome[data-scroll-divider*="b"]::after',
       '.kui-nav-stack[data-separator="auto"][data-chrome-dividers="always"] > .kui-nav-stack__chrome::after',
-      '.kui-nav-stack[data-separator="auto"]:not([data-chrome-dividers]) > .kui-nav-stack__bottom[data-scroll-divider*="t"]',
+      '.kui-nav-stack[data-separator="auto"]:not( [data-chrome-dividers], [data-bottom-toolbar-material="clear"] ) > .kui-nav-stack__bottom[data-scroll-divider*="t"]',
       '.kui-nav-stack[data-separator="auto"][data-chrome-dividers="always"] > .kui-nav-stack__bottom',
     ]);
     expect(
@@ -315,7 +317,7 @@ describe('NavStack and TabScaffold chromeDividers', () => {
         /data-scroll-divider|data-chrome-dividers/,
       ),
     ).toEqual([
-      '.kui-tab-scaffold[data-separator="auto"]:not([data-chrome-dividers]) > .kui-tab-scaffold__bar[data-scroll-divider*="t"]',
+      '.kui-tab-scaffold[data-separator="auto"]:not( [data-chrome-dividers], [data-bar-material="clear"] ) > .kui-tab-scaffold__bar[data-scroll-divider*="t"]',
       '.kui-tab-scaffold[data-separator="auto"][data-chrome-dividers="always"] > .kui-tab-scaffold__bar',
     ]);
   });

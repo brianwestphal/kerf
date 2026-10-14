@@ -714,6 +714,14 @@ panel behind it. The same rule and fallbacks apply.
   colors, the header (or NavStack chrome) paints `Canvas` with a `CanvasText`
   bottom edge, and an overlay NavStack bottom toolbar paints `Canvas` with a
   `CanvasText` top edge, so content passing beneath it never shows through.
+- **Clear chrome has no material of its own.** A `clear` Pane header,
+  NavStack bar, or TabNavigator bar is transparent, so nothing guarantees its
+  text over arbitrary content: keep its controls in glass control groups,
+  which carry the material and AA lift with them, and give a title over
+  imagery a scrim (or keep it in the content). `scrollEdge="material"` brings
+  the material back while content lies beneath the bar. Clear chrome turns
+  opaque under reduced transparency or increased contrast and paints
+  `Canvas` in forced colors, like the material.
 - **An app can turn every effect static.** There is no reliable CSS signal
   for a low-power device, so an app that detects one sets
   `data-kui-effects="static"` on the root element

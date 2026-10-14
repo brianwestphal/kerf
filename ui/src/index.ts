@@ -285,6 +285,7 @@ export {
   type PaneHeaderPresentation,
   type PaneProps,
   type PaneSeparatorSide,
+  type ScrollEdge,
   type SurfaceTint,
   type SurfaceTintScheme,
 } from './components/layout/pane/pane.js';

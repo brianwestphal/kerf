@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import type { ScrollEdge } from '../../../shared/layout/scroll-edge.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import {
@@ -82,8 +83,13 @@ export type TabNavigatorTab<Id extends string = string> =
  * How a {@link TabNavigator}'s tab bar relates to the active scene: `docked`
  * below it, or `overlay` laid over its bottom edge on the translucent chrome
  * material, so the scene's content scrolls visibly beneath the bar.
+ * `clear` lays it over
+ * the same edge fully transparent, for chrome over imagery: legibility comes
+ * from glass control groups or a scrim, and with `scrollEdge="material"` the
+ * chrome material fades in once content scrolls beneath
+ * it, until the scene scrolls to its end.
  */
-export type TabNavigatorBarPresentation = 'docked' | 'overlay';
+export type TabNavigatorBarPresentation = 'docked' | 'overlay' | 'clear';
 
 export interface TabNavigatorProps<Id extends string = string> {
   id: string;
@@ -124,6 +130,12 @@ export interface TabNavigatorProps<Id extends string = string> {
    */
   barPresentation?: TabNavigatorBarPresentation;
   /**
+   * With `barPresentation="clear"`, `material` fades the chrome material in
+   * behind the bar while the active scene continues beneath it (default
+   * `none`).
+   */
+  scrollEdge?: ScrollEdge;
+  /**
    * Paint the navigator, and its docked tab bar, in an app-chosen color (a
    * `@kerfjs/ui/css-values` color builder) instead of the surface. A tab's own
    * `background` paints its scene. Forced colors paint `Canvas`.
@@ -156,6 +168,7 @@ export function TabNavigator<Id extends string>({
   separator = 'auto',
   chromeDividers = 'scroll',
   barPresentation = 'docked',
+  scrollEdge = 'none',
   background,
   tint,
   className = '',
@@ -183,7 +196,13 @@ export function TabNavigator<Id extends string>({
           : undefined
       }
       data-bar-presentation={
-        barPresentation === 'overlay' ? 'overlay' : undefined
+        barPresentation !== 'docked' ? 'overlay' : undefined
+      }
+      data-bar-material={barPresentation === 'clear' ? 'clear' : undefined}
+      data-scroll-edge={
+        barPresentation === 'clear' && scrollEdge === 'material'
+          ? 'material'
+          : undefined
       }
       data-background={background === undefined ? undefined : ''}
       data-kui-tint={tinted['data-kui-tint']}

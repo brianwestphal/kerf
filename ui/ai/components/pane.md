@@ -20,6 +20,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 - The header should float over the scrolling content on a translucent material so content scrolls visibly beneath it, with the first item still resting below the header (headerPresentation: overlay, measured by wireScrollDividers).
 - A pane needs an app-chosen surface color, such as a media detail page painted in its artwork's color (background, a typed CssColor; also in PaneConfig).
 - A region should take on an app color (a media page in its artwork's color) with its text, quiet text, links, fills, and chrome material re-derived to keep AA (tint: { color, scheme }; also in PaneConfig).
+- The header lies over imagery and must be fully transparent, with glass control groups for legibility and the material fading back in once content scrolls beneath (headerPresentation: clear, scrollEdge: material).
 
 **Not when:**
 
@@ -57,6 +58,7 @@ Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#k
 - overlay header on the translucent chrome material (headerPresentation: overlay)
 - app-chosen background color (background), replacing the default or sunken fill
 - scoped tint re-deriving surface and text tokens from an app color (tint)
+- clear (transparent) overlay header, optionally with the scroll-edge material (headerPresentation: clear, scrollEdge: material)
 
 ## Composition
 
@@ -101,6 +103,7 @@ Margin: child · border: conditional · padding: child (layout role: structure).
 - An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.
 - A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.
 - A tint clamps the re-derived surface and text lightness so normal, quiet, link, and neutral-on-quiet text keep 4.5:1 over the tinted surface, raised surface, and quiet fills for any color; under prefers-contrast: more or without relative color syntax the scope keeps the plain palette in its declared scheme.
+- A clear header has no material of its own: keep its controls in glass ToolbarControlGroups and a title over imagery on a scrim; it turns opaque under reduced transparency or increased contrast and paints Canvas in forced colors.
 
 ## Styling boundary
 

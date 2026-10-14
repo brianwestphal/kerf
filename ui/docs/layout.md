@@ -338,6 +338,45 @@ inline gutter instead of nesting them inside another padded content item. A
 conditional `StateBanner` remains visibly distinct because it communicates
 semantic status.
 
+### Clear header
+
+`headerPresentation="clear"` is an overlay header with no fill: the same
+measuring, placement, and scroll clearance as `overlay`, but fully
+transparent, for a header laid over imagery such as a `BackdropImage` hero.
+The header is not what keeps its controls legible over the image: put them
+in glass control groups (`ToolbarControlGroup material="glass"`), or give the
+content a scrim. A clear header draws no scroll divider.
+
+Add `scrollEdge="material"` to fade the chrome material in behind the header
+once content scrolls beneath it, and out again at the top, like the
+scroll-edge effect of iOS. The material is a pseudo-element whose opacity
+alone transitions; the blur itself never animates. It follows the same
+scroll state `wireScrollDividers` already publishes for dividers, so it works
+in every engine with no extra wiring.
+
+```tsx
+<Pane
+  label="Album"
+  headerPresentation="clear"
+  scrollEdge="material"
+  header={<Toolbar label="Album" leading={<BackGroup />} trailing={<AlbumActions />} />}
+>
+  <BackdropImage src={art} alt="" fadeTo={uiColor("surface")}>
+    <Tracks />
+  </BackdropImage>
+</Pane>
+```
+
+Clear chrome turns opaque where transparency would hurt: under
+`prefers-reduced-transparency: reduce` or `prefers-contrast: more` it paints
+the opaque material, and in forced colors it paints `Canvas` with a
+`CanvasText` edge. Under reduced motion, the static-effects switch, or a
+slow-updating display, the scroll-edge material switches without fading.
+`NavStack` (`chromePresentation`, `bottomToolbarPresentation`) and
+`TabNavigator` (`barPresentation`) take the same `clear` value and
+`scrollEdge` prop; a bottom bar shows its material while content continues
+below it and clears once the content reaches its end.
+
 ## Content items
 
 Render an ordinary surface-like `.kui-content` child with `ContentItem` from

@@ -289,6 +289,84 @@
   }
 }
 
+/* `headerPresentation="clear"`: an overlay header (the same measuring,
+   placement, and clearance as above) that is fully transparent, for chrome
+   laid over imagery. Legibility comes from glass control groups or a scrim
+   in the content, not from the header. With `scrollEdge="material"` a
+   pseudo-element carrying the chrome material fades in (opacity only, never
+   the filter) while `wireScrollDividers` reports content scrolled beneath
+   the header, and out at rest; the clear header draws no scroll divider. */
+.kui-pane[data-header-material="clear"] > .kui-pane__header {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: transparent;
+}
+
+:where(.kui-pane[data-header-material="clear"][data-scroll-edge="material"])
+  > .kui-pane__header {
+  position: relative;
+  isolation: isolate;
+}
+
+.kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+  > .kui-pane__header::before {
+  position: absolute;
+  z-index: -1;
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--wa-transition-normal, 250ms) ease;
+}
+
+.kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+  > .kui-pane__header[data-scroll-divider*="b"]::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+    > .kui-pane__header::before {
+    transition: none;
+  }
+}
+
+:root[data-kui-effects="static"]
+  .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+  > .kui-pane__header::before {
+  transition: none;
+}
+
+@media (update: slow) {
+  .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+    > .kui-pane__header::before {
+    transition: none;
+  }
+}
+
+/* Clear chrome turns opaque where transparency would hurt, like the
+   material itself. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .kui-pane[data-header-material="clear"] > .kui-pane__header {
+    background: var(--kui-chrome-material);
+  }
+}
+
+@media (forced-colors: active) {
+  .kui-pane[data-header-material="clear"] > .kui-pane__header {
+    background: Canvas;
+    border-block-end: 1px solid CanvasText;
+  }
+
+  .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+    > .kui-pane__header::before {
+    content: none;
+  }
+}
+
 /* Add one outer gutter without changing the inherited item-margin token.
    Nested Row, List, and Grid therefore keep their own default 8px insets. */
 .kui-pane[data-deep-inset="true"] > .kui-pane__content {
@@ -339,7 +417,7 @@
   box-shadow: inset 0 1px var(--_kui-pane-chrome-divider);
 }
 
-.kui-pane:not([data-chrome-dividers])
+.kui-pane:not([data-chrome-dividers], [data-header-material="clear"])
   > :is(.kui-pane__header, .kui-pane__toolbar)[data-scroll-divider*="b"],
 .kui-pane:not([data-chrome-dividers])
   > .kui-pane__footer[data-scroll-divider*="t"],

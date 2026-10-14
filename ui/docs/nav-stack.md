@@ -313,6 +313,18 @@ edge.
 `SplitView`'s `compactStack.bottomToolbarPresentation` and a Workbench
 navigation panel's `navStack.bottomToolbarPresentation` forward it too.
 
+### Clear chrome
+
+`chromePresentation="clear"` and `bottomToolbarPresentation="clear"` lay the
+bars over the active view like `overlay`, with the same measuring and edge
+insets, but fully transparent, for chrome over imagery. Keep their controls
+in glass control groups (`ToolbarControlGroup material="glass"`). With
+`scrollEdge="material"`, the chrome material fades in (opacity only) behind
+the top chrome once the view's content scrolls beneath it, and behind the
+bottom toolbar while content continues below it. Clear bars draw no scroll
+divider, turn opaque under reduced transparency or increased contrast, and
+paint `Canvas` in forced colors. See [Clear header](layout.md#clear-header).
+
 ## Safe areas
 
 The stack paints through a device's unsafe areas. Its chrome pads for the top

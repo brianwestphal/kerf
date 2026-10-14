@@ -47,6 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 - translucent tab bar laid over the active scene (barPresentation overlay, measured by wireTabNavigator)
 - app-chosen navigator or per-scene background color (background, tab.background); the overlay bar keeps the chrome material
 - scoped tint (tint)
+- clear (transparent) bars with an optional scroll-edge material (barPresentation: clear, scrollEdge: material)
 
 ## Composition
 
@@ -85,6 +86,7 @@ Margin: none · border: conditional · padding: self (layout role: structure). `
 - A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes "\<label>, \<badgeLabel>" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required.
 - Over the overlay bar's translucent material, unselected labels lift halfway toward --kui-color-text and the selected label mixes 40% of it into the brand color, so both keep 4.5:1 over worst-case content; the material turns opaque under reduced transparency or increased contrast and paints Canvas with a CanvasText edge in forced colors.
 - A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.
+- Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors.
 
 ## Styling boundary
 

@@ -1,6 +1,7 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
+import type { ScrollEdge } from '../../../shared/layout/scroll-edge.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import {
@@ -33,6 +34,8 @@ const paneProtectedAttributes = new Set([
   'data-outlined',
   'data-scroll-clearance',
   'data-header-presentation',
+  'data-header-material',
+  'data-scroll-edge',
   'data-header-overlay',
   'data-separator-block-start',
   'data-separator-block-end',
@@ -71,6 +74,8 @@ type PaneRootAttributes = Readonly<
     'data-outlined'?: never;
     'data-scroll-clearance'?: never;
     'data-header-presentation'?: never;
+    'data-header-material'?: never;
+    'data-scroll-edge'?: never;
     'data-header-overlay'?: never;
   }
 >;
@@ -89,8 +94,12 @@ export type PaneChromeDividers = 'scroll' | 'always' | 'none';
  * How a Pane's header relates to its scrolling content: `docked` in its own
  * row above the content, or `overlay` laid over the content's top edge on the
  * translucent chrome material, so content scrolls visibly beneath it.
+ * `clear` lays it over
+ * the same edge fully transparent, for chrome over imagery: legibility comes
+ * from glass control groups or a scrim, and with `scrollEdge="material"` the
+ * chrome material fades in once content scrolls beneath it.
  */
-export type PaneHeaderPresentation = 'docked' | 'overlay';
+export type PaneHeaderPresentation = 'docked' | 'overlay' | 'clear';
 
 /** Background treatment of the Pane's scrolling work surface. */
 export type PaneAppearance = 'default' | 'sunken';
@@ -138,6 +147,11 @@ export interface PaneProps {
    * content passing beneath it.
    */
   headerPresentation?: PaneHeaderPresentation;
+  /**
+   * With `headerPresentation="clear"`, `material` fades the chrome material
+   * in behind the header once content scrolls beneath it (default `none`).
+   */
+  scrollEdge?: ScrollEdge;
   /** Paint the scrolling work surface with the shared lowered-surface color. */
   appearance?: PaneAppearance;
   /**
@@ -219,6 +233,7 @@ export type PaneConfig = Pick<
   | 'safeAreaEdges'
   | 'chromeDividers'
   | 'headerPresentation'
+  | 'scrollEdge'
   | 'appearance'
   | 'background'
   | 'tint'
@@ -258,6 +273,7 @@ export function Pane({
   chromePlacement = 'fixed',
   chromeDividers,
   headerPresentation = 'docked',
+  scrollEdge = 'none',
   appearance = 'default',
   background,
   tint,
@@ -294,6 +310,7 @@ export function Pane({
   if (appearance === 'sunken' && background === undefined)
     ensureSunkenTexture();
   const tinted = surfaceTintAttributes(tint);
+  const clearHeader = headerPresentation === 'clear' && header !== undefined;
   const body = (
     <>
       {header === undefined ? null : (
@@ -331,9 +348,12 @@ export function Pane({
     'data-outlined': outlined ? 'true' : undefined,
     'data-scroll-clearance': scrollClearance,
     'data-header-presentation':
-      headerPresentation === 'overlay' && header !== undefined
+      headerPresentation !== 'docked' && header !== undefined
         ? 'overlay'
         : undefined,
+    'data-header-material': clearHeader ? 'clear' : undefined,
+    'data-scroll-edge':
+      clearHeader && scrollEdge === 'material' ? 'material' : undefined,
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-chrome-dividers':
       resolvedChromeDividers === 'always' || resolvedChromeDividers === 'none'
@@ -362,6 +382,7 @@ export function Pane({
 }
 
 export type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
+export type { ScrollEdge } from '../../../shared/layout/scroll-edge.js';
 export type {
   SurfaceTint,
   SurfaceTintScheme,

@@ -192,7 +192,7 @@ const views = signal<NavStackView[]>([{ key: 'home', toolbar: { title: 'Home' },
 **Implementation:** ticket **NavStack layout**.
 
 **Overlay chrome (KF-1N0S19: a translucent NavStack top bar laid over the
-active view).** `chromePresentation` (`"docked"`, the default, or `"overlay"`;
+active view).** `chromePresentation` (`"docked"`, the default, `"overlay"`, or the transparent `"clear"`;
 the `NavStackChromePresentation` type) is the NavStack counterpart of
 `Pane.headerPresentation` (§3.7) and reuses its chrome material, fallbacks,
 and contrast rule (`ui/docs/accessibility.md` "Chrome material"). The root
@@ -262,7 +262,7 @@ also covers forced colors and reduced transparency.
 
 **Overlay bottom toolbar (KF-Z4NSDF: a translucent NavStack bottom toolbar
 laid over the active view).** `bottomToolbarPresentation` (`"docked"`, the
-default, or `"overlay"`; the `NavStackBottomToolbarPresentation` type) mirrors
+default, `"overlay"`, or the transparent `"clear"`; the `NavStackBottomToolbarPresentation` type) mirrors
 the overlay chrome at the block-end edge. The root carries
 `data-bottom-toolbar-presentation="overlay"` whenever the prop asks for it; the
 wiring decides whether there is a toolbar to lay over the view. `SplitView`'s
@@ -825,7 +825,7 @@ const active = signal<"home" | "search">("home");
 NavStack.
 
 **Overlay tab bar (KF-C3V8B7: a translucent TabNavigator bar over the active
-scene).** `barPresentation` (`"docked"`, the default, or `"overlay"`; the
+scene).** `barPresentation` (`"docked"`, the default, `"overlay"`, or the transparent `"clear"`; the
 `TabNavigatorBarPresentation` type) lays `.kui-tab-scaffold__bar` over the
 scenes on `--kui-chrome-material`, mirroring the NavStack overlay bottom
 toolbar. The root carries `data-bar-presentation="overlay"` whenever the prop
@@ -1356,7 +1356,9 @@ Firefox, and WebKit.
 
 **Overlay Pane headers (KF-DT6C3F: a translucent header that publishes
 block-start scroll clearance).** The same wiring measures every Pane header
-with `headerPresentation="overlay"` and fixed chrome placement. A
+with `headerPresentation="overlay"` (or the transparent `"clear"`, which
+reuses the overlay measuring and adds an optional `scrollEdge: "material"`
+fade driven by the same scroll state) and fixed chrome placement. A
 `ResizeObserver` reads the header's border-box block size, and the wiring
 publishes it on the Pane root as the inherited
 `--kui-scroll-clearance-block-start` context. It also writes the wiring-owned
