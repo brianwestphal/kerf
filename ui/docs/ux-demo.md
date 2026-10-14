@@ -1,6 +1,16 @@
 # UX catalog contract
 
-Run `npm run dev` from `ui/`. The catalog is a development and review surface, not a second implementation. The development server reloads component source edits without a restart: component entries still load through their `dist/browser` wrappers, so each component's reachable CSS is exercised as consumers receive it, but the JavaScript those wrappers re-export (and every other `@kerfjs/ui` subpath) resolves to `src/`, and CSS resolves to `src/` as well. A component that gains a new CSS dependency needs a restart, because the wrapper listing its stylesheets is regenerated only by the build. Production demo builds, previews, and the browser tests use `dist/`. The development server allows repo-owned assets used by the catalog, and its production bundle uses relative asset URLs so the complete catalog remains intact below preview and proxy paths.
+Run `npm run dev` from `ui/` (or `npm run dev:lan` from the repo root or `ui/`). The catalog is a development and review surface, not a second implementation. The development server reloads component source edits without a restart: component entries still load through their `dist/browser` wrappers, so each component's reachable CSS is exercised as consumers receive it, but the JavaScript those wrappers re-export (and every other `@kerfjs/ui` subpath) resolves to `src/`, and CSS resolves to `src/` as well. A component that gains a new CSS dependency needs a restart, because the wrapper listing its stylesheets is regenerated only by the build. Production demo builds, previews, and the browser tests use `dist/`. The development server allows repo-owned assets used by the catalog, and its production bundle uses relative asset URLs so the complete catalog remains intact below preview and proxy paths.
+
+`npm run dev:lan` serves the same development catalog on every network
+interface, for checks only a real device can make: a phone's virtual keyboard
+and safe areas, touch dragging, and device rendering. It prints the catalog's
+LAN and Tailscale URLs (opening the bottom-sheet route) and accepts Tailscale
+MagicDNS (`*.ts.net`) and mDNS (`*.local`) host names; plain `npm run dev` stays
+on `127.0.0.1`. The catalog page sets `viewport-fit=cover`, so on a notched
+phone `env(safe-area-inset-*)` reports the real insets and the layouts' safe-area
+model is visible. See [`manual-test-plan.md`](manual-test-plan.md) for the
+device checks.
 
 Every Playwright entry point builds current source before the preview server
 starts. `npm run test:e2e -- tests/browser/row.spec.ts` and a direct focused

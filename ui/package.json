@@ -540,6 +540,7 @@
   "scripts": {
     "build": "tsup && node ../scripts/clean-dist-output.mjs dist && node scripts/build-css.mjs && node scripts/build-browser-entries.mjs",
     "dev": "npm run build && vite --config ux-demo/vite.config.ts",
+    "dev:lan": "npm run build && node scripts/dev-lan.mjs",
     "demo:bundle": "npm run build && vite build --config ux-demo/vite.config.ts",
     "demo:build": "npm run demo:bundle && node scripts/check-demo-bundle.mjs",
     "demo:serve": "vite preview --config ux-demo/vite.config.ts",

@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import { uxReviewPlugin } from '@kerfjs/ui/vite-ux-review';
@@ -121,6 +122,11 @@ export default defineConfig({
   css: { postcss: { plugins: [remifyCss()] } },
   server: {
     host: '127.0.0.1',
+    // `npm run dev:lan` binds every interface for device checks over the LAN
+    // or a tailnet; accept its Tailscale MagicDNS and mDNS host names there
+    // only, so the default localhost server keeps Vite's host check.
+    allowedHosts:
+      process.env.KERF_UI_DEV_LAN === '1' ? ['.ts.net', '.local'] : undefined,
     port: 42817,
     strictPort: true,
     fs: { allow: [fileURLToPath(new URL('../..', import.meta.url))] },
