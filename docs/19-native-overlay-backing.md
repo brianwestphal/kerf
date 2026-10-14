@@ -509,6 +509,24 @@ focus, and stack have already moved on.
   leaving one already restored focus to.
 - Page unload needs no handling: the timer and node go with the document.
 
+**Anchored surfaces** (KF-KY39K1 — `popover()` / `tooltip()` forward
+`exitClass` / `exitDuration` to `overlay()`, adding no exit code of their own):
+
+- A popover's `close()` and its outside-click dismissal play the exit;
+  repositioning stops as `result` settles, so the leaving node stays put.
+- A tooltip's hide after `hideDelay` plays the exit.
+- Anchor-removal teardown is instant for both: there is no anchor left to exit
+  from (the slot-hosted watch's rule). So are a popover's positioning rollback
+  and a tooltip's failed-show rollback.
+- The tooltip disposer hides instantly and also ends an exit already running.
+- A tooltip shown again while its previous node is still exiting removes that
+  node instantly and opens a fresh one, in the same task. The alternative,
+  cancelling the exit and keeping the node, was rejected: `close()` already
+  disposed its mount, listeners, and stack entry, so reviving it would mean
+  re-running construction on a half-torn-down wrapper. Replacing it paints no
+  empty frame and never leaves two tooltip nodes for one anchor; the only
+  visible difference is that the fresh node starts from its entrance state.
+
 **Testing.**
 
 - `tests/unit/overlay-exit.test.ts` walks the transition matrix with stubbed
@@ -523,3 +541,10 @@ focus, and stack have already moved on.
   exit, removal coincides with the animation's end well ahead of the cap,
   reduced motion skips the exit, and a `confirm()` resolves before its exit
   ends while an overlay opened mid-exit owns Escape.
+- `tests/unit/overlay-anchored-exit.test.ts` covers the anchored surfaces:
+  close and outside dismissal with an exit, instant close, anchor removal and
+  rollback staying instant, the tooltip hide → exit → re-show cycle, hide-delay
+  re-entry, the disposer mid-exit, and reduced motion.
+  `tests/browser/overlay-anchored-exit.spec.ts` runs a real CSS fade on a
+  popover (close and outside click) and a tooltip re-hovered mid-exit in all
+  three engines.

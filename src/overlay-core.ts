@@ -176,8 +176,11 @@ function supportsPopover(): boolean {
   );
 }
 
-/** A teardown with no exit: construction rollback, or a node already gone. */
-const INSTANT: OverlayCloseOptions = { instant: true };
+/**
+ * Internal: a teardown with no exit — construction rollback, or a node (or an
+ * anchored surface's anchor) already gone. Not re-exported from `kerfjs/overlay`.
+ */
+export const INSTANT: OverlayCloseOptions = { instant: true };
 
 /** The wrapper's custom property carrying a bottom sheet's keyboard overlap. */
 const KEYBOARD_INSET = '--kerf-keyboard-inset';

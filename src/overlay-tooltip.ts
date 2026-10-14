@@ -3,7 +3,9 @@ import { attach } from './attach.js';
 import { jsx, type SafeHtml } from './jsx-runtime.js';
 import type { MountResult } from './mount.js';
 import {
+  INSTANT,
   overlay,
+  type OverlayCloseOptions,
   type OverlayContent,
   type OverlayHandle,
   overlayHost,
@@ -30,6 +32,16 @@ export interface TooltipOptions extends AnchorPositionOptions {
   role?: string;
   /** Host the tooltip in the browser top layer (the Popover API) where supported. See {@link OverlayOptions.native}. Default `false`. */
   native?: boolean;
+  /**
+   * Class added when the tooltip hides, so CSS owns its **exit**. See
+   * {@link OverlayOptions.exitClass}: the hide after `hideDelay` plays it;
+   * the anchor leaving the document and the disposer hide instantly. Showing
+   * again while the previous tooltip is still exiting removes that leaving
+   * node at once and opens a fresh one, so an anchor never has two.
+   */
+  exitClass?: string;
+  /** The exit's hard cap in ms. See {@link OverlayOptions.exitDuration}. Default `0`. */
+  exitDuration?: number;
 }
 
 /**
@@ -38,7 +50,8 @@ export interface TooltipOptions extends AnchorPositionOptions {
  * `pointerleave`/`blur`, and positions itself with {@link autoReposition} (above
  * the anchor by default). Unlike {@link popover} there is no click-dismiss model —
  * it follows the pointer/focus. Returns a disposer that removes the anchor
- * listeners and hides any shown tooltip. Structural only (kerf ships no CSS).
+ * listeners and hides any shown tooltip at once (ending a running exit, too).
+ * Structural only (kerf ships no CSS).
  */
 export function tooltip(
   anchor: Element,
@@ -57,6 +70,8 @@ export function tooltip(
     viewportMargin,
     fitHeight,
     native = false,
+    exitClass,
+    exitDuration,
   } = options;
 
   const body: OverlayContent =
@@ -73,6 +88,9 @@ export function tooltip(
   let current:
     | { handle: OverlayHandle; stop: () => void; unwatch: () => void }
     | undefined;
+  // The previous tooltip while its exit runs (or already removed — closing it
+  // again instantly is then a no-op).
+  let leaving: OverlayHandle | undefined;
   let presence = 0;
 
   // Runs from the `delay` timer, so there is no caller to throw to. A failed
@@ -85,6 +103,10 @@ export function tooltip(
   function show(): void {
     // The anchor left the document while the show was pending (KF-BAVCEV).
     if (!anchor.isConnected) return;
+    // One tooltip per anchor: a show during the previous one's exit ends that
+    // exit now. Both happen in this task, so no frame paints without a tooltip.
+    leaving?.close(undefined, INSTANT);
+    leaving = undefined;
     const handle = overlay(body, {
       container: container ?? overlayHost(anchor),
       className,
@@ -92,6 +114,8 @@ export function tooltip(
       trap: false,
       initialFocus: false,
       native,
+      exitClass,
+      exitDuration,
     });
     handle.el.setAttribute('role', role);
     let stop: () => void;
@@ -105,16 +129,17 @@ export function tooltip(
       });
     } catch (error) {
       // Not yet tracked in `current`, so `hide()` could never reach it.
-      handle.close();
+      handle.close(undefined, INSTANT);
       throw error;
     }
     // KF-BAVCEV: an anchor removed from the document (e.g. with the modal that
     // held it) fires no pointerleave / blur, so hide when it leaves and forget
-    // its presence; a move within the document keeps the tooltip shown.
+    // its presence; a move within the document keeps the tooltip shown. No
+    // exit: there is no anchor left to exit from.
     const unwatch = attach(anchor, () => () => {
       presence = 0;
       if (timers.hide !== undefined) clearTimeout(timers.hide);
-      hide();
+      hide(INSTANT);
     });
     current = { handle, stop, unwatch };
     // A surface that closed itself (its host slot left the document with the
@@ -124,14 +149,15 @@ export function tooltip(
     });
   }
 
-  function hide(): void {
+  function hide(closeOptions?: OverlayCloseOptions): void {
     const shown = current;
     if (shown === undefined) return;
     // Cleared first: `unwatch()` runs the anchor teardown, which re-enters here.
     current = undefined;
     shown.unwatch();
     shown.stop();
-    shown.handle.close();
+    shown.handle.close(undefined, closeOptions);
+    leaving = shown.handle;
   }
 
   const onEnter = (event: Event): void => {
@@ -146,7 +172,7 @@ export function tooltip(
     if (presence) return;
     if (timers.show !== undefined) clearTimeout(timers.show);
     if (current === undefined) return;
-    timers.hide = setTimeout(hide, hideDelay);
+    timers.hide = setTimeout(() => hide(), hideDelay);
   };
 
   anchor.addEventListener('pointerenter', onEnter);
@@ -161,6 +187,7 @@ export function tooltip(
     anchor.removeEventListener('blur', onLeave);
     if (timers.show !== undefined) clearTimeout(timers.show);
     if (timers.hide !== undefined) clearTimeout(timers.hide);
-    hide();
+    hide(INSTANT);
+    leaving?.close(undefined, INSTANT);
   };
 }

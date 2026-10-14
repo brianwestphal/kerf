@@ -2,6 +2,7 @@
 import { attach } from './attach.js';
 import {
   type DismissTrigger,
+  INSTANT,
   overlay,
   type OverlayContent,
   type OverlayHandle,
@@ -58,6 +59,14 @@ export interface PopoverOptions {
    * See {@link OverlayOptions.native}. Default `false`.
    */
   native?: boolean;
+  /**
+   * Class added when the popover closes, so CSS owns its **exit**. See
+   * {@link OverlayOptions.exitClass}: `close()` and a user dismissal play it;
+   * the teardown when the anchor leaves the document is instant.
+   */
+  exitClass?: string;
+  /** The exit's hard cap in ms. See {@link OverlayOptions.exitDuration}. Default `0`. */
+  exitDuration?: number;
 }
 
 /**
@@ -87,6 +96,8 @@ export function popover(
     outsideIgnore,
     onDismiss,
     native = false,
+    exitClass,
+    exitDuration,
   } = options;
 
   const extraIgnore =
@@ -105,6 +116,8 @@ export function popover(
     onDismiss,
     outsideIgnore: [anchor, ...extraIgnore],
     native,
+    exitClass,
+    exitDuration,
   });
 
   // Position + keep it glued while open; drop the listeners on close. A throw
@@ -120,7 +133,7 @@ export function popover(
       fitHeight,
     });
   } catch (error) {
-    handle.close();
+    handle.close(undefined, INSTANT);
     throw error;
   }
   void handle.result.then(stopReposition);
@@ -128,7 +141,14 @@ export function popover(
   // KF-BAVCEV: never outlive the anchor. When it leaves the document (e.g. the
   // modal holding it closes) close the popover as cleanup — not a user
   // dismissal, so no `onDismiss`. A move within the document keeps it open.
-  void handle.result.then(attach(anchor, () => handle.close));
+  // Instant, like construction rollback: there is no anchor left to exit from.
+  // The watch's own disposal at `result` runs this teardown too, with the
+  // anchor still connected — an exit then starting must not end.
+  void handle.result.then(
+    attach(anchor, () => () => {
+      if (!anchor.isConnected) handle.close(undefined, INSTANT);
+    }),
+  );
 
   return handle;
 }
