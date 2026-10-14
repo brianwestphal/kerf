@@ -99,8 +99,11 @@ for (const name of ['list-both', 'pane-both', 'navstack-pane-both']) {
     expect(Math.round(start.scroller.bottom)).toBe(
       Math.round(start.footer.bottom),
     );
-    expect(start.scrollPaddingTop).toBe('48px');
-    expect(start.scrollPaddingBottom).toBe('64px');
+    // A scrollable List adds its 6px ring room (ring reach + 2px slack)
+    // to the clearance, so a focused row's ring is never flush to the edge.
+    const ringRoom = name.startsWith('list') ? 6 : 0;
+    expect(start.scrollPaddingTop).toBe(`${String(48 + ringRoom)}px`);
+    expect(start.scrollPaddingBottom).toBe(`${String(64 + ringRoom)}px`);
     // At the start, the first row rests below the header overlay.
     expect(Math.round(start.first)).toBe(Math.round(start.header.bottom));
 
@@ -140,7 +143,8 @@ for (const name of ['list-both', 'pane-both', 'navstack-pane-both']) {
 test('a List clears only the edges it opts into', async ({ page }) => {
   const start = await regionGeometry(page, 'list-start', 'start');
   expect(Math.round(start.first)).toBe(Math.round(start.header.bottom));
-  expect(start.scrollPaddingBottom).toBe('0px');
+  // Only the List's own 6px ring room at the end, no clearance.
+  expect(start.scrollPaddingBottom).toBe('6px');
   const end = await regionGeometry(page, 'list-start', 'end');
   // No block-end clearance: the last row ends at the scroller's own end,
   // beneath the footer overlay.
@@ -152,7 +156,8 @@ test('a List without scrollClearance ignores the published context', async ({
 }) => {
   const start = await regionGeometry(page, 'list-none', 'start');
   expect(Math.round(start.first)).toBe(Math.round(start.scroller.top));
-  expect(start.scrollPaddingTop).toBe('auto');
+  // Only the scrollable List's own 6px ring room, no clearance.
+  expect(start.scrollPaddingTop).toBe('6px');
   const end = await regionGeometry(page, 'list-none', 'end');
   expect(Math.round(end.last)).toBe(Math.round(end.scroller.bottom));
 });

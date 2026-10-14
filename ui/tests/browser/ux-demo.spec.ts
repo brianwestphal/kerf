@@ -261,7 +261,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
       .locator('[data-catalog-section]')
       .filter({ has: page.getByText('Recipes', { exact: true }) });
     const rows = recipes.locator('[data-component="list-item"]');
-    await expect(rows).toHaveCount(10);
+    await expect(rows).toHaveCount(11);
     await expect(rows).toHaveText([
       /Desktop Application Shell/,
       /Navigation Sidebar/,
@@ -273,6 +273,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
       /Navigation Stack/,
       /Loading Inspector/,
       /Collapsible Sidebar/,
+      /Media Detail/,
     ]);
     await expect(
       page.locator('[data-item-id="recipe-command-palette"]'),
@@ -6756,6 +6757,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Pop Selected Tone',
     'Icon-State Toggle',
     'Dark Group',
+    'Glass Material',
     'Compact Mixed Controls',
     'Avatar Profile',
     'Avatar Selection',
@@ -6763,7 +6765,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Wrapping Zone Sizing',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  const expectedGroupCount = 29;
+  const expectedGroupCount = 31;
   await expect(groups).toHaveCount(expectedGroupCount);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',

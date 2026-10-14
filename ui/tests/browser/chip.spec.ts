@@ -167,26 +167,32 @@ test('link chips download files, show focus and hover, truncate, and read on tra
   });
   await page.mouse.move(0, 0);
 
-  // Keyboard focus draws a currentColor ring on an inherit link chip.
-  await userFile.focus();
-  await page.keyboard.press('Shift+Tab');
-  await page.keyboard.press('Tab');
-  await expect(userFile).toBeFocused();
-  const ring = await userFile.evaluate((element) => {
-    const style = globalThis.getComputedStyle(element);
-    return {
-      matches: element.matches(':focus-visible'),
-      style: style.outlineStyle,
-      width: style.outlineWidth,
-      color: style.outlineColor,
-      text: style.color,
-    };
-  });
-  expect(ring).toMatchObject({ matches: true, style: 'solid', width: '3px' });
-  expect(ring.color).toBe(ring.text);
-  await transcript.screenshot({
-    path: testInfo.outputPath('chip-link-focus.png'),
-  });
+  // Keyboard focus draws a currentColor ring on an inherit link chip. WebKit
+  // does not focus links at all by default (Safari's "Press Tab to highlight
+  // each item" setting is off), even through focus(), so the ring is checked
+  // in the engines that focus them; the outline CSS is engine-neutral.
+  const focusesLinks = testInfo.project.name !== 'webkit';
+  if (focusesLinks) {
+    await userFile.focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    await expect(userFile).toBeFocused();
+    const ring = await userFile.evaluate((element) => {
+      const style = globalThis.getComputedStyle(element);
+      return {
+        matches: element.matches(':focus-visible'),
+        style: style.outlineStyle,
+        width: style.outlineWidth,
+        color: style.outlineColor,
+        text: style.color,
+      };
+    });
+    expect(ring).toMatchObject({ matches: true, style: 'solid', width: '3px' });
+    expect(ring.color).toBe(ring.text);
+    await transcript.screenshot({
+      path: testInfo.outputPath('chip-link-focus.png'),
+    });
+  }
 
   // Text stays readable over the chip fill on both bubbles and themes.
   for (const scheme of ['light', 'dark'] as const) {
@@ -216,12 +222,14 @@ test('link chips download files, show focus and hover, truncate, and read on tra
     )
     .not.toBe(externalRest);
   await page.mouse.move(0, 0);
-  await external.focus();
-  await page.keyboard.press('Shift+Tab');
-  await page.keyboard.press('Tab');
-  await expect(external).toBeFocused();
-  await expect(external).toHaveCSS('outline-width', '3px');
-  await expect(external).toHaveCSS('outline-offset', '2px');
+  if (focusesLinks) {
+    await external.focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    await expect(external).toBeFocused();
+    await expect(external).toHaveCSS('outline-width', '3px');
+    await expect(external).toHaveCSS('outline-offset', '2px');
+  }
 
   // A long file name truncates inside its bubble at phone width.
   await page.setViewportSize({ width: 390, height: 844 });

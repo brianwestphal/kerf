@@ -81,7 +81,7 @@ test.describe('coarse touch', () => {
     expect(await readTokenSize(page)).toBeGreaterThanOrEqual(16);
     await expect(page.locator('meta[name="viewport"]')).toHaveAttribute(
       'content',
-      'width=device-width, initial-scale=1.0',
+      'width=device-width, initial-scale=1.0, viewport-fit=cover',
     );
 
     const editor = page.locator(
