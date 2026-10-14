@@ -166,6 +166,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { PaneSeparatorSide } from './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './css-values.js';
 
 type ToolbarPosition = 'header' | 'footer';
 /** Control-band density: `default` (60px with 44px groups) or `compact`. */
@@ -1601,7 +1602,7 @@ export { wireListFocusScroll };
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-VXTumzKa.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-BS3d-A5t.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './list.js';
@@ -1646,7 +1647,7 @@ export { type WireNavStackOptions, wireNavStack };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-VXTumzKa.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-BS3d-A5t.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
@@ -1751,6 +1752,7 @@ export { SplitView, type SplitViewCompactStack, type SplitViewCompactViewToolbar
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
+import { CssColor } from './css-values.js';
 
 /**
  * Logical pane sides: where a {@link Pane} can show a separator and where it can
@@ -1774,6 +1776,7 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-chrome-placement'?: never;
     'data-chrome-dividers'?: never;
     'data-appearance'?: never;
+    'data-background'?: never;
     'data-deep-inset'?: never;
     'data-outlined'?: never;
     'data-scroll-clearance'?: never;
@@ -1842,6 +1845,16 @@ interface PaneProps {
     /** Paint the scrolling work surface with the shared lowered-surface color. */
     appearance?: PaneAppearance;
     /**
+     * Paint the whole pane, header and footer included, in an app-chosen color
+     * (`uiColor('surface-raised')`, `fillColor('#1f2a44')`, or `colorVar(…)`
+     * from `@kerfjs/ui/css-values`). It replaces the appearance's fill: a sunken
+     * pane drops its lowered color and grain. Omitted, the pane keeps its
+     * default (transparent, or the sunken surface). Forced colors paint
+     * `Canvas`. Keep text at AA over the color; a dark color needs a matching
+     * tint or dark tones for its content.
+     */
+    background?: CssColor;
+    /**
      * Clear chrome that lies over the scrolling content's block-start and/or
      * block-end edge, such as a `DialogSurface` floating footer over a filling
      * Pane. The content scroller adds the inherited
@@ -1891,14 +1904,14 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'headerPresentation' | 'appearance' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'headerPresentation' | 'appearance' | 'background' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, chromeDividers, headerPresentation, appearance, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, chromeDividers, headerPresentation, appearance, background, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance };
 ```
@@ -1908,14 +1921,14 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-VXTumzKa.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-BS3d-A5t.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { a as PanelToolbar, c as PanelBottomToolbar, b as PanelChromePlacement, d as PanelToggle } from './panel-toolbar-vg6Ir5Dy.js';
 import { ToolbarConfig } from './toolbar.js';
-import './toolbar-text.js';
 import './css-values.js';
+import './toolbar-text.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './scroll-clearance-BikHljTc.js';
@@ -2528,6 +2541,7 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssColor } from './css-values.js';
 import { PaneAppearance } from './pane.js';
 import './scroll-clearance-BikHljTc.js';
 
@@ -2540,6 +2554,11 @@ interface TabNavigatorTabBase<Id extends string> {
     content: KerfUiContent;
     /** Background of this scene's scrolling work surface. */
     appearance?: PaneAppearance;
+    /**
+     * Paint this scene in an app-chosen color (a `@kerfjs/ui/css-values` color
+     * builder). It replaces the appearance's fill. Forced colors paint `Canvas`.
+     */
+    background?: CssColor;
     /** Add 8px to every side of a plain scene's scrolling content. */
     deepInset?: boolean;
     /** Opt into keyboard (`0`) or programmatic (`-1`) focus on this scene. */
@@ -2625,6 +2644,12 @@ interface TabNavigatorProps<Id extends string = string> {
      * toward the normal text color to keep AA over the content beneath.
      */
     barPresentation?: TabNavigatorBarPresentation;
+    /**
+     * Paint the navigator, and its docked tab bar, in an app-chosen color (a
+     * `@kerfjs/ui/css-values` color builder) instead of the surface. A tab's own
+     * `background` paints its scene. Forced colors paint `Canvas`.
+     */
+    background?: CssColor;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -2637,7 +2662,7 @@ interface TabNavigatorProps<Id extends string = string> {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
+declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, background, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
 
 export { TabNavigator, type TabNavigatorBarPresentation, type TabNavigatorProps, type TabNavigatorTab };
 ```
@@ -2817,12 +2842,12 @@ import './toolbar.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './css-values.js';
 import './workbench.js';
-import './nav-stack-VXTumzKa.js';
+import './nav-stack-BS3d-A5t.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
-import './css-values.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -2972,12 +2997,12 @@ import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './css-values.js';
 import './workbench.js';
-import './nav-stack-VXTumzKa.js';
+import './nav-stack-BS3d-A5t.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
-import './css-values.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './lucide-icon.js';
 import 'lucide';
@@ -3027,12 +3052,12 @@ import './semantic-content-BbzjvSu9.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './css-values.js';
 import './workbench.js';
-import './nav-stack-VXTumzKa.js';
+import './nav-stack-BS3d-A5t.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
-import './css-values.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './lucide-icon.js';
 import 'lucide';

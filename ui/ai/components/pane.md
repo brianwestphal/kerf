@@ -18,6 +18,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 - An opaque edge-to-edge child needs a reserved vertical scrollbar gutter.
 - Scrolling content must pass beneath chrome laid over the pane edge (a DialogSurface floating footer) while its first and last items still rest clear of it (scrollClearance).
 - The header should float over the scrolling content on a translucent material so content scrolls visibly beneath it, with the first item still resting below the header (headerPresentation: overlay, measured by wireScrollDividers).
+- A pane needs an app-chosen surface color, such as a media detail page painted in its artwork's color (background, a typed CssColor; also in PaneConfig).
 
 **Not when:**
 
@@ -53,6 +54,7 @@ Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#k
 - always or no chrome dividers
 - scrollClearance block-start, block-end, or both on the scrolling content
 - overlay header on the translucent chrome material (headerPresentation: overlay)
+- app-chosen background color (background), replacing the default or sunken fill
 
 ## Composition
 
@@ -68,7 +70,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it); whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig).
+**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it); whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig); an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it).
 
 **Wiring:** `wireScrollDividers` is optional.
 
@@ -95,6 +97,7 @@ Margin: child · border: conditional · padding: child (layout role: structure).
 - Choose semantic root and content elements that match the region and provide labels for landmark elements.
 - Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent.
 - An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.
+- A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.
 
 ## Styling boundary
 

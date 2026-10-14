@@ -50,6 +50,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - permanent or no chrome dividers (chromeDividers always or none)
 - translucent top chrome laid over the active view (chromePresentation overlay, measured by wireNavStack)
 - translucent bottom toolbar laid over the active view (bottomToolbarPresentation overlay, measured by wireNavStack)
+- app-chosen stack background color (background); overlay chrome keeps the chrome material
 
 ## Composition
 
@@ -60,7 +61,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 
 ## State and wiring
 
-**The app owns:** ordered view stack and stable keys; view content and structured top and bottom toolbar configurations; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar or a persistent structured fallback; per-view leading, center, and trailing top-toolbar groups; per-view header and footer with List and Pane configuration; top-toolbar defaults, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers); whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation); whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation).
+**The app owns:** ordered view stack and stable keys; view content and structured top and bottom toolbar configurations; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar or a persistent structured fallback; per-view leading, center, and trailing top-toolbar groups; per-view header and footer with List and Pane configuration; top-toolbar defaults, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers); whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation); whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation); an optional app-chosen color for the stack, its docked chrome and bottom toolbar, and every view (background, a typed CssColor); one view's own color goes in its pane: { background }.
 
 **Wiring:** `wireNavStack`, `wireScrollDividers` is required.
 
@@ -95,6 +96,7 @@ Margin: none · border: conditional · padding: child (layout role: structure). 
 - Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target.
 - Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter.
 - An overlay bottom toolbar (bottomToolbarPresentation overlay) keeps the same AA rule: an untoned ToolbarText there lifts its title and description, and a default-tone ToolbarControlGroup in either overlaid bar takes the normal text color for its controls. Its 1px top edge stays visible in forced colors.
+- A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.
 
 ## Styling boundary
 

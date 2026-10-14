@@ -45,6 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 - permanent or no bar divider (chromeDividers always or none)
 - sunken active-scene separator (separator auto or hidden)
 - translucent tab bar laid over the active scene (barPresentation overlay, measured by wireTabNavigator)
+- app-chosen navigator or per-scene background color (background, tab.background); the overlay bar keeps the chrome material
 
 ## Composition
 
@@ -55,7 +56,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-navigator`](../public-api-signature
 
 ## State and wiring
 
-**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers); whether the bar's top separator follows a sunken active surface or stays hidden (separator); optional active-scene focus (tabIndex) and persistent outline (outlined).
+**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers); whether the bar's top separator follows a sunken active surface or stays hidden (separator); optional active-scene focus (tabIndex) and persistent outline (outlined); an optional app-chosen color for the navigator and its docked bar (background) and per scene (tab.background), each a typed CssColor that replaces the default or sunken fill.
 
 **Wiring:** `wireTabNavigator`, `wireScrollDividers` is required.
 
@@ -82,6 +83,7 @@ Margin: none · border: conditional · padding: self (layout role: structure). `
 - A focusable scene is a tabpanel named by its tab label; optional scene tabIndex applies only while active.
 - A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes "\<label>, \<badgeLabel>" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required.
 - Over the overlay bar's translucent material, unselected labels lift halfway toward --kui-color-text and the selected label mixes 40% of it into the brand color, so both keep 4.5:1 over worst-case content; the material turns opaque under reduced transparency or increased contrast and paints Canvas with a CanvasText edge in forced colors.
+- A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.
 
 ## Styling boundary
 

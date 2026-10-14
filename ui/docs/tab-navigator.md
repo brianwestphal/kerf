@@ -169,6 +169,26 @@ so it never moves the bar or a tab.
 the wiring reports content below. It does not suppress the sunken-surface
 separator; use `separator="hidden"` for that.
 
+## Background colors
+
+`background` paints the navigator and its docked bar in an app-chosen color
+from `@kerfjs/ui/css-values` (`uiColor(...)`, `fillColor(...)`, or
+`colorVar(...)`) instead of the surface. A tab's own `background` paints its
+scene and replaces that scene's `appearance`. The overlay bar keeps the
+chrome material over either. Keep the bar's labels and the scene's text at AA
+over the colors you choose; forced colors paint `Canvas`. See
+[Background colors](layout.md#background-colors).
+
+```tsx
+<TabNavigator
+  id="library"
+  label="Library"
+  active={active.value}
+  background={uiColor("surface-raised")}
+  tabs={[{ id: "now", label: "Now Playing", content: <NowPlaying />, background: fillColor("#2b1d3a") }]}
+/>
+```
+
 ## Translucent bar
 
 `barPresentation="overlay"` lays the tab bar over the active scene's bottom

@@ -61,6 +61,26 @@
   background: var(--kui-pane-chrome-background, var(--kui-color-surface));
 }
 
+/* `background`: an app-chosen color paints the whole pane, header and footer
+   included, and replaces the appearance's fill, so a sunken pane's content
+   and auto chrome turn transparent over it. Forced colors paint the system
+   surface instead. */
+.kui-pane[data-background] {
+  background: var(--_kui-pane-background);
+}
+
+.kui-pane[data-background][data-appearance="sunken"] > .kui-pane__content,
+.kui-pane[data-background][data-appearance="sunken"][data-chrome-placement="auto"]
+  > :is(.kui-pane__header, .kui-pane__footer) {
+  background: transparent;
+}
+
+@media (forced-colors: active) {
+  .kui-pane[data-background] {
+    background: Canvas;
+  }
+}
+
 /* Safe areas. The pane root never pads, so its background and separators paint
    through an unsafe area; its slots compensate on the edges the pane still
    touches. The inherited `--kui-edge-inset-*` context says how far each edge

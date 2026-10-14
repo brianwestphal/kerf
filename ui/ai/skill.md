@@ -59,6 +59,17 @@ twice through a wrapper, a second background, or an unnecessary override.
 Check the resulting contrast in both color schemes, especially over a custom
 backdrop. See `../docs/webawesome-theme.md#contextual-transparency`.
 
+### App-chosen surface colors
+
+For a surface in its own color (a media page in its artwork's color), set the
+typed `background` prop instead of CSS: `Pane` (also `PaneConfig`, so Workbench
+panels, CollapsiblePanel, and NavStack view panes forward it), `NavStack`,
+`TabNavigator`, and each `TabNavigatorTab`. Pass a `@kerfjs/ui/css-values`
+color (`uiColor(...)`, `fillColor(...)`, `colorVar(...)`); it replaces the
+default or sunken fill, overlay chrome keeps its material, and forced colors
+paint `Canvas`. Never select `.kui-pane` or a layout class to recolor it. You
+own the contrast of the content over the color.
+
 ## Components own their styles; configure, never override
 
 This is the rule every Kerf UI surface follows, and applications and

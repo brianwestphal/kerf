@@ -24,6 +24,13 @@ depth; avoid a wrapper or extra background that paints the same visual surface
 twice. Check contrast in both color schemes over the actual backdrop. See
 [contextual transparency](./docs/webawesome-theme.md#contextual-transparency).
 
+For an app-chosen surface color, set the typed `background` prop (a
+`@kerfjs/ui/css-values` color) on `Pane` (also `PaneConfig`), `NavStack`,
+`TabNavigator`, or a `TabNavigatorTab` instead of styling the component. It
+replaces the default or sunken fill; overlay chrome keeps its material; forced
+colors paint `Canvas`. Keep content at AA over the color. See
+[Background colors](./docs/layout.md#background-colors).
+
 For arbitrary interactive help or popup content, use `openAnchoredSurface` or
 `openAnchoredSurfaceAt` from `@kerfjs/ui/anchored-surface`; see
 [AnchoredSurface](./docs/anchored-surface.md). The app owns content and actions.

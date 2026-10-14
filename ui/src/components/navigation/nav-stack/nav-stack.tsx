@@ -3,6 +3,7 @@ import { ChevronLeft } from 'lucide';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import type { NavPane } from '../../../shared/panels/nav-pane.js';
 import type { PanelBottomToolbar } from '../../../shared/panels/panel-toolbar.js';
+import type { CssColor } from '../../../shared/styles/css-values.js';
 import { Toolbar, type ToolbarConfig } from '../../actions/toolbar/toolbar.js';
 import { ToolbarControlGroup } from '../../actions/toolbar-control-group/toolbar-control-group.js';
 import {
@@ -147,6 +148,13 @@ export interface NavStackProps {
    * `ToolbarText` in the toolbar lifts to AA over the content beneath it.
    */
   bottomToolbarPresentation?: NavStackBottomToolbarPresentation;
+  /**
+   * Paint the stack, its docked chrome and bottom toolbar, and every view in
+   * an app-chosen color (a `@kerfjs/ui/css-values` color builder) instead of
+   * the surface. Overlay chrome keeps the chrome material; one view's own
+   * color goes in its `pane: { background }`. Forced colors paint `Canvas`.
+   */
+  background?: CssColor;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -202,6 +210,7 @@ export function NavStack({
   chromeDividers = 'scroll',
   chromePresentation = 'docked',
   bottomToolbarPresentation = 'docked',
+  background,
   className = '',
   slot,
 }: NavStackProps) {
@@ -244,6 +253,12 @@ export function NavStack({
       }
       data-bottom-toolbar-presentation={
         bottomToolbarPresentation === 'overlay' ? 'overlay' : undefined
+      }
+      data-background={background === undefined ? undefined : ''}
+      style={
+        background === undefined
+          ? undefined
+          : `--_kui-nav-stack-background:${background}`
       }
       aria-label={label}
       slot={slot}

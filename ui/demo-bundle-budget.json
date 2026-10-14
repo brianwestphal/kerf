@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 373700,
-  "measuredLargestJavaScriptGzip": 118704,
-  "measuredTotalJavaScriptGzip": 373683,
+  "totalJavaScriptGzip": 374000,
+  "measuredLargestJavaScriptGzip": 118705,
+  "measuredTotalJavaScriptGzip": 373998,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4627,6 +4627,22 @@
         "measuredTotalJavaScriptGzip": 373683,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 373700
+      }
+    },
+    {
+      "at": "2026-10-14T04:20:57.304Z",
+      "reason": "KF-C7GSDQ: typed background props on Pane/NavStack/TabNavigator and the Pane Background Color demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118704,
+        "measuredTotalJavaScriptGzip": 373683,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 373700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118705,
+        "measuredTotalJavaScriptGzip": 373998,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 374000
       }
     }
   ]

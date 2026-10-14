@@ -187,6 +187,19 @@ top Toolbar's own `dividerSides`.
 <NavStack id="settings" label="Settings" views={views.value} chromeDividers="always" />
 ```
 
+## Background colors
+
+`background` paints the stack, its docked chrome and bottom toolbar, and every
+view in an app-chosen color from `@kerfjs/ui/css-values` instead of the
+surface. One view's own color goes in its `pane: { background }`, which paints
+over the stack's. Overlay chrome keeps the chrome material. The app keeps text
+at AA over the color; forced colors paint `Canvas`. See
+[Background colors](layout.md#background-colors).
+
+```tsx
+<NavStack id="music" label="Music" views={views.value} background={uiColor("surface-raised")} />
+```
+
 ## Overlay chrome
 
 `chromePresentation="overlay"` lays the top chrome over the active view's top

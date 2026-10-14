@@ -1,6 +1,7 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
+import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 
 /**
@@ -21,6 +22,7 @@ const paneProtectedAttributes = new Set([
   'data-chrome-placement',
   'data-chrome-dividers',
   'data-appearance',
+  'data-background',
   'data-deep-inset',
   'data-outlined',
   'data-scroll-clearance',
@@ -57,6 +59,7 @@ type PaneRootAttributes = Readonly<
     'data-chrome-placement'?: never;
     'data-chrome-dividers'?: never;
     'data-appearance'?: never;
+    'data-background'?: never;
     'data-deep-inset'?: never;
     'data-outlined'?: never;
     'data-scroll-clearance'?: never;
@@ -131,6 +134,16 @@ export interface PaneProps {
   /** Paint the scrolling work surface with the shared lowered-surface color. */
   appearance?: PaneAppearance;
   /**
+   * Paint the whole pane, header and footer included, in an app-chosen color
+   * (`uiColor('surface-raised')`, `fillColor('#1f2a44')`, or `colorVar(…)`
+   * from `@kerfjs/ui/css-values`). It replaces the appearance's fill: a sunken
+   * pane drops its lowered color and grain. Omitted, the pane keeps its
+   * default (transparent, or the sunken surface). Forced colors paint
+   * `Canvas`. Keep text at AA over the color; a dark color needs a matching
+   * tint or dark tones for its content.
+   */
+  background?: CssColor;
+  /**
    * Clear chrome that lies over the scrolling content's block-start and/or
    * block-end edge, such as a `DialogSurface` floating footer over a filling
    * Pane. The content scroller adds the inherited
@@ -190,6 +203,7 @@ export type PaneConfig = Pick<
   | 'chromeDividers'
   | 'headerPresentation'
   | 'appearance'
+  | 'background'
   | 'deepInset'
   | 'scrollClearance'
   | 'tabIndex'
@@ -227,6 +241,7 @@ export function Pane({
   chromeDividers,
   headerPresentation = 'docked',
   appearance = 'default',
+  background,
   deepInset = false,
   scrollClearance,
   tabIndex,
@@ -257,7 +272,8 @@ export function Pane({
   );
   const resolvedChromeDividers =
     chromeDividers ?? (appearance === 'sunken' ? 'always' : 'scroll');
-  if (appearance === 'sunken') ensureSunkenTexture();
+  if (appearance === 'sunken' && background === undefined)
+    ensureSunkenTexture();
   const body = (
     <>
       {header === undefined ? null : (
@@ -281,6 +297,11 @@ export function Pane({
     id,
     'data-component': 'pane',
     'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
+    'data-background': background === undefined ? undefined : '',
+    style:
+      background === undefined
+        ? undefined
+        : `--_kui-pane-background:${background}`,
     'data-deep-inset': deepInset ? 'true' : undefined,
     'data-outlined': outlined ? 'true' : undefined,
     'data-scroll-clearance': scrollClearance,

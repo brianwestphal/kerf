@@ -5,7 +5,7 @@
   height: 100%;
   overflow: hidden;
   flex-direction: column;
-  background: var(--kui-color-surface);
+  background: var(--_kui-tab-scaffold-background, var(--kui-color-surface));
   /* Safe areas: the scenes and the bar paint through unsafe areas; the bar
      compensates for the bottom and inline edges, and the scenes for the top
      and inline edges (see pane.css for the `--kui-edge-inset-*` context). */
@@ -53,6 +53,27 @@
 
 .kui-tab-scaffold__scene[data-appearance="sunken"] {
   background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
+}
+
+/* `background`: the navigator's color paints the root and a docked bar (the
+   overlay bar keeps the chrome material); a tab's own color paints its scene
+   and replaces its appearance's fill. A nested navigator never inherits the
+   color. Forced colors paint the system surface. */
+.kui-tab-scaffold:not([data-background]) {
+  --_kui-tab-scaffold-background: initial;
+}
+
+.kui-tab-scaffold__scene[data-background] {
+  background: var(--_kui-tab-scaffold-scene-background);
+}
+
+@media (forced-colors: active) {
+  .kui-tab-scaffold[data-background],
+  .kui-tab-scaffold[data-background]:not([data-bar-presentation="overlay"])
+    > .kui-tab-scaffold__bar,
+  .kui-tab-scaffold__scene[data-background] {
+    background: Canvas;
+  }
 }
 
 /* A scene is its region's scroll owner, so its top inset is padding inside
@@ -138,7 +159,7 @@
      scroll divider. Changing its color never moves the bar or a tab. */
   border-block-start: 1px solid
     var(--_kui-tab-scaffold-bar-divider, transparent);
-  background: var(--kui-color-surface);
+  background: var(--_kui-tab-scaffold-background, var(--kui-color-surface));
 }
 
 .kui-tab-scaffold[data-separator="auto"]:has(

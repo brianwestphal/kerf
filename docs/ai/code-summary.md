@@ -1045,6 +1045,16 @@ while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 
+Layout backgrounds (KF-C7GSDQ, app-chosen surface colors): `Pane.background`
+(also `PaneConfig`, forwarded by `paneConfigProps`), `NavStack.background`,
+`TabNavigator.background`, and `TabNavigatorTab.background` take a
+`CssColor` and render it as an inline component-private property
+(`--_kui-pane-background`, `--_kui-nav-stack-background`,
+`--_kui-tab-scaffold-background`, `--_kui-tab-scaffold-scene-background`)
+behind a protected `data-background` gate; `ui/tests/unit/layout-background.test.tsx`
+pins the markup and CSS, and `ui/tests/browser/layout-background.spec.ts`
+the painted colors.
+
 Static-effects switch (KF-YHPYXX, an app-set low-power mode): `ui/src/foundation.css`
 resets the chrome material tokens to the opaque surface under
 `:root[data-kui-effects="static"]` and `@media (update: slow)`. Every

@@ -648,7 +648,8 @@
         "A child table or other component needs edge-to-edge decoration with text aligned to other pane content.",
         "An opaque edge-to-edge child needs a reserved vertical scrollbar gutter.",
         "Scrolling content must pass beneath chrome laid over the pane edge (a DialogSurface floating footer) while its first and last items still rest clear of it (scrollClearance).",
-        "The header should float over the scrolling content on a translucent material so content scrolls visibly beneath it, with the first item still resting below the header (headerPresentation: overlay, measured by wireScrollDividers)."
+        "The header should float over the scrolling content on a translucent material so content scrolls visibly beneath it, with the first item still resting below the header (headerPresentation: overlay, measured by wireScrollDividers).",
+        "A pane needs an app-chosen surface color, such as a media detail page painted in its artwork's color (background, a typed CssColor; also in PaneConfig)."
       ],
       "avoidWhen": [
         "Do not use Pane as a padded card or add a competing scroll owner around its content slot.",
@@ -674,7 +675,8 @@
         "whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter)",
         "optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined)",
         "whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it)",
-        "whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig)"
+        "whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig)",
+        "an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it)"
       ],
       "variants": [
         "content only",
@@ -687,12 +689,14 @@
         "chrome dividers only while scrolled (default, wired by wireScrollDividers)",
         "always or no chrome dividers",
         "scrollClearance block-start, block-end, or both on the scrolling content",
-        "overlay header on the translucent chrome material (headerPresentation: overlay)"
+        "overlay header on the translucent chrome material (headerPresentation: overlay)",
+        "app-chosen background color (background), replacing the default or sunken fill"
       ],
       "accessibility": [
         "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
         "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent.",
-        "An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter."
+        "An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
+        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
       ],
       "geometry": {
         "margin": "child",
@@ -825,7 +829,8 @@
         "top-toolbar defaults, title size, and heading level",
         "whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers)",
         "whether the top chrome docks above the active view or lies over it on the translucent chrome material (chromePresentation)",
-        "whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation)"
+        "whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation)",
+        "an optional app-chosen color for the stack, its docked chrome and bottom toolbar, and every view (background, a typed CssColor); one view's own color goes in its pane: { background }"
       ],
       "variants": [
         "single root view",
@@ -839,7 +844,8 @@
         "chrome and bottom-toolbar dividers only while the active view scrolls beneath them (wired by wireScrollDividers)",
         "permanent or no chrome dividers (chromeDividers always or none)",
         "translucent top chrome laid over the active view (chromePresentation overlay, measured by wireNavStack)",
-        "translucent bottom toolbar laid over the active view (bottomToolbarPresentation overlay, measured by wireNavStack)"
+        "translucent bottom toolbar laid over the active view (bottomToolbarPresentation overlay, measured by wireNavStack)",
+        "app-chosen stack background color (background); overlay chrome keeps the chrome material"
       ],
       "accessibility": [
         "Give the stack region an accessible label and every back control a stable action label; visible backText names the control itself.",
@@ -847,7 +853,8 @@
         "Use wireNavStack so each controlled push moves focus into the new top view and each pop restores the revealed view's remembered descendant.",
         "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target.",
         "Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter.",
-        "An overlay bottom toolbar (bottomToolbarPresentation overlay) keeps the same AA rule: an untoned ToolbarText there lifts its title and description, and a default-tone ToolbarControlGroup in either overlaid bar takes the normal text color for its controls. Its 1px top edge stays visible in forced colors."
+        "An overlay bottom toolbar (bottomToolbarPresentation overlay) keeps the same AA rule: an untoned ToolbarText there lifts its title and description, and a default-tone ToolbarControlGroup in either overlaid bar takes the normal text color for its controls. Its 1px top edge stays visible in forced colors.",
+        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
       ],
       "geometry": {
         "margin": "none",
@@ -1142,7 +1149,8 @@
         "responsive replacement on larger device classes",
         "whether the bar divider follows the scroll, always shows, or never shows (chromeDividers)",
         "whether the bar's top separator follows a sunken active surface or stays hidden (separator)",
-        "optional active-scene focus (tabIndex) and persistent outline (outlined)"
+        "optional active-scene focus (tabIndex) and persistent outline (outlined)",
+        "an optional app-chosen color for the navigator and its docked bar (background) and per scene (tab.background), each a typed CssColor that replaces the default or sunken fill"
       ],
       "variants": [
         "text-only tabs",
@@ -1152,14 +1160,16 @@
         "bar divider only while the active scene continues below it (wired by wireScrollDividers)",
         "permanent or no bar divider (chromeDividers always or none)",
         "sunken active-scene separator (separator auto or hidden)",
-        "translucent tab bar laid over the active scene (barPresentation overlay, measured by wireTabNavigator)"
+        "translucent tab bar laid over the active scene (barPresentation overlay, measured by wireTabNavigator)",
+        "app-chosen navigator or per-scene background color (background, tab.background); the overlay bar keeps the chrome material"
       ],
       "accessibility": [
         "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
         "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.",
         "A focusable scene is a tabpanel named by its tab label; optional scene tabIndex applies only while active.",
         "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required.",
-        "Over the overlay bar's translucent material, unselected labels lift halfway toward --kui-color-text and the selected label mixes 40% of it into the brand color, so both keep 4.5:1 over worst-case content; the material turns opaque under reduced transparency or increased contrast and paints Canvas with a CanvasText edge in forced colors."
+        "Over the overlay bar's translucent material, unselected labels lift halfway toward --kui-color-text and the selected label mixes 40% of it into the brand color, so both keep 4.5:1 over worst-case content; the material turns opaque under reduced transparency or increased contrast and paints Canvas with a CanvasText edge in forced colors.",
+        "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
       ],
       "geometry": {
         "margin": "none",

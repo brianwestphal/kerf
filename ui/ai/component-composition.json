@@ -646,6 +646,11 @@
           "id": "whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -695,7 +700,8 @@
         "obligations": [
           "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
           "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent.",
-          "An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter."
+          "An overlay header's text uses the normal text color, which keeps WCAG AA over the 80% chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
+          "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
         ]
       },
       "cssValueProps": [],
@@ -797,6 +803,11 @@
           "id": "whether the bottom toolbar docks below the active view or lies over it on the translucent chrome material (bottomToolbarPresentation)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "an optional app-chosen color for the stack, its docked chrome and bottom toolbar, and every view (background, a typed CssColor); one view's own color goes in its pane: { background }",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -882,7 +893,8 @@
           "Use wireNavStack so each controlled push moves focus into the new top view and each pop restores the revealed view's remembered descendant.",
           "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target.",
           "Overlay chrome (chromePresentation overlay) keeps WCAG AA over content passing beneath the translucent material: an untoned ToolbarText there takes the normal text color for its title and lifts its description halfway toward it; keep other quiet copy in the view. The material turns opaque under reduced transparency, increased contrast, forced colors, or without backdrop-filter.",
-          "An overlay bottom toolbar (bottomToolbarPresentation overlay) keeps the same AA rule: an untoned ToolbarText there lifts its title and description, and a default-tone ToolbarControlGroup in either overlaid bar takes the normal text color for its controls. Its 1px top edge stays visible in forced colors."
+          "An overlay bottom toolbar (bottomToolbarPresentation overlay) keeps the same AA rule: an untoned ToolbarText there lifts its title and description, and a default-tone ToolbarControlGroup in either overlaid bar takes the normal text color for its controls. Its 1px top edge stays visible in forced colors.",
+          "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
         ]
       },
       "cssValueProps": [],
@@ -1109,6 +1121,11 @@
           "id": "optional active-scene focus (tabIndex) and persistent outline (outlined)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "an optional app-chosen color for the navigator and its docked bar (background) and per scene (tab.background), each a typed CssColor that replaces the default or sunken fill",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -1156,7 +1173,8 @@
           "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.",
           "A focusable scene is a tabpanel named by its tab label; optional scene tabIndex applies only while active.",
           "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required.",
-          "Over the overlay bar's translucent material, unselected labels lift halfway toward --kui-color-text and the selected label mixes 40% of it into the brand color, so both keep 4.5:1 over worst-case content; the material turns opaque under reduced transparency or increased contrast and paints Canvas with a CanvasText edge in forced colors."
+          "Over the overlay bar's translucent material, unselected labels lift halfway toward --kui-color-text and the selected label mixes 40% of it into the brand color, so both keep 4.5:1 over worst-case content; the material turns opaque under reduced transparency or increased contrast and paints Canvas with a CanvasText edge in forced colors.",
+          "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead."
         ]
       },
       "cssValueProps": [],

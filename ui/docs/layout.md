@@ -106,6 +106,36 @@ The color uses `--kui-sunken-panel-background`, falling back to
 in a nested layout so a translucent override paints once. The public color
 override may be set at a Pane or layout boundary.
 
+### Background colors
+
+Set `background` when a pane needs a surface color of its own, such as a
+media detail page painted in its artwork's color. It takes a typed color from
+`@kerfjs/ui/css-values`: `uiColor('surface-raised')` for a theme token,
+`fillColor('#1f2a44')` for an app-chosen literal, or `colorVar('--app-hue')`
+for an app-owned custom property. The color paints the whole pane, header and
+footer included, and replaces the appearance's fill: a sunken pane with a
+background drops its lowered color and grain. Omitted, the pane keeps its
+default.
+
+```tsx
+import { fillColor } from "@kerfjs/ui/css-values";
+
+<Pane background={fillColor("#1f2a44")} header={<AlbumToolbar />}>
+  <AlbumTracks />
+</Pane>;
+```
+
+`PaneConfig.background` forwards like `appearance`, so a Workbench `mainPane`
+or panel `pane`, a CollapsiblePanel `pane`, or a `NavStackView` `pane` takes
+it. `NavStack` and `TabNavigator` take their own `background` for the stack
+or navigator surface and their docked bars, and a `TabNavigatorTab` takes one
+for its scene. Overlay chrome keeps the translucent chrome material over any
+of them.
+
+The app owns contrast: keep text at AA over the color you choose. A dark
+color needs dark-tone controls or a scoped tint for its content. In forced
+colors every background paints `Canvas`.
+
 Pass any combination of logical sides to `separators`: `block-start`,
 `block-end`, `inline-start`, and `inline-end`. Every line is off by default and
 each enabled side uses `--kui-pane-separator-width` (1px) and

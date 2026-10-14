@@ -6,7 +6,7 @@
   height: 100%;
   overflow: hidden;
   flex-direction: column;
-  background: var(--kui-color-surface);
+  background: var(--_kui-nav-stack-background, var(--kui-color-surface));
   /* Safe areas: the stack's surfaces paint through unsafe areas; its chrome,
      bottom toolbar, and each view compensate for the edges the stack still
      touches (see pane.css for the `--kui-edge-inset-*` edge context). */
@@ -60,6 +60,25 @@
   opacity: 0;
 }
 
+/* `background`: the stack's color paints the stack, its docked chrome and
+   bottom toolbar, and every view (a view's own `pane.background` paints over
+   it). Overlay chrome keeps the chrome material. A nested stack never
+   inherits the color. Forced colors paint the system surface. */
+.kui-nav-stack:not([data-background]) {
+  --_kui-nav-stack-background: initial;
+}
+
+@media (forced-colors: active) {
+  .kui-nav-stack[data-background],
+  .kui-nav-stack[data-background]
+    > :is(.kui-nav-stack__chrome, .kui-nav-stack__bottom),
+  .kui-nav-stack[data-background]
+    > .kui-nav-stack__viewport
+    > .kui-nav-stack__view {
+    background: Canvas;
+  }
+}
+
 /* The chrome hosts the stack's real top Toolbar. It hands that toolbar the
    edges the stack still touches through the edge context (never the bottom,
    which the viewport owns); the toolbar pads for the sides it claims with
@@ -68,7 +87,7 @@
   --kui-edge-inset-block-start: var(--_kui-nav-stack-safe-block-start);
   --kui-edge-inset-inline-start: var(--_kui-nav-stack-safe-inline-start);
   --kui-edge-inset-inline-end: var(--_kui-nav-stack-safe-inline-end);
-  background: var(--kui-color-surface);
+  background: var(--_kui-nav-stack-background, var(--kui-color-surface));
 }
 
 .kui-nav-stack__viewport {
@@ -97,7 +116,7 @@
 .kui-nav-stack__view {
   position: absolute;
   overflow: auto;
-  background: var(--kui-color-surface);
+  background: var(--_kui-nav-stack-background, var(--kui-color-surface));
   transition: transform var(--kui-nav-stack-transition-duration, 200ms) ease;
   inset: 0;
 }
@@ -179,7 +198,7 @@
   --kui-edge-inset-inline-end: var(--_kui-nav-stack-safe-inline-end);
   border-block-start: 1px solid
     var(--_kui-nav-stack-bottom-divider, transparent);
-  background: var(--kui-color-surface);
+  background: var(--_kui-nav-stack-background, var(--kui-color-surface));
 }
 
 /* The live chrome is the containing block of its scroll divider; a

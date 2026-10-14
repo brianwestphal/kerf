@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import { Badge } from '../../feedback/badge/badge.js';
 import type { PaneAppearance } from '../../layout/pane/pane.js';
@@ -14,6 +15,11 @@ interface TabNavigatorTabBase<Id extends string> {
   content: KerfUiContent;
   /** Background of this scene's scrolling work surface. */
   appearance?: PaneAppearance;
+  /**
+   * Paint this scene in an app-chosen color (a `@kerfjs/ui/css-values` color
+   * builder). It replaces the appearance's fill. Forced colors paint `Canvas`.
+   */
+  background?: CssColor;
   /** Add 8px to every side of a plain scene's scrolling content. */
   deepInset?: boolean;
   /** Opt into keyboard (`0`) or programmatic (`-1`) focus on this scene. */
@@ -106,6 +112,12 @@ export interface TabNavigatorProps<Id extends string = string> {
    * toward the normal text color to keep AA over the content beneath.
    */
   barPresentation?: TabNavigatorBarPresentation;
+  /**
+   * Paint the navigator, and its docked tab bar, in an app-chosen color (a
+   * `@kerfjs/ui/css-values` color builder) instead of the surface. A tab's own
+   * `background` paints its scene. Forced colors paint `Canvas`.
+   */
+  background?: CssColor;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -127,10 +139,16 @@ export function TabNavigator<Id extends string>({
   separator = 'auto',
   chromeDividers = 'scroll',
   barPresentation = 'docked',
+  background,
   className = '',
   slot,
 }: TabNavigatorProps<Id>) {
-  if (tabs.some((tab) => tab.appearance === 'sunken')) ensureSunkenTexture();
+  if (
+    tabs.some(
+      (tab) => tab.appearance === 'sunken' && tab.background === undefined,
+    )
+  )
+    ensureSunkenTexture();
   return (
     <section
       class={`kui-tab-scaffold ${className}`.trim()}
@@ -146,6 +164,12 @@ export function TabNavigator<Id extends string>({
       data-bar-presentation={
         barPresentation === 'overlay' ? 'overlay' : undefined
       }
+      data-background={background === undefined ? undefined : ''}
+      style={
+        background === undefined
+          ? undefined
+          : `--_kui-tab-scaffold-background:${background}`
+      }
       slot={slot}
     >
       <div class="kui-tab-scaffold__scenes">
@@ -154,7 +178,17 @@ export function TabNavigator<Id extends string>({
             class="kui-tab-scaffold__scene"
             data-tab-scaffold-scene={tab.id}
             data-active={String(tab.id === active)}
-            data-appearance={tab.appearance === 'sunken' ? 'sunken' : undefined}
+            data-appearance={
+              tab.appearance === 'sunken' && tab.background === undefined
+                ? 'sunken'
+                : undefined
+            }
+            data-background={tab.background === undefined ? undefined : ''}
+            style={
+              tab.background === undefined
+                ? undefined
+                : `--_kui-tab-scaffold-scene-background:${tab.background}`
+            }
             data-deep-inset={tab.deepInset ? 'true' : undefined}
             data-outlined={
               tab.id === active && tab.outlined ? 'true' : undefined

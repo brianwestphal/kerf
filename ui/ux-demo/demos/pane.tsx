@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
+import { fillColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -178,6 +179,35 @@ export function PaneDemo() {
           {Array.from({ length: 12 }, (_, index) => (
             <ContentItem>{`Update ${index + 1}`}</ContentItem>
           ))}
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Background Color"
+        note="background paints the whole pane, header included, in an app-chosen color from @kerfjs/ui/css-values. Here a light-dark() literal keeps the text at AA in both color schemes."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <Pane
+          element="section"
+          label="Album"
+          background={fillColor('light-dark(#e6edfb, #1b2438)')}
+          rootAttributes={{ 'data-background-demo': 'pane' }}
+          header={
+            <Toolbar
+              label="Album Header"
+              leading={<ToolbarText text="Night Drive" size="xlarge" />}
+            />
+          }
+        >
+          {['Overture', 'Neon Rain', 'Coastline', 'Last Exit'].map(
+            (title, index) => (
+              <ContentItem>{`${index + 1}. ${title}`}</ContentItem>
+            ),
+          )}
         </Pane>
       </CatalogExample>
       <CatalogExample
