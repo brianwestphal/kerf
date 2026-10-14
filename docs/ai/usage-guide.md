@@ -249,7 +249,9 @@ foreground.
 Use `BackdropImage` (`@kerfjs/ui/backdrop-image`) as the first child of a
 scrolling Pane or NavStack view that opens with a large image (an artist,
 album, or place page). Set `parallax="subtle"` (or a 0 to 1 factor) for a
-compositor-only scroll lag, `fadeTo={uiColor('surface')}` (any `CssColor`) to
+compositor-only scroll lag, `blur={{ dim: 0.2 }}` (or a `blurredSrc` asset)
+for a progressive blur that never animates the filter,
+`fadeTo={uiColor('surface')}` (any `CssColor`) to
 dissolve it into a color that keeps painting under its `children`, and
 `overlay` for a title over its block end with an optional `scrim`. Pass
 `alt=""` for a decorative image. Never hand-roll scroll listeners,

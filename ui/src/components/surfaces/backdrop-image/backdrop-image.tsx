@@ -3,7 +3,11 @@ import {
   filterRootAttributes,
   type StructuralRootAttributes,
 } from '../../../shared/dom/extension-attributes.js';
-import type { CssColor, CssLength } from '../../../shared/styles/css-values.js';
+import {
+  type CssColor,
+  type CssLength,
+  remify,
+} from '../../../shared/styles/css-values.js';
 
 /** How a single image fills the backdrop (`object-fit`). */
 export type BackdropImageFit = 'cover' | 'contain' | 'fill';
@@ -36,8 +40,32 @@ export type BackdropImageParallax = 'none' | 'subtle' | number;
  */
 export type BackdropImageScrim = 'none' | 'bottom' | 'full';
 
+/**
+ * A scroll-linked progressive blur: a statically blurred copy of the image
+ * fades in as the image block scrolls away. Only the copy's opacity (and the
+ * optional dim layer's) animates; the blur itself is set once.
+ */
+export interface BackdropImageBlur {
+  /**
+   * CSS blur radius applied once to the copy. Default 24px; with
+   * `blurredSrc` the default is no filter, since that asset is already soft.
+   */
+  radius?: CssLength;
+  /**
+   * An app-supplied pre-blurred or low-resolution copy of the image, used
+   * instead of filtering `src`.
+   */
+  blurredSrc?: string;
+  /**
+   * Peak opacity, from 0 to 1, of a black dim layer that ramps in with the
+   * blur. Default 0 (no dim layer).
+   */
+  dim?: number;
+}
+
 const backdropImageProtected = new Set([
   'data-component',
+  'data-blur',
   'data-parallax',
   'data-scrim',
   'data-fade',
@@ -47,6 +75,7 @@ const backdropImageProtected = new Set([
 type BackdropImageRootAttributes = StructuralRootAttributes &
   Readonly<{
     'data-component'?: never;
+    'data-blur'?: never;
     'data-parallax'?: never;
     'data-scrim'?: never;
     'data-fade'?: never;
@@ -73,6 +102,11 @@ interface BackdropImageCommonProps {
    * the page reads as one surface. Omit for a hard edge with no surface.
    */
   fadeTo?: CssColor;
+  /**
+   * Blur the image progressively as it scrolls away, by cross-fading a
+   * statically blurred copy. Static (unblurred) wherever parallax is.
+   */
+  blur?: BackdropImageBlur;
   /** Dim the image under `overlay` content. Default `none`. */
   scrim?: BackdropImageScrim;
   /** Content laid over the image's block end, such as a title and actions. */
@@ -121,6 +155,13 @@ function parallaxFactor(parallax: BackdropImageParallax): number {
   return parallax;
 }
 
+function blurDim(dim: number | undefined): number {
+  if (dim === undefined) return 0;
+  if (!Number.isFinite(dim) || dim < 0 || dim > 1)
+    throw new RangeError('BackdropImage blur.dim must be from 0 to 1.');
+  return dim;
+}
+
 const unsafeStyleValue = /[;{}<>"'\\]|\p{Cc}/u;
 
 function styleValue(value: string, prop: string): string {
@@ -156,6 +197,7 @@ export function BackdropImage(props: BackdropImageProps) {
     position = 'center',
     height,
     parallax = 'none',
+    blur,
     fadeTo,
     scrim = 'none',
     overlay,
@@ -166,6 +208,12 @@ export function BackdropImage(props: BackdropImageProps) {
     slot,
   } = props;
   const factor = parallaxFactor(parallax);
+  const dim = blurDim(blur?.dim);
+  const blurRadius =
+    blur === undefined
+      ? undefined
+      : (blur.radius ??
+        (blur.blurredSrc === undefined ? remify(24) : undefined));
   const style = [
     height === undefined
       ? ''
@@ -178,25 +226,31 @@ export function BackdropImage(props: BackdropImageProps) {
     props.fit === undefined || props.fit === 'cover'
       ? ''
       : `--_kui-backdrop-image-fit:${props.fit}`,
+    blurRadius === undefined
+      ? ''
+      : `--_kui-backdrop-image-blur:${styleValue(blurRadius, 'blur.radius')}`,
+    dim === 0 ? '' : `--_kui-backdrop-image-dim:${String(dim)}`,
   ]
     .filter(Boolean)
     .join(';');
-  const media =
+  const image = (className: string, source: string, copy: boolean) =>
     props.repeat === undefined ? (
       <img
-        class="kui-backdrop-image__media"
-        src={src}
-        srcSet={props.srcset}
-        sizes={props.sizes}
-        alt={alt}
+        class={className}
+        src={source}
+        srcSet={source === src ? props.srcset : undefined}
+        sizes={source === src ? props.sizes : undefined}
+        alt={copy ? '' : alt}
+        aria-hidden={copy ? 'true' : undefined}
         decoding="async"
       />
     ) : (
       <div
-        class="kui-backdrop-image__media"
-        role={alt ? 'img' : undefined}
-        aria-label={alt || undefined}
-        style={`background-image:${cssUrl(src)};background-repeat:${props.repeat}`}
+        class={className}
+        role={!copy && alt ? 'img' : undefined}
+        aria-label={!copy && alt ? alt : undefined}
+        aria-hidden={copy ? 'true' : undefined}
+        style={`background-image:${cssUrl(source)};background-repeat:${props.repeat}`}
       />
     );
   const hasOverlay =
@@ -210,6 +264,13 @@ export function BackdropImage(props: BackdropImageProps) {
       class={`kui-backdrop-image ${className}`.trim()}
       data-component="backdrop-image"
       data-parallax={factor === 0 ? 'none' : 'scroll'}
+      data-blur={
+        blur === undefined
+          ? undefined
+          : blurRadius === undefined
+            ? 'asset'
+            : 'filter'
+      }
       data-fade={fadeTo === undefined ? undefined : 'true'}
       data-scrim={scrim === 'none' ? undefined : scrim}
       data-repeat={props.repeat}
@@ -218,7 +279,17 @@ export function BackdropImage(props: BackdropImageProps) {
     >
       <div class="kui-backdrop-image__hero">
         <div class="kui-backdrop-image__backdrop">
-          <div class="kui-backdrop-image__layers">{media}</div>
+          <div class="kui-backdrop-image__layers">
+            {image('kui-backdrop-image__media', src, false)}
+            {blur === undefined
+              ? null
+              : image(
+                  'kui-backdrop-image__blurred',
+                  blur.blurredSrc ?? src,
+                  true,
+                )}
+          </div>
+          {dim === 0 ? null : <div class="kui-backdrop-image__dim" />}
           {scrim === 'none' ? null : <div class="kui-backdrop-image__scrim" />}
         </div>
         {hasOverlay ? (

@@ -149,6 +149,84 @@ describe('BackdropImage', () => {
   });
 });
 
+describe('BackdropImage blur', () => {
+  it('stacks a filtered copy of the image with a default radius', () => {
+    const html = String(
+      BackdropImage({
+        src: '/hero.jpg',
+        srcset: '/hero-800.jpg 800w',
+        sizes: '100vw',
+        alt: 'Harbor',
+        blur: {},
+      }),
+    );
+    expect(html).toContain(
+      'data-parallax="none" data-blur="filter" style="--_kui-backdrop-image-blur:1.5rem"',
+    );
+    expect(html).toContain(
+      '<img class="kui-backdrop-image__blurred" src="/hero.jpg" srcset="/hero-800.jpg 800w" sizes="100vw" alt="" aria-hidden="true" decoding="async">',
+    );
+    expect(html).not.toContain('__dim');
+  });
+
+  it('uses an app-supplied blurred asset without a filter, plus a dim layer', () => {
+    const html = String(
+      BackdropImage({
+        src: '/hero.jpg',
+        srcset: '/hero-800.jpg 800w',
+        alt: '',
+        blur: { blurredSrc: '/hero-blur.jpg', dim: 0.4 },
+      }),
+    );
+    expect(html).toContain(
+      'data-blur="asset" style="--_kui-backdrop-image-dim:0.4"',
+    );
+    expect(html).toContain(
+      '<img class="kui-backdrop-image__blurred" src="/hero-blur.jpg" alt="" aria-hidden="true" decoding="async">',
+    );
+    expect(html).toContain(
+      '</div><div class="kui-backdrop-image__dim"></div></div>',
+    );
+    expect(
+      String(
+        BackdropImage({
+          src: '/hero.jpg',
+          alt: '',
+          blur: { blurredSrc: '/hero-blur.jpg', radius: remify(8) },
+        }),
+      ),
+    ).toContain('data-blur="filter" style="--_kui-backdrop-image-blur:0.5rem"');
+  });
+
+  it('blurs a tiled image with a hidden decorative copy', () => {
+    const html = String(
+      BackdropImage({
+        src: '/tile.svg',
+        alt: 'Pattern',
+        repeat: 'repeat',
+        blur: { radius: remify(4) },
+      }),
+    );
+    expect(html).toContain(
+      '<div class="kui-backdrop-image__blurred" aria-hidden="true" style="background-image:url(&quot;/tile.svg&quot;);background-repeat:repeat"></div>',
+    );
+  });
+
+  it('rejects a dim outside 0 to 1 and an unsafe radius', () => {
+    for (const dim of [-0.1, 2, Number.NaN])
+      expect(() =>
+        BackdropImage({ src: '/a.jpg', alt: '', blur: { dim } }),
+      ).toThrow(RangeError);
+    expect(() =>
+      BackdropImage({
+        src: '/a.jpg',
+        alt: '',
+        blur: { radius: '4px;x' as never },
+      }),
+    ).toThrow(TypeError);
+  });
+});
+
 describe('BackdropImage stylesheet', () => {
   it('drives parallax only through a guarded, transform-only scroll timeline', () => {
     expect(css.replace(/\/\*[\s\S]*?\*\//g, '')).not.toMatch(
@@ -169,18 +247,43 @@ describe('BackdropImage stylesheet', () => {
     ).toEqual(['transform:', 'transform:']);
   });
 
-  it('turns parallax off for static effects and slow displays, and the fade off for reduced transparency', () => {
-    expect(css).toMatch(
-      /:root\[data-kui-effects="static"\]\s+\.kui-backdrop-image\[data-parallax="scroll"\]\s+\.kui-backdrop-image__layers \{\s*animation: none;/,
-    );
-    expect(css).toMatch(
-      /@media \(update: slow\) \{\s*\.kui-backdrop-image\[data-parallax="scroll"\] \.kui-backdrop-image__layers \{\s*animation: none;/,
-    );
+  it('turns parallax and the blur ramp off for static effects and slow displays, and the fade off for reduced transparency', () => {
+    const block = (start: RegExp) => {
+      const match = start.exec(css);
+      expect(match).not.toBeNull();
+      return css.slice(match!.index, css.indexOf('}', match!.index) + 1);
+    };
+    for (const rule of [
+      block(/:root\[data-kui-effects="static"\]/),
+      block(/@media \(update: slow\) \{/),
+    ]) {
+      expect(rule).toContain('.kui-backdrop-image[data-parallax="scroll"]');
+      expect(rule).toContain('.kui-backdrop-image__layers');
+      expect(rule).toContain('.kui-backdrop-image[data-blur]');
+      expect(rule).toContain(
+        ':is(.kui-backdrop-image__blurred, .kui-backdrop-image__dim)',
+      );
+      expect(rule).toMatch(/\{\s*animation: none;\s*\}$/);
+    }
     expect(css).toMatch(
       /@media \(prefers-reduced-transparency: reduce\), \(prefers-contrast: more\) \{\s*\.kui-backdrop-image\[data-fade="true"\] \.kui-backdrop-image__backdrop \{\s*mask-image: none;/,
     );
     expect(css).toMatch(
       /\.kui-backdrop-image\[data-fade="true"\] \.kui-backdrop-image__overlay \{\s*background-color: var\(--_kui-backdrop-image-fade-to\);/,
+    );
+  });
+
+  it('ramps only opacity for the blur and never animates the filter', () => {
+    const reveal = /@keyframes kui-backdrop-image-reveal \{([\s\S]*?)\n\}/.exec(
+      css,
+    )?.[1];
+    expect(
+      reveal!.match(/^\s+([a-z-]+):/gm)?.map((line) => line.trim()),
+    ).toEqual(['opacity:', 'opacity:']);
+    for (const [, body] of css.matchAll(/@keyframes [\w-]+ \{([\s\S]*?)\n\}/g))
+      expect(body).not.toContain('filter');
+    expect(css).toMatch(
+      /\.kui-backdrop-image\[data-blur="filter"\] \.kui-backdrop-image__blurred \{[^}]*filter: blur\(var\(--_kui-backdrop-image-blur\)\);/,
     );
   });
 });

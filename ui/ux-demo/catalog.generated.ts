@@ -188,7 +188,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Open a scrolling Pane or NavStack view with a hero or tiled backdrop image (an artist, album, or place page) that lags the scroll on a compositor-only scroll timeline, dissolves through a mask into an app-chosen color, and continues that color under the following content, with Kerf-owned static fallbacks.",
+    "description": "Open a scrolling Pane or NavStack view with a hero or tiled backdrop image (an artist, album, or place page) that lags the scroll and progressively blurs on a compositor-only scroll timeline, dissolves through a mask into an app-chosen color, and continues that color under the following content, with Kerf-owned static fallbacks.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/backdrop-image.tsx",
     "componentSource": "ui/src/components/surfaces/backdrop-image/backdrop-image.tsx",

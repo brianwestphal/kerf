@@ -4177,8 +4177,31 @@ type BackdropImageParallax = 'none' | 'subtle' | number;
  * block end where a title sits, `full` dims the whole image evenly.
  */
 type BackdropImageScrim = 'none' | 'bottom' | 'full';
+/**
+ * A scroll-linked progressive blur: a statically blurred copy of the image
+ * fades in as the image block scrolls away. Only the copy's opacity (and the
+ * optional dim layer's) animates; the blur itself is set once.
+ */
+interface BackdropImageBlur {
+    /**
+     * CSS blur radius applied once to the copy. Default 24px; with
+     * `blurredSrc` the default is no filter, since that asset is already soft.
+     */
+    radius?: CssLength;
+    /**
+     * An app-supplied pre-blurred or low-resolution copy of the image, used
+     * instead of filtering `src`.
+     */
+    blurredSrc?: string;
+    /**
+     * Peak opacity, from 0 to 1, of a black dim layer that ramps in with the
+     * blur. Default 0 (no dim layer).
+     */
+    dim?: number;
+}
 type BackdropImageRootAttributes = StructuralRootAttributes & Readonly<{
     'data-component'?: never;
+    'data-blur'?: never;
     'data-parallax'?: never;
     'data-scrim'?: never;
     'data-fade'?: never;
@@ -4204,6 +4227,11 @@ interface BackdropImageCommonProps {
      * the page reads as one surface. Omit for a hard edge with no surface.
      */
     fadeTo?: CssColor;
+    /**
+     * Blur the image progressively as it scrolls away, by cross-fading a
+     * statically blurred copy. Static (unblurred) wherever parallax is.
+     */
+    blur?: BackdropImageBlur;
     /** Dim the image under `overlay` content. Default `none`. */
     scrim?: BackdropImageScrim;
     /** Content laid over the image's block end, such as a title and actions. */
@@ -4247,7 +4275,7 @@ type BackdropImageProps = BackdropImageSingleProps | BackdropImageTiledProps;
  */
 declare function BackdropImage(props: BackdropImageProps): kerfjs.SafeHtml;
 
-export { BackdropImage, type BackdropImageFit, type BackdropImageParallax, type BackdropImagePosition, type BackdropImageProps, type BackdropImageRepeat, type BackdropImageScrim, type BackdropImageSingleProps, type BackdropImageTiledProps };
+export { BackdropImage, type BackdropImageBlur, type BackdropImageFit, type BackdropImageParallax, type BackdropImagePosition, type BackdropImageProps, type BackdropImageRepeat, type BackdropImageScrim, type BackdropImageSingleProps, type BackdropImageTiledProps };
 ```
 
 ## `@kerfjs/ui/wire-toolbar-visibility`

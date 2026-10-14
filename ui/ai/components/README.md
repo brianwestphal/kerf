@@ -25,7 +25,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Workbench](./workbench.md) — Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.
 - [CollapsiblePanel](./collapsible-panel.md) — Add one independently collapsible peripheral panel without adopting the complete multi-panel Workbench shell.
 - [SunkenPanel](./sunken-panel.md) — Group a vertical list of application content on a visually lowered surface with one owned 8px inset and an explicit rounded or square-corner shape.
-- [BackdropImage](./backdrop-image.md) — Open a scrolling Pane or NavStack view with a hero or tiled backdrop image (an artist, album, or place page) that lags the scroll on a compositor-only scroll timeline, dissolves through a mask into an app-chosen color, and continues that color under the following content, with Kerf-owned static fallbacks.
+- [BackdropImage](./backdrop-image.md) — Open a scrolling Pane or NavStack view with a hero or tiled backdrop image (an artist, album, or place page) that lags the scroll and progressively blurs on a compositor-only scroll timeline, dissolves through a mask into an app-chosen color, and continues that color under the following content, with Kerf-owned static fallbacks.
 - [Toolbar](./toolbar.md) — Leading, centered, and trailing toolbar composition.
 - [ToolbarControlGroup](./toolbar-control-group.md) — Provide complete toolbar action geometry through configuration, including semantic anchors, overflow containment, and dropdown menu insets without application CSS.
 - [Surface Scaffolds](./surface-scaffold.md) — Configure recurring dialog and popup geometry without consumer ::part() overrides.

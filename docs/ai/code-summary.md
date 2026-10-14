@@ -1022,8 +1022,9 @@ surrounding foreground. Tests: `ui/tests/unit/chip-link.test.tsx`,
 `ui/src/components/surfaces/backdrop-image/backdrop-image.tsx` (`@kerfjs/ui/backdrop-image`)
 renders a scrolling view's hero or tiled image: a hero block (a named
 `view-timeline`) holding a clipped, masked backdrop whose `__layers` animate
-only `transform` over the block's `exit-crossing` range for parallax, an
-optional scrim, an `overlay` slot over its block end, and `children` below on
+only `transform` over the block's `exit-crossing` range for parallax, a
+`blur` copy (`__blurred`, filtered once or an app `blurredSrc`) and `__dim`
+layer whose `opacity` alone ramps over the same range, an optional scrim, an `overlay` slot over its block end, and `children` below on
 the root's `fadeTo` color. The root bleeds to the Pane's resolved inline
 insets and hands them back. Static fallbacks: no `animation-timeline`
 support, reduced motion, `:root[data-kui-effects="static"]`, `update: slow`;

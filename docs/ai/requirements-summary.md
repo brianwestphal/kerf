@@ -487,7 +487,9 @@ currentColor border and no fill, so it keeps a brand-loud bubble's text contrast
 BackdropImage (shipped) opens a scrolling Pane or NavStack view with a hero or
 tiled image (`src`/`srcset`/`alt`, `fit`, `position`, `repeat`, typed
 `height`): `parallax` (`none`, `subtle`, or a 0 to 1 factor) lags it on a
-compositor-only scroll-driven timeline, typed `fadeTo` dissolves it through a
+compositor-only scroll-driven timeline, `blur` (`radius`, `blurredSrc`,
+`dim`) cross-fades the opacity of a once-blurred copy as it scrolls away (no
+per-frame raster in a Chromium trace), typed `fadeTo` dissolves it through a
 mask into a color that also paints under its `children`, and `overlay` content
 sits over its block end with an optional `scrim`. Static without scroll-driven
 animation support (Firefox today), under reduced motion, the

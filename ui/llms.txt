@@ -769,7 +769,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 
 - **Open a scrolling view with `BackdropImage`.** Place it first in a Pane or
   NavStack view's scrolling content: `parallax` (`subtle` or a 0 to 1 factor)
-  lags the image on a compositor-only scroll timeline, `fadeTo` (a `CssColor`)
+  lags the image on a compositor-only scroll timeline, `blur` (`radius`,
+  `blurredSrc`, `dim`) cross-fades in a once-blurred copy as it scrolls away
+  (only opacity animates, never the filter), `fadeTo` (a `CssColor`)
   dissolves it into a color that keeps painting under its `children`, and
   `overlay` content sits over its block end with an optional `scrim`. Pass
   `alt=""` for a decorative image. It is static under reduced motion,

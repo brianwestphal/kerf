@@ -49,6 +49,8 @@ import { remify, uiColor } from '@kerfjs/ui/css-values';
   The image's lower half dissolves into it, and the whole surface, including
   `children` below the image, paints it. Omit it for a hard edge and no
   surface color.
+- `blur` (`{ radius?, blurredSrc?, dim? }`) blurs the image progressively as it
+  scrolls away (see [Progressive blur](#progressive-blur)).
 - `scrim`: `bottom` darkens toward the block end where an overlay title sits,
   `full` dims the image evenly. The app keeps overlay text at AA with the scrim
   or fade color it chooses.
@@ -75,12 +77,40 @@ factor times that distance, so the image moves slower than the content. There
 is no scroll listener and no `background-attachment: fixed`, and the compositor
 runs the animation.
 
+## Progressive blur
+
+`blur` stacks a blurred copy of the image over the sharp one and fades the
+copy in over the same scroll range as the parallax, so the image softens as it
+scrolls away. The blur itself is set once: either a CSS `filter: blur()` of
+`radius` (default 24px) on a copy of `src`, which overhangs the block by its
+radius so the blur's transparent fringe falls outside the clip, or an
+app-supplied pre-blurred or low-resolution `blurredSrc` (no filter unless
+`radius` is also given). Only the copy's `opacity` animates, plus the optional
+`dim` layer (a black layer whose opacity ramps to `dim`, from 0 to 1), so no
+frame re-rasterizes the image. The copy is decorative (`alt=""`,
+`aria-hidden`).
+
+```tsx
+<BackdropImage
+  src="/art/hero.jpg"
+  alt=""
+  parallax="subtle"
+  blur={{ blurredSrc: '/art/hero-blur-64.jpg', dim: 0.2 }}
+  fadeTo={uiColor('surface')}
+/>
+```
+
+In a Chromium performance trace of 200 scroll frames across the image's exit
+range, the effect produced no `Paint` events and no per-frame raster (a
+control that repainted the root each frame produced 400 `Paint` events), and
+no animation failed to composite.
+
 ## Fallbacks
 
 | Condition                                                          | Result                                                                                             |
 | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| No `animation-timeline` support (Firefox at the time of writing)   | Static image; the fade and color still apply.                                                      |
-| `prefers-reduced-motion: reduce`                                   | Static image.                                                                                      |
-| `:root[data-kui-effects="static"]`                                 | Static image.                                                                                      |
-| `@media (update: slow)` (e-ink, print)                             | Static image.                                                                                      |
+| No `animation-timeline` support (Firefox at the time of writing)   | Static, sharp image (no parallax, blur, or dim); the fade and color still apply.                   |
+| `prefers-reduced-motion: reduce`                                   | Static, sharp image.                                                                               |
+| `:root[data-kui-effects="static"]`                                 | Static, sharp image.                                                                               |
+| `@media (update: slow)` (e-ink, print)                             | Static, sharp image.                                                                               |
 | `prefers-reduced-transparency: reduce` or `prefers-contrast: more` | No dissolve: a hard edge onto solid `fadeTo`, and `overlay` content sits on a solid `fadeTo` band. |

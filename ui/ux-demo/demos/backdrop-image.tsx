@@ -81,8 +81,8 @@ export function BackdropImageDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'backdrop-image' }}>
       <CatalogExample
-        label="Parallax Hero Fading Into the Page"
-        note='Scroll the pane: parallax="subtle" lags the image behind the content on a scroll-driven timeline, and fadeTo dissolves it into the surface color, which keeps painting under the songs. The image stays static under reduced motion or without scroll-driven animations.'
+        label="Parallax Hero With Progressive Blur"
+        note='Scroll the pane: parallax="subtle" lags the image behind the content, blur cross-fades in a copy blurred once (with a light dim) as the image scrolls away, and fadeTo dissolves it into the surface color, which keeps painting under the songs. Only transform and opacity animate, on a scroll-driven timeline; the image stays static and sharp under reduced motion or without scroll-driven animations.'
         viewport={{
           layout: 'grid',
           width: 'medium',
@@ -95,6 +95,7 @@ export function BackdropImageDemo() {
             src={svgUrl(SKYLINE)}
             alt=""
             parallax="subtle"
+            blur={{ dim: 0.2 }}
             fadeTo={uiColor('surface')}
             overlay={
               <Toolbar
