@@ -303,50 +303,61 @@
   background: transparent;
 }
 
-:where(
-    .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
-  )
+:where(.kui-nav-stack[data-chrome-material="clear"][data-scroll-edge])
   > .kui-nav-stack__chrome:not(.kui-nav-stack__chrome-copy) {
   position: relative;
   isolation: isolate;
 }
 
-.kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+/* The scroll edge fades in as content scrolls beneath the bar: the wiring
+   publishes `--kui-scroll-edge-progress` (0 at rest, 1 once content lies
+   `scrollEdgeDistance` beyond the bar) and only the layer's opacity follows
+   it; the filter never animates. Unwired, it stays clear. */
+.kui-nav-stack[data-chrome-material="clear"][data-scroll-edge]
   > .kui-nav-stack__chrome::before {
   position: absolute;
   z-index: -1;
-  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
-  backdrop-filter: var(--kui-chrome-material-filter);
-  background: var(--kui-chrome-material);
   content: "";
   inset: 0;
-  opacity: 0;
+  opacity: var(--kui-scroll-edge-progress, 0);
   pointer-events: none;
-  transition: opacity var(--wa-transition-normal, 250ms) ease;
 }
 
 .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+  > .kui-nav-stack__chrome::before {
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+}
+
+.kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="surface"]
+  > .kui-nav-stack__chrome::before {
+  background: var(--kui-color-surface);
+}
+
+/* Static effects and slow displays snap the edge on while content lies
+   beneath the bar instead of tracking the scroll. */
+:root[data-kui-effects="static"]
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge]
+  > .kui-nav-stack__chrome::before {
+  opacity: 0;
+}
+
+:root[data-kui-effects="static"]
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge]
   > .kui-nav-stack__chrome[data-scroll-divider*="b"]::before {
   opacity: 1;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
-    > .kui-nav-stack__chrome::before {
-    transition: none;
-  }
-}
-
-:root[data-kui-effects="static"]
-  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
-  > .kui-nav-stack__chrome::before {
-  transition: none;
-}
-
 @media (update: slow) {
-  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge]
     > .kui-nav-stack__chrome::before {
-    transition: none;
+    opacity: 0;
+  }
+
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge]
+    > .kui-nav-stack__chrome[data-scroll-divider*="b"]::before {
+    opacity: 1;
   }
 }
 
@@ -364,7 +375,7 @@
     border-block-end: 1px solid CanvasText;
   }
 
-  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge="material"]
+  .kui-nav-stack[data-chrome-material="clear"][data-scroll-edge]
     > .kui-nav-stack__chrome::before {
     content: none;
   }
@@ -376,50 +387,61 @@
   background: transparent;
 }
 
-:where(
-    .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
-  )
+:where(.kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge])
   > .kui-nav-stack__bottom:not(.kui-nav-stack__chrome-copy) {
   position: relative;
   isolation: isolate;
 }
 
-.kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+/* The scroll edge fades in as content scrolls beneath the bar: the wiring
+   publishes `--kui-scroll-edge-progress` (0 at rest, 1 once content lies
+   `scrollEdgeDistance` beyond the bar) and only the layer's opacity follows
+   it; the filter never animates. Unwired, it stays clear. */
+.kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge]
   > .kui-nav-stack__bottom::before {
   position: absolute;
   z-index: -1;
-  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
-  backdrop-filter: var(--kui-chrome-material-filter);
-  background: var(--kui-chrome-material);
   content: "";
   inset: 0;
-  opacity: 0;
+  opacity: var(--kui-scroll-edge-progress, 0);
   pointer-events: none;
-  transition: opacity var(--wa-transition-normal, 250ms) ease;
 }
 
 .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+  > .kui-nav-stack__bottom::before {
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+}
+
+.kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="surface"]
+  > .kui-nav-stack__bottom::before {
+  background: var(--kui-color-surface);
+}
+
+/* Static effects and slow displays snap the edge on while content lies
+   beneath the bar instead of tracking the scroll. */
+:root[data-kui-effects="static"]
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge]
+  > .kui-nav-stack__bottom::before {
+  opacity: 0;
+}
+
+:root[data-kui-effects="static"]
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge]
   > .kui-nav-stack__bottom[data-scroll-divider*="t"]::before {
   opacity: 1;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
-    > .kui-nav-stack__bottom::before {
-    transition: none;
-  }
-}
-
-:root[data-kui-effects="static"]
-  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
-  > .kui-nav-stack__bottom::before {
-  transition: none;
-}
-
 @media (update: slow) {
-  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge]
     > .kui-nav-stack__bottom::before {
-    transition: none;
+    opacity: 0;
+  }
+
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge]
+    > .kui-nav-stack__bottom[data-scroll-divider*="t"]::before {
+    opacity: 1;
   }
 }
 
@@ -439,7 +461,7 @@
     border-block-start-color: CanvasText;
   }
 
-  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge="material"]
+  .kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge]
     > .kui-nav-stack__bottom::before {
     content: none;
   }

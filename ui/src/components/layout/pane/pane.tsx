@@ -1,7 +1,10 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { ScrollClearance } from '../../../shared/layout/scroll-clearance.js';
-import type { ScrollEdge } from '../../../shared/layout/scroll-edge.js';
+import {
+  type ScrollEdge,
+  scrollEdgeAttributes,
+} from '../../../shared/layout/scroll-edge.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import {
@@ -37,6 +40,7 @@ const paneProtectedAttributes = new Set([
   'data-header-presentation',
   'data-header-material',
   'data-scroll-edge',
+  'data-scroll-edge-distance',
   'data-header-overlay',
   'data-separator-block-start',
   'data-separator-block-end',
@@ -78,6 +82,7 @@ type PaneRootAttributes = Readonly<
     'data-header-presentation'?: never;
     'data-header-material'?: never;
     'data-scroll-edge'?: never;
+    'data-scroll-edge-distance'?: never;
     'data-header-overlay'?: never;
   }
 >;
@@ -154,6 +159,11 @@ export interface PaneProps {
    * in behind the header once content scrolls beneath it (default `none`).
    */
   scrollEdge?: ScrollEdge;
+  /**
+   * The scroll distance, in CSS pixels, over which the scroll edge fades in
+   * (default 60).
+   */
+  scrollEdgeDistance?: number;
   /** Paint the scrolling work surface with the shared lowered-surface color. */
   appearance?: PaneAppearance;
   /**
@@ -236,6 +246,7 @@ export type PaneConfig = Pick<
   | 'chromeDividers'
   | 'headerPresentation'
   | 'scrollEdge'
+  | 'scrollEdgeDistance'
   | 'appearance'
   | 'background'
   | 'tint'
@@ -276,6 +287,7 @@ export function Pane({
   chromeDividers,
   headerPresentation = 'docked',
   scrollEdge = 'none',
+  scrollEdgeDistance,
   appearance = 'default',
   background,
   tint,
@@ -355,8 +367,7 @@ export function Pane({
         ? 'overlay'
         : undefined,
     'data-header-material': clearHeader ? 'clear' : undefined,
-    'data-scroll-edge':
-      clearHeader && scrollEdge === 'material' ? 'material' : undefined,
+    ...scrollEdgeAttributes(scrollEdge, scrollEdgeDistance, clearHeader),
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-chrome-dividers':
       resolvedChromeDividers === 'always' || resolvedChromeDividers === 'none'

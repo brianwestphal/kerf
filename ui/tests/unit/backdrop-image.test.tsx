@@ -266,6 +266,10 @@ describe('BackdropImage stylesheet', () => {
     expect(css).toContain(
       'animation-range: exit-crossing 0% exit-crossing 100%;',
     );
+    // The blur ramps over the first half of the exit.
+    expect(css).toContain(
+      'animation-range: exit-crossing 0% exit-crossing 50%;',
+    );
     const keyframes =
       /@keyframes kui-backdrop-image-parallax \{([\s\S]*?)\n\}/.exec(css)?.[1];
     expect(keyframes).toBeDefined();

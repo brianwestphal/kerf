@@ -718,8 +718,9 @@ panel behind it. The same rule and fallbacks apply.
   NavStack bar, or TabNavigator bar is transparent, so nothing guarantees its
   text over arbitrary content: keep its controls in glass control groups,
   which carry the material and AA lift with them, and give a title over
-  imagery a scrim (or keep it in the content). `scrollEdge="material"` brings
-  the material back while content lies beneath the bar. Clear chrome turns
+  imagery a scrim (or keep it in the content). `scrollEdge="material"` (or
+  `"surface"`) fades a backing in gradually as content scrolls beneath the
+  bar. Clear chrome turns
   opaque under reduced transparency or increased contrast and paints
   `Canvas` in forced colors, like the material.
 - **An app can turn every effect static.** There is no reliable CSS signal

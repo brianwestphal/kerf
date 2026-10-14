@@ -1640,3 +1640,76 @@ describe('wireScrollDividers — TabScaffold bar over the active scene', () => {
     dispose();
   });
 });
+
+describe('scroll-edge progress', () => {
+  const progress = (element: Element) =>
+    (element as HTMLElement).style.getPropertyValue(
+      '--kui-scroll-edge-progress',
+    );
+
+  it('publishes how far content has scrolled beneath a clear bar, over its distance', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = String(
+      Pane({
+        header: raw('<span>Title</span>'),
+        headerPresentation: 'clear',
+        scrollEdge: 'material',
+        scrollEdgeDistance: 100,
+        footer: raw('<span>Footer</span>'),
+        children: raw('<span>Rows</span>'),
+      }),
+    );
+    const content = root.querySelector('.kui-pane__content')!;
+    const header = root.querySelector('.kui-pane__header')!;
+    const footer = root.querySelector('.kui-pane__footer')!;
+    const state = geometry(content, { scrollHeight: 500, clientHeight: 100 });
+    const dispose = wireScrollDividers(root);
+    expect(progress(header)).toBe('0');
+    // The footer measures toward the scroll end (400px below: fully in);
+    // only clear bars draw a layer from it.
+    expect(progress(footer)).toBe('1');
+    scrollTo(content, state, { scrollTop: 50 });
+    expect(progress(header)).toBe('0.5');
+    scrollTo(content, state, { scrollTop: 250 });
+    expect(progress(header)).toBe('1');
+    scrollTo(content, state, { scrollTop: 0 });
+    expect(progress(header)).toBe('0');
+    dispose();
+    expect(progress(header)).toBe('');
+    expect(header.hasAttribute('style')).toBe(false);
+    root.remove();
+  });
+
+  it('fades a bottom bar toward the scroll end, over the default 60px', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = String(
+      NavStack({
+        id: 'stack',
+        label: 'Music',
+        bottomToolbarPresentation: 'clear',
+        scrollEdge: 'surface',
+        bottomToolbar: {
+          label: 'Player',
+          center: raw('<span>Now Playing</span>'),
+        },
+        views: [{ key: 'home', content: raw('<span>Home</span>') }],
+      }),
+    );
+    const view = root.querySelector('.kui-nav-stack__view')!;
+    const bottom = root.querySelector(
+      '.kui-nav-stack__bottom:not(.kui-nav-stack__chrome-copy)',
+    )!;
+    const state = geometry(view, { scrollHeight: 400, clientHeight: 100 });
+    const dispose = wireScrollDividers(root);
+    // 300px of content still lies below: fully faded in.
+    expect(progress(bottom)).toBe('1');
+    scrollTo(view, state, { scrollTop: 270 });
+    expect(progress(bottom)).toBe('0.5');
+    scrollTo(view, state, { scrollTop: 300 });
+    expect(progress(bottom)).toBe('0');
+    dispose();
+    root.remove();
+  });
+});

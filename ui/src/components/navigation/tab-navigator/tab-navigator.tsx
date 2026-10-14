@@ -1,7 +1,10 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
-import type { ScrollEdge } from '../../../shared/layout/scroll-edge.js';
+import {
+  type ScrollEdge,
+  scrollEdgeAttributes,
+} from '../../../shared/layout/scroll-edge.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import {
@@ -136,6 +139,11 @@ export interface TabNavigatorProps<Id extends string = string> {
    */
   scrollEdge?: ScrollEdge;
   /**
+   * The scroll distance, in CSS pixels, over which the scroll edge fades in
+   * (default 60).
+   */
+  scrollEdgeDistance?: number;
+  /**
    * Paint the navigator, and its docked tab bar, in an app-chosen color (a
    * `@kerfjs/ui/css-values` color builder) instead of the surface. A tab's own
    * `background` paints its scene. Forced colors paint `Canvas`.
@@ -169,6 +177,7 @@ export function TabNavigator<Id extends string>({
   chromeDividers = 'scroll',
   barPresentation = 'docked',
   scrollEdge = 'none',
+  scrollEdgeDistance,
   background,
   tint,
   className = '',
@@ -199,11 +208,11 @@ export function TabNavigator<Id extends string>({
         barPresentation !== 'docked' ? 'overlay' : undefined
       }
       data-bar-material={barPresentation === 'clear' ? 'clear' : undefined}
-      data-scroll-edge={
-        barPresentation === 'clear' && scrollEdge === 'material'
-          ? 'material'
-          : undefined
-      }
+      {...scrollEdgeAttributes(
+        scrollEdge,
+        scrollEdgeDistance,
+        barPresentation === 'clear',
+      )}
       data-background={background === undefined ? undefined : ''}
       data-kui-tint={tinted['data-kui-tint']}
       data-kui-tint-accent={tinted['data-kui-tint-accent']}

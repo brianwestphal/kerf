@@ -1,7 +1,10 @@
 import { ChevronLeft } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
-import type { ScrollEdge } from '../../../shared/layout/scroll-edge.js';
+import {
+  type ScrollEdge,
+  scrollEdgeAttributes,
+} from '../../../shared/layout/scroll-edge.js';
 import type { NavPane } from '../../../shared/panels/nav-pane.js';
 import type { PanelBottomToolbar } from '../../../shared/panels/panel-toolbar.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
@@ -172,6 +175,11 @@ export interface NavStackProps {
    */
   scrollEdge?: ScrollEdge;
   /**
+   * The scroll distance, in CSS pixels, over which the scroll edge fades in
+   * (default 60).
+   */
+  scrollEdgeDistance?: number;
+  /**
    * Paint the stack, its docked chrome and bottom toolbar, and every view in
    * an app-chosen color (a `@kerfjs/ui/css-values` color builder) instead of
    * the surface. Overlay chrome keeps the chrome material; one view's own
@@ -240,6 +248,7 @@ export function NavStack({
   chromePresentation = 'docked',
   bottomToolbarPresentation = 'docked',
   scrollEdge = 'none',
+  scrollEdgeDistance,
   background,
   tint,
   className = '',
@@ -294,13 +303,12 @@ export function NavStack({
       data-bottom-toolbar-material={
         bottomToolbarPresentation === 'clear' ? 'clear' : undefined
       }
-      data-scroll-edge={
-        scrollEdge === 'material' &&
-        ((chromePresentation === 'clear' && !hideToolbar) ||
-          bottomToolbarPresentation === 'clear')
-          ? 'material'
-          : undefined
-      }
+      {...scrollEdgeAttributes(
+        scrollEdge,
+        scrollEdgeDistance,
+        (chromePresentation === 'clear' && !hideToolbar) ||
+          bottomToolbarPresentation === 'clear',
+      )}
       data-background={background === undefined ? undefined : ''}
       data-kui-tint={tinted['data-kui-tint']}
       data-kui-tint-accent={tinted['data-kui-tint-accent']}

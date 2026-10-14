@@ -76,6 +76,11 @@ const OVERLAY_PANE =
  */
 const THRESHOLD = 1;
 
+/** The scroll-edge fade a clear bar's material follows (see `fadeEdges`). */
+const SCROLL_EDGE_PROGRESS = '--kui-scroll-edge-progress';
+const SCROLL_EDGE_DISTANCE = 'data-scroll-edge-distance';
+const DEFAULT_SCROLL_EDGE_DISTANCE = 60;
+
 interface Pairing {
   scroller: HTMLElement;
   chrome: Partial<Record<Edge, HTMLElement>>;
@@ -330,6 +335,8 @@ function createController(
   const overflow = new Map<HTMLElement, string>();
   /** Every element this wiring has written, with what it wrote. */
   const written = new Map<Element, Map<StateAttribute, string>>();
+  /** Chrome carrying a published scroll-edge progress. */
+  const faded = new Set<HTMLElement>();
   /** Each overlay Pane header, with its Pane. */
   let overlays = new Map<HTMLElement, HTMLElement>();
   /** Each overlay header's last measured border-box block size, in px. */
@@ -476,6 +483,49 @@ function createController(
     }
   };
 
+  /**
+   * Publish each clear bar's scroll-edge progress: how far content has
+   * scrolled beneath it, as a fraction of its component's
+   * `data-scroll-edge-distance` (60px by default). A top bar measures from the
+   * scroll start, a bottom bar toward the scroll end. Only chrome whose own
+   * component root opts in (`data-scroll-edge`) gets one; `only` limits the
+   * pass to the bars of one scrolled scroller.
+   */
+  const fadeEdges = (only?: HTMLElement) => {
+    const current = new Set<HTMLElement>();
+    for (const { scroller, chrome } of pairings)
+      for (const edge of ['t', 'b'] as const) {
+        const element = chrome[edge];
+        const owner = element?.parentElement;
+        if (!element || !owner?.hasAttribute('data-scroll-edge')) continue;
+        current.add(element);
+        if (only && scroller !== only) continue;
+        const distance =
+          Number(owner.getAttribute(SCROLL_EDGE_DISTANCE)) ||
+          DEFAULT_SCROLL_EDGE_DISTANCE;
+        const travelled =
+          edge === 't'
+            ? scroller.scrollTop
+            : scroller.scrollHeight -
+              scroller.clientHeight -
+              scroller.scrollTop;
+        const value = String(
+          Math.round(Math.min(1, Math.max(0, travelled / distance)) * 1000) /
+            1000,
+        );
+        if (element.style.getPropertyValue(SCROLL_EDGE_PROGRESS) !== value)
+          element.style.setProperty(SCROLL_EDGE_PROGRESS, value);
+      }
+    if (only) return;
+    for (const element of faded)
+      if (!current.has(element)) {
+        element.style.removeProperty(SCROLL_EDGE_PROGRESS);
+        if (!element.getAttribute('style')) element.removeAttribute('style');
+      }
+    faded.clear();
+    for (const element of current) faded.add(element);
+  };
+
   /** Write every paired element's attributes from the measured overflow. */
   const apply = () => {
     const current = new Map<Element, Map<StateAttribute, string>>();
@@ -506,6 +556,7 @@ function createController(
       written.set(element, values);
       for (const [name, value] of values) write(element, name, value);
     }
+    fadeEdges();
   };
 
   /** Each observed element, keyed to whether it is observed by border box. */
@@ -660,6 +711,7 @@ function createController(
   const onScroll = (event: Event) => {
     const scroller = event.target as HTMLElement;
     if (!overflow.has(scroller)) return;
+    fadeEdges(scroller);
     const edges = measure(scroller);
     if (edges === overflow.get(scroller)) return;
     overflow.set(scroller, edges);
@@ -830,6 +882,7 @@ function createController(
         overflow.clear();
         observed.clear();
         pairings = [];
+        fadeEdges();
         CONTROLLERS.delete(ownerDocument);
       }
     };

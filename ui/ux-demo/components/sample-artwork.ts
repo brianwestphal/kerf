@@ -11,6 +11,14 @@ export const SKYLINE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160
 <path d="M0 760 L260 660 L480 740 L720 650 L940 760 L1180 680 L1400 770 L1600 700 V900 H0Z" fill="#241a3d"/>
 </svg>`;
 
+// The same scene blurred once, ahead of time: the precomputed asset a
+// `BackdropImage` `blur.blurredSrc` cross-fades to, so the page never blurs
+// at run time.
+export const SKYLINE_BLURRED = SKYLINE.replace(
+  '<rect width="1600" height="900" fill="url(#s)"/>',
+  '<filter id="b" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="28"/></filter><g filter="url(#b)"><rect width="1600" height="900" fill="url(#s)"/>',
+).replace('</svg>', '</g></svg>');
+
 // A small seamless tile for the repeat form.
 export const TILE = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
 <rect width="48" height="48" fill="#2f4a7a"/><path d="M0 24 L24 0 L48 24 L24 48Z" fill="#3c5e96"/><circle cx="24" cy="24" r="5" fill="#f4b36b"/>

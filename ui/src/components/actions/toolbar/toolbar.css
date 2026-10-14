@@ -217,6 +217,15 @@
   overflow-clip-margin: 4px;
 }
 
+/* A glass control group floats on a soft shadow that reaches well past the
+   ring margin (about 24px below and 18px to the side). While the zone holds
+   one it stops clipping, so the shadow is never cut off flat: a margin would
+   not do, since WebKit has no `overflow-clip-margin`. A title beside it still
+   truncates itself with its own ellipsis. */
+.kui-toolbar__leading:has(> .kui-toolbar-control-group[data-material="glass"]) {
+  overflow: visible;
+}
+
 .kui-toolbar__center {
   /* The center content never compresses below its own width (a group cannot
      shrink or clip its controls). The track above takes this as its minimum, so

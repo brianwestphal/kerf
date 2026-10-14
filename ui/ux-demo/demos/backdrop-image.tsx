@@ -13,7 +13,12 @@ import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ChevronLeft, Ellipsis, Share } from 'lucide';
 
-import { SKYLINE, svgUrl, TILE } from '../components/sample-artwork.js';
+import {
+  SKYLINE,
+  SKYLINE_BLURRED,
+  svgUrl,
+  TILE,
+} from '../components/sample-artwork.js';
 
 const TRACKS = [
   ['Low Tide', '3:42'],
@@ -57,7 +62,7 @@ export function BackdropImageDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'backdrop-image' }}>
       <CatalogExample
         label="Parallax Hero With Progressive Blur"
-        note='Scroll the pane: parallax="subtle" lags the image behind the content, blur cross-fades in a copy blurred once (with a light dim) as the image scrolls away, and fadeTo dissolves it into the surface color, which keeps painting under the songs. Only transform and opacity animate, on a scroll-driven timeline; the image stays static and sharp under reduced motion or without scroll-driven animations.'
+        note='Scroll the pane: parallax="subtle" lags the image behind the content, blur cross-fades in a precomputed blurred asset (blur.blurredSrc, with a light dim) over the first half of the image exit, and fadeTo dissolves it into the surface color, which keeps painting under the songs. Only transform and opacity animate, on a scroll-driven timeline; the image stays static and sharp under reduced motion or without scroll-driven animations.'
         viewport={{
           layout: 'grid',
           width: 'medium',
@@ -70,7 +75,7 @@ export function BackdropImageDemo() {
             src={svgUrl(SKYLINE)}
             alt=""
             parallax="subtle"
-            blur={{ dim: 0.2 }}
+            blur={{ blurredSrc: svgUrl(SKYLINE_BLURRED), dim: 0.2 }}
             fadeTo={uiColor('surface')}
             overlay={
               <Toolbar
@@ -91,7 +96,7 @@ export function BackdropImageDemo() {
       </CatalogExample>
       <CatalogExample
         label="Clear Header"
-        note='headerPresentation="clear" lays the header over the content fully transparent, so its glass control groups float over the artwork. scrollEdge="material" fades the chrome material in behind the header once content scrolls beneath it, and out again at the top. underChrome runs the artwork up beneath the header.'
+        note='headerPresentation="clear" lays the header over the content fully transparent, so its glass control groups float over the artwork. It stays clear as content scrolls beneath it; scrollEdge="material" fades the chrome material in gradually over the first 60px of scroll, and out again at the top. underChrome runs the artwork up beneath the header.'
         viewport={{
           layout: 'grid',
           width: 'medium',

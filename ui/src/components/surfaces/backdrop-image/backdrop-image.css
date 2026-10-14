@@ -167,11 +167,14 @@
       animation-range: exit-crossing 0% exit-crossing 100%;
     }
 
+    /* The blur reaches full strength halfway through the exit, while most
+       of the image is still in view; ramping over the whole exit left it
+       barely visible before the image had scrolled away. */
     .kui-backdrop-image[data-blur]
       :is(.kui-backdrop-image__blurred, .kui-backdrop-image__dim) {
       animation: kui-backdrop-image-reveal linear both;
       animation-timeline: --kui-backdrop-image;
-      animation-range: exit-crossing 0% exit-crossing 100%;
+      animation-range: exit-crossing 0% exit-crossing 50%;
     }
   }
 }

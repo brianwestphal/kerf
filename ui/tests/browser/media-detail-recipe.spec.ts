@@ -44,6 +44,13 @@ test('the album page runs its artwork beneath clear, glass-controlled chrome', a
         backMaterial: chrome
           .querySelector('[data-nav-back]')!
           .closest<HTMLElement>('.kui-toolbar-control-group')!.dataset.material,
+        // The leading zone clips (for a shrinking title), but not while it
+        // holds a glass group, so its soft shadow is never cut off.
+        leadingOverflow: window.getComputedStyle(
+          chrome
+            .querySelector('[data-nav-back]')!
+            .closest('.kui-toolbar__leading')!,
+        ).overflow,
         glassGroups: document.querySelectorAll(
           `${recipe} .kui-toolbar-control-group[data-material="glass"]`,
         ).length,
@@ -54,6 +61,7 @@ test('the album page runs its artwork beneath clear, glass-controlled chrome', a
   expect(geometry.hero.top).toBeCloseTo(geometry.stack.top, 0);
   expect(geometry.chromeBackground).toBe('rgba(0, 0, 0, 0)');
   expect(geometry.backMaterial).toBe('glass');
+  expect(geometry.leadingOverflow).toBe('visible');
   // Back, the album actions, and the playback group.
   expect(geometry.glassGroups).toBeGreaterThanOrEqual(3);
 });

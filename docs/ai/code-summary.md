@@ -1082,10 +1082,15 @@ Clear chrome (KF-TQ3NHD, transparent bars over imagery): `clear` presentations
 render the existing overlay attribute (so measuring, clearance, and the
 overlay AA lifts are reused) plus `data-header-material` /
 `data-chrome-material` / `data-bottom-toolbar-material` / `data-bar-material`
-`="clear"`; `scrollEdge="material"` (`ui/src/shared/layout/scroll-edge.ts`,
-`ScrollEdge`) adds `data-scroll-edge`, and each bar's `::before` carries the
-chrome material and fades its opacity on the existing `data-scroll-divider`
-state. `ui/tests/unit/clear-chrome.test.tsx` pins markup and rules;
+`="clear"`; `scrollEdge="material" | "surface"` (`ui/src/shared/layout/scroll-edge.ts`,
+`ScrollEdge`, `scrollEdgeAttributes`) adds `data-scroll-edge` and an optional
+`data-scroll-edge-distance` (default 60px); `wireScrollDividers`' `fadeEdges`
+publishes `--kui-scroll-edge-progress` (0–1 over that distance, toward the
+scroll start for top bars and the end for bottom bars) on each such
+component's chrome, and each bar's `::before` takes it as its opacity
+(static effects and `update: slow` snap on `data-scroll-divider` instead).
+A Toolbar's leading zone stops clipping while it holds a glass group, so the
+group's shadow is never cut flat (WebKit has no `overflow-clip-margin`). `ui/tests/unit/clear-chrome.test.tsx` pins markup and rules;
 `ui/tests/browser/clear-chrome.spec.ts` (fixture
 `ui/tests/browser/fixtures/clear-chrome.tsx`) checks the fade at rest,
 mid-scroll, and at the end, and the opaque and forced-color fallbacks.

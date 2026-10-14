@@ -25,6 +25,7 @@ export function paneConfigProps(
     chromeDividers: config?.chromeDividers,
     headerPresentation: config?.headerPresentation,
     scrollEdge: config?.scrollEdge,
+    scrollEdgeDistance: config?.scrollEdgeDistance,
     appearance: config?.appearance,
     background: config?.background,
     tint: config?.tint,

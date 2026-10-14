@@ -1618,7 +1618,7 @@ export { wireListFocusScroll };
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-fXJaN7k4.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-CU_0dKtI.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './pane.js';
@@ -1663,7 +1663,7 @@ export { type WireNavStackOptions, wireNavStack };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-fXJaN7k4.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-CU_0dKtI.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
@@ -1771,12 +1771,13 @@ import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
 import { CssColor } from './css-values.js';
 
 /**
- * What clear (fully transparent) chrome shows once content scrolls beneath it:
- * `none` stays transparent; `material` fades in the translucent chrome
- * material (opacity only) while the scroll state wiring reports content
- * beneath the chrome, and fades it out at rest.
+ * What clear (fully transparent) chrome fades in as content scrolls beneath
+ * it: `none` stays clear; `material` fades in the translucent chrome
+ * material; `surface` fades in the opaque surface. The fade tracks the scroll
+ * over `scrollEdgeDistance` (opacity only), from the scroll state
+ * `wireScrollDividers` reports; unwired, the chrome stays clear.
  */
-type ScrollEdge = 'none' | 'material';
+type ScrollEdge = 'none' | 'material' | 'surface';
 
 /** The color scheme an app declares for a {@link SurfaceTint}'s color. */
 type SurfaceTintScheme = 'light' | 'dark';
@@ -1831,6 +1832,7 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-header-presentation'?: never;
     'data-header-material'?: never;
     'data-scroll-edge'?: never;
+    'data-scroll-edge-distance'?: never;
     'data-header-overlay'?: never;
 }>;
 /** How a Pane's header and footer relate to its scrolling content. */
@@ -1901,6 +1903,11 @@ interface PaneProps {
      * in behind the header once content scrolls beneath it (default `none`).
      */
     scrollEdge?: ScrollEdge;
+    /**
+     * The scroll distance, in CSS pixels, over which the scroll edge fades in
+     * (default 60).
+     */
+    scrollEdgeDistance?: number;
     /** Paint the scrolling work surface with the shared lowered-surface color. */
     appearance?: PaneAppearance;
     /**
@@ -1973,14 +1980,14 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'headerPresentation' | 'scrollEdge' | 'appearance' | 'background' | 'tint' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'headerPresentation' | 'scrollEdge' | 'scrollEdgeDistance' | 'appearance' | 'background' | 'tint' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, chromeDividers, headerPresentation, scrollEdge, appearance, background, tint, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, chromeDividers, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, type SurfaceTint, type SurfaceTintScheme };
 ```
@@ -1990,7 +1997,7 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-fXJaN7k4.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-CU_0dKtI.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
@@ -2731,6 +2738,11 @@ interface TabNavigatorProps<Id extends string = string> {
      */
     scrollEdge?: ScrollEdge;
     /**
+     * The scroll distance, in CSS pixels, over which the scroll edge fades in
+     * (default 60).
+     */
+    scrollEdgeDistance?: number;
+    /**
      * Paint the navigator, and its docked tab bar, in an app-chosen color (a
      * `@kerfjs/ui/css-values` color builder) instead of the surface. A tab's own
      * `background` paints its scene. Forced colors paint `Canvas`.
@@ -2754,7 +2766,7 @@ interface TabNavigatorProps<Id extends string = string> {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, scrollEdge, background, tint, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
+declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, scrollEdge, scrollEdgeDistance, background, tint, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
 
 export { TabNavigator, type TabNavigatorBarPresentation, type TabNavigatorProps, type TabNavigatorTab };
 ```
@@ -2936,7 +2948,7 @@ import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './workbench.js';
-import './nav-stack-fXJaN7k4.js';
+import './nav-stack-CU_0dKtI.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -3091,7 +3103,7 @@ import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './workbench.js';
-import './nav-stack-fXJaN7k4.js';
+import './nav-stack-CU_0dKtI.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -3146,7 +3158,7 @@ import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './workbench.js';
-import './nav-stack-fXJaN7k4.js';
+import './nav-stack-CU_0dKtI.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';

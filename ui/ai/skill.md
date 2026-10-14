@@ -66,8 +66,9 @@ the `clear` presentation (`Pane headerPresentation`, `NavStack
 chromePresentation` / `bottomToolbarPresentation`, `TabNavigator
 barPresentation`) instead of making `overlay` chrome transparent with CSS.
 Put its controls in `ToolbarControlGroup material="glass"` groups, and add
-`scrollEdge="material"` to fade the material back in once content scrolls
-beneath the bar; give the opening `BackdropImage` `underChrome` so its artwork runs beneath the clear header. A clear bar draws no divider and turns opaque under reduced
+`scrollEdge="material"` (or `"surface"`, with `scrollEdgeDistance`, default
+60px) to fade a backing in gradually as content scrolls beneath the bar (it
+stays clear otherwise); give the opening `BackdropImage` `underChrome` so its artwork runs beneath the clear header. A clear bar draws no divider and turns opaque under reduced
 transparency, increased contrast, and forced colors on its own.
 
 ### App-chosen surface colors

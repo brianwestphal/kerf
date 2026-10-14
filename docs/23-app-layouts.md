@@ -1357,7 +1357,8 @@ Firefox, and WebKit.
 **Overlay Pane headers (KF-DT6C3F: a translucent header that publishes
 block-start scroll clearance).** The same wiring measures every Pane header
 with `headerPresentation="overlay"` (or the transparent `"clear"`, which
-reuses the overlay measuring and adds an optional `scrollEdge: "material"`
+reuses the overlay measuring and adds an optional `scrollEdge: "material" | "surface"` backing that fades in
+over `scrollEdgeDistance` pixels
 fade driven by the same scroll state) and fixed chrome placement. A
 `ResizeObserver` reads the header's border-box block size, and the wiring
 publishes it on the Pane root as the inherited

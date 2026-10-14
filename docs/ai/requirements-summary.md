@@ -556,8 +556,9 @@ album page.
 
 Clear chrome (shipped): a `clear` presentation for Pane headers, NavStack
 chrome and bottom toolbars, and TabNavigator bars, with an optional
-`scrollEdge: 'material'` fade driven by the existing scroll state (not a CSS
-scroll timeline); opaque under reduced transparency, increased contrast, and
+`scrollEdge: 'material' | 'surface'` backing that fades in gradually over
+`scrollEdgeDistance` (default 60px) from a progress `wireScrollDividers`
+publishes (not a CSS scroll timeline); opaque under reduced transparency, increased contrast, and
 forced colors.
 
 Scoped tints (shipped): `tint: { color, scheme }` on `Pane` (and `PaneConfig`),

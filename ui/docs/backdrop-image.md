@@ -91,8 +91,9 @@ runs the animation.
 ## Progressive blur
 
 `blur` stacks a blurred copy of the image over the sharp one and fades the
-copy in over the same scroll range as the parallax, so the image softens as it
-scrolls away. The blur itself is set once: either a CSS `filter: blur()` of
+copy in over the first half of the parallax's scroll range, so the image is
+fully softened while most of it is still in view, the way a media page's
+artwork blurs early in the scroll. The blur itself is set once: either a CSS `filter: blur()` of
 `radius` (default 24px) on a copy of `src`, which overhangs the block by its
 radius so the blur's transparent fringe falls outside the clip, or an
 app-supplied pre-blurred or low-resolution `blurredSrc` (no filter unless

@@ -70,16 +70,19 @@ test('BackdropImage parallax and blur follow the Pane scroller', async ({
   expect(samples.map(({ offset }) => offset)).toEqual(
     supported ? [0, 35, 56, 112] : [0, 0, 0, 0],
   );
-  // The blurred copy and dim layer ramp linearly over the 320px block.
+  // The blurred copy and dim layer ramp linearly over the first half of the
+  // 320px block's exit, so the blur is at full strength while most of the
+  // image is still in view.
   expect(samples.map(({ blur }) => blur)).toEqual(
-    supported ? [0, 0.31, 0.5, 1] : [0, 0, 0, 0],
+    supported ? [0, 0.63, 1, 1] : [0, 0, 0, 0],
   );
   expect(samples.map(({ dim }) => dim)).toEqual(
-    supported ? [0, 0.31, 0.5, 1] : [0, 0, 0, 0],
+    supported ? [0, 0.63, 1, 1] : [0, 0, 0, 0],
   );
-  // The blur is set once (24px default, in rem) and never animates.
+  // The hero cross-fades to a precomputed blurred asset: nothing is filtered
+  // at run time, and no filter ever animates.
   expect(new Set(samples.map(({ filter }) => filter))).toEqual(
-    new Set(['blur(24px)']),
+    new Set(['none']),
   );
   expect(
     await scroller.evaluate((element) =>
@@ -115,7 +118,7 @@ const STATIC: Sample[] = [0, 160, 420].map(() => ({
   offset: 0,
   blur: 0,
   dim: 0,
-  filter: 'blur(24px)',
+  filter: 'none',
 }));
 
 test('BackdropImage is static and sharp under reduced motion', async ({

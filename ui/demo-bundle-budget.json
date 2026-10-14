@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 380200,
-  "measuredLargestJavaScriptGzip": 118680,
-  "measuredTotalJavaScriptGzip": 380162,
+  "totalJavaScriptGzip": 380800,
+  "measuredLargestJavaScriptGzip": 118681,
+  "measuredTotalJavaScriptGzip": 380701,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4803,6 +4803,38 @@
         "measuredTotalJavaScriptGzip": 380162,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 380200
+      }
+    },
+    {
+      "at": "2026-10-14T07:20:08.746Z",
+      "reason": "KF-TQ3NHD/KF-WD2E31 rework: scroll-edge progress fade and precomputed-blur demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 380162,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 380200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 380636,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 380700
+      }
+    },
+    {
+      "at": "2026-10-14T07:41:06.674Z",
+      "reason": "KF-TQ3NHD/KF-WD2E31 rework: scroll-edge progress fade, glass toolbar zone, precomputed-blur demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 380636,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 380700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 380701,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 380800
       }
     }
   ]

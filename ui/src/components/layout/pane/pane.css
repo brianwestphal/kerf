@@ -305,48 +305,61 @@
   background: transparent;
 }
 
-:where(.kui-pane[data-header-material="clear"][data-scroll-edge="material"])
+:where(.kui-pane[data-header-material="clear"][data-scroll-edge])
   > .kui-pane__header {
   position: relative;
   isolation: isolate;
 }
 
-.kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+/* The scroll edge fades in as content scrolls beneath the bar: the wiring
+   publishes `--kui-scroll-edge-progress` (0 at rest, 1 once content has
+   scrolled `scrollEdgeDistance` past the edge) and only the layer's opacity
+   follows it; the filter never animates. Unwired, it stays clear. */
+.kui-pane[data-header-material="clear"][data-scroll-edge]
   > .kui-pane__header::before {
   position: absolute;
   z-index: -1;
-  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
-  backdrop-filter: var(--kui-chrome-material-filter);
-  background: var(--kui-chrome-material);
   content: "";
   inset: 0;
-  opacity: 0;
+  opacity: var(--kui-scroll-edge-progress, 0);
   pointer-events: none;
-  transition: opacity var(--wa-transition-normal, 250ms) ease;
 }
 
 .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+  > .kui-pane__header::before {
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+}
+
+.kui-pane[data-header-material="clear"][data-scroll-edge="surface"]
+  > .kui-pane__header::before {
+  background: var(--kui-color-surface);
+}
+
+/* Static effects and slow displays snap the edge on once content lies
+   beneath the bar instead of tracking the scroll. */
+:root[data-kui-effects="static"]
+  .kui-pane[data-header-material="clear"][data-scroll-edge]
+  > .kui-pane__header::before {
+  opacity: 0;
+}
+
+:root[data-kui-effects="static"]
+  .kui-pane[data-header-material="clear"][data-scroll-edge]
   > .kui-pane__header[data-scroll-divider*="b"]::before {
   opacity: 1;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
-    > .kui-pane__header::before {
-    transition: none;
-  }
-}
-
-:root[data-kui-effects="static"]
-  .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
-  > .kui-pane__header::before {
-  transition: none;
-}
-
 @media (update: slow) {
-  .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+  .kui-pane[data-header-material="clear"][data-scroll-edge]
     > .kui-pane__header::before {
-    transition: none;
+    opacity: 0;
+  }
+
+  .kui-pane[data-header-material="clear"][data-scroll-edge]
+    > .kui-pane__header[data-scroll-divider*="b"]::before {
+    opacity: 1;
   }
 }
 
@@ -364,7 +377,7 @@
     border-block-end: 1px solid CanvasText;
   }
 
-  .kui-pane[data-header-material="clear"][data-scroll-edge="material"]
+  .kui-pane[data-header-material="clear"][data-scroll-edge]
     > .kui-pane__header::before {
     content: none;
   }

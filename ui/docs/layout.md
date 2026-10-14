@@ -358,12 +358,17 @@ content a scrim. A clear header draws no scroll divider. Set `underChrome` on a
 `BackdropImage` that opens the content to run its artwork up beneath the
 header.
 
-Add `scrollEdge="material"` to fade the chrome material in behind the header
-once content scrolls beneath it, and out again at the top, like the
-scroll-edge effect of iOS. The material is a pseudo-element whose opacity
-alone transitions; the blur itself never animates. It follows the same
-scroll state `wireScrollDividers` already publishes for dividers, so it works
-in every engine with no extra wiring.
+A clear header stays clear while content scrolls beneath it. To fade a
+backing in gradually instead, the scroll-edge effect of iOS, set
+`scrollEdge="material"` (the translucent chrome material) or
+`scrollEdge="surface"` (the opaque surface). The backing tracks the scroll:
+it is fully clear at rest and fully in once content has scrolled
+`scrollEdgeDistance` pixels beneath the header (default 60), and out again as
+you return to the top. Only its opacity changes; the blur itself never
+animates. `wireScrollDividers` publishes the progress
+(`--kui-scroll-edge-progress`, 0 to 1) from the scroll it already tracks, so
+it works in every engine with no extra wiring; unwired, the header stays
+clear.
 
 ```tsx
 <Pane
@@ -381,12 +386,14 @@ in every engine with no extra wiring.
 Clear chrome turns opaque where transparency would hurt: under
 `prefers-reduced-transparency: reduce` or `prefers-contrast: more` it paints
 the opaque material, and in forced colors it paints `Canvas` with a
-`CanvasText` edge. Under reduced motion, the static-effects switch, or a
-slow-updating display, the scroll-edge material switches without fading.
+`CanvasText` edge. Under the static-effects switch or on a slow-updating
+display, the scroll edge snaps on while content lies beneath the bar instead
+of tracking the scroll.
 `NavStack` (`chromePresentation`, `bottomToolbarPresentation`) and
 `TabNavigator` (`barPresentation`) take the same `clear` value and
-`scrollEdge` prop; a bottom bar shows its material while content continues
-below it and clears once the content reaches its end.
+`scrollEdge` and `scrollEdgeDistance` props; a bottom bar fades its backing
+out over the last `scrollEdgeDistance` pixels, clearing once the content
+reaches its end.
 
 ## Content items
 

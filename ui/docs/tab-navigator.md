@@ -233,9 +233,11 @@ active scene's thumb and buttons stay visible and usable.
 ### Clear bar
 
 `barPresentation="clear"` lays the bar over the active scene like `overlay`
-but fully transparent, for a bar over imagery. With `scrollEdge="material"`
-the chrome material fades in (opacity only) while the scene continues
-beneath the bar and clears once it is scrolled to its end. A clear bar draws
+but fully transparent, for a bar over imagery. It stays
+clear while content scrolls beneath it; with `scrollEdge="material"` (or
+`"surface"`) a backing fades in (opacity only) while the scene continues
+beneath the bar and fades out over the last `scrollEdgeDistance` pixels
+(default 60) before its end. A clear bar draws
 no scroll divider, turns opaque under reduced transparency or increased
 contrast, and paints `Canvas` in forced colors. See
 [Clear header](layout.md#clear-header).

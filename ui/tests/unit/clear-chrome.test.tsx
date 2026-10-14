@@ -49,6 +49,18 @@ describe('clear chrome', () => {
     expect(html).toContain('data-header-presentation="overlay"');
     expect(html).toContain('data-header-material="clear"');
     expect(html).toContain('data-scroll-edge="material"');
+    expect(html).not.toContain('data-scroll-edge-distance');
+    expect(
+      String(
+        Pane({
+          header,
+          headerPresentation: 'clear',
+          scrollEdge: 'surface',
+          scrollEdgeDistance: 120,
+          children: <span>Rows</span>,
+        }),
+      ),
+    ).toContain('data-scroll-edge="surface" data-scroll-edge-distance="120"');
 
     const overlay = String(
       Pane({
@@ -161,49 +173,48 @@ describe('clear chrome', () => {
         'backdrop-filter:none',
         'background:transparent',
       ]);
-      const pseudo = decls.filter(
-        (entry) =>
-          entry.media === '' &&
-          !entry.selector.startsWith(':root') &&
-          entry.selector.includes('[data-scroll-edge="material"]') &&
-          entry.selector.endsWith('::before'),
+      const rule = (suffix: string) =>
+        decls
+          .filter(
+            (entry) =>
+              entry.media === '' &&
+              !entry.selector.startsWith(':root') &&
+              entry.selector.endsWith(suffix),
+          )
+          .map((entry) => entry.decl);
+      // The layer follows the published progress; only its opacity changes.
+      expect(rule(`[data-scroll-edge] > ${bar}::before`)).toContain(
+        'opacity:var(--kui-scroll-edge-progress, 0)',
       );
-      expect(pseudo.map((entry) => entry.decl)).toEqual(
-        expect.arrayContaining([
-          'background:var(--kui-chrome-material)',
-          'backdrop-filter:var(--kui-chrome-material-filter)',
-          'opacity:0',
-          'opacity:1',
-        ]),
-      );
-      // Only opacity transitions; the filter itself never animates.
-      const transitions = pseudo.filter((entry) =>
-        entry.decl.startsWith('transition:'),
-      );
-      expect(transitions.map((entry) => entry.decl)).toEqual([
-        'transition:opacity var(--wa-transition-normal, 250ms) ease',
+      expect(rule(`[data-scroll-edge="material"] > ${bar}::before`)).toEqual([
+        '-webkit-backdrop-filter:var(--kui-chrome-material-filter)',
+        'backdrop-filter:var(--kui-chrome-material-filter)',
+        'background:var(--kui-chrome-material)',
+      ]);
+      expect(rule(`[data-scroll-edge="surface"] > ${bar}::before`)).toEqual([
+        'background:var(--kui-color-surface)',
       ]);
       expect(
-        pseudo.find((entry) => entry.decl === 'opacity:1')!.selector,
-      ).toContain(`[data-scroll-divider*="${state}"]`);
-      for (const media of [
-        '(prefers-reduced-motion: reduce)',
-        '(update: slow)',
+        decls.some(
+          (entry) =>
+            entry.selector.includes('data-scroll-edge') &&
+            entry.decl.startsWith('transition:'),
+        ),
+      ).toBe(false);
+      // Static effects and slow displays snap on the scroll state instead.
+      for (const scope of [
+        (entry: (typeof decls)[number]) =>
+          entry.selector.startsWith(':root[data-kui-effects="static"]'),
+        (entry: (typeof decls)[number]) => entry.media === '(update: slow)',
       ])
         expect(
           decls.some(
             (entry) =>
-              entry.media === media && entry.decl === 'transition:none',
+              scope(entry) &&
+              entry.selector.includes(`[data-scroll-divider*="${state}"]`) &&
+              entry.decl === 'opacity:1',
           ),
-          `${bar} under ${media}`,
         ).toBe(true);
-      expect(
-        decls.some(
-          (entry) =>
-            entry.selector.startsWith(':root[data-kui-effects="static"]') &&
-            entry.decl === 'transition:none',
-        ),
-      ).toBe(true);
       expect(
         decls.some(
           (entry) =>
