@@ -1,7 +1,12 @@
 /** `choice()` implementation and public option types. */
 import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
-import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
+import {
+  overlay,
+  type OverlayContent,
+  type OverlayPresentation,
+  wireDialog,
+} from './overlay-core.js';
 
 /** One choosable action in a {@link choice} dialog. */
 export interface ChoiceAction<R> {
@@ -23,6 +28,8 @@ export interface ChoiceOptions<R> {
   title?: string;
   defaultValue?: R;
   native?: boolean;
+  /** `'bottom-sheet'` presents the dialog as a bottom sheet (see `OverlayOptions.presentation`). Default `'modal'`. */
+  presentation?: OverlayPresentation;
   render?: (slots: ChoiceRenderSlots) => OverlayContent;
 }
 
@@ -38,6 +45,7 @@ export function choice<R>(
     title,
     defaultValue,
     native = false,
+    presentation,
     render,
   } = options;
   const hasDefault = 'defaultValue' in options;
@@ -82,6 +90,7 @@ export function choice<R>(
     initialFocus: '[data-choice]',
     trap: true,
     native,
+    presentation,
   });
 
   // Post-open wiring is still construction: a throw closes the overlay. Any

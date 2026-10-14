@@ -1,7 +1,12 @@
 /** `form()` implementation and public option types. */
 import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
-import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
+import {
+  overlay,
+  type OverlayContent,
+  type OverlayPresentation,
+  wireDialog,
+} from './overlay-core.js';
 import { type FieldValidator, runValidator } from './overlay-prompt.js';
 
 /** A single field in a {@link form}. */
@@ -37,6 +42,8 @@ export interface FormOptions {
   okText?: string;
   cancelText?: string;
   native?: boolean;
+  /** `'bottom-sheet'` presents the dialog as a bottom sheet (see `OverlayOptions.presentation`). Default `'modal'`. */
+  presentation?: OverlayPresentation;
   render?: (slots: FormRenderSlots) => OverlayContent;
 }
 
@@ -52,6 +59,7 @@ export function form(
     okText = 'OK',
     cancelText = 'Cancel',
     native = false,
+    presentation,
     render,
   } = options;
 
@@ -129,6 +137,7 @@ export function form(
     initialFocus: '[data-field]',
     trap: true,
     native,
+    presentation,
   });
 
   // Post-open wiring is still construction: a missing required field input or

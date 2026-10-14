@@ -373,3 +373,54 @@ possible future work (each its own ticket if pursued):
   work, not part of this behavior-preserving pass.
 - **Default-on**, if and when a "reset UA styles" story is agreed that keeps the
   zero-CSS contract.
+
+## 19.9 Bottom-sheet presentation (`presentation: 'bottom-sheet'`)
+
+> **Status: shipped.** `overlay()`, `confirm`, `prompt`, `form`, and `choice`
+> accept `presentation?: 'modal' | 'bottom-sheet'` (`OverlayPresentation`),
+> named after `@kerfjs/ui`'s `DialogSurface` `presentation="bottom-sheet"`.
+> (`placement` was not reused: `popover()` already spends it on below / above.)
+
+**Ownership.** The core keeps its zero-CSS contract, so it owns only what needs
+JavaScript or is a stable hook, and sets no geometry (an inline style would
+beat the app's class rules):
+
+- `data-presentation="bottom-sheet"` on the wrapper, on both the plain `<div>`
+  and the `native` `<dialog>` / `[popover]` hosts. `'modal'` (the default) adds
+  nothing, so existing output is byte-identical.
+- While open, a `visualViewport` `resize` + `scroll` watch publishes the virtual
+  keyboard's overlap as `--kerf-keyboard-inset: <px>` on the wrapper: the layout
+  viewport height (`innerHeight`) minus the visual viewport's `height` and
+  `offsetTop`, rounded — the same measurement `DialogSurface`'s register makes.
+  It is removed when the overlap is zero, while pinch-zoomed (`scale > 1.01`,
+  where the difference is zoom rather than a keyboard), and on close. An engine
+  without `visualViewport` publishes nothing. With
+  `interactive-widget=resizes-content` the layout viewport shrinks instead, so
+  the overlap is zero and the sheet follows the viewport.
+- The watch is installed right after the content mounts and before
+  `showModal()` / `showPopover()`, so the first frame clears a keyboard that is
+  already up, and it is one of the transaction's removers: close, user
+  dismissal, the native `cancel`, and construction rollback all remove it.
+
+The app (or `@kerfjs/ui`) owns the bottom-edge geometry, square bottom corners,
+safe-area padding (its own gutter plus `max(env(safe-area-inset-bottom),
+var(--kerf-keyboard-inset, 0px))`), and motion. On the plain path the wrapper is the full-screen backdrop
+and its child is the sheet; on the `native` path the `<dialog>` is the sheet
+(`margin-block-end: 0` overrides the UA centering) and `::backdrop` is the
+backdrop. `docs/8-api-reference.md` › `overlay` carries the recipe.
+
+**Out of scope** (follow-ups): a resize grabber (`KF-5GHR5Z`), exit motion —
+`close()` still removes the node synchronously (`KF-WAK1TW`), and a
+`@kerfjs/ui` style layer for core sheets (`KF-CV6GG5`).
+
+**Testing.** `tests/unit/overlay-bottom-sheet.test.ts` drives a fake
+`visualViewport` through open / close / reopen, a keyboard appearing, moving,
+and hiding mid-dialog, pinch zoom, stacked sheets closed out of order, the
+plain, `native`, and non-modal hosts, rollback after a throwing render or
+`showModal()`, and each promise dialog. `tests/browser/overlay-bottom-sheet.spec.ts`
+proves in Chromium, Firefox, and WebKit that the documented recipe rests the
+sheet flush on the bottom edge for both hosts and that a real `visualViewport`
+`resize` event reaches the wrapper and pads the sheet. Playwright cannot raise
+a virtual keyboard, so the spec reports a layout viewport 300px taller than the
+visual one; a real-device check is tracked with `DialogSurface`'s
+(`KF-S9GFCZ`).

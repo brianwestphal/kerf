@@ -10,6 +10,7 @@ export {
   type OverlayContent,
   type OverlayHandle,
   type OverlayOptions,
+  type OverlayPresentation,
 } from './overlay-core.js';
 export {
   choice,

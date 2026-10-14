@@ -1,7 +1,12 @@
 /** `prompt()` implementation and public option types. */
 import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
-import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
+import {
+  overlay,
+  type OverlayContent,
+  type OverlayPresentation,
+  wireDialog,
+} from './overlay-core.js';
 
 /**
  * Validate a single field's value, synchronously: return a non-empty message
@@ -45,6 +50,8 @@ export interface PromptOptions {
   cancelText?: string;
   validate?: FieldValidator;
   native?: boolean;
+  /** `'bottom-sheet'` presents the dialog as a bottom sheet (see `OverlayOptions.presentation`). Default `'modal'`. */
+  presentation?: OverlayPresentation;
   render?: (slots: PromptRenderSlots) => OverlayContent;
 }
 
@@ -73,6 +80,7 @@ export function prompt(
     cancelText = 'Cancel',
     validate,
     native = false,
+    presentation,
     render,
   } = options;
 
@@ -131,6 +139,7 @@ export function prompt(
     initialFocus: '[data-prompt-input]',
     trap: true,
     native,
+    presentation,
   });
 
   // Post-open wiring is still construction: a missing required input or any

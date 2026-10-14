@@ -1,7 +1,12 @@
 /** `confirm()` implementation and public option types. */
 import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
-import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
+import {
+  overlay,
+  type OverlayContent,
+  type OverlayPresentation,
+  wireDialog,
+} from './overlay-core.js';
 
 /** Wiring slots passed to a {@link ConfirmOptions.render}. */
 export interface ConfirmRenderSlots {
@@ -28,6 +33,8 @@ export interface ConfirmOptions {
   danger?: boolean;
   /** Host the dialog in the browser top layer where supported. */
   native?: boolean;
+  /** `'bottom-sheet'` presents the dialog as a bottom sheet (see `OverlayOptions.presentation`). Default `'modal'`. */
+  presentation?: OverlayPresentation;
   /** Bring your own body while retaining kerf's dialog wiring. */
   render?: (slots: ConfirmRenderSlots) => OverlayContent;
 }
@@ -45,6 +52,7 @@ export function confirm(
     cancelText = 'Cancel',
     danger = false,
     native = false,
+    presentation,
     render,
   } = options;
 
@@ -88,6 +96,7 @@ export function confirm(
     initialFocus: '[data-confirm="ok"]',
     trap: true,
     native,
+    presentation,
   });
 
   // Post-open wiring is still construction: a throw closes the overlay. The

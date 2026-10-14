@@ -202,7 +202,10 @@ const BUDGETS = [
     // KF-YW3PRD (+0.20 KB): fitHeight reads a running max-height animation
     // or transition at the keyframe it is headed to (its current frame
     // skewed the cap) and skips the room swap so the app's animation runs on.
-    budgetKb: 22.3,
+    // KF-1BVQ8H (+0.16 KB): presentation: 'bottom-sheet' marks the wrapper and
+    // follows visualViewport to publish --kerf-keyboard-inset while open, and
+    // the four promise dialogs thread the option through.
+    budgetKb: 22.6,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

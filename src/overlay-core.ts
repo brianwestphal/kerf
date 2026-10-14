@@ -31,6 +31,15 @@ export type DismissTrigger = 'escape' | 'backdrop' | 'outside';
 /** Content for an overlay: static `SafeHtml`, or a render function `mount()` drives reactively. */
 export type OverlayContent = SafeHtml | (() => MountResult);
 
+/**
+ * How an overlay is presented. `'modal'` (the default) adds nothing.
+ * `'bottom-sheet'` marks the wrapper `data-presentation="bottom-sheet"` and,
+ * while open, publishes the virtual keyboard's overlap as the inline custom
+ * property `--kerf-keyboard-inset`. kerf ships no CSS: the bottom-edge
+ * geometry, safe-area padding, and motion are the app's (or `@kerfjs/ui`'s).
+ */
+export type OverlayPresentation = 'modal' | 'bottom-sheet';
+
 /** Options for {@link overlay}. */
 export interface OverlayOptions {
   /**
@@ -83,6 +92,18 @@ export interface OverlayOptions {
    * the DOM. Default `false`.
    */
   native?: boolean;
+  /**
+   * `'bottom-sheet'` marks the wrapper `data-presentation="bottom-sheet"` (on
+   * both the plain `<div>` and the `native` `<dialog>` / `[popover]` hosts) and,
+   * while the overlay is open, follows `visualViewport` to publish the virtual
+   * keyboard's overlap as `--kerf-keyboard-inset: <px>` on the wrapper (removed
+   * when there is none, while pinch-zoomed, and on close). Style the sheet with
+   * those hooks — rest it on the bottom edge and add
+   * `max(env(safe-area-inset-bottom), var(--kerf-keyboard-inset, 0px))` to its
+   * block-end padding. kerf
+   * sets no geometry of its own. Default `'modal'` (nothing added).
+   */
+  presentation?: OverlayPresentation;
 }
 
 /** Handle returned by {@link overlay}. Holds no framework state — it's a closure. */
@@ -126,6 +147,42 @@ function supportsPopover(): boolean {
     typeof HTMLElement !== 'undefined' &&
     typeof HTMLElement.prototype.showPopover === 'function'
   );
+}
+
+/** The wrapper's custom property carrying a bottom sheet's keyboard overlap. */
+const KEYBOARD_INSET = '--kerf-keyboard-inset';
+
+// A bottom sheet rests on the layout viewport's bottom edge, which a virtual
+// keyboard overlays: publish that overlap (layout height minus the visual
+// viewport's height and top offset; nothing while pinch-zoomed, when the
+// difference is zoom, not a keyboard) on `el` until the returned disposer
+// runs. Engines without `visualViewport` publish nothing. A page whose
+// viewport meta resizes content shrinks the layout viewport instead, so the
+// overlap is zero there and the sheet simply follows the viewport.
+function followKeyboardInset(
+  el: HTMLElement,
+  removers: Array<() => void>,
+): void {
+  const viewport = globalThis.visualViewport;
+  if (viewport == null) return;
+  const publish = (): void => {
+    const inset =
+      viewport.scale > 1.01
+        ? 0
+        : Math.round(
+            globalThis.innerHeight - viewport.height - viewport.offsetTop,
+          );
+    if (inset > 0) el.style.setProperty(KEYBOARD_INSET, `${inset}px`);
+    else el.style.removeProperty(KEYBOARD_INSET);
+  };
+  viewport.addEventListener('resize', publish);
+  viewport.addEventListener('scroll', publish);
+  removers.push(() => {
+    viewport.removeEventListener('resize', publish);
+    viewport.removeEventListener('scroll', publish);
+    el.style.removeProperty(KEYBOARD_INSET);
+  });
+  publish();
 }
 
 // Stacked-surface arbitration (KF-CW7GJ8: a tooltip inside a modal used to
@@ -410,6 +467,7 @@ export function overlay(
     onDismiss,
     outsideIgnore,
     native = false,
+    presentation = 'modal',
   } = options;
 
   if (typeof initialFocus === 'string')
@@ -443,6 +501,8 @@ export function overlay(
     : document.createElement('div');
   wrapper.className = className;
   if (usePopover) wrapper.setAttribute('popover', 'manual');
+  const bottomSheet = presentation === 'bottom-sheet';
+  if (bottomSheet) wrapper.setAttribute('data-presentation', 'bottom-sheet');
   // `<dialog>.showModal()` conveys modality natively (role + inert), so the ARIA
   // attributes are only needed on the plain-`<div>` fallback.
   if (trap && !useDialog) {
@@ -563,6 +623,9 @@ export function overlay(
       wrapper,
       typeof content === 'function' ? content : () => content,
     );
+    // Before the top-layer show, so the first painted frame already clears
+    // a keyboard that is up when the sheet opens.
+    if (bottomSheet) followKeyboardInset(wrapper, removers);
     // Watch for app-owned modal dialogs while any kerf surface is open.
     // Shadow roots are refreshed on every open; one attached after the latest
     // open is not watched until the next.
