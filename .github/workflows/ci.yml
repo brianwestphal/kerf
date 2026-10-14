@@ -233,6 +233,15 @@ jobs:
       - run: npm ci
       - run: npx playwright install chromium
       - run: npm run build
+      # The templates are captured in the default presentation. A macOS
+      # runner may report reduced transparency or more contrast, which makes
+      # the glass and chrome materials resolve opaque and the templates drift.
+      # Pin both preferences off, then report what the capture browser sees.
+      - name: Pin and report the capture browser's display preferences
+        run: |
+          defaults write com.apple.universalaccess reduceTransparency -bool false || true
+          defaults write com.apple.universalaccess increaseContrast -bool false || true
+          node scripts/report-capture-media.mjs
       - run: npm run check:design-templates:drift
 
   # KF-118: browser tests run on every push/PR alongside the unit suites.
