@@ -36,18 +36,22 @@ dialog.kerf-overlay[data-presentation="bottom-sheet"] {
     var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px)),
     var(--kerf-keyboard-inset, 0px)
   );
-  box-sizing: border-box;
-  width: min(100%, remify(560px));
-  max-width: 100%;
-  max-height: calc(
+  --_kui-overlay-sheet-cap: calc(
     100dvh - var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px)) -
       remify(16px)
   );
+  --_kui-overlay-sheet-padding-end: calc(
+    var(--kui-space-xs) + var(--_kui-overlay-sheet-clearance)
+  );
+  box-sizing: border-box;
+  width: min(100%, remify(560px));
+  max-width: 100%;
+  max-height: var(--_kui-overlay-sheet-cap);
   margin: 0;
   /* The 8px surface inset of a DialogSurface body: content items and lists
      inside own their own inset from there. */
   padding: var(--kui-space-xs) var(--kui-space-xs)
-    calc(var(--kui-space-xs) + var(--_kui-overlay-sheet-clearance));
+    var(--_kui-overlay-sheet-padding-end);
   overflow: auto;
   border: 0;
   /* Concentric with a pill control group at the 8px surface inset, like a
@@ -71,6 +75,60 @@ dialog.kerf-overlay[data-presentation="bottom-sheet"] {
    gives way to the bottom edge. */
 dialog.kerf-overlay[data-presentation="bottom-sheet"] {
   margin: auto auto 0;
+}
+
+/* A resizable sheet (the `kui-overlay-sheet-resizable` class, wired by
+   `wireOverlaySheets` from `@kerfjs/ui/wire-overlay-sheets`) carries the
+   grabber of a resizable DialogSurface sheet at its top edge. It opens at its
+   content height; a drag or the keyboard publishes the visible height on the
+   wrapper, between the minimum and the cap. */
+div.kerf-overlay.kui-overlay-sheet-resizable[data-presentation="bottom-sheet"]
+  > *,
+dialog.kerf-overlay.kui-overlay-sheet-resizable[data-presentation="bottom-sheet"] {
+  height: calc(
+    var(--_kui-overlay-sheet-height) + var(--_kui-overlay-sheet-padding-end)
+  );
+  min-height: min(
+    calc(
+      var(--kui-overlay-sheet-min-height, remify(160px)) +
+        var(--_kui-overlay-sheet-padding-end)
+    ),
+    var(--_kui-overlay-sheet-cap)
+  );
+  padding-block-start: 0;
+}
+
+/* Sticky, so it stays at the top edge while the sheet's content scrolls, and
+   overlapping the content's first 8px, so the content starts 12px down as in
+   a resizable DialogSurface sheet. */
+.kui-overlay-sheet-handle {
+  position: sticky;
+  z-index: 2;
+  inset-block-start: 0;
+  display: block;
+  width: remify(96px);
+  height: remify(20px);
+  margin: 0 auto calc(remify(12px) - remify(20px));
+  border-radius: var(--kui-radius-s);
+  cursor: ns-resize;
+  touch-action: none;
+}
+
+.kui-overlay-sheet-handle::before {
+  position: absolute;
+  inset-block-start: remify(6px);
+  inset-inline: 0;
+  width: remify(36px);
+  height: remify(5px);
+  margin-inline: auto;
+  border-radius: remify(2.5px);
+  background: var(--kui-color-neutral-border-loud);
+  content: "";
+}
+
+.kui-overlay-sheet-handle:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
 }
 
 @keyframes kui-overlay-sheet-slide {
@@ -145,5 +203,9 @@ dialog.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit {
   dialog.kerf-overlay[data-presentation="bottom-sheet"] {
     border-block-start: 1px solid CanvasText;
     background: Canvas;
+  }
+
+  .kui-overlay-sheet-handle::before {
+    background: CanvasText;
   }
 }

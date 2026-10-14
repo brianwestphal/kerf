@@ -224,6 +224,10 @@
       "types": "./dist/wire-scroll-dividers.d.ts",
       "import": "./dist/wire-scroll-dividers.js"
     },
+    "./wire-overlay-sheets": {
+      "types": "./dist/wire-overlay-sheets.d.ts",
+      "import": "./dist/wire-overlay-sheets.js"
+    },
     "./wire-list-reorder": {
       "types": "./dist/wire-list-reorder.d.ts",
       "import": "./dist/wire-list-reorder.js"

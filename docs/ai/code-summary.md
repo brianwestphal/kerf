@@ -1076,6 +1076,21 @@ global style entry, export `@kerfjs/ui/overlay-sheet.css`, class roots
 styles `.kerf-overlay[data-presentation="bottom-sheet"]` on the plain and native
 hosts; `ui/tests/browser/overlay-sheet.spec.ts` (fixture imports the repo core)
 checks geometry, keyboard padding, the exit, and reduced motion.
+Resizable core sheets (KF-P16FST, a grabber for core bottom sheets reusing
+DialogSurface's): `ui/src/components/surfaces/surface-scaffold/internal/sheet-handle.ts`
+(the shared separator grabber: keyboard/pointer resize, bounds, ARIA values,
+used by `install-bottom-sheet.ts` and the wiring) and
+`ui/src/components/surfaces/surface-scaffold/wiring/wire-overlay-sheets.ts`
+(`wireOverlaySheets(container = document.body)`, facade
+`ui/src/wire-overlay-sheets.ts`, subpath `@kerfjs/ui/wire-overlay-sheets`):
+watches the container's direct children for a
+`.kerf-overlay.kui-overlay-sheet-resizable[data-presentation="bottom-sheet"]`
+wrapper, prepends a `data-morph-preserve` grabber to the sheet (the native
+`<dialog>` or the plain wrapper's content root), keeps it first across
+re-renders, and publishes `--_kui-overlay-sheet-height` on the wrapper.
+`ui/tests/unit/wire-overlay-sheets.test.ts` and
+`ui/tests/browser/overlay-sheet-resize.spec.ts` (fixture
+`fixtures/overlay-sheet-resize.tsx`) cover both hosts.
 
 Media Detail recipe (KF-HZM8BT, the backgrounds family composed):
 `ui/ux-demo/recipes/media-detail.tsx` (`recipe-media-detail`, eleventh in

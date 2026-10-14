@@ -26,14 +26,15 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `PopoverDialogSurface`, `PopupSurface`.
+- JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `PopoverDialogSurface`, `PopupSurface`, `wireOverlaySheets`.
 - CSS: the browser build of `@kerfjs/ui/surface-scaffold` pulls its CSS automatically; import `@kerfjs/ui/surface-scaffold.css` manually only without the `browser` export condition.
 - Registration: import `@kerfjs/ui/surface-scaffold/register` once (a side effect).
+- Wiring: `wireOverlaySheets` from `@kerfjs/ui/wire-overlay-sheets` (optional).
 - Declared side effects: browser-condition-css, custom-element-registration.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signatures-v1.md#kerfjsuisurface-scaffold) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signatures-v1.md#kerfjsuisurface-scaffold), [`@kerfjs/ui/wire-overlay-sheets`](../public-api-signatures-v1.md#kerfjsuiwire-overlay-sheets) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -53,6 +54,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
 - core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css
+- resizable core kerfjs/overlay bottom sheet: the kui-overlay-sheet-resizable class plus wireOverlaySheets adds the resizable DialogSurface sheet grabber
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -71,9 +73,9 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 
 ## State and wiring
 
-**The app owns:** open state; focus lifecycle; dismissal policy; content; outer placement; whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out).
+**The app owns:** open state; focus lifecycle; dismissal policy; content; outer placement; whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber).
 
-No wiring helper.
+**Wiring:** `wireOverlaySheets` is optional.
 
 ## Geometry
 

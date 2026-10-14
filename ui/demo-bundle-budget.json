@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 382100,
-  "measuredLargestJavaScriptGzip": 118682,
-  "measuredTotalJavaScriptGzip": 382029,
+  "totalJavaScriptGzip": 383000,
+  "measuredLargestJavaScriptGzip": 118681,
+  "measuredTotalJavaScriptGzip": 382943,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4883,6 +4883,22 @@
         "measuredTotalJavaScriptGzip": 382029,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 382100
+      }
+    },
+    {
+      "at": "2026-10-14T09:33:09.812Z",
+      "reason": "Resizable Core Sheet catalog demo and wireOverlaySheets wiring",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118682,
+        "measuredTotalJavaScriptGzip": 382029,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 382100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 382943,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 383000
       }
     }
   ]

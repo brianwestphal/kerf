@@ -35,7 +35,15 @@ export const packageClassRoots = new Map([
   ['document.css', ['kui-app-root']],
   // Styles the core kerfjs/overlay host (`.kerf-overlay`), which no kerf UI
   // component owns.
-  ['overlay-sheet.css', ['kerf-overlay', 'kui-overlay-sheet-exit']],
+  [
+    'overlay-sheet.css',
+    [
+      'kerf-overlay',
+      'kui-overlay-sheet-exit',
+      'kui-overlay-sheet-resizable',
+      'kui-overlay-sheet-handle',
+    ],
+  ],
   [
     'layout.css',
     [

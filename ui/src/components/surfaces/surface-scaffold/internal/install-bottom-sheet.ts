@@ -1,3 +1,9 @@
+import {
+  createSheetHandle,
+  syncSheetHandleValues,
+  wireSheetHandle,
+} from './sheet-handle.js';
+
 interface SheetDialog extends HTMLElement {
   dialog?: HTMLDialogElement;
   open?: boolean;
@@ -20,10 +26,6 @@ export const KEYBOARD_INSET_PROPERTY = '--_kui-dialog-surface-keyboard-inset';
  * while it runs, so the CSS can swap only those keyframes (never the pulse).
  */
 export const SHEET_MOTION_ATTRIBUTE = 'data-kui-sheet-motion';
-
-/** Arrow-key step, and the Page Up/Down step, in px. */
-const STEP = 16;
-const PAGE_STEP = 64;
 
 const installed = new WeakSet<object>();
 const viewportCleanups = new WeakMap<SheetDialog, () => void>();
@@ -76,7 +78,8 @@ export function installBottomSheet(prototype: object): void {
       const handle = panel?.querySelector(
         `:scope > [part~="${SHEET_HANDLE_PART}"]`,
       );
-      if (panel && handle && isResizable(this)) syncValues(handle, panel);
+      if (panel && handle && isResizable(this))
+        syncSheetHandleValues(handle, panel);
     });
     return result;
   };
@@ -120,90 +123,15 @@ function syncHandle(host: SheetDialog, panel: HTMLElement): void {
 }
 
 function createHandle(host: SheetDialog, panel: HTMLElement): void {
-  const handle = document.createElement('div');
-  handle.setAttribute('part', SHEET_HANDLE_PART);
-  handle.setAttribute('role', 'separator');
-  handle.setAttribute('aria-orientation', 'horizontal');
-  handle.setAttribute('aria-label', 'Resize sheet');
-  handle.tabIndex = 0;
+  const handle = createSheetHandle({ part: SHEET_HANDLE_PART });
   // Before Lit's first marker, outside every part Lit owns.
   panel.prepend(handle);
-  handle.addEventListener('focus', () => syncValues(handle, panel));
-  handle.addEventListener('keydown', (event) => {
-    if (!isResizable(host)) return;
-    const { min, max } = bounds(panel);
-    const current = panel.getBoundingClientRect().height;
-    const next = {
-      ArrowUp: current + STEP,
-      ArrowDown: current - STEP,
-      PageUp: current + PAGE_STEP,
-      PageDown: current - PAGE_STEP,
-      Home: min,
-      End: max,
-    }[event.key];
-    if (next === undefined) return;
-    event.preventDefault();
-    resizeTo(handle, panel, next);
+  wireSheetHandle(handle, {
+    panel,
+    host: panel,
+    property: SHEET_HEIGHT_PROPERTY,
+    enabled: () => isResizable(host),
   });
-  handle.addEventListener('pointerdown', (event) => {
-    if (!isResizable(host) || event.button !== 0) return;
-    event.preventDefault();
-    const startY = event.clientY;
-    const start = panel.getBoundingClientRect().height;
-    handle.setPointerCapture?.(event.pointerId);
-    const move = (moveEvent: PointerEvent): void =>
-      resizeTo(handle, panel, start - (moveEvent.clientY - startY));
-    const end = (): void => {
-      handle.removeEventListener('pointermove', move);
-      handle.removeEventListener('pointerup', end);
-      handle.removeEventListener('pointercancel', end);
-    };
-    handle.addEventListener('pointermove', move);
-    handle.addEventListener('pointerup', end);
-    handle.addEventListener('pointercancel', end);
-  });
-}
-
-/** The panel's resolved border-box bounds and block-end clearance, in px. */
-function bounds(panel: HTMLElement): {
-  min: number;
-  max: number;
-  clearance: number;
-} {
-  const style = globalThis.getComputedStyle(panel);
-  const clearance = parseFloat(style.paddingBlockEnd) || 0;
-  const min = parseFloat(style.minHeight) || 0;
-  const max = parseFloat(style.maxHeight);
-  return {
-    min,
-    max: Number.isFinite(max) ? max : globalThis.innerHeight,
-    clearance,
-  };
-}
-
-/** Resize to a border-box height, published as the visible height above the clearance. */
-function resizeTo(handle: Element, panel: HTMLElement, height: number): void {
-  const { min, max, clearance } = bounds(panel);
-  const clamped = Math.min(max, Math.max(min, Math.round(height)));
-  panel.style.setProperty(
-    SHEET_HEIGHT_PROPERTY,
-    `${Math.max(0, clamped - clearance)}px`,
-  );
-  syncValues(handle, panel, clamped);
-}
-
-/** Separator values in visible (content) px, as a ResizableRegion reports them. */
-function syncValues(
-  handle: Element,
-  panel: HTMLElement,
-  height = panel.getBoundingClientRect().height,
-): void {
-  const { min, max, clearance } = bounds(panel);
-  const visible = (value: number) =>
-    String(Math.max(0, Math.round(value - clearance)));
-  handle.setAttribute('aria-valuemin', visible(min));
-  handle.setAttribute('aria-valuemax', visible(max));
-  handle.setAttribute('aria-valuenow', visible(height));
 }
 
 /**

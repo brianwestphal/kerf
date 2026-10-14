@@ -252,6 +252,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `wireTabBars`, `reorderTabs`                                        | `@kerfjs/ui/wire-tab-bars`              | —                                        |
 | `wireScrollDividers`                                                | `@kerfjs/ui/wire-scroll-dividers`       | —                                        |
 | `wireToolbarVisibility`                                             | `@kerfjs/ui/wire-toolbar-visibility`    | —                                        |
+| `wireOverlaySheets`                                                 | `@kerfjs/ui/wire-overlay-sheets`        | `@kerfjs/ui/overlay-sheet.css`           |
 | `LoadingSpinner`                                                    | `@kerfjs/ui/loading-spinner`            | `@kerfjs/ui/loading-spinner.css`         |
 | `Skeleton`                                                          | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`                |
 | `SunkenPanel`                                                       | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`            |

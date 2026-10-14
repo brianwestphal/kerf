@@ -1548,6 +1548,31 @@ declare function wireScrollDividers(root: Root, { targets }?: WireScrollDividers
 export { type ScrollDividerTarget, type WireScrollDividersOptions, wireScrollDividers };
 ```
 
+## `@kerfjs/ui/wire-overlay-sheets`
+
+```ts
+/**
+ * Give every resizable core `kerfjs/overlay` bottom sheet opened in
+ * `container` the resize grabber a `resizable` `DialogSurface` sheet has: a
+ * `role="separator"` at the sheet's top edge that resizes its visible height
+ * by drag or keyboard (arrows, Page Up/Down, Home, End), between
+ * `--kui-overlay-sheet-min-height` (160px) and the sheet's cap below the top
+ * safe area. A sheet opts in with the `kui-overlay-sheet-resizable` class
+ * (`overlay()` and the promise dialogs alike) and opens at its content
+ * height each time.
+ *
+ * kerf appends each overlay to its `container` (`document.body` by
+ * default), so call this once per container you open sheets in. The grabber
+ * is `data-morph-preserve` and returns to the top of the sheet after each
+ * re-render of the overlay's content. Requires
+ * `@kerfjs/ui/overlay-sheet.css`. Returns a disposer that removes every
+ * grabber and stops watching.
+ */
+declare function wireOverlaySheets(container?: ParentNode): () => void;
+
+export { wireOverlaySheets };
+```
+
 ## `@kerfjs/ui/wire-list-reorder`
 
 ```ts

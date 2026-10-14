@@ -33,7 +33,8 @@ scrolls beneath (a first `BackdropImage` with `underChrome` runs its artwork ben
 
 For a `kerfjs/overlay` dialog with `presentation: 'bottom-sheet'`, import
 `@kerfjs/ui/overlay-sheet.css` once (and pass `exitClass: 'kui-overlay-sheet-exit'`
-for the slide out); see [Core dialogs as bottom sheets](./docs/surface-scaffold.md#core-dialogs-as-bottom-sheets).
+for the slide out; add the `kui-overlay-sheet-resizable` class and call
+`wireOverlaySheets()` for a resize grabber); see [Core dialogs as bottom sheets](./docs/surface-scaffold.md#core-dialogs-as-bottom-sheets).
 
 For an app-chosen surface color, set the typed `background` prop (a
 `@kerfjs/ui/css-values` color) on `Pane` (also `PaneConfig`), `NavStack`,

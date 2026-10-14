@@ -23,7 +23,23 @@ import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
-import { confirm } from 'kerfjs/overlay';
+import { delegate } from 'kerfjs';
+import { confirm, overlay } from 'kerfjs/overlay';
+
+const QUEUE = [
+  'Morning Light',
+  'Harbor Lines',
+  'Paper Kites',
+  'Slow Current',
+  'Northern Rooms',
+  'Glass Garden',
+  'Late Ferry',
+  'Quiet Engines',
+  'Salt and Cedar',
+  'Low Orbit',
+  'Long Way Home',
+  'Afterglow',
+];
 
 const PROJECTS = ['Atlas', 'Borealis', 'Cirrus', 'Delta', 'Ember', 'Fjord'];
 
@@ -164,6 +180,58 @@ export function discardDraftSheet(): Promise<boolean> {
         </Row>
       </List>
     ),
+  });
+}
+
+/**
+ * A core `overlay()` bottom sheet the person can resize: the
+ * `kui-overlay-sheet-resizable` class opts it in, and the catalog's
+ * `wireOverlaySheets()` adds the grabber. Resolves with the chosen song, or
+ * `undefined` when dismissed.
+ */
+export function openUpNextSheet(): Promise<string | undefined> {
+  const handle = overlay(
+    <List gap="xs">
+      <Toolbar
+        label="Up Next"
+        leading={<ToolbarText text="Up Next" size="xlarge" headingLevel={2} />}
+        trailing={
+          <ToolbarControlGroup label="Up Next Actions" content="text">
+            <button type="button" data-up-next-done>
+              Done
+            </button>
+          </ToolbarControlGroup>
+        }
+      />
+      {QUEUE.map((title, index) => (
+        <ListItem
+          action="play-up-next"
+          itemId={`up-next-${String(index + 1)}`}
+          label={title}
+        />
+      ))}
+    </List>,
+    {
+      className: 'kerf-overlay kui-overlay-sheet-resizable',
+      presentation: 'bottom-sheet',
+      dismiss: ['escape', 'backdrop'],
+      exitClass: 'kui-overlay-sheet-exit',
+      exitDuration: 400,
+    },
+  );
+  const stopDone = delegate(handle.el, 'click', '[data-up-next-done]', () =>
+    handle.close(),
+  );
+  const stopPlay = delegate(
+    handle.el,
+    'click',
+    '[data-action="play-up-next"]',
+    (_event, item) => handle.close(item.textContent.trim()),
+  );
+  return handle.result.then((value) => {
+    stopDone();
+    stopPlay();
+    return typeof value === 'string' ? value : undefined;
   });
 }
 
@@ -502,6 +570,17 @@ export function SurfaceScaffoldDemo() {
         <ToolbarControlGroup single>
           <button type="button" data-action="open-overlay-sheet">
             Discard Draft
+          </button>
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample
+        label="Resizable Core Sheet"
+        note="Add the kui-overlay-sheet-resizable class and call wireOverlaySheets() from @kerfjs/ui/wire-overlay-sheets once for the container you open sheets in. The sheet gets a resizable DialogSurface sheet's grabber: drag it, or focus it and use the arrow keys, Page Up/Down, Home, and End."
+        align="inline-control"
+      >
+        <ToolbarControlGroup single>
+          <button type="button" data-action="open-up-next-sheet">
+            Show Up Next
           </button>
         </ToolbarControlGroup>
       </CatalogExample>

@@ -395,6 +395,7 @@ export {
   type PopupSurfaceProps,
   type SurfaceInset,
 } from './components/surfaces/surface-scaffold/surface-scaffold.js';
+export { wireOverlaySheets } from './components/surfaces/surface-scaffold/wiring/wire-overlay-sheets.js';
 export {
   Text,
   type TextContent,

@@ -189,6 +189,34 @@ confirm("Discard this draft?", {
 Use native buttons for the wired controls: the core focuses the OK control
 as it opens, before a Web Awesome button has rendered its inner control.
 
+A core sheet can also be resizable, like a `resizable` `DialogSurface` sheet.
+Add the `kui-overlay-sheet-resizable` class next to the default wrapper class,
+and call `wireOverlaySheets()` from `@kerfjs/ui/wire-overlay-sheets` once for
+each container sheets open in (`document.body`, the core's default):
+
+```tsx
+import "@kerfjs/ui/overlay-sheet.css";
+import { wireOverlaySheets } from "@kerfjs/ui/wire-overlay-sheets";
+
+const stopSheets = wireOverlaySheets();
+
+overlay(<UpNext />, {
+  className: "kerf-overlay kui-overlay-sheet-resizable",
+  presentation: "bottom-sheet",
+});
+```
+
+Each such sheet gets the same grabber at its top edge: a `role="separator"`
+that resizes the visible height by drag, the arrow keys (16px), Page Up/Down
+(64px), Home (the minimum), and End (the cap), and reports that height as its
+ARIA values. The minimum is `--kui-overlay-sheet-min-height` (160px). The
+sheet opens at its content height every time. The grabber sticks to the top
+edge while the content scrolls, and stays the sheet's first child (and first
+tab stop) across re-renders of the overlay's content. Compose the sheet's
+content root as a block or column, since the grabber is its first child. The
+wiring watches only the container's direct children, which is where the core
+appends each overlay; call the disposer to remove every grabber.
+
 ### Filling the dialog
 
 `maxHeight` caps a modal that sizes to its content. A layout that fills the

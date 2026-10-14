@@ -77,7 +77,11 @@ For a `kerfjs/overlay` `confirm` / `prompt` / `form` / `choice` (or `overlay()`)
 with `presentation: 'bottom-sheet'`, import `@kerfjs/ui/overlay-sheet.css` once
 instead of writing sheet CSS, pass `exitClass: 'kui-overlay-sheet-exit'` with an
 `exitDuration` for the slide out, and compose the content through the dialog's
-`render` slot with native buttons for the wired controls.
+`render` slot with native buttons for the wired controls. For a sheet the person
+can resize, add the `kui-overlay-sheet-resizable` class
+(`className: 'kerf-overlay kui-overlay-sheet-resizable'`) and call
+`wireOverlaySheets()` from `@kerfjs/ui/wire-overlay-sheets` once per container,
+instead of building a grabber.
 
 ### App-chosen surface colors
 

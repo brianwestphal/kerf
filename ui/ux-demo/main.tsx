@@ -46,6 +46,7 @@ import {
   wireListReorder,
 } from '@kerfjs/ui/wire-list-reorder';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
+import { wireOverlaySheets } from '@kerfjs/ui/wire-overlay-sheets';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
@@ -183,6 +184,7 @@ import {
 import {
   CHAT_DIALOG_ID,
   discardDraftSheet,
+  openUpNextSheet,
   resetSurfaceScaffoldDemo,
   SEND_CHAT_DIALOG_MESSAGE_ACTION,
   sendSurfaceScaffoldChatMessage,
@@ -638,6 +640,12 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = recipeNotesVisible.value
       ? 'Recipe notes shown'
       : 'Recipe notes hidden';
+  },
+  'open-up-next-sheet': () => {
+    void openUpNextSheet().then((song) => {
+      actionLog.value =
+        song === undefined ? 'Up Next closed' : `Playing ${song}`;
+    });
   },
   'open-overlay-sheet': () => {
     void discardDraftSheet().then((discard) => {
@@ -1376,6 +1384,7 @@ const stopCatalog = wireCatalog(app, {
       : 'Settings expanded';
   },
 });
+const stopOverlaySheets = wireOverlaySheets();
 const stopResize = wireResizableRegions(app, {
   onCommit: ({ id, size }) => {
     // Recipes own their resizable regions through their own wiring.
@@ -2075,6 +2084,7 @@ window.addEventListener(
     stopActions();
     stopCatalog();
     stopResize();
+    stopOverlaySheets();
     stopSelect();
     stopRecipeNav?.();
     stopRecipeNavEffect();
