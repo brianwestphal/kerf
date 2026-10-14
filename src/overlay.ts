@@ -7,6 +7,7 @@
 export {
   type DismissTrigger,
   overlay,
+  type OverlayCloseOptions,
   type OverlayContent,
   type OverlayHandle,
   type OverlayOptions,

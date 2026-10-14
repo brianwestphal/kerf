@@ -10,7 +10,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { raw } from '../../src/jsx-runtime.js';
-import { choice, confirm, form, overlay, prompt } from '../../src/overlay.js';
+import {
+  choice,
+  confirm,
+  form,
+  overlay,
+  type OverlayCloseOptions,
+  prompt,
+} from '../../src/overlay.js';
 import { signal } from '../../src/reactive.js';
 
 /** A fake `Animation`: `endTime` drives kerf's finite filter; `settle()` ends it. */
@@ -208,7 +215,9 @@ describe('overlay() — re-entrancy during the exit', () => {
     stubAnimations([fakeAnimation().animation]);
     const h = overlay(raw('<p>x</p>'), EXIT);
     h.close();
-    h.close(undefined, { instant: true });
+    // The options type is public from kerfjs/overlay.
+    const instant: OverlayCloseOptions = { instant: true };
+    h.close(undefined, instant);
     expect(h.el.isConnected).toBe(false);
     expect(vi.getTimerCount()).toBe(0);
     h.close(undefined, { instant: true }); // still idempotent
