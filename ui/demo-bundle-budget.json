@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 380000,
-  "measuredLargestJavaScriptGzip": 118680,
-  "measuredTotalJavaScriptGzip": 379910,
+  "measuredLargestJavaScriptGzip": 118681,
+  "measuredTotalJavaScriptGzip": 379998,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4769,6 +4769,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 118680,
         "measuredTotalJavaScriptGzip": 379910,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 380000
+      }
+    },
+    {
+      "at": "2026-10-14T06:37:15.532Z",
+      "reason": "KF-7MXK46 tint accent and KF-S9GFCZ bottom-sheet content height demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 379910,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 380000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 379998,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 380000
       }

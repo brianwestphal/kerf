@@ -39,6 +39,7 @@ function panelGeometry(page: Page) {
       width: rect.width,
       height: rect.height,
       bodyBottom: body.getBoundingClientRect().bottom,
+      bodyScrollOverflow: body.scrollHeight - body.clientHeight,
       radii: [
         style.borderTopLeftRadius,
         style.borderTopRightRadius,
@@ -60,8 +61,10 @@ for (const [label, width, height] of [
     await openSheet(page, width, height);
     const geometry = await panelGeometry(page);
     expect(geometry.bottom).toBeCloseTo(height, 0);
-    // 360px opening height above a zero safe area.
-    expect(geometry.height).toBeCloseTo(360, 0);
+    // With no `height` the sheet opens at its content height: the body holds
+    // the whole form without scrolling, well short of the cap.
+    expect(geometry.height).toBeLessThan(height - 16);
+    expect(geometry.bodyScrollOverflow).toBeLessThanOrEqual(1);
     expect(geometry.radii[0]).not.toBe('0px');
     expect(geometry.radii[1]).not.toBe('0px');
     expect(geometry.radii.slice(2)).toEqual(['0px', '0px']);
@@ -76,6 +79,7 @@ test('the panel runs behind the safe area and the keyboard while its content sta
   page,
 }) => {
   await openSheet(page, 390, 844);
+  const opening = (await panelGeometry(page)).height;
   await page.evaluate(() =>
     document.documentElement.style.setProperty(
       '--kui-safe-area-block-end',
@@ -85,7 +89,7 @@ test('the panel runs behind the safe area and the keyboard while its content sta
   let geometry = await panelGeometry(page);
   expect(geometry.bottom).toBeCloseTo(844, 0);
   expect(geometry.paddingBottom).toBeCloseTo(34, 0);
-  expect(geometry.height).toBeCloseTo(394, 0);
+  expect(geometry.height).toBeCloseTo(opening + 34, 0);
   expect(geometry.bodyBottom).toBeLessThanOrEqual(844 - 34 + 0.5);
   // The register publishes the measured keyboard overlap on the panel; the
   // larger clearance wins and the visible height above it is kept.
@@ -99,7 +103,7 @@ test('the panel runs behind the safe area and the keyboard while its content sta
   geometry = await panelGeometry(page);
   expect(geometry.bottom).toBeCloseTo(844, 0);
   expect(geometry.paddingBottom).toBeCloseTo(300, 0);
-  expect(geometry.height).toBeCloseTo(660, 0);
+  expect(geometry.height).toBeCloseTo(opening + 300, 0);
   expect(geometry.bodyBottom).toBeLessThanOrEqual(844 - 300 + 0.5);
   // The cap (viewport minus the 16px gutter) still holds.
   await page
@@ -117,9 +121,13 @@ test('the grabber resizes the sheet by drag and keyboard within its bounds', asy
   page,
 }) => {
   await openSheet(page, 390, 844);
+  const opening = (await panelGeometry(page)).height;
   const handle = page.getByRole('separator', { name: 'Resize sheet' });
   await expect(handle).toBeVisible();
-  await expect(handle).toHaveAttribute('aria-valuenow', '360');
+  await expect(handle).toHaveAttribute(
+    'aria-valuenow',
+    String(Math.round(opening)),
+  );
   await expect(handle).toHaveAttribute('aria-valuemin', '200');
   await expect(handle).toHaveAttribute('aria-valuemax', '828');
   const box = (await handle.boundingBox())!;
@@ -129,8 +137,11 @@ test('the grabber resizes the sheet by drag and keyboard within its bounds', asy
     steps: 6,
   });
   await page.mouse.up();
-  expect((await panelGeometry(page)).height).toBeCloseTo(480, 0);
-  await expect(handle).toHaveAttribute('aria-valuenow', '480');
+  expect((await panelGeometry(page)).height).toBeCloseTo(opening + 120, 0);
+  await expect(handle).toHaveAttribute(
+    'aria-valuenow',
+    String(Math.round(opening + 120)),
+  );
   // Dragging past the top stops at the cap.
   const moved = (await handle.boundingBox())!;
   await page.mouse.move(moved.x + 40, moved.y + 10);
@@ -146,7 +157,7 @@ test('the grabber resizes the sheet by drag and keyboard within its bounds', asy
   await expect(handle).toHaveAttribute('aria-valuenow', '216');
   // The pointer never light-dismisses the sheet from its own grabber.
   await expect(page.locator(DIALOG)).toHaveAttribute('open', '');
-  // Each opening starts at the configured height again.
+  // Each opening starts at the configured (here, content) height again.
   await page.keyboard.press('Escape');
   await expect(page.locator(DIALOG)).not.toHaveAttribute('open', '');
   await expect
@@ -159,7 +170,9 @@ test('the grabber resizes the sheet by drag and keyboard within its bounds', asy
       }),
     )
     .toBe(true);
-  await expect.poll(async () => (await panelGeometry(page)).height).toBe(360);
+  await expect
+    .poll(async () => Math.round((await panelGeometry(page)).height))
+    .toBe(Math.round(opening));
 });
 
 test('the sheet slides up from the bottom edge and back down, unless motion is reduced', async ({
@@ -213,4 +226,28 @@ test('the sheet slides up from the bottom edge and back down, unless motion is r
   const reduced = (await marks())[4]!;
   expect(reduced.mark).toBe('enter');
   expect(reduced.names).not.toEqual(slide);
+});
+
+test('a sheet without a height opens at its content height, so nothing at its end is clipped', async ({
+  page,
+}) => {
+  // A modal dialog sits between both block insets; an auto height used to
+  // stretch the sheet to its cap, and the catalog's old fixed height sat a
+  // few pixels short of the form, clipping the textarea's bottom border.
+  await openSheet(page, 390, 844);
+  const fit = await page.locator(DIALOG).evaluate((element) => {
+    const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+    const textarea = element.querySelector('wa-textarea')!;
+    return {
+      overflow: body.scrollHeight - body.clientHeight,
+      textareaBottom: textarea.getBoundingClientRect().bottom,
+      bodyBottom: body.getBoundingClientRect().bottom,
+    };
+  });
+  expect(fit.overflow).toBeLessThanOrEqual(1);
+  expect(fit.textareaBottom).toBeLessThanOrEqual(fit.bodyBottom);
+  const geometry = await panelGeometry(page);
+  // It rests on the bottom edge well below the top of a tall viewport.
+  expect(geometry.bottom).toBeCloseTo(844, 0);
+  expect(geometry.top).toBeGreaterThan(300);
 });

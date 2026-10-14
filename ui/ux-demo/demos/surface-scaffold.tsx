@@ -424,12 +424,11 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Resizable Bottom Sheet"
-        note='presentation="bottom-sheet" attaches the dialog to the bottom edge with square bottom corners and clears the safe area and the virtual keyboard. resizable adds a grabber that resizes it between minHeight and the viewport (drag, or the arrow keys); it slides in and out unless motion is reduced.'
+        note='presentation="bottom-sheet" attaches the dialog to the bottom edge with square bottom corners and clears the safe area and the virtual keyboard. Without a height it opens at its content height. resizable adds a grabber that resizes it between minHeight and the viewport (drag, or the arrow keys); it slides in and out unless motion is reduced.'
         align="inline-control"
       >
         <DialogSurface
           presentation="bottom-sheet"
-          height={remify(360)}
           minHeight={remify(200)}
           resizable
           bodyInset="none"

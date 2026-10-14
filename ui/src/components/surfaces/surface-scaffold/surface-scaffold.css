@@ -353,6 +353,10 @@
       var(--_kui-dialog-surface-sheet-clearance)
   );
   max-height: var(--_kui-dialog-surface-sheet-cap);
+  /* A modal dialog sits between both block insets, so an auto height would
+     stretch to the cap; anchored only at the bottom, a sheet with no
+     `height` (and no resized height) opens at its content height. */
+  inset-block-start: auto;
   margin: auto auto 0;
   padding-block-end: var(--_kui-dialog-surface-sheet-clearance);
   border-radius: var(--_kui-dialog-surface-radius)
