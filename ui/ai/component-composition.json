@@ -2002,7 +2002,7 @@
           "kui-popup-surface"
         ],
         "publicTokens": [
-          "--kui-radius-l",
+          "--kui-layout-pill-radius",
           "--kui-wa-container-inset",
           "--kui-wa-surface-inset",
           "--kui-chrome-material-raised",

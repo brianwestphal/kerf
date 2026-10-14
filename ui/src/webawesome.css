@@ -477,6 +477,16 @@
     padding: var(--kui-wa-surface-inset);
   }
 
+  /* The panel corner is concentric with a pill ToolbarControlGroup resting at
+     the surface inset (22px pill + 8px inset = 30px), so header and body
+     controls nest into the corner instead of crowding a tighter curve. */
+  wa-dialog::part(dialog) {
+    border-radius: calc(
+      var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
+        var(--kui-wa-surface-inset, remify(8px))
+    );
+  }
+
   wa-dialog::part(footer) {
     padding: var(--kui-wa-container-inset);
     display: flex;

@@ -237,6 +237,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- `@kerfjs/ui` dialog corners are now concentric with a pill `ToolbarControlGroup` (22px) resting at the body inset, in place of Web Awesome's 12px panel radius: 30px by default (a bare `wa-dialog`, `PopoverDialogSurface`, and `DialogSurface` with a `compact` or `none` body inset) and 38px for `bodyInset="comfortable"`. A side sheet's leading corners follow the same radius (`KF-1FNWQG`).
+
 - A resizable `@kerfjs/ui` `Workbench` panel without a `label` now names its resize handle in title style, as `ui/docs/writing.md` asks for region names: "Resize Left Rail", "Resize Right Rail", and "Resize Bottom Drawer" (previously "Resize left rail" and so on). A test or locator that matched the old accessible name needs the new one (`KF-NWS9GB`).
 
 - `kerf-ui-doctor`'s `KUI-D040` now also checks template literals passed to title-style props, judging only their static words: ``label={`Edit ${name} shortcut`}`` is reported with the suggestion `` `Edit ${name} Shortcut` ``. Interpolated values and words joined to an interpolation are never judged. The UX demos' dynamic control names follow it ("Edit … Shortcut", "Open Ticket …", "New Tab …"), and the NavStack demo's detail item is named by its visible title alone (`KF-8B6JES`).

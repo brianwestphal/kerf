@@ -5,6 +5,21 @@
     var(--_kui-dialog-surface-gutter, remify(16px))
   );
   --width: min(remify(560px), calc(100vw - remify(32px)));
+  /* Concentric with a pill ToolbarControlGroup at the body inset: 22px + 8px
+     compact, 22px + 16px comfortable. */
+  --_kui-dialog-surface-radius: calc(
+    var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
+      var(--kui-wa-surface-inset, remify(8px))
+  );
+}
+.kui-dialog-surface[data-body-inset="comfortable"] > wa-dialog {
+  --_kui-dialog-surface-radius: calc(
+    var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
+      var(--kui-wa-container-inset, remify(16px))
+  );
+}
+.kui-dialog-surface > wa-dialog::part(dialog) {
+  border-radius: var(--_kui-dialog-surface-radius);
 }
 .kui-dialog-surface[data-size="small"] > wa-dialog {
   --_kui-dialog-surface-width: remify(400px);
@@ -281,7 +296,8 @@
   height: 100dvh;
   max-height: 100dvh;
   margin-inline-end: 0;
-  border-radius: var(--kui-radius-l) 0 0 var(--kui-radius-l);
+  border-radius: var(--_kui-dialog-surface-radius) 0 0
+    var(--_kui-dialog-surface-radius);
 }
 .kui-dialog-surface[data-presentation="fullscreen"] > wa-dialog {
   --width: 100vw;
@@ -325,7 +341,12 @@
   overflow: auto;
   color: var(--kui-color-text);
   border: 1px solid var(--kui-color-neutral-border-normal);
-  border-radius: var(--kui-radius-l);
+  /* Matches the modal DialogSurface corner: a pill ToolbarControlGroup at the
+     8px surface inset (22px + 8px). */
+  border-radius: calc(
+    var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
+      var(--kui-wa-surface-inset, remify(8px))
+  );
   background: var(--kui-color-surface-raised);
   box-shadow: var(--kui-shadow-l);
 }

@@ -12,6 +12,12 @@ Wrap one `wa-dialog` with `DialogSurface`. Choose `size` (`small`, `medium`, or
 `bodyInset` / `footerInset` (`none`, `compact`, or `comfortable`). The defaults
 match Kerf's medium modal, 8px body, and 16px footer rhythm.
 
+The panel corner is concentric with a pill `ToolbarControlGroup` (22px) resting
+at the body inset: 30px for `compact` (and `none`) and 38px for `comfortable`,
+so header and body controls nest into the curve. A side sheet uses the same
+radius on its leading corners, and a bare `wa-dialog` or `PopoverDialogSurface`
+takes the 30px default.
+
 The modal size presets have preferred widths of 400px, 560px, and 800px,
 respectively, before the viewport width cap. Set `preferredWidth` to a branded
 `CssLength` when the desktop shell needs another width. It takes precedence over

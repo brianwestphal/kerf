@@ -94,7 +94,7 @@ Never put `kui-popover-dialog-surface` on an element you write; render `PopoverD
 
 Never put `kui-popup-surface` on an element you write; render `PopupSurface` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-radius-l`, `--kui-wa-container-inset`, `--kui-wa-surface-inset`, `--kui-chrome-material-raised`, `--kui-chrome-material-filter`, `--kui-scroll-clearance-block-start`, `--kui-scroll-clearance-block-end`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-layout-pill-radius`, `--kui-wa-container-inset`, `--kui-wa-surface-inset`, `--kui-chrome-material-raised`, `--kui-chrome-material-filter`, `--kui-scroll-clearance-block-start`, `--kui-scroll-clearance-block-end`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

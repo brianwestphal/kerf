@@ -963,3 +963,43 @@ test('the chat dialog composer sends on Enter and keeps Shift+Enter newlines', a
   await expect(field).toBeFocused();
   await page.keyboard.press('Escape');
 });
+
+// The dialog corner is concentric with a pill ToolbarControlGroup (22px)
+// resting at the body inset: 22 + 8 = 30px compact (and the default), 22 + 16
+// = 38px comfortable.
+test('the dialog corner is concentric with a toolbar group at the body inset', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await page.goto('/?component=surface-scaffold');
+  const demo = page.locator('[data-demo="surface-scaffold"]');
+  await demo.getByRole('button', { name: 'Open Dialog' }).click();
+  const dialog = page.locator('#catalog-wa-dialog');
+  await expect(dialog).toHaveAttribute('open', '');
+  const radius = () =>
+    dialog.evaluate(
+      (element) =>
+        window.getComputedStyle(element.shadowRoot!.querySelector('dialog')!)
+          .borderTopLeftRadius,
+    );
+  const setInset = (inset: string | null) =>
+    dialog.evaluate((element, value) => {
+      const surface = element.closest('.kui-dialog-surface')!;
+      if (value === null) surface.removeAttribute('data-body-inset');
+      else surface.setAttribute('data-body-inset', value);
+    }, inset);
+  expect(await radius()).toBe('30px');
+  await setInset('compact');
+  expect(await radius()).toBe('30px');
+  await setInset('comfortable');
+  expect(await radius()).toBe('38px');
+  // A bare wa-dialog outside DialogSurface takes the compact default.
+  await setInset('none');
+  await dialog.evaluate((element) => {
+    element
+      .closest('.kui-dialog-surface')!
+      .classList.remove('kui-dialog-surface');
+  });
+  expect(await radius()).toBe('30px');
+  await page.keyboard.press('Escape');
+});
