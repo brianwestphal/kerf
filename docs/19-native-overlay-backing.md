@@ -409,9 +409,9 @@ and its child is the sheet; on the `native` path the `<dialog>` is the sheet
 (`margin-block-end: 0` overrides the UA centering) and `::backdrop` is the
 backdrop. `docs/8-api-reference.md` › `overlay` carries the recipe.
 
-**Out of scope** (follow-ups): a resize grabber (`KF-5GHR5Z`), exit motion —
-`close()` still removes the node synchronously (`KF-WAK1TW`), and a
-`@kerfjs/ui` style layer for core sheets (`KF-CV6GG5`).
+**Out of scope** (follow-ups): a resize grabber (`KF-5GHR5Z`) and a
+`@kerfjs/ui` style layer for core sheets (`KF-CV6GG5`). Exit motion shipped
+separately as `exitClass` / `exitDuration` (§19.10).
 
 **Testing.** `tests/unit/overlay-bottom-sheet.test.ts` drives a fake
 `visualViewport` through open / close / reopen, a keyboard appearing, moving,
@@ -424,3 +424,102 @@ sheet flush on the bottom edge for both hosts and that a real `visualViewport`
 a virtual keyboard, so the spec reports a layout viewport 300px taller than the
 visual one; a real-device check is tracked with `DialogSurface`'s
 (`KF-S9GFCZ`).
+
+## 19.10 Exit motion (`exitClass` / `exitDuration`)
+
+> **Status: shipped** (KF-WAK1TW — before it, `close()` removed the node
+> synchronously, so CSS could animate an overlay in but never out).
+> `overlay()`, `confirm`, `prompt`, `form`, and `choice` accept
+> `exitClass?: string` and `exitDuration?: number`, named and defaulted after
+> `toast()`'s pair, and `OverlayHandle.close(result?, options?)` takes
+> `OverlayCloseOptions` `{ instant?: boolean }`.
+
+**Opt-in.** An exit runs when `exitClass` is set or `exitDuration > 0` (the
+`toast()` rule) and the user does not prefer reduced motion. Otherwise `close()`
+is unchanged: synchronous removal, byte-identical behavior.
+
+**Only removal is deferred.** Everything observable happens at `close()`, in
+the existing teardown order:
+
+1. The surface leaves the per-document arbitration stack. A surface opened
+   during the exit is topmost, so Escape, backdrop, outside-click, and Tab
+   arbitration never see the leaving one.
+2. Dismissal listeners, the focus trap, slot / anchor watches, and the `mount()`
+   are disposed. The leaving content stops re-rendering, and a second Escape or
+   backdrop click cannot dismiss it again.
+3. A native host leaves the top layer (`dialog.close()` / `hidePopover()`).
+4. The wrapper gets `inert`: no clicks (they reach the page beneath), no focus,
+   hidden from assistive tech.
+5. Focus is restored.
+6. `result` settles, so a promise dialog resolves (or a guarded throw rejects)
+   at once. The result is known; making the caller wait out an animation would
+   delay its next action for nothing.
+
+The only steps that wait are `wrapper.remove()` and the bottom-sheet
+`--kerf-keyboard-inset` watch. That watch keeps following a retracting keyboard
+until removal, so the sheet does not jump while it leaves.
+
+**When the node goes.** Whichever comes first:
+
+- the finite Web Animations running in the wrapper's subtree once `exitClass`
+  applies, read with `getAnimations({ subtree: true })` (reading them flushes
+  style, so the exit's own CSS animations and transitions are included;
+  infinite ones are ignored, and a cancelled one counts as settled);
+- `exitDuration` ms (the hard cap).
+
+If nothing finite is running, removal happens at once (one microtask). That
+covers CSS that turns motion off under a media query, or a closed native
+`<dialog>` left `display: none`. An engine without `getAnimations()` waits for
+the timeout alone. As in `toast()`, `exitClass` with `exitDuration: 0` removes
+on the next tick, so set the cap to at least your animation's length.
+
+**Native `<dialog>` — leave the top layer at close start.** The alternative was
+to keep the dialog modal-open but inert until the exit ends. It was rejected:
+
+- the rest of the page would stay inert for the whole exit;
+- focus could not return to the opener (it sits in that inert content);
+- the lingering open modal would make the next plain overlay "lift" over it.
+
+Closing at once keeps every native and fallback rule identical. The cost: a
+closed `<dialog>` / `[popover]` is `display: none`, and its `::backdrop` is
+gone, unless the app's CSS keeps it painted. Two app-side patterns work:
+
+- `exitClass` sets `display: block` and the same fixed geometry the open
+  dialog had, then animates. This is the recipe in `docs/8`, verified in all
+  three engines. The panel paints outside the top layer for the exit.
+- `transition: display <d> allow-discrete, overlay <d> allow-discrete` on the
+  dialog (with `exitDuration` alone). This keeps it in the top layer where the
+  engine supports `overlay`.
+
+**Reduced motion.** `prefers-reduced-motion: reduce` skips the exit entirely
+(no class, synchronous removal). The exit is decoration only: the result,
+focus, and stack have already moved on.
+
+**Re-entrancy.**
+
+- `close()` again during the exit is a no-op; the first value wins.
+- `close(_, { instant: true })` skips the exit, or ends a running one now
+  (clears the cap, removes the node); it is also idempotent.
+- The exit finishing after an instant end does nothing.
+- Construction rollback and a promise dialog's wiring failure close instantly,
+  so a failed call still leaves nothing behind synchronously.
+- A slot-hosted surface whose node was removed by its dialog also closes
+  instantly.
+- An overlay opened mid-exit is independent. Its `restoreTo` is the opener the
+  leaving one already restored focus to.
+- Page unload needs no handling: the timer and node go with the document.
+
+**Testing.**
+
+- `tests/unit/overlay-exit.test.ts` walks the transition matrix with stubbed
+  animations: the default path, the close-start state, early-out vs. cap,
+  filtering, no-`getAnimations` fallback, `exitDuration` / `exitClass` alone,
+  mount disposal, dismissal during exit, close twice, instant mid-exit and up
+  front, open-another mid-exit, reopen, rollback, reduced motion, native
+  `<dialog>` / `[popover]`, bottom-sheet inset, and each promise dialog.
+- `tests/browser/overlay-exit.spec.ts` runs the `docs/8` recipe in Chromium,
+  Firefox, and WebKit. A real CSS exit runs on the plain and native hosts (it
+  is frozen mid-flight, then resumed). The page beneath takes clicks during the
+  exit, removal coincides with the animation's end well ahead of the cap,
+  reduced motion skips the exit, and a `confirm()` resolves before its exit
+  ends while an overlay opened mid-exit owns Escape.

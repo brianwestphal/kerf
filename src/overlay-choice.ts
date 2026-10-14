@@ -30,6 +30,10 @@ export interface ChoiceOptions<R> {
   native?: boolean;
   /** `'bottom-sheet'` presents the dialog as a bottom sheet (see `OverlayOptions.presentation`). Default `'modal'`. */
   presentation?: OverlayPresentation;
+  /** Class added on close so CSS owns the exit; the node is removed after it (see `OverlayOptions.exitClass`). The promise settles at once. */
+  exitClass?: string;
+  /** The exit's hard cap in ms (see `OverlayOptions.exitDuration`). Default `0`. */
+  exitDuration?: number;
   render?: (slots: ChoiceRenderSlots) => OverlayContent;
 }
 
@@ -46,6 +50,8 @@ export function choice<R>(
     defaultValue,
     native = false,
     presentation,
+    exitClass,
+    exitDuration,
     render,
   } = options;
   const hasDefault = 'defaultValue' in options;
@@ -91,6 +97,8 @@ export function choice<R>(
     trap: true,
     native,
     presentation,
+    exitClass,
+    exitDuration,
   });
 
   // Post-open wiring is still construction: a throw closes the overlay. Any

@@ -205,7 +205,10 @@ const BUDGETS = [
     // KF-1BVQ8H (+0.16 KB): presentation: 'bottom-sheet' marks the wrapper and
     // follows visualViewport to publish --kerf-keyboard-inset while open, and
     // the four promise dialogs thread the option through.
-    budgetKb: 22.6,
+    // KF-WAK1TW (+0.21 KB): opt-in exit motion — exitClass / exitDuration defer
+    // only the node's removal (early-out on the subtree's finite animations,
+    // reduced-motion skip), close(_, { instant }), and the dialogs thread it.
+    budgetKb: 22.9,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

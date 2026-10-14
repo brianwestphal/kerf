@@ -104,14 +104,41 @@ export interface OverlayOptions {
    * sets no geometry of its own. Default `'modal'` (nothing added).
    */
   presentation?: OverlayPresentation;
+  /**
+   * Class added when the overlay closes, so CSS owns the **exit** (mirrors
+   * `toast()`'s `exitClass`). Everything else happens at once — `result`
+   * settles, the overlay leaves the stack, a native host leaves the top layer,
+   * the wrapper turns `inert`, focus is restored — and only the node's removal
+   * waits: until the CSS animations / transitions then running in the wrapper
+   * finish, or `exitDuration` ms pass, whichever is first. Skipped under
+   * `prefers-reduced-motion: reduce`. A closed native `<dialog>` / `[popover]`
+   * is `display: none` unless your CSS keeps it shown during the exit.
+   */
+  exitClass?: string;
+  /**
+   * The exit's hard cap in ms (see `exitClass`). Also opts into an exit on its
+   * own — e.g. a native `<dialog>`'s `display` / `overlay` `allow-discrete`
+   * transition. Default `0`.
+   */
+  exitDuration?: number;
+}
+
+/** Options for {@link OverlayHandle.close}. */
+export interface OverlayCloseOptions {
+  /** Skip the exit and remove the node now — or end an exit already running. */
+  instant?: boolean;
 }
 
 /** Handle returned by {@link overlay}. Holds no framework state — it's a closure. */
 export interface OverlayHandle {
   /** The wrapper element (mounted into, appended to `container`). */
   el: HTMLElement;
-  /** Tear down: dispose the mount, remove listeners + the node, restore focus, resolve `result`. Idempotent. */
-  close(result?: unknown): void;
+  /**
+   * Tear down: dispose the mount, remove listeners, restore focus, resolve
+   * `result`, and remove the node — after the exit, when one is configured
+   * (`{ instant: true }` skips or ends it). Idempotent.
+   */
+  close(result?: unknown, options?: OverlayCloseOptions): void;
   /** Resolves with the value passed to `close()` (or `undefined` on user dismissal). */
   result: Promise<unknown>;
 }
@@ -148,6 +175,9 @@ function supportsPopover(): boolean {
     typeof HTMLElement.prototype.showPopover === 'function'
   );
 }
+
+/** A teardown with no exit: construction rollback, or a node already gone. */
+const INSTANT: OverlayCloseOptions = { instant: true };
 
 /** The wrapper's custom property carrying a bottom sheet's keyboard overlap. */
 const KEYBOARD_INSET = '--kerf-keyboard-inset';
@@ -468,6 +498,8 @@ export function overlay(
     outsideIgnore,
     native = false,
     presentation = 'modal',
+    exitClass,
+    exitDuration = 0,
   } = options;
 
   if (typeof initialFocus === 'string')
@@ -522,13 +554,16 @@ export function overlay(
     ownsInput(arbitration.stack, surface, kind);
 
   const removers: Array<() => void> = [];
+  // Run at the node's removal — after the exit, when one runs — not at close().
+  const finalizers: Array<() => void> = [];
   const resultBox: { resolve?: (value: unknown) => void } = {};
   const result = new Promise<unknown>((resolve) => {
     resultBox.resolve = resolve;
   });
-  const state = { closed: false };
+  const state = { closed: false, removed: false };
   let disposeMount: (() => void) | undefined;
   let nativeOpened = false;
+  let exitTimer: ReturnType<typeof setTimeout> | undefined;
 
   // KF-FJ9VD8: a modal `<dialog>` kerf opens later would leave this non-modal
   // surface inert beneath it, so the opener calls this to move it into the top
@@ -555,11 +590,31 @@ export function overlay(
         devHooks.overlayBlockedByModal?.('inert');
     };
 
+  // Remove the node, ending the exit if one is running. Idempotent.
+  function finish(): void {
+    if (state.removed) return;
+    state.removed = true;
+    clearTimeout(exitTimer);
+    for (const end of finalizers) end();
+    wrapper.remove();
+  }
+
   // Also the construction rollback (see the transaction below): every step
   // tolerates a phase that never ran — no mount yet, no stack entry, never
   // appended, never shown.
-  function close(value?: unknown): void {
-    if (state.closed) return;
+  //
+  // The exit (KF-WAK1TW: CSS could animate an overlay in but never out) defers
+  // ONLY the node's removal. Everything observable happens now: the stack entry
+  // goes (a surface opened during the exit is topmost), listeners + the mount
+  // are disposed, a native host leaves the top layer (so the page is no longer
+  // inert and focus can return), the wrapper turns `inert` (no clicks, no
+  // focus, hidden from assistive tech), focus is restored, `result` settles.
+  function close(value?: unknown, closeOptions?: OverlayCloseOptions): void {
+    const instant = closeOptions?.instant === true;
+    if (state.closed) {
+      if (instant) finish();
+      return;
+    }
     state.closed = true;
     const { stack } = arbitration;
     const stackIndex = stack.indexOf(surface);
@@ -586,9 +641,33 @@ export function overlay(
       if (useDialog) (wrapper as HTMLDialogElement).close();
       else (wrapper as HTMLElement & { hidePopover(): void }).hidePopover();
     }
-    wrapper.remove();
+    const exit =
+      !instant &&
+      (exitClass !== undefined || exitDuration > 0) &&
+      !globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (exit) {
+      wrapper.inert = true;
+      if (exitClass !== undefined) wrapper.classList.add(exitClass);
+    } else finish();
     restoreFocus(active);
     resultBox.resolve?.(value);
+    if (exit) {
+      // `exitDuration` caps the exit; the finite animations running in the
+      // wrapper once `exitClass` applies (reading them flushes style, so the
+      // exit's own are included) end it early — at once when none run.
+      exitTimer = setTimeout(finish, exitDuration);
+      if ('getAnimations' in wrapper)
+        void Promise.allSettled(
+          wrapper
+            .getAnimations({ subtree: true })
+            .filter((animation) =>
+              Number.isFinite(
+                animation.effect?.getComputedTiming().endTime ?? Infinity,
+              ),
+            )
+            .map((animation) => animation.finished),
+        ).then(finish);
+    }
   }
 
   // Closing a surface that doesn't hold focus (an out-of-order close beneath
@@ -625,7 +704,7 @@ export function overlay(
     );
     // Before the top-layer show, so the first painted frame already clears
     // a keyboard that is up when the sheet opens.
-    if (bottomSheet) followKeyboardInset(wrapper, removers);
+    if (bottomSheet) followKeyboardInset(wrapper, finalizers);
     // Watch for app-owned modal dialogs while any kerf surface is open.
     // Shadow roots are refreshed on every open; one attached after the latest
     // open is not watched until the next.
@@ -656,7 +735,7 @@ export function overlay(
       // anchor (moved out of the dialog) stays connected, so the anchor watch
       // never fires. Watch the wrapper itself: close as cleanup (no
       // `onDismiss`) and leave the open-order stack.
-      removers.push(attach(wrapper, () => close));
+      removers.push(attach(wrapper, () => () => close(undefined, INSTANT)));
     }
     // KF-F52T5D: a surface inside a modal context leaves when that dialog
     // closes, as cleanup (no `onDismiss`). Closing an app-owned or
@@ -670,7 +749,7 @@ export function overlay(
     }
     applyInitialFocus();
   } catch (error) {
-    close();
+    close(undefined, INSTANT);
     throw error;
   }
 
@@ -845,7 +924,7 @@ export function wireDialog<T>(
     );
   } catch (error) {
     disposers.forEach((dispose) => dispose());
-    handle.close();
+    handle.close(undefined, INSTANT);
     throw error;
   }
   // One hop, not a chain: `settle` maps the value in the same reaction, so a

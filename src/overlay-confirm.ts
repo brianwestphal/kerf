@@ -35,6 +35,10 @@ export interface ConfirmOptions {
   native?: boolean;
   /** `'bottom-sheet'` presents the dialog as a bottom sheet (see `OverlayOptions.presentation`). Default `'modal'`. */
   presentation?: OverlayPresentation;
+  /** Class added on close so CSS owns the exit; the node is removed after it (see `OverlayOptions.exitClass`). The promise settles at once. */
+  exitClass?: string;
+  /** The exit's hard cap in ms (see `OverlayOptions.exitDuration`). Default `0`. */
+  exitDuration?: number;
   /** Bring your own body while retaining kerf's dialog wiring. */
   render?: (slots: ConfirmRenderSlots) => OverlayContent;
 }
@@ -53,6 +57,8 @@ export function confirm(
     danger = false,
     native = false,
     presentation,
+    exitClass,
+    exitDuration,
     render,
   } = options;
 
@@ -97,6 +103,8 @@ export function confirm(
     trap: true,
     native,
     presentation,
+    exitClass,
+    exitDuration,
   });
 
   // Post-open wiring is still construction: a throw closes the overlay. The
