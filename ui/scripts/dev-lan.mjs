@@ -22,8 +22,12 @@ try {
 }
 for (const entries of Object.values(networkInterfaces()))
   for (const entry of entries ?? [])
-    if (entry.family === 'IPv4' && !entry.internal)
-      addresses.add(entry.address);
+    if (
+      entry.family === 'IPv4' &&
+      !entry.internal &&
+      !addresses.has(entry.address)
+    )
+      addresses.set(entry.address, '');
 
 console.log('[dev:lan] Open on another device:');
 for (const [ip, label] of addresses) {
