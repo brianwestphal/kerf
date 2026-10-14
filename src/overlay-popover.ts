@@ -1,6 +1,7 @@
 /** Anchored popover lifecycle built on the shared overlay transaction. */
 import { attach } from './attach.js';
 import {
+  anchorOverlay,
   type DismissTrigger,
   INSTANT,
   overlay,
@@ -137,6 +138,9 @@ export function popover(
     throw error;
   }
   void handle.result.then(stopReposition);
+  // KF-XNEK58: an overlay holding the anchor closes this popover at its own
+  // close(), not when its (possibly exiting) node is finally removed.
+  anchorOverlay(handle, anchor);
 
   // KF-BAVCEV: never outlive the anchor. When it leaves the document (e.g. the
   // modal holding it closes) close the popover as cleanup — not a user

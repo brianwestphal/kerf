@@ -241,6 +241,13 @@ interface OverlaySurface {
   restoreTo: Element | null;
   /** Non-modal only: move (or re-show) into the top layer above a newly opened modal `<dialog>`. */
   liftAbove?: () => void;
+  /** An anchored surface's anchor (see {@link anchorOverlay}). */
+  anchor?: Element;
+  /**
+   * Close as cleanup because the surface this one renders in, or its anchor
+   * renders in, is closing: `instant` when that host's node goes now.
+   */
+  leave: (instant: boolean) => void;
 }
 
 interface OverlayArbitration {
@@ -549,6 +556,7 @@ export function overlay(
     triggers,
     modal: trap,
     restoreTo: document.activeElement,
+    leave: (now) => close(undefined, now ? INSTANT : undefined),
   };
 
   // Does this surface own `kind` right now (and has no surface acted on `event`)?
@@ -633,6 +641,21 @@ export function overlay(
     for (const other of stack)
       if (other.restoreTo !== null && wrapper.contains(other.restoreTo))
         other.restoreTo = surface.restoreTo;
+    const exit =
+      !instant &&
+      (exitClass !== undefined || exitDuration > 0) &&
+      !globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // KF-XNEK58: a surface rendered inside this one, or anchored to content
+    // inside it, leaves with it now — not when the node is finally removed
+    // (an exit can keep the inert node for `exitDuration` ms). It follows this
+    // surface: its own exit alongside an exiting host, gone at once otherwise.
+    for (const other of [...stack])
+      if (
+        stack.includes(other) &&
+        (renderedInside(other.el, wrapper) ||
+          (other.anchor !== undefined && renderedInside(other.anchor, wrapper)))
+      )
+        other.leave(!exit);
     const active = document.activeElement;
     for (const remove of removers) remove();
     disposeMount?.();
@@ -644,10 +667,6 @@ export function overlay(
       if (useDialog) (wrapper as HTMLDialogElement).close();
       else (wrapper as HTMLElement & { hidePopover(): void }).hidePopover();
     }
-    const exit =
-      !instant &&
-      (exitClass !== undefined || exitDuration > 0) &&
-      !globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (exit) {
       wrapper.inert = true;
       if (exitClass !== undefined) wrapper.classList.add(exitClass);
@@ -921,6 +940,25 @@ async function whenRendered(el: HTMLElement): Promise<void> {
   await globalThis.customElements.whenDefined(el.localName);
   await (el as { updateComplete?: unknown }).updateComplete;
   await new Promise((resolve) => globalThis.requestAnimationFrame(resolve));
+}
+
+/**
+ * Internal: mark the just-opened `handle` as anchored to `anchor`, so it
+ * leaves (closes as cleanup, no `onDismiss`) the moment an overlay holding the
+ * anchor closes — even while that overlay's node lingers for its exit. `leave`
+ * replaces the default `handle.close()` (with `{ instant }` when the host goes
+ * at once). Not re-exported from `kerfjs/overlay`.
+ */
+export function anchorOverlay(
+  handle: OverlayHandle,
+  anchor: Element,
+  leave?: (instant: boolean) => void,
+): void {
+  const surface = overlayArbitration(document).stack.find(
+    ({ el }) => el === handle.el,
+  ) as OverlaySurface;
+  surface.anchor = anchor;
+  if (leave !== undefined) surface.leave = leave;
 }
 
 /**

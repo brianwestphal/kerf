@@ -170,3 +170,45 @@ test('prefers-reduced-motion: reduce hides a tooltip at once', async ({
   await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
   expect(await page.locator('.kerf-tooltip.is-leaving').count()).toBe(0);
 });
+
+for (const native of [false, true]) {
+  const host = native ? 'native <dialog>' : 'plain';
+  test(`a popover and a tooltip anchored inside an exiting ${host} overlay leave at its close()`, async ({
+    page,
+  }) => {
+    const state = await page.evaluate(
+      async ({ capMs, nativeHost }) => {
+        const { overlay, popover, tooltip } = (window as any).kerfOverlay;
+        const { raw } = (window as any).jsxRuntime;
+        const modal = overlay(
+          raw('<button id="menu">menu</button><button id="help">help</button>'),
+          { native: nativeHost, exitClass: 'is-leaving', exitDuration: capMs },
+        );
+        const menu = document.getElementById('menu') as HTMLElement;
+        const help = document.getElementById('help') as HTMLElement;
+        const pop = popover(menu, raw('<p>items</p>'));
+        tooltip(help, 'help text', { delay: 0 });
+        help.dispatchEvent(new Event('pointerenter'));
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        const before = {
+          pop: pop.el.isConnected,
+          tips: document.querySelectorAll('.kerf-tooltip').length,
+        };
+        modal.close();
+        return {
+          before,
+          modalLingers: modal.el.isConnected,
+          popGone: !pop.el.isConnected,
+          tipsAfter: document.querySelectorAll('.kerf-tooltip').length,
+        };
+      },
+      { capMs: CAP_MS, nativeHost: native },
+    );
+    expect(state).toEqual({
+      before: { pop: true, tips: 1 },
+      modalLingers: true,
+      popGone: true,
+      tipsAfter: 0,
+    });
+  });
+}

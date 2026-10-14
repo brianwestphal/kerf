@@ -3,6 +3,7 @@ import { attach } from './attach.js';
 import { jsx, type SafeHtml } from './jsx-runtime.js';
 import type { MountResult } from './mount.js';
 import {
+  anchorOverlay,
   INSTANT,
   overlay,
   type OverlayCloseOptions,
@@ -101,8 +102,9 @@ export function tooltip(
   // (a window `error` event in browsers), the same way kerf's other deferred
   // callbacks (debounce / throttle timers, attach teardown) surface errors.
   function show(): void {
-    // The anchor left the document while the show was pending (KF-BAVCEV).
-    if (!anchor.isConnected) return;
+    // The anchor left the document while the show was pending (KF-BAVCEV),
+    // or sits in an inert subtree — e.g. an overlay already exiting (KF-XNEK58).
+    if (!anchor.isConnected || anchor.closest('[inert]') !== null) return;
     // One tooltip per anchor: a show during the previous one's exit ends that
     // exit now. Both happen in this task, so no frame paints without a tooltip.
     leaving?.close(undefined, INSTANT);
@@ -136,17 +138,23 @@ export function tooltip(
     // held it) fires no pointerleave / blur, so hide when it leaves and forget
     // its presence; a move within the document keeps the tooltip shown. No
     // exit: there is no anchor left to exit from.
-    const unwatch = attach(anchor, () => () => {
-      presence = 0;
-      if (timers.hide !== undefined) clearTimeout(timers.hide);
-      hide(INSTANT);
-    });
+    const unwatch = attach(anchor, () => () => drop(INSTANT));
     current = { handle, stop, unwatch };
+    // KF-XNEK58: an overlay holding the anchor that closes hides this tooltip
+    // at its close(), with an exit only when that overlay exits too.
+    anchorOverlay(handle, anchor, (now) => drop(now ? INSTANT : undefined));
     // A surface that closed itself (its host slot left the document with the
     // dialog) must not stay `current`, or the next hover would never show.
     void handle.result.then(() => {
       if (current?.handle === handle) hide();
     });
+  }
+
+  // The anchor is gone (or its host is closing): forget presence and hide.
+  function drop(closeOptions?: OverlayCloseOptions): void {
+    presence = 0;
+    if (timers.hide !== undefined) clearTimeout(timers.hide);
+    hide(closeOptions);
   }
 
   function hide(closeOptions?: OverlayCloseOptions): void {

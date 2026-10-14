@@ -508,6 +508,17 @@ focus, and stack have already moved on.
 - An overlay opened mid-exit is independent. Its `restoreTo` is the opener the
   leaving one already restored focus to.
 - Page unload needs no handling: the timer and node go with the document.
+- A surface inside the closing one leaves at the same `close()` (KF-XNEK58 —
+  before, an anchored popover or tooltip watched only its anchor's removal, so
+  it lingered over the inert host for up to `exitDuration`). Right after the
+  `restoreTo` handoff, every stacked surface whose wrapper or anchor (recorded
+  by `popover()` / `tooltip()` through the internal `anchorOverlay()`) renders
+  inside the leaving wrapper closes as cleanup, without `onDismiss`. It follows
+  the host: its own exit alongside an exiting host, instant when the host's
+  node goes now (no exit configured, `{ instant: true }`, reduced motion). A
+  chain (a popover anchored in a popover anchored in the host) unwinds from
+  the top. A tooltip show still pending on an anchor in an `inert` subtree
+  never appears.
 
 **Anchored surfaces** (KF-KY39K1 — `popover()` / `tooltip()` forward
 `exitClass` / `exitDuration` to `overlay()`, adding no exit code of their own):
@@ -544,7 +555,11 @@ focus, and stack have already moved on.
 - `tests/unit/overlay-anchored-exit.test.ts` covers the anchored surfaces:
   close and outside dismissal with an exit, instant close, anchor removal and
   rollback staying instant, the tooltip hide → exit → re-show cycle, hide-delay
-  re-entry, the disposer mid-exit, and reduced motion.
+  re-entry, the disposer mid-exit, and reduced motion. Its host-side block
+  closes an exiting (and an instant, and a reduced-motion) modal around a
+  popover, a tooltip, a popover chain, and a host-slot overlay, with focus
+  returning to the modal's opener; the spec checks the same for a plain and a
+  native `<dialog>` host in every engine.
   `tests/browser/overlay-anchored-exit.spec.ts` runs a real CSS fade on a
   popover (close and outside click) and a tooltip re-hovered mid-exit in all
   three engines.

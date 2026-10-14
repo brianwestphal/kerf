@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 383000,
-  "measuredLargestJavaScriptGzip": 118681,
-  "measuredTotalJavaScriptGzip": 382943,
+  "totalJavaScriptGzip": 383100,
+  "measuredLargestJavaScriptGzip": 118680,
+  "measuredTotalJavaScriptGzip": 383067,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4899,6 +4899,22 @@
         "measuredTotalJavaScriptGzip": 382943,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 383000
+      }
+    },
+    {
+      "at": "2026-10-14T09:39:47.729Z",
+      "reason": "kerfjs/overlay popover and tooltip exit options and nested surfaces leaving with a closing overlay (KF-KY39K1, KF-XNEK58)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 382943,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 383000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 383067,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 383100
       }
     }
   ]

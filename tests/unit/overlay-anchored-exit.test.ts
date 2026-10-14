@@ -6,12 +6,17 @@
  * must not double up (a tooltip re-shown while its previous node is still
  * exiting). happy-dom's `getAnimations()` never sees CSS, so a controllable
  * fake animation keeps each exit running until the test settles it; the real
- * CSS exit is `tests/browser/overlay-exit.spec.ts`.
+ * CSS exit is `tests/browser/overlay-anchored-exit.spec.ts`.
+ *
+ * The last block is the host side: a popover / tooltip anchored inside an
+ * overlay that closes leaves at that close() — not when an exiting host's
+ * node is finally removed — following the host (its own exit alongside an
+ * exiting host, gone at once with an instant one).
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { raw } from '../../src/jsx-runtime.js';
-import { popover, tooltip } from '../../src/overlay.js';
+import { overlay, popover, tooltip } from '../../src/overlay.js';
 import { rectFn } from './overlay-test-helpers.js';
 
 /** A finite fake `Animation` whose `finished` settles on demand. */
@@ -272,6 +277,165 @@ describe('tooltip() — exitClass / exitDuration', () => {
     const tip = tips()[0];
     leave();
     expect(tip.isConnected).toBe(false);
+    stop();
+  });
+});
+
+describe('an anchored surface inside a closing overlay leaves at its close()', () => {
+  /** A modal (with an exit unless `exit: false`) holding a trigger button. */
+  function host(exit = true) {
+    const modal = overlay(
+      raw('<button id="inner">inner</button>'),
+      exit ? EXIT : {},
+    );
+    const inner = document.getElementById('inner') as HTMLElement;
+    return { modal, inner };
+  }
+
+  it('an exiting modal closes the popover inside it at once, as cleanup', async () => {
+    runningExit();
+    const { modal, inner } = host();
+    const onDismiss = vi.fn();
+    const pop = popover(inner, raw('<p>menu</p>'), { onDismiss });
+    modal.close();
+    expect(modal.el.isConnected).toBe(true); // the host is still exiting
+    expect(pop.el.isConnected).toBe(false); // the popover is not
+    await expect(pop.result).resolves.toBeUndefined();
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it('a popover with its own exit exits alongside the exiting modal', async () => {
+    const { settle } = runningExit();
+    const { modal, inner } = host();
+    const pop = popover(inner, raw('<p>menu</p>'), EXIT);
+    modal.close();
+    expect(pop.el.isConnected).toBe(true);
+    expect(pop.el.inert).toBe(true);
+    expect(pop.el.classList.contains('is-leaving')).toBe(true);
+    settle();
+    await microtasks();
+    expect(pop.el.isConnected).toBe(false);
+    expect(modal.el.isConnected).toBe(false);
+  });
+
+  it('an instant host takes a popover with an exit along at once', () => {
+    runningExit();
+    const { modal, inner } = host(false);
+    const pop = popover(inner, raw('<p>menu</p>'), EXIT);
+    modal.close();
+    expect(pop.el.isConnected).toBe(false);
+    expect(pop.el.classList.contains('is-leaving')).toBe(false);
+  });
+
+  it('close(_, { instant: true }) on an exiting host is instant for the popover too', () => {
+    runningExit();
+    const { modal, inner } = host();
+    const pop = popover(inner, raw('<p>menu</p>'), EXIT);
+    modal.close(undefined, { instant: true });
+    expect(modal.el.isConnected).toBe(false);
+    expect(pop.el.isConnected).toBe(false);
+  });
+
+  it('reduced motion: the host skips its exit, so the popover goes at once', () => {
+    vi.spyOn(globalThis, 'matchMedia').mockImplementation(
+      (query: string) =>
+        ({
+          matches: query === '(prefers-reduced-motion: reduce)',
+        }) as MediaQueryList,
+    );
+    const { modal, inner } = host();
+    const pop = popover(inner, raw('<p>menu</p>'), EXIT);
+    modal.close();
+    expect(pop.el.isConnected).toBe(false);
+  });
+
+  it('a popover anchored outside the closing modal stays open', () => {
+    runningExit();
+    const { modal } = host();
+    const pop = popover(anchor, raw('<p>menu</p>'));
+    modal.close();
+    expect(pop.el.isConnected).toBe(true);
+    pop.close();
+  });
+
+  it('a chain closes from the host down: modal > popover > popover anchored in it', () => {
+    runningExit();
+    const { modal, inner } = host();
+    const outer = popover(inner, raw('<button id="deeper">d</button>'));
+    const deeper = document.getElementById('deeper') as HTMLElement;
+    const nested = popover(deeper, raw('<p>sub</p>'));
+    modal.close();
+    expect(outer.el.isConnected).toBe(false);
+    expect(nested.el.isConnected).toBe(false);
+  });
+
+  it("an overlay rendered in the closing modal's host slot leaves with it", () => {
+    runningExit();
+    const modal = overlay(
+      raw('<div id="slot" data-kerf-overlay-host data-morph-skip></div>'),
+      EXIT,
+    );
+    const inside = overlay(raw('<p>inside</p>'), {
+      container: document.getElementById('slot') as HTMLElement,
+      trap: false,
+      dismiss: false,
+      initialFocus: false,
+    });
+    modal.close();
+    expect(modal.el.isConnected).toBe(true);
+    expect(inside.el.isConnected).toBe(false);
+  });
+
+  it('focus held by the nested popover returns to the modal opener', () => {
+    runningExit();
+    const opener = anchor;
+    opener.focus();
+    const { modal, inner } = host();
+    popover(inner, raw('<button id="item">item</button>'), {
+      initialFocus: true,
+    });
+    expect(document.activeElement?.id).toBe('item');
+    modal.close();
+    expect(document.activeElement).toBe(opener);
+  });
+
+  it('a shown tooltip anchored inside the exiting modal hides at once', () => {
+    runningExit();
+    const { modal, inner } = host();
+    const stop = tooltip(inner, 'tip', { delay: 0 });
+    inner.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(0);
+    expect(tips()).toHaveLength(1);
+    modal.close();
+    expect(tips()).toHaveLength(0);
+    stop();
+  });
+
+  it('a tooltip with its own exit exits alongside the exiting modal; a later hover never shows it', () => {
+    runningExit();
+    const { modal, inner } = host();
+    const stop = tooltip(inner, 'tip', { delay: 0, ...EXIT });
+    inner.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(0);
+    const tip = tips()[0];
+    modal.close();
+    expect(tip.classList.contains('is-leaving')).toBe(true);
+    // The host is inert now: a show that still fires does not appear.
+    inner.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(0);
+    expect(tips()).toHaveLength(1);
+    expect(tips()[0]).toBe(tip);
+    stop();
+  });
+
+  it('a tooltip show still pending when the modal starts its exit never appears', () => {
+    runningExit();
+    const { modal, inner } = host();
+    const stop = tooltip(inner, 'tip', { delay: 400 });
+    inner.dispatchEvent(new Event('pointerenter'));
+    modal.close();
+    vi.advanceTimersByTime(400);
+    expect(tips()).toHaveLength(0);
     stop();
   });
 });

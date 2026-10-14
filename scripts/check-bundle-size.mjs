@@ -208,7 +208,12 @@ const BUDGETS = [
     // KF-WAK1TW (+0.21 KB): opt-in exit motion — exitClass / exitDuration defer
     // only the node's removal (early-out on the subtree's finite animations,
     // reduced-motion skip), close(_, { instant }), and the dialogs thread it.
-    budgetKb: 23.0,
+    // KF-NYZYFY (+0.05 KB): initialFocus waits for a custom element that has
+    // not rendered yet instead of aborting the open.
+    // KF-KY39K1 + KF-XNEK58 (+0.12 KB): popover() / tooltip() forward the exit
+    // options, and a surface anchored (or rendered) inside a closing overlay
+    // leaves at that close() instead of when an exiting node is removed.
+    budgetKb: 23.2,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
