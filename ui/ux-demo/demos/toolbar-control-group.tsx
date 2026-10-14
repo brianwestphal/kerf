@@ -1,5 +1,6 @@
 import { BackdropImage } from '@kerfjs/ui/backdrop-image';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { remify, uiColor } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
@@ -7,7 +8,6 @@ import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
-import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -379,14 +379,14 @@ export function ToolbarControlGroupDemo() {
                 >
                   <button
                     type="button"
-                    aria-label="Previous"
+                    aria-label="Earlier Photo"
                     data-action="log-previous"
                   >
                     <LucideIcon icon={ChevronLeft} name="chevron-left" />
                   </button>
                   <button
                     type="button"
-                    aria-label="Next"
+                    aria-label="Later Photo"
                     data-action="log-next"
                   >
                     <LucideIcon icon={ChevronRight} name="chevron-right" />
@@ -402,7 +402,7 @@ export function ToolbarControlGroupDemo() {
                 >
                   <button
                     type="button"
-                    aria-label="Share"
+                    aria-label="Share Photo"
                     data-action="log-share"
                   >
                     <LucideIcon icon={Share2} name="share-2" />
@@ -419,16 +419,14 @@ export function ToolbarControlGroupDemo() {
             fadeTo={uiColor('surface')}
             underChrome
           >
-            {(['danger', 'warning', 'success', 'info', 'pop'] as const).map(
-              (tone) => (
-                <StateBanner
-                  presentation="strip"
-                  tone={tone}
-                  title={`${tone.charAt(0).toUpperCase() + tone.slice(1)} Content`}
-                  detail="Passes beneath the glass controls as you scroll."
-                />
-              ),
-            )}
+            {[
+              'Coastal Ridge',
+              'Harbor Lights',
+              'Northbound',
+              'Glass Coast',
+            ].map((title) => (
+              <ContentItem>{title}</ContentItem>
+            ))}
           </BackdropImage>
         </Pane>
       </CatalogExample>
