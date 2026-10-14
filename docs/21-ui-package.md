@@ -362,8 +362,11 @@ slot without mixing authoring rules into the per-entry component catalog.
     begins, so the thumb and arrow buttons stay visible. An overlay scrollbar
     takes no space and passes beneath the header like the content.
   - **Fallbacks.** The material resolves to the opaque surface under
-    `prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and
-    without `backdrop-filter`. In forced colors the header paints `Canvas` with
+    `prefers-reduced-transparency: reduce` or `prefers-contrast: more`,
+    without `backdrop-filter`, on a slow-updating display (`update: slow`),
+    and under the app-set static-effects switch
+    (`data-kui-effects="static"` on the root element), which also stops
+    every scroll-driven component animation. In forced colors the header paints `Canvas` with
     a `CanvasText` bottom edge.
   - **Contrast.** Text on the material is measured over a worst-case solid
     backdrop: black in light, white in dark. Normal text passes AA (about

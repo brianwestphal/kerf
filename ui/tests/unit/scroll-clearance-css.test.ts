@@ -128,7 +128,7 @@ describe('scroll clearance context', () => {
     ]);
   });
 
-  it('defines the chrome material, opaque without backdrop-filter or under reduced transparency and increased contrast', () => {
+  it('defines the chrome material, opaque without backdrop-filter, under reduced transparency and increased contrast, and under the static-effects switch', () => {
     const root = postcss.parse(
       readFileSync(resolve(src, '../foundation.css'), 'utf8'),
     );
@@ -150,6 +150,12 @@ describe('scroll clearance context', () => {
       '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material:var(--kui-color-surface)',
       '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material-raised:var(--kui-color-surface-raised)',
       '@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) :root --kui-chrome-material-filter:none',
+      ':root[data-kui-effects="static"] --kui-chrome-material:var(--kui-color-surface)',
+      ':root[data-kui-effects="static"] --kui-chrome-material-raised:var(--kui-color-surface-raised)',
+      ':root[data-kui-effects="static"] --kui-chrome-material-filter:none',
+      '@media (update: slow) :root --kui-chrome-material:var(--kui-color-surface)',
+      '@media (update: slow) :root --kui-chrome-material-raised:var(--kui-color-surface-raised)',
+      '@media (update: slow) :root --kui-chrome-material-filter:none',
     ]);
   });
 

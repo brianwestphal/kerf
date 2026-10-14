@@ -714,6 +714,14 @@ panel behind it. The same rule and fallbacks apply.
   colors, the header (or NavStack chrome) paints `Canvas` with a `CanvasText`
   bottom edge, and an overlay NavStack bottom toolbar paints `Canvas` with a
   `CanvasText` top edge, so content passing beneath it never shows through.
+- **An app can turn every effect static.** There is no reliable CSS signal
+  for a low-power device, so an app that detects one sets
+  `data-kui-effects="static"` on the root element
+  (`document.documentElement.dataset.kuiEffects = 'static'`). The material
+  then resolves to the opaque surface, and every scroll-driven animation a
+  component owns stops at its resting state. A display that cannot animate
+  smoothly (`@media (update: slow)`, such as e-ink) gets the same result on
+  its own. Removing the attribute restores the effects.
 
 `tests/browser/overlay-header.spec.ts` (Pane),
 `tests/browser/overlay-nav-stack.spec.ts` (NavStack top chrome),

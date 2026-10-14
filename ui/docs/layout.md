@@ -205,8 +205,10 @@ The header paints the shared chrome material, `--kui-chrome-material` (the
 surface at 80% opacity) behind `--kui-chrome-material-filter` (a blur and
 saturation backdrop filter), so content passing beneath it reads as softened
 color, not as competing text. The material becomes the opaque surface under
-`prefers-reduced-transparency: reduce` or `prefers-contrast: more`, and where
-the browser lacks `backdrop-filter`. In forced colors the header paints
+`prefers-reduced-transparency: reduce` or `prefers-contrast: more`, where
+the browser lacks `backdrop-filter`, on a slow-updating display
+(`update: slow`), and when the app sets `data-kui-effects="static"` on the
+root element (see [Chrome material](accessibility.md#chrome-material)). In forced colors the header paints
 `Canvas` with a `CanvasText` bottom edge.
 
 `wireScrollDividers` measures each overlay header (its border-box height,

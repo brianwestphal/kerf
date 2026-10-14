@@ -1044,6 +1044,15 @@ inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe are
 while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
+
+Static-effects switch (KF-YHPYXX, an app-set low-power mode): `ui/src/foundation.css`
+resets the chrome material tokens to the opaque surface under
+`:root[data-kui-effects="static"]` and `@media (update: slow)`. Every
+`backdrop-filter` in `ui/src/` must read a `--kui-*` filter token that both
+switches reset, and every stylesheet with an `animation-timeline` must stop it
+(`animation: none`) under both; `ui/tests/unit/static-effects.test.ts` enforces
+that, and `ui/tests/browser/static-effects.spec.ts` checks the opaque material in
+three engines.
 `Toolbar.safeAreaEdges` lets an app bar or bottom bar outside a Pane header or
 footer claim its screen edges (the `app-bars` / `app-bar-in-header` fixture
 scenarios).

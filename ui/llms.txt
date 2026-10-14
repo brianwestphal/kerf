@@ -528,7 +528,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   For a header that floats over its scrolling content, set
   `headerPresentation="overlay"` on the `Pane` (or in `PaneConfig`). It paints
   the translucent chrome material (`--kui-chrome-material`, opaque under
-  reduced transparency, increased contrast, and forced colors). The same
+  reduced transparency, increased contrast, forced colors, a slow-updating
+  display, and the app-set `data-kui-effects="static"` root switch). The same
   `wireScrollDividers` call measures the header and publishes its height as
   block-start scroll clearance, which the content clears automatically. Keep
   overlay-header text in the normal text color.

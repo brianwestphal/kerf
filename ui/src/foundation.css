@@ -545,6 +545,27 @@
   }
 }
 
+/* The static-effects switch. There is no reliable CSS signal for a low-power
+   or slow device, so an app that detects one itself sets
+   `data-kui-effects="static"` on the root element; a display that cannot
+   animate smoothly (`update: slow`, e-ink and similar) gets the same result
+   on its own. Either way every backdrop effect turns opaque here, and every
+   scroll-driven animation a component owns stops in that component's CSS
+   (tests/unit/static-effects.test.ts holds each one to it). */
+:root[data-kui-effects="static"] {
+  --kui-chrome-material: var(--kui-color-surface);
+  --kui-chrome-material-raised: var(--kui-color-surface-raised);
+  --kui-chrome-material-filter: none;
+}
+
+@media (update: slow) {
+  :root {
+    --kui-chrome-material: var(--kui-color-surface);
+    --kui-chrome-material-raised: var(--kui-color-surface-raised);
+    --kui-chrome-material-filter: none;
+  }
+}
+
 @media (prefers-contrast: more) {
   :root {
     --kui-color-pop-fill-quiet: Canvas;
