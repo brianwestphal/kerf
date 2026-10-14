@@ -231,6 +231,39 @@ export const COMPONENTS = {
           }),
       },
       {
+        // A template cannot carry backdrop-filter (the capture would rasterize
+        // it into an embedded image design tools cannot load), so the glass
+        // group drops the filter and is drawn over sample dusk color bands: the
+        // translucent material, specular edge, and shadow read as designed,
+        // without the live blur.
+        id: 'glass',
+        label: 'Glass Material Over Artwork',
+        height: 72,
+        render: () =>
+          raw(
+            `<div style="position:relative;padding:8px;display:inline-block;--kui-chrome-material-filter:none">` +
+              // Flat dusk bands behind the group: a gradient backdrop would
+              // keep a nested SVG that design tools cannot load.
+              `<div style="position:absolute;inset:0;display:flex">` +
+              ['#1b2a5c', '#7a3f6e', '#c2577a', '#f4b36b']
+                .map(
+                  (color) => `<div style="flex:1;background:${color}"></div>`,
+                )
+                .join('') +
+              `</div><div style="position:relative">${html(
+                ToolbarControlGroup({
+                  label: 'Glass Navigation',
+                  material: 'glass',
+                  children: raw(
+                    iconButton(ListIcon, 'list', 'List') +
+                      iconButton(Columns3, 'columns-3', 'Columns') +
+                      iconButton(Settings, 'settings', 'Settings'),
+                  ),
+                }),
+              )}</div></div>`,
+          ),
+      },
+      {
         id: 'push-buttons',
         label: 'Push-Appearance Buttons',
         height: 56,

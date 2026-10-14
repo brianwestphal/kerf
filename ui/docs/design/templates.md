@@ -138,3 +138,11 @@ pane/sidebar geometry checks cover the resulting 43px icon-label offset from the
 section edge (17px content inset + 18px icon + 8px gap).
 
 For a focused update, pass component names: `npm run design-templates:build -- toolbar`. Omit them to capture all components. Toolbar width variants use the real `wireToolbarVisibility` helper after rendering typed props. The `ListActionRow` "Trailing overflow menu" variant renders a real `trailingMenu` `PopupMenu`. Its trigger is a native button inside Web Awesome's shadow root, and domotion cannot read that button's author styles. A registered trigger would therefore be captured as a raster image, which also stops the library sheet from flattening. The capture instead leaves the PopupMenu unregistered. The template-only `staticPopupMenuTriggerCss` gives the trigger host the geometry `popup-menu.css` gives its `::part(base)` in a row: a 44px-wide box, as tall as the row, with the 16px icon centered. It also hides the closed menu's items. The icon lands at the same position as in a registered capture.
+
+The `ToolbarControlGroup` "Glass Material Over Artwork" variant draws the glass
+group over flat sample color bands with `--kui-chrome-material-filter: none`.
+domotion rasterizes a live `backdrop-filter` into an embedded image that keeps a
+nested `<svg>` in the library sheet, which design tools cannot load, and a
+gradient backdrop does the same. The template therefore shows the translucent
+material, specular edge, and shadow as designed, without the blur, which exists
+only at run time.
