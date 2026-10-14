@@ -471,6 +471,36 @@ describe('production UI primitives', () => {
       'class="kui-dialog-surface editor" data-component="dialog-surface" data-size="large" data-presentation="side-sheet" data-body-inset="none" data-footer-inset="compact"',
     );
     expect(dialog).toContain('<wa-dialog label="Edit">Body</wa-dialog>');
+    const sheet = asHtml(
+      DialogSurface({
+        presentation: 'bottom-sheet',
+        height: px(360),
+        minHeight: px(200),
+        resizable: true,
+        enterMotion: 'standard',
+        exitMotion: 'standard',
+        rootAttributes: { 'data-resizable': undefined, 'data-key': 'sheet' },
+        children: <wa-dialog label="Compose">Body</wa-dialog>,
+      }),
+    );
+    expect(sheet).toContain('data-key="sheet"');
+    expect(sheet).toContain('data-presentation="bottom-sheet"');
+    expect(sheet).toContain(
+      'data-height="" data-min-height="" data-resizable="" data-enter-motion="standard" data-exit-motion="standard"',
+    );
+    expect(sheet).toContain(
+      '--_kui-dialog-surface-height:360px;--_kui-dialog-surface-min-height:200px',
+    );
+    // Slide is the default motion; a fixed sheet renders no resize marker.
+    const fixedSheet = asHtml(
+      DialogSurface({
+        presentation: 'bottom-sheet',
+        children: <wa-dialog label="Compose">Body</wa-dialog>,
+      }),
+    );
+    expect(fixedSheet).not.toContain('data-resizable');
+    expect(fixedSheet).not.toContain('motion');
+    expect(fixedSheet).not.toContain('data-min-height');
     const listBody = asHtml(
       DialogSurface({
         bodyInset: 'none',

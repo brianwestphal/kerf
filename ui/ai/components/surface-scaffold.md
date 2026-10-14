@@ -15,6 +15,7 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 - A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.
 - A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout="fill".
 - A chat-style dialog floats its composer over the transcript with footerPresentation="floating" and keeps a heading or notice above one scrolling transcript with bodyLayout="fill-last".
+- A phone-first task (compose, quick edit, a picker) should rise from the bottom edge as a sheet the person can resize: presentation="bottom-sheet" with height, and resizable with minHeight / maxHeight bounds.
 - A dialog's title bar should float over the body on the translucent chrome material so a transcript scrolls visibly beneath both the title bar and a floating composer (headerPresentation="floating" with bodyLayout="fill" and a List or Pane that opts into scrollClearance="both").
 
 **Not when:**
@@ -38,7 +39,8 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 
 - small, medium, or large dialog
 - data-\* rootAttributes (a data-key) so sibling dialogs morph by identity
-- modal, side-sheet, or fullscreen dialog
+- modal, side-sheet, fullscreen, or bottom-sheet dialog
+- bottom sheet attached to the bottom edge: square bottom corners, safe-area and virtual-keyboard clearance behind the panel, slide (or standard) enter and exit motion, and an optional resizable top grabber bounded by minHeight and maxHeight
 - typed modal preferred width, viewport gutter, and maximum height, including viewport cap
 - definite viewport-bounded modal height and a fill body layout for one child
 - fill-last body layout: fixed rows above one filling, scrolling last child
@@ -56,6 +58,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - `preferredWidth`: length grammar; raw values: forbid; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `preferredWidth={remify(832)}`
 - `viewportGutter`: length grammar; raw values: forbid; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `viewportGutter={remify(8)}`
 - `footerOffset`: length grammar; raw values: forbid; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `footerOffset={remify(8)}`
+- `minHeight`: length grammar; raw values: forbid; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `minHeight={remify(200)}`
 - `maxHeight`: length grammar; raw values: forbid; shorthands `viewport`; helpers `px`, `rem`, `remify`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `maxHeight="viewport"`
 
 ## Composition
@@ -80,6 +83,7 @@ Margin: parent · border: child · padding: self (layout role: structure). `self
 - Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.
 - Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.
 - A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.
+- A resizable bottom sheet's grabber is a focusable horizontal separator ("Resize sheet") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion falls back to Web Awesome's under prefers-reduced-motion.
 - Use popup surfaces only for real dropdown menus with named triggers.
 
 ## Styling boundary
@@ -94,7 +98,7 @@ Never put `kui-popover-dialog-surface` on an element you write; render `PopoverD
 
 Never put `kui-popup-surface` on an element you write; render `PopupSurface` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-layout-pill-radius`, `--kui-wa-container-inset`, `--kui-wa-surface-inset`, `--kui-chrome-material-raised`, `--kui-chrome-material-filter`, `--kui-scroll-clearance-block-start`, `--kui-scroll-clearance-block-end`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-layout-pill-radius`, `--kui-wa-container-inset`, `--kui-wa-surface-inset`, `--kui-chrome-material-raised`, `--kui-chrome-material-filter`, `--kui-scroll-clearance-block-start`, `--kui-scroll-clearance-block-end`, `--kui-safe-area-block-start`, `--kui-safe-area-block-end`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

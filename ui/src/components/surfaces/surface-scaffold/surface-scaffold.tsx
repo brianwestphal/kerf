@@ -3,7 +3,20 @@ import { filterDataAttributes } from '../../../shared/dom/extension-attributes.j
 import type { CssLength } from '../../../shared/styles/css-values.js';
 
 export type DialogSurfaceSize = 'small' | 'medium' | 'large';
-export type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen';
+/**
+ * How the dialog is presented: `modal` (default) centered on the screen,
+ * `side-sheet` against the inline end, `fullscreen`, or `bottom-sheet`
+ * attached to the bottom edge (square bottom corners, safe-area and
+ * virtual-keyboard clearance, optionally user-resizable).
+ */
+export type DialogSurfacePresentation =
+  'modal' | 'side-sheet' | 'fullscreen' | 'bottom-sheet';
+/**
+ * How a bottom sheet appears or leaves: `slide` (default) moves the panel in
+ * from, or out to, the bottom edge; `standard` keeps Web Awesome's
+ * scale-and-fade. Both honor `prefers-reduced-motion`.
+ */
+export type DialogSurfaceSheetMotion = 'slide' | 'standard';
 export type SurfaceInset = 'none' | 'compact' | 'comfortable';
 export type DialogSurfaceMaxHeight = CssLength | 'viewport';
 /** A definite modal height: a length or the full viewport, minus both gutters. */
@@ -51,6 +64,10 @@ const DIALOG_SURFACE_PROTECTED = new Set([
   'data-body-layout',
   'data-footer-presentation',
   'data-header-presentation',
+  'data-min-height',
+  'data-resizable',
+  'data-enter-motion',
+  'data-exit-motion',
 ]);
 
 export interface DialogSurfaceProps {
@@ -63,13 +80,34 @@ export interface DialogSurfaceProps {
   footerInset?: SurfaceInset;
   /** Modal edge clearance. Omit to retain Web Awesome's default viewport cap. */
   viewportGutter?: CssLength;
-  /** Modal height cap, bounded by the dynamic viewport minus both gutters. */
+  /**
+   * Modal height cap, bounded by the dynamic viewport minus both gutters. On a
+   * bottom sheet, the cap (and the resize ceiling), bounded by the dynamic
+   * viewport minus the top safe area and one gutter.
+   */
   maxHeight?: DialogSurfaceMaxHeight;
   /**
    * Modal definite height, bounded the same way, so a filling child has a
-   * height to fill. Takes precedence over `maxHeight`.
+   * height to fill. Takes precedence over `maxHeight`. On a bottom sheet, the
+   * height it opens at (the visible height above the safe area or keyboard).
    */
   height?: DialogSurfaceHeight;
+  /**
+   * A resizable bottom sheet's resize floor (default 160px), the visible
+   * height above the safe area or keyboard.
+   */
+  minHeight?: CssLength;
+  /**
+   * Let the person resize a bottom sheet by its top grabber (drag, or the
+   * arrow, Page Up/Down, Home and End keys) between `minHeight` and the
+   * sheet's cap. Needs the `/register` entry; each opening starts at `height`
+   * (or the content height). Ignored by other presentations.
+   */
+  resizable?: boolean;
+  /** How a bottom sheet appears (default `slide` up from the bottom edge). */
+  enterMotion?: DialogSurfaceSheetMotion;
+  /** How a bottom sheet is dismissed (default `slide` down off the bottom edge). */
+  exitMotion?: DialogSurfaceSheetMotion;
   /**
    * Body layout (default `flow`); `fill` lets one child own the body and
    * `fill-last` stacks fixed rows above one filling last child.
@@ -130,6 +168,10 @@ export function DialogSurface({
   viewportGutter,
   maxHeight,
   height,
+  minHeight,
+  resizable = false,
+  enterMotion = 'slide',
+  exitMotion = 'slide',
   bodyLayout = 'flow',
   headerPresentation = 'docked',
   footerPresentation = 'docked',
@@ -154,6 +196,9 @@ export function DialogSurface({
     footerOffset === undefined
       ? ''
       : `--_kui-dialog-surface-footer-offset:${footerOffset}`,
+    minHeight === undefined
+      ? ''
+      : `--_kui-dialog-surface-min-height:${minHeight}`,
   ]
     .filter(Boolean)
     .join(';');
@@ -177,6 +222,10 @@ export function DialogSurface({
       data-footer-presentation={
         footerPresentation === 'floating' ? 'floating' : undefined
       }
+      data-min-height={minHeight === undefined ? undefined : ''}
+      data-resizable={resizable ? '' : undefined}
+      data-enter-motion={enterMotion === 'slide' ? undefined : enterMotion}
+      data-exit-motion={exitMotion === 'slide' ? undefined : exitMotion}
       style={style || undefined}
       slot={slot}
     >

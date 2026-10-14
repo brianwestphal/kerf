@@ -1927,6 +1927,7 @@
           "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",
           "Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.",
           "A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
+          "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion falls back to Web Awesome's under prefers-reduced-motion.",
           "Use popup surfaces only for real dropdown menus with named triggers."
         ]
       },
@@ -1992,6 +1993,26 @@
           "examples": ["footerOffset={remify(8)}"]
         },
         {
+          "path": "minHeight",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "remify",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["minHeight={remify(200)}"]
+        },
+        {
           "path": "maxHeight",
           "grammar": "length",
           "helpers": [
@@ -2026,7 +2047,9 @@
           "--kui-chrome-material-raised",
           "--kui-chrome-material-filter",
           "--kui-scroll-clearance-block-start",
-          "--kui-scroll-clearance-block-end"
+          "--kui-scroll-clearance-block-end",
+          "--kui-safe-area-block-start",
+          "--kui-safe-area-block-end"
         ]
       },
       "diagnostics": [],

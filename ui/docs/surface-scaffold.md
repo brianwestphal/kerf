@@ -8,7 +8,8 @@ inside `PopupSurface` also keeps keyboard item navigation made during its show
 animation when Web Awesome completes its initial focus handoff.
 
 Wrap one `wa-dialog` with `DialogSurface`. Choose `size` (`small`, `medium`, or
-`large`), `presentation` (`modal`, `side-sheet`, or `fullscreen`), and independent
+`large`), `presentation` (`modal`, `side-sheet`, `fullscreen`, or
+`bottom-sheet`; see [Bottom sheets](#bottom-sheets)), and independent
 `bodyInset` / `footerInset` (`none`, `compact`, or `comfortable`). The defaults
 match Kerf's medium modal, 8px body, and 16px footer rhythm.
 
@@ -52,7 +53,8 @@ clamped to the dynamic viewport height minus twice the gutter (16px per edge
 when the gutter is omitted). Negative gutters/caps clamp to zero. Omitting
 both options preserves Web Awesome's existing width and phone height caps.
 These options apply only to `presentation="modal"`; side sheets and fullscreen
-surfaces keep their own geometry.
+surfaces keep their own geometry, and a bottom sheet reads `height` and
+`maxHeight` as described in [Bottom sheets](#bottom-sheets).
 
 ```tsx
 import '@kerfjs/ui/surface-scaffold/register';
@@ -79,6 +81,65 @@ The scaffold introduces no hidden breakpoint or automatic fullscreen switch.
 An application can configure device-class breakpoints when its phone policy
 differs from the default. Prefer a typed cap such as `maxHeight={remify(640)}`
 when the modal should stop growing before the viewport bound.
+
+### Bottom sheets
+
+`presentation="bottom-sheet"` attaches the dialog to the bottom edge of the
+screen instead of centering it, the way a phone presents a compose or quick
+edit sheet. The default `modal` presentation is unchanged.
+
+- **Geometry.** The panel rests on the viewport's block-end edge. Its top
+  corners keep the dialog radius and its bottom corners are square. It is
+  full width on a phone and the `size` / `preferredWidth` width, centered, on
+  a wider screen.
+- **Safe area and keyboard.** The panel runs to the edge, behind the home
+  indicator and any virtual keyboard, while a block-end padding keeps its
+  content above them. The padding is the largest of
+  `--kui-safe-area-block-end`, the keyboard overlap the register measures from
+  `visualViewport` (layout height minus the visual viewport's height and top
+  offset, ignored while pinch-zoomed), and the VirtualKeyboard API's
+  `env(keyboard-inset-height)`. A page whose viewport meta sets
+  `interactive-widget=resizes-content` shrinks the layout viewport instead, so
+  the measured overlap is zero and the sheet simply follows the dynamic
+  viewport. Kerf never sets `navigator.virtualKeyboard.overlaysContent`; an
+  application that opts into it gets the `env()` value for free.
+- **Height.** `height`, `minHeight`, and `maxHeight` measure the visible
+  content height above that clearance. `height` is the opening height
+  (omit it to size to content), and `maxHeight` caps it. The panel never
+  exceeds the dynamic viewport minus the top safe area and one
+  `viewportGutter` (16px by default), so a tall keyboard shrinks the content
+  rather than pushing the sheet off the top.
+- **Resizing.** `resizable` adds a grabber at the top edge: a focusable
+  horizontal `separator` named "Resize sheet" with `aria-valuemin`,
+  `aria-valuenow`, and `aria-valuemax` in visible px. Drag it, or use the
+  arrow keys (16px), Page Up/Down (64px), Home (`minHeight`, default 160px),
+  and End (the cap). The register injects the grabber into the dialog's
+  shadow panel, so it never disturbs `bodyLayout` children or a Kerf morph.
+  Each opening starts again at `height`.
+- **Motion.** The sheet slides up from the bottom edge when it opens and back
+  down when it is dismissed. `enterMotion="standard"` or
+  `exitMotion="standard"` keeps Web Awesome's scale-and-fade for that
+  transition. The slide falls back to Web Awesome's motion under
+  `prefers-reduced-motion: reduce` and the document's static effects mode
+  (`:root[data-kui-effects="static"]`). A prevented close still pulses.
+
+```tsx
+import '@kerfjs/ui/surface-scaffold/register';
+import { remify } from '@kerfjs/ui/css-values';
+import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
+
+<DialogSurface presentation="bottom-sheet" height={remify(360)} minHeight={remify(200)} resizable bodyInset="none">
+  <wa-dialog label="New Message" light-dismiss>
+    {/* Application-owned fields */}
+  </wa-dialog>
+</DialogSurface>;
+```
+
+The resize grabber, keyboard clearance, and slide need the `/register`
+entry. Without it the sheet keeps its bottom-edge geometry and safe-area
+padding, shows no grabber, and opens with Web Awesome's own animation.
+`preferredWidth`, `bodyLayout`, the floating header and footer, and the
+insets compose with a bottom sheet as they do with a modal.
 
 ### Filling the dialog
 
@@ -273,4 +334,4 @@ preserve `data-morph-skip-children` when its upgraded light-DOM items must retai
 identity across Kerf rerenders. Import `@kerfjs/ui/popup-menu/register` once for
 the focus handoff fix when wrapping a raw `wa-dropdown`.
 
-Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog`, measures each surface's footer for a floating footer's body clearance, draws a floating header's divider while content is scrolled beneath it, and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. A host that is itself an explicit dialog (`role="dialog"` or `"alertdialog"` with its own name) keeps that name alone: the native panel is left unnamed, so one dialog carries the name. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.
+Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog`, measures each surface's footer for a floating footer's body clearance, draws a floating header's divider while content is scrolled beneath it, wires a bottom sheet's resize grabber, keyboard clearance, and slide, and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. A host that is itself an explicit dialog (`role="dialog"` or `"alertdialog"` with its own name) keeps that name alone: the native panel is left unnamed, so one dialog carries the name. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.

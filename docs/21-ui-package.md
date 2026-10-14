@@ -383,6 +383,8 @@ slot without mixing authoring rules into the per-entry component catalog.
   See `ui/docs/layout.md` "Overlay header" and `ui/docs/accessibility.md`
   "Chrome material".
 
+- **Bottom sheets.** `presentation="bottom-sheet"` attaches a `DialogSurface` to the bottom edge: the top corners keep the dialog radius, the bottom corners are square, and the panel runs behind the home indicator and any virtual keyboard while a block-end padding (the largest of `--kui-safe-area-block-end`, the `visualViewport` keyboard overlap the register measures, and `env(keyboard-inset-height)`) keeps content above them. `height` / `minHeight` / `maxHeight` measure that visible height, capped at the dynamic viewport minus the top safe area and one gutter. `resizable` adds a top grabber (a focusable "Resize sheet" separator; drag, arrows, Page Up/Down, Home/End) bounded by `minHeight` (default 160px) and the cap; each opening restarts at `height`. The sheet slides up on open and down on dismiss (`enterMotion` / `exitMotion`, `"slide"` default or `"standard"`), falling back to Web Awesome motion under reduced motion and `:root[data-kui-effects="static"]`. The register entry owns the grabber, the keyboard measurement, and the slide marks (`internal/install-bottom-sheet.ts`); without it the sheet keeps its bottom-edge geometry and safe-area padding but shows no grabber. See `ui/docs/surface-scaffold.md` "Bottom sheets".
+
 - **A floating dialog title bar.** `DialogSurface.headerPresentation`
   (`docked` default, or `floating`) lays the `wa-dialog` header over the
   body's block start on `--kui-chrome-material-raised`, the raised panel

@@ -4128,7 +4128,19 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssLength } from './css-values.js';
 
 type DialogSurfaceSize = 'small' | 'medium' | 'large';
-type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen';
+/**
+ * How the dialog is presented: `modal` (default) centered on the screen,
+ * `side-sheet` against the inline end, `fullscreen`, or `bottom-sheet`
+ * attached to the bottom edge (square bottom corners, safe-area and
+ * virtual-keyboard clearance, optionally user-resizable).
+ */
+type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen' | 'bottom-sheet';
+/**
+ * How a bottom sheet appears or leaves: `slide` (default) moves the panel in
+ * from, or out to, the bottom edge; `standard` keeps Web Awesome's
+ * scale-and-fade. Both honor `prefers-reduced-motion`.
+ */
+type DialogSurfaceSheetMotion = 'slide' | 'standard';
 type SurfaceInset = 'none' | 'compact' | 'comfortable';
 type DialogSurfaceMaxHeight = CssLength | 'viewport';
 /** A definite modal height: a length or the full viewport, minus both gutters. */
@@ -4169,13 +4181,34 @@ interface DialogSurfaceProps {
     footerInset?: SurfaceInset;
     /** Modal edge clearance. Omit to retain Web Awesome's default viewport cap. */
     viewportGutter?: CssLength;
-    /** Modal height cap, bounded by the dynamic viewport minus both gutters. */
+    /**
+     * Modal height cap, bounded by the dynamic viewport minus both gutters. On a
+     * bottom sheet, the cap (and the resize ceiling), bounded by the dynamic
+     * viewport minus the top safe area and one gutter.
+     */
     maxHeight?: DialogSurfaceMaxHeight;
     /**
      * Modal definite height, bounded the same way, so a filling child has a
-     * height to fill. Takes precedence over `maxHeight`.
+     * height to fill. Takes precedence over `maxHeight`. On a bottom sheet, the
+     * height it opens at (the visible height above the safe area or keyboard).
      */
     height?: DialogSurfaceHeight;
+    /**
+     * A resizable bottom sheet's resize floor (default 160px), the visible
+     * height above the safe area or keyboard.
+     */
+    minHeight?: CssLength;
+    /**
+     * Let the person resize a bottom sheet by its top grabber (drag, or the
+     * arrow, Page Up/Down, Home and End keys) between `minHeight` and the
+     * sheet's cap. Needs the `/register` entry; each opening starts at `height`
+     * (or the content height). Ignored by other presentations.
+     */
+    resizable?: boolean;
+    /** How a bottom sheet appears (default `slide` up from the bottom edge). */
+    enterMotion?: DialogSurfaceSheetMotion;
+    /** How a bottom sheet is dismissed (default `slide` down off the bottom edge). */
+    exitMotion?: DialogSurfaceSheetMotion;
     /**
      * Body layout (default `flow`); `fill` lets one child own the body and
      * `fill-last` stacks fixed rows above one filling last child.
@@ -4225,7 +4258,7 @@ interface DialogSurfaceProps {
     slot?: string;
 }
 /** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
-declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */
@@ -4292,7 +4325,7 @@ interface PopupSurfaceProps {
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
-export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
+export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
 ```
 
 ## `@kerfjs/ui/text`

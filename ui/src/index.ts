@@ -369,6 +369,7 @@ export {
   type DialogSurfacePresentation,
   type DialogSurfaceProps,
   type DialogSurfaceRootAttributes,
+  type DialogSurfaceSheetMotion,
   type DialogSurfaceSize,
   PopoverDialogSurface,
   type PopoverDialogSurfaceDataAttributes,

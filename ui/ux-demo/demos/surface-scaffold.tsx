@@ -1,8 +1,12 @@
+import '@awesome.me/webawesome/dist/components/input/input.js';
+import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Composer } from '@kerfjs/ui/composer';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { remify } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
+import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
@@ -116,6 +120,9 @@ const INITIAL_THREAD: readonly ChatMessage[] = [
     text: 'Scheduled. I will post the release notes here once the tag is pushed.',
   },
 ];
+
+/** The resizable bottom sheet example's id. */
+export const SHEET_DIALOG_ID = 'catalog-sheet-dialog';
 
 /** Each chat-style example's transcript, by its dialog id. */
 const transcripts = {
@@ -412,6 +419,43 @@ export function SurfaceScaffoldDemo() {
                 </wa-button>
               }
             />
+          </wa-dialog>
+        </DialogSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Resizable Bottom Sheet"
+        note='presentation="bottom-sheet" attaches the dialog to the bottom edge with square bottom corners and clears the safe area and the virtual keyboard. resizable adds a grabber that resizes it between minHeight and the viewport (drag, or the arrow keys); it slides in and out unless motion is reduced.'
+        align="inline-control"
+      >
+        <DialogSurface
+          presentation="bottom-sheet"
+          height={remify(360)}
+          minHeight={remify(200)}
+          resizable
+          bodyInset="none"
+        >
+          <wa-button
+            data-action="show-wa-dialog"
+            data-dialog-id={SHEET_DIALOG_ID}
+          >
+            Open New Message
+          </wa-button>
+          <wa-dialog id={SHEET_DIALOG_ID} label="New Message" light-dismiss>
+            <List>
+              <ListInsetControl>
+                <wa-input label="To" name="catalog-sheet-to" />
+              </ListInsetControl>
+              <ListInsetControl>
+                <wa-input label="Subject" name="catalog-sheet-subject" />
+              </ListInsetControl>
+              <ListInsetControl>
+                <wa-textarea
+                  label="Message"
+                  name="catalog-sheet-message"
+                  rows={4}
+                />
+              </ListInsetControl>
+            </List>
           </wa-dialog>
         </DialogSurface>
       </CatalogExample>

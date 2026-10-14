@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `@kerfjs/ui` `DialogSurface` gains `presentation="bottom-sheet"`: a dialog attached to the bottom edge of the screen, with square bottom corners, the top corners on the dialog radius, and a panel that runs behind the home indicator and the virtual keyboard while its content stays above them (the larger of the bottom safe area, the keyboard overlap measured from `visualViewport`, and `env(keyboard-inset-height)`). `height`, `maxHeight`, and the new `minHeight` size its visible height. The new `resizable` prop adds a top grabber, a focusable "Resize sheet" separator you drag or move with the arrow, Page Up/Down, Home, and End keys between `minHeight` and the viewport cap. The sheet slides up when it opens and down when it is dismissed; `enterMotion` / `exitMotion` (`"slide"` or `"standard"`) choose per transition, and reduced motion keeps Web Awesome's own animation. The centered `modal` presentation remains the default. The grabber, keyboard clearance, and slide need `@kerfjs/ui/surface-scaffold/register` (`KF-0AGJ5W`).
+
 ### Fixed
 
 - `kerf-ui-doctor --full` and `kerf-ui-analyze` no longer report findings in gitignored, generated output. A local Playwright run's `playwright-report/` (its trace viewer ships CSS) produced about a hundred `KUI-L006` review findings in one app, so running the tests changed the doctor result. Inside a Git work tree, full traversal now skips every path the project's ignore rules ignore, across TypeScript, the isolated ESLint pass, analyzer discovery, and cache inputs; Playwright's `playwright-report`, `test-results`, and `blob-report` directories are also skipped by name, which covers projects outside Git.

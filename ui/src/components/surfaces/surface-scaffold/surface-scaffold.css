@@ -309,6 +309,145 @@
   max-height: 100dvh;
   border-radius: 0;
 }
+/* A bottom sheet rests on the viewport's block-end edge: square bottom
+   corners, the dialog's own radius on top. Its panel runs to the edge, behind
+   the home indicator and any virtual keyboard, while a block-end padding
+   (the larger of the safe area, the keyboard inset the register measures
+   from `visualViewport`, and the VirtualKeyboard API's
+   `env(keyboard-inset-height)`) keeps its content above them. `height`,
+   `minHeight` and `maxHeight` measure that visible content height; the panel
+   is capped at the dynamic viewport minus the top safe area and one gutter. */
+.kui-dialog-surface[data-presentation="bottom-sheet"]
+  > wa-dialog::part(dialog) {
+  --_kui-dialog-surface-sheet-clearance: max(
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px)),
+    var(--_kui-dialog-surface-keyboard-inset, 0px),
+    env(keyboard-inset-height, 0px)
+  );
+  --_kui-dialog-surface-sheet-cap: max(
+    0px,
+    min(
+      calc(
+        var(--_kui-dialog-surface-max-height, 100dvh) +
+          var(--_kui-dialog-surface-sheet-clearance)
+      ),
+      calc(
+        100dvh -
+          var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px)) -
+          var(--_kui-dialog-surface-resolved-gutter)
+      )
+    )
+  );
+  box-sizing: border-box;
+  width: min(
+    var(
+      --_kui-dialog-surface-preferred-width,
+      var(--_kui-dialog-surface-width)
+    ),
+    100%
+  );
+  max-width: 100%;
+  /* Unset (content height) until the register publishes a resized height. */
+  height: calc(
+    var(--_kui-dialog-surface-sheet-height) +
+      var(--_kui-dialog-surface-sheet-clearance)
+  );
+  max-height: var(--_kui-dialog-surface-sheet-cap);
+  margin: auto auto 0;
+  padding-block-end: var(--_kui-dialog-surface-sheet-clearance);
+  border-radius: var(--_kui-dialog-surface-radius)
+    var(--_kui-dialog-surface-radius) 0 0;
+}
+.kui-dialog-surface[data-presentation="bottom-sheet"][data-height]
+  > wa-dialog::part(dialog) {
+  height: calc(
+    var(
+        --_kui-dialog-surface-sheet-height,
+        var(--_kui-dialog-surface-height, 100dvh)
+      ) +
+      var(--_kui-dialog-surface-sheet-clearance)
+  );
+}
+/* A resizable sheet keeps a band at its top edge for the grabber the
+   register injects: a `role="separator"` that resizes the visible height
+   between `minHeight` (default 160px) and the cap by drag or keyboard. */
+.kui-dialog-surface[data-presentation="bottom-sheet"][data-resizable]
+  > wa-dialog::part(dialog) {
+  min-height: min(
+    calc(
+      var(--_kui-dialog-surface-min-height, remify(160px)) +
+        var(--_kui-dialog-surface-sheet-clearance)
+    ),
+    var(--_kui-dialog-surface-sheet-cap)
+  );
+  padding-block-start: remify(12px);
+}
+.kui-dialog-surface[data-presentation="bottom-sheet"][data-resizable]
+  > wa-dialog::part(sheet-handle) {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 0;
+  inset-inline: 0;
+  width: remify(96px);
+  height: remify(20px);
+  margin-inline: auto;
+  border-radius: var(--kui-radius-s);
+  cursor: ns-resize;
+  touch-action: none;
+}
+.kui-dialog-surface[data-presentation="bottom-sheet"][data-resizable]
+  > wa-dialog::part(sheet-handle)::before {
+  position: absolute;
+  inset-block-start: remify(6px);
+  inset-inline: 0;
+  width: remify(36px);
+  height: remify(5px);
+  margin-inline: auto;
+  border-radius: remify(2.5px);
+  background: var(--kui-color-neutral-border-loud);
+  content: "";
+}
+.kui-dialog-surface[data-presentation="bottom-sheet"][data-resizable]
+  > wa-dialog::part(sheet-handle):focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+@media (forced-colors: active) {
+  .kui-dialog-surface[data-presentation="bottom-sheet"][data-resizable]
+    > wa-dialog::part(sheet-handle)::before {
+    background: CanvasText;
+  }
+}
+/* The sheet slides up from, and back down to, the bottom edge. Web Awesome
+   runs its show, hide and pulse animations through one slot, so the register
+   marks the host only while a show (`enter`) or hide (`exit`) runs, and only
+   those keyframes change; the hide plays them in reverse. Reduced motion and
+   the static effects mode keep Web Awesome's own animation. */
+@keyframes kui-dialog-surface-sheet-slide {
+  from {
+    translate: 0 100%;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-kui-effects="static"])
+    .kui-dialog-surface[data-presentation="bottom-sheet"]:not(
+      [data-enter-motion="standard"]
+    )
+    > wa-dialog[data-kui-sheet-motion="enter"]::part(dialog),
+  :root:not([data-kui-effects="static"])
+    .kui-dialog-surface[data-presentation="bottom-sheet"]:not(
+      [data-exit-motion="standard"]
+    )
+    > wa-dialog[data-kui-sheet-motion="exit"]::part(dialog) {
+    animation-name: kui-dialog-surface-sheet-slide;
+    /* A full-height travel needs longer than the dialog's 150ms scale. */
+    animation-duration: var(--wa-transition-slow, 300ms);
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
 /* PopoverDialogSurface: the dialog chrome and bounded geometry for a native
    popover="auto" surface (non-modal, light dismiss) or the same surface in
    flow. The UA popover rules supply the centered top-layer placement. */
