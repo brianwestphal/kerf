@@ -32,8 +32,6 @@ async function frameGeometry(page: Page) {
       clip: {
         top: box.top + border,
         left: box.left + border,
-        // The bottom from the fractional border box: clientHeight rounds to
-        // whole pixels, which put the clip up to half a pixel short.
         bottom: box.bottom - Number.parseFloat(style.borderBottomWidth),
         right: box.left + border + list.clientWidth,
       },
@@ -60,16 +58,23 @@ async function focusedRing(page: Page) {
   });
 }
 
+// Slack for subpixel layout. At the scroll end, an engine with whole-pixel
+// scroll positions (Firefox on Linux) cannot reach a fractional content end:
+// the last row rests up to a pixel short, so its ring (reach 4px, the frame's
+// 4px inset) can paint ~0.6px into the 1px border. Anything beyond a pixel is
+// a real clip.
+const SLACK = 1;
+
 function ringInside(
   ring: Awaited<ReturnType<typeof focusedRing>>,
   clip: Awaited<ReturnType<typeof frameGeometry>>['clip'],
 ) {
   return (
     ring.style !== 'none' &&
-    ring.top >= clip.top - 0.5 &&
-    ring.bottom <= clip.bottom + 0.5 &&
-    ring.left >= clip.left - 0.5 &&
-    ring.right <= clip.right + 0.5
+    ring.top >= clip.top - SLACK &&
+    ring.bottom <= clip.bottom + SLACK &&
+    ring.left >= clip.left - SLACK &&
+    ring.right <= clip.right + SLACK
   );
 }
 
@@ -78,10 +83,10 @@ function expectInside(
   clip: Awaited<ReturnType<typeof frameGeometry>>['clip'],
 ) {
   expect(ring.style).not.toBe('none');
-  expect(ring.top).toBeGreaterThanOrEqual(clip.top - 0.5);
-  expect(ring.bottom).toBeLessThanOrEqual(clip.bottom + 0.5);
-  expect(ring.left).toBeGreaterThanOrEqual(clip.left - 0.5);
-  expect(ring.right).toBeLessThanOrEqual(clip.right + 0.5);
+  expect(ring.top).toBeGreaterThanOrEqual(clip.top - SLACK);
+  expect(ring.bottom).toBeLessThanOrEqual(clip.bottom + SLACK);
+  expect(ring.left).toBeGreaterThanOrEqual(clip.left - SLACK);
+  expect(ring.right).toBeLessThanOrEqual(clip.right + SLACK);
 }
 
 test('a framed result picker is bordered, rounded, inset 4px, and bounded by maxHeight', async ({
@@ -312,8 +317,8 @@ for (const edge of ['bottom', 'top'] as const) {
     const { clip } = await frameGeometry(page);
     // Block axis only: an unframed List's rows span its full width, so their
     // inline ring edges meet the clip by design (that is `frame`'s job).
-    expect(ring.top).toBeGreaterThanOrEqual(clip.top - 0.5);
-    expect(ring.bottom).toBeLessThanOrEqual(clip.bottom + 0.5);
+    expect(ring.top).toBeGreaterThanOrEqual(clip.top - SLACK);
+    expect(ring.bottom).toBeLessThanOrEqual(clip.bottom + SLACK);
   });
 }
 
