@@ -478,8 +478,10 @@ completion handlers in consumers. Raw `wa-select` elements remain native.
 
 Neutral lowered surfaces and decorative neutral fills/borders are translucent theme colors; compose nested public components directly. Default/raised canvases, foregrounds, focus indicators, and loud contrast-bearing fills remain opaque. Do not assign depth-specific component tokens in demo wrappers.
 
-Use `ToolbarText tone="dark"` on a loud or photo-backed toolbar surface to
-match dark control groups. It applies to read-only headings and actionable
+Use `ToolbarText tone="dark"` on a loud-filled toolbar surface (the inverse
+`--kui-color-neutral-fill-loud`) to match dark control groups; it inverts with
+the color scheme. Over a dark photo or scrim keep the default tone inside a
+`BackdropImage` overlay, which takes the dark scheme under its `scrim`. It applies to read-only headings and actionable
 titles at every size; default tone retains existing identity and heading colors.
 
 Navigation transition continuity: `wireNavStack` slides the incoming view over the preserved previous view on push and the outgoing view off on pop, cross-fades both live chrome surfaces with inert snapshots, and settles/cancels an interrupted transition before starting the next. Reduced motion and duration zero settle immediately.

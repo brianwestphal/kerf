@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 379800,
-  "measuredLargestJavaScriptGzip": 118680,
-  "measuredTotalJavaScriptGzip": 379797,
+  "totalJavaScriptGzip": 379900,
+  "measuredLargestJavaScriptGzip": 118681,
+  "measuredTotalJavaScriptGzip": 379808,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4739,6 +4739,22 @@
         "measuredTotalJavaScriptGzip": 379797,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 379800
+      }
+    },
+    {
+      "at": "2026-10-14T05:43:33.770Z",
+      "reason": "KF-920DKY: scrim overlay note text in the BackdropImage demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 379797,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 379800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118681,
+        "measuredTotalJavaScriptGzip": 379808,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 379900
       }
     }
   ]

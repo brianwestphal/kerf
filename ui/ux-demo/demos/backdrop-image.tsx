@@ -201,7 +201,7 @@ export function BackdropImageDemo() {
       </CatalogExample>
       <CatalogExample
         label="Scrim Under a Title"
-        note='scrim="bottom" darkens the image toward the title, which uses the dark toolbar tone. Without fadeTo the image ends on a hard edge.'
+        note='scrim="bottom" darkens the image toward the title, and the overlay takes the dark color scheme over it, so a default-tone title reads light in both schemes. Without fadeTo the image ends on a hard edge.'
         viewport={{
           layout: 'grid',
           width: 'medium',
@@ -223,7 +223,6 @@ export function BackdropImageDemo() {
                   <ToolbarText
                     text="Coastal Ridge"
                     size="xlarge"
-                    tone="dark"
                     headingLevel={2}
                   />
                 }

@@ -164,3 +164,28 @@ test('BackdropImage drops the fade for increased contrast', async ({
   expect(solid.mask).toBe('none');
   expect(solid.overlay).toBe(solid.surface);
 });
+
+test('content over a scrim takes the dark scheme, so a default-tone title is light in both schemes', async ({
+  page,
+}) => {
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('/?component=backdrop-image');
+    const title = page
+      .locator(
+        '.kui-backdrop-image[data-scrim="bottom"] .kui-backdrop-image__overlay .kui-toolbar-text',
+      )
+      .first();
+    await expect(title).toBeVisible();
+    const channels = await title.evaluate((element) => {
+      const context = document
+        .createElement('canvas')
+        .getContext('2d', { willReadFrequently: true })!;
+      context.fillStyle = window.getComputedStyle(element).color;
+      context.fillRect(0, 0, 1, 1);
+      return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+    });
+    for (const channel of channels)
+      expect(channel, `${scheme} title channel`).toBeGreaterThan(200);
+  }
+});

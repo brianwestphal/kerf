@@ -56,8 +56,10 @@ the folder modules, and CSS only imports their owner stylesheets.
 
 ### Shared semantic tones
 
-Use `ToolbarText tone="dark"` on a loud or photo-backed toolbar surface to
-match dark control groups. It applies to read-only headings and actionable
+Use `ToolbarText tone="dark"` on a loud-filled toolbar surface (the inverse
+`--kui-color-neutral-fill-loud`) to match dark control groups; it inverts with
+the color scheme. Over a dark photo or scrim keep the default tone inside a
+`BackdropImage` overlay, which takes the dark scheme under its `scrim`. It applies to read-only headings and actionable
 titles at every size; default tone retains existing identity and heading colors.
 
 `SemanticTone` is the shared color-role type for `Badge`, `Chip`, `StateBanner`,

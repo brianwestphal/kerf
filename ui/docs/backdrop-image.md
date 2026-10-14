@@ -52,8 +52,12 @@ import { remify, uiColor } from '@kerfjs/ui/css-values';
 - `blur` (`{ radius?, blurredSrc?, dim? }`) blurs the image progressively as it
   scrolls away (see [Progressive blur](#progressive-blur)).
 - `scrim`: `bottom` darkens toward the block end where an overlay title sits,
-  `full` dims the image evenly. The app keeps overlay text at AA with the scrim
-  or fade color it chooses.
+  `full` dims the image evenly. A scrim is dark in both color schemes, so the
+  overlay takes the dark scheme over it: default-tone titles and controls read
+  light in both schemes (do not use `ToolbarText tone="dark"` there; that tone
+  inverts with the scheme). Under reduced transparency or increased contrast,
+  where the overlay sits on a solid `fadeTo` band, it keeps the page's scheme.
+  The app keeps overlay text at AA with the image, scrim, and fade it chooses.
 - `overlay` is laid over the image's block end; `children` continue below it.
 - `underChrome` runs the image up beneath the Pane's block-start inset (an
   overlay or clear header's clearance, NavStack chrome handed to a view's

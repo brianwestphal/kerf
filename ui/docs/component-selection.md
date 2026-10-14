@@ -555,8 +555,12 @@ unset.
 
 ## Toolbar composition
 
-Use `ToolbarText tone="dark"` on a loud or photo-backed toolbar surface to
-match dark control groups. It applies to read-only headings and actionable
+Use `ToolbarText tone="dark"` on a loud-filled toolbar surface (one painted
+with `--kui-color-neutral-fill-loud`, the inverse of the page) to match dark
+control groups; like them it inverts with the color scheme. Text over a dark
+photo or scrim needs a foreground that is light in both schemes instead: a
+`BackdropImage` `scrim` gives its overlay the dark scheme, so keep the
+default tone there. It applies to read-only headings and actionable
 titles at every size; default tone retains existing identity and heading colors.
 
 A `FloatingToolbar` accepts `ToolbarControlGroup` directly as its children in

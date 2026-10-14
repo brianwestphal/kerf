@@ -136,6 +136,15 @@
     var(--_kui-backdrop-image-inset-end);
 }
 
+/* A scrim is dark in both color schemes, so the content laid over it takes
+   the dark scheme: default-tone titles and controls resolve their light
+   foregrounds whatever the page's scheme. */
+.kui-backdrop-image:is([data-scrim="bottom"], [data-scrim="full"])
+  .kui-backdrop-image__overlay {
+  color-scheme: dark;
+  color: var(--kui-color-text);
+}
+
 .kui-backdrop-image__content {
   min-width: 0;
   padding-inline: var(--_kui-backdrop-image-inset-start)
@@ -215,5 +224,15 @@
 
   .kui-backdrop-image[data-fade="true"] .kui-backdrop-image__overlay {
     background-color: var(--_kui-backdrop-image-fade-to);
+  }
+
+  /* Over that solid band the overlay keeps the page's scheme. */
+  .kui-backdrop-image[data-fade="true"]:is(
+      [data-scrim="bottom"],
+      [data-scrim="full"]
+    )
+    .kui-backdrop-image__overlay {
+    color-scheme: inherit;
+    color: inherit;
   }
 }

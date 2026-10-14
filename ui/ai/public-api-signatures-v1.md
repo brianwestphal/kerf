@@ -254,7 +254,12 @@ type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 interface ToolbarTextBaseProps {
     text: string;
     size?: ToolbarTextSize;
-    /** Use dark-toolbar foregrounds on a dark or photo-backed toolbar. */
+    /**
+     * Use loud-toolbar foregrounds on a toolbar painted with the inverse loud
+     * fill, matching dark control groups; like them it inverts with the color
+     * scheme. Over a dark photo or scrim keep the default tone inside a
+     * `BackdropImage` overlay, which takes the dark scheme under its scrim.
+     */
     tone?: ToolbarTextTone;
     /** Hide below this Toolbar content width; requires wireToolbarVisibility. */
     hideBelow?: CssLength;

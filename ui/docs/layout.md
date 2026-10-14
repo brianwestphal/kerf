@@ -609,9 +609,12 @@ do not create line spacing.
 `Text` is also the answer for a normal-color subsection title. `ToolbarText`
 below `xlarge` (`large`, `default`, `small`) is deliberately quiet: it labels a
 toolbar's identity — a pane name or a status — and must not compete with the
-content and controls around it. Set `tone="dark"` on a loud or photo-backed
-toolbar surface to use `--kui-color-neutral-on-loud` at every size, matching
-dark control groups. Default tone keeps existing identity and heading colors. A subsection title is
+content and controls around it. Set `tone="dark"` on a loud-filled toolbar
+surface (the inverse `--kui-color-neutral-fill-loud`) to use
+`--kui-color-neutral-on-loud` at every size, matching dark control groups; it
+inverts with the color scheme. Over a dark photo or scrim keep the default
+tone inside a `BackdropImage` overlay, which takes the dark scheme under its
+`scrim`. Default tone keeps existing identity and heading colors. A subsection title is
 document content, not toolbar identity: use `Text` with the `h2`–`h6` variant
 the outline calls for (inside a `List` with `controlInsets`, its text lines up
 with content items). Use `ListHeader` when the section is a list or menu group
