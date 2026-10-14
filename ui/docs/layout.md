@@ -171,6 +171,15 @@ their own fills. Without relative color syntax, and under
 scheme. `tint` and `background` combine: `background` paints the pane, and
 `tint` still re-derives the tokens for its content.
 
+Add `accent` (usually the artwork's most vivid color) to re-derive the brand
+ramp too: `tint={{ color, scheme, accent }}`. Loud fills (primary buttons, the
+current popup row, checked controls) and their text, brand text and links,
+text on brand fills, and the focus ring all take the accent's hue. Lightness
+is clamped so each pair keeps AA for any accent: in a light scope the fill
+stays at or below 50% OKLCH lightness under white text and brand text at most
+45%; in a dark scope the fill stays between 72% and 85% under near-black text
+and brand text at least 80%.
+
 `PaneConfig.tint` forwards like `background`. `NavStack`, `TabNavigator`, and
 each `TabNavigatorTab` take `tint` for the stack, the navigator, or one scene.
 

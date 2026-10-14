@@ -1098,8 +1098,9 @@ derived tokens re-resolve in the scope) and, behind `@supports` relative color
 syntax and `not (prefers-contrast: more)`, overrides the base Web Awesome
 surface/text/brand tokens with lightness-clamped `oklch(from …)` values; every
 material fallback also names the tint scope. `ui/tests/unit/surface-tint.test.tsx`
-pins markup and rules, and `ui/tests/browser/tone-contrast.spec.ts` sweeps seeds
-for AA (fixture `ui/tests/browser/fixtures/tint-sweep.tsx`).
+pins markup and rules (plus `data-kui-tint-accent` / `--_kui-tint-accent` for the
+optional accent, whose brand-ramp rules sit beside the tint rules), and
+`ui/tests/browser/tone-contrast.spec.ts` sweeps seeds and accent seeds for AA (fixture `ui/tests/browser/fixtures/tint-sweep.tsx`).
 
 Layout backgrounds (KF-C7GSDQ, app-chosen surface colors): `Pane.background`
 (also `PaneConfig`, forwarded by `paneConfigProps`), `NavStack.background`,

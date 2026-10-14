@@ -656,6 +656,11 @@
           "id": "an optional scoped tint (tint: { color, scheme }, also in PaneConfig): the color and the declared light or dark scheme it belongs to; Kerf does no color detection",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "an optional tint accent (tint.accent) that re-derives the brand ramp, links, and focus ring inside the tinted scope at AA",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {

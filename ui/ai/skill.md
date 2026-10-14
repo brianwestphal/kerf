@@ -86,7 +86,7 @@ color, set `tint={{ color, scheme }}` on the same components (and
 `TabNavigatorTab`, `PaneConfig`) instead: you declare whether the color is a
 `'light'` or `'dark'` surface, and the scope re-derives surface, text, quiet
 text, link, fills, and chrome material from it with lightness clamped to keep
-text at WCAG AA. Never restyle tokens by hand inside a tinted region.
+text at WCAG AA. Add `accent` to re-derive the brand ramp (loud fills, links, focus ring) from the artwork's vivid color with the same AA clamps. Never restyle tokens by hand inside a tinted region.
 
 ## Components own their styles; configure, never override
 

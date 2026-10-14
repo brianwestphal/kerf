@@ -206,6 +206,7 @@ export function TabNavigator<Id extends string>({
       }
       data-background={background === undefined ? undefined : ''}
       data-kui-tint={tinted['data-kui-tint']}
+      data-kui-tint-accent={tinted['data-kui-tint-accent']}
       style={joinStyles(
         background === undefined
           ? undefined
@@ -227,6 +228,9 @@ export function TabNavigator<Id extends string>({
             }
             data-background={tab.background === undefined ? undefined : ''}
             data-kui-tint={surfaceTintAttributes(tab.tint)['data-kui-tint']}
+            data-kui-tint-accent={
+              surfaceTintAttributes(tab.tint)['data-kui-tint-accent']
+            }
             style={joinStyles(
               tab.background === undefined
                 ? undefined

@@ -30,6 +30,7 @@ const paneProtectedAttributes = new Set([
   'data-appearance',
   'data-background',
   'data-kui-tint',
+  'data-kui-tint-accent',
   'data-deep-inset',
   'data-outlined',
   'data-scroll-clearance',
@@ -70,6 +71,7 @@ type PaneRootAttributes = Readonly<
     'data-appearance'?: never;
     'data-background'?: never;
     'data-kui-tint'?: never;
+    'data-kui-tint-accent'?: never;
     'data-deep-inset'?: never;
     'data-outlined'?: never;
     'data-scroll-clearance'?: never;
@@ -338,6 +340,7 @@ export function Pane({
     'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
     'data-background': background === undefined ? undefined : '',
     'data-kui-tint': tinted['data-kui-tint'],
+    'data-kui-tint-accent': tinted['data-kui-tint-accent'],
     style: joinStyles(
       background === undefined
         ? undefined

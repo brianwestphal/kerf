@@ -61,3 +61,55 @@ app.innerHTML = String(
     )}
   </div>,
 );
+
+// Accent seeds: each tint scheme with a vivid accent re-derives its brand
+// ramp; the spec measures the brand pairs those tokens paint.
+export const ACCENT_SEEDS = [
+  '#ff0000',
+  '#ffd60a',
+  '#00c853',
+  '#00b8d4',
+  '#2962ff',
+  '#aa00ff',
+  '#ff4081',
+  '#808080',
+  '#000000',
+  '#ffffff',
+] as const;
+
+const accentHost = document.createElement('div');
+accentHost.setAttribute('data-accents', '');
+app.append(accentHost);
+accentHost.innerHTML = String(
+  <div style="display:flex;flex-wrap:wrap;gap:8px;padding:8px">
+    {(['light', 'dark'] as const).flatMap((scheme) =>
+      ACCENT_SEEDS.map((accent) => (
+        <section
+          data-accent={accent}
+          data-scheme={scheme}
+          style="display:grid;height:80px;width:120px"
+        >
+          <Pane
+            label={`${accent} ${scheme}`}
+            safeAreaEdges={[]}
+            tint={{
+              color: fillColor(scheme === 'light' ? '#e6edfb' : '#1b2438'),
+              scheme,
+              accent: fillColor(accent),
+            }}
+          >
+            {probe('fill-loud', 'background:var(--kui-color-brand-fill-loud)')}
+            {probe(
+              'fill-normal',
+              'background:var(--kui-color-brand-fill-normal)',
+            )}
+            {probe('on-loud', 'color:var(--kui-color-brand-on-loud)')}
+            {probe('on-quiet', 'color:var(--kui-color-brand-on-quiet)')}
+            {probe('on-fill', 'color:var(--kui-color-brand-on-fill)')}
+            {probe('link', 'color:var(--kui-color-text-link)')}
+          </Pane>
+        </section>
+      )),
+    )}
+  </div>,
+);

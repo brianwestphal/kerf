@@ -15,22 +15,38 @@ export type SurfaceTintScheme = 'light' | 'dark';
 export interface SurfaceTint {
   color: CssColor;
   scheme: SurfaceTintScheme;
+  /**
+   * An optional accent (usually the artwork's most vivid color). The scope's
+   * brand ramp re-derives from it: loud fills and their text, brand text and
+   * links, text on brand fills, and the focus ring, each clamped to keep AA.
+   */
+  accent?: CssColor;
 }
 
 /** The root attributes a tinted surface renders. */
 export function surfaceTintAttributes(tint: SurfaceTint | undefined): {
   'data-kui-tint': SurfaceTintScheme | undefined;
+  'data-kui-tint-accent': '' | undefined;
   /** The Web Awesome scheme class, so its theme re-derives in the scope. */
   className: string;
   /** The inline declaration carrying the color, or `undefined`. */
   style: string | undefined;
 } {
   if (tint === undefined)
-    return { 'data-kui-tint': undefined, className: '', style: undefined };
+    return {
+      'data-kui-tint': undefined,
+      'data-kui-tint-accent': undefined,
+      className: '',
+      style: undefined,
+    };
   return {
     'data-kui-tint': tint.scheme,
+    'data-kui-tint-accent': tint.accent === undefined ? undefined : '',
     className: `wa-${tint.scheme}`,
-    style: `--_kui-tint-color:${tint.color}`,
+    style:
+      tint.accent === undefined
+        ? `--_kui-tint-color:${tint.color}`
+        : `--_kui-tint-color:${tint.color};--_kui-tint-accent:${tint.accent}`,
   };
 }
 

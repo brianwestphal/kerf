@@ -1792,6 +1792,12 @@ type SurfaceTintScheme = 'light' | 'dark';
 interface SurfaceTint {
     color: CssColor;
     scheme: SurfaceTintScheme;
+    /**
+     * An optional accent (usually the artwork's most vivid color). The scope's
+     * brand ramp re-derives from it: loud fills and their text, brand text and
+     * links, text on brand fills, and the focus ring, each clamped to keep AA.
+     */
+    accent?: CssColor;
 }
 
 /**
@@ -1818,6 +1824,7 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-appearance'?: never;
     'data-background'?: never;
     'data-kui-tint'?: never;
+    'data-kui-tint-accent'?: never;
     'data-deep-inset'?: never;
     'data-outlined'?: never;
     'data-scroll-clearance'?: never;

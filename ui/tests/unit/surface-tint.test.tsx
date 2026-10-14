@@ -39,6 +39,18 @@ describe('surface tint', () => {
       className: 'wa-dark',
       style: '--_kui-tint-color:#2962ff',
     });
+    expect(
+      surfaceTintAttributes({
+        color: fillColor('#1b2438'),
+        scheme: 'dark',
+        accent: fillColor('#ff4081'),
+      }),
+    ).toEqual({
+      'data-kui-tint': 'dark',
+      'data-kui-tint-accent': '',
+      className: 'wa-dark',
+      style: '--_kui-tint-color:#1b2438;--_kui-tint-accent:#ff4081',
+    });
     expect(joinStyles(undefined, undefined)).toBeUndefined();
     expect(joinStyles('a:1', undefined, 'b:2')).toBe('a:1;b:2');
   });
@@ -130,6 +142,20 @@ describe('surface tint', () => {
       )
         tintRules.push(`${at.reverse().join(' > ')} ${rule.selector}`);
     });
+    const accentRules: string[] = [];
+    foundation.walkRules(
+      /^\[data-kui-tint="(light|dark)"\]\[data-kui-tint-accent\]$/,
+      (rule) => {
+        const props = rule.nodes
+          .filter((node): node is postcss.Declaration => node.type === 'decl')
+          .map((decl) => decl.prop);
+        accentRules.push(`${rule.selector} ${props.join(',')}`);
+      },
+    );
+    expect(accentRules).toEqual([
+      '[data-kui-tint="light"][data-kui-tint-accent] --wa-color-brand-fill-loud,--wa-color-brand-on-loud,--wa-color-brand-on-quiet,--kui-color-brand-on-fill,--wa-color-focus',
+      '[data-kui-tint="dark"][data-kui-tint-accent] --wa-color-brand-fill-loud,--wa-color-brand-on-loud,--wa-color-brand-on-quiet,--kui-color-brand-on-fill,--wa-color-focus',
+    ]);
     expect(tintRules).toEqual([
       '(color: oklch(from red l c h)) > not (prefers-contrast: more) [data-kui-tint="light"]',
       '(color: oklch(from red l c h)) > not (prefers-contrast: more) [data-kui-tint="dark"]',

@@ -303,6 +303,7 @@ export function NavStack({
       }
       data-background={background === undefined ? undefined : ''}
       data-kui-tint={tinted['data-kui-tint']}
+      data-kui-tint-accent={tinted['data-kui-tint-accent']}
       style={joinStyles(
         background === undefined
           ? undefined

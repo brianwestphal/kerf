@@ -618,6 +618,43 @@
         from var(--_kui-tint-brand-source) max(l, 0.8) c h
       );
     }
+
+    /* An optional accent (`tint.accent`) re-derives the brand ramp in the
+       scope: the loud fill (buttons, the current row, checked controls), its
+       on-loud text, brand text and links, text on brand fills, and the focus
+       ring. Lightness is clamped so each pair keeps WCAG AA for any accent:
+       a light scope's fill stays at or below 50% under white text, a dark
+       scope's between 72% and 85% under near-black text, and brand text at
+       most 45% (light) or at least 80% (dark). */
+    [data-kui-tint="light"][data-kui-tint-accent] {
+      --wa-color-brand-fill-loud: oklch(
+        from var(--_kui-tint-accent) min(l, 0.5) c h
+      );
+      --wa-color-brand-on-loud: #fff;
+      --wa-color-brand-on-quiet: oklch(
+        from var(--_kui-tint-accent) min(l, 0.45) c h
+      );
+      --kui-color-brand-on-fill: oklch(
+        from var(--_kui-tint-accent) min(l, 0.38) c h
+      );
+      --wa-color-focus: oklch(from var(--_kui-tint-accent) min(l, 0.5) c h);
+    }
+
+    [data-kui-tint="dark"][data-kui-tint-accent] {
+      --wa-color-brand-fill-loud: oklch(
+        from var(--_kui-tint-accent) clamp(0.72, l, 0.85) c h
+      );
+      --wa-color-brand-on-loud: #111113;
+      --wa-color-brand-on-quiet: oklch(
+        from var(--_kui-tint-accent) max(l, 0.8) c h
+      );
+      --kui-color-brand-on-fill: oklch(
+        from var(--_kui-tint-accent) max(l, 0.82) c h
+      );
+      --wa-color-focus: oklch(
+        from var(--_kui-tint-accent) clamp(0.72, l, 0.85) c h
+      );
+    }
   }
 }
 

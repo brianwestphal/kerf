@@ -899,3 +899,94 @@ test('increased contrast collapses a tint to the plain palette in its declared s
   // The plain surfaces: white in a light scope, #1c1c1e in a dark one.
   expect(surfaces).toEqual(['rgb(255, 255, 255)', 'rgb(28, 28, 30)']);
 });
+
+for (const [pageScheme, theme] of [
+  ['light', 'plain'],
+  ['dark', 'webawesome'],
+] as const) {
+  test(`${pageScheme} page, ${theme} theme: a tint accent keeps every brand pair at AA`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: pageScheme });
+    const result = await tintBundle;
+    const javascript = result.outputFiles.find((file) =>
+      file.path.endsWith('.js'),
+    )!;
+    await page.setViewportSize({ width: 900, height: 900 });
+    await page.setContent('<body style="margin:0"><div data-app></div></body>');
+    await page.addStyleTag({
+      content: theme === 'webawesome' ? themedTintCss : tintCss,
+    });
+    await page.addScriptTag({ content: javascript.text });
+
+    const found = await page.evaluate((minimum) => {
+      const context = document
+        .createElement('canvas')
+        .getContext('2d', { willReadFrequently: true })!;
+      context.canvas.width = 1;
+      context.canvas.height = 1;
+      const paint = (...colors: string[]) => {
+        context.clearRect(0, 0, 1, 1);
+        for (const color of colors) {
+          context.fillStyle = color;
+          context.fillRect(0, 0, 1, 1);
+        }
+        return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+      };
+      const luminance = (rgb: number[]) => {
+        const [r = 0, g = 0, b = 0] = rgb.map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045
+            ? value / 12.92
+            : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const ratio = (a: number[], b: number[]) => {
+        const [light, dark] = [luminance(a), luminance(b)].sort(
+          (x, y) => y - x,
+        );
+        return (light! + 0.05) / (dark! + 0.05);
+      };
+      const failures: string[] = [];
+      for (const region of document.querySelectorAll<HTMLElement>(
+        '[data-accent]',
+      )) {
+        const read = (name: string, prop: 'color' | 'backgroundColor') =>
+          window.getComputedStyle(
+            region.querySelector(`[data-probe="${name}"]`)!,
+          )[prop];
+        const surface = window.getComputedStyle(
+          region.querySelector('.kui-pane')!,
+        ).backgroundColor;
+        const pairs: [string, number[], number[]][] = [
+          [
+            'on-loud over fill-loud',
+            paint(read('on-loud', 'color')),
+            paint(read('fill-loud', 'backgroundColor')),
+          ],
+          [
+            'on-quiet over surface',
+            paint(read('on-quiet', 'color')),
+            paint(surface),
+          ],
+          ['link over surface', paint(read('link', 'color')), paint(surface)],
+          [
+            'on-fill over fill-normal',
+            paint(read('on-fill', 'color')),
+            paint(surface, read('fill-normal', 'backgroundColor')),
+          ],
+        ];
+        for (const [name, text, backdrop] of pairs) {
+          const value = ratio(text, backdrop);
+          if (value < minimum)
+            failures.push(
+              `${region.dataset.accent} ${region.dataset.scheme}: ${name} = ${value.toFixed(2)}`,
+            );
+        }
+      }
+      return failures;
+    }, TEXT_AA);
+    expect(found).toEqual([]);
+  });
+}
