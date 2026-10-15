@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 391900,
-  "measuredLargestJavaScriptGzip": 138249,
-  "measuredTotalJavaScriptGzip": 391887,
+  "totalJavaScriptGzip": 392100,
+  "measuredLargestJavaScriptGzip": 138250,
+  "measuredTotalJavaScriptGzip": 392021,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5123,6 +5123,22 @@
         "measuredTotalJavaScriptGzip": 391887,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 391900
+      }
+    },
+    {
+      "at": "2026-10-15T22:46:58.385Z",
+      "reason": "wireContentItems now dispatches a modifier-carrying MouseEvent for keyboard activation (KF-45RNDS: keyboard multi-selection)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 138249,
+        "measuredTotalJavaScriptGzip": 391887,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 391900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 138250,
+        "measuredTotalJavaScriptGzip": 392021,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 392100
       }
     }
   ]

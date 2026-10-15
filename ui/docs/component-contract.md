@@ -564,7 +564,10 @@ multiple actions, put sibling buttons in a static ContentItem (or use
 For an interactive ContentItem, `wireContentItems` activates the card on Enter
 or Space only when the key event originated from the card itself. A nested
 native control, including one inside a custom element's shadow root, keeps its
-own keyboard activation.
+own keyboard activation. The activation click carries the key's Shift, Ctrl,
+and Cmd state (Space uses the state at press), so one delegated click handler
+implements range and toggle selection for pointer and keyboard alike.
+Alt-modified keys are left to the platform.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Each group reserves `calc(2px + remify(42px))`, or 44px, with 8px between

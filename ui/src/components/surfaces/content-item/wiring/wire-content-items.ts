@@ -63,31 +63,58 @@ export function isContentItemActivation(
   return actionItem(item, event) === item;
 }
 
+type ActivationModifiers = Pick<
+  KeyboardEvent,
+  'shiftKey' | 'ctrlKey' | 'metaKey'
+>;
+
+/**
+ * Activate an item with a click that carries the activating key's modifier
+ * state, so one delegated click handler serves pointer and keyboard
+ * multi-selection alike (Shift extends a range, Cmd/Ctrl toggles one item).
+ */
+function activate(item: HTMLElement, modifiers: ActivationModifiers) {
+  item.dispatchEvent(
+    new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      view: item.ownerDocument.defaultView,
+      shiftKey: modifiers.shiftKey,
+      ctrlKey: modifiers.ctrlKey,
+      metaKey: modifiers.metaKey,
+    }),
+  );
+}
+
 /**
  * Give interactive ContentItems native-like Enter/Space activation with one
  * delegated listener pair. Space activates on release and is cancelled if
  * focus moves; the item's own `data-action` still goes through the app's
- * ordinary delegated click handler. Returns a disposer.
+ * ordinary delegated click handler. The activation click mirrors the Shift,
+ * Ctrl, and Meta state of the activating key (Space uses the state at press),
+ * so the click handler can read `shiftKey` / `metaKey` / `ctrlKey` for
+ * keyboard range and toggle selection. Alt-modified keys are left to the
+ * platform. Returns a disposer.
  */
 export function wireContentItems(root: HTMLElement): () => void {
-  let pendingSpace: HTMLElement | null = null;
+  let pendingSpace: {
+    item: HTMLElement;
+    modifiers: ActivationModifiers;
+  } | null = null;
 
   const clearSpace = () => {
-    pendingSpace?.removeAttribute('data-kui-pressed');
+    pendingSpace?.item.removeAttribute('data-kui-pressed');
     pendingSpace = null;
   };
 
   const keydown = (event: KeyboardEvent) => {
-    if (
-      event.defaultPrevented ||
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey
-    )
-      return;
+    if (event.defaultPrevented || event.altKey) return;
     const item = actionItem(root, event);
     if (!item) return;
+    const commandKey = event.ctrlKey || event.metaKey;
     if (
+      !commandKey &&
       item.dataset.selectionMode === 'multiple' &&
       [
         'ArrowDown',
@@ -135,33 +162,40 @@ export function wireContentItems(root: HTMLElement): () => void {
     }
     if (event.key === 'Enter') {
       event.preventDefault();
-      item.click();
+      activate(item, event);
       return;
     }
     if (event.key === ' ' || event.key === 'Spacebar') {
       event.preventDefault();
       if (event.repeat) return;
       clearSpace();
-      pendingSpace = item;
+      pendingSpace = {
+        item,
+        modifiers: {
+          shiftKey: event.shiftKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+        },
+      };
       item.setAttribute('data-kui-pressed', 'true');
     }
   };
 
   const keyup = (event: KeyboardEvent) => {
     if (event.key !== ' ' && event.key !== 'Spacebar') return;
-    const item = pendingSpace;
-    if (!item) return;
+    if (!pendingSpace) return;
+    const { item, modifiers } = pendingSpace;
     event.preventDefault();
     clearSpace();
     if (
       item === actionItem(root, event) &&
       item.ownerDocument.activeElement === item
     )
-      item.click();
+      activate(item, modifiers);
   };
 
   const focusout = (event: FocusEvent) => {
-    if (event.target === pendingSpace) clearSpace();
+    if (event.target === pendingSpace?.item) clearSpace();
   };
 
   root.addEventListener('keydown', keydown);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { List } from '../../src/components/collections/list/list.js';
 import { Grid } from '../../src/components/layout/grid/grid.js';
 import { ContentItem } from '../../src/components/surfaces/content-item/content-item.js';
 import {
@@ -323,7 +324,7 @@ describe('wireContentItems', () => {
     root.remove();
   });
 
-  it('ignores modified keys, nested controls, and unrelated events', () => {
+  it('ignores Alt-modified keys, nested controls, and unrelated events', () => {
     const root = document.createElement('div');
     root.innerHTML = String(
       <ContentItem interactive action="pick" itemId="card">
@@ -340,15 +341,13 @@ describe('wireContentItems', () => {
     const stop = wireContentItems(root);
     item.focus();
 
-    for (const modifier of ['altKey', 'ctrlKey', 'metaKey'] as const) {
-      item.dispatchEvent(
-        new KeyboardEvent('keydown', {
-          key: 'Enter',
-          bubbles: true,
-          [modifier]: true,
-        }),
-      );
-    }
+    item.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        altKey: true,
+      }),
+    );
     const prevented = new KeyboardEvent('keydown', {
       key: 'Enter',
       bubbles: true,
@@ -376,6 +375,95 @@ describe('wireContentItems', () => {
       new KeyboardEvent('keyup', { key: 'Spacebar', bubbles: true }),
     );
     expect(clicks).toBe(1);
+    stop();
+    root.remove();
+  });
+
+  it('forwards the activating key modifiers on the activation click', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      <List selectionMode="multiple" ariaLabel="Messages">
+        <ContentItem
+          interactive
+          action="pick"
+          itemId="one"
+          selectionMode="multiple"
+        >
+          One
+        </ContentItem>
+        <ContentItem
+          interactive
+          action="pick"
+          itemId="two"
+          selectionMode="multiple"
+        >
+          Two
+        </ContentItem>
+      </List>,
+    );
+    document.body.append(root);
+    const first = root.querySelector<HTMLElement>('[data-item-id="one"]')!;
+    const second = root.querySelector<HTMLElement>('[data-item-id="two"]')!;
+    const clicks: string[] = [];
+    root.addEventListener('click', (event) => {
+      const id = (event.target as HTMLElement).dataset.itemId;
+      const flags = (['shiftKey', 'ctrlKey', 'metaKey', 'altKey'] as const)
+        .filter((flag) => event[flag])
+        .join('+');
+      clicks.push(`${id}:${flags || 'plain'}:${event instanceof MouseEvent}`);
+    });
+    const stop = wireContentItems(root);
+    const press = (
+      target: HTMLElement,
+      type: 'keydown' | 'keyup',
+      key: string,
+      init: KeyboardEventInit = {},
+    ) =>
+      target.dispatchEvent(
+        new KeyboardEvent(type, {
+          key,
+          bubbles: true,
+          cancelable: true,
+          ...init,
+        }),
+      );
+
+    first.focus();
+    press(first, 'keydown', 'Enter');
+    press(first, 'keydown', 'Enter', { shiftKey: true });
+    press(first, 'keydown', 'Enter', { ctrlKey: true });
+    press(first, 'keydown', 'Enter', { metaKey: true });
+    // Space activates on release with the modifiers held at press, even if
+    // the modifier is released first.
+    press(first, 'keydown', ' ', { shiftKey: true });
+    press(first, 'keyup', ' ');
+    press(first, 'keydown', ' ', { metaKey: true });
+    press(first, 'keyup', ' ', { metaKey: true });
+    press(first, 'keydown', 'Spacebar', { ctrlKey: true, shiftKey: true });
+    press(first, 'keyup', 'Spacebar');
+    expect(clicks).toEqual([
+      'one:plain:true',
+      'one:shiftKey:true',
+      'one:ctrlKey:true',
+      'one:metaKey:true',
+      'one:shiftKey:true',
+      'one:metaKey:true',
+      'one:shiftKey+ctrlKey:true',
+    ]);
+
+    // Shift+Arrow still moves focus for range extension; Cmd/Ctrl+Arrow and
+    // Alt-modified activation keys are left to the platform.
+    expect(press(first, 'keydown', 'ArrowDown', { shiftKey: true })).toBe(
+      false,
+    );
+    expect(document.activeElement).toBe(second);
+    expect(press(second, 'keydown', 'ArrowUp', { metaKey: true })).toBe(true);
+    expect(press(second, 'keydown', 'Home', { ctrlKey: true })).toBe(true);
+    expect(document.activeElement).toBe(second);
+    expect(press(second, 'keydown', 'Enter', { altKey: true })).toBe(true);
+    expect(press(second, 'keydown', ' ', { altKey: true })).toBe(true);
+    expect(second.dataset.kuiPressed).toBeUndefined();
+    expect(clicks).toHaveLength(7);
     stop();
     root.remove();
   });

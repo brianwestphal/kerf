@@ -80,3 +80,48 @@ test('interactive cards select with pointer and keyboard without moving their fr
     path: 'test-results/content-item-interaction-narrow.png',
   });
 });
+
+test('keyboard activation forwards Shift, Ctrl, and Meta to the click', async ({
+  page,
+}) => {
+  await page.goto('/?component=content-item');
+  const toggle = page.locator(
+    '[data-demo="content-item"] [data-demo-item="toggle-card"]',
+  );
+  await toggle.evaluate((element) => {
+    const seen: string[] = [];
+    (window as unknown as { seenClicks: string[] }).seenClicks = seen;
+    element.addEventListener('click', (event) => {
+      const flags = (['shiftKey', 'ctrlKey', 'metaKey', 'altKey'] as const)
+        .filter((flag) => event[flag])
+        .join('+');
+      seen.push(flags || 'plain');
+    });
+  });
+  await toggle.focus();
+  for (const chord of [
+    'Enter',
+    'Shift+Enter',
+    'Control+Enter',
+    'Meta+Enter',
+    'Shift+Space',
+    'Control+Space',
+    'Meta+Space',
+  ])
+    await page.keyboard.press(chord);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as unknown as { seenClicks: string[] }).seenClicks,
+      ),
+    )
+    .toEqual([
+      'plain',
+      'shiftKey',
+      'ctrlKey',
+      'metaKey',
+      'shiftKey',
+      'ctrlKey',
+      'metaKey',
+    ]);
+});
