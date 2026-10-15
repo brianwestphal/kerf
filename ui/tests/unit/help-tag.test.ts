@@ -1,21 +1,81 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
+// Every placement the tag asks for: its trigger, the text it showed there,
+// and the placement options. Positions settle at once.
+const placed = vi.hoisted(() => ({
+  anchors: [] as Element[],
+  text: new Map<Element, string>(),
+  options: [] as { placement: string; padding: number }[],
+}));
+
+vi.mock('@floating-ui/dom', () => ({
+  computePosition: (
+    anchor: Element,
+    popup: HTMLElement,
+    options: { placement: string },
+  ) => {
+    placed.anchors.push(anchor);
+    placed.text.set(anchor, popup.textContent);
+    return Promise.resolve({ x: 0, y: 0, placement: options.placement });
+  },
+  autoUpdate: (_anchor: Element, _popup: HTMLElement, update: () => void) => {
+    update();
+    return () => {};
+  },
+  flip: (options: { padding: number }) => {
+    placed.options.push({ placement: 'flip', padding: options.padding });
+    return { name: 'flip', fn: () => ({}) };
+  },
+  shift: () => ({ name: 'shift', fn: () => ({}) }),
+  size: () => ({ name: 'size', fn: () => ({}) }),
+}));
+
 import {
   HELP_TAG_SHOW_DELAY,
+  HELP_TAG_STYLES,
   HELP_TAG_VIEWPORT_MARGIN,
   HELP_TAG_WARM_WINDOW,
   installHelpTags,
-} from '../../src/integrations/webawesome/help-tags/install-help-tag.js';
+} from '../../src/wiring/help-tags.js';
+import {
+  installPopoverPolyfill,
+  isShown,
+  resetPopovers,
+} from './helpers/popover.js';
 
-// A fake of the Web Awesome tooltip the help-tag boundary drives (`open` /
-// `anchor` / `updateComplete`), and light-DOM Select and PopupMenu roots. The
-// browser suite (tests/browser/select-help-tag.spec.ts) covers the real
-// elements.
-class FakeTooltip extends HTMLElement {
-  open = false;
-  anchor: Element | null = null;
-  updateComplete: Promise<boolean> = Promise.resolve(true);
+// The help tags drive one light-DOM `.kui-help-tag` popover, placed under the
+// trigger they name. The fixtures are light-DOM Select and PopupMenu roots and
+// toolbar buttons; the browser suites (tests/browser/select-help-tag.spec.ts,
+// tests/browser/toolbar-help-tag.spec.ts) cover the real elements.
+
+/** The one tag element, while it is in the layer. */
+const tagElement = () =>
+  document.querySelector<HTMLElement>('.kui-help-tag-layer > .kui-help-tag');
+
+/** What one trigger's tag looks like: shown there now, and its text. */
+interface TagView {
+  readonly open: boolean;
+  readonly textContent: string;
+  readonly anchor: Element;
 }
+
+const viewOf = (anchor: Element): TagView => ({
+  get open() {
+    const tag = tagElement();
+    return Boolean(tag && isShown(tag) && placed.anchors.at(-1) === anchor);
+  },
+  // The live text while it shows here; otherwise what it last showed here.
+  get textContent() {
+    return this.open
+      ? tagElement()!.textContent
+      : (placed.text.get(anchor) ?? '');
+  },
+  anchor,
+});
+
+/** The tag shown for a trigger, or null when it never showed there. */
+const tagAt = (anchor: Element | null): TagView | null =>
+  anchor && placed.anchors.includes(anchor) ? viewOf(anchor) : null;
 
 let keyboardFocus = true;
 // Each test's fake clock starts past the previous one, so no warm window
@@ -26,7 +86,7 @@ function fakeTime() {
 }
 
 beforeAll(() => {
-  customElements.define('wa-tooltip', FakeTooltip);
+  installPopoverPolyfill();
   installHelpTags(document, { focusVisible: () => keyboardFocus });
   // Idempotent: a second registration adds no second set of listeners.
   installHelpTags(document);
@@ -39,10 +99,10 @@ afterEach(() => {
   focusIn(document.body);
   if (vi.isFakeTimers()) vi.advanceTimersByTime(HELP_TAG_WARM_WINDOW + 1);
   vi.useRealTimers();
-  // The fake tooltip never finishes hiding on its own; finish it so each
-  // closed toolbar-button tag leaves the shared body layer.
-  for (const tag of document.querySelectorAll('.kui-help-tag-layer > *'))
-    tag.dispatchEvent(new Event('wa-after-hide'));
+  resetPopovers();
+  placed.anchors.length = 0;
+  placed.text.clear();
+  placed.options.length = 0;
   document.body.replaceChildren();
 });
 
@@ -116,19 +176,13 @@ function popupMenu({ label = 'Sort Tickets' }: { label?: string | null } = {}) {
   return { host, trigger, item, menu };
 }
 
-/** Every tag lives in the body layer, anchored to its control's trigger. */
-const tagOf = (host: Element) => {
-  const trigger = host.querySelector(
-    ':scope > :is(.kui-popup-menu__trigger, .kui-select__trigger)',
+/** A Select's or PopupMenu's tag, anchored to its trigger. */
+const tagOf = (host: Element) =>
+  tagAt(
+    host.querySelector(
+      ':scope > :is(.kui-popup-menu__trigger, .kui-select__trigger)',
+    ),
   );
-  return (
-    [
-      ...document.querySelectorAll<FakeTooltip>(
-        '.kui-help-tag-layer > wa-tooltip',
-      ),
-    ].find((tag) => trigger && tag.anchor === trigger) ?? null
-  );
-};
 
 function toggle(menu: Element, newState: 'open' | 'closed') {
   const event = new Event('beforetoggle');
@@ -192,23 +246,19 @@ describe('icon-only trigger help tags', () => {
     expect(tag.open).toBe(true);
     expect(tag.textContent).toBe('Filter by Label: Bug, Docs');
     expect(tag.anchor).toBe(combobox);
-    // Aria-hidden and not wired through `for`, so it never renames the trigger.
-    expect(tag.getAttribute('aria-hidden')).toBe('true');
-    expect(tag.getAttribute('trigger')).toBe('manual');
-    expect(tag.hasAttribute('for')).toBe(false);
-    expect(tag.getAttribute('placement')).toBe('bottom');
-    expect(tag.style.pointerEvents).toBe('none');
-    // A first update that resets the anchor is corrected afterwards, and the
-    // tag's popup keeps clear of the viewport edge.
-    tag.anchor = null;
-    const popup = document.createElement('wa-popup') as HTMLElement & {
-      shiftPadding?: number;
-    };
-    tag.attachShadow({ mode: 'open' }).append(popup);
-    await tag.updateComplete;
+    // An aria-hidden manual popover with no relationship to the trigger, so
+    // it never renames it; placed below it, clear of the viewport edge.
+    const element = tagElement()!;
+    expect(element.getAttribute('aria-hidden')).toBe('true');
+    expect(element.getAttribute('popover')).toBe('manual');
+    expect(element.id).toBe('');
+    expect(combobox.hasAttribute('aria-describedby')).toBe(false);
     await Promise.resolve();
-    expect(tag.anchor).toBe(combobox);
-    expect(popup.shiftPadding).toBe(HELP_TAG_VIEWPORT_MARGIN);
+    expect(element.getAttribute('data-placement')).toBe('bottom');
+    expect(placed.options.at(-1)).toEqual({
+      placement: 'flip',
+      padding: HELP_TAG_VIEWPORT_MARGIN,
+    });
 
     // Moving within the trigger keeps it; leaving hides it.
     pointerOver(combobox);
@@ -217,22 +267,39 @@ describe('icon-only trigger help tags', () => {
     expect(tag.open).toBe(false);
   });
 
-  it("keeps the tag's lifecycle events from reaching the control", () => {
+  it('still shows, outside the top layer, without the Popover API', () => {
     const { host, input } = select({ multipleSummary: '' });
-    const heard = vi.fn();
-    host.addEventListener('wa-show', heard);
-    host.addEventListener('wa-after-hide', heard);
-    pointerOver(input);
-    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
-    const tag = tagOf(host)!;
-    expect(tag.textContent).toBe('Filter by Label');
-    tag.dispatchEvent(new Event('wa-show', { bubbles: true, composed: true }));
-    tag.dispatchEvent(
-      new Event('wa-after-hide', { bubbles: true, composed: true }),
+    const proto = HTMLElement.prototype as unknown as Record<string, unknown>;
+    const show = proto.showPopover;
+    const hide = proto.hidePopover;
+    delete proto.showPopover;
+    delete proto.hidePopover;
+    try {
+      focusIn(input);
+      expect(tagElement()!.textContent).toBe('Filter by Label');
+      expect(tagOf(host)!.textContent).toBe('Filter by Label');
+      focusIn(document.body);
+      expect(tagElement()).toBeNull();
+    } finally {
+      proto.showPopover = show;
+      proto.hidePopover = hide;
+    }
+  });
+
+  it('looks the same whatever CSS the application loads', () => {
+    // The install adopts the tag's own zero-specificity stylesheet.
+    const sheet = document.adoptedStyleSheets.find((candidate) =>
+      [...candidate.cssRules].some((rule) =>
+        rule.cssText.includes('.kui-help-tag'),
+      ),
     );
-    expect(heard).not.toHaveBeenCalled();
-    // The tag's own wa-show is not the control opening.
-    expect(tag.open).toBe(true);
+    expect(sheet).toBeDefined();
+    expect(HELP_TAG_STYLES).toContain(':where(.kui-help-tag)');
+    expect(HELP_TAG_STYLES).toContain('pointer-events: none');
+    // Installing again adopts nothing more.
+    const count = document.adoptedStyleSheets.length;
+    installHelpTags(document);
+    expect(document.adoptedStyleSheets).toHaveLength(count);
   });
 
   it('names a single Select and its current choice, and follows a change', () => {
@@ -306,8 +373,8 @@ describe('icon-only trigger help tags', () => {
     const tag = tagOf(host)!;
     expect(tag.textContent).toBe('Sort Tickets');
     expect(tag.anchor).toBe(trigger);
-    expect(tag.parentElement?.className).toBe('kui-help-tag-layer');
-    expect(tag.style.colorScheme).toBe('dark');
+    expect(tagElement()!.parentElement?.className).toBe('kui-help-tag-layer');
+    expect(tagElement()!.style.colorScheme).toBe('dark');
 
     // The menu itself is not the trigger.
     const other = popupMenu({ label: 'Other' });
@@ -583,10 +650,11 @@ function toolbarControl({
 
 const layerOf = () =>
   document.body.querySelector<HTMLElement>(':scope > .kui-help-tag-layer');
+/** The toolbar controls a tag has shown at, in the order it first did. */
 const buttonTags = () =>
-  [...(layerOf()?.querySelectorAll('wa-tooltip.kui-help-tag') ?? [])].map(
-    (tag) => tag as FakeTooltip,
-  );
+  [...new Set(placed.anchors)]
+    .filter((anchor) => anchor.matches('button, a'))
+    .map(viewOf);
 
 describe('icon-only toolbar button help tags', () => {
   it('show for a standalone IconToggleButton outside any group', () => {
@@ -613,10 +681,10 @@ describe('icon-only toolbar button help tags', () => {
     expect(tag!.open).toBe(true);
     expect(tag!.textContent).toBe('Pin View');
     expect(tag!.anchor).toBe(control);
-    expect(tag!.getAttribute('aria-hidden')).toBe('true');
-    expect(tag!.getAttribute('trigger')).toBe('manual');
-    expect(tag!.hasAttribute('for')).toBe(false);
-    expect(tag!.style.colorScheme).toBe(
+    const element = tagElement()!;
+    expect(element.getAttribute('aria-hidden')).toBe('true');
+    expect(element.getAttribute('popover')).toBe('manual');
+    expect(element.style.colorScheme).toBe(
       window.getComputedStyle(control).colorScheme,
     );
     // The layer is aria-hidden, skipped by a morph, and out of the body's flow.
@@ -631,28 +699,26 @@ describe('icon-only toolbar button help tags', () => {
 
     pointerOver(document.body);
     expect(tag!.open).toBe(false);
-    // Once hidden, the tag leaves the layer; the next hover builds a new one.
-    tag!.dispatchEvent(new Event('wa-after-hide'));
-    expect(tag!.isConnected).toBe(false);
+    // Once hidden, the tag leaves the layer; the next hover shows it again.
+    expect(element.isConnected).toBe(false);
+    expect(isShown(element)).toBe(false);
     vi.advanceTimersByTime(HELP_TAG_WARM_WINDOW + 1);
     pointerOver(control);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
-    const [again] = buttonTags();
-    expect(again).not.toBe(tag);
-    expect(again!.open).toBe(true);
+    expect(tagElement()).toBe(element);
+    expect(tag!.open).toBe(true);
   });
 
-  it('keeps a tag that reopens before its hide finishes', () => {
+  it('hides at once and shows again when focus returns', () => {
     const { control } = toolbarControl();
     focusIn(control);
     const [tag] = buttonTags();
     focusIn(document.body);
     expect(tag!.open).toBe(false);
+    expect(tagElement()).toBeNull();
     focusIn(control);
     expect(tag!.open).toBe(true);
-    tag!.dispatchEvent(new Event('wa-after-hide'));
-    expect(tag!.isConnected).toBe(true);
-    expect(buttonTags()).toEqual([tag]);
+    expect(buttonTags()).toHaveLength(1);
   });
 
   it('shows at once on keyboard focus, never on a click focus', () => {
@@ -759,7 +825,7 @@ describe('focus-visible default', () => {
   it('reads :focus-visible and treats an unsupported selector as not visible', async () => {
     vi.resetModules();
     const { installHelpTags: install } =
-      await import('../../src/integrations/webawesome/help-tags/install-help-tag.js');
+      await import('../../src/wiring/help-tags.js');
     const doc = document.implementation.createHTMLDocument('help');
     install(doc);
     const host = doc.createElement('span');
@@ -779,6 +845,6 @@ describe('focus-visible default', () => {
     focusIn(doc.body);
     focusIn(trigger);
     expect(matches).toHaveBeenCalledWith(':focus-visible');
-    expect(doc.querySelector('wa-tooltip')).toBeNull();
+    expect(doc.querySelector('.kui-help-tag')).toBeNull();
   });
 });

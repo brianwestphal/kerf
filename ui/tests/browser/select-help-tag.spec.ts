@@ -19,11 +19,11 @@ async function keyboardFocus(page: Page, target: Locator, key: string) {
 // accessible name), which every tag text starts with.
 
 const helpTag = (host: Locator, name: string) =>
-  host.page().locator('.kui-help-tag-layer > wa-tooltip.kui-help-tag', {
+  host.page().locator('.kui-help-tag-layer > .kui-help-tag', {
     hasText: name,
   });
-const tagBody = (host: Locator, name: string) =>
-  helpTag(host, name).locator('[part~="body"]');
+// The tag element is its own text box.
+const tagBody = (host: Locator, name: string) => helpTag(host, name);
 
 async function moveAway(page: Page) {
   await page.mouse.move(2, 2);
@@ -226,13 +226,12 @@ test('an icon-only PopupMenu names its trigger; a text trigger has no tag', asyn
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=popup-menu');
-  // A PopupMenu has no shadow root: its tag lives in the body-level layer.
+  // Every tag lives in the body-level layer.
   const layerTag = (text: string) =>
-    page.locator('.kui-help-tag-layer wa-tooltip.kui-help-tag', {
+    page.locator('.kui-help-tag-layer > .kui-help-tag', {
       hasText: text,
     });
-  const layerTagBody = (text: string) =>
-    layerTag(text).locator('[part~="body"]');
+  const layerTagBody = (text: string) => layerTag(text);
   const menu = page.locator('[data-demo="popup-menu"] .kui-popup-menu').first();
   const trigger = menu.getByRole('button', { name: 'Sort Tickets' });
   await trigger.hover();

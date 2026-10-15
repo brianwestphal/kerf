@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 386800,
-  "measuredLargestJavaScriptGzip": 131900,
-  "measuredTotalJavaScriptGzip": 386763,
+  "totalJavaScriptGzip": 387700,
+  "measuredLargestJavaScriptGzip": 131912,
+  "measuredTotalJavaScriptGzip": 387614,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5011,6 +5011,22 @@
         "measuredTotalJavaScriptGzip": 386763,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 386800
+      }
+    },
+    {
+      "at": "2026-10-15T05:55:28.957Z",
+      "reason": "KF-9VNFSG: help tags draw their own light-DOM tag and stylesheet, while the Web Awesome catalog still demonstrates raw wa-tooltip",
+      "old": {
+        "measuredLargestJavaScriptGzip": 131900,
+        "measuredTotalJavaScriptGzip": 386763,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 386800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 131912,
+        "measuredTotalJavaScriptGzip": 387614,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 387700
       }
     }
   ]

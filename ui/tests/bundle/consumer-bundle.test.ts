@@ -480,11 +480,9 @@ describe('consumer bundle boundaries', () => {
     // The form-associated kui-select element ships only with registration.
     expect(output(pure, '.js')).not.toContain('setFormValue');
     expect(output(registered, '.js')).toContain('setFormValue');
-    // Registration brings only the help tag's tooltip from Web Awesome.
+    // Registration brings nothing from Web Awesome, not even its tooltip.
     const inputs = Object.keys(registered.metafile!.inputs).join('\n');
-    expect(inputs).toContain('components/tooltip/tooltip.js');
-    expect(inputs).not.toContain('components/select/select.js');
-    expect(inputs).not.toContain('components/option/option.js');
+    expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
   it('keeps DialogSurface free of Web Awesome, with or without its register', async () => {
@@ -518,12 +516,8 @@ describe('consumer bundle boundaries', () => {
     const registered = await bundle("import '@kerfjs/ui/help-tags/register';");
     const inputs = Object.keys(registered.metafile!.inputs).join('\n');
     expect(inputs).toContain('dist/help-tags-register.js');
-    expect(inputs).toContain(
-      '@awesome.me/webawesome/dist/components/tooltip/tooltip.js',
-    );
-    // Only the tooltip: no Select, dropdown, or button registrations.
-    expect(inputs).not.toContain('components/select/select.js');
-    expect(inputs).not.toContain('components/dropdown/dropdown.js');
+    // The tag is Kerf's own element: nothing comes from Web Awesome.
+    expect(inputs).not.toContain('@awesome.me/webawesome');
     expect(output(registered, '.js')).toContain('kui-help-tag-layer');
   });
 

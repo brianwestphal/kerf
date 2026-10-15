@@ -18,11 +18,11 @@ async function keyboardFocus(page: Page, target: Locator, key: string) {
 // accessibility tree unchanged.
 
 const layerTag = (page: Page, text: string) =>
-  page.locator('.kui-help-tag-layer wa-tooltip.kui-help-tag', {
+  page.locator('.kui-help-tag-layer > .kui-help-tag', {
     hasText: text,
   });
-const layerTagBody = (page: Page, text: string) =>
-  layerTag(page, text).locator('[part~="body"]');
+// The tag element is its own text box.
+const layerTagBody = (page: Page, text: string) => layerTag(page, text);
 
 async function openSelectDemo(page: Page, width: number) {
   await page.setViewportSize({ width, height: 800 });

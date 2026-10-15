@@ -416,7 +416,7 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   or clear the value through ordinary change events. The app owns the updated
   controlled value and localized action labels.
   Icon-only Selects (single or multiple) and icon-only `PopupMenu`s show an
-  `aria-hidden` Web Awesome help tag repeating that name (and a Select's
+  `aria-hidden` help tag repeating that name (and a Select's
   choice) on hover and keyboard focus, hidden while the popup is open; the
   register import installs it, so do not add a `title` or tooltip of your own.
   The same installer tags an icon-only `<button>` or link inside a

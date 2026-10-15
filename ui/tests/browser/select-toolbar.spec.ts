@@ -332,7 +332,7 @@ test('caret-free icon-only Select is a round value trigger with keyboard access'
     await select.getByRole('combobox').hover();
     // Help tags live in the shared body-level layer.
     await expect(
-      page.locator('.kui-help-tag-layer > wa-tooltip.kui-help-tag[open]'),
+      page.locator('.kui-help-tag-layer > .kui-help-tag:popover-open'),
     ).toHaveText('Workspace Sort: Balanced');
     await select.getByRole('combobox').focus();
     await page.keyboard.press('Enter');

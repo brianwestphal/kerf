@@ -156,9 +156,13 @@ all three kinds, and any of `@kerfjs/ui/select/register`,
 `@kerfjs/ui/popup-menu/register`, or `@kerfjs/ui/help-tags/register` installs
 it (once per document, however many are imported). An application whose
 toolbars have icon-only buttons but no registered `Select` or `PopupMenu`
-imports `@kerfjs/ui/help-tags/register`, which registers only the tooltip
-element. Pure `SafeHtml` rendering stays zero-JS: without an installer, nothing
-shows a tag.
+imports `@kerfjs/ui/help-tags/register`, which installs only the help tags.
+The tag is Kerf's own element (no Web Awesome): one `aria-hidden`,
+`popover="manual"` element in the top layer, placed 8px below its trigger
+(flipping above when short, kept 8px clear of the viewport edge), styled by a
+zero-specificity stylesheet the installer adopts so a theme can restyle it.
+Pure `SafeHtml` rendering stays zero-JS: without an installer, nothing shows a
+tag.
 
 - **Text.** The tag says what the accessible name says: a filter's name and
   chosen labels ("Filter by label: Bug, Docs", or "Filter by label" when none

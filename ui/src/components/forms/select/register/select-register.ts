@@ -1,6 +1,4 @@
-import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js';
-
-import { installHelpTags } from '../../../../integrations/webawesome/help-tags/install-help-tag.js';
+import { installHelpTags } from '../../../../wiring/help-tags.js';
 import { installPopupMenus } from '../../../actions/popup-menu/internal/popup-menu-controller.js';
 import { installSelects } from '../internal/select-controller.js';
 

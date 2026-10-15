@@ -6,25 +6,28 @@
 // `ToolbarControlGroup` (named only by `aria-label`) carry their purpose — and
 // a Select its current choice — only in the accessible name. Sighted pointer
 // and keyboard users see just the icon, so the registration boundary shows a
-// Web Awesome `wa-tooltip` naming the control (Apple HIG "help tag"):
+// tag naming the control (Apple HIG "help tag"):
 //
 // - after a short hover delay, or immediately when a previous tag just closed
 //   (moving along a toolbar), and at once on keyboard (`:focus-visible`) focus;
 // - never while the control's popup is open, and not again after a press or
 //   Escape until the pointer or focus leaves and returns;
 // - with the same text the accessible name already announces, so the tag is
-//   `aria-hidden` and never joins the control's `aria-labelledby` (a manual
-//   trigger with a programmatic anchor, not `for`, so Web Awesome does not
-//   add it) — assistive technology hears the name once.
+//   `aria-hidden` and never joins the control's `aria-labelledby` — assistive
+//   technology hears the name once.
 //
-// Every tag lives in one body-level layer (re-attached if a body morph drops
-// it, and removed again once hidden), outside the control so the morph never
-// sees it and `:has()` selectors on the control ignore it, and copies its
-// trigger's `color-scheme`; the tag's Popover-API popup renders in the top
-// layer, so its place in the document does not affect where or above what it
-// shows. A button that already has a native `title`, or a Web Awesome tooltip
-// `for` it, keeps that and gets no second tag. Each tag's own lifecycle events
-// stop at the tag, so they never reach an application's listeners.
+// One tag shows at a time: a `popover="manual"` element in the top layer,
+// placed 8px below its trigger (flipping above when short, kept 8px clear of
+// the viewport edge) and following it while shown. It lives in a body-level
+// layer (re-attached if a body morph drops it, and removed again once
+// hidden), outside the control so the morph never sees it and `:has()`
+// selectors on the control ignore it, and copies its trigger's
+// `color-scheme`. Its look is a small stylesheet the install adopts, at zero
+// specificity so a theme can restyle it. A button that already has a native
+// `title`, or a Web Awesome tooltip `for` it, keeps that and gets no second
+// tag.
+
+import { followAnchor, positionPopup } from '../shared/popup/position-popup.js';
 
 /** Hover delay before a help tag appears. */
 export const HELP_TAG_SHOW_DELAY = 500;
@@ -32,30 +35,87 @@ export const HELP_TAG_SHOW_DELAY = 500;
 export const HELP_TAG_WARM_WINDOW = 400;
 /** A tag shifted inward stays this far from the viewport edge. */
 export const HELP_TAG_VIEWPORT_MARGIN = 8;
+/** The gap between a tag and its trigger. */
+export const HELP_TAG_GAP = 8;
+
+/**
+ * The tag's look: the loud neutral fill and its on-loud text (14px), a 3px
+ * radius, and a scale-and-fade entrance unless motion is reduced. Every
+ * selector is wrapped in `:where()`, so any theme rule wins.
+ */
+export const HELP_TAG_STYLES = `
+:where(.kui-help-tag) {
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(30ch, var(--_kui-popup-available-width, 100vw));
+  margin: 0;
+  padding: 0.25em 0.5em;
+  overflow: hidden;
+  color: var(--kui-color-neutral-on-loud, #fff);
+  font: inherit;
+  font-size: var(--kui-font-s, 0.875rem);
+  line-height: 1.6;
+  text-align: start;
+  white-space: normal;
+  border: 1px solid var(--kui-color-neutral-fill-loud, #48484a);
+  border-radius: 3px;
+  background: var(--kui-color-neutral-fill-loud, #48484a);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(:root:not([data-kui-effects="static"]) .kui-help-tag:popover-open) {
+    animation: kui-help-tag-show 150ms ease;
+  }
+  :where(.kui-help-tag[data-placement^="top"]) {
+    transform-origin: bottom;
+  }
+  :where(.kui-help-tag[data-placement^="bottom"]) {
+    transform-origin: top;
+  }
+}
+@keyframes kui-help-tag-show {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+}
+@media (forced-colors: active) {
+  :where(.kui-help-tag) {
+    color: CanvasText;
+    border-color: CanvasText;
+    background: Canvas;
+  }
+}
+`;
 
 type HelpTagHost = HTMLElement;
-
-interface HelpTag extends HTMLElement {
-  open: boolean;
-  readonly updateComplete: Promise<unknown>;
-  anchor: Element | null;
-  trigger: string;
-  placement: string;
-}
 
 export interface HelpTagOptions {
   /** Whether a newly focused element shows keyboard focus. */
   focusVisible?: (element: Element) => boolean;
 }
 
-const LIFECYCLE_EVENTS = [
-  'wa-show',
-  'wa-after-show',
-  'wa-hide',
-  'wa-after-hide',
-] as const;
-
 const installed = new WeakSet<Document>();
+
+/**
+ * Adopt the tag's stylesheet into `doc` once. A document without a window
+ * (one built by `createHTMLDocument`) never renders, so it needs none.
+ */
+function adoptStyles(doc: Document): void {
+  const view = doc.defaultView;
+  if (!view) return;
+  const sheet = new view.CSSStyleSheet();
+  sheet.replaceSync(HELP_TAG_STYLES);
+  doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, sheet];
+}
+
+/** Whether the engine implements the Popover API on `element`. */
+const popoverSupported = (element: HTMLElement): boolean =>
+  typeof element.showPopover === 'function';
 
 function isFocusVisible(element: Element): boolean {
   try {
@@ -161,20 +221,22 @@ export function installHelpTags(
 ): void {
   if (installed.has(doc)) return;
   installed.add(doc);
-  const tags = new WeakMap<HelpTagHost, HelpTag>();
+  adoptStyles(doc);
   let hovered: HelpTagHost | null = null;
   let focused: HelpTagHost | null = null;
-  // The trigger whose tag is open, with that tag.
-  let shown: { host: HelpTagHost; tag: HelpTag } | null = null;
+  // The trigger whose tag is open, and how to stop following it.
+  let shown: { host: HelpTagHost; stop: () => void } | null = null;
   // A press, Escape, or an opened popup suppresses that trigger's tag.
   let dismissed: HelpTagHost | null = null;
   let timer: number | undefined;
   let warmUntil = 0;
   let layer: HTMLElement | null = null;
+  // The one tag element, reused for every trigger.
+  let tag: HTMLElement | null = null;
 
-  // The body-level home of plain controls' tags. Its fixed, zero-size box
-  // keeps it out of a grid or flex body's flow; a body morph that drops it is
-  // repaired on the next show.
+  // The body-level home of the tag. Its fixed, zero-size box keeps it out of
+  // a grid or flex body's flow; a body morph that drops it is repaired on the
+  // next show.
   const layerRoot = (): HTMLElement => {
     if (!layer) {
       layer = doc.createElement('div');
@@ -193,36 +255,25 @@ export function installHelpTags(
     return layer;
   };
 
-  const tagFor = (host: HelpTagHost): HelpTag => {
-    const root = layerRoot();
-    let tag = tags.get(host);
+  const tagElement = (): HTMLElement => {
     if (!tag) {
-      tag = doc.createElement('wa-tooltip') as HelpTag;
+      tag = doc.createElement('div');
       tag.className = 'kui-help-tag';
+      tag.setAttribute('popover', 'manual');
       tag.setAttribute('aria-hidden', 'true');
-      tag.setAttribute('trigger', 'manual');
-      tag.setAttribute('placement', 'bottom');
-      tag.style.pointerEvents = 'none';
-      for (const type of LIFECYCLE_EVENTS)
-        tag.addEventListener(type, (event) => event.stopPropagation());
-      // A hidden tag leaves the layer, so tags for controls that a re-render
-      // replaced never accumulate there.
-      const created = tag;
-      created.addEventListener('wa-after-hide', () => {
-        if (created.open) return;
-        created.remove();
-        tags.delete(host);
-      });
-      root.append(tag);
-      tags.set(host, tag);
     }
     return tag;
   };
 
   const hide = (host: HelpTagHost) => {
     if (shown?.host !== host) return;
-    shown.tag.open = false;
+    shown.stop();
     shown = null;
+    // A hidden tag leaves the layer. (Hiding a popover a morph already hid,
+    // by dropping the layer, is a no-op.)
+    const current = tagElement();
+    if (popoverSupported(current)) current.hidePopover();
+    current.remove();
     warmUntil = Date.now() + HELP_TAG_WARM_WINDOW;
   };
 
@@ -233,25 +284,27 @@ export function installHelpTags(
     const anchor = anchorOf(host);
     const text = helpText(host);
     if (!anchor || !text) return;
-    const tag = tagFor(host);
     if (shown) hide(shown.host);
-    // A body-layer tag takes its trigger's light or dark scheme, which a
-    // subtree theme (`.wa-dark`) may set below the document root.
-    tag.style.colorScheme = window.getComputedStyle(anchor).colorScheme;
-    tag.anchor = anchor;
-    tag.textContent = text;
-    tag.open = true;
-    shown = { host, tag };
-    // A new tag's first update resets `anchor` from its (null) `for`. Its
-    // popup also keeps the standard 8px clear of the viewport edge when it
-    // shifts a long tag inward (Web Awesome's tooltip leaves this at 0).
-    void tag.updateComplete.then(() => {
-      if (tag.anchor !== anchor) tag.anchor = anchor;
-      const popup = tag.shadowRoot?.querySelector<
-        HTMLElement & { shiftPadding: number }
-      >('wa-popup');
-      if (popup) popup.shiftPadding = HELP_TAG_VIEWPORT_MARGIN;
-    });
+    const current = tagElement();
+    layerRoot().append(current);
+    // The tag takes its trigger's light or dark scheme, which a subtree
+    // theme (`.wa-dark`) may set below the document root.
+    current.style.colorScheme = window.getComputedStyle(anchor).colorScheme;
+    current.textContent = text;
+    // Without the Popover API (a test DOM), the fixed tag still shows, just
+    // outside the top layer.
+    if (popoverSupported(current)) current.showPopover();
+    const stop = followAnchor(
+      anchor,
+      current,
+      () =>
+        void positionPopup(anchor, current, {
+          placement: 'bottom',
+          gap: HELP_TAG_GAP,
+          padding: HELP_TAG_VIEWPORT_MARGIN,
+        }),
+    );
+    shown = { host, stop };
   };
 
   /** The tagged host whose trigger (not its popup) is on the path. */
@@ -398,7 +451,7 @@ export function installHelpTags(
   // Keep a visible tag's text in step with the selection.
   const refresh = (event: Event) => {
     const host = helpTagHost(event.composedPath());
-    if (shown && host === shown.host) shown.tag.textContent = helpText(host);
+    if (shown && host === shown.host) tagElement().textContent = helpText(host);
   };
   doc.addEventListener('change', refresh, true);
   doc.addEventListener('input', refresh, true);
