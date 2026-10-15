@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 386400,
-  "measuredLargestJavaScriptGzip": 131903,
-  "measuredTotalJavaScriptGzip": 386363,
+  "totalJavaScriptGzip": 386800,
+  "measuredLargestJavaScriptGzip": 131900,
+  "measuredTotalJavaScriptGzip": 386763,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4995,6 +4995,22 @@
         "measuredTotalJavaScriptGzip": 386363,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 386400
+      }
+    },
+    {
+      "at": "2026-10-15T05:04:43.364Z",
+      "reason": "Merge of main (Chip action mode) into the Web Awesome independence branch: both changes' bundle growth together",
+      "old": {
+        "measuredLargestJavaScriptGzip": 131903,
+        "measuredTotalJavaScriptGzip": 386363,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 386400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 131900,
+        "measuredTotalJavaScriptGzip": 386763,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 386800
       }
     }
   ]

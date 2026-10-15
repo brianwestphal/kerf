@@ -35,6 +35,33 @@ interface ChipNoLinkProps {
   external?: never;
 }
 
+interface ChipNoActionProps {
+  action?: never;
+  actionLabel?: never;
+}
+
+/**
+ * An action chip renders its whole root as a native
+ * `<button type="button">` carrying `data-action` (and `data-item-id`) for an
+ * application delegated handler. It cannot also be a link or carry a remove
+ * button, because nested interactive content is invalid.
+ */
+interface ChipActionProps {
+  /** Delegated action name; the chip renders as a native `<button>`. */
+  action: string;
+  /**
+   * Accessible name when the visible label alone is unclear, such as
+   * "Insert filter is:mine". Start it with, or include, the visible label so
+   * speech input still matches.
+   */
+  actionLabel?: string;
+  href?: never;
+  download?: never;
+  external?: never;
+  removeAction?: never;
+  removeLabel?: never;
+}
+
 /**
  * A link chip renders a native `<a>` with Chip geometry. It cannot also carry
  * a remove button, because a button inside a link is invalid.
@@ -48,18 +75,25 @@ interface ChipLinkProps {
   external?: boolean;
   removeAction?: never;
   removeLabel?: never;
+  action?: never;
+  actionLabel?: never;
 }
 
 /**
  * A plain chip, a removable chip (a delegated action plus a specific
- * accessible name), or a link chip (`href`, optional `download`/`external`).
+ * accessible name), a link chip (`href`, optional `download`/`external`), or
+ * an action chip (`action`, optional `actionLabel`) whose whole body is a
+ * native button.
  */
 export type ChipProps = ChipCommonProps &
   ChipLabelProps &
   (
-    | ({ removeAction: string; removeLabel: string } & ChipNoLinkProps)
-    | ({ removeAction?: never; removeLabel?: never } & ChipNoLinkProps)
+    | ({ removeAction: string; removeLabel: string } & ChipNoLinkProps &
+        ChipNoActionProps)
+    | ({ removeAction?: never; removeLabel?: never } & ChipNoLinkProps &
+        ChipNoActionProps)
     | ChipLinkProps
+    | ChipActionProps
   );
 
 function removeButton(action: string, label: string, disabled: boolean) {
@@ -97,8 +131,9 @@ function downloadValue(download: string | boolean | undefined) {
 }
 
 /**
- * A short label with an optional native remove button, or a native link when
- * `href` is set. The application owns removal and the link destination.
+ * A short label with an optional native remove button, a native link when
+ * `href` is set, or a native button when `action` is set. The application
+ * owns removal, the link destination, and the action handler.
  */
 export function Chip({
   children,
@@ -117,9 +152,20 @@ export function Chip({
   external = false,
   removeAction,
   removeLabel,
+  action,
+  actionLabel,
 }: ChipProps) {
   if (truncate && typeof children !== 'string')
     throw new TypeError('Chip truncate requires a plain text label');
+  if (
+    action !== undefined &&
+    (href !== undefined ||
+      removeAction !== undefined ||
+      removeLabel !== undefined)
+  )
+    throw new TypeError(
+      'Chip action cannot be combined with href or removeAction, because nested interactive content is invalid',
+    );
   const content = (
     <>
       {icon === undefined ? null : (
@@ -168,6 +214,28 @@ export function Chip({
       >
         {content}
       </a>
+    );
+  }
+  if (action !== undefined) {
+    return (
+      <button
+        class={rootClass}
+        type="button"
+        disabled={disabled}
+        aria-label={actionLabel?.trim() || undefined}
+        data-action={action}
+        data-component="chip"
+        data-tone={tone}
+        data-appearance={appearance}
+        data-shape={shape}
+        data-size={size}
+        data-disabled={disabled ? '' : undefined}
+        data-truncate={truncate ? '' : undefined}
+        data-item-id={itemId}
+        slot={slot}
+      >
+        {content}
+      </button>
     );
   }
   return (

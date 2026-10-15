@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Action `Chip`.** `Chip` takes an `action` (with the existing `itemId`), and its whole body then renders as a native `<button type="button" data-action data-item-id>` for an application's delegated handler, such as a filter token in a search syntax help popover that inserts itself into the query. The button keeps Chip geometry and adds hover, press, `:focus-visible`, and `disabled` states; an optional `actionLabel` names it when the visible label alone is unclear. A compact, rounded action chip in a wrapping `Row` inside a compact `ValueTable` cell keeps the row height of the compact `Badge` it replaces, even with Web Awesome's native button styles loaded. `action` cannot be combined with `href` or `removeAction`, at the type level or at runtime, because nested interactive content is invalid. The Chip catalog shows a search filter table, and the new Chip design templates cover tags and action chips.
+
 - **`@kerfjs/ui/overlay-sheet.css`.** An opt-in stylesheet for core `kerfjs/overlay` dialogs presented with `presentation: 'bottom-sheet'`, matching `DialogSurface`'s sheet:
   - the bottom edge, full width up to 560px and centered beyond;
   - square bottom corners under the dialog radius;

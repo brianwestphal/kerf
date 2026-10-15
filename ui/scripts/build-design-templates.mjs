@@ -53,6 +53,7 @@ import {
 } from 'lucide';
 
 import { AppTab } from '../dist/app-tab.js';
+import { Chip } from '../dist/chip.js';
 import { ChoiceChips } from '../dist/choice-chips.js';
 import { Composer } from '../dist/composer.js';
 import { em, fillColor, px } from '../dist/css-values.js';
@@ -62,6 +63,7 @@ import { ListActionRow } from '../dist/list-action-row.js';
 import { ListHeader } from '../dist/list-header.js';
 import { ListItem } from '../dist/list-item.js';
 import { LucideIcon } from '../dist/lucide-icon.js';
+import { Row } from '../dist/row.js';
 import { SegmentedControl } from '../dist/segmented-control.js';
 import { Skeleton } from '../dist/skeleton.js';
 import { StateBanner } from '../dist/state-banner.js';
@@ -500,6 +502,88 @@ export const COMPONENTS = {
             trailingActionLabel: 'Edit Deploy Preview',
             trailingActionIcon: glyph(Pencil, 'pencil'),
           }),
+      },
+    ],
+  },
+  chip: {
+    css: ['foundation', 'layout', 'row', 'lucide-icon', 'value-table', 'chip'],
+    selector: '#frame',
+    width: 460,
+    frameWidth: 420,
+    variants: [
+      {
+        id: 'tags',
+        label: 'Removable, Link, and Plain Tags',
+        height: 48,
+        render: () =>
+          Row({
+            gap: 'xs',
+            wrap: true,
+            children: [
+              Chip({
+                children: 'Urgent',
+                tone: 'info',
+                itemId: 'urgent',
+                removeAction: 'remove-tag',
+                removeLabel: 'Remove Urgent tag',
+              }),
+              Chip({
+                children: 'report.md',
+                href: '/files/report.md',
+                download: 'report.md',
+                icon: glyph(FileText, 'file-text'),
+              }),
+              Chip({ children: 'Backlog', appearance: 'solid' }),
+            ],
+          }),
+      },
+      {
+        id: 'action-filters',
+        label: 'Action Chips in a Compact Value Table',
+        height: 190,
+        render: () => {
+          const filters = (tokens, unavailable = []) =>
+            Row({
+              gap: '2xs',
+              wrap: true,
+              children: tokens.map((token) =>
+                Chip({
+                  children: token,
+                  action: 'insert-filter',
+                  actionLabel: `Insert filter ${token}`,
+                  itemId: token,
+                  size: 'compact',
+                  shape: 'rounded',
+                  disabled: unavailable.includes(token),
+                }),
+              ),
+            });
+          return ValueTable({
+            label: 'Search Filters',
+            density: 'compact',
+            children: [
+              ValueTableRow({
+                label: 'Status',
+                value: filters(['is:draft', 'is:sent', 'is:awarded']),
+              }),
+              ValueTableRow({
+                label: 'Ownership',
+                value: filters(['is:mine', 'is:shared']),
+              }),
+              ValueTableRow({
+                label: 'Site',
+                value: filters(['site:Karachi', 'site:Lahore']),
+              }),
+              ValueTableRow({
+                label: 'Content',
+                value: filters(
+                  ['has:questions', 'has:attachments'],
+                  ['has:attachments'],
+                ),
+              }),
+            ],
+          });
+        },
       },
     ],
   },

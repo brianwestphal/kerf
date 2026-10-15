@@ -9,7 +9,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 ## Kerf UI — Foundation
 
 - [Badge](./badge.md) — Present compact metadata without application-authored badge CSS or consumer styling of component internals.
-- [Chip](./chip.md) — Render removable tags and file or link chips without application rules on Web Awesome internals or anchor chrome.
+- [Chip](./chip.md) — Render removable tags, file or link chips, and activatable action chips without application rules on Web Awesome internals or anchor and button chrome.
 - [LucideIcon](./lucide-icon.md) — Decorative and meaningfully labeled Lucide-compatible icons.
 - [DisclosureArrow](./disclosure-arrow.md) — Indicate whether a disclosure control is open with an overridable 18px root-scaled visual and shortest-path rotation behavior.
 - [Foundation Tokens](./foundation.md) — Provide the shared semantic token foundation for application themes and every styled Kerf UI component.

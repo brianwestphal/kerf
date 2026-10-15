@@ -488,6 +488,11 @@ state without consumer rules on Web Awesome internals. With `href` (plus optiona
 truncation, focus ring, and hover feedback, for downloadable file chips in chat
 bubbles; `tone="inherit"` follows the surrounding foreground with a
 currentColor border and no fill, so it keeps a brand-loud bubble's text contrast.
+With `action` (plus `itemId` and an optional `actionLabel`) the whole chip is a
+native button for a delegated one-shot action, such as inserting a search help
+filter token, with hover, press, focus-ring, and disabled states; it is
+exclusive with `href` and `removeAction`, and a compact rounded action chip
+keeps a compact Badge's row height in a compact ValueTable cell (shipped).
 BackdropImage (shipped) opens a scrolling Pane or NavStack view with a hero or
 tiled image (`src`/`srcset`/`alt`, `fit`, `position`, `repeat`, typed
 `height`): `parallax` (`none`, `subtle`, or a 0 to 1 factor) lags it on a
