@@ -6971,6 +6971,42 @@
       }
     },
     {
+      "key": "@kerfjs/ui:wa-tag-input",
+      "package": "@kerfjs/ui",
+      "id": "wa-tag-input",
+      "name": "Tag Input",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:wa-accordion",
       "package": "@kerfjs/ui",
       "id": "wa-accordion",
@@ -7451,6 +7487,78 @@
       "layout": {
         "roles": ["navigation"],
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-stepper",
+      "package": "@kerfjs/ui",
+      "id": "wa-stepper",
+      "name": "Stepper",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-step",
+      "package": "@kerfjs/ui",
+      "id": "wa-step",
+      "name": "Step",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
       "cssValueProps": [],

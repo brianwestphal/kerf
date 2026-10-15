@@ -478,7 +478,7 @@ attributes so stale draft text does not remain visible.
 When the app uses Web Awesome's broader free component set, import
 types with `import type {} from '@kerfjs/ui/webawesome'` and import
 `@kerfjs/ui/webawesome.css` once. The first is a side-effect-free Kerf JSX
-declaration boundary for all 70 catalog-supported `wa-*` elements. The CSS-only
+declaration boundary for all 73 catalog-supported `wa-*` elements. The CSS-only
 entry includes Web Awesome's base stylesheet and the Hot Sheet 2-aligned Kerf
 theme but registers no custom elements. Continue importing only the individual
 Web Awesome component modules the app renders, and override public `--wa-*`
@@ -600,7 +600,7 @@ server — `wireCatalog`'s `onUxReviewProject`, and
 `Catalog`'s `uxReview` prop);
 the detail view derives one grouped `Uses` / `Used By` selector from declared
 component dependencies and hides it for unrelated components. The catalog also
-lists all 70 free Web Awesome 3.12 components in a collapsible Web Awesome
+lists all 73 free Web Awesome 3.14 components in a collapsible Web Awesome
 Integration section (optional; Kerf components need none of them),
 with an addressable themed specimen and cross-system relationships for each.
 Catalog authors use exactly three demo kinds: component, composition, and recipe.

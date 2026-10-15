@@ -8648,6 +8648,53 @@
       }
     },
     {
+      "id": "wa-tag-input",
+      "name": "Tag Input",
+      "category": "Forms",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Form field that collects a list of short values as removable tags, each submitted as its own form value.",
+      "uses": [
+        "wa-icon",
+        "wa-tag"
+      ],
+      "purpose": "Form field that collects a list of short values as removable tags, each submitted as its own form value.",
+      "customElement": "wa-tag-input",
+      "useWhen": [
+        "Form field that collects a list of short values as removable tags, each submitted as its own form value."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Do not use it for search filters; TokenSearchField combines free text with ordered, editable filter tokens.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+      ],
+      "recommendation": "supported",
+      "alternatives": [
+        {
+          "id": "token-search-field",
+          "relationship": "prefer-kerf",
+          "when": "Use TokenSearchField when the tags are search filters rather than submitted form values."
+        }
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/tag-input/tag-input.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-tag-input",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
       "id": "wa-accordion",
       "name": "Accordion",
       "category": "Layout",
@@ -9182,6 +9229,85 @@
       },
       "links": {
         "catalogRoute": "?component=wa-pagination",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-stepper",
+      "name": "Stepper",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "Ordered indicator for a multi-step process, such as checkout or setup, with optional step-by-step navigation.",
+      "uses": [
+        "wa-step"
+      ],
+      "purpose": "Ordered indicator for a multi-step process, such as checkout or setup, with optional step-by-step navigation.",
+      "customElement": "wa-stepper",
+      "useWhen": [
+        "Ordered indicator for a multi-step process, such as checkout or setup, with optional step-by-step navigation."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/stepper/stepper.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-stepper",
+        "documentation": "docs/webawesome-theme.md#coverage",
+        "recipe": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "id": "wa-step",
+      "name": "Step",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "webawesome",
+      "description": "One stage inside a stepper, showing its position, label, and status.",
+      "uses": [
+        "wa-icon",
+        "wa-spinner"
+      ],
+      "purpose": "One stage inside a stepper, showing its position, label, and status.",
+      "customElement": "wa-step",
+      "useWhen": [
+        "One stage inside a stepper, showing its position, label, and status."
+      ],
+      "avoidWhen": [
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+      ],
+      "recommendation": "supported",
+      "alternatives": [],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
+      "delivery": {
+        "registrationImport": "@awesome.me/webawesome/dist/components/step/step.js",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "custom-element-registration"
+        ]
+      },
+      "links": {
+        "catalogRoute": "?component=wa-step",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
       }

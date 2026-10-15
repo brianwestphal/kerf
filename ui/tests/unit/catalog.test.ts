@@ -590,7 +590,7 @@ describe('UX catalog metadata', () => {
         .filter((entry) => entry.kind === 'composition')
         .every((entry) => !/composition/i.test(entry.name)),
     ).toBe(true);
-    expect(webAwesomeCatalog).toHaveLength(70);
+    expect(webAwesomeCatalog).toHaveLength(73);
     expect(
       webAwesomeCatalog.every(
         (entry) => entry.source === 'webawesome' && entry.kind === 'component',

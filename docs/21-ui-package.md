@@ -164,10 +164,10 @@ Plain Accordion and Details remove inline padding from their trigger and body;
 outlined and sunken disclosure headers use the 16px container inset while their
 bodies retain the compact 8px surface inset.
 
-Web Awesome 3 is an optional peer at `^3.12.0`. Stage 1 of the Web Awesome
+Web Awesome 3 is an optional peer at `^3.14.0`. Stage 1 of the Web Awesome
 independence work (`PopupMenu`, `Select`, and `DialogSurface` drawing their own
 native controls) retired every prototype patch, so the ui package tests the
-floor through its lockfile (3.12.0) and the newest 3.x through CI's
+floor through its lockfile (3.14.0) and the newest 3.x through CI's
 `ui-webawesome-latest` job (`npm --prefix ui run test:webawesome-latest`: the
 unit and Chromium browser suites). With `KERF_WEBAWESOME_LATEST=1`, which
 that script sets, the catalog check warns about elements a newer Web Awesome
@@ -191,7 +191,7 @@ rather than moved under `integrations/`, since they were already opt-in.
 Stage 3 (KF-F52B04: guidance treats Web Awesome as an integration) makes Kerf
 components and native elements the only default answer. The catalog tags the
 28 Web Awesome elements a Kerf component replaces `Discouraged` (recommendation
-`avoid` with `prefer-kerf` alternatives), lists all 70 under a collapsed
+`avoid` with `prefer-kerf` alternatives), lists all 73 under a collapsed
 `Web Awesome Integration` sidebar section, and the package profile defaults
 avoid each one so `KUI-L301` reports a raw tag. `ui/docs/component-selection.md`
 (section "Web Awesome integration"), `ui/ai/skill.md`, `ui/llms.txt`,
@@ -508,7 +508,7 @@ implementation file derived from the canonical browser import; Web Awesome
 entries name the local documentation as Kerf integration guidance. The typed
 projection derives these paths without adding a public runtime export.
 Decorative chrome, Web Awesome controls, and production components share
-semantic theme tokens. All 70 free Web Awesome 3.12 modules have focused routes
+semantic theme tokens. All 73 free Web Awesome 3.14 modules have focused routes
 under a distinct collapsible `Web Awesome Integration` section with category
 subgroups. The canonical recommendation metadata projects visible
 `Discouraged` sidebar tags onto the 28 superseded or exceptional choices while leaving Popup available as

@@ -212,7 +212,7 @@ jobs:
   # regenerated). Keep this exact-render comparison on macOS: the committed
   # system-font SVGs use macOS font metrics, so comparing Linux renders makes
   # every template appear to drift even when its component is unchanged.
-  # The ui package supports every Web Awesome 3.x from 3.12 (its peer range);
+  # The ui package supports every Web Awesome 3.x from 3.14 (its peer range);
   # the lockfile tests the floor, and this job tests the newest 3.x release so
   # an upgrade that breaks the theme or a raw-element demo surfaces here first.
   ui-webawesome-latest:

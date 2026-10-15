@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 392100,
-  "measuredLargestJavaScriptGzip": 138250,
-  "measuredTotalJavaScriptGzip": 392021,
+  "totalJavaScriptGzip": 403600,
+  "measuredLargestJavaScriptGzip": 148183,
+  "measuredTotalJavaScriptGzip": 403579,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5139,6 +5139,22 @@
         "measuredTotalJavaScriptGzip": 392021,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 392100
+      }
+    },
+    {
+      "at": "2026-10-15T22:56:32.545Z",
+      "reason": "Web Awesome floor raised to 3.14 (larger upstream bundle) plus wa-stepper/wa-step/wa-tag-input catalog specimens (KF-38B7VP)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 138250,
+        "measuredTotalJavaScriptGzip": 392021,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 392100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 148183,
+        "measuredTotalJavaScriptGzip": 403579,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 403600
       }
     }
   ]

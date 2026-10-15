@@ -90,11 +90,14 @@ declare module 'kerfjs/jsx-runtime' {
       'wa-slider': KerfCustomElement;
       'wa-spinner': KerfCustomElement;
       'wa-split-panel': KerfCustomElement;
+      'wa-step': KerfCustomElement;
+      'wa-stepper': KerfCustomElement;
       'wa-switch': KerfCustomElement;
       'wa-tab': KerfCustomElement;
       'wa-tab-group': KerfCustomElement;
       'wa-tab-panel': KerfCustomElement;
       'wa-tag': KerfCustomElement;
+      'wa-tag-input': KerfCustomElement;
       'wa-textarea': KerfCustomElement;
       'wa-time-input': KerfCustomElement;
       'wa-toast': KerfCustomElement;

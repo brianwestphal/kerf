@@ -638,7 +638,7 @@
     "design-templates:build": "node scripts/build-design-templates.mjs"
   },
   "peerDependencies": {
-    "@awesome.me/webawesome": "^3.12.0",
+    "@awesome.me/webawesome": "^3.14.0",
     "kerfjs": "^4.0.0",
     "lucide": "^1.43.0",
     "playwright": "^1.63.0"
@@ -657,7 +657,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@awesome.me/webawesome": "^3.12.0",
+    "@awesome.me/webawesome": "^3.14.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
     "@types/node": "^22.10.0",

@@ -1456,6 +1456,21 @@ export const generatedWebAwesomeCatalog = [
     "documentation": "ui/docs/webawesome-theme.md#coverage"
   },
   {
+    "id": "wa-tag-input",
+    "name": "Tag Input",
+    "category": "Forms",
+    "kind": "component",
+    "source": "webawesome",
+    "description": "Form field that collects a list of short values as removable tags, each submitted as its own form value.",
+    "recommendation": "supported",
+    "uses": [
+      "wa-icon",
+      "wa-tag"
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
+  },
+  {
     "id": "wa-accordion",
     "name": "Accordion",
     "category": "Layout",
@@ -1622,6 +1637,35 @@ export const generatedWebAwesomeCatalog = [
     "recommendation": "supported",
     "uses": [
       "wa-icon"
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
+  },
+  {
+    "id": "wa-stepper",
+    "name": "Stepper",
+    "category": "Navigation",
+    "kind": "component",
+    "source": "webawesome",
+    "description": "Ordered indicator for a multi-step process, such as checkout or setup, with optional step-by-step navigation.",
+    "recommendation": "supported",
+    "uses": [
+      "wa-step"
+    ],
+    "demoSource": "ui/ux-demo/webawesome-demos.tsx",
+    "documentation": "ui/docs/webawesome-theme.md#coverage"
+  },
+  {
+    "id": "wa-step",
+    "name": "Step",
+    "category": "Navigation",
+    "kind": "component",
+    "source": "webawesome",
+    "description": "One stage inside a stepper, showing its position, label, and status.",
+    "recommendation": "supported",
+    "uses": [
+      "wa-icon",
+      "wa-spinner"
     ],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"

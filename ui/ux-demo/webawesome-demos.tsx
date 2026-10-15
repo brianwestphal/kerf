@@ -55,10 +55,13 @@ import '@awesome.me/webawesome/dist/components/skeleton/skeleton.js';
 import '@awesome.me/webawesome/dist/components/slider/slider.js';
 import '@awesome.me/webawesome/dist/components/spinner/spinner.js';
 import '@awesome.me/webawesome/dist/components/split-panel/split-panel.js';
+import '@awesome.me/webawesome/dist/components/step/step.js';
+import '@awesome.me/webawesome/dist/components/stepper/stepper.js';
 import '@awesome.me/webawesome/dist/components/switch/switch.js';
 import '@awesome.me/webawesome/dist/components/tab-group/tab-group.js';
 import '@awesome.me/webawesome/dist/components/tab-panel/tab-panel.js';
 import '@awesome.me/webawesome/dist/components/tab/tab.js';
+import '@awesome.me/webawesome/dist/components/tag-input/tag-input.js';
 import '@awesome.me/webawesome/dist/components/tag/tag.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 import '@awesome.me/webawesome/dist/components/time-input/time-input.js';
@@ -268,6 +271,17 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       with-now
     />
   ),
+  'wa-tag-input': () => (
+    <wa-tag-input
+      label="Reviewers"
+      name="reviewers"
+      value="Ana, Kai"
+      delimiter=","
+      placeholder="Add a name"
+      hint="Press Enter or type a comma to add each reviewer."
+      with-clear
+    />
+  ),
 
   'wa-accordion': () => (
     <List gap="xs">
@@ -457,6 +471,39 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       with-summary
       label="Component Results"
     />
+  ),
+  'wa-stepper': () => (
+    <wa-stepper label="Release Checklist" active="review">
+      <wa-step name="draft" completed>
+        Draft
+      </wa-step>
+      <wa-step name="review">Review</wa-step>
+      <wa-step name="publish">Publish</wa-step>
+    </wa-stepper>
+  ),
+  'wa-step': () => (
+    <wa-stepper label="Step States" active="checks" orientation="vertical">
+      <wa-step name="upload" completed>
+        Upload
+        <span slot="description">Completed step</span>
+      </wa-step>
+      <wa-step name="checks">
+        Run checks
+        <span slot="description">Active step</span>
+      </wa-step>
+      <wa-step name="deploy" loading>
+        Deploy
+        <span slot="description">Upcoming step loading its transition</span>
+      </wa-step>
+      <wa-step name="fix" variant="danger">
+        Fix failures
+        <span slot="description">Upcoming step with a danger marker</span>
+      </wa-step>
+      <wa-step name="archive" disabled>
+        Archive
+        <span slot="description">Disabled step</span>
+      </wa-step>
+    </wa-stepper>
   ),
   'wa-tab': () => (
     <wa-tab-group active="focused">
@@ -1010,7 +1057,7 @@ export const webAwesomeComponentDemos: Record<
       >
         <CatalogExample
           label={entry.name}
-          note={`Web Awesome 3.12 · ${entry.category}`}
+          note={`Web Awesome 3.14 · ${entry.category}`}
         >
           {specimenRenderers[entry.id]()}
         </CatalogExample>

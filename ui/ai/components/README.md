@@ -112,6 +112,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Switch](./wa-switch.md) (avoid) — Ecosystem switch; use Kerf Switch.
 - [Textarea](./wa-textarea.md) (avoid) — Ecosystem multi-line input; use Kerf TextField with multiline.
 - [Time Input](./wa-time-input.md) — Experimental segmented time field with an optional picker.
+- [Tag Input](./wa-tag-input.md) — Form field that collects a list of short values as removable tags, each submitted as its own form value.
 
 ## Web Awesome — Layout
 
@@ -131,6 +132,8 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Breadcrumb](./wa-breadcrumb.md) — Ordered navigation trail for the current location.
 - [Breadcrumb Item](./wa-breadcrumb-item.md) — One link or current-location item in a breadcrumb.
 - [Pagination](./wa-pagination.md) — Experimental page navigation for a bounded result set.
+- [Stepper](./wa-stepper.md) — Ordered indicator for a multi-step process, such as checkout or setup, with optional step-by-step navigation.
+- [Step](./wa-step.md) — One stage inside a stepper, showing its position, label, and status.
 - [Tab](./wa-tab.md) (avoid) — Ecosystem tab label; use Kerf TabBar or SegmentedControl.
 - [Tab Group](./wa-tab-group.md) (avoid) — Ecosystem tabs; use Kerf TabBar or SegmentedControl.
 - [Tab Panel](./wa-tab-panel.md) (avoid) — Ecosystem tab panel; use Kerf TabBar with application-owned panels.

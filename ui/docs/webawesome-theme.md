@@ -16,11 +16,11 @@ match nothing when Web Awesome is absent. The consumer-bundle tests and the
 `webawesome-optional` browser spec enforce all of this.
 
 **Supported versions.** `@kerfjs/ui` supports every Web Awesome 3.x release
-from 3.12 (its optional peer range is `^3.12.0`). No Kerf component patches
+from 3.14 (its optional peer range is `^3.14.0`). No Kerf component patches
 Web Awesome's internals any more: `PopupMenu`, `Select`, and `DialogSurface`
 draw their own native controls, so an upgrade within 3.x reaches only this
 theme and the Web Awesome elements an application renders itself. The
-package's own tests run against 3.12.0 (the lockfile), and CI's
+package's own tests run against 3.14.0 (the lockfile), and CI's
 `ui-webawesome-latest` job runs the ui unit and Chromium browser suites
 against the newest 3.x (`npm run test:webawesome-latest`). That job reports,
 rather than fails on, elements a newer Web Awesome adds that the catalog has
@@ -243,7 +243,7 @@ badge or containing scope when a product needs a different contrast-safe pair,
 or `--kui-wa-badge-accent-foreground` for a reviewed accent foreground.
 Breadcrumb has no bordered or filled container, and Scroller delegates item chrome
 to its slotted children, so both retain their upstream geometry. Web Awesome
-3.12's free catalog has
+3.14's free catalog has
 `wa-dropdown-item`, but no `wa-menu-item`; the theme therefore styles the
 supported dropdown item rather than carrying a dead selector.
 
