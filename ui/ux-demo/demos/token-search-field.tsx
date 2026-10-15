@@ -1,6 +1,6 @@
-import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -118,20 +118,20 @@ export function TokenSearchFieldDemo() {
             label="Search with Filters"
             model={grammarSearchModel}
           />
-          <wa-button
-            size="small"
-            appearance="outlined"
-            data-action="commit-grammar-release"
+          <Button
+            size="compact"
+            emphasis="secondary"
+            action="commit-grammar-release"
           >
             Add Release Tag
-          </wa-button>
-          <wa-button
-            size="small"
-            appearance="outlined"
-            data-action="replace-grammar-search"
+          </Button>
+          <Button
+            size="compact"
+            emphasis="secondary"
+            action="replace-grammar-search"
           >
             Load Saved Search
-          </wa-button>
+          </Button>
           <Text
             variant="span"
             tone="quiet"
@@ -223,14 +223,14 @@ export function TokenSearchFieldDemo() {
           >
             <Row wrap>
               {ADOPTION_SUGGESTIONS.map((suggestion) => (
-                <wa-button
-                  size="small"
-                  appearance="outlined"
-                  data-action="add-adoption-token"
-                  data-token-value={suggestion.value}
+                <Button
+                  size="compact"
+                  emphasis="secondary"
+                  action="add-adoption-token"
+                  rootAttributes={{ 'data-token-value': suggestion.value }}
                 >
                   {suggestion.label}
-                </wa-button>
+                </Button>
               ))}
             </Row>
           </div>

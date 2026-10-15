@@ -1,7 +1,7 @@
-import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@kerfjs/ui/select/register';
 
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -83,7 +83,7 @@ export function ListInsetControlDemo() {
             <wa-input label="Assignee" placeholder="Search people" />
           </ListInsetControl>
           <ListInsetControl>
-            <wa-button appearance="outlined">Assign</wa-button>
+            <Button emphasis="secondary">Assign</Button>
           </ListInsetControl>
         </DemoListInsetPane>
       </CatalogExample>

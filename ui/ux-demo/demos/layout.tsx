@@ -1,6 +1,6 @@
-import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/card/card.js';
 
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
@@ -52,10 +52,10 @@ export function LayoutDemo() {
             </Text>
           </wa-card>
           <Row controlInsets="l">
-            <wa-button variant="brand" data-action="log-add">
+            <Button tone="brand" action="log-add">
               Primary Action
-            </wa-button>
-            <wa-button data-action="log-more">Secondary Action</wa-button>
+            </Button>
+            <Button action="log-more">Secondary Action</Button>
           </Row>
           <Text>24px major rhythm · 8px internal rhythm</Text>
         </Pane>

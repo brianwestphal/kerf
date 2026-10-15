@@ -59,7 +59,7 @@ for (const { name, width, sidebar, beside } of cases) {
         left: line.left,
       }));
       const buttons = [
-        ...element.querySelectorAll('.kui-state-banner__action wa-button'),
+        ...element.querySelectorAll('.kui-state-banner__action .kui-button'),
       ].map((button) => {
         const box = button.getBoundingClientRect();
         return {
@@ -87,6 +87,8 @@ for (const { name, width, sidebar, beside } of cases) {
       a.top < b.bottom - 0.5 &&
       b.top < a.bottom - 0.5;
 
+    // Both action Buttons are measured (a missed selector would pass vacuously).
+    expect(geometry.buttons).toHaveLength(2);
     // The copy and the action never share any area.
     expect(overlaps(geometry.copy, geometry.action)).toBe(false);
     // Every title line is clear of every button and inside the banner.

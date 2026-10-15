@@ -104,7 +104,9 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
   const readout = page.locator('[data-demo-adoption-readout]');
   const chips = field.locator('[data-component="token-search-token"]');
   const suggestion = (name: string) =>
-    page.locator('[data-token-search-keep-open] wa-button', { hasText: name });
+    page.locator('[data-token-search-keep-open] .kui-button', {
+      hasText: name,
+    });
 
   // Starts expanded and empty (the app owns `expanded`).
   await expect(field).toHaveAttribute('data-expanded', 'true');

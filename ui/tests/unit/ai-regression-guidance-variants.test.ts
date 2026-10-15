@@ -81,13 +81,14 @@ describe(
         'ai/components/empty-state.md',
         'ai/components/loading-spinner.md',
       ]);
-      // Web Awesome registrations and tags select wa-* pages; the shared theme
-      // CSS import does not select PopupMenu.
+      // Web Awesome registrations and tags select wa-* pages, and Kerf
+      // components (the recipe's Button) their own; the shared theme CSS
+      // import does not select PopupMenu.
       expect(form).toEqual(
         expect.arrayContaining([
           'ai/components/select.md',
           'ai/components/spacer.md',
-          'ai/components/wa-button.md',
+          'ai/components/button.md',
           'ai/components/wa-input.md',
           'ai/components/wa-textarea.md',
         ]),

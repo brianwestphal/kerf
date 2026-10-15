@@ -83,8 +83,8 @@ const geometry = (bar: Locator) =>
       strip: box('.kui-tab-bar__tabs').toJSON() as DOMRect,
       trailing: box('.kui-tab-bar__trailing').toJSON() as DOMRect,
       end: box('.kui-tab-bar__end').toJSON() as DOMRect,
-      trailingReachable: reachable('.kui-tab-bar__trailing > wa-button'),
-      endReachable: reachable('.kui-tab-bar__end > wa-button'),
+      trailingReachable: reachable('.kui-tab-bar__trailing > .kui-button'),
+      endReachable: reachable('.kui-tab-bar__end > .kui-button'),
       extra:
         Number.parseFloat(
           strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra'),
@@ -153,8 +153,8 @@ for (const [label, width] of [
     }
     await expectAllocated(bar);
 
-    await bar.locator('.kui-tab-bar__trailing > wa-button').click();
-    await bar.locator('.kui-tab-bar__end > wa-button').click();
+    await bar.locator('.kui-tab-bar__trailing > .kui-button').click();
+    await bar.locator('.kui-tab-bar__end > .kui-button').click();
     if (testInfo.project.name === 'chromium')
       await bar.screenshot({
         path: testInfo.outputPath(`snap-twelve-${width ?? 'phone'}.png`),

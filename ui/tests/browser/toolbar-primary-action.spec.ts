@@ -8,24 +8,23 @@ test('standalone trailing primary action keeps its chrome and control-band align
   const toolbar = page.locator(
     '[data-demo-toolbar-primary-action] .kui-toolbar',
   );
-  const button = toolbar.locator('.kui-toolbar__trailing > wa-button');
+  const button = toolbar.locator('.kui-toolbar__trailing > .kui-button');
   const group = toolbar.locator(
     '.kui-toolbar__trailing > .kui-toolbar-control-group',
   );
   await expect(button).toHaveText('New Ticket…');
-  await expect(button).toHaveAttribute('variant', 'brand');
+  await expect(button).toHaveAttribute('data-tone', 'brand');
   await expect(button).toBeVisible();
   const geometry = await toolbar.evaluate((element) => {
     const zone = element.querySelector('.kui-toolbar__trailing')!;
-    const button = zone.querySelector('wa-button')!;
+    const button = zone.querySelector('.kui-button')!;
     const group = zone.querySelector('.kui-toolbar-control-group')!;
     const buttonRect = button.getBoundingClientRect();
     const groupRect = group.getBoundingClientRect();
-    const base = button.shadowRoot!.querySelector('[part~="base"]')!;
     return {
       buttonCenter: buttonRect.top + buttonRect.height / 2,
       groupCenter: groupRect.top + groupRect.height / 2,
-      buttonBackground: window.getComputedStyle(base).backgroundColor,
+      buttonBackground: window.getComputedStyle(button).backgroundColor,
       groupBackground: window.getComputedStyle(group).backgroundColor,
     };
   });
@@ -38,10 +37,14 @@ test('standalone trailing primary action keeps its chrome and control-band align
       path: testInfo.outputPath('toolbar-primary-wide.png'),
     });
 
-  await button.evaluate((element) => element.setAttribute('size', 'small'));
+  await button.evaluate((element) =>
+    element.setAttribute('data-size', 'compact'),
+  );
   const compactCenters = await toolbar.evaluate((element) => {
     const zone = element.querySelector('.kui-toolbar__trailing')!;
-    const buttonRect = zone.querySelector('wa-button')!.getBoundingClientRect();
+    const buttonRect = zone
+      .querySelector('.kui-button')!
+      .getBoundingClientRect();
     const groupRect = zone
       .querySelector('.kui-toolbar-control-group')!
       .getBoundingClientRect();
@@ -51,13 +54,17 @@ test('standalone trailing primary action keeps its chrome and control-band align
     ];
   });
   expect(Math.abs(compactCenters[0]! - compactCenters[1]!)).toBeLessThan(1);
-  await button.evaluate((element) => element.removeAttribute('size'));
+  await button.evaluate((element) =>
+    element.setAttribute('data-size', 'default'),
+  );
 
   await toolbar.evaluate((element) => {
     (element as HTMLElement).style.width = '170px';
   });
   const narrow = await toolbar.evaluate((element) => {
-    const button = element.querySelector('.kui-toolbar__trailing > wa-button')!;
+    const button = element.querySelector(
+      '.kui-toolbar__trailing > .kui-button',
+    )!;
     const group = element.querySelector(
       '.kui-toolbar__trailing > .kui-toolbar-control-group',
     )!;

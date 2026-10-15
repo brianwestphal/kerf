@@ -74,7 +74,7 @@ test('ChoiceChips selects with native radio keyboard semantics and wraps as sepa
   // The 560px dialog: the palette wraps inside it and Save reads the form value.
   await demo
     .locator(
-      'wa-button[data-action="show-dialog"][data-dialog-id="choice-chips-dialog"]',
+      'button.kui-button[data-action="show-dialog"][data-dialog-id="choice-chips-dialog"]',
     )
     .click();
   const dialogGroup = page.getByRole('radiogroup', {

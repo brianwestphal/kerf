@@ -176,20 +176,20 @@ export function ToolbarControlGroupDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup label="View Actions" shape={shape}>
-          <wa-button
-            appearance="plain"
+          <button
+            type="button"
             aria-label="Favorite View"
             data-action="log-favorite"
           >
             <LucideIcon icon={Star} name="star" />
-          </wa-button>
-          <wa-button
-            appearance="plain"
+          </button>
+          <button
+            type="button"
             aria-label="More Actions"
             data-action="log-more"
           >
             <LucideIcon icon={MoreHorizontal} name="ellipsis" />
-          </wa-button>
+          </button>
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
@@ -223,13 +223,9 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample label="Single Button" align="inline-control">
         <ToolbarControlGroup single shape={shape}>
-          <wa-button
-            appearance="plain"
-            aria-label="Pin View"
-            data-action="log-pin"
-          >
+          <button type="button" aria-label="Pin View" data-action="log-pin">
             <LucideIcon icon={Pin} name="pin" />
-          </wa-button>
+          </button>
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample

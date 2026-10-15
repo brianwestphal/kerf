@@ -23,7 +23,11 @@ test('ContentSwap pushes between sides and hides the inactive one', async ({
     'kui-content-swap-in-end',
   ]);
   await swap.evaluate((node) =>
-    Promise.all(node.getAnimations({ subtree: true }).map((a) => a.finished)),
+    Promise.all(
+      node
+        .getAnimations({ subtree: true })
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
   );
   const settled = await swap.evaluate((node) => {
     const hidden = node.querySelector<HTMLElement>('[data-side="a"]')!;
@@ -44,7 +48,11 @@ test('ContentSwap pushes between sides and hides the inactive one', async ({
   // RTL mirrors the slide: the incoming side starts on the left.
   await swap.getByRole('button', { name: 'Back' }).click();
   await swap.evaluate((node) =>
-    Promise.all(node.getAnimations({ subtree: true }).map((a) => a.finished)),
+    Promise.all(
+      node
+        .getAnimations({ subtree: true })
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
   );
   // On the document: a re-render would drop an attribute set on the swap.
   await page.evaluate(() =>

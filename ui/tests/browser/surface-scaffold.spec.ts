@@ -49,7 +49,10 @@ test('modal viewport bounds retain actions and native focus across resize and re
   await page.setViewportSize({ width: 1100, height: 850 });
   await page.goto('/?component=surface-scaffold');
   const trigger = page.getByRole('button', { name: 'Open Bounded Dialog' });
-  await trigger.click();
+  // Opened from the keyboard, so the trigger holds focus to return to:
+  // Safari never focuses a native button on a click.
+  await trigger.focus();
+  await page.keyboard.press('Enter');
   const dialog = page.locator('#catalog-bounded-dialog');
   await expect(
     page.getByRole('dialog', { name: 'Close Workspace', exact: true }),

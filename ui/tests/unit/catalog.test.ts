@@ -545,6 +545,7 @@ describe('UX catalog metadata', () => {
       'AnchoredSurface',
       'PopupMenu',
       'IconButton',
+      'Button',
       'IconToggleButton',
       'SplitButton',
       'FilePicker',
@@ -599,6 +600,7 @@ describe('UX catalog metadata', () => {
     ).toEqual([
       'list-action-row',
       'list-item',
+      'button',
       'split-button',
       'feedback',
       'empty-state',

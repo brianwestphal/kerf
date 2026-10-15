@@ -182,6 +182,10 @@ describe('wireComposers', () => {
       <wa-button data-action="send" loading>
         Send
       </wa-button>,
+      // A busy Button.
+      <button type="button" data-action="send" aria-busy="true">
+        Send
+      </button>,
       <span data-action="send" aria-disabled="true">
         Send
       </span>,

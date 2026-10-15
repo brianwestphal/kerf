@@ -1,0 +1,153 @@
+/* Button: a native button (or link) at the 44px control height. The tone
+   picks the color family and the emphasis how loudly it asks; both resolve
+   to the private fill, text, and border colors below. */
+.kui-button {
+  --_kui-button-fill: var(--kui-color-neutral-fill-loud);
+  --_kui-button-text: var(--kui-color-neutral-on-loud);
+  --_kui-button-border: transparent;
+  --_kui-button-quiet: var(--kui-color-neutral-fill-quiet);
+  --_kui-button-on-quiet: var(--kui-color-neutral-on-quiet);
+  --_kui-button-outline: var(--kui-color-neutral-border-loud);
+  --_kui-button-height: round(2.75em, 1px);
+  position: relative;
+  display: inline-flex;
+  box-sizing: border-box;
+  height: var(--_kui-button-height);
+  align-items: center;
+  justify-content: center;
+  gap: remify(8px);
+  padding: 0 remify(8px);
+  margin: 0;
+  color: var(--_kui-button-text);
+  font: inherit;
+  font-size: var(--kui-font-m, remify(16px));
+  font-weight: 500;
+  line-height: normal;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid var(--_kui-button-border);
+  /* The shared control radius native controls, fields, and Select follow. */
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  background-color: var(--_kui-button-fill);
+  cursor: pointer;
+  transition:
+    background-color 75ms,
+    border-color 75ms,
+    color 75ms;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.kui-button[data-tone="brand"] {
+  --_kui-button-fill: var(--kui-color-brand-fill-loud);
+  --_kui-button-text: var(--kui-color-brand-on-loud);
+  --_kui-button-quiet: var(--kui-color-brand-fill-quiet);
+  --_kui-button-on-quiet: var(--kui-color-brand-on-quiet);
+  --_kui-button-outline: var(--kui-color-brand-border-loud);
+}
+.kui-button[data-tone="danger"] {
+  --_kui-button-fill: var(--kui-color-danger-fill-loud);
+  --_kui-button-text: var(--kui-color-danger-on-loud);
+  --_kui-button-quiet: var(--kui-color-danger-fill-quiet);
+  --_kui-button-on-quiet: var(--kui-color-danger-on-quiet);
+  --_kui-button-outline: var(--kui-color-danger-border-loud);
+}
+/* A secondary button is outlined in its tone; a plain one shows only its
+   text. Both take a quiet tone fill under the pointer. */
+.kui-button[data-emphasis="secondary"],
+.kui-button[data-emphasis="plain"] {
+  --_kui-button-fill: transparent;
+  --_kui-button-text: var(--_kui-button-on-quiet);
+}
+.kui-button[data-emphasis="secondary"] {
+  --_kui-button-border: var(--_kui-button-outline);
+}
+.kui-button[data-size="compact"] {
+  --_kui-button-height: round(calc(1rem + 1.2em), 1px);
+  font-size: var(--kui-font-s, remify(14px));
+}
+/* An icon-only button is a square one control height on each side, which a
+   tight row never squeezes. */
+.kui-button[data-icon-only] {
+  width: var(--_kui-button-height);
+  flex-shrink: 0;
+  padding: 0;
+}
+/* In a Toolbar's trailing zone, a standalone Button keeps the first control
+   band's axis, as a ToolbarControlGroup does, so taller siblings never move
+   it. `--_kui-toolbar-band` is the context the Toolbar provides. */
+.kui-toolbar__trailing > .kui-button {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-block-start: max(
+    0px,
+    calc((var(--_kui-toolbar-band) - var(--_kui-button-height)) / 2)
+  );
+}
+/* Beside a field in a ListInsetControl, the square keeps its size instead of
+   growing to share the row, and lines up with the field below its label. */
+.kui-list-inset-control > .kui-button[data-icon-only] {
+  flex: none;
+  align-self: flex-end;
+}
+@media (hover: hover) {
+  .kui-button:not(:disabled, [aria-disabled="true"], [data-loading]):hover {
+    background-color: color-mix(
+      in oklab,
+      var(--_kui-button-fill),
+      oklch(from currentColor calc(1 - l) c h) 10%
+    );
+  }
+  .kui-button:is([data-emphasis="secondary"], [data-emphasis="plain"]):not(
+      :disabled,
+      [aria-disabled="true"],
+      [data-loading]
+    ):hover {
+    background-color: var(--_kui-button-quiet);
+  }
+}
+.kui-button:not(:disabled, [aria-disabled="true"], [data-loading]):active {
+  background-color: color-mix(
+    in oklab,
+    var(--_kui-button-fill),
+    light-dark(#fff, #1c1c1e) 10%
+  );
+}
+.kui-button:focus {
+  outline: none;
+}
+.kui-button:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-button:is(:disabled, [aria-disabled="true"]) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.kui-button__icon {
+  display: inline-flex;
+  flex: none;
+}
+.kui-button__label {
+  min-width: 0;
+}
+/* Busy: the spinner takes the label's place. The label keeps the width and
+   is only transparent, not hidden, so it still names the button. */
+.kui-button[data-loading] {
+  cursor: wait;
+}
+.kui-button[data-loading] > :is(.kui-button__label, .kui-button__icon) {
+  opacity: 0;
+}
+.kui-button__spinner {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inset: 0;
+}
+@media (forced-colors: active) {
+  .kui-button {
+    border-color: ButtonText;
+  }
+}

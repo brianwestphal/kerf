@@ -6107,9 +6107,9 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "Square, icon-only Web Awesome button with a LucideIcon and a required accessible name.",
+      "description": "Square, icon-only Button with a LucideIcon and a required accessible name.",
       "uses": [
-        "wa-button",
+        "button",
         "lucide-icon"
       ],
       "purpose": "Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.",
@@ -6121,10 +6121,14 @@
       ],
       "avoidWhen": [
         "Do not use inside a ToolbarControlGroup; the group owns its controls' geometry, so compose a native button with a LucideIcon there.",
-        "Do not use when the action needs a visible text label; use wa-button with text.",
-        "Do not override wa-button::part(base) width, min-height, or padding to square an icon button; use IconButton."
+        "Do not use when the action needs a visible text label; use Button with a label."
       ],
       "alternatives": [
+        {
+          "id": "button",
+          "relationship": "nearest",
+          "when": "Use Button when the action needs a visible text label."
+        },
         {
           "id": "wa-button",
           "relationship": "prefer-over",
@@ -6139,18 +6143,16 @@
       "appOwns": [
         "the delegated action",
         "the accessible name",
-        "appearance, variant, and size choice"
+        "tone, emphasis, and size choice"
       ],
       "variants": [
-        "default appearance",
-        "plain",
-        "outlined",
-        "danger variant",
-        "disabled",
-        "xs, s, m, l, or xl size"
+        "neutral, brand, or danger tone",
+        "primary, secondary, or plain emphasis",
+        "default or compact size",
+        "disabled"
       ],
       "accessibility": [
-        "label is required and names the button through its LucideIcon (role img), since the button shows no text."
+        "A native button named by the required label (aria-label); the icon is decorative, since the button shows no text."
       ],
       "geometry": {
         "margin": "none",
@@ -6160,21 +6162,121 @@
       "delivery": {
         "browserImport": "@kerfjs/ui/icon-button",
         "manualCssImport": "@kerfjs/ui/icon-button.css",
-        "registrationImport": "@awesome.me/webawesome/dist/components/button/button.js",
-        "themeCssImport": "@kerfjs/ui/webawesome.css",
         "sideEffects": [
-          "browser-condition-css",
-          "custom-element-registration"
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [],
+      "publicTokens": [],
+      "rootElement": "button",
+      "links": {
+        "catalogRoute": "?component=icon-button",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "button",
+      "name": "Button",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A standalone action button: a native button (or a link with href) in a neutral, brand, or danger tone and a primary, secondary, or plain emphasis, at the 44px control height or compact.",
+      "uses": [
+        "loading-spinner"
+      ],
+      "purpose": "Trigger an action from a dialog footer, a form, or content outside any Toolbar, with Kerf's button chrome and native button semantics.",
+      "publicExports": [
+        "Button"
+      ],
+      "useWhen": [
+        "A dialog footer, a form, or content needs an action button: tone=\"brand\" for the main action, tone=\"danger\" for a destructive one, and emphasis=\"secondary\" or \"plain\" for the quieter actions beside it.",
+        "A form submits or resets: type=\"submit\" or \"reset\" (the default type never submits), with name, value, and form when needed.",
+        "An action navigates: href renders a link with the same chrome."
+      ],
+      "avoidWhen": [
+        "Do not use inside a ToolbarControlGroup; give the group plain <button> controls, which it styles.",
+        "Do not use for an icon-only action; use IconButton (or IconToggleButton for an on/off toggle).",
+        "Do not use for a menu trigger; use PopupMenu."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-button",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "icon-button",
+          "relationship": "nearest",
+          "when": "Use IconButton for an icon-only action."
+        },
+        {
+          "id": "toolbar-control-group",
+          "relationship": "nearest",
+          "when": "Inside a Toolbar, compose plain buttons in a ToolbarControlGroup."
+        }
+      ],
+      "appOwns": [
+        "the label and its delegated action",
+        "what a press does while loading",
+        "form ownership"
+      ],
+      "variants": [
+        "neutral, brand, or danger tone",
+        "primary, secondary, or plain emphasis",
+        "default or compact size",
+        "leading icon",
+        "loading",
+        "disabled",
+        "link (href)"
+      ],
+      "accessibility": [
+        "A native <button> (type=\"button\" unless set) or, with href, an <a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring.",
+        "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\"."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/button",
+        "manualCssImport": "@kerfjs/ui/button.css",
+        "sideEffects": [
+          "browser-condition-css"
         ]
       },
       "wiring": [],
       "publicClasses": [
-        "kui-icon-button"
+        "kui-button",
+        "kui-button__icon",
+        "kui-button__label",
+        "kui-button__spinner"
       ],
-      "publicTokens": [],
-      "rootElement": "wa-button",
+      "publicTokens": [
+        "--kui-color-neutral-fill-loud",
+        "--kui-color-neutral-on-loud",
+        "--kui-color-neutral-fill-quiet",
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-neutral-border-loud",
+        "--kui-color-brand-fill-loud",
+        "--kui-color-brand-on-loud",
+        "--kui-color-brand-fill-quiet",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-brand-border-loud",
+        "--kui-color-danger-fill-loud",
+        "--kui-color-danger-on-loud",
+        "--kui-color-danger-fill-quiet",
+        "--kui-color-danger-on-quiet",
+        "--kui-color-danger-border-loud",
+        "--kui-focus-ring",
+        "--kui-font-m",
+        "--kui-font-s",
+        "--kui-layout-rounded-radius"
+      ],
+      "rootElement": "button",
       "links": {
-        "catalogRoute": "?component=icon-button",
+        "catalogRoute": "?component=button",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }

@@ -1,11 +1,11 @@
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/webawesome.css';
-import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 
 import { Spacer } from '@kerfjs/ui';
+import { Button } from '@kerfjs/ui/button';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Row } from '@kerfjs/ui/row';
@@ -123,21 +123,20 @@ export const createRecipe: RecipeFactory = (announce) => {
         </List>
         <Row gap="xs" wrap controlInsets="rl">
           <Spacer flex />
-          <wa-button
-            appearance="outlined"
-            data-action="recipe-action"
-            data-recipe-command="reset"
+          <Button
+            emphasis="secondary"
+            action="recipe-action"
+            rootAttributes={{ 'data-recipe-command': 'reset' }}
           >
             Reset
-          </wa-button>
-          <wa-button
-            variant="brand"
-            appearance="accent"
-            data-action="recipe-action"
-            data-recipe-command="submit"
+          </Button>
+          <Button
+            tone="brand"
+            action="recipe-action"
+            rootAttributes={{ 'data-recipe-command': 'submit' }}
           >
             Publish Update
-          </wa-button>
+          </Button>
         </Row>
       </List>
     </form>

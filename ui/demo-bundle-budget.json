@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 387700,
+  "totalJavaScriptGzip": 388400,
   "measuredLargestJavaScriptGzip": 131912,
-  "measuredTotalJavaScriptGzip": 387614,
+  "measuredTotalJavaScriptGzip": 388319,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5027,6 +5027,38 @@
         "measuredTotalJavaScriptGzip": 387614,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 387700
+      }
+    },
+    {
+      "at": "2026-10-15T06:49:57.181Z",
+      "reason": "KF-9HV3B2: the Button component and its catalog route; IconButton and the demos use it instead of wa-button",
+      "old": {
+        "measuredLargestJavaScriptGzip": 131912,
+        "measuredTotalJavaScriptGzip": 387614,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 387700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 131912,
+        "measuredTotalJavaScriptGzip": 388279,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 388300
+      }
+    },
+    {
+      "at": "2026-10-15T07:28:52.394Z",
+      "reason": "KF-9HV3B2: the Button component, its catalog route, and its StateBanner, ListInsetControl, and icon-only fixes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 131912,
+        "measuredTotalJavaScriptGzip": 388279,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 388300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 131912,
+        "measuredTotalJavaScriptGzip": 388319,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 388400
       }
     }
   ]

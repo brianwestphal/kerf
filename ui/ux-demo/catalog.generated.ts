@@ -685,11 +685,25 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.",
     "uses": [
-      "wa-button",
+      "button",
       "lucide-icon"
     ],
     "demoSource": "ui/ux-demo/demos/icon-button.tsx",
     "componentSource": "ui/src/components/actions/icon-button/icon-button.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
+    "id": "button",
+    "name": "Button",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Trigger an action from a dialog footer, a form, or content outside any Toolbar, with Kerf's button chrome and native button semantics.",
+    "uses": [
+      "loading-spinner"
+    ],
+    "demoSource": "ui/ux-demo/demos/button.tsx",
+    "componentSource": "ui/src/components/actions/button/button.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {

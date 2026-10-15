@@ -1,2 +1,3 @@
-/* Public stylesheet entry; implementation is colocated with the component. */
-@import "./components/actions/icon-button/icon-button.css";
+/* Public stylesheet entry; implementation is colocated with the component.
+   IconButton is an icon-only Button, so its look is the Button stylesheet. */
+@import "./components/actions/button/button.css";

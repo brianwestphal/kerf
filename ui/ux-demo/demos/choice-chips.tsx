@@ -1,5 +1,6 @@
 import '@kerfjs/ui/lucide-icon.css';
 
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ChoiceChips, type ChoiceChipsChoice } from '@kerfjs/ui/choice-chips';
 import { ContentItem } from '@kerfjs/ui/content-item';
@@ -106,22 +107,24 @@ export function ChoiceChipsDemo() {
         note="The checked radio is the form value; Save reads it from the form."
         align="inline-control"
       >
-        <wa-button
-          data-action="show-dialog"
-          data-dialog-id="choice-chips-dialog"
+        <Button
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': 'choice-chips-dialog' }}
         >
           Edit Command
-        </wa-button>
+        </Button>
         <DialogSurface
           id="choice-chips-dialog"
           label="Edit Command"
           preferredWidth={px(560)}
           footer={
             <>
-              <wa-button data-dialog-close>Cancel</wa-button>
-              <wa-button variant="brand" data-action="save-choice-chips-dialog">
+              <Button rootAttributes={{ 'data-dialog-close': '' }}>
+                Cancel
+              </Button>
+              <Button tone="brand" action="save-choice-chips-dialog">
                 Save
-              </wa-button>
+              </Button>
             </>
           }
         >

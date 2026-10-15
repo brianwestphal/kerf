@@ -3511,7 +3511,8 @@ type Root = HTMLElement | Document;
  * delegated handler as a click. Shift+Enter and Alt+Enter insert a newline.
  * Nothing is sent, and no newline is inserted, when the message is empty or
  * whitespace-only, the key is auto-repeating, or the first action is
- * disabled, loading, or `aria-disabled`. An Enter that commits an IME
+ * disabled, loading (a busy `Button` reports `aria-busy`), or
+ * `aria-disabled`. An Enter that commits an IME
  * composition (`isComposing`, keyCode 229, or between `compositionstart` and
  * `compositionend`) is left to the input method. Dispose with the owning
  * application.
@@ -5281,16 +5282,11 @@ export { type AnchoredSurfaceOptions, type AnchoredSurfacePoint, type AnchoredSu
 ```ts
 import * as kerfjs from 'kerfjs';
 import { LucideNode } from './lucide-icon.js';
+import { ButtonTone, ButtonEmphasis, ButtonSize, ButtonType, ButtonRootAttributes } from './button.js';
 import 'lucide';
 import './css-values.js';
+import './semantic-content-BbzjvSu9.js';
 
-type IconButtonAppearance = 'accent' | 'filled' | 'outlined' | 'filled-outlined' | 'plain';
-type IconButtonVariant = 'neutral' | 'brand' | 'success' | 'warning' | 'danger';
-type IconButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
-type IconButtonRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
-    'data-component'?: never;
-    'data-action'?: never;
-}>;
 interface IconButtonProps {
     /** The Lucide-compatible icon node shown alone in the button. */
     icon: LucideNode;
@@ -5300,31 +5296,108 @@ interface IconButtonProps {
     label: string;
     /** Delegated `data-action` the application handles. */
     action?: string;
-    /** Web Awesome appearance; defaults to Web Awesome's own. */
-    appearance?: IconButtonAppearance;
-    /** Web Awesome semantic variant; defaults to Web Awesome's own. */
-    variant?: IconButtonVariant;
-    /** Web Awesome control size; the square follows its control height. */
-    size?: IconButtonSize;
-    type?: 'button' | 'submit' | 'reset';
+    tone?: ButtonTone;
+    emphasis?: ButtonEmphasis;
+    size?: ButtonSize;
+    type?: ButtonType;
     disabled?: boolean;
     id?: string;
     className?: string;
-    /** Safe `data-*` metadata; `data-component` and `data-action` stay owned. */
-    rootAttributes?: IconButtonRootAttributes;
+    /** Safe `data-*` metadata; the Button's own markers stay protected. */
+    rootAttributes?: ButtonRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /**
- * An icon-only Web Awesome button with a `LucideIcon`: square, one form
- * control height on each side, so it matches an adjacent `wa-input` or
- * `Select`. Web Awesome squares a button only for a lone `wa-icon`; this is
- * the Kerf form for Lucide icons. Register `wa-button` once
- * (`@awesome.me/webawesome/dist/components/button/button.js`).
+ * An icon-only `Button` with a `LucideIcon`: a square one control height on
+ * each side, so it matches an adjacent field or `Select`, named by `label`.
+ * Outside a toolbar; inside one, compose a `ToolbarControlGroup`.
  */
-declare function IconButton({ icon, iconName, label, action, appearance, variant, size, type, disabled, id, className, rootAttributes, slot, }: IconButtonProps): kerfjs.SafeHtml;
+declare function IconButton({ icon, iconName, label, ...options }: IconButtonProps): kerfjs.SafeHtml;
 
-export { IconButton, type IconButtonAppearance, type IconButtonProps, type IconButtonSize, type IconButtonVariant };
+export { IconButton, type IconButtonProps };
+```
+
+## `@kerfjs/ui/button`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+/** The color family: `neutral` (default), `brand` for the main action, `danger` for a destructive one. */
+type ButtonTone = 'neutral' | 'brand' | 'danger';
+/**
+ * How loudly it asks: `primary` (default) fills the button, `secondary`
+ * outlines it, and `plain` shows only its text until hovered.
+ */
+type ButtonEmphasis = 'primary' | 'secondary' | 'plain';
+/** `default` is the 44px control height; `compact` is 33px with smaller text. */
+type ButtonSize = 'default' | 'compact';
+/** What a form button does: `button` (default), `submit`, or `reset`. */
+type ButtonType = 'button' | 'submit' | 'reset';
+/** Application `data-*` metadata; the Button's own markers stay protected. */
+type ButtonRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+/** A Button's visible label: text or rendered content, never empty. */
+type ButtonLabel = string | Exclude<KerfUiContent, null | undefined | boolean>;
+/**
+ * A labeled button (its label names it; `ariaLabel` only when the label is
+ * not enough), or an icon-only square named by `ariaLabel`.
+ */
+type ButtonContent = {
+    /** The label. */
+    children: ButtonLabel;
+    /** A leading icon, such as a `LucideIcon`; it is decorative. */
+    icon?: KerfUiContent;
+    ariaLabel?: string;
+} | {
+    children?: undefined;
+    /** The icon of an icon-only square button. */
+    icon: KerfUiContent;
+    /** The accessible name an icon-only button needs. */
+    ariaLabel: string;
+};
+type ButtonProps = ButtonContent & ButtonOptions;
+interface ButtonOptions {
+    tone?: ButtonTone;
+    emphasis?: ButtonEmphasis;
+    size?: ButtonSize;
+    /**
+     * Busy: a spinner replaces the label (which still names it) and the button
+     * reports `aria-busy`. Presses still reach it; the application decides
+     * what a press does while it is busy.
+     */
+    loading?: boolean;
+    disabled?: boolean;
+    /** A form button's behavior (default `button`, which never submits). */
+    type?: ButtonType;
+    name?: string;
+    value?: string;
+    /** The id of the form it belongs to, when it sits outside that form. */
+    form?: string;
+    /** Render a link with button styling instead of a `<button>`. */
+    href?: string;
+    /** Where a link opens. */
+    target?: '_self' | '_blank' | '_parent' | '_top';
+    /** Delegated `data-action` the application handles. */
+    action?: string;
+    id?: string;
+    className?: string;
+    /** Safe `data-*` metadata (a `data-key`, `data-dialog-close`). */
+    rootAttributes?: ButtonRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A standalone action button: a native `<button>` (or a link with `href`)
+ * in one of three tones and three emphases, at the 44px control height or
+ * compact, with a label or as an icon-only square. Inside a
+ * `ToolbarControlGroup`, use a plain `<button>`, which the group styles; use
+ * Button for a dialog footer, a form, or a standalone action beside other
+ * content.
+ */
+declare function Button({ children, tone, emphasis, size, icon, loading, disabled, type, name, value, form, href, target, action, ariaLabel, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+
+export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonSize, type ButtonTone, type ButtonType };
 ```
 
 ## `@kerfjs/ui/icon-toggle-button`

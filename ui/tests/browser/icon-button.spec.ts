@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-// Web Awesome squares a wa-button only for a lone wa-icon; IconButton gives a
-// lone LucideIcon the same geometry, level with an adjacent labeled field.
+// IconButton is an icon-only Button: a square one control height on each
+// side, level with an adjacent labeled field.
 test('IconButton is a control-height square level with its field and named by its icon', async ({
   page,
 }) => {
@@ -12,22 +12,23 @@ test('IconButton is a control-height square level with its field and named by it
     const browse = demo.getByRole('button', { name: 'Browse for a Folder' });
     await expect(browse).toBeVisible();
     const geometry = await demo.evaluate((root) => {
-      const part = (host: Element) =>
-        host
-          .shadowRoot!.querySelector('[part~="base"]')!
-          .getBoundingClientRect();
-      const field = part(root.querySelector('wa-input')!);
-      const buttons = [...root.querySelectorAll('.kui-icon-button')].map(
-        (host) => {
-          const box = part(host);
-          return {
-            size: host.getAttribute('size'),
-            w: box.width,
-            h: box.height,
-          };
-        },
-      );
-      const first = part(root.querySelector('.kui-icon-button')!);
+      const field = root
+        .querySelector('wa-input')!
+        .shadowRoot!.querySelector('[part~="base"]')!
+        .getBoundingClientRect();
+      const buttons = [
+        ...root.querySelectorAll('.kui-button[data-icon-only]'),
+      ].map((host) => {
+        const box = host.getBoundingClientRect();
+        return {
+          size: host.getAttribute('data-size'),
+          w: box.width,
+          h: box.height,
+        };
+      });
+      const first = root
+        .querySelector('.kui-button[data-icon-only]')!
+        .getBoundingClientRect();
       return { field, first, buttons };
     });
     for (const button of geometry.buttons)
@@ -38,9 +39,9 @@ test('IconButton is a control-height square level with its field and named by it
     expect(geometry.first.height).toBeCloseTo(geometry.field.height, 0);
     expect(geometry.first.top).toBeCloseTo(geometry.field.top, 0);
     expect(geometry.first.left).toBeGreaterThan(geometry.field.right);
-    const sized = geometry.buttons.slice(-3);
-    expect(sized.map((button) => button.size)).toEqual(['s', 'm', 'l']);
-    expect(sized[0]!.h).toBeLessThan(sized[1]!.h);
-    expect(sized[1]!.h).toBeLessThan(sized[2]!.h);
+    const sized = geometry.buttons.slice(-2);
+    expect(sized.map((button) => button.size)).toEqual(['default', 'compact']);
+    expect(sized[0]!.h).toBe(44);
+    expect(sized[1]!.h).toBe(33);
   }
 });

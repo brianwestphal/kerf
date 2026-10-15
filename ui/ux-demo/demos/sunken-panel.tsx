@@ -1,6 +1,7 @@
 import '@awesome.me/webawesome/dist/components/details/details.js';
 
 import { ContentItem } from '@kerfjs/ui';
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
@@ -83,7 +84,7 @@ export function SunkenPanelDemo() {
             <Text>Second layer</Text>
             <SunkenPanel ariaLabel="Third Layer">
               <Text>Third layer</Text>
-              <wa-button>Focus Nested Control</wa-button>
+              <Button>Focus Nested Control</Button>
             </SunkenPanel>
           </SunkenPanel>
         </SunkenPanel>

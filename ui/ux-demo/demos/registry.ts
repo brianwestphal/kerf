@@ -4,6 +4,7 @@ import { AnchoredSurfaceDemo } from './anchored-surface.js';
 import { ApplicationTabsDemo } from './application-tabs.js';
 import { BackdropImageDemo } from './backdrop-image.js';
 import { BadgeDemo, BadgeSettings } from './badge.js';
+import { ButtonDemo } from './button.js';
 import { ChipDemo } from './chip.js';
 import { ChoiceChipsDemo } from './choice-chips.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
@@ -115,6 +116,7 @@ export const demos = {
   'summary-row': SummaryRowDemo,
   'edge-activity-indicator': EdgeActivityIndicatorDemo,
   'icon-button': IconButtonDemo,
+  button: ButtonDemo,
   'icon-toggle-button': IconToggleButtonDemo,
   'split-button': SplitButtonDemo,
   'framed-list': FramedListDemo,

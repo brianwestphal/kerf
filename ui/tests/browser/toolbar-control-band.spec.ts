@@ -2,7 +2,7 @@ import { expect, type Page, test } from '@playwright/test';
 
 /**
  * A Toolbar reserves one group-height control band at its top. ToolbarText,
- * ToolbarControlGroup, and standalone wa-button keep their first-band axis
+ * ToolbarControlGroup, and a standalone Button keep their first-band axis
  * even when a taller sibling grows the zone. Other direct content centers in
  * the zone by default.
  */

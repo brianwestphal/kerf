@@ -1,12 +1,13 @@
 import { expect, type Locator, test } from '@playwright/test';
 
-// The Web Awesome theme gives default-size single-line controls Kerf's 44px
-// control height, so a kerf Select and a plain wa-input / wa-button line up.
+// Default-size single-line controls share Kerf's 44px control height, so a
+// kerf Select, a plain wa-input, and a Kerf Button line up.
 
 const visualHeight = (host: Locator) =>
   host.evaluate((element) => {
     // A Web Awesome host draws its box on a shadow part, a Select on its
-    // trigger; a native control (a PopupMenu trigger) is its own box.
+    // trigger; a native control (a Button, a PopupMenu trigger) is its own
+    // box.
     const part =
       element.shadowRoot?.querySelector('[part~="combobox"], [part~="base"]') ??
       element.querySelector(':scope > .kui-select__trigger') ??
@@ -14,7 +15,7 @@ const visualHeight = (host: Locator) =>
     return part.getBoundingClientRect().height;
   });
 
-test('a kerf Select, a wa-input, and a wa-button share the 44px control height', async ({
+test('a kerf Select, a wa-input, and a Button share the 44px control height', async ({
   page,
   browserName,
 }) => {
@@ -25,7 +26,7 @@ test('a kerf Select, a wa-input, and a wa-button share the 44px control height',
   });
   const select = example.locator('kui-select[name="demo-inset-status"]');
   const input = example.locator('wa-input[label="Assignee"]');
-  const button = example.locator('wa-button');
+  const button = example.locator('.kui-button');
   await expect(select).toBeVisible();
   await expect
     .poll(() => visualHeight(input))
@@ -41,7 +42,7 @@ test('small buttons and toolbar-group buttons keep their own control heights', a
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=state-banner');
-  const small = page.locator('wa-button[size="small"]').first();
+  const small = page.locator('.kui-button[data-size="compact"]').first();
   await expect(small).toBeVisible();
   expect(await visualHeight(small)).toBeLessThan(40);
 

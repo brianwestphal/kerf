@@ -1,3 +1,4 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { px } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
@@ -155,9 +156,9 @@ export function ToolbarDemo() {
                   <LucideIcon icon={RefreshCw} name="refresh-cw" />
                 </button>
               </ToolbarControlGroup>
-              <wa-button variant="brand" data-action="log-add">
+              <Button tone="brand" action="log-add">
                 New Ticket…
-              </wa-button>
+              </Button>
             </>
           }
         />

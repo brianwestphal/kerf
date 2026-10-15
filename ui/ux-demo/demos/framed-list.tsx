@@ -54,14 +54,14 @@ export function FramedListDemo() {
                   icon={Pencil}
                   iconName="pencil"
                   label={`Edit ${shortcut.name} Shortcut`}
-                  appearance="plain"
+                  emphasis="plain"
                   action="log-edit-shortcut"
                 />
                 <IconButton
                   icon={RotateCcw}
                   iconName="rotate-ccw"
                   label={`Reset ${shortcut.name} Shortcut`}
-                  appearance="plain"
+                  emphasis="plain"
                   action="log-reset-shortcut"
                 />
               </Row>

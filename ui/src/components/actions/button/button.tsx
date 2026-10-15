@@ -1,0 +1,178 @@
+import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
+
+/** The color family: `neutral` (default), `brand` for the main action, `danger` for a destructive one. */
+export type ButtonTone = 'neutral' | 'brand' | 'danger';
+
+/**
+ * How loudly it asks: `primary` (default) fills the button, `secondary`
+ * outlines it, and `plain` shows only its text until hovered.
+ */
+export type ButtonEmphasis = 'primary' | 'secondary' | 'plain';
+
+/** `default` is the 44px control height; `compact` is 33px with smaller text. */
+export type ButtonSize = 'default' | 'compact';
+
+/** What a form button does: `button` (default), `submit`, or `reset`. */
+export type ButtonType = 'button' | 'submit' | 'reset';
+
+const BUTTON_PROTECTED = new Set([
+  'data-component',
+  'data-action',
+  'data-tone',
+  'data-emphasis',
+  'data-size',
+  'data-loading',
+  'data-icon-only',
+]);
+
+/** Application `data-*` metadata; the Button's own markers stay protected. */
+export type ButtonRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined>
+>;
+
+/** A Button's visible label: text or rendered content, never empty. */
+export type ButtonLabel =
+  string | Exclude<KerfUiContent, null | undefined | boolean>;
+
+/**
+ * A labeled button (its label names it; `ariaLabel` only when the label is
+ * not enough), or an icon-only square named by `ariaLabel`.
+ */
+export type ButtonContent =
+  | {
+      /** The label. */
+      children: ButtonLabel;
+      /** A leading icon, such as a `LucideIcon`; it is decorative. */
+      icon?: KerfUiContent;
+      ariaLabel?: string;
+    }
+  | {
+      children?: undefined;
+      /** The icon of an icon-only square button. */
+      icon: KerfUiContent;
+      /** The accessible name an icon-only button needs. */
+      ariaLabel: string;
+    };
+
+export type ButtonProps = ButtonContent & ButtonOptions;
+
+export interface ButtonOptions {
+  tone?: ButtonTone;
+  emphasis?: ButtonEmphasis;
+  size?: ButtonSize;
+  /**
+   * Busy: a spinner replaces the label (which still names it) and the button
+   * reports `aria-busy`. Presses still reach it; the application decides
+   * what a press does while it is busy.
+   */
+  loading?: boolean;
+  disabled?: boolean;
+  /** A form button's behavior (default `button`, which never submits). */
+  type?: ButtonType;
+  name?: string;
+  value?: string;
+  /** The id of the form it belongs to, when it sits outside that form. */
+  form?: string;
+  /** Render a link with button styling instead of a `<button>`. */
+  href?: string;
+  /** Where a link opens. */
+  target?: '_self' | '_blank' | '_parent' | '_top';
+  /** Delegated `data-action` the application handles. */
+  action?: string;
+  id?: string;
+  className?: string;
+  /** Safe `data-*` metadata (a `data-key`, `data-dialog-close`). */
+  rootAttributes?: ButtonRootAttributes;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
+}
+
+/**
+ * A standalone action button: a native `<button>` (or a link with `href`)
+ * in one of three tones and three emphases, at the 44px control height or
+ * compact, with a label or as an icon-only square. Inside a
+ * `ToolbarControlGroup`, use a plain `<button>`, which the group styles; use
+ * Button for a dialog footer, a form, or a standalone action beside other
+ * content.
+ */
+export function Button({
+  children,
+  tone = 'neutral',
+  emphasis = 'primary',
+  size = 'default',
+  icon,
+  loading = false,
+  disabled = false,
+  type = 'button',
+  name,
+  value,
+  form,
+  href,
+  target,
+  action,
+  ariaLabel,
+  id,
+  className = '',
+  rootAttributes = {},
+  slot,
+}: ButtonProps) {
+  const shared = {
+    ...filterDataAttributes(rootAttributes, BUTTON_PROTECTED),
+    id,
+    class: `kui-button ${className}`.trim(),
+    'data-component': 'button',
+    'data-tone': tone,
+    'data-emphasis': emphasis,
+    'data-size': size,
+    'data-loading': loading ? '' : undefined,
+    'data-icon-only': children === undefined ? '' : undefined,
+    'data-action': action,
+    'aria-label': ariaLabel,
+    'aria-busy': loading ? 'true' : undefined,
+    slot,
+  };
+  const content = (
+    <>
+      {icon === undefined ? null : (
+        <span class="kui-button__icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
+      {children === undefined ? null : (
+        <span class="kui-button__label">{children}</span>
+      )}
+      {loading ? (
+        <span class="kui-button__spinner" aria-hidden="true">
+          <LoadingSpinner />
+        </span>
+      ) : null}
+    </>
+  );
+  // A disabled link has no destination and is announced as disabled.
+  if (href !== undefined)
+    return (
+      <a
+        {...shared}
+        href={disabled ? undefined : href}
+        target={disabled ? undefined : target}
+        role={disabled ? 'link' : undefined}
+        aria-disabled={disabled ? 'true' : undefined}
+      >
+        {content}
+      </a>
+    );
+  return (
+    <button
+      {...shared}
+      type={type}
+      name={name}
+      value={value}
+      form={form}
+      disabled={disabled}
+    >
+      {content}
+    </button>
+  );
+}

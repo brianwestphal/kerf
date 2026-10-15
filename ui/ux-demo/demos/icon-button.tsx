@@ -1,4 +1,3 @@
-import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
@@ -25,7 +24,7 @@ export function IconButtonDemo() {
           />
         </ListInsetControl>
       </CatalogExample>
-      <CatalogExample label="Appearances and Variants" align="inline-control">
+      <CatalogExample label="Tones and Emphasis" align="inline-control">
         <Row>
           <IconButton
             icon={RefreshCw}
@@ -37,29 +36,29 @@ export function IconButtonDemo() {
             icon={RefreshCw}
             iconName="refresh-cw"
             label="Refresh (Plain)"
-            appearance="plain"
+            emphasis="plain"
             action="log-refresh"
           />
           <IconButton
             icon={Trash2}
             iconName="trash-2"
             label="Delete"
-            variant="danger"
-            appearance="outlined"
+            tone="danger"
+            emphasis="secondary"
             action="log-delete"
           />
           <IconButton
             icon={Trash2}
             iconName="trash-2"
             label="Delete (Disabled)"
-            variant="danger"
+            tone="danger"
             disabled
           />
         </Row>
       </CatalogExample>
       <CatalogExample label="Sizes" align="inline-control">
         <Row>
-          {(['s', 'm', 'l'] as const).map((size) => (
+          {(['default', 'compact'] as const).map((size) => (
             <IconButton
               icon={RefreshCw}
               iconName="refresh-cw"

@@ -7,8 +7,8 @@ test('standalone tab bar actions stay visible while the tabs scroll', async ({
   await page.goto('/?component=tab-bar');
   const bar = page.locator('[data-tab-bar-id="raw-action-tab-bar"]');
   const tabs = bar.locator('.kui-tab-bar__tabs');
-  const adjacent = bar.locator('.kui-tab-bar__trailing > wa-button');
-  const primary = bar.locator('.kui-tab-bar__end > wa-button');
+  const adjacent = bar.locator('.kui-tab-bar__trailing > .kui-button');
+  const primary = bar.locator('.kui-tab-bar__end > .kui-button');
 
   await expect(adjacent).toHaveText('Add Tab');
   await expect(primary).toHaveText('New Ticket…');

@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:icon-button` · Kerf UI · component · Controls
 
-Square, icon-only Web Awesome button with a LucideIcon and a required accessible name.
+Square, icon-only Button with a LucideIcon and a required accessible name.
 
 ## When to use
 
@@ -15,11 +15,11 @@ Render an icon-only action as a square one form-control height on each side, so 
 **Not when:**
 
 - Do not use inside a ToolbarControlGroup; the group owns its controls' geometry, so compose a native button with a LucideIcon there.
-- Do not use when the action needs a visible text label; use wa-button with text.
-- Do not override wa-button::part(base) width, min-height, or padding to square an icon button; use IconButton.
+- Do not use when the action needs a visible text label; use Button with a label.
 
 **Alternatives:**
 
+- [Button](./button.md) (nearest) — Use Button when the action needs a visible text label.
 - [Button](./wa-button.md) (prefer-over) — Web Awesome squares a button only for a lone wa-icon; with a LucideIcon use IconButton.
 - [ListInsetControl](./list-inset-control.md) (composes-with) — Beside a field in a ListInsetControl the square keeps its size and aligns with the field below its label.
 
@@ -27,9 +27,7 @@ Render an icon-only action as a square one form-control height on each side, so 
 
 - JavaScript: `@kerfjs/ui/icon-button` — exports `IconButton`.
 - CSS: the browser build of `@kerfjs/ui/icon-button` pulls its CSS automatically; import `@kerfjs/ui/icon-button.css` manually only without the `browser` export condition.
-- Theme CSS: import `@kerfjs/ui/webawesome.css` once.
-- Registration: import `@awesome.me/webawesome/dist/components/button/button.js` once (a side effect).
-- Declared side effects: browser-condition-css, custom-element-registration.
+- Declared side effects: browser-condition-css.
 
 ## Props
 
@@ -37,23 +35,21 @@ Exact prop names and types: [`@kerfjs/ui/icon-button`](../public-api-signatures-
 
 **Variants (configure, do not restyle):**
 
-- default appearance
-- plain
-- outlined
-- danger variant
+- neutral, brand, or danger tone
+- primary, secondary, or plain emphasis
+- default or compact size
 - disabled
-- xs, s, m, l, or xl size
 
 ## Composition
 
 - Parents: any.
 - Contexts: `application-ui`.
 - Children: unrestricted.
-- Built from: [Button](./wa-button.md), [LucideIcon](./lucide-icon.md).
+- Built from: [Button](./button.md), [LucideIcon](./lucide-icon.md).
 
 ## State and wiring
 
-**The app owns:** the delegated action; the accessible name; appearance, variant, and size choice.
+**The app owns:** the delegated action; the accessible name; tone, emphasis, and size choice.
 
 No wiring helper.
 
@@ -63,20 +59,16 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 
 ## Accessibility
 
-- label is required and names the button through its LucideIcon (role img), since the button shows no text.
+- A native button named by the required label (aria-label); the icon is decorative, since the button shows no text.
 
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-icon-button`.
-
-Never put `kui-icon-button` on an element you write; render `IconButton` instead (`KUI-L103`).
-
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 
 ## Related
 
-- Components: [Button](./wa-button.md), [LucideIcon](./lucide-icon.md), [ListInsetControl](./list-inset-control.md).
+- Components: [Button](./button.md), [LucideIcon](./lucide-icon.md), [Button](./wa-button.md), [ListInsetControl](./list-inset-control.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=icon-button`.

@@ -9,15 +9,15 @@ open state, dismissal policy, ids, names, and content.
 ```tsx
 import { DialogSurface, openDialog } from '@kerfjs/ui/surface-scaffold';
 
-<wa-button data-action="edit-workspace">Edit Workspace</wa-button>
+<Button action="edit-workspace">Edit Workspace</Button>
 <DialogSurface
   id="edit-workspace"
   label="Edit Workspace"
   bodyInset="none"
   footer={
     <>
-      <wa-button data-dialog-close>Cancel</wa-button>
-      <wa-button variant="brand" data-action="save-workspace">Save</wa-button>
+      <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
+      <Button tone="brand" action="save-workspace">Save</Button>
     </>
   }
 >
@@ -330,7 +330,7 @@ transcript, and its field grows the measured footer. With `submitOnEnter` and
   footerPresentation="floating"
   footerOffset={remify(8)}
   footerInset="none"
-  footer={<Composer submitOnEnter id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>} />}
+  footer={<Composer submitOnEnter id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={<Button tone="brand" action="send-message">Send</Button>} />}
 >
   <StateBanner title="Answers use the latest nightly build." tone="neutral" />
   <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">
@@ -380,7 +380,7 @@ composer and `scrollClearance="both"`, the transcript scrolls beneath both:
   footerPresentation="floating"
   footerOffset={remify(8)}
   footerInset="none"
-  footer={<Composer submitOnEnter id="thread-message" name="message" label="Message" placeholder="Reply to the thread" actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>} />}
+  footer={<Composer submitOnEnter id="thread-message" name="message" label="Message" placeholder="Reply to the thread" actions={<Button tone="brand" action="send-message">Send</Button>} />}
 >
   <List gap="xs" controlInsets="tb" scrollable scrollClearance="both">
     {bubbles}

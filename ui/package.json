@@ -75,6 +75,11 @@
       "browser": "./dist/browser/badge.js",
       "import": "./dist/badge.js"
     },
+    "./button": {
+      "types": "./dist/button.d.ts",
+      "browser": "./dist/browser/button.js",
+      "import": "./dist/button.js"
+    },
     "./chip": {
       "types": "./dist/chip.d.ts",
       "browser": "./dist/browser/chip.js",
@@ -467,6 +472,7 @@
     "./styles.css": "./dist/styles/styles.css",
     "./lucide-icon.css": "./dist/styles/lucide-icon.css",
     "./badge.css": "./dist/styles/badge.css",
+    "./button.css": "./dist/styles/button.css",
     "./chip.css": "./dist/styles/chip.css",
     "./disclosure-arrow.css": "./dist/styles/disclosure-arrow.css",
     "./toolbar.css": "./dist/styles/toolbar.css",

@@ -18,9 +18,9 @@ draws a frame, a focus border, and a shadow.
   minRows={1}
   maxRows={8}
   actions={
-    <wa-button variant="brand" data-action="send-message">
+    <Button tone="brand" action="send-message">
       Send
-    </wa-button>
+    </Button>
   }
 />
 ```
@@ -75,14 +75,14 @@ In an opted-in composer's field:
 | Enter on an empty or whitespace-only message | Nothing: no send and no newline.                                                                          |
 | Auto-repeating Enter (key held down)         | Nothing.                                                                                                  |
 
-The first trailing action is the first `wa-button`, `button`, or
+The first trailing action is the first `button` (a `Button`), `wa-button`, or
 `[data-action]` element inside `actions`. Clicking it means the keyboard send
 runs the same delegated `data-action` handler as a pointer send, so the app
 writes one send handler that reads the field, clears it, and re-renders. The
 click does not move focus, so the person keeps typing. Nothing is sent while
 the field is `disabled`, or while that action has a `disabled` attribute or
-property, a `loading` attribute (a busy `wa-button`), or
-`aria-disabled="true"`; the Enter is still suppressed, so a message waiting on
+property, `aria-busy="true"` (a busy `Button`), a `loading` attribute (a busy
+`wa-button`), or `aria-disabled="true"`; the Enter is still suppressed, so a message waiting on
 a busy Send does not gain a newline.
 
 Leave `submitOnEnter` off for a long-form prompt where Enter should be a

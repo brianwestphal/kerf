@@ -166,7 +166,7 @@
 
 /* Every zone reserves a group-height control band. Direct custom content
    centers against its zone's height by default. ToolbarText,
-   ToolbarControlGroup, and standalone wa-button keep their own first-band
+   ToolbarControlGroup, a standalone Button, and a raw wa-button keep their own first-band
    placement, so taller siblings do not move their controls off that axis.
    `--_kui-toolbar-band` is context those components use for that placement. */
 .kui-toolbar {

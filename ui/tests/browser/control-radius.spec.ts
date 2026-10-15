@@ -3,10 +3,11 @@ import { expect, type Locator, test } from '@playwright/test';
 const shadowRadius = (host: Locator) =>
   host.evaluate((element) => {
     // A Web Awesome host draws its box on a shadow part, a Select on its
-    // trigger.
+    // trigger; a Button is its own box.
     const part =
       element.shadowRoot?.querySelector('[part~="combobox"], [part~="base"]') ??
-      element.querySelector(':scope > .kui-select__trigger')!;
+      element.querySelector(':scope > .kui-select__trigger') ??
+      element;
     return window.getComputedStyle(part).borderTopLeftRadius;
   });
 
@@ -21,7 +22,7 @@ test('native and Web Awesome controls follow the Kerf rounded rectangle radius',
   });
   const input = example.locator('wa-input[label="Assignee"]');
   const select = example.locator('kui-select[name="demo-inset-status"]');
-  const button = example.locator('wa-button');
+  const button = example.locator('.kui-button');
   await expect(input).toBeVisible();
 
   await page.evaluate(() => {

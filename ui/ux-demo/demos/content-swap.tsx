@@ -1,5 +1,4 @@
-import '@awesome.me/webawesome/dist/components/button/button.js';
-
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentSwap } from '@kerfjs/ui/content-swap';
 import { List } from '@kerfjs/ui/list';
@@ -27,7 +26,7 @@ export function ContentSwapDemo() {
                 Step 1 of 2 · Choose the folder that holds the project.
               </ListInsetText>
               <Row hAlign="right" controlInsets="rl">
-                <wa-button data-action="content-swap-next">Next</wa-button>
+                <Button action="content-swap-next">Next</Button>
               </Row>
             </List>
           }
@@ -37,7 +36,7 @@ export function ContentSwapDemo() {
                 Step 2 of 2 · Confirm the connection settings.
               </ListInsetText>
               <Row hAlign="right" controlInsets="rl">
-                <wa-button data-action="content-swap-back">Back</wa-button>
+                <Button action="content-swap-back">Back</Button>
               </Row>
             </List>
           }
@@ -53,16 +52,14 @@ export function ContentSwapDemo() {
           active={contentSwapFaded.value}
           a={
             <Row controlInsets="trbl">
-              <wa-button data-action="content-swap-fade">
-                Show Details
-              </wa-button>
+              <Button action="content-swap-fade">Show Details</Button>
             </Row>
           }
           b={
             <Row controlInsets="trbl">
-              <wa-button data-action="content-swap-fade" variant="brand">
+              <Button action="content-swap-fade" tone="brand">
                 Hide Details
-              </wa-button>
+              </Button>
             </Row>
           }
         />

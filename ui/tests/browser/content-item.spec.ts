@@ -184,12 +184,12 @@ test('a rich static card gives its primary and secondary buttons independent act
   );
 });
 
-test('a nested Web Awesome button keeps Enter and Space from activating its ContentItem', async ({
+test('a nested Button keeps Enter and Space from activating its ContentItem', async ({
   page,
 }) => {
   await page.goto('/?component=content-item');
   const card = page.locator('[data-demo-item="card-with-action"]');
-  const action = card.locator('wa-button');
+  const action = card.locator('.kui-button');
   await page.evaluate(() => {
     document.body.dataset.testCardClicks = '0';
     document.addEventListener('click', (event) => {

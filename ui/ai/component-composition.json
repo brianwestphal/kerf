@@ -4957,7 +4957,7 @@
           "required": false
         },
         {
-          "id": "appearance, variant, and size choice",
+          "id": "tone, emphasis, and size choice",
           "owner": "application",
           "required": false
         }
@@ -4975,15 +4975,94 @@
       },
       "accessibility": {
         "obligations": [
-          "label is required and names the button through its LucideIcon (role img), since the button shows no text."
+          "A native button named by the required label (aria-label); the icon is decorative, since the button shows no text."
         ]
       },
       "cssValueProps": [],
       "boundaries": {
-        "rootClass": "kui-icon-button",
-        "publicClasses": ["kui-icon-button"],
-        "rootElement": "wa-button",
+        "rootClass": null,
+        "publicClasses": [],
+        "rootElement": "button",
         "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:button",
+      "package": "@kerfjs/ui",
+      "id": "button",
+      "name": "Button",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the label and its delegated action",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "what a press does while loading",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "form ownership", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "A native <button> (type=\"button\" unless set) or, with href, an <a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring.",
+          "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\"."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-button",
+        "publicClasses": [
+          "kui-button",
+          "kui-button__icon",
+          "kui-button__label",
+          "kui-button__spinner"
+        ],
+        "rootElement": "button",
+        "publicTokens": [
+          "--kui-color-neutral-fill-loud",
+          "--kui-color-neutral-on-loud",
+          "--kui-color-neutral-fill-quiet",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-neutral-border-loud",
+          "--kui-color-brand-fill-loud",
+          "--kui-color-brand-on-loud",
+          "--kui-color-brand-fill-quiet",
+          "--kui-color-brand-on-quiet",
+          "--kui-color-brand-border-loud",
+          "--kui-color-danger-fill-loud",
+          "--kui-color-danger-on-loud",
+          "--kui-color-danger-fill-quiet",
+          "--kui-color-danger-on-quiet",
+          "--kui-color-danger-border-loud",
+          "--kui-focus-ring",
+          "--kui-font-m",
+          "--kui-font-s",
+          "--kui-layout-rounded-radius"
+        ]
       },
       "diagnostics": [],
       "provenance": {

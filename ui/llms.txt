@@ -449,8 +449,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   Wrap every control — `SegmentedControl`, `Select`, a collapsible
   `TokenSearchField`, Web Awesome controls — inside a `ToolbarControlGroup`. For an
   ordinary icon/action control inside the group use a **plain `<button>`** (the
-  group styles it fully) — that is the default; reach for `wa-button` only when you
-  need a Web Awesome feature. A toolbar popup menu is a `PopupMenu`
+  group styles it fully) — that is the default; a standalone `Button` belongs
+  outside a group. A toolbar popup menu is a `PopupMenu`
   (`@kerfjs/ui/popup-menu`, registered once via `@kerfjs/ui/popup-menu/register`)
   in a `single` `ToolbarControlGroup` with `nestedDropdown`; never hand-write
   `wa-dropdown` markup for a menu. Let the group size the trigger from its icon,
@@ -599,8 +599,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `TabBar trailingPlacement="adjacent"`, put the local action in `trailing`, and
   the workspace action in `end`; the component keeps both visible while its tab
   list shrinks and scrolls, without application descendant CSS. Each action
-  zone accepts one ToolbarControlGroup or a standalone `wa-button` for its own
-  Web Awesome chrome. Managed
+  zone accepts one ToolbarControlGroup or a standalone `Button` for its own
+  chrome. Managed
   TokenSearchField clear also preserves open state and replacement
   editor focus before the next input task, so shortcut-letter typing stays in search.
   Select All deletion does the same; deletion
@@ -696,11 +696,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   that keeps the first and last rows' focus rings inside the clip, and the
   typed `CssLength` bounds need no flex-column ancestor. Never wrap a List in
   an app div with `max-height`, `overflow`, and a border.
-- **Square an icon-only button with `IconButton`.** Web Awesome squares a
-  `wa-button` only for a lone `wa-icon`; with a `LucideIcon` use
-  `IconButton({ icon, iconName, label })` (label required) instead of
-  overriding `wa-button::part(base)`. Inside a `ToolbarControlGroup` keep a
-  native `button`; the group owns its geometry.
+- **Use `Button` for a standalone action, `IconButton` for an icon-only one.**
+  `Button` (`@kerfjs/ui/button`) is a native button in a `tone` (`neutral`,
+  `brand`, `danger`) and an `emphasis` (`primary`, `secondary`, `plain`), at
+  the 44px control height or `size="compact"`, with an optional `icon`,
+  `loading`, `href`, and form `type`. `IconButton({ icon, iconName, label })`
+  (label required) is its icon-only square. Inside a `ToolbarControlGroup`
+  keep a native `button`; the group owns its geometry.
 - **Paint a strip's surface with `List surface`.** `surface="base"` or
   `"raised"` fills a List and its insets with a solid surface (a banner strip
   above a sunken work area); never wrap it in app CSS that sets a background.

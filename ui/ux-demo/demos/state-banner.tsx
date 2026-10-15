@@ -1,5 +1,4 @@
-import '@awesome.me/webawesome/dist/components/button/button.js';
-
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
@@ -34,9 +33,9 @@ export function StateBannerDemo() {
               detail="Semantic defaults remain overridable."
               icon={iconFor(tone)}
               action={
-                <wa-button size="small" data-action={`log-${tone}`}>
+                <Button size="compact" action={`log-${tone}`}>
                   Act
-                </wa-button>
+                </Button>
               }
             />
           </CatalogExample>
@@ -69,7 +68,7 @@ export function StateBannerDemo() {
           icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
           copyLayout="stacked"
           actionPlacement="below"
-          action={<wa-button size="small">Review Projects</wa-button>}
+          action={<Button size="compact">Review Projects</Button>}
         />
       </CatalogExample>
       {/* A side action that holds several controls: on a narrow banner the
@@ -95,8 +94,8 @@ export function StateBannerDemo() {
               icon={<LucideIcon icon={CircleAlert} name="circle-alert" />}
               action={
                 <Row wrap hAlign="right">
-                  <wa-button size="small">Retry Save</wa-button>
-                  <wa-button size="small">Discard Changes</wa-button>
+                  <Button size="compact">Retry Save</Button>
+                  <Button size="compact">Discard Changes</Button>
                 </Row>
               }
             />
@@ -111,7 +110,7 @@ export function StateBannerDemo() {
           detail="Desktop alerts resume when you reconnect."
           icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
           copyLayout="stacked"
-          action={<wa-button size="small">Resume</wa-button>}
+          action={<Button size="compact">Resume</Button>}
         />
       </CatalogExample>
       <CatalogExample label="Placeholder" align="none">

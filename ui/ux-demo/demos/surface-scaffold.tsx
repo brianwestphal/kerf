@@ -1,6 +1,7 @@
 import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Composer } from '@kerfjs/ui/composer';
 import { ContentItem } from '@kerfjs/ui/content-item';
@@ -278,12 +279,12 @@ export function SurfaceScaffoldDemo() {
       rootAttributes={{ 'data-demo': 'surface-scaffold' }}
     >
       <CatalogExample label="Medium Dialog" align="inline-control">
-        <wa-button
-          data-action="show-dialog"
-          data-dialog-id="catalog-medium-dialog"
+        <Button
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': 'catalog-medium-dialog' }}
         >
           Open Dialog
-        </wa-button>
+        </Button>
         <DialogSurface
           id="catalog-medium-dialog"
           label="Edit Workspace"
@@ -293,10 +294,12 @@ export function SurfaceScaffoldDemo() {
           footerInset="comfortable"
           footer={
             <>
-              <wa-button data-dialog-close>Cancel</wa-button>
-              <wa-button variant="brand" data-dialog-close>
+              <Button rootAttributes={{ 'data-dialog-close': '' }}>
+                Cancel
+              </Button>
+              <Button tone="brand" rootAttributes={{ 'data-dialog-close': '' }}>
                 Save
-              </wa-button>
+              </Button>
             </>
           }
         >
@@ -312,12 +315,12 @@ export function SurfaceScaffoldDemo() {
         note="An 832px preferred width overrides the large preset; an 8px gutter and viewport height cap keep it on phones."
         align="inline-control"
       >
-        <wa-button
-          data-action="show-dialog"
-          data-dialog-id="catalog-bounded-dialog"
+        <Button
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': 'catalog-bounded-dialog' }}
         >
           Open Bounded Dialog
-        </wa-button>
+        </Button>
         <DialogSurface
           id="catalog-bounded-dialog"
           label="Close Workspace"
@@ -328,10 +331,12 @@ export function SurfaceScaffoldDemo() {
           bodyInset="none"
           footer={
             <>
-              <wa-button data-dialog-close>Keep Working</wa-button>
-              <wa-button variant="brand" data-dialog-close>
+              <Button rootAttributes={{ 'data-dialog-close': '' }}>
+                Keep Working
+              </Button>
+              <Button tone="brand" rootAttributes={{ 'data-dialog-close': '' }}>
                 Stop and Close
-              </wa-button>
+              </Button>
             </>
           }
         >
@@ -352,12 +357,12 @@ export function SurfaceScaffoldDemo() {
         note="A 480px preferred width and typed 360px maximum stay viewport-bounded while the footer remains outside the scrolling body."
         align="inline-control"
       >
-        <wa-button
-          data-action="show-dialog"
-          data-dialog-id="catalog-capped-dialog"
+        <Button
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': 'catalog-capped-dialog' }}
         >
           Open Capped Dialog
-        </wa-button>
+        </Button>
         <DialogSurface
           id="catalog-capped-dialog"
           label="Review Workspace Changes"
@@ -365,7 +370,11 @@ export function SurfaceScaffoldDemo() {
           viewportGutter={remify(8)}
           maxHeight={remify(360)}
           bodyInset="none"
-          footer={<wa-button data-dialog-close>Cancel Review</wa-button>}
+          footer={
+            <Button rootAttributes={{ 'data-dialog-close': '' }}>
+              Cancel Review
+            </Button>
+          }
         >
           <List>
             {[
@@ -386,12 +395,12 @@ export function SurfaceScaffoldDemo() {
         note='height gives the modal a definite, viewport-bounded size and bodyLayout="fill" hands the whole body to one SplitView.'
         align="inline-control"
       >
-        <wa-button
-          data-action="show-dialog"
-          data-dialog-id="catalog-filled-dialog"
+        <Button
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': 'catalog-filled-dialog' }}
         >
           Open Project Details
-        </wa-button>
+        </Button>
         <DialogSurface
           id="catalog-filled-dialog"
           label="Project Details"
@@ -409,9 +418,12 @@ export function SurfaceScaffoldDemo() {
         note='footerPresentation="floating" lays a Composer over the body, 8px from the panel edges so its text aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills the rest; with scrollClearance="block-end" the transcript scrolls beneath the composer and its last message still rests above it.'
         align="inline-control"
       >
-        <wa-button data-action="show-dialog" data-dialog-id={CHAT_DIALOG_ID}>
+        <Button
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': CHAT_DIALOG_ID }}
+        >
           Open Assistant
-        </wa-button>
+        </Button>
         <DialogSurface
           id={CHAT_DIALOG_ID}
           label="Assistant"
@@ -430,12 +442,9 @@ export function SurfaceScaffoldDemo() {
               label="Message"
               placeholder="Ask about this build"
               actions={
-                <wa-button
-                  variant="brand"
-                  data-action={SEND_CHAT_DIALOG_MESSAGE_ACTION}
-                >
+                <Button tone="brand" action={SEND_CHAT_DIALOG_MESSAGE_ACTION}>
                   Send
-                </wa-button>
+                </Button>
               }
             />
           }
@@ -460,9 +469,12 @@ export function SurfaceScaffoldDemo() {
         note='headerPresentation="floating" lays the title bar over the body on the translucent chrome material. With bodyLayout="fill" and scrollClearance="both", the transcript scrolls visibly beneath both the title bar and the floating composer, while its first and last messages rest clear of them.'
         align="inline-control"
       >
-        <wa-button data-action="show-dialog" data-dialog-id={THREAD_DIALOG_ID}>
+        <Button
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': THREAD_DIALOG_ID }}
+        >
           Open Release Thread
-        </wa-button>
+        </Button>
         <DialogSurface
           id={THREAD_DIALOG_ID}
           label="Release Thread"
@@ -489,12 +501,9 @@ export function SurfaceScaffoldDemo() {
               label="Message"
               placeholder="Reply to the thread"
               actions={
-                <wa-button
-                  variant="brand"
-                  data-action={SEND_CHAT_DIALOG_MESSAGE_ACTION}
-                >
+                <Button tone="brand" action={SEND_CHAT_DIALOG_MESSAGE_ACTION}>
                   Send
-                </wa-button>
+                </Button>
               }
             />
           }
@@ -515,9 +524,12 @@ export function SurfaceScaffoldDemo() {
         note='presentation="bottom-sheet" attaches the dialog to the bottom edge with square bottom corners and clears the safe area and the virtual keyboard. Without a height it opens at its content height. resizable adds a grabber that resizes it between minHeight and the viewport (drag, or the arrow keys); it slides in and out unless motion is reduced.'
         align="inline-control"
       >
-        <wa-button data-action="show-dialog" data-dialog-id={SHEET_DIALOG_ID}>
+        <Button
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': SHEET_DIALOG_ID }}
+        >
           Open New Message
-        </wa-button>
+        </Button>
         <DialogSurface
           id={SHEET_DIALOG_ID}
           label="New Message"

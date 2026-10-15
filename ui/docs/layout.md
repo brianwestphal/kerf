@@ -526,7 +526,7 @@ Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
 A `Toolbar` lays its zones out against one 44px control band at its top: an
 ordinary `ToolbarText`, `ToolbarControlGroup`, or standalone trailing
-`wa-button` no taller than the band is centered in it by its own size, and a
+`Button` no taller than the band is centered in it by its own size, and a
 taller one (a wrapped title, a second trailing row) starts at the band's top
 and grows down, so it never moves the other controls. A wrapped `ToolbarText`
 centers its first line in the band. Other direct zone content centers against

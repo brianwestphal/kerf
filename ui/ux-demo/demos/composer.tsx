@@ -1,3 +1,4 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Composer } from '@kerfjs/ui/composer';
 
@@ -22,13 +23,13 @@ export function ComposerDemo() {
           placeholder="Ask about this build"
           hint="Answers use the latest nightly build."
           actions={
-            <wa-button
-              variant="brand"
-              data-action={SEND_COMPOSER_DEMO_ACTION}
-              data-composer-id="composer-demo-chat"
+            <Button
+              tone="brand"
+              action={SEND_COMPOSER_DEMO_ACTION}
+              rootAttributes={{ 'data-composer-id': 'composer-demo-chat' }}
             >
               Send
-            </wa-button>
+            </Button>
           }
         />
       </CatalogExample>
@@ -44,13 +45,13 @@ export function ComposerDemo() {
           minRows={3}
           maxRows={12}
           actions={
-            <wa-button
-              variant="brand"
-              data-action={SEND_COMPOSER_DEMO_ACTION}
-              data-composer-id="composer-demo-prompt"
+            <Button
+              tone="brand"
+              action={SEND_COMPOSER_DEMO_ACTION}
+              rootAttributes={{ 'data-composer-id': 'composer-demo-prompt' }}
             >
               Generate
-            </wa-button>
+            </Button>
           }
         />
       </CatalogExample>

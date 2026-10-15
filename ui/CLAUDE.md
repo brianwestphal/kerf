@@ -108,7 +108,7 @@ matters, and ask rather than guess when a design brief is ambiguous.**
   size.
 - **Use the toolbar components for identity and grouped controls.** A title is
   `ToolbarText`, not an `<h2>`. Wrap related controls in `ToolbarControlGroup`;
-  the trailing zone also accepts a standalone primary `wa-button`. (Popup menu =
+  the trailing zone also accepts a standalone primary `Button`. (Popup menu =
   a `PopupMenu` in a `single` ToolbarControlGroup with `nestedDropdown`.)
 - **Keep each control whole inside a `ToolbarControlGroup`.** An icon sits beside
   its label on one row; the default group stays on one row and the toolbar's

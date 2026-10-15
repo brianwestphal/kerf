@@ -22,6 +22,7 @@ function isUnavailable(action: Element): boolean {
   return (
     action.hasAttribute('disabled') ||
     action.hasAttribute('loading') ||
+    action.getAttribute('aria-busy') === 'true' ||
     action.getAttribute('aria-disabled') === 'true' ||
     (action as Element & { disabled?: unknown }).disabled === true
   );
@@ -34,7 +35,8 @@ function isUnavailable(action: Element): boolean {
  * delegated handler as a click. Shift+Enter and Alt+Enter insert a newline.
  * Nothing is sent, and no newline is inserted, when the message is empty or
  * whitespace-only, the key is auto-repeating, or the first action is
- * disabled, loading, or `aria-disabled`. An Enter that commits an IME
+ * disabled, loading (a busy `Button` reports `aria-busy`), or
+ * `aria-disabled`. An Enter that commits an IME
  * composition (`isComposing`, keyCode 229, or between `compositionstart` and
  * `compositionend`) is left to the input method. Dispose with the owning
  * application.

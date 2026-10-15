@@ -3,9 +3,9 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/split-view.css';
 import '@kerfjs/ui/webawesome.css';
-import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/dialog/dialog.js';
 
+import { Button } from '@kerfjs/ui/button';
 import { remify } from '@kerfjs/ui/css-values';
 import { deviceClass } from '@kerfjs/ui/device-class';
 import { List } from '@kerfjs/ui/list';
@@ -84,21 +84,20 @@ export const createRecipe: RecipeFactory = (announce) => {
   const recordActions = () => (
     <Row gap="xs" wrap controlInsets="trbl">
       <Spacer flex />
-      <wa-button
-        appearance="outlined"
-        data-action="recipe-action"
-        data-recipe-command="archive"
+      <Button
+        emphasis="secondary"
+        action="recipe-action"
+        rootAttributes={{ 'data-recipe-command': 'archive' }}
       >
         Archive
-      </wa-button>
-      <wa-button
-        variant="brand"
-        appearance="accent"
-        data-action="recipe-action"
-        data-recipe-command="open-record"
+      </Button>
+      <Button
+        tone="brand"
+        action="recipe-action"
+        rootAttributes={{ 'data-recipe-command': 'open-record' }}
       >
         Open Project
-      </wa-button>
+      </Button>
     </Row>
   );
 
@@ -178,14 +177,13 @@ export const createRecipe: RecipeFactory = (announce) => {
         aria-label="Project Details Dialog"
       >
         <Row hAlign="center">
-          <wa-button
-            variant="brand"
-            appearance="accent"
-            data-action="recipe-action"
-            data-recipe-command="open"
+          <Button
+            tone="brand"
+            action="recipe-action"
+            rootAttributes={{ 'data-recipe-command': 'open' }}
           >
             Open Project Details
-          </wa-button>
+          </Button>
           {/* One dialog in both layouts, so crossing the compact breakpoint
               while it is open morphs it in place and it stays open. */}
           <DialogSurface
@@ -200,21 +198,20 @@ export const createRecipe: RecipeFactory = (announce) => {
             footer={
               compact ? (
                 <>
-                  <wa-button
-                    appearance="outlined"
-                    data-action="recipe-action"
-                    data-recipe-command="archive"
+                  <Button
+                    emphasis="secondary"
+                    action="recipe-action"
+                    rootAttributes={{ 'data-recipe-command': 'archive' }}
                   >
                     Archive
-                  </wa-button>
-                  <wa-button
-                    variant="brand"
-                    appearance="accent"
-                    data-action="recipe-action"
-                    data-recipe-command="open-record"
+                  </Button>
+                  <Button
+                    tone="brand"
+                    action="recipe-action"
+                    rootAttributes={{ 'data-recipe-command': 'open-record' }}
                   >
                     Open Project
-                  </wa-button>
+                  </Button>
                 </>
               ) : undefined
             }

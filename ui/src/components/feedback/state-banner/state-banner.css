@@ -268,7 +268,9 @@
   margin-inline-start: auto;
   flex: 0 1 auto;
 }
-.kui-state-banner__action button {
+/* A plain action button takes the banner's own pill; a Button keeps its own
+   look. */
+.kui-state-banner__action button:not(.kui-button) {
   min-height: remify(28.8px);
   padding: 0 remify(11.2px);
   border: 1px solid currentColor;
@@ -280,10 +282,10 @@
   font-size: var(--kui-font-2xs);
   font-weight: 650;
 }
-.kui-state-banner__action button:hover {
+.kui-state-banner__action button:not(.kui-button):hover {
   background: var(--_kui-state-banner-action-hover-background);
 }
-.kui-state-banner__action button:focus-visible {
+.kui-state-banner__action button:not(.kui-button):focus-visible {
   outline: 2px solid var(--kui-color-text-link);
   outline-offset: 2px;
 }

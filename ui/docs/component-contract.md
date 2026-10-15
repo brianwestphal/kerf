@@ -606,7 +606,7 @@ Use `visibility="yield-to-expanded-sibling"` on trailing groups that should
 leave a 480px-or-narrower toolbar while a sibling trailing group is expanded.
 They return when it collapses or the toolbar widens; leading and center zones
 remain visible.
-Reach for `wa-button` only when you need a Web Awesome feature; a popup menu is a `PopupMenu`, which renders its own
+A group's controls are plain `<button>`s (a standalone `Button` belongs outside a group); a popup menu is a `PopupMenu`, which renders its own
 trigger. By default a group stays on one row: each icon sits beside its label,
 and the enclosing `Toolbar`'s responsive policy relocates whole groups. Set
 `overflow="wrap"` only for independent links that should move as whole actions
@@ -664,7 +664,7 @@ choose `responsive="stack"` with `responsiveAt="compact" | "narrow"`,
 `responsive="wrap"` for a heading whose title must stay whole, or
 `responsive="center-priority"` instead of selecting its zone classes from a
 parent stylesheet. No policy clips an action: the trailing zone wraps whole
-groups and its standalone primary `wa-button` onto another row; a stacked
+groups and its standalone primary `Button` onto another row; a stacked
 center zone wraps its groups. The center zone never
 compresses below its content width, so when the leading identity, center, and
 trailing zones share a row that is too narrow, the leading title is what gives

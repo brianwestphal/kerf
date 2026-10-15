@@ -76,6 +76,7 @@ const entries = [
   'wire-comboboxes',
   'wire-file-pickers',
   'edge-activity-indicator',
+  'button',
   'icon-button',
   'icon-toggle-button',
   'split-button',

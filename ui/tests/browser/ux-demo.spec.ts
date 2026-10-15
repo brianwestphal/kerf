@@ -483,15 +483,15 @@ test('slides the catalog sidebar out and back via a composited transform, not a 
     .toBeCloseTo(expandedWidth, 0);
 });
 
-test('keeps an icon-only control-group wa-button highlight at least square (min-width == height)', async ({
+test('keeps an icon-only control-group button highlight at least square (min-width == height)', async ({
   page,
   browserName,
 }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/?component=toolbar-control-group');
 
-  // The highlight lives on the wa-button's shadow `base` part. An icon-only
-  // button must not render it as a vertical oval: its width must be >= its
+  // The highlight is the plain button's own box. An icon-only button must not
+  // render it as a vertical oval: its width must be >= its
   // height (a circle at the 40px default), while a caret button grows wider.
   const basePart = (sel: string | Locator) =>
     (typeof sel === 'string' ? page.locator(sel) : sel)
@@ -506,7 +506,7 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
         return r ? { w: Math.round(r.width), h: Math.round(r.height) } : null;
       });
 
-  const favorite = await basePart('wa-button[aria-label="Favorite View"]');
+  const favorite = await basePart('button[aria-label="Favorite View"]');
   expect(favorite).not.toBeNull();
   expect(favorite!.h).toBeGreaterThan(0);
   expect(favorite!.w).toBeGreaterThanOrEqual(favorite!.h); // square or wider, never a vertical oval
@@ -520,7 +520,7 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
   expect(sort!.w).toBeGreaterThan(sort!.h); // caret content grows past the square floor
 
   if (browserName === 'chromium') {
-    await page.locator('wa-button[aria-label="Favorite View"]').hover();
+    await page.locator('button[aria-label="Favorite View"]').hover();
     await page
       .locator('.kui-catalog-example', {
         has: page.locator('.kui-list-header:has-text("Button Group")'),
@@ -543,9 +543,9 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
   const soloGroup = page
     .locator('[data-demo="toolbar-control-group"]')
     .locator('.kui-toolbar-control-group[data-single="true"]')
-    .filter({ has: page.locator('wa-button[aria-label="Pin View"]') })
+    .filter({ has: page.locator('button[aria-label="Pin View"]') })
     .first();
-  const soloButton = soloGroup.locator('wa-button[aria-label="Pin View"]');
+  const soloButton = soloGroup.locator('button[aria-label="Pin View"]');
   const transparent = 'rgba(0, 0, 0, 0)';
   await soloButton.hover();
   await expect
@@ -564,20 +564,15 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
     .locator(
       '.kui-toolbar-control-group[label="View Actions"], .kui-toolbar-control-group',
     )
-    .filter({ has: page.locator('wa-button[aria-label="Favorite View"]') })
+    .filter({ has: page.locator('button[aria-label="Favorite View"]') })
     .first();
-  const favorite = multiGroup.locator('wa-button[aria-label="Favorite View"]');
+  const favorite = multiGroup.locator('button[aria-label="Favorite View"]');
   await favorite.hover();
   await expect
     .poll(() =>
-      favorite.evaluate((host) => {
-        const base = (
-          host as unknown as { shadowRoot: ShadowRoot | null }
-        ).shadowRoot?.querySelector('[part~="base"]');
-        return base
-          ? window.getComputedStyle(base as Element).backgroundColor
-          : '';
-      }),
+      favorite.evaluate(
+        (button) => window.getComputedStyle(button).backgroundColor,
+      ),
     )
     .not.toBe(transparent);
 });
@@ -624,7 +619,7 @@ test('the ToolbarControlGroup Demo shape toggle switches each shape-controlled s
   const shapeControlledCount = await shapeControlledGroups.count();
   const sampleGroup = demo
     .locator('.kui-toolbar-control-group')
-    .filter({ has: page.locator('wa-button[aria-label="Pin View"]') })
+    .filter({ has: page.locator('button[aria-label="Pin View"]') })
     .first();
 
   // Default: every group is pill (22px), none rounded.
@@ -1102,7 +1097,7 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   await expect(tight).toHaveAttribute('data-sides', 'rl');
 });
 
-test('ListInsetControl stretches a Select, a text input, and a wa-button across its row', async ({
+test('ListInsetControl stretches a Select, a text input, and a Button across its row', async ({
   page,
 }) => {
   for (const width of [1100, 390]) {
@@ -1111,17 +1106,20 @@ test('ListInsetControl stretches a Select, a text input, and a wa-button across 
     const controls = page.locator(
       '[data-demo="list-inset-control"] [data-component="list-inset-control"]',
     );
-    for (const tag of ['kui-select', 'wa-input', 'wa-button']) {
+    for (const tag of ['kui-select', 'wa-input', '.kui-button']) {
       const inset = controls.filter({ has: page.locator(`> ${tag}`) }).last();
       await inset.scrollIntoViewIfNeeded();
       await expect(inset.locator(`> ${tag}`)).toBeVisible();
       const widths = await inset.evaluate((element, childTag) => {
         const child = element.querySelector(`:scope > ${childTag}`)!;
         // A Select's bordered box is its light-DOM trigger; Web Awesome
-        // controls draw theirs in a shadow part.
+        // controls draw theirs in a shadow part; a Button is its own box.
         const visible =
           child.querySelector(':scope > .kui-select__trigger') ??
-          child.shadowRoot?.querySelector('[part~="combobox"], [part~="base"]');
+          child.shadowRoot?.querySelector(
+            '[part~="combobox"], [part~="base"]',
+          ) ??
+          child;
         return {
           inset: element.getBoundingClientRect().width,
           child: child.getBoundingClientRect().width,

@@ -266,6 +266,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                        |
 | `createTokenSearchModel`                                            | `@kerfjs/ui/token-search-model`         | —                                        |
 | `StateBanner`                                                       | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`            |
+| `Button`                                                            | `@kerfjs/ui/button`                     | `@kerfjs/ui/button.css`                  |
 | `IconButton`                                                        | `@kerfjs/ui/icon-button`                | `@kerfjs/ui/icon-button.css`             |
 | `IconToggleButton`                                                  | `@kerfjs/ui/icon-toggle-button`         | `@kerfjs/ui/icon-toggle-button.css`      |
 | `SplitButton`                                                       | `@kerfjs/ui/split-button`               | `@kerfjs/ui/split-button.css`            |
@@ -751,7 +752,7 @@ with an optional quiet `hint` and the trailing `actions`:
   label="Message"
   placeholder="Ask about this build"
   hint="Answers use the latest nightly build."
-  actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>}
+  actions={<Button tone="brand" action="send-message">Send</Button>}
 />
 ```
 

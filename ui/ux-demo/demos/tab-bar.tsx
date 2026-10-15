@@ -1,4 +1,5 @@
 import { AppTab } from '@kerfjs/ui/app-tab';
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
@@ -142,14 +143,14 @@ export function TabBarDemo() {
           label="Project Tabs with Primary Action"
           trailingPlacement="adjacent"
           trailing={
-            <wa-button appearance="plain" data-action="log-more">
+            <Button emphasis="plain" action="log-more">
               Add Tab
-            </wa-button>
+            </Button>
           }
           end={
-            <wa-button variant="brand" data-action="log-add">
+            <Button tone="brand" action="log-add">
               New Ticket…
-            </wa-button>
+            </Button>
           }
         >
           {overflowTabs}

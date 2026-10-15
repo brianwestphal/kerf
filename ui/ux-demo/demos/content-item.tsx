@@ -1,5 +1,4 @@
-import '@awesome.me/webawesome/dist/components/button/button.js';
-
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import type { ContentItemAppearance } from '@kerfjs/ui/content-item';
 import { ContentItem } from '@kerfjs/ui/content-item';
@@ -128,12 +127,12 @@ export function ContentItemDemo() {
             rootAttributes={{ 'data-demo-item': 'multi-action-card' }}
           >
             <Row vAlign="middle" wrap>
-              <wa-button appearance="plain" data-action="log-card-primary">
+              <Button emphasis="plain" action="log-card-primary">
                 Open Quotation
-              </wa-button>
-              <wa-button appearance="plain" data-action="log-more">
+              </Button>
+              <Button emphasis="plain" action="log-more">
                 More Actions
-              </wa-button>
+              </Button>
             </Row>
           </ContentItem>
         </Pane>
@@ -224,9 +223,9 @@ export function ContentItemDemo() {
             rootAttributes={{ 'data-demo-item': 'card-with-action' }}
           >
             {itemCopy('Card with Action', 'The inner button acts on its own.')}
-            <wa-button appearance="plain" data-action="log-more">
+            <Button emphasis="plain" action="log-more">
               More Actions
-            </wa-button>
+            </Button>
           </ContentItem>
           <ContentItem
             interactive

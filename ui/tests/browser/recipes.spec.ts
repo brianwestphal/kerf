@@ -311,7 +311,7 @@ test('lays the project dialog out as a workbench on roomy devices and a drill-do
         const detailToolbar = bounds('[data-split-detail] .kui-toolbar');
         const actions = [
           ...root.querySelectorAll<HTMLElement>(
-            '[data-split-detail] wa-button',
+            '[data-split-detail] .kui-button',
           ),
         ].map((button) => button.getBoundingClientRect());
         return {
