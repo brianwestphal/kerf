@@ -331,6 +331,32 @@ describe('titleStyleLabels', () => {
     ]);
   });
 
+  test('reads Kerf field, group, and button labels, not option text', () => {
+    expect(
+      labels(`
+        export const Form = () => (
+          <form>
+            <TextField label="Project name" placeholder="Search tickets" hint="Shown to everyone" />
+            <TextField ariaLabel="Search components" clearable clearLabel="Clear search" />
+            <Select label="Release channel" choices={[{ value: 'b', label: 'Beta channel' }]} />
+            <RadioGroup label="Notify me" choices={[{ value: 'all', label: 'Every new reply' }]} />
+            <Checkbox label="Show hidden files" hint="Includes dotfiles" />
+            <Switch label="Sync over cellular" />
+            <Button tone="brand">Save draft</Button>
+          </form>
+        );
+      `),
+    ).toEqual([
+      'TextField label: Project name',
+      'TextField ariaLabel: Search components',
+      'TextField clearLabel: Clear search',
+      'Select label: Release channel',
+      'Select choices: Beta channel',
+      'RadioGroup label: Notify me',
+      '<Button> text: Save draft',
+    ]);
+  });
+
   test('reads raw Web Awesome field and radio-group labels, not option text', () => {
     expect(
       labels(`

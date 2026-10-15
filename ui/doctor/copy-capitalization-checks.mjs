@@ -14,7 +14,8 @@ import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 // to known title-style props are read (a template literal's static words, never
 // its interpolated values), so prose, descriptions, placeholders, tooltips,
 // checkbox/switch option text, status lines, LoadingSpinner and Skeleton
-// labels, and dynamic data are never judged. The check reports lowercase words title style capitalizes; it
+// labels, Checkbox/Switch labels and RadioGroup choice labels, and dynamic
+// data are never judged. The check reports lowercase words title style capitalizes; it
 // does not report capitalized short words, because Apple capitalizes a
 // preposition of any length inside a phrasal verb ("Log In to the Server").
 
@@ -174,7 +175,14 @@ const titleStyleProps = new Map([
   ['SplitView', { props: ['backLabel'] }],
   ['PopupMenu', { props: ['text', 'label'], entries: { items: ['label'] } }],
   ['SegmentedControl', { entries: { choices: ['label'] } }],
-  ['Select', { entries: { choices: ['label'] } }],
+  [
+    'Select',
+    { props: ['label', 'ariaLabel'], entries: { choices: ['label'] } },
+  ],
+  // Field and group labels. A Checkbox or Switch label and a RadioGroup
+  // choice label are option text, which is sentence style and not read.
+  ['TextField', { props: ['label', 'ariaLabel', 'clearLabel'] }],
+  ['RadioGroup', { props: ['label', 'ariaLabel'] }],
   ['TabNavigator', { entries: { tabs: ['label'] } }],
   // Region and landmark names: the accessible name of a pane, toolbar,
   // control group, list, tab bar, or layout region names it, so it is title
@@ -235,9 +243,10 @@ const landmarkRoles = new Set([
   'form',
   'search',
 ]);
-// A raw Web Awesome field's or radio group's `label` is a field label. The
-// option text of `wa-checkbox`, `wa-switch`, and `wa-radio` is sentence style
-// and is not read.
+// A raw Web Awesome field's or radio group's `label` (in an application using
+// the optional integration) is a field label. The option text of
+// `wa-checkbox`, `wa-switch`, and `wa-radio` is sentence style and is not
+// read.
 const fieldLabelTags = new Set([
   'wa-input',
   'wa-select',
@@ -245,7 +254,7 @@ const fieldLabelTags = new Set([
   'wa-radio-group',
 ]);
 const titleToolbarTextSizes = new Set(['xlarge', 'xlarge-fixed', 'large']);
-const buttonTags = new Set(['button', 'wa-button']);
+const buttonTags = new Set(['button', 'wa-button', 'Button']);
 const titleSlots = new Set(['title', 'leading', 'header']);
 const statusToolbarTextSizes = new Set(['small', 'xsmall']);
 

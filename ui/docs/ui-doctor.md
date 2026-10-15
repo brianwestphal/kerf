@@ -146,7 +146,7 @@ capitalization rule in [Writing interface copy](./writing.md#capitalization).
 Names of commands, controls, views, and fields use title style, following
 Apple's guidance. `KUI-D040` (warning) reports a string or template literal
 passed to a known title-style prop that leaves a word lowercase where title style
-capitalizes it. For example, `<wa-button>Save draft</wa-button>` should be
+capitalizes it. For example, `<Button>Save draft</Button>` should be
 "Save Draft", and `<ListHeader label="Needs attention" />` should be "Needs
 Attention". The action names the repaired label.
 
@@ -166,7 +166,8 @@ covers these string literals:
   declared in the same file;
 - `SegmentedControl`, `Select`, and `TabNavigator` choice and tab labels;
 - `NavStack` view titles and `backText`, and `SplitView` `backLabel`;
-- `FieldLabel` text and the static text of a `button` or `wa-button`;
+- `FieldLabel` text and the static text of a `Button`, `button`, or
+  `wa-button`;
 - the `name` of a panel toolbar's `toggle: { action, name }` object literal
   (Workbench panels, `CollapsiblePanel`), which names the toggle group and
   completes its "Show …" / "Hide …" label;
@@ -180,11 +181,14 @@ covers these string literals:
   configuration declared in the same file; and the `aria-label` of a
   `section`, `nav`, `aside`, `main`, `header`, `footer`, `form`, or `search`
   element or an element with a landmark `role`;
-- the `label` of a raw `wa-input`, `wa-select`, `wa-textarea`, or
-  `wa-radio-group`, which is a field or group label;
+- field and group labels: the `label` and `ariaLabel` of `TextField`,
+  `Select`, and `RadioGroup`, and the `label` of a raw `wa-input`,
+  `wa-select`, `wa-textarea`, or `wa-radio-group` in an application using the
+  optional Web Awesome integration;
 - the accessible names of icon-only controls, which the rule also gives title
   style: `IconButton` and `IconToggleButton` `label`, `PopupMenu` `label`,
-  `SplitButton` `optionsLabel`, `TokenSearchField` `clearLabel`, and the
+  `SplitButton` `optionsLabel`, `TokenSearchField` and `TextField`
+  `clearLabel`, and the
   `aria-label` of a `button` or `wa-button` whose only content is an icon. A
   button with visible text is judged by that text, never by its `aria-label`.
 
@@ -199,6 +203,7 @@ The check is deliberately one-directional, to keep false positives rare:
   is. A word joined to an interpolation (`` `${count}s` ``) is skipped.
 - It ignores other dynamic values and every sentence-style surface: descriptions,
   details, placeholders, tooltips, status text, and option text, including
+  `Checkbox` and `Switch` labels, `RadioGroup` choice labels, and
   `wa-checkbox`, `wa-switch`, and `wa-radio` labels. It does not read
   `LoadingSpinner` or `Skeleton` labels, which announce a status.
 - It skips tokens containing digits, code, paths, or URLs, and lowercase-led

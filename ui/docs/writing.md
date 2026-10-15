@@ -105,7 +105,7 @@ interpolated value keeps its own spelling. The covered props are:
 - `PopupMenu` `text` and item and heading labels, including submenus;
 - `SegmentedControl`, `Select`, and `TabNavigator` choice and tab labels;
 - `NavStack` view titles and `backText`, and `SplitView` `backLabel`;
-- `FieldLabel` text and the text of a `button` or `wa-button`;
+- `FieldLabel` text and the text of a `Button`, `button`, or `wa-button`;
 - the `name` of a panel toolbar's `toggle: { action, name }`;
 - region and landmark names: the `label` of `Pane`, `Workbench`, `Toolbar`,
   `ToolbarControlGroup`, `TabBar`, `NavStack`, `CollapsiblePanel`,
@@ -114,15 +114,18 @@ interpolated value keeps its own spelling. The covered props are:
   inside `Workbench`, `CollapsiblePanel`, and `NavStack` configuration, and
   the `aria-label` of a landmark element (`section`, `nav`, `aside`, `main`,
   `header`, `footer`, `form`, `search`) or landmark role;
-- the `label` of a raw `wa-input`, `wa-select`, `wa-textarea`, or
-  `wa-radio-group`;
+- field and group labels: the `label` (or `ariaLabel`) of `TextField`,
+  `Select`, and `RadioGroup`, and, in an application using the optional Web
+  Awesome integration, the `label` of a raw `wa-input`, `wa-select`,
+  `wa-textarea`, or `wa-radio-group`;
 - the accessible names of icon-only controls: `IconButton` and
   `IconToggleButton` `label`, `PopupMenu` `label`, `SplitButton`
-  `optionsLabel`, `TokenSearchField` `clearLabel`, and the `aria-label` of a
+  `optionsLabel`, `TokenSearchField` and `TextField` `clearLabel`, and the `aria-label` of a
   `button` or `wa-button` whose only content is an icon.
 
-The check never judges sentence-style surfaces (including `wa-checkbox`,
-`wa-switch`, and `wa-radio` option text and the `LoadingSpinner` and
+The check never judges sentence-style surfaces (including `Checkbox` and
+`Switch` labels, `RadioGroup` choice labels, `wa-checkbox`, `wa-switch`, and
+`wa-radio` option text and the `LoadingSpinner` and
 `Skeleton` status labels), interpolated or other dynamic values, or text
 ending with `.`, `!`, or `?`. It skips a word joined to an interpolation, tokens containing digits, code, or paths, and
 lowercase-led brands such as iOS. It does not report capitalized short words,

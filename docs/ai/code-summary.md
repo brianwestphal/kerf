@@ -707,10 +707,10 @@ stylesheet filenames, and foreign component selectors (`KUI-D030`–`KUI-D032`).
 The `copy-capitalization-checks.mjs` pass (`KUI-D040`, warning) reads string
 and template literals (static words only; interpolations stand in as
 letterless hole tokens) passed to known title-style label props: ToolbarText titles,
-ListHeader, CatalogExample / CatalogExampleStack labels, PopupMenu items, choices, tabs, empty/banner titles, button text,
-FieldLabel, and the accessible names of icon-only controls (IconButton /
+ListHeader, CatalogExample / CatalogExampleStack labels, PopupMenu items, choices, tabs, empty/banner titles, button and `Button` text,
+FieldLabel, TextField / Select / RadioGroup field and group labels (Checkbox / Switch labels and RadioGroup choice labels are sentence-style option text and are not read), and the accessible names of icon-only controls (IconButton /
 IconToggleButton / PopupMenu `label`, SplitButton `optionsLabel`,
-TokenSearchField `clearLabel`, an icon-only button's `aria-label`), panel
+TokenSearchField / TextField `clearLabel`, an icon-only button's `aria-label`), panel
 toolbar `toggle: { action, name }` names, region and landmark names (Pane,
 Workbench, Toolbar, ToolbarControlGroup, SunkenPanel, List, TabBar, NavStack,
 CollapsiblePanel, FloatingToolbar, ResizableRegion labels, their nested
