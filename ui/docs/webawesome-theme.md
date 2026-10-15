@@ -22,7 +22,10 @@ draw their own native controls, so an upgrade within 3.x reaches only this
 theme and the Web Awesome elements an application renders itself. The
 package's own tests run against 3.12.0 (the lockfile), and CI's
 `ui-webawesome-latest` job runs the ui unit and Chromium browser suites
-against the newest 3.x (`npm run test:webawesome-latest`).
+against the newest 3.x (`npm run test:webawesome-latest`). That job reports,
+rather than fails on, elements a newer Web Awesome adds that the catalog has
+not reviewed yet, and a demo bundle over the budget recorded for the lockfile;
+a cataloged element that disappears upstream still fails.
 
 ```ts
 import type {} from "@kerfjs/ui/webawesome";

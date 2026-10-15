@@ -813,9 +813,25 @@ const webAwesomeEntries = entries.filter(
 const catalogTags = webAwesomeEntries
   .map((entry) => entry.customElement)
   .sort();
-if (JSON.stringify(manifestTags) !== JSON.stringify(catalogTags))
+// The newest-3.x compatibility job (`test:webawesome-latest`) installs a
+// Web Awesome newer than the pinned floor, which can add elements the
+// catalog has not reviewed yet. There, a new upstream element is reported,
+// not failed; a cataloged element missing upstream still fails everywhere.
+const newerWebAwesomeAllowed = process.env.KERF_WEBAWESOME_LATEST === '1';
+const uncatalogedTags = manifestTags.filter(
+  (tag) => !catalogTags.includes(tag),
+);
+const removedTags = catalogTags.filter((tag) => !manifestTags.includes(tag));
+if (
+  removedTags.length > 0 ||
+  (!newerWebAwesomeAllowed && uncatalogedTags.length > 0)
+)
   fail(
     'Web Awesome entries must exactly match the installed custom-elements manifest',
+  );
+else if (uncatalogedTags.length > 0)
+  console.warn(
+    `[check-component-catalog] newer Web Awesome adds uncataloged elements: ${uncatalogedTags.join(', ')}`,
   );
 const declaredTags = [...webAwesomeTypesSource.matchAll(/^\s+'(wa-[^']+)':/gm)]
   .map((match) => match[1])

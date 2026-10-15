@@ -86,13 +86,22 @@ function kb(bytes) {
   return `${(bytes / 1000).toFixed(2)} kB`;
 }
 
+// The budget is reviewed against the locked dependency tree. The newest-3.x
+// compatibility job (`test:webawesome-latest`) bundles a newer Web Awesome,
+// so there an overage is reported instead of failing the run.
+function overBudget(message) {
+  if (process.env.KERF_WEBAWESOME_LATEST === '1')
+    console.warn(`Warning (newer Web Awesome): ${message}`);
+  else throw new Error(message);
+}
+
 if (measurement.largestJavaScriptGzip > limits.largestJavaScriptGzip) {
-  throw new Error(
+  overBudget(
     `UX demo largest JavaScript chunk ${measurement.largestJavaScriptAsset} is ${kb(measurement.largestJavaScriptGzip)} gzip; budget is ${kb(limits.largestJavaScriptGzip)}`,
   );
 }
 if (measurement.totalJavaScriptGzip > limits.totalJavaScriptGzip) {
-  throw new Error(
+  overBudget(
     `UX demo JavaScript totals ${kb(measurement.totalJavaScriptGzip)} gzip; budget is ${kb(limits.totalJavaScriptGzip)}. If reviewed, run npm run check:change -- --update-bundle-budget --reason "why the growth is intentional".`,
   );
 }

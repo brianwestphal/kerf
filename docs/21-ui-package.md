@@ -169,7 +169,11 @@ independence work (`PopupMenu`, `Select`, and `DialogSurface` drawing their own
 native controls) retired every prototype patch, so the ui package tests the
 floor through its lockfile (3.12.0) and the newest 3.x through CI's
 `ui-webawesome-latest` job (`npm --prefix ui run test:webawesome-latest`: the
-unit and Chromium browser suites).
+unit and Chromium browser suites). With `KERF_WEBAWESOME_LATEST=1`, which
+that script sets, the catalog check warns about elements a newer Web Awesome
+adds (and the demo-bundle check warns about an overage against the budget
+recorded for the lockfile), and only fails when a cataloged element is missing
+upstream.
 
 Stage 2 (KF-3558JM: Web Awesome becomes a purely optional integration) finishes the code side. Only
 `@kerfjs/ui/webawesome.css` (the theme bridge) and the type-only
