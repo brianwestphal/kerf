@@ -6041,6 +6041,322 @@
       }
     },
     {
+      "id": "checkbox",
+      "name": "Checkbox",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A native checkbox drawn as a Kerf box beside its label, with hint and error text on the label's column, a mixed (indeterminate) state, and native form participation.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Turn one independent option on or off in a form or settings list, including a parent whose children are partly checked, without Web Awesome.",
+      "publicExports": [
+        "Checkbox",
+        "wireCheckboxes"
+      ],
+      "useWhen": [
+        "A form or settings list has an independent yes/no option that is submitted or applied with the rest of the form.",
+        "A parent option summarizes partly checked children: indeterminate, with wireCheckboxes(root)."
+      ],
+      "avoidWhen": [
+        "Do not use for a setting that applies the moment it changes; use Switch.",
+        "Do not use for one choice among several; use RadioGroup, ChoiceChips, or SegmentedControl.",
+        "Do not use for several wrapping tag-like choices; use ChoiceChips multiple."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-checkbox",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "switch",
+          "relationship": "nearest",
+          "when": "Use Switch for a setting that applies immediately."
+        },
+        {
+          "id": "choice-chips",
+          "relationship": "nearest",
+          "when": "Use ChoiceChips multiple for several visible, wrapping choices."
+        }
+      ],
+      "appOwns": [
+        "checked and indeterminate state",
+        "validation and error copy",
+        "what a change does"
+      ],
+      "variants": [
+        "checked",
+        "indeterminate",
+        "hint",
+        "error",
+        "required",
+        "disabled",
+        "default or compact size"
+      ],
+      "accessibility": [
+        "A native <input type=\"checkbox\"> inside its <label>, invisibly over the drawn box, so the label names it and pointer, keyboard, touch exploration, and forms reach the real control; Space toggles it and focus shows the focus ring on the box.",
+        "The hint and error form the input's aria-description; an error sets aria-invalid=\"true\" and the danger border. indeterminate sets the native indeterminate property through wireCheckboxes, so assistive technology reports a mixed state."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "none",
+        "notes": [
+          "A 20px box (18px compact) 8px (7px) before its label; hint and error align with the label text."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/checkbox",
+        "manualCssImport": "@kerfjs/ui/checkbox.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireCheckboxes",
+          "import": "@kerfjs/ui/wire-checkboxes",
+          "required": false,
+          "reason": "Sets the native indeterminate property, which only script can set, from the rendered marker; a Checkbox without indeterminate works without it.",
+          "stateAttributes": []
+        }
+      ],
+      "publicClasses": [
+        "kui-checkbox",
+        "kui-checkbox__row",
+        "kui-checkbox__control",
+        "kui-checkbox__input",
+        "kui-checkbox__box",
+        "kui-checkbox__label",
+        "kui-checkbox__hint",
+        "kui-checkbox__error"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-fill-loud",
+        "--kui-color-brand-on-loud",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-surface",
+        "--kui-color-text",
+        "--kui-color-text-quiet",
+        "--kui-color-danger-border-loud",
+        "--kui-color-danger-on-quiet",
+        "--kui-focus-ring",
+        "--kui-font-m",
+        "--kui-font-s",
+        "--kui-font-xs"
+      ],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=checkbox",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "radio-group",
+      "name": "RadioGroup",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A native fieldset of radios, each drawn as a Kerf circle beside its label, with the group label above, per-choice hints, and hint and error text below, stacked or wrapping.",
+      "uses": [],
+      "purpose": "Choose exactly one of a few options that should stay visible with room for a label and hint each, with native keyboard behavior and form participation.",
+      "publicExports": [
+        "RadioGroup"
+      ],
+      "useWhen": [
+        "A form asks for one of two to about six options that people should compare at a glance, each with a readable label and an optional hint."
+      ],
+      "avoidWhen": [
+        "Do not use for many options or a compact toolbar value; use Select.",
+        "Do not use to switch a view; use SegmentedControl.",
+        "Do not use for chip-styled or color choices; use ChoiceChips."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-radio-group",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "wa-radio",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "select",
+          "relationship": "nearest",
+          "when": "Use Select for a long list."
+        },
+        {
+          "id": "choice-chips",
+          "relationship": "nearest",
+          "when": "Use ChoiceChips for wrapping pill choices."
+        }
+      ],
+      "appOwns": [
+        "value",
+        "choices and their copy",
+        "validation and error copy"
+      ],
+      "variants": [
+        "vertical or horizontal",
+        "per-choice hint",
+        "disabled choice",
+        "whole group disabled",
+        "hint",
+        "error",
+        "required",
+        "default or compact size"
+      ],
+      "accessibility": [
+        "A native <fieldset role=\"radiogroup\"> named by its legend (label) or ariaLabel; each choice is a native radio inside its <label>, invisibly over the drawn circle. The browser owns the interaction: one Tab stop, arrow keys move and select, and the checked radio submits its value under name.",
+        "The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each circle. required sets each radio's native required and aria-required on the group. A choice's hint is that radio's aria-description."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "self",
+        "notes": [
+          "The label and hint sit on the text column (1px + 8px); the choices sit on the 8px control column, 12px apart."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/radio-group",
+        "manualCssImport": "@kerfjs/ui/radio-group.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-radio-group",
+        "kui-radio-group__label",
+        "kui-radio-group__choices",
+        "kui-radio-group__choice",
+        "kui-radio-group__row",
+        "kui-radio-group__control",
+        "kui-radio-group__input",
+        "kui-radio-group__circle",
+        "kui-radio-group__choice-label",
+        "kui-radio-group__choice-hint",
+        "kui-radio-group__hint",
+        "kui-radio-group__error"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-fill-loud",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-surface",
+        "--kui-color-text",
+        "--kui-color-text-quiet",
+        "--kui-color-danger-border-loud",
+        "--kui-color-danger-on-quiet",
+        "--kui-focus-ring",
+        "--kui-font-m",
+        "--kui-font-s",
+        "--kui-font-xs",
+        "--kui-color-neutral-on-quiet",
+        "--kui-layout-item-padding"
+      ],
+      "rootElement": "fieldset",
+      "links": {
+        "catalogRoute": "?component=radio-group",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "switch",
+      "name": "Switch",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "An on/off setting that applies immediately: a native checkbox with role=\"switch\" drawn as a track and thumb beside its label, with a hint on the label's column.",
+      "uses": [],
+      "purpose": "Turn a setting on or off the moment it changes, such as live updates or a preference, without Web Awesome.",
+      "publicExports": [
+        "Switch"
+      ],
+      "useWhen": [
+        "A setting takes effect immediately when toggled, in a settings list or a pane footer."
+      ],
+      "avoidWhen": [
+        "Do not use for an option a form submits later; use Checkbox.",
+        "Do not use for an icon-only toolbar toggle; use IconToggleButton or a ToolbarControlGroup toggle."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-switch",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "checkbox",
+          "relationship": "nearest",
+          "when": "Use Checkbox for an option a form submits."
+        },
+        {
+          "id": "icon-toggle-button",
+          "relationship": "nearest",
+          "when": "Use IconToggleButton for an icon-only toggle."
+        }
+      ],
+      "appOwns": [
+        "checked state",
+        "applying the setting"
+      ],
+      "variants": [
+        "on or off",
+        "hint",
+        "disabled",
+        "default or compact size"
+      ],
+      "accessibility": [
+        "A native <input type=\"checkbox\" role=\"switch\"> inside its <label>, invisibly over the drawn track, so the label names it and assistive technology announces on or off; Space toggles it and focus shows the focus ring on the track. The hint is its aria-description. The thumb's slide is skipped when reduced motion is preferred."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "none",
+        "notes": [
+          "A 35×20 track (31.5×18 compact) 8px (7px) before its label; the hint aligns with the label text."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/switch",
+        "manualCssImport": "@kerfjs/ui/switch.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-switch",
+        "kui-switch__row",
+        "kui-switch__control",
+        "kui-switch__input",
+        "kui-switch__track",
+        "kui-switch__thumb",
+        "kui-switch__label",
+        "kui-switch__hint"
+      ],
+      "publicTokens": [
+        "--kui-color-brand-fill-loud",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-surface",
+        "--kui-color-text",
+        "--kui-color-text-quiet",
+        "--kui-focus-ring",
+        "--kui-font-m",
+        "--kui-font-s",
+        "--kui-font-xs"
+      ],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=switch",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "anchored-surface",
       "name": "AnchoredSurface",
       "category": "Feedback",
@@ -7650,7 +7966,12 @@
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
       ],
       "recommendation": "supported",
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "checkbox",
+          "relationship": "prefer-kerf"
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -7688,7 +8009,12 @@
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
       ],
       "recommendation": "supported",
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "checkbox",
+          "relationship": "prefer-kerf"
+        }
+      ],
       "geometry": {
         "margin": "self",
         "border": "child",
@@ -7967,7 +8293,12 @@
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
       ],
       "recommendation": "supported",
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "radio-group",
+          "relationship": "prefer-kerf"
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -8005,7 +8336,12 @@
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
       ],
       "recommendation": "supported",
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "radio-group",
+          "relationship": "prefer-kerf"
+        }
+      ],
       "geometry": {
         "margin": "self",
         "border": "child",
@@ -8163,7 +8499,12 @@
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
       ],
       "recommendation": "supported",
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "switch",
+          "relationship": "prefer-kerf"
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",

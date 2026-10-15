@@ -165,3 +165,8 @@ export const badgePlayground = signal<BadgePlaygroundState>({
   shape: 'pill',
   size: 'default',
 });
+export const checkboxTasks = signal<readonly string[]>(['design']);
+export const radioDensity = signal<'compact' | 'balanced' | 'roomy'>(
+  'balanced',
+);
+export const switchLiveUpdates = signal(true);

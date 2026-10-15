@@ -36,6 +36,9 @@
 @import "./backdrop-image.css";
 @import "./file-picker.css";
 @import "./text-field.css";
+@import "./checkbox.css";
+@import "./radio-group.css";
+@import "./switch.css";
 @import "./combobox.css";
 @import "./edge-activity-indicator.css";
 @import "./button.css";

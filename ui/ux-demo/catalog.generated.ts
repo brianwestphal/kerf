@@ -665,6 +665,44 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "checkbox",
+    "name": "Checkbox",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Turn one independent option on or off in a form or settings list, including a parent whose children are partly checked, without Web Awesome.",
+    "uses": [
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/checkbox.tsx",
+    "componentSource": "ui/src/components/forms/checkbox/checkbox.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
+    "id": "radio-group",
+    "name": "RadioGroup",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Choose exactly one of a few options that should stay visible with room for a label and hint each, with native keyboard behavior and form participation.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/radio-group.tsx",
+    "componentSource": "ui/src/components/forms/radio-group/radio-group.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
+    "id": "switch",
+    "name": "Switch",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Turn a setting on or off the moment it changes, such as live updates or a preference, without Web Awesome.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/switch.tsx",
+    "componentSource": "ui/src/components/forms/switch/switch.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "anchored-surface",
     "name": "AnchoredSurface",
     "category": "Feedback",

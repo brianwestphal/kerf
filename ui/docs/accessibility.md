@@ -526,6 +526,36 @@ disabled or read-only field's clear button is disabled. `showCount` (with
 `wireTextFields` keeps current. Compact text grows to 16px on coarse-pointer
 touch screens so focusing a field never zooms the page in iOS.
 
+## Checkbox, RadioGroup, and Switch
+
+Each control is a native input inside its `<label>`, positioned invisibly over
+an `aria-hidden` drawn box, circle, or track. The label names it, and pointer,
+keyboard, touch exploration, and form submission all reach the real input.
+Keyboard focus draws the 3px focus ring with a 1px offset on the drawn shape;
+forced-colors mode paints checked state with `Highlight`.
+
+- `Checkbox` is an `<input type="checkbox">`; Space toggles it. `hint` and
+  `error` form its `aria-description`, and `error` sets `aria-invalid="true"`
+  and a danger border. `indeterminate` renders a `data-indeterminate` marker
+  that `wireCheckboxes(root)` turns into the native `indeterminate` property
+  (the only way to set it), so assistive technology reports a mixed state; a
+  click clears it natively and the app's next render decides it again.
+- `RadioGroup` is a `<fieldset role="radiogroup">` named by its `<legend>`
+  (`label`) or `ariaLabel`. The browser owns the interaction: one Tab stop,
+  arrow keys move and select (skipping disabled choices), and the checked
+  radio submits its value under `name`. The group's `hint` and `error` form
+  its `aria-description`; `error` sets `aria-invalid` on the group, `required`
+  sets native `required` on each radio plus `aria-required` on the group, and a
+  choice's `hint` is that radio's `aria-description`.
+- `Switch` is an `<input type="checkbox" role="switch">`, so assistive
+  technology announces on and off; Space toggles it. Its `hint` is its
+  `aria-description`. The thumb's slide is skipped when reduced motion is
+  preferred. Use it only for a setting that applies immediately.
+
+Hints sit on the label's text column, not under the drawn shape. Safari's
+default Tab order skips checkboxes and radios as it does buttons; the
+controls keep that platform setting.
+
 ## Composer
 
 `Composer`'s message field is a native `<textarea>` named by `label`

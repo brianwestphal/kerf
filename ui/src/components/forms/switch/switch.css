@@ -1,0 +1,132 @@
+/* Switch: a track and thumb beside its label, with a hint on the label's
+   column. The native input sits invisibly over the track. */
+.kui-switch {
+  --_kui-switch-height: remify(20px);
+  --_kui-switch-gap: remify(8px);
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  font-size: var(--kui-font-m, remify(16px));
+  font-weight: 400;
+  line-height: 1.25;
+}
+.kui-switch[data-size="compact"] {
+  --_kui-switch-height: remify(18px);
+  --_kui-switch-gap: remify(7px);
+  font-size: var(--kui-font-s, remify(14px));
+}
+.kui-switch__row {
+  display: inline-flex;
+  width: fit-content;
+  align-items: flex-start;
+  gap: var(--_kui-switch-gap);
+  color: var(--kui-color-text);
+  cursor: pointer;
+}
+.kui-switch__control {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+.kui-switch__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: inherit;
+  appearance: none;
+}
+.kui-switch__track {
+  --_kui-switch-thumb: calc(var(--_kui-switch-height) * 0.6);
+  --_kui-switch-inset: calc(
+    (var(--_kui-switch-height) - var(--_kui-switch-thumb)) / 2
+  );
+  display: inline-flex;
+  box-sizing: border-box;
+  width: calc(var(--_kui-switch-height) * 1.75);
+  height: var(--_kui-switch-height);
+  align-items: center;
+  padding-inline: calc(var(--_kui-switch-inset) - 1px);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--_kui-switch-height);
+  background-color: var(--kui-color-surface);
+}
+.kui-switch__thumb {
+  width: var(--_kui-switch-thumb);
+  height: var(--_kui-switch-thumb);
+  border-radius: 50%;
+  background-color: var(--kui-color-neutral-border-normal);
+  transition: translate 150ms ease;
+}
+.kui-switch__input:checked + .kui-switch__track {
+  border-color: var(--kui-color-brand-fill-loud);
+  background-color: var(--kui-color-brand-fill-loud);
+}
+.kui-switch__input:checked + .kui-switch__track > .kui-switch__thumb {
+  background-color: var(--kui-color-surface);
+  translate: calc(
+      var(--_kui-switch-height) * 1.75 - var(--_kui-switch-thumb) - 2 *
+        var(--_kui-switch-inset)
+    )
+    0;
+}
+.kui-switch__input:dir(rtl):checked + .kui-switch__track > .kui-switch__thumb {
+  translate: calc(
+      -1 *
+        (
+          var(--_kui-switch-height) * 1.75 - var(--_kui-switch-thumb) - 2 *
+            var(--_kui-switch-inset)
+        )
+    )
+    0;
+}
+.kui-switch__input:focus-visible + .kui-switch__track {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-switch__label {
+  min-width: 0;
+  padding-block-start: calc((var(--_kui-switch-height) - 1lh) / 2);
+  overflow-wrap: anywhere;
+}
+.kui-switch:has(.kui-switch__input:disabled) .kui-switch__row {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.kui-switch__hint {
+  display: block;
+  margin-block-start: remify(7px);
+  padding-inline-start: calc(
+    var(--_kui-switch-height) * 1.75 + var(--_kui-switch-gap)
+  );
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s, remify(14px));
+  line-height: 1.6;
+}
+.kui-switch[data-size="compact"] .kui-switch__hint {
+  font-size: var(--kui-font-xs, remify(12px));
+}
+@media (prefers-reduced-motion: reduce) {
+  .kui-switch__thumb {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .kui-switch__track {
+    border-color: CanvasText;
+  }
+  .kui-switch__thumb {
+    background-color: CanvasText;
+  }
+  .kui-switch__input:checked + .kui-switch__track {
+    border-color: Highlight;
+    background-color: Highlight;
+  }
+  .kui-switch__input:checked + .kui-switch__track > .kui-switch__thumb {
+    background-color: HighlightText;
+  }
+}

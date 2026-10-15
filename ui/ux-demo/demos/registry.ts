@@ -5,6 +5,7 @@ import { ApplicationTabsDemo } from './application-tabs.js';
 import { BackdropImageDemo } from './backdrop-image.js';
 import { BadgeDemo, BadgeSettings } from './badge.js';
 import { ButtonDemo } from './button.js';
+import { CheckboxDemo } from './checkbox.js';
 import { ChipDemo } from './chip.js';
 import { ChoiceChipsDemo } from './choice-chips.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
@@ -39,6 +40,7 @@ import { LucideIconDemo } from './lucide-icon.js';
 import { NavStackDemo } from './nav-stack.js';
 import { PaneDemo } from './pane.js';
 import { PopupMenuDemo } from './popup-menu.js';
+import { RadioGroupDemo } from './radio-group.js';
 import { ResizeDemo } from './resize.js';
 import { RowDemo } from './row.js';
 import { SegmentedControlDemo } from './segmented-control.js';
@@ -51,6 +53,7 @@ import { StateBannerDemo } from './state-banner.js';
 import { SummaryRowDemo } from './summary-row.js';
 import { SunkenPanelDemo } from './sunken-panel.js';
 import { SurfaceScaffoldDemo } from './surface-scaffold.js';
+import { SwitchDemo } from './switch.js';
 import { TabBarDemo } from './tab-bar.js';
 import { TabNavigatorDemo } from './tab-navigator.js';
 import { TabsDemo } from './tabs.js';
@@ -119,6 +122,9 @@ export const demos = {
   'icon-button': IconButtonDemo,
   button: ButtonDemo,
   'text-field': TextFieldDemo,
+  checkbox: CheckboxDemo,
+  'radio-group': RadioGroupDemo,
+  switch: SwitchDemo,
   'icon-toggle-button': IconToggleButtonDemo,
   'split-button': SplitButtonDemo,
   'framed-list': FramedListDemo,

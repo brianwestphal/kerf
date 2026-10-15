@@ -34,6 +34,7 @@ import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
+import { wireCheckboxes } from '@kerfjs/ui/wire-checkboxes';
 import { wireComboboxes } from '@kerfjs/ui/wire-comboboxes';
 import { wireComposers } from '@kerfjs/ui/wire-composers';
 import {
@@ -89,6 +90,7 @@ import {
   preferredDemoTheme,
 } from './demo-theme.js';
 import { applyBadgeSetting } from './demos/badge.js';
+import { checkboxTaskChoices } from './demos/checkbox.js';
 import {
   RELOCATION_RAIL_ACTION,
   RELOCATION_RAIL_ID,
@@ -126,6 +128,7 @@ import {
   adoptionReadout,
   adoptionTokens,
   bannerTone,
+  checkboxTasks,
   choiceChipsColor,
   choiceChipsDialogColor,
   choiceChipsIntents,
@@ -156,6 +159,7 @@ import {
   menuToolsOpen,
   popupContextAnchor,
   popupSortChoice,
+  radioDensity,
   regionSize,
   reorderCommands,
   reorderFiles,
@@ -166,6 +170,7 @@ import {
   splitButtonOptionsOpen,
   splitButtonRunning,
   summaryRowSelected,
+  switchLiveUpdates,
   tabBarActive,
   tabBarTabs,
   ticketLabelFilter,
@@ -1736,6 +1741,7 @@ const stopComboboxes = wireComboboxes(app, {
 });
 const stopComposers = wireComposers(app);
 const stopTextFields = wireTextFields(app);
+const stopCheckboxes = wireCheckboxes(app);
 const stopFilePickers = wireFilePickers(app, {
   onFiles: ({ files, via }) => {
     filePickerFiles.value = [
@@ -1955,6 +1961,35 @@ const updateAnimationSetting = (element: Element): void => {
   demo.output.textContent = 'Settings updated';
 };
 const stopChoiceChipsDemo = delegateActions(app, 'change', {
+  'checkbox-demo': (_event, element) => {
+    const input = element as HTMLInputElement;
+    if (input.name === 'tasks-all')
+      checkboxTasks.value = input.checked
+        ? checkboxTaskChoices.map((task) => task.value)
+        : [];
+    else if (input.name === 'tasks')
+      checkboxTasks.value = checkboxTaskChoices
+        .map((task) => task.value)
+        .filter((value) =>
+          value === input.value
+            ? input.checked
+            : checkboxTasks.value.includes(value),
+        );
+    const label = input.closest('label')?.textContent ?? '';
+    actionLog.value = `${label}: ${input.checked ? 'checked' : 'unchecked'}`;
+  },
+  'radio-group-demo': (_event, element) => {
+    const input = element as HTMLInputElement;
+    if (input.name === 'layout-density')
+      radioDensity.value = input.value as typeof radioDensity.value;
+    actionLog.value = `Choice: ${input.value}`;
+  },
+  'switch-demo': (_event, element) => {
+    const input = element as HTMLInputElement;
+    const label = input.closest('label')?.textContent ?? '';
+    if (label === 'Live updates') switchLiveUpdates.value = input.checked;
+    actionLog.value = `${label}: ${input.checked ? 'on' : 'off'}`;
+  },
   'choice-chips-demo': (_event, element) => {
     const input = element as HTMLInputElement;
     const group = input.closest('[data-component="choice-chips"]')?.id;
@@ -2118,6 +2153,7 @@ window.addEventListener(
     stopComposers();
     stopFilePickers();
     stopTextFields();
+    stopCheckboxes();
     stopComboboxes();
     stopListItemDragOver();
     stopListItemDrop();

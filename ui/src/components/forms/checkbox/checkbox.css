@@ -1,0 +1,121 @@
+/* Checkbox: a drawn box beside its label, with hint and error text on the
+   label's column. The native input sits invisibly over the box, so pointer,
+   keyboard, touch exploration, and forms all reach the real control. */
+.kui-checkbox {
+  --_kui-checkbox-box: remify(20px);
+  --_kui-checkbox-gap: remify(8px);
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  font-size: var(--kui-font-m, remify(16px));
+  font-weight: 400;
+  line-height: 1.2;
+}
+.kui-checkbox[data-size="compact"] {
+  --_kui-checkbox-box: remify(18px);
+  --_kui-checkbox-gap: remify(7px);
+  font-size: var(--kui-font-s, remify(14px));
+}
+.kui-checkbox__row {
+  display: inline-flex;
+  width: fit-content;
+  align-items: flex-start;
+  gap: var(--_kui-checkbox-gap);
+  color: var(--kui-color-text);
+  cursor: pointer;
+}
+.kui-checkbox__control {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+/* A real input with every native and global form-control style reset. */
+.kui-checkbox__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: inherit;
+  appearance: none;
+}
+.kui-checkbox__box {
+  display: inline-flex;
+  box-sizing: border-box;
+  width: var(--_kui-checkbox-box);
+  height: var(--_kui-checkbox-box);
+  align-items: center;
+  justify-content: center;
+  color: var(--kui-color-brand-on-loud);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: remify(3px);
+  background-color: var(--kui-color-surface);
+}
+.kui-checkbox__box > [data-lucide] {
+  display: none;
+  width: calc(var(--_kui-checkbox-box) - remify(6px));
+  height: calc(var(--_kui-checkbox-box) - remify(6px));
+  stroke-width: 3;
+}
+.kui-checkbox__input:is(:checked, :indeterminate) + .kui-checkbox__box {
+  border-color: var(--kui-color-brand-fill-loud);
+  background-color: var(--kui-color-brand-fill-loud);
+}
+.kui-checkbox__input:checked:not(:indeterminate)
+  + .kui-checkbox__box
+  > [data-lucide="check"],
+.kui-checkbox__input:indeterminate
+  + .kui-checkbox__box
+  > [data-lucide="minus"] {
+  display: block;
+}
+.kui-checkbox__input:focus-visible + .kui-checkbox__box {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-checkbox[data-invalid] .kui-checkbox__box {
+  border-color: var(--kui-color-danger-border-loud);
+}
+.kui-checkbox__label {
+  min-width: 0;
+  padding-block-start: calc((var(--_kui-checkbox-box) - 1lh) / 2);
+  overflow-wrap: anywhere;
+}
+.kui-checkbox:has(.kui-checkbox__input:disabled) .kui-checkbox__row {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.kui-checkbox__hint,
+.kui-checkbox__error {
+  display: block;
+  margin-block-start: remify(7px);
+  padding-inline-start: calc(
+    var(--_kui-checkbox-box) + var(--_kui-checkbox-gap)
+  );
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s, remify(14px));
+  line-height: 1.6;
+}
+.kui-checkbox[data-size="compact"]
+  :is(.kui-checkbox__hint, .kui-checkbox__error) {
+  font-size: var(--kui-font-xs, remify(12px));
+}
+.kui-checkbox__error {
+  color: var(--kui-color-danger-on-quiet);
+}
+.kui-checkbox__hint + .kui-checkbox__error {
+  margin-block-start: 0;
+}
+@media (forced-colors: active) {
+  .kui-checkbox__box {
+    border-color: CanvasText;
+  }
+  .kui-checkbox__input:is(:checked, :indeterminate) + .kui-checkbox__box {
+    color: HighlightText;
+    border-color: Highlight;
+    background-color: Highlight;
+  }
+}

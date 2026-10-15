@@ -713,6 +713,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `showCount`, at the 44px height or `size="compact"`. Call
   `wireTextFields(root)` (`@kerfjs/ui/wire-text-fields`) once for clearing and
   counting. Never render `wa-input` or `wa-textarea` for a form field.
+- **Use `Checkbox`, `RadioGroup`, and `Switch` for native toggles.**
+  `@kerfjs/ui/checkbox` (with `indeterminate` and `wireCheckboxes(root)` from
+  `@kerfjs/ui/wire-checkboxes`), `@kerfjs/ui/radio-group` (`label`, `name`,
+  `choices`, `value`; one Tab stop, arrow keys), and `@kerfjs/ui/switch`
+  (`role="switch"`, only for a setting that applies immediately) draw Kerf
+  boxes over native inputs with hint and error text. Never render
+  `wa-checkbox`, `wa-radio-group`, or `wa-switch`.
 - **Use `Combobox` to pick or create a value by typing.** A themed native
   input on the ARIA combobox pattern with filtered suggestions and an optional
   create option; `wireComboboxes(root, { onCommit })` reports `{ id, value,

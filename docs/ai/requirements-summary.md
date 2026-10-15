@@ -304,6 +304,8 @@ status, and dormant trailing content cannot escape the visible row. Its
 `multiline` variant wraps the primary label while keeping the leading icon on
 the first inherited text line.
 
+`@kerfjs/ui` `Checkbox`, `RadioGroup`, and `Switch` (stage 2 of the Web Awesome independence work) draw Kerf boxes, circles, and tracks over native inputs with hint and error text, matching the old `wa-checkbox` / `wa-radio` / `wa-switch` look; `wireCheckboxes` sets the native mixed state. `RadioGroup` takes a `choices` array (no separate `Radio`).
+
 `@kerfjs/ui` `TextField` (stage 2 of the Web Awesome independence work) is a native input or textarea in one labeled box with hint and error text (its `aria-description`; an error sets `aria-invalid`), an optional leading icon, clear button, growing rows, and live count, matching the old `wa-input` / `wa-textarea` look; `wireTextFields` clears and counts, and the catalog no longer renders `wa-input` or `wa-textarea` outside the Web Awesome routes.
 
 `@kerfjs/ui` `Button` (stage 2 of the Web Awesome independence work) is a native button in a `tone` × `emphasis` × `size` with an optional icon, loading, link, and form type, matching the old `wa-button` look; `IconButton` is its icon-only square, and the catalog no longer renders `wa-button` outside the Web Awesome routes.

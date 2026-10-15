@@ -430,6 +430,25 @@
       "types": "./dist/wire-text-fields.d.ts",
       "import": "./dist/wire-text-fields.js"
     },
+    "./checkbox": {
+      "types": "./dist/checkbox.d.ts",
+      "browser": "./dist/browser/checkbox.js",
+      "import": "./dist/checkbox.js"
+    },
+    "./radio-group": {
+      "types": "./dist/radio-group.d.ts",
+      "browser": "./dist/browser/radio-group.js",
+      "import": "./dist/radio-group.js"
+    },
+    "./switch": {
+      "types": "./dist/switch.d.ts",
+      "browser": "./dist/browser/switch.js",
+      "import": "./dist/switch.js"
+    },
+    "./wire-checkboxes": {
+      "types": "./dist/wire-checkboxes.d.ts",
+      "import": "./dist/wire-checkboxes.js"
+    },
     "./backdrop-image": {
       "types": "./dist/backdrop-image.d.ts",
       "browser": "./dist/browser/backdrop-image.js",
@@ -527,6 +546,9 @@
     "./backdrop-image.css": "./dist/styles/backdrop-image.css",
     "./file-picker.css": "./dist/styles/file-picker.css",
     "./text-field.css": "./dist/styles/text-field.css",
+    "./checkbox.css": "./dist/styles/checkbox.css",
+    "./radio-group.css": "./dist/styles/radio-group.css",
+    "./switch.css": "./dist/styles/switch.css",
     "./combobox.css": "./dist/styles/combobox.css",
     "./edge-activity-indicator.css": "./dist/styles/edge-activity-indicator.css",
     "./icon-button.css": "./dist/styles/icon-button.css",

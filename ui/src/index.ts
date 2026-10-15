@@ -186,6 +186,13 @@ export {
   type StateBannerUrgency,
 } from './components/feedback/state-banner/state-banner.js';
 export {
+  Checkbox,
+  type CheckboxProps,
+  type CheckboxRootAttributes,
+  type CheckboxSize,
+} from './components/forms/checkbox/checkbox.js';
+export { wireCheckboxes } from './components/forms/checkbox/wiring/wire-checkboxes.js';
+export {
   ChoiceChips,
   type ChoiceChipsChoice,
   type ChoiceChipsProps,
@@ -225,6 +232,16 @@ export {
   type WireFilePickersOptions,
 } from './components/forms/file-picker/wiring/wire-file-pickers.js';
 export {
+  RadioGroup,
+  type RadioGroupChoice,
+  type RadioGroupName,
+  type RadioGroupOptions,
+  type RadioGroupOrientation,
+  type RadioGroupProps,
+  type RadioGroupRootAttributes,
+  type RadioGroupSize,
+} from './components/forms/radio-group/radio-group.js';
+export {
   SegmentedControl,
   type SegmentedControlAppearance,
   type SegmentedControlChoice,
@@ -242,6 +259,12 @@ export {
   type SelectSelectedPresentation,
   type SelectSize,
 } from './components/forms/select/select.js';
+export {
+  Switch,
+  type SwitchProps,
+  type SwitchRootAttributes,
+  type SwitchSize,
+} from './components/forms/switch/switch.js';
 export {
   TextField,
   type TextFieldName,

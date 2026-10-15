@@ -1,0 +1,156 @@
+/* RadioGroup: the group label, the choices on the text column (each a drawn
+   circle beside its label, the native radio invisibly over the circle), and
+   hint and error text below. */
+.kui-radio-group {
+  --_kui-radio-group-size: remify(20px);
+  --_kui-radio-group-gap: remify(8px);
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: var(--kui-font-m, remify(16px));
+  font-weight: 400;
+  line-height: 1.2;
+}
+.kui-radio-group[data-size="compact"] {
+  --_kui-radio-group-size: remify(18px);
+  --_kui-radio-group-gap: remify(7px);
+  font-size: var(--kui-font-s, remify(14px));
+}
+/* The label matches every Kerf form control's label (TextField's too). */
+.kui-radio-group__label {
+  display: block;
+  float: none;
+  margin-block-end: remify(6px);
+  padding: 0;
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.kui-radio-group__choices {
+  display: flex;
+  flex-direction: column;
+  gap: remify(12px);
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+}
+.kui-radio-group[data-orientation="horizontal"] .kui-radio-group__choices {
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: remify(24px);
+}
+.kui-radio-group__choice {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+.kui-radio-group__row {
+  display: inline-flex;
+  width: fit-content;
+  align-items: flex-start;
+  gap: var(--_kui-radio-group-gap);
+  color: var(--kui-color-text);
+  cursor: pointer;
+}
+.kui-radio-group__control {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+.kui-radio-group__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: inherit;
+  appearance: none;
+}
+.kui-radio-group__circle {
+  display: inline-flex;
+  box-sizing: border-box;
+  width: var(--_kui-radio-group-size);
+  height: var(--_kui-radio-group-size);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: 50%;
+  background-color: var(--kui-color-surface);
+}
+.kui-radio-group__input:checked + .kui-radio-group__circle {
+  border-color: var(--kui-color-brand-fill-loud);
+}
+.kui-radio-group__input:checked + .kui-radio-group__circle::after {
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  background-color: var(--kui-color-brand-fill-loud);
+  content: "";
+}
+.kui-radio-group__input:focus-visible + .kui-radio-group__circle {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-radio-group[data-invalid] .kui-radio-group__circle {
+  border-color: var(--kui-color-danger-border-loud);
+}
+.kui-radio-group__choice-label {
+  min-width: 0;
+  padding-block-start: calc((var(--_kui-radio-group-size) - 1lh) / 2);
+  overflow-wrap: anywhere;
+}
+.kui-radio-group__choice:has(.kui-radio-group__input:disabled)
+  .kui-radio-group__row {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.kui-radio-group__choice-hint {
+  padding-inline-start: calc(
+    var(--_kui-radio-group-size) + var(--_kui-radio-group-gap)
+  );
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s, remify(14px));
+  line-height: 1.6;
+}
+.kui-radio-group__hint,
+.kui-radio-group__error {
+  display: block;
+  margin-block-start: remify(7px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s, remify(14px));
+  line-height: 1.6;
+}
+.kui-radio-group[data-size="compact"]
+  :is(
+    .kui-radio-group__hint,
+    .kui-radio-group__error,
+    .kui-radio-group__choice-hint
+  ) {
+  font-size: var(--kui-font-xs, remify(12px));
+}
+.kui-radio-group__error {
+  color: var(--kui-color-danger-on-quiet);
+}
+.kui-radio-group__hint + .kui-radio-group__error {
+  margin-block-start: 0;
+}
+@media (forced-colors: active) {
+  .kui-radio-group__circle {
+    border-color: CanvasText;
+  }
+  .kui-radio-group__input:checked + .kui-radio-group__circle {
+    border-color: Highlight;
+  }
+  .kui-radio-group__input:checked + .kui-radio-group__circle::after {
+    background-color: Highlight;
+  }
+}

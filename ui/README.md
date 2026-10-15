@@ -262,6 +262,10 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `ChoiceChips`                                                       | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |
 | `TextField`                                                         | `@kerfjs/ui/text-field`                 | `@kerfjs/ui/text-field.css`              |
 | `wireTextFields`                                                    | `@kerfjs/ui/wire-text-fields`           | —                                        |
+| `Checkbox`                                                          | `@kerfjs/ui/checkbox`                   | `@kerfjs/ui/checkbox.css`                |
+| `wireCheckboxes`                                                    | `@kerfjs/ui/wire-checkboxes`            | —                                        |
+| `RadioGroup`                                                        | `@kerfjs/ui/radio-group`                | `@kerfjs/ui/radio-group.css`             |
+| `Switch`                                                            | `@kerfjs/ui/switch`                     | `@kerfjs/ui/switch.css`                  |
 | `Composer`                                                          | `@kerfjs/ui/composer`                   | `@kerfjs/ui/composer.css`                |
 | `wireComposers`                                                     | `@kerfjs/ui/wire-composers`             | —                                        |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`      |

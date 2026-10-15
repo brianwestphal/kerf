@@ -12,6 +12,10 @@ Labels and validates a related set of checkboxes.
 
 - Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.
 
+**Alternatives:**
+
+- [Checkbox](./checkbox.md) (prefer-kerf)
+
 ## Imports
 
 - Theme CSS: import `@kerfjs/ui/webawesome.css` once.
@@ -50,6 +54,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Checkbox](./wa-checkbox.md).
+- Components: [Checkbox](./wa-checkbox.md), [Checkbox](./checkbox.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage).
 - UX catalog route: `?component=wa-checkbox-group`.

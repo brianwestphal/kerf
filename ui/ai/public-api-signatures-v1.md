@@ -5291,6 +5291,166 @@ declare function TextField({ label, ariaLabel, value, name, placeholder, hint, e
 export { TextField, type TextFieldName, type TextFieldOptions, type TextFieldProps, type TextFieldRootAttributes, type TextFieldSize, type TextFieldType };
 ```
 
+## `@kerfjs/ui/checkbox`
+
+```ts
+import * as kerfjs from 'kerfjs';
+
+/** `default` is a 20px box beside 16px text; `compact` an 18px box and 14px text. */
+type CheckboxSize = 'default' | 'compact';
+/** Application `data-*` metadata; the Checkbox's own markers stay protected. */
+type CheckboxRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+interface CheckboxProps {
+    /** The visible label, which is also the checkbox's accessible name. */
+    label: string;
+    checked?: boolean;
+    /**
+     * A mixed state, such as a parent of partly checked children. Needs
+     * `wireCheckboxes(root)`, which sets the native `indeterminate` property.
+     */
+    indeterminate?: boolean;
+    name?: string;
+    /** The value submitted while checked (native default `on`). */
+    value?: string;
+    /** Supporting text below the label, also the checkbox's description. */
+    hint?: string;
+    /** A validation message: shown in the danger color and marking it invalid. */
+    error?: string;
+    size?: CheckboxSize;
+    disabled?: boolean;
+    required?: boolean;
+    /** Delegated `data-action` on the input; listen for `change`. */
+    action?: string;
+    /** Associate the input with a form outside its ancestor chain. */
+    form?: string;
+    /** The input's id. */
+    id?: string;
+    className?: string;
+    /** Safe `data-*` metadata (a `data-key`). */
+    rootAttributes?: CheckboxRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A native checkbox drawn as a Kerf box beside its label, with optional hint
+ * and error text aligned under the label, a mixed (indeterminate) state, and
+ * native form participation.
+ */
+declare function Checkbox({ label, checked, indeterminate, name, value, hint, error, size, disabled, required, action, form, id, className, rootAttributes, slot, }: CheckboxProps): kerfjs.SafeHtml;
+
+export { Checkbox, type CheckboxProps, type CheckboxRootAttributes, type CheckboxSize };
+```
+
+## `@kerfjs/ui/radio-group`
+
+```ts
+import * as kerfjs from 'kerfjs';
+
+/** `default` is a 20px circle beside 16px text; `compact` 18px and 14px. */
+type RadioGroupSize = 'default' | 'compact';
+/** `vertical` stacks the choices; `horizontal` lines them up and wraps. */
+type RadioGroupOrientation = 'vertical' | 'horizontal';
+/** Application `data-*` metadata; the RadioGroup's own markers stay protected. */
+type RadioGroupRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+interface RadioGroupChoice<Value extends string = string> {
+    value: Value;
+    /** Visible label; it is also the radio's accessible name. */
+    label: string;
+    /** Supporting text under this choice's label, also its description. */
+    hint?: string;
+    disabled?: boolean;
+}
+/** A group is named by a visible `label` (its legend) or by `ariaLabel`. */
+type RadioGroupName = {
+    label: string;
+    ariaLabel?: never;
+} | {
+    label?: never;
+    ariaLabel: string;
+};
+interface RadioGroupOptions<Value extends string = string> {
+    /** Native input `name`: the form field the selected value submits under. */
+    name: string;
+    choices: readonly RadioGroupChoice<Value>[];
+    /** The selected value. Omit for no selection. */
+    value?: NoInfer<Value>;
+    /** Supporting text below the choices, also the group's description. */
+    hint?: string;
+    /** A validation message: shown in the danger color and marking it invalid. */
+    error?: string;
+    size?: RadioGroupSize;
+    orientation?: RadioGroupOrientation;
+    /** Require a selection for native form validation. */
+    required?: boolean;
+    /** Disable the whole group. */
+    disabled?: boolean;
+    /** Delegated `data-action` on every radio; listen for `change`. */
+    action?: string;
+    /** Associate the radios with a form outside their ancestor chain. */
+    form?: string;
+    /** The fieldset's id. */
+    id?: string;
+    className?: string;
+    /** Safe `data-*` metadata (a `data-key`). */
+    rootAttributes?: RadioGroupRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+type RadioGroupProps<Value extends string = string> = RadioGroupName & RadioGroupOptions<Value>;
+/**
+ * One exclusive choice among a few visible options: a native fieldset of
+ * radios, each drawn as a Kerf circle beside its label, with the group label
+ * above and hint and error text below. The browser owns the interaction: one
+ * Tab stop, arrow keys move and select, and the checked value submits.
+ */
+declare function RadioGroup<Value extends string>({ label, ariaLabel, name, choices, value, hint, error, size, orientation, required, disabled, action, form, id, className, rootAttributes, slot, }: RadioGroupProps<Value>): kerfjs.SafeHtml;
+
+export { RadioGroup, type RadioGroupChoice, type RadioGroupName, type RadioGroupOptions, type RadioGroupOrientation, type RadioGroupProps, type RadioGroupRootAttributes, type RadioGroupSize };
+```
+
+## `@kerfjs/ui/switch`
+
+```ts
+import * as kerfjs from 'kerfjs';
+
+/** `default` is a 35×20 track beside 16px text; `compact` 31.5×18 and 14px. */
+type SwitchSize = 'default' | 'compact';
+/** Application `data-*` metadata; the Switch's own markers stay protected. */
+type SwitchRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+interface SwitchProps {
+    /** The visible label, which is also the switch's accessible name. */
+    label: string;
+    /** Whether the setting is on. */
+    checked?: boolean;
+    name?: string;
+    /** The value submitted while on (native default `on`). */
+    value?: string;
+    /** Supporting text below the label, also the switch's description. */
+    hint?: string;
+    size?: SwitchSize;
+    disabled?: boolean;
+    /** Delegated `data-action` on the input; listen for `change`. */
+    action?: string;
+    /** Associate the input with a form outside its ancestor chain. */
+    form?: string;
+    /** The input's id. */
+    id?: string;
+    className?: string;
+    /** Safe `data-*` metadata (a `data-key`). */
+    rootAttributes?: SwitchRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * An on/off setting that applies immediately: a native checkbox with
+ * `role="switch"`, drawn as a track and thumb beside its label, with an
+ * optional hint aligned under the label.
+ */
+declare function Switch({ label, checked, name, value, hint, size, disabled, action, form, id, className, rootAttributes, slot, }: SwitchProps): kerfjs.SafeHtml;
+
+export { Switch, type SwitchProps, type SwitchRootAttributes, type SwitchSize };
+```
+
 ## `@kerfjs/ui/anchored-surface`
 
 ```ts

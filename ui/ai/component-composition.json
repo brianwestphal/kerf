@@ -4894,6 +4894,255 @@
       }
     },
     {
+      "key": "@kerfjs/ui:checkbox",
+      "package": "@kerfjs/ui",
+      "id": "checkbox",
+      "name": "Checkbox",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "checked and indeterminate state",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "validation and error copy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "what a change does",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": ["wireCheckboxes"],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "none",
+          "notes": [
+            "A 20px box (18px compact) 8px (7px) before its label; hint and error align with the label text."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "A native <input type=\"checkbox\"> inside its <label>, invisibly over the drawn box, so the label names it and pointer, keyboard, touch exploration, and forms reach the real control; Space toggles it and focus shows the focus ring on the box.",
+          "The hint and error form the input's aria-description; an error sets aria-invalid=\"true\" and the danger border. indeterminate sets the native indeterminate property through wireCheckboxes, so assistive technology reports a mixed state."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-checkbox",
+        "publicClasses": [
+          "kui-checkbox",
+          "kui-checkbox__row",
+          "kui-checkbox__control",
+          "kui-checkbox__input",
+          "kui-checkbox__box",
+          "kui-checkbox__label",
+          "kui-checkbox__hint",
+          "kui-checkbox__error"
+        ],
+        "rootElement": "div",
+        "publicTokens": [
+          "--kui-color-brand-fill-loud",
+          "--kui-color-brand-on-loud",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-surface",
+          "--kui-color-text",
+          "--kui-color-text-quiet",
+          "--kui-color-danger-border-loud",
+          "--kui-color-danger-on-quiet",
+          "--kui-focus-ring",
+          "--kui-font-m",
+          "--kui-font-s",
+          "--kui-font-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:radio-group",
+      "package": "@kerfjs/ui",
+      "id": "radio-group",
+      "name": "RadioGroup",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "value", "owner": "application", "required": false },
+        {
+          "id": "choices and their copy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "validation and error copy",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "self",
+          "notes": [
+            "The label and hint sit on the text column (1px + 8px); the choices sit on the 8px control column, 12px apart."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "A native <fieldset role=\"radiogroup\"> named by its legend (label) or ariaLabel; each choice is a native radio inside its <label>, invisibly over the drawn circle. The browser owns the interaction: one Tab stop, arrow keys move and select, and the checked radio submits its value under name.",
+          "The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each circle. required sets each radio's native required and aria-required on the group. A choice's hint is that radio's aria-description."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-radio-group",
+        "publicClasses": [
+          "kui-radio-group",
+          "kui-radio-group__label",
+          "kui-radio-group__choices",
+          "kui-radio-group__choice",
+          "kui-radio-group__row",
+          "kui-radio-group__control",
+          "kui-radio-group__input",
+          "kui-radio-group__circle",
+          "kui-radio-group__choice-label",
+          "kui-radio-group__choice-hint",
+          "kui-radio-group__hint",
+          "kui-radio-group__error"
+        ],
+        "rootElement": "fieldset",
+        "publicTokens": [
+          "--kui-color-brand-fill-loud",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-surface",
+          "--kui-color-text",
+          "--kui-color-text-quiet",
+          "--kui-color-danger-border-loud",
+          "--kui-color-danger-on-quiet",
+          "--kui-focus-ring",
+          "--kui-font-m",
+          "--kui-font-s",
+          "--kui-font-xs",
+          "--kui-color-neutral-on-quiet",
+          "--kui-layout-item-padding"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:switch",
+      "package": "@kerfjs/ui",
+      "id": "switch",
+      "name": "Switch",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "checked state", "owner": "application", "required": false },
+        {
+          "id": "applying the setting",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "none",
+          "notes": [
+            "A 35×20 track (31.5×18 compact) 8px (7px) before its label; the hint aligns with the label text."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "A native <input type=\"checkbox\" role=\"switch\"> inside its <label>, invisibly over the drawn track, so the label names it and assistive technology announces on or off; Space toggles it and focus shows the focus ring on the track. The hint is its aria-description. The thumb's slide is skipped when reduced motion is preferred."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-switch",
+        "publicClasses": [
+          "kui-switch",
+          "kui-switch__row",
+          "kui-switch__control",
+          "kui-switch__input",
+          "kui-switch__track",
+          "kui-switch__thumb",
+          "kui-switch__label",
+          "kui-switch__hint"
+        ],
+        "rootElement": "div",
+        "publicTokens": [
+          "--kui-color-brand-fill-loud",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-surface",
+          "--kui-color-text",
+          "--kui-color-text-quiet",
+          "--kui-focus-ring",
+          "--kui-font-m",
+          "--kui-font-s",
+          "--kui-font-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:anchored-surface",
       "package": "@kerfjs/ui",
       "id": "anchored-surface",

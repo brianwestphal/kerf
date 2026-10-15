@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 389800,
-  "measuredLargestJavaScriptGzip": 137616,
-  "measuredTotalJavaScriptGzip": 389788,
+  "totalJavaScriptGzip": 391800,
+  "measuredLargestJavaScriptGzip": 137615,
+  "measuredTotalJavaScriptGzip": 391800,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5075,6 +5075,22 @@
         "measuredTotalJavaScriptGzip": 389788,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 389800
+      }
+    },
+    {
+      "at": "2026-10-15T09:12:43.033Z",
+      "reason": "Checkbox, RadioGroup, and Switch components plus their three catalog demo routes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 137616,
+        "measuredTotalJavaScriptGzip": 389788,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 389800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 137615,
+        "measuredTotalJavaScriptGzip": 391800,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 391800
       }
     }
   ]
