@@ -1025,7 +1025,12 @@ only the surface, and closing with the dialog.
 button. It exposes delegated action and item identity, semantic appearance,
 compact geometry, and a disabled state. An `href` makes it a native `<a>` link
 chip (`download`, `external`); `ChipTone` adds `inherit`, which follows the
-surrounding foreground. Tests: `ui/tests/unit/chip-link.test.tsx`,
+surrounding foreground. An `action` makes the whole root a native
+`<button type="button" data-action data-item-id>` (optional `actionLabel`),
+exclusive with `href` and `removeAction` at the type level and at runtime;
+`button.kui-chip` resets page-wide native button themes so a compact action
+chip stays Badge-height. Design templates: `ui/docs/design/templates/chip/`.
+Tests: `ui/tests/unit/chip-link.test.tsx`, `ui/tests/unit/chip-action.test.tsx`,
 `ui/tests/unit/chip-icon-truncate.test.tsx`, `ui/tests/browser/chip.spec.ts`.
 `ui/src/components/surfaces/backdrop-image/backdrop-image.tsx` (`@kerfjs/ui/backdrop-image`)
 renders a scrolling view's hero or tiled image: a hero block (a named

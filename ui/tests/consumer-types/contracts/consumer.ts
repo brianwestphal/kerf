@@ -131,6 +131,15 @@ Chip({
   truncate: true,
 });
 Chip({ children: 'Docs', href: 'https://example.com', external: true });
+Chip({
+  children: 'is:mine',
+  action: 'search-help-insert',
+  actionLabel: 'Insert filter is:mine',
+  itemId: 'is:mine',
+  size: 'compact',
+  shape: 'rounded',
+});
+Chip({ children: 'has:attachments', action: 'insert', disabled: true });
 ChoiceChips({
   name: 'color',
   label: 'Command Color',
@@ -221,6 +230,17 @@ Chip({
 });
 // @ts-expect-error download needs an href.
 Chip({ children: 'report.md', download: true });
+// @ts-expect-error An action chip cannot also be a link.
+Chip({ children: 'is:mine', action: 'insert', href: '/search?q=is:mine' });
+// @ts-expect-error An action chip cannot also carry a remove button.
+Chip({
+  children: 'is:mine',
+  action: 'insert',
+  removeAction: 'remove-filter',
+  removeLabel: 'Remove is:mine',
+});
+// @ts-expect-error actionLabel needs an action.
+Chip({ children: 'is:mine', actionLabel: 'Insert filter is:mine' });
 const textVariant: TextVariant = 'h3';
 const inlineTextVariant: TextVariant = 'span';
 const textTone: TextTone = 'quiet';

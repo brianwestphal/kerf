@@ -925,6 +925,47 @@ wash on hover. File names are data: keep their spelling.
 </Row>
 ```
 
+## Action chips
+
+Give `Chip` an `action` when activating the chip should do something with its
+value once, such as inserting a filter token from a search syntax help popover
+into the query. The whole chip becomes a native
+`<button type="button" data-action data-item-id>` with the same geometry, plus
+hover, press, focus-ring, and `disabled` states; Enter and Space activate it,
+and a delegated handler reads `itemId`. Set `actionLabel` when the visible
+label alone is unclear, and keep the label inside it ("Insert filter is:mine")
+so speech input still matches. An action chip cannot also take `href` or
+`removeAction`, because nested interactive content is invalid. Use `Badge` for
+metadata nobody activates, and `ChoiceChips` when the chips hold a persistent
+radio or checkbox value.
+
+A compact, rounded action chip is exactly as tall as the compact `Badge` it
+replaces, so a wrapping `Row` of them in a compact `ValueTable` cell keeps the
+table's row height.
+
+```tsx
+<ValueTable label="Search Filters" density="compact">
+  <ValueTableRow
+    label="Ownership"
+    value={
+      <Row gap="2xs" wrap>
+        {['is:mine', 'is:shared'].map((token) => (
+          <Chip
+            action="search-help-insert"
+            actionLabel={`Insert filter ${token}`}
+            itemId={token}
+            size="compact"
+            shape="rounded"
+          >
+            {token}
+          </Chip>
+        ))}
+      </Row>
+    }
+  />
+</ValueTable>
+```
+
 ## Wrapping exclusive choices
 
 Use `ChoiceChips` when one value is chosen from a visible set that does not

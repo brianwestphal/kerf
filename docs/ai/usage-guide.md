@@ -244,7 +244,13 @@ downloadable file or a short link, pass `href` (with `download`, a file name or
 `true`, and `external` for a new tab) instead: the chip renders a native `<a>`
 and cannot also carry a remove button. Inside a `brand-loud` or `neutral`
 `ContentItem` bubble, set `tone="inherit"` so the chip follows the bubble's
-foreground.
+foreground. For a short value the user activates once, such as a filter token
+in a search help popover, pass `action` (and `itemId`): the whole chip renders
+as a native `<button type="button" data-action data-item-id>` with hover,
+press, focus-ring, and `disabled` states, plus an optional `actionLabel` that
+contains the visible label. It cannot also take `href` or `removeAction`, and
+a compact rounded action chip keeps a compact `Badge`'s height in a compact
+`ValueTable` cell.
 
 Use `BackdropImage` (`@kerfjs/ui/backdrop-image`) as the first child of a
 scrolling Pane or NavStack view that opens with a large image (an artist,

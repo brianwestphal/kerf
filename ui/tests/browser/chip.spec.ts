@@ -37,7 +37,7 @@ test('Chip delegates removal, sizes its compact control, and disables unavailabl
   await expect(
     locked.getByRole('button', { name: 'Remove Locked tag' }),
   ).toBeDisabled();
-  await expect(demo.locator('[data-component="chip"]')).toHaveCount(9);
+  await expect(demo.locator('[data-component="chip"]')).toHaveCount(19);
   await expect(
     demo.locator('[data-component="chip"]').last().locator('button'),
   ).toHaveCount(0);
@@ -250,4 +250,102 @@ test('link chips download files, show focus and hover, truncate, and read on tra
   await transcript.screenshot({
     path: testInfo.outputPath('chip-link-narrow.png'),
   });
+});
+
+test('action chips activate by pointer, Enter, and Space, show a focus ring, skip when disabled, and keep the compact Badge row height', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=chip');
+  const table = page.locator(
+    '[data-demo="chip"] [data-component="value-table"]',
+  );
+  const log = page.locator('.catalog-log');
+  const mine = table.getByRole('button', { name: 'Insert filter is:mine' });
+  await expect(mine).toHaveAttribute('type', 'button');
+  await expect(mine).toHaveAttribute('data-action', 'log-chip-insert');
+  await expect(mine).toHaveAttribute('data-item-id', 'is:mine');
+  await expect(table.locator('button.kui-chip')).toHaveCount(10);
+  await expect(table.locator('.kui-chip button, .kui-chip a')).toHaveCount(0);
+
+  const sent = table.getByRole('button', { name: 'Insert filter is:sent' });
+  await sent.focus();
+  await expect(sent).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(log).toHaveText('Insert filter: is:sent');
+  const ring = await sent.evaluate((element) => {
+    const style = globalThis.getComputedStyle(element);
+    return {
+      visible: element.matches(':focus-visible'),
+      style: style.outlineStyle,
+      width: parseFloat(style.outlineWidth),
+    };
+  });
+  expect(ring.visible).toBe(true);
+  expect(ring.style).not.toBe('none');
+  expect(ring.width).toBeGreaterThanOrEqual(2);
+
+  const karachi = table.getByRole('button', {
+    name: 'Insert filter site:Karachi',
+  });
+  await karachi.focus();
+  await page.keyboard.press('Space');
+  await expect(log).toHaveText('Insert filter: site:Karachi');
+
+  // Pointer activation last: a pointer click stops a later programmatic
+  // focus from matching :focus-visible in Firefox.
+  await mine.click();
+  await expect(log).toHaveText('Insert filter: is:mine');
+
+  const attachments = table.getByRole('button', {
+    name: 'Insert filter has:attachments',
+  });
+  await expect(attachments).toBeDisabled();
+  await expect(attachments).toHaveAttribute('data-disabled', '');
+  await attachments.click({ force: true });
+  await expect(log).toHaveText('Insert filter: is:mine');
+  await attachments.evaluate((element) => (element as HTMLElement).focus());
+  await expect(attachments).not.toBeFocused();
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    const geometry = await table.evaluate((element) => {
+      const chips = [...element.querySelectorAll<HTMLElement>('.kui-chip')];
+      const valueRow = chips[0]!.parentElement!;
+      const tableRow = valueRow.closest<HTMLElement>('.kui-value-table__row')!;
+      const before = {
+        chips: [
+          ...new Set(chips.map((chip) => chip.getBoundingClientRect().height)),
+        ],
+        valueRow: valueRow.getBoundingClientRect().height,
+        tableRow: tableRow.getBoundingClientRect().height,
+      };
+      // Swap the chips for the compact rounded Badges they replace.
+      const original = valueRow.innerHTML;
+      valueRow.innerHTML = [...valueRow.children]
+        .map(
+          (chip) =>
+            `<span class="kui-badge" data-component="badge" data-tone="neutral" data-appearance="quiet" data-shape="rounded" data-size="compact">${chip.textContent}</span>`,
+        )
+        .join('');
+      const badge = valueRow.firstElementChild!.getBoundingClientRect().height;
+      const after = {
+        valueRow: valueRow.getBoundingClientRect().height,
+        tableRow: tableRow.getBoundingClientRect().height,
+      };
+      valueRow.innerHTML = original;
+      return { before, badge, after };
+    });
+    expect(geometry.before.chips).toEqual([20]);
+    expect(geometry.badge).toBe(20);
+    expect(geometry.before.valueRow).toBe(geometry.after.valueRow);
+    expect(geometry.before.tableRow).toBe(geometry.after.tableRow);
+    if (browserName === 'chromium') {
+      await mine.focus();
+      await table.screenshot({
+        path: `test-results/chip-action-${width === 1100 ? 'wide' : 'narrow'}.png`,
+      });
+    }
+  }
 });

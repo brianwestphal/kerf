@@ -7,6 +7,7 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
+import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { Check, ExternalLink, FileCode, FileText, Trophy } from 'lucide';
 
 interface DemoFile {
@@ -39,6 +40,45 @@ const assistantFiles: readonly DemoFile[] = [
     body: '# Design template drift',
   },
 ];
+
+interface DemoFilterGroup {
+  readonly label: string;
+  readonly tokens: readonly string[];
+  readonly unavailable?: readonly string[];
+}
+
+const searchFilters: readonly DemoFilterGroup[] = [
+  { label: 'Status', tokens: ['is:draft', 'is:sent', 'is:awarded'] },
+  { label: 'Ownership', tokens: ['is:mine', 'is:shared'] },
+  {
+    label: 'Site',
+    tokens: ['site:Karachi', 'site:Lahore', 'site:Islamabad'],
+  },
+  {
+    label: 'Content',
+    tokens: ['has:questions', 'has:attachments'],
+    unavailable: ['has:attachments'],
+  },
+];
+
+function filterChips(group: DemoFilterGroup) {
+  return (
+    <Row gap="2xs" wrap>
+      {group.tokens.map((token) => (
+        <Chip
+          action="log-chip-insert"
+          actionLabel={`Insert filter ${token}`}
+          itemId={token}
+          size="compact"
+          shape="rounded"
+          disabled={group.unavailable?.includes(token) ?? false}
+        >
+          {token}
+        </Chip>
+      ))}
+    </Row>
+  );
+}
 
 function fileChips(files: readonly DemoFile[], group: string) {
   return (
@@ -155,6 +195,25 @@ export function ChipDemo() {
         >
           Kerf Source
         </Chip>
+      </CatalogExample>
+      <CatalogExample
+        label="Action Chips in a Value Table"
+        note={
+          <>
+            <code>action</code> makes the whole chip a native button that
+            delegates its <code>itemId</code>. In a compact value cell it keeps
+            the compact Badge's row height. A disabled chip leaves the tab
+            order.
+          </>
+        }
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <ValueTable label="Search Filters" density="compact">
+          {searchFilters.map((group) => (
+            <ValueTableRow label={group.label} value={filterChips(group)} />
+          ))}
+        </ValueTable>
       </CatalogExample>
       <CatalogExample label="Plain Label" align="inline-control">
         <Chip appearance="solid">Backlog</Chip>

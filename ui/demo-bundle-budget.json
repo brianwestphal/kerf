@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 383100,
+  "totalJavaScriptGzip": 383600,
   "measuredLargestJavaScriptGzip": 118680,
-  "measuredTotalJavaScriptGzip": 383067,
+  "measuredTotalJavaScriptGzip": 383528,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4915,6 +4915,22 @@
         "measuredTotalJavaScriptGzip": 383067,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 383100
+      }
+    },
+    {
+      "at": "2026-10-15T02:08:22.802Z",
+      "reason": "Chip action mode with a search-filter value table example (KF-WKP1DS)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 383067,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 383100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 383528,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 383600
       }
     }
   ]

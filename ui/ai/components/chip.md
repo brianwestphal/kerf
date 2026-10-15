@@ -4,20 +4,22 @@
 
 `@kerfjs/ui:chip` · Kerf UI · component · Foundation
 
-A short tag with semantic or inherited tone, an optional accessible remove button, or a native link and download form, including compact and disabled variants.
+A short tag with semantic or inherited tone, an optional accessible remove button, a native link and download form, or a native action button, including compact and disabled variants.
 
 ## When to use
 
-Render removable tags and file or link chips without application rules on Web Awesome internals or anchor chrome.
+Render removable tags, file or link chips, and activatable action chips without application rules on Web Awesome internals or anchor and button chrome.
 
 - Show a short tag that the application can remove through a delegated action, including a compact or disabled tag.
 - Show a downloadable file or a short link with chip geometry, such as the referenced files of a chat message; set tone inherit inside a brand-loud or neutral ContentItem bubble.
+- Offer a short value the user can activate to apply it, such as a filter token in a search syntax help popover that inserts itself into the query: set action (and itemId) so the whole chip is a native button.
 
 **Not when:**
 
 - Use Badge for non-interactive status and count metadata.
 - Do not use the remove button without a specific accessible name.
 - Use ListItemLink for a navigation row and ToolbarActionLink for a toolbar link.
+- Use ChoiceChips when the chips choose a persistent value with radio or checkbox state; an action chip fires a one-shot command.
 
 ## Imports
 
@@ -35,7 +37,7 @@ Exact prop names and types: [`@kerfjs/ui/chip`](../public-api-signatures-v1.md#k
 - quiet, solid, or outline appearance
 - pill or rounded shape
 - compact or default size
-- removable, link, or plain, enabled or disabled
+- removable, link, action, or plain, enabled or disabled
 
 ## Composition
 
@@ -45,7 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/chip`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** tag text and identity; remove action and list update; link destination and download file name; disabled policy.
+**The app owns:** tag text and identity; remove action and list update; link destination and download file name; action handler and its effect; disabled policy.
 
 No wiring helper.
 
@@ -58,6 +60,7 @@ Margin: none · border: self · padding: self (layout role: foundation). `self` 
 - The remove control is a native button and requires an action and a specific removeLabel. A disabled chip disables that button and removes it from keyboard interaction.
 - A link chip is a native anchor named by its visible label; external adds a safe rel, a new tab, and an "(opens in new tab)" name suffix, and a disabled link chip drops its destination and leaves the tab order.
 - The inherit tone paints no fill, so its label keeps the surrounding text contrast, and its focus ring follows the surrounding foreground.
+- An action chip is one native button (type button) named by its visible label or by actionLabel, which should include that label; Enter and Space activate it, it shows the focus ring on keyboard focus, and a disabled action chip is a disabled button that leaves the tab order. It cannot also be a link or carry a remove button.
 - Keep meaningful tag text visible because tone is supplementary.
 
 ## Styling boundary

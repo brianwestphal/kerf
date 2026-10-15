@@ -113,11 +113,12 @@
   overflow: hidden;
 }
 
-/* Link chip: a native anchor with the same geometry. Hover and press layer a
-   currentColor wash over whichever fill the appearance paints; an inherit
-   chip instead strengthens its border and underlines its label, so the
-   surrounding text contrast holds in every state. */
-.kui-chip[data-link] {
+/* Link and action chips: a native anchor or button with the same geometry.
+   Hover and press layer a currentColor wash over whichever fill the
+   appearance paints; an inherit chip instead strengthens its border and
+   underlines its label, so the surrounding text contrast holds in every
+   state. */
+.kui-chip:is([data-link], [data-action]) {
   --_kui-chip-wash: transparent;
 
   background-image: linear-gradient(
@@ -128,38 +129,63 @@
   cursor: pointer;
 }
 
-.kui-chip[data-link]:hover {
+/* An action chip is a native button: drop the UA button chrome and any
+   page-wide native button theme (Web Awesome's native styles give every
+   button a form-control height) so it keeps the chip's font and box. A
+   compact action chip is exactly as tall as the compact Badge it replaces in
+   a wrapping value-cell Row. */
+button.kui-chip {
+  height: auto;
+  margin: 0;
+  padding-block: 0;
+  font-family: inherit;
+  font-style: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  vertical-align: middle;
+  transition: none;
+  appearance: none;
+}
+
+.kui-chip:is([data-link], [data-action]):hover {
   --_kui-chip-wash: color-mix(in srgb, currentColor 10%, transparent);
 }
 
-.kui-chip[data-link]:active {
+.kui-chip:is([data-link], [data-action]):active {
   --_kui-chip-wash: color-mix(in srgb, currentColor 18%, transparent);
 }
 
-.kui-chip[data-link][data-tone="inherit"]:is(:hover, :active) {
+.kui-chip:is([data-link], [data-action])[data-tone="inherit"]:is(
+    :hover,
+    :active
+  ) {
   --_kui-chip-wash: transparent;
   --_kui-chip-border: currentColor;
 }
 
 /* The label clips for its ellipsis; a little block room keeps the hover
    underline inside that clip without changing the chip's height. */
-.kui-chip[data-link] .kui-chip__label {
+.kui-chip:is([data-link], [data-action]) .kui-chip__label {
   padding-block: 0.2em;
 }
 
-.kui-chip[data-link][data-tone="inherit"]:is(:hover, :active) .kui-chip__label {
+.kui-chip:is([data-link], [data-action])[data-tone="inherit"]:is(
+    :hover,
+    :active
+  )
+  .kui-chip__label {
   text-decoration: underline;
   text-underline-offset: 0.12em;
 }
 
-.kui-chip[data-link]:focus-visible {
+.kui-chip:is([data-link], [data-action]):focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: 2px;
 }
 
 /* The brand focus color can match a brand-loud surface; an inherit chip's
    ring follows the surrounding foreground instead. */
-.kui-chip[data-link][data-tone="inherit"]:focus-visible {
+.kui-chip:is([data-link], [data-action])[data-tone="inherit"]:focus-visible {
   outline: 3px solid currentColor;
 }
 

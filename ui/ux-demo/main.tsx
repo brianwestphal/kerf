@@ -1139,6 +1139,9 @@ const stopActions = delegateActions(app, 'click', {
   'log-decision': (_event, element) => {
     actionLog.value = `Decision: ${(element as HTMLElement).dataset.decision ?? ''}`;
   },
+  'log-chip-insert': (_event, element) => {
+    actionLog.value = `Insert filter: ${(element as HTMLElement).dataset.itemId ?? ''}`;
+  },
   'log-chip-remove': (_event, element) => {
     actionLog.value = `Remove tag: ${(element as HTMLElement).closest('[data-component="chip"]')?.getAttribute('data-item-id') ?? ''}`;
   },

@@ -767,6 +767,14 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `external` (new tab, safe rel, announced) are optional, and a link chip has
   no remove button. Inside a ContentItem bubble set `tone="inherit"` so it
   follows the bubble's foreground instead of styling an anchor yourself.
+- **Use an action `Chip` for a value the user activates once.** `action` (with
+  `itemId`) renders the whole chip as a native
+  `<button type="button" data-action data-item-id>` for a delegated handler,
+  such as a search help filter token that inserts itself into the query, with
+  hover, press, focus-ring, and `disabled` states. `actionLabel` is an optional
+  accessible name that contains the visible label. It cannot also take `href`
+  or `removeAction`. A compact rounded action chip keeps a compact `Badge`'s row
+  height in a compact `ValueTable` cell; never make a `Badge` clickable.
 - **Use `ChoiceChips` for a wrapping exclusive choice.** When one value comes
   from a visible set too large for a `SegmentedControl` track (a nine-color
   palette in a 560px dialog), render separate pills backed by native radios:
