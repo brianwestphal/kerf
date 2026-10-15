@@ -21,7 +21,7 @@ import {
   type PopupMenuEntry,
 } from '../../src/components/actions/popup-menu/popup-menu.js';
 import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
-import { LegacyPopupMenu } from '../fixtures/popup-menu-legacy.js';
+import { ReferencePopupMenu } from '../fixtures/popup-menu-reference.js';
 
 const ROWS = 300;
 const glyphs = [Copy, Pencil, Share, Star, Tag, Flag, Archive] as const;
@@ -83,18 +83,18 @@ describe('PopupMenu: 300 rows x 9 entries with Lucide icons', () => {
     renderPrebuiltRows();
   });
 
-  // The implementation before the streaming hash and markup cache.
+  // The same markup rendered without the streaming hash and markup cache.
   bench(
-    'previous: re-render every row (unchanged props, icons rebuilt)',
+    'uncached reference: re-render every row (unchanged props, icons rebuilt)',
     () => {
-      renderRows(LegacyPopupMenu);
+      renderRows(ReferencePopupMenu);
     },
   );
 
   bench(
-    'previous: re-render every row (PopupMenu only, icons prebuilt)',
+    'uncached reference: re-render every row (PopupMenu only, icons prebuilt)',
     () => {
-      renderPrebuiltRows(LegacyPopupMenu);
+      renderPrebuiltRows(ReferencePopupMenu);
     },
   );
 });

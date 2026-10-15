@@ -50,9 +50,7 @@ async function mountFixture(page: Page): Promise<void> {
   await page.addScriptTag({ content: javascript.text });
   await page.waitForFunction(() =>
     Boolean(
-      customElements.get('wa-select') &&
-      customElements.get('wa-divider') &&
-      customElements.get('wa-dropdown'),
+      customElements.get('wa-select') && customElements.get('wa-divider'),
     ),
   );
 }
@@ -96,7 +94,7 @@ test('a Select divider keeps its separator semantics across re-renders', async (
 });
 
 // Lit reflects each `reflect: true` default (wa-select size/appearance/
-// placement, wa-dropdown size, wa-divider orientation) onto its host. A
+// placement, wa-divider orientation) onto its host. A
 // template that omits them lets every re-render strip them, which nulls the
 // property and forces a full Lit update to restore it. The templates render
 // the defaults, so a no-op re-render leaves every Web Awesome host alone:
@@ -160,15 +158,13 @@ test('a no-op re-render churns no Web Awesome host attributes or updates', async
   });
   // The fixture renders every Web Awesome host the templates own.
   expect(new Set(hosts)).toEqual(
-    new Set([
-      'wa-select',
-      'wa-option',
-      'wa-divider',
-      'wa-dropdown',
-      'wa-button',
-      'wa-dropdown-item',
-    ]),
+    new Set(['wa-select', 'wa-option', 'wa-divider']),
   );
+  const menuBefore = await page.evaluate(() => {
+    const menu = document.querySelector('.kui-popup-menu')!;
+    Object.assign(window, { menuNode: menu });
+    return menu.outerHTML;
+  });
 
   await rerender(page, 3);
   await settle();
@@ -176,6 +172,19 @@ test('a no-op re-render churns no Web Awesome host attributes or updates', async
     () => (window as unknown as { churn: unknown }).churn,
   );
   expect(churn).toEqual({ mutations: [], updates: [] });
+  // The PopupMenu (Kerf-owned markup) is left exactly as it was, too.
+  expect(
+    await page.evaluate(
+      () =>
+        (window as unknown as { menuNode: Element }).menuNode ===
+        document.querySelector('.kui-popup-menu'),
+    ),
+  ).toBe(true);
+  expect(
+    await page.evaluate(
+      () => document.querySelector('.kui-popup-menu')!.outerHTML,
+    ),
+  ).toBe(menuBefore);
   expect(
     await page.evaluate(() =>
       document.querySelector('[data-renders]')?.getAttribute('data-renders'),

@@ -287,8 +287,10 @@ the scroll viewport. Use `SunkenPanel` for a padded content group that does
 not introduce scrolling. See [Lowered work surfaces](./layout.md#lowered-work-surfaces).
 
 Set `ResizableRegion`'s `--kui-resizable-region-background` for an inline
-surface. An open descendant `PopupMenu` or Web Awesome dropdown automatically
-releases clipping and raises the region on its public popup layer. Set
+surface. A `PopupMenu` opens in the browser top layer, so the region keeps
+clipping its own content while the menu shows in full; an open raw Web Awesome
+dropdown inside it automatically releases clipping and raises the region on
+its public popup layer instead. Set
 `contentOverflow="visible"` for other anchored content that must escape the
 region. A collapsed region can place `restoreControl` in a top or bottom corner with
 `restorePosition`, set its typed `restoreInset`, or use
@@ -675,11 +677,13 @@ popover. Do not override the group's position, height, or overflow in app CSS.
 
 A **popup menu in a toolbar** is a `PopupMenu` (`@kerfjs/ui/popup-menu`) in a
 `single` `ToolbarControlGroup` with `nestedDropdown`; the group sizes the trigger
-as a toolbar button and `menuInset` sets the menu's inset. `PopupMenu` renders the
-Web Awesome dropdown, its trigger, and its typed items (commands, headings, and
-dividers), and keeps Web Awesome's managed children out of the morph. Register
-`@kerfjs/ui/popup-menu/register` once. Do not hand-write `wa-dropdown` markup for a
-menu.
+as a toolbar button and `menuInset` sets the menu's inset. `PopupMenu` renders
+its own native trigger button and a `role="menu"` panel of typed items
+(commands, headings, and dividers) that opens in the browser top layer, and
+keeps the open menu's state out of the morph. Register
+`@kerfjs/ui/popup-menu/register` once; it wires opening, keyboard navigation,
+submenus, and dismissal for every PopupMenu in the document. Do not hand-write
+`wa-dropdown` or menu markup for a menu.
 
 ```tsx
 <ToolbarControlGroup single nestedDropdown menuInset="compact">
@@ -697,8 +701,8 @@ menu.
 Nested decisions use an item with `submenu`. Children keep their own actions,
 `attributes` metadata, icons, `checked` state, disabled state and
 `disabledReason` tooltip. Nested `heading` and `divider` entries group those
-commands without entering keyboard navigation. `tone: 'danger'` maps to the Web Awesome destructive
-variant. A parent can sit among ordinary commands and dividers, so the same
+commands without entering keyboard navigation. `tone: 'danger'` draws a
+destructive command. A parent can sit among ordinary commands and dividers, so the same
 items shape covers single-line and batch actions; compute each batch child's
 `disabled` state from the current selection.
 
@@ -727,9 +731,12 @@ Items with `checked: true` or `checked: false` reserve checkmark space, and so
 does every plain command in a menu level (the top menu or one submenu) that
 holds such an item, so icons and labels line up across the level; a level
 without a choice keeps the compact start. Omit `checked` for a plain command,
-including one beside checkbox items.
-Commands still dispatch their own `data-action` once on pointer and keyboard
-selection.
+including one beside checkbox items. The application owns each choice's state:
+choosing one reports the state it asks for (`detail.checked`) in the root's
+bubbling, cancelable `kui-menu-select` event, alongside `detail.item` and its
+`detail.value`, and the menu shows the new checkmark once the application
+renders it. Commands still dispatch their own `data-action` once on pointer and
+keyboard selection; canceling `kui-menu-select` keeps the menu open.
 
 For a row opened by right-click, render `PopupMenu` with `context`, `label`,
 `anchor`, and a stable root `data-*` marker. Its trigger is an invisible anchor
@@ -743,12 +750,12 @@ or a `z-index` (the open menu is in the browser top layer). In the app's
 `anchor`, and call `openPopupMenu` with the menu. Because the point is part of the
 menu's own template, it survives re-renders and a rebuilt menu, so the app
 never re-applies it. `openPopupMenuAt` still opens a menu rendered without `anchor` at a given
-point. Call `closePopupMenu` for programmatic dismissal. The pointer anchor
-retains Web Awesome's collision placement, focus management, submenu keyboard
-navigation, and outside/Escape dismissal.
+point. Call `closePopupMenu` for programmatic dismissal. A pointer-anchored menu
+keeps the same collision placement, focus management, submenu keyboard
+navigation, and outside/Escape dismissal as a trigger-anchored one.
 
-The dropdown's popup flips and shifts at viewport edges, limits its height to
-the available space, and uses the browser top layer where supported. The app
+The menu opens in the browser top layer, flips and shifts at viewport edges,
+and limits its height to the available space, scrolling past it. The app
 supplies pointer coordinates and command policy; it does not need to calculate
 menu offsets. For other anchored content, use Web Awesome `wa-tooltip` or
 `wa-popover` when its interaction fits, and `wa-popup` when only placement is
@@ -1010,7 +1017,7 @@ marks the superseded or exceptional choices below with a visible `Discouraged`
 tag; Popup remains untagged because low-level anchored positioning can be the
 right primitive. Never render a `Discouraged` element directly in application,
 demo, or recipe markup: reach it only through the Kerf component that wraps or
-replaces it (`PopupMenu` renders `wa-dropdown`; `Select` renders `wa-select` /
+replaces it (`PopupMenu` replaces `wa-dropdown`; `Select` renders `wa-select` /
 `wa-option`), and file a component gap rather than dropping to the raw tag.
 
 | Web Awesome choice                                                 | Kerf decision                                                                                                                                         |

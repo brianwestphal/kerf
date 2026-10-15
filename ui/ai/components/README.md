@@ -64,7 +64,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ResizableRegion](./resize.md) — Pointer and keyboard-operable split region with a customizable handle icon.
 - [Select](./select.md) — Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.
 - [Combobox](./combobox.md) — Let people pick an existing value or create a new one by typing (tags, labels, recipients), with the themed field chrome, the ARIA combobox pattern, and a touch-safe font size, without a native datalist or app CSS.
-- [PopupMenu](./popup-menu.md) — A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.
+- [PopupMenu](./popup-menu.md) — A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.
 - [IconButton](./icon-button.md) — Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.
 - [IconToggleButton](./icon-toggle-button.md) — Render an icon-only aria-pressed toggle in content or a pane footer, where a Toolbar does not belong, with the 44px contained geometry and raised pressed face of a single ToolbarControlGroup.
 - [SplitButton](./split-button.md) — Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.

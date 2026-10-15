@@ -206,7 +206,7 @@ test('restores display choices across reloads and keeps them independent', async
   const motion = page.locator('[data-action="toggle-motion"]');
   const theme = page.locator('[data-action="toggle-theme"]');
 
-  await menu.locator('[slot="trigger"]').click();
+  await menu.locator('.kui-popup-menu__trigger').click();
   await menu.locator('[data-background-choice="layout-guide"]').click();
   await contrast.click();
   await motion.click();
@@ -239,7 +239,7 @@ test('restores display choices across reloads and keeps them independent', async
   await contrast.click();
   await motion.click();
   await theme.click();
-  await menu.locator('[slot="trigger"]').click();
+  await menu.locator('.kui-popup-menu__trigger').click();
   await menu.locator('[data-background-choice="checkerboard"]').click();
   await page.reload();
   await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
@@ -497,9 +497,11 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
     (typeof sel === 'string' ? page.locator(sel) : sel)
       .first()
       .evaluate((host) => {
-        const base = (
-          host as unknown as { shadowRoot: ShadowRoot | null }
-        ).shadowRoot?.querySelector('[part~="base"]');
+        // A wa-button draws on its shadow base; a native trigger is its own box.
+        const base =
+          (
+            host as unknown as { shadowRoot: ShadowRoot | null }
+          ).shadowRoot?.querySelector('[part~="base"]') ?? host;
         const r = (base as HTMLElement | null)?.getBoundingClientRect();
         return r ? { w: Math.round(r.width), h: Math.round(r.height) } : null;
       });
@@ -512,7 +514,7 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
 
   const sort = await basePart(
     page
-      .locator('wa-button[slot="trigger"]')
+      .locator('.kui-popup-menu__trigger')
       .filter({ hasText: 'Sort Tickets' }),
   );
   expect(sort!.w).toBeGreaterThan(sort!.h); // caret content grows past the square floor
@@ -2087,7 +2089,7 @@ test('fills the preview scroller for short Catalog specimens across backgrounds 
       'surface',
       'sunken',
     ]) {
-      await menu.locator('[slot="trigger"]').click();
+      await menu.locator('.kui-popup-menu__trigger').click();
       await menu.locator(`[data-background-choice="${background}"]`).click();
       await expect(stage).toHaveAttribute('data-background-style', background);
       const geometry = await stage.evaluate((element) => {
@@ -2153,7 +2155,7 @@ test('keeps Catalog display controls fully visible and usable across widths', as
       page.locator('[data-action="toggle-contrast"]'),
     ).toHaveAttribute('aria-pressed', String(contrastOn));
     await page
-      .locator('[data-catalog-background-menu] [slot="trigger"]')
+      .locator('[data-catalog-background-menu] .kui-popup-menu__trigger')
       .click();
     await expect(
       page.locator(
@@ -2170,7 +2172,7 @@ test('switches catalog background patterns and surfaces across entries and theme
   await page.goto('/?component=badge');
   const stage = page.locator('[data-catalog-stage]');
   const menu = page.locator('[data-catalog-background-menu]');
-  const trigger = menu.locator('[slot="trigger"]');
+  const trigger = menu.locator('.kui-popup-menu__trigger');
   await expect(stage).toHaveAttribute('data-background-style', 'checkerboard');
   await expect(stage).toHaveCSS('background-size', '16px 16px');
   await expect(stage).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
@@ -2209,10 +2211,9 @@ test('switches catalog background patterns and surfaces across entries and theme
     await trigger.click();
     await expect(
       menu.locator(`[data-background-choice="${value}"]`),
-    ).toHaveAttribute('checked', '');
-    await menu.evaluate((element: HTMLElement & { open: boolean }) => {
-      element.open = false;
-    });
+    ).toHaveAttribute('aria-checked', 'true');
+    await page.keyboard.press('Escape');
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
     if (browserName === 'chromium')
       await page.screenshot({
         path: `test-results/catalog-background-${value}.png`,
@@ -2230,13 +2231,13 @@ test('switches catalog background patterns and surfaces across entries and theme
   await expect(
     menu.locator('[data-background-choice="layout-guide"]'),
   ).toBeVisible();
-  const menuBounds = await menu.boundingBox();
+  const menuBounds = await menu
+    .locator(':scope > .kui-popup-menu__menu')
+    .boundingBox();
   expect(menuBounds).not.toBeNull();
   expect(menuBounds!.x).toBeGreaterThanOrEqual(0);
   expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(390);
-  await menu.evaluate((element: HTMLElement & { open: boolean }) => {
-    element.open = false;
-  });
+  await page.keyboard.press('Escape');
   if (browserName === 'chromium') {
     await page.waitForTimeout(300);
     await page.screenshot({
@@ -2259,7 +2260,7 @@ test('uses one sunken surface under the transparent Catalog stage in both themes
   await expect(pane).toHaveAttribute('data-appearance', 'sunken');
   const stage = page.locator('[data-catalog-stage]');
   const menu = page.locator('[data-catalog-background-menu]');
-  await menu.locator('[slot="trigger"]').click();
+  await menu.locator('.kui-popup-menu__trigger').click();
   await menu.locator('[data-background-choice="sunken"]').click();
   for (const theme of ['light', 'dark']) {
     await expect(stage).toHaveAttribute('data-background-style', 'sunken');
@@ -4943,7 +4944,7 @@ test('catalog supports its stateful controls', async ({
     'data-menu-inset',
     'compact',
   );
-  const relatedTrigger = menuRelationships.locator('wa-button[slot="trigger"]');
+  const relatedTrigger = menuRelationships.locator('.kui-popup-menu__trigger');
   await expect(relatedTrigger).toHaveCount(1);
   await expect(relatedTrigger).toContainText('Components');
   await relatedTrigger.click();
@@ -4953,11 +4954,11 @@ test('catalog supports its stateful controls', async ({
     }),
   ).toBeVisible();
   await menuRelationships
-    .locator('wa-dropdown-item[data-item-id="list-item"]')
+    .locator('.kui-popup-menu__item[data-item-id="list-item"]')
     .click();
   await expect(page).toHaveURL(/component=list-item/);
   await expect(page.locator('[data-demo="list-item"]')).toBeVisible();
-  await menuRelationships.locator('wa-button[slot="trigger"]').click();
+  await menuRelationships.locator('.kui-popup-menu__trigger').click();
   await expect(
     menuRelationships.locator('.kui-popup-menu__heading', {
       hasText: 'Used By',
@@ -4967,9 +4968,9 @@ test('catalog supports its stateful controls', async ({
   await page.goto('/?component=resize');
   const resizeRelationships = page.locator('[data-catalog-related]');
   await expect(
-    resizeRelationships.locator('wa-button[slot="trigger"]'),
+    resizeRelationships.locator('.kui-popup-menu__trigger'),
   ).toHaveCount(1);
-  await resizeRelationships.locator('wa-button[slot="trigger"]').click();
+  await resizeRelationships.locator('.kui-popup-menu__trigger').click();
   await expect(resizeRelationships).toContainText('SplitView');
   await page.keyboard.press('Escape');
 
@@ -6735,11 +6736,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
 
   await page.goto('/?component=toolbar-control-group');
   const demo = page.getByRole('region', { name: 'ToolbarControlGroup Demo' });
-  await expect
-    .poll(() =>
-      page.evaluate(() => customElements.get('wa-dropdown') !== undefined),
-    )
-    .toBe(true);
+  await expect(page.locator('.kui-popup-menu').first()).toBeAttached();
   await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
     'Icon Tile Tones',
     'Shape',
@@ -6785,14 +6782,14 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       .querySelector(':scope > button')!
       .getBoundingClientRect();
     const dropdown = node
-      .querySelector(':scope > wa-dropdown')!
+      .querySelector(':scope > .kui-popup-menu')!
       .getBoundingClientRect();
     const group = node.getBoundingClientRect();
     const buttonStyle = window.getComputedStyle(
       node.querySelector(':scope > button')!,
     );
     const dropdownStyle = window.getComputedStyle(
-      node.querySelector(':scope > wa-dropdown')!,
+      node.querySelector(':scope > .kui-popup-menu')!,
     );
     return {
       gap: dropdown.left - button.right,
@@ -6805,7 +6802,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       selectedShadow: buttonStyle.boxShadow,
     };
   });
-  // Compact mixed groups declare a 4px gap that their wa-dropdown / wa-button
+  // Compact mixed groups declare a 4px gap that their PopupMenu / wa-button
   // children offset with -2px margins, so the rendered gap stays closed.
   expect(compactSpacing.declaredGap).toBe('4px');
   // Sub-pixel tolerance: Linux Firefox measured 0.0000153px here.
@@ -6864,8 +6861,8 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'color',
     'rgb(12, 98, 243)',
   );
-  const dropdown = demo.locator('wa-dropdown').first();
-  const dropdownItems = dropdown.locator('wa-dropdown-item');
+  const dropdown = demo.locator('.kui-popup-menu').first();
+  const dropdownItems = dropdown.locator('.kui-popup-menu__item');
   await expect(dropdown).toHaveAttribute('data-morph-skip-children', '');
   await expect(dropdownItems).toHaveCount(2);
   const originalFirstItem = await dropdownItems.first().elementHandle();
@@ -6874,7 +6871,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   expect(originalLastItem).not.toBeNull();
   await expect(dropdownItems.first()).toBeHidden();
   await demo
-    .locator('wa-button[slot="trigger"]')
+    .locator('.kui-popup-menu__trigger')
     .filter({ hasText: 'Sort Tickets' })
     .click();
   await expect(dropdownItems.first()).toBeVisible();
@@ -6891,13 +6888,6 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       .last()
       .evaluate((node, original) => node === original, originalLastItem),
   ).toBe(true);
-  await expect
-    .poll(() =>
-      dropdownItems.evaluateAll((items) =>
-        items.every((item) => item.shadowRoot !== null),
-      ),
-    )
-    .toBe(true);
   await expect(
     demo.getByRole('button', { name: 'Pressed Comparison' }).locator('..'),
   ).toHaveCSS('background-color', 'rgb(72, 72, 74)');
@@ -6989,11 +6979,7 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
   browserName,
 }) => {
   await page.goto('/?component=toolbar-control-group');
-  await expect
-    .poll(() =>
-      page.evaluate(() => customElements.get('wa-dropdown') !== undefined),
-    )
-    .toBe(true);
+  await expect(page.locator('.kui-popup-menu').first()).toBeAttached();
   const demo = page.getByRole('region', { name: 'ToolbarControlGroup Demo' });
   const group = demo.getByRole('group', { name: 'Compact Formatting' });
 
@@ -7003,8 +6989,8 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
   ) => {
     const measured = await trigger.evaluate((node, selector) => {
       const group = node.closest('.kui-toolbar-control-group')!;
-      const base = node.shadowRoot!.querySelector('[part~="base"]')!;
-      const caret = node.shadowRoot!.querySelector('[part~="caret"]')!;
+      const base = node;
+      const caret = node.querySelector('.kui-popup-menu__caret')!;
       const content = node.querySelector(selector)!;
       const bounds = (element: Element) => {
         const rect = element.getBoundingClientRect();
@@ -7031,11 +7017,11 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
   };
 
   const popupTrigger = demo
-    .locator('wa-button[slot="trigger"]')
+    .locator('.kui-popup-menu__trigger')
     .filter({ hasText: 'Sort Tickets' });
   const relatedTrigger = page
     .locator('[data-catalog-related]')
-    .locator('wa-button[slot="trigger"]');
+    .locator('.kui-popup-menu__trigger');
   await expectTriggerContentContained(
     popupTrigger,
     '[data-lucide="arrow-down-a-z"]',
@@ -7056,10 +7042,10 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
   const geometry = () =>
     group.evaluate((node) => {
       const selected = node.querySelector(':scope > button')!;
-      const dropdown = node.querySelector(':scope > wa-dropdown')!;
-      const trigger = dropdown.querySelector('wa-button')!;
-      const base = trigger.shadowRoot!.querySelector('[part~="base"]')!;
-      const caret = trigger.shadowRoot!.querySelector('[part~="caret"]')!;
+      const dropdown = node.querySelector(':scope > .kui-popup-menu')!;
+      const trigger = dropdown.querySelector('.kui-popup-menu__trigger')!;
+      const base = trigger;
+      const caret = trigger.querySelector('.kui-popup-menu__caret')!;
       const bounds = (element: Element) => {
         const rect = element.getBoundingClientRect();
         return { left: rect.left, right: rect.right };

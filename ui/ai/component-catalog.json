@@ -476,6 +476,7 @@
         "--kui-color-danger-on-fill",
         "--kui-focus-ring",
         "--kui-shadow-s",
+        "--kui-shadow-m",
         "--kui-shadow-l"
       ],
       "links": {
@@ -5976,14 +5977,12 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.",
+      "description": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.",
       "uses": [
-        "wa-dropdown",
-        "wa-dropdown-item",
-        "wa-button",
-        "wa-divider"
+        "lucide-icon",
+        "wa-tooltip"
       ],
-      "purpose": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.",
+      "purpose": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.",
       "publicExports": [
         "PopupMenu",
         "openPopupMenu",
@@ -6012,6 +6011,7 @@
       "appOwns": [
         "commands and their delegated actions",
         "which items are enabled",
+        "the checked state of checkbox choices, which the menu reports as requested in its kui-menu-select event",
         "reactions to the menu opening or closing",
         "contextmenu event handling and identification of the menu root when using a pointer-anchored context menu"
       ],
@@ -6046,8 +6046,9 @@
         }
       ],
       "accessibility": [
-        "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. The context anchor stays out of the accessibility tree. The open menu takes the trigger's name (the context or icon-only label, or the visible text), and each submenu takes its parent item's label, so a screen reader announces a named menu and getByRole('menu', { name }) finds it. Web Awesome provides menu roles, nested arrow-key navigation, typeahead, and Escape.",
-        "Once registered, an icon-only trigger shows its label as an aria-hidden Web Awesome help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
+        "The trigger is a native button with aria-haspopup=\"menu\" and aria-expanded; an icon-only trigger requires label, rendered as visually hidden text inside the button, and a trigger with visible text is named by that text. The context anchor stays out of the accessibility tree. The open menu (role=\"menu\") takes the trigger's name, each submenu takes its parent item's label, and a heading names the role=\"group\" that holds its items, so a screen reader announces named menus and getByRole('menu', { name }) finds them. Items are menuitem or menuitemcheckbox buttons with aria-checked and aria-disabled.",
+        "Keyboard: Enter, Space, or ArrowDown on the trigger opens on the first item (ArrowUp on the last); ArrowUp/ArrowDown move and wrap past disabled items, Home/End jump, and typing a label's first letters moves to it; Enter or Space chooses; ArrowRight opens a submenu on its first item and ArrowLeft returns to the parent item (mirrored right to left); Escape closes the current level and returns focus to its opener; Tab closes the menu and continues from the trigger.",
+        "Once registered, an icon-only trigger shows its label as an aria-hidden help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
       ],
       "geometry": {
         "margin": "none",
@@ -6061,13 +6062,17 @@
         "themeCssImport": "@kerfjs/ui/webawesome.css",
         "sideEffects": [
           "browser-condition-css",
+          "document-listeners",
           "custom-element-registration"
         ]
       },
       "wiring": [],
       "publicClasses": [
         "kui-popup-menu",
+        "kui-popup-menu__trigger",
         "kui-popup-menu__label",
+        "kui-popup-menu__menu",
+        "kui-popup-menu__item",
         "kui-popup-menu__details",
         "kui-popup-menu__context-anchor"
       ],

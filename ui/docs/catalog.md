@@ -206,9 +206,9 @@ entry's `tags` array.
 
 Use `align="glyph"` for a bare glyph/text specimen, `align="inline-control"`
 for a control whose own inline padding contributes about 8px, and
-`align="text-trigger"` for a Web Awesome dropdown's text trigger whose visible
-label needs an 8px inset (such as a plain `PopupMenu` trigger). The dropdown host
-has no layout box, so this inset applies to its button child. Use
+`align="text-trigger"` for a text menu trigger whose visible label needs an
+8px inset (such as a plain `PopupMenu` trigger), so its text lines up with the
+example label past the trigger's own padding and border. Use
 `align="none"` (the default) for a content item or composition that owns its
 geometry.
 

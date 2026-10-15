@@ -3,9 +3,7 @@
 `DialogSurface` and `PopupSurface` configure recurring Web Awesome surface
 geometry without application `::part()` overrides. They do not replace Web
 Awesome behavior: the application still owns open state, dismissal policy, ids,
-labels, and content. With `@kerfjs/ui/popup-menu/register` imported, a dropdown
-inside `PopupSurface` also keeps keyboard item navigation made during its show
-animation when Web Awesome completes its initial focus handoff.
+labels, and content.
 
 Wrap one `wa-dialog` with `DialogSurface`. Choose `size` (`small`, `medium`, or
 `large`), `presentation` (`modal`, `side-sheet`, `fullscreen`, or
@@ -408,9 +406,9 @@ Use `DialogSurface` with `wa-dialog` whenever the task must block the page.
 
 Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="list-zero"` removes menu
 padding for a child that already owns row insets, `compact` uses 4px, and
-`standard` uses the shared 8px surface inset. Keep the dropdown trigger named and
-preserve `data-morph-skip-children` when its upgraded light-DOM items must retain
-identity across Kerf rerenders. Import `@kerfjs/ui/popup-menu/register` once for
-the focus handoff fix when wrapping a raw `wa-dropdown`.
+`standard` uses the shared 8px surface inset. Keep the menu trigger named. A raw
+`wa-dropdown` should keep `data-morph-skip-children` when its upgraded light-DOM
+items must retain identity across Kerf rerenders; a `PopupMenu` already
+protects its own open state from the morph.
 
 Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog`, measures each surface's footer for a floating footer's body clearance, draws a floating header's divider while content is scrolled beneath it, wires a bottom sheet's resize grabber, keyboard clearance, and slide, and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. A host that is itself an explicit dialog (`role="dialog"` or `"alertdialog"` with its own name) keeps that name alone: the native panel is left unnamed, so one dialog carries the name. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.

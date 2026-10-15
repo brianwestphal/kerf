@@ -213,43 +213,55 @@ Chromium.
 
 ## PopupMenu
 
-`PopupMenu` renders a Web Awesome dropdown, so the menu roles, arrow-key and
-typeahead navigation, Escape, and focus return to the trigger come from
-`wa-dropdown`. Kerf's part is the trigger's name. A Web Awesome button takes its
-name from its content and ignores an `aria-label` on the host, so an icon-only
-trigger requires `label`, which renders as visually hidden text inside the
-button; a trigger with visible `text` is named by that text. An icon-only
-trigger also shows its `label` as an `aria-hidden` help tag on hover and
-keyboard focus (see [Help tags on icon-only triggers](#help-tags-on-icon-only-triggers)).
-The open menu carries that same name. Web Awesome renders the `role="menu"`
-panel inside the dropdown's shadow root, where no ID reference can reach the
-trigger (the context anchor is `aria-hidden` light DOM, and a button trigger's
-real `<button>` sits in `wa-button`'s own shadow root). So `PopupMenu` renders
-the name it already knows (a context or icon-only `label`, or the visible
-`text`) as `data-menu-label` on the dropdown, and the register copies it to the
-panel as `aria-label` on first render and on every open. A submenu panel shares
-a shadow root with its parent item's label and is `aria-labelledby` it, so it
-is announced as, for example, "More Actions, menu".
-`tests/browser/popup-menu-accessible-name.spec.ts` finds each panel with
-`getByRole('menu', { name })` in Chromium, Firefox, and WebKit. Group headings
-render as the same uppercase group titles a grouped `Select` shows, and dividers
-are presentational. A keyboard-focused item is the menu's current row, painted
-with the Select's current-option fill rather than a second focus ring inside the
-open popup. A disabled item stays in the menu but cannot be
-chosen; disable the whole trigger only when every command is unavailable.
-Clicking outside dismisses a context `PopupMenu`, including one reopened while
-its previous hide animation is still finishing.
-Nested items use Web Awesome's submenu pointer and Left/Right arrow routing;
-headings and dividers can separate nested groups without becoming keyboard
-choices. A rapid ArrowDown or ArrowUp after opening a submenu keeps the chosen
-item focused when its show animation finishes. If a submenu is reopened during
-its close animation, it remains visible; pointer and ArrowRight actions also
-recover a submenu left hidden with an open state. Set `checked` to `true` or `false` for checkbox menu semantics; omit it
-for a plain command. `details` supplies optional
-trailing visual content without changing a command's accessible label. A
-`context` menu's invisible anchor is outside the accessibility tree and normal
-Tab order; opening the menu moves focus into its commands and Escape dismisses
-it. Keep a separate visible row action named even when it is disabled.
+`PopupMenu` is Kerf's own menu: a native trigger `<button>` and a `role="menu"`
+panel that opens as a manual popover in the top layer, wired by
+`@kerfjs/ui/popup-menu/register`. The trigger carries `aria-haspopup="menu"`
+and an `aria-expanded` that follows the menu. An icon-only trigger requires
+`label`, which renders as visually hidden text inside the button; a trigger
+with visible `text` is named by that text. An icon-only trigger also shows its
+`label` as an `aria-hidden` help tag on hover and keyboard focus (see
+[Help tags on icon-only triggers](#help-tags-on-icon-only-triggers)).
+The open menu carries that same name as its `aria-label` (a context or
+icon-only `label`, or the visible `text`), and each submenu panel is named by
+its parent item's label, so it is announced as, for example, "More Actions,
+menu". `tests/browser/popup-menu-accessible-name.spec.ts` finds each panel with
+`getByRole('menu', { name })` in Chromium, Firefox, and WebKit.
+
+Items are `menuitem` (or `menuitemcheckbox`, with `aria-checked`) buttons;
+a disabled item keeps `aria-disabled="true"`, stays in the menu, is skipped by
+the arrow keys, and cannot be chosen (its click never reaches the
+application's `data-action`). Disable the whole trigger only when every command
+is unavailable. A heading names the `role="group"` that holds the items under
+it and is itself hidden from assistive technology, so its words are announced
+once; dividers are `role="separator"`. A keyboard-focused item is the menu's
+current row, painted with the Select's current-option fill rather than a second
+focus ring inside the open popup.
+
+The keyboard follows the menu-button pattern. Enter, Space, or ArrowDown on the
+trigger opens the menu on its first item, and ArrowUp on its last. ArrowUp and
+ArrowDown move and wrap, Home and End jump, and typing the first letters of a
+label moves to it. Enter or Space chooses the current item; a choice closes the
+menu and returns focus to the trigger. ArrowRight opens a submenu on its first
+item and ArrowLeft returns to the parent item (mirrored right to left); a key
+pressed while a submenu is still fading in lands on the item it names. Escape
+closes the current level and returns focus to its opener, so an enclosing
+dialog stays open; Tab closes the menu and continues from the trigger. A press
+anywhere outside an open menu closes it, including a context menu opened by
+that same press.
+
+Hovering an item that has a submenu opens it. While a pointer-opened submenu
+is showing, a "safe triangle" from the pointer to the submenu's near edge keeps
+a diagonal move toward the submenu from closing it as the pointer crosses the
+parent's other rows; moving onto another item of the parent closes it after a
+short grace period. Set `checked` to `true` or `false` for checkbox menu
+semantics; omit it for a plain command. The application owns that state: a
+choice reports the state it asks for in the root's `kui-menu-select` event, and the
+menu shows the new state once the application renders it. `details` supplies
+optional trailing visual content without changing a command's accessible
+label. A `context` menu's invisible anchor is outside the accessibility tree
+and normal Tab order; opening the menu moves focus into its commands and Escape
+dismisses it. Keep a separate visible row action named even when it is
+disabled.
 
 ## ListActionRow
 

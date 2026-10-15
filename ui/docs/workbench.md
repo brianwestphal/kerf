@@ -95,8 +95,9 @@ an optional `label`. Common shell behavior is configured rather than restyled:
 - `collapseMotion: "slide" | "fade-slide" | "none"` keeps the track change
   instant while choosing composited content motion;
 - `contentOverflow: "clip" | "auto" | "visible"` chooses the resting overflow
-  policy. An open descendant `PopupMenu` or Web Awesome dropdown temporarily
-  releases rail/drawer clipping and raises its popup layer automatically;
+  policy. A `PopupMenu` opens in the browser top layer, which no clipping
+  reaches; an open raw Web Awesome dropdown temporarily releases rail/drawer
+  clipping and raises its popup layer automatically;
 - `presentation: "inline" | "overlay" | "hidden"` supports compact overlays
   or a responsive replacement. An overlay rail spans the Workbench height at
   its side and an overlay drawer spans the work-area column at the bottom,
@@ -612,9 +613,9 @@ collapse slides it out at the resized width. A collapsed,
 overlay, or hidden region is not resizeable. Together these policies replace
 app CSS for separator suppression, instant-track/composited-content collapse,
 popup overflow, mobile overlay/hidden replacement, resize-transition guards,
-and safe-area restore placement. A descendant `PopupMenu` or Web Awesome
-dropdown with `open` releases clipping for its lifecycle, so menu events need
-not rerender the region. The app still owns the other signals and decides when
+and safe-area restore placement. A descendant `PopupMenu` shows in the top
+layer, and a raw Web Awesome dropdown with `open` releases clipping for its
+lifecycle, so menu events need not rerender the region. The app still owns the other signals and decides when
 each policy applies.
 
 ## Public styling boundary

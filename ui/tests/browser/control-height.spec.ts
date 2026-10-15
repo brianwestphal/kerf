@@ -5,9 +5,11 @@ import { expect, type Locator, test } from '@playwright/test';
 
 const visualHeight = (host: Locator) =>
   host.evaluate((element) => {
-    const part = element.shadowRoot!.querySelector(
-      '[part~="combobox"], [part~="base"]',
-    )!;
+    // A Web Awesome host draws its box on a shadow part; a native control
+    // (a PopupMenu trigger) is its own box.
+    const part =
+      element.shadowRoot?.querySelector('[part~="combobox"], [part~="base"]') ??
+      element;
     return part.getBoundingClientRect().height;
   });
 
@@ -44,12 +46,12 @@ test('small buttons and toolbar-group buttons keep their own control heights', a
 
   await page.goto('/?component=toolbar-control-group');
   const trigger = page
-    .locator('wa-button[slot="trigger"]')
+    .locator('.kui-popup-menu__trigger')
     .filter({ hasText: 'Sort Tickets' });
   await expect(trigger).toBeVisible();
   expect(await visualHeight(trigger)).toBeCloseTo(40, 0);
   const compact = page
     .getByRole('group', { name: 'Compact Formatting' })
-    .locator('wa-dropdown wa-button');
+    .locator('.kui-popup-menu__trigger');
   expect(await visualHeight(compact)).toBeCloseTo(32, 0);
 });

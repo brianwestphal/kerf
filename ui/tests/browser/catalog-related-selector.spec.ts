@@ -5,16 +5,16 @@ async function screenshotRelated(page: Page, path: string) {
   await expect
     .poll(() =>
       page.locator('[data-catalog-related]').evaluate((root) => {
-        const menu = root.shadowRoot?.querySelector('[part~="menu"]');
+        const menu = root.querySelector(':scope > .kui-popup-menu__menu');
         return menu ? window.getComputedStyle(menu).opacity : '';
       }),
     )
     .toBe('1');
   const clip = await page.locator('[data-catalog-related]').evaluate((root) => {
     const trigger = root.getBoundingClientRect();
-    // `[data-catalog-related]` is the wa-dropdown itself.
-    const menu = root.shadowRoot
-      ?.querySelector<HTMLElement>('[part~="menu"]')
+    // `[data-catalog-related]` is the PopupMenu root itself.
+    const menu = root
+      .querySelector<HTMLElement>(':scope > .kui-popup-menu__menu')
       ?.getBoundingClientRect();
     const left = Math.max(
       0,
@@ -48,15 +48,14 @@ test('related Components selector fits its trigger and popup content', async ({
     await page.setViewportSize(viewport);
     await page.goto('/?component=lucide-icon');
     const related = page.locator('[data-catalog-related]');
-    const trigger = related.locator('wa-button[slot="trigger"]');
+    const trigger = related.locator(':scope > .kui-popup-menu__trigger');
     await expect(trigger).toContainText('Components');
     const triggerFit = await trigger.evaluate((element) => {
-      const base =
-        element.shadowRoot?.querySelector<HTMLElement>('[part~="base"]');
-      // The trigger's default-slot content (icon + label) must keep a
-      // real inset from the button chrome on both sides.
+      const base = element;
+      // The trigger's content (icon + label) must keep a real inset from the
+      // button chrome on both sides.
       const content = [...element.children]
-        .filter((child) => !child.hasAttribute('slot'))
+        .filter((child) => !child.classList.contains('kui-popup-menu__caret'))
         .map((child) => child.getBoundingClientRect())
         .filter((bounds) => bounds.width > 0);
       const baseBounds = base?.getBoundingClientRect();
@@ -78,20 +77,15 @@ test('related Components selector fits its trigger and popup content', async ({
     // leading the label, and the trigger stays a single control height.
     const row = await trigger.evaluate((element) => {
       const [icon, label] = [...element.children]
-        .filter((child) => !child.hasAttribute('slot'))
+        .filter((child) => !child.classList.contains('kui-popup-menu__caret'))
         .map((child) => child.getBoundingClientRect());
-      const base = element.shadowRoot
-        ?.querySelector<HTMLElement>('[part~="base"]')
-        ?.getBoundingClientRect();
+      const base = element.getBoundingClientRect();
       return {
         centerDelta: Math.abs(
           (icon.top + icon.bottom) / 2 - (label.top + label.bottom) / 2,
         ),
         iconLeads: icon.right <= label.left,
-        labelInsideBase:
-          base !== undefined &&
-          label.top >= base.top &&
-          label.bottom <= base.bottom,
+        labelInsideBase: label.top >= base.top && label.bottom <= base.bottom,
       };
     });
     expect(row.centerDelta).toBeLessThanOrEqual(2);
@@ -102,8 +96,8 @@ test('related Components selector fits its trigger and popup content', async ({
     const firstHeading = related.locator('.kui-popup-menu__heading').first();
     await expect(firstHeading).toBeVisible();
     const popupSpacing = await related.evaluate((root) => {
-      const menu = root.shadowRoot
-        ?.querySelector<HTMLElement>('[part~="menu"]')
+      const menu = root
+        .querySelector<HTMLElement>(':scope > .kui-popup-menu__menu')
         ?.getBoundingClientRect();
       const textBounds = (element: HTMLElement | null | undefined) => {
         const text = [...(element?.childNodes ?? [])].find(
@@ -120,7 +114,7 @@ test('related Components selector fits its trigger and popup content', async ({
         root.querySelector<HTMLElement>('.kui-popup-menu__heading'),
       );
       const longest = [
-        ...root.querySelectorAll<HTMLElement>('wa-dropdown-item'),
+        ...root.querySelectorAll<HTMLElement>('.kui-popup-menu__item-label'),
       ]
         .map((item) => textBounds(item))
         .filter((bounds): bounds is DOMRect => Boolean(bounds))

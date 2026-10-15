@@ -382,8 +382,8 @@ colocated component source:
   appear only in an ancestor compound or inside `:has()` / `:not()`; the
   styled compound is the stylesheet's own class.
 - **Owned Web Awesome tags.** Kerf components are named by class, never by a
-  `wa-*` tag they render. A tag another component renders (`wa-dropdown`,
-  `wa-select`, `wa-option`, a `PopupMenu`'s trigger `wa-button`) — as the
+  `wa-*` tag they render. A tag another component renders (`wa-select`,
+  `wa-option`) — as the
   subject, or as an ancestor whose internals the rule reaches — must be scoped
   to that component by its class or excluded with `:not()`. A direct child
   that cannot be the owner's internal
@@ -630,7 +630,7 @@ outside painting; the Select keeps its focus outline 3px inside the trigger
 and drops it while the listbox is open. Both settings belong to Select, not an
 application `::part()` override.
 
-Set `menuInset` to configure the dropdown menu surface
+Set `menuInset` to configure the menu surface
 without application `::part(menu)` CSS; the default `standard` keeps each menu's
 own inset (8px for a raw `wa-dropdown`, the Select listbox's 4px for a
 `PopupMenu`), while `compact` and `list-zero` apply to every nested menu. A
@@ -650,19 +650,15 @@ group title rather than the farther-in Select option label. Checked submenu
 items keep their checkmark inside the submenu surface with the same check-column
 advance as the top level. Compact mixed controls retain the standard
 item padding, omit an internal separator, and let the raised selected item paint
-over the outer border instead of shrinking to an inset highlight. The Web
-Awesome trigger's shadow base owns max-content sizing, so icons, localized text,
-and the shadow caret determine the width without a fixed host measurement.
-With `popup-menu/register` loaded, PopupMenu and a raw dropdown inside
-`PopupSurface` preserve item navigation made during the Web Awesome show
-animation across its final initial-focus handoff.
+over the outer border instead of shrinking to an inset highlight. The
+PopupMenu trigger sizes to max-content, so icons, localized text, and the caret
+determine the width without a fixed measurement.
 At viewport widths of 480px or less, `PopupMenu` places an open submenu above
 or below its parent menu, choosing the side with room and constraining the
-submenu to the viewport. It never paints over the parent list. The submenu
-remains a native Web Awesome `menu`: the reverse horizontal arrow (ArrowLeft in
-LTR, ArrowRight in RTL) returns focus to its parent item, Escape dismisses the
-menu, and choosing a child dispatches the normal
-`data-action` and `wa-select` events. Wider viewports retain the side cascade.
+submenu to the viewport. It never paints over the parent list. The reverse
+horizontal arrow (ArrowLeft in LTR, ArrowRight in RTL) returns focus to its
+parent item, Escape closes it, and choosing a child dispatches the normal
+`data-action` and `kui-menu-select` events. Wider viewports retain the side cascade.
 The enclosing `Toolbar` owns zone alignment and responsive topology: use
 `centerAlign="stretch"` when the center group should consume its track, and
 choose `responsive="stack"` with `responsiveAt="compact" | "narrow"`,

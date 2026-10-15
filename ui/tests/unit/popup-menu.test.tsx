@@ -1,8 +1,11 @@
 import { mount, signal } from 'kerfjs';
 import { ArrowDownAZ, Copy } from 'lucide';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { installPopupMenuKeyboard } from '../../src/components/actions/popup-menu/internal/install-popup-menu-keyboard.js';
+import {
+  POPUP_MENU_CLOSE_EVENT,
+  POPUP_MENU_OPEN_EVENT,
+} from '../../src/components/actions/popup-menu/internal/popup-menu-events.js';
 import {
   closePopupMenu,
   openPopupMenu,
@@ -21,7 +24,22 @@ const render = (html: string) => {
   return template.content.firstElementChild as HTMLElement;
 };
 
-describe('PopupMenu', () => {
+const items = (
+  root: Element,
+  menu = root.querySelector(':scope > .kui-popup-menu__menu')!,
+) =>
+  [...menu.querySelectorAll<HTMLElement>('.kui-popup-menu__item')].filter(
+    (item) => item.closest('.kui-popup-menu__menu') === menu,
+  );
+
+const label = (item: Element) =>
+  item.querySelector('.kui-popup-menu__item-label')?.textContent;
+
+afterEach(() => {
+  document.body.replaceChildren();
+});
+
+describe('PopupMenu markup', () => {
   it('renders nested checkbox choices, plain commands, disabled reasons, and danger tone', () => {
     const menu = render(
       asHtml(
@@ -51,162 +69,234 @@ describe('PopupMenu', () => {
               ],
             },
             { kind: 'divider' },
-            {
-              label: 'Newest First',
-              action: 'sort',
-              checked: true,
-            },
+            { label: 'Newest First', action: 'sort', checked: true },
           ],
         }),
       ),
     );
-    const parent = menu.querySelector<HTMLElement>(
-      'wa-dropdown-item:has(> [slot="submenu"])',
-    )!;
-    expect(parent.textContent).toContain('Decide');
-    expect(parent.querySelector('[slot="details"]')).not.toBeNull();
-    const children = parent.querySelectorAll<HTMLElement>(
-      ':scope > wa-dropdown-item[slot="submenu"]',
-    );
+    const host = menu.querySelector('.kui-popup-menu__submenu-host')!;
+    expect(host.getAttribute('role')).toBe('none');
+    const parent = host.querySelector(':scope > .kui-popup-menu__item')!;
+    expect(label(parent)).toBe('Decide');
+    expect(parent.getAttribute('aria-haspopup')).toBe('menu');
+    expect(parent.getAttribute('aria-expanded')).toBe('false');
     expect(
-      [...parent.querySelectorAll(':scope > [slot="submenu"]')].map(
-        (child) => child.localName,
-      ),
-    ).toEqual(['div', 'wa-dropdown-item', 'wa-divider', 'wa-dropdown-item']);
+      parent.querySelector('.kui-popup-menu__submenu-icon svg path'),
+    ).not.toBe(null);
+    const submenu = host.querySelector(':scope > .kui-popup-menu__menu')!;
+    expect(submenu.getAttribute('role')).toBe('menu');
+    expect(submenu.getAttribute('popover')).toBe('manual');
+    expect(submenu.hasAttribute('data-submenu')).toBe(true);
+    expect(submenu.getAttribute('aria-label')).toBe('Decide');
+    expect([...submenu.children].map((child) => child.className)).toEqual([
+      'kui-popup-menu__group',
+      'kui-popup-menu__divider',
+      'kui-popup-menu__item',
+    ]);
+    const group = submenu.querySelector('.kui-popup-menu__group')!;
+    expect(group.getAttribute('role')).toBe('group');
+    expect(group.getAttribute('aria-label')).toBe('Review');
     expect(
-      parent.querySelector('.kui-popup-menu__heading[slot="submenu"]')
-        ?.textContent,
-    ).toBe('Review');
-    expect(children).toHaveLength(2);
-    expect(children[0].getAttribute('type')).toBe('checkbox');
-    expect(children[0].hasAttribute('checked')).toBe(true);
-    expect(children[0].getAttribute('data-decision')).toBe('approve');
-    expect(children[1].getAttribute('variant')).toBe('danger');
-    expect(children[1].getAttribute('title')).toBe('Needs a price');
-    expect(children[1].hasAttribute('disabled')).toBe(true);
-    const checked = [...menu.querySelectorAll('wa-dropdown-item')].find(
-      (item) => item.textContent === 'Newest First',
-    )!;
-    expect(checked.getAttribute('type')).toBe('checkbox');
-    expect(checked.hasAttribute('checked')).toBe(true);
-    expect(menu.querySelector('wa-dropdown-item')?.hasAttribute('type')).toBe(
-      false,
-    );
+      group
+        .querySelector('.kui-popup-menu__heading')
+        ?.getAttribute('aria-hidden'),
+    ).toBe('true');
+    expect(
+      submenu.querySelector('.kui-popup-menu__divider')?.getAttribute('role'),
+    ).toBe('separator');
+    const [approve, reject] = items(menu, submenu);
+    expect(approve!.getAttribute('role')).toBe('menuitemcheckbox');
+    expect(approve!.getAttribute('aria-checked')).toBe('true');
+    expect(approve!.getAttribute('data-decision')).toBe('approve');
+    expect(approve!.querySelector('.kui-popup-menu__check svg')).not.toBe(null);
+    expect(reject!.getAttribute('role')).toBe('menuitem');
+    expect(reject!.getAttribute('data-tone')).toBe('danger');
+    expect(reject!.getAttribute('title')).toBe('Needs a price');
+    expect(reject!.getAttribute('aria-disabled')).toBe('true');
+    // A plain command in a level with a choice keeps an empty check column.
+    expect(
+      reject!.querySelector('.kui-popup-menu__check')?.children,
+    ).toHaveLength(0);
+    const top = items(menu);
+    expect(top.map(label)).toEqual(['Copy', 'Decide', 'Newest First']);
+    expect(top[2]!.getAttribute('aria-checked')).toBe('true');
+    expect(top[0]!.getAttribute('role')).toBe('menuitem');
+    expect(top[0]!.hasAttribute('aria-checked')).toBe(false);
   });
 
-  it('reserves the check column on plain items only in levels that hold a choice', () => {
+  it('reserves the check column only in levels that hold a choice', () => {
     const menu = render(
       asHtml(
         PopupMenu({
           text: 'Drive options',
           items: [
-            { label: 'Default', action: 'default', checked: true },
-            { kind: 'heading', label: 'Settings' },
+            { label: 'Default', action: 'default', checked: false },
             {
               label: 'Model',
               icon: <LucideIcon icon={Copy} name="model" />,
-              submenu: [
-                { label: 'GPT-5.6', action: 'model', checked: false },
-                { label: 'Other…', action: 'model-other' },
-              ],
-            },
-            {
-              label: 'Provider',
-              submenu: [{ label: 'OpenAI', action: 'provider' }],
+              submenu: [{ label: 'Other…', action: 'model-other' }],
             },
           ],
         }),
       ),
     );
-    const item = (label: string) =>
-      [...menu.querySelectorAll('wa-dropdown-item')].find(
-        (element) =>
-          [...element.childNodes]
-            .filter((node) => node.nodeType === Node.TEXT_NODE)
-            .map((node) => node.textContent)
-            .join('')
-            .trim() === label,
-      )!;
-    const spacer = (label: string) =>
-      item(label).querySelector(':scope > .kui-popup-menu__check-space');
-
-    // The top level holds a choice: its plain items reserve the column, and
-    // the spacer precedes the item icon in the icon slot.
-    for (const label of ['Model', 'Provider']) {
-      expect(item(label).getAttribute('data-check-space'), label).toBe(
-        'reserved',
-      );
-      expect(spacer(label)?.getAttribute('slot'), label).toBe('icon');
-      expect(spacer(label)?.getAttribute('aria-hidden'), label).toBe('true');
-    }
+    const [defaults, model] = items(menu);
+    expect(defaults!.getAttribute('aria-checked')).toBe('false');
+    // An unchecked choice still renders its glyph, hidden until checked.
+    expect(defaults!.querySelector('.kui-popup-menu__check svg')).not.toBe(
+      null,
+    );
+    expect(model!.querySelector('.kui-popup-menu__check')).not.toBe(null);
+    const submenu = menu.querySelector('[data-submenu]')!;
     expect(
-      item('Model').querySelector(':scope > [slot="icon"]')?.className,
-    ).toBe('kui-popup-menu__check-space');
-    // Choices never reserve a second column.
-    expect(item('Default').hasAttribute('data-check-space')).toBe(false);
-    expect(spacer('Default')).toBeNull();
-    expect(item('GPT-5.6').hasAttribute('data-check-space')).toBe(false);
-    // Each submenu is its own level.
-    expect(item('Other…').getAttribute('data-check-space')).toBe('reserved');
-    expect(spacer('Other…')).not.toBeNull();
-    expect(item('OpenAI').hasAttribute('data-check-space')).toBe(false);
-    expect(spacer('OpenAI')).toBeNull();
+      items(menu, submenu)[0]!.querySelector('.kui-popup-menu__check'),
+    ).toBe(null);
   });
 
-  it('keeps the compact start in a level without a choice', () => {
+  it('renders an icon-only trigger named by its label over typed commands', () => {
     const menu = render(
       asHtml(
         PopupMenu({
-          text: 'Actions',
+          label: 'Sort Tickets',
+          icon: <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />,
           items: [
-            { label: 'Open', action: 'open' },
-            {
-              label: 'Sort',
-              submenu: [{ label: 'Newest', action: 'sort', checked: true }],
-            },
+            { label: 'Recently Updated', action: 'sort-recent' },
+            { label: 'Priority', action: 'sort-priority', value: 'priority' },
           ],
         }),
       ),
     );
-    expect(menu.querySelectorAll('[data-check-space]')).toHaveLength(0);
-    expect(menu.querySelectorAll('.kui-popup-menu__check-space')).toHaveLength(
-      0,
+    expect(menu.localName).toBe('span');
+    expect(menu.className).toBe('kui-popup-menu');
+    expect(menu.dataset.component).toBe('popup-menu');
+    expect(menu.dataset.trigger).toBe('button');
+    expect(menu.dataset.placement).toBe('bottom-start');
+    // The register owns the open state, so the morph skips the children.
+    expect(menu.hasAttribute('data-morph-skip-children')).toBe(true);
+    const trigger = menu.querySelector<HTMLButtonElement>(
+      ':scope > button.kui-popup-menu__trigger',
+    )!;
+    expect(trigger.type).toBe('button');
+    expect(trigger.getAttribute('aria-haspopup')).toBe('menu');
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    expect(trigger.querySelector('.kui-popup-menu__label')?.textContent).toBe(
+      'Sort Tickets',
     );
+    expect(trigger.querySelector('.kui-popup-menu__text')).toBe(null);
+    expect(trigger.querySelector('[data-lucide="arrow-down-a-z"]')).not.toBe(
+      null,
+    );
+    expect(trigger.querySelector('.kui-popup-menu__caret svg path')).not.toBe(
+      null,
+    );
+    const panel = menu.querySelector(':scope > .kui-popup-menu__menu')!;
+    expect(panel.getAttribute('aria-label')).toBe('Sort Tickets');
+    expect(panel.hasAttribute('data-submenu')).toBe(false);
+    const rows = items(menu);
+    expect(rows.map(label)).toEqual(['Recently Updated', 'Priority']);
+    expect(rows.map((item) => item.getAttribute('data-action'))).toEqual([
+      'sort-recent',
+      'sort-priority',
+    ]);
+    expect(rows.map((item) => item.getAttribute('tabindex'))).toEqual([
+      '-1',
+      '-1',
+    ]);
+    expect(rows[0]!.hasAttribute('value')).toBe(false);
+    expect(rows[1]!.getAttribute('value')).toBe('priority');
   });
 
-  it('renders a context anchor and controls its open state at pointer coordinates', () => {
+  it('renders visible trigger text, groups, dividers, item icons, and item metadata', () => {
+    const menu = render(
+      asHtml(
+        PopupMenu({
+          text: 'Components',
+          icon: <LucideIcon icon={Copy} name="lead" />,
+          placement: 'top-end',
+          caret: false,
+          disabled: true,
+          slot: 'end',
+          rootAttributes: { 'data-catalog-related': '' },
+          items: [
+            { kind: 'heading', label: 'Structure' },
+            {
+              label: 'Copy',
+              icon: <LucideIcon icon={Copy} name="copy" />,
+              details: <kbd>⌘C</kbd>,
+              attributes: { 'data-item-id': 'copy' },
+            },
+            { kind: 'heading', label: 'Danger' },
+            { kind: 'heading', label: 'Empty' },
+            { kind: 'divider' },
+            { label: 'Delete', disabled: true },
+          ],
+        }),
+      ),
+    );
+    expect(menu.dataset.placement).toBe('top-end');
+    expect(menu.getAttribute('slot')).toBe('end');
+    expect(menu.hasAttribute('data-catalog-related')).toBe(true);
+    const trigger = menu.querySelector<HTMLButtonElement>(
+      '.kui-popup-menu__trigger',
+    )!;
+    expect(trigger.querySelector('.kui-popup-menu__text')?.textContent).toBe(
+      'Components',
+    );
+    expect(trigger.querySelector('.kui-popup-menu__label')).toBe(null);
+    expect(trigger.querySelector('.kui-popup-menu__caret')).toBe(null);
+    expect(trigger.disabled).toBe(true);
+    const panel = menu.querySelector(':scope > .kui-popup-menu__menu')!;
+    expect([...panel.children].map((child) => child.className)).toEqual([
+      'kui-popup-menu__group',
+      'kui-popup-menu__group',
+      'kui-popup-menu__group',
+      'kui-popup-menu__divider',
+      'kui-popup-menu__item',
+    ]);
+    const [structure, danger] = panel.querySelectorAll(
+      '.kui-popup-menu__group',
+    );
+    expect(
+      structure!.querySelector('.kui-popup-menu__heading')?.textContent,
+    ).toBe('Structure');
+    // A heading followed by another heading holds an empty group.
+    expect(danger!.querySelectorAll('.kui-popup-menu__item')).toHaveLength(0);
+    const [copy, remove] = items(menu);
+    expect(copy!.getAttribute('data-item-id')).toBe('copy');
+    expect(
+      copy!.querySelector('.kui-popup-menu__icon [data-lucide="copy"]'),
+    ).not.toBe(null);
+    expect(
+      copy!.querySelector('.kui-popup-menu__details kbd')?.textContent,
+    ).toBe('⌘C');
+    expect(remove!.getAttribute('aria-disabled')).toBe('true');
+    expect(remove!.hasAttribute('title')).toBe(false);
+  });
+
+  it('renders a context anchor named by the menu, not the hidden anchor', () => {
     const menu = render(
       asHtml(
         PopupMenu({
           context: true,
-          label: 'Demand Actions',
-          rootAttributes: { 'data-demand-menu': 'd-1' },
-          items: [
-            {
-              label: 'Open',
-              action: 'open',
-              attributes: { 'data-demand-id': 'd-1' },
-            },
-          ],
+          label: 'Ticket actions',
+          items: [{ label: 'Open', action: 'open' }],
         }),
       ),
-    ) as PopupMenuElement;
+    );
     expect(menu.dataset.trigger).toBe('context');
-    expect(menu.dataset.demandMenu).toBe('d-1');
-    const anchor = menu.querySelector('button[slot="trigger"]')!;
-    expect(anchor.getAttribute('aria-label')).toBe('Demand Actions');
+    const anchor = menu.querySelector(
+      ':scope > .kui-popup-menu__context-anchor',
+    )!;
+    expect(anchor.getAttribute('aria-hidden')).toBe('true');
     expect(anchor.getAttribute('tabindex')).toBe('-1');
-    openPopupMenuAt(menu, 123, 456);
-    expect(menu.open).toBe(true);
-    expect(menu.style.getPropertyValue('--kui-popup-menu-context-x')).toBe(
-      '123px',
-    );
-    expect(menu.style.getPropertyValue('--kui-popup-menu-context-y')).toBe(
-      '456px',
-    );
-    closePopupMenu(menu);
-    expect(menu.open).toBe(false);
+    expect(menu.querySelector('.kui-popup-menu__trigger')).toBe(null);
+    expect(
+      menu
+        .querySelector(':scope > .kui-popup-menu__menu')
+        ?.getAttribute('aria-label'),
+    ).toBe('Ticket actions');
   });
+
   it('renders a context anchor point that survives re-renders and replacement', () => {
     const point = signal({ x: 40, y: 60 });
     const checked = signal(false);
@@ -230,8 +320,6 @@ describe('PopupMenu', () => {
       menu().style.getPropertyValue('--kui-popup-menu-context-y'),
     ];
     expect(at()).toEqual(['40px', '60px']);
-    openPopupMenu(menu());
-    expect(menu().open).toBe(true);
     // A changed item rebuilds the menu under a new content key; the anchor is
     // part of its template, so the replacement keeps the point.
     const before = menu();
@@ -241,142 +329,43 @@ describe('PopupMenu', () => {
     point.value = { x: 300, y: 12.5 };
     expect(at()).toEqual(['300px', '12.5px']);
     dispose();
-    host.remove();
   });
 
   it('rejects an anchor outside context mode or with non-finite coordinates', () => {
-    const items = [{ label: 'Open', action: 'open' }] as const;
+    const entries = [{ label: 'Open', action: 'open' }] as const;
     for (const anchor of [
       { x: Number.NaN, y: 0 },
       { x: 0, y: Number.POSITIVE_INFINITY },
     ])
       expect(() =>
-        PopupMenu({ context: true, label: 'Menu', anchor, items }),
+        PopupMenu({ context: true, label: 'Menu', anchor, items: entries }),
       ).toThrow(RangeError);
     expect(() =>
       PopupMenu({
         text: 'Menu',
         anchor: { x: 1, y: 1 },
-        items,
+        items: entries,
       } as unknown as Parameters<typeof PopupMenu>[0]),
     ).toThrow(RangeError);
     // Without an anchor the root renders no style attribute.
     expect(
-      asHtml(PopupMenu({ context: true, label: 'Menu', items })),
+      asHtml(PopupMenu({ context: true, label: 'Menu', items: entries })),
     ).not.toContain('style=');
   });
 
-  it('renders an icon-only trigger named by its label over typed commands', () => {
-    const menu = render(
-      asHtml(
-        PopupMenu({
-          label: 'Sort Tickets',
-          icon: <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />,
-          items: [
-            { label: 'Recently Updated', action: 'sort-recent' },
-            { label: 'Priority', action: 'sort-priority', value: 'priority' },
-          ],
-        }),
-      ),
-    );
-    expect(menu.localName).toBe('wa-dropdown');
-    expect(menu.className).toBe('kui-popup-menu');
-    expect(menu.dataset.component).toBe('popup-menu');
-    expect(menu.getAttribute('placement')).toBe('bottom-start');
-    // Web Awesome's reflected default size is rendered, so a re-render's
-    // morph never strips it and forces a Lit update to restore it.
-    expect(menu.getAttribute('size')).toBe('m');
-    // Web Awesome owns the trigger and item DOM once upgraded.
-    expect(menu.hasAttribute('data-morph-skip-children')).toBe(true);
-    const trigger = menu.querySelector(':scope > wa-button[slot="trigger"]')!;
-    // Web Awesome names its button from slotted content, not a host aria-label.
-    expect(trigger.hasAttribute('aria-label')).toBe(false);
-    expect(trigger.querySelector('.kui-popup-menu__label')?.textContent).toBe(
-      'Sort Tickets',
-    );
-    expect(trigger.getAttribute('appearance')).toBe('plain');
-    expect(trigger.hasAttribute('with-caret')).toBe(true);
-    expect(trigger.querySelector('[data-lucide="arrow-down-a-z"]')).not.toBe(
-      null,
-    );
-
-    const items = [...menu.querySelectorAll(':scope > wa-dropdown-item')];
-    expect(items.map((item) => item.textContent)).toEqual([
-      'Recently Updated',
-      'Priority',
-    ]);
-    expect(items.map((item) => item.getAttribute('data-action'))).toEqual([
-      'sort-recent',
-      'sort-priority',
-    ]);
-    expect(items[0]!.hasAttribute('value')).toBe(false);
-    expect(items[1]!.getAttribute('value')).toBe('priority');
-  });
-
-  it('renders visible trigger text, headings, dividers, item icons, and item metadata', () => {
-    const menu = render(
-      asHtml(
-        PopupMenu({
-          text: 'Components',
-          placement: 'top-end',
-          caret: false,
-          disabled: true,
-          slot: 'end',
-          rootAttributes: { 'data-catalog-related': '' },
-          items: [
-            { kind: 'heading', label: 'Structure' },
-            {
-              label: 'Copy',
-              icon: <LucideIcon icon={Copy} name="copy" />,
-              attributes: { 'data-item-id': 'copy' },
-            },
-            { kind: 'divider' },
-            { label: 'Delete', disabled: true },
-          ],
-        }),
-      ),
-    );
-    expect(menu.getAttribute('placement')).toBe('top-end');
-    expect(menu.getAttribute('slot')).toBe('end');
-    expect(menu.hasAttribute('data-catalog-related')).toBe(true);
-    const trigger = menu.querySelector('wa-button[slot="trigger"]')!;
-    // Visible text names the trigger; there is no hidden label.
-    expect(trigger.querySelector('span')?.textContent).toBe('Components');
-    expect(trigger.querySelector('.kui-popup-menu__label')).toBe(null);
-    expect(trigger.hasAttribute('with-caret')).toBe(false);
-    expect(trigger.hasAttribute('disabled')).toBe(true);
-    expect([...menu.children].slice(1).map((child) => child.localName)).toEqual(
-      ['div', 'wa-dropdown-item', 'wa-divider', 'wa-dropdown-item'],
-    );
-    // A styled group title (the Select's), not a slotted h1-h6 whose Web
-    // Awesome metrics are !important.
-    expect(menu.querySelector('.kui-popup-menu__heading')?.textContent).toBe(
-      'Structure',
-    );
-    expect(menu.querySelector('h1, h2, h3, h4, h5, h6')).toBe(null);
-    const [copy, remove] = menu.querySelectorAll('wa-dropdown-item');
-    expect(copy!.getAttribute('data-item-id')).toBe('copy');
-    expect(
-      copy!.querySelector(
-        '[slot="icon"].kui-popup-menu__icon [data-lucide="copy"]',
-      ),
-    ).not.toBe(null);
-    expect(remove!.hasAttribute('disabled')).toBe(true);
-  });
-
   it('rebuilds the morph-skipped menu when its items change and keeps it otherwise', () => {
-    const items = signal<readonly PopupMenuEntry[]>([{ label: 'Inbox' }]);
+    const entries = signal<readonly PopupMenuEntry[]>([{ label: 'Inbox' }]);
     const placement = signal<'bottom-start' | 'top-end'>('bottom-start');
     const root = document.createElement('div');
     document.body.append(root);
     const stop = mount(root, () =>
       PopupMenu({
         text: 'View',
-        items: items.value,
+        items: entries.value,
         placement: placement.value,
       }),
     );
-    const menu = () => root.querySelector<HTMLElement>('wa-dropdown')!;
+    const menu = () => root.querySelector<HTMLElement>('.kui-popup-menu')!;
     const first = menu();
     const firstKey = first.dataset.key;
     expect(firstKey).toMatch(/^kui-popup-menu-[0-9a-z]+$/);
@@ -384,97 +373,62 @@ describe('PopupMenu', () => {
     // A root attribute change morphs in place; the key and children stay.
     placement.value = 'top-end';
     expect(menu()).toBe(first);
-    expect(menu().getAttribute('placement')).toBe('top-end');
+    expect(menu().dataset.placement).toBe('top-end');
 
-    // Equal items keep the key, so Web Awesome's upgraded children survive.
-    items.value = [{ label: 'Inbox' }];
+    // Equal items keep the key, so the live menu and its state survive.
+    entries.value = [{ label: 'Inbox' }];
     expect(menu()).toBe(first);
 
-    // A defined false state changes the row to a checkbox with no checkmark.
-    items.value = [{ label: 'Inbox', checked: false }];
+    // A defined false state changes the row to an unchecked checkbox.
+    entries.value = [{ label: 'Inbox', checked: false }];
     expect(menu()).not.toBe(first);
-    expect(menu().querySelector('wa-dropdown-item')?.getAttribute('type')).toBe(
-      'checkbox',
-    );
-    expect(
-      menu().querySelector('wa-dropdown-item')?.hasAttribute('checked'),
-    ).toBe(false);
+    expect(items(menu())[0]!.getAttribute('aria-checked')).toBe('false');
 
-    items.value = [{ label: 'Inbox' }, { label: 'Archive' }];
-    expect(menu()).not.toBe(first);
+    entries.value = [{ label: 'Inbox' }, { label: 'Archive' }];
     expect(menu().dataset.key).not.toBe(firstKey);
-    expect(
-      [...menu().querySelectorAll('wa-dropdown-item')].map(
-        (item) => item.textContent,
-      ),
-    ).toEqual(['Inbox', 'Archive']);
+    expect(items(menu()).map(label)).toEqual(['Inbox', 'Archive']);
     stop();
-    root.remove();
   });
 });
 
-describe('installPopupMenuKeyboard', () => {
-  class FakeDropdown extends HTMLElement {
-    selections: [string, string][] = [];
-    makeSelection(item: HTMLElement, event?: Event) {
-      this.selections.push([item.textContent ?? '', event?.type ?? '']);
-    }
-  }
-  customElements.define('fake-popup-dropdown', FakeDropdown);
-  installPopupMenuKeyboard(FakeDropdown.prototype);
-  // Installing twice must not wrap the method twice.
-  installPopupMenuKeyboard(FakeDropdown.prototype);
-
-  const setup = (className: string) => {
-    const dropdown = document.createElement(
-      'fake-popup-dropdown',
-    ) as FakeDropdown;
-    dropdown.className = className;
-    const item = document.createElement('button') as HTMLButtonElement & {
-      disabled: boolean;
-    };
-    item.textContent = 'Archive';
-    dropdown.append(item);
-    // Web Awesome selects a pointer choice from the item's click.
-    item.addEventListener('click', (event) =>
-      dropdown.makeSelection(item, event),
+describe('PopupMenu open and close helpers', () => {
+  it('send open and close requests to the root, with a point when given', () => {
+    const menu = render(
+      asHtml(PopupMenu({ text: 'Actions', items: [{ label: 'Open' }] })),
     );
-    document.body.append(dropdown);
-    return { dropdown, item };
-  };
-
-  it('routes a keyboard choice in a PopupMenu through one item click', () => {
-    const { dropdown, item } = setup('kui-popup-menu');
-    const clicks: EventTarget[] = [];
-    document.body.addEventListener('click', (event) =>
-      clicks.push(event.target!),
+    const requests: unknown[] = [];
+    menu.addEventListener(POPUP_MENU_OPEN_EVENT, (event) =>
+      requests.push(['open', (event as CustomEvent).detail]),
     );
-    dropdown.makeSelection(
-      item,
-      new KeyboardEvent('keydown', { key: 'Enter' }),
+    menu.addEventListener(POPUP_MENU_CLOSE_EVENT, () =>
+      requests.push(['close']),
     );
-    expect(clicks).toEqual([item]);
-    expect(dropdown.selections).toEqual([['Archive', 'click']]);
+    openPopupMenu(menu);
+    openPopupMenuAt(menu, 123, 456);
+    closePopupMenu(menu);
+    expect(requests).toEqual([
+      ['open', {}],
+      ['open', { point: { x: 123, y: 456 } }],
+      ['close'],
+    ]);
+    // The point also moves a context menu's invisible anchor.
+    expect(menu.style.getPropertyValue('--kui-popup-menu-context-x')).toBe(
+      '123px',
+    );
+    expect(menu.style.getPropertyValue('--kui-popup-menu-context-y')).toBe(
+      '456px',
+    );
   });
 
-  it('leaves pointer choices, disabled items, and raw dropdowns unchanged', () => {
-    const menu = setup('kui-popup-menu');
-    menu.item.click();
-    expect(menu.dropdown.selections).toEqual([['Archive', 'click']]);
-
-    const disabled = setup('kui-popup-menu');
-    disabled.item.disabled = true;
-    disabled.dropdown.makeSelection(
-      disabled.item,
-      new KeyboardEvent('keydown', { key: 'Enter' }),
+  it('are inert without the register', () => {
+    const menu = render(
+      asHtml(PopupMenu({ text: 'Actions', items: [{ label: 'Open' }] })),
     );
-    expect(disabled.dropdown.selections).toEqual([['Archive', 'keydown']]);
-
-    const raw = setup('');
-    raw.dropdown.makeSelection(
-      raw.item,
-      new KeyboardEvent('keydown', { key: 'Enter' }),
-    );
-    expect(raw.dropdown.selections).toEqual([['Archive', 'keydown']]);
+    document.body.append(menu);
+    const listener = vi.fn();
+    document.addEventListener('beforetoggle', listener, true);
+    openPopupMenu(menu);
+    expect(listener).not.toHaveBeenCalled();
+    document.removeEventListener('beforetoggle', listener, true);
   });
 });

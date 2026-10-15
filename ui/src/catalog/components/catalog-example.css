@@ -199,6 +199,12 @@
   margin-inline-start: var(--kui-catalog-example-align);
 }
 
-.kui-catalog-example[data-align="text-trigger"] > wa-dropdown > wa-button {
-  margin-inline-start: remify(8px);
+/* A trigger's text lines up with the example label's: the trigger's own
+   inset (8px plus its 1px border) follows this 8px offset. */
+.kui-catalog-example[data-align="text-trigger"]
+  > :not([data-catalog-example-label]):not([data-catalog-example-note]):not(
+    :popover-open
+  ) {
+  --kui-catalog-example-align: remify(8px);
+  margin-inline-start: var(--kui-catalog-example-align);
 }

@@ -207,7 +207,7 @@ describe('SegmentedControl corner geometry', () => {
       ],
       [
         popupRoot,
-        '.kui-toolbar-control-group[data-content="mixed"] :where(wa-dropdown.kui-popup-menu) > wa-button',
+        '.kui-toolbar-control-group[data-content="mixed"] > .kui-popup-menu > .kui-popup-menu__trigger',
       ],
     ] as const) {
       const mixedTextRule = sheet.nodes.find(

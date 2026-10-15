@@ -518,9 +518,9 @@ interface PopupMenuItem {
     label: string;
     /** Delegated `data-action` the app handles when the item is chosen. */
     action?: string;
-    /** Native `wa-dropdown-item` value, reported by its `wa-select` event. */
+    /** The item's value, reported in the menu's `kui-menu-select` event. */
     value?: string;
-    /** Leading icon, typically a `LucideIcon`; it is placed in the item's icon slot. */
+    /** Leading icon, typically a `LucideIcon`, before the label. */
     icon?: SafeHtml;
     /** A checkbox choice, including nested choices; omit for a plain command. */
     checked?: boolean;
@@ -554,7 +554,7 @@ type PopupMenuTriggerName = {
     text?: never;
     /**
      * Accessible name of an icon-only trigger, rendered as visually hidden
-     * slotted text (a Web Awesome button takes its name from its content).
+     * text inside the trigger button.
      */
     label: string;
 };
@@ -594,35 +594,35 @@ type PopupMenuProps = PopupMenuTrigger & {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 };
-/** A rendered context PopupMenu with Web Awesome's controlled open state. */
-type PopupMenuElement = HTMLElement & {
-    open: boolean;
-};
+/** A rendered PopupMenu root, the element the open and close helpers take. */
+type PopupMenuElement = HTMLElement;
 /**
  * Open a PopupMenu at viewport pointer coordinates. A `context` menu rendered
  * without `anchor` moves its invisible anchor there (a menu rendered with
- * `anchor` opens with `openPopupMenu` instead). A button-triggered menu (such as a `ListActionRow`
- * trailing menu) anchors its popup at the point, opening `bottom-start` like a
- * context menu, for this opening only; once the menu has closed it returns to
- * its trigger and placement. Before Web Awesome upgrades it, the menu opens at
- * its trigger.
+ * `anchor` opens with `openPopupMenu` instead). A button-triggered menu (such
+ * as a `ListActionRow` trailing menu) opens `bottom-start` from the point,
+ * like a context menu, for this opening only; its next opening returns to its
+ * trigger and placement. Needs the `/register` entry.
  */
 declare function openPopupMenuAt(menu: PopupMenuElement, x: number, y: number): void;
 /**
- * Open a context PopupMenu at the `anchor` it was rendered with (or the
- * point a previous `openPopupMenuAt` set).
+ * Open a PopupMenu from its trigger, or a context PopupMenu at the `anchor`
+ * it was rendered with (or the point a previous `openPopupMenuAt` set).
+ * Needs the `/register` entry.
  */
 declare function openPopupMenu(menu: PopupMenuElement): void;
-/** Close a programmatically opened PopupMenu. */
+/** Close an open PopupMenu, and any submenu it shows. */
 declare function closePopupMenu(menu: PopupMenuElement): void;
 /**
- * An action menu: a trigger button that opens a list of commands. Renders the
- * `wa-dropdown` root directly, so a `single` `ToolbarControlGroup` (with
- * `nestedDropdown`) or a `PopupSurface` sizes and insets it as usual. Items
- * dispatch through delegated `data-action`s; the app owns the commands and any
- * open-state reaction. Import `@kerfjs/ui/popup-menu/register` once to register
- * the Web Awesome elements. At viewport widths up to 480px, submenus appear
- * above or below their parent menu so their rows do not cover the parent list.
+ * An action menu: a trigger button that opens a list of commands in the top
+ * layer. A `single` `ToolbarControlGroup` (with `nestedDropdown`) or a
+ * `PopupSurface` sizes and insets it as usual. Items dispatch through
+ * delegated `data-action`s, and the root reports each choice as a bubbling
+ * `kui-menu-select` event; the app owns the commands and any open-state reaction.
+ * Import `@kerfjs/ui/popup-menu/register` once to wire opening, keyboard
+ * navigation, submenus, and dismissal. At viewport widths up to 480px,
+ * submenus appear above or below their parent menu so their rows do not cover
+ * the parent list.
  */
 declare function PopupMenu({ text, label, icon, items, placement, caret, disabled, rootAttributes, slot, context, anchor, }: PopupMenuProps): SafeHtml;
 

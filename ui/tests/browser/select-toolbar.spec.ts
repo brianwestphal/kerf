@@ -72,8 +72,8 @@ test('compact toolbar Select uses group focus geometry and spaced option icons',
 });
 
 // An icon-only Select shows its icon plus a visible disclosure caret, as one
-// pill in the same control family as the ToolbarControlGroup popup-menu
-// dropdown (an icon + caret wa-button). The group paints the composed focus
+// pill in the same control family as the ToolbarControlGroup PopupMenu
+// trigger (an icon + caret button). The group paints the composed focus
 // ring, so the ring only follows the visible control when the trigger is inset
 // evenly on every side with a concentric radius; the group then sizes to the
 // trigger and is wider than tall. Before, a lone default-size trigger was a
@@ -92,36 +92,37 @@ const round = (value: number) => Math.round(value * 100) / 100;
 
 async function popupMenuTrigger(page: Page, size: 'default' | 'compact') {
   await page.goto('/?component=toolbar-control-group');
-  const dropdown = page
-    .locator('[data-demo="toolbar-control-group"] wa-dropdown')
+  const menu = page
+    .locator('[data-demo="toolbar-control-group"] .kui-popup-menu')
     .first();
-  await dropdown.evaluate(
+  await menu.evaluate(
     (element, nextSize) =>
       element.parentElement!.setAttribute('data-size', nextSize),
     size,
   );
-  return dropdown.locator('wa-button').evaluate((button): TriggerGeometry => {
-    const base = button.shadowRoot!.querySelector('[part~="base"]')!;
-    const trigger = base.getBoundingClientRect();
-    const icon = button.querySelector('svg')!.getBoundingClientRect();
-    const caret =
-      button.shadowRoot!.querySelector<HTMLElement>('[part~="caret"]')!;
-    const glyph = caret
-      .shadowRoot!.querySelector('svg')!
-      .getBoundingClientRect();
-    return {
-      triggerWidth: trigger.width,
-      triggerHeight: trigger.height,
-      iconStart: icon.left - trigger.left,
-      iconCenter: icon.left + icon.width / 2 - trigger.left,
-      caretCenter: glyph.left + glyph.width / 2 - trigger.left,
-      caretHeight: Number.parseFloat(
-        window.getComputedStyle(caret.shadowRoot!.querySelector('svg')!).height,
-      ),
-      caretVisible:
-        window.getComputedStyle(caret).display !== 'none' && glyph.width > 0,
-    };
-  });
+  return menu
+    .locator('.kui-popup-menu__trigger')
+    .evaluate((button): TriggerGeometry => {
+      const trigger = button.getBoundingClientRect();
+      const icon = button.querySelector('svg')!.getBoundingClientRect();
+      const caret = button.querySelector<HTMLElement>(
+        '.kui-popup-menu__caret',
+      )!;
+      const glyphSvg = caret.querySelector('svg')!;
+      const glyph = glyphSvg.getBoundingClientRect();
+      return {
+        triggerWidth: trigger.width,
+        triggerHeight: trigger.height,
+        iconStart: icon.left - trigger.left,
+        iconCenter: icon.left + icon.width / 2 - trigger.left,
+        caretCenter: glyph.left + glyph.width / 2 - trigger.left,
+        caretHeight: Number.parseFloat(
+          window.getComputedStyle(glyphSvg).height,
+        ),
+        caretVisible:
+          window.getComputedStyle(caret).display !== 'none' && glyph.width > 0,
+      };
+    });
 }
 
 function selectGeometry(select: Locator) {

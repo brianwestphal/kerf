@@ -1,11 +1,22 @@
 import type { SafeHtml } from 'kerfjs';
+import { Check } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  PopupCaretGlyph,
+  PopupSubmenuGlyph,
+} from '../../../shared/popup/popup-glyphs.js';
+import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 import {
   cachedPopupMenuContent,
   cachePopupMenuContent,
   popupMenuContentKey,
 } from './internal/popup-menu-content-cache.js';
+import {
+  POPUP_MENU_CLOSE_EVENT,
+  POPUP_MENU_OPEN_EVENT,
+  type PopupMenuOpenDetail,
+} from './internal/popup-menu-events.js';
 
 export type PopupMenuPlacement =
   'bottom-start' | 'bottom' | 'bottom-end' | 'top-start' | 'top' | 'top-end';
@@ -25,9 +36,9 @@ export interface PopupMenuItem {
   label: string;
   /** Delegated `data-action` the app handles when the item is chosen. */
   action?: string;
-  /** Native `wa-dropdown-item` value, reported by its `wa-select` event. */
+  /** The item's value, reported in the menu's `kui-menu-select` event. */
   value?: string;
-  /** Leading icon, typically a `LucideIcon`; it is placed in the item's icon slot. */
+  /** Leading icon, typically a `LucideIcon`, before the label. */
   icon?: SafeHtml;
   /** A checkbox choice, including nested choices; omit for a plain command. */
   checked?: boolean;
@@ -68,7 +79,7 @@ type PopupMenuTriggerName =
       text?: never;
       /**
        * Accessible name of an icon-only trigger, rendered as visually hidden
-       * slotted text (a Web Awesome button takes its name from its content).
+       * text inside the trigger button.
        */
       label: string;
     };
@@ -111,95 +122,147 @@ export type PopupMenuProps = PopupMenuTrigger & {
   slot?: string;
 };
 
+type PopupMenuCommand = PopupMenuItem & { kind?: 'item' };
+
+const isCommand = (entry: PopupMenuEntry): entry is PopupMenuCommand =>
+  entry.kind !== 'heading' && entry.kind !== 'divider';
+
 /** Whether a menu level holds a checkbox choice, so its plain items reserve the check column. */
 function hasChoice(entries: readonly PopupMenuEntry[]): boolean {
   return entries.some(
-    (entry) =>
-      entry.kind !== 'heading' &&
-      entry.kind !== 'divider' &&
-      entry.checked !== undefined,
+    (entry) => isCommand(entry) && entry.checked !== undefined,
   );
 }
 
-function renderEntry(
-  entry: PopupMenuEntry,
-  nested = false,
-  levelHasChoice = false,
-) {
-  if (entry.kind === 'divider')
-    return <wa-divider slot={nested ? 'submenu' : undefined} />;
-  // A group title styled like the Select's group title. It is not a slotted
-  // h1-h6, whose Web Awesome group-label metrics are !important.
-  if (entry.kind === 'heading')
-    return (
-      <div
-        class="kui-popup-menu__heading"
-        slot={nested ? 'submenu' : undefined}
-      >
-        {entry.label}
-      </div>
-    );
+function renderItem(entry: PopupMenuCommand, levelHasChoice: boolean) {
   // A plain command beside checkbox choices keeps their check column, so its
   // icon and label line up with theirs.
-  const reserveCheck = levelHasChoice && entry.checked === undefined;
-  const submenuHasChoice = entry.submenu ? hasChoice(entry.submenu) : false;
-  return (
-    <wa-dropdown-item
+  const choice = entry.checked !== undefined;
+  const item = (
+    <button
       {...(entry.attributes ?? {})}
-      slot={nested ? 'submenu' : undefined}
-      data-check-space={reserveCheck ? 'reserved' : undefined}
+      type="button"
+      class="kui-popup-menu__item"
+      role={choice ? 'menuitemcheckbox' : 'menuitem'}
+      tabindex={-1}
       data-action={entry.action}
       value={entry.value}
-      type={entry.checked === undefined ? undefined : 'checkbox'}
-      checked={entry.checked}
-      variant={entry.tone === 'danger' ? 'danger' : undefined}
-      disabled={entry.disabled}
+      data-tone={entry.tone === 'danger' ? 'danger' : undefined}
+      aria-checked={choice ? String(entry.checked) : undefined}
+      aria-disabled={entry.disabled ? 'true' : undefined}
+      aria-haspopup={entry.submenu ? 'menu' : undefined}
+      aria-expanded={entry.submenu ? 'false' : undefined}
       title={entry.disabled ? entry.disabledReason : undefined}
     >
-      {reserveCheck ? (
-        <span
-          slot="icon"
-          class="kui-popup-menu__check-space"
-          aria-hidden="true"
-        />
+      {levelHasChoice ? (
+        <span class="kui-popup-menu__check" aria-hidden="true">
+          {choice ? <LucideIcon icon={Check} name="check" /> : null}
+        </span>
       ) : null}
       {entry.icon ? (
-        <span slot="icon" class="kui-popup-menu__icon">
+        <span class="kui-popup-menu__icon" aria-hidden="true">
           {entry.icon}
         </span>
       ) : null}
-      {entry.label}
+      <span class="kui-popup-menu__item-label">{entry.label}</span>
       {entry.details ? (
-        <span slot="details" class="kui-popup-menu__details">
-          {entry.details}
-        </span>
-      ) : entry.submenu ? (
-        <span slot="details" />
+        <span class="kui-popup-menu__details">{entry.details}</span>
       ) : null}
-      {entry.submenu?.map((child) =>
-        renderEntry(child, true, submenuHasChoice),
-      )}
-    </wa-dropdown-item>
+      {entry.submenu ? (
+        <span class="kui-popup-menu__submenu-icon" aria-hidden="true">
+          <PopupSubmenuGlyph />
+        </span>
+      ) : null}
+    </button>
+  );
+  if (!entry.submenu) return item;
+  return (
+    <div class="kui-popup-menu__submenu-host" role="none">
+      {item}
+      {renderMenu(entry.submenu, entry.label, true)}
+    </div>
   );
 }
 
-/** A rendered context PopupMenu with Web Awesome's controlled open state. */
-export type PopupMenuElement = HTMLElement & { open: boolean };
+/**
+ * One menu level: its entries in order, with each heading opening a labeled
+ * group that holds the items up to the next heading or divider.
+ */
+function renderEntries(entries: readonly PopupMenuEntry[]): SafeHtml[] {
+  const levelHasChoice = hasChoice(entries);
+  const out: SafeHtml[] = [];
+  let index = 0;
+  while (index < entries.length) {
+    const entry = entries[index]!;
+    if (entry.kind === 'divider') {
+      out.push(<div class="kui-popup-menu__divider" role="separator" />);
+      index += 1;
+      continue;
+    }
+    if (entry.kind === 'heading') {
+      const members: SafeHtml[] = [];
+      index += 1;
+      while (index < entries.length) {
+        const member = entries[index]!;
+        if (!isCommand(member)) break;
+        members.push(renderItem(member, levelHasChoice));
+        index += 1;
+      }
+      out.push(
+        <div
+          class="kui-popup-menu__group"
+          role="group"
+          aria-label={entry.label}
+        >
+          <div class="kui-popup-menu__heading" aria-hidden="true">
+            {entry.label}
+          </div>
+          {members}
+        </div>,
+      );
+      continue;
+    }
+    out.push(renderItem(entry, levelHasChoice));
+    index += 1;
+  }
+  return out;
+}
 
-/** The Web Awesome popup inside an upgraded `wa-dropdown`, which accepts a virtual anchor. */
-type PopupMenuPopup = HTMLElement & { anchor?: unknown; placement: string };
+function renderMenu(
+  entries: readonly PopupMenuEntry[],
+  name: string | undefined,
+  submenu: boolean,
+) {
+  return (
+    <div
+      class="kui-popup-menu__menu"
+      role="menu"
+      popover="manual"
+      tabindex={-1}
+      aria-label={name}
+      data-submenu={submenu ? '' : undefined}
+    >
+      {renderEntries(entries)}
+    </div>
+  );
+}
 
-/** Pending trigger-anchor restorations of pointer-opened button menus. */
-const pointerRestores = new WeakMap<HTMLElement, (event: Event) => void>();
+/** A rendered PopupMenu root, the element the open and close helpers take. */
+export type PopupMenuElement = HTMLElement;
+
+function requestOpen(menu: PopupMenuElement, detail: PopupMenuOpenDetail) {
+  menu.dispatchEvent(
+    new CustomEvent<PopupMenuOpenDetail>(POPUP_MENU_OPEN_EVENT, { detail }),
+  );
+}
 
 /**
  * Open a PopupMenu at viewport pointer coordinates. A `context` menu rendered
  * without `anchor` moves its invisible anchor there (a menu rendered with
- * `anchor` opens with `openPopupMenu` instead). A button-triggered menu (such as a `ListActionRow`
- * trailing menu) anchors its popup at the point, opening `bottom-start` like a
- * context menu, for this opening only; once the menu has closed it returns to
- * its trigger and placement. Before Web Awesome upgrades it, the menu opens at
- * its trigger.
+ * `anchor` opens with `openPopupMenu` instead). A button-triggered menu (such
+ * as a `ListActionRow` trailing menu) opens `bottom-start` from the point,
+ * like a context menu, for this opening only; its next opening returns to its
+ * trigger and placement. Needs the `/register` entry.
  */
 export function openPopupMenuAt(
   menu: PopupMenuElement,
@@ -208,41 +271,21 @@ export function openPopupMenuAt(
 ): void {
   menu.style.setProperty('--kui-popup-menu-context-x', `${x}px`);
   menu.style.setProperty('--kui-popup-menu-context-y', `${y}px`);
-  const popup =
-    menu.getAttribute('data-trigger') === 'context'
-      ? null
-      : menu.shadowRoot?.querySelector<PopupMenuPopup>('wa-popup');
-  if (popup) {
-    popup.anchor = {
-      getBoundingClientRect: () => new DOMRect(x, y, 0, 0),
-    };
-    popup.placement = 'bottom-start';
-    const previous = pointerRestores.get(menu);
-    if (previous) menu.removeEventListener('wa-after-hide', previous);
-    const restore = (event: Event) => {
-      if (event.target !== menu) return;
-      menu.removeEventListener('wa-after-hide', restore);
-      pointerRestores.delete(menu);
-      popup.anchor = undefined;
-      popup.placement = menu.getAttribute('placement') ?? 'bottom-start';
-    };
-    pointerRestores.set(menu, restore);
-    menu.addEventListener('wa-after-hide', restore);
-  }
-  menu.open = true;
+  requestOpen(menu, { point: { x, y } });
 }
 
 /**
- * Open a context PopupMenu at the `anchor` it was rendered with (or the
- * point a previous `openPopupMenuAt` set).
+ * Open a PopupMenu from its trigger, or a context PopupMenu at the `anchor`
+ * it was rendered with (or the point a previous `openPopupMenuAt` set).
+ * Needs the `/register` entry.
  */
 export function openPopupMenu(menu: PopupMenuElement): void {
-  menu.open = true;
+  requestOpen(menu, {});
 }
 
-/** Close a programmatically opened PopupMenu. */
+/** Close an open PopupMenu, and any submenu it shows. */
 export function closePopupMenu(menu: PopupMenuElement): void {
-  menu.open = false;
+  menu.dispatchEvent(new CustomEvent(POPUP_MENU_CLOSE_EVENT));
 }
 
 interface PopupMenuContentProps {
@@ -255,7 +298,7 @@ interface PopupMenuContentProps {
   items: readonly PopupMenuEntry[];
 }
 
-/** The trigger and entries: everything inside the `wa-dropdown` root. */
+/** The trigger and the menu: everything inside the root. */
 function renderContent({
   context,
   label,
@@ -265,46 +308,51 @@ function renderContent({
   disabled,
   items,
 }: PopupMenuContentProps): SafeHtml {
-  const levelHasChoice = hasChoice(items);
   return (
     <>
       {context ? (
         <button
           type="button"
-          slot="trigger"
           class="kui-popup-menu__context-anchor"
-          aria-label={label}
           aria-hidden="true"
           tabindex={-1}
         />
       ) : (
-        <wa-button
-          slot="trigger"
-          appearance="plain"
-          with-caret={caret}
+        <button
+          type="button"
+          class="kui-popup-menu__trigger"
+          aria-haspopup="menu"
+          aria-expanded="false"
           disabled={disabled}
         >
           {icon}
           {text ? (
-            <span>{text}</span>
+            <span class="kui-popup-menu__text">{text}</span>
           ) : (
             <span class="kui-popup-menu__label">{label}</span>
           )}
-        </wa-button>
+          {caret ? (
+            <span class="kui-popup-menu__caret" aria-hidden="true">
+              <PopupCaretGlyph />
+            </span>
+          ) : null}
+        </button>
       )}
-      {items.map((entry) => renderEntry(entry, false, levelHasChoice))}
+      {renderMenu(items, text ?? label, false)}
     </>
   );
 }
 
 /**
- * An action menu: a trigger button that opens a list of commands. Renders the
- * `wa-dropdown` root directly, so a `single` `ToolbarControlGroup` (with
- * `nestedDropdown`) or a `PopupSurface` sizes and insets it as usual. Items
- * dispatch through delegated `data-action`s; the app owns the commands and any
- * open-state reaction. Import `@kerfjs/ui/popup-menu/register` once to register
- * the Web Awesome elements. At viewport widths up to 480px, submenus appear
- * above or below their parent menu so their rows do not cover the parent list.
+ * An action menu: a trigger button that opens a list of commands in the top
+ * layer. A `single` `ToolbarControlGroup` (with `nestedDropdown`) or a
+ * `PopupSurface` sizes and insets it as usual. Items dispatch through
+ * delegated `data-action`s, and the root reports each choice as a bubbling
+ * `kui-menu-select` event; the app owns the commands and any open-state reaction.
+ * Import `@kerfjs/ui/popup-menu/register` once to wire opening, keyboard
+ * navigation, submenus, and dismissal. At viewport widths up to 480px,
+ * submenus appear above or below their parent menu so their rows do not cover
+ * the parent list.
  */
 export function PopupMenu({
   text,
@@ -326,9 +374,10 @@ export function PopupMenu({
     throw new RangeError(
       'PopupMenu anchor requires context mode and finite x and y coordinates',
     );
-  // Web Awesome owns the trigger and item DOM once upgraded, so the morph
-  // skips the children; the content key rebuilds the menu when they change.
-  // An unchanged menu reuses its cached markup and costs one hash pass.
+  // The register owns the open menu's state (shown popovers, `aria-expanded`,
+  // checked toggles, focus), so the morph skips the children; the content key
+  // rebuilds the menu when they change. An unchanged menu reuses its cached
+  // markup and costs one hash pass.
   const { key, cacheKey } = popupMenuContentKey(
     [
       text ?? '',
@@ -353,29 +402,23 @@ export function PopupMenu({
     });
     cachePopupMenuContent(cacheKey, content);
   }
-  // data-menu-label names the shadow role="menu" panel (the register copies
-  // it there), since no ID reference reaches the trigger across shadow roots.
-  // size="m" is Web Awesome's reflected default; rendering it keeps a
-  // re-render's morph from stripping it and forcing a Lit update.
   return (
-    <wa-dropdown
-      size="m"
+    <span
       {...rootAttributes}
       class="kui-popup-menu"
       data-component="popup-menu"
       data-key={key}
       data-morph-skip-children
       data-trigger={context ? 'context' : 'button'}
-      data-menu-label={text ?? label}
+      data-placement={placement}
       style={
         anchor
           ? `--kui-popup-menu-context-x:${anchor.x}px;--kui-popup-menu-context-y:${anchor.y}px`
           : undefined
       }
-      placement={placement}
       slot={slot}
     >
       {content}
-    </wa-dropdown>
+    </span>
   );
 }

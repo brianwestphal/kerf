@@ -398,67 +398,14 @@ test('applies typed dialog and popup surface geometry', async ({
   await dialog.getByRole('button', { name: 'Cancel' }).click();
   await expect(dialog).not.toHaveAttribute('open', '');
 
-  const dropdown = demo.locator('wa-dropdown');
-  await dropdown.getByRole('button', { name: 'Choose View' }).click();
-  await expect(dropdown.locator('wa-dropdown-item').first()).toBeVisible();
-  expect(
-    await dropdown.evaluate(
-      (element) =>
-        window.getComputedStyle(
-          element.shadowRoot!.querySelector('[part~="menu"]')!,
-        ).padding,
-    ),
-  ).toBe('0px');
-});
-
-test('a raw dropdown inside PopupSurface keeps keyboard navigation made during show', async ({
-  page,
-}) => {
-  await page.goto('/?component=surface-scaffold');
-  await page.evaluate(async () => {
-    await customElements.whenDefined('wa-dropdown');
-    const surface = document.createElement('span');
-    surface.className = 'kui-popup-surface';
-    surface.innerHTML =
-      '<wa-dropdown id="test-surface-dropdown"><button slot="trigger">Choose action</button><wa-dropdown-item>First</wa-dropdown-item><wa-dropdown-item>Second</wa-dropdown-item></wa-dropdown>';
-    document.body.append(surface);
-    const dropdown = surface.querySelector(
-      'wa-dropdown',
-    ) as unknown as HTMLElement & {
-      updateComplete: Promise<unknown>;
-      menu?: HTMLElement;
-    };
-    await dropdown.updateComplete;
-    dropdown.menu?.style.setProperty('--show-duration', '1500ms');
-  });
-  const dropdown = page.locator('#test-surface-dropdown');
-  const trigger = dropdown.getByRole('button', { name: 'Choose action' });
-  const second = dropdown.getByRole('menuitem', { name: 'Second' });
-  await trigger.click();
-  await expect
-    .poll(() =>
-      dropdown.evaluate((element) =>
-        (
-          element as HTMLElement & { menu?: HTMLElement }
-        ).menu?.classList.contains('show'),
-      ),
-    )
-    .toBe(true);
-  await page.keyboard.press('Home');
-  await page.keyboard.press('ArrowDown');
-  await expect(second).toBeFocused();
-  await expect
-    .poll(() =>
-      dropdown.evaluate((element) =>
-        (
-          element as HTMLElement & { menu?: HTMLElement }
-        ).menu?.classList.contains('show'),
-      ),
-    )
-    .toBe(false);
-  await expect(second).toBeFocused();
-  await page.keyboard.press('Enter');
-  await expect(dropdown).not.toHaveAttribute('open', '');
+  const menu = demo.locator('.kui-popup-surface > .kui-popup-menu');
+  await menu.getByRole('button', { name: 'Choose View' }).click();
+  await expect(menu.locator('.kui-popup-menu__item').first()).toBeVisible();
+  // `inset="list-zero"` removes the menu's padding.
+  await expect(menu.locator(':scope > .kui-popup-menu__menu')).toHaveCSS(
+    'padding',
+    '0px',
+  );
 });
 
 test('a definite-height DialogSurface hands its whole body to one filling child', async ({

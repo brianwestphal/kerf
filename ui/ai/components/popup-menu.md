@@ -6,7 +6,7 @@
 
 ## When to use
 
-A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.
+A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.
 
 - Offer a short list of commands behind one trigger, such as a toolbar sort or More menu.
 - Group related commands under headings and dividers in one popup.
@@ -28,7 +28,7 @@ A typed action menu with nested choices, selected state, and optional pointer-an
 - CSS: the browser build of `@kerfjs/ui/popup-menu` pulls its CSS automatically; import `@kerfjs/ui/popup-menu.css` manually only without the `browser` export condition.
 - Theme CSS: import `@kerfjs/ui/webawesome.css` once.
 - Registration: import `@kerfjs/ui/popup-menu/register` once (a side effect).
-- Declared side effects: browser-condition-css, custom-element-registration.
+- Declared side effects: browser-condition-css, document-listeners, custom-element-registration.
 
 ## Props
 
@@ -53,11 +53,11 @@ Exact prop names and types: [`@kerfjs/ui/popup-menu`](../public-api-signatures-v
 - Parents: any.
 - Contexts: `application-ui`.
 - Children: unrestricted.
-- Built from: [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md), [Button](./wa-button.md), [Divider](./wa-divider.md).
+- Built from: [LucideIcon](./lucide-icon.md), [Tooltip](./wa-tooltip.md).
 
 ## State and wiring
 
-**The app owns:** commands and their delegated actions; which items are enabled; reactions to the menu opening or closing; contextmenu event handling and identification of the menu root when using a pointer-anchored context menu.
+**The app owns:** commands and their delegated actions; which items are enabled; the checked state of checkbox choices, which the menu reports as requested in its kui-menu-select event; reactions to the menu opening or closing; contextmenu event handling and identification of the menu root when using a pointer-anchored context menu.
 
 No wiring helper.
 
@@ -67,8 +67,9 @@ Margin: none · border: child · padding: child (layout role: controls). `self` 
 
 ## Accessibility
 
-- An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. The context anchor stays out of the accessibility tree. The open menu takes the trigger's name (the context or icon-only label, or the visible text), and each submenu takes its parent item's label, so a screen reader announces a named menu and getByRole('menu', { name }) finds it. Web Awesome provides menu roles, nested arrow-key navigation, typeahead, and Escape.
-- Once registered, an icon-only trigger shows its label as an aria-hidden Web Awesome help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.
+- The trigger is a native button with aria-haspopup="menu" and aria-expanded; an icon-only trigger requires label, rendered as visually hidden text inside the button, and a trigger with visible text is named by that text. The context anchor stays out of the accessibility tree. The open menu (role="menu") takes the trigger's name, each submenu takes its parent item's label, and a heading names the role="group" that holds its items, so a screen reader announces named menus and getByRole('menu', { name }) finds them. Items are menuitem or menuitemcheckbox buttons with aria-checked and aria-disabled.
+- Keyboard: Enter, Space, or ArrowDown on the trigger opens on the first item (ArrowUp on the last); ArrowUp/ArrowDown move and wrap past disabled items, Home/End jump, and typing a label's first letters moves to it; Enter or Space chooses; ArrowRight opens a submenu on its first item and ArrowLeft returns to the parent item (mirrored right to left); Escape closes the current level and returns focus to its opener; Tab closes the menu and continues from the trigger.
+- Once registered, an icon-only trigger shows its label as an aria-hidden help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.
 
 ## Usage examples
 
@@ -158,14 +159,14 @@ row.addEventListener('contextmenu', (event) => {
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-popup-menu`, `kui-popup-menu__label`, `kui-popup-menu__details`, `kui-popup-menu__context-anchor`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-popup-menu`, `kui-popup-menu__trigger`, `kui-popup-menu__label`, `kui-popup-menu__menu`, `kui-popup-menu__item`, `kui-popup-menu__details`, `kui-popup-menu__context-anchor`.
 
-Never put `kui-popup-menu`, `kui-popup-menu__label`, `kui-popup-menu__details`, `kui-popup-menu__context-anchor` on an element you write; render `PopupMenu` instead (`KUI-L103`).
+Never put `kui-popup-menu`, `kui-popup-menu__trigger`, `kui-popup-menu__label`, `kui-popup-menu__menu`, `kui-popup-menu__item`, `kui-popup-menu__details`, `kui-popup-menu__context-anchor` on an element you write; render `PopupMenu` instead (`KUI-L103`).
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 
 ## Related
 
-- Components: [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md), [Button](./wa-button.md), [Divider](./wa-divider.md), [Select](./select.md).
+- Components: [LucideIcon](./lucide-icon.md), [Tooltip](./wa-tooltip.md), [Select](./select.md), [Dropdown](./wa-dropdown.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#popup-menu-migration`](../../docs/component-selection.md#popup-menu-migration).
 - UX catalog route: `?component=popup-menu`.

@@ -907,9 +907,10 @@
   }
 }
 
-/* Release the panel and its sliding/scrolling content while a PopupMenu or
-   Web Awesome dropdown is open. This comes after resize clipping and keeps
-   the popup in place through wa-show/wa-after-hide without a prop change. */
+/* Release the panel and its sliding/scrolling content while a raw Web
+   Awesome dropdown is open (a PopupMenu opens in the top layer, which no
+   ancestor clips). This comes after resize clipping and keeps the popup in
+   place through wa-show/wa-after-hide without a prop change. */
 .kui-workbench__rail:not([data-collapsed="true"]):has(wa-dropdown[open]),
 .kui-workbench__drawer:not([data-collapsed="true"]):has(wa-dropdown[open]) {
   overflow: visible;

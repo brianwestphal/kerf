@@ -13,8 +13,9 @@ import { mount, signal } from 'kerfjs';
  * A single Select whose choices put a divider inside one run of options, a
  * multiple Select, and a PopupMenu, mounted under a signal the test bumps to
  * force kerf re-renders with an unchanged template. Web Awesome sets
- * attributes on these hosts itself, so the test can check what a
- * re-render's morph leaves behind (and whether it churns any).
+ * attributes on the Select hosts itself, so the test can check what a
+ * re-render's morph leaves behind (and whether it churns any); the PopupMenu
+ * must come through untouched.
  */
 const renders = signal(0);
 

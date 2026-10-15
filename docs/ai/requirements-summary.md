@@ -466,8 +466,12 @@ and missing prefixes leave state intact.
 Programmatic saved-search replacement uses a model action that publishes parsed
 state and advances the editor revision, so an unchanged chip set cannot leave
 stale DOM-owned query text visible.
-PopupMenu nested menus accept action items, headings, and dividers; the latter
-two separate groups visually while keyboard navigation remains on commands.
+PopupMenu is Kerf-owned (no Web Awesome dropdown): a native trigger and a
+top-layer `role="menu"` popover wired by `popup-menu/register`. Nested menus
+accept action items, headings, and dividers; the latter two separate groups
+visually while keyboard navigation remains on commands. A choice dispatches
+the item's `data-action` and a `kui-menu-select` event; checkbox state stays
+application-owned.
 AnchoredSurface is shipped for app-owned interactive help or arbitrary popup
 content near an element or pointer. It provides Kerf UI surface tokens and
 delegates viewport placement, top-layer/modal hosting, focus, and dismissal to

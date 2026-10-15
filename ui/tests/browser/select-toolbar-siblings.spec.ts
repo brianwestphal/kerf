@@ -19,17 +19,17 @@ function groupGeometry(select: Locator) {
         return child.shadowRoot!.querySelector<HTMLElement>(
           '[part~="combobox"]',
         )!;
-      if (child.tagName === 'WA-DROPDOWN')
-        return child
-          .querySelector('wa-button')!
-          .shadowRoot!.querySelector<HTMLElement>('[part~="base"]')!;
+      if (child.classList.contains('kui-popup-menu'))
+        return child.querySelector<HTMLElement>('.kui-popup-menu__trigger')!;
       return child as HTMLElement;
     };
     const segments = [...group.children].map((child) => {
       const element = visual(child);
       const box = element.getBoundingClientRect();
       return {
-        tag: child.tagName,
+        tag: child.classList.contains('kui-popup-menu')
+          ? 'POPUP-MENU'
+          : child.tagName,
         left: box.left - outer.left,
         right: box.right - outer.left,
         top: box.top - outer.top,
@@ -61,7 +61,7 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
   const select = page.locator('wa-select[name="toolbar-group-sort"]');
   const group = select.locator('xpath=..');
   const pressed = group.locator('> button[aria-pressed="true"]');
-  const trigger = group.locator('wa-dropdown > wa-button');
+  const trigger = group.locator('.kui-popup-menu > .kui-popup-menu__trigger');
   await expect(select).toBeVisible();
 
   for (const [size, shape] of [
@@ -86,7 +86,7 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
     expect(segments.map((segment) => segment.tag)).toEqual([
       'BUTTON',
       'WA-SELECT',
-      'WA-DROPDOWN',
+      'POPUP-MENU',
     ]);
     for (const segment of segments) {
       expect(segment.height).toBe(height);
@@ -117,10 +117,7 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
     await expect
       .poll(() =>
         trigger.evaluate(
-          (host) =>
-            window.getComputedStyle(
-              host.shadowRoot!.querySelector('[part~="base"]')!,
-            ).backgroundColor,
+          (host) => window.getComputedStyle(host).backgroundColor,
         ),
       )
       .toBe(siblingHover);

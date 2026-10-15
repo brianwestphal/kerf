@@ -669,12 +669,10 @@ export const generatedKerfCatalog = [
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
-    "description": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, built on the Web Awesome dropdown.",
+    "description": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.",
     "uses": [
-      "wa-dropdown",
-      "wa-dropdown-item",
-      "wa-button",
-      "wa-divider"
+      "lucide-icon",
+      "wa-tooltip"
     ],
     "demoSource": "ui/ux-demo/demos/popup-menu.tsx",
     "componentSource": "ui/src/components/actions/popup-menu/popup-menu.tsx",

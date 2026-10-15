@@ -1,9 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import {
-  installPopupMenuSubmenuPlacement,
-  phoneSubmenuPosition,
-} from '../../src/components/actions/popup-menu/internal/install-popup-menu-submenu-placement.js';
+import { phoneSubmenuPosition } from '../../src/shared/popup/position-popup.js';
 
 const rect = (left: number, top: number, width: number, height: number) =>
   new DOMRect(left, top, width, height);
@@ -22,6 +19,7 @@ describe('phoneSubmenuPosition', () => {
       top: 284,
       maxHeight: 552,
       maxWidth: 374,
+      placement: 'bottom-start',
     });
   });
 
@@ -38,6 +36,7 @@ describe('phoneSubmenuPosition', () => {
       top: 306,
       maxHeight: 538,
       maxWidth: 374,
+      placement: 'top-start',
     });
   });
 
@@ -54,6 +53,7 @@ describe('phoneSubmenuPosition', () => {
       top: 354,
       maxHeight: 206,
       maxWidth: 374,
+      placement: 'bottom-start',
     });
   });
 
@@ -66,204 +66,5 @@ describe('phoneSubmenuPosition', () => {
         true,
       ).left,
     ).toBe(60);
-  });
-});
-
-describe('installPopupMenuSubmenuPlacement', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    document.body.replaceChildren();
-  });
-
-  it('switches narrow placement on and off without changing raw dropdowns', async () => {
-    let narrow = true;
-    vi.stubGlobal('matchMedia', () => ({ matches: narrow }));
-    vi.stubGlobal('innerWidth', 390);
-    vi.stubGlobal('innerHeight', 844);
-    const nativePosition = vi.fn();
-    const prototype = { positionSubmenu: nativePosition };
-    installPopupMenuSubmenuPlacement(prototype);
-    const installedPosition = prototype.positionSubmenu;
-    installPopupMenuSubmenuPlacement(prototype);
-    expect(prototype.positionSubmenu).toBe(installedPosition);
-    const menu = document.createElement('wa-dropdown');
-    Object.setPrototypeOf(
-      menu,
-      Object.assign(Object.create(HTMLElement.prototype), prototype),
-    );
-    menu.classList.add('kui-popup-menu');
-    const surface = document.createElement('div');
-    Object.defineProperty(menu, 'menu', { value: surface });
-    surface.getBoundingClientRect = () => rect(30, 100, 180, 180);
-    const item = document.createElement('wa-dropdown-item') as HTMLElement & {
-      submenuElement: HTMLElement;
-      submenuOpen: boolean;
-    };
-    const submenu = document.createElement('div');
-    submenu.getBoundingClientRect = () => rect(0, 0, 160, 120);
-    item.submenuElement = submenu;
-    item.submenuOpen = true;
-    item.append(submenu);
-    menu.append(item);
-    document.body.append(menu);
-    const position = (entry: typeof item) =>
-      (
-        menu as unknown as { positionSubmenu: (entry: typeof item) => void }
-      ).positionSubmenu(entry);
-
-    position(item);
-    await Promise.resolve();
-    expect(nativePosition).not.toHaveBeenCalled();
-    expect(submenu.style.position).toBe('fixed');
-    expect(submenu.style.left).toBe('30px');
-    expect(submenu.style.top).toBe('284px');
-
-    narrow = false;
-    position(item);
-    expect(nativePosition).toHaveBeenCalledOnce();
-    expect(submenu.style.position).toBe('');
-    expect(submenu.style.maxHeight).toBe('');
-
-    narrow = true;
-    position(item);
-    item.submenuOpen = false;
-    await Promise.resolve();
-    expect(submenu.style.position).toBe('');
-
-    position(document.createElement('wa-dropdown-item') as typeof item);
-    expect(nativePosition).toHaveBeenCalledTimes(2);
-
-    menu.classList.remove('kui-popup-menu');
-    submenu.style.left = '7px';
-    position(item);
-    expect(nativePosition).toHaveBeenCalledTimes(3);
-    expect(submenu.style.left).toBe('7px');
-
-    position(document.createElement('wa-dropdown-item') as typeof item);
-    expect(nativePosition).toHaveBeenCalledTimes(4);
-  });
-
-  it('positions a nested page against its immediate parent submenu', async () => {
-    vi.stubGlobal('matchMedia', () => ({ matches: true }));
-    vi.stubGlobal('innerWidth', 390);
-    vi.stubGlobal('innerHeight', 844);
-    const prototype = { positionSubmenu: vi.fn() };
-    installPopupMenuSubmenuPlacement(prototype);
-    const menu = document.createElement('wa-dropdown');
-    Object.setPrototypeOf(
-      menu,
-      Object.assign(Object.create(HTMLElement.prototype), prototype),
-    );
-    menu.classList.add('kui-popup-menu');
-    const rootSurface = document.createElement('div');
-    Object.defineProperty(menu, 'menu', { value: rootSurface });
-    rootSurface.getBoundingClientRect = () => rect(30, 100, 180, 180);
-    const parent = document.createElement('wa-dropdown-item') as HTMLElement & {
-      submenuElement: HTMLElement;
-    };
-    const parentSurface = document.createElement('div');
-    parentSurface.getBoundingClientRect = () => rect(170, 550, 180, 100);
-    parent.submenuElement = parentSurface;
-    const item = document.createElement('wa-dropdown-item') as HTMLElement & {
-      submenuElement: HTMLElement;
-      submenuOpen: boolean;
-    };
-    const submenu = document.createElement('div');
-    submenu.getBoundingClientRect = () => rect(0, 0, 220, 240);
-    item.submenuElement = submenu;
-    item.submenuOpen = true;
-    item.append(submenu);
-    parent.append(item);
-    menu.append(parent);
-    document.body.append(menu);
-    const position = (entry: typeof item) =>
-      (
-        menu as unknown as { positionSubmenu: (entry: typeof item) => void }
-      ).positionSubmenu(entry);
-
-    position(item);
-    await Promise.resolve();
-    expect(submenu.style.top).toBe('306px');
-    expect(submenu.getAttribute('data-placement')).toBe('top-start');
-  });
-
-  it('re-measures the safe triangle after placement and after the show animation', async () => {
-    vi.stubGlobal('matchMedia', () => ({ matches: false }));
-    const frames: FrameRequestCallback[] = [];
-    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
-      frames.push(callback);
-      return frames.length;
-    });
-    const update = vi.fn();
-    const prototype = {
-      positionSubmenu: vi.fn(),
-      updateSafeTriangleCoordinates: update,
-    };
-    installPopupMenuSubmenuPlacement(prototype);
-    const menu = document.createElement('wa-dropdown');
-    Object.setPrototypeOf(
-      menu,
-      Object.assign(Object.create(HTMLElement.prototype), prototype),
-    );
-    menu.classList.add('kui-popup-menu');
-    const item = document.createElement('wa-dropdown-item') as HTMLElement & {
-      submenuElement: HTMLElement;
-      submenuOpen: boolean;
-    };
-    const submenu = document.createElement('div');
-    let settle!: () => void;
-    let fail!: (reason: unknown) => void;
-    const animations = [
-      { finished: new Promise<void>((resolve) => (settle = resolve)) },
-    ];
-    submenu.getAnimations = () => animations as unknown as Animation[];
-    item.submenuElement = submenu;
-    item.submenuOpen = true;
-    menu.append(item);
-    document.body.append(menu);
-    const position = () =>
-      (
-        menu as unknown as { positionSubmenu: (entry: typeof item) => void }
-      ).positionSubmenu(item);
-
-    position();
-    expect(update).not.toHaveBeenCalled();
-    frames.shift()!(0);
-    expect(update).toHaveBeenCalledTimes(1);
-    settle();
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(update).toHaveBeenCalledTimes(2);
-
-    // A rejected (cancelled) animation is ignored; no animations skips the wait.
-    animations[0] = {
-      finished: new Promise<void>((_, reject) => (fail = reject)),
-    };
-    position();
-    frames.shift()!(0);
-    fail(new Error('cancelled'));
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(update).toHaveBeenCalledTimes(3);
-    animations.length = 0;
-    position();
-    frames.shift()!(0);
-    expect(update).toHaveBeenCalledTimes(4);
-
-    // A closed submenu or a disconnected menu is not re-measured.
-    position();
-    item.submenuOpen = false;
-    frames.shift()!(0);
-    item.submenuOpen = true;
-    position();
-    menu.remove();
-    frames.shift()!(0);
-    expect(update).toHaveBeenCalledTimes(4);
-
-    // An item without a submenu schedules nothing.
-    (
-      menu as unknown as { positionSubmenu: (entry: HTMLElement) => void }
-    ).positionSubmenu(document.createElement('wa-dropdown-item'));
-    expect(frames).toHaveLength(0);
   });
 });

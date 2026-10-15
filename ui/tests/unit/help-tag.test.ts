@@ -97,33 +97,54 @@ function select({
   return { host, combobox, input, listbox, option };
 }
 
-function popupMenu({
-  label = 'Sort Tickets',
-  shadow = true,
-}: { label?: string | null; shadow?: boolean } = {}) {
+function popupMenu({ label = 'Sort Tickets' }: { label?: string | null } = {}) {
   fakeTime();
-  const host = document.createElement('wa-dropdown') as FakeHost;
-  host.open = false;
+  const host = document.createElement('span');
+  host.className = 'kui-popup-menu';
   host.dataset.component = 'popup-menu';
-  const trigger = document.createElement('wa-button');
-  trigger.slot = 'trigger';
+  const trigger = document.createElement('button');
+  trigger.className = 'kui-popup-menu__trigger';
+  trigger.setAttribute('aria-expanded', 'false');
   const text = document.createElement('span');
-  if (label === null) text.textContent = 'Actions';
-  else {
+  if (label === null) {
+    text.className = 'kui-popup-menu__text';
+    text.textContent = 'Actions';
+  } else {
     text.className = 'kui-popup-menu__label';
     text.textContent = label;
   }
   trigger.append(text);
-  const item = document.createElement('wa-dropdown-item');
-  host.append(trigger, item);
-  if (shadow) host.attachShadow({ mode: 'open' });
+  const menu = document.createElement('div');
+  menu.className = 'kui-popup-menu__menu';
+  const item = document.createElement('button');
+  item.className = 'kui-popup-menu__item';
+  menu.append(item);
+  host.append(trigger, menu);
   document.body.append(host);
-  return { host, trigger, item };
+  return { host, trigger, item, menu };
 }
 
-const tagOf = (host: Element) =>
-  host.shadowRoot?.querySelector<FakeTooltip>('wa-tooltip.kui-help-tag') ??
-  null;
+/** A Select's tag lives in its shadow root; a PopupMenu's in the body layer. */
+const tagOf = (host: Element) => {
+  const own = host.shadowRoot?.querySelector<FakeTooltip>(
+    'wa-tooltip.kui-help-tag',
+  );
+  if (own) return own;
+  const trigger = host.querySelector(':scope > .kui-popup-menu__trigger');
+  return (
+    [
+      ...document.querySelectorAll<FakeTooltip>(
+        '.kui-help-tag-layer > wa-tooltip',
+      ),
+    ].find((tag) => trigger && tag.anchor === trigger) ?? null
+  );
+};
+
+function toggle(menu: Element, newState: 'open' | 'closed') {
+  const event = new Event('beforetoggle');
+  Object.defineProperty(event, 'newState', { value: newState });
+  menu.dispatchEvent(event);
+}
 
 function pointerOver(target: EventTarget, pointerType = 'mouse') {
   target.dispatchEvent(
@@ -293,25 +314,64 @@ describe('icon-only trigger help tags', () => {
     expect(tagOf(filter.host)).toBeNull();
   });
 
-  it('names an icon-only PopupMenu trigger; a host without a shadow root gets none', () => {
+  it('names an icon-only PopupMenu trigger in the body layer, in its color scheme', () => {
     const { host, trigger } = popupMenu();
+    trigger.style.colorScheme = 'dark';
     pointerOver(trigger);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     const tag = tagOf(host)!;
     expect(tag.textContent).toBe('Sort Tickets');
     expect(tag.anchor).toBe(trigger);
+    expect(tag.parentElement?.className).toBe('kui-help-tag-layer');
+    expect(tag.style.colorScheme).toBe('dark');
 
-    const bare = popupMenu({ shadow: false });
-    pointerOver(bare.trigger);
+    // The menu itself is not the trigger.
+    const other = popupMenu({ label: 'Other' });
+    pointerOver(other.item);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
-    expect(bare.host.querySelector('wa-tooltip')).toBeNull();
-    // The previous tag closed when the pointer moved to the new trigger.
-    expect(tag.open).toBe(false);
+    expect(tagOf(other.host)).toBeNull();
 
     const unnamed = popupMenu({ label: '' });
     pointerOver(unnamed.trigger);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     expect(tagOf(unnamed.host)).toBeNull();
+  });
+
+  it('hides a PopupMenu tag when its menu opens and shows none while it is open', () => {
+    const { host, trigger, menu } = popupMenu();
+    focusIn(trigger);
+    const tag = tagOf(host)!;
+    expect(tag.open).toBe(true);
+    // A closing toggle, another popover's toggle, or a submenu's is not it.
+    toggle(menu, 'closed');
+    const stray = document.createElement('div');
+    stray.className = 'kui-popup-menu__menu';
+    document.body.append(stray);
+    toggle(stray, 'open');
+    toggle(document.body, 'open');
+    expect(tag.open).toBe(true);
+    toggle(menu, 'open');
+    expect(tag.open).toBe(false);
+    // While it is open (aria-expanded), hovering the trigger shows nothing.
+    trigger.setAttribute('aria-expanded', 'true');
+    focusOut(trigger, document.body);
+    focusIn(document.body);
+    pointerOver(document.body);
+    pointerOver(trigger);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    expect(tag.open).toBe(false);
+    trigger.setAttribute('aria-expanded', 'false');
+    pointerOver(document.body);
+    pointerOver(trigger);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    expect(tagOf(host)!.open).toBe(true);
+  });
+
+  it('ignores a toggle on a menu whose root is not an icon-only PopupMenu', () => {
+    const { host, trigger, menu } = popupMenu({ label: null });
+    focusIn(trigger);
+    toggle(menu, 'open');
+    expect(tagOf(host)).toBeNull();
   });
 
   it('shows at once on keyboard focus, never on a click focus', () => {
@@ -722,13 +782,12 @@ describe('focus-visible default', () => {
       await import('../../src/integrations/webawesome/help-tags/install-help-tag.js');
     const doc = document.implementation.createHTMLDocument('help');
     install(doc);
-    const host = doc.createElement('wa-dropdown');
+    const host = doc.createElement('span');
     host.dataset.component = 'popup-menu';
-    const trigger = doc.createElement('wa-button');
-    trigger.slot = 'trigger';
+    const trigger = doc.createElement('button');
+    trigger.className = 'kui-popup-menu__trigger';
     trigger.innerHTML = '<span class="kui-popup-menu__label">Sort</span>';
     host.append(trigger);
-    host.attachShadow({ mode: 'open' });
     doc.body.append(host);
     const matches = vi
       .spyOn(trigger, 'matches')
@@ -740,6 +799,6 @@ describe('focus-visible default', () => {
     focusIn(doc.body);
     focusIn(trigger);
     expect(matches).toHaveBeenCalledWith(':focus-visible');
-    expect(host.shadowRoot!.querySelector('wa-tooltip')).toBeNull();
+    expect(doc.querySelector('wa-tooltip')).toBeNull();
   });
 });

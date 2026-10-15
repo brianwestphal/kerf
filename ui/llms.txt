@@ -459,6 +459,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   row, as in the catalog resource footer. `PopupMenu` items also support nested `submenu`
   actions, headings, dividers, checked or trailing choice marks, danger tone,
   and disabled reasons; nested headings/dividers stay out of keyboard choices;
+  a choice dispatches its `data-action` plus a bubbling `kui-menu-select` event whose
+  `detail.checked` is the state a checkbox choice asks for (the app owns and
+  renders that state);
   use `context` with `anchor` + `openPopupMenu` (or `openPopupMenuAt`) and
   `closePopupMenu` for pointer-anchored row menus; the menu owns its
   zero-footprint anchor host, so add no wrapper or CSS. `openPopupMenuAt`

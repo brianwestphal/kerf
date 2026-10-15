@@ -1,5 +1,67 @@
-/* An icon-only trigger's accessible name: Web Awesome names its button from the
-   slotted content, so the label is present but visually hidden. */
+/* PopupMenu shares the Select's caret motion, surface inset, row rhythm,
+   current-row fill, and group titles from the popup-choice contract in
+   foundation.css. Checkbox items reserve a check column, and so do the plain
+   items in any level that holds one; a level without a choice keeps the
+   compact start. */
+
+.kui-popup-menu {
+  --_kui-popup-menu-motion: 75ms;
+  --_kui-popup-menu-trigger-height: round(2.75em, 1px);
+  --_kui-popup-menu-trigger-radius: var(--kui-layout-rounded-radius);
+
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/* The trigger: a quiet button whose text and caret share one row. */
+.kui-popup-menu__trigger {
+  display: inline-flex;
+  box-sizing: border-box;
+  height: var(--_kui-popup-menu-trigger-height);
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 var(--kui-layout-item-padding);
+  border: var(--kui-layout-item-border-width) solid transparent;
+  border-radius: var(--_kui-popup-menu-trigger-radius);
+  color: var(--kui-color-neutral-on-quiet);
+  background: transparent;
+  font: inherit;
+  font-weight: var(--kui-font-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transform: none;
+  transition:
+    background-color var(--_kui-popup-menu-motion) ease,
+    border-color var(--_kui-popup-menu-motion) ease,
+    color var(--_kui-popup-menu-motion) ease;
+}
+@media (hover: hover) {
+  .kui-popup-menu__trigger:not(:disabled):hover {
+    background-color: var(--kui-color-neutral-fill-quiet);
+  }
+}
+.kui-popup-menu__trigger:focus {
+  outline: none;
+}
+.kui-popup-menu__trigger:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-popup-menu__trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.kui-popup-menu__trigger > svg {
+  flex: none;
+}
+/* An icon and visible text sit one standard gap apart. */
+.kui-popup-menu__text:not(:first-child) {
+  margin-inline-start: var(--kui-space-xs);
+}
+
+/* An icon-only trigger's accessible name: present, but visually hidden. */
 .kui-popup-menu__label {
   position: absolute;
   width: 1px;
@@ -11,98 +73,195 @@
   clip-path: inset(50%);
 }
 
-/* PopupMenu shares the Select's caret motion, surface inset, row rhythm,
-   current-row fill, and group titles from the popup-choice contract in
-   foundation.css. Checkbox items reserve a check column, and so do the
-   plain items in any level that holds one; a level without a choice keeps the
-   compact start. */
-
-/* The trigger caret turns to face the open menu, like the Select's. */
-.kui-popup-menu > wa-button::part(caret) {
+/* The caret turns to face the open menu, like the Select's. */
+.kui-popup-menu__caret {
+  display: flex;
+  width: 1.25em;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: 0.75em;
   rotate: 0deg;
   transition: var(--_kui-popup-caret-transition);
 }
-.kui-popup-menu[open] > wa-button::part(caret) {
+.kui-popup-menu__caret svg {
+  width: 0.875em;
+  height: 0.875em;
+  flex: none;
+}
+.kui-popup-menu__trigger[aria-expanded="true"] > .kui-popup-menu__caret {
   rotate: var(--_kui-popup-caret-open-rotation);
 }
 
-/* The Select's popup fades in place; Web Awesome's dropdown also scales from
-   90%. Holding the scale leaves the shared fade. */
-.kui-popup-menu::part(menu) {
+/* The menu and each submenu: a raised surface in the top layer, placed by
+   the register against its trigger or item. It fades in place. */
+.kui-popup-menu__menu {
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  width: max-content;
+  margin: 0;
   padding: var(--_kui-popup-inset);
+  overflow: auto;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text);
   background: var(--_kui-popup-scroll-cue);
+  box-shadow: var(--kui-shadow-m);
+  font: inherit;
+  font-weight: normal;
+  text-align: start;
+  white-space: normal;
+  user-select: none;
+  opacity: 0;
+  transition:
+    opacity var(--_kui-popup-menu-motion) ease,
+    display var(--_kui-popup-menu-motion) allow-discrete,
+    overlay var(--_kui-popup-menu-motion) allow-discrete;
+}
+.kui-popup-menu__menu:popover-open {
+  display: flex;
+  flex-direction: column;
   gap: var(--_kui-popup-row-gap);
-  scale: none !important;
+  opacity: 1;
+}
+/* Rows keep their height; a capped menu scrolls instead of squeezing them. */
+.kui-popup-menu__menu > *,
+.kui-popup-menu__group > *,
+.kui-popup-menu__submenu-host > * {
+  flex: none;
+}
+@starting-style {
+  .kui-popup-menu__menu:popover-open {
+    opacity: 0;
+  }
+}
+.kui-popup-menu__menu:focus {
+  outline: none;
 }
 
-/* A submenu capped beside its parent menu (a phone placement) scrolls with
-   the same edge cue as the menu and a Select's listbox. */
-.kui-popup-menu wa-dropdown-item::part(submenu) {
-  background: var(--_kui-popup-scroll-cue);
+/* A pointer-opened submenu's safe triangle: from the pointer to the
+   submenu's near edge, so a diagonal move toward it stays over the submenu
+   instead of crossing (and closing it from) the parent's other items. */
+.kui-popup-menu__menu[data-pointer-opened]::before {
+  position: fixed;
+  inset: 0;
+  content: "";
+  clip-path: polygon(
+    var(--_kui-popup-menu-safe-x, 0) var(--_kui-popup-menu-safe-y, 0),
+    var(--_kui-popup-menu-safe-edge, 0) var(--_kui-popup-menu-safe-top, 0),
+    var(--_kui-popup-menu-safe-edge, 0) var(--_kui-popup-menu-safe-bottom, 0)
+  );
 }
 
-.kui-popup-menu wa-dropdown-item {
-  /* A plain command starts at the checkbox glyph's leading edge. The glyph
-     sits half a smaller-font em beyond the row's base inset; its label starts
-     after the full check column below. */
+.kui-popup-menu__group,
+.kui-popup-menu__submenu-host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--_kui-popup-row-gap);
+}
+
+/* A group title matches the Select's group title. */
+.kui-popup-menu__heading {
+  padding: var(--_kui-popup-group-title-padding);
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-2xs);
+  font-weight: var(--_kui-popup-group-title-font-weight);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kui-popup-menu__divider {
+  flex: none;
+  margin-block: 0.5em;
+  border-top: 1px solid var(--kui-color-neutral-border-normal);
+}
+
+/* One command: the Select option's geometry. A plain command starts at the
+   checkbox glyph's leading edge, half a smaller-font em beyond the row's base
+   inset. */
+.kui-popup-menu__item {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  align-items: center;
+  margin: 0;
   padding: var(--_kui-popup-row-padding-block)
     var(--_kui-popup-row-padding-inline-end) var(--_kui-popup-row-padding-block)
     calc(var(--_kui-popup-row-padding-inline-start) + 0.4375em);
+  border: 0;
+  border-radius: var(--kui-radius-s);
+  color: var(--kui-color-text);
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  white-space: normal;
+  cursor: pointer;
+  transform: none;
+  transition:
+    background-color var(--_kui-popup-menu-motion) ease,
+    color var(--_kui-popup-menu-motion) ease;
 }
-.kui-popup-menu wa-dropdown-item[type="checkbox"] {
-  /* Web Awesome marks every sibling checkbox-adjacent; reserve this column
-     only on items whose checked state was explicitly supplied. */
-  padding-inline-start: calc(
-    var(--_kui-popup-row-padding-inline-start) +
-      var(--_kui-popup-row-check-width)
-  );
+.kui-popup-menu__item:focus {
+  outline: none;
 }
-/* Web Awesome's nested submenu owns its item host padding. Move its exposed
-   checkmark inside the panel: in flow, the checkmark and its gap advance the
-   row's content by the same check column as at the top level. */
-.kui-popup-menu
-  wa-dropdown-item[slot="submenu"][type="checkbox"]::part(checkmark) {
-  margin-inline-start: 0;
+@media (hover: hover) {
+  .kui-popup-menu__item:not([aria-disabled="true"]):hover {
+    background-color: var(--kui-color-neutral-fill-normal);
+  }
+  .kui-popup-menu__item[data-tone="danger"]:not([aria-disabled="true"]):hover {
+    color: var(--kui-color-danger-on-normal);
+    background-color: var(--kui-color-danger-fill-normal);
+  }
 }
-/* A plain item beside checkbox choices holds their check column with an empty
-   icon-slot spacer, at either level. Web Awesome sizes a slotted icon in its
-   smaller font and spaces it 0.75em (!important) from the next item; with
-   that gap, 1em of width equals the 1.25em checkmark plus its 0.5em gap. */
-.kui-popup-menu__check-space {
-  display: block;
-  width: 1em;
-  height: 1px;
-  flex: none;
+.kui-popup-menu__item[aria-expanded="true"] {
+  background-color: var(--kui-color-neutral-fill-normal);
 }
-.kui-popup-menu wa-dropdown-item::part(label) {
-  padding-block: var(--_kui-popup-row-label-padding-block);
-  line-height: var(--_kui-popup-row-label-line-height);
+.kui-popup-menu__item[data-tone="danger"] {
+  color: var(--kui-color-danger-on-quiet);
 }
 /* A keyboard-focused item is the menu's current row: the Select's brand fill,
    with no second focus ring inside the open popup. */
-.kui-popup-menu wa-dropdown-item:focus-visible {
-  outline: none;
+.kui-popup-menu__item:focus-visible {
   color: var(--_kui-popup-row-current-color);
   background-color: var(--_kui-popup-row-current-background);
 }
-.kui-popup-menu > wa-divider,
-.kui-popup-menu wa-divider[slot="submenu"] {
-  --spacing: 0.5em;
+.kui-popup-menu__item[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* The check column: the checkmark of a checkbox item, or the same empty
+   width beside the plain items of a level that holds one. */
+.kui-popup-menu__check {
+  display: flex;
+  width: 1.25em;
+  height: 1em;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin-inline-end: 0.5em;
+  font-size: var(--kui-font-s);
+}
+.kui-popup-menu__check svg {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+  stroke-width: 2.5;
+}
+.kui-popup-menu__item[aria-checked="false"] .kui-popup-menu__check svg {
+  visibility: hidden;
 }
 
 /* Center the icon on the label's line, like the Select's start slot. */
-.kui-popup-menu wa-dropdown-item::part(icon) {
-  display: flex;
-  align-self: center;
-}
 .kui-popup-menu__icon {
   display: inline-flex;
   width: var(--_kui-popup-row-icon-size);
   height: var(--_kui-popup-row-icon-size);
   flex: none;
-  /* Web Awesome spaces a slotted item icon 0.75em from its label (an
-     !important shadow rule). Sizing that em makes the gap the Select's. */
-  font-size: calc(var(--_kui-popup-row-icon-gap) / 0.75);
+  margin-inline-end: var(--_kui-popup-row-icon-gap);
 }
 .kui-popup-menu__icon svg {
   display: block;
@@ -110,15 +269,45 @@
   height: 100%;
 }
 
-.kui-popup-menu__details {
-  display: inline-flex;
-  align-items: center;
+.kui-popup-menu__item-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-block: var(--_kui-popup-row-label-padding-block);
+  line-height: var(--_kui-popup-row-label-line-height);
 }
 
+.kui-popup-menu__details {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: end;
+  margin-inline-start: 2em;
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}
 .kui-popup-menu__details svg {
   display: block;
   width: var(--_kui-popup-row-icon-size);
   height: var(--_kui-popup-row-icon-size);
+}
+
+.kui-popup-menu__submenu-icon {
+  display: flex;
+  width: 1.25em;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: 2.5em;
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-s);
+}
+.kui-popup-menu__submenu-icon svg {
+  width: 0.875em;
+  height: 0.875em;
+  flex: none;
+}
+.kui-popup-menu__submenu-icon:dir(rtl) {
+  transform: scaleX(-1);
 }
 
 /* A context menu takes no space where it is rendered: out of flow, it adds no
@@ -145,141 +334,55 @@
   pointer-events: none;
 }
 
-/* A group title matches the Select's group title. It is a styled element
-   rather than a slotted heading, whose Web Awesome metrics are !important. */
-.kui-popup-menu__heading {
-  padding: var(--_kui-popup-group-title-padding);
-  color: var(--kui-color-neutral-on-quiet);
-  font-size: var(--kui-font-2xs);
-  font-weight: var(--_kui-popup-group-title-font-weight);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 /* In a ToolbarControlGroup a PopupMenu sizes itself in the group's context:
-   the group lays out its own native and raw Web Awesome children and names a
-   PopupMenu only to key its own state on it. The trigger takes the group's
-   control height (40px, or 32px in a compact group). A mixed-content trigger
-   in a nested-dropdown group grows for its label plus the caret; a fixed 32px
-   base would center both outside its host, painting the label across the
-   separator and the caret beyond the group border. */
-/* The trigger button takes the group's control metrics, as the group's own
-   raw wa-button children do (toolbar-control-group.css excludes this
-   trigger). The PopupMenu ancestor sits in `:where()` so each rule keeps the
-   specificity of the group's matching raw-child rule and resolves against the
-   group's attribute-keyed variants exactly as they do. */
-.kui-toolbar-control-group :where(wa-dropdown.kui-popup-menu) > wa-button {
-  --wa-form-control-height: remify(40px);
-  display: inline-flex;
-  line-height: 0;
-  align-items: center;
-  justify-content: center;
-  --wa-color-fill-quiet: transparent;
+   the trigger takes the group's control height (40px, or 32px in a compact
+   group), the group's item radius, and the group's hover; in a `single`
+   group the group's own surface shows the hover. A mixed-content trigger in
+   a nested-dropdown group grows for its label plus the caret. */
+.kui-toolbar-control-group > .kui-popup-menu {
+  --_kui-popup-menu-trigger-height: remify(40px);
+  --_kui-popup-menu-trigger-radius: var(
+    --kui-toolbar-item-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
+
+  flex: 0 0 auto;
 }
-.kui-toolbar-control-group[data-size="compact"]
-  :where(wa-dropdown.kui-popup-menu)
-  > wa-button {
-  --wa-form-control-height: remify(32px);
+.kui-toolbar-control-group[data-size="compact"] > .kui-popup-menu {
+  --_kui-popup-menu-trigger-height: remify(32px);
+}
+.kui-toolbar-control-group > .kui-popup-menu > .kui-popup-menu__trigger {
+  min-width: var(--_kui-popup-menu-trigger-height);
+  line-height: 0;
 }
 .kui-toolbar-control-group[data-content="mixed"]
-  :where(wa-dropdown.kui-popup-menu)
-  > wa-button {
+  > .kui-popup-menu
+  > .kui-popup-menu__trigger {
   line-height: normal;
 }
-.kui-toolbar-control-group
-  :where(wa-dropdown.kui-popup-menu)
-  > wa-button
-  > svg {
+.kui-toolbar-control-group > .kui-popup-menu > .kui-popup-menu__trigger > svg {
   display: block;
   width: remify(16px);
   height: remify(16px);
 }
-/* Toolbar controls never wrap: a slotted icon and its label share one row. */
-.kui-toolbar-control-group
-  :where(wa-dropdown.kui-popup-menu)
-  > wa-button::part(label) {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--kui-space-xs);
-  white-space: nowrap;
-}
-/* At least a circle around an icon-only trigger, with the group's item radius;
-   hover lifts the trigger like a group button, except in a `single` group,
-   whose whole surface shows the hover (toolbar-control-group.css). */
-.kui-toolbar-control-group
-  :where(wa-dropdown.kui-popup-menu)
-  > wa-button::part(base) {
-  min-width: remify(40px);
-  min-height: remify(40px);
-  box-sizing: border-box;
-  border: 1px solid transparent;
-  border-radius: var(
-    --kui-toolbar-item-radius,
-    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
-  );
-}
-.kui-toolbar-control-group
-  :where(wa-dropdown.kui-popup-menu)
-  > wa-button:hover::part(base) {
+.kui-toolbar-control-group > .kui-popup-menu > .kui-popup-menu__trigger:hover {
   border-color: var(--kui-toolbar-control-border);
   background-color: var(--kui-toolbar-control-hover-background);
 }
 .kui-toolbar-control-group[data-single="true"]
-  :where(wa-dropdown.kui-popup-menu)
-  > wa-button:hover::part(base) {
+  > .kui-popup-menu
+  > .kui-popup-menu__trigger:hover {
   border-color: transparent;
   background: transparent;
 }
-.kui-toolbar-control-group > wa-dropdown.kui-popup-menu {
-  display: inline-flex;
-  flex: 0 0 auto;
-}
-.kui-toolbar-control-group > wa-dropdown.kui-popup-menu,
-.kui-toolbar-control-group > wa-dropdown.kui-popup-menu > wa-button,
-.kui-toolbar-control-group
-  > wa-dropdown.kui-popup-menu
-  > wa-button::part(base) {
-  min-width: remify(40px);
-  height: remify(40px);
-}
-.kui-toolbar-control-group[data-size="compact"] > wa-dropdown.kui-popup-menu,
-.kui-toolbar-control-group[data-size="compact"]
-  > wa-dropdown.kui-popup-menu
-  > wa-button,
-.kui-toolbar-control-group[data-size="compact"]
-  > wa-dropdown.kui-popup-menu
-  > wa-button::part(base),
-.kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
-  wa-dropdown.kui-popup-menu
-  wa-button,
-.kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
-  wa-dropdown.kui-popup-menu
-  wa-button::part(base) {
-  min-width: remify(32px);
-  height: remify(32px);
-  min-height: remify(32px);
-}
 .kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
-  > wa-dropdown.kui-popup-menu {
+  > .kui-popup-menu {
   margin: -2px;
 }
-.kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
-  > wa-dropdown.kui-popup-menu
-  > wa-button,
-.kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
-  > wa-dropdown.kui-popup-menu
-  > wa-button::part(base) {
+.kui-toolbar-control-group:is([data-single="true"], [data-content="mixed"])
+  > .kui-popup-menu
+  > .kui-popup-menu__trigger {
   min-width: max-content;
-}
-.kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
-  > wa-dropdown.kui-popup-menu
-  > wa-button::part(base) {
-  width: max-content;
-}
-.kui-toolbar-control-group[data-single="true"]
-  > wa-dropdown.kui-popup-menu
-  > wa-button::part(base) {
-  width: max-content;
 }
 
 /* The menu insets a composing parent asks for. A PopupMenu applies them to
@@ -287,23 +390,26 @@
    ToolbarControlGroup's `standard` inset keeps. A PopupSurface's inset follows
    the group's, so a surface wins when both apply. */
 .kui-toolbar-control-group[data-menu-inset="compact"]
-  wa-dropdown.kui-popup-menu::part(menu) {
+  .kui-popup-menu__menu:not([data-submenu]) {
   padding: remify(4px);
 }
 .kui-toolbar-control-group[data-menu-inset="list-zero"]
-  wa-dropdown.kui-popup-menu::part(menu) {
+  .kui-popup-menu__menu:not([data-submenu]) {
   padding: 0;
 }
 .kui-popup-surface[data-inset="standard"]
-  > wa-dropdown.kui-popup-menu::part(menu) {
+  > .kui-popup-menu
+  > .kui-popup-menu__menu {
   padding: var(--kui-wa-surface-inset, remify(8px));
 }
 .kui-popup-surface[data-inset="compact"]
-  > wa-dropdown.kui-popup-menu::part(menu) {
+  > .kui-popup-menu
+  > .kui-popup-menu__menu {
   padding: remify(4px);
 }
 .kui-popup-surface[data-inset="list-zero"]
-  > wa-dropdown.kui-popup-menu::part(menu) {
+  > .kui-popup-menu
+  > .kui-popup-menu__menu {
   padding: 0;
 }
 
@@ -314,35 +420,34 @@
   display: flex;
   flex: none;
 }
-.kui-list-action-row > .kui-popup-menu > wa-button {
-  display: flex;
-  min-height: remify(44px);
-  color: inherit;
-}
-.kui-list-action-row[data-density="compact"] > .kui-popup-menu > wa-button {
-  min-height: remify(36px);
-}
-.kui-list-action-row > .kui-popup-menu > wa-button::part(base) {
+.kui-list-action-row > .kui-popup-menu > .kui-popup-menu__trigger {
   width: remify(44px);
   min-width: remify(44px);
-  height: 100%;
-  min-height: 0;
+  height: auto;
+  min-height: remify(44px);
   padding: 0;
   border: 0;
   border-radius: var(--kui-radius-pill);
   color: inherit;
   background: transparent;
 }
+.kui-list-action-row[data-density="compact"]
+  > .kui-popup-menu
+  > .kui-popup-menu__trigger {
+  min-height: remify(36px);
+}
 .kui-list-action-row
   > .kui-popup-menu
-  > wa-button:not([disabled]):hover::part(base) {
+  > .kui-popup-menu__trigger:not(:disabled):hover {
   background: var(--kui-list-action-row-trailing-hover-background);
 }
-.kui-list-action-row > .kui-popup-menu > wa-button::part(base):focus-visible {
+.kui-list-action-row
+  > .kui-popup-menu
+  > .kui-popup-menu__trigger:focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: -2px;
 }
-.kui-list-action-row > .kui-popup-menu > wa-button > svg {
+.kui-list-action-row > .kui-popup-menu > .kui-popup-menu__trigger > svg {
   display: block;
   width: remify(16px);
   height: remify(16px);
@@ -350,21 +455,21 @@
 /* The row's interaction visibility reveals the trigger on hover or focus, and
    keeps it visible while its menu is open. A placeholder row reveals nothing. */
 .kui-list-action-row[data-trailing-visibility="interaction"]
-  > .kui-popup-menu:not([open])
-  > wa-button {
+  > .kui-popup-menu
+  > .kui-popup-menu__trigger[aria-expanded="false"] {
   opacity: 0;
 }
 .kui-list-action-row[data-trailing-visibility="interaction"]:not(
     [data-placeholder="true"]
   ):is(:hover, :focus-within)
   > .kui-popup-menu
-  > wa-button {
+  > .kui-popup-menu__trigger {
   opacity: 1;
 }
 @media (hover: none) {
   .kui-list-action-row[data-trailing-visibility="interaction"]
     > .kui-popup-menu
-    > wa-button {
+    > .kui-popup-menu__trigger {
     opacity: 1;
   }
 }

@@ -204,13 +204,18 @@ test('an icon-only PopupMenu names its trigger; a text trigger has no tag', asyn
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=popup-menu');
-  const menu = page
-    .locator('[data-demo="popup-menu"] wa-dropdown.kui-popup-menu')
-    .first();
+  // A PopupMenu has no shadow root: its tag lives in the body-level layer.
+  const layerTag = (text: string) =>
+    page.locator('.kui-help-tag-layer wa-tooltip.kui-help-tag', {
+      hasText: text,
+    });
+  const layerTagBody = (text: string) =>
+    layerTag(text).locator('[part~="body"]');
+  const menu = page.locator('[data-demo="popup-menu"] .kui-popup-menu').first();
   const trigger = menu.getByRole('button', { name: 'Sort Tickets' });
   await trigger.hover();
-  await expect(tagBody(menu)).toBeVisible();
-  await expect(helpTag(menu)).toHaveText('Sort Tickets');
+  await expect(layerTagBody('Sort Tickets')).toBeVisible();
+  await expect(layerTag('Sort Tickets')).toHaveText('Sort Tickets');
   await expect(trigger).toHaveAccessibleName('Sort Tickets');
   const box = await trigger.boundingBox();
   await page.screenshot({
@@ -223,19 +228,19 @@ test('an icon-only PopupMenu names its trigger; a text trigger has no tag', asyn
     },
   });
   await trigger.click();
-  await expect(menu).toHaveAttribute('open', '');
-  await expect(tagBody(menu)).toBeHidden();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(layerTagBody('Sort Tickets')).toBeHidden();
   await page.keyboard.press('Escape');
-  await expect(menu).not.toHaveAttribute('open', '');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   // Focus returns to the trigger without reopening the tag.
   await moveAway(page);
-  await expect(tagBody(menu)).toBeHidden();
+  await expect(layerTagBody('Sort Tickets')).toBeHidden();
 
   // Keyboard focus shows it at once.
   await page.keyboard.press('Tab');
   await keyboardFocus(page, trigger, 'Shift+Tab');
   await expect(trigger).toBeFocused();
-  await expect(tagBody(menu)).toBeVisible({ timeout: 300 });
+  await expect(layerTagBody('Sort Tickets')).toBeVisible({ timeout: 300 });
   await page.screenshot({
     path: 'test-results/popup-menu-help-tag-focus-wide.png',
     clip: {
@@ -246,18 +251,18 @@ test('an icon-only PopupMenu names its trigger; a text trigger has no tag', asyn
     },
   });
   await page.keyboard.press('Enter');
-  await expect(menu).toHaveAttribute('open', '');
-  await expect(tagBody(menu)).toBeHidden();
-  await expect(menu.locator('wa-dropdown-item').first()).toBeFocused();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(layerTagBody('Sort Tickets')).toBeHidden();
+  await expect(menu.locator('.kui-popup-menu__item').first()).toBeFocused();
   await page.keyboard.press('Escape');
-  await expect(menu).not.toHaveAttribute('open', '');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
   const textMenu = page
-    .locator('[data-demo="popup-menu"] wa-dropdown.kui-popup-menu')
+    .locator('[data-demo="popup-menu"] .kui-popup-menu')
     .nth(1);
   await textMenu.getByRole('button', { name: 'Actions', exact: true }).hover();
   await page.waitForTimeout(700);
-  await expect(helpTag(textMenu)).toHaveCount(0);
+  await expect(layerTag('Actions')).toHaveCount(0);
 });
 
 test('a long tag near the viewport edge keeps 8px clear of it', async ({

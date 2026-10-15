@@ -1,9 +1,9 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
 // A Select and a PopupMenu are the same popup control, one storing a value and
-// one dispatching a command. Before, the PopupMenu drew its own Web Awesome
-// dropdown geometry (8px menu inset, 35px rows with no check column, a scaling
-// entrance, a static caret) beside the Select's cleaner listbox. Both now read
+// one dispatching a command. They once drew different geometry (an 8px menu
+// inset, 35px rows with no check column, a scaling entrance, a static caret)
+// side by side. Both now read
 // one popup-choice contract, so their rows, surface inset, caret motion, and
 // current-row fill must stay identical. The Select trigger also no longer
 // paints its focus ring while its listbox is open, like the PopupMenu trigger.
@@ -54,15 +54,15 @@ function selectMetrics(select: Locator): Promise<Metrics> {
 
 function menuMetrics(menu: Locator): Promise<Metrics> {
   return menu.evaluate((host) => {
-    const surface =
-      host.shadowRoot!.querySelector<HTMLElement>('[part~="menu"]')!;
-    const item = host.querySelector('wa-dropdown-item')!;
-    const label =
-      item.shadowRoot!.querySelector<HTMLElement>('[part~="label"]')!;
-    const icon = item.querySelector<HTMLElement>('[slot="icon"]');
-    const caret = host
-      .querySelector('wa-button')!
-      .shadowRoot!.querySelector<HTMLElement>('[part~="caret"]')!;
+    const surface = host.querySelector<HTMLElement>(
+      ':scope > .kui-popup-menu__menu',
+    )!;
+    const item = host.querySelector<HTMLElement>('.kui-popup-menu__item')!;
+    const label = item.querySelector<HTMLElement>(
+      '.kui-popup-menu__item-label',
+    )!;
+    const icon = item.querySelector<HTMLElement>('.kui-popup-menu__icon');
+    const caret = host.querySelector<HTMLElement>('.kui-popup-menu__caret')!;
     const row = window.getComputedStyle(item);
     return {
       inset: window.getComputedStyle(surface).padding,
@@ -98,7 +98,7 @@ async function openDemo(page: Page) {
   await page.goto('/?component=toolbar-control-group');
   const select = page.locator('wa-select[name="toolbar-group-sort"]');
   const group = select.locator('xpath=..');
-  const menu = group.locator('> wa-dropdown');
+  const menu = group.locator('> .kui-popup-menu');
   await expect(select).toBeVisible();
   await select.scrollIntoViewIfNeeded();
   return { select, group, menu };
@@ -124,8 +124,11 @@ test('PopupMenu draws the same popup, rows, and caret motion as Select', async (
   await page.keyboard.press('Escape');
   await expect(select).not.toHaveAttribute('open', '');
 
-  await menu.locator('> wa-button').click();
-  await expect(menu).toHaveAttribute('open', '');
+  await menu.locator('> .kui-popup-menu__trigger').click();
+  await expect(menu.locator('> .kui-popup-menu__trigger')).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
   await expect
     .poll(async () => (await menuMetrics(menu)).caretRotate)
     .toBe('-180deg');
@@ -176,9 +179,9 @@ test('a keyboard-current PopupMenu item takes the Select current-row fill', asyn
   const selectCurrent = await currentFill();
   await page.keyboard.press('Escape');
 
-  await menu.locator('> wa-button').focus();
+  await menu.locator('> .kui-popup-menu__trigger').focus();
   await page.keyboard.press('Enter');
-  const item = menu.locator('wa-dropdown-item').first();
+  const item = menu.locator('.kui-popup-menu__item').first();
   await expect(item).toBeFocused();
   // Color and fill transition in; poll for the settled current row.
   await expect

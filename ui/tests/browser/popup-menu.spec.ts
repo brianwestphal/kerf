@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 async function expectDemoTriggerAlignment(page: Page, label: string) {
   const offset = await page
@@ -9,9 +9,9 @@ async function expectDemoTriggerAlignment(page: Page, label: string) {
     .first()
     .evaluate((section) => {
       const heading = section.querySelector('[data-catalog-example-label]');
-      const triggerText = section
-        .querySelector('wa-dropdown.kui-popup-menu > wa-button')
-        ?.shadowRoot?.querySelector('[part~="label"]');
+      const triggerText = section.querySelector(
+        '.kui-popup-menu > .kui-popup-menu__trigger > .kui-popup-menu__text',
+      );
       if (!heading || !triggerText)
         throw new Error('PopupMenu demo label missing');
       const labelText = heading.querySelector('.kui-text')?.firstChild;
@@ -26,6 +26,75 @@ async function expectDemoTriggerAlignment(page: Page, label: string) {
   expect(Math.abs(offset), `${label}: ${offset}px`).toBeLessThanOrEqual(2);
 }
 
+/** The menu panel a PopupMenu root opens. */
+const panelOf = (root: Locator) =>
+  root.locator(':scope > .kui-popup-menu__menu');
+
+/** Whether a PopupMenu root's menu is open (its opener reports it). */
+const openerOf = (root: Locator) =>
+  root.locator(
+    ':scope > .kui-popup-menu__trigger, :scope > .kui-popup-menu__context-anchor',
+  );
+
+async function expectOpen(root: Locator, open = true) {
+  await expect(openerOf(root)).toHaveAttribute(
+    'aria-expanded',
+    open ? 'true' : 'false',
+  );
+  if (open) await expect(panelOf(root)).toBeVisible();
+  else await expect(panelOf(root)).toBeHidden();
+}
+
+/** The "Nested Decisions" demo menu, its trigger, submenu item, and submenu. */
+function nestedMenu(page: Page) {
+  const root = page
+    .locator('[data-demo="popup-menu"]')
+    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .filter({ has: page.locator('[data-submenu]') });
+  const parent = root.locator(
+    '.kui-popup-menu__submenu-host > .kui-popup-menu__item',
+  );
+  const submenu = root.locator('[data-submenu]');
+  return {
+    root,
+    trigger: root.getByRole('button', { name: 'Decide' }),
+    parent,
+    submenu,
+    approve: submenu.locator('[data-decision="approve"]'),
+    reject: submenu.locator('[data-decision="reject"]'),
+    other: submenu.locator('[data-decision="other"]'),
+  };
+}
+
+/** Wait for a fading popup to finish its motion before measuring it. */
+const settled = (popup: Locator) =>
+  popup.evaluate(async (element) => {
+    await Promise.all(
+      element
+        .getAnimations()
+        .map((animation) => animation.finished.catch(() => undefined)),
+    );
+  });
+
+/** Append `count` plain choices to a menu panel, as an app with many rows would. */
+const addChoices = (submenu: Locator, count: number) =>
+  submenu.evaluate((menu, total) => {
+    for (let index = 0; index < total; index++) {
+      const choice = document.createElement('button');
+      choice.type = 'button';
+      choice.className = 'kui-popup-menu__item';
+      choice.setAttribute('role', 'menuitem');
+      choice.tabIndex = -1;
+      choice.dataset.action = 'log-decision';
+      choice.dataset.decision = `project-${String(index)}`;
+      const label = document.createElement('span');
+      label.className = 'kui-popup-menu__item-label';
+      label.textContent = `Project ${String(index)}`;
+      choice.append(label);
+      menu.append(choice);
+    }
+  }, count);
+
 test('PopupMenu opens from its toolbar trigger and dispatches the chosen command', async ({
   page,
   browserName,
@@ -36,17 +105,22 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   const sort = demo.locator('[data-component="popup-menu"]').first();
   const trigger = sort.getByRole('button', { name: 'Sort Tickets' });
   await expect(trigger).toBeVisible();
+  await expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
 
   // The toolbar group sizes the trigger as a 40px toolbar control.
   const box = await trigger.boundingBox();
   expect(box?.height).toBeCloseTo(40, 0);
 
   await trigger.click();
+  await expectOpen(sort);
+  // The open menu is named by its trigger.
+  await expect(sort.getByRole('menu', { name: 'Sort Tickets' })).toBeVisible();
   const priority = sort.getByRole('menuitem', { name: 'Priority' });
   await expect(priority).toBeVisible();
   await priority.click();
   await expect(page.locator('.catalog-log')).toHaveText('Sorted by priority');
   await expect(priority).toBeHidden();
+  await expectOpen(sort, false);
 
   // Keyboard: Enter opens the menu, arrows move, Enter chooses.
   await trigger.focus();
@@ -54,13 +128,20 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   const recent = sort.getByRole('menuitem', { name: 'Recently Updated' });
   await expect(recent).toBeFocused();
   await page.keyboard.press('ArrowDown');
-  await expect(sort.getByRole('menuitem', { name: 'Priority' })).toBeFocused();
+  await expect(priority).toBeFocused();
   await page.keyboard.press('Home');
   await expect(recent).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText(
     'Sorted by recently updated',
   );
+  await expect(trigger).toBeFocused();
+
+  // Space chooses too, and ArrowUp on the trigger opens on the last item.
+  await page.keyboard.press('ArrowUp');
+  await expect(priority).toBeFocused();
+  await page.keyboard.press(' ');
+  await expect(page.locator('.catalog-log')).toHaveText('Sorted by priority');
 
   // Headings, dividers, item icons, and disabled items.
   const grouped = demo.locator('[data-component="popup-menu"]').nth(1);
@@ -68,19 +149,27 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   await expect(
     grouped.locator('.kui-popup-menu__heading', { hasText: 'Ticket' }),
   ).toBeVisible();
-  await expect(grouped.locator('wa-divider')).toHaveCount(1);
+  await expect(grouped.getByRole('group', { name: 'Ticket' })).toBeVisible();
+  await expect(grouped.getByRole('separator')).toHaveCount(1);
   await expect(
-    grouped.locator('wa-dropdown-item [slot="icon"] [data-lucide="copy"]'),
+    grouped.locator('.kui-popup-menu__icon [data-lucide="copy"]'),
   ).toBeVisible();
+  const remove = grouped.getByRole('menuitem', { name: 'Delete' });
+  await expect(remove).toHaveAttribute('aria-disabled', 'true');
+  // Arrow keys skip the disabled command, and a click on it does nothing.
+  await page.keyboard.press('End');
   await expect(
-    grouped.getByRole('menuitem', { name: 'Delete' }),
-  ).toHaveAttribute('aria-disabled', 'true');
+    grouped.getByRole('menuitem', { name: 'Archive' }),
+  ).toBeFocused();
+  await remove.click({ force: true });
+  await expectOpen(grouped);
   if (browserName === 'chromium')
     await page.screenshot({ path: 'test-results/popup-menu-grouped.png' });
   await page.keyboard.press('Escape');
   await expect(
     grouped.getByRole('menuitem', { name: 'Duplicate' }),
   ).toBeHidden();
+  await expect(grouped.getByRole('button', { name: 'Actions' })).toBeFocused();
 });
 
 test('nested checked choices, disabled commands, and context opening work', async ({
@@ -96,18 +185,21 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await expectDemoTriggerAlignment(page, 'Nested Decisions');
   await page.setViewportSize({ width: 1100, height: 800 });
   const demo = page.locator('[data-demo="popup-menu"]');
-  const nested = demo
-    .locator('[data-component="popup-menu"][data-trigger="button"]')
-    .filter({
-      has: page.locator('wa-dropdown-item[slot="submenu"]'),
-    });
-  const trigger = nested.getByRole('button', { name: 'Decide' });
+  const {
+    root: nested,
+    trigger,
+    parent,
+    submenu,
+    approve,
+    reject,
+    other,
+  } = nestedMenu(page);
   await page.evaluate(() => {
     document.body.dataset.testSelectCount = '0';
-    document.addEventListener('wa-select', (event) => {
+    document.addEventListener('kui-menu-select', (event) => {
       if (
         !(event.target instanceof Element) ||
-        !event.target.querySelector('wa-dropdown-item[slot="submenu"]')
+        !event.target.querySelector('[data-submenu]')
       )
         return;
       document.body.dataset.testSelectCount = String(
@@ -117,49 +209,31 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   });
   await trigger.focus();
   await page.keyboard.press('Enter');
-  await expect(nested).toHaveAttribute('open', '');
-  const parent = nested.locator(
-    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
-  );
-  const approve = parent.locator('[data-decision="approve"]');
-  const reject = parent.locator('[data-decision="reject"]');
-  const other = parent.locator('[data-decision="other"]');
-  const headings = parent.locator('.kui-popup-menu__heading[slot="submenu"]');
-  const divider = parent.locator('wa-divider[slot="submenu"]');
-  await expect(parent).toHaveJSProperty('hasSubmenu', true);
-  await expect(parent).toHaveJSProperty('submenuOpen', false);
+  await expectOpen(nested);
+  await expect(parent).toHaveAttribute('aria-haspopup', 'menu');
+  await expect(parent).toHaveAttribute('aria-expanded', 'false');
   await expect(parent).toBeFocused();
   await page.keyboard.press('ArrowRight');
-  await expect(parent).toHaveJSProperty('submenuOpen', true);
-  // Web Awesome focuses the first submenu item once on opening and again when
-  // its show animation ends. Let that second handoff finish before testing
-  // arrow navigation so it cannot overwrite the next keyboard move.
-  await parent.evaluate(async (element) => {
-    const submenu = (element as HTMLElement & { submenuElement?: HTMLElement })
-      .submenuElement;
-    await Promise.all(
-      (submenu?.getAnimations() ?? []).map((animation) =>
-        animation.finished.catch(() => undefined),
-      ),
-    );
-    await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
-  });
+  await expect(parent).toHaveAttribute('aria-expanded', 'true');
   await expect(approve).toBeFocused();
+  // The submenu is named by its item.
+  await expect(submenu).toBeVisible();
+  await expect(submenu).toHaveAccessibleName('Decide');
   await approve.press('ArrowDown');
   await expect(other).toBeFocused();
   await other.press('ArrowUp');
   await expect(approve).toBeFocused();
+  await settled(submenu);
   const checkmark = await approve.evaluate((element) => {
-    const check = element.shadowRoot?.querySelector('#check');
-    const label = element.shadowRoot?.querySelector('#label');
-    const submenu =
-      element.parentElement?.shadowRoot?.querySelector('#submenu');
-    if (!check || !label || !submenu) throw new Error('Submenu parts missing');
+    const check = element.querySelector('.kui-popup-menu__check svg');
+    const label = element.querySelector('.kui-popup-menu__item-label');
+    const panel = element.closest('.kui-popup-menu__menu');
+    if (!check || !label || !panel) throw new Error('Submenu parts missing');
     return {
       checkLeft: check.getBoundingClientRect().left,
       checkRight: check.getBoundingClientRect().right,
       labelLeft: label.getBoundingClientRect().left,
-      panelLeft: submenu.getBoundingClientRect().left,
+      panelLeft: panel.getBoundingClientRect().left,
       checkVisibility: window.getComputedStyle(check).visibility,
     };
   });
@@ -174,15 +248,19 @@ test('nested checked choices, disabled commands, and context opening work', asyn
     'data-test-select-count',
     '1',
   );
+  await expectOpen(nested, false);
 
   await trigger.click();
   await parent.hover();
   await expect(approve).toBeVisible();
-  await expect(approve).toHaveAttribute('checked', '');
+  await expect(approve).toHaveAttribute('aria-checked', 'true');
   await expect(reject).toHaveAttribute('aria-disabled', 'true');
   await expect(reject).toHaveAttribute('title', 'A price is required');
-  await expect(headings).toHaveText(['Review', 'More']);
-  await expect(divider).toBeVisible();
+  await expect(submenu.locator('.kui-popup-menu__heading')).toHaveText([
+    'Review',
+    'More',
+  ]);
+  await expect(submenu.getByRole('separator')).toBeVisible();
   await expect(other).toBeVisible();
   await approve.click();
   await expect(page.locator('.catalog-log')).toHaveText('Decision: approve');
@@ -195,36 +273,29 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await trigger.click();
   await parent.hover();
   await expect(other).toBeVisible();
-  await parent.evaluate(async (item) => {
-    const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
-    await Promise.all(
-      (submenu?.getAnimations() ?? []).map((animation) =>
-        animation.finished.catch(() => undefined),
-      ),
-    );
-  });
-  const narrowPlacement = await parent.evaluate((item) => {
-    const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
-    const dropdown = item.closest('wa-dropdown');
-    const menu = dropdown?.shadowRoot?.querySelector('[part~="menu"]');
-    if (!submenu || !menu) throw new Error('PopupMenu surface missing');
-    const child = submenu.getBoundingClientRect();
+  await settled(submenu);
+  const narrowPlacement = await submenu.evaluate((child) => {
+    const menu = child.parentElement?.closest('.kui-popup-menu__menu');
+    if (!menu) throw new Error('PopupMenu surface missing');
+    const box = child.getBoundingClientRect();
     const parentMenu = menu.getBoundingClientRect();
     return {
-      childTop: child.top,
-      childBottom: child.bottom,
-      childLeft: child.left,
-      childRight: child.right,
+      childTop: box.top,
+      childBottom: box.bottom,
+      childLeft: box.left,
+      childRight: box.right,
       parentTop: parentMenu.top,
       parentBottom: parentMenu.bottom,
+      placement: child.getAttribute('data-placement'),
     };
   });
-  // The flipped submenu has a small attachment seam over the parent menu.
-  // Allow a few pixels of browser rounding around the nominal 16px seam.
+  // A phone submenu sits above or below the whole parent menu.
   expect(
-    narrowPlacement.childBottom <= narrowPlacement.parentTop + 20 ||
-      narrowPlacement.childTop >= narrowPlacement.parentBottom - 20,
+    narrowPlacement.childBottom <= narrowPlacement.parentTop + 0.5 ||
+      narrowPlacement.childTop >= narrowPlacement.parentBottom - 0.5,
+    JSON.stringify(narrowPlacement),
   ).toBe(true);
+  expect(narrowPlacement.placement).toMatch(/^(bottom|top)-start$/);
   expect(narrowPlacement.childLeft).toBeGreaterThanOrEqual(8);
   expect(narrowPlacement.childRight).toBeLessThanOrEqual(390 - 8);
   expect(narrowPlacement.childTop).toBeGreaterThanOrEqual(8);
@@ -232,15 +303,18 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await approve.focus();
   await page.keyboard.press('ArrowLeft');
   await expect(parent).toBeFocused();
-  await expect(parent).toHaveJSProperty('submenuOpen', false);
+  await expect(parent).toHaveAttribute('aria-expanded', 'false');
   await page.keyboard.press('ArrowRight');
   await expect(other).toBeVisible();
+  // Escape closes the submenu, then the menu.
   await page.keyboard.press('Escape');
-  await expect(nested).not.toHaveAttribute('open', '');
+  await expect(submenu).toBeHidden();
+  await expectOpen(nested);
+  await page.keyboard.press('Escape');
+  await expectOpen(nested, false);
   await trigger.click();
   await parent.hover();
   await expect(other).toBeVisible();
-  await expect(parent.locator('[part~="submenu"]')).not.toHaveClass(/show/);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/popup-menu-nested-narrow.png',
@@ -252,24 +326,33 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await trigger.click();
   await parent.hover();
   await expect(approve).toBeVisible();
-  const widePlacement = await parent.evaluate((item) => {
-    const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
-    if (!submenu) throw new Error('PopupMenu submenu missing');
+  // At desktop width the submenu opens beside its item.
+  await expect(submenu).toHaveAttribute(
+    'data-placement',
+    /^(right|left)-start$/,
+  );
+  const beside = await parent.evaluate((item) => {
+    const child = item.nextElementSibling!.getBoundingClientRect();
+    const box = item.getBoundingClientRect();
     return {
-      position: (submenu as HTMLElement).style.position,
-      maxHeight: (submenu as HTMLElement).style.maxHeight,
+      childLeft: child.left,
+      itemRight: box.right,
+      childTop: child.top,
+      itemTop: box.top,
     };
   });
-  expect(widePlacement).toEqual({ position: '', maxHeight: '' });
+  expect(Math.abs(beside.childLeft - beside.itemRight)).toBeLessThanOrEqual(1);
+  // Its first row lines up with the item (the panel lifts by inset + border).
+  expect(Math.abs(beside.childTop + 5 - beside.itemTop)).toBeLessThanOrEqual(1);
   await page.keyboard.press('Escape');
   const context = demo.locator('[data-popup-context-menu]');
   const row = demo.locator('[data-popup-menu-context-target]');
   await row.click({ button: 'right', position: { x: 20, y: 12 } });
   const rowBox = await row.boundingBox();
-  await expect(context).toHaveAttribute('open', '');
+  await expectOpen(context);
   const contextButton = demo.getByRole('button', { name: 'Demand Actions' });
   await expect(contextButton).toBeEnabled();
-  const anchorBox = await context.locator('[slot="trigger"]').boundingBox();
+  const anchorBox = await openerOf(context).boundingBox();
   expect(Math.abs(anchorBox!.x - (rowBox!.x + 20))).toBeLessThanOrEqual(2);
   expect(Math.abs(anchorBox!.y - (rowBox!.y + 12))).toBeLessThanOrEqual(2);
   if (browserName === 'chromium')
@@ -278,37 +361,25 @@ test('nested checked choices, disabled commands, and context opening work', asyn
   await expect(page.locator('.catalog-log')).toHaveText(
     'Context demand opened',
   );
-  await expect(context).not.toHaveAttribute('open', '');
+  await expectOpen(context, false);
 
   await contextButton.click();
-  await expect(context).toHaveAttribute('open', '');
+  await expectOpen(context);
   const buttonBox = await contextButton.boundingBox();
-  const buttonAnchorBox = await context
-    .locator('[slot="trigger"]')
-    .boundingBox();
+  const buttonAnchorBox = await openerOf(context).boundingBox();
   expect(Math.abs(buttonAnchorBox!.x - buttonBox!.x)).toBeLessThanOrEqual(2);
   expect(
     Math.abs(buttonAnchorBox!.y - (buttonBox!.y + buttonBox!.height)),
   ).toBeLessThanOrEqual(2);
   if (browserName === 'chromium')
     await page.screenshot({ path: 'test-results/popup-menu-button-wide.png' });
-  // Web Awesome clears `open` before its hide animation and focus handoff
-  // finish. Wait for the completed hide before exercising keyboard reopening.
-  await context.evaluate((element) => {
-    element.addEventListener(
-      'wa-after-hide',
-      () => element.setAttribute('data-test-hide-complete', ''),
-      { once: true },
-    );
-  });
   await page.keyboard.press('Escape');
-  await expect(context).not.toHaveAttribute('open', '');
-  await expect(context).toHaveAttribute('data-test-hide-complete', '');
+  await expectOpen(context, false);
 
   await contextButton.press('Enter');
-  await expect(context).toHaveAttribute('open', '');
+  await expectOpen(context);
   const keyboardOpen = context.getByRole('menuitem', { name: 'Open' });
-  await keyboardOpen.focus();
+  await expect(keyboardOpen).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText(
     'Context demand opened',
@@ -380,11 +451,12 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
     const plain = menu.getByRole('menuitem', { name: 'More Sort Options' });
     // The plain command shares the choices' check column: its label starts
     // where theirs do.
-    const labelX = (item: typeof plain) =>
+    const labelX = (item: Locator) =>
       item.evaluate(
         (element) =>
-          element.shadowRoot?.querySelector('#label')?.getBoundingClientRect()
-            .x,
+          element
+            .querySelector('.kui-popup-menu__item-label')
+            ?.getBoundingClientRect().x,
       );
     const checkedLabelX = await labelX(updated);
     const plainLabelX = await labelX(plain);
@@ -392,13 +464,7 @@ test('checked PopupMenu choice follows application state on pointer and keyboard
     expect(plainLabelX).toBeDefined();
     expect(Math.abs(checkedLabelX! - plainLabelX!)).toBeLessThanOrEqual(1);
     if (browserName === 'chromium') {
-      await menu.evaluate(async (element) => {
-        await Promise.all(
-          element
-            .getAnimations({ subtree: true })
-            .map((animation) => animation.finished.catch(() => undefined)),
-        );
-      });
+      await settled(panelOf(menu));
       await page.screenshot({
         path: `test-results/popup-menu-checked-${width}.png`,
       });
@@ -423,23 +489,15 @@ test('a level with a checkbox choice aligns plain items to its check column', as
   browserName,
 }) => {
   await page.goto('/?component=popup-menu');
-  const nested = page
-    .locator('[data-component="popup-menu"][data-trigger="button"]')
-    .filter({
-      has: page.locator('wa-dropdown-item[slot="submenu"]'),
-    });
-  const trigger = nested.getByRole('button', { name: 'Decide' });
-  const parent = nested.locator(
-    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
-  );
-  const columns = (item: typeof parent) =>
+  const { trigger, parent, submenu, approve } = nestedMenu(page);
+  const columns = (item: Locator) =>
     item.evaluate((element) => {
       const x = (node: Element | null | undefined) =>
         node ? node.getBoundingClientRect().x : null;
       return {
-        check: x(element.shadowRoot?.querySelector('#check')),
+        check: x(element.querySelector('.kui-popup-menu__check svg')),
         icon: x(element.querySelector(':scope > .kui-popup-menu__icon')),
-        label: x(element.shadowRoot?.querySelector('#label')),
+        label: x(element.querySelector('.kui-popup-menu__item-label')),
       };
     });
   const near = (a: number | null, b: number | null, what: string) => {
@@ -452,32 +510,18 @@ test('a level with a checkbox choice aligns plain items to its check column', as
     await page.setViewportSize({ width, height: 844 });
     await trigger.click();
     // The top level holds no choice: its plain item keeps the compact start.
-    await expect(parent).not.toHaveAttribute('data-check-space', /./);
-    await expect(
-      parent.locator(':scope > .kui-popup-menu__check-space'),
-    ).toHaveCount(0);
+    await expect(parent.locator('.kui-popup-menu__check')).toHaveCount(0);
 
     // The submenu mixes a checked choice with plain commands (one disabled):
     // all share one icon column and one label column.
     await parent.hover();
-    const approve = parent.locator('[data-decision="approve"]');
     await expect(approve).toBeVisible();
-    // Measure the settled panel, not its scale-in animation.
-    await parent.evaluate(async (element) => {
-      const submenu = (
-        element as HTMLElement & { submenuElement?: HTMLElement }
-      ).submenuElement;
-      await Promise.all(
-        (submenu?.getAnimations() ?? []).map((animation) =>
-          animation.finished.catch(() => undefined),
-        ),
-      );
-    });
+    await settled(submenu);
     const checked = await columns(approve);
     expect(checked.check).not.toBeNull();
     for (const decision of ['reject', 'other']) {
       const row = await columns(
-        parent.locator(`[data-decision="${decision}"]`),
+        submenu.locator(`[data-decision="${decision}"]`),
       );
       expect(row.check, decision).toBeNull();
       near(row.icon, checked.icon, `${decision} icon`);
@@ -488,7 +532,6 @@ test('a level with a checkbox choice aligns plain items to its check column', as
         path: `test-results/popup-menu-mixed-${width}.png`,
       });
     await page.keyboard.press('Escape');
-    await page.keyboard.press('Escape');
   }
 });
 
@@ -497,39 +540,17 @@ test('submenu arrows keep the chosen item focused after opening', async ({
   browserName,
 }) => {
   await page.goto('/?component=popup-menu');
-  const nested = page
-    .locator('[data-component="popup-menu"][data-trigger="button"]')
-    .filter({
-      has: page.locator('wa-dropdown-item[slot="submenu"]'),
-    });
-  const trigger = nested.getByRole('button', { name: 'Decide' });
-  const parent = nested.locator(
-    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
-  );
-  const approve = parent.locator('[data-decision="approve"]');
-  const other = parent.locator('[data-decision="other"]');
+  const { trigger, parent, approve, other } = nestedMenu(page);
 
   await trigger.focus();
   await page.keyboard.press('Enter');
   await expect(parent).toBeFocused();
   await page.keyboard.press('ArrowRight');
-  await expect(approve).toBeFocused();
-  // Web Awesome schedules the submenu's initial focus after its open animation.
-  // Let that native focus setup settle before sending the next arrow key.
-  await parent.evaluate(async (element) => {
-    const submenu = (element as HTMLElement & { submenuElement?: HTMLElement })
-      .submenuElement;
-    await Promise.all(
-      (submenu?.getAnimations() ?? []).map((animation) =>
-        animation.finished.catch(() => undefined),
-      ),
-    );
-    await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
-  });
-  await approve.press('ArrowDown');
+  // No settling wait: the next key lands while the submenu is still fading in.
+  await page.keyboard.press('ArrowDown');
   await expect(other).toBeFocused();
-  await parent.evaluate(
-    () => new Promise<void>((resolve) => window.setTimeout(resolve, 0)),
+  await page.evaluate(
+    () => new Promise<void>((resolve) => window.setTimeout(resolve, 300)),
   );
   await expect(other).toBeFocused();
   if (browserName === 'chromium')
@@ -537,10 +558,12 @@ test('submenu arrows keep the chosen item focused after opening', async ({
   await other.press('ArrowUp');
   await expect(approve).toBeFocused();
   await page.keyboard.press('Escape');
+  await expect(parent).toBeFocused();
+  await page.keyboard.press('Escape');
   await expect(trigger).toBeFocused();
 });
 
-test('keyboard navigation during the dropdown show animation survives its focus handoff', async ({
+test('keyboard navigation works while the menu is still fading in', async ({
   page,
 }) => {
   await page.goto('/?component=popup-menu');
@@ -548,170 +571,80 @@ test('keyboard navigation during the dropdown show animation survives its focus 
   const trigger = menu.getByRole('button', { name: 'Sort Choices' });
   const priority = menu.getByRole('menuitemcheckbox', { name: 'Priority' });
   await menu.evaluate((element) => {
-    (element as HTMLElement & { menu?: HTMLElement }).menu?.style.setProperty(
-      '--show-duration',
+    (element as HTMLElement).style.setProperty(
+      '--_kui-popup-menu-motion',
       '1500ms',
     );
   });
 
   await trigger.click();
-  await expect
-    .poll(() =>
-      menu.evaluate((element) =>
-        (
-          element as HTMLElement & { menu?: HTMLElement }
-        ).menu?.classList.contains('show'),
-      ),
-    )
-    .toBe(true);
   await page.keyboard.press('Home');
   await page.keyboard.press('ArrowDown');
   const duringShow = await priority.evaluate((item) => {
-    const dropdown = item.closest('wa-dropdown') as unknown as HTMLElement & {
-      menu?: HTMLElement;
-    };
+    const panel = item.closest('.kui-popup-menu__menu')!;
     return {
       focused: document.activeElement === item,
-      animating: dropdown.menu?.classList.contains('show'),
+      fading: Number(window.getComputedStyle(panel).opacity) < 1,
     };
   });
   expect(duringShow.focused, JSON.stringify(duringShow)).toBe(true);
-  expect(duringShow.animating, JSON.stringify(duringShow)).toBe(true);
-  await expect
-    .poll(() =>
-      menu.evaluate((element) =>
-        (
-          element as HTMLElement & { menu?: HTMLElement }
-        ).menu?.classList.contains('show'),
-      ),
-    )
-    .toBe(false);
+  expect(duringShow.fading, JSON.stringify(duringShow)).toBe(true);
+  await settled(panelOf(menu));
   await expect(priority).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(trigger).toBeFocused();
 });
 
-test('submenu recovers from an interrupted close and a stale hidden open', async ({
+test('a submenu survives a pointer that leaves and returns, and rapid keyboard toggles', async ({
   page,
   browserName,
 }) => {
+  await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=popup-menu');
-  const nested = page
-    .locator('[data-component="popup-menu"][data-trigger="button"]')
-    .filter({
-      has: page.locator('wa-dropdown-item[slot="submenu"]'),
-    });
-  const trigger = nested.getByRole('button', { name: 'Decide' });
-  const parent = nested.locator(
-    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
-  );
-  const approve = parent.locator('[data-decision="approve"]');
-  await trigger.click();
-  await parent.hover();
-  await expect(approve).toBeVisible();
+  const demo = page.locator('[data-demo="popup-menu"]');
+  const context = demo.locator('[data-popup-context-menu]');
+  const more = context.getByRole('menuitem', { name: 'More Actions' });
+  const archive = context.getByRole('menuitem', { name: 'Archive' });
+  const copy = context.getByRole('menuitem', { name: 'Copy Reference' });
+  await demo.getByRole('button', { name: 'Demand Actions' }).click();
+  await expectOpen(context);
+  await more.hover();
+  await expect(copy).toBeVisible();
 
-  await parent.evaluate(async (element) => {
-    const item = element as HTMLElement & {
-      closeSubmenu(): Promise<void>;
-      openSubmenu(): Promise<void>;
-      submenuElement?: HTMLElement;
-      submenuOpen: boolean;
-    };
-    await new Promise<void>((resolve) => window.setTimeout(resolve, 400));
-    const closing = item.closeSubmenu();
-    await Promise.resolve();
-    void item.openSubmenu();
-    void closing;
-    await new Promise<void>((resolve) => window.setTimeout(resolve, 600));
-    if (item.submenuElement?.hidden || !item.submenuOpen)
-      throw new Error('Submenu stayed hidden after reopening during close');
-  });
-  await expect(approve).toBeVisible();
-
-  await page.mouse.move(0, 0);
-  await expect
-    .poll(() => parent.evaluate((element) => element.matches(':hover')))
-    .toBe(false);
-  // Leaving an open submenu can arm Web Awesome's 100 ms hover-out close
-  // (engine-dependent). A longer in-page timer always fires after it, so the
-  // close cannot land on the submenu the stale-state hover reopens below.
+  // Over a sibling the submenu closes after a short grace period; returning
+  // to it within that period keeps it open. Raw mouse moves at measured
+  // points (no actionability waits) keep both moves inside that period.
+  const center = async (target: typeof copy) => {
+    const box = (await target.boundingBox())!;
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  };
+  const [archivePoint, copyPoint] = [await center(archive), await center(copy)];
+  await page.mouse.move(archivePoint.x, archivePoint.y);
+  await page.mouse.move(copyPoint.x, copyPoint.y);
   await page.evaluate(
-    () => new Promise<void>((resolve) => window.setTimeout(resolve, 150)),
+    () => new Promise<void>((resolve) => window.setTimeout(resolve, 300)),
   );
-  await parent.evaluate((element) => {
-    const item = element as HTMLElement & {
-      submenuElement?: HTMLElement;
-      submenuOpen: boolean;
-    };
-    item.submenuOpen = true;
-    if (item.submenuElement) item.submenuElement.hidden = true;
-  });
-  await parent.hover();
-  await expect(approve).toBeVisible();
+  await expect(copy).toBeVisible();
+  await expect(more).toHaveAttribute('aria-expanded', 'true');
+  // Staying away closes it.
+  await archive.hover();
+  await expect(copy).toBeHidden();
+  await expect(more).toHaveAttribute('aria-expanded', 'false');
 
-  // The keyboard scenario starts with a fresh dropdown so the preceding
-  // hover and interrupted-close transitions cannot leave a navigation stack.
-  await page.reload();
-  await trigger.click();
-  // Let the parent dropdown finish its own focus handoff before exercising
-  // the independent stale-submenu keyboard path.
-  await expect
-    .poll(() =>
-      nested.evaluate((element) =>
-        (
-          element as HTMLElement & { menu?: HTMLElement }
-        ).menu?.classList.contains('show'),
-      ),
-    )
-    .toBe(false);
-  // Move the pointer off the menu before any submenu is open: Web Awesome's
-  // global mousemove handler arms a 100 ms close for an open submenu the
-  // pointer is not over, and that timer would race the keyboard reopen below.
-  await page.mouse.move(0, 0);
-  await expect
-    .poll(() => parent.evaluate((element) => element.matches(':hover')))
-    .toBe(false);
-  await parent.evaluate((element) => {
-    (element as HTMLElement & { submenuOpen: boolean }).submenuOpen = true;
-  });
-  await expect(approve).toBeVisible();
-  await expect
-    .poll(() =>
-      parent.evaluate(
-        (element) =>
-          !(
-            element as HTMLElement & { submenuElement?: HTMLElement }
-          ).submenuElement?.classList.contains('show'),
-      ),
-    )
-    .toBe(true);
-  await parent.evaluate((element) => {
-    const item = element as HTMLElement & {
-      submenuElement?: HTMLElement;
-      submenuOpen: boolean;
-      active: boolean;
-    };
-    const dropdown = item.closest('wa-dropdown') as unknown as HTMLElement & {
-      openSubmenuStack: HTMLElement[];
-    };
-    // Construct the stale state and key event in one task so Web Awesome's
-    // queued focus/stack updates cannot turn this into a different transition.
-    dropdown.openSubmenuStack = [];
-    item.active = true;
-    if (item.submenuElement) item.submenuElement.hidden = true;
-    item.focus();
-    item.dispatchEvent(
-      new globalThis.KeyboardEvent('keydown', {
-        key: 'ArrowRight',
-        bubbles: true,
-        composed: true,
-      }),
-    );
-  });
-  await expect(approve).toBeVisible();
-  await expect(approve).toBeFocused();
+  // Opening and closing it from the keyboard in quick succession settles open.
+  await more.focus();
+  for (let index = 0; index < 3; index++) {
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowLeft');
+  }
+  await page.keyboard.press('ArrowRight');
+  await expect(copy).toBeVisible();
+  await expect(copy).toBeFocused();
   if (browserName === 'chromium')
     await page.screenshot({ path: 'test-results/popup-menu-reopened.png' });
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');
+  await expectOpen(context, false);
 });
 
 test('context PopupMenu dismisses when clicking outside after either opening path', async ({
@@ -730,14 +663,14 @@ test('context PopupMenu dismisses when clicking outside after either opening pat
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
     await row.click({ button: 'right' });
-    await expect(context).toHaveAttribute('open', '');
+    await expectOpen(context);
     await heading.click();
-    await expect(context).not.toHaveAttribute('open', '');
+    await expectOpen(context, false);
 
     await button.click();
-    await expect(context).toHaveAttribute('open', '');
+    await expectOpen(context);
     await heading.click();
-    await expect(context).not.toHaveAttribute('open', '');
+    await expectOpen(context, false);
     if (browserName === 'chromium')
       await page.screenshot({
         path: `test-results/popup-menu-dismissed-${width}.png`,
@@ -745,10 +678,36 @@ test('context PopupMenu dismisses when clicking outside after either opening pat
   }
 });
 
+test('a press on an open menu trigger closes it without reopening', async ({
+  page,
+}) => {
+  await page.goto('/?component=popup-menu');
+  const { root, trigger } = nestedMenu(page);
+  await trigger.click();
+  await expectOpen(root);
+  await trigger.click();
+  await expectOpen(root, false);
+  await trigger.click();
+  await expectOpen(root);
+  await page.keyboard.press('Escape');
+});
+
 test('context menu and nested commands stay within each viewport corner', async ({
   page,
   browserName,
 }) => {
+  const inside = (surface: Locator) =>
+    surface.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      return (
+        bounds.width > 0 &&
+        bounds.height > 0 &&
+        bounds.left >= -1 &&
+        bounds.top >= -1 &&
+        bounds.right <= window.innerWidth + 1 &&
+        bounds.bottom <= window.innerHeight + 1
+      );
+    });
   for (const { width, height } of [
     { width: 390, height: 844 },
     { width: 1100, height: 800 },
@@ -776,65 +735,23 @@ test('context menu and nested commands stay within each viewport corner', async 
           ),
         [x, y],
       );
-      await expect(context).toHaveAttribute('open', '');
-      await expect
-        .poll(() =>
-          context.evaluate((menu) => {
-            const surface = menu.shadowRoot
-              ?.querySelector('wa-popup')
-              ?.shadowRoot?.querySelector('[part="popup"]');
-            if (!surface) return false;
-            const bounds = surface.getBoundingClientRect();
-            return (
-              bounds.width > 0 &&
-              bounds.height > 0 &&
-              bounds.left >= -1 &&
-              bounds.top >= -1 &&
-              bounds.right <= window.innerWidth + 1 &&
-              bounds.bottom <= window.innerHeight + 1
-            );
-          }),
-        )
-        .toBe(true);
+      await expectOpen(context);
+      await expect.poll(() => inside(panelOf(context))).toBe(true);
 
       if (x === width - 5 && y === height - 5) {
-        const parent = context.locator('wa-dropdown-item', {
-          hasText: 'More Actions',
-        });
+        const parent = context.getByRole('menuitem', { name: 'More Actions' });
         await parent.hover();
-        await expect(parent).toHaveJSProperty('submenuOpen', true);
+        await expect(parent).toHaveAttribute('aria-expanded', 'true');
         await expect
-          .poll(() =>
-            parent.evaluate((item) => {
-              const surface =
-                item.shadowRoot?.querySelector('[part~="submenu"]');
-              if (!surface) return false;
-              const bounds = surface.getBoundingClientRect();
-              return (
-                bounds.width > 0 &&
-                bounds.height > 0 &&
-                bounds.left >= -1 &&
-                bounds.top >= -1 &&
-                bounds.right <= window.innerWidth + 1 &&
-                bounds.bottom <= window.innerHeight + 1
-              );
-            }),
-          )
+          .poll(() => inside(context.locator('[data-submenu]')))
           .toBe(true);
         if (browserName === 'chromium')
           await page.screenshot({
             path: `test-results/popup-menu-context-corner-${width}.png`,
           });
       }
-      await context.evaluate(async (menu) => {
-        const hidden = new Promise<void>((resolve) =>
-          menu.addEventListener('wa-after-hide', () => resolve(), {
-            once: true,
-          }),
-        );
-        (menu as HTMLElement & { open: boolean }).open = false;
-        await hidden;
-      });
+      await page.keyboard.press('Escape');
+      await expectOpen(context, false);
     }
   }
 });
@@ -858,7 +775,7 @@ test('a context PopupMenu renders its anchor point and takes no layout space', a
     }),
   ).toEqual({ position: 'fixed', width: 0, height: 0 });
   await row.click({ button: 'right', position: { x: 30, y: 10 } });
-  await expect(context).toHaveAttribute('open', '');
+  await expectOpen(context);
   const rowBox = (await row.boundingBox())!;
   // The point lives in the rendered template, not only in imperative style,
   // so a re-render or replacement of the menu keeps it.
@@ -878,59 +795,39 @@ test('a context PopupMenu renders its anchor point and takes no layout space', a
   expect(panel.y).toBeGreaterThanOrEqual(y - 4);
   expect(panel.y).toBeLessThanOrEqual(y + 48);
   await page.keyboard.press('Escape');
-  await expect(context).not.toHaveAttribute('open', '');
+  await expectOpen(context, false);
 });
 
-// KF-6KRE6H: End pressed before Web Awesome's late first-item handoff lands
-// focused the last choice, the handoff then focused (and scrolled to) the
-// first, and the keyboard-choice restore refocused the last choice with
-// preventScroll, leaving it focused but scrolled out of view.
 test('End pressed as a long submenu opens leaves the last choice focused and scrolled into view', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=popup-menu');
-  const nested = page
-    .locator('[data-demo="popup-menu"]')
-    .locator('[data-component="popup-menu"][data-trigger="button"]')
-    .filter({ has: page.locator('wa-dropdown-item[slot="submenu"]') });
-  const trigger = nested.getByRole('button', { name: 'Decide' });
-  const parent = nested.locator(
-    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
-  );
-  await parent.evaluate((item) => {
-    for (let index = 0; index < 20; index++) {
-      const choice = document.createElement('wa-dropdown-item');
-      choice.setAttribute('slot', 'submenu');
-      choice.dataset.action = 'log-decision';
-      choice.dataset.decision = `project-${String(index)}`;
-      choice.textContent = `Project ${String(index)}`;
-      item.append(choice);
-    }
-  });
-  const last = parent.locator('[data-decision="project-19"]');
+  const { trigger, parent, submenu } = nestedMenu(page);
+  await addChoices(submenu, 20);
+  const last = submenu.locator('[data-decision="project-19"]');
   await trigger.focus();
   await page.keyboard.press('Enter');
   await expect(parent).toBeFocused();
-  // No wait between opening the submenu and the End press: the press lands
-  // before Web Awesome's queued first-item focus.
+  // No wait between opening the submenu and the End press.
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('End');
   await expect(last).toBeFocused();
-  // Past the handoff timer and the restore that follows it.
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(400);
   await expect(last).toBeFocused();
-  const placement = await parent.evaluate((item) => {
-    const submenu = item.shadowRoot!.querySelector('[part~="submenu"]')!;
-    const choice = item.querySelector('[data-decision="project-19"]')!;
-    const clip = submenu.getBoundingClientRect();
-    const box = choice.getBoundingClientRect();
-    return {
-      scrolled: submenu.scrollTop > 0,
-      inside: box.top >= clip.top - 0.5 && box.bottom <= clip.bottom + 1,
-    };
-  });
-  expect(placement).toEqual({ scrolled: true, inside: true });
+  await expect
+    .poll(() =>
+      submenu.evaluate((menu) => {
+        const choice = menu.querySelector('[data-decision="project-19"]')!;
+        const clip = menu.getBoundingClientRect();
+        const box = choice.getBoundingClientRect();
+        return {
+          scrolled: menu.scrollTop > 0,
+          inside: box.top >= clip.top - 0.5 && box.bottom <= clip.bottom + 1,
+        };
+      }),
+    )
+    .toEqual({ scrolled: true, inside: true });
 });
 
 test('a long phone submenu stays inside the viewport and scrolls to every choice', async ({
@@ -938,39 +835,19 @@ test('a long phone submenu stays inside the viewport and scrolls to every choice
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=popup-menu');
-  const nested = page
-    .locator('[data-demo="popup-menu"]')
-    .locator('[data-component="popup-menu"][data-trigger="button"]')
-    .filter({ has: page.locator('wa-dropdown-item[slot="submenu"]') });
-  const trigger = nested.getByRole('button', { name: 'Decide' });
-  const parent = nested.locator(
-    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
-  );
+  const { root, trigger, parent, submenu } = nestedMenu(page);
   // An app menu with one choice per project: far more rows than a phone
   // screen holds on either side of the parent menu.
-  await parent.evaluate((item) => {
-    for (let index = 0; index < 20; index++) {
-      const choice = document.createElement('wa-dropdown-item');
-      choice.setAttribute('slot', 'submenu');
-      choice.dataset.action = 'log-decision';
-      choice.dataset.decision = `project-${String(index)}`;
-      choice.textContent = `Project ${String(index)}`;
-      item.append(choice);
-    }
-  });
-  const last = parent.locator('[data-decision="project-19"]');
+  await addChoices(submenu, 20);
+  const last = submenu.locator('[data-decision="project-19"]');
   const submenuBox = () =>
-    parent.evaluate((item) => {
-      const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
-      if (!(submenu instanceof HTMLElement))
-        throw new Error('PopupMenu submenu missing');
-      const box = submenu.getBoundingClientRect();
+    submenu.evaluate((menu) => {
+      const box = menu.getBoundingClientRect();
       return {
         top: box.top,
         bottom: box.bottom,
-        scrollable: submenu.scrollHeight > submenu.clientHeight,
-        settled: submenu.getAnimations().length === 0,
-        scrollTop: submenu.scrollTop,
+        scrollable: menu.scrollHeight > menu.clientHeight,
+        scrollTop: menu.scrollTop,
       };
     });
 
@@ -997,16 +874,13 @@ test('a long phone submenu stays inside the viewport and scrolls to every choice
     await page.keyboard.press('Enter');
     await expect(parent).toBeFocused();
     await page.keyboard.press('ArrowRight');
-    await expect(parent).toHaveJSProperty('submenuOpen', true);
+    await expect(parent).toHaveAttribute('aria-expanded', 'true');
     await expect.poll(async () => (await submenuBox()).scrollable).toBe(true);
     const placed = await submenuBox();
     expect(placed.top).toBeGreaterThanOrEqual(8 - 0.5);
     expect(placed.bottom).toBeLessThanOrEqual(844 - 8 + 0.5);
 
     // The keyboard walks every choice, scrolling the last one into view.
-    // Focus lands before the engine finishes scrolling it into view (a
-    // loaded full run once read the box mid-scroll), so poll the geometry
-    // until the last choice rests inside the scrolled submenu.
     await page.keyboard.press('End');
     await expect(last).toBeFocused();
     await expect
@@ -1022,14 +896,14 @@ test('a long phone submenu stays inside the viewport and scrolls to every choice
       .toEqual({ topInside: true, bottomInside: true, scrolled: true });
     await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
-    await expect(nested).not.toHaveAttribute('open', '');
+    await expectOpen(root, false);
   }
 
   // The wheel scrolls the capped submenu, and a pointer reaches and chooses
   // the last row.
   await trigger.click();
   await parent.hover();
-  await expect(parent).toHaveJSProperty('submenuOpen', true);
+  await expect(parent).toHaveAttribute('aria-expanded', 'true');
   await expect.poll(async () => (await submenuBox()).scrollable).toBe(true);
   const opened = await submenuBox();
   await page.mouse.move(100, opened.top + 40);
@@ -1070,25 +944,13 @@ test('PopupMenu menus and Select listboxes share the scroll-edge cue', async ({
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=popup-menu');
-  const nested = page
-    .locator('[data-demo="popup-menu"]')
-    .locator('[data-component="popup-menu"][data-trigger="button"]')
-    .filter({ has: page.locator('wa-dropdown-item[slot="submenu"]') });
-  const parent = nested.locator(
-    'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
-  );
-  const menuStyle = await nested.evaluate((dropdown) => {
-    const menu = dropdown.shadowRoot?.querySelector('[part~="menu"]');
-    if (!menu) throw new Error('PopupMenu menu missing');
-    return window.getComputedStyle(menu).backgroundAttachment;
-  });
-  expect(attachments(menuStyle)).toEqual(cue);
-  const submenuStyle = await parent.evaluate((item) => {
-    const submenu = item.shadowRoot?.querySelector('[part~="submenu"]');
-    if (!submenu) throw new Error('PopupMenu submenu missing');
-    return window.getComputedStyle(submenu).backgroundAttachment;
-  });
-  expect(attachments(submenuStyle)).toEqual(cue);
+  const { root, submenu } = nestedMenu(page);
+  const style = (popup: Locator) =>
+    popup.evaluate(
+      (menu) => window.getComputedStyle(menu).backgroundAttachment,
+    );
+  expect(attachments(await style(panelOf(root)))).toEqual(cue);
+  expect(attachments(await style(submenu))).toEqual(cue);
 
   await page.goto('/?component=select');
   const listboxStyle = await page

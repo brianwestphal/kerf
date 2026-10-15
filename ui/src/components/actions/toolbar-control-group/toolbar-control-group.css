@@ -565,7 +565,7 @@
 }
 
 /* The group lays out its own native and raw Web Awesome children. A composed
-   PopupMenu (`wa-dropdown.kui-popup-menu`) or Select sizes itself in the
+   PopupMenu (`.kui-popup-menu`) or Select sizes itself in the
    group's context from its own stylesheet (popup-menu.css, select.css); the
    group names those children by class only to key its own state on them. */
 .kui-toolbar-control-group
@@ -977,7 +977,7 @@
     :where(
       :has(
         .kui-select[open],
-        .kui-popup-menu[open],
+        .kui-popup-menu > [aria-expanded="true"],
         wa-dropdown:not(.kui-popup-menu)[open]
       )
     )
@@ -990,7 +990,7 @@
     :where(
       :has(
         .kui-select[open],
-        .kui-popup-menu[open],
+        .kui-popup-menu > [aria-expanded="true"],
         wa-dropdown:not(.kui-popup-menu)[open]
       )
     )
@@ -1014,7 +1014,7 @@
     :where(
       :has(
         .kui-select[open],
-        .kui-popup-menu[open],
+        .kui-popup-menu > [aria-expanded="true"],
         wa-dropdown:not(.kui-popup-menu)[open]
       )
     )
@@ -1027,7 +1027,7 @@
     :where(
       :has(
         .kui-select[open],
-        .kui-popup-menu[open],
+        .kui-popup-menu > [aria-expanded="true"],
         wa-dropdown:not(.kui-popup-menu)[open]
       )
     )

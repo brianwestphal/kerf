@@ -19,7 +19,7 @@ import {
   type PopupMenuProps,
 } from '../../src/components/actions/popup-menu/popup-menu.js';
 import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
-import { LegacyPopupMenu } from '../fixtures/popup-menu-legacy.js';
+import { ReferencePopupMenu } from '../fixtures/popup-menu-reference.js';
 
 const icon = (glyph: typeof Copy, name: string) =>
   LucideIcon({ icon: glyph, name });
@@ -102,16 +102,16 @@ afterEach(() => _clearPopupMenuMarkupCache());
 
 // Long parts (icon and details markup) feed the digest as their own memoized
 // hashes, so a menu holding one has a different `data-key` value than the
-// legacy character-by-character digest; everything else is byte-identical.
+// reference character-by-character digest; everything else is byte-identical.
 const withoutKey = (html: string) =>
   html.replace(/ data-key="kui-popup-menu-[^"]*"/, '');
 const keyOf = (html: string) => /data-key="([^"]+)"/.exec(html)![1];
 
 describe('PopupMenu content key and markup cache', () => {
   it.each(cases)(
-    'renders %s byte-identically to the previous implementation apart from the key value, cached or not',
+    'renders %s byte-identically to the reference implementation apart from the key value, cached or not',
     (_name, props) => {
-      const expected = withoutKey(String(LegacyPopupMenu(props)));
+      const expected = withoutKey(String(ReferencePopupMenu(props)));
       const first = String(PopupMenu(props));
       expect(withoutKey(first)).toBe(expected);
       // The second render is served from the markup cache.
@@ -126,9 +126,9 @@ describe('PopupMenu content key and markup cache', () => {
       ([name]) => name === 'empty menu' || name.startsWith('astral'),
     ),
   )(
-    'keeps the legacy key value for %s, which has no long part',
+    'keeps the reference key value for %s, which has no long part',
     (_name, props) => {
-      expect(String(PopupMenu(props))).toBe(String(LegacyPopupMenu(props)));
+      expect(String(PopupMenu(props))).toBe(String(ReferencePopupMenu(props)));
     },
   );
 
@@ -138,7 +138,7 @@ describe('PopupMenu content key and markup cache', () => {
       text: 'Short',
       items: [{ label: 'Go', details: short }],
     };
-    expect(String(PopupMenu(props))).toBe(String(LegacyPopupMenu(props)));
+    expect(String(PopupMenu(props))).toBe(String(ReferencePopupMenu(props)));
     expect(_popupMenuPartDigestCount()).toBe(0);
   });
 
@@ -205,7 +205,7 @@ describe('PopupMenu content key and markup cache', () => {
     expect(withoutKey(trash)).toBe(
       withoutKey(
         String(
-          LegacyPopupMenu({
+          ReferencePopupMenu({
             text: 'Actions',
             items: [{ label: 'Go', icon: icon(Trash, 'glyph') }],
           }),
@@ -246,7 +246,7 @@ describe('PopupMenu content key and markup cache', () => {
     expect(cachedPopupMenuContent(keyFor(MARKUP_CACHE_LIMIT))).toBeDefined();
     // An evicted menu renders afresh, identically, and is cached again.
     expect(render(1)).toBe(
-      String(LegacyPopupMenu({ text: 'Row 1', items: [{ label: 'Open' }] })),
+      String(ReferencePopupMenu({ text: 'Row 1', items: [{ label: 'Open' }] })),
     );
     expect(cachedPopupMenuContent(keyFor(1))).toBeDefined();
   });
@@ -265,7 +265,7 @@ describe('PopupMenu content key and markup cache', () => {
       items: [{ label: 'Rows', details: listed }],
     };
     const html = String(PopupMenu(props));
-    expect(html).toBe(String(LegacyPopupMenu(props)));
+    expect(html).toBe(String(ReferencePopupMenu(props)));
     expect(_popupMenuMarkupCacheSize()).toBe(0);
     cachePopupMenuContent('static', new SafeHtml('<b>ok</b>'));
     expect(_popupMenuMarkupCacheSize()).toBe(1);
@@ -290,7 +290,9 @@ describe('PopupMenu content key and markup cache', () => {
         )}
       </div>
     ));
-    const menus = () => [...root.querySelectorAll<HTMLElement>('wa-dropdown')];
+    const menus = () => [
+      ...root.querySelectorAll<HTMLElement>('.kui-popup-menu'),
+    ];
     const first = menus();
     expect(first).toHaveLength(3);
 

@@ -118,7 +118,7 @@ describe('Catalog', () => {
     // Stage renders the app-provided content
     expect(html).toContain('class="preview">Select preview');
     expect(html).toContain('data-background-style="checkerboard"');
-    // Footer resource link + related popup menu (a wa-dropdown, grouped by `group`)
+    // Footer resource link + related popup menu (grouped by `group`)
     expect(html).toContain('data-component="toolbar-action-link"');
     expect(html).toContain('data-overflow="wrap"');
     expect(html).toContain('href="https://example.com/select.ts"');
@@ -127,13 +127,19 @@ describe('Catalog', () => {
     expect(html).toContain(
       'data-responsive="stack" data-responsive-at="narrow"',
     );
-    expect(html).toContain('<span>Components</span>');
+    expect(html).toContain(
+      '<span class="kui-popup-menu__text">Components</span>',
+    );
     // Group headings are the Select's group titles, not slotted h3s.
     expect(html).toContain(
-      '<div class="kui-popup-menu__heading">Used By</div>',
+      '<div class="kui-popup-menu__heading" aria-hidden="true">Used By</div>',
     );
-    expect(html).toContain('<div class="kui-popup-menu__heading">Uses</div>');
-    expect(html).toContain('<wa-divider></wa-divider>');
+    expect(html).toContain(
+      '<div class="kui-popup-menu__heading" aria-hidden="true">Uses</div>',
+    );
+    expect(html).toContain(
+      '<div class="kui-popup-menu__divider" role="separator"></div>',
+    );
     expect(html).toContain(
       'data-action="catalog-select" data-item-id="banner"',
     );
@@ -191,8 +197,8 @@ describe('Catalog', () => {
     expect(
       host
         .querySelector('[data-background-choice="surface"]')
-        ?.hasAttribute('checked'),
-    ).toBe(true);
+        ?.getAttribute('aria-checked'),
+    ).toBe('true');
     host.innerHTML = String(
       Catalog({
         ...props,
@@ -208,8 +214,8 @@ describe('Catalog', () => {
     expect(
       host
         .querySelector('[data-background-choice="sunken"]')
-        ?.hasAttribute('checked'),
-    ).toBe(true);
+        ?.getAttribute('aria-checked'),
+    ).toBe('true');
   });
 
   it('places filtered consumer metadata on the catalog-owned preview stage', () => {
@@ -1565,7 +1571,7 @@ describe('wireCatalog', () => {
 
   it('ignores a related-menu item with no id', () => {
     const root = mountShell(
-      '<div data-catalog-related><wa-dropdown-item data-action="catalog-select">no id</wa-dropdown-item></div>',
+      '<div data-catalog-related><button class="kui-popup-menu__item" data-action="catalog-select">no id</button></div>',
     );
     const onSelect = vi.fn();
     const stop = wireCatalog(root, { onSelect });

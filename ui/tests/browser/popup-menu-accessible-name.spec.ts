@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-// Web Awesome renders each menu panel (role="menu") in a shadow root that no
-// ID reference from the trigger can reach, so PopupMenu names it from the
-// label it already knows. These checks query the accessibility tree by name.
+// PopupMenu names each menu panel (role="menu") from the label it already
+// knows: the root menu from its trigger, a submenu from its item. These
+// checks query the accessibility tree by name.
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/?component=popup-menu');
@@ -22,7 +22,7 @@ test('a text trigger and its submenu name their open menus', async ({
   const demo = page.locator('[data-demo="popup-menu"]');
   const decide = demo
     .locator('[data-component="popup-menu"][data-trigger="button"]')
-    .filter({ has: page.locator('wa-dropdown-item[slot="submenu"]') });
+    .filter({ has: page.locator('[data-submenu]') });
   await decide.getByRole('button', { name: 'Decide' }).focus();
   await page.keyboard.press('Enter');
   const menu = decide.getByRole('menu', { name: 'Decide', exact: true });
@@ -45,7 +45,9 @@ test('a context menu and its submenu are named', async ({ page }) => {
   await demo.locator('[data-popup-menu-context-target]').click({
     button: 'right',
   });
-  await expect(context).toHaveAttribute('open', '');
+  await expect(
+    context.locator(':scope > .kui-popup-menu__context-anchor'),
+  ).toHaveAttribute('aria-expanded', 'true');
   const menu = context.getByRole('menu', {
     name: 'Demand Actions',
     exact: true,

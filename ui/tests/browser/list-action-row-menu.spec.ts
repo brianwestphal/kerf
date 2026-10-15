@@ -16,7 +16,9 @@ test('ListActionRow trailing menu opens from its trigger, reveals on interaction
   // The trigger is the row's sibling trailing control: a 44px pill beside the
   // primary button, filling the row's height.
   const rowBox = (await row.boundingBox())!;
-  const menuBox = (await menu.locator('wa-button').boundingBox())!;
+  const menuBox = (await menu
+    .locator(':scope > .kui-popup-menu__trigger')
+    .boundingBox())!;
   expect(Math.round(menuBox.width)).toBe(44);
   expect(Math.round(menuBox.height)).toBe(Math.round(rowBox.height));
   expect(
@@ -26,7 +28,7 @@ test('ListActionRow trailing menu opens from its trigger, reveals on interaction
   // Interaction visibility: hidden at rest, revealed on row hover.
   const triggerOpacity = () =>
     menu
-      .locator('wa-button')
+      .locator(':scope > .kui-popup-menu__trigger')
       .evaluate((element) => window.getComputedStyle(element).opacity);
   await page.mouse.move(0, 0);
   await expect.poll(triggerOpacity).toBe('0');
@@ -44,10 +46,10 @@ test('ListActionRow trailing menu opens from its trigger, reveals on interaction
   // The trigger opens the menu below it, end-aligned, and the chosen command
   // dispatches its own data-action.
   await trigger.click();
-  await expect(menu).toHaveAttribute('open', '');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   const edit = menu.getByRole('menuitem', { name: 'Edit' });
   await expect(edit).toBeVisible();
-  // Web Awesome places the popup asynchronously; wait for it to settle.
+  // Placement lands in the frame after opening; wait for it to settle.
   await expect
     .poll(async () => (await edit.boundingBox())!.y)
     .toBeGreaterThanOrEqual(menuBox.y + menuBox.height - 1);
@@ -60,7 +62,7 @@ test('ListActionRow trailing menu opens from its trigger, reveals on interaction
     });
   await edit.click();
   await expect(log).toHaveText('Edit run-tests');
-  await expect(menu).not.toHaveAttribute('open', '');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
   // The primary action still selects the row.
   await primary.click();
@@ -68,15 +70,8 @@ test('ListActionRow trailing menu opens from its trigger, reveals on interaction
   await expect(row).toHaveAttribute('data-selected', 'true');
 
   // Right-click on the primary opens the same menu at the pointer.
-  await menu.evaluate((element) =>
-    element.addEventListener(
-      'wa-after-hide',
-      () => element.setAttribute('data-test-hidden', ''),
-      { once: true },
-    ),
-  );
   await primary.click({ button: 'right', position: { x: 40, y: 10 } });
-  await expect(menu).toHaveAttribute('open', '');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   const pointerEdit = menu.getByRole('menuitem', { name: 'Edit' });
   await expect(pointerEdit).toBeVisible();
   const primaryBox = (await primary.boundingBox())!;
@@ -94,14 +89,16 @@ test('ListActionRow trailing menu opens from its trigger, reveals on interaction
       path: 'test-results/list-action-row-menu-context-wide.png',
     });
   await page.keyboard.press('Escape');
-  await expect(menu).not.toHaveAttribute('open', '');
-  await expect(menu).toHaveAttribute('data-test-hidden', '');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(pointerEdit).toBeHidden();
 
   // After a pointer opening, the trigger anchors the menu again.
   await trigger.click();
-  await expect(menu).toHaveAttribute('open', '');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   const reopenedEdit = menu.getByRole('menuitem', { name: 'Edit' });
-  const triggerBox = (await menu.locator('wa-button').boundingBox())!;
+  const triggerBox = (await menu
+    .locator(':scope > .kui-popup-menu__trigger')
+    .boundingBox())!;
   await expect
     .poll(async () => (await reopenedEdit.boundingBox())!.y)
     .toBeGreaterThanOrEqual(triggerBox.y + triggerBox.height - 1);

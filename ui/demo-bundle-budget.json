@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 383100,
-  "measuredLargestJavaScriptGzip": 118680,
-  "measuredTotalJavaScriptGzip": 383067,
+  "totalJavaScriptGzip": 384800,
+  "measuredLargestJavaScriptGzip": 124495,
+  "measuredTotalJavaScriptGzip": 384747,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4915,6 +4915,38 @@
         "measuredTotalJavaScriptGzip": 383067,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 383100
+      }
+    },
+    {
+      "at": "2026-10-15T00:20:20.077Z",
+      "reason": "PopupMenu now owns its menu (native popover, kerf controller) while Web Awesome's dropdown still ships for the raw wa-dropdown catalog specimen until the theme bridge becomes optional",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 383067,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 383100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124494,
+        "measuredTotalJavaScriptGzip": 384683,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 384700
+      }
+    },
+    {
+      "at": "2026-10-15T00:33:10.295Z",
+      "reason": "PopupMenu owns its menu (manual native popovers, kerf controller with outside-press dismissal) while Web Awesome's dropdown still ships for the raw wa-dropdown catalog specimen until the theme bridge becomes optional",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124494,
+        "measuredTotalJavaScriptGzip": 384683,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 384700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 124495,
+        "measuredTotalJavaScriptGzip": 384747,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 384800
       }
     }
   ]
