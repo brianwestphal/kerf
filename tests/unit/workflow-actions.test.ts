@@ -192,3 +192,32 @@ describe('UI browser failure evidence', () => {
     expect(config).toContain("trace: 'retain-on-failure'");
   });
 });
+
+describe('Web Awesome compatibility', () => {
+  it('tests the newest 3.x in CI while the lockfile tests the floor of the peer range', () => {
+    const workflow = parse(
+      readFileSync(join(workflowDirectory, 'ci.yml'), 'utf8'),
+    ) as {
+      jobs: Record<string, { steps: Array<{ run?: string }> }>;
+    };
+    const job = workflow.jobs['ui-webawesome-latest'];
+    expect(job).toBeDefined();
+    expect(job!.steps.map((step) => step.run)).toContain(
+      'npm run test:webawesome-latest',
+    );
+    const ui = JSON.parse(
+      readFileSync(resolve(workflowDirectory, '../../ui/package.json'), 'utf8'),
+    ) as {
+      scripts: Record<string, string>;
+      peerDependencies: Record<string, string>;
+      devDependencies: Record<string, string>;
+    };
+    expect(ui.scripts['test:webawesome-latest']).toContain(
+      '@awesome.me/webawesome@^3',
+    );
+    // The development install is a range like the peer, not an exact pin.
+    expect(ui.devDependencies['@awesome.me/webawesome']).toBe(
+      ui.peerDependencies['@awesome.me/webawesome'],
+    );
+  });
+});

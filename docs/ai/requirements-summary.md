@@ -304,6 +304,8 @@ status, and dormant trailing content cannot escape the visible row. Its
 `multiline` variant wraps the primary label while keeping the leading icon on
 the first inherited text line.
 
+`@kerfjs/ui` supports every Web Awesome 3.x from 3.12 (optional peer `^3.12.0`): stage 1 of the Web Awesome independence work retired every prototype patch, and CI tests the newest 3.x alongside the 3.12.0 floor.
+
 `@kerfjs/ui` Select is Kerf's own control (wa-independence stage 1; it no
 longer renders `wa-select`): a native `role="combobox"` trigger and a top-layer
 `role="listbox"` popover, wired by `select/register`, with a form-associated

@@ -591,6 +591,7 @@
     "test:contract-types:packed": "node scripts/check-packed-type-contracts.mjs",
     "test:consumer-types": "npm run test:contract-types:source && npm run build && node node_modules/typescript7/bin/tsc -p tests/consumer-types/webawesome/tsconfig.json && npm run test:contract-types:packed",
     "test:e2e": "playwright test",
+    "test:webawesome-latest": "npm install --no-save --no-audit --no-fund @awesome.me/webawesome@^3 && node -e \"console.log('Web Awesome', require('@awesome.me/webawesome/package.json').version)\" && vitest run tests/unit && playwright test --project=chromium",
     "bench:micro": "vitest bench --run tests/bench",
     "check": "npm run check:source-organization && npm run check:catalog && npm run check:component-integrations && npm run check:profile && npm run check:demo-conformance && npm run check:recipes && npm run check:css-ownership && npm run check:guidance && npm run check:ai-compatibility && npm run check:ai-regressions && npm run lint && npm run typecheck && npm test && npm run test:consumer-types && npm run check:ai-signatures && npm run demo:build && npm run check:design-templates && npm pack --dry-run",
     "prepublishOnly": "npm run check",
@@ -618,7 +619,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@awesome.me/webawesome": "3.12.0",
+    "@awesome.me/webawesome": "^3.12.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
     "@types/node": "^22.10.0",

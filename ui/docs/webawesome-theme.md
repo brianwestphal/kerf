@@ -1,7 +1,16 @@
 # Web Awesome theme contract
 
-`@kerfjs/ui/webawesome.css` is the optional bridge between Web Awesome 3.12's
+`@kerfjs/ui/webawesome.css` is the optional bridge between Web Awesome 3's
 free components and the Kerf/Hot Sheet 2 design system.
+
+**Supported versions.** `@kerfjs/ui` supports every Web Awesome 3.x release
+from 3.12 (its optional peer range is `^3.12.0`). No Kerf component patches
+Web Awesome's internals any more: `PopupMenu`, `Select`, and `DialogSurface`
+draw their own native controls, so an upgrade within 3.x reaches only this
+theme and the Web Awesome elements an application renders itself. The
+package's own tests run against 3.12.0 (the lockfile), and CI's
+`ui-webawesome-latest` job runs the ui unit and Chromium browser suites
+against the newest 3.x (`npm run test:webawesome-latest`).
 
 ```ts
 import type {} from "@kerfjs/ui/webawesome";

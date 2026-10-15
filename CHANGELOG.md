@@ -61,6 +61,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
   A raw `wa-dialog` outside `DialogSurface` keeps Web Awesome's own behavior and the theme in `@kerfjs/ui/webawesome.css`; import its module yourself where you render it.
 
+- `@kerfjs/ui` no longer patches any Web Awesome internals, so it supports every Web Awesome 3.x from 3.12 (the optional peer range, `^3.12.0`) rather than effectively one exact version. Its CI runs the ui unit and Chromium browser suites against the newest 3.x as well as the 3.12.0 floor, and both pass on 3.14.0 (`KF-F3FY5G`).
+
 ### Fixed
 
 - A `kerfjs/overlay` `initialFocus` that targets a custom element that cannot take focus yet no longer aborts the open. Before, a Web Awesome `wa-button` whose `focus()` throws before it has rendered made `overlay()` (and `confirm()`, `prompt()`, `form()`, `choice()`) roll back and rethrow. Now focus holds on the overlay itself, then moves to the element once it is defined and rendered, unless the overlay has closed or the user has moved focus in the meantime. The same applies to `initialFocus: true` when the first tab stop is such an element. Covered in Chromium, Firefox, and WebKit.

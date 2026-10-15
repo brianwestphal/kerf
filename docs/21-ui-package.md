@@ -164,6 +164,13 @@ Plain Accordion and Details remove inline padding from their trigger and body;
 outlined and sunken disclosure headers use the 16px container inset while their
 bodies retain the compact 8px surface inset.
 
+Web Awesome 3 is an optional peer at `^3.12.0`. Stage 1 of the Web Awesome
+independence work (`PopupMenu`, `Select`, and `DialogSurface` drawing their own
+native controls) retired every prototype patch, so the ui package tests the
+floor through its lockfile (3.12.0) and the newest 3.x through CI's
+`ui-webawesome-latest` job (`npm --prefix ui run test:webawesome-latest`: the
+unit and Chromium browser suites).
+
 `Select` is Kerf's own control (KF-CF0FEN, wa-independence stage 1: it no
 longer renders `wa-select` / `wa-option`). Rendering it is pure: a `kui-select`
 root holding an optional visible label, a native trigger `<button
