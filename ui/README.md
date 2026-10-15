@@ -923,3 +923,16 @@ negative, unresolved, or contradictory values leave the item visible under this
 width policy. Keep primary actions visible and offer a complementary overflow
 group. See `docs/component-contract.md` "Toolbar width visibility" for lifecycle
 details.
+
+## License and third-party notices
+
+`@kerfjs/ui` is MIT licensed (see `LICENSE`).
+
+Web Awesome (`@awesome.me/webawesome`, copyright Fonticons, Inc., MIT) is an
+optional peer dependency. This package does not copy or bundle Web Awesome
+code: `@kerfjs/ui/webawesome.css` imports Web Awesome's stylesheet from the
+application's own installation, and `@kerfjs/ui/webawesome` contains only type
+declarations. An application that bundles Web Awesome components
+redistributes them, so it should retain Web Awesome's MIT notice; Font Awesome
+Free, whose icons Web Awesome embeds, asks that the attribution comments in
+those icons stay intact.

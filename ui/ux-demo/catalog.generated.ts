@@ -1661,7 +1661,7 @@ export const generatedWebAwesomeCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "webawesome",
-    "description": "One stage inside a stepper, showing its position, label, and status.",
+    "description": "Marker and label for one stage of a wa-stepper process, with completed, loading, disabled, and semantic-color states.",
     "recommendation": "supported",
     "uses": [
       "wa-icon",

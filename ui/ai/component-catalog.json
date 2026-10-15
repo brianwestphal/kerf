@@ -9278,15 +9278,15 @@
       "category": "Navigation",
       "kind": "component",
       "source": "webawesome",
-      "description": "One stage inside a stepper, showing its position, label, and status.",
+      "description": "Marker and label for one stage of a wa-stepper process, with completed, loading, disabled, and semantic-color states.",
       "uses": [
         "wa-icon",
         "wa-spinner"
       ],
-      "purpose": "One stage inside a stepper, showing its position, label, and status.",
+      "purpose": "Marker and label for one stage of a wa-stepper process, with completed, loading, disabled, and semantic-color states.",
       "customElement": "wa-step",
       "useWhen": [
-        "One stage inside a stepper, showing its position, label, and status."
+        "Marker and label for one stage of a wa-stepper process, with completed, loading, disabled, and semantic-color states."
       ],
       "avoidWhen": [
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",

@@ -6,7 +6,7 @@
 
 ## When to use
 
-One stage inside a stepper, showing its position, label, and status.
+Marker and label for one stage of a wa-stepper process, with completed, loading, disabled, and semantic-color states.
 
 **Not when:**
 

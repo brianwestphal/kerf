@@ -133,7 +133,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Breadcrumb Item](./wa-breadcrumb-item.md) — One link or current-location item in a breadcrumb.
 - [Pagination](./wa-pagination.md) — Experimental page navigation for a bounded result set.
 - [Stepper](./wa-stepper.md) — Ordered indicator for a multi-step process, such as checkout or setup, with optional step-by-step navigation.
-- [Step](./wa-step.md) — One stage inside a stepper, showing its position, label, and status.
+- [Step](./wa-step.md) — Marker and label for one stage of a wa-stepper process, with completed, loading, disabled, and semantic-color states.
 - [Tab](./wa-tab.md) (avoid) — Ecosystem tab label; use Kerf TabBar or SegmentedControl.
 - [Tab Group](./wa-tab-group.md) (avoid) — Ecosystem tabs; use Kerf TabBar or SegmentedControl.
 - [Tab Panel](./wa-tab-panel.md) (avoid) — Ecosystem tab panel; use Kerf TabBar with application-owned panels.
