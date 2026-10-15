@@ -1,8 +1,6 @@
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/webawesome.css';
-import '@awesome.me/webawesome/dist/components/input/input.js';
-import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 
 import { Spacer } from '@kerfjs/ui';
 import { Button } from '@kerfjs/ui/button';
@@ -12,6 +10,7 @@ import { Row } from '@kerfjs/ui/row';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
+import { TextField } from '@kerfjs/ui/text-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
@@ -94,20 +93,21 @@ export const createRecipe: RecipeFactory = (announce) => {
           />
         )}
         <List gap="xs" controlInsets="rl">
-          <wa-input
+          <TextField
             name="recipe-title"
             label="Update Title"
             hint="Summarize the outcome in one line."
             required
             value={title.value}
           />
-          <wa-textarea
+          <TextField
+            multiline
             name="recipe-body"
             label="Details"
             hint="Include decisions, owners, and the next checkpoint."
-            rows="5"
-            maxlength="400"
-            with-count
+            rows={5}
+            maxLength={400}
+            showCount
             value={body.value}
           />
           <Select<string>

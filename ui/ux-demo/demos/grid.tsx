@@ -1,11 +1,11 @@
 import '@awesome.me/webawesome/dist/components/card/card.js';
-import '@awesome.me/webawesome/dist/components/input/input.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { px } from '@kerfjs/ui/css-values';
 import { Grid } from '@kerfjs/ui/grid';
 import { Text } from '@kerfjs/ui/text';
+import { TextField } from '@kerfjs/ui/text-field';
 
 import { gridTileSelections } from './state.js';
 
@@ -17,8 +17,8 @@ export function GridDemo() {
         note="Related form fields divide the available width evenly with the standard homogeneous-group gap."
       >
         <Grid columns={2} gap="m">
-          <wa-input label="Quantity" value="12" />
-          <wa-input label="Unit" value="pieces" />
+          <TextField label="Quantity" value="12" />
+          <TextField label="Unit" value="pieces" />
         </Grid>
       </CatalogExample>
       <CatalogExample
@@ -51,8 +51,8 @@ export function GridDemo() {
         viewport={{ width: 'wide' }}
       >
         <Grid minColumnWidth={px(376)} gap="m">
-          <wa-input label="Provider Name" value="Example provider" />
-          <wa-input label="API Endpoint" value="https://example.test" />
+          <TextField label="Provider Name" value="Example provider" />
+          <TextField label="API Endpoint" value="https://example.test" />
         </Grid>
       </CatalogExample>
       <CatalogExample
@@ -67,7 +67,7 @@ export function GridDemo() {
           rootAttributes={{ 'data-demo-grid-insets': '' }}
         >
           <Text flush>Text aligned to the full content inset</Text>
-          <wa-input label="Amount" value="12" />
+          <TextField label="Amount" value="12" />
         </Grid>
       </CatalogExample>
       <CatalogExample

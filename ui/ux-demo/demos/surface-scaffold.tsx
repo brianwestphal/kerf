@@ -1,6 +1,3 @@
-import '@awesome.me/webawesome/dist/components/input/input.js';
-import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
-
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Composer } from '@kerfjs/ui/composer';
@@ -20,6 +17,7 @@ import {
   PopupSurface,
 } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
+import { TextField } from '@kerfjs/ui/text-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -541,13 +539,14 @@ export function SurfaceScaffoldDemo() {
         >
           <List>
             <ListInsetControl>
-              <wa-input label="To" name="catalog-sheet-to" />
+              <TextField label="To" name="catalog-sheet-to" />
             </ListInsetControl>
             <ListInsetControl>
-              <wa-input label="Subject" name="catalog-sheet-subject" />
+              <TextField label="Subject" name="catalog-sheet-subject" />
             </ListInsetControl>
             <ListInsetControl>
-              <wa-textarea
+              <TextField
+                multiline
                 label="Message"
                 name="catalog-sheet-message"
                 rows={4}

@@ -24,13 +24,13 @@ export function mountRecipe(
   const stopChanges = delegate(
     root,
     'change',
-    'kui-select, wa-input, wa-textarea',
+    'kui-select, .kui-text-field__input',
     dispatchChange,
   );
   const stopInputs = delegate(
     root,
     'input',
-    'wa-input, wa-textarea',
+    '.kui-text-field__input',
     dispatchChange,
   );
   const stopDialogs = delegate(

@@ -453,7 +453,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
         ':scope > [data-component="list"] > [data-component="toolbar"]',
       )!;
       const input = root.querySelector<HTMLElement>(
-        'wa-input[name="recipe-title"]',
+        '.kui-text-field:has([name="recipe-title"])',
       )!;
       const fields = input.parentElement!;
       const footerRow = stack.querySelector<HTMLElement>(
@@ -488,34 +488,29 @@ test('keeps the composer on one labeled surface with shared field and action gut
       const summaryRange = document.createRange();
       summaryRange.selectNodeContents(summary);
       const textarea = root.querySelector<HTMLElement>(
-        'wa-textarea[name="recipe-body"]',
+        '.kui-text-field:has([name="recipe-body"])',
       )!;
       const select = root.querySelector<HTMLElement>(
         'kui-select[name="recipe-audience"]',
       )!;
-      const inputLabel = input.shadowRoot!.querySelector<HTMLElement>(
-        '[part~="form-control-label"]',
-      )!;
-      const inputHint =
-        input.shadowRoot!.querySelector<HTMLElement>('[part~="hint"]')!;
-      const textareaLabel = textarea.shadowRoot!.querySelector<HTMLElement>(
-        '[part~="form-control-label"]',
-      )!;
-      const textareaHint =
-        textarea.shadowRoot!.querySelector<HTMLElement>('[part~="hint"]')!;
-      const textareaCount =
-        textarea.shadowRoot!.querySelector<HTMLElement>('[part~="count"]')!;
-      const textareaControl =
-        textarea.shadowRoot!.querySelector<HTMLElement>('[part~="textarea"]')!;
+      const part = (field: HTMLElement, name: string) =>
+        field.querySelector<HTMLElement>(`.kui-text-field__${name}`)!;
+      const inputLabel = part(input, 'label');
+      const inputHint = part(input, 'hint');
+      const textareaLabel = part(textarea, 'label');
+      const textareaHint = part(textarea, 'hint');
+      const textareaCount = part(textarea, 'count');
+      const textareaControl = part(textarea, 'input');
       const selectLabel = select.querySelector<HTMLElement>(
         ':scope > .kui-select__label',
       )!;
       const textareaBounds = textarea.getBoundingClientRect();
-      const countBounds = textareaCount.getBoundingClientRect();
-      const hintSlot =
-        textareaHint.querySelector<HTMLSlotElement>('slot[name="hint"]')!;
+      // The count's text, not its box, which pads to the text column.
+      const countRange = document.createRange();
+      countRange.selectNodeContents(textareaCount);
+      const countBounds = countRange.getBoundingClientRect();
       const hintRange = document.createRange();
-      hintRange.selectNodeContents(hintSlot);
+      hintRange.selectNodeContents(textareaHint);
       const hintCountOverlap = [...hintRange.getClientRects()].some(
         (rect) =>
           Math.min(rect.right, countBounds.right) >
@@ -601,8 +596,8 @@ test('keeps the composer on one labeled surface with shared field and action gut
     await expect(banner).toHaveCount(bannerRole ? 1 : 0);
     if (bannerRole) await expect(banner).toHaveAttribute('role', bannerRole);
     for (const field of [
-      'wa-input[name="recipe-title"]',
-      'wa-textarea[name="recipe-body"]',
+      '[name="recipe-title"]',
+      '[name="recipe-body"]',
       'kui-select[name="recipe-audience"]',
     ])
       await expect(form.locator(field)).toBeVisible();
@@ -646,7 +641,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
       measured.textareaHintPadding,
       measured.selectLabelPadding,
     ]) {
-      // Shared Web Awesome field chrome aligns labels and hints with the value:
+      // Shared Kerf field chrome aligns labels and hints with the value:
       // the 1px control border plus its 8px inline content inset.
       expect(padding.start).toBeCloseTo(1 + 8 * scale, 0);
       expect(padding.end).toBeCloseTo(1 + 8 * scale, 0);
@@ -681,22 +676,8 @@ test('keeps the composer on one labeled surface with shared field and action gut
   if (browserName === 'chromium')
     await form.screenshot({ path: 'test-results/composer-layout-error.png' });
 
-  await form
-    .locator('wa-input[name="recipe-title"]')
-    .evaluate((element: HTMLElement & { value: string }) => {
-      element.value = 'Tablet navigation shipped';
-      element.dispatchEvent(
-        new Event('input', { bubbles: true, composed: true }),
-      );
-    });
-  await form
-    .locator('wa-textarea[name="recipe-body"]')
-    .evaluate((element: HTMLElement & { value: string }) => {
-      element.value = 'Updated draft content';
-      element.dispatchEvent(
-        new Event('input', { bubbles: true, composed: true }),
-      );
-    });
+  await form.locator('[name="recipe-title"]').fill('Tablet navigation shipped');
+  await form.locator('[name="recipe-body"]').fill('Updated draft content');
   await form.getByRole('button', { name: 'Publish Update' }).click();
   await expect(form.getByRole('status')).toContainText('Update Published');
   await expectLayout(1, 'status');
@@ -706,27 +687,20 @@ test('keeps the composer on one labeled surface with shared field and action gut
   await expect(form.locator('[data-component="state-banner"]')).toHaveCount(0);
   await expect(page.locator('.catalog-log')).toHaveText('Draft reset');
   const resetValues = await form.evaluate((root) => {
-    const readValue = (selector: string, controlSelector: string) => {
-      const host = root.querySelector<HTMLElement & { value: string }>(
-        selector,
-      )!;
-      const control = host.shadowRoot?.querySelector<
+    const readValue = (name: string) => {
+      const control = root.querySelector<
         HTMLInputElement | HTMLTextAreaElement
-      >(controlSelector);
-      return {
-        attribute: host.getAttribute('value'),
-        control: control?.value,
-        property: host.value,
-      };
+      >(`[name="${name}"]`)!;
+      return { initial: control.defaultValue, value: control.value };
     };
     return {
-      body: readValue('wa-textarea[name="recipe-body"]', 'textarea'),
-      title: readValue('wa-input[name="recipe-title"]', 'input'),
+      body: readValue('recipe-body'),
+      title: readValue('recipe-title'),
     };
   });
   expect(resetValues).toEqual({
-    body: { attribute: '', control: '', property: '' },
-    title: { attribute: '', control: '', property: '' },
+    body: { initial: '', value: '' },
+    title: { initial: '', value: '' },
   });
   await expectLayout(1);
   if (browserName === 'chromium') {
@@ -770,7 +744,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
         rootBorderWidth: parseFloat(rootStyle.borderLeftWidth),
         sectionBorders: [
           ...root.querySelectorAll<HTMLElement>(
-            ':scope > [data-component="list"] > :is([data-component="list"]:has(wa-input), [data-component="row"])',
+            ':scope > [data-component="list"] > :is([data-component="list"]:has(.kui-text-field), [data-component="row"])',
           ),
         ].map((section) => {
           const style = window.getComputedStyle(section);
@@ -920,14 +894,7 @@ test('runs dialog focus lifecycle, form validation, and every list transition', 
   const form = await openRecipe(page, 'recipe-composer-form');
   await form.getByRole('button', { name: 'Publish Update' }).click();
   await expect(form.getByRole('alert')).toContainText('Add a Title');
-  await form
-    .locator('wa-input[name="recipe-title"]')
-    .evaluate((element: HTMLElement & { value: string }) => {
-      element.value = 'Tablet navigation shipped';
-      element.dispatchEvent(
-        new Event('input', { bubbles: true, composed: true }),
-      );
-    });
+  await form.locator('[name="recipe-title"]').fill('Tablet navigation shipped');
   await form.getByRole('button', { name: 'Publish Update' }).click();
   await expect(form.getByRole('status')).toContainText('Update Published');
 

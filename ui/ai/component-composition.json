@@ -4804,6 +4804,96 @@
       }
     },
     {
+      "key": "@kerfjs/ui:text-field",
+      "package": "@kerfjs/ui",
+      "id": "text-field",
+      "name": "TextField",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "value", "owner": "application", "required": false },
+        {
+          "id": "validation and error copy",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "hint copy", "owner": "application", "required": false },
+        {
+          "id": "what a cleared field means",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": ["wireTextFields"],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "Label, hint, and error sit on the value's text column (1px border + 8px padding); the 44px box matches Button and Select, and compact matches their compact 33px."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The whole field is a <label> around a native <input> or <textarea>, so clicking anywhere on it focuses the field; the input is named by label (aria-label, with the visible label text hidden from assistive technology so the clear button and count stay out of the name) or by ariaLabel. Focus shows the standard focus ring around the box.",
+          "The hint and error are visible below the field and form the input's aria-description; an error also sets aria-invalid=\"true\". The clear button is a native button named by clearLabel (default Clear), hidden while the field is empty, and returns focus to the field.",
+          "Compact text grows to 16px on coarse-pointer touch screens so iOS does not zoom on focus."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-text-field",
+        "publicClasses": [
+          "kui-text-field",
+          "kui-text-field__label",
+          "kui-text-field__required",
+          "kui-text-field__box",
+          "kui-text-field__icon",
+          "kui-text-field__input",
+          "kui-text-field__clear",
+          "kui-text-field__hint",
+          "kui-text-field__error",
+          "kui-text-field__footer",
+          "kui-text-field__count"
+        ],
+        "rootElement": "label",
+        "publicTokens": [
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-danger-border-loud",
+          "--kui-color-danger-on-quiet",
+          "--kui-color-text",
+          "--kui-color-text-quiet",
+          "--kui-color-surface",
+          "--kui-focus-ring",
+          "--kui-font-m",
+          "--kui-font-s",
+          "--kui-font-xs",
+          "--kui-layout-item-padding",
+          "--kui-layout-rounded-radius",
+          "--kui-radius-circle"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:anchored-surface",
       "package": "@kerfjs/ui",
       "id": "anchored-surface",

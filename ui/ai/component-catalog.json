@@ -5910,6 +5910,137 @@
       }
     },
     {
+      "id": "text-field",
+      "name": "TextField",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A labeled single-line input or multi-line textarea with hint and error text, an optional leading icon, clear button, and character count, at the 44px control height or compact.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Collect free text (names, addresses, notes, comments) with Kerf's field chrome, a visible or accessible label, supporting and validation text, and native input semantics.",
+      "publicExports": [
+        "TextField",
+        "wireTextFields"
+      ],
+      "useWhen": [
+        "A form or dialog collects a line of free text: label names it (or ariaLabel when nearby content already does), hint explains it, and error reports a validation problem.",
+        "People write a longer note or message: multiline with rows, or rows plus maxRows to grow with the content; maxLength with showCount shows the remaining budget.",
+        "A filter or search field needs a leading icon and a clear button: icon and clearable."
+      ],
+      "avoidWhen": [
+        "Do not use when only existing values are allowed; use Select.",
+        "Do not use when people pick among suggestions or create tags; use Combobox.",
+        "Do not use for search text with removable filter tokens; use TokenSearchField.",
+        "Do not use for a chat-style message with a send action; use Composer."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-input",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "wa-textarea",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "combobox",
+          "relationship": "nearest",
+          "when": "Use Combobox when people pick among suggestions or create a value."
+        },
+        {
+          "id": "composer",
+          "relationship": "nearest",
+          "when": "Use Composer for a message with a send action."
+        }
+      ],
+      "appOwns": [
+        "value",
+        "validation and error copy",
+        "hint copy",
+        "what a cleared field means"
+      ],
+      "variants": [
+        "visible label or ariaLabel",
+        "hint",
+        "error",
+        "default or compact size",
+        "leading icon",
+        "clearable",
+        "multiline (fixed rows or growing to maxRows)",
+        "maxLength with a live count",
+        "disabled",
+        "read-only",
+        "required",
+        "email, password, search, url, tel, or number type"
+      ],
+      "accessibility": [
+        "The whole field is a <label> around a native <input> or <textarea>, so clicking anywhere on it focuses the field; the input is named by label (aria-label, with the visible label text hidden from assistive technology so the clear button and count stay out of the name) or by ariaLabel. Focus shows the standard focus ring around the box.",
+        "The hint and error are visible below the field and form the input's aria-description; an error also sets aria-invalid=\"true\". The clear button is a native button named by clearLabel (default Clear), hidden while the field is empty, and returns focus to the field.",
+        "Compact text grows to 16px on coarse-pointer touch screens so iOS does not zoom on focus."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "Label, hint, and error sit on the value's text column (1px border + 8px padding); the 44px box matches Button and Select, and compact matches their compact 33px."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/text-field",
+        "manualCssImport": "@kerfjs/ui/text-field.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireTextFields",
+          "import": "@kerfjs/ui/wire-text-fields",
+          "required": false,
+          "reason": "Makes clearable fields clear themselves (announcing input and change) and keeps showCount counts current; a field without either works without it.",
+          "stateAttributes": []
+        }
+      ],
+      "publicClasses": [
+        "kui-text-field",
+        "kui-text-field__label",
+        "kui-text-field__required",
+        "kui-text-field__box",
+        "kui-text-field__icon",
+        "kui-text-field__input",
+        "kui-text-field__clear",
+        "kui-text-field__hint",
+        "kui-text-field__error",
+        "kui-text-field__footer",
+        "kui-text-field__count"
+      ],
+      "publicTokens": [
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-neutral-border-normal",
+        "--kui-color-danger-border-loud",
+        "--kui-color-danger-on-quiet",
+        "--kui-color-text",
+        "--kui-color-text-quiet",
+        "--kui-color-surface",
+        "--kui-focus-ring",
+        "--kui-font-m",
+        "--kui-font-s",
+        "--kui-font-xs",
+        "--kui-layout-item-padding",
+        "--kui-layout-rounded-radius",
+        "--kui-radius-circle"
+      ],
+      "rootElement": "label",
+      "links": {
+        "catalogRoute": "?component=text-field",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "anchored-surface",
       "name": "AnchoredSurface",
       "category": "Feedback",
@@ -7640,6 +7771,10 @@
         {
           "id": "token-search-field",
           "relationship": "prefer-kerf"
+        },
+        {
+          "id": "text-field",
+          "relationship": "prefer-kerf"
         }
       ],
       "geometry": {
@@ -8064,7 +8199,12 @@
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
       ],
       "recommendation": "supported",
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "text-field",
+          "relationship": "prefer-kerf"
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",

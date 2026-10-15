@@ -15,6 +15,7 @@ Text input with labels, hints, clear controls, and semantic appearances.
 **Alternatives:**
 
 - [TokenSearchField](./token-search-field.md) (prefer-kerf)
+- [TextField](./text-field.md) (prefer-kerf)
 
 ## Imports
 
@@ -54,6 +55,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Icon](./wa-icon.md), [TokenSearchField](./token-search-field.md).
+- Components: [Icon](./wa-icon.md), [TokenSearchField](./token-search-field.md), [TextField](./text-field.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage), [`docs/component-selection.md#web-awesome-overlap-policy`](../../docs/component-selection.md#web-awesome-overlap-policy).
 - UX catalog route: `?component=wa-input`.

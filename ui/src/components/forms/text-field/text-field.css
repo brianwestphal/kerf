@@ -1,0 +1,193 @@
+/* TextField: a label above one bordered box (the input with an optional
+   leading icon and clear button), then supporting or error text. */
+.kui-text-field {
+  --_kui-text-field-height: round(2.75em, 1px);
+  display: flex;
+  width: auto;
+  min-width: 0;
+  flex-direction: column;
+  font-size: var(--kui-font-m, remify(16px));
+  font-weight: 400;
+}
+.kui-text-field[data-size="compact"] {
+  --_kui-text-field-height: round(calc(1rem + 1.2em), 1px);
+  font-size: var(--kui-font-s, remify(14px));
+}
+/* The label matches every Kerf form control's label (Select's too). */
+.kui-text-field__label {
+  display: block;
+  margin-block-end: remify(6px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+/* A required field's asterisk; the input itself reports `required`. */
+.kui-text-field__required {
+  margin-inline-start: 0.1em;
+}
+.kui-text-field__box {
+  display: flex;
+  box-sizing: border-box;
+  min-height: var(--_kui-text-field-height);
+  align-items: center;
+  gap: remify(8px);
+  padding: 0 remify(8px);
+  color: var(--kui-color-text);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  background-color: var(--kui-color-surface);
+  cursor: text;
+}
+.kui-text-field__box:focus-within {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-text-field[data-invalid] > .kui-text-field__box {
+  border-color: var(--kui-color-danger-border-loud);
+}
+.kui-text-field__icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--kui-color-neutral-on-quiet);
+}
+/* The box draws the chrome, so the input resets every native (and global
+   form-control) style of its own. */
+.kui-text-field__input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: calc(var(--_kui-text-field-height) - 2px);
+  min-height: 0;
+  flex: 1 1 auto;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  line-height: 1.2;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  opacity: 1;
+  transition: none;
+  appearance: none;
+}
+.kui-text-field__input::placeholder {
+  color: var(--kui-color-text-quiet);
+  opacity: 1;
+}
+/* A multi-line field: the box holds only the textarea, which pads itself so
+   its scrollbar reaches the border. */
+.kui-text-field[data-multiline] > .kui-text-field__box {
+  align-items: stretch;
+  padding: 0;
+}
+.kui-text-field[data-multiline] .kui-text-field__input {
+  height: calc(
+    var(--_kui-text-field-rows, 3) * 1lh + 2 * var(--_kui-text-field-block-pad)
+  );
+  padding: var(--_kui-text-field-block-pad) remify(8px);
+  line-height: 1.45;
+  resize: vertical;
+  --_kui-text-field-block-pad: remify(4.4px);
+}
+/* Growing from `rows` to `maxRows` with its content, then scrolling. */
+.kui-text-field[data-multiline="grow"] .kui-text-field__input {
+  height: auto;
+  min-height: calc(
+    var(--_kui-text-field-rows, 3) * 1lh + 2 * var(--_kui-text-field-block-pad)
+  );
+  max-height: calc(
+    var(--_kui-text-field-max-rows) * 1lh + 2 * var(--_kui-text-field-block-pad)
+  );
+  field-sizing: content;
+  resize: none;
+}
+.kui-text-field__clear {
+  display: inline-flex;
+  width: remify(28px);
+  height: remify(28px);
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-inline-end: remify(-4px);
+  color: var(--kui-color-neutral-on-quiet);
+  border: none;
+  border-radius: var(--kui-radius-circle, 50%);
+  background: transparent;
+  cursor: pointer;
+}
+.kui-text-field__clear > [data-lucide] {
+  width: remify(16px);
+  height: remify(16px);
+}
+.kui-text-field__clear:hover {
+  color: var(--kui-color-text);
+}
+.kui-text-field__clear:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+/* Only a field with a value offers to clear it. */
+.kui-text-field__input:placeholder-shown ~ .kui-text-field__clear {
+  display: none;
+}
+.kui-text-field__hint,
+.kui-text-field__error {
+  display: block;
+  margin-block-start: remify(7px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s, remify(14px));
+  line-height: 1.6;
+}
+.kui-text-field[data-size="compact"]
+  :is(.kui-text-field__hint, .kui-text-field__error) {
+  font-size: var(--kui-font-xs, remify(12px));
+}
+.kui-text-field__error {
+  color: var(--kui-color-danger-on-quiet);
+}
+/* A live character count trails the hint on the same line. */
+.kui-text-field__footer {
+  display: flex;
+  align-items: baseline;
+  gap: remify(8px);
+}
+.kui-text-field__footer > .kui-text-field__hint {
+  flex: 1 1 auto;
+}
+.kui-text-field__count {
+  flex: none;
+  margin-inline-start: auto;
+  margin-block-start: remify(7px);
+  padding-inline-end: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-xs, remify(12px));
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+}
+.kui-text-field__hint + .kui-text-field__error {
+  margin-block-start: 0;
+}
+.kui-text-field:has(.kui-text-field__input:disabled) > .kui-text-field__box {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+/* A touch field below 16px makes iOS magnify the page on focus. */
+@media (hover: none) and (pointer: coarse) {
+  .kui-text-field[data-size="compact"] .kui-text-field__input {
+    font-size: max(16px, 1em);
+  }
+}
+@media (forced-colors: active) {
+  .kui-text-field__box {
+    border-color: CanvasText;
+  }
+}

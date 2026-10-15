@@ -542,6 +542,7 @@ describe('UX catalog metadata', () => {
       'ResizableRegion',
       'Select',
       'Combobox',
+      'TextField',
       'AnchoredSurface',
       'PopupMenu',
       'IconButton',

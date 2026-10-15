@@ -1,9 +1,8 @@
-import '@awesome.me/webawesome/dist/components/input/input.js';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { IconButton } from '@kerfjs/ui/icon-button';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { Row } from '@kerfjs/ui/row';
+import { TextField } from '@kerfjs/ui/text-field';
 import { FolderOpen, RefreshCw, Trash2 } from 'lucide';
 
 export function IconButtonDemo() {
@@ -15,7 +14,7 @@ export function IconButtonDemo() {
         viewport={{ width: 'medium' }}
       >
         <ListInsetControl>
-          <wa-input label="Project Path" value="~/Documents/projects/atlas" />
+          <TextField label="Project Path" value="~/Documents/projects/atlas" />
           <IconButton
             icon={FolderOpen}
             iconName="folder-open"

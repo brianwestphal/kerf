@@ -12,6 +12,10 @@ Multiline text field with labels, hints, and resize behavior.
 
 - Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.
 
+**Alternatives:**
+
+- [TextField](./text-field.md) (prefer-kerf)
+
 ## Imports
 
 - Theme CSS: import `@kerfjs/ui/webawesome.css` once.
@@ -49,5 +53,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
+- Components: [TextField](./text-field.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage).
 - UX catalog route: `?component=wa-textarea`.

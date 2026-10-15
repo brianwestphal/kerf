@@ -75,6 +75,8 @@ const entries = [
   'combobox',
   'wire-comboboxes',
   'wire-file-pickers',
+  'text-field',
+  'wire-text-fields',
   'edge-activity-indicator',
   'button',
   'icon-button',

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('TokenSearchField form presentation matches Web Awesome field geometry and metadata', async ({
+test('TokenSearchField form presentation matches TextField geometry and metadata', async ({
   page,
 }) => {
   for (const width of [1280, 390]) {
@@ -21,14 +21,19 @@ test('TokenSearchField form presentation matches Web Awesome field geometry and 
       'Add filters to narrow the view.',
     );
     const geometry = await pair.evaluate((container) => {
-      const wa = container.querySelector('wa-input')!;
-      const waLabel = wa.shadowRoot!.querySelector<HTMLElement>(
-        '[part~="form-control-label"]',
+      const text = container.querySelector<HTMLElement>('.kui-text-field')!;
+      const textLabel = text.querySelector<HTMLElement>(
+        '.kui-text-field__label',
       )!;
-      const waHint =
-        wa.shadowRoot!.querySelector<HTMLElement>('[part~="hint"]')!;
-      const waControl =
-        wa.shadowRoot!.querySelector<HTMLElement>('.text-field')!;
+      const textHint = text.querySelector<HTMLElement>(
+        '.kui-text-field__hint',
+      )!;
+      const textControl = text.querySelector<HTMLElement>(
+        '.kui-text-field__box',
+      )!;
+      const textRequired = text.querySelector<HTMLElement>(
+        '.kui-text-field__required',
+      )!;
       const search = container.querySelector<HTMLElement>(
         '[data-component="token-search-field"]',
       )!;
@@ -53,41 +58,42 @@ test('TokenSearchField form presentation matches Web Awesome field geometry and 
         };
       };
       return {
-        hostLeft: wa.getBoundingClientRect().left,
-        hostRight: wa.getBoundingClientRect().right,
+        hostLeft: text.getBoundingClientRect().left,
+        hostRight: text.getBoundingClientRect().right,
         searchLeft: search.getBoundingClientRect().left,
         searchRight: search.getBoundingClientRect().right,
-        waLabelInset:
-          waLabel.getBoundingClientRect().left -
-          wa.getBoundingClientRect().left +
-          parseFloat(globalThis.getComputedStyle(waLabel).paddingLeft),
+        textLabelInset:
+          textLabel.getBoundingClientRect().left -
+          text.getBoundingClientRect().left +
+          parseFloat(globalThis.getComputedStyle(textLabel).paddingLeft),
         searchLabelInset:
           searchLabel.getBoundingClientRect().left -
           search.getBoundingClientRect().left +
           parseFloat(globalThis.getComputedStyle(searchLabel).paddingLeft),
-        waHintInset:
-          waHint.getBoundingClientRect().left -
-          wa.getBoundingClientRect().left +
-          parseFloat(globalThis.getComputedStyle(waHint).paddingLeft),
+        textHintInset:
+          textHint.getBoundingClientRect().left -
+          text.getBoundingClientRect().left +
+          parseFloat(globalThis.getComputedStyle(textHint).paddingLeft),
         searchHintInset:
           searchHint.getBoundingClientRect().left -
           search.getBoundingClientRect().left +
           parseFloat(globalThis.getComputedStyle(searchHint).paddingLeft),
-        waLabel: style(waLabel),
+        textLabel: style(textLabel),
         searchLabel: style(searchLabel),
-        waControlRadius: globalThis.getComputedStyle(waControl).borderRadius,
+        textControlRadius:
+          globalThis.getComputedStyle(textControl).borderRadius,
         searchControlRadius: globalThis.getComputedStyle(search).borderRadius,
-        waRequiredColor: globalThis.getComputedStyle(waLabel, '::after').color,
+        textRequiredColor: globalThis.getComputedStyle(textRequired).color,
         searchRequiredColor: globalThis.getComputedStyle(searchRequired).color,
       };
     });
     expect(geometry.searchLeft).toBeCloseTo(geometry.hostLeft, 0);
     expect(geometry.searchRight).toBeCloseTo(geometry.hostRight, 0);
-    expect(geometry.searchLabelInset).toBeCloseTo(geometry.waLabelInset, 0);
-    expect(geometry.searchHintInset).toBeCloseTo(geometry.waHintInset, 0);
-    expect(geometry.searchLabel).toEqual(geometry.waLabel);
-    expect(geometry.searchControlRadius).toBe(geometry.waControlRadius);
-    expect(geometry.searchRequiredColor).toBe(geometry.waRequiredColor);
+    expect(geometry.searchLabelInset).toBeCloseTo(geometry.textLabelInset, 0);
+    expect(geometry.searchHintInset).toBeCloseTo(geometry.textHintInset, 0);
+    expect(geometry.searchLabel).toEqual(geometry.textLabel);
+    expect(geometry.searchControlRadius).toBe(geometry.textControlRadius);
+    expect(geometry.searchRequiredColor).toBe(geometry.textRequiredColor);
 
     await field.locator('[data-token-search-form-label]').click();
     await expect(editor).toBeFocused();

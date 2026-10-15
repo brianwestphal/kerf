@@ -55,6 +55,7 @@ import { TabBarDemo } from './tab-bar.js';
 import { TabNavigatorDemo } from './tab-navigator.js';
 import { TabsDemo } from './tabs.js';
 import { TextDemo } from './text.js';
+import { TextFieldDemo } from './text-field.js';
 import { TokenSearchFieldDemo } from './token-search-field.js';
 import { ToolbarDemo } from './toolbar.js';
 import { ToolbarControlGroupDemo } from './toolbar-control-group.js';
@@ -117,6 +118,7 @@ export const demos = {
   'edge-activity-indicator': EdgeActivityIndicatorDemo,
   'icon-button': IconButtonDemo,
   button: ButtonDemo,
+  'text-field': TextFieldDemo,
   'icon-toggle-button': IconToggleButtonDemo,
   'split-button': SplitButtonDemo,
   'framed-list': FramedListDemo,

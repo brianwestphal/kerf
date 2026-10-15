@@ -129,7 +129,7 @@ instead.
 - Style its field, frame, or action row from application CSS. A variation it
   does not offer is a component gap.
 - Use it for an ordinary form field submitted with the rest of a form; use
-  `wa-textarea` with a `FieldLabel`.
+  a `multiline` `TextField`.
 
 ## Verification
 

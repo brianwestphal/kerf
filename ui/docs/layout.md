@@ -961,7 +961,7 @@ instance's value.
 default to `trbl`. The text wrapper applies its complete 8/1/8 geometry only on
 selected sides; the control wrapper applies its 8px outer margin only on
 selected sides. Every direct child of `ListInsetControl` grows to fill the row
-(a `Select`, a `wa-input`, or a `wa-button` spans the full inset width), and
+(a `Select`, a `TextField`, or a `Button` spans the full inset width), and
 several children share the row with an 8px gap; stack controls vertically with
 a `List` using `controlInsets` instead. Pass `sides="rl"` for tight text that
 keeps the horizontal inset without adding vertical box space.

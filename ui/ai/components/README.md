@@ -64,6 +64,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ResizableRegion](./resize.md) — Pointer and keyboard-operable split region with a customizable handle icon.
 - [Select](./select.md) — Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.
 - [Combobox](./combobox.md) — Let people pick an existing value or create a new one by typing (tags, labels, recipients), with the themed field chrome, the ARIA combobox pattern, and a touch-safe font size, without a native datalist or app CSS.
+- [TextField](./text-field.md) — Collect free text (names, addresses, notes, comments) with Kerf's field chrome, a visible or accessible label, supporting and validation text, and native input semantics.
 - [PopupMenu](./popup-menu.md) — A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.
 - [IconButton](./icon-button.md) — Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.
 - [Button](./button.md) — Trigger an action from a dialog footer, a form, or content outside any Toolbar, with Kerf's button chrome and native button semantics.

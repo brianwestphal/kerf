@@ -1,11 +1,10 @@
-import '@awesome.me/webawesome/dist/components/input/input.js';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { Row } from '@kerfjs/ui/row';
 import { FieldLabel, Text } from '@kerfjs/ui/text';
+import { TextField } from '@kerfjs/ui/text-field';
 
 export function TextDemo() {
   return (
@@ -84,7 +83,7 @@ export function TextDemo() {
           <ContentItem>October 16, 2026</ContentItem>
         </div>
         <ListInsetControl sides="trl">
-          <wa-input label="Needed By" value="October 16, 2026" />
+          <TextField label="Needed By" value="October 16, 2026" />
         </ListInsetControl>
       </CatalogExample>
       <CatalogExample

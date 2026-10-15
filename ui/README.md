@@ -260,6 +260,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `Select`                                                            | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                  |
 | `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |
 | `ChoiceChips`                                                       | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |
+| `TextField`                                                         | `@kerfjs/ui/text-field`                 | `@kerfjs/ui/text-field.css`              |
+| `wireTextFields`                                                    | `@kerfjs/ui/wire-text-fields`           | —                                        |
 | `Composer`                                                          | `@kerfjs/ui/composer`                   | `@kerfjs/ui/composer.css`                |
 | `wireComposers`                                                     | `@kerfjs/ui/wire-composers`             | —                                        |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`      |

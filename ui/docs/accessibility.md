@@ -501,6 +501,31 @@ in the application. Every chip color is a theme token resolved through
 or any `color-scheme: dark` ancestor) the pills, labels, checked tint, and
 focus ring read on inverse chrome without overrides.
 
+## TextField
+
+`TextField` renders a native `<input>` (or, with `multiline`, a `<textarea>`)
+inside one `<label>`, so a click anywhere on the field focuses it. The input is
+named explicitly — `aria-label` from `label`, whose visible text is
+`aria-hidden`, or from `ariaLabel` — so the clear button and the character
+count inside the label never join its name. `hint` and `error` are visible
+below the field and together form its `aria-description`; `error` also sets
+`aria-invalid="true"`, draws the box border in the danger color, and shows the
+message in the danger text color, so validity never relies on hue alone.
+`required`, `disabled`, `readOnly`, `maxLength`, `type`, and `autocomplete`
+are native attributes. A required field shows an `aria-hidden` asterisk after
+its label; the input itself reports `required`. The focus ring is drawn on the
+box around the input (`:focus-within`), 3px with a 1px offset like every Kerf
+control.
+
+`clearable` adds a native `<button>` named by `clearLabel` (default "Clear")
+after the input. It is hidden while the field is empty, is a normal Tab stop,
+and with `wireTextFields(root)` empties the field, dispatches bubbling `input`
+and `change` events as typing would, and returns focus to the field. A
+disabled or read-only field's clear button is disabled. `showCount` (with
+`maxLength`) shows a live `count / maxLength` beside the hint that
+`wireTextFields` keeps current. Compact text grows to 16px on coarse-pointer
+touch screens so focusing a field never zooms the page in iOS.
+
 ## Composer
 
 `Composer`'s message field is a native `<textarea>` named by `label`
@@ -534,7 +559,7 @@ searchbox references the label and hint with `aria-labelledby` and
 `aria-describedby`, and `required` sets `aria-required`; the application
 validates the value before submission. `wireTokenSearchFields()` also moves
 focus to the editor when the visible label is clicked. The field stands outside
-a Toolbar and fills the same inline space as a neighboring `wa-input`.
+a Toolbar and fills the same inline space as a neighboring `TextField`.
 Its control radius and required-marker color and offset follow Web Awesome's
 form-control tokens, so the two controls read as one form.
 

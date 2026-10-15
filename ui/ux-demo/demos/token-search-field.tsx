@@ -1,11 +1,10 @@
-import '@awesome.me/webawesome/dist/components/input/input.js';
-
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
+import { TextField } from '@kerfjs/ui/text-field';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { CircleHelp, CircleX } from 'lucide';
@@ -53,7 +52,7 @@ export function TokenSearchFieldDemo() {
         viewport={{ layout: 'grid', width: 'compact' }}
       >
         <List gap="m" rootAttributes={{ 'data-demo-token-form': '' }}>
-          <wa-input
+          <TextField
             label="View Name"
             hint="Name this saved view."
             required

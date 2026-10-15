@@ -227,10 +227,13 @@ describe('production composition recipes', () => {
     const template = document.createElement('template');
     template.innerHTML = resetMarkup;
     expect(
-      template.content.querySelector('wa-input')?.getAttribute('value'),
+      template.content
+        .querySelector('input[name="recipe-title"]')
+        ?.getAttribute('value'),
     ).toBe('');
     expect(
-      template.content.querySelector('wa-textarea')?.getAttribute('value'),
+      template.content.querySelector('textarea[name="recipe-body"]')
+        ?.textContent,
     ).toBe('');
     expect(announcements.at(-1)).toBe('Draft reset');
   });

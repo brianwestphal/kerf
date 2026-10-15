@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 388400,
-  "measuredLargestJavaScriptGzip": 131912,
-  "measuredTotalJavaScriptGzip": 388319,
+  "totalJavaScriptGzip": 389800,
+  "measuredLargestJavaScriptGzip": 137616,
+  "measuredTotalJavaScriptGzip": 389788,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5059,6 +5059,22 @@
         "measuredTotalJavaScriptGzip": 388319,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 388400
+      }
+    },
+    {
+      "at": "2026-10-15T08:18:06.410Z",
+      "reason": "TextField replaces wa-input/wa-textarea in demos and recipes; the Web Awesome input and textarea registrations move into the Web Awesome demo chunk that still renders them",
+      "old": {
+        "measuredLargestJavaScriptGzip": 131912,
+        "measuredTotalJavaScriptGzip": 388319,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 388400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 137616,
+        "measuredTotalJavaScriptGzip": 389788,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 389800
       }
     }
   ]

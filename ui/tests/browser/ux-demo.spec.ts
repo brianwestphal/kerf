@@ -1106,20 +1106,18 @@ test('ListInsetControl stretches a Select, a text input, and a Button across its
     const controls = page.locator(
       '[data-demo="list-inset-control"] [data-component="list-inset-control"]',
     );
-    for (const tag of ['kui-select', 'wa-input', '.kui-button']) {
+    for (const tag of ['kui-select', '.kui-text-field', '.kui-button']) {
       const inset = controls.filter({ has: page.locator(`> ${tag}`) }).last();
       await inset.scrollIntoViewIfNeeded();
       await expect(inset.locator(`> ${tag}`)).toBeVisible();
       const widths = await inset.evaluate((element, childTag) => {
         const child = element.querySelector(`:scope > ${childTag}`)!;
-        // A Select's bordered box is its light-DOM trigger; Web Awesome
-        // controls draw theirs in a shadow part; a Button is its own box.
+        // A Select's bordered box is its trigger, a TextField's its box; a
+        // Button is its own box.
         const visible =
-          child.querySelector(':scope > .kui-select__trigger') ??
-          child.shadowRoot?.querySelector(
-            '[part~="combobox"], [part~="base"]',
-          ) ??
-          child;
+          child.querySelector(
+            ':scope > :is(.kui-select__trigger, .kui-text-field__box)',
+          ) ?? child;
         return {
           inset: element.getBoundingClientRect().width,
           child: child.getBoundingClientRect().width,

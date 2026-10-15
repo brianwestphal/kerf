@@ -706,6 +706,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Paint a strip's surface with `List surface`.** `surface="base"` or
   `"raised"` fills a List and its insets with a solid surface (a banner strip
   above a sunken work area); never wrap it in app CSS that sets a background.
+- **Use `TextField` for free text.** `@kerfjs/ui/text-field` is a native
+  input in one labeled box: `label` (or `ariaLabel`), `hint`, and `error` (its
+  description; an error marks it invalid), an optional `icon` and `clearable`
+  button, `multiline` with `rows` and a growing `maxRows`, and `maxLength` with
+  `showCount`, at the 44px height or `size="compact"`. Call
+  `wireTextFields(root)` (`@kerfjs/ui/wire-text-fields`) once for clearing and
+  counting. Never render `wa-input` or `wa-textarea` for a form field.
 - **Use `Combobox` to pick or create a value by typing.** A themed native
   input on the ARIA combobox pattern with filtered suggestions and an optional
   create option; `wireComboboxes(root, { onCommit })` reports `{ id, value,

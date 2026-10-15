@@ -1,5 +1,4 @@
 import '@awesome.me/webawesome/dist/components/card/card.js';
-import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/tag/tag.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
@@ -13,6 +12,7 @@ import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
+import { TextField } from '@kerfjs/ui/text-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -260,7 +260,7 @@ export function ListDemo() {
         <wa-card appearance="sunken">
           <List gap="xs" textInsets="l" controlInsets="rb">
             <wa-tag>Text-aligned left edge</wa-tag>
-            <wa-input label="Inset List Control" value="Control edge" />
+            <TextField label="Inset List Control" value="Control edge" />
             <List textInsets="t">
               <wa-tag>Nested text-aligned top edge</wa-tag>
             </List>

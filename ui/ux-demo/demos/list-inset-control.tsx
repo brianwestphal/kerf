@@ -1,4 +1,3 @@
-import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@kerfjs/ui/select/register';
 
 import { Button } from '@kerfjs/ui/button';
@@ -7,6 +6,7 @@ import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { TextField } from '@kerfjs/ui/text-field';
 import { Check } from 'lucide';
 
 import { DemoListInsetPane } from './demo-list-inset-pane.js';
@@ -38,7 +38,7 @@ export function ListInsetControlDemo() {
             icon={<LucideIcon icon={Check} name="check" />}
           />
           <ListInsetControl>
-            <wa-input
+            <TextField
               label="Filter Records"
               placeholder="An input that owns its border and padding"
             />
@@ -53,7 +53,7 @@ export function ListInsetControlDemo() {
       >
         <DemoListInsetPane>
           <ListInsetControl sides="rb">
-            <wa-input
+            <TextField
               label="Filter Selected Sides"
               placeholder="Right and bottom inset"
             />
@@ -80,7 +80,7 @@ export function ListInsetControlDemo() {
             />
           </ListInsetControl>
           <ListInsetControl sides="trl">
-            <wa-input label="Assignee" placeholder="Search people" />
+            <TextField label="Assignee" placeholder="Search people" />
           </ListInsetControl>
           <ListInsetControl>
             <Button emphasis="secondary">Assign</Button>

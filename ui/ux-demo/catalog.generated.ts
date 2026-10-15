@@ -651,6 +651,20 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "text-field",
+    "name": "TextField",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Collect free text (names, addresses, notes, comments) with Kerf's field chrome, a visible or accessible label, supporting and validation text, and native input semantics.",
+    "uses": [
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/text-field.tsx",
+    "componentSource": "ui/src/components/forms/text-field/text-field.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "anchored-surface",
     "name": "AnchoredSurface",
     "category": "Feedback",

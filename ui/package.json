@@ -421,6 +421,15 @@
       "types": "./dist/wire-file-pickers.d.ts",
       "import": "./dist/wire-file-pickers.js"
     },
+    "./text-field": {
+      "types": "./dist/text-field.d.ts",
+      "browser": "./dist/browser/text-field.js",
+      "import": "./dist/text-field.js"
+    },
+    "./wire-text-fields": {
+      "types": "./dist/wire-text-fields.d.ts",
+      "import": "./dist/wire-text-fields.js"
+    },
     "./backdrop-image": {
       "types": "./dist/backdrop-image.d.ts",
       "browser": "./dist/browser/backdrop-image.js",
@@ -517,6 +526,7 @@
     "./content-swap.css": "./dist/styles/content-swap.css",
     "./backdrop-image.css": "./dist/styles/backdrop-image.css",
     "./file-picker.css": "./dist/styles/file-picker.css",
+    "./text-field.css": "./dist/styles/text-field.css",
     "./combobox.css": "./dist/styles/combobox.css",
     "./edge-activity-indicator.css": "./dist/styles/edge-activity-indicator.css",
     "./icon-button.css": "./dist/styles/icon-button.css",

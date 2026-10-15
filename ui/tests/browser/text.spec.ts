@@ -40,31 +40,22 @@ test('FieldLabel matches the live form label and names a preview', async ({
   const section = page.locator('[data-demo-section="field-label"]');
   const label = section.locator('.kui-text__field-label');
   const preview = section.getByRole('group', { name: 'Needed By' });
-  const input = section.locator('wa-input');
+  const input = section.locator('.kui-text-field');
   await expect(label).toHaveText('Needed By');
   await expect(preview).toContainText('October 16, 2026');
-  await expect(input).toHaveAttribute('label', 'Needed By');
+  await expect(input.getByRole('textbox', { name: 'Needed By' })).toHaveValue(
+    'October 16, 2026',
+  );
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 850 });
-    await expect
-      .poll(() =>
-        input.evaluate((host) =>
-          Boolean(
-            host.shadowRoot?.querySelector('[part~="form-control-label"]'),
-          ),
-        ),
-      )
-      .toBe(true);
     const styles = await section.evaluate((root) => {
       const previewLabel = root.querySelector<HTMLElement>(
         '.kui-text__field-label',
       )!;
-      const controlLabel = root
-        .querySelector('wa-input')!
-        .shadowRoot!.querySelector<HTMLElement>(
-          '[part~="form-control-label"]',
-        )!;
+      const controlLabel = root.querySelector<HTMLElement>(
+        '.kui-text-field__label',
+      )!;
       const pick = (element: HTMLElement) => {
         const css = globalThis.getComputedStyle(element);
         return [

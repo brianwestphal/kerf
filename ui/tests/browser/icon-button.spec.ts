@@ -13,8 +13,7 @@ test('IconButton is a control-height square level with its field and named by it
     await expect(browse).toBeVisible();
     const geometry = await demo.evaluate((root) => {
       const field = root
-        .querySelector('wa-input')!
-        .shadowRoot!.querySelector('[part~="base"]')!
+        .querySelector('.kui-text-field__box')!
         .getBoundingClientRect();
       const buttons = [
         ...root.querySelectorAll('.kui-button[data-icon-only]'),

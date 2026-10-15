@@ -239,7 +239,7 @@ test('a sheet without a height opens at its content height, so nothing at its en
   await openSheet(page, 390, 844);
   const fit = await page.locator(DIALOG).evaluate((element) => {
     const body = element.querySelector('.kui-dialog-surface__body')!;
-    const textarea = element.querySelector('wa-textarea')!;
+    const textarea = element.querySelector('.kui-text-field[data-multiline]')!;
     return {
       overflow: body.scrollHeight - body.clientHeight,
       textareaBottom: textarea.getBoundingClientRect().bottom,

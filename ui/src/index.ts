@@ -243,6 +243,16 @@ export {
   type SelectSize,
 } from './components/forms/select/select.js';
 export {
+  TextField,
+  type TextFieldName,
+  type TextFieldOptions,
+  type TextFieldProps,
+  type TextFieldRootAttributes,
+  type TextFieldSize,
+  type TextFieldType,
+} from './components/forms/text-field/text-field.js';
+export { wireTextFields } from './components/forms/text-field/wiring/wire-text-fields.js';
+export {
   createTokenSearchModel,
   type TokenSearchModel,
   type TokenSearchModelOptions,

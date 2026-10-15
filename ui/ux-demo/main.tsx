@@ -52,6 +52,7 @@ import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
+import { wireTextFields } from '@kerfjs/ui/wire-text-fields';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
@@ -1663,13 +1664,13 @@ const dispatchRecipeChange = (_event: Event, element: Element) => {
 const stopRecipeChanges = delegate(
   app,
   'change',
-  '[data-recipe] kui-select, [data-recipe] wa-input, [data-recipe] wa-textarea',
+  '[data-recipe] kui-select, [data-recipe] .kui-text-field__input',
   dispatchRecipeChange,
 );
 const stopRecipeInputs = delegate(
   app,
   'input',
-  '[data-recipe] wa-input, [data-recipe] wa-textarea',
+  '[data-recipe] .kui-text-field__input',
   dispatchRecipeChange,
 );
 const stopRecipeDialogs = delegateCapture(
@@ -1734,6 +1735,7 @@ const stopComboboxes = wireComboboxes(app, {
   },
 });
 const stopComposers = wireComposers(app);
+const stopTextFields = wireTextFields(app);
 const stopFilePickers = wireFilePickers(app, {
   onFiles: ({ files, via }) => {
     filePickerFiles.value = [
@@ -2115,6 +2117,7 @@ window.addEventListener(
     stopEdgeActivityReset();
     stopComposers();
     stopFilePickers();
+    stopTextFields();
     stopComboboxes();
     stopListItemDragOver();
     stopListItemDrop();
