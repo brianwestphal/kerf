@@ -130,11 +130,29 @@ test('A multiple ChoiceChips group toggles native checkboxes by pointer and Spac
     'Checked: feature, docs',
   );
 
-  // Keyboard: every pill is its own Tab stop and Space toggles it.
+  // Keyboard: every pill is its own Tab stop and Space toggles it. Every
+  // native checkbox stays in the sequential focus order (none opts out with a
+  // negative tabindex). macOS WebKit's default Tab reaches only text fields
+  // and lists, never a checkbox (Linux WebKit, Chromium, and Firefox do), so
+  // there the box is focused directly before Space; elsewhere Tab moves from
+  // one pill to the next.
+  const tabIndexes = await group
+    .getByRole('checkbox')
+    .evaluateAll((boxes) =>
+      boxes.map((box) => (box as HTMLInputElement).tabIndex),
+    );
+  expect(tabIndexes).toEqual([0, 0, 0, 0, 0]);
   const feature = group.getByRole('checkbox', { name: 'Feature' });
-  await feature.focus();
-  await page.keyboard.press('Tab');
   const docs = group.getByRole('checkbox', { name: 'Docs' });
+  const macPlatform = await page.evaluate(() =>
+    globalThis.navigator.platform.startsWith('Mac'),
+  );
+  if (browserName === 'webkit' && macPlatform) {
+    await docs.focus();
+  } else {
+    await feature.focus();
+    await page.keyboard.press('Tab');
+  }
   await expect(docs).toBeFocused();
   await page.keyboard.press('Space');
   await expect(docs).not.toBeChecked();
