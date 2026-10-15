@@ -51,10 +51,11 @@ test('pointer location clamps into a narrow viewport and dismisses outside', asy
   await expect(help).toHaveCount(0);
 });
 
-// wa-dialog keeps its modal <dialog> in a shadow root, so the slotted trigger
-// has no `dialog` ancestor. The surface must still join the modal's flat tree:
-// a surface left in document.body is painted but inert (no focus, no input).
-test('interactive help remains usable inside a Web Awesome dialog', async ({
+// A surface opened from inside a DialogSurface must join the modal dialog:
+// one left in document.body is painted but inert (no focus, no input). The
+// DialogSurface renders the host kerfjs/overlay uses, a direct child of its
+// native <dialog>.
+test('interactive help remains usable inside a DialogSurface', async ({
   page,
 }, testInfo) => {
   for (const width of [1180, 390]) {
@@ -75,11 +76,11 @@ test('interactive help remains usable inside a Web Awesome dialog', async ({
           element.closest('[data-anchored-surface-modal]'),
         ),
       })),
-    ).toEqual({ hosted: 'wa-dialog', lightDomOfDialog: true });
+    ).toEqual({ hosted: 'dialog', lightDomOfDialog: true });
     const gotIt = help.getByRole('button', { name: 'Got It' });
     await expect(gotIt).toBeFocused(); // inert content cannot take focus
     await page.screenshot({
-      path: `test-results/anchored-surface-wa-dialog-${width}-${testInfo.project.name}.png`,
+      path: `test-results/anchored-surface-dialog-surface-${width}-${testInfo.project.name}.png`,
     });
 
     // Escape dismisses only the surface; the dialog beneath stays open.
@@ -100,18 +101,18 @@ test('interactive help remains usable inside a Web Awesome dialog', async ({
     await explain.click();
     await expect(help).toBeVisible();
     await modal
-      .locator('[data-dialog="close"]')
+      .locator('.kui-dialog-surface__footer [data-dialog-close]')
       .evaluate((button: HTMLElement) => button.click());
     await expect(modal).not.toHaveAttribute('open');
     await expect(help).toHaveCount(0);
   }
 });
 
-// A wa-dialog that opens while a surface outside it is showing fires its
-// `toggle` inside its shadow root, which never reaches the document. kerf
-// watches open shadow roots too, so the surface is re-shown above the modal
-// instead of staying painted beneath its backdrop.
-test('a surface already showing is re-hosted above a Web Awesome dialog that opens later', async ({
+// A DialogSurface that opens while a surface outside it is showing goes to
+// the top layer above that surface. kerf watches modal dialogs opening, so
+// the surface is re-shown above the modal instead of staying painted beneath
+// its backdrop.
+test('a surface already showing is re-hosted above a DialogSurface that opens later', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1180, height: 760 });
@@ -120,18 +121,16 @@ test('a surface already showing is re-hosted above a Web Awesome dialog that ope
   const help = page.locator(surface);
   await expect(help).toBeVisible();
   const modal = page.locator('[data-anchored-surface-modal]');
-  await modal.evaluate((dialog: HTMLElement & { open: boolean }) => {
-    dialog.open = true;
-  });
+  await modal.evaluate((dialog: HTMLDialogElement) => dialog.showModal());
   await expect(modal).toHaveAttribute('open');
   // Paint order, in pixels (hit-testing cannot see an inert element): an
   // opaque backdrop hides anything beneath the modal; a red surface above it
   // still shows in its own box.
   const clip = await page.evaluate(() => {
-    const host = document.querySelector('[data-anchored-surface-modal]')!;
     const style = document.createElement('style');
-    style.textContent = 'dialog::backdrop{background:#fff!important}';
-    host.shadowRoot!.appendChild(style);
+    style.textContent =
+      'dialog[data-anchored-surface-modal]::backdrop{background:#fff!important}';
+    document.head.appendChild(style);
     const el = document.querySelector<HTMLElement>(
       '[data-component="anchored-surface"]',
     )!;

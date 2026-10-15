@@ -1,21 +1,69 @@
 # Dialog and popup surface scaffolds
 
-`DialogSurface` and `PopupSurface` configure recurring Web Awesome surface
-geometry without application `::part()` overrides. They do not replace Web
-Awesome behavior: the application still owns open state, dismissal policy, ids,
-labels, and content.
+`DialogSurface` is Kerf's modal dialog: a native `<dialog>` with a header
+(title, header actions, close button), a body, and an optional footer, sized
+and presented by its props. `PopoverDialogSurface` is its non-modal sibling,
+and `PopupSurface` insets a raw Web Awesome dropdown. The application owns
+open state, dismissal policy, ids, names, and content.
 
-Wrap one `wa-dialog` with `DialogSurface`. Choose `size` (`small`, `medium`, or
-`large`), `presentation` (`modal`, `side-sheet`, `fullscreen`, or
-`bottom-sheet`; see [Bottom sheets](#bottom-sheets)), and independent
-`bodyInset` / `footerInset` (`none`, `compact`, or `comfortable`). The defaults
-match Kerf's medium modal, 8px body, and 16px footer rhythm.
+```tsx
+import { DialogSurface, openDialog } from '@kerfjs/ui/surface-scaffold';
+
+<wa-button data-action="edit-workspace">Edit Workspace</wa-button>
+<DialogSurface
+  id="edit-workspace"
+  label="Edit Workspace"
+  bodyInset="none"
+  footer={
+    <>
+      <wa-button data-dialog-close>Cancel</wa-button>
+      <wa-button variant="brand" data-action="save-workspace">Save</wa-button>
+    </>
+  }
+>
+  <List>
+    <ListInsetText>Changes apply to every project in this workspace.</ListInsetText>
+  </List>
+</DialogSurface>;
+
+openDialog(document.getElementById('edit-workspace') as HTMLDialogElement);
+```
+
+- **Name.** `label` names the dialog and is its title text. With `heading`
+  (title content such as an xl `ToolbarText` with a description), pass
+  `labelledBy`, the id of the element that names it, or keep `label`.
+- **Header.** The title, then `headerActions` and a close button (`closeLabel`,
+  default `Close`). `withoutHeader` renders none, for content that owns its
+  heading and close control.
+- **Body and footer.** `children` is the body; `footer` sits below it (or
+  floats over it, see [Chat dialogs](#chat-dialogs-a-floating-footer-over-a-filling-transcript)).
+- **Opening and closing.** Render the dialog closed and open it with
+  `openDialog(dialog)`: it opens modally in the top layer, the rest of the
+  page is inert, and focus moves to an `autofocus` element or else the panel.
+  `closeDialog(dialog)` closes it after its exit motion; the browser returns
+  focus to the element that opened it. Do not toggle its `open` attribute,
+  which opens a dialog without modality.
+- **Close requests.** The close button, any element inside with
+  `data-dialog-close` (a Cancel button), Escape, and, with `lightDismiss`, a
+  press on the backdrop ask to close: the dialog dispatches a cancelable
+  `kui-request-close` whose `detail.source` is `close-button`, `escape`, or
+  `backdrop`. Call `preventDefault()` to keep it open (unsaved changes); the
+  panel then pulses, as it does for a backdrop press without `lightDismiss`.
+  The native `close` event fires once it has closed. Your own
+  `closeDialog()` is never refused.
+
+Choose `size` (`small`, `medium`, or `large`), `presentation` (`modal`,
+`side-sheet`, `fullscreen`, or `bottom-sheet`; see
+[Bottom sheets](#bottom-sheets)), and independent `bodyInset` / `footerInset`
+(`none`, `compact`, or `comfortable`). The defaults match Kerf's medium modal,
+8px body, and 16px footer rhythm. The dialog scales and fades in and out
+(150ms), unless motion is reduced or the document's static effects mode is on.
 
 The panel corner is concentric with a pill `ToolbarControlGroup` (22px) resting
 at the body inset: 30px for `compact` (and `none`) and 38px for `comfortable`,
 so header and body controls nest into the curve. A side sheet uses the same
-radius on its leading corners, and a bare `wa-dialog` or `PopoverDialogSurface`
-takes the 30px default.
+radius on its leading corners, and a `PopoverDialogSurface` takes the 30px
+default.
 
 The modal size presets have preferred widths of 400px, 560px, and 800px,
 respectively, before the viewport width cap. Set `preferredWidth` to a branded
@@ -29,14 +77,12 @@ resource tracks or preview aspect sizing.
 Every `DialogSurface` root has the same structure, so two sibling dialogs that
 are rendered conditionally are matched by position when the page re-renders:
 one open dialog's element (with its accessible name and open state) can be
-reused for another, and Web Awesome events such as `wa-after-hide` fire on the
-wrong dialog or not at all. Give each sibling a stable key on its root with
-`rootAttributes`, instead of wrapping it in an app `div`:
+reused for another, and its `close` event fires on the wrong dialog. Give each
+sibling a stable key on its root with `rootAttributes` (or an `id`), instead
+of wrapping it in an app `div`:
 
 ```tsx
-<DialogSurface rootAttributes={{ "data-key": "project-setup" }}>
-  <wa-dialog label="Set up project">…</wa-dialog>
-</DialogSurface>
+<DialogSurface label="Set up project" rootAttributes={{ "data-key": "project-setup" }}>…</DialogSurface>
 ```
 
 `rootAttributes` takes `data-*` identity only; the surface's own configuration
@@ -49,26 +95,25 @@ It sets the minimum horizontal clearance; `preferredWidth` overrides the `size`
 preset when supplied. `maxHeight` accepts a branded length or `"viewport"`; explicit caps are
 clamped to the dynamic viewport height minus twice the gutter (16px per edge
 when the gutter is omitted). Negative gutters/caps clamp to zero. Omitting
-both options preserves Web Awesome's existing width and phone height caps.
+both options keeps the default caps: 20px clear of each viewport edge, and
+80% of the viewport height at 420px wide or narrower.
 These options apply only to `presentation="modal"`; side sheets and fullscreen
 surfaces keep their own geometry, and a bottom sheet reads `height` and
 `maxHeight` as described in [Bottom sheets](#bottom-sheets).
 
 ```tsx
-import '@kerfjs/ui/surface-scaffold/register';
 import { remify } from '@kerfjs/ui/css-values';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 
-<DialogSurface preferredWidth={remify(832)} viewportGutter={remify(8)} maxHeight="viewport" bodyInset="none">
-  <wa-dialog label="Close Workspace">{/* Application-owned content and footer */}</wa-dialog>
+<DialogSurface id="close-workspace" label="Close Workspace" preferredWidth={remify(832)} viewportGutter={remify(8)} maxHeight="viewport" bodyInset="none" footer={actions}>
+  {/* Application-owned content */}
 </DialogSurface>;
 ```
 
 This gives a desktop modal an 832px preferred width and a phone modal an 8px edge gutter with a `calc(100dvh - 16px)` height
-cap without application selectors on Kerf roots or Web Awesome parts. A cap
-is not a fixed height: short content stays naturally sized, and taller content
-scrolls in Web Awesome's body while its header/footer remain outside that
-scroll owner. Choosing a larger cap cannot guarantee that arbitrary content
+cap without application selectors on Kerf roots. A cap is not a fixed
+height: short content stays naturally sized, and taller content scrolls in the
+dialog body while its header/footer remain outside that scroll owner. Choosing a larger cap cannot guarantee that arbitrary content
 fits without scrolling; preview tracks, canvas aspect ratios and content sizing
 remain application-owned.
 
@@ -93,7 +138,7 @@ edit sheet. The default `modal` presentation is unchanged.
 - **Safe area and keyboard.** The panel runs to the edge, behind the home
   indicator and any virtual keyboard, while a block-end padding keeps its
   content above them. The padding is the largest of
-  `--kui-safe-area-block-end`, the keyboard overlap the register measures from
+  `--kui-safe-area-block-end`, the keyboard overlap `openDialog` measures from
   `visualViewport` (layout height minus the visual viewport's height and top
   offset, ignored while pinch-zoomed), and the VirtualKeyboard API's
   `env(keyboard-inset-height)`. A page whose viewport meta sets
@@ -111,31 +156,27 @@ edit sheet. The default `modal` presentation is unchanged.
   horizontal `separator` named "Resize sheet" with `aria-valuemin`,
   `aria-valuenow`, and `aria-valuemax` in visible px. Drag it, or use the
   arrow keys (16px), Page Up/Down (64px), Home (`minHeight`, default 160px),
-  and End (the cap). The register injects the grabber into the dialog's
-  shadow panel, so it never disturbs `bodyLayout` children or a Kerf morph.
-  Each opening starts again at `height`.
+  and End (the cap). The grabber sits at the panel's top edge, outside the
+  body, so it never disturbs `bodyLayout` children, and the resized height
+  survives a re-render while the sheet is open. Each opening starts again at
+  `height`.
 - **Motion.** The sheet slides up from the bottom edge when it opens and back
   down when it is dismissed. `enterMotion="standard"` or
-  `exitMotion="standard"` keeps Web Awesome's scale-and-fade for that
-  transition. The slide falls back to Web Awesome's motion under
-  `prefers-reduced-motion: reduce` and the document's static effects mode
-  (`:root[data-kui-effects="static"]`). A prevented close still pulses.
+  `exitMotion="standard"` keeps the dialog's scale-and-fade for that
+  transition. There is no motion under `prefers-reduced-motion: reduce` or
+  the document's static effects mode (`:root[data-kui-effects="static"]`). A
+  refused close still pulses.
 
 ```tsx
-import '@kerfjs/ui/surface-scaffold/register';
 import { remify } from '@kerfjs/ui/css-values';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 
-<DialogSurface presentation="bottom-sheet" height={remify(360)} minHeight={remify(200)} resizable bodyInset="none">
-  <wa-dialog label="New Message" light-dismiss>
-    {/* Application-owned fields */}
-  </wa-dialog>
+<DialogSurface id="new-message" label="New Message" lightDismiss presentation="bottom-sheet" height={remify(360)} minHeight={remify(200)} resizable bodyInset="none">
+  {/* Application-owned fields */}
 </DialogSurface>;
 ```
 
-The resize grabber, keyboard clearance, and slide need the `/register`
-entry. Without it the sheet keeps its bottom-edge geometry and safe-area
-padding, shows no grabber, and opens with Web Awesome's own animation.
+`openDialog` wires the resize grabber, keyboard clearance, and slide.
 `preferredWidth`, `bodyLayout`, the floating header and footer, and the
 insets compose with a bottom sheet as they do with a modal.
 
@@ -229,10 +270,8 @@ body's whole height to its one child, which owns its own scrolling; the body
 itself stops scrolling. Combine it with `bodyInset="none"`.
 
 ```tsx
-<DialogSurface size="large" height={remify(640)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill">
-  <wa-dialog label="Repository Status">
-    <SplitView id="repo-split" label="Changes" listWidth={{ size: 432, maxFraction: 0.5 }} list={list} detail={detail} />
-  </wa-dialog>
+<DialogSurface label="Repository Status" size="large" height={remify(640)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill">
+  <SplitView id="repo-split" label="Changes" listWidth={{ size: 432, maxFraction: 0.5 }} list={list} detail={detail} />
 </DialogSurface>;
 ```
 
@@ -251,8 +290,8 @@ and floats its composer over the body's block end. Two props compose it:
   The modal panel is its positioning context. The default `docked` footer
   sits below the body as before.
 
-The register measures the footer (it follows a composer that grows, wraps, or
-hides) and the body reserves that height plus the offset after its own inset,
+An open dialog measures its footer (it follows a composer that grows, wraps,
+or hides) and the body reserves that height plus the offset after its own inset,
 with a matching `scroll-padding`. Flowing body content scrolls beneath the
 floating footer and its end stays reachable above it; with `fill` or
 `fill-last` the filling child's scrollport ends at the footer's top. Content
@@ -282,18 +321,25 @@ transcript, and its field grows the measured footer. With `submitOnEnter` and
 `wireComposers(root)`, Enter sends through the same action as the Send button.
 
 ```tsx
-<DialogSurface height={remify(560)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill-last" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
-  <wa-dialog label="Assistant">
-    <StateBanner title="Answers use the latest nightly build." tone="neutral" />
-    <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">
-      {messages.map((message) => (
-        <ContentItem bubble={message.mine ? 'end' : 'start'} appearance={message.mine ? 'brand-loud' : 'neutral'}>
-          <Text variant="span">{message.text}</Text>
-        </ContentItem>
-      ))}
-    </List>
-    <Composer submitOnEnter slot="footer" id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>} />
-  </wa-dialog>
+<DialogSurface
+  label="Assistant"
+  height={remify(560)}
+  viewportGutter={remify(8)}
+  bodyInset="none"
+  bodyLayout="fill-last"
+  footerPresentation="floating"
+  footerOffset={remify(8)}
+  footerInset="none"
+  footer={<Composer submitOnEnter id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>} />}
+>
+  <StateBanner title="Answers use the latest nightly build." tone="neutral" />
+  <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">
+    {messages.map((message) => (
+      <ContentItem bubble={message.mine ? 'end' : 'start'} appearance={message.mine ? 'brand-loud' : 'neutral'}>
+        <Text variant="span">{message.text}</Text>
+      </ContentItem>
+    ))}
+  </List>
 </DialogSurface>;
 ```
 
@@ -306,11 +352,11 @@ behind `--kui-chrome-material-filter` (a blur and saturation backdrop filter).
 Content passing beneath the title bar reads as softened color, not as
 competing text. The default `docked` header sits above the body as before.
 
-The register measures the header the same way it measures the footer (it
-follows a title that wraps, text that grows, or a `without-header` toggle).
+An open dialog measures its header the same way it measures the footer (it
+follows a title that wraps, text that grows, or a `withoutHeader` toggle).
 The body reserves the measured height before its own inset, with a matching
 `scroll-padding`, so flowing content starts below the title bar and scrolls
-beneath it. A dialog without the register has no measurement, so its header
+beneath it. Unmeasured (a dialog opened without `openDialog`), the header
 stays docked rather than covering content.
 
 To let a filling transcript scroll visibly beneath the title bar, make it the
@@ -323,21 +369,29 @@ reservation: they never sit beneath the title bar. Combined with a floating
 composer and `scrollClearance="both"`, the transcript scrolls beneath both:
 
 ```tsx
-<DialogSurface height={remify(560)} viewportGutter={remify(8)} bodyInset="none" bodyLayout="fill" headerPresentation="floating" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
-  <wa-dialog label="Release Thread">
-    <ToolbarText slot="label" text="Release Thread" size="xlarge" description="Engineering · 5.2 candidate" />
-    <List gap="xs" controlInsets="tb" scrollable scrollClearance="both">
-      {bubbles}
-    </List>
-    <Composer submitOnEnter slot="footer" id="thread-message" name="message" label="Message" placeholder="Reply to the thread" actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>} />
-  </wa-dialog>
+<DialogSurface
+  label="Release Thread"
+  heading={<ToolbarText text="Release Thread" size="xlarge" description="Engineering · 5.2 candidate" />}
+  height={remify(560)}
+  viewportGutter={remify(8)}
+  bodyInset="none"
+  bodyLayout="fill"
+  headerPresentation="floating"
+  footerPresentation="floating"
+  footerOffset={remify(8)}
+  footerInset="none"
+  footer={<Composer submitOnEnter id="thread-message" name="message" label="Message" placeholder="Reply to the thread" actions={<wa-button variant="brand" data-action="send-message">Send</wa-button>} />}
+>
+  <List gap="xs" controlInsets="tb" scrollable scrollClearance="both">
+    {bubbles}
+  </List>
 </DialogSurface>;
 ```
 
 Like a `Pane`'s overlay header, the title bar draws its divider as scroll
 state: a 1px line along its bottom edge only while the body, or a filling
 child that reaches beneath it, is scrolled away from its top, and none at
-rest. The register follows those scrollers (a nested scroller that starts
+rest. The open dialog follows those scrollers (a nested scroller that starts
 below the title bar never counts), and the line is an inset shadow, so it
 never moves the header or the content.
 
@@ -345,8 +399,8 @@ The material turns opaque under `prefers-reduced-transparency: reduce` or
 `prefers-contrast: more`, and where the browser lacks `backdrop-filter`; in
 forced colors the header paints `Canvas` with a `CanvasText` bottom edge.
 
-For a title with a short supporting line, slot a `ToolbarText` as the label
-(`<ToolbarText slot="label" text="Release Thread" size="xlarge" description="Engineering · 5.2 candidate" />`).
+For a title with a short supporting line, pass a `ToolbarText` as the
+`heading` (`heading={<ToolbarText text="Release Thread" size="xlarge" description="Engineering · 5.2 candidate" />}`).
 On the floating title bar an untoned `ToolbarText` keeps AA by itself: its
 title takes the normal text color and its description lifts halfway toward
 it. Any other quiet copy you place there can fall below AA over the content
@@ -363,7 +417,7 @@ geometry.
 
 ## Non-modal dialogs: `PopoverDialogSurface`
 
-`wa-dialog` is modal: it makes the page inert until it closes. When a dialog
+`DialogSurface` is modal: it makes the page inert until it closes. When a dialog
 should leave the page interactive and close on Escape or a press outside (a
 status panel, a quick inspector), render `PopoverDialogSurface` instead of a
 hand-built popover with application chrome CSS. It is a native
@@ -384,8 +438,8 @@ pass `describedBy`, the id of the element that holds the summary. It renders as
 </PopoverDialogSurface>;
 ```
 
-`DialogSurface` has no `describedBy`. It wraps a `wa-dialog` that the app
-authors, so the app names and describes that dialog on its own markup.
+`DialogSurface` has no `describedBy`: name it with `label` or `labelledBy`,
+and keep any description in the body or its `heading`'s description.
 
 Open it with a control's `popoverTarget` (or `showPopover()`); the browser
 places it centered in the top layer, light-dismisses it, and restores nothing
@@ -402,7 +456,7 @@ preview.
 </PopoverDialogSurface>;
 ```
 
-Use `DialogSurface` with `wa-dialog` whenever the task must block the page.
+Use `DialogSurface` whenever the task must block the page.
 
 Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="list-zero"` removes menu
 padding for a child that already owns row insets, `compact` uses 4px, and
@@ -411,4 +465,10 @@ padding for a child that already owns row insets, `compact` uses 4px, and
 items must retain identity across Kerf rerenders; a `PopupMenu` already
 protects its own open state from the morph.
 
-Import `@kerfjs/ui/surface-scaffold/register` once when using `DialogSurface`: it registers `wa-dialog`, measures each surface's footer for a floating footer's body clearance, draws a floating header's divider while content is scrolled beneath it, wires a bottom sheet's resize grabber, keyboard clearance, and slide, and repairs Web Awesome 3.12 native dialog names before the first modal opening. Headed dialogs reference the rendered title, including live slotted labels; headerless dialogs use the public `label`. Explicit host `aria-label` and pre-existing native names are preserved. A host that is itself an explicit dialog (`role="dialog"` or `"alertdialog"` with its own name) keeps that name alone: the native panel is left unnamed, so one dialog carries the name. Geometry-only markup stays CSS-free and does not register Web Awesome implicitly.
+`openDialog` installs the document listeners every `DialogSurface` needs
+(close requests, motion, and, while each dialog is open, chrome measurement,
+the floating header's divider, the bottom sheet's keyboard clearance and
+grabber, and restoring that measured state after an application re-render).
+Import `@kerfjs/ui/surface-scaffold/register` once when a dialog may be opened
+without `openDialog` and should still take close requests. Rendering a
+`DialogSurface` has no side effects and registers no custom element.

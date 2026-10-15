@@ -7,6 +7,7 @@ describe('DialogSurface rootAttributes', () => {
   it('passes data-* identity to the root and protects its own attributes', () => {
     const output = String(
       DialogSurface({
+        label: 'Setup',
         children: <p>Body</p>,
         size: 'large',
         rootAttributes: {
@@ -20,9 +21,9 @@ describe('DialogSurface rootAttributes', () => {
     expect(output).toContain('data-size="large"');
     expect(output).not.toContain('data-size="small"');
     expect(output).toContain('data-component="dialog-surface"');
-    expect(String(DialogSurface({ children: <p>Body</p> }))).not.toContain(
-      'data-key',
-    );
+    expect(
+      String(DialogSurface({ label: 'Setup', children: <p>Body</p> })),
+    ).not.toContain('data-key');
   });
 
   it('keeps each keyed sibling dialog on its own element across re-renders', () => {
@@ -36,10 +37,11 @@ describe('DialogSurface rootAttributes', () => {
     const dispose = mount(root, () => (
       <div>
         {order.value.map((key) => (
-          <DialogSurface rootAttributes={{ 'data-key': key }}>
-            <wa-dialog label={names[key]}>
-              <p>{names[key]}</p>
-            </wa-dialog>
+          <DialogSurface
+            label={names[key]!}
+            rootAttributes={{ 'data-key': key }}
+          >
+            <p>{names[key]}</p>
           </DialogSurface>
         ))}
       </div>
@@ -56,8 +58,10 @@ describe('DialogSurface rootAttributes', () => {
 
     order.value = ['setup', 'connect'];
     expect(surface('connect')).toBe(connect);
-    expect(surface('connect').textContent).toBe('Connect repository');
-    expect(surface('setup').textContent).toBe('Set up project');
+    const body = (key: string) =>
+      surface(key).querySelector('.kui-dialog-surface__body')!.textContent;
+    expect(body('connect')).toBe('Connect repository');
+    expect(body('setup')).toBe('Set up project');
     dispose();
     root.remove();
   });

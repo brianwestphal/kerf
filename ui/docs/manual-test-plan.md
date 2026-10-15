@@ -21,7 +21,7 @@ an iPhone (Safari) and an Android phone (Chrome).
    between its minimum height and the screen less the top safe area.
 
 Playwright cannot raise a virtual keyboard; the overlap formula is unit-tested
-(`tests/unit/dialog-bottom-sheet.test.ts`) and a simulated keyboard is covered
+(`tests/unit/dialog-surface-controller.test.tsx`) and a simulated keyboard is covered
 in `tests/browser/dialog-bottom-sheet.spec.ts`.
 
 ## Automated coverage summary

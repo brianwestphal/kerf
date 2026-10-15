@@ -21,6 +21,11 @@ export interface SheetHandleTarget {
   property: string;
   /** False while the sheet is not resizable: input is ignored. */
   enabled: () => boolean;
+  /**
+   * Publish the visible height in place of setting `property` on `host`
+   * directly (a DialogSurface keeps it across re-renders).
+   */
+  publish?: (value: string) => void;
 }
 
 /** Create an unattached grabber element with its separator semantics. */
@@ -109,10 +114,12 @@ function resizeTo(
   target: SheetHandleTarget,
   height: number,
 ): void {
-  const { panel, host, property } = target;
+  const { panel, host, property, publish } = target;
   const { min, max, clearance } = bounds(panel);
   const clamped = Math.min(max, Math.max(min, Math.round(height)));
-  host.style.setProperty(property, `${Math.max(0, clamped - clearance)}px`);
+  const value = `${Math.max(0, clamped - clearance)}px`;
+  if (publish) publish(value);
+  else host.style.setProperty(property, value);
   syncSheetHandleValues(handle, panel, clamped);
 }
 

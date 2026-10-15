@@ -1,7 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
 // KF-0AGJ5W bottom-sheet DialogSurface: `presentation="bottom-sheet"` rests
-// the wa-dialog panel on the viewport's bottom edge with square bottom
+// the native dialog panel on the viewport's bottom edge with square bottom
 // corners, clears the safe area and the virtual keyboard with a block-end
 // padding the panel runs behind, slides in and out, and (with `resizable`)
 // offers a top grabber that resizes it within `minHeight` and the cap.
@@ -15,21 +15,23 @@ async function openSheet(page: Page, width: number, height: number) {
   await expect(page.locator(DIALOG)).toHaveAttribute('open', '');
   await expect
     .poll(() =>
-      page.locator(DIALOG).evaluate((element) =>
-        element
-          .shadowRoot!.querySelector('[part~="dialog"]')!
-          .getAnimations()
-          .every((animation) => animation.playState === 'finished'),
-      ),
+      page
+        .locator(DIALOG)
+        .evaluate(
+          (element) =>
+            !element.hasAttribute('data-kui-dialog-motion') &&
+            element
+              .getAnimations()
+              .every((animation) => animation.playState === 'finished'),
+        ),
     )
     .toBe(true);
 }
 
 function panelGeometry(page: Page) {
   return page.locator(DIALOG).evaluate((element) => {
-    const panel =
-      element.shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!;
-    const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+    const panel = element as HTMLElement;
+    const body = element.querySelector('.kui-dialog-surface__body')!;
     const rect = panel.getBoundingClientRect();
     const style = globalThis.getComputedStyle(panel);
     return {
@@ -91,14 +93,15 @@ test('the panel runs behind the safe area and the keyboard while its content sta
   expect(geometry.paddingBottom).toBeCloseTo(34, 0);
   expect(geometry.height).toBeCloseTo(opening + 34, 0);
   expect(geometry.bodyBottom).toBeLessThanOrEqual(844 - 34 + 0.5);
-  // The register publishes the measured keyboard overlap on the panel; the
+  // openDialog publishes the measured keyboard overlap on the panel; the
   // larger clearance wins and the visible height above it is kept.
   await page
     .locator(DIALOG)
-    .evaluate((element) =>
-      element
-        .shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!
-        .style.setProperty('--_kui-dialog-surface-keyboard-inset', '300px'),
+    .evaluate((element: HTMLElement) =>
+      element.style.setProperty(
+        '--_kui-dialog-surface-keyboard-inset',
+        '300px',
+      ),
     );
   geometry = await panelGeometry(page);
   expect(geometry.bottom).toBeCloseTo(844, 0);
@@ -108,10 +111,11 @@ test('the panel runs behind the safe area and the keyboard while its content sta
   // The cap (viewport minus the 16px gutter) still holds.
   await page
     .locator(DIALOG)
-    .evaluate((element) =>
-      element
-        .shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!
-        .style.setProperty('--_kui-dialog-surface-keyboard-inset', '600px'),
+    .evaluate((element: HTMLElement) =>
+      element.style.setProperty(
+        '--_kui-dialog-surface-keyboard-inset',
+        '600px',
+      ),
     );
   geometry = await panelGeometry(page);
   expect(geometry.top).toBeCloseTo(16, 0);
@@ -142,11 +146,13 @@ test('the grabber resizes the sheet by drag and keyboard within its bounds', asy
     'aria-valuenow',
     String(Math.round(opening + 120)),
   );
-  // Dragging past the top stops at the cap.
+  // Dragging past the top stops at the cap. The release stays in the
+  // viewport: a synthetic release outside it never reaches the page, which
+  // would leave the grabber holding pointer capture.
   const moved = (await handle.boundingBox())!;
   await page.mouse.move(moved.x + 40, moved.y + 10);
   await page.mouse.down();
-  await page.mouse.move(moved.x + 40, -400, { steps: 4 });
+  await page.mouse.move(moved.x + 40, 0, { steps: 4 });
   await page.mouse.up();
   expect((await panelGeometry(page)).top).toBeCloseTo(16, 0);
   await handle.focus();
@@ -160,16 +166,8 @@ test('the grabber resizes the sheet by drag and keyboard within its bounds', asy
   // Each opening starts at the configured (here, content) height again.
   await page.keyboard.press('Escape');
   await expect(page.locator(DIALOG)).not.toHaveAttribute('open', '');
-  await expect
-    .poll(() =>
-      page.locator(DIALOG).evaluate((element) => {
-        // Reopen until Web Awesome has settled its close.
-        const dialog = element as HTMLElement & { open: boolean };
-        dialog.open = true;
-        return element.hasAttribute('open');
-      }),
-    )
-    .toBe(true);
+  await page.getByRole('button', { name: 'Open New Message' }).click();
+  await expect(page.locator(DIALOG)).toHaveAttribute('open', '');
   await expect
     .poll(async () => Math.round((await panelGeometry(page)).height))
     .toBe(Math.round(opening));
@@ -186,13 +184,12 @@ test('the sheet slides up from the bottom edge and back down, unless motion is r
     (globalThis as { sheetMarks?: typeof marks }).sheetMarks = marks;
     new MutationObserver(() =>
       marks.push({
-        mark: element.getAttribute('data-kui-sheet-motion'),
+        mark: element.getAttribute('data-kui-dialog-motion'),
         names: element
-          .shadowRoot!.querySelector('[part~="dialog"]')!
           .getAnimations()
           .map((animation) => (animation as CSSAnimation).animationName),
       }),
-    ).observe(element, { attributeFilter: ['data-kui-sheet-motion'] });
+    ).observe(element, { attributeFilter: ['data-kui-dialog-motion'] });
   });
   const marks = () =>
     page.evaluate(
@@ -203,15 +200,14 @@ test('the sheet slides up from the bottom edge and back down, unless motion is r
           }
         ).sheetMarks!,
     );
-  const setOpen = (open: boolean) =>
-    page.locator(DIALOG).evaluate((element, value) => {
-      (element as HTMLElement & { open: boolean }).open = value;
-    }, open);
+  const open = () =>
+    page.getByRole('button', { name: 'Open New Message' }).click();
   const slide = ['kui-dialog-surface-sheet-slide'];
-  await page.getByRole('button', { name: 'Open New Message' }).click();
+  await open();
   await expect(page.locator(DIALOG)).toHaveAttribute('open', '');
   await expect.poll(async () => (await marks()).length).toBe(2);
-  await setOpen(false);
+  // Escape asks to close; the sheet slides out before it closes.
+  await page.keyboard.press('Escape');
   await expect(page.locator(DIALOG)).not.toHaveAttribute('open', '');
   await expect.poll(async () => (await marks()).length).toBe(4);
   expect(await marks()).toEqual([
@@ -220,12 +216,18 @@ test('the sheet slides up from the bottom edge and back down, unless motion is r
     { mark: 'exit', names: slide },
     { mark: null, names: [] },
   ]);
+  // Under reduced motion the sheet opens with no animation at all.
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await setOpen(true);
+  await open();
+  await expect(page.locator(DIALOG)).toHaveAttribute('open', '');
   await expect.poll(async () => (await marks()).length).toBeGreaterThan(4);
-  const reduced = (await marks())[4]!;
-  expect(reduced.mark).toBe('enter');
-  expect(reduced.names).not.toEqual(slide);
+  for (const reduced of (await marks()).slice(4))
+    expect(reduced.names).not.toEqual(slide);
+  expect(
+    await page
+      .locator(DIALOG)
+      .evaluate((element) => element.getAnimations().length),
+  ).toBe(0);
 });
 
 test('a sheet without a height opens at its content height, so nothing at its end is clipped', async ({
@@ -236,7 +238,7 @@ test('a sheet without a height opens at its content height, so nothing at its en
   // few pixels short of the form, clipping the textarea's bottom border.
   await openSheet(page, 390, 844);
   const fit = await page.locator(DIALOG).evaluate((element) => {
-    const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+    const body = element.querySelector('.kui-dialog-surface__body')!;
     const textarea = element.querySelector('wa-textarea')!;
     return {
       overflow: body.scrollHeight - body.clientHeight,

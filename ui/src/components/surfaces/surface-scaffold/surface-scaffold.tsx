@@ -1,6 +1,16 @@
+import { X } from 'lucide';
+
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
+import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
+
+export {
+  closeDialog,
+  type DialogCloseSource,
+  type DialogRequestCloseDetail,
+  openDialog,
+} from './internal/dialog-surface-controller.js';
 
 export type DialogSurfaceSize = 'small' | 'medium' | 'large';
 /**
@@ -13,7 +23,7 @@ export type DialogSurfacePresentation =
   'modal' | 'side-sheet' | 'fullscreen' | 'bottom-sheet';
 /**
  * How a bottom sheet appears or leaves: `slide` (default) moves the panel in
- * from, or out to, the bottom edge; `standard` keeps Web Awesome's
+ * from, or out to, the bottom edge; `standard` keeps the dialog's
  * scale-and-fade. Both honor `prefers-reduced-motion`.
  */
 export type DialogSurfaceSheetMotion = 'slide' | 'standard';
@@ -68,10 +78,42 @@ const DIALOG_SURFACE_PROTECTED = new Set([
   'data-resizable',
   'data-enter-motion',
   'data-exit-motion',
+  'data-light-dismiss',
 ]);
 
-export interface DialogSurfaceProps {
+/**
+ * The dialog's accessible name: its `label` text (also the default title), or
+ * the id of an element that names it, such as a `heading` ToolbarText.
+ */
+export type DialogSurfaceName =
+  { label: string; labelledBy?: never } | { label?: never; labelledBy: string };
+
+export type DialogSurfaceProps = DialogSurfaceName & DialogSurfaceOptions;
+
+export interface DialogSurfaceOptions {
+  /** The dialog's id, for `openDialog(document.getElementById(id))`. */
+  id?: string;
+  /** The body content. */
   children: KerfUiContent;
+  /**
+   * Header title content in place of the `label` text, such as an xl
+   * `ToolbarText` with a description. The dialog keeps its `label` (or
+   * `labelledBy`) name.
+   */
+  heading?: KerfUiContent;
+  /** Controls before the close button in the header. */
+  headerActions?: KerfUiContent;
+  /** The footer, below the body (or floating over it); usually its buttons. */
+  footer?: KerfUiContent;
+  /**
+   * Render no header: no title and no close button. The content then owns its
+   * heading and a way to close (an element with `data-dialog-close`).
+   */
+  withoutHeader?: boolean;
+  /** Close on a press on the backdrop; otherwise the panel pulses. */
+  lightDismiss?: boolean;
+  /** The close button's accessible name (default `Close`). */
+  closeLabel?: string;
   size?: DialogSurfaceSize;
   presentation?: DialogSurfacePresentation;
   /** Modal preferred width. Takes precedence over size, within the viewport cap. */
@@ -157,8 +199,25 @@ export interface DialogSurfaceProps {
   slot?: string;
 }
 
-/** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
+/**
+ * A modal dialog: a native `<dialog>` with Kerf's header, body, and footer
+ * chrome, sized and presented by its props. Render it closed, then open it
+ * with `openDialog()` and close it with `closeDialog()`, the close button, an
+ * element with `data-dialog-close`, Escape, or (with `lightDismiss`) a press
+ * on the backdrop. Import `@kerfjs/ui/surface-scaffold/register` for the
+ * floating header and footer measurement, the bottom sheet's keyboard
+ * clearance and grabber, and re-render resilience while open.
+ */
 export function DialogSurface({
+  id,
+  label,
+  labelledBy,
+  heading,
+  headerActions,
+  footer,
+  withoutHeader = false,
+  lightDismiss = false,
+  closeLabel = 'Close',
   children,
   size = 'medium',
   presentation = 'modal',
@@ -203,9 +262,14 @@ export function DialogSurface({
     .filter(Boolean)
     .join(';');
   return (
-    <div
+    <dialog
       {...filterDataAttributes(rootAttributes, DIALOG_SURFACE_PROTECTED)}
+      id={id}
       class={`kui-dialog-surface ${className}`.trim()}
+      aria-label={label}
+      aria-labelledby={labelledBy}
+      tabindex={-1}
+      data-light-dismiss={lightDismiss ? '' : undefined}
       data-component="dialog-surface"
       data-size={size}
       data-presentation={presentation}
@@ -229,8 +293,43 @@ export function DialogSurface({
       style={style || undefined}
       slot={slot}
     >
-      {children}
-    </div>
+      {withoutHeader ? null : (
+        <header class="kui-dialog-surface__header">
+          {heading === undefined ? (
+            <h2 class="kui-dialog-surface__title">{label}</h2>
+          ) : (
+            <div class="kui-dialog-surface__title">{heading}</div>
+          )}
+          <div class="kui-dialog-surface__header-actions">
+            {headerActions}
+            <button
+              type="button"
+              class="kui-dialog-surface__close"
+              aria-label={closeLabel}
+              data-dialog-close=""
+            >
+              <LucideIcon icon={X} name="x" size="l" />
+            </button>
+          </div>
+        </header>
+      )}
+      {presentation === 'bottom-sheet' && resizable ? (
+        <div
+          class="kui-dialog-surface__sheet-handle"
+          role="separator"
+          aria-orientation="horizontal"
+          aria-label="Resize sheet"
+          tabindex={0}
+        />
+      ) : null}
+      <div class="kui-dialog-surface__body">{children}</div>
+      {footer === undefined ? null : (
+        <footer class="kui-dialog-surface__footer">{footer}</footer>
+      )}
+      {/* Where kerfjs/overlay hosts a popover or tooltip opened inside the
+          modal dialog, so it stays interactive above the inert page. */}
+      <div data-kerf-overlay-host data-morph-skip style="display:contents" />
+    </dialog>
   );
 }
 
@@ -295,8 +394,8 @@ const POPOVER_DIALOG_PROTECTED = new Set([
  * A non-modal dialog surface on the native Popover API: Kerf's dialog chrome,
  * viewport-bounded size, and single-child fill without application CSS.
  * Open it with a `popovertarget` control or `showPopover()`; it light
- * dismisses and leaves the page interactive. Use `DialogSurface` with
- * `wa-dialog` when the task must block the page.
+ * dismisses and leaves the page interactive. Use `DialogSurface` when the
+ * task must block the page.
  */
 export function PopoverDialogSurface({
   id,

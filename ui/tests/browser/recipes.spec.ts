@@ -23,25 +23,10 @@ async function activateDialogAndWaitForShow(
   dialog: Locator,
   activate: () => Promise<void>,
 ) {
-  await dialog.evaluate((element) => {
-    const target = element as HTMLElement & {
-      waitForAfterShow?: Promise<void>;
-    };
-    target.waitForAfterShow = new Promise<void>((resolve) =>
-      element.addEventListener('wa-after-show', () => resolve(), {
-        once: true,
-      }),
-    );
-  });
   await activate();
-  await dialog.evaluate(async (element) => {
-    const target = element as HTMLElement & {
-      waitForAfterShow?: Promise<void>;
-    };
-    await target.waitForAfterShow;
-    delete target.waitForAfterShow;
-  });
+  // Open, and its enter motion finished.
   await expect(dialog).toHaveJSProperty('open', true);
+  await expect(dialog).not.toHaveAttribute('data-kui-dialog-motion');
 }
 
 /** Every pane in a recipe owns exactly one scrolling content region. */
@@ -58,7 +43,9 @@ async function expectOneScrollOwnerPerPane(recipe: Locator, panes: number) {
 }
 
 const projectDialog = (page: Page) =>
-  page.locator('[data-recipe="recipe-list-detail-dialog"] wa-dialog');
+  page.locator(
+    '[data-recipe="recipe-list-detail-dialog"] dialog.kui-dialog-surface',
+  );
 
 async function expectToolbarZonesNotToOverlap(recipe: Locator) {
   const zones = await Promise.all(
@@ -307,10 +294,10 @@ test('lays the project dialog out as a workbench on roomy devices and a drill-do
     if (viewport.width === 1440) {
       expect(compact).toBe(false);
       const roomy = await dialog.evaluate((root) => {
-        const panel = root
-          .shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!
-          .getBoundingClientRect();
-        const header = root.shadowRoot!.querySelector('[part~="header"]');
+        const panel = root.getBoundingClientRect();
+        const header = root.querySelector(
+          ':scope > .kui-dialog-surface__header',
+        );
         const bounds = (selector: string) =>
           root.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
         const textStart = (selector: string) => {
@@ -389,10 +376,8 @@ test('lays the project dialog out as a workbench on roomy devices and a drill-do
 
     const geometry = await dialog.evaluate((root) => {
       const range = document.createRange();
-      const panel = root
-        .shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!
-        .getBoundingClientRect();
-      const title = root.shadowRoot!.querySelector('[part~="title"]')!;
+      const panel = root.getBoundingClientRect();
+      const title = root.querySelector('.kui-dialog-surface__title')!;
       range.selectNodeContents(title);
       const split = root
         .querySelector<HTMLElement>('[data-component="split-view"]')!
@@ -401,7 +386,9 @@ test('lays the project dialog out as a workbench on roomy devices and a drill-do
         .querySelector<HTMLElement>('[data-item-id="alpha"]')!
         .getBoundingClientRect();
       const footer = [
-        ...root.querySelectorAll<HTMLElement>('[slot="footer"]'),
+        ...root.querySelectorAll<HTMLElement>(
+          '.kui-dialog-surface__footer > *',
+        ),
       ].map((button) => button.getBoundingClientRect());
       return {
         footerEndInset: panel.right - footer.at(-1)!.right,

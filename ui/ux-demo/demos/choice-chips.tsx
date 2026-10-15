@@ -106,40 +106,36 @@ export function ChoiceChipsDemo() {
         note="The checked radio is the form value; Save reads it from the form."
         align="inline-control"
       >
-        <DialogSurface preferredWidth={px(560)}>
-          <wa-button
-            data-action="show-wa-dialog"
-            data-dialog-id="choice-chips-dialog"
-          >
-            Edit Command
-          </wa-button>
-          <wa-dialog id="choice-chips-dialog" label="Edit Command">
-            <form id="choice-chips-dialog-form">
-              <FieldLabel id="choice-chips-dialog-label">Color</FieldLabel>
-              <ChoiceChips
-                id="choice-chips-dialog-color"
-                name="color"
-                labelledBy="choice-chips-dialog-label"
-                value={choiceChipsDialogColor.value}
-                action="choice-chips-demo"
-                choices={colorChoices}
-              />
-            </form>
-            <wa-button
-              slot="footer"
-              data-action="hide-wa-dialog"
-              data-dialog-id="choice-chips-dialog"
-            >
-              Cancel
-            </wa-button>
-            <wa-button
-              slot="footer"
-              variant="brand"
-              data-action="save-choice-chips-dialog"
-            >
-              Save
-            </wa-button>
-          </wa-dialog>
+        <wa-button
+          data-action="show-dialog"
+          data-dialog-id="choice-chips-dialog"
+        >
+          Edit Command
+        </wa-button>
+        <DialogSurface
+          id="choice-chips-dialog"
+          label="Edit Command"
+          preferredWidth={px(560)}
+          footer={
+            <>
+              <wa-button data-dialog-close>Cancel</wa-button>
+              <wa-button variant="brand" data-action="save-choice-chips-dialog">
+                Save
+              </wa-button>
+            </>
+          }
+        >
+          <form id="choice-chips-dialog-form">
+            <FieldLabel id="choice-chips-dialog-label">Color</FieldLabel>
+            <ChoiceChips
+              id="choice-chips-dialog-color"
+              name="color"
+              labelledBy="choice-chips-dialog-label"
+              value={choiceChipsDialogColor.value}
+              action="choice-chips-demo"
+              choices={colorChoices}
+            />
+          </form>
         </DialogSurface>
       </CatalogExample>
       <CatalogExample

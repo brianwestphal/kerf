@@ -4,28 +4,34 @@ import { expect, type Page, test } from '@playwright/test';
 // behind as scrollable overflow. WebKit kept the popup's last box in the
 // body's scroll extent after the popover left the top layer, so the body
 // scrolled into a blank band below its content (Karwan's questions dialog: a
-// wa-dialog in a positioned section of a scrolling pane).
+// dialog in a positioned section of a scrolling pane). The fixture is a
+// DialogSurface's markup: a native modal dialog with a scrolling body.
 
 async function mountDialog(page: Page) {
   await page.setViewportSize({ width: 480, height: 700 });
   await page.goto('/?component=select');
   await page.locator('[name="rendering-balance"]').evaluate((select) => {
     const pane = select.closest('.kui-pane__content')!;
-    const dialog = document.createElement('wa-dialog');
-    dialog.setAttribute('label', 'A few details');
+    const dialog = document.createElement('dialog');
+    dialog.className = 'kui-dialog-surface';
+    dialog.setAttribute('aria-label', 'A few details');
+    dialog.setAttribute('data-component', 'dialog-surface');
     dialog.dataset.overflowFixture = '';
+    const body = document.createElement('div');
+    body.className = 'kui-dialog-surface__body';
     const input = document.createElement('wa-input');
     input.setAttribute('label', 'Quantity');
     input.setAttribute('type', 'number');
     const stack = document.createElement('div');
     stack.style.cssText = 'display:flex;flex-direction:column;gap:24px';
     stack.append(select, input);
-    dialog.append(stack);
+    body.append(stack);
+    dialog.append(body);
     const section = document.createElement('section');
     section.style.position = 'relative';
     section.append(dialog);
     pane.prepend(section);
-    (dialog as HTMLElement & { open: boolean }).open = true;
+    dialog.showModal();
   });
   const dialog = page.locator('[data-overflow-fixture]');
   await expect(dialog).toHaveAttribute('open', '');
@@ -36,7 +42,7 @@ async function mountDialog(page: Page) {
 
 function scrollExtent(page: Page) {
   return page.locator('[data-overflow-fixture]').evaluate((dialog) => {
-    const body = dialog.shadowRoot!.querySelector('[part~="body"]')!;
+    const body = dialog.querySelector('.kui-dialog-surface__body')!;
     return { client: body.clientHeight, scroll: body.scrollHeight };
   });
 }
@@ -86,7 +92,7 @@ test('closing a Select in a scrolling dialog leaves no blank scroll space', asyn
   );
 
   await page.locator('[data-overflow-fixture]').evaluate((dialog) => {
-    dialog.shadowRoot!.querySelector('[part~="body"]')!.scrollTop = 10_000;
+    dialog.querySelector('.kui-dialog-surface__body')!.scrollTop = 10_000;
   });
   await page.screenshot({
     path: testInfo.outputPath('select-dialog-overflow-scrolled.png'),

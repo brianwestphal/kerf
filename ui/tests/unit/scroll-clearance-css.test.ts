@@ -165,7 +165,7 @@ describe('scroll clearance context', () => {
     const all = declarations(file);
     const reset = all.filter(
       (decl) =>
-        decl.selector === '.kui-dialog-surface > wa-dialog::part(body)' &&
+        decl.selector === '.kui-dialog-surface__body' &&
         decl.prop.startsWith('--kui-scroll-clearance-'),
     );
     expect(reset.map(({ prop, value }) => `${prop}:${value}`)).toEqual([
@@ -191,7 +191,7 @@ describe('scroll clearance context', () => {
       all
         .filter((decl) => decl.selector === selector)
         .map(({ prop, value }) => `${prop}:${value}`);
-    expect(rule(`${floating} > wa-dialog::part(header)`)).toEqual([
+    expect(rule(`${floating} > .kui-dialog-surface__header`)).toEqual([
       'position:relative',
       'z-index:1',
       // The measured height, given back so the body starts beneath it; an
@@ -208,23 +208,25 @@ describe('scroll clearance context', () => {
       'background:Canvas',
       'border-block-end:1px solid CanvasText',
     ]);
-    expect(rule(`${floating} > wa-dialog::part(body)`)).toEqual([
+    expect(rule(`${floating} > .kui-dialog-surface__body`)).toEqual([
       '--_kui-dialog-surface-header-clearance:var( --_kui-dialog-surface-header-block-size, 0px )',
       'scroll-padding-block-start:var(--_kui-dialog-surface-header-clearance)',
     ]);
     expect(
-      rule(`${floating}[data-body-inset="none"] > wa-dialog::part(body)`),
+      rule(`${floating}[data-body-inset="none"] > .kui-dialog-surface__body`),
     ).toEqual([
       'padding-block-start:var(--_kui-dialog-surface-header-clearance)',
     ]);
     expect(
-      rule(`${floating}[data-body-inset="compact"] > wa-dialog::part(body)`),
+      rule(
+        `${floating}[data-body-inset="compact"] > .kui-dialog-surface__body`,
+      ),
     ).toEqual([
       'padding-block-start:calc( var(--kui-wa-surface-inset, remify(8px)) + var(--_kui-dialog-surface-header-clearance) )',
     ]);
     expect(
       rule(
-        `${floating}[data-body-inset="comfortable"] > wa-dialog::part(body)`,
+        `${floating}[data-body-inset="comfortable"] > .kui-dialog-surface__body`,
       ),
     ).toEqual([
       'padding-block-start:calc( var(--kui-wa-container-inset, remify(16px)) + var(--_kui-dialog-surface-header-clearance) )',
@@ -237,10 +239,8 @@ describe('scroll clearance context', () => {
       '--kui-scroll-clearance-block-start:var( --_kui-dialog-surface-header-clearance )',
       'padding-block-start:0',
     ]);
-    // Only the body's sole unslotted child reaches beneath the header: a
-    // leading fill-last child would otherwise sit under it.
-    expect(published[0]!.selector).toContain(
-      ':nth-child(1 of :not([slot])):nth-last-child(1 of :not([slot]))',
-    );
+    // Only the body's sole child reaches beneath the header: a leading
+    // fill-last child would otherwise sit under it.
+    expect(published[0]!.selector).toContain('> :only-child:is(');
   });
 });

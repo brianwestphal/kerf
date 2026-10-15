@@ -248,15 +248,111 @@ describe('production UI primitives', () => {
     expect(hiddenWins).not.toContain('aria-label');
   });
 
-  it('serializes a definite modal height and a filling body layout', () => {
-    const plain = asHtml(
-      DialogSurface({ children: <wa-dialog label="Edit">Body</wa-dialog> }),
+  it('renders a native dialog with its header, body, footer, and name', () => {
+    const host = document.createElement('div');
+    host.innerHTML = asHtml(
+      DialogSurface({
+        id: 'edit',
+        label: 'Edit Workspace',
+        headerActions: <button type="button">Help</button>,
+        footer: <button type="button">Save</button>,
+        lightDismiss: true,
+        closeLabel: 'Dismiss',
+        children: <>Body</>,
+      }),
     );
+    const dialog = host.querySelector('dialog')!;
+    expect(dialog.id).toBe('edit');
+    expect(dialog.className).toBe('kui-dialog-surface');
+    expect(dialog.getAttribute('aria-label')).toBe('Edit Workspace');
+    expect(dialog.hasAttribute('data-light-dismiss')).toBe(true);
+    expect(dialog.hasAttribute('open')).toBe(false);
+    const title = dialog.querySelector('h2.kui-dialog-surface__title')!;
+    expect(title.textContent).toBe('Edit Workspace');
+    const actions = dialog.querySelector(
+      '.kui-dialog-surface__header-actions',
+    )!;
+    expect([...actions.children].map((child) => child.textContent)).toEqual([
+      'Help',
+      '',
+    ]);
+    const close = actions.querySelector('.kui-dialog-surface__close')!;
+    expect(close.getAttribute('aria-label')).toBe('Dismiss');
+    expect(close.hasAttribute('data-dialog-close')).toBe(true);
+    expect(close.querySelector('[data-lucide="x"]')).not.toBe(null);
+    expect(dialog.querySelector('.kui-dialog-surface__body')!.textContent).toBe(
+      'Body',
+    );
+    expect(
+      dialog.querySelector('footer.kui-dialog-surface__footer')!.textContent,
+    ).toBe('Save');
+    expect(dialog.querySelector('.kui-dialog-surface__sheet-handle')).toBe(
+      null,
+    );
+    // kerfjs/overlay hosts anchored surfaces in the modal dialog here.
+    expect(
+      dialog.querySelector(
+        ':scope > [data-kerf-overlay-host][data-morph-skip]',
+      ),
+    ).not.toBe(null);
+
+    // A heading replaces the title text; labelledBy names the dialog; with
+    // no footer none renders, and withoutHeader drops the whole header.
+    host.innerHTML = asHtml(
+      DialogSurface({
+        labelledBy: 'thread-title',
+        heading: <span id="thread-title">Thread</span>,
+        children: <>Body</>,
+      }),
+    );
+    const named = host.querySelector('dialog')!;
+    expect(named.getAttribute('aria-labelledby')).toBe('thread-title');
+    expect(named.hasAttribute('aria-label')).toBe(false);
+    expect(
+      named.querySelector('div.kui-dialog-surface__title > #thread-title'),
+    ).not.toBe(null);
+    expect(named.querySelector('.kui-dialog-surface__footer')).toBe(null);
+    expect(
+      named
+        .querySelector('.kui-dialog-surface__close')!
+        .getAttribute('aria-label'),
+    ).toBe('Close');
+    host.innerHTML = asHtml(
+      DialogSurface({
+        label: 'Bare',
+        withoutHeader: true,
+        children: <>Body</>,
+      }),
+    );
+    expect(host.querySelector('.kui-dialog-surface__header')).toBe(null);
+
+    // Only a resizable bottom sheet renders the grabber.
+    host.innerHTML = asHtml(
+      DialogSurface({
+        label: 'Compose',
+        presentation: 'bottom-sheet',
+        resizable: true,
+        children: <>Body</>,
+      }),
+    );
+    const handle = host.querySelector('.kui-dialog-surface__sheet-handle')!;
+    expect(handle.getAttribute('role')).toBe('separator');
+    expect(handle.getAttribute('aria-label')).toBe('Resize sheet');
+    expect(handle.getAttribute('tabindex')).toBe('0');
+    host.innerHTML = asHtml(
+      DialogSurface({ label: 'Edit', resizable: true, children: <>Body</> }),
+    );
+    expect(host.querySelector('.kui-dialog-surface__sheet-handle')).toBe(null);
+  });
+
+  it('serializes a definite modal height and a filling body layout', () => {
+    const plain = asHtml(DialogSurface({ label: 'Edit', children: <>Body</> }));
     expect(plain).not.toContain('data-height');
     expect(plain).not.toContain('data-body-layout');
     const viewport = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        label: 'Edit',
+        children: <>Body</>,
         height: 'viewport',
         bodyLayout: 'fill',
       }),
@@ -266,7 +362,8 @@ describe('production UI primitives', () => {
     expect(viewport).not.toContain('--_kui-dialog-surface-height');
     const fixed = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        label: 'Edit',
+        children: <>Body</>,
         height: px(640),
       }),
     );
@@ -274,20 +371,20 @@ describe('production UI primitives', () => {
   });
 
   it('serializes a floating header and keeps its attribute protected', () => {
-    const plain = asHtml(
-      DialogSurface({ children: <wa-dialog label="Chat">Body</wa-dialog> }),
-    );
+    const plain = asHtml(DialogSurface({ label: 'Chat', children: <>Body</> }));
     expect(plain).not.toContain('data-header-presentation');
     const docked = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Chat">Body</wa-dialog>,
+        label: 'Chat',
+        children: <>Body</>,
         headerPresentation: 'docked',
       }),
     );
     expect(docked).not.toContain('data-header-presentation');
     const floating = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Chat">Body</wa-dialog>,
+        label: 'Chat',
+        children: <>Body</>,
         headerPresentation: 'floating',
         footerPresentation: 'floating',
         rootAttributes: {
@@ -301,21 +398,21 @@ describe('production UI primitives', () => {
   });
 
   it('serializes a floating footer, its offset and a fill-last body layout', () => {
-    const plain = asHtml(
-      DialogSurface({ children: <wa-dialog label="Chat">Body</wa-dialog> }),
-    );
+    const plain = asHtml(DialogSurface({ label: 'Chat', children: <>Body</> }));
     expect(plain).not.toContain('data-footer-presentation');
     expect(plain).not.toContain('footer-offset');
     const docked = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Chat">Body</wa-dialog>,
+        label: 'Chat',
+        children: <>Body</>,
         footerPresentation: 'docked',
       }),
     );
     expect(docked).not.toContain('data-footer-presentation');
     const chat = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Chat">Body</wa-dialog>,
+        label: 'Chat',
+        children: <>Body</>,
         footerPresentation: 'floating',
         footerOffset: px(8),
         bodyLayout: 'fill-last',
@@ -406,15 +503,17 @@ describe('production UI primitives', () => {
 
   it('serializes optional modal bounds without changing omitted defaults', () => {
     const defaults = asHtml(
-      DialogSurface({ children: <wa-dialog label="Edit">Body</wa-dialog> }),
+      DialogSurface({ label: 'Edit', children: <>Body</> }),
     );
     expect(defaults).not.toContain('data-viewport-gutter');
     expect(defaults).not.toContain('data-max-height');
     expect(defaults).not.toContain('data-preferred-width');
-    expect(defaults).not.toContain('style=');
+    // The root carries no geometry style.
+    expect(defaults).toMatch(/^<dialog (?![^>]*style=)[^>]*>/);
     const viewport = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        label: 'Edit',
+        children: <>Body</>,
         viewportGutter: px(8),
         maxHeight: 'viewport',
       }),
@@ -425,7 +524,8 @@ describe('production UI primitives', () => {
     expect(viewport).not.toContain('--_kui-dialog-surface-max-height:');
     const capped = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        label: 'Edit',
+        children: <>Body</>,
         maxHeight: px(360),
       }),
     );
@@ -433,7 +533,8 @@ describe('production UI primitives', () => {
     expect(capped).not.toContain('data-viewport-gutter');
     const both = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        label: 'Edit',
+        children: <>Body</>,
         viewportGutter: px(0),
         maxHeight: px(2000),
       }),
@@ -443,7 +544,8 @@ describe('production UI primitives', () => {
     );
     const preferred = asHtml(
       DialogSurface({
-        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        label: 'Edit',
+        children: <>Body</>,
         size: 'large',
         preferredWidth: px(832),
         viewportGutter: px(8),
@@ -464,13 +566,16 @@ describe('production UI primitives', () => {
         bodyInset: 'none',
         footerInset: 'compact',
         className: 'editor',
-        children: <wa-dialog label="Edit">Body</wa-dialog>,
+        label: 'Edit',
+        children: <>Body</>,
       }),
     );
     expect(dialog).toContain(
-      'class="kui-dialog-surface editor" data-component="dialog-surface" data-size="large" data-presentation="side-sheet" data-body-inset="none" data-footer-inset="compact"',
+      'class="kui-dialog-surface editor" aria-label="Edit" tabindex="-1" data-component="dialog-surface" data-size="large" data-presentation="side-sheet" data-body-inset="none" data-footer-inset="compact"',
     );
-    expect(dialog).toContain('<wa-dialog label="Edit">Body</wa-dialog>');
+    expect(dialog).toContain(
+      '<div class="kui-dialog-surface__body">Body</div>',
+    );
     const sheet = asHtml(
       DialogSurface({
         presentation: 'bottom-sheet',
@@ -480,7 +585,8 @@ describe('production UI primitives', () => {
         enterMotion: 'standard',
         exitMotion: 'standard',
         rootAttributes: { 'data-resizable': undefined, 'data-key': 'sheet' },
-        children: <wa-dialog label="Compose">Body</wa-dialog>,
+        label: 'Compose',
+        children: <>Body</>,
       }),
     );
     expect(sheet).toContain('data-key="sheet"');
@@ -495,7 +601,8 @@ describe('production UI primitives', () => {
     const fixedSheet = asHtml(
       DialogSurface({
         presentation: 'bottom-sheet',
-        children: <wa-dialog label="Compose">Body</wa-dialog>,
+        label: 'Compose',
+        children: <>Body</>,
       }),
     );
     expect(fixedSheet).not.toContain('data-resizable');
@@ -504,12 +611,11 @@ describe('production UI primitives', () => {
     const listBody = asHtml(
       DialogSurface({
         bodyInset: 'none',
+        label: 'Edit',
         children: (
-          <wa-dialog label="Edit">
-            <List>
-              <ListInsetText>Aligned dialog copy</ListInsetText>
-            </List>
-          </wa-dialog>
+          <List>
+            <ListInsetText>Aligned dialog copy</ListInsetText>
+          </List>
         ),
       }),
     );
@@ -1360,9 +1466,9 @@ describe('production UI primitives', () => {
       '<h2 id="section-title" aria-label="Section title" data-scope="details" class="kui-text title emphasis" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="transparent">Details</h2>',
     );
     // A lone className joins with one space (no gap for the absent class).
-    expect(asHtml(Text({ className: 'fallback', children: 'Body' }))).toContain(
-      'class="kui-text fallback"',
-    );
+    expect(
+      asHtml(Text({ className: 'fallback', children: <>Body</> })),
+    ).toContain('class="kui-text fallback"');
     expect(asHtml(Text({ children: <span>Body</span> }))).toBe(
       '<p class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="transparent"><span>Body</span></p>',
     );

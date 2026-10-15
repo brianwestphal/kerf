@@ -236,7 +236,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Configure recurring dialog and popup geometry without consumer ::part() overrides.",
     "uses": [
-      "wa-dialog",
+      "lucide-icon",
       "wa-dropdown",
       "wa-dropdown-item"
     ],

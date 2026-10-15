@@ -44,8 +44,9 @@ draws a frame, a focus border, and a shadow.
   reads the textarea in its send action, clears it, and re-renders.
 - **Disabled.** `disabled` disables the field; the app disables or marks busy
   its own actions.
-- **Placement.** `slot` assigns it to a web component slot, such as a
-  `wa-dialog`'s `footer`. `rootAttributes` takes safe `data-*` identity.
+- **Placement.** Pass it as a `DialogSurface`'s `footer`, or use `slot` to
+  assign it to a web component slot. `rootAttributes` takes safe `data-*`
+  identity.
 - **Enter to send.** `submitOnEnter` opts in to the keyboard contract below;
   it marks the root `data-submit-on-enter="true"` (protected from
   `rootAttributes`) and gives the field `aria-keyshortcuts="Enter"`.
@@ -98,12 +99,19 @@ with `bodyLayout="fill-last"` and `footerPresentation="floating"` (and
 composer into the footer:
 
 ```tsx
-<DialogSurface height={remify(560)} bodyInset="none" bodyLayout="fill-last" footerPresentation="floating" footerOffset={remify(8)} footerInset="none">
-  <wa-dialog id="assistant" label="Assistant">
-    <StateBanner title="Answers use the latest nightly build." tone="neutral" />
-    <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">{messages}</List>
-    <Composer submitOnEnter slot="footer" id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={send} />
-  </wa-dialog>
+<DialogSurface
+  id="assistant"
+  label="Assistant"
+  height={remify(560)}
+  bodyInset="none"
+  bodyLayout="fill-last"
+  footerPresentation="floating"
+  footerOffset={remify(8)}
+  footerInset="none"
+  footer={<Composer submitOnEnter id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={send} />}
+>
+  <StateBanner title="Answers use the latest nightly build." tone="neutral" />
+  <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">{messages}</List>
 </DialogSurface>;
 ```
 

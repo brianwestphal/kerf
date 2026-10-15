@@ -2006,10 +2006,26 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
-        { "id": "open state", "owner": "application", "required": false },
-        { "id": "focus lifecycle", "owner": "application", "required": false },
-        { "id": "dismissal policy", "owner": "application", "required": false },
-        { "id": "content", "owner": "application", "required": false },
+        {
+          "id": "open state (openDialog and closeDialog)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "whether a close request may proceed (cancel kui-request-close to keep the dialog open; the panel pulses)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "dismissal policy (lightDismiss)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "content, heading, header actions, and footer",
+          "owner": "application",
+          "required": false
+        },
         { "id": "outer placement", "owner": "application", "required": false },
         {
           "id": "whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber)",
@@ -2030,10 +2046,11 @@
       },
       "accessibility": {
         "obligations": [
-          "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",
+          "DialogSurface is a native <dialog> opened modally (showModal): it is in the top layer, the rest of the page is inert, focus stays inside, and it returns to the opener on close. Focus starts on an autofocus element, otherwise on the panel.",
+          "Name it with label (also its title text) or labelledBy (the id of a heading, such as a ToolbarText). The close button is named Close (closeLabel) and Escape asks to close; the cancelable kui-request-close event reports source close-button, escape, or backdrop.",
           "Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.",
           "A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
-          "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion falls back to Web Awesome's under prefers-reduced-motion.",
+          "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.",
           "Use popup surfaces only for real dropdown menus with named triggers."
         ]
       },
@@ -2143,6 +2160,12 @@
         "rootClass": "kui-dialog-surface",
         "publicClasses": [
           "kui-dialog-surface",
+          "kui-dialog-surface__body",
+          "kui-dialog-surface__close",
+          "kui-dialog-surface__footer",
+          "kui-dialog-surface__header",
+          "kui-dialog-surface__header-actions",
+          "kui-dialog-surface__title",
           "kui-popover-dialog-surface",
           "kui-popup-surface"
         ],

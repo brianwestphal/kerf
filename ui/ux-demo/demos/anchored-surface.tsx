@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { signal } from 'kerfjs';
@@ -53,15 +54,20 @@ export function AnchoredSurfaceDemo() {
         <button type="button" data-anchored-surface-open-modal>
           Open Dialog
         </button>
-        <wa-dialog data-anchored-surface-modal label="Field Settings">
+        <DialogSurface
+          label="Field Settings"
+          rootAttributes={{ 'data-anchored-surface-modal': '' }}
+          footer={
+            <button type="button" data-dialog-close>
+              Close Dialog
+            </button>
+          }
+        >
           <Text>Dialog content can open interactive anchored help.</Text>
           <button type="button" data-anchored-surface-trigger="modal">
             Explain in Dialog
           </button>
-          <button type="button" slot="footer" data-dialog="close">
-            Close Dialog
-          </button>
-        </wa-dialog>
+        </DialogSurface>
       </CatalogExample>
     </CatalogExampleStack>
   );

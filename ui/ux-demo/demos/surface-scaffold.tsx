@@ -278,30 +278,33 @@ export function SurfaceScaffoldDemo() {
       rootAttributes={{ 'data-demo': 'surface-scaffold' }}
     >
       <CatalogExample label="Medium Dialog" align="inline-control">
+        <wa-button
+          data-action="show-dialog"
+          data-dialog-id="catalog-medium-dialog"
+        >
+          Open Dialog
+        </wa-button>
         <DialogSurface
+          id="catalog-medium-dialog"
+          label="Edit Workspace"
           size="medium"
           presentation="modal"
           bodyInset="none"
           footerInset="comfortable"
+          footer={
+            <>
+              <wa-button data-dialog-close>Cancel</wa-button>
+              <wa-button variant="brand" data-dialog-close>
+                Save
+              </wa-button>
+            </>
+          }
         >
-          <wa-button data-action="show-wa-dialog">Open Dialog</wa-button>
-          <wa-dialog id="catalog-wa-dialog" label="Edit Workspace">
-            <List>
-              <ListInsetText>
-                Dialog content uses list-owned item geometry.
-              </ListInsetText>
-            </List>
-            <wa-button slot="footer" data-action="hide-wa-dialog">
-              Cancel
-            </wa-button>
-            <wa-button
-              slot="footer"
-              variant="brand"
-              data-action="hide-wa-dialog"
-            >
-              Save
-            </wa-button>
-          </wa-dialog>
+          <List>
+            <ListInsetText>
+              Dialog content uses list-owned item geometry.
+            </ListInsetText>
+          </List>
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
@@ -309,46 +312,39 @@ export function SurfaceScaffoldDemo() {
         note="An 832px preferred width overrides the large preset; an 8px gutter and viewport height cap keep it on phones."
         align="inline-control"
       >
+        <wa-button
+          data-action="show-dialog"
+          data-dialog-id="catalog-bounded-dialog"
+        >
+          Open Bounded Dialog
+        </wa-button>
         <DialogSurface
+          id="catalog-bounded-dialog"
+          label="Close Workspace"
           size="large"
           preferredWidth={remify(832)}
           viewportGutter={remify(8)}
           maxHeight="viewport"
           bodyInset="none"
+          footer={
+            <>
+              <wa-button data-dialog-close>Keep Working</wa-button>
+              <wa-button variant="brand" data-dialog-close>
+                Stop and Close
+              </wa-button>
+            </>
+          }
         >
-          <wa-button
-            data-action="show-wa-dialog"
-            data-dialog-id="catalog-bounded-dialog"
-          >
-            Open Bounded Dialog
-          </wa-button>
-          <wa-dialog id="catalog-bounded-dialog" label="Close Workspace">
-            <List>
-              <ListInsetText>
-                Closing this workspace stops its running tasks. Saved files
-                remain available when you reopen it.
-              </ListInsetText>
-              <ListInsetText>
-                Review your changes before stopping the workspace. Unsaved
-                terminal output will be lost.
-              </ListInsetText>
-            </List>
-            <wa-button
-              slot="footer"
-              data-action="hide-wa-dialog"
-              data-dialog-id="catalog-bounded-dialog"
-            >
-              Keep Working
-            </wa-button>
-            <wa-button
-              slot="footer"
-              variant="brand"
-              data-action="hide-wa-dialog"
-              data-dialog-id="catalog-bounded-dialog"
-            >
-              Stop and Close
-            </wa-button>
-          </wa-dialog>
+          <List>
+            <ListInsetText>
+              Closing this workspace stops its running tasks. Saved files remain
+              available when you reopen it.
+            </ListInsetText>
+            <ListInsetText>
+              Review your changes before stopping the workspace. Unsaved
+              terminal output will be lost.
+            </ListInsetText>
+          </List>
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
@@ -356,42 +352,33 @@ export function SurfaceScaffoldDemo() {
         note="A 480px preferred width and typed 360px maximum stay viewport-bounded while the footer remains outside the scrolling body."
         align="inline-control"
       >
+        <wa-button
+          data-action="show-dialog"
+          data-dialog-id="catalog-capped-dialog"
+        >
+          Open Capped Dialog
+        </wa-button>
         <DialogSurface
+          id="catalog-capped-dialog"
+          label="Review Workspace Changes"
           preferredWidth={remify(480)}
           viewportGutter={remify(8)}
           maxHeight={remify(360)}
           bodyInset="none"
+          footer={<wa-button data-dialog-close>Cancel Review</wa-button>}
         >
-          <wa-button
-            data-action="show-wa-dialog"
-            data-dialog-id="catalog-capped-dialog"
-          >
-            Open Capped Dialog
-          </wa-button>
-          <wa-dialog
-            id="catalog-capped-dialog"
-            label="Review Workspace Changes"
-          >
-            <List>
-              {[
-                'Saved files remain available.',
-                'Running tasks will stop.',
-                'Terminal sessions will close.',
-                'Unsaved output will be lost.',
-                'Background synchronization will stop.',
-                'Reopen the workspace to resume your work.',
-              ].map((copy) => (
-                <ListInsetText>{copy}</ListInsetText>
-              ))}
-            </List>
-            <wa-button
-              slot="footer"
-              data-action="hide-wa-dialog"
-              data-dialog-id="catalog-capped-dialog"
-            >
-              Cancel Review
-            </wa-button>
-          </wa-dialog>
+          <List>
+            {[
+              'Saved files remain available.',
+              'Running tasks will stop.',
+              'Terminal sessions will close.',
+              'Unsaved output will be lost.',
+              'Background synchronization will stop.',
+              'Reopen the workspace to resume your work.',
+            ].map((copy) => (
+              <ListInsetText>{copy}</ListInsetText>
+            ))}
+          </List>
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
@@ -399,22 +386,22 @@ export function SurfaceScaffoldDemo() {
         note='height gives the modal a definite, viewport-bounded size and bodyLayout="fill" hands the whole body to one SplitView.'
         align="inline-control"
       >
+        <wa-button
+          data-action="show-dialog"
+          data-dialog-id="catalog-filled-dialog"
+        >
+          Open Project Details
+        </wa-button>
         <DialogSurface
+          id="catalog-filled-dialog"
+          label="Project Details"
           size="large"
           viewportGutter={remify(8)}
           height={remify(480)}
           bodyInset="none"
           bodyLayout="fill"
         >
-          <wa-button
-            data-action="show-wa-dialog"
-            data-dialog-id="catalog-filled-dialog"
-          >
-            Open Project Details
-          </wa-button>
-          <wa-dialog id="catalog-filled-dialog" label="Project Details">
-            {projectSplit('catalog-filled-dialog-split')}
-          </wa-dialog>
+          {projectSplit('catalog-filled-dialog-split')}
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
@@ -422,7 +409,12 @@ export function SurfaceScaffoldDemo() {
         note='footerPresentation="floating" lays a Composer over the body, 8px from the panel edges so its text aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills the rest; with scrollClearance="block-end" the transcript scrolls beneath the composer and its last message still rests above it.'
         align="inline-control"
       >
+        <wa-button data-action="show-dialog" data-dialog-id={CHAT_DIALOG_ID}>
+          Open Assistant
+        </wa-button>
         <DialogSurface
+          id={CHAT_DIALOG_ID}
+          label="Assistant"
           viewportGutter={remify(8)}
           height={remify(560)}
           bodyInset="none"
@@ -430,30 +422,9 @@ export function SurfaceScaffoldDemo() {
           footerPresentation="floating"
           footerOffset={remify(8)}
           footerInset="none"
-        >
-          <wa-button
-            data-action="show-wa-dialog"
-            data-dialog-id={CHAT_DIALOG_ID}
-          >
-            Open Assistant
-          </wa-button>
-          <wa-dialog id={CHAT_DIALOG_ID} label="Assistant">
-            <StateBanner
-              title="Answers use the latest nightly build."
-              tone="neutral"
-            />
-            <List
-              gap="xs"
-              controlInsets="tb"
-              scrollable
-              scrollClearance="block-end"
-              rootAttributes={{ 'data-demo-chat-transcript': '' }}
-            >
-              {chatBubbles(transcripts[CHAT_DIALOG_ID].value)}
-            </List>
+          footer={
             <Composer
               submitOnEnter
-              slot="footer"
               id="catalog-chat-message"
               name="catalog-chat-message"
               label="Message"
@@ -467,7 +438,21 @@ export function SurfaceScaffoldDemo() {
                 </wa-button>
               }
             />
-          </wa-dialog>
+          }
+        >
+          <StateBanner
+            title="Answers use the latest nightly build."
+            tone="neutral"
+          />
+          <List
+            gap="xs"
+            controlInsets="tb"
+            scrollable
+            scrollClearance="block-end"
+            rootAttributes={{ 'data-demo-chat-transcript': '' }}
+          >
+            {chatBubbles(transcripts[CHAT_DIALOG_ID].value)}
+          </List>
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
@@ -475,7 +460,19 @@ export function SurfaceScaffoldDemo() {
         note='headerPresentation="floating" lays the title bar over the body on the translucent chrome material. With bodyLayout="fill" and scrollClearance="both", the transcript scrolls visibly beneath both the title bar and the floating composer, while its first and last messages rest clear of them.'
         align="inline-control"
       >
+        <wa-button data-action="show-dialog" data-dialog-id={THREAD_DIALOG_ID}>
+          Open Release Thread
+        </wa-button>
         <DialogSurface
+          id={THREAD_DIALOG_ID}
+          label="Release Thread"
+          heading={
+            <ToolbarText
+              text="Release Thread"
+              size="xlarge"
+              description="Engineering · 5.2 candidate"
+            />
+          }
           viewportGutter={remify(8)}
           height={remify(560)}
           bodyInset="none"
@@ -484,32 +481,9 @@ export function SurfaceScaffoldDemo() {
           footerPresentation="floating"
           footerOffset={remify(8)}
           footerInset="none"
-        >
-          <wa-button
-            data-action="show-wa-dialog"
-            data-dialog-id={THREAD_DIALOG_ID}
-          >
-            Open Release Thread
-          </wa-button>
-          <wa-dialog id={THREAD_DIALOG_ID} label="Release Thread">
-            <ToolbarText
-              slot="label"
-              text="Release Thread"
-              size="xlarge"
-              description="Engineering · 5.2 candidate"
-            />
-            <List
-              gap="xs"
-              controlInsets="tb"
-              scrollable
-              scrollClearance="both"
-              rootAttributes={{ 'data-demo-chat-transcript': '' }}
-            >
-              {chatBubbles(transcripts[THREAD_DIALOG_ID].value)}
-            </List>
+          footer={
             <Composer
               submitOnEnter
-              slot="footer"
               id="catalog-thread-message"
               name="catalog-thread-message"
               label="Message"
@@ -523,7 +497,17 @@ export function SurfaceScaffoldDemo() {
                 </wa-button>
               }
             />
-          </wa-dialog>
+          }
+        >
+          <List
+            gap="xs"
+            controlInsets="tb"
+            scrollable
+            scrollClearance="both"
+            rootAttributes={{ 'data-demo-chat-transcript': '' }}
+          >
+            {chatBubbles(transcripts[THREAD_DIALOG_ID].value)}
+          </List>
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
@@ -531,35 +515,33 @@ export function SurfaceScaffoldDemo() {
         note='presentation="bottom-sheet" attaches the dialog to the bottom edge with square bottom corners and clears the safe area and the virtual keyboard. Without a height it opens at its content height. resizable adds a grabber that resizes it between minHeight and the viewport (drag, or the arrow keys); it slides in and out unless motion is reduced.'
         align="inline-control"
       >
+        <wa-button data-action="show-dialog" data-dialog-id={SHEET_DIALOG_ID}>
+          Open New Message
+        </wa-button>
         <DialogSurface
+          id={SHEET_DIALOG_ID}
+          label="New Message"
+          lightDismiss
           presentation="bottom-sheet"
           minHeight={remify(200)}
           resizable
           bodyInset="none"
         >
-          <wa-button
-            data-action="show-wa-dialog"
-            data-dialog-id={SHEET_DIALOG_ID}
-          >
-            Open New Message
-          </wa-button>
-          <wa-dialog id={SHEET_DIALOG_ID} label="New Message" light-dismiss>
-            <List>
-              <ListInsetControl>
-                <wa-input label="To" name="catalog-sheet-to" />
-              </ListInsetControl>
-              <ListInsetControl>
-                <wa-input label="Subject" name="catalog-sheet-subject" />
-              </ListInsetControl>
-              <ListInsetControl>
-                <wa-textarea
-                  label="Message"
-                  name="catalog-sheet-message"
-                  rows={4}
-                />
-              </ListInsetControl>
-            </List>
-          </wa-dialog>
+          <List>
+            <ListInsetControl>
+              <wa-input label="To" name="catalog-sheet-to" />
+            </ListInsetControl>
+            <ListInsetControl>
+              <wa-input label="Subject" name="catalog-sheet-subject" />
+            </ListInsetControl>
+            <ListInsetControl>
+              <wa-textarea
+                label="Message"
+                name="catalog-sheet-message"
+                rows={4}
+              />
+            </ListInsetControl>
+          </List>
         </DialogSurface>
       </CatalogExample>
       <CatalogExample

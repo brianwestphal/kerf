@@ -657,31 +657,75 @@ CollapsiblePanelToggle({
   action: 'toggle',
   slot: 'named',
 });
-UI.DialogSurface({ children: slottedContent, slot: 'named' });
+UI.DialogSurface({ label: 'Edit', children: slottedContent, slot: 'named' });
 UI.DialogSurface({
+  label: 'Edit',
   children: slottedContent,
   viewportGutter: px(8),
   maxHeight: 'viewport',
 });
-UI.DialogSurface({ children: slottedContent, maxHeight: px(360) });
 UI.DialogSurface({
+  label: 'Edit',
+  children: slottedContent,
+  maxHeight: px(360),
+});
+UI.DialogSurface({
+  label: 'Edit',
   children: slottedContent,
   size: 'large',
   preferredWidth: px(832),
 });
-// @ts-expect-error Modal preferred widths use branded lengths, not raw CSS strings.
-UI.DialogSurface({ children: slottedContent, preferredWidth: '832px' });
-// @ts-expect-error Flex shorthands cannot configure a modal preferred width.
-UI.DialogSurface({ children: slottedContent, preferredWidth: flex(1) });
-// @ts-expect-error Modal gutters use branded lengths, not raw CSS strings.
-UI.DialogSurface({ children: slottedContent, viewportGutter: '8px' });
 UI.DialogSurface({
+  label: 'Edit',
+  children: slottedContent,
+  // @ts-expect-error Modal preferred widths use branded lengths, not raw CSS strings.
+  preferredWidth: '832px',
+});
+UI.DialogSurface({
+  label: 'Edit',
+  children: slottedContent,
+  // @ts-expect-error Flex shorthands cannot configure a modal preferred width.
+  preferredWidth: flex(1),
+});
+UI.DialogSurface({
+  label: 'Edit',
+  children: slottedContent,
+  // @ts-expect-error Modal gutters use branded lengths, not raw CSS strings.
+  viewportGutter: '8px',
+});
+UI.DialogSurface({
+  label: 'Edit',
   children: slottedContent,
   // @ts-expect-error Modal caps use branded lengths or the viewport policy.
   maxHeight: 'calc(100dvh - 16px)',
 });
-// @ts-expect-error Flex shorthands cannot configure a modal dimension.
-UI.DialogSurface({ children: slottedContent, maxHeight: flex(1) });
+UI.DialogSurface({
+  label: 'Edit',
+  children: slottedContent,
+  // @ts-expect-error Flex shorthands cannot configure a modal dimension.
+  maxHeight: flex(1),
+});
+// @ts-expect-error A DialogSurface needs an accessible name.
+UI.DialogSurface({ children: slottedContent });
+UI.DialogSurface({
+  labelledBy: 'thread-title',
+  heading: slottedContent,
+  headerActions: slottedContent,
+  footer: slottedContent,
+  lightDismiss: true,
+  children: slottedContent,
+});
+// @ts-expect-error A dialog is named by label or labelledBy, not both.
+UI.DialogSurface({
+  label: 'Edit',
+  labelledBy: 'title',
+  children: slottedContent,
+});
+declare const consumerDialog: HTMLDialogElement;
+UI.openDialog(consumerDialog);
+UI.closeDialog(consumerDialog);
+const requestCloseSource: UI.DialogRequestCloseDetail['source'] = 'backdrop';
+void requestCloseSource;
 UI.DisclosureArrow({ open: false, slot: 'named' });
 UI.EmptyState({ title: 'Empty', slot: 'named' });
 UI.FloatingToolbar({ children: slottedContent, label: 'Tools', slot: 'named' });

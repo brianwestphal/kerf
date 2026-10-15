@@ -487,6 +487,27 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('components/option/option.js');
   });
 
+  it('keeps DialogSurface free of Web Awesome, with or without its register', async () => {
+    const pure = await bundle(
+      "import { DialogSurface } from '@kerfjs/ui/surface-scaffold'; console.log(String(DialogSurface({ label: 'Edit', children: '' })));",
+    );
+    const pureInputs = Object.keys(pure.metafile!.inputs).join('\n');
+    expect(pureInputs).not.toContain('@awesome.me/webawesome');
+    // Rendering alone ships no controller; opening a dialog does.
+    expect(output(pure, '.js')).not.toContain('kui-request-close');
+    const opened = await bundle(
+      "import { openDialog } from '@kerfjs/ui/surface-scaffold'; openDialog(document.querySelector('dialog'));",
+    );
+    expect(output(opened, '.js')).toContain('kui-request-close');
+    const registered = await bundle(
+      "import '@kerfjs/ui/surface-scaffold/register';",
+    );
+    expect(output(registered, '.js')).toContain('kui-request-close');
+    expect(Object.keys(registered.metafile!.inputs).join('\n')).not.toContain(
+      '@awesome.me/webawesome',
+    );
+  });
+
   it('keeps toolbar help tags behind their own registration subpath', async () => {
     const toolbar = await bundle(
       "import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group'; console.log(String(ToolbarControlGroup({ children: '' })));",

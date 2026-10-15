@@ -2112,21 +2112,23 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Typed Web Awesome dialog preferred widths and viewport bounds, presentation, and popup inset composition.",
+      "description": "A native modal dialog (DialogSurface) with Kerf's header, body, and footer chrome, typed preferred widths, viewport bounds, and presentations, plus a non-modal popover dialog and popup inset composition.",
       "uses": [
-        "wa-dialog",
+        "lucide-icon",
         "wa-dropdown",
         "wa-dropdown-item"
       ],
       "purpose": "Configure recurring dialog and popup geometry without consumer ::part() overrides.",
       "publicExports": [
         "DialogSurface",
+        "openDialog",
+        "closeDialog",
         "PopoverDialogSurface",
         "PopupSurface",
         "wireOverlaySheets"
       ],
       "useWhen": [
-        "A Web Awesome dialog or dropdown needs a standard size, presentation, body/footer inset, or list-compatible menu inset.",
+        "A modal task needs a dialog: render a DialogSurface with a label (or labelledBy plus a heading), its body as children, and its buttons as footer, then open it with openDialog() and close it with closeDialog(), the close button, or any element with data-dialog-close. A raw Web Awesome dropdown that needs a list-compatible menu inset uses PopupSurface.",
         "A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText.",
         "A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.",
         "A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout=\"fill\".",
@@ -2135,16 +2137,16 @@
         "A dialog's title bar should float over the body on the translucent chrome material so a transcript scrolls visibly beneath both the title bar and a floating composer (headerPresentation=\"floating\" with bodyLayout=\"fill\" and a List or Pane that opts into scrollClearance=\"both\")."
       ],
       "avoidWhen": [
-        "Do not use it as a generic layout wrapper or to replace application-owned modal state and focus lifecycle.",
+        "Do not use it as a generic layout wrapper, and do not toggle the dialog's open attribute (that opens it non-modally); open and close it with openDialog() and closeDialog().",
         "Do not stack a dialog body inset around children that already own List or content-item geometry; use bodyInset none.",
-        "Do not put quiet secondary text of your own in a floating dialog header; it can fall below AA over the content passing beneath. A ToolbarText slotted as the dialog's label (or into header-actions) is fine: its title takes the normal text color and its description lifts halfway toward it, keeping AA."
+        "Do not put quiet secondary text of your own in a floating dialog header; it can fall below AA over the content passing beneath. A ToolbarText as the dialog's heading (or in headerActions) is fine: its title takes the normal text color and its description lifts halfway toward it, keeping AA."
       ],
       "alternatives": [],
       "appOwns": [
-        "open state",
-        "focus lifecycle",
-        "dismissal policy",
-        "content",
+        "open state (openDialog and closeDialog)",
+        "whether a close request may proceed (cancel kui-request-close to keep the dialog open; the panel pulses)",
+        "dismissal policy (lightDismiss)",
+        "content, heading, header actions, and footer",
         "outer placement",
         "whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber)"
       ],
@@ -2165,13 +2167,16 @@
         "none, compact, or comfortable body and footer inset",
         "standard, compact, or zero-inset popup menu",
         "core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css",
-        "resizable core kerfjs/overlay bottom sheet: the kui-overlay-sheet-resizable class plus wireOverlaySheets adds the resizable DialogSurface sheet grabber"
+        "resizable core kerfjs/overlay bottom sheet: the kui-overlay-sheet-resizable class plus wireOverlaySheets adds the resizable DialogSurface sheet grabber",
+        "header with label text or heading content, headerActions, a close button, and an optional footer; withoutHeader for content that owns its heading and close control",
+        "light dismiss (a backdrop press closes; otherwise the panel pulses)"
       ],
       "accessibility": [
-        "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",
+        "DialogSurface is a native <dialog> opened modally (showModal): it is in the top layer, the rest of the page is inert, focus stays inside, and it returns to the opener on close. Focus starts on an autofocus element, otherwise on the panel.",
+        "Name it with label (also its title text) or labelledBy (the id of a heading, such as a ToolbarText). The close button is named Close (closeLabel) and Escape asks to close; the cancelable kui-request-close event reports source close-button, escape, or backdrop.",
         "Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.",
         "A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
-        "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion falls back to Web Awesome's under prefers-reduced-motion.",
+        "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.",
         "Use popup surfaces only for real dropdown menus with named triggers."
       ],
       "geometry": {
@@ -2185,7 +2190,7 @@
         "registrationImport": "@kerfjs/ui/surface-scaffold/register",
         "sideEffects": [
           "browser-condition-css",
-          "custom-element-registration"
+          "document-listeners"
         ]
       },
       "wiring": [
@@ -2198,6 +2203,12 @@
       ],
       "publicClasses": [
         "kui-dialog-surface",
+        "kui-dialog-surface__body",
+        "kui-dialog-surface__close",
+        "kui-dialog-surface__footer",
+        "kui-dialog-surface__header",
+        "kui-dialog-surface__header-actions",
+        "kui-dialog-surface__title",
         "kui-popover-dialog-surface",
         "kui-popup-surface"
       ],

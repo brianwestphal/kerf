@@ -1,13 +1,26 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
-test('registered dialog names survive slotted labels, header changes and repeated opens', async ({
+// The label names the native dialog and titles its header; a native name
+// change, Escape, and reopening keep one correctly named dialog. (Web
+// Awesome's slotted-label and without-header name repair has no equivalent:
+// the DialogSurface renders its own header and names itself.)
+test('dialog names follow the label, a native name change, and repeated opens', async ({
   page,
 }) => {
   await page.goto('/?component=surface-scaffold');
   const dialog = page.locator('#catalog-bounded-dialog');
-  await page.getByRole('button', { name: 'Open Bounded Dialog' }).click();
+  const open = page.getByRole('button', { name: 'Open Bounded Dialog' });
+  await open.click();
+  const named = page.getByRole('dialog', {
+    name: 'Close Workspace',
+    exact: true,
+  });
+  await expect(named).toBeVisible();
   await expect(
-    page.getByRole('dialog', { name: 'Close Workspace', exact: true }),
+    dialog.getByRole('heading', { name: 'Close Workspace', exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole('button', { name: 'Close', exact: true }),
   ).toBeVisible();
   for (const name of [
     'First explicit workspace',
@@ -19,46 +32,13 @@ test('registered dialog names survive slotted labels, header changes and repeate
     );
     await expect(page.getByRole('dialog', { name, exact: true })).toBeVisible();
   }
-  await dialog.evaluate((element) => element.removeAttribute('aria-label'));
-  await expect(
-    page.getByRole('dialog', { name: 'Close Workspace', exact: true }),
-  ).toBeVisible();
-  await dialog.evaluate((element) => {
-    const title = document.createElement('span');
-    title.slot = 'label';
-    title.textContent = 'Review running tasks';
-    element.append(title);
-  });
-  await expect(
-    page.getByRole('dialog', { name: 'Review running tasks', exact: true }),
-  ).toBeVisible();
-  await dialog
-    .locator('[slot="label"]')
-    .evaluate((element) => (element.textContent = 'Review stopped tasks'));
-  await expect(
-    page.getByRole('dialog', { name: 'Review stopped tasks', exact: true }),
-  ).toBeVisible();
-  await dialog.evaluate((element) => {
-    element.setAttribute('without-header', '');
-    element.setAttribute('label', 'Headerless workspace');
-  });
-  await expect(
-    page.getByRole('dialog', { name: 'Headerless workspace', exact: true }),
-  ).toBeVisible();
+  await dialog.evaluate((element) =>
+    element.setAttribute('aria-label', 'Close Workspace'),
+  );
   await page.keyboard.press('Escape');
   await expect(dialog).not.toHaveAttribute('open', '');
-  await page.getByRole('button', { name: 'Open Bounded Dialog' }).click();
-  await expect(
-    page.getByRole('dialog', { name: 'Headerless workspace', exact: true }),
-  ).toBeVisible();
-  await dialog.evaluate((element) => {
-    element.removeAttribute('without-header');
-    element.querySelector('[slot="label"]')!.remove();
-    element.setAttribute('label', 'Restored workspace');
-  });
-  await expect(
-    page.getByRole('dialog', { name: 'Restored workspace', exact: true }),
-  ).toBeVisible();
+  await open.click();
+  await expect(named).toHaveCount(1);
   await page.keyboard.press('Escape');
   await expect(dialog).not.toHaveAttribute('open', '');
 });
@@ -77,9 +57,7 @@ test('modal viewport bounds retain actions and native focus across resize and re
   await expect
     .poll(() =>
       dialog.evaluate((element) =>
-        element
-          .shadowRoot!.querySelector('[part~="dialog"]')!
-          .classList.contains('show'),
+        element.hasAttribute('data-kui-dialog-motion'),
       ),
     )
     .toBe(false);
@@ -94,17 +72,12 @@ test('modal viewport bounds retain actions and native focus across resize and re
     await expect(dialog).toHaveAttribute('open', '');
     await expect
       .poll(() =>
-        dialog.evaluate(
-          (element) =>
-            element
-              .shadowRoot!.querySelector('[part~="dialog"]')!
-              .getBoundingClientRect().width,
-        ),
+        dialog.evaluate((element) => element.getBoundingClientRect().width),
       )
       .toBeCloseTo(Math.min(832, viewport.width - 16), 0);
     const geometry = await dialog.evaluate((element) => {
-      const panel = element.shadowRoot!.querySelector('[part~="dialog"]')!;
-      const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+      const panel = element;
+      const body = element.querySelector('.kui-dialog-surface__body')!;
       const rect = panel.getBoundingClientRect();
       return {
         left: rect.left,
@@ -164,19 +137,19 @@ test('typed modal cap keeps its footer reachable when the body scrolls', async (
   await page.getByRole('button', { name: 'Open Capped Dialog' }).click();
   const dialog = page.locator('#catalog-capped-dialog');
   await expect(dialog).toHaveAttribute('open', '');
-  await expect(dialog.getByRole('dialog')).toBeVisible();
+  await expect(
+    page.getByRole('dialog', { name: 'Review Workspace Changes' }),
+  ).toBeVisible();
   await expect
     .poll(() =>
       dialog.evaluate((element) =>
-        element
-          .shadowRoot!.querySelector('[part~="dialog"]')!
-          .classList.contains('show'),
+        element.hasAttribute('data-kui-dialog-motion'),
       ),
     )
     .toBe(false);
   const geometry = await dialog.evaluate((element) => {
-    const panel = element.shadowRoot!.querySelector('[part~="dialog"]')!;
-    const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+    const panel = element;
+    const body = element.querySelector('.kui-dialog-surface__body')!;
     return {
       height: panel.getBoundingClientRect().height,
       maxHeight: window.getComputedStyle(panel).maxHeight,
@@ -189,12 +162,7 @@ test('typed modal cap keeps its footer reachable when the body scrolls', async (
   await page.setViewportSize({ width: 390, height: 240 });
   await expect
     .poll(() =>
-      dialog.evaluate(
-        (element) =>
-          window.getComputedStyle(
-            element.shadowRoot!.querySelector('[part~="dialog"]')!,
-          ).maxHeight,
-      ),
+      dialog.evaluate((element) => window.getComputedStyle(element).maxHeight),
     )
     .toBe('224px');
   await expect(
@@ -219,16 +187,12 @@ test('preferred modal widths override presets without changing side-sheet or ful
   const panelWidth = (selector: string) =>
     page
       .locator(selector)
-      .evaluate(
-        (element) =>
-          element
-            .shadowRoot!.querySelector('[part~="dialog"]')!
-            .getBoundingClientRect().width,
-      );
+      .evaluate((element) => element.getBoundingClientRect().width);
   await expect
     .poll(() => panelWidth('#catalog-bounded-dialog'))
     .toBeCloseTo(832, 0);
-  const surface = bounded.locator('xpath=..');
+  // The dialog is the surface: its configuration attributes are its own.
+  const surface = bounded;
   await surface.evaluate((element) =>
     element.removeAttribute('data-viewport-gutter'),
   );
@@ -259,11 +223,10 @@ test('preferred modal widths override presets without changing side-sheet or ful
     .toBeCloseTo(480, 0);
 });
 
-/** Whether a wa-dialog's panel has no running (show) animation. */
+/** Whether a DialogSurface's panel has no running (show) animation. */
 function panelSettled(dialog: Locator) {
   return dialog.evaluate((element) =>
     element
-      .shadowRoot!.querySelector('[part~="dialog"]')!
       .getAnimations()
       .every((animation) => animation.playState === 'finished'),
   );
@@ -278,16 +241,15 @@ test('applies typed dialog and popup surface geometry', async ({
   await expect(demo).toBeVisible();
 
   await demo.getByRole('button', { name: 'Open Dialog' }).click();
-  const dialog = page.locator('#catalog-wa-dialog');
+  const dialog = page.locator('#catalog-medium-dialog');
   await expect(dialog).toHaveAttribute('open', '');
   // The panel scales in; a panel measured mid-animation reads a pixel off
   // (KF-46M124: panelLeft 21 instead of 20 under a loaded full run).
   await expect.poll(() => panelSettled(dialog)).toBe(true);
   const dialogGeometry = await dialog.evaluate((element) => {
-    const root = element.shadowRoot!;
-    const panel = root.querySelector('[part~="dialog"]')!;
-    const body = root.querySelector('[part~="body"]')!;
-    const footer = root.querySelector('[part~="footer"]')!;
+    const panel = element;
+    const body = element.querySelector('.kui-dialog-surface__body')!;
+    const footer = element.querySelector('.kui-dialog-surface__footer')!;
     return {
       width: Math.round(panel.getBoundingClientRect().width),
       bodyPadding: window.getComputedStyle(body).padding,
@@ -323,15 +285,13 @@ test('applies typed dialog and popup surface geometry', async ({
       range.selectNodeContents(node);
       return range.getBoundingClientRect().left;
     };
-    const title = element.shadowRoot!.querySelector('[part~="title"]')!;
+    const title = element.querySelector('.kui-dialog-surface__title')!;
     const body = element.querySelector('[data-component="list-inset-text"]')!;
     return { title: textLeft(title), body: textLeft(body) };
   });
   expect(Math.abs(labelAlignment.title - labelAlignment.body)).toBeLessThan(1);
   const wideClip = await dialog.evaluate((element) => {
-    const rect = element
-      .shadowRoot!.querySelector('[part~="dialog"]')!
-      .getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
     const inset = 16;
     return {
       x: Math.max(0, rect.left - inset),
@@ -350,16 +310,12 @@ test('applies typed dialog and popup surface geometry', async ({
   await expect
     .poll(() =>
       dialog.evaluate((element) =>
-        Math.round(
-          element
-            .shadowRoot!.querySelector('[part~="dialog"]')!
-            .getBoundingClientRect().left,
-        ),
+        Math.round(element.getBoundingClientRect().left),
       ),
     )
     .toBe(20);
   const narrowGeometry = await dialog.evaluate((element) => {
-    const panel = element.shadowRoot!.querySelector('[part~="dialog"]')!;
+    const panel = element;
     const text = element.querySelector('[data-component="list-inset-text"]')!;
     const panelRect = panel.getBoundingClientRect();
     const textRect = text.getBoundingClientRect();
@@ -380,9 +336,7 @@ test('applies typed dialog and popup surface geometry', async ({
     narrowGeometry.viewportWidth,
   );
   const narrowClip = await dialog.evaluate((element) => {
-    const rect = element
-      .shadowRoot!.querySelector('[part~="dialog"]')!
-      .getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
     const inset = 16;
     return {
       x: Math.max(0, rect.left - inset),
@@ -419,8 +373,8 @@ test('a definite-height DialogSurface hands its whole body to one filling child'
   await expect
     .poll(() =>
       dialog.evaluate((element) => {
-        const part = element.shadowRoot!.querySelector('[part~="dialog"]')!;
-        const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+        const part = element;
+        const body = element.querySelector('.kui-dialog-surface__body')!;
         const split = element.querySelector('[data-component="split-view"]')!;
         return {
           dialog: Math.round(part.getBoundingClientRect().height),
@@ -431,7 +385,7 @@ test('a definite-height DialogSurface hands its whole body to one filling child'
     )
     .toMatchObject({ dialog: 480 });
   const sizes = await dialog.evaluate((element) => {
-    const body = element.shadowRoot!.querySelector('[part~="body"]')!;
+    const body = element.querySelector('.kui-dialog-surface__body')!;
     const split = element.querySelector('[data-component="split-view"]')!;
     return [
       Math.round(body.getBoundingClientRect().height),
@@ -532,31 +486,28 @@ test('an embedded PopoverDialogSurface renders the same surface in flow', async 
   });
 });
 
-// A wa-dialog host that is itself an explicit, named dialog owns that name:
-// DialogSurface no longer names the native panel too, so one dialog carries
-// the name (a role query is not ambiguous) and the slotted content stays in it.
-test('a host with an explicit dialog role is the only dialog with its name', async ({
+// The DialogSurface is itself the one native dialog: a heading composed in
+// place of the label text leaves its label as the only name, so a role query
+// is not ambiguous and the content stays inside it.
+test('a dialog with a composed heading is the only dialog with its name', async ({
   page,
 }) => {
   await page.goto('/?component=surface-scaffold');
-  const dialog = page.locator('#catalog-bounded-dialog');
-  await dialog.evaluate((element) => {
-    element.setAttribute('role', 'dialog');
-    element.setAttribute('aria-label', 'Not working');
+  await page.getByRole('button', { name: 'Open Release Thread' }).click();
+  const named = page.getByRole('dialog', {
+    name: 'Release Thread',
+    exact: true,
   });
-  await page.getByRole('button', { name: 'Open Bounded Dialog' }).click();
-  const named = page.getByRole('dialog', { name: 'Not working', exact: true });
   await expect(named).toHaveCount(1);
+  await expect(named).toHaveAttribute('id', 'catalog-thread-dialog');
   expect(
-    await dialog.evaluate((element) => {
-      const panel = element.shadowRoot!.querySelector('dialog')!;
-      return [
-        panel.open,
-        panel.getAttribute('aria-label'),
-        panel.getAttribute('aria-labelledby'),
-      ];
-    }),
-  ).toEqual([true, null, null]);
+    await named.evaluate((element) => [
+      element.localName,
+      element.matches(':modal'),
+      element.querySelectorAll('dialog, [role="dialog"]').length,
+      Boolean(element.querySelector('[data-demo-chat-transcript]')),
+    ]),
+  ).toEqual(['dialog', true, 0, true]);
   await page.keyboard.press('Escape');
 });
 
@@ -570,22 +521,19 @@ test('the default dialog close control is a toolbar-sized circle', async ({
   await page.goto('/?component=surface-scaffold');
   const demo = page.locator('[data-demo="surface-scaffold"]');
   await demo.getByRole('button', { name: 'Open Dialog' }).click();
-  const dialog = page.locator('#catalog-wa-dialog');
+  const dialog = page.locator('#catalog-medium-dialog');
   await expect(dialog).toHaveAttribute('open', '');
-  const close = dialog.locator('[part~="close-button"]');
+  const close = dialog.locator('.kui-dialog-surface__close');
+  await expect(close).toHaveAccessibleName('Close');
   const geometry = () =>
-    dialog.evaluate((element) => {
-      const button = element.shadowRoot!.querySelector(
-        '[part~="close-button"]',
-      )!;
-      const base = button.shadowRoot!.querySelector('[part~="base"]')!;
-      const box = base.getBoundingClientRect();
-      const style = window.getComputedStyle(base);
+    close.evaluate((button) => {
+      const box = button.getBoundingClientRect();
+      const style = window.getComputedStyle(button);
       return {
         width: box.width,
         height: box.height,
         radius: style.borderTopLeftRadius,
-        border: style.borderTopColor,
+        border: style.borderTopWidth,
         background: style.backgroundColor,
       };
     });
@@ -595,7 +543,9 @@ test('the default dialog close control is a toolbar-sized circle', async ({
   expect(rest.width).toBeCloseTo(40, 0);
   expect(rest.height).toBeCloseTo(40, 0);
   expect(rest.radius).toBe('50%');
-  expect(rest.border).toBe('rgba(0, 0, 0, 0)');
+  // No border (a native button with none, where Web Awesome's base kept a
+  // transparent one).
+  expect(rest.border).toBe('0px');
   const hoverFill = await page.evaluate(() => {
     const probe = document.createElement('div');
     probe.style.backgroundColor = 'var(--kui-color-neutral-fill-normal)';
@@ -612,7 +562,6 @@ test('the default dialog close control is a toolbar-sized circle', async ({
 /** The chat dialog example's panel, body, footer and transcript boxes. */
 async function chatGeometry(page: Page) {
   return page.locator('#catalog-chat-dialog').evaluate((element) => {
-    const shadow = element.shadowRoot!;
     const rect = (node: Element) => {
       const box = node.getBoundingClientRect();
       return {
@@ -623,9 +572,9 @@ async function chatGeometry(page: Page) {
         height: box.height,
       };
     };
-    const panel = shadow.querySelector('[part~="dialog"]')!;
-    const body = shadow.querySelector('[part~="body"]')!;
-    const footer = shadow.querySelector('[part~="footer"]')!;
+    const panel = element;
+    const body = element.querySelector('.kui-dialog-surface__body')!;
+    const footer = element.querySelector('.kui-dialog-surface__footer')!;
     const banner = element.querySelector('[data-component="state-banner"]')!;
     const transcript = element.querySelector<HTMLElement>(
       '[data-demo-chat-transcript]',
@@ -687,7 +636,7 @@ function lastMessageClearance({
 async function messagesBeneathFooter(page: Page) {
   return page.locator('#catalog-chat-dialog').evaluate((element) => {
     const footer = element
-      .shadowRoot!.querySelector('[part~="footer"]')!
+      .querySelector('.kui-dialog-surface__footer')!
       .getBoundingClientRect();
     const transcript = element
       .querySelector('[data-demo-chat-transcript]')!
@@ -806,9 +755,7 @@ test('a floating footer lies inset over the body while a fill-last transcript sc
   await page
     .locator('#catalog-chat-dialog')
     .evaluate((element) =>
-      element.parentElement!.style.removeProperty(
-        '--_kui-dialog-surface-footer-offset',
-      ),
+      element.style.removeProperty('--_kui-dialog-surface-footer-offset'),
     );
   await expect
     .poll(async () => footerOffsets(await chatGeometry(page)))
@@ -921,32 +868,25 @@ test('the dialog corner is concentric with a toolbar group at the body inset', a
   await page.goto('/?component=surface-scaffold');
   const demo = page.locator('[data-demo="surface-scaffold"]');
   await demo.getByRole('button', { name: 'Open Dialog' }).click();
-  const dialog = page.locator('#catalog-wa-dialog');
+  const dialog = page.locator('#catalog-medium-dialog');
   await expect(dialog).toHaveAttribute('open', '');
   const radius = () =>
     dialog.evaluate(
-      (element) =>
-        window.getComputedStyle(element.shadowRoot!.querySelector('dialog')!)
-          .borderTopLeftRadius,
+      (element) => window.getComputedStyle(element).borderTopLeftRadius,
     );
   const setInset = (inset: string | null) =>
     dialog.evaluate((element, value) => {
-      const surface = element.closest('.kui-dialog-surface')!;
-      if (value === null) surface.removeAttribute('data-body-inset');
-      else surface.setAttribute('data-body-inset', value);
+      if (value === null) element.removeAttribute('data-body-inset');
+      else element.setAttribute('data-body-inset', value);
     }, inset);
   expect(await radius()).toBe('30px');
   await setInset('compact');
   expect(await radius()).toBe('30px');
   await setInset('comfortable');
   expect(await radius()).toBe('38px');
-  // A bare wa-dialog outside DialogSurface takes the compact default.
+  // No body inset keeps the compact default. (There is no bare wa-dialog
+  // case any more: the DialogSurface is the dialog.)
   await setInset('none');
-  await dialog.evaluate((element) => {
-    element
-      .closest('.kui-dialog-surface')!
-      .classList.remove('kui-dialog-surface');
-  });
   expect(await radius()).toBe('30px');
   await page.keyboard.press('Escape');
 });

@@ -402,14 +402,7 @@
   > .kui-pane__header
   .kui-toolbar-control-group:not([data-tone="dark"], [data-scrim="true"]),
 .kui-dialog-surface[data-header-presentation="floating"]
-  > wa-dialog
-  > .kui-toolbar-control-group[slot="header-actions"]:not(
-    [data-tone="dark"],
-    [data-scrim="true"]
-  ),
-.kui-dialog-surface[data-header-presentation="floating"]
-  > wa-dialog
-  > [slot="header-actions"]
+  > .kui-dialog-surface__header
   .kui-toolbar-control-group:not([data-tone="dark"], [data-scrim="true"]),
 .kui-nav-stack[data-chrome-presentation="overlay"]
   > .kui-nav-stack__chrome

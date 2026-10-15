@@ -718,7 +718,7 @@ panel behind it. The same rule and fallbacks apply.
   controls take `--kui-color-text` there. An overlay `TabNavigator` bar's
   unselected labels lift halfway toward `--kui-color-text`, and its selected
   label mixes 40% of it into the brand color: the plain brand color measured
-  about 3.2:1 (light) over the worst case. `wa-dialog`'s own close button is an
+  about 3.2:1 (light) over the worst case. A `DialogSurface`'s close button is an
   icon, held to the 3:1 non-text bar, and measures about 3.8:1 (light) and
   4.1:1 (dark) over the raised material. Any other quiet copy you place in
   overlay chrome yourself has no such lift; keep it in the content.

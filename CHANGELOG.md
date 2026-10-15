@@ -43,6 +43,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - `input` and `change` still bubble from the root, and the root's `value` is the chosen value (an array with `multiple`). `wa-show`, `wa-hide`, `wa-after-show`, and `wa-after-hide` are gone; the select-all and clear actions report a `change` only.
   - The `kui-select--label-hidden` class is gone: an `ariaLabel`-only Select now names its trigger with `aria-label` and renders no label element.
   - The register no longer registers `wa-select`, `wa-option`, or `wa-divider` (it still registers `wa-tooltip` for help tags). Import those Web Awesome modules yourself where you render them raw.
+- **Breaking (`@kerfjs/ui`, 5.0 beta): `DialogSurface` is the dialog itself, a native `<dialog>`, instead of a wrapper around a `wa-dialog` you write.** It renders Kerf's header (title, header actions, and a close button), the body, and an optional footer from props, keeps every size, presentation, inset, height, and floating header or footer prop, and looks the same. Open it with `openDialog(dialog)` and close it with `closeDialog(dialog)`, both from `@kerfjs/ui/surface-scaffold`: it opens modally in the top layer with the page inert and focus on an `autofocus` element or the panel, scales and fades in and out, and returns focus to its opener. The close button, any element inside with `data-dialog-close`, Escape, and (with `lightDismiss`) a press on the backdrop dispatch a cancelable `kui-request-close` (`detail.source`: `close-button`, `escape`, or `backdrop`); cancel it to keep the dialog open, and the panel pulses. The native `close` event fires once it has closed. While open, it measures a floating header or footer, follows a bottom sheet's keyboard and grabber, and keeps that state across application re-renders. It renders the host `kerfjs/overlay` uses for popovers and tooltips opened inside it. The four Web Awesome dialog patches are gone, and `surface-scaffold/register` no longer registers `wa-dialog`. Migration (`KF-JR9YFX`):
+
+  | Before (`wa-dialog` inside `DialogSurface`)                   | Now (`DialogSurface` props)                                                                  |
+  | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+  | `<wa-dialog label="Edit">` inside `<DialogSurface>`           | `<DialogSurface label="Edit">`, with the dialog's content as its children                    |
+  | `id` on the `wa-dialog`                                       | `id`                                                                                         |
+  | `slot="label"` content, such as a `ToolbarText`               | `heading` (keep `label`, or name it with `labelledBy`)                                       |
+  | `slot="header-actions"` content                               | `headerActions`                                                                              |
+  | `slot="footer"` buttons or `Composer`                         | `footer`                                                                                     |
+  | `without-header`, `light-dismiss`                             | `withoutHeader`, `lightDismiss`                                                              |
+  | `dialog.open = true` / `false`, or `open={…}` in the template | `openDialog(dialog)` / `closeDialog(dialog)`                                                 |
+  | `data-dialog="close"` on a button                             | `data-dialog-close`                                                                          |
+  | `wa-request-close` (cancelable)                               | `kui-request-close` (cancelable), `detail.source`                                            |
+  | `wa-show`, `wa-after-show`, `wa-hide`, `wa-after-hide`        | the native `close` event (after closing); nothing fires on open                              |
+  | `::part(dialog \| header \| body \| footer)`                  | `.kui-dialog-surface` and its `__header`, `__body`, and `__footer` (configure through props) |
+
+  A raw `wa-dialog` outside `DialogSurface` keeps Web Awesome's own behavior and the theme in `@kerfjs/ui/webawesome.css`; import its module yourself where you render it.
 
 ### Fixed
 

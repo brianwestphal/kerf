@@ -4,13 +4,13 @@
 
 `@kerfjs/ui:surface-scaffold` · Kerf UI · component · Structure
 
-Typed Web Awesome dialog preferred widths and viewport bounds, presentation, and popup inset composition.
+A native modal dialog (DialogSurface) with Kerf's header, body, and footer chrome, typed preferred widths, viewport bounds, and presentations, plus a non-modal popover dialog and popup inset composition.
 
 ## When to use
 
 Configure recurring dialog and popup geometry without consumer ::part() overrides.
 
-- A Web Awesome dialog or dropdown needs a standard size, presentation, body/footer inset, or list-compatible menu inset.
+- A modal task needs a dialog: render a DialogSurface with a label (or labelledBy plus a heading), its body as children, and its buttons as footer, then open it with openDialog() and close it with closeDialog(), the close button, or any element with data-dialog-close. A raw Web Awesome dropdown that needs a list-compatible menu inset uses PopupSurface.
 - A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText.
 - A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.
 - A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout="fill".
@@ -20,17 +20,17 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 
 **Not when:**
 
-- Do not use it as a generic layout wrapper or to replace application-owned modal state and focus lifecycle.
+- Do not use it as a generic layout wrapper, and do not toggle the dialog's open attribute (that opens it non-modally); open and close it with openDialog() and closeDialog().
 - Do not stack a dialog body inset around children that already own List or content-item geometry; use bodyInset none.
-- Do not put quiet secondary text of your own in a floating dialog header; it can fall below AA over the content passing beneath. A ToolbarText slotted as the dialog's label (or into header-actions) is fine: its title takes the normal text color and its description lifts halfway toward it, keeping AA.
+- Do not put quiet secondary text of your own in a floating dialog header; it can fall below AA over the content passing beneath. A ToolbarText as the dialog's heading (or in headerActions) is fine: its title takes the normal text color and its description lifts halfway toward it, keeping AA.
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `PopoverDialogSurface`, `PopupSurface`, `wireOverlaySheets`.
+- JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `openDialog`, `closeDialog`, `PopoverDialogSurface`, `PopupSurface`, `wireOverlaySheets`.
 - CSS: the browser build of `@kerfjs/ui/surface-scaffold` pulls its CSS automatically; import `@kerfjs/ui/surface-scaffold.css` manually only without the `browser` export condition.
 - Registration: import `@kerfjs/ui/surface-scaffold/register` once (a side effect).
 - Wiring: `wireOverlaySheets` from `@kerfjs/ui/wire-overlay-sheets` (optional).
-- Declared side effects: browser-condition-css, custom-element-registration.
+- Declared side effects: browser-condition-css, document-listeners.
 
 ## Props
 
@@ -55,6 +55,8 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - standard, compact, or zero-inset popup menu
 - core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css
 - resizable core kerfjs/overlay bottom sheet: the kui-overlay-sheet-resizable class plus wireOverlaySheets adds the resizable DialogSurface sheet grabber
+- header with label text or heading content, headerActions, a close button, and an optional footer; withoutHeader for content that owns its heading and close control
+- light dismiss (a backdrop press closes; otherwise the panel pulses)
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -69,11 +71,11 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - Parents: any.
 - Contexts: `application-ui`.
 - Children: unrestricted.
-- Built from: [Dialog](./wa-dialog.md), [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md).
+- Built from: [LucideIcon](./lucide-icon.md), [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md).
 
 ## State and wiring
 
-**The app owns:** open state; focus lifecycle; dismissal policy; content; outer placement; whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber).
+**The app owns:** open state (openDialog and closeDialog); whether a close request may proceed (cancel kui-request-close to keep the dialog open; the panel pulses); dismissal policy (lightDismiss); content, heading, header actions, and footer; outer placement; whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber).
 
 **Wiring:** `wireOverlaySheets` is optional.
 
@@ -83,19 +85,20 @@ Margin: parent · border: child · padding: self (layout role: structure). `self
 
 ## Accessibility
 
-- Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.
+- DialogSurface is a native \<dialog> opened modally (showModal): it is in the top layer, the rest of the page is inert, focus stays inside, and it returns to the opener on close. Focus starts on an autofocus element, otherwise on the panel.
+- Name it with label (also its title text) or labelledBy (the id of a heading, such as a ToolbarText). The close button is named Close (closeLabel) and Escape asks to close; the cancelable kui-request-close event reports source close-button, escape, or backdrop.
 - Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.
 - A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.
-- A resizable bottom sheet's grabber is a focusable horizontal separator ("Resize sheet") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion falls back to Web Awesome's under prefers-reduced-motion.
+- A resizable bottom sheet's grabber is a focusable horizontal separator ("Resize sheet") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.
 - Use popup surfaces only for real dropdown menus with named triggers.
 
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-dialog-surface`, `kui-popover-dialog-surface`, `kui-popup-surface`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-dialog-surface`, `kui-dialog-surface__body`, `kui-dialog-surface__close`, `kui-dialog-surface__footer`, `kui-dialog-surface__header`, `kui-dialog-surface__header-actions`, `kui-dialog-surface__title`, `kui-popover-dialog-surface`, `kui-popup-surface`.
 
-Never put `kui-dialog-surface` on an element you write; render `DialogSurface` instead (`KUI-L103`).
+Never put `kui-dialog-surface`, `kui-dialog-surface__body`, `kui-dialog-surface__close`, `kui-dialog-surface__footer`, `kui-dialog-surface__header`, `kui-dialog-surface__header-actions`, `kui-dialog-surface__title` on an element you write; render `DialogSurface` instead (`KUI-L103`).
 
 Never put `kui-popover-dialog-surface` on an element you write; render `PopoverDialogSurface` instead (`KUI-L103`).
 
@@ -107,6 +110,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Dialog](./wa-dialog.md), [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md).
+- Components: [LucideIcon](./lucide-icon.md), [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md).
 - Docs: [`docs/surface-scaffold.md`](../../docs/surface-scaffold.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=surface-scaffold`.

@@ -3,8 +3,8 @@ import { expect, type Page, test } from '@playwright/test';
 import { contrastRatio } from '../../evaluator/index.mjs';
 
 // KF-REH2T2 floating DialogSurface header: `headerPresentation="floating"`
-// lays the wa-dialog header over the body's block-start edge on the
-// translucent raised chrome material. The register measures the header and
+// lays the native dialog's header over the body's block-start edge on the
+// translucent raised chrome material. openDialog measures the header and
 // publishes its height on the panel; the body reserves it, or, for a filling
 // only child that opts into block-start `scrollClearance`, publishes it as
 // `--kui-scroll-clearance-block-start` so the transcript scrolls visibly
@@ -21,12 +21,15 @@ async function openThread(page: Page, width = 1280, height = 900) {
   // The panel scales in; measure once the show animation settles.
   await expect
     .poll(() =>
-      page.locator(DIALOG).evaluate((element) =>
-        element
-          .shadowRoot!.querySelector('[part~="dialog"]')!
-          .getAnimations()
-          .every((animation) => animation.playState === 'finished'),
-      ),
+      page
+        .locator(DIALOG)
+        .evaluate(
+          (element) =>
+            !element.hasAttribute('data-kui-dialog-motion') &&
+            element
+              .getAnimations()
+              .every((animation) => animation.playState === 'finished'),
+        ),
     )
     .toBe(true);
 }
@@ -34,7 +37,6 @@ async function openThread(page: Page, width = 1280, height = 900) {
 /** The thread dialog's panel, header, body, footer and transcript geometry. */
 async function threadGeometry(page: Page, scroll?: 'start' | 'middle' | 'end') {
   return page.locator(DIALOG).evaluate((element, position) => {
-    const shadow = element.shadowRoot!;
     const transcript = element.querySelector<HTMLElement>(
       '[data-demo-chat-transcript]',
     )!;
@@ -43,10 +45,14 @@ async function threadGeometry(page: Page, scroll?: 'start' | 'middle' | 'end') {
     if (position === 'middle') transcript.scrollTop = max / 2;
     if (position === 'end') transcript.scrollTop = max;
     const rect = (node: Element) => node.getBoundingClientRect();
-    const panel = shadow.querySelector<HTMLElement>('[part~="dialog"]')!;
-    const header = shadow.querySelector('[part~="header"]');
-    const body = shadow.querySelector('[part~="body"]')!;
-    const footer = shadow.querySelector('[part~="footer"]')!;
+    const panel = element as HTMLElement;
+    const header = element.querySelector(
+      ':scope > .kui-dialog-surface__header',
+    );
+    const body = element.querySelector(':scope > .kui-dialog-surface__body')!;
+    const footer = element.querySelector(
+      ':scope > .kui-dialog-surface__footer',
+    )!;
     const head = header ? rect(header) : undefined;
     const messages = [...transcript.children];
     return {
@@ -137,9 +143,8 @@ test('the transcript reaches beneath the floating title bar, and its first messa
 /** The floating header's computed divider shadow and the panel's state. */
 function headerDivider(page: Page, dialog = DIALOG) {
   return page.locator(dialog).evaluate((element) => {
-    const shadow = element.shadowRoot!;
-    const header = shadow.querySelector('[part~="header"]')!;
-    const panel = shadow.querySelector<HTMLElement>('[part~="dialog"]')!;
+    const header = element.querySelector('.kui-dialog-surface__header')!;
+    const panel = element as HTMLElement;
     return {
       shadow: globalThis.getComputedStyle(header).boxShadow,
       published: panel.style.getPropertyValue(
@@ -149,7 +154,7 @@ function headerDivider(page: Page, dialog = DIALOG) {
   });
 }
 
-/** Scroll an element (inside the dialog, light DOM or shadow) to a position. */
+/** Scroll the thread transcript to a position. */
 async function scrollThread(page: Page, position: 'start' | 'middle') {
   await page.locator(TRANSCRIPT).evaluate((transcript, at) => {
     const max = transcript.scrollHeight - transcript.clientHeight;
@@ -205,11 +210,14 @@ test('the clearance follows the header as its text grows, and leaves with the he
     document.documentElement.style.removeProperty('font-size');
   });
 
-  // `without-header` removes the header part: the clearance is withdrawn and
-  // the first message rests at the panel's top inset.
-  await page
-    .locator(DIALOG)
-    .evaluate((element) => element.setAttribute('without-header', ''));
+  // A re-render without the header (`withoutHeader`) removes it: the
+  // clearance is withdrawn and the first message rests at the panel's top
+  // inset. Detach the header the way a morph would.
+  await page.locator(DIALOG).evaluate((element) => {
+    const header = element.querySelector('.kui-dialog-surface__header')!;
+    (globalThis as { detachedHeader?: Element }).detachedHeader = header;
+    header.remove();
+  });
   await expect
     .poll(async () => {
       const bare = await threadGeometry(page, 'start');
@@ -220,10 +228,12 @@ test('the clearance follows the header as its text grows, and leaves with the he
       ];
     })
     .toEqual([undefined, 8, true]);
-  // Rendered again, the new header part is measured and cleared.
-  await page
-    .locator(DIALOG)
-    .evaluate((element) => element.removeAttribute('without-header'));
+  // Rendered again, the header is measured and cleared.
+  await page.locator(DIALOG).evaluate((element) => {
+    element.prepend(
+      (globalThis as { detachedHeader?: Element }).detachedHeader!,
+    );
+  });
   await expect
     .poll(async () => {
       const restored = await threadGeometry(page, 'start');
@@ -239,20 +249,20 @@ test('a flowing body reserves the floating header before its own inset', async (
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/?component=surface-scaffold');
   // The medium dialog flows its content; give it a compact inset too.
-  await page.locator('#catalog-wa-dialog').evaluate((element) => {
-    element.parentElement!.setAttribute('data-header-presentation', 'floating');
-    element.parentElement!.setAttribute('data-body-inset', 'compact');
+  const medium = page.locator('#catalog-medium-dialog');
+  await medium.evaluate((element) => {
+    element.setAttribute('data-header-presentation', 'floating');
+    element.setAttribute('data-body-inset', 'compact');
   });
   await page.getByRole('button', { name: 'Open Dialog', exact: true }).click();
-  await expect(page.locator('#catalog-wa-dialog')).toHaveAttribute('open', '');
+  await expect(medium).toHaveAttribute('open', '');
   await expect
     .poll(() =>
-      page.locator('#catalog-wa-dialog').evaluate((element) => {
-        const shadow = element.shadowRoot!;
-        const header = shadow
-          .querySelector('[part~="header"]')!
+      medium.evaluate((element) => {
+        const header = element
+          .querySelector('.kui-dialog-surface__header')!
           .getBoundingClientRect();
-        const body = shadow.querySelector('[part~="body"]')!;
+        const body = element.querySelector('.kui-dialog-surface__body')!;
         const style = globalThis.getComputedStyle(body);
         return {
           bodyStartsAtHeaderTop:
@@ -277,10 +287,10 @@ async function material(
 ) {
   const painted = await page.locator(DIALOG).evaluate(
     (element, [color, selector]) => {
-      const header = element.shadowRoot!.querySelector('[part~="header"]')!;
-      // The slotted label ToolbarText's title, or its description.
+      const header = element.querySelector('.kui-dialog-surface__header')!;
+      // The heading ToolbarText's title, or its description.
       const title = element.querySelector(
-        `[slot="label"] ${selector}, [slot="label"]${selector}`,
+        `.kui-dialog-surface__title ${selector}`,
       )!;
       const context = document
         .createElement('canvas')
@@ -340,7 +350,7 @@ for (const [scheme, backdrop] of [
     expect(result.alpha).toBeLessThan(215);
     expect(result.filter).toContain('blur');
     expect(result.contrast).toBeGreaterThanOrEqual(4.5);
-    // The slotted label's quiet description lifts halfway toward the normal
+    // The heading's quiet description lifts halfway toward the normal
     // text color: AA, while still visibly quieter than the title.
     const description = await material(
       page,
@@ -355,7 +365,7 @@ for (const [scheme, backdrop] of [
 // KF-NT49NB: a default-tone ToolbarControlGroup in the floating header's
 // actions sits on the raised chrome material, where its quiet control color
 // over its own translucent fill fell below AA over the worst case; it takes
-// the normal text color there. wa-dialog's own close button is an icon (3:1
+// the normal text color there. The dialog's close button is an icon (3:1
 // non-text bar), which it clears in both schemes.
 for (const [scheme, backdrop] of [
   ['light', 'black'],
@@ -371,14 +381,12 @@ for (const [scheme, backdrop] of [
       const group = document.createElement('div');
       group.className = 'kui-toolbar-control-group';
       group.dataset.component = 'toolbar-control-group';
-      group.slot = 'header-actions';
       group.innerHTML = '<button type="button" data-pin>Pin</button>';
-      element.append(group);
-      const shadow = element.shadowRoot!;
-      const header = shadow.querySelector('[part~="header"]')!;
-      const close = shadow
-        .querySelector('[part~="close-button"]')!
-        .shadowRoot!.querySelector('[part~="base"]')!;
+      element
+        .querySelector('.kui-dialog-surface__header-actions')!
+        .prepend(group);
+      const header = element.querySelector('.kui-dialog-surface__header')!;
+      const close = element.querySelector('.kui-dialog-surface__close')!;
       const context = document
         .createElement('canvas')
         .getContext('2d', { willReadFrequently: true })!;

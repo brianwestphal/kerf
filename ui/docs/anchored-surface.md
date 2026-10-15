@@ -41,12 +41,13 @@ openAnchoredSurfaceAt(
 );
 ```
 
-Pass `context` for a pointer opened inside a modal dialog. Inside a Web
-Awesome `wa-dialog` or `wa-drawer`, the surface stays interactive with no extra
-markup: `kerfjs/overlay` finds the modal `<dialog>` in the element's shadow
-root and hosts the surface in the element's light DOM, slotted inside the
-dialog. Dialogs opened by `kerfjs/overlay` get a host automatically too. For an
-app-owned native `<dialog>`, include
+Pass `context` for a pointer opened inside a modal dialog. Inside a
+`DialogSurface`, the surface stays interactive with no extra markup: the
+dialog renders the host `kerfjs/overlay` uses. Inside a Web Awesome
+`wa-dialog` or `wa-drawer`, `kerfjs/overlay` finds the modal `<dialog>` in the
+element's shadow root and hosts the surface in the element's light DOM,
+slotted inside the dialog. Dialogs opened by `kerfjs/overlay` get a host
+automatically too. For another app-owned native `<dialog>`, include
 `<div data-kerf-overlay-host data-morph-skip></div>` in the dialog markup so
 controls in the anchored surface stay interactive. For any other modal context,
 pass `container`: an element inside the open modal, where the surface is

@@ -15,7 +15,7 @@ import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { Spacer } from '@kerfjs/ui/spacer';
 import { SplitView } from '@kerfjs/ui/split-view';
-import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
+import { DialogSurface, openDialog } from '@kerfjs/ui/surface-scaffold';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -48,13 +48,9 @@ const records = {
 
 type RecordId = keyof typeof records;
 
-interface RecipeDialogElement extends HTMLElement {
-  open: boolean;
-}
-
 export const presentation: RecipePresentation = {
   viewport: { layout: 'grid', width: 'full' },
-  note: 'On roomy devices the dialog body is a workbench: a full-height list sidebar with its own toolbar beside a full-height detail column that carries the primary title, close control, and record actions. Compact devices get a full-screen sheet that drills from the list into the detail. Web Awesome owns modal focus and Escape; DialogSurface owns dialog geometry; SplitView owns the panes and the compact drill-down. The app owns open state, selection, and record actions.',
+  note: 'On roomy devices the dialog body is a workbench: a full-height list sidebar with its own toolbar beside a full-height detail column that carries the primary title, close control, and record actions. Compact devices get a full-screen sheet that drills from the list into the detail. DialogSurface owns the native modal dialog (focus, Escape, and its geometry); SplitView owns the panes and the compact drill-down. The app owns open state, selection, and record actions.',
 };
 
 export const createRecipe: RecipeFactory = (announce) => {
@@ -62,7 +58,6 @@ export const createRecipe: RecipeFactory = (announce) => {
   // Compact devices drill from the list into the detail; this flag is the
   // pushed detail view. Roomy devices show both panes side by side.
   const detailOpen = signal(false);
-  const open = { value: false };
   const device = deviceClass();
 
   const projectRows = (compact: boolean) => (
@@ -142,7 +137,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             }
             trailing={
               <ToolbarControlGroup appearance="borderless" single>
-                <button type="button" aria-label="Close" data-dialog="close">
+                <button type="button" aria-label="Close" data-dialog-close>
                   <LucideIcon icon={X} name="x" />
                 </button>
               </ToolbarControlGroup>
@@ -183,69 +178,69 @@ export const createRecipe: RecipeFactory = (announce) => {
         aria-label="Project Details Dialog"
       >
         <Row hAlign="center">
+          <wa-button
+            variant="brand"
+            appearance="accent"
+            data-action="recipe-action"
+            data-recipe-command="open"
+          >
+            Open Project Details
+          </wa-button>
+          {/* One dialog in both layouts, so crossing the compact breakpoint
+              while it is open morphs it in place and it stays open. */}
           <DialogSurface
+            label="Project Details"
             size="large"
             presentation={compact ? 'fullscreen' : 'modal'}
             viewportGutter={remify(16)}
             maxHeight="viewport"
             bodyInset="none"
             footerInset="comfortable"
+            withoutHeader={!compact}
+            footer={
+              compact ? (
+                <>
+                  <wa-button
+                    appearance="outlined"
+                    data-action="recipe-action"
+                    data-recipe-command="archive"
+                  >
+                    Archive
+                  </wa-button>
+                  <wa-button
+                    variant="brand"
+                    appearance="accent"
+                    data-action="recipe-action"
+                    data-recipe-command="open-record"
+                  >
+                    Open Project
+                  </wa-button>
+                </>
+              ) : undefined
+            }
           >
-            <wa-button
-              variant="brand"
-              appearance="accent"
-              data-action="recipe-action"
-              data-recipe-command="open"
-            >
-              Open Project Details
-            </wa-button>
             {compact ? (
-              <wa-dialog label="Project Details" open={open.value} with-footer>
-                <SplitView
-                  id="recipe-projects"
-                  label="Projects"
-                  compact
-                  detailActive={detailOpen.value}
-                  listTitle="Recent projects"
-                  detailTitle={records[selected.value].name}
-                  backLabel="Back to Projects"
-                  list={<List>{projectRows(true)}</List>}
-                  detail={compactDetail()}
-                />
-                <wa-button
-                  slot="footer"
-                  appearance="outlined"
-                  data-action="recipe-action"
-                  data-recipe-command="archive"
-                >
-                  Archive
-                </wa-button>
-                <wa-button
-                  slot="footer"
-                  variant="brand"
-                  appearance="accent"
-                  data-action="recipe-action"
-                  data-recipe-command="open-record"
-                >
-                  Open Project
-                </wa-button>
-              </wa-dialog>
+              <SplitView
+                id="recipe-projects"
+                label="Projects"
+                compact
+                detailActive={detailOpen.value}
+                listTitle="Recent projects"
+                detailTitle={records[selected.value].name}
+                backLabel="Back to Projects"
+                list={<List>{projectRows(true)}</List>}
+                detail={compactDetail()}
+              />
             ) : (
-              <wa-dialog
-                label="Project Details"
-                open={open.value}
-                without-header
-              >
-                <SplitView
-                  id="recipe-projects"
-                  label="Projects"
-                  compact={false}
-                  listTitle="Recent projects"
-                  detailTitle={records[selected.value].name}
-                  list={sidebar()}
-                  detail={detailColumn()}
-                />
-              </wa-dialog>
+              <SplitView
+                id="recipe-projects"
+                label="Projects"
+                compact={false}
+                listTitle="Recent projects"
+                detailTitle={records[selected.value].name}
+                list={sidebar()}
+                detail={detailColumn()}
+              />
             )}
           </DialogSurface>
         </Row>
@@ -269,17 +264,15 @@ export const createRecipe: RecipeFactory = (announce) => {
       }
       const dialog = element
         .closest('[data-recipe]')
-        ?.querySelector<RecipeDialogElement>('wa-dialog');
+        ?.querySelector<HTMLDialogElement>('dialog.kui-dialog-surface');
       if (command === 'open' && dialog) {
         element.focus();
-        open.value = true;
-        dialog.open = true;
+        openDialog(dialog);
         return;
       }
       announce(`${command} requested`);
     },
     afterHide() {
-      open.value = false;
       detailOpen.value = false;
     },
   };

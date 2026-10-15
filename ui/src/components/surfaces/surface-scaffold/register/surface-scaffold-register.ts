@@ -1,20 +1,14 @@
-import WaDialog from '@awesome.me/webawesome/dist/components/dialog/dialog.js';
+import { installDialogSurfaces } from '../internal/dialog-surface-controller.js';
 
-import { installBottomSheet } from '../internal/install-bottom-sheet.js';
-import { installChromeBlockSize } from '../internal/install-chrome-block-size.js';
-import { installDialogLabel } from '../internal/install-dialog-label.js';
-import { installHeaderScrollDivider } from '../internal/install-header-scroll-divider.js';
-
-installDialogLabel(WaDialog.prototype);
-installChromeBlockSize(WaDialog.prototype);
-installHeaderScrollDivider(WaDialog.prototype);
-installBottomSheet(WaDialog.prototype);
+installDialogSurfaces();
 
 /**
- * Importing this module registers wa-dialog, repairs wrapped native names, and
- * measures each DialogSurface header and footer for a floating header's or
- * footer's body clearance, shows a floating header's divider while content
- * is scrolled beneath it, and wires a bottom sheet's resize grabber,
- * virtual-keyboard clearance, and slide motion.
+ * Importing this module wires every DialogSurface in the document: the close
+ * button, `data-dialog-close`, Escape, and backdrop requests through the
+ * cancelable `kui-request-close`. `openDialog` also wires the dialogs it
+ * opens, measuring a floating header's or footer's body clearance, showing a
+ * floating header's divider while content scrolls beneath it, and following a
+ * bottom sheet's keyboard clearance and resize grabber, all kept across
+ * application re-renders while the dialog is open.
  */
 export const surfaceScaffoldElementsRegistered = true;

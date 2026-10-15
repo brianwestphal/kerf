@@ -96,7 +96,7 @@ const cases: SlotCase[] = [
   },
   {
     name: 'DialogSurface',
-    render: (slot) => DialogSurface({ children: content, slot }),
+    render: (slot) => DialogSurface({ label: 'Edit', children: content, slot }),
   },
   {
     name: 'DisclosureArrow',

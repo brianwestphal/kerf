@@ -29,6 +29,7 @@ import {
   openPopupMenuAt,
   type PopupMenuElement,
 } from '@kerfjs/ui/popup-menu';
+import { closeDialog, openDialog } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -659,23 +660,28 @@ const stopActions = delegateActions(app, 'click', {
     );
     if (dialog) dialog.open = true;
   },
+  'show-dialog': (_event, target) => {
+    actionLog.value = 'Dialog opened';
+    const dialog = document.getElementById(
+      target.getAttribute('data-dialog-id') ?? '',
+    );
+    if (dialog instanceof HTMLDialogElement) openDialog(dialog);
+  },
   'save-choice-chips-dialog': () => {
     const form = document.querySelector<HTMLFormElement>(
       '#choice-chips-dialog-form',
     );
     const color = form ? new FormData(form).get('color') : null;
     actionLog.value = `Saved color: ${typeof color === 'string' ? color : 'none'}`;
-    const dialog = document.querySelector<HTMLElement & { open: boolean }>(
-      '#choice-chips-dialog',
-    );
-    if (dialog) dialog.open = false;
+    const dialog = document.getElementById('choice-chips-dialog');
+    if (dialog instanceof HTMLDialogElement) closeDialog(dialog);
   },
   [SEND_CHAT_DIALOG_MESSAGE_ACTION]: (_event, target) => {
     // The chat and floating title bar examples share this action.
     const dialog =
-      target.closest('wa-dialog') ?? document.getElementById(CHAT_DIALOG_ID);
+      target.closest('dialog') ?? document.getElementById(CHAT_DIALOG_ID);
     const field = dialog?.querySelector<HTMLTextAreaElement>(
-      '[slot="footer"] textarea',
+      '.kui-dialog-surface__footer textarea',
     );
     if (!field || !sendSurfaceScaffoldChatMessage(field.value, dialog?.id))
       return;
@@ -1663,10 +1669,10 @@ const stopRecipeInputs = delegate(
   '[data-recipe] wa-input, [data-recipe] wa-textarea',
   dispatchRecipeChange,
 );
-const stopRecipeDialogs = delegate(
+const stopRecipeDialogs = delegateCapture(
   app,
-  'wa-after-hide',
-  '[data-recipe] wa-dialog',
+  'close',
+  '[data-recipe] dialog.kui-dialog-surface',
   (_event, element) => {
     if (isRecipeId(selectedDemo.value))
       recipeControllers
@@ -1912,10 +1918,10 @@ const stopAnchoredSurfaceOpenModal = delegate(
   'click',
   '[data-anchored-surface-open-modal]',
   () => {
-    const dialog = app.querySelector<HTMLElement & { open: boolean }>(
-      '[data-anchored-surface-modal]',
+    const dialog = app.querySelector<HTMLDialogElement>(
+      'dialog[data-anchored-surface-modal]',
     );
-    if (dialog) dialog.open = true;
+    if (dialog) openDialog(dialog);
   },
 );
 const updateAnimationSetting = (element: Element): void => {

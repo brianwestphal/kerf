@@ -4410,6 +4410,27 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssLength } from './css-values.js';
 
+/** What asked an open DialogSurface to close. */
+type DialogCloseSource = 'close-button' | 'escape' | 'backdrop';
+/** The detail of a DialogSurface's cancelable `kui-request-close` event. */
+interface DialogRequestCloseDetail {
+    readonly source: DialogCloseSource;
+}
+/**
+ * Open a DialogSurface as a modal dialog: in the top layer, the rest of the
+ * page inert, focus on its `autofocus` element or else the panel. It plays
+ * its enter motion and, with the controller installed here, keeps its
+ * measured chrome, sheet height, and keyboard clearance across application
+ * re-renders. Opening an open dialog does nothing.
+ */
+declare function openDialog(dialog: HTMLDialogElement): void;
+/**
+ * Close an open DialogSurface after its exit motion. The application's own
+ * close is never refused: no `kui-request-close` is dispatched. The native
+ * `close` event fires once it has closed.
+ */
+declare function closeDialog(dialog: HTMLDialogElement): void;
+
 type DialogSurfaceSize = 'small' | 'medium' | 'large';
 /**
  * How the dialog is presented: `modal` (default) centered on the screen,
@@ -4420,7 +4441,7 @@ type DialogSurfaceSize = 'small' | 'medium' | 'large';
 type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen' | 'bottom-sheet';
 /**
  * How a bottom sheet appears or leaves: `slide` (default) moves the panel in
- * from, or out to, the bottom edge; `standard` keeps Web Awesome's
+ * from, or out to, the bottom edge; `standard` keeps the dialog's
  * scale-and-fade. Both honor `prefers-reduced-motion`.
  */
 type DialogSurfaceSheetMotion = 'slide' | 'standard';
@@ -4454,8 +4475,42 @@ type DialogSurfaceHeaderPresentation = 'docked' | 'floating';
  * `data-key`; the surface's own configuration attributes stay protected.
  */
 type DialogSurfaceRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
-interface DialogSurfaceProps {
+/**
+ * The dialog's accessible name: its `label` text (also the default title), or
+ * the id of an element that names it, such as a `heading` ToolbarText.
+ */
+type DialogSurfaceName = {
+    label: string;
+    labelledBy?: never;
+} | {
+    label?: never;
+    labelledBy: string;
+};
+type DialogSurfaceProps = DialogSurfaceName & DialogSurfaceOptions;
+interface DialogSurfaceOptions {
+    /** The dialog's id, for `openDialog(document.getElementById(id))`. */
+    id?: string;
+    /** The body content. */
     children: KerfUiContent;
+    /**
+     * Header title content in place of the `label` text, such as an xl
+     * `ToolbarText` with a description. The dialog keeps its `label` (or
+     * `labelledBy`) name.
+     */
+    heading?: KerfUiContent;
+    /** Controls before the close button in the header. */
+    headerActions?: KerfUiContent;
+    /** The footer, below the body (or floating over it); usually its buttons. */
+    footer?: KerfUiContent;
+    /**
+     * Render no header: no title and no close button. The content then owns its
+     * heading and a way to close (an element with `data-dialog-close`).
+     */
+    withoutHeader?: boolean;
+    /** Close on a press on the backdrop; otherwise the panel pulses. */
+    lightDismiss?: boolean;
+    /** The close button's accessible name (default `Close`). */
+    closeLabel?: string;
     size?: DialogSurfaceSize;
     presentation?: DialogSurfacePresentation;
     /** Modal preferred width. Takes precedence over size, within the viewport cap. */
@@ -4540,8 +4595,16 @@ interface DialogSurfaceProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-/** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
-declare function DialogSurface({ children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+/**
+ * A modal dialog: a native `<dialog>` with Kerf's header, body, and footer
+ * chrome, sized and presented by its props. Render it closed, then open it
+ * with `openDialog()` and close it with `closeDialog()`, the close button, an
+ * element with `data-dialog-close`, Escape, or (with `lightDismiss`) a press
+ * on the backdrop. Import `@kerfjs/ui/surface-scaffold/register` for the
+ * floating header and footer measurement, the bottom sheet's keyboard
+ * clearance and grabber, and re-render resilience while open.
+ */
+declare function DialogSurface({ id, label, labelledBy, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */
@@ -4593,8 +4656,8 @@ type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
  * A non-modal dialog surface on the native Popover API: Kerf's dialog chrome,
  * viewport-bounded size, and single-child fill without application CSS.
  * Open it with a `popovertarget` control or `showPopover()`; it light
- * dismisses and leaves the page interactive. Use `DialogSurface` with
- * `wa-dialog` when the task must block the page.
+ * dismisses and leaves the page interactive. Use `DialogSurface` when the
+ * task must block the page.
  */
 declare function PopoverDialogSurface({ id, children, label, labelledBy, describedBy, presentation, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, rootAttributes, className, slot, }: PopoverDialogSurfaceProps): kerfjs.SafeHtml;
 type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
@@ -4608,7 +4671,7 @@ interface PopupSurfaceProps {
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
-export { DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
+export { type DialogCloseSource, type DialogRequestCloseDetail, DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfaceName, type DialogSurfaceOptions, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset, closeDialog, openDialog };
 ```
 
 ## `@kerfjs/ui/text`
