@@ -18,6 +18,8 @@
   gap: remify(8px);
   padding: 0 remify(8px);
   margin: 0;
+  /* Never the platform's native button drawing, like the other Kerf controls. */
+  appearance: none;
   color: var(--_kui-button-text);
   font: inherit;
   font-size: var(--kui-font-m, remify(16px));

@@ -46,6 +46,7 @@ import {
   Pencil,
   Plus,
   Rocket,
+  Search,
   Settings,
   Star,
   Trash2,
@@ -53,6 +54,8 @@ import {
 } from 'lucide';
 
 import { AppTab } from '../dist/app-tab.js';
+import { Button } from '../dist/button.js';
+import { Checkbox } from '../dist/checkbox.js';
 import { Chip } from '../dist/chip.js';
 import { ChoiceChips } from '../dist/choice-chips.js';
 import { Composer } from '../dist/composer.js';
@@ -63,11 +66,15 @@ import { ListActionRow } from '../dist/list-action-row.js';
 import { ListHeader } from '../dist/list-header.js';
 import { ListItem } from '../dist/list-item.js';
 import { LucideIcon } from '../dist/lucide-icon.js';
+import { RadioGroup } from '../dist/radio-group.js';
 import { Row } from '../dist/row.js';
 import { SegmentedControl } from '../dist/segmented-control.js';
+import { Select } from '../dist/select.js';
 import { Skeleton } from '../dist/skeleton.js';
 import { StateBanner } from '../dist/state-banner.js';
+import { Switch } from '../dist/switch.js';
 import { TabBar } from '../dist/tab-bar.js';
+import { TextField } from '../dist/text-field.js';
 import { Toolbar } from '../dist/toolbar.js';
 import { ToolbarControlGroup } from '../dist/toolbar-control-group.js';
 import { ToolbarText } from '../dist/toolbar-text.js';
@@ -1125,6 +1132,383 @@ export const COMPONENTS = {
       })),
     ],
   },
+  button: {
+    css: ['foundation', 'layout', 'row', 'lucide-icon', 'button'],
+    selector: '#frame',
+    width: 520,
+    frameWidth: 'max-content',
+    variants: [
+      {
+        id: 'tones',
+        label: 'Primary Tones',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            children: [
+              Button({ children: 'Save Changes', tone: 'brand' }),
+              Button({ children: 'Cancel' }),
+              Button({ children: 'Delete Project', tone: 'danger' }),
+            ],
+          }),
+      },
+      {
+        id: 'emphasis',
+        label: 'Secondary and Plain Emphasis',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            children: [
+              Button({ children: 'Export', emphasis: 'secondary' }),
+              Button({
+                children: 'Remove',
+                tone: 'danger',
+                emphasis: 'secondary',
+              }),
+              Button({ children: 'Learn More', emphasis: 'plain' }),
+            ],
+          }),
+      },
+      {
+        id: 'icons',
+        label: 'With an Icon, and Icon Only',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            children: [
+              Button({
+                children: 'New Ticket',
+                tone: 'brand',
+                icon: glyph(Plus, 'plus'),
+              }),
+              Button({
+                children: 'Filters',
+                icon: glyph(Filter, 'filter'),
+              }),
+              Button({
+                icon: glyph(Settings, 'settings'),
+                ariaLabel: 'Settings',
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'states',
+        label: 'Compact and Disabled',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            vAlign: 'middle',
+            children: [
+              Button({ children: 'Compact', size: 'compact' }),
+              Button({ children: 'Unavailable', disabled: true }),
+            ],
+          }),
+      },
+    ],
+  },
+  'text-field': {
+    css: ['foundation', 'layout', 'lucide-icon', 'text-field'],
+    selector: '#frame',
+    width: 400,
+    frameWidth: 360,
+    variants: [
+      {
+        id: 'labeled',
+        label: 'Label, Value, and Hint',
+        height: 94,
+        render: () =>
+          TextField({
+            label: 'Project Name',
+            value: 'Northstar Migration',
+            hint: 'Visible to collaborators.',
+            clearable: true,
+          }),
+      },
+      {
+        id: 'search',
+        label: 'Search with an Icon',
+        height: 44,
+        render: () =>
+          TextField({
+            ariaLabel: 'Search Tickets',
+            placeholder: 'Search tickets',
+            type: 'search',
+            icon: glyph(Search, 'search'),
+          }),
+      },
+      {
+        id: 'error',
+        label: 'Required with an Error',
+        height: 94,
+        render: () =>
+          TextField({
+            label: 'Email',
+            type: 'email',
+            value: 'robin@',
+            required: true,
+            error: 'Enter a complete email address.',
+          }),
+      },
+      {
+        id: 'multiline',
+        label: 'Growing Multi-Line with a Count',
+        height: 127,
+        render: () =>
+          TextField({
+            label: 'Release Note',
+            multiline: true,
+            rows: 3,
+            maxRows: 8,
+            placeholder: 'Summarize what changed',
+            maxLength: 200,
+            showCount: true,
+          }),
+      },
+      {
+        id: 'compact',
+        label: 'Compact',
+        height: 54,
+        render: () =>
+          TextField({ label: 'Tag', value: 'design', size: 'compact' }),
+      },
+    ],
+  },
+  checkbox: {
+    css: ['foundation', 'layout', 'list', 'checkbox'],
+    selector: '#frame',
+    width: 400,
+    frameWidth: 360,
+    variants: [
+      {
+        id: 'states',
+        label: 'Checked, Unchecked, and Disabled',
+        height: 106,
+        render: () =>
+          List({
+            gap: 'xs',
+            children: [
+              Checkbox({ label: 'Include in release', checked: true }),
+              Checkbox({
+                label: 'Email summaries',
+                hint: 'Sent every Monday morning.',
+              }),
+              Checkbox({
+                label: 'Locked setting',
+                checked: true,
+                disabled: true,
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'mixed',
+        label: 'Mixed Parent',
+        height: 76,
+        wire: "import { wireCheckboxes } from './ui/dist/wire-checkboxes.js'; wireCheckboxes(document);",
+        render: () =>
+          List({
+            gap: 'xs',
+            children: [
+              Checkbox({ label: 'All tasks', indeterminate: true }),
+              Checkbox({ label: 'Design review', checked: true }),
+              Checkbox({ label: 'Build release' }),
+            ],
+          }),
+      },
+      {
+        id: 'error',
+        label: 'Required with an Error',
+        height: 50,
+        render: () =>
+          Checkbox({
+            label: 'I accept the release terms',
+            required: true,
+            error: 'Accept the terms to continue.',
+          }),
+      },
+      {
+        id: 'compact',
+        label: 'Compact',
+        height: 44,
+        render: () =>
+          List({
+            gap: 'xs',
+            children: [
+              Checkbox({
+                label: 'Show archived',
+                size: 'compact',
+                checked: true,
+              }),
+              Checkbox({ label: 'Show drafts', size: 'compact' }),
+            ],
+          }),
+      },
+    ],
+  },
+  'radio-group': {
+    css: ['foundation', 'layout', 'radio-group'],
+    selector: '#frame',
+    width: 400,
+    frameWidth: 360,
+    variants: [
+      {
+        id: 'vertical',
+        label: 'Stacked Choices with Hints',
+        height: 189,
+        render: () =>
+          RadioGroup({
+            label: 'Layout Density',
+            name: 'density',
+            value: 'balanced',
+            hint: 'Applies to every list.',
+            choices: [
+              { value: 'compact', label: 'Compact' },
+              { value: 'balanced', label: 'Balanced' },
+              {
+                value: 'roomy',
+                label: 'Roomy',
+                hint: 'Larger rows for touch screens.',
+              },
+              { value: 'custom', label: 'Custom', disabled: true },
+            ],
+          }),
+      },
+      {
+        id: 'horizontal',
+        label: 'Horizontal, Compact, with an Error',
+        height: 65,
+        render: () =>
+          RadioGroup({
+            label: 'Release Channel',
+            name: 'channel',
+            size: 'compact',
+            orientation: 'horizontal',
+            required: true,
+            error: 'Choose a channel.',
+            choices: [
+              { value: 'stable', label: 'Stable' },
+              { value: 'beta', label: 'Beta' },
+              { value: 'nightly', label: 'Nightly' },
+            ],
+          }),
+      },
+    ],
+  },
+  switch: {
+    css: ['foundation', 'layout', 'list', 'switch'],
+    selector: '#frame',
+    width: 400,
+    frameWidth: 360,
+    variants: [
+      {
+        id: 'states',
+        label: 'On, Off, and Disabled',
+        height: 106,
+        render: () =>
+          List({
+            gap: 'xs',
+            children: [
+              Switch({
+                label: 'Live updates',
+                checked: true,
+                hint: 'The list refreshes as tickets change.',
+              }),
+              Switch({ label: 'Compact navigation' }),
+              Switch({
+                label: 'Managed setting',
+                checked: true,
+                disabled: true,
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'compact',
+        label: 'Compact',
+        height: 44,
+        render: () =>
+          List({
+            gap: 'xs',
+            children: [
+              Switch({
+                label: 'Show archived',
+                size: 'compact',
+                checked: true,
+              }),
+              Switch({ label: 'Show drafts', size: 'compact' }),
+            ],
+          }),
+      },
+    ],
+  },
+  select: {
+    css: ['foundation', 'layout', 'lucide-icon', 'select'],
+    selector: '#frame',
+    width: 400,
+    frameWidth: 360,
+    variants: [
+      {
+        id: 'form',
+        label: 'Labeled Form Field',
+        height: 94,
+        render: () =>
+          Select({
+            label: 'Status',
+            name: 'status',
+            value: 'review',
+            hint: 'Moves the ticket on the board.',
+            choices: [
+              { value: 'backlog', label: 'Backlog' },
+              { value: 'review', label: 'In Review' },
+              { value: 'done', label: 'Done' },
+            ],
+          }),
+      },
+      {
+        id: 'icons',
+        label: 'Choices with Icons',
+        height: 65,
+        render: () =>
+          Select({
+            label: 'Notify',
+            name: 'notify',
+            value: 'mentions',
+            choices: [
+              {
+                value: 'all',
+                label: 'Every Update',
+                icon: Bell,
+                iconName: 'bell',
+              },
+              {
+                value: 'mentions',
+                label: 'Mentions Only',
+                icon: Star,
+                iconName: 'star',
+              },
+            ],
+          }),
+      },
+      {
+        id: 'compact',
+        label: 'Compact, Disabled',
+        height: 53,
+        render: () =>
+          Select({
+            label: 'Region',
+            name: 'region',
+            value: 'us-east',
+            size: 'compact',
+            disabled: true,
+            choices: [{ value: 'us-east', label: 'US East' }],
+          }),
+      },
+    ],
+  },
   'toolbar-text': {
     css: ['foundation', 'toolbar-text'],
     selector: '#frame',
@@ -1315,8 +1699,11 @@ async function buildComponent(domotion, name, spec) {
   for (const variant of spec.variants) {
     const themed = {};
     for (const theme of THEMES) {
-      const wiring = variant.wireToolbarVisibility
-        ? `<script>${(await build({ stdin: { contents: "import { wireToolbarVisibility } from './ui/dist/wire-toolbar-visibility.js'; wireToolbarVisibility(document);", resolveDir: resolve(root, '..') }, bundle: true, format: 'iife', write: false })).outputFiles[0].text}</script>`
+      const wire = variant.wireToolbarVisibility
+        ? "import { wireToolbarVisibility } from './ui/dist/wire-toolbar-visibility.js'; wireToolbarVisibility(document);"
+        : variant.wire;
+      const wiring = wire
+        ? `<script>${(await build({ stdin: { contents: wire, resolveDir: resolve(root, '..') }, bundle: true, format: 'iife', write: false })).outputFiles[0].text}</script>`
         : '';
       const page = `<!doctype html><html><head><meta charset="utf-8"><style>${frameCss(theme)}${cssText}${captureCss}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div>${wiring}</body></html>`;
       const pagePath = resolve(dir, `${variant.id}${theme.suffix}.html`);

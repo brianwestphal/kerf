@@ -12,11 +12,14 @@ component picture without running the app.
 Templated components (each with light + dark variants):
 `ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `List`, `ListItem`, `ListHeader`,
 `ListActionRow`, `ValueTable`, `StateBanner`, `EmptyState`, `Skeleton`,
-`SegmentedControl`, `TabBar`/`AppTab`, and `TokenSearchField`.
+`SegmentedControl`, `TabBar`/`AppTab`, `TokenSearchField`, `Chip`, `ChoiceChips`,
+`Composer`, and the native form controls `Button`, `TextField`, `Checkbox`,
+`RadioGroup`, `Switch`, and `Select`.
 
 Deliberately **not** templated (they don't read as a single static component
-picture): `Select` renders a Web Awesome custom element that needs its runtime
-registered, so it has no faithful static capture; `LucideIcon` and
+picture): `DialogSurface` is a modal `<dialog>` that only presents as a dialog
+in the browser's top layer, so the catalog's surface-scaffold route shows it
+instead; `LucideIcon` and
 `DisclosureArrow` are decorative primitives best seen inside the components that
 use them; `ResizableRegion` and the whole-screen layouts (`NavStack`,
 `SplitView`, `Workbench`, `TabNavigator`) and the `Catalog` shell are
@@ -137,7 +140,14 @@ regenerate both themes and library sheets when that geometry changes. The browse
 pane/sidebar geometry checks cover the resulting 43px icon-label offset from the
 section edge (17px content inset + 18px icon + 8px gap).
 
-For a focused update, pass component names: `npm run design-templates:build -- toolbar`. Omit them to capture all components. Toolbar width variants use the real `wireToolbarVisibility` helper after rendering typed props. The `ListActionRow` "Trailing overflow menu" variant renders a real `trailingMenu` `PopupMenu`. Its trigger is a native button inside Web Awesome's shadow root, and domotion cannot read that button's author styles. A registered trigger would therefore be captured as a raster image, which also stops the library sheet from flattening. The capture instead leaves the PopupMenu unregistered. The template-only `staticPopupMenuTriggerCss` gives the trigger host the geometry `popup-menu.css` gives its `::part(base)` in a row: a 44px-wide box, as tall as the row, with the 16px icon centered. It also hides the closed menu's items. The icon lands at the same position as in a registered capture.
+For a focused update, pass component names: `npm run design-templates:build -- toolbar`. Omit them to capture all components. Toolbar width variants use the real `wireToolbarVisibility` helper after rendering typed props. The `ListActionRow` "Trailing overflow menu" variant renders a real `trailingMenu` `PopupMenu`; its trigger is a native light-DOM button, so it captures as vectors with no template-only styling.
+
+The form-control templates render real components. A variant that needs wiring
+names it in the manifest's `wire` field (the `Checkbox` "Mixed Parent" variant
+runs `wireCheckboxes` so the native mixed state draws). domotion cannot
+vectorize the text inside a `<textarea>` or a textarea's native resize grip,
+so the `TextField` multi-line variant shows a growing field (`maxRows`, no grip)
+with a placeholder rather than a value.
 
 The `ToolbarControlGroup` "Glass Material Over Artwork" variant draws the glass
 group over flat sample color bands with `--kui-chrome-material-filter: none`.

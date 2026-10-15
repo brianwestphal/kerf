@@ -636,6 +636,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/select.tsx",
     "componentSource": "ui/src/components/forms/select/select.tsx",
+    "designTemplate": "ui/docs/design/templates/select.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -662,6 +663,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/text-field.tsx",
     "componentSource": "ui/src/components/forms/text-field/text-field.tsx",
+    "designTemplate": "ui/docs/design/templates/text-field.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -676,6 +678,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/checkbox.tsx",
     "componentSource": "ui/src/components/forms/checkbox/checkbox.tsx",
+    "designTemplate": "ui/docs/design/templates/checkbox.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -688,6 +691,7 @@ export const generatedKerfCatalog = [
     "uses": [],
     "demoSource": "ui/ux-demo/demos/radio-group.tsx",
     "componentSource": "ui/src/components/forms/radio-group/radio-group.tsx",
+    "designTemplate": "ui/docs/design/templates/radio-group.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -700,6 +704,7 @@ export const generatedKerfCatalog = [
     "uses": [],
     "demoSource": "ui/ux-demo/demos/switch.tsx",
     "componentSource": "ui/src/components/forms/switch/switch.tsx",
+    "designTemplate": "ui/docs/design/templates/switch.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -756,6 +761,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/button.tsx",
     "componentSource": "ui/src/components/actions/button/button.tsx",
+    "designTemplate": "ui/docs/design/templates/button.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
