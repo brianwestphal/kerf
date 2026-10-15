@@ -23,18 +23,17 @@ interface Metrics {
 
 function selectMetrics(select: Locator): Promise<Metrics> {
   return select.evaluate((host) => {
-    const root = host.shadowRoot!;
-    const listbox = root.querySelector<HTMLElement>('[part~="listbox"]')!;
-    const option = host.querySelector('wa-option')!;
-    const label =
-      option.shadowRoot!.querySelector<HTMLElement>('[part~="label"]')!;
-    const start =
-      option.shadowRoot!.querySelector<HTMLSlotElement>('[part~="start"]')!;
-    const expand = root.querySelector<HTMLElement>('[part~="expand-icon"]')!;
+    const listbox = host.querySelector<HTMLElement>(
+      ':scope > .kui-select__popup',
+    )!;
+    const option = host.querySelector<HTMLElement>('.kui-select__option')!;
+    const label = option.querySelector<HTMLElement>(
+      '.kui-select__option-label',
+    )!;
+    const icon = option.querySelector<HTMLElement>('.kui-select__icon');
+    const expand = host.querySelector<HTMLElement>('.kui-select__caret')!;
     const row = window.getComputedStyle(option);
-    const firstContent = (
-      start.assignedElements().length > 0 ? start : label
-    ).getBoundingClientRect().left;
+    const firstContent = (icon ?? label).getBoundingClientRect().left;
     return {
       inset: window.getComputedStyle(listbox).padding,
       rowHeight: Math.round(option.getBoundingClientRect().height * 10) / 10,
@@ -84,8 +83,9 @@ function menuMetrics(menu: Locator): Promise<Metrics> {
 
 function comboboxOutline(select: Locator) {
   return select.evaluate((host) => {
-    const combobox =
-      host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
+    const combobox = host.querySelector<HTMLElement>(
+      ':scope > .kui-select__trigger',
+    )!;
     const style = window.getComputedStyle(combobox);
     return { style: style.outlineStyle, color: style.outlineColor };
   });
@@ -96,7 +96,7 @@ const transparent = /rgba\(0, 0, 0, 0\)|transparent/;
 async function openDemo(page: Page) {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=toolbar-control-group');
-  const select = page.locator('wa-select[name="toolbar-group-sort"]');
+  const select = page.locator('kui-select[name="toolbar-group-sort"]');
   const group = select.locator('xpath=..');
   const menu = group.locator('> .kui-popup-menu');
   await expect(select).toBeVisible();
@@ -115,7 +115,7 @@ test('PopupMenu draws the same popup, rows, and caret motion as Select', async (
   expect(closedMenu.caretTransition).toBe(closedSelect.caretTransition);
   expect(closedMenu.caretTransition).toContain('rotate');
 
-  await select.click();
+  await select.getByRole('combobox').click();
   await expect(select).toHaveAttribute('open', '');
   await expect
     .poll(async () => (await selectMetrics(select)).caretRotate)
@@ -160,7 +160,7 @@ test('a keyboard-current PopupMenu item takes the Select current-row fill', asyn
   await select.getByRole('combobox').focus();
   await page.keyboard.press('Enter');
   await expect(select).toHaveAttribute('open', '');
-  const current = select.locator('wa-option').first();
+  const current = select.locator('.kui-select__option').first();
   const currentFill = () =>
     current.evaluate((option) => {
       const style = window.getComputedStyle(option);
@@ -225,7 +225,7 @@ test('an open Select hides its trigger focus ring and restores it on close', asy
     .poll(async () => (await comboboxOutline(select)).color)
     .not.toMatch(transparent);
 
-  await select.click();
+  await select.getByRole('combobox').click();
   await expect(select).toHaveAttribute('open', '');
   await expect
     .poll(async () => (await comboboxOutline(select)).color)

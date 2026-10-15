@@ -262,8 +262,9 @@ test('an entry with settings shows a settings pane that drives its preview, coll
   await expect(settings).toBeVisible();
   await expect(playground).toHaveAttribute('data-tone', 'info');
 
-  await settings.locator('wa-select[name="badge-playground-tone"]').click();
-  await page.locator('wa-option[value="success"]').first().click();
+  const tone = settings.locator('kui-select[name="badge-playground-tone"]');
+  await tone.getByRole('combobox').click();
+  await tone.getByRole('option', { name: 'Success' }).click();
   await expect(playground).toHaveAttribute('data-tone', 'success');
 
   await settings.getByRole('button', { name: 'Hide Settings' }).click();

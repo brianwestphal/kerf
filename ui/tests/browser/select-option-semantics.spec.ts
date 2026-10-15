@@ -1,13 +1,10 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
-// Web Awesome gives each wa-option `role="option"` and an `aria-selected`
-// that tracks its live `selected` state. The Select's template does not
-// render those attributes, so a kerf re-render (the morph removes attributes
-// the template omits) used to strip them, and screen readers lost every
-// option's role and selected state. kerf's core morph now treats `role` and
-// `aria-*` on any custom element as element-owned (never removed because the
-// template omits them), so no Select-specific restore is needed. This spec is
-// the end-to-end regression guard for that core rule: the semantics must
+// Each Select option renders its own `role="option"` and an `aria-selected`
+// that the controller updates as the person chooses. A kerf re-render (the
+// morph applies the template's attributes) must leave every option's role and
+// selected state in step with the Select's value, so screen readers never
+// lose them. This spec is the end-to-end regression guard: the semantics must
 // survive re-renders in single and multiple mode, before and after the person
 // interacts.
 
@@ -20,12 +17,18 @@ type OptionSemantics = {
 
 function semantics(select: Locator): Promise<OptionSemantics[]> {
   return select.evaluate((host) =>
-    [...host.querySelectorAll('wa-option')].map((option) => ({
-      value: option.getAttribute('value'),
-      role: option.getAttribute('role'),
-      ariaSelected: option.getAttribute('aria-selected'),
-      selected: (option as HTMLElement & { selected: boolean }).selected,
-    })),
+    [...host.querySelectorAll('.kui-select__option')].map((option) => {
+      const value = option.getAttribute('data-value');
+      const chosen = (host as HTMLElement & { value: string | string[] }).value;
+      return {
+        value,
+        role: option.getAttribute('role'),
+        ariaSelected: option.getAttribute('aria-selected'),
+        selected: Array.isArray(chosen)
+          ? chosen.includes(value!)
+          : chosen === value,
+      };
+    }),
   );
 }
 
@@ -47,7 +50,7 @@ async function expectConsistent(select: Locator, chosen: readonly string[]) {
 
 /** Re-render the demo by changing a single Select's controlling signal. */
 async function chooseProgrammatically(page: Page, name: string, value: string) {
-  await page.locator(`wa-select[name="${name}"]`).evaluate((host, next) => {
+  await page.locator(`kui-select[name="${name}"]`).evaluate((host, next) => {
     (host as HTMLElement & { value: string }).value = next;
     host.dispatchEvent(new Event('change', { bubbles: true }));
   }, value);
@@ -61,14 +64,14 @@ test('single Select options keep role and aria-selected across re-renders', asyn
 }) => {
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=select');
-  const select = page.locator('wa-select[name="plain-rendering-balance"]');
+  const select = page.locator('kui-select[name="plain-rendering-balance"]');
   await expect(select).toBeVisible();
   await expectConsistent(select, ['balanced']);
 
   await select.scrollIntoViewIfNeeded();
-  await select.click();
+  await select.getByRole('combobox').click();
   await expect(select).toHaveAttribute('open', '');
-  await select.locator('wa-option[value="explicit"]').click();
+  await select.locator('.kui-select__option[data-value="explicit"]').click();
   // The demo's change handler updates the controlling signal and re-renders.
   await expect(
     page.locator('[data-demo="select"] [data-select-value]').first(),
@@ -92,14 +95,14 @@ test('multiple Select options keep role and aria-selected across re-renders', as
 }) => {
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=select');
-  const select = page.locator('wa-select[name="ticket-labels"]');
+  const select = page.locator('kui-select[name="ticket-labels"]');
   await expect(select).toBeVisible();
   await expectConsistent(select, ['bug', 'docs']);
 
   await select.scrollIntoViewIfNeeded();
-  await select.click();
+  await select.getByRole('combobox').click();
   await expect(select).toHaveAttribute('open', '');
-  await select.locator('wa-option[value="feature"]').click();
+  await select.locator('.kui-select__option[data-value="feature"]').click();
   await expectConsistent(select, ['bug', 'feature', 'docs']);
   await page.keyboard.press('Escape');
 
@@ -110,7 +113,7 @@ test('multiple Select options keep role and aria-selected across re-renders', as
     select.getByRole('option', { selected: true, includeHidden: true }),
   ).toHaveText(['Bug', 'Feature', 'Docs']);
   await expectConsistent(
-    page.locator('wa-select[name="plain-rendering-balance"]'),
+    page.locator('kui-select[name="plain-rendering-balance"]'),
     ['quiet'],
   );
 });

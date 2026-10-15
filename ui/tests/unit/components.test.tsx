@@ -2678,7 +2678,7 @@ describe('production UI primitives', () => {
     );
   });
 
-  it('renders grouped and ungrouped Web Awesome select choices without registering elements', () => {
+  it('renders grouped and ungrouped Select choices without registering elements', () => {
     const grouped = asHtml(
       Select({
         name: 'mode',
@@ -2747,7 +2747,7 @@ describe('production UI primitives', () => {
     expect(customRoundIcon).toContain('kui-select__custom-selected');
     // "Manual" opens the separated "Other" group, whose border is already the
     // separator, so its separatorBefore must not add a second divider.
-    expect(grouped).not.toContain('<wa-divider');
+    expect(grouped).not.toContain('kui-select__separator');
     const divided = asHtml(
       Select({
         name: 'divided',
@@ -2762,30 +2762,17 @@ describe('production UI primitives', () => {
     );
     // Only the within-group divider renders: before "B", not before the
     // menu's first choice.
-    expect(divided.match(/<wa-divider[ >]/g)).toHaveLength(1);
+    expect(divided.match(/class="kui-select__separator"/g)).toHaveLength(1);
     expect(divided).toMatch(
-      /<wa-divider[^>]*><\/wa-divider><wa-option value="b">/,
+      /<div class="kui-select__separator" role="separator"><\/div><div class="kui-select__option" role="option" tabindex="-1" data-value="b"/,
     );
-    // The separator semantics Web Awesome would set once on the host, and the
-    // orientation it reflects, are rendered, so a kerf re-render cannot strip
-    // them.
-    expect(divided).toContain(
-      '<wa-divider orientation="horizontal" role="separator" aria-orientation="horizontal"></wa-divider>',
-    );
-    // Web Awesome's reflected defaults are rendered for the same reason.
-    expect(divided).toMatch(
-      /^<wa-select size="m" appearance="outlined" placement="bottom" /,
-    );
+    // The root is the form-associated kui-select element, not wa-select.
+    expect(divided).toMatch(/^<kui-select class="kui-select" /);
+    expect(divided).not.toContain('<wa-');
     expect(grouped).toContain('<strong>Balanced</strong>');
     expect(grouped).toContain('class="kui-select__custom-selected-content"');
     expect(grouped).toContain(
-      'data-key="mode:balanced:custom-selected" slot="start" class="kui-select__custom-selected"',
-    );
-    expect(grouped).toContain(
-      'data-key="mode:balanced:option" data-morph-skip slot="start" class="kui-select__icon"',
-    );
-    expect(grouped).toContain(
-      'data-key="mode:manual:option" data-morph-skip slot="start" class="kui-select__icon"',
+      '<span class="kui-select__icon" style="color:var(--kui-color-success-on-quiet)" aria-hidden="true">',
     );
     const plain = asHtml(
       Select({
@@ -2799,8 +2786,10 @@ describe('production UI primitives', () => {
       }),
     );
     expect(plain).toContain(
-      'aria-label="Plain" value="one" placeholder="Choose" hint="Choose the primary option." disabled',
+      'aria-label="Plain" aria-description="Choose the primary option." disabled',
     );
+    expect(plain).toContain('<kui-select class="kui-select"');
+    expect(plain).toMatch(/ disabled><button/);
     const title = asHtml(
       Select({
         name: 'view',
@@ -2813,12 +2802,11 @@ describe('production UI primitives', () => {
     );
     expect(title).toContain('data-presentation="title"');
     expect(title).toContain('data-focus-ring-inset="true"');
-    expect(plain).toContain(
-      'data-key="plain:one:selected" data-morph-skip slot="start" class="kui-select__icon kui-select__icon--selected"',
-    );
-    expect(plain).toContain(
-      'data-key="plain:one:option" data-morph-skip slot="start" class="kui-select__icon"',
-    );
+    // The chosen choice's icon leads the trigger; every option keeps its own.
+    expect(
+      plain.match(/class="kui-select__icon kui-select__icon--selected"/g),
+    ).toHaveLength(1);
+    expect(plain.match(/class="kui-select__icon"/g)).toHaveLength(1);
     expect(plain).toContain('data-lucide="one"');
     expect(
       asHtml(
@@ -2829,7 +2817,7 @@ describe('production UI primitives', () => {
           choices: [{ value: 'one', label: 'One' }] as SelectChoice[],
         }),
       ),
-    ).not.toContain('slot="start"');
+    ).not.toContain('kui-select__icon');
     const onlyGrouped = asHtml(
       Select({
         name: 'grouped',
@@ -2873,7 +2861,7 @@ describe('production UI primitives', () => {
     expect(html).toContain('data-caret="false"');
     expect(html).toContain('kui-select--custom-selected');
     expect(html).toContain('<strong>Open</strong>');
-    expect(html).toContain('<wa-option');
+    expect(html).toContain('role="option"');
   });
 
   it('renders disabled Select choices and opt-in multiple actions', () => {
@@ -2897,8 +2885,9 @@ describe('production UI primitives', () => {
       }),
     );
     expect(multiple).toContain(
-      '<wa-option value="browsers" disabled title="Not yet supported">Web Browsers</wa-option>',
+      'data-value="browsers" aria-selected="false" aria-disabled="true" title="Not yet supported"',
     );
+    expect(multiple).toContain('aria-multiselectable="true"');
     expect(multiple).toContain('data-select-action="all"');
     expect(multiple).toContain('data-select-action="clear"');
     expect(multiple).toContain('role="group" aria-label="Item Types"');
@@ -2911,6 +2900,39 @@ describe('production UI primitives', () => {
       }),
     );
     expect(single).not.toContain('kui-select__actions');
+  });
+
+  it('renders one-sided Select footers, derived icon names, and a caretless placeholder', () => {
+    const footer = (props: { selectAllLabel?: string; clearLabel?: string }) =>
+      asHtml(
+        Select({
+          name: 'types',
+          multiple: true,
+          value: [],
+          ariaLabel: 'Types',
+          choices: [{ value: 'a', label: 'Big Files', icon: Plus }],
+          ...props,
+        }),
+      );
+    const all = footer({ selectAllLabel: 'All' });
+    expect(all).toContain('data-select-action="all"');
+    expect(all).not.toContain('data-select-action="clear"');
+    expect(all).toContain('data-lucide="big-files"');
+    const clear = footer({ clearLabel: 'Clear' });
+    expect(clear).toContain('data-select-action="clear"');
+    expect(clear).not.toContain('data-select-action="all"');
+    const loading = asHtml(
+      Select({
+        name: 'loading',
+        value: 'a',
+        ariaLabel: 'Loading',
+        caret: false,
+        placeholder: true,
+        choices: [{ value: 'a', label: 'A' }],
+      }),
+    );
+    expect(loading).toContain('kui-select__placeholder-box');
+    expect(loading).not.toContain('kui-select__caret');
   });
 
   it('renders a multiple Select as selected options without a single value or selected icon', () => {
@@ -2929,19 +2951,21 @@ describe('production UI primitives', () => {
         ],
       }),
     );
-    const select = host.querySelector('wa-select')!;
+    const select = host.querySelector('kui-select')!;
     expect(select.hasAttribute('multiple')).toBe(true);
     // The value attribute holds one string; the options carry the value.
     expect(select.hasAttribute('value')).toBe(false);
     expect(select.getAttribute('name')).toBe('labels');
-    expect(select.getAttribute('placeholder')).toBe('No labels');
-    expect(
-      [...select.querySelectorAll('wa-option[selected]')].map((option) =>
-        option.getAttribute('value'),
-      ),
-    ).toEqual(['bug', 'design']);
+    const chosen = (root: Element) =>
+      [...root.querySelectorAll('[role="option"][aria-selected="true"]')].map(
+        (option) => option.getAttribute('data-value'),
+      );
+    expect(chosen(select)).toEqual(['bug', 'design']);
+    expect(select.querySelector('.kui-select__value')!.textContent).toBe(
+      'Bug, Design',
+    );
     // Only option icons; no leading selected-choice icon on the trigger.
-    expect(select.querySelector(':scope > [slot="start"]')).toBe(null);
+    expect(select.querySelector('.kui-select__icon--selected')).toBe(null);
     expect(select.getAttribute('data-selected-presentation')).toBe('label');
 
     const empty = document.createElement('div');
@@ -2951,10 +2975,14 @@ describe('production UI primitives', () => {
         multiple: true,
         value: [],
         ariaLabel: 'Labels',
+        placeholderText: 'No labels',
         choices: [{ value: 'bug', label: 'Bug' }],
       }),
     );
-    expect(empty.querySelector('wa-option[selected]')).toBe(null);
+    expect(chosen(empty)).toEqual([]);
+    const emptyValue = empty.querySelector('.kui-select__value')!;
+    expect(emptyValue.getAttribute('data-placeholder')).toBe('true');
+    expect(emptyValue.textContent).toBe('No labels');
 
     const single = document.createElement('div');
     single.innerHTML = asHtml(
@@ -2965,10 +2993,10 @@ describe('production UI primitives', () => {
         choices: [{ value: 'bug', label: 'Bug' }],
       }),
     );
-    const singleSelect = single.querySelector('wa-select')!;
+    const singleSelect = single.querySelector('kui-select')!;
     expect(singleSelect.hasAttribute('multiple')).toBe(false);
     expect(singleSelect.getAttribute('value')).toBe('bug');
-    expect(singleSelect.querySelector('wa-option[selected]')).toBe(null);
+    expect(chosen(singleSelect)).toEqual(['bug']);
   });
 
   it('renders a multiple icon-only Select as a fixed trigger icon, a count badge, and a name that ends with the summary', () => {
@@ -2990,35 +3018,40 @@ describe('production UI primitives', () => {
           ],
         }),
       );
-      return host.querySelector('wa-select')!;
+      return host.querySelector('kui-select')!;
     };
     const select = render(['design', 'bug']);
     expect(select.getAttribute('data-selected-presentation')).toBe('icon-only');
     expect(select.hasAttribute('multiple')).toBe(true);
+    const trigger = select.querySelector('.kui-select__trigger')!;
     // The trigger icon names the menu; no chosen option's icon leads.
-    const start = select.querySelectorAll(':scope > [slot="start"]');
-    expect(start).toHaveLength(1);
-    expect(start[0]!.classList.contains('kui-select__trigger-icon')).toBe(true);
-    expect(start[0]!.querySelector('svg')!.getAttribute('data-lucide')).toBe(
+    const icons = trigger.querySelectorAll('.kui-select__icon');
+    expect(icons).toHaveLength(1);
+    expect(icons[0]!.classList.contains('kui-select__trigger-icon')).toBe(true);
+    expect(icons[0]!.querySelector('svg')!.getAttribute('data-lucide')).toBe(
       'funnel',
     );
     // The count is decorative; the accessible name carries the summary.
-    const count = select.querySelector(':scope > [slot="end"]')!;
-    expect(count.getAttribute('data-component')).toBe('badge');
+    const count = trigger.querySelector('[data-component="badge"]')!;
     expect(count.getAttribute('aria-hidden')).toBe('true');
     expect(count.textContent).toBe('2');
-    const name = select.querySelector(':scope > [slot="label"]')!;
-    expect(name.textContent).toBe('Filter by Label');
-    const summary = name.querySelector('.kui-select__name-summary')!;
-    expect(summary.hasAttribute('data-morph-skip')).toBe(true);
-    expect(select.classList.contains('kui-select--label-hidden')).toBe(true);
+    expect(trigger.getAttribute('aria-label')).toBe(
+      'Filter by Label: Bug, Design',
+    );
+    expect(trigger.querySelector('.kui-select__value')!.textContent).toBe('');
+    expect(select.querySelector('.kui-select__label')).toBe(null);
 
-    // Nothing chosen: no count badge.
-    expect(render([]).querySelector('[slot="end"]')).toBe(null);
+    // Nothing chosen: no count badge, and the bare name.
+    const none = render([]);
+    expect(none.querySelector('[data-component="badge"]')).toBe(null);
+    expect(
+      none.querySelector('.kui-select__trigger')!.getAttribute('aria-label'),
+    ).toBe('Filter by Label');
     // The count ignores values that match no choice.
     expect(
-      render(['bug', 'missing' as 'bug']).querySelector('[slot="end"]')!
-        .textContent,
+      render(['bug', 'missing' as 'bug']).querySelector(
+        '[data-component="badge"]',
+      )!.textContent,
     ).toBe('1');
   });
 
@@ -3043,29 +3076,29 @@ describe('production UI primitives', () => {
             : {}),
         }),
       );
-      return host.querySelector('wa-select')!;
+      return host.querySelector('kui-select')!;
     };
+    const name = (select: Element) =>
+      select.querySelector('.kui-select__trigger')!.getAttribute('aria-label');
+    const shown = (select: Element) =>
+      select.querySelector('.kui-select__label')?.textContent ?? null;
     for (const custom of [false, true]) {
       const hidden = render({ ariaLabel: 'Project' }, custom);
-      expect(hidden.getAttribute('label')).toBe('Project');
-      expect(hidden.classList.contains('kui-select--label-hidden')).toBe(true);
+      expect(name(hidden)).toBe('Project');
+      expect(shown(hidden)).toBe(null);
       expect(hidden.getAttribute('value')).toBe('one');
       const visible = render({ label: 'Visible project' }, custom);
-      expect(visible.getAttribute('label')).toBe('Visible project');
-      expect(visible.classList.contains('kui-select--label-hidden')).toBe(
-        false,
-      );
+      expect(name(visible)).toBe('Visible project');
+      expect(shown(visible)).toBe('Visible project');
       const both = render(
         { label: 'Visible project', ariaLabel: 'Fallback' },
         custom,
       );
-      expect(both.getAttribute('label')).toBe('Visible project');
-      expect(both.classList.contains('kui-select--label-hidden')).toBe(false);
-      expect(
-        render({ label: '', ariaLabel: 'Fallback' }, custom).getAttribute(
-          'label',
-        ),
-      ).toBe('Fallback');
+      expect(name(both)).toBe('Visible project');
+      expect(shown(both)).toBe('Visible project');
+      const empty = render({ label: '', ariaLabel: 'Fallback' }, custom);
+      expect(name(empty)).toBe('Fallback');
+      expect(shown(empty)).toBe(null);
     }
   });
 

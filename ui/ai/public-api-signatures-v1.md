@@ -3525,11 +3525,28 @@ export { wireComposers };
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { KerfCustomElement } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssForegroundColor } from './css-values.js';
 import { LucideNode } from './lucide-icon.js';
 import 'lucide';
 
+declare module 'kerfjs/jsx-runtime' {
+    namespace JSX {
+        interface IntrinsicElements {
+            /** The Select root: a light-DOM form control defined by `select/register`. */
+            'kui-select': KerfCustomElement & {
+                class?: string;
+                name?: string;
+                value?: string;
+                multiple?: boolean;
+                disabled?: boolean;
+                style?: string;
+                slot?: string;
+            };
+        }
+    }
+}
 interface SelectChoice<Value extends string = string> {
     value: Value;
     label: string;
@@ -3571,9 +3588,9 @@ interface SelectBaseProps<Value extends string = string> {
     name: string;
     choices: readonly SelectChoice<Value>[];
     className?: string;
-    /** Empty-value hint text shown in the closed control (the native select placeholder). */
+    /** Empty-value hint text shown in the closed control. */
     placeholderText?: string;
-    /** Supporting text shown below the control and associated with its combobox. */
+    /** Supporting text shown below the control and announced as its description. */
     hint?: string;
     disabled?: boolean;
     /** Match menu width to the trigger; default menus grow to content within viewport gutters. */
@@ -3609,8 +3626,8 @@ interface SelectSingleValueProps<Value extends string = string> {
 }
 /**
  * Any number of chosen values. The popup stays open while the person toggles
- * choices and closes on an outside click, Escape, or focus leaving; the closed
- * control summarizes the chosen labels in choice order.
+ * choices and closes on an outside press, Escape, or Tab; the closed control
+ * summarizes the chosen labels in choice order.
  */
 interface SelectMultipleLabelProps<Value extends string = string> {
     multiple: true;
@@ -3627,7 +3644,7 @@ interface SelectMultipleLabelProps<Value extends string = string> {
  * A multiple Select drawn as an icon-only toolbar trigger, such as a
  * "Filter by label" funnel. No single choice is selected, so the trigger shows
  * a fixed `triggerIcon` naming the menu's purpose; while any choice is chosen
- * a count badge sits beside it, and the combobox's accessible name ends with
+ * a count badge sits beside it, and the trigger's accessible name ends with
  * the chosen labels in choice order.
  */
 interface SelectMultipleIconProps<Value extends string = string> {

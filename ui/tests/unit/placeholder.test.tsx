@@ -463,7 +463,7 @@ describe('component placeholder mode', () => {
     expect(html.match(/class="kui-skeleton"/g)).toHaveLength(1);
   });
 
-  it('Select renders a static control box instead of the interactive wa-select', () => {
+  it('Select renders a static control box instead of the interactive Select', () => {
     const html = asHtml(
       Select({
         name: 'status',
@@ -478,11 +478,12 @@ describe('component placeholder mode', () => {
     expect(html).toContain('data-placeholder="true"');
     expect(html).toContain('Status');
     expect(html).toContain('kui-skeleton');
-    expect(html).toContain('kui-select__placeholder-chevron');
+    expect(html).toContain('kui-select__caret');
     expect(html).toContain(
-      '<span class="kui-select__placeholder-hint">Current workflow state.</span>',
+      '<span class="kui-select__hint">Current workflow state.</span>',
     );
-    expect(html).not.toContain('<wa-select');
+    expect(html).not.toContain('kui-select__trigger');
+    expect(html).not.toContain('<kui-select');
   });
 
   it('Select placeholder omits the label element when no label is given', () => {
@@ -496,7 +497,7 @@ describe('component placeholder mode', () => {
       }),
     );
     expect(html).toContain('kui-select--placeholder');
-    expect(html).not.toContain('kui-select__placeholder-label');
+    expect(html).not.toContain('kui-select__label');
     expect(html).toContain('kui-skeleton');
   });
 
@@ -510,8 +511,9 @@ describe('component placeholder mode', () => {
         choices: [{ value: 'open', label: 'Open' }],
       }),
     );
-    expect(html).toContain('<wa-select');
-    expect(html).toContain('placeholder="Choose a status"');
+    expect(html).toContain('<kui-select');
+    expect(html).toContain('data-placeholder-text="Choose a status"');
+    expect(html).toContain('>Choose a status</span>');
   });
 });
 

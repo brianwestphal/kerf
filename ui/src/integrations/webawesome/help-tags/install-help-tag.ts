@@ -17,17 +17,14 @@
 //   trigger with a programmatic anchor, not `for`, so Web Awesome does not
 //   add it) — assistive technology hears the name once.
 //
-// A Select's tag lives in the control's open shadow root, so the morph never
-// sees it, `:has([open])` selectors on the light DOM ignore it, and it
-// inherits the control's theme. A plain button or a PopupMenu has no shadow
-// root, so its tag lives in one body-level layer (re-attached if a body morph
-// drops it, and removed again once hidden) and copies the button's
-// `color-scheme`; the tag's Popover-API popup renders in the top layer, so its
-// place in the document does not affect where or above what it shows. A
-// button that already has a native `title`, or a Web Awesome tooltip `for` it,
-// keeps that and gets no second tag. Each tag's own lifecycle events stop at
-// the tag so an application listening for the control's `wa-show` / `wa-hide`
-// never hears the tag's.
+// Every tag lives in one body-level layer (re-attached if a body morph drops
+// it, and removed again once hidden), outside the control so the morph never
+// sees it and `:has()` selectors on the control ignore it, and copies its
+// trigger's `color-scheme`; the tag's Popover-API popup renders in the top
+// layer, so its place in the document does not affect where or above what it
+// shows. A button that already has a native `title`, or a Web Awesome tooltip
+// `for` it, keeps that and gets no second tag. Each tag's own lifecycle events
+// stop at the tag, so they never reach an application's listeners.
 
 /** Hover delay before a help tag appears. */
 export const HELP_TAG_SHOW_DELAY = 500;
@@ -36,10 +33,7 @@ export const HELP_TAG_WARM_WINDOW = 400;
 /** A tag shifted inward stays this far from the viewport edge. */
 export const HELP_TAG_VIEWPORT_MARGIN = 8;
 
-interface HelpTagHost extends HTMLElement {
-  open?: boolean;
-  selectedOptions?: readonly (HTMLElement & { label?: string })[];
-}
+type HelpTagHost = HTMLElement;
 
 interface HelpTag extends HTMLElement {
   open: boolean;
@@ -77,21 +71,17 @@ const MENU_LABEL = ':scope > .kui-popup-menu__trigger > .kui-popup-menu__label';
 const isPlainControl = (host: HelpTagHost): boolean =>
   host.localName === 'button' || host.localName === 'a';
 
-/** A PopupMenu root: light DOM, with its trigger and menu inside. */
-const isPopupMenu = (host: HelpTagHost): boolean =>
-  host.dataset.component === 'popup-menu';
-
-/** Hosts without a shadow root keep their tag in the body-level layer. */
-const usesLayer = (host: HelpTagHost): boolean =>
-  isPlainControl(host) || isPopupMenu(host);
+/** A Select root: its trigger, value, and listbox are light DOM. */
+const isSelect = (host: HelpTagHost): boolean =>
+  host.dataset.component === 'select';
 
 /** Whether the control's own popup is showing. */
 const popupOpen = (host: HelpTagHost): boolean =>
-  isPopupMenu(host)
-    ? host
+  isSelect(host)
+    ? host.hasAttribute('open')
+    : host
         .querySelector(':scope > .kui-popup-menu__trigger')
-        ?.getAttribute('aria-expanded') === 'true'
-    : host.open === true;
+        ?.getAttribute('aria-expanded') === 'true';
 
 /** An element's text with whitespace collapsed (an element's is never null). */
 const words = (node: Element): string =>
@@ -129,7 +119,7 @@ function helpTagHost(path: readonly EventTarget[]): HelpTagHost | null {
     const { component, selectedPresentation } = target.dataset;
     if (
       component === 'select' &&
-      target.localName === 'wa-select' &&
+      target.localName === 'kui-select' &&
       selectedPresentation === 'icon-only'
     )
       return target;
@@ -142,23 +132,23 @@ function helpTagHost(path: readonly EventTarget[]): HelpTagHost | null {
 /** The visible trigger the tag describes and anchors to. */
 function anchorOf(host: HelpTagHost): Element | null {
   if (isPlainControl(host)) return host;
-  if (host.dataset.component === 'select')
-    return host.shadowRoot?.querySelector('[part~="combobox"]') ?? null;
-  return host.querySelector(':scope > .kui-popup-menu__trigger');
+  return host.querySelector(
+    isSelect(host)
+      ? ':scope > .kui-select__trigger'
+      : ':scope > .kui-popup-menu__trigger',
+  );
 }
 
 /** The tag text: the same words as the trigger's accessible name. */
 function helpText(host: HelpTagHost): string {
   if (isPlainControl(host)) return ariaLabel(host);
-  // An icon-only PopupMenu's visually hidden label, or a multiple icon
-  // trigger's label slot (it already ends with the chosen labels).
-  const label =
-    host.querySelector(MENU_LABEL) ??
-    host.querySelector(':scope > [slot="label"]');
-  if (label) return words(label);
-  const name = host.getAttribute('label') ?? '';
-  const chosen = host.selectedOptions?.[0];
-  const choice = chosen ? chosen.label || words(chosen) : '';
+  if (!isSelect(host)) return words(host.querySelector(MENU_LABEL)!);
+  // A Select's trigger name (a multiple icon trigger's already ends with the
+  // chosen labels), then a single choice's visually hidden value.
+  const trigger = anchorOf(host)!;
+  const name = ariaLabel(trigger);
+  const value = trigger.querySelector('.kui-select__value');
+  const choice = value ? words(value) : '';
   return choice && choice !== name ? `${name}: ${choice}` : name;
 }
 
@@ -203,10 +193,8 @@ export function installHelpTags(
     return layer;
   };
 
-  const tagFor = (host: HelpTagHost): HelpTag | null => {
-    const plain = usesLayer(host);
-    const root = plain ? layerRoot() : host.shadowRoot;
-    if (!root) return null;
+  const tagFor = (host: HelpTagHost): HelpTag => {
+    const root = layerRoot();
     let tag = tags.get(host);
     if (!tag) {
       tag = doc.createElement('wa-tooltip') as HelpTag;
@@ -217,16 +205,14 @@ export function installHelpTags(
       tag.style.pointerEvents = 'none';
       for (const type of LIFECYCLE_EVENTS)
         tag.addEventListener(type, (event) => event.stopPropagation());
-      if (plain) {
-        // A hidden button tag leaves the layer, so tags for buttons that a
-        // re-render replaced never accumulate there.
-        const created = tag;
-        created.addEventListener('wa-after-hide', () => {
-          if (created.open) return;
-          created.remove();
-          tags.delete(host);
-        });
-      }
+      // A hidden tag leaves the layer, so tags for controls that a re-render
+      // replaced never accumulate there.
+      const created = tag;
+      created.addEventListener('wa-after-hide', () => {
+        if (created.open) return;
+        created.remove();
+        tags.delete(host);
+      });
       root.append(tag);
       tags.set(host, tag);
     }
@@ -248,12 +234,10 @@ export function installHelpTags(
     const text = helpText(host);
     if (!anchor || !text) return;
     const tag = tagFor(host);
-    if (!tag) return;
     if (shown) hide(shown.host);
-    // A body-layer tag takes its button's light or dark scheme, which a
+    // A body-layer tag takes its trigger's light or dark scheme, which a
     // subtree theme (`.wa-dark`) may set below the document root.
-    if (usesLayer(host))
-      tag.style.colorScheme = window.getComputedStyle(anchor).colorScheme;
+    tag.style.colorScheme = window.getComputedStyle(anchor).colorScheme;
     tag.anchor = anchor;
     tag.textContent = text;
     tag.open = true;
@@ -391,17 +375,8 @@ export function installHelpTags(
     true,
   );
 
-  // Opening the popup hides the tag: the menu itself now shows the choices.
-  doc.addEventListener(
-    'wa-show',
-    (event) => {
-      const host = helpTagHost(event.composedPath());
-      if (host && event.composedPath()[0] === host) dismiss(host);
-    },
-    true,
-  );
-
-  // A PopupMenu's menu is a native popover: its opening hides the tag too.
+  // Opening the popup (a native popover) hides the tag: the popup itself now
+  // shows the choices.
   doc.addEventListener(
     'beforetoggle',
     (event) => {
@@ -409,7 +384,9 @@ export function installHelpTags(
       if (
         (event as ToggleEvent).newState !== 'open' ||
         !(menu instanceof HTMLElement) ||
-        !menu.matches('.kui-popup-menu > .kui-popup-menu__menu')
+        !menu.matches(
+          '.kui-popup-menu > .kui-popup-menu__menu, kui-select > .kui-select__popup',
+        )
       )
         return;
       const host = menu.parentElement as HelpTagHost;

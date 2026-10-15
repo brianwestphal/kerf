@@ -477,11 +477,14 @@ describe('consumer bundle boundaries', () => {
     expect(output(pure, '.css')).toContain('.kui-select');
     expect(output(pure, '.css')).toContain('[data-lucide]');
     const registered = await bundle("import '@kerfjs/ui/select/register';");
-    expect(output(pure, '.js')).not.toContain('@kerfjs/ui/select-lifecycle');
-    expect(output(registered, '.js')).toContain('@kerfjs/ui/select-lifecycle');
-    expect(Object.keys(registered.metafile!.inputs).join('\n')).toContain(
-      '@awesome.me/webawesome',
-    );
+    // The form-associated kui-select element ships only with registration.
+    expect(output(pure, '.js')).not.toContain('setFormValue');
+    expect(output(registered, '.js')).toContain('setFormValue');
+    // Registration brings only the help tag's tooltip from Web Awesome.
+    const inputs = Object.keys(registered.metafile!.inputs).join('\n');
+    expect(inputs).toContain('components/tooltip/tooltip.js');
+    expect(inputs).not.toContain('components/select/select.js');
+    expect(inputs).not.toContain('components/option/option.js');
   });
 
   it('keeps toolbar help tags behind their own registration subpath', async () => {

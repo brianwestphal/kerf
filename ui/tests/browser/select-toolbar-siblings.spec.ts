@@ -15,9 +15,9 @@ function groupGeometry(select: Locator) {
     const group = host.closest<HTMLElement>('.kui-toolbar-control-group')!;
     const outer = group.getBoundingClientRect();
     const visual = (child: Element) => {
-      if (child.tagName === 'WA-SELECT')
-        return child.shadowRoot!.querySelector<HTMLElement>(
-          '[part~="combobox"]',
+      if (child.classList.contains('kui-select'))
+        return child.querySelector<HTMLElement>(
+          ':scope > .kui-select__trigger',
         )!;
       if (child.classList.contains('kui-popup-menu'))
         return child.querySelector<HTMLElement>('.kui-popup-menu__trigger')!;
@@ -43,14 +43,16 @@ function groupGeometry(select: Locator) {
   });
 }
 
-function ringOf(element: Locator, part?: string) {
-  return element.evaluate((host, partName) => {
-    const target = partName
-      ? host.shadowRoot!.querySelector<HTMLElement>(`[part~="${partName}"]`)!
+const TRIGGER = ':scope > .kui-select__trigger';
+
+function ringOf(element: Locator, selector?: string) {
+  return element.evaluate((host, inner) => {
+    const target = inner
+      ? host.querySelector<HTMLElement>(inner)!
       : (host as HTMLElement);
     const style = window.getComputedStyle(target);
     return `${style.outlineStyle} ${style.outlineWidth} ${style.outlineColor} +${style.outlineOffset}`;
-  }, part);
+  }, selector);
 }
 
 test('icon-only Select shares inset, gaps, radius, hover, and focus ring with sibling controls', async ({
@@ -58,7 +60,7 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=toolbar-control-group');
-  const select = page.locator('wa-select[name="toolbar-group-sort"]');
+  const select = page.locator('kui-select[name="toolbar-group-sort"]');
   const group = select.locator('xpath=..');
   const pressed = group.locator('> button[aria-pressed="true"]');
   const trigger = group.locator('.kui-popup-menu > .kui-popup-menu__trigger');
@@ -74,7 +76,9 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
       (element, [nextSize, nextShape]) => {
         element.setAttribute('data-size', nextSize);
         element.setAttribute('data-shape', nextShape);
-        element.querySelector('wa-select')!.setAttribute('data-size', nextSize);
+        element
+          .querySelector('kui-select')!
+          .setAttribute('data-size', nextSize);
       },
       [size, shape] as const,
     );
@@ -85,7 +89,7 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
     expect(groupHeight).toBe(height + blockInset * 2);
     expect(segments.map((segment) => segment.tag)).toEqual([
       'BUTTON',
-      'WA-SELECT',
+      'KUI-SELECT',
       'POPUP-MENU',
     ]);
     for (const segment of segments) {
@@ -127,7 +131,7 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
         select.evaluate(
           (host) =>
             window.getComputedStyle(
-              host.shadowRoot!.querySelector('[part~="combobox"]')!,
+              host.querySelector(':scope > .kui-select__trigger')!,
             ).backgroundColor,
         ),
       )
@@ -146,7 +150,7 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
     const buttonRing = await ringOf(pressed);
     expect(buttonRing).toMatch(/^solid 3px .* \+1px$/);
     await select.getByRole('combobox').focus();
-    await expect.poll(() => ringOf(select, 'combobox')).toBe(buttonRing);
+    await expect.poll(() => ringOf(select, TRIGGER)).toBe(buttonRing);
     expect(
       await group.evaluate(
         (element) => window.getComputedStyle(element).outlineStyle,
@@ -154,15 +158,15 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
     ).toBe('none');
     // While the listbox is open it shows focus itself, so the trigger ring is
     // off (as a PopupMenu trigger's is) and returns when the listbox closes.
-    await select.click();
+    await select.getByRole('combobox').click();
     await expect(select).toHaveAttribute('open');
     await page.keyboard.press('ArrowDown');
     await expect
-      .poll(() => ringOf(select, 'combobox'))
+      .poll(() => ringOf(select, TRIGGER))
       .toMatch(/rgba\(0, 0, 0, 0\)/);
     await page.keyboard.press('Escape');
     await expect(select).not.toHaveAttribute('open');
-    await expect.poll(() => ringOf(select, 'combobox')).toBe(buttonRing);
+    await expect.poll(() => ringOf(select, TRIGGER)).toBe(buttonRing);
 
     // A Select told that the group owns its ring still paints one when the
     // group only paints per-control rings; nothing else would show focus.
@@ -171,7 +175,7 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
     );
     await trigger.focus();
     await select.getByRole('combobox').focus();
-    await expect.poll(() => ringOf(select, 'combobox')).toBe(buttonRing);
+    await expect.poll(() => ringOf(select, TRIGGER)).toBe(buttonRing);
     await select.evaluate((host) =>
       host.setAttribute('data-focus-ring-owner', 'select'),
     );

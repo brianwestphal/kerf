@@ -110,32 +110,30 @@ even when the selected content shows its own short text.
 
 Use `hint` for persistent supporting text below the control; use
 `placeholderText` only for the empty value shown inside the closed control.
-Kerf passes hint text through Web Awesome's form-control contract, which renders
-the hint part and connects the shadow combobox to it with `aria-describedby`.
-The accessible control is that shadow combobox, not the `wa-select` wrapper;
-inspect or test the element returned by the `combobox` role. Both the `hint`
-attribute used by Kerf and Web Awesome's explicit `hint` slot produce a computed
-accessible description in Chromium, Firefox, and WebKit, so applications do not
-need an `aria-description` mirror or a shadow-DOM patch.
+The hint renders below the control and is the trigger's `aria-description`. The
+accessible control is the light-DOM trigger button (`role="combobox"`), not the
+`kui-select` root; inspect or test the element returned by the `combobox` role.
 Loading placeholders keep the same visible hint while replacing the interactive
 control with inert chrome.
 
 `tests/unit/components.test.tsx` covers name projection and visible/hidden label
 variants. `tests/browser/select-accessibility.spec.ts` verifies actual accessible
 names, unchanged unlabeled geometry, keyboard selection, controlled rerenders,
-native hint wiring, and wide/narrow presentation in Chromium, Firefox, and WebKit.
+hint wiring, and wide/narrow presentation in Chromium, Firefox, and WebKit.
 
-The explicit `@kerfjs/ui/select/register` import also installs the canonical
-Select lifecycle adapter. The latest open/close request owns animation completion
-and deferred option focus. A stale close cannot hide a reopened popup after
-resize; stale completion events are not emitted. Preventing `wa-show` or
-`wa-hide` retains the accepted closed/open state, and removal prevents deferred
-activation. Native option selection, keyboard behavior, dismissal listeners,
-and popup anchor placement remain with Web Awesome. Raw `wa-select` elements
-without the canonical `data-component="select"` marker are unchanged.
-`tests/unit/select-lifecycle.test.ts` and `animate-select-popup.test.ts` cover
-repeated and out-of-order completions, cancellation, instance isolation, and
-removal. `tests/browser/select-lifecycle.spec.ts` repeats animation/resize/reopen
+The explicit `@kerfjs/ui/select/register` import defines the form-associated
+`kui-select` root and wires every Select in the document. The trigger opens the
+listbox (`role="listbox"`, `aria-multiselectable` when `multiple`) as a manual
+popover in the top layer, below the trigger and flipping above when short, with
+focus on the chosen option. In the listbox the arrow keys move and wrap,
+Home/End jump, typing a label's first letters moves to it, and Enter or Space
+chooses; a single Select then closes and returns focus to the trigger, while a
+multiple Select stays open. Escape closes and returns focus to the trigger; Tab
+and an outside press close it. Options are `role="option"` elements with
+`aria-selected` and, for a disabled choice, `aria-disabled`; the template
+renders them, so a re-render keeps them. `tests/unit/select-controller.test.tsx`
+covers the keyboard, choice, and form contracts;
+`tests/browser/select-lifecycle.spec.ts` repeats open/close/resize/reopen
 sequences at wide and narrow widths in Chromium, Firefox, and WebKit.
 
 ### Help tags on icon-only triggers

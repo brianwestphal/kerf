@@ -91,7 +91,7 @@ const RULES: Record<string, CaseRule> = {
     ignoreStyles: ['[data-segment-value="name"]'],
   },
   // The Select placeholder is a static box standing in for the live
-  // wa-select's shadow tree; placeholder.spec.ts compares it part by part.
+  // trigger and its listbox; placeholder.spec.ts compares it part by part.
   select: { rootOnly: true },
 };
 
@@ -144,14 +144,7 @@ async function mountFixture(page: Page, { webAwesome = true } = {}) {
   });
   await page.addScriptTag({ content: javascript.text });
   await page.evaluate(async () => {
-    await customElements.whenDefined('wa-select');
-    await Promise.all(
-      [...document.querySelectorAll('wa-select')].map(
-        (select) =>
-          (select as HTMLElement & { updateComplete?: Promise<unknown> })
-            .updateComplete,
-      ),
-    );
+    await customElements.whenDefined('kui-select');
     await document.fonts.ready;
   });
 }

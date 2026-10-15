@@ -100,6 +100,7 @@
   inset: auto;
   box-sizing: border-box;
   width: max-content;
+  max-width: var(--_kui-popup-available-width, none);
   margin: 0;
   padding: var(--_kui-popup-inset);
   overflow: auto;

@@ -631,9 +631,7 @@ export const generatedKerfCatalog = [
     "description": "Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.",
     "uses": [
       "lucide-icon",
-      "badge",
-      "wa-select",
-      "wa-option"
+      "badge"
     ],
     "demoSource": "ui/ux-demo/demos/select.tsx",
     "componentSource": "ui/src/components/forms/select/select.tsx",

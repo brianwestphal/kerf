@@ -504,7 +504,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
         'wa-textarea[name="recipe-body"]',
       )!;
       const select = root.querySelector<HTMLElement>(
-        'wa-select[name="recipe-audience"]',
+        'kui-select[name="recipe-audience"]',
       )!;
       const inputLabel = input.shadowRoot!.querySelector<HTMLElement>(
         '[part~="form-control-label"]',
@@ -520,8 +520,8 @@ test('keeps the composer on one labeled surface with shared field and action gut
         textarea.shadowRoot!.querySelector<HTMLElement>('[part~="count"]')!;
       const textareaControl =
         textarea.shadowRoot!.querySelector<HTMLElement>('[part~="textarea"]')!;
-      const selectLabel = select.shadowRoot!.querySelector<HTMLElement>(
-        '[part~="form-control-label"]',
+      const selectLabel = select.querySelector<HTMLElement>(
+        ':scope > .kui-select__label',
       )!;
       const textareaBounds = textarea.getBoundingClientRect();
       const countBounds = textareaCount.getBoundingClientRect();
@@ -616,7 +616,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
     for (const field of [
       'wa-input[name="recipe-title"]',
       'wa-textarea[name="recipe-body"]',
-      'wa-select[name="recipe-audience"]',
+      'kui-select[name="recipe-audience"]',
     ])
       await expect(form.locator(field)).toBeVisible();
     await expect(form.getByRole('button', { name: 'Reset' })).toBeVisible();

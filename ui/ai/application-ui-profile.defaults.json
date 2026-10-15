@@ -74,7 +74,7 @@
     "value-selection": {
       "preferred": "@kerfjs/ui:select",
       "avoid": ["@kerfjs/ui:wa-select", "@kerfjs/ui:wa-option"],
-      "rationale": "Render Select, which wraps wa-select and wa-option with Kerf's popup and spacing contract."
+      "rationale": "Render Select, which replaces wa-select and wa-option with Kerf's own popup, form, and spacing contract."
     }
   },
   "theme": {

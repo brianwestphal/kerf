@@ -7,19 +7,14 @@ import {
   installHelpTags,
 } from '../../src/integrations/webawesome/help-tags/install-help-tag.js';
 
-// Fakes of the Web Awesome members the help-tag boundary drives: a tooltip with
-// `open` / `anchor` / `updateComplete`, and Select / Dropdown hosts with an
-// open shadow root. The browser suite (tests/browser/select-help-tag.spec.ts)
-// covers the real elements.
+// A fake of the Web Awesome tooltip the help-tag boundary drives (`open` /
+// `anchor` / `updateComplete`), and light-DOM Select and PopupMenu roots. The
+// browser suite (tests/browser/select-help-tag.spec.ts) covers the real
+// elements.
 class FakeTooltip extends HTMLElement {
   open = false;
   anchor: Element | null = null;
   updateComplete: Promise<boolean> = Promise.resolve(true);
-}
-
-interface FakeHost extends HTMLElement {
-  open: boolean;
-  selectedOptions?: (HTMLElement & { label?: string })[];
 }
 
 let keyboardFocus = true;
@@ -60,41 +55,38 @@ function select({
   name?: string;
   iconOnly?: boolean;
   multipleSummary?: string;
-  choice?: { label?: string; text?: string };
+  choice?: string;
 } = {}) {
   fakeTime();
-  const host = document.createElement('wa-select') as FakeHost;
-  host.open = false;
+  const host = document.createElement('kui-select');
   host.dataset.component = 'select';
   host.dataset.selectedPresentation = iconOnly ? 'icon-only' : 'label';
-  host.setAttribute('label', name);
-  if (multipleSummary !== undefined) {
-    const label = document.createElement('span');
-    label.slot = 'label';
-    label.innerHTML = `${name}<span class="kui-select__name-summary">${multipleSummary}</span>`;
-    host.append(label);
+  const trigger = document.createElement('button');
+  trigger.className = 'kui-select__trigger';
+  // A multiple icon trigger's name already ends with the chosen labels.
+  if (name) trigger.setAttribute('aria-label', name + (multipleSummary ?? ''));
+  const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  trigger.append(icon);
+  if (choice !== undefined) {
+    const value = document.createElement('span');
+    value.className = 'kui-select__value';
+    value.innerHTML = choice;
+    trigger.append(value);
   }
-  if (choice) {
-    const option = document.createElement('wa-option') as HTMLElement & {
-      label?: string;
-    };
-    option.innerHTML = choice.text ?? '';
-    if (choice.label !== undefined) option.label = choice.label;
-    host.selectedOptions = [option];
-    host.append(option);
-  }
-  const option = document.createElement('wa-option');
-  host.append(option);
-  const root = host.attachShadow({ mode: 'open' });
-  const combobox = document.createElement('div');
-  combobox.setAttribute('part', 'combobox');
-  const input = document.createElement('input');
-  combobox.append(input);
   const listbox = document.createElement('div');
-  listbox.setAttribute('part', 'listbox');
-  root.append(combobox, listbox);
+  listbox.className = 'kui-select__popup';
+  const option = document.createElement('div');
+  option.className = 'kui-select__option';
+  listbox.append(option);
+  host.append(trigger, listbox);
   document.body.append(host);
-  return { host, combobox, input, listbox, option };
+  return { host, combobox: trigger, input: trigger, listbox, option };
+}
+
+/** The Select's popup opening (or closing), as its controller does it. */
+function openPopup(host: Element, listbox: Element, open = true) {
+  host.toggleAttribute('open', open);
+  if (open) toggle(listbox, 'open');
 }
 
 function popupMenu({ label = 'Sort Tickets' }: { label?: string | null } = {}) {
@@ -124,13 +116,11 @@ function popupMenu({ label = 'Sort Tickets' }: { label?: string | null } = {}) {
   return { host, trigger, item, menu };
 }
 
-/** A Select's tag lives in its shadow root; a PopupMenu's in the body layer. */
+/** Every tag lives in the body layer, anchored to its control's trigger. */
 const tagOf = (host: Element) => {
-  const own = host.shadowRoot?.querySelector<FakeTooltip>(
-    'wa-tooltip.kui-help-tag',
+  const trigger = host.querySelector(
+    ':scope > :is(.kui-popup-menu__trigger, .kui-select__trigger)',
   );
-  if (own) return own;
-  const trigger = host.querySelector(':scope > .kui-popup-menu__trigger');
   return (
     [
       ...document.querySelectorAll<FakeTooltip>(
@@ -185,12 +175,6 @@ function focusOut(target: EventTarget, relatedTarget: EventTarget | null) {
       composed: true,
       relatedTarget,
     }),
-  );
-}
-
-function waShow(target: EventTarget) {
-  target.dispatchEvent(
-    new Event('wa-show', { bubbles: true, composed: true, cancelable: true }),
   );
 }
 
@@ -254,40 +238,40 @@ describe('icon-only trigger help tags', () => {
   it('names a single Select and its current choice, and follows a change', () => {
     const { host, input } = select({
       name: 'Rendering Balance',
-      choice: { label: 'Balanced' },
+      choice: 'Balanced',
     });
     pointerOver(input);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     const tag = tagOf(host)!;
     expect(tag.textContent).toBe('Rendering Balance: Balanced');
-    host.selectedOptions![0]!.label = 'Quiet';
+    const value = host.querySelector('.kui-select__value')!;
+    value.textContent = 'Quiet';
     host.dispatchEvent(new Event('change', { bubbles: true }));
     expect(tag.textContent).toBe('Rendering Balance: Quiet');
-    host.selectedOptions![0]!.label = 'Explicit';
+    value.textContent = 'Explicit';
     host.dispatchEvent(new Event('input', { bubbles: true }));
     expect(tag.textContent).toBe('Rendering Balance: Explicit');
     // A change on another control leaves the tag alone.
-    const other = select({ name: 'Other', choice: { label: 'A' } });
+    const other = select({ name: 'Other', choice: 'A' });
     other.host.dispatchEvent(new Event('change', { bubbles: true }));
     document.body.dispatchEvent(new Event('change', { bubbles: true }));
     expect(tag.textContent).toBe('Rendering Balance: Explicit');
   });
 
-  it('falls back to option text and to the bare name', () => {
+  it('collapses the value text and falls back to the bare name', () => {
     const fromText = select({
       name: 'Mode',
-      choice: { text: '  <span></span>\n  Quiet  ' },
+      choice: '  <span></span>\n  Quiet  ',
     });
     focusIn(fromText.input);
     expect(tagOf(fromText.host)!.textContent).toBe('Mode: Quiet');
-    const same = select({ name: 'Mode', choice: { label: 'Mode' } });
+    const same = select({ name: 'Mode', choice: 'Mode' });
     focusIn(same.input);
     expect(tagOf(same.host)!.textContent).toBe('Mode');
     const none = select({ name: 'Mode' });
     focusIn(none.input);
     expect(tagOf(none.host)!.textContent).toBe('Mode');
-    const empty = select({ name: '', choice: { text: '' } });
-    empty.host.removeAttribute('label');
+    const empty = select({ name: '', choice: '' });
     focusIn(empty.input);
     expect(tagOf(empty.host)).toBeNull();
   });
@@ -461,20 +445,19 @@ describe('icon-only trigger help tags', () => {
   });
 
   it('hides for the open popup and stays hidden until the pointer moves elsewhere', () => {
-    const { host, input, option } = select({ multipleSummary: '' });
+    const { host, input, option, listbox } = select({ multipleSummary: '' });
     pointerOver(input);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     const tag = tagOf(host)!;
     pointerDown(input);
     expect(tag.open).toBe(false);
-    host.open = true;
-    waShow(host);
+    openPopup(host, listbox);
     // The pointer in the open popup, and back on the trigger, shows nothing.
     pointerOver(option);
     pointerOver(input);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     expect(tag.open).toBe(false);
-    host.open = false;
+    openPopup(host, listbox, false);
     // Still on the trigger after the popup closes: still dismissed.
     pointerOver(input.parentElement!);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
@@ -485,24 +468,23 @@ describe('icon-only trigger help tags', () => {
     expect(tag.open).toBe(true);
     // An open popup never shows a tag.
     pointerOver(document.body);
-    host.open = true;
+    host.setAttribute('open', '');
     pointerOver(input);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     expect(tag.open).toBe(false);
-    host.open = false;
+    host.removeAttribute('open');
   });
 
   it('hides a keyboard tag when its popup opens and not again when it closes', () => {
-    const { host, input, option } = select({ multipleSummary: '' });
+    const { host, input, option, listbox } = select({ multipleSummary: '' });
     focusIn(input);
     const tag = tagOf(host)!;
-    host.open = true;
-    waShow(host);
+    openPopup(host, listbox);
     expect(tag.open).toBe(false);
     // Focus visits the popup and returns to the trigger on close.
     focusOut(input, host);
     focusIn(option);
-    host.open = false;
+    openPopup(host, listbox, false);
     focusIn(input);
     expect(tag.open).toBe(false);
     // Tabbing away ends the dismissal; returning shows it again.
@@ -510,12 +492,10 @@ describe('icon-only trigger help tags', () => {
     focusIn(document.body);
     focusIn(input);
     expect(tag.open).toBe(true);
-    // A wa-show from something inside the control is not the popup opening.
-    option.dispatchEvent(
-      new Event('wa-show', { bubbles: true, composed: true }),
-    );
+    // A toggle on something else inside the control is not the popup opening.
+    toggle(option, 'open');
     expect(tag.open).toBe(true);
-    waShow(document.body);
+    toggle(document.body, 'open');
     expect(tag.open).toBe(true);
   });
 
@@ -551,9 +531,9 @@ describe('icon-only trigger help tags', () => {
     expect(tagOf(host)!.open).toBe(true);
   });
 
-  it('treats a select without a shadow root as having no trigger', () => {
+  it('treats a Select without a trigger as having nothing to name', () => {
     fakeTime();
-    const host = document.createElement('wa-select');
+    const host = document.createElement('kui-select');
     host.dataset.component = 'select';
     host.dataset.selectedPresentation = 'icon-only';
     const inner = document.createElement('span');

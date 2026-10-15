@@ -24,7 +24,7 @@ export function mountRecipe(
   const stopChanges = delegate(
     root,
     'change',
-    'wa-select, wa-input, wa-textarea',
+    'kui-select, wa-input, wa-textarea',
     dispatchChange,
   );
   const stopInputs = delegate(

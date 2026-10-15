@@ -7,13 +7,14 @@ test('inline Select trigger takes its badge box and keeps focus and listbox beha
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=select');
-    const select = page.locator('[name="inline-status"]');
+    const select = page.locator('kui-select[name="inline-status"]');
     const badge = select.locator('[data-component="badge"]');
     await expect(select).toBeVisible();
     await expect(badge).toBeVisible();
     const geometry = await select.evaluate((host) => {
-      const trigger =
-        host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
+      const trigger = host.querySelector<HTMLElement>(
+        ':scope > .kui-select__trigger',
+      )!;
       const badge = host.querySelector<HTMLElement>(
         '[data-component="badge"]',
       )!;
@@ -44,15 +45,15 @@ test('inline Select trigger takes its badge box and keeps focus and listbox beha
         path: `test-results/select-inline-${width}.png`,
       });
 
-    await select.click();
+    await select.locator(':scope > .kui-select__trigger').click();
     await expect(select).toHaveAttribute('open');
-    await expect(select.locator('wa-option')).toHaveCount(3);
+    await expect(select.getByRole('option')).toHaveCount(3);
     await page.keyboard.press('Escape');
     await expect(select).not.toHaveAttribute('open');
     const outline = await select.evaluate(
       (host) =>
         window.getComputedStyle(
-          host.shadowRoot!.querySelector('[part~="combobox"]')!,
+          host.querySelector(':scope > .kui-select__trigger')!,
         ).outlineStyle,
     );
     expect(outline).not.toBe('none');

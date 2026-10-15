@@ -1111,15 +1111,17 @@ test('ListInsetControl stretches a Select, a text input, and a wa-button across 
     const controls = page.locator(
       '[data-demo="list-inset-control"] [data-component="list-inset-control"]',
     );
-    for (const tag of ['wa-select', 'wa-input', 'wa-button']) {
+    for (const tag of ['kui-select', 'wa-input', 'wa-button']) {
       const inset = controls.filter({ has: page.locator(`> ${tag}`) }).last();
       await inset.scrollIntoViewIfNeeded();
       await expect(inset.locator(`> ${tag}`)).toBeVisible();
       const widths = await inset.evaluate((element, childTag) => {
         const child = element.querySelector(`:scope > ${childTag}`)!;
-        const visible = child.shadowRoot?.querySelector(
-          '[part~="combobox"], [part~="base"]',
-        );
+        // A Select's bordered box is its light-DOM trigger; Web Awesome
+        // controls draw theirs in a shadow part.
+        const visible =
+          child.querySelector(':scope > .kui-select__trigger') ??
+          child.shadowRoot?.querySelector('[part~="combobox"], [part~="base"]');
         return {
           inset: element.getBoundingClientRect().width,
           child: child.getBoundingClientRect().width,
@@ -1795,12 +1797,10 @@ test('sizes and rotates the first-class disclosure arrow while Select keeps its 
 
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=select');
-  const select = page.locator('[data-demo="select"] wa-select').first();
+  const select = page.locator('[data-demo="select"] kui-select').first();
   const selectDisclosure = () =>
     select.evaluate((element) => {
-      const icon = element.shadowRoot?.querySelector<HTMLElement>(
-        '[part~="expand-icon"]',
-      );
+      const icon = element.querySelector<HTMLElement>('.kui-select__caret');
       const bounds = icon?.getBoundingClientRect();
       return icon
         ? {
@@ -4399,9 +4399,7 @@ test('disclosure and breadcrumb chevrons match the Kerf Select scale', async ({
     .locator('[data-demo="select"] [name="rendering-balance"]')
     .evaluateAll((elements) =>
       elements.map((element) => {
-        const icon = element.shadowRoot?.querySelector<HTMLElement>(
-          '[part~="expand-icon"]',
-        );
+        const icon = element.querySelector<HTMLElement>('.kui-select__caret');
         return icon ? window.getComputedStyle(icon).transform : '';
       }),
     );
@@ -4418,26 +4416,24 @@ test('preserves Select option icons across Kerf rerenders and replaces selected 
   await page.goto('/?component=select');
   const demo = page.locator('[data-demo="select"]');
   const select = demo.locator('[name="rendering-balance"]');
-  const optionIcons = select.locator('wa-option .kui-select__icon');
+  const trigger = select.locator('.kui-select__trigger');
+  const optionIcons = select.locator('.kui-select__option .kui-select__icon');
   await expect(optionIcons).toHaveCount(3);
   await expect(
     select.locator(
       '.kui-select__custom-selected [data-lucide="sliders-horizontal"]',
     ),
   ).toBeVisible();
-  await expect(select.locator('.kui-select__custom-selected')).toHaveAttribute(
-    'data-key',
-    'rendering-balance:balanced:custom-selected',
-  );
   const selectGeometry = await select.evaluate((element) => {
-    const combobox = element.shadowRoot
-      ?.querySelector<HTMLElement>('[part~="combobox"]')
+    const combobox = element
+      .querySelector<HTMLElement>(':scope > .kui-select__trigger')
       ?.getBoundingClientRect();
-    const arrow = element.shadowRoot
-      ?.querySelector<HTMLElement>('[part~="expand-icon"]')
+    const arrow = element
+      .querySelector<HTMLElement>('.kui-select__caret')
       ?.getBoundingClientRect();
+    // The custom content itself (its wrapper's box includes its end padding).
     const selected = element
-      .querySelector<HTMLElement>('.kui-select__custom-selected')
+      .querySelector<HTMLElement>('.kui-select__custom-selected-content')
       ?.getBoundingClientRect();
     return combobox && arrow && selected
       ? {
@@ -4451,36 +4447,35 @@ test('preserves Select option icons across Kerf rerenders and replaces selected 
   expect(selectGeometry?.arrowTrailingInset).toBeLessThan(16);
   expect(selectGeometry?.selectedToArrowGap).toBeGreaterThanOrEqual(8);
   expect(selectGeometry?.selectedInside).toBe(true);
+  // Tag each icon node with a property (a re-render's morph owns the
+  // attributes), so a replaced node shows up as a lost identity.
   await optionIcons.evaluateAll((icons) =>
     icons.forEach((icon, index) => {
-      icon.setAttribute('data-browser-identity', String(index));
+      (icon as HTMLElement & { browserIdentity?: number }).browserIdentity =
+        index;
     }),
   );
+  const identities = () =>
+    optionIcons.evaluateAll((icons) =>
+      icons.map(
+        (icon) =>
+          (icon as HTMLElement & { browserIdentity?: number }).browserIdentity,
+      ),
+    );
 
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(optionIcons).toHaveCount(3);
-  await expect(optionIcons.nth(0)).toHaveAttribute(
-    'data-browser-identity',
-    '0',
-  );
-  await expect(optionIcons.nth(1)).toHaveAttribute(
-    'data-browser-identity',
-    '1',
-  );
-  await expect(optionIcons.nth(2)).toHaveAttribute(
-    'data-browser-identity',
-    '2',
-  );
+  await expect.poll(identities).toEqual([0, 1, 2]);
   await expect(
-    select.locator('wa-option[value="quiet"] [data-lucide="bell"]'),
+    select.locator('[data-value="quiet"] [data-lucide="bell"]'),
   ).toBeAttached();
   await expect(
     select.locator(
-      'wa-option[value="balanced"] [data-lucide="sliders-horizontal"]',
+      '[data-value="balanced"] [data-lucide="sliders-horizontal"]',
     ),
   ).toBeAttached();
   await expect(
-    select.locator('wa-option[value="explicit"] [data-lucide="wrench"]'),
+    select.locator('[data-value="explicit"] [data-lucide="wrench"]'),
   ).toBeAttached();
 
   await select.evaluate((element) => {
@@ -4491,65 +4486,29 @@ test('preserves Select option icons across Kerf rerenders and replaces selected 
     );
   });
   await expect(page.locator('[data-select-value]')).toHaveText('explicit');
-  await expect(select.locator('.kui-select__custom-selected')).toHaveAttribute(
-    'data-key',
-    'rendering-balance:explicit:custom-selected',
-  );
+  // The re-render replaces the custom selected content with the new choice's.
+  await expect(
+    select.locator(
+      '.kui-select__custom-selected [data-lucide="sliders-horizontal"]',
+    ),
+  ).toHaveCount(0);
   await expect(
     select.locator('.kui-select__custom-selected [data-lucide="wrench"]'),
   ).toBeVisible();
-  await expect(optionIcons.nth(0)).toHaveAttribute(
-    'data-browser-identity',
-    '0',
-  );
-  await expect(optionIcons.nth(1)).toHaveAttribute(
-    'data-browser-identity',
-    '1',
-  );
-  await expect(optionIcons.nth(2)).toHaveAttribute(
-    'data-browser-identity',
-    '2',
-  );
+  await expect.poll(identities).toEqual([0, 1, 2]);
 
-  await Promise.all([
-    select.evaluate(
-      (element) =>
-        new Promise<void>((resolve) =>
-          element.addEventListener('wa-after-show', () => resolve(), {
-            once: true,
-          }),
-        ),
-    ),
-    activateWithKeyboard(page, select),
-  ]);
-  await expect(select.locator('wa-option[value="explicit"]')).toBeVisible();
+  await activateWithKeyboard(page, trigger);
+  await expect(select).toHaveAttribute('open', '');
+  await expect(select.locator('[data-value="explicit"]')).toBeVisible();
   if (browserName === 'chromium') {
     await page.screenshot({ path: 'test-results/select-icon-slots-wide.png' });
-    await Promise.all([
-      select.evaluate(
-        (element) =>
-          new Promise<void>((resolve) =>
-            element.addEventListener('wa-after-hide', () => resolve(), {
-              once: true,
-            }),
-          ),
-      ),
-      page.keyboard.press('Escape'),
-    ]);
+    await page.keyboard.press('Escape');
+    await expect(select).not.toHaveAttribute('open');
     await page.setViewportSize({ width: 390, height: 844 });
     await demo.scrollIntoViewIfNeeded();
-    await Promise.all([
-      select.evaluate(
-        (element) =>
-          new Promise<void>((resolve) =>
-            element.addEventListener('wa-after-show', () => resolve(), {
-              once: true,
-            }),
-          ),
-      ),
-      activateWithKeyboard(page, select),
-    ]);
-    await expect(select.locator('wa-option[value="explicit"]')).toBeVisible();
+    await activateWithKeyboard(page, trigger);
+    await expect(select).toHaveAttribute('open', '');
+    await expect(select.locator('[data-value="explicit"]')).toBeVisible();
     await page.screenshot({
       path: 'test-results/select-icon-slots-narrow.png',
     });
@@ -4567,21 +4526,14 @@ test('keeps the current Select option text above WCAG AA contrast', async ({
   const select = page.locator(
     '[data-demo="select"] [name="rendering-balance"]',
   );
-  const openDropdown = () =>
-    Promise.all([
-      select.evaluate(
-        (element) =>
-          new Promise<void>((resolve) =>
-            element.addEventListener('wa-after-show', () => resolve(), {
-              once: true,
-            }),
-          ),
-      ),
-      activateWithKeyboard(page, select),
-    ]);
+  const openDropdown = async () => {
+    await activateWithKeyboard(page, select.locator('.kui-select__trigger'));
+    await expect(select).toHaveAttribute('open', '');
+  };
+  // Opening focuses the chosen option, which takes the current-row fill.
   const currentOptionContrast = () =>
     select
-      .locator('wa-option[aria-selected="true"]')
+      .locator('.kui-select__option[aria-selected="true"]')
       .first()
       .evaluate((option) => {
         const context = document.createElement('canvas').getContext('2d');
@@ -4605,8 +4557,7 @@ test('keeps the current Select option text above WCAG AA contrast', async ({
             0.0722 * (channels[2] ?? 0)
           );
         };
-        const base =
-          option.shadowRoot?.querySelector('[part~="base"]') ?? option;
+        const base = option.querySelector('.kui-select__option-label')!;
         let backgroundHost: (Element & { host?: Element }) | null =
           base as Element;
         let background = 'rgba(0, 0, 0, 0)';

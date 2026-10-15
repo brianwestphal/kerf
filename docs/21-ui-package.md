@@ -164,45 +164,27 @@ Plain Accordion and Details remove inline padding from their trigger and body;
 outlined and sunken disclosure headers use the 16px container inset while their
 bodies retain the compact 8px surface inset.
 
-`Select` is a Web Awesome adapter. Rendering it is pure; custom-element
-registration happens only after `import '@kerfjs/ui/select/register'`. Web
-Awesome is an optional peer so apps that use neither that registration entry
-nor `webawesome.css` do not install or bundle it. Option icon slots carry
-stable per-select/per-choice morph keys and preserve the upgraded custom
-element's slot state across application rerenders. Custom selected content is
-keyed by the controlled value, so it is replaced when the selection changes
-instead of retaining stale content. A nonempty `label`, or otherwise `ariaLabel`,
-names the actual shadow combobox. The ariaLabel-only label is visually hidden by
-the package without adding height, including with `renderSelected`; host ARIA
-attributes alone are not sufficient. `hint` supplies persistent supporting text
-below the control through Web Awesome's native hint relationship, while
-`placeholderText` remains the empty value inside the closed control; loading
-placeholders preserve the visible hint. The accessible description belongs to
-the shadow `combobox`, not the `wa-select` wrapper; both Web Awesome's hint
-attribute and explicit hint slot resolve there without an application patch.
-Unit name-projection coverage lives in `ui/tests/unit/components.test.tsx`; the
-three-engine accessible-name/description, keyboard, rerender, and geometry regression is
-`ui/tests/browser/select-accessibility.spec.ts`. Each `wa-option` owns its
-`role="option"`, `aria-selected`, and `aria-disabled`, which the template does not
-render; kerf's core morph treats `role` / `aria-*` on any custom element as
-element-owned (`src/utils/isUserAgentOwnedAttr.ts`, `docs/4-render.md` §4.4.1),
-so an application rerender leaves them to Web Awesome in single and `multiple`
-Selects alike, with no Select-specific restore (browser regression guard:
-`ui/tests/browser/select-option-semantics.spec.ts`). A `separatorBefore`
-`wa-divider` is different: Web Awesome sets its `role="separator"` and
-`aria-orientation` once and never re-derives them, so the Select template
-renders both explicitly, which also holds without the core rule
-(`ui/tests/browser/wa-host-attributes.spec.ts`). For the same reason the
-templates render the defaults Web Awesome reflects onto its hosts
-(`wa-select` `size="m" appearance="outlined" placement="bottom"`,
-`wa-divider` `orientation="horizontal"`): omitted, each re-render
-stripped them and forced a Lit update per host to restore them. The same spec
-asserts an unchanged re-render produces no attribute records and no Lit update
-on any Web Awesome host. Since KF-K8S4RX the core morph also leaves any
-attribute a custom element's template never rendered (after the element's first
-attribute sync), so an omitted default no longer churns; rendering the defaults
-explicitly still keeps the very first re-render quiet, and the same spec's
-raw-host test guards the core rule with templates that omit every default.
+`Select` is Kerf's own control (KF-CF0FEN, wa-independence stage 1: it no
+longer renders `wa-select` / `wa-option`). Rendering it is pure: a `kui-select`
+root holding an optional visible label, a native trigger `<button
+role="combobox">`, an optional hint, and a `popover="manual"` listbox of
+`role="option"` rows. `import '@kerfjs/ui/select/register'` defines `kui-select`
+as a light-DOM, form-associated custom element (`value`, `name`, `multiple`,
+`form`; it submits like a native select and returns to its rendered choice on
+form reset) and installs the document listeners that open, place, navigate,
+choose, and dismiss every Select. Custom selected content is keyed by the
+controlled value, so it is replaced when the selection changes instead of
+retaining stale content. A nonempty `label`, or otherwise `ariaLabel`, names the
+trigger; the ariaLabel-only name adds no height, including with
+`renderSelected`. `hint` supplies persistent supporting text below the control
+and is the trigger's `aria-description`, while `placeholderText` remains the
+empty value inside the closed control; loading placeholders preserve the
+visible hint. The template renders each option's `role`, `aria-selected`, and
+`aria-disabled` and each separator's `role="separator"`, so an application
+rerender keeps them (browser guards: `ui/tests/browser/select-option-semantics.spec.ts`,
+`ui/tests/browser/select-accessibility.spec.ts`). Choosing announces `input`
+then `change` from the root (bulk actions announce `change`); a re-render that
+changes which options are chosen is the new controlled value and form value.
 
 ## 21.3 Initial component set
 

@@ -954,10 +954,10 @@ test('PopupMenu menus and Select listboxes share the scroll-edge cue', async ({
 
   await page.goto('/?component=select');
   const listboxStyle = await page
-    .locator('wa-select.kui-select')
+    .locator('kui-select.kui-select')
     .first()
     .evaluate((select) => {
-      const listbox = select.shadowRoot?.querySelector('[part~="listbox"]');
+      const listbox = select.querySelector(':scope > .kui-select__popup');
       if (!listbox) throw new Error('Select listbox missing');
       return window.getComputedStyle(listbox).backgroundAttachment;
     });

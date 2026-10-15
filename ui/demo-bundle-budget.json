@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 384800,
-  "measuredLargestJavaScriptGzip": 124495,
-  "measuredTotalJavaScriptGzip": 384747,
+  "totalJavaScriptGzip": 385200,
+  "measuredLargestJavaScriptGzip": 131883,
+  "measuredTotalJavaScriptGzip": 385107,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4947,6 +4947,38 @@
         "measuredTotalJavaScriptGzip": 384747,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 384800
+      }
+    },
+    {
+      "at": "2026-10-15T02:43:25.777Z",
+      "reason": "KF-CF0FEN: Select's own controller and form-associated element ship beside the raw wa-select the Web Awesome catalog still demonstrates",
+      "old": {
+        "measuredLargestJavaScriptGzip": 124495,
+        "measuredTotalJavaScriptGzip": 384747,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 384800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 131884,
+        "measuredTotalJavaScriptGzip": 385088,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 385100
+      }
+    },
+    {
+      "at": "2026-10-15T03:11:02.011Z",
+      "reason": "KF-CF0FEN: Select's own controller, form-associated element, and Safari tab-order trigger ship beside the raw wa-select the Web Awesome catalog still demonstrates",
+      "old": {
+        "measuredLargestJavaScriptGzip": 131884,
+        "measuredTotalJavaScriptGzip": 385088,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 385100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 131883,
+        "measuredTotalJavaScriptGzip": 385107,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 385200
       }
     }
   ]

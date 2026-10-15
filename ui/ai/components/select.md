@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:select` · Kerf UI · component · Controls
 
-Controlled Web Awesome select with typed single or multiple values, disabled choices, optional bulk actions, and form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.
+Controlled Kerf select with typed single or multiple values, disabled choices, optional bulk actions, and form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations; a native trigger and a top-layer listbox wired by select/register.
 
 ## When to use
 
@@ -68,7 +68,7 @@ Exact prop names and types: [`@kerfjs/ui/select`](../public-api-signatures-v1.md
 - Parents: any.
 - Contexts: `controlled-value-selection`.
 - Children: unrestricted.
-- Built from: [LucideIcon](./lucide-icon.md), [Badge](./badge.md), [Select](./wa-select.md), [Option](./wa-option.md).
+- Built from: [LucideIcon](./lucide-icon.md), [Badge](./badge.md).
 
 ## State and wiring
 
@@ -85,21 +85,22 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 ## Accessibility
 
 - Verify the live value, standard events, focus, and rendered output.
-- A nonempty label names the internal combobox; otherwise ariaLabel supplies a visually hidden label without adding control height, including custom selected content.
-- Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control.
-- Import select/register once; its scoped lifecycle adapter keeps the latest open/close request authoritative across animation reversals, canceled transitions, and removal. Do not add consumer popup timing or position repairs.
-- With multiple, the popup stays open while choices toggle (pointer, Enter, or Space) and closes on an outside press, Escape, or focus leaving; each chosen option shows a check, and the closed control summarizes the chosen labels in choice order.
-- Disabled choices stay visible but cannot be selected; disabledReason exposes a tooltip. A multiple Select can opt in to localized select-all and clear buttons, which skip disabled choices and publish ordinary input/change events for changed values.
-- A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the combobox's accessible name ends with the chosen labels in choice order, and its hidden value stays empty.
-- Once registered, an icon-only trigger (single or multiple) shows an aria-hidden Web Awesome help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the popup is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.
+- The trigger is a native button with role="combobox", aria-haspopup="listbox", and aria-expanded. A nonempty label names it (the visible label is aria-hidden text beside it); otherwise ariaLabel names it without adding control height, including custom selected content.
+- Hint text is visible below the control and is the trigger's aria-description; placeholderText remains the empty value inside the closed control.
+- Import select/register once: it defines the form-associated kui-select root (value, name, form submission, and form reset) and wires every Select in the document. The listbox opens below the trigger in the top layer, flipping above when short and capped at the viewport edges. Do not add consumer popup timing or position repairs.
+- Keyboard: Enter, Space, ArrowDown, or ArrowUp on the trigger opens on the chosen option (Home/End on the first/last), and typing opens on a matching label; in the listbox the arrows move and wrap, Home/End jump, typing a label's first letters moves to it, Enter or Space chooses, Escape closes and returns focus to the trigger, and Tab closes and continues from the trigger.
+- With multiple, the listbox (aria-multiselectable) stays open while choices toggle (pointer, Enter, or Space) and closes on an outside press, Escape, or Tab; each chosen option shows a check, and the closed control summarizes the chosen labels in choice order.
+- Disabled choices stay visible with aria-disabled but cannot be chosen; disabledReason is their title. A multiple Select can opt in to localized select-all and clear buttons below the listbox, which skip disabled choices and publish ordinary change events for changed values.
+- A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the trigger's accessible name ends with the chosen labels in choice order, and its value text stays empty.
+- Once registered, an icon-only trigger (single or multiple) shows an aria-hidden help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the listbox is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.
 
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-select`, `kui-select--custom-selected`, `kui-select--fit-menu`, `kui-select--label-hidden`, `kui-select__custom-selected`, `kui-select__custom-selected-content`, `kui-select__group`, `kui-select__group--separated`, `kui-select__group-title`, `kui-select__icon`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-select`, `kui-select--custom-selected`, `kui-select--fit-menu`, `kui-select__custom-selected`, `kui-select__custom-selected-content`, `kui-select__group`, `kui-select__group--separated`, `kui-select__group-title`, `kui-select__icon`, `kui-select__listbox`, `kui-select__option`, `kui-select__popup`, `kui-select__trigger`, `kui-select__value`.
 
-Never put `kui-select`, `kui-select--custom-selected`, `kui-select--fit-menu`, `kui-select--label-hidden`, `kui-select__custom-selected`, `kui-select__custom-selected-content`, `kui-select__group`, `kui-select__group--separated`, `kui-select__group-title`, `kui-select__icon` on an element you write; render `Select` instead (`KUI-L103`).
+Never put `kui-select`, `kui-select--custom-selected`, `kui-select--fit-menu`, `kui-select__custom-selected`, `kui-select__custom-selected-content`, `kui-select__group`, `kui-select__group--separated`, `kui-select__group-title`, `kui-select__icon`, `kui-select__listbox`, `kui-select__option`, `kui-select__popup`, `kui-select__trigger`, `kui-select__value` on an element you write; render `Select` instead (`KUI-L103`).
 
 Public tokens it reads: `--kui-color-neutral-border-quiet`, `--kui-color-neutral-on-quiet`, `--kui-disclosure-icon-scale`, `--kui-font-2xs`, `--kui-select-selected-color`, `--kui-select-selected-font-size`, `--kui-select-selected-font-weight`, `--kui-select-trigger-max-width`. Set a token only where its public contract allows; prefer a prop.
 
@@ -111,6 +112,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [Badge](./badge.md), [Select](./wa-select.md), [Option](./wa-option.md), [SegmentedControl](./segmented-control.md), [Dropdown](./wa-dropdown.md), [Combobox](./combobox.md).
+- Components: [LucideIcon](./lucide-icon.md), [Badge](./badge.md), [SegmentedControl](./segmented-control.md), [Select](./wa-select.md), [Dropdown](./wa-dropdown.md), [Combobox](./combobox.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#web-awesome-overlap-policy`](../../docs/component-selection.md#web-awesome-overlap-policy).
 - UX catalog route: `?component=select`.

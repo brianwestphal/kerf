@@ -27,7 +27,7 @@ describe('Select toolbar composition CSS', () => {
     expect(css).not.toContain('.kui-skeleton');
   });
 
-  it('puts option spacing on the Web Awesome start part', async () => {
+  it('spaces option and trigger icons from their labels', async () => {
     const file = resolve(
       import.meta.dirname,
       '../../src/components/forms/select/select.css',
@@ -35,29 +35,15 @@ describe('Select toolbar composition CSS', () => {
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
 
     expect(
-      declarations(root, '.kui-select wa-option::part(start)').get(
+      declarations(root, '.kui-select__option > .kui-select__icon').get(
         'margin-inline-end',
       ),
     ).toBe('var(--_kui-popup-row-icon-gap)');
     expect(
-      declarations(root, '.kui-select > .kui-select__icon[slot="start"]').get(
+      declarations(root, '.kui-select__trigger > .kui-select__icon').get(
         'margin-inline-end',
       ),
     ).toBe('remify(8px)');
-    const selectedIconRule = root.nodes.find(
-      (node) =>
-        node.type === 'rule' &&
-        node.selector === '.kui-select > .kui-select__icon[slot="start"]',
-    );
-    expect(
-      selectedIconRule?.type === 'rule' &&
-        selectedIconRule.nodes.some(
-          (node) =>
-            node.type === 'decl' &&
-            node.prop === 'margin-inline-end' &&
-            node.important,
-        ),
-    ).toBe(true);
   });
 
   it('paints delegated Select focus on the toolbar group', async () => {

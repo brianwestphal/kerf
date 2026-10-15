@@ -14,7 +14,7 @@ for (const width of [1100, 390]) {
       group.style.position = 'fixed';
       group.style.top = '120px';
       element
-        .querySelector('wa-option')!
+        .querySelector('.kui-select__option-label')!
         .append(
           ' — Attention Needed for Project Configuration and Deployment Settings',
         );
@@ -23,24 +23,17 @@ for (const width of [1100, 390]) {
       await select.evaluate((element, x) => {
         element.parentElement!.style.left = `${x}px`;
       }, left);
-      await select.evaluate((element) => {
-        element.removeAttribute('data-qa-settled');
-        element.addEventListener(
-          'wa-after-show',
-          () => {
-            element.setAttribute('data-qa-settled', 'true');
-          },
-          { once: true },
-        );
-      });
-      await select.click();
-      await expect(select).toHaveAttribute('data-qa-settled', 'true');
+      await select.getByRole('combobox').click();
       await expect(select).toHaveAttribute('open');
+      await expect(select.locator('.kui-select__popup')).toHaveCSS(
+        'opacity',
+        '1',
+      );
       await expect
         .poll(async () =>
           select.evaluate((element) => {
             const bounds = element
-              .shadowRoot!.querySelector('[part~="listbox"]')!
+              .querySelector(':scope > .kui-select__popup')!
               .getBoundingClientRect();
             return (
               bounds.left >= 9.5 && bounds.right <= window.innerWidth - 9.5
@@ -51,9 +44,7 @@ for (const width of [1100, 390]) {
       await expect
         .poll(async () =>
           select.evaluate((element) => {
-            const label = element
-              .querySelector('wa-option')!
-              .shadowRoot!.querySelector('[part~="label"]')!;
+            const label = element.querySelector('.kui-select__option-label')!;
             return label.scrollWidth <= label.clientWidth + 1;
           }),
         )
@@ -65,7 +56,7 @@ for (const width of [1100, 390]) {
       await page.keyboard.press('Escape');
       await expect(select).not.toHaveAttribute('open');
     }
-    await select.click();
+    await select.getByRole('combobox').click();
     const resizedWidth = width === 1100 ? 390 : 1100;
     await page.setViewportSize({ width: resizedWidth, height: 844 });
     await select.evaluate((element, x) => {
@@ -75,7 +66,7 @@ for (const width of [1100, 390]) {
       .poll(async () =>
         select.evaluate((element) => {
           const bounds = element
-            .shadowRoot!.querySelector('[part~="listbox"]')!
+            .querySelector(':scope > .kui-select__popup')!
             .getBoundingClientRect();
           return bounds.left >= 9.5 && bounds.right <= window.innerWidth - 9.5;
         }),
@@ -90,17 +81,17 @@ for (const width of [1100, 390]) {
     await select.evaluate((element) => {
       element.classList.add('kui-select--fit-menu');
     });
-    await select.click();
+    await select.getByRole('combobox').click();
     await expect
       .poll(async () =>
         select.evaluate((element) => {
-          const popup = element.shadowRoot!.querySelector('wa-popup')!;
           const bounds = element
-            .shadowRoot!.querySelector('[part~="listbox"]')!
+            .querySelector(':scope > .kui-select__popup')!
             .getBoundingClientRect();
-          const anchor = element.getBoundingClientRect();
+          const anchor = element
+            .querySelector(':scope > .kui-select__trigger')!
+            .getBoundingClientRect();
           return (
-            popup.getAttribute('sync') === 'width' &&
             Math.abs(bounds.width - anchor.width) <= 1 &&
             bounds.left >= 9.5 &&
             bounds.right <= window.innerWidth - 9.5
@@ -115,12 +106,12 @@ for (const width of [1100, 390]) {
     await select.evaluate((element) => {
       element.classList.remove('kui-select--fit-menu');
     });
-    await select.click();
+    await select.getByRole('combobox').click();
     await expect
       .poll(async () =>
         select.evaluate((element) => {
           const bounds = element
-            .shadowRoot!.querySelector('[part~="listbox"]')!
+            .querySelector(':scope > .kui-select__popup')!
             .getBoundingClientRect();
           return (
             bounds.width > element.getBoundingClientRect().width &&
@@ -142,23 +133,17 @@ for (const width of [1100, 390]) {
     await page.goto('/?component=select');
     const select = page.locator('[name="viewport-attention"]');
     await select.scrollIntoViewIfNeeded();
-    await select.evaluate((element) => {
-      element.addEventListener(
-        'wa-after-show',
-        () => {
-          element.setAttribute('data-qa-settled', 'true');
-        },
-        { once: true },
-      );
-    });
-    await select.click();
-    await expect(select).toHaveAttribute('data-qa-settled', 'true');
+    await select.getByRole('combobox').click();
     await expect(select).toHaveAttribute('open');
+    await expect(select.locator('.kui-select__popup')).toHaveCSS(
+      'opacity',
+      '1',
+    );
     await expect
       .poll(async () =>
         select.evaluate((element) => {
           const bounds = element
-            .shadowRoot!.querySelector('[part~="listbox"]')!
+            .querySelector(':scope > .kui-select__popup')!
             .getBoundingClientRect();
           return bounds.left >= 9.5 && bounds.right <= window.innerWidth - 9.5;
         }),

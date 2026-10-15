@@ -11,7 +11,6 @@ async function mountDialog(page: Page) {
   await page.goto('/?component=select');
   await page.locator('[name="rendering-balance"]').evaluate((select) => {
     const pane = select.closest('.kui-pane__content')!;
-    select.setAttribute('label', 'Required packing');
     const dialog = document.createElement('wa-dialog');
     dialog.setAttribute('label', 'A few details');
     dialog.dataset.overflowFixture = '';
@@ -44,16 +43,10 @@ function scrollExtent(page: Page) {
 
 async function openSelect(page: Page) {
   const select = page.locator('[data-overflow-fixture] .kui-select');
-  await select.evaluate((element) => {
-    element.addEventListener(
-      'wa-after-show',
-      () => element.setAttribute('data-qa-shown', ''),
-      { once: true },
-    );
-  });
-  await select.click();
-  await expect(select).toHaveAttribute('data-qa-shown', '');
-  await select.evaluate((element) => element.removeAttribute('data-qa-shown'));
+  await select.getByRole('combobox').click();
+  await expect(select).toHaveAttribute('open', '');
+  // Let the listbox's fade-in finish.
+  await expect(select.locator('.kui-select__popup')).toHaveCSS('opacity', '1');
   return select;
 }
 
@@ -63,15 +56,14 @@ test('closing a Select in a scrolling dialog leaves no blank scroll space', asyn
   await mountDialog(page);
   const initial = await scrollExtent(page);
 
-  // Close with Escape: the body keeps its extent and focus stays on the Select.
+  // Close with Escape: the body keeps its extent and focus returns to the
+  // Select's trigger.
   const select = await openSelect(page);
   await page.keyboard.press('Escape');
   await expect(select).not.toHaveAttribute('open');
   await page.waitForTimeout(300);
   expect(await scrollExtent(page)).toEqual(initial);
-  expect(
-    await select.evaluate((element) => document.activeElement === element),
-  ).toBe(true);
+  await expect(select.getByRole('combobox')).toBeFocused();
 
   // The keyboard still drives the Select after the relayout.
   await page.keyboard.press('ArrowDown');
@@ -82,7 +74,7 @@ test('closing a Select in a scrolling dialog leaves no blank scroll space', asyn
   // Close by picking a value.
   await openSelect(page);
   await page
-    .locator('[data-overflow-fixture] .kui-select wa-option')
+    .locator('[data-overflow-fixture] .kui-select .kui-select__option')
     .nth(1)
     .click();
   await expect(select).not.toHaveAttribute('open');

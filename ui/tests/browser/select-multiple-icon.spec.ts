@@ -9,8 +9,8 @@ import { expect, type Locator, test } from '@playwright/test';
 function trigger(select: Locator) {
   return select.evaluate(async (host) => {
     const box = (element: Element) => element.getBoundingClientRect();
-    const combobox = host.shadowRoot!.querySelector('[part~="combobox"]')!;
-    const caret = host.shadowRoot!.querySelector('[part~="expand-icon"]')!;
+    const combobox = host.querySelector(':scope > .kui-select__trigger')!;
+    const caret = combobox.querySelector('.kui-select__caret')!;
     // The caret rotates while the popup opens or closes, and a mid-rotation
     // bounding box is wider than the settled glyph's box. How far the
     // transition has run when the test measures differs by engine (Firefox
@@ -19,17 +19,15 @@ function trigger(select: Locator) {
     // `finished` promise; that is not a failure here.
     await Promise.all(
       caret
-        .getAnimations()
+        .getAnimations({ subtree: true })
         .map((animation) => animation.finished.catch(() => undefined)),
     );
     const icon = host.querySelector(
       '.kui-select__trigger-icon, .kui-select__icon--selected',
     )!;
-    const count = host.querySelector(':scope > .kui-badge[slot="end"]');
+    const count = combobox.querySelector(':scope > .kui-badge');
     return {
-      display: host.shadowRoot!.querySelector<HTMLInputElement>(
-        '[part~="display-input"]',
-      )!.value,
+      display: combobox.querySelector('.kui-select__value')!.textContent,
       count: count?.textContent ?? null,
       icon: icon.querySelector('svg')!.getAttribute('data-lucide'),
       combobox: box(combobox),
@@ -45,8 +43,10 @@ test('an icon-only multiple Select names its selection, counts it, and stays ope
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=select');
-  const select = page.locator('wa-select[name="ticket-label-filter"]');
-  const sibling = page.locator('wa-select[name="toolbar-ticket-label-filter"]');
+  const select = page.locator('kui-select[name="ticket-label-filter"]');
+  const sibling = page.locator(
+    'kui-select[name="toolbar-ticket-label-filter"]',
+  );
   await expect(select).toBeVisible();
   await select.scrollIntoViewIfNeeded();
   const combobox = select.getByRole('combobox');
@@ -61,7 +61,7 @@ test('an icon-only multiple Select names its selection, counts it, and stays ope
   // icon-to-caret spacing and inline padding as a single icon-only
   // trigger, all vertically centered in the pill.
   const single = await trigger(
-    page.locator('wa-select[name="toolbar-default-rendering-balance"]'),
+    page.locator('kui-select[name="toolbar-default-rendering-balance"]'),
   );
   const caretGap = single.caret.left - single.iconBox.right;
   expect(current.countBox!.left - current.iconBox.right).toBeCloseTo(4, 0);
@@ -75,9 +75,9 @@ test('an icon-only multiple Select names its selection, counts it, and stays ope
   for (const part of [current.iconBox, current.countBox!])
     expect(part.top + part.height / 2).toBeCloseTo(middle, 0);
 
-  await select.click();
+  await combobox.click();
   await expect(select).toHaveAttribute('open', '');
-  await select.locator('wa-option[value="bug"]').click();
+  await select.locator('.kui-select__option[data-value="bug"]').click();
   await expect(combobox).toHaveAccessibleName('Filter by Label: Docs');
   expect((await trigger(select)).count).toBe('1');
   await expect(select).toHaveAttribute('open', '');
@@ -86,7 +86,7 @@ test('an icon-only multiple Select names its selection, counts it, and stays ope
     'Filter by Label: Docs',
   );
 
-  await select.locator('wa-option[value="docs"]').click();
+  await select.locator('.kui-select__option[data-value="docs"]').click();
   await expect(combobox).toHaveAccessibleName('Filter by Label');
   current = await trigger(select);
   expect(current.count).toBe(null);
@@ -103,7 +103,7 @@ test('an icon-only multiple Select beside actions toggles from the keyboard and 
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=select');
-  const select = page.locator('wa-select[name="toolbar-ticket-label-filter"]');
+  const select = page.locator('kui-select[name="toolbar-ticket-label-filter"]');
   await expect(select).toBeVisible();
   await select.scrollIntoViewIfNeeded();
   const pin = page.locator(
@@ -119,7 +119,7 @@ test('an icon-only multiple Select beside actions toggles from the keyboard and 
     const group = host.closest('.kui-toolbar-control-group')!;
     return {
       select: host
-        .shadowRoot!.querySelector('[part~="combobox"]')!
+        .querySelector(':scope > .kui-select__trigger')!
         .getBoundingClientRect().height,
       button: group.querySelector('button')!.getBoundingClientRect().height,
     };

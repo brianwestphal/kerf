@@ -304,19 +304,17 @@ status, and dormant trailing content cannot escape the visible row. Its
 `multiline` variant wraps the primary label while keeping the leading icon on
 the first inherited text line.
 
-`@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
-Web Awesome's internal combobox name. The ariaLabel-only label is visually
-hidden without adding geometry, including with custom selected content. See
+`@kerfjs/ui` Select is Kerf's own control (wa-independence stage 1; it no
+longer renders `wa-select`): a native `role="combobox"` trigger and a top-layer
+`role="listbox"` popover, wired by `select/register`, with a form-associated
+`kui-select` root. A nonempty `label`, or otherwise `ariaLabel`, names the
+trigger without adding geometry, including with custom selected content. See
 [`ui/docs/accessibility.md`](../../ui/docs/accessibility.md#select).
-Select registration owns animation reversals: only the current request may
-complete, canceled show/hide retains the accepted state, and removal blocks
-deferred activation. Raw Web Awesome Selects remain native.
-Select `hint` text stays visible below interactive and loading-placeholder
-controls through Web Awesome's native hint relationship; `placeholderText`
-remains the empty value inside the closed control. The relationship computes as
-the accessible description of the shadow `combobox` (not the custom-element
-host) for both attribute and explicit-slot hints across Chromium, Firefox, and
-WebKit; no application shadow-DOM patch is required.
+Select registration owns opening, placement, keyboard navigation and
+typeahead, choosing, and dismissal. Select `hint` text stays visible below
+interactive and loading-placeholder controls and is the trigger's
+`aria-description`; `placeholderText` remains the empty value inside the
+closed control.
 
 Semantic multi-content zones share the intentionally narrow recursive
 `KerfUiContent` type. It accepts `SafeHtml`, runtime-empty boolean/nullish

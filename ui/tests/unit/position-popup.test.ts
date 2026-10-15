@@ -66,11 +66,13 @@ describe('positionPopup', () => {
     const anchor = document.createElement('button');
     const popup = document.createElement('div');
     popup.style.maxHeight = '10px';
-    popup.style.maxWidth = '10px';
+    popup.style.setProperty('--_kui-popup-available-width', '10px');
     const done = positionPopup(anchor, popup, { placement: 'bottom-start' });
     // The earlier cap is cleared so the natural size steers the flip.
     expect(popup.style.maxHeight).toBe('');
-    expect(popup.style.maxWidth).toBe('');
+    expect(popup.style.getPropertyValue('--_kui-popup-available-width')).toBe(
+      '',
+    );
     await done;
     const { anchor: used, options } = calls.compute[0]!;
     expect(used).toBe(anchor);
@@ -108,15 +110,15 @@ describe('positionPopup', () => {
     };
     expect(size.padding).toBe(4);
     size.apply({ availableHeight: 120, availableWidth: 300 });
-    expect([popup.style.maxHeight, popup.style.maxWidth]).toEqual([
-      '120px',
-      '300px',
-    ]);
+    expect([
+      popup.style.maxHeight,
+      popup.style.getPropertyValue('--_kui-popup-available-width'),
+    ]).toEqual(['120px', '300px']);
     size.apply({ availableHeight: -5, availableWidth: -1 });
-    expect([popup.style.maxHeight, popup.style.maxWidth]).toEqual([
-      '0px',
-      '0px',
-    ]);
+    expect([
+      popup.style.maxHeight,
+      popup.style.getPropertyValue('--_kui-popup-available-width'),
+    ]).toEqual(['0px', '0px']);
   });
 
   it('offsets along the main axis by the gap and across it by the cross offset', async () => {

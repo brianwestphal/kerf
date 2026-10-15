@@ -9,43 +9,39 @@ import { expect, type Locator, test } from '@playwright/test';
 
 function state(select: Locator) {
   return select.evaluate((host) => {
-    const element = host as HTMLElement & {
-      open: boolean;
-      value: string[] | string | null;
-    };
+    const element = host as HTMLElement & { value: string[] | string };
+    const display = host.querySelector('.kui-select__value')!;
     return {
-      open: element.open,
+      open: host.hasAttribute('open'),
       value: element.value,
-      display: host.shadowRoot!.querySelector<HTMLInputElement>(
-        '[part~="display-input"]',
-      )!.value,
-      checked: [...host.querySelectorAll('wa-option')]
-        .filter(
-          (option) => (option as HTMLElement & { selected: boolean }).selected,
-        )
-        .map((option) => option.getAttribute('value')),
+      display: display.hasAttribute('data-placeholder')
+        ? ''
+        : display.textContent,
+      placeholder: display.getAttribute('data-placeholder-text'),
+      checked: [
+        ...host.querySelectorAll('.kui-select__option[aria-selected="true"]'),
+      ].map((option) => option.getAttribute('data-value')),
     };
   });
 }
+
+const option = (select: Locator, value: string) =>
+  select.locator(`.kui-select__option[data-value="${value}"]`);
 
 test('a multiple Select stays open while choices toggle and closes on click away', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=select');
-  const select = page.locator('wa-select[name="ticket-labels"]');
+  const select = page.locator('kui-select[name="ticket-labels"]');
   await expect(select).toBeVisible();
   await select.scrollIntoViewIfNeeded();
 
   await expect
     .poll(async () => (await state(select)).display)
     .toBe('Bug, Docs');
-  // Web Awesome's per-choice tags are replaced by the summary.
-  expect(
-    await select.evaluate(
-      (host) => host.shadowRoot!.querySelectorAll('wa-tag').length,
-    ),
-  ).toBe(0);
+  // One summary, never per-choice tags.
+  await expect(select.locator('.kui-select__value')).toHaveCount(1);
 
   const changes: unknown[] = [];
   await page.exposeFunction('recordChange', (value: unknown) =>
@@ -59,9 +55,9 @@ test('a multiple Select stays open while choices toggle and closes on click away
     ),
   );
 
-  await select.click();
+  await select.getByRole('combobox').click();
   await expect(select).toHaveAttribute('open', '');
-  await select.locator('wa-option[value="feature"]').click();
+  await option(select, 'feature').click();
   await expect.poll(() => changes.length).toBe(1);
   let current = await state(select);
   expect(current.open).toBe(true);
@@ -74,7 +70,7 @@ test('a multiple Select stays open while choices toggle and closes on click away
   // Choice order, whatever order the person chose in.
   expect(current.display).toBe('Bug, Feature, Docs');
 
-  await select.locator('wa-option[value="bug"]').click();
+  await option(select, 'bug').click();
   await expect.poll(() => changes.length).toBe(2);
   current = await state(select);
   expect(current.open).toBe(true);
@@ -93,7 +89,7 @@ test('disabled choices and opt-in bulk actions keep the multiple Select controll
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=select');
-  const select = page.locator('wa-select[name="item-types"]');
+  const select = page.locator('kui-select[name="item-types"]');
   await select.scrollIntoViewIfNeeded();
   const changes: unknown[] = [];
   await page.exposeFunction('recordItemTypes', (value: unknown) =>
@@ -106,8 +102,8 @@ test('disabled choices and opt-in bulk actions keep the multiple Select controll
       ).recordItemTypes((host as HTMLElement & { value: unknown }).value),
     ),
   );
-  await select.click();
-  const browser = select.locator('wa-option[value="browsers"]');
+  await select.getByRole('combobox').click();
+  const browser = option(select, 'browsers');
   await expect(browser).toHaveAttribute('aria-disabled', 'true');
   await expect(browser).toHaveAttribute('title', 'Not yet supported');
   const selectAll = select.locator('button[data-select-action="all"]');
@@ -132,7 +128,8 @@ test('disabled choices and opt-in bulk actions keep the multiple Select controll
   await expect(select).toHaveAttribute('open', '');
   await browser.click({ force: true });
   expect((await state(select)).checked).toEqual([]);
-  await select.getByRole('combobox').focus();
+  // Keyboard focus reaches a disabled choice, but Enter does not choose it.
+  await option(select, 'files').focus();
   await page.keyboard.press('Home');
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowDown');
@@ -152,7 +149,7 @@ test('a multiple Select toggles from the keyboard and closes on Escape', async (
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=select');
-  const select = page.locator('wa-select[name="ticket-labels"]');
+  const select = page.locator('kui-select[name="ticket-labels"]');
   await expect(select).toBeVisible();
   await select.scrollIntoViewIfNeeded();
   await select.getByRole('combobox').focus();
@@ -185,14 +182,11 @@ test('a multiple Select toggles from the keyboard and closes on Escape', async (
   await page.keyboard.press(' ');
   await page.keyboard.press('Escape');
   await expect.poll(async () => (await state(select)).checked).toEqual([]);
-  expect(
-    await select.evaluate(
-      (host) =>
-        host.shadowRoot!.querySelector<HTMLInputElement>(
-          '[part~="display-input"]',
-        )!.placeholder,
-    ),
-  ).toBe('No labels');
+  await expect(select.locator('.kui-select__value')).toHaveAttribute(
+    'data-placeholder',
+    'true',
+  );
+  await expect(select.locator('.kui-select__value')).toHaveText('No labels');
 });
 
 test('a re-rendered selection is the controlled value, even after interaction', async ({
@@ -200,55 +194,49 @@ test('a re-rendered selection is the controlled value, even after interaction', 
 }) => {
   await page.setViewportSize({ width: 1100, height: 800 });
   await page.goto('/?component=select');
-  const select = page.locator('wa-select[name="ticket-labels"]');
+  const select = page.locator('kui-select[name="ticket-labels"]');
   await expect(select).toBeVisible();
   await select.scrollIntoViewIfNeeded();
-  await select.click();
-  await select.locator('wa-option[value="design"]').click();
+  await select.getByRole('combobox').click();
+  await option(select, 'design').click();
   await page.keyboard.press('Escape');
   await expect(select).not.toHaveAttribute('open', '');
 
   // What a morph does when the application's value changes.
   await select.evaluate((host) => {
-    for (const option of host.querySelectorAll('wa-option'))
-      option.toggleAttribute(
-        'selected',
-        ['feature', 'performance'].includes(option.getAttribute('value')!),
+    for (const option of host.querySelectorAll('.kui-select__option'))
+      option.setAttribute(
+        'aria-selected',
+        String(
+          ['feature', 'performance'].includes(
+            option.getAttribute('data-value')!,
+          ),
+        ),
       );
   });
   await expect
     .poll(async () => (await state(select)).checked)
     .toEqual(['feature', 'performance']);
-  expect((await state(select)).display).toBe('Feature, Performance');
+  expect((await state(select)).value).toEqual(['feature', 'performance']);
 });
 
 test('a multiple Select submits every chosen value under its name', async ({
   page,
 }) => {
   await page.goto('/?component=select');
-  await expect(page.locator('wa-select[name="ticket-labels"]')).toBeVisible();
+  await expect(page.locator('kui-select[name="ticket-labels"]')).toBeVisible();
   const submitted = await page.evaluate(async () => {
+    // A copy of the rendered control (Bug and Docs chosen) inside a form.
     const form = document.createElement('form');
-    form.innerHTML = `
-      <wa-select data-component="select" class="kui-select" name="labels" multiple label="Labels">
-        <wa-option value="bug" selected>Bug</wa-option>
-        <wa-option value="docs">Docs</wa-option>
-        <wa-option value="design" selected>Design</wa-option>
-      </wa-select>`;
+    const source = document.querySelector('kui-select[name="ticket-labels"]')!;
+    form.append(source.cloneNode(true));
     document.body.append(form);
-    const select = form.querySelector('wa-select') as HTMLElement & {
-      updateComplete: Promise<unknown>;
-    };
-    await customElements.whenDefined('wa-select');
-    await select.updateComplete;
     await new Promise((resolve) => window.requestAnimationFrame(resolve));
-    const values = new FormData(form).getAll('labels');
-    const display = select.shadowRoot!.querySelector<HTMLInputElement>(
-      '[part~="display-input"]',
-    )!.value;
+    const values = new FormData(form).getAll('ticket-labels');
+    const display = form.querySelector('.kui-select__value')!.textContent;
     form.remove();
     return { values, display };
   });
-  expect(submitted.values).toEqual(['bug', 'design']);
-  expect(submitted.display).toBe('Bug, Design');
+  expect(submitted.values).toEqual(['bug', 'docs']);
+  expect(submitted.display).toBe('Bug, Docs');
 });

@@ -1,6 +1,9 @@
 import type { SafeHtml } from 'kerfjs';
+import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
+import { Check } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { PopupCaretGlyph } from '../../../shared/popup/popup-glyphs.js';
 import {
   type CssForegroundColor,
   em,
@@ -11,6 +14,26 @@ import {
   LucideIcon,
   type LucideNode,
 } from '../../media/lucide-icon/lucide-icon.js';
+import { summarizeSelection } from './model/select-summary.js';
+
+declare module 'kerfjs/jsx-runtime' {
+  // Module augmentation requires the namespace form expected by the JSX runtime.
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      /** The Select root: a light-DOM form control defined by `select/register`. */
+      'kui-select': KerfCustomElement & {
+        class?: string;
+        name?: string;
+        value?: string;
+        multiple?: boolean;
+        disabled?: boolean;
+        style?: string;
+        slot?: string;
+      };
+    }
+  }
+}
 
 export interface SelectChoice<Value extends string = string> {
   value: Value;
@@ -52,9 +75,9 @@ interface SelectBaseProps<Value extends string = string> {
   name: string;
   choices: readonly SelectChoice<Value>[];
   className?: string;
-  /** Empty-value hint text shown in the closed control (the native select placeholder). */
+  /** Empty-value hint text shown in the closed control. */
   placeholderText?: string;
-  /** Supporting text shown below the control and associated with its combobox. */
+  /** Supporting text shown below the control and announced as its description. */
   hint?: string;
   disabled?: boolean;
   /** Match menu width to the trigger; default menus grow to content within viewport gutters. */
@@ -92,8 +115,8 @@ export interface SelectSingleValueProps<Value extends string = string> {
 
 /**
  * Any number of chosen values. The popup stays open while the person toggles
- * choices and closes on an outside click, Escape, or focus leaving; the closed
- * control summarizes the chosen labels in choice order.
+ * choices and closes on an outside press, Escape, or Tab; the closed control
+ * summarizes the chosen labels in choice order.
  */
 export interface SelectMultipleLabelProps<Value extends string = string> {
   multiple: true;
@@ -111,7 +134,7 @@ export interface SelectMultipleLabelProps<Value extends string = string> {
  * A multiple Select drawn as an icon-only toolbar trigger, such as a
  * "Filter by label" funnel. No single choice is selected, so the trigger shows
  * a fixed `triggerIcon` naming the menu's purpose; while any choice is chosen
- * a count badge sits beside it, and the combobox's accessible name ends with
+ * a count badge sits beside it, and the trigger's accessible name ends with
  * the chosen labels in choice order.
  */
 export interface SelectMultipleIconProps<Value extends string = string> {
@@ -138,16 +161,40 @@ export type SelectProps<Value extends string = string> =
     SelectAccessibleName &
     (SelectSingleValueProps<Value> | SelectMultipleValueProps<Value>);
 
-// The closed wa-select's disclosure glyph: Web Awesome's system `chevron-down`,
-// Font Awesome Free 7.0.0 by @fontawesome (https://fontawesome.com), licensed
-// CC BY 4.0 (https://fontawesome.com/license/free). The placeholder draws the
-// same path so the loading box matches the live control without registering
-// Web Awesome.
-function SelectChevron() {
+/**
+ * A choice's icon, in the listbox or (`selected`) in the closed trigger.
+ * Rendered only for a choice that has one.
+ */
+function ChoiceIcon<Value extends string>({
+  choice,
+  icon,
+  selected = false,
+}: {
+  choice: SelectChoice<Value>;
+  icon: LucideNode;
+  selected?: boolean;
+}) {
   return (
-    <svg viewBox="0 0 448 512" aria-hidden="true">
-      <path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
-    </svg>
+    <span
+      class={`kui-select__icon${selected ? ' kui-select__icon--selected' : ''}`}
+      style={choice.color ? `color:${choice.color}` : undefined}
+      aria-hidden="true"
+    >
+      <LucideIcon
+        icon={icon}
+        name={
+          choice.iconName ?? choice.label.toLowerCase().replaceAll(' ', '-')
+        }
+      />
+    </span>
+  );
+}
+
+function Caret() {
+  return (
+    <span class="kui-select__caret" aria-hidden="true">
+      <PopupCaretGlyph />
+    </span>
   );
 }
 
@@ -181,95 +228,88 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
   // purpose instead of a selected choice's icon.
   const iconTrigger =
     props.multiple && props.selectedPresentation === 'icon-only';
-  const triggerIcon = iconTrigger ? props.triggerIcon : undefined;
+  const accessibleName = label || ariaLabel;
+  const style =
+    labelMaxWidth === undefined
+      ? undefined
+      : `--kui-select-label-max-width:${labelMaxWidth}px`;
+  const rootData = {
+    'data-component': 'select',
+    'data-presentation': presentation,
+    'data-size': size,
+    'data-trigger-width': triggerWidth,
+    'data-caret': caret ? undefined : 'false',
+    'data-selected-presentation': selectedPresentation,
+    'data-focus-ring-owner': focusRingOwner,
+    'data-focus-ring-inset': focusRingInset ? 'true' : undefined,
+  } as const;
   if (placeholder) {
     return (
       <div
         class={`kui-select kui-select--placeholder ${className}`.trim()}
-        data-component="select"
+        {...rootData}
         data-placeholder="true"
-        data-presentation={presentation}
-        data-size={size}
-        data-trigger-width={triggerWidth}
-        data-caret={caret ? undefined : 'false'}
-        data-selected-presentation={selectedPresentation}
-        data-focus-ring-owner={focusRingOwner}
-        data-focus-ring-inset={focusRingInset ? 'true' : undefined}
         aria-busy="true"
-        style={
-          labelMaxWidth === undefined
-            ? undefined
-            : `--kui-select-label-max-width:${labelMaxWidth}px`
-        }
+        style={style}
         slot={slot}
       >
-        {label && <span class="kui-select__placeholder-label">{label}</span>}
+        {label && <span class="kui-select__label">{label}</span>}
         <span
           class="kui-select__placeholder-box"
           aria-label={ariaLabel}
           role="img"
         >
           <Skeleton width={em(10)} />
-          <span class="kui-select__placeholder-chevron" aria-hidden="true">
-            <SelectChevron />
-          </span>
+          {caret ? <Caret /> : null}
         </span>
-        {hint && <span class="kui-select__placeholder-hint">{hint}</span>}
+        {hint && <span class="kui-select__hint">{hint}</span>}
       </div>
     );
   }
-  // A multiple Select summarizes its choices in the display text instead of
-  // leading with one selected icon.
-  const selected = multiple
-    ? undefined
-    : choices.find((choice) => choice.value === values[0] && !choice.disabled);
-  const chosenCount = iconTrigger
-    ? choices.filter(
-        (choice) => !choice.disabled && values.includes(choice.value),
-      ).length
-    : 0;
-  const icon = (choice: SelectChoice<Value>, selectedIcon = false) => (
-    <span
-      data-key={`${name}:${choice.value}:${selectedIcon ? 'selected' : 'option'}`}
-      data-morph-skip
-      slot="start"
-      class={`kui-select__icon${selectedIcon ? ' kui-select__icon--selected' : ''}`}
-      style={choice.color ? `color:${choice.color}` : undefined}
-    >
-      {choice.icon ? (
-        <LucideIcon
-          icon={choice.icon}
-          name={
-            choice.iconName ?? choice.label.toLowerCase().replaceAll(' ', '-')
-          }
-        />
-      ) : null}
-    </span>
+  const enabledChosen = choices.filter(
+    (choice) => !choice.disabled && values.includes(choice.value),
   );
-  const option = (choice: SelectChoice<Value>, index: number) => (
-    <>
-      {/* Web Awesome sets the divider's role and aria-orientation on its
-          host once, so a template that omits them would lose them to the
-          next kerf re-render's morph for good. Render them explicitly, with
-          the orientation it reflects (see the wa-select note below). */}
-      {choice.separatorBefore && index > 0 && (
-        <wa-divider
-          orientation="horizontal"
-          role="separator"
-          aria-orientation="horizontal"
-        />
-      )}
-      <wa-option
-        value={choice.value}
-        selected={multiple && !choice.disabled && values.includes(choice.value)}
-        disabled={choice.disabled}
-        title={choice.disabled ? choice.disabledReason : undefined}
-      >
-        {choice.icon ? icon(choice) : null}
-        {choice.label}
-      </wa-option>
-    </>
-  );
+  const selected = multiple ? undefined : enabledChosen[0];
+  // A multiple Select summarizes its chosen labels, in choice order; an
+  // icon-only trigger (whose value text is hidden) ends its name with them.
+  const summary = multiple
+    ? summarizeSelection(enabledChosen.map((choice) => choice.label))
+    : '';
+  const triggerName =
+    iconTrigger && summary ? `${accessibleName}: ${summary}` : accessibleName;
+  const valueText = multiple
+    ? iconTrigger
+      ? ''
+      : summary
+    : (selected?.label ?? '');
+  const option = (choice: SelectChoice<Value>, index: number) => {
+    const chosen = !choice.disabled && values.includes(choice.value);
+    return (
+      <>
+        {choice.separatorBefore && index > 0 ? (
+          <div class="kui-select__separator" role="separator" />
+        ) : null}
+        <div
+          class="kui-select__option"
+          role="option"
+          tabindex={-1}
+          data-value={choice.value}
+          data-default-selected={chosen ? '' : undefined}
+          aria-selected={String(chosen)}
+          aria-disabled={choice.disabled ? 'true' : undefined}
+          title={choice.disabled ? choice.disabledReason : undefined}
+        >
+          <span class="kui-select__check" aria-hidden="true">
+            <LucideIcon icon={Check} name="check" />
+          </span>
+          {choice.icon ? (
+            <ChoiceIcon choice={choice} icon={choice.icon} />
+          ) : null}
+          <span class="kui-select__option-label">{choice.label}</span>
+        </div>
+      </>
+    );
+  };
   const groups = [
     ...new Set(
       choices
@@ -278,115 +318,114 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     ),
   ];
   const ungrouped = choices.filter((choice) => !choice.group);
-  // Web Awesome names its shadow combobox from the label, not the host's
-  // aria-label. Keep ariaLabel-only names available without visible chrome.
-  // A multiple Select's value is its selected options (the value attribute
-  // holds only one string), kept in sync by @kerfjs/ui/select/register.
-  // size/appearance/placement are Web Awesome's defaults, which it reflects
-  // onto the host; rendering them keeps a re-render's morph from stripping
-  // them and forcing a Lit update to put them back.
   return (
-    <wa-select
-      size="m"
-      appearance="outlined"
-      placement="bottom"
-      class={`kui-select${renderSelected ? ' kui-select--custom-selected' : ''}${fitMenu ? ' kui-select--fit-menu' : ''}${!label ? ' kui-select--label-hidden' : ''} ${className}`.trim()}
-      data-component="select"
-      data-presentation={presentation}
-      data-size={size}
-      data-trigger-width={triggerWidth}
-      data-caret={caret ? undefined : 'false'}
-      data-selected-presentation={selectedPresentation}
-      data-focus-ring-owner={focusRingOwner}
-      data-focus-ring-inset={focusRingInset ? 'true' : undefined}
+    <kui-select
+      class={`kui-select${renderSelected ? ' kui-select--custom-selected' : ''}${fitMenu ? ' kui-select--fit-menu' : ''} ${className}`.trim()}
+      {...rootData}
       name={name}
-      label={label || ariaLabel}
-      aria-label={ariaLabel}
+      value={multiple ? undefined : (selected?.value ?? '')}
       multiple={multiple}
-      value={multiple ? undefined : values[0]}
-      placeholder={placeholderText}
-      hint={hint}
       disabled={disabled}
-      style={
-        labelMaxWidth === undefined
-          ? undefined
-          : `--kui-select-label-max-width:${labelMaxWidth}px`
-      }
+      style={style}
       slot={slot}
     >
-      {iconTrigger && (
-        <>
-          {/* The accessible name ends with the chosen labels, which
-              @kerfjs/ui/select/register writes into the summary. */}
-          <span slot="label" data-key={`${name}:trigger-label`}>
-            {label || ariaLabel}
-            <span class="kui-select__name-summary" data-morph-skip />
+      {label ? (
+        <span class="kui-select__label" aria-hidden="true">
+          {label}
+        </span>
+      ) : null}
+      <button
+        type="button"
+        class="kui-select__trigger"
+        role="combobox"
+        // Safari's default Tab order skips buttons; a select stays in it.
+        tabindex={0}
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-label={triggerName}
+        aria-description={hint}
+        disabled={disabled}
+      >
+        {iconTrigger ? (
+          <span class="kui-select__icon kui-select__icon--selected kui-select__trigger-icon">
+            {props.triggerIcon}
           </span>
-          <span
-            data-key={`${name}:trigger-icon`}
-            slot="start"
-            class="kui-select__icon kui-select__icon--selected kui-select__trigger-icon"
-          >
-            {triggerIcon}
-          </span>
-          {chosenCount > 0 && (
-            <Badge slot="end" tone="info" size="compact" ariaHidden>
-              {chosenCount}
-            </Badge>
-          )}
-        </>
-      )}
-      {selected &&
-        (renderSelected ? (
-          <span
-            data-key={`${name}:${values[0]}:custom-selected`}
-            slot="start"
-            class="kui-select__custom-selected"
-          >
+        ) : selected && renderSelected ? (
+          <span class="kui-select__custom-selected">
             <span class="kui-select__custom-selected-content">
               {renderSelected(selected)}
             </span>
           </span>
-        ) : selected.icon ? (
-          icon(selected, true)
-        ) : null)}
-      {ungrouped.map(option)}
-      {groups.map((group, index) => (
-        <div
-          class={`kui-select__group${index > 0 || ungrouped.length > 0 ? ' kui-select__group--separated' : ''}`}
-          role="group"
-          aria-label={group}
+        ) : selected?.icon ? (
+          <ChoiceIcon choice={selected} icon={selected.icon} selected />
+        ) : null}
+        <span
+          class="kui-select__value"
+          data-placeholder={valueText ? undefined : 'true'}
+          data-placeholder-text={placeholderText}
         >
-          <span class="kui-select__group-title">{group}</span>
-          {choices.filter((choice) => choice.group === group).map(option)}
-        </div>
-      ))}
-      {props.multiple && (props.selectAllLabel || props.clearLabel) && (
+          {valueText || placeholderText || ''}
+        </span>
+        {iconTrigger && enabledChosen.length > 0 ? (
+          <Badge tone="info" size="compact" ariaHidden>
+            {enabledChosen.length}
+          </Badge>
+        ) : null}
+        {caret ? <Caret /> : null}
+      </button>
+      {hint ? (
+        <span class="kui-select__hint" aria-hidden="true">
+          {hint}
+        </span>
+      ) : null}
+      <div class="kui-select__popup" popover="manual" tabindex={-1}>
         <div
-          class="kui-select__actions"
-          role="group"
-          aria-label={label || ariaLabel}
+          class="kui-select__listbox"
+          role="listbox"
+          aria-label={accessibleName}
+          aria-multiselectable={multiple ? 'true' : undefined}
         >
-          {props.selectAllLabel && (
-            <button
-              class="kui-select__action"
-              type="button"
-              data-select-action="all"
+          {ungrouped.map(option)}
+          {groups.map((group, index) => (
+            <div
+              class={`kui-select__group${index > 0 || ungrouped.length > 0 ? ' kui-select__group--separated' : ''}`}
+              role="group"
+              aria-label={group}
             >
-              {props.selectAllLabel}
-            </button>
-          )}
-          {props.clearLabel && (
-            <button
-              class="kui-select__action"
-              type="button"
-              data-select-action="clear"
-            >
-              {props.clearLabel}
-            </button>
-          )}
+              <span class="kui-select__group-title" aria-hidden="true">
+                {group}
+              </span>
+              {choices.filter((choice) => choice.group === group).map(option)}
+            </div>
+          ))}
         </div>
-      )}
-    </wa-select>
+        {props.multiple && (props.selectAllLabel || props.clearLabel) ? (
+          <div
+            class="kui-select__actions"
+            role="group"
+            aria-label={accessibleName}
+          >
+            {props.selectAllLabel ? (
+              <button
+                class="kui-select__action"
+                type="button"
+                data-select-action="all"
+              >
+                {props.selectAllLabel}
+              </button>
+            ) : null}
+            {props.clearLabel ? (
+              <button
+                class="kui-select__action"
+                type="button"
+                data-select-action="clear"
+              >
+                {props.clearLabel}
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    </kui-select>
   );
 }

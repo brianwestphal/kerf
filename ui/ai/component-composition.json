@@ -4608,13 +4608,14 @@
       "accessibility": {
         "obligations": [
           "Verify the live value, standard events, focus, and rendered output.",
-          "A nonempty label names the internal combobox; otherwise ariaLabel supplies a visually hidden label without adding control height, including custom selected content.",
-          "Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control.",
-          "Import select/register once; its scoped lifecycle adapter keeps the latest open/close request authoritative across animation reversals, canceled transitions, and removal. Do not add consumer popup timing or position repairs.",
-          "With multiple, the popup stays open while choices toggle (pointer, Enter, or Space) and closes on an outside press, Escape, or focus leaving; each chosen option shows a check, and the closed control summarizes the chosen labels in choice order.",
-          "Disabled choices stay visible but cannot be selected; disabledReason exposes a tooltip. A multiple Select can opt in to localized select-all and clear buttons, which skip disabled choices and publish ordinary input/change events for changed values.",
-          "A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the combobox's accessible name ends with the chosen labels in choice order, and its hidden value stays empty.",
-          "Once registered, an icon-only trigger (single or multiple) shows an aria-hidden Web Awesome help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the popup is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
+          "The trigger is a native button with role=\"combobox\", aria-haspopup=\"listbox\", and aria-expanded. A nonempty label names it (the visible label is aria-hidden text beside it); otherwise ariaLabel names it without adding control height, including custom selected content.",
+          "Hint text is visible below the control and is the trigger's aria-description; placeholderText remains the empty value inside the closed control.",
+          "Import select/register once: it defines the form-associated kui-select root (value, name, form submission, and form reset) and wires every Select in the document. The listbox opens below the trigger in the top layer, flipping above when short and capped at the viewport edges. Do not add consumer popup timing or position repairs.",
+          "Keyboard: Enter, Space, ArrowDown, or ArrowUp on the trigger opens on the chosen option (Home/End on the first/last), and typing opens on a matching label; in the listbox the arrows move and wrap, Home/End jump, typing a label's first letters moves to it, Enter or Space chooses, Escape closes and returns focus to the trigger, and Tab closes and continues from the trigger.",
+          "With multiple, the listbox (aria-multiselectable) stays open while choices toggle (pointer, Enter, or Space) and closes on an outside press, Escape, or Tab; each chosen option shows a check, and the closed control summarizes the chosen labels in choice order.",
+          "Disabled choices stay visible with aria-disabled but cannot be chosen; disabledReason is their title. A multiple Select can opt in to localized select-all and clear buttons below the listbox, which skip disabled choices and publish ordinary change events for changed values.",
+          "A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the trigger's accessible name ends with the chosen labels in choice order, and its value text stays empty.",
+          "Once registered, an icon-only trigger (single or multiple) shows an aria-hidden help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the listbox is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
         ]
       },
       "cssValueProps": [
@@ -4639,13 +4640,17 @@
           "kui-select",
           "kui-select--custom-selected",
           "kui-select--fit-menu",
-          "kui-select--label-hidden",
           "kui-select__custom-selected",
           "kui-select__custom-selected-content",
           "kui-select__group",
           "kui-select__group--separated",
           "kui-select__group-title",
-          "kui-select__icon"
+          "kui-select__icon",
+          "kui-select__listbox",
+          "kui-select__option",
+          "kui-select__popup",
+          "kui-select__trigger",
+          "kui-select__value"
         ],
         "publicTokens": [
           "--kui-color-neutral-border-quiet",

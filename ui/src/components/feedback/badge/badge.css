@@ -125,12 +125,9 @@
   background: var(--_kui-badge-fill-solid);
 }
 
-/* A multiple icon-only Select's count badge, in the trigger's end slot after
-   its fixed icon, sits 4px from the icon (the caret keeps its 12px after it).
-   The summary that ends the Select's label (and accessible name) stays inline
-   text, so a visible label reads "Labels: Bug, Docs" in place of the hidden
-   value. */
-.kui-select > .kui-badge[slot="end"] {
+/* A multiple icon-only Select's count badge, in the trigger after its fixed
+   icon, sits 4px from the icon (the caret keeps its 12px after it). */
+.kui-select__trigger > .kui-badge {
   margin-inline-start: remify(4px);
 }
 

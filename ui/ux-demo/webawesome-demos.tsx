@@ -50,6 +50,7 @@ import '@awesome.me/webawesome/dist/components/rating/rating.js';
 import '@awesome.me/webawesome/dist/components/relative-time/relative-time.js';
 import '@awesome.me/webawesome/dist/components/resize-observer/resize-observer.js';
 import '@awesome.me/webawesome/dist/components/scroller/scroller.js';
+import '@awesome.me/webawesome/dist/components/select/select.js';
 import '@awesome.me/webawesome/dist/components/skeleton/skeleton.js';
 import '@awesome.me/webawesome/dist/components/slider/slider.js';
 import '@awesome.me/webawesome/dist/components/spinner/spinner.js';

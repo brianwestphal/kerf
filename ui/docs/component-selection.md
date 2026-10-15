@@ -1017,7 +1017,7 @@ marks the superseded or exceptional choices below with a visible `Discouraged`
 tag; Popup remains untagged because low-level anchored positioning can be the
 right primitive. Never render a `Discouraged` element directly in application,
 demo, or recipe markup: reach it only through the Kerf component that wraps or
-replaces it (`PopupMenu` replaces `wa-dropdown`; `Select` renders `wa-select` /
+replaces it (`PopupMenu` replaces `wa-dropdown`; `Select` replaces `wa-select` /
 `wa-option`), and file a component gap rather than dropping to the raw tag.
 
 | Web Awesome choice                                                 | Kerf decision                                                                                                                                         |
@@ -1025,7 +1025,7 @@ replaces it (`PopupMenu` replaces `wa-dropdown`; `Select` renders `wa-select` /
 | `wa-button`, `wa-dropdown`, `wa-dropdown-item`                     | Use buttons for actions and `PopupMenu` for a command menu, never raw dropdown markup. Use `ListItem` for a navigation row and `Select` for a value.  |
 | `wa-button-group`                                                  | Use only for exceptional grouped actions; use `SegmentedControl` for one-of-many selection.                                                           |
 | `wa-input`, `wa-tag`                                               | Use `Chip` for removable or disabled tags; use `TokenSearchField` only when text and ordered filter tokens form one editor.                           |
-| `wa-select`, `wa-option`                                           | Use `Select`, which owns Kerf spacing, controlled rendering, icon stability, and explicit registration.                                               |
+| `wa-select`, `wa-option`                                           | Use `Select`, which owns Kerf spacing, controlled rendering, form participation, and explicit registration.                                           |
 | `wa-tab-group`, `wa-tab`, `wa-tab-panel`                           | Use `TabBar`/`AppTab` for application tabs or `SegmentedControl` for compact local views.                                                             |
 | `wa-icon`                                                          | Use `LucideIcon` in application UI.                                                                                                                   |
 | `wa-split-panel`                                                   | Use `ResizableRegion` for Kerf application panes; retain Split Panel only when its distinct API is required.                                          |

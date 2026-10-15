@@ -10,7 +10,7 @@ test('compact toolbar Select uses group focus geometry and spaced option icons',
   const select = demo.locator('[name="toolbar-rendering-balance"]');
   const group = select.locator('xpath=..');
 
-  await select.click();
+  await select.locator(':scope > .kui-select__trigger').click();
   await expect(select).toHaveAttribute('open');
   const focusGeometry = await group.evaluate((element) => {
     const style = window.getComputedStyle(element);
@@ -31,21 +31,21 @@ test('compact toolbar Select uses group focus geometry and spaced option icons',
   expect(focusGeometry.width).toBe(68);
   expect(focusGeometry.borderRadius).toBeGreaterThanOrEqual(17);
 
-  const gaps = await select.locator('wa-option').evaluateAll((options) =>
-    options.map((option) => {
-      const icon = option.querySelector<HTMLElement>('.kui-select__icon');
-      const label = [...option.childNodes].find(
-        (node) =>
-          node.nodeType === Node.TEXT_NODE && Boolean(node.textContent?.trim()),
-      );
-      if (!icon || !label) return -1;
-      const range = document.createRange();
-      range.selectNodeContents(label);
-      return (
-        range.getBoundingClientRect().left - icon.getBoundingClientRect().right
-      );
-    }),
-  );
+  const gaps = await select
+    .locator('.kui-select__option')
+    .evaluateAll((options) =>
+      options.map((option) => {
+        const icon = option.querySelector<HTMLElement>('.kui-select__icon');
+        const label = option.querySelector('.kui-select__option-label');
+        if (!icon || !label) return -1;
+        const range = document.createRange();
+        range.selectNodeContents(label);
+        return (
+          range.getBoundingClientRect().left -
+          icon.getBoundingClientRect().right
+        );
+      }),
+    );
   expect(gaps).toHaveLength(3);
   for (const gap of gaps) expect(gap).toBeGreaterThanOrEqual(8);
 
@@ -54,8 +54,8 @@ test('compact toolbar Select uses group focus geometry and spaced option icons',
 
   await page.setViewportSize({ width: 390, height: 844 });
   const popupBounds = await select.evaluate((element) =>
-    element.shadowRoot
-      ?.querySelector<HTMLElement>('[part~="listbox"]')
+    element
+      .querySelector<HTMLElement>(':scope > .kui-select__popup')
       ?.getBoundingClientRect(),
   );
   expect(popupBounds?.left).toBeGreaterThanOrEqual(10);
@@ -132,18 +132,15 @@ function selectGeometry(select: Locator) {
       Math.min(Number.parseFloat(value), Math.min(box.width, box.height) / 2);
     const style = window.getComputedStyle(group);
     const outer = group.getBoundingClientRect();
-    const combobox =
-      host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
+    const combobox = host.querySelector<HTMLElement>(
+      ':scope > .kui-select__trigger',
+    )!;
     const inner = combobox.getBoundingClientRect();
-    const icon = host
+    const icon = combobox
       .querySelector('.kui-select__icon--selected')!
       .getBoundingClientRect();
-    const caret = host.shadowRoot!.querySelector<HTMLElement>(
-      '[part~="expand-icon"]',
-    )!;
-    const glyphSvg = caret
-      .querySelector('wa-icon')!
-      .shadowRoot!.querySelector('svg')!;
+    const caret = combobox.querySelector<HTMLElement>('.kui-select__caret')!;
+    const glyphSvg = caret.querySelector('svg')!;
     const glyph = glyphSvg.getBoundingClientRect();
     const trigger: TriggerGeometry = {
       triggerWidth: inner.width,
@@ -152,7 +149,7 @@ function selectGeometry(select: Locator) {
       iconCenter: icon.left + icon.width / 2 - inner.left,
       caretCenter: glyph.left + glyph.width / 2 - inner.left,
       // The open caret rotates with a transition, so measure the glyph's
-      // layout height times the part's scale rather than its rotating box.
+      // layout height times the caret's scale rather than its rotating box.
       caretHeight:
         Number.parseFloat(window.getComputedStyle(glyphSvg).height) *
         new DOMMatrix(window.getComputedStyle(caret).transform).a,
@@ -237,7 +234,7 @@ test('icon-only toolbar Select is a caret pill matching the popup-menu dropdown 
     const select = demo.locator(`[name="${name}"]`);
     await page.keyboard.press('Shift');
     await select.getByRole('combobox').focus();
-    await expect(select).toBeFocused();
+    await expect(select.getByRole('combobox')).toBeFocused();
     expectPill(await selectGeometry(select), size, 'outline 3px +1px');
     await page.keyboard.press('Enter');
     await expect(select).toHaveAttribute('open');
@@ -266,14 +263,16 @@ test('icon-only toolbar Select is a caret pill matching the popup-menu dropdown 
         element.setAttribute('data-size', nextSize);
         element.setAttribute('data-shape', nextShape);
         element.setAttribute('data-focus-ring', nextRing);
-        element.querySelector('wa-select')!.setAttribute('data-size', nextSize);
+        element
+          .querySelector('kui-select')!
+          .setAttribute('data-size', nextSize);
       },
       [size, shape, ring] as const,
     );
     const expected = ring === 'halo' ? 'halo' : 'outline 3px +1px';
     await select.getByRole('combobox').focus();
     expectPill(await selectGeometry(select), size, expected);
-    await select.click();
+    await select.getByRole('combobox').click();
     await expect(select).toHaveAttribute('open');
     await page.keyboard.press('ArrowDown');
     expectPill(await selectGeometry(select), size, 'none');
@@ -295,12 +294,10 @@ test('caret-free icon-only Select is a round value trigger with keyboard access'
     const group = select.locator('xpath=..');
     await expect(select).toHaveAttribute('data-caret', 'false');
     const geometry = await select.evaluate((host) => {
-      const combobox =
-        host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
-      const caret = host.shadowRoot!.querySelector<HTMLElement>(
-        '[part~="expand-icon"]',
+      const combobox = host.querySelector<HTMLElement>(
+        ':scope > .kui-select__trigger',
       )!;
-      const icon = host.querySelector('.kui-select__icon--selected')!;
+      const icon = combobox.querySelector('.kui-select__icon--selected')!;
       const glyph = icon.querySelector('svg')!;
       const box = combobox.getBoundingClientRect();
       const iconBox = icon.getBoundingClientRect();
@@ -312,10 +309,11 @@ test('caret-free icon-only Select is a round value trigger with keyboard access'
           iconBox.left + iconBox.width / 2 - (box.left + box.width / 2),
         glyphOffset:
           glyphBox.left + glyphBox.width / 2 - (box.left + box.width / 2),
-        caretDisplay: window.getComputedStyle(caret).display,
+        // A caret-free trigger renders no caret at all.
+        carets: combobox.querySelectorAll('.kui-select__caret').length,
       };
     });
-    expect(geometry.caretDisplay).toBe('none');
+    expect(geometry.carets).toBe(0);
     expect(geometry.width).toBe(geometry.height);
     expect(Math.abs(geometry.iconOffset)).toBeLessThanOrEqual(1);
     expect(Math.abs(geometry.glyphOffset)).toBeLessThanOrEqual(1);
@@ -331,10 +329,11 @@ test('caret-free icon-only Select is a round value trigger with keyboard access'
       path: testInfo.outputPath(`select-round-${width}.png`),
     });
 
-    await select.hover();
-    await expect(select.locator('wa-tooltip.kui-help-tag')).toHaveText(
-      'Workspace Sort: Balanced',
-    );
+    await select.getByRole('combobox').hover();
+    // Help tags live in the shared body-level layer.
+    await expect(
+      page.locator('.kui-help-tag-layer > wa-tooltip.kui-help-tag[open]'),
+    ).toHaveText('Workspace Sort: Balanced');
     await select.getByRole('combobox').focus();
     await page.keyboard.press('Enter');
     await expect(select).toHaveAttribute('open');
@@ -345,8 +344,9 @@ test('caret-free icon-only Select is a round value trigger with keyboard access'
       '[data-demo="select"] [name="toolbar-round-custom-rendering-balance"]',
     );
     const customGeometry = await custom.evaluate((host) => {
-      const combobox =
-        host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
+      const combobox = host.querySelector<HTMLElement>(
+        ':scope > .kui-select__trigger',
+      )!;
       const icon = host.querySelector('.kui-select__custom-selected svg')!;
       const trigger = combobox.getBoundingClientRect();
       const glyph = icon.getBoundingClientRect();
@@ -395,10 +395,11 @@ test('Select option icon colors keep non-text contrast in light and dark themes'
         return 0.2126 * red! + 0.7152 * green! + 0.0722 * blue!;
       };
       const icon = element.querySelector<HTMLElement>(
-        'wa-option[value="quiet"] .kui-select__icon',
+        '.kui-select__option[data-value="quiet"] .kui-select__icon',
       )!;
-      const listbox =
-        element.shadowRoot!.querySelector<HTMLElement>('[part~="listbox"]')!;
+      const listbox = element.querySelector<HTMLElement>(
+        ':scope > .kui-select__popup',
+      )!;
       const iconColor = window.getComputedStyle(icon).color;
       const foreground = luminance(iconColor);
       const background = luminance(
@@ -416,7 +417,7 @@ test('Select option icon colors keep non-text contrast in light and dark themes'
   for (const theme of ['initial', 'toggled']) {
     if (theme === 'toggled')
       await page.locator('[data-action="toggle-theme"]').click();
-    await select.click();
+    await select.getByRole('combobox').click();
     await expect(select).toHaveAttribute('open');
     const measured = await iconContrast();
     expect(measured.opacity).toBe(1);

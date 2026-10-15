@@ -56,7 +56,7 @@ const CHROME: readonly ChromeSpec[] = [
   },
 ];
 
-// Select's placeholder is a separate static box (not the live wa-select), so its
+// Select's placeholder is a separate static box (not the live Select trigger), so its
 // label, box, chevron, and hint are compared part-by-part in placeholder.spec.ts.
 // ListHeader and AppTab are not in the recipe; their own tests below cover them,
 // and placeholder-fixture.spec.ts diffs every placeholder component against a

@@ -48,11 +48,7 @@ async function mountFixture(page: Page): Promise<void> {
     ),
   });
   await page.addScriptTag({ content: javascript.text });
-  await page.waitForFunction(() =>
-    Boolean(
-      customElements.get('wa-select') && customElements.get('wa-divider'),
-    ),
-  );
+  await page.waitForFunction(() => Boolean(customElements.get('kui-select')));
 }
 
 /** Bump the mount's signal (the template is unchanged) and let Lit settle. */
@@ -72,119 +68,96 @@ test('a Select divider keeps its separator semantics across re-renders', async (
   page,
 }) => {
   await mountFixture(page);
-  const divider = page.locator('wa-select[name="divided"] wa-divider');
-  await expect(divider).toHaveCount(1);
+  // A Select draws its own separator rows, so the template renders their
+  // semantics and nothing has to restore them after a morph.
+  const separators = page
+    .locator('kui-select[name="divided"]')
+    .getByRole('separator', { includeHidden: true });
+  await expect(separators).toHaveCount(1);
   const semantics = () =>
-    divider.evaluate((host) => ({
-      role: host.getAttribute('role'),
-      orientation: host.getAttribute('aria-orientation'),
+    separators.evaluate((node) => ({
+      role: node.getAttribute('role'),
+      className: node.className,
     }));
-  const expected = { role: 'separator', orientation: 'horizontal' };
-  await expect.poll(semantics).toEqual(expected);
+  const expected = { role: 'separator', className: 'kui-select__separator' };
+  expect(await semantics()).toEqual(expected);
 
   await rerender(page);
   expect(await semantics()).toEqual(expected);
   await rerender(page, 2);
   expect(await semantics()).toEqual(expected);
-  await expect(
-    page
-      .locator('wa-select[name="divided"]')
-      .getByRole('separator', { includeHidden: true }),
-  ).toHaveCount(1);
+  await expect(separators).toHaveCount(1);
 });
 
-// Lit reflects each `reflect: true` default (wa-select size/appearance/
-// placement, wa-divider orientation) onto its host. A
-// template that omits them lets every re-render strip them, which nulls the
-// property and forces a full Lit update to restore it. The templates render
-// the defaults, so a no-op re-render leaves every Web Awesome host alone:
-// no attribute record and no Lit update on any of them.
-test('a no-op re-render churns no Web Awesome host attributes or updates', async ({
+// kerf's morph removes host attributes a template omits, so markup whose
+// element sets its own attributes churns on every re-render (a strip and a
+// restore per host). The Select and PopupMenu render Kerf-owned markup with
+// no Web Awesome hosts, and the templates render every attribute they own, so
+// a no-op re-render leaves both exactly as they were: no attribute record on
+// any Select element, and the same nodes and markup afterward.
+test('a no-op re-render churns no Select or PopupMenu attributes', async ({
   page,
 }) => {
   await mountFixture(page);
   const settle = () =>
-    page.evaluate(async () => {
-      await new Promise((done) => window.requestAnimationFrame(done));
-      await Promise.all(
-        [...document.querySelectorAll('[data-wa-host-attributes] *')]
-          .filter((node) => node.localName.startsWith('wa-'))
-          .map(
-            (node) =>
-              (node as HTMLElement & { updateComplete?: Promise<unknown> })
-                .updateComplete,
-          ),
-      );
-    });
-  await settle();
-  const hosts = await page.evaluate(() => {
-    const root = document.querySelector('[data-wa-host-attributes]')!;
-    const tracked = [...root.querySelectorAll('*')].filter((node) =>
-      node.localName.startsWith('wa-'),
+    page.evaluate(
+      () => new Promise((done) => window.requestAnimationFrame(done)),
     );
-    const log = {
-      mutations: [] as string[],
-      updates: [] as string[],
-    };
+  await settle();
+  const before = await page.evaluate(() => {
+    const root = document.querySelector('[data-wa-host-attributes]')!;
+    const log: string[] = [];
     const describe = (node: Element) =>
-      `${node.localName}${node.getAttribute('name') ? `[name=${node.getAttribute('name')}]` : ''}`;
-    for (const node of tracked) {
-      const host = node as HTMLElement & {
-        update(changed: Map<PropertyKey, unknown>): void;
-      };
-      const original = host.update;
-      host.update = function (changed) {
-        log.updates.push(`${describe(node)} ${[...changed.keys()].join('+')}`);
-        original.call(this, changed);
-      };
-    }
+      `${node.localName}${node.className ? `.${String(node.className).split(' ')[0]}` : ''}`;
     new MutationObserver((records) => {
       for (const record of records) {
         const target = record.target as Element;
-        const name = record.attributeName ?? '';
-        // A wa-option's role / aria-selected / aria-disabled track live
-        // state, so the template cannot render them; the morph strips them
-        // and @kerfjs/ui/select/register restores them without a Lit update
-        // (select-option-semantics.spec.ts owns that contract).
-        const liveOptionSemantics =
-          target.localName === 'wa-option' &&
-          (name === 'role' || name.startsWith('aria-'));
-        if (target.localName.startsWith('wa-') && !liveOptionSemantics)
-          log.mutations.push(`${describe(target)} ${name}`);
+        // The fixture's render counter is the one attribute that changes.
+        if (record.attributeName === 'data-renders') continue;
+        log.push(`${describe(target)} ${record.attributeName ?? ''}`);
       }
     }).observe(root, { attributes: true, subtree: true });
-    Object.assign(window, { churn: log });
-    return tracked.map((node) => node.localName);
+    const selects = [...root.querySelectorAll('kui-select')];
+    const menu = root.querySelector('.kui-popup-menu')!;
+    Object.assign(window, { churn: log, selectNodes: selects, menuNode: menu });
+    return {
+      // No Web Awesome host is left in either template.
+      waHosts: [...root.querySelectorAll('*')]
+        .map((node) => node.localName)
+        .filter((name) => name.startsWith('wa-')),
+      selects: selects.map((node) => node.outerHTML),
+      menu: menu.outerHTML,
+    };
   });
-  // The fixture renders every Web Awesome host the templates own.
-  expect(new Set(hosts)).toEqual(
-    new Set(['wa-select', 'wa-option', 'wa-divider']),
-  );
-  const menuBefore = await page.evaluate(() => {
-    const menu = document.querySelector('.kui-popup-menu')!;
-    Object.assign(window, { menuNode: menu });
-    return menu.outerHTML;
-  });
+  expect(before.waHosts).toEqual([]);
+  expect(before.selects).toHaveLength(2);
 
   await rerender(page, 3);
   await settle();
-  const churn = await page.evaluate(
-    () => (window as unknown as { churn: unknown }).churn,
-  );
-  expect(churn).toEqual({ mutations: [], updates: [] });
+  const after = await page.evaluate(() => {
+    const state = window as unknown as {
+      churn: string[];
+      selectNodes: Element[];
+      menuNode: Element;
+    };
+    const selects = [...document.querySelectorAll('kui-select')];
+    const menu = document.querySelector('.kui-popup-menu')!;
+    return {
+      churn: state.churn,
+      sameSelects: selects.every(
+        (node, index) => node === state.selectNodes[index],
+      ),
+      sameMenu: menu === state.menuNode,
+      selects: selects.map((node) => node.outerHTML),
+      menu: menu.outerHTML,
+    };
+  });
+  expect(after.churn).toEqual([]);
+  expect(after.sameSelects).toBe(true);
+  expect(after.selects).toEqual(before.selects);
   // The PopupMenu (Kerf-owned markup) is left exactly as it was, too.
-  expect(
-    await page.evaluate(
-      () =>
-        (window as unknown as { menuNode: Element }).menuNode ===
-        document.querySelector('.kui-popup-menu'),
-    ),
-  ).toBe(true);
-  expect(
-    await page.evaluate(
-      () => document.querySelector('.kui-popup-menu')!.outerHTML,
-    ),
-  ).toBe(menuBefore);
+  expect(after.sameMenu).toBe(true);
+  expect(after.menu).toBe(before.menu);
   expect(
     await page.evaluate(() =>
       document.querySelector('[data-renders]')?.getAttribute('data-renders'),

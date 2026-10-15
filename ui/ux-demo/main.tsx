@@ -1398,7 +1398,7 @@ const stopResize = wireResizableRegions(app, {
     actionLog.value = `Panel resized to ${size}px`;
   },
 });
-const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
+const stopSelect = delegate(app, 'change', 'kui-select', (_event, element) => {
   const value = (element as HTMLElement & { value?: string | string[] }).value;
   if (Array.isArray(value)) {
     const name = element.getAttribute('name');
@@ -1654,7 +1654,7 @@ const dispatchRecipeChange = (_event: Event, element: Element) => {
 const stopRecipeChanges = delegate(
   app,
   'change',
-  '[data-recipe] wa-select, [data-recipe] wa-input, [data-recipe] wa-textarea',
+  '[data-recipe] kui-select, [data-recipe] wa-input, [data-recipe] wa-textarea',
   dispatchRecipeChange,
 );
 const stopRecipeInputs = delegate(
@@ -1969,7 +1969,7 @@ const stopChoiceChipsDemo = delegateActions(app, 'change', {
 const stopAnimationSelects = delegate(
   app,
   'change',
-  'wa-select[name^="animation-"]',
+  'kui-select[name^="animation-"]',
   (_event, element) => {
     updateAnimationSetting(element);
   },

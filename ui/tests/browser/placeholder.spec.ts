@@ -120,9 +120,9 @@ test('the Loading Inspector recipe composes placeholder chrome and swaps to load
     'Status',
   );
   await expect(rows.first().locator('dd .kui-skeleton')).toBeVisible();
-  // Select renders a static placeholder box, not the interactive wa-select.
+  // Select renders a static placeholder box, not the interactive kui-select.
   await expect(inspector.locator('.kui-select--placeholder')).toBeVisible();
-  expect(await inspector.locator('wa-select').count()).toBe(0);
+  expect(await inspector.locator('kui-select').count()).toBe(0);
   // A placeholder menu item is disabled and carries no action.
   const item = inspector
     .locator('.kui-list-item[data-placeholder="true"]')
@@ -164,7 +164,7 @@ test('the Loading Inspector recipe composes placeholder chrome and swaps to load
   await expect(
     inspector.locator('.kui-value-table__row[data-placeholder="true"]'),
   ).toHaveCount(0);
-  await expect(inspector.locator('wa-select')).toBeVisible();
+  await expect(inspector.locator('kui-select')).toBeVisible();
   await expect(inspector.getByText('Mara Lopez')).toBeVisible();
 });
 
@@ -178,24 +178,18 @@ test('a placeholder Select keeps the live control’s chrome; only the value is 
   await expect(select).toHaveAttribute('data-placeholder', 'true');
 
   // Label typography and inset, box geometry, and the chevron's box, read from
-  // the placeholder's own elements or the live wa-select's parts.
+  // the placeholder's own elements or the live Select's.
   const chrome = () =>
     select.evaluate((root) => {
       const placeholder = root.dataset.placeholder === 'true';
-      const part = (name: string) =>
-        root.shadowRoot?.querySelector(`[part~="${name}"]`) ?? null;
-      const label = placeholder
-        ? root.querySelector('.kui-select__placeholder-label')
-        : part('form-control-label');
-      const box = placeholder
-        ? root.querySelector('.kui-select__placeholder-box')
-        : part('combobox');
-      const chevron = placeholder
-        ? root.querySelector('.kui-select__placeholder-chevron')
-        : part('expand-icon');
-      const hint = placeholder
-        ? root.querySelector('.kui-select__placeholder-hint')
-        : part('hint');
+      const label = root.querySelector(':scope > .kui-select__label');
+      const box = root.querySelector(
+        placeholder
+          ? ':scope > .kui-select__placeholder-box'
+          : ':scope > .kui-select__trigger',
+      );
+      const chevron = box!.querySelector(':scope > .kui-select__caret');
+      const hint = root.querySelector(':scope > .kui-select__hint');
       const origin = root.getBoundingClientRect();
       const rect = (element: Element) => {
         const bounds = element.getBoundingClientRect();

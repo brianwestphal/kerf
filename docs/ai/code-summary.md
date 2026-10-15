@@ -888,17 +888,23 @@ and from intermediate expressions. List gaps, List flex, Skeleton dimensions,
 and Select choice colors accept only their property-specific contracts. It
 also re-exports every named AppTab, TabBar, ToolbarControlGroup, and Select
 presentation axis; the source and packed consumer contract compile the same
-type-only import fixture. `Select` also owns the morph
-boundary for its upgraded Web Awesome markup: stable skipped option-icon keys
-retain slotted elements across rerenders, while value-keyed custom selected
-content is replaced when the controlled selection changes.
-`@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
-Web Awesome’s internal combobox name. The ariaLabel-only label is visually
-hidden without adding geometry, also with custom selected content. See
-[`ui/docs/accessibility.md`](../../ui/docs/accessibility.md#select).
-`hint` renders persistent supporting text below the control through Web
-Awesome's native hint relationship; `placeholderText` remains the empty value
-inside the closed control, and loading placeholders retain the visible hint.
+type-only import fixture. `@kerfjs/ui` Select (KF-CF0FEN: no longer
+`wa-select`) renders a `kui-select` root, a native trigger `<button
+role="combobox">`, and a `popover="manual"` listbox of `role="option"` rows;
+`ui/src/components/forms/select/internal/select-element.ts` is the light-DOM,
+form-associated `kui-select` element (value, name, form submit/reset) and
+`internal/select-controller.ts` the document listeners `select/register`
+installs (open, floating-ui placement, keyboard and typeahead, choose, bulk
+actions, dismissal); `model/select-summary.ts` summarizes a multiple
+selection. Value-keyed custom selected content is replaced when the
+controlled selection changes. A nonempty `label`, or otherwise `ariaLabel`,
+names the trigger without adding geometry, also with custom selected content.
+See [`ui/docs/accessibility.md`](../../ui/docs/accessibility.md#select).
+`hint` renders persistent supporting text below the control as the trigger's
+`aria-description`; `placeholderText` remains the empty value inside the
+closed control, and loading placeholders retain the visible hint.
+Unit coverage: `ui/tests/unit/select-controller.test.tsx`,
+`ui/tests/unit/select-summary.test.ts`.
 Placeholders change only their unknown values: `ui/src/skeleton.css` keeps a
 `[data-placeholder="true"]` control `disabled` but undimmed (including Web
 Awesome's native `button:disabled`), `ui/tests/browser/placeholder-chrome.spec.ts`
@@ -1071,10 +1077,8 @@ tracking) that clicks the first trailing action. Tests:
 `ui/tests/browser/composer.spec.ts`, and the chat dialog case in
 `ui/tests/browser/surface-scaffold.spec.ts`.
 `ui/src/components/forms/select/select.tsx` renders disabled choices and opt-in multiple-select action
-buttons. `ui/src/components/forms/select/internal/install-select-actions.ts`
-applies select-all or clear through
-the registered Web Awesome selection path and publishes normal input/change
-events for changed values.
+buttons; the Select controller applies select-all or clear and publishes a
+`change` event for changed values.
 Safe areas: `ui/src/foundation.css` defines the `--kui-safe-area-*` device insets
 (default `env(safe-area-inset-*)`); the pane and layout stylesheets route the
 inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe areas

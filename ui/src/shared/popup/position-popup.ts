@@ -21,6 +21,12 @@ import {
 export type PopupPlacement =
   'bottom-start' | 'bottom' | 'bottom-end' | 'top-start' | 'top' | 'top-end';
 
+/**
+ * The custom property a placed popup's CSS reads to cap its width at the room
+ * its side has; the popup also keeps any width limit of its own.
+ */
+export const POPUP_AVAILABLE_WIDTH = '--_kui-popup-available-width';
+
 /** A popup stays this far from the viewport edge when shifted or capped. */
 export const POPUP_VIEWPORT_PADDING = 10;
 
@@ -62,7 +68,7 @@ export async function positionPopup(
   // Measure the natural size: a cap from an earlier, shorter side would
   // otherwise steer the flip.
   popup.style.removeProperty('max-height');
-  popup.style.removeProperty('max-width');
+  popup.style.removeProperty(POPUP_AVAILABLE_WIDTH);
   const {
     x,
     y,
@@ -93,7 +99,11 @@ export async function positionPopup(
         boundary,
         apply({ availableHeight, availableWidth }) {
           popup.style.maxHeight = `${Math.max(0, availableHeight)}px`;
-          popup.style.maxWidth = `${Math.max(0, availableWidth)}px`;
+          // The popup's own CSS caps its width by this and its own limit.
+          popup.style.setProperty(
+            POPUP_AVAILABLE_WIDTH,
+            `${Math.max(0, availableWidth)}px`,
+          );
         },
       }),
     ],

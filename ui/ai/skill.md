@@ -483,11 +483,12 @@ For nested action menus, use `PopupMenuItem.submenu` with item, heading, and div
 
 ## Select lifecycle ownership
 
-Import `@kerfjs/ui/select/register` once. It owns the canonical Select animation
-lifecycle: the latest request wins through open/close reversals, canceled
-transitions, and removal. Native value, keyboard, dismissal, and anchor placement
-remain with Web Awesome. Do not add popup delays, position repairs, or animation
-completion handlers in consumers. Raw `wa-select` elements remain native.
+Import `@kerfjs/ui/select/register` once. It defines the form-associated
+`kui-select` root and wires every Select: opening, top-layer placement,
+keyboard navigation and typeahead, choosing, and dismissal. Listen for the
+standard `input` / `change` events on the root and read its `value` (an array
+with `multiple`). Do not add popup delays, position repairs, or animation
+completion handlers in consumers.
 
 Neutral lowered surfaces and decorative neutral fills/borders are translucent theme colors; compose nested public components directly. Default/raised canvases, foregrounds, focus indicators, and loud contrast-bearing fills remain opaque. Do not assign depth-specific component tokens in demo wrappers.
 

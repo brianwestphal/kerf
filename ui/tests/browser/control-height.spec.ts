@@ -5,10 +5,11 @@ import { expect, type Locator, test } from '@playwright/test';
 
 const visualHeight = (host: Locator) =>
   host.evaluate((element) => {
-    // A Web Awesome host draws its box on a shadow part; a native control
-    // (a PopupMenu trigger) is its own box.
+    // A Web Awesome host draws its box on a shadow part, a Select on its
+    // trigger; a native control (a PopupMenu trigger) is its own box.
     const part =
       element.shadowRoot?.querySelector('[part~="combobox"], [part~="base"]') ??
+      element.querySelector(':scope > .kui-select__trigger') ??
       element;
     return part.getBoundingClientRect().height;
   });
@@ -22,7 +23,7 @@ test('a kerf Select, a wa-input, and a wa-button share the 44px control height',
   const example = page.locator('[data-catalog-example]', {
     has: page.locator('wa-input[label="Assignee"]'),
   });
-  const select = example.locator('wa-select[name="demo-inset-status"]');
+  const select = example.locator('kui-select[name="demo-inset-status"]');
   const input = example.locator('wa-input[label="Assignee"]');
   const button = example.locator('wa-button');
   await expect(select).toBeVisible();

@@ -7,18 +7,15 @@ test('view-title Select keeps its 36px trigger and inset focus ring', async ({
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/?component=select');
     const section = page.locator('[data-demo-section="select-view-title"]');
-    const select = section.locator('wa-select[name="view-title-demo"]');
+    const select = section.locator('kui-select[name="view-title-demo"]');
     await expect(select).toHaveAttribute('data-presentation', 'title');
     await expect(select).toHaveAttribute('data-focus-ring-inset', 'true');
     const geometry = await select.evaluate((node) => {
-      const combobox =
-        node.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
-      const caret = node.shadowRoot!.querySelector<HTMLElement>(
-        '[part~="expand-icon"]',
+      const combobox = node.querySelector<HTMLElement>(
+        ':scope > .kui-select__trigger',
       )!;
-      const label = node.shadowRoot!.querySelector<HTMLElement>(
-        '[part~="display-input"]',
-      )!;
+      const caret = combobox.querySelector<HTMLElement>('.kui-select__caret')!;
+      const label = combobox.querySelector<HTMLElement>('.kui-select__value')!;
       const style = window.getComputedStyle(combobox);
       return {
         height: combobox.getBoundingClientRect().height,
@@ -45,22 +42,18 @@ test('view-title Select keeps its 36px trigger and inset focus ring', async ({
     await section.evaluate((node) => {
       (node as HTMLElement).style.overflow = 'hidden';
     });
-    const displayInput = select.locator('[part~="display-input"]');
-    await displayInput.focus();
-    await expect(displayInput).toBeFocused();
-    expect(
-      await select.evaluate((node) => {
-        const combobox =
-          node.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
-        return window.getComputedStyle(combobox).outlineOffset;
-      }),
-    ).toBe('-3px');
+    const trigger = select.locator(':scope > .kui-select__trigger');
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    await expect(trigger).toHaveCSS('outline-offset', '-3px');
     await section.screenshot({
       path: `test-results/select-title-focus-${testInfo.project.name}-${width}.png`,
     });
-    await select.click();
+    await trigger.click();
     await expect(select).toHaveAttribute('open', '');
     await select.getByRole('option', { name: 'Active' }).click();
-    await expect(select).toHaveAttribute('value', 'active');
+    await expect
+      .poll(() => select.evaluate((node) => (node as HTMLSelectElement).value))
+      .toBe('active');
   }
 });

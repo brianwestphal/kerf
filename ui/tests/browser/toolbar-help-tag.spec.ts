@@ -73,11 +73,11 @@ test('hovering an icon-only toolbar button shows its name after a delay', async 
   expect(await group.ariaSnapshot()).toBe(before);
 
   // Moving along the toolbar while warm shows the next tag at once.
-  const filter = page.locator('wa-select[name="toolbar-ticket-label-filter"]');
+  const filter = page.locator('kui-select[name="toolbar-ticket-label-filter"]');
   await filter.hover();
-  await expect(
-    filter.locator('wa-tooltip.kui-help-tag [part~="body"]'),
-  ).toBeVisible({ timeout: 300 });
+  await expect(layerTagBody(page, 'Filter by Label')).toBeVisible({
+    timeout: 300,
+  });
   await expect(layerTagBody(page, 'Pin View')).toBeHidden();
   await pin.hover();
   await expect(layerTagBody(page, 'Pin View')).toBeVisible({ timeout: 300 });
@@ -97,7 +97,7 @@ test('keyboard focus shows the tag at once; a click focus and Escape hide it', a
   browserName,
 }) => {
   const { pin } = await openSelectDemo(page, 390);
-  const filter = page.locator('wa-select[name="toolbar-ticket-label-filter"]');
+  const filter = page.locator('kui-select[name="toolbar-ticket-label-filter"]');
   // Reach the button from the keyboard: focus the filter, then Shift+Tab.
   await filter.getByRole('combobox').focus();
   await keyboardFocus(page, pin, 'Shift+Tab');

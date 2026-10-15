@@ -382,8 +382,7 @@ colocated component source:
   appear only in an ancestor compound or inside `:has()` / `:not()`; the
   styled compound is the stylesheet's own class.
 - **Owned Web Awesome tags.** Kerf components are named by class, never by a
-  `wa-*` tag they render. A tag another component renders (`wa-select`,
-  `wa-option`) — as the
+  `wa-*` tag they render. A tag another component renders — as the
   subject, or as an ancestor whose internals the rule reaches — must be scoped
   to that component by its class or excluded with `:not()`. A direct child
   that cannot be the owner's internal

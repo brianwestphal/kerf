@@ -615,9 +615,8 @@ describe('UX catalog metadata', () => {
       'wa-tag',
       'wa-option',
     ]);
-    expect(catalogEntriesUsing('wa-select').map((entry) => entry.id)).toEqual([
-      'select',
-    ]);
+    // Select is Kerf's own control; nothing composes the raw wa-select.
+    expect(catalogEntriesUsing('wa-select')).toEqual([]);
     expect(
       catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id),
     ).toEqual(['wa-carousel']);
