@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 391900,
-  "measuredLargestJavaScriptGzip": 137615,
-  "measuredTotalJavaScriptGzip": 391804,
+  "measuredLargestJavaScriptGzip": 138249,
+  "measuredTotalJavaScriptGzip": 391887,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5105,6 +5105,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 137615,
         "measuredTotalJavaScriptGzip": 391804,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 391900
+      }
+    },
+    {
+      "at": "2026-10-15T12:50:50.788Z",
+      "reason": "Merge main (TokenSearchField structure signal, single-zone Toolbar) into the Web Awesome independence branch",
+      "old": {
+        "measuredLargestJavaScriptGzip": 137615,
+        "measuredTotalJavaScriptGzip": 391804,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 391900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 138249,
+        "measuredTotalJavaScriptGzip": 391887,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 391900
       }

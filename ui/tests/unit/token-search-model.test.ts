@@ -339,4 +339,57 @@ describe('createTokenSearchModel', () => {
       { value: 'tag:"design system"', parsedValue: 'design system', offset: 0 },
     ]);
   });
+
+  it('publishes structure and suggestions only on structural changes, not per keystroke', () => {
+    const model = createTokenSearchModel({ rules });
+    const structures = [model.structure.value];
+    const suggestionLists = [model.suggestions.value];
+    const record = () => {
+      structures.push(model.structure.value);
+      suggestionLists.push(model.suggestions.value);
+    };
+    expect(model.structure.value).toEqual({
+      hasQuery: false,
+      tokenValues: [],
+      editorRevision: 0,
+    });
+
+    for (const query of ['h', 'he', 'hel', 'hell', 'hello']) {
+      model.edit({ query, tokens: [] });
+      record();
+    }
+    // empty -> non-empty is one structural change; further typing is not.
+    expect(new Set(structures).size).toBe(2);
+    expect(new Set(suggestionLists).size).toBe(1);
+    expect(model.structure.value.hasQuery).toBe(true);
+
+    const typed = model.structure.value;
+    model.edit({ query: 'hello is:', tokens: [] });
+    const shown = model.suggestions.value;
+    expect(shown.map(({ value }) => value)).toEqual(['is:open', 'is:closed']);
+    model.edit({ query: 'hello is:', tokens: [] });
+    expect(model.suggestions.value).toBe(shown);
+    expect(model.structure.value).toBe(typed);
+
+    model.edit({ query: 'hello is:open ', tokens: [] });
+    expect(model.structure.value.tokenValues).toEqual(['is:open']);
+    expect(model.suggestions.value).toEqual([]);
+    const withToken = model.structure.value;
+    model.edit({
+      query: 'hello more',
+      tokens: [{ ...model.state.value.tokens[0], offset: 6 }],
+    });
+    expect(model.structure.value).toBe(withToken);
+
+    model.remove('is:open');
+    expect(model.structure.value.tokenValues).toEqual([]);
+    const beforeReplace = model.structure.value;
+    model.replace({ query: 'hello more', tokens: [] });
+    expect(model.structure.value).not.toBe(beforeReplace);
+    expect(model.structure.value.editorRevision).toBe(1);
+    model.dismiss();
+    const dismissed = model.suggestions.value;
+    model.dismiss();
+    expect(model.suggestions.value).toBe(dismissed);
+  });
 });

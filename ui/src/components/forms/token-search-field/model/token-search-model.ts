@@ -1,4 +1,10 @@
-import { type Signal, signal } from 'kerfjs';
+import {
+  batch,
+  computed,
+  type ReadonlySignal,
+  type Signal,
+  signal,
+} from 'kerfjs';
 
 import type {
   TokenSearchFieldValue,
@@ -34,10 +40,35 @@ export interface TokenSearchSuggestion {
   label: string;
 }
 
+/**
+ * The render-relevant shape of a managed field: everything a host render
+ * needs to re-run for. Plain text edits do not change it.
+ */
+export interface TokenSearchStructure {
+  /** Whether the free text is non-empty (drives clear, placeholder, and collapsed state). */
+  hasQuery: boolean;
+  /** Committed token values in editor order. */
+  tokenValues: readonly string[];
+  /** The model's editor revision (programmatic text replacement). */
+  editorRevision: number;
+}
+
 export interface TokenSearchModel<Result = unknown> {
+  /**
+   * The live query and tokens. Changes on every keystroke: read it with
+   * `.peek()` (or in an event handler) to avoid subscribing a render per key.
+   */
   state: Signal<TokenSearchState>;
   /** Changes when a model action must replace DOM-owned editor text. */
   editorRevision: Signal<number>;
+  /**
+   * Changes only on structural edits (a token committed, removed, or
+   * reordered; the text becoming empty or non-empty; an editor revision), and
+   * keeps the same reference otherwise. `TokenSearchField` subscribes to this
+   * instead of `state`, so typing does not re-run the host render.
+   */
+  structure: ReadonlySignal<TokenSearchStructure>;
+  /** Visible suggestions. Publishes only when the list's content changes. */
   suggestions: Signal<readonly TokenSearchSuggestion[]>;
   result: Signal<Result | undefined>;
   edit(value: TokenSearchFieldValue, commit?: boolean): void;
@@ -135,13 +166,32 @@ export function createTokenSearchModel<Result = unknown>({
     }),
   });
   const editorRevision = signal(0);
+  let lastStructure: TokenSearchStructure | undefined;
+  const structure = computed<TokenSearchStructure>(() => {
+    const { query, tokens } = state.value;
+    const next: TokenSearchStructure = {
+      hasQuery: query.length > 0,
+      tokenValues: tokens.map((token) => token.value),
+      editorRevision: editorRevision.value,
+    };
+    if (
+      lastStructure?.hasQuery === next.hasQuery &&
+      lastStructure.editorRevision === next.editorRevision &&
+      lastStructure.tokenValues.length === next.tokenValues.length &&
+      lastStructure.tokenValues.every(
+        (value, index) => value === next.tokenValues[index],
+      )
+    )
+      return lastStructure;
+    return (lastStructure = next);
+  });
   const suggestions = signal<readonly TokenSearchSuggestion[]>([]);
-  const result = signal<Result | undefined>(evaluate?.(state.value));
+  const result = signal<Result | undefined>(evaluate?.(state.peek()));
   let activeStart: number | undefined;
   let activeRule: TokenSearchRule | undefined;
 
   const refreshSuggestions = () => {
-    const match = activePattern?.exec(state.value.query);
+    const match = activePattern?.exec(state.peek().query);
     const raw = match?.[1];
     const separator = raw?.indexOf(':') ?? -1;
     const rule =
@@ -152,7 +202,7 @@ export function createTokenSearchModel<Result = unknown>({
     const input = separator < 0 ? '' : unquote(raw!.slice(separator + 1));
     activeStart =
       match && raw ? match.index + match[0].lastIndexOf(raw) : undefined;
-    suggestions.value = (rule?.suggest?.(input, state.value) ?? []).flatMap(
+    const next = (rule?.suggest?.(input, state.peek()) ?? []).flatMap(
       (candidate) => {
         const value =
           typeof candidate === 'string' ? candidate : candidate.value;
@@ -168,12 +218,23 @@ export function createTokenSearchModel<Result = unknown>({
           : [];
       },
     );
+    const current = suggestions.peek();
+    if (
+      next.length !== current.length ||
+      next.some(
+        (suggestion, index) =>
+          suggestion.value !== current[index].value ||
+          suggestion.label !== current[index].label,
+      )
+    )
+      suggestions.value = next;
   };
-  const publish = (next: TokenSearchState) => {
-    state.value = next;
-    result.value = evaluate?.(next);
-    refreshSuggestions();
-  };
+  const publish = (next: TokenSearchState) =>
+    batch(() => {
+      state.value = next;
+      result.value = evaluate?.(next);
+      refreshSuggestions();
+    });
   refreshSuggestions();
 
   const edit = (value: TokenSearchFieldValue, commit = false) => {
@@ -222,13 +283,13 @@ export function createTokenSearchModel<Result = unknown>({
 
   const commitResolved = (token: TokenSearchResolvedToken | undefined) => {
     if (!token || activeStart === undefined) return;
-    const query = state.value.query.slice(0, activeStart);
-    publish({ query, tokens: [...state.value.tokens, token] });
+    const query = state.peek().query.slice(0, activeStart);
+    publish({ query, tokens: [...state.peek().tokens, token] });
   };
   const choose = (value: string) => {
     if (
       activeStart === undefined ||
-      !suggestions.value.some((suggestion) => suggestion.value === value)
+      !suggestions.peek().some((suggestion) => suggestion.value === value)
     )
       return;
     commitResolved(resolve(value, activeStart));
@@ -241,35 +302,38 @@ export function createTokenSearchModel<Result = unknown>({
   return {
     state,
     editorRevision,
+    structure,
     suggestions,
     result,
     edit,
     replace(value) {
-      edit(value);
-      editorRevision.value++;
+      batch(() => {
+        edit(value);
+        editorRevision.value = editorRevision.peek() + 1;
+      });
     },
     submit(value) {
       edit(value, true);
-      onSubmit?.(state.value, result.value);
+      onSubmit?.(state.peek(), result.peek());
     },
     choose,
     commit,
     expandToken(value) {
-      const index = state.value.tokens.findIndex(
-        (token) => token.value === value,
-      );
+      const index = state
+        .peek()
+        .tokens.findIndex((token) => token.value === value);
       if (index < 0) return;
       const offset = Math.max(
         0,
         Math.min(
-          state.value.query.length,
-          state.value.tokens[index].offset ?? state.value.query.length,
+          state.peek().query.length,
+          state.peek().tokens[index].offset ?? state.peek().query.length,
         ),
       );
       const insertion = `${value} `;
       publish({
-        query: `${state.value.query.slice(0, offset)}${insertion}${state.value.query.slice(offset)}`,
-        tokens: state.value.tokens.flatMap((token, at) =>
+        query: `${state.peek().query.slice(0, offset)}${insertion}${state.peek().query.slice(offset)}`,
+        tokens: state.peek().tokens.flatMap((token, at) =>
           at === index
             ? []
             : [
@@ -283,21 +347,23 @@ export function createTokenSearchModel<Result = unknown>({
       });
     },
     remove(value) {
-      const index = state.value.tokens.findIndex(
-        (token) => token.value === value,
-      );
+      const index = state
+        .peek()
+        .tokens.findIndex((token) => token.value === value);
       if (index < 0) return;
       publish({
-        ...state.value,
-        tokens: state.value.tokens.filter((_, at) => at !== index),
+        ...state.peek(),
+        tokens: state.peek().tokens.filter((_, at) => at !== index),
       });
     },
     clear() {
-      publish({ query: '', tokens: [] });
-      editorRevision.value++;
+      batch(() => {
+        publish({ query: '', tokens: [] });
+        editorRevision.value = editorRevision.peek() + 1;
+      });
     },
     dismiss() {
-      suggestions.value = [];
+      if (suggestions.peek().length > 0) suggestions.value = [];
     },
   };
 }

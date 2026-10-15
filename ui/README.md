@@ -318,6 +318,9 @@ when it adds useful context. Set `responsive="wrap"` on a heading whose title
 must stay whole: it keeps one row while everything fits and otherwise moves the
 trailing actions below the title instead of truncating it.
 
+A toolbar with a single zone gives it the whole content box, so content set to
+fill the row reaches both insets; an absent zone leaves no empty track or gap.
+
 A toolbar never clips an action. Its trailing zone wraps whole control groups
 onto another trailing-aligned row under every `responsive` policy, and a
 `responsive="stack"` toolbar wraps its stacked center and trailing groups the
@@ -788,7 +791,12 @@ pass it as the field's `model`, and register it under the field id in
 their optional `suggest` function supplies selectable completions. The model
 commits valid expressions on whitespace or Enter, owns chips and clear/edit/
 remove actions, and exposes `state`, `suggestions`, and the latest `result` as
-signals. Omit the model to retain full manual control. Use `readTokenSearchField()`
+signals. The field subscribes only to `model.structure`, which changes when a
+token is committed or removed, the text becomes empty or non-empty, or the
+editor revision changes, so typing plain text never re-runs the host render.
+Keep it that way in the host: read `model.state.peek()` in render, and bind
+`model.result` (or a `computed`) as a fine-grained signal hole rather than
+reading `model.state.value`. Omit the model to retain full manual control. Use `readTokenSearchField()`
 after browser input to recover text plus token offsets, and
 `placeTokenSearchCaret()` when restoring focus after a controlled update.
 Call `wireTokenSearchFields()` once at a stable root to make Enter submit through

@@ -520,7 +520,7 @@ still owns the controlled `value` and localized action labels.
   hidden compact replacement and keeps compact overlays exclusive by default.
 - `TokenSearchField` is a structured editor. A `TextField` is the right answer for ordinary text.
 
-For common structured search, use `createTokenSearchModel` from `@kerfjs/ui/token-search-model`, pass the model to `TokenSearchField`, and register it under the field id in `wireTokenSearchFields(root, { models })`. Rules parse `name:value` expressions and provide suggestions; the model owns chips, selection, removal, clear, and an optional evaluation result. Omit `model` and `models` for full manual control.
+For common structured search, use `createTokenSearchModel` from `@kerfjs/ui/token-search-model`, pass the model to `TokenSearchField`, and register it under the field id in `wireTokenSearchFields(root, { models })`. Rules parse `name:value` expressions and provide suggestions; the model owns chips, selection, removal, clear, and an optional evaluation result. The field subscribes only to `model.structure`, so typing plain text does not re-run the host render; read `model.state.peek()` in the host's render and bind `model.result` as a signal hole instead of reading `model.state.value`. Omit `model` and `models` for full manual control.
 
 In a form, use `TokenSearchField presentation="form-field"` with its `label`,
 optional `hint`, and `required` state. It renders a full-width control beside
@@ -580,7 +580,10 @@ application markup. `ToolbarText` is the standard identity/title; use
 hover treatment, or overflow behavior. A standalone primary `Button` keeps
 its own chrome and fits naturally in the trailing zone. Bare
 controls retain their own styling and accessibility responsibilities; the
-toolbar only positions them within the zone.
+toolbar only positions them within the zone. A toolbar with a single zone (only
+`leading`, only `trailing`, or only `center`) gives that zone the whole content
+box: an absent zone leaves no empty track or gap, so content set to fill the row
+reaches the opposite inset.
 For a title that opens an editor, set `action` on a direct `ToolbarText`: it
 renders a native button that keeps its content width when possible and
 ellipsizes before an adjacent status chip when the leading zone narrows. The

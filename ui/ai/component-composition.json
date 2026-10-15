@@ -4417,7 +4417,8 @@
         "helpers": ["wireTokenSearchFields"],
         "obligations": [
           "Retain and invoke the disposer.",
-          "Use readTokenSearchField for DOM-owned text."
+          "Use readTokenSearchField for DOM-owned text.",
+          "With a managed model, read model.state.peek() (never model.state.value) in the host render and bind model.result as a signal hole; the field itself re-renders only when model.structure changes, not per keystroke."
         ],
         "stateAttributes": [
           {

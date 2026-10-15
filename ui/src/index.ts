@@ -282,6 +282,7 @@ export {
   type TokenSearchResolvedToken,
   type TokenSearchRule,
   type TokenSearchState,
+  type TokenSearchStructure,
   type TokenSearchSuggestion,
 } from './components/forms/token-search-field/model/token-search-model.js';
 export {

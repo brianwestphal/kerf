@@ -182,6 +182,78 @@ describe('wireTokenSearchFields', () => {
     expect(popup.style.position).toBe('');
   });
 
+  it('does not re-run the host render while typing plain text into a managed field', () => {
+    const model = createTokenSearchModel({
+      rules: [{ name: 'tag', suggest: () => ['client'] }],
+    });
+    const root = document.createElement('div');
+    document.body.append(root);
+    let renders = 0;
+    const stopMount = mount(root, () => {
+      renders += 1;
+      return TokenSearchField({ id: 'tickets', label: 'Search', model });
+    });
+    const stop = wireTokenSearchFields(root, { models: { tickets: model } });
+    const editor = () =>
+      root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const type = (text: string) => {
+      const target = editor();
+      const textSpan =
+        target.querySelector<HTMLElement>(
+          '[data-token-search-text]:last-of-type',
+        ) ?? target;
+      textSpan.textContent = text;
+      target.dispatchEvent(
+        new InputEvent('input', {
+          bubbles: true,
+          inputType: 'insertText',
+          data: text.at(-1),
+        }),
+      );
+    };
+    const firstEditor = editor();
+
+    type('h');
+    expect(renders).toBe(2); // empty -> non-empty shows the clear button
+    expect(root.querySelector('.kui-token-search__clear')).not.toBeNull();
+    const text = 'hello world release notes';
+    for (let length = 2; length <= text.length; length += 1)
+      type(text.slice(0, length));
+    expect(renders).toBe(2);
+    expect(model.state.peek().query).toBe(text);
+    expect(editor()).toBe(firstEditor);
+
+    type(`${text} tag:c`);
+    expect(renders).toBe(3); // suggestions appear
+    type(`${text} tag:cl`);
+    type(`${text} tag:cli`);
+    expect(renders).toBe(3);
+    expect(
+      root.querySelectorAll('[data-token-search-suggestion]'),
+    ).toHaveLength(1);
+
+    type(`${text} tag:client `);
+    expect(renders).toBe(4); // token committed, suggestions hidden
+    expect(
+      root.querySelectorAll('[data-component="token-search-token"]'),
+    ).toHaveLength(1);
+    expect(root.querySelector('[data-token-search-suggestion]')).toBeNull();
+
+    root
+      .querySelector<HTMLButtonElement>('.kui-token-search__token-remove')!
+      .click();
+    expect(renders).toBe(5); // chip removal re-renders
+    expect(
+      root.querySelectorAll('[data-component="token-search-token"]'),
+    ).toHaveLength(0);
+
+    root.querySelector<HTMLButtonElement>('.kui-token-search__clear')!.click();
+    expect(renders).toBe(6); // clear is one batched structural change
+    expect(root.querySelector('.kui-token-search__clear')).toBeNull();
+    stop();
+    stopMount();
+  });
+
   it('dismisses model suggestions with Escape', () => {
     const model = createTokenSearchModel({
       rules: [{ name: 'tag', suggest: () => ['client'] }],
