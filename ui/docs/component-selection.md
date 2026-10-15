@@ -514,7 +514,7 @@ still owns the controlled `value` and localized action labels.
   hidden compact replacement and keeps compact overlays exclusive by default.
 - `TokenSearchField` is a structured editor. A native input or `wa-input` is the right answer for ordinary text.
 
-For common structured search, use `createTokenSearchModel` from `@kerfjs/ui/token-search-model`, pass the model to `TokenSearchField`, and register it under the field id in `wireTokenSearchFields(root, { models })`. Rules parse `name:value` expressions and provide suggestions; the model owns chips, selection, removal, clear, and an optional evaluation result. Omit `model` and `models` for full manual control.
+For common structured search, use `createTokenSearchModel` from `@kerfjs/ui/token-search-model`, pass the model to `TokenSearchField`, and register it under the field id in `wireTokenSearchFields(root, { models })`. Rules parse `name:value` expressions and provide suggestions; the model owns chips, selection, removal, clear, and an optional evaluation result. The field subscribes only to `model.structure`, so typing plain text does not re-run the host render; read `model.state.peek()` in the host's render and bind `model.result` as a signal hole instead of reading `model.state.value`. Omit `model` and `models` for full manual control.
 
 In a form, use `TokenSearchField presentation="form-field"` with its `label`,
 optional `hint`, and `required` state. It renders a full-width control beside

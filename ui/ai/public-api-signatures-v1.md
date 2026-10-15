@@ -3836,7 +3836,7 @@ export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape, ensureSunken
 ## `@kerfjs/ui/token-search-field`
 
 ```ts
-export { T as TokenSearchEditorAttributes, a as TokenSearchField, b as TokenSearchFieldProps, c as TokenSearchFieldValue, j as TokenSearchToken, k as TokenSearchTrailingAction, l as TokenSearchTrailingActionAttributes, p as placeTokenSearchCaret, r as readTokenSearchField } from './token-search-model-aYR0YAei.js';
+export { T as TokenSearchEditorAttributes, a as TokenSearchField, b as TokenSearchFieldProps, c as TokenSearchFieldValue, k as TokenSearchToken, l as TokenSearchTrailingAction, m as TokenSearchTrailingActionAttributes, p as placeTokenSearchCaret, r as readTokenSearchField } from './token-search-model-JA1i8z4D.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 ```
@@ -3845,7 +3845,7 @@ import './semantic-content-BbzjvSu9.js';
 
 ```ts
 import { Signal } from 'kerfjs';
-import { d as TokenSearchModel } from './token-search-model-aYR0YAei.js';
+import { d as TokenSearchModel } from './token-search-model-JA1i8z4D.js';
 import './semantic-content-BbzjvSu9.js';
 
 interface TokenSearchSubmit {
@@ -5072,7 +5072,7 @@ export { CssLength, Spacer, type SpacerProps, UiSpaceName };
 ## `@kerfjs/ui/token-search-model`
 
 ```ts
-export { d as TokenSearchModel, e as TokenSearchModelOptions, f as TokenSearchResolvedToken, g as TokenSearchRule, h as TokenSearchState, i as TokenSearchSuggestion, m as createTokenSearchModel } from './token-search-model-aYR0YAei.js';
+export { d as TokenSearchModel, e as TokenSearchModelOptions, f as TokenSearchResolvedToken, g as TokenSearchRule, h as TokenSearchState, i as TokenSearchStructure, j as TokenSearchSuggestion, n as createTokenSearchModel } from './token-search-model-JA1i8z4D.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 ```

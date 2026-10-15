@@ -610,6 +610,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   A sibling helper can call `model.commit(value)` for the active `name:` prefix
   even when that value is not suggested; invalid values and missing prefixes
   leave state unchanged.
+  A managed field subscribes the host render only to `model.structure`
+  (committed tokens, empty or non-empty text, editor revision), so typing plain
+  text never re-runs it; in the host's own render read `model.state.peek()` and
+  bind `model.result` as a signal hole instead of reading `model.state.value`.
   The one richer case is `wireTokenSearchFields`, which manages the
   collapsible field's expand/collapse/focus by default (on, per-behavior opt-out) and
   exposes the `expanded` signal on its handle — bind it in render or hand in your own

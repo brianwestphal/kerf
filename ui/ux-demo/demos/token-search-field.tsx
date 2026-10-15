@@ -138,7 +138,7 @@ export function TokenSearchFieldDemo() {
             size="compact"
             data-demo-grammar-result
           >
-            {grammarSearchModel.result.value}
+            <span>{grammarSearchModel.result}</span>
           </Text>
         </List>
       </CatalogExample>

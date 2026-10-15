@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 383600,
-  "measuredLargestJavaScriptGzip": 118680,
-  "measuredTotalJavaScriptGzip": 383528,
+  "totalJavaScriptGzip": 383900,
+  "measuredLargestJavaScriptGzip": 118682,
+  "measuredTotalJavaScriptGzip": 383820,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4931,6 +4931,22 @@
         "measuredTotalJavaScriptGzip": 383528,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 383600
+      }
+    },
+    {
+      "at": "2026-10-15T09:00:27.350Z",
+      "reason": "KF-NZ3CP2: TokenSearchModel gains a memoized structure computed and batched publishing so typing no longer re-runs the host render",
+      "old": {
+        "measuredLargestJavaScriptGzip": 118680,
+        "measuredTotalJavaScriptGzip": 383528,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 383600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 118682,
+        "measuredTotalJavaScriptGzip": 383820,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 383900
       }
     }
   ]

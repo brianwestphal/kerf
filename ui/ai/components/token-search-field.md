@@ -65,6 +65,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 - Retain and invoke the disposer.
 - Use readTokenSearchField for DOM-owned text.
+- With a managed model, read model.state.peek() (never model.state.value) in the host render and bind model.result as a signal hole; the field itself re-renders only when model.structure changes, not per keystroke.
 
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 

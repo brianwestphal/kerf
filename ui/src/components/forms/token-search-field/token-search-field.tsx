@@ -204,15 +204,17 @@ export function TokenSearchField({
   editorAttributes = {},
   slot,
 }: TokenSearchFieldProps) {
-  if (model) {
-    query = model.state.value.query;
-    tokens = model.state.value.tokens;
-  }
+  // A managed model subscribes the host render to `structure` (token,
+  // emptiness, and revision changes) only. The live text is DOM-owned between
+  // structural changes, so it is peeked, not read: typing must not re-run the
+  // host render on every keystroke.
+  const structure = model?.structure.value;
+  if (model) ({ query, tokens } = model.state.peek());
   const suggestions = model?.suggestions.value ?? [];
   const parts = orderedParts(query, tokens);
   const tokenKey = tokens.map((token) => token.value).join('|');
-  const key = model
-    ? `${id}@${String(revision ?? '')}:${model.editorRevision.value}:${tokenKey}`
+  const key = structure
+    ? `${id}@${String(revision ?? '')}:${structure.editorRevision}:${tokenKey}`
     : revision === undefined
       ? `${id}:${tokenKey}`
       : `${id}@${String(revision)}:${tokenKey}`;
