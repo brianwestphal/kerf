@@ -5,9 +5,7 @@
   --kui-font-sans: var(
     --wa-font-family-body,
     ui-sans-serif,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
+    system-ui,
     sans-serif
   );
   /* Kerf owns the code stack rather than deferring to Web Awesome's
@@ -24,7 +22,7 @@
   --kui-font-l: var(--wa-font-size-l, 20px);
   --kui-font-xl: var(--wa-font-size-xl, 25px);
   --kui-font-2xl: var(--wa-font-size-2xl, 32px);
-  --kui-font-weight-semibold: var(--wa-font-weight-semibold, 650);
+  --kui-font-weight-semibold: var(--wa-font-weight-semibold, 500);
   /* Official spacing scale (see docs/layout.md "Spacing scale"). Five canonical
      steps, each expressing one relationship — pick by how connected the elements
      are, not by eye:

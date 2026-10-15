@@ -42,7 +42,7 @@
   background: transparent;
   font: inherit;
   font-size: var(--kui-font-m, inherit);
-  line-height: var(--wa-line-height-normal, 1.6);
+  line-height: 1.6;
   resize: none;
   field-sizing: content;
   min-height: calc(var(--_kui-composer-min-rows) * 1lh + remify(8px));

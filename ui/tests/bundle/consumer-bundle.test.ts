@@ -1053,4 +1053,83 @@ describe('consumer bundle boundaries', () => {
     expect(valueTableBuilt).toContain('0.5rem');
     expect(valueTableBuilt).not.toContain('remify(');
   });
+
+  it('ships no Web Awesome code or styles from any entry but the opt-in theme', async () => {
+    // Web Awesome is an optional peer: only `@kerfjs/ui/webawesome.css` (the
+    // theme bridge) may pull it in. Every other public entry, component and
+    // stylesheet alike, bundles without it.
+    const manifest = JSON.parse(
+      await readFile(new URL('../../package.json', import.meta.url), 'utf8'),
+    ) as { exports: Record<string, unknown> };
+    const entries = Object.keys(manifest.exports).filter(
+      (key) =>
+        key.startsWith('./') &&
+        !key.includes('*') &&
+        !key.endsWith('.json') &&
+        key !== './webawesome.css',
+    );
+    expect(entries.length).toBeGreaterThan(100);
+    for (const key of entries) {
+      const specifier = `@kerfjs/ui/${key.slice(2)}`;
+      // A bare import of a side-effect-free module bundles nothing.
+      const contents = key.endsWith('.css')
+        ? `import '${specifier}';`
+        : `export * from '${specifier}';`;
+      const attempt = (platform: 'browser' | 'node') =>
+        build({
+          stdin: {
+            contents,
+            resolveDir: new URL('../..', import.meta.url).pathname,
+            sourcefile: 'consumer.ts',
+          },
+          bundle: true,
+          format: 'esm',
+          metafile: true,
+          outdir: 'out',
+          platform,
+          write: false,
+          logLevel: 'silent',
+          // Node-only tools (doctor, analyzer, review plugins) leave their
+          // heavy tool dependencies external; Web Awesome stays bundled.
+          external: [
+            'kerfjs',
+            'playwright',
+            'playwright-core',
+            'typescript',
+            'postcss',
+            'vite',
+            'esbuild',
+            'lightningcss',
+          ],
+          tsconfigRaw: {
+            compilerOptions: { jsx: 'react-jsx', jsxImportSource: 'kerfjs' },
+          },
+        });
+      const result = await attempt('browser').catch(() => attempt('node'));
+      const inputs = Object.keys(result.metafile.inputs);
+      expect(
+        inputs.filter((input) => input.includes('@awesome.me/webawesome')),
+        key,
+      ).toEqual([]);
+    }
+  }, 120_000);
+
+  it('keeps the foundation free of Web Awesome selectors and bare theme reads', async () => {
+    const foundation = await readFile(
+      new URL('../../dist/styles/foundation.css', import.meta.url),
+      'utf8',
+    );
+    const selectors = [...foundation.matchAll(/([^{}]+)\{/g)].map(
+      (match) => match[1]!,
+    );
+    expect(
+      selectors.filter((selector) => /(^|[^-\w])wa-/.test(selector)),
+    ).toEqual([]);
+    // A Web Awesome theme may restyle Kerf, but every read falls back.
+    const reads = [...foundation.matchAll(/var\(\s*(--wa-[\w-]+)\s*([,)])/g)];
+    expect(reads.length).toBeGreaterThan(0);
+    expect(
+      reads.filter((match) => match[2] === ')').map((match) => match[1]),
+    ).toEqual([]);
+  });
 });

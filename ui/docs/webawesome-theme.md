@@ -3,6 +3,18 @@
 `@kerfjs/ui/webawesome.css` is the optional bridge between Web Awesome 3's
 free components and the Kerf/Hot Sheet 2 design system.
 
+**Optional by design.** No Kerf component needs Web Awesome or this bridge.
+`@awesome.me/webawesome` is an optional peer, and `@kerfjs/ui/webawesome.css`
+(with the type-only `@kerfjs/ui/webawesome`) is the only entry that touches
+it. `foundation.css` has no `wa-*` selectors; its tokens may read a Web
+Awesome theme variable (`--kui-font-m: var(--wa-font-size-m, 16px)`), so an
+app's Web Awesome theme also restyles Kerf, but every such read falls back to
+the value this theme gives it. A Kerf-only application therefore renders
+exactly like the catalog. Kerf component stylesheets read only `--kui-*`
+tokens; the few rules that place a raw `wa-*` child inside a Kerf container
+match nothing when Web Awesome is absent. The consumer-bundle tests and the
+`webawesome-optional` browser spec enforce all of this.
+
 **Supported versions.** `@kerfjs/ui` supports every Web Awesome 3.x release
 from 3.12 (its optional peer range is `^3.12.0`). No Kerf component patches
 Web Awesome's internals any more: `PopupMenu`, `Select`, and `DialogSurface`
@@ -377,11 +389,10 @@ smallest subtree that needs a different identity:
 }
 ```
 
-`TokenSearchField` with `presentation="form-field"` uses
-`--wa-form-control-border-radius` for its control corners and
-`--wa-form-control-required-content-color` and
-`--wa-form-control-required-content-offset` for its required marker. These
-tokens keep it aligned with a neighboring `wa-input` when a form theme changes.
+Kerf components read only `--kui-*` tokens. `TokenSearchField` with
+`presentation="form-field"` follows `--kui-layout-rounded-radius` for its
+corners, as `TextField`, `Select`, and `Button` do, so the fields in a form
+change together.
 
 The shipped theme pairs every `--wa-color-{variant}-fill-loud` with an
 `--wa-color-{variant}-on-loud` that clears WCAG AA (4.5:1) in both color

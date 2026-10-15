@@ -619,8 +619,11 @@ the complete [layout contract](./docs/layout.md).
 
 ## Web Awesome theme
 
-Apps using Web Awesome's free components can opt into the same visual universe
-with one CSS import:
+Kerf components never need Web Awesome: every Kerf component draws native
+controls and reads only `--kui-*` tokens, which resolve to the same values with
+or without the Web Awesome theme. `@awesome.me/webawesome` is an optional peer
+for applications that also render Web Awesome's `wa-*` elements. Those apps opt
+into the same visual universe with one CSS import:
 
 ```ts
 import type {} from "@kerfjs/ui/webawesome";
@@ -832,26 +835,26 @@ the component- or wiring-owned action, tab identity, selection, drag, drop, and
 component markers. Keep the icon free of interactive descendants; the named
 close button retains all close interaction.
 
-`Select` uses Web Awesome but does not register anything by itself. Install the optional peer, import the shared theme if desired, and explicitly import the registration entry in the application:
+`Select` and `PopupMenu` draw their own native controls and need no Web Awesome. Each renders inert markup until its registration entry is imported once in the application:
 
 ```ts
-import "@kerfjs/ui/webawesome.css";
 import "@kerfjs/ui/select/register";
+import "@kerfjs/ui/popup-menu/register";
 ```
 
-That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it. `PopupMenu` follows the same rule: import `@kerfjs/ui/popup-menu/register` once to register the dropdown, item, button, and divider elements it renders. Either registration also installs help tags: an icon-only Select, PopupMenu, or `aria-label`-named `<button>` in a `ToolbarControlGroup` shows its name in an `aria-hidden` tooltip on hover and keyboard focus. A toolbar with icon-only buttons but neither control imports `@kerfjs/ui/help-tags/register`, which registers only the tooltip.
+`select/register` defines the form-associated `kui-select` root and wires every `Select` in the document; `popup-menu/register` wires every `PopupMenu` (opening, keyboard navigation, submenus, the `kui-menu-select` event, and focus return). That boundary keeps custom-element and document-listener side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it, and also prove that no public entry except `@kerfjs/ui/webawesome.css` pulls in Web Awesome. Either registration also installs help tags: an icon-only Select, PopupMenu, or `aria-label`-named `<button>` in a `ToolbarControlGroup` shows its name in an `aria-hidden` tooltip on hover and keyboard focus. A toolbar with icon-only buttons but neither control imports `@kerfjs/ui/help-tags/register`, which registers only the tooltip.
 
 `PopupMenu` items may include `submenu` children, `checked` choices, a leading `icon`, trailing `details`, `disabledReason`, and a `danger` tone. The app owns choice state and dispatches each item's `action`. For a right-click menu, set `context: true`, a `label`, and `anchor={pointSignal.value}`; the app's `contextmenu` handler stores `{ x: event.clientX, y: event.clientY }` in that signal and calls `openPopupMenu(menu)`. The menu renders its own zero-footprint anchor host and keeps the point across re-renders, so it needs no wrapper or CSS (`openPopupMenuAt(menu, x, y)` still opens a menu rendered without `anchor`); `closePopupMenu(menu)` closes it programmatically. See [component selection](docs/component-selection.md#popup-menu-migration) for examples.
 Use `label` for a visible label or `ariaLabel` for a visually hidden name. A
 nonempty visible label takes precedence when both are supplied. Kerf names the
-actual shadow combobox without adding visible label spacing; this also works
-with `renderSelected`, and needs no application shadow-DOM patch. Use `hint`
+native trigger without adding visible label spacing; this also works with
+`renderSelected`. Use `hint`
 for persistent supporting text below the control and `placeholderText` for the
 empty value inside the closed control. Loading placeholders preserve the hint.
 
-`Select` also owns the Kerf/Web Awesome reconciliation boundary: option icons
-keep stable slotted elements across rerenders, and `renderSelected` content is
-replaced when the controlled value changes. Consumers do not need to add
+`Select` also owns its reconciliation boundary: option icons keep stable
+elements across rerenders, and `renderSelected` content is replaced when the
+controlled value changes. Consumers do not need to add
 `data-key` or `data-morph-skip` workarounds around choice icons. Icon-bearing
 options retain the standard icon-to-label gap. When a compact Select is wrapped
 in a `ToolbarControlGroup`, use `focusRingOwner="group"`; the group paints the

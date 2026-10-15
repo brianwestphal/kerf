@@ -2,29 +2,28 @@
   display: grid;
   width: 100%;
   min-width: 0;
-  gap: var(--wa-space-2xs, remify(4px));
+  gap: var(--kui-space-2xs, remify(4px));
 }
 
 .kui-token-search__field-label {
   padding-inline: remify(9px);
-  color: var(--kui-color-neutral-on-quiet, var(--wa-color-text-quiet));
-  font-size: var(--kui-font-xs, var(--wa-font-size-xs));
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
   font-weight: 650;
   letter-spacing: 0.04em;
-  line-height: var(--wa-line-height-condensed, 1.2);
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
 .kui-token-search__field-required {
-  margin-inline-start: var(--wa-form-control-required-content-offset, 0.1em);
-  color: var(--wa-form-control-required-content-color, inherit);
+  margin-inline-start: 0.1em;
 }
 
 .kui-token-search__field-hint {
   padding-inline: remify(9px);
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-s);
-  line-height: var(--wa-line-height-normal, 1.6);
+  line-height: 1.6;
 }
 
 .kui-token-search {
@@ -54,10 +53,7 @@
 }
 
 .kui-token-search[data-presentation="form-field"] {
-  border-radius: var(
-    --wa-form-control-border-radius,
-    var(--wa-border-radius-m)
-  );
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
 }
 
 .kui-token-search[data-disabled="true"] {

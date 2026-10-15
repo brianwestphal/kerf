@@ -7,21 +7,19 @@
   overflow-wrap: normal;
 }
 
-/* Match the themed Web Awesome form-control label without introducing a
-   native <label> that would falsely point at a non-form preview. */
+/* Match every Kerf form control's label (TextField, Select) without
+   introducing a native <label> that would falsely point at a non-form
+   preview. */
 .kui-text__field-label {
   box-sizing: border-box;
   min-width: 0;
-  padding-inline: calc(
-    var(--wa-form-control-border-width, 1px) +
-      var(--wa-form-control-padding-inline, remify(8px))
-  );
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
   margin: 0 0 0.5em;
-  color: var(--kui-color-neutral-on-quiet, var(--wa-color-text-quiet));
-  font-size: var(--kui-font-xs, var(--wa-font-size-xs));
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
   font-weight: 650;
   letter-spacing: 0.04em;
-  line-height: var(--wa-line-height-condensed);
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
@@ -181,10 +179,10 @@ span.kui-text {
 .kui-list-header:is([data-size="m"], [data-size="l"], [data-size="xl"])
   .kui-list-header__title
   > .kui-text {
-  font-family: var(--wa-font-family-heading, var(--kui-font-sans));
-  font-weight: var(--wa-font-weight-heading, 600);
+  font-family: var(--kui-font-sans);
+  font-weight: 600;
   letter-spacing: normal;
-  line-height: var(--wa-line-height-condensed, 1.2);
+  line-height: 1.2;
   text-transform: none;
 }
 

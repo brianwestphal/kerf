@@ -171,6 +171,19 @@ floor through its lockfile (3.12.0) and the newest 3.x through CI's
 `ui-webawesome-latest` job (`npm --prefix ui run test:webawesome-latest`: the
 unit and Chromium browser suites).
 
+Stage 3 (KF-3558JM) makes Web Awesome a purely optional integration. Only
+`@kerfjs/ui/webawesome.css` (the theme bridge) and the type-only
+`@kerfjs/ui/webawesome` JSX declarations touch it; every Kerf component draws
+native controls and its stylesheet reads only `--kui-*` tokens.
+`foundation.css` has no `wa-*` selectors, and each token that may follow a Web
+Awesome theme variable (`var(--wa-font-size-m, 16px)`) falls back to the value
+the Kerf theme gives it, so a Kerf-only application renders exactly like the
+catalog. A consumer-bundle test bundles every public entry and fails if any but
+the theme bridge pulls in Web Awesome; `ui/tests/browser/webawesome-optional.spec.ts`
+re-resolves every such token with its `--wa-*` inputs reset and compares it with
+the themed catalog in both schemes. The existing `webawesome` subpaths were kept
+rather than moved under `integrations/`, since they were already opt-in.
+
 `Select` is Kerf's own control (KF-CF0FEN, wa-independence stage 1: it no
 longer renders `wa-select` / `wa-option`). Rendering it is pure: a `kui-select`
 root holding an optional visible label, a native trigger `<button
@@ -296,9 +309,8 @@ slot without mixing authoring rules into the per-entry component catalog.
   with named edit/remove buttons, and a named clear action. The application
   owns parsing, suggestions, result feedback, and state; editable text remains
   DOM-owned between controlled token changes to preserve the caret.
-  In `presentation="form-field"`, its corners and required marker follow the
-  Web Awesome form-control radius, required color, and offset tokens used by
-  adjacent `TextField` controls.
+  In `presentation="form-field"`, its corners follow the shared
+  `--kui-layout-rounded-radius` used by adjacent `TextField` controls.
   `wireTokenSearchFields` restores focus and the text-relative caret when
   keyboard chip deletion causes controlled rendering to replace the editor. Managed
   clear also keeps an adopted field open and restores the replacement editor for

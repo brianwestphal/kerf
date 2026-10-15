@@ -304,6 +304,8 @@ status, and dormant trailing content cannot escape the visible row. Its
 `multiline` variant wraps the primary label while keeping the leading icon on
 the first inherited text line.
 
+Stage 3 of the Web Awesome independence work: Web Awesome is an optional integration. Only `@kerfjs/ui/webawesome.css` (and the type-only `@kerfjs/ui/webawesome`) touches it; component CSS reads only `--kui-*` tokens; `foundation.css` has no `wa-*` selectors and its `--wa-*` reads fall back to the Kerf theme's values. Consumer-bundle tests and `ui/tests/browser/webawesome-optional.spec.ts` prove a Kerf-only app renders identically. The existing subpaths were kept rather than renamed to `integrations/webawesome`.
+
 `@kerfjs/ui` `Checkbox`, `RadioGroup`, and `Switch` (stage 2 of the Web Awesome independence work) draw Kerf boxes, circles, and tracks over native inputs with hint and error text, matching the old `wa-checkbox` / `wa-radio` / `wa-switch` look; `wireCheckboxes` sets the native mixed state. `RadioGroup` takes a `choices` array (no separate `Radio`).
 
 `@kerfjs/ui` `TextField` (stage 2 of the Web Awesome independence work) is a native input or textarea in one labeled box with hint and error text (its `aria-description`; an error sets `aria-invalid`), an optional leading icon, clear button, growing rows, and live count, matching the old `wa-input` / `wa-textarea` look; `wireTextFields` clears and counts, and the catalog no longer renders `wa-input` or `wa-textarea` outside the Web Awesome routes.
