@@ -315,16 +315,22 @@ describe('Web Awesome consumer guidance', () => {
     );
 
     expect(guidance).toContain(
-      'listing does not make each component the preferred Kerf application pattern',
+      'listing does not make any of them the\npreferred Kerf pattern',
     );
+    expect(guidance).toContain(
+      'Kerf components and native elements come first',
+    );
+    expect(guidance).toContain('./webawesome-migration.md');
     expect(guidance).toContain('Consider `wa-popup`');
-    expect(guidance).toContain('use Kerf `Select`');
-    expect(guidance).toContain(
-      '`SegmentedControl` for a small exclusive choice set',
-    );
-    expect(guidance).toContain(
-      'Prefer Kerf `ResizableRegion` over Web Awesome Split Panel',
-    );
-    expect(guidance).toContain('Avoid Web Awesome Zoomable Frame and Icon');
+    expect(guidance).toContain('`positionAnchored()`');
+    for (const element of [
+      'Button',
+      'Input',
+      'Select',
+      'Dialog',
+      'Split Panel',
+    ])
+      expect(guidance).toContain(element);
+    expect(guidance).toContain('Never render them in application markup');
   });
 });

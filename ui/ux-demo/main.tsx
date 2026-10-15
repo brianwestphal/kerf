@@ -501,7 +501,7 @@ mount(app, () => {
   const isRecipe = selected.kind === 'recipe';
   const statusLabel = ((): string => {
     if (selected.source === 'webawesome')
-      return 'Web Awesome component · Kerf theme';
+      return 'Web Awesome integration · optional · Kerf theme';
     switch (selected.kind) {
       case 'component':
         return 'Kerf first-class component · production CSS';
@@ -517,7 +517,7 @@ mount(app, () => {
       brand={{ title: 'Kerf', logoUrl: kerfLogoUrl }}
       sections={kuiCatalogSections}
       secondarySections={{
-        label: 'Web Awesome',
+        label: 'Web Awesome Integration',
         collapsible: true,
         expanded: webAwesomeExpanded.value,
         sections: kuiWebAwesomeSections,
@@ -1380,8 +1380,8 @@ const stopCatalog = wireCatalog(app, {
   onToggleSecondary: () => {
     webAwesomeExpanded.value = !webAwesomeExpanded.value;
     actionLog.value = webAwesomeExpanded.value
-      ? 'Web Awesome catalog expanded'
-      : 'Web Awesome catalog collapsed';
+      ? 'Web Awesome integration expanded'
+      : 'Web Awesome integration collapsed';
   },
   selectAction: 'select-demo',
   toggleSidebarAction: 'toggle-catalog-sidebar',

@@ -11,6 +11,7 @@ Placement-aware stack of transient notifications.
 **Not when:**
 
 - Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.
+- Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead.
 
 **Alternatives:**
 
@@ -56,5 +57,5 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 ## Related
 
 - Components: [Toast Item](./wa-toast-item.md), [StateBanner](./state-banner.md), [EmptyState](./empty-state.md).
-- Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage), [`docs/component-selection.md#web-awesome-overlap-policy`](../../docs/component-selection.md#web-awesome-overlap-policy).
+- Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage), [`docs/component-selection.md#web-awesome-integration`](../../docs/component-selection.md#web-awesome-integration).
 - UX catalog route: `?component=wa-toast`.

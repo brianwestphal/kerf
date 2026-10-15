@@ -600,7 +600,8 @@ server — `wireCatalog`'s `onUxReviewProject`, and
 `Catalog`'s `uxReview` prop);
 the detail view derives one grouped `Uses` / `Used By` selector from declared
 component dependencies and hides it for unrelated components. The catalog also
-lists all 70 free Web Awesome 3.12 components in a collapsible ecosystem section,
+lists all 70 free Web Awesome 3.12 components in a collapsible Web Awesome
+Integration section (optional; Kerf components need none of them),
 with an addressable themed specimen and cross-system relationships for each.
 Catalog authors use exactly three demo kinds: component, composition, and recipe.
 Functional groups are ordered by product importance; components precede

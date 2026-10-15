@@ -231,12 +231,15 @@ title-style labels as `KUI-D040`. See
 
 ## Core rules (do the right thing)
 
-- **Prefer a Kerf UI component over a Web Awesome component over a raw HTML
-  tag**, using each for what it is good at. Never render a `Discouraged` Web
-  Awesome element (`wa-dropdown`, `wa-button-group`, `wa-select`, `wa-tab-group`,
-  `wa-icon`, …) directly; reach it only through the Kerf component that wraps or
-  replaces it (`PopupMenu`, `SegmentedControl`, `Select`, `TabBar`,
-  `LucideIcon`), and file a component gap rather than dropping to the raw tag.
+- **Prefer a Kerf UI component, then a native HTML element**, using each for
+  what it is good at. Kerf UI needs no Web Awesome; it is an optional
+  integration. Never render a `Discouraged` Web Awesome element (`wa-button`,
+  `wa-input`, `wa-checkbox`, `wa-select`, `wa-dropdown`, `wa-dialog`,
+  `wa-tab-group`, `wa-icon`, …); use the Kerf component that replaces it
+  (`Button`, `TextField`, `Checkbox`, `Select`, `PopupMenu`, `DialogSurface`,
+  `TabBar`, `LucideIcon`; see
+  [webawesome-migration.md](./docs/webawesome-migration.md)), and file a
+  component gap rather than dropping to the raw tag.
 - **Reach for the primitive, not for CSS.** The package is built to look right
   without an application customization layer. Before adding `padding`, `margin`,
   `width`, `height`, `border`, `background`, a wrapper card, or a decoration,
@@ -639,8 +642,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   faithful loading view (e.g. an inspector) without hand-rebuilding markup.
   Component-drawn chrome stays live: a `ListItem` or `ListActionRow` keeps its
   `busy` spinner while its `status` (and a `ListItem`'s `trailing`) content
-  become skeletons. Use the standalone `Skeleton` for a custom slot. Prefer it over `wa-skeleton`
-  (the pure-Kerf primitives avoid Web Awesome), and never animate it — use
+  become skeletons. Use the standalone `Skeleton` for a custom slot. Prefer it over `wa-skeleton`,
+  and never animate it — use
   `LoadingSpinner` for known busy activity instead. Set its `size` prop to a
   named icon step or positive pixel number when the inherited 1em is unsuitable.
 - **Keep ListItem content inside the row.** The rounded `ListItem` root clips
@@ -801,7 +804,7 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   the group with `label` or `labelledBy`, lead choices with a `swatch`
   (`CssColor` such as `fillColor('#3b82f6')`, or `'transparent'` for the struck-through no-color dot) or an
   `icon`, and handle the delegated `action` on `change`. Never wrap a
-  `SegmentedControl` or button-appearance `wa-radio` set instead. Set
+  `SegmentedControl` or a joined button group instead. Set
   `multiple` (with a `readonly Value[]` `value`) when any number may be on:
   the same pills become native checkboxes in a `role="group"`, each a Tab stop
   that Space toggles, and every checked value submits under `name`. On dark
@@ -881,7 +884,8 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [recipes.md](./docs/recipes.md): production compositions (app shell, list-detail dialog, composer form, …) as copyable references.
 - [workbench.md](./docs/workbench.md): the `Workbench` multi-panel shell, its collapse policies, and opt-in `resizable` panels driven by `wireWorkbench` (`@kerfjs/ui/wire-workbench`: drag, keyboard, min/max, persistence, compact suspension), the `mainMinSize` / `mainMinHeight` work-area minimums (default 320px wide beside any inline rail, 120px tall above the drawer) that resizable panels stop at and inline panels shrink around, and a panel's `responsiveOverlayAt` (`narrow` / `compact`, rails and the bottom drawer) that presents it as an overlay below a Workbench container breakpoint without a device-class check; a panel given its `collapsed` signal is a transient overlay (collapsed on entering the breakpoint, takes focus and keeps Tab inside while open, closed by Escape or an outside press, focus returned; `dismissOverlays`), and overlays are exclusive by default (opening one closes the others; `exclusiveOverlays: false` opts out).
 - [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabNavigator` by data + interaction + device, and dialog presentation, plus the safe-area model (surfaces paint through unsafe areas; content pads only the edges it reaches; `Pane.safeAreaEdges` for app-owned arrangements, `Toolbar.safeAreaEdges` for an app bar or bottom bar at a screen edge).
-- [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists). The UX sidebar visibly tags superseded and exceptional Web Awesome choices as `Discouraged`; Popup remains an available conditional positioning primitive.
+- [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome integration theme; catalog coverage means themed-and-supported for integration applications, not preferred. The UX sidebar tags every element a Kerf component replaces as `Discouraged`; Popup remains an available conditional positioning primitive.
+- [webawesome-migration.md](./docs/webawesome-migration.md): moving an application from Web Awesome elements to their Kerf replacements, then removing Web Awesome.
 - [ai/components/README.md](./ai/components/README.md): the generated per-component markdown reference — the assistant entry point over both JSON catalogs.
 - [component-catalog.json](./ai/component-catalog.json) + [component-catalog-extension.schema.json](./ai/component-catalog-extension.schema.json) + [catalog-authoring.json](./ai/catalog-authoring.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable selection facts, a reusable app-component extension contract, Catalog authoring discovery, and exact signatures.
 - [compile-time-contracts-v1.json](./ai/compile-time-contracts-v1.json) + [type-contracts.md](./docs/type-contracts.md): stable compile diagnostics, packed-declaration proof, migrations, and explicit non-goals.

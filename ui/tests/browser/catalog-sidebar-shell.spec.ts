@@ -198,7 +198,7 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await filter.fill('Input');
   await expect(sidebar.locator('[data-item-id="wa-input"]')).toBeVisible();
   await expect(
-    sidebar.getByRole('button', { name: 'Web Awesome' }),
+    sidebar.getByRole('button', { name: 'Web Awesome Integration' }),
   ).toHaveAttribute('aria-expanded', 'true');
   await filter.fill('no matching component');
   await expect(sidebar.getByText('No matching items')).toBeVisible();

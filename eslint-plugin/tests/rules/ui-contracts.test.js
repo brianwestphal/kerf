@@ -1223,13 +1223,26 @@ const discouragedTags = [
   ['wa-comparison', 'content-item'],
   ['wa-icon', 'lucide-icon'],
   ['wa-zoomable-frame', 'content-item'],
+  ['wa-button', 'button'],
+  ['wa-input', 'text-field'],
+  ['wa-textarea', 'text-field'],
+  ['wa-checkbox', 'checkbox'],
+  ['wa-checkbox-group', 'checkbox'],
+  ['wa-radio-group', 'radio-group'],
+  ['wa-radio', 'radio-group'],
+  ['wa-switch', 'switch'],
+  ['wa-dialog', 'surface-scaffold'],
+  ['wa-badge', 'badge'],
+  ['wa-tag', 'chip'],
+  ['wa-spinner', 'loading-spinner'],
+  ['wa-skeleton', 'skeleton'],
 ];
 
 tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
   valid: [
-    // Supported Web Awesome elements and the one encouraged conditional
-    // primitive stay allowed.
-    ...['wa-button', 'wa-popup', 'wa-dialog', 'wa-input'].map((tag) => ({
+    // Integration elements no Kerf component replaces and the one
+    // encouraged conditional primitive stay allowed.
+    ...['wa-card', 'wa-popup', 'wa-drawer', 'wa-carousel'].map((tag) => ({
       code: `<div><${tag} /></div>;`,
       filename: appFile,
       settings: shippedDefaultsSettings,

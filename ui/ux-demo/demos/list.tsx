@@ -1,7 +1,7 @@
 import '@awesome.me/webawesome/dist/components/card/card.js';
-import '@awesome.me/webawesome/dist/components/tag/tag.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { Chip } from '@kerfjs/ui/chip';
 import { flex, rem } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
@@ -247,9 +247,9 @@ export function ListDemo() {
       >
         <wa-card appearance="sunken">
           <List gap="xs" hAlign="right" vAlign="full">
-            <wa-tag>Top</wa-tag>
-            <wa-tag>Middle</wa-tag>
-            <wa-tag>Bottom</wa-tag>
+            <Chip>Top</Chip>
+            <Chip>Middle</Chip>
+            <Chip>Bottom</Chip>
           </List>
         </wa-card>
       </CatalogExample>
@@ -259,10 +259,10 @@ export function ListDemo() {
       >
         <wa-card appearance="sunken">
           <List gap="xs" textInsets="l" controlInsets="rb">
-            <wa-tag>Text-aligned left edge</wa-tag>
+            <Chip>Text-aligned left edge</Chip>
             <TextField label="Inset List Control" value="Control edge" />
             <List textInsets="t">
-              <wa-tag>Nested text-aligned top edge</wa-tag>
+              <Chip>Nested text-aligned top edge</Chip>
             </List>
           </List>
         </wa-card>

@@ -9,8 +9,10 @@ A component matches whether it is rendered through an imported export (`<WaButto
 <wa-select>…</wa-select>            // KUI-L301: prefer @kerfjs/ui:select
 <wa-tab-group>…</wa-tab-group>      // KUI-L301: prefer @kerfjs/ui:tab-bar
 <wa-icon name="gear" />             // KUI-L301: prefer @kerfjs/ui:lucide-icon
+<wa-button>Save</wa-button>          // KUI-L301: prefer @kerfjs/ui:button
+<wa-input label="Name" />           // KUI-L301: prefer @kerfjs/ui:text-field
 ```
 
-Supported Web Awesome elements (`<wa-button>`, `<wa-dialog>`, the encouraged `<wa-popup>`) and unknown custom elements are not reported. The source file of a component declared in a profile catalog is exempt: that wrapper owns the element it renders, and the preference applies to its callers.
+Web Awesome elements no Kerf component replaces (`<wa-card>`, `<wa-carousel>`, the encouraged `<wa-popup>`) and unknown custom elements are not reported. The source file of a component declared in a profile catalog is exempt: that wrapper owns the element it renders, and the preference applies to its callers.
 
 `recommended-ui` treats the rule as a warning; `strict-ui` treats it as an error. Use a narrowly targeted `KUI-L301` profile exception when a documented application boundary cannot follow the preference. Component substitutions are not autofixed because their props and interaction contracts can differ.

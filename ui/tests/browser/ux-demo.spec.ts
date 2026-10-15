@@ -4778,7 +4778,7 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
   const discouraged = secondary.locator('.kui-list-item__status', {
     hasText: 'Discouraged',
   });
-  await expect(discouraged).toHaveCount(15);
+  await expect(discouraged).toHaveCount(28);
   await expect(
     page.locator('[data-item-id="wa-button-group"] .kui-list-item__status'),
   ).toHaveText('Discouraged');
@@ -4855,7 +4855,7 @@ test('catalog supports its stateful controls', async ({
     page.locator('#kui-catalog-left-rail [data-component="list-item"]:visible'),
   ).toHaveCount(kerfCatalog.length);
   const ecosystemToggle = page.getByRole('button', {
-    name: 'Web Awesome',
+    name: 'Web Awesome Integration',
     exact: true,
   });
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'false');
@@ -7630,12 +7630,14 @@ test('communicates preferred Kerf patterns on ecosystem alternatives', async ({
     ],
     [
       'wa-split-panel',
-      'Alternative split API; prefer Kerf ResizableRegion for application panes.',
+      'Alternative split API; use Kerf ResizableRegion for application panes.',
     ],
     [
       'wa-icon',
       'Ecosystem icon renderer; use Kerf LucideIcon in application UI.',
     ],
+    ['wa-button', 'Ecosystem action button; use Kerf Button or IconButton.'],
+    ['wa-input', 'Ecosystem text input; use Kerf TextField.'],
     [
       'wa-zoomable-frame',
       'Avoid for application UI; keep embedded-media behavior application-owned.',

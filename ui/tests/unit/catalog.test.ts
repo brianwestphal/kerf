@@ -360,17 +360,30 @@ describe('UX catalog metadata', () => {
     expect(
       webAwesomeCatalog.filter(isDiscouragedWebAwesome).map(({ id }) => id),
     ).toEqual([
+      'wa-button',
       'wa-button-group',
       'wa-dropdown',
       'wa-dropdown-item',
+      'wa-checkbox',
+      'wa-checkbox-group',
+      'wa-input',
       'wa-option',
+      'wa-radio',
+      'wa-radio-group',
       'wa-select',
+      'wa-switch',
+      'wa-textarea',
+      'wa-dialog',
       'wa-split-panel',
       'wa-tab',
       'wa-tab-group',
       'wa-tab-panel',
       'wa-tree',
       'wa-tree-item',
+      'wa-badge',
+      'wa-skeleton',
+      'wa-spinner',
+      'wa-tag',
       'wa-animated-image',
       'wa-comparison',
       'wa-icon',
@@ -651,7 +664,7 @@ describe('UX catalog metadata', () => {
       'Preferred low-level anchored positioning',
     );
     expect(findCatalogEntry('wa-split-panel')?.description).toContain(
-      'prefer Kerf ResizableRegion',
+      'use Kerf ResizableRegion',
     );
     expect(findCatalogEntry('wa-button-group')?.description).toContain(
       'prefer Kerf SegmentedControl',
@@ -662,6 +675,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(15);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(28);
   });
 });

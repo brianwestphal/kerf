@@ -58,15 +58,16 @@ shells, `Toolbar` + `ToolbarText` for headings, and `List`/`ListItem`/
 `ListHeader` for navigation and grouped content, instead of hand-rolled markup
 with its own CSS.
 
-The order of preference is **Kerf UI component, then Web Awesome component,
-then raw HTML tag** — using each naturally for what it is good at. Never
-render a `Discouraged` Web Awesome element (`wa-dropdown`, `wa-button-group`,
-`wa-select`, `wa-tab-group`, `wa-icon`, …) directly, in a demo, recipe, or the
-catalog shell; reach it only through the Kerf component that wraps or replaces
-it (`PopupMenu`, `SegmentedControl`, `Select`, `TabBar`, `LucideIcon`). When a
-Web Awesome component needs Kerf's look, prefer a theme override that reaches
-parity; wrap it as a Kerf component only when Kerf must own its spacing or
-behavior contract (`Select`, `PopupMenu`). Catalog-only helpers are fine when
+The order of preference is **Kerf UI component, then native HTML element** —
+using each naturally for what it is good at. Web Awesome is an optional
+integration: no Kerf component needs it. Never render a `Discouraged` Web
+Awesome element (`wa-button`, `wa-input`, `wa-dropdown`, `wa-select`,
+`wa-dialog`, `wa-tab-group`, `wa-icon`, …) in a demo, recipe, or the catalog
+shell; use the Kerf component that replaces it (`Button`, `TextField`,
+`PopupMenu`, `Select`, `DialogSurface`, `TabBar`, `LucideIcon`). The remaining
+Web Awesome elements appear only in the catalog's integration specimens and in
+demos where no Kerf component or native element fits; file a component gap
+when one should exist. Catalog-only helpers are fine when
 they are clearly not part of the public component set; nominate any that
 deserve promotion to real components rather than promoting them yourself.
 

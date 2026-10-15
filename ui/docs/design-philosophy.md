@@ -29,10 +29,10 @@ Establish one reading order and one dominant action per decision point. Group fi
 The package is designed to look right _unstyled_. A screen built from the
 primitives, their props, and the semantic tokens should already read well, so
 applications do not carry a component-customization stylesheet. Prefer a Kerf
-UI component over a Web Awesome component over a raw HTML tag, using each for
-what it is good at; a `Discouraged` Web Awesome element is reached only through
-the Kerf component that wraps it (`PopupMenu`, `Select`), never rendered
-directly. Before adding any `padding`, `margin`, `width`,
+UI component, then a native HTML element, using each for what it is good at.
+Kerf UI needs no Web Awesome; an application that adopts the optional
+integration still never renders a `Discouraged` element, which a Kerf
+component replaces (`Button`, `TextField`, `Select`, `PopupMenu`, …). Before adding any `padding`, `margin`, `width`,
 `height`, `border`, `background`, wrapper card, or decoration, check whether the
 component, the pane, or the content-item already owns it — it almost always does,
 and adding more usually **double-insets** or fights the component (the most common

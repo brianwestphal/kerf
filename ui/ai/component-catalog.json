@@ -2,7 +2,7 @@
   "$schema": "./component-catalog.schema.json",
   "schemaVersion": 1,
   "package": "@kerfjs/ui",
-  "description": "Machine-readable selection, composition, delivery, ownership, and accessibility metadata for Kerf UI and its supported Web Awesome set.",
+  "description": "Machine-readable selection, composition, delivery, ownership, and accessibility metadata for Kerf UI, plus the optional Web Awesome integration set.",
   "wiringProviders": [
     {
       "export": "wireCatalog",
@@ -5795,7 +5795,7 @@
       "links": {
         "catalogRoute": "?component=select",
         "documentation": "docs/component-selection.md",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -7726,25 +7726,30 @@
       "category": "Actions",
       "kind": "component",
       "source": "webawesome",
-      "description": "Action control with semantic variants, appearances, loading, and icon support.",
+      "description": "Ecosystem action button; use Kerf Button or IconButton.",
       "uses": [
         "wa-icon",
         "wa-spinner"
       ],
-      "purpose": "Action control with semantic variants, appearances, loading, and icon support.",
+      "purpose": "Ecosystem action button; use Kerf Button or IconButton.",
       "customElement": "wa-button",
       "useWhen": [
         "Action control with semantic variants, appearances, loading, and icon support."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use Button for a text or text-and-icon action and IconButton for an icon-only action."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
+        {
+          "id": "button",
+          "relationship": "prefer-kerf",
+          "when": "Use Button for a text or text-and-icon action and IconButton for an icon-only action."
+        },
         {
           "id": "icon-button",
           "relationship": "prefer-kerf",
-          "when": "For an icon-only button with a LucideIcon, use IconButton for Web Awesome's square icon-button geometry."
+          "when": "Use Button for a text or text-and-icon action and IconButton for an icon-only action."
         }
       ],
       "geometry": {
@@ -7781,7 +7786,8 @@
         "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "conditional",
       "alternatives": [
@@ -7810,7 +7816,7 @@
       "links": {
         "catalogRoute": "?component=wa-button-group",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -7830,7 +7836,8 @@
         "Copies a supplied value and announces success or failure."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -7858,28 +7865,30 @@
       "category": "Actions",
       "kind": "component",
       "source": "webawesome",
-      "description": "Action-menu primitive; prefer Kerf Select when choosing a value.",
+      "description": "Ecosystem action menu; use Kerf PopupMenu, or Select when choosing a value.",
       "uses": [
         "wa-dropdown-item",
         "wa-popup"
       ],
-      "purpose": "Action-menu primitive; prefer Kerf Select when choosing a value.",
+      "purpose": "Ecosystem action menu; use Kerf PopupMenu, or Select when choosing a value.",
       "customElement": "wa-dropdown",
       "useWhen": [
         "Action-menu primitive; prefer Kerf Select when choosing a value."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use PopupMenu for a command menu and Select for a value."
       ],
-      "recommendation": "conditional",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "popup-menu",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use PopupMenu for a command menu and Select for a value."
         },
         {
           "id": "select",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use PopupMenu for a command menu and Select for a value."
         }
       ],
       "geometry": {
@@ -7897,7 +7906,7 @@
       "links": {
         "catalogRoute": "?component=wa-dropdown",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -7906,27 +7915,29 @@
       "category": "Actions",
       "kind": "component",
       "source": "webawesome",
-      "description": "Action-menu row; prefer Kerf Select options for value selection.",
+      "description": "Ecosystem action-menu row; use Kerf PopupMenu items or Select choices.",
       "uses": [
         "wa-icon"
       ],
-      "purpose": "Action-menu row; prefer Kerf Select options for value selection.",
+      "purpose": "Ecosystem action-menu row; use Kerf PopupMenu items or Select choices.",
       "customElement": "wa-dropdown-item",
       "useWhen": [
         "Action-menu row; prefer Kerf Select options for value selection."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use PopupMenu items for commands and Select choices for values."
       ],
-      "recommendation": "conditional",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "popup-menu",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use PopupMenu items for commands and Select choices for values."
         },
         {
           "id": "select",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use PopupMenu items for commands and Select choices for values."
         }
       ],
       "geometry": {
@@ -7944,7 +7955,7 @@
       "links": {
         "catalogRoute": "?component=wa-dropdown-item",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -7953,23 +7964,24 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Binary form control with checked, indeterminate, and disabled states.",
+      "description": "Ecosystem checkbox; use Kerf Checkbox.",
       "uses": [
         "wa-icon"
       ],
-      "purpose": "Binary form control with checked, indeterminate, and disabled states.",
+      "purpose": "Ecosystem checkbox; use Kerf Checkbox.",
       "customElement": "wa-checkbox",
       "useWhen": [
         "Binary form control with checked, indeterminate, and disabled states."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use Checkbox for a submitted option."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "checkbox",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use Checkbox for a submitted option."
         }
       ],
       "geometry": {
@@ -7996,23 +8008,29 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Labels and validates a related set of checkboxes.",
+      "description": "Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.",
       "uses": [
         "wa-checkbox"
       ],
-      "purpose": "Labels and validates a related set of checkboxes.",
+      "purpose": "Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.",
       "customElement": "wa-checkbox-group",
       "useWhen": [
         "Labels and validates a related set of checkboxes."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "checkbox",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills."
+        },
+        {
+          "id": "choice-chips",
+          "relationship": "prefer-kerf",
+          "when": "Use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills."
         }
       ],
       "geometry": {
@@ -8052,7 +8070,8 @@
         "Color input with swatches, formats, opacity, and eyedropper support."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8080,27 +8099,29 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Text input with labels, hints, clear controls, and semantic appearances.",
+      "description": "Ecosystem text input; use Kerf TextField.",
       "uses": [
         "wa-icon"
       ],
-      "purpose": "Text input with labels, hints, clear controls, and semantic appearances.",
+      "purpose": "Ecosystem text input; use Kerf TextField.",
       "customElement": "wa-input",
       "useWhen": [
         "Text input with labels, hints, clear controls, and semantic appearances."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
-          "id": "token-search-field",
-          "relationship": "prefer-kerf"
+          "id": "text-field",
+          "relationship": "prefer-kerf",
+          "when": "Use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor."
         },
         {
-          "id": "text-field",
-          "relationship": "prefer-kerf"
+          "id": "token-search-field",
+          "relationship": "prefer-kerf",
+          "when": "Use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor."
         }
       ],
       "geometry": {
@@ -8118,7 +8139,7 @@
       "links": {
         "catalogRoute": "?component=wa-input",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -8135,7 +8156,8 @@
         "Experimental segmented field for partially or fully known dates."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8173,7 +8195,8 @@
         "Numeric input with keyboard and stepper controls."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8201,23 +8224,24 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Underlying ecosystem option; prefer choices passed to Kerf Select.",
+      "description": "Ecosystem select option; use Kerf Select choices.",
       "uses": [
         "wa-icon"
       ],
-      "purpose": "Underlying ecosystem option; prefer choices passed to Kerf Select.",
+      "purpose": "Ecosystem select option; use Kerf Select choices.",
       "customElement": "wa-option",
       "useWhen": [
         "Underlying ecosystem option; prefer choices passed to Kerf Select."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; pass choices to Select."
       ],
-      "recommendation": "underlying",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "select",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Pass choices to Select."
         }
       ],
       "geometry": {
@@ -8235,7 +8259,7 @@
       "links": {
         "catalogRoute": "?component=wa-option",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -8252,7 +8276,8 @@
         "Experimental segmented one-time-password input."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8280,23 +8305,24 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Single-choice control used inside a radio group.",
+      "description": "Ecosystem radio; use Kerf RadioGroup choices.",
       "uses": [
         "wa-icon"
       ],
-      "purpose": "Single-choice control used inside a radio group.",
+      "purpose": "Ecosystem radio; use Kerf RadioGroup choices.",
       "customElement": "wa-radio",
       "useWhen": [
         "Single-choice control used inside a radio group."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use RadioGroup with a choices array."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "radio-group",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use RadioGroup with a choices array."
         }
       ],
       "geometry": {
@@ -8323,23 +8349,34 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Labels and manages a mutually exclusive set of radios.",
+      "description": "Ecosystem radio group; use Kerf RadioGroup, ChoiceChips, or SegmentedControl.",
       "uses": [
         "wa-radio"
       ],
-      "purpose": "Labels and manages a mutually exclusive set of radios.",
+      "purpose": "Ecosystem radio group; use Kerf RadioGroup, ChoiceChips, or SegmentedControl.",
       "customElement": "wa-radio-group",
       "useWhen": [
         "Labels and manages a mutually exclusive set of radios."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use RadioGroup for a few labeled options, ChoiceChips for wrapping pills, and SegmentedControl for a view switch."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "radio-group",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use RadioGroup for a few labeled options, ChoiceChips for wrapping pills, and SegmentedControl for a view switch."
+        },
+        {
+          "id": "choice-chips",
+          "relationship": "prefer-kerf",
+          "when": "Use RadioGroup for a few labeled options, ChoiceChips for wrapping pills, and SegmentedControl for a view switch."
+        },
+        {
+          "id": "segmented-control",
+          "relationship": "prefer-kerf",
+          "when": "Use RadioGroup for a few labeled options, ChoiceChips for wrapping pills, and SegmentedControl for a view switch."
         }
       ],
       "geometry": {
@@ -8376,7 +8413,8 @@
         "Interactive rating control with accessible labeling."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8404,26 +8442,27 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Underlying ecosystem field; prefer Kerf Select for app UI.",
+      "description": "Ecosystem select field; use Kerf Select.",
       "uses": [
         "wa-icon",
         "wa-popup",
         "wa-tag",
         "wa-option"
       ],
-      "purpose": "Underlying ecosystem field; prefer Kerf Select for app UI.",
+      "purpose": "Ecosystem select field; use Kerf Select.",
       "customElement": "wa-select",
       "useWhen": [
         "Underlying ecosystem field; prefer Kerf Select for app UI."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use Select; it is a native Kerf control and needs no Web Awesome registration."
       ],
-      "recommendation": "underlying",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "select",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use Select; it is a native Kerf control and needs no Web Awesome registration."
         }
       ],
       "geometry": {
@@ -8441,7 +8480,7 @@
       "links": {
         "catalogRoute": "?component=wa-select",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -8460,7 +8499,8 @@
         "Range input with markers and value tooltip support."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8488,21 +8528,22 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Immediate on/off setting control.",
+      "description": "Ecosystem switch; use Kerf Switch.",
       "uses": [],
-      "purpose": "Immediate on/off setting control.",
+      "purpose": "Ecosystem switch; use Kerf Switch.",
       "customElement": "wa-switch",
       "useWhen": [
         "Immediate on/off setting control."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use Switch for a setting that applies immediately."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "switch",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use Switch for a setting that applies immediately."
         }
       ],
       "geometry": {
@@ -8529,21 +8570,22 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Multiline text field with labels, hints, and resize behavior.",
+      "description": "Ecosystem multi-line input; use Kerf TextField with multiline.",
       "uses": [],
-      "purpose": "Multiline text field with labels, hints, and resize behavior.",
+      "purpose": "Ecosystem multi-line input; use Kerf TextField with multiline.",
       "customElement": "wa-textarea",
       "useWhen": [
         "Multiline text field with labels, hints, and resize behavior."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use TextField with multiline for multi-line text."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "text-field",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use TextField with multiline for multi-line text."
         }
       ],
       "geometry": {
@@ -8581,7 +8623,8 @@
         "Experimental segmented time field with an optional picker."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8619,7 +8662,8 @@
         "Coordinates one or more collapsible content sections."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8666,7 +8710,8 @@
         "Experimental labeled disclosure section used by an accordion."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8702,7 +8747,8 @@
         "Groups related content and optional header, media, and footer slots."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8749,7 +8795,8 @@
         "Single disclosure panel for secondary information."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8786,20 +8833,26 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Modal surface for focused tasks and confirmations.",
+      "description": "Ecosystem dialog; use Kerf DialogSurface with openDialog and closeDialog.",
       "uses": [
         "wa-button"
       ],
-      "purpose": "Modal surface for focused tasks and confirmations.",
+      "purpose": "Ecosystem dialog; use Kerf DialogSurface with openDialog and closeDialog.",
       "customElement": "wa-dialog",
       "useWhen": [
         "Modal surface for focused tasks and confirmations."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use DialogSurface with openDialog and closeDialog, or a kerfjs/overlay dialog."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "surface-scaffold",
+          "relationship": "prefer-kerf",
+          "when": "Use DialogSurface with openDialog and closeDialog, or a kerfjs/overlay dialog."
+        }
+      ],
       "publicClasses": [
         "hide-actions"
       ],
@@ -8838,7 +8891,8 @@
         "Visual separator for related groups of content."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8876,7 +8930,8 @@
         "Edge-anchored modal surface for navigation or secondary tasks."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8912,7 +8967,8 @@
         "Responsive application shell with navigation, banner, and main slots."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8948,7 +9004,8 @@
         "Overflow container with accessible scrolling affordances."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -8976,21 +9033,22 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Alternative split API; prefer Kerf ResizableRegion for application panes.",
+      "description": "Alternative split API; use Kerf ResizableRegion for application panes.",
       "uses": [],
-      "purpose": "Alternative split API; prefer Kerf ResizableRegion for application panes.",
+      "purpose": "Alternative split API; use Kerf ResizableRegion for application panes.",
       "customElement": "wa-split-panel",
       "useWhen": [
         "Alternative split API; prefer Kerf ResizableRegion for application panes."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use ResizableRegion for application panes."
       ],
-      "recommendation": "conditional",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "resize",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use ResizableRegion for application panes."
         }
       ],
       "geometry": {
@@ -9008,7 +9066,7 @@
       "links": {
         "catalogRoute": "?component=wa-split-panel",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9028,7 +9086,8 @@
         "Ordered navigation trail for the current location."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9064,7 +9123,8 @@
         "One link or current-location item in a breadcrumb."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9102,7 +9162,8 @@
         "Experimental page navigation for a bounded result set."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9130,25 +9191,27 @@
       "category": "Navigation",
       "kind": "component",
       "source": "webawesome",
-      "description": "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.",
+      "description": "Ecosystem tab label; use Kerf TabBar or SegmentedControl.",
       "uses": [],
-      "purpose": "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.",
+      "purpose": "Ecosystem tab label; use Kerf TabBar or SegmentedControl.",
       "customElement": "wa-tab",
       "useWhen": [
         "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use TabBar for application tabs or SegmentedControl for compact local views."
       ],
-      "recommendation": "conditional",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "tab-bar",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use TabBar for application tabs or SegmentedControl for compact local views."
         },
         {
           "id": "segmented-control",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use TabBar for application tabs or SegmentedControl for compact local views."
         }
       ],
       "geometry": {
@@ -9166,7 +9229,7 @@
       "links": {
         "catalogRoute": "?component=wa-tab",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9175,29 +9238,31 @@
       "category": "Navigation",
       "kind": "component",
       "source": "webawesome",
-      "description": "Ecosystem tabs; prefer Kerf TabBar or SegmentedControl.",
+      "description": "Ecosystem tabs; use Kerf TabBar or SegmentedControl.",
       "uses": [
         "wa-button",
         "wa-tab",
         "wa-tab-panel"
       ],
-      "purpose": "Ecosystem tabs; prefer Kerf TabBar or SegmentedControl.",
+      "purpose": "Ecosystem tabs; use Kerf TabBar or SegmentedControl.",
       "customElement": "wa-tab-group",
       "useWhen": [
         "Ecosystem tabs; prefer Kerf TabBar or SegmentedControl."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use TabBar for application tabs or SegmentedControl for compact local views."
       ],
-      "recommendation": "conditional",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "tab-bar",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use TabBar for application tabs or SegmentedControl for compact local views."
         },
         {
           "id": "segmented-control",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use TabBar for application tabs or SegmentedControl for compact local views."
         }
       ],
       "geometry": {
@@ -9215,7 +9280,7 @@
       "links": {
         "catalogRoute": "?component=wa-tab-group",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9224,21 +9289,22 @@
       "category": "Navigation",
       "kind": "component",
       "source": "webawesome",
-      "description": "Ecosystem tab panel; prefer app-owned panels with Kerf navigation.",
+      "description": "Ecosystem tab panel; use Kerf TabBar with application-owned panels.",
       "uses": [],
-      "purpose": "Ecosystem tab panel; prefer app-owned panels with Kerf navigation.",
+      "purpose": "Ecosystem tab panel; use Kerf TabBar with application-owned panels.",
       "customElement": "wa-tab-panel",
       "useWhen": [
         "Ecosystem tab panel; prefer app-owned panels with Kerf navigation."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use TabBar; the application owns its panels."
       ],
-      "recommendation": "conditional",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "tab-bar",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use TabBar; the application owns its panels."
         }
       ],
       "geometry": {
@@ -9259,7 +9325,7 @@
       "links": {
         "catalogRoute": "?component=wa-tab-panel",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9278,7 +9344,8 @@
         "Specialized hierarchy; use only when the product requires tree behavior."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "exceptional",
       "alternatives": [],
@@ -9297,7 +9364,7 @@
       "links": {
         "catalogRoute": "?component=wa-tree",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9318,7 +9385,8 @@
         "Specialized tree row; use only as part of a required tree."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "exceptional",
       "alternatives": [],
@@ -9337,7 +9405,7 @@
       "links": {
         "catalogRoute": "?component=wa-tree-item",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9346,18 +9414,24 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Compact status or count label with semantic variants.",
+      "description": "Ecosystem badge; use Kerf Badge.",
       "uses": [],
-      "purpose": "Compact status or count label with semantic variants.",
+      "purpose": "Ecosystem badge; use Kerf Badge.",
       "customElement": "wa-badge",
       "useWhen": [
         "Compact status or count label with semantic variants."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use Badge for compact status, count, or category metadata."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "badge",
+          "relationship": "prefer-kerf",
+          "when": "Use Badge for compact status, count, or category metadata."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -9395,7 +9469,8 @@
         "Prominent contextual message with semantic variants."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [
@@ -9419,7 +9494,7 @@
       "links": {
         "catalogRoute": "?component=wa-callout",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9436,7 +9511,8 @@
         "Linear indicator for determinate or indeterminate progress."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9472,7 +9548,8 @@
         "Circular indicator for determinate or indeterminate progress."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9500,18 +9577,24 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Placeholder shape for content that is still loading.",
+      "description": "Ecosystem placeholder; use Kerf Skeleton.",
       "uses": [],
-      "purpose": "Placeholder shape for content that is still loading.",
+      "purpose": "Ecosystem placeholder; use Kerf Skeleton.",
       "customElement": "wa-skeleton",
       "useWhen": [
         "Placeholder shape for content that is still loading."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use Skeleton for a loading placeholder."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "skeleton",
+          "relationship": "prefer-kerf",
+          "when": "Use Skeleton for a loading placeholder."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "none",
@@ -9536,21 +9619,22 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Compact indeterminate activity indicator.",
+      "description": "Ecosystem spinner; use Kerf LoadingSpinner.",
       "uses": [],
-      "purpose": "Compact indeterminate activity indicator.",
+      "purpose": "Ecosystem spinner; use Kerf LoadingSpinner.",
       "customElement": "wa-spinner",
       "useWhen": [
         "Compact indeterminate activity indicator."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use LoadingSpinner for indeterminate activity."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "loading-spinner",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use LoadingSpinner for indeterminate activity."
         }
       ],
       "geometry": {
@@ -9568,7 +9652,7 @@
       "links": {
         "catalogRoute": "?component=wa-spinner",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9577,23 +9661,29 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Compact categorization label with optional removal action.",
+      "description": "Ecosystem tag; use Kerf Chip.",
       "uses": [
         "wa-button"
       ],
-      "purpose": "Compact categorization label with optional removal action.",
+      "purpose": "Ecosystem tag; use Kerf Chip.",
       "customElement": "wa-tag",
       "useWhen": [
         "Compact categorization label with optional removal action."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not use it in Kerf UI; use Chip for a removable or disabled tag."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
+          "id": "chip",
+          "relationship": "prefer-kerf",
+          "when": "Use Chip for a removable or disabled tag."
+        },
+        {
           "id": "token-search-field",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use Chip for a removable or disabled tag."
         }
       ],
       "geometry": {
@@ -9611,7 +9701,7 @@
       "links": {
         "catalogRoute": "?component=wa-tag",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9630,7 +9720,8 @@
         "Placement-aware stack of transient notifications."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [
@@ -9658,7 +9749,7 @@
       "links": {
         "catalogRoute": "?component=wa-toast",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9678,7 +9769,8 @@
         "One dismissible notification inside a toast stack."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [
@@ -9706,7 +9798,7 @@
       "links": {
         "catalogRoute": "?component=wa-toast-item",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9725,7 +9817,8 @@
         "Brief contextual label anchored to a control."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9763,7 +9856,8 @@
         "Specialized animated media; use only for a concrete product requirement."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "exceptional",
       "alternatives": [],
@@ -9782,7 +9876,7 @@
       "links": {
         "catalogRoute": "?component=wa-animated-image",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9801,7 +9895,8 @@
         "Person or entity image with initials fallback."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9840,7 +9935,8 @@
         "Navigable horizontal or vertical collection of slides."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9876,7 +9972,8 @@
         "One content slide inside a carousel."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -9914,7 +10011,8 @@
         "Specialized before-and-after media; use only when specifically required."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "exceptional",
       "alternatives": [],
@@ -9933,7 +10031,7 @@
       "links": {
         "catalogRoute": "?component=wa-comparison",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9950,7 +10048,8 @@
         "Ecosystem icon renderer; use Kerf LucideIcon in application UI."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "avoid",
       "alternatives": [
@@ -9974,7 +10073,7 @@
       "links": {
         "catalogRoute": "?component=wa-icon",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9991,7 +10090,8 @@
         "Experimental renderer for trusted Markdown content."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10027,7 +10127,8 @@
         "Scannable QR representation of a supplied value."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10065,7 +10166,8 @@
         "Avoid for application UI; keep embedded-media behavior application-owned."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "avoid",
       "alternatives": [],
@@ -10084,7 +10186,7 @@
       "links": {
         "catalogRoute": "?component=wa-zoomable-frame",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -10103,7 +10205,8 @@
         "Declarative Web Animations API wrapper with preset effects."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10139,7 +10242,8 @@
         "Locale-aware byte and bit value formatter."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10175,7 +10279,8 @@
         "Locale-aware date and time formatter."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10211,7 +10316,8 @@
         "Locale-aware number, currency, unit, and percentage formatter."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10247,7 +10353,8 @@
         "Loads and injects an external HTML fragment."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10283,7 +10390,8 @@
         "Declaratively emits visibility changes for slotted content."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10319,7 +10427,8 @@
         "Declaratively emits DOM mutation records for slotted content."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10357,7 +10466,8 @@
         "Anchored non-modal surface built on popup positioning."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10393,7 +10503,8 @@
         "Preferred low-level anchored positioning when Tooltip or Popover do not fit."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "conditional",
       "alternatives": [],
@@ -10412,7 +10523,7 @@
       "links": {
         "catalogRoute": "?component=wa-popup",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -10429,7 +10540,8 @@
         "Experimental helper that selects one slotted item at random."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10465,7 +10577,8 @@
         "Locale-aware human description of a date relative to now."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],
@@ -10501,7 +10614,8 @@
         "Declaratively emits size changes for slotted content."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need."
+        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
+        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [],

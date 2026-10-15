@@ -31,7 +31,7 @@
     "command-menu": {
       "preferred": "@kerfjs/ui:popup-menu",
       "avoid": ["@kerfjs/ui:wa-dropdown", "@kerfjs/ui:wa-dropdown-item"],
-      "rationale": "Render PopupMenu, which wraps wa-dropdown with the shared popup contract; use Select when choosing a value."
+      "rationale": "Render PopupMenu, Kerf's native command menu; use Select when choosing a value."
     },
     "embedded-media": {
       "preferred": "@kerfjs/ui:content-item",
@@ -75,6 +75,56 @@
       "preferred": "@kerfjs/ui:select",
       "avoid": ["@kerfjs/ui:wa-select", "@kerfjs/ui:wa-option"],
       "rationale": "Render Select, which replaces wa-select and wa-option with Kerf's own popup, form, and spacing contract."
+    },
+    "action-button": {
+      "preferred": "@kerfjs/ui:button",
+      "avoid": ["@kerfjs/ui:wa-button"],
+      "rationale": "Render Button, a native button with Kerf tones and sizes; use IconButton for an icon-only action."
+    },
+    "text-entry": {
+      "preferred": "@kerfjs/ui:text-field",
+      "avoid": ["@kerfjs/ui:wa-input", "@kerfjs/ui:wa-textarea"],
+      "rationale": "Render TextField, a native input or textarea with Kerf label, hint, error, clear, and count anatomy."
+    },
+    "boolean-option": {
+      "preferred": "@kerfjs/ui:checkbox",
+      "avoid": ["@kerfjs/ui:wa-checkbox", "@kerfjs/ui:wa-checkbox-group"],
+      "rationale": "Render Checkbox, a native checkbox drawn as a Kerf box."
+    },
+    "exclusive-option": {
+      "preferred": "@kerfjs/ui:radio-group",
+      "avoid": ["@kerfjs/ui:wa-radio-group", "@kerfjs/ui:wa-radio"],
+      "rationale": "Render RadioGroup, a native radio group with a choices array."
+    },
+    "immediate-setting": {
+      "preferred": "@kerfjs/ui:switch",
+      "avoid": ["@kerfjs/ui:wa-switch"],
+      "rationale": "Render Switch, a native switch-role checkbox for a setting that applies immediately."
+    },
+    "modal-dialog": {
+      "preferred": "@kerfjs/ui:surface-scaffold",
+      "avoid": ["@kerfjs/ui:wa-dialog"],
+      "rationale": "Render DialogSurface, a native dialog opened with openDialog and closed with closeDialog."
+    },
+    "status-badge": {
+      "preferred": "@kerfjs/ui:badge",
+      "avoid": ["@kerfjs/ui:wa-badge"],
+      "rationale": "Render Badge for compact status, count, or category metadata."
+    },
+    "removable-tag": {
+      "preferred": "@kerfjs/ui:chip",
+      "avoid": ["@kerfjs/ui:wa-tag"],
+      "rationale": "Render Chip for a tag, removable or not."
+    },
+    "activity-indicator": {
+      "preferred": "@kerfjs/ui:loading-spinner",
+      "avoid": ["@kerfjs/ui:wa-spinner"],
+      "rationale": "Render LoadingSpinner for indeterminate activity."
+    },
+    "loading-placeholder": {
+      "preferred": "@kerfjs/ui:skeleton",
+      "avoid": ["@kerfjs/ui:wa-skeleton"],
+      "rationale": "Render Skeleton for a loading placeholder."
     }
   },
   "theme": {

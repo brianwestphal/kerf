@@ -91,7 +91,7 @@ Media-query grammar remains separate and semantic pixel inputs remain numbers.
 
 `DisclosureArrow` has an 18px root-scaled default and a typed `size` prop
 (a `CssLength`) that sets its `--kui-disclosure-arrow-size` token. Kerf `Select`
-uses a separate Web Awesome expand-glyph contract with
+uses its own expand-glyph contract with
 `--kui-disclosure-icon-scale: .5`, so its half-scale treatment remains
 independent of the shared arrow's box size. Configured directions animate over
 the shortest path; a 180-degree closed-to-open tie uses counterclockwise
@@ -171,7 +171,7 @@ floor through its lockfile (3.12.0) and the newest 3.x through CI's
 `ui-webawesome-latest` job (`npm --prefix ui run test:webawesome-latest`: the
 unit and Chromium browser suites).
 
-Stage 3 (KF-3558JM) makes Web Awesome a purely optional integration. Only
+Stage 2 (KF-3558JM: Web Awesome becomes a purely optional integration) finishes the code side. Only
 `@kerfjs/ui/webawesome.css` (the theme bridge) and the type-only
 `@kerfjs/ui/webawesome` JSX declarations touch it; every Kerf component draws
 native controls and its stylesheet reads only `--kui-*` tokens.
@@ -183,6 +183,19 @@ the theme bridge pulls in Web Awesome; `ui/tests/browser/webawesome-optional.spe
 re-resolves every such token with its `--wa-*` inputs reset and compares it with
 the themed catalog in both schemes. The existing `webawesome` subpaths were kept
 rather than moved under `integrations/`, since they were already opt-in.
+
+Stage 3 (KF-F52B04: guidance treats Web Awesome as an integration) makes Kerf
+components and native elements the only default answer. The catalog tags the
+28 Web Awesome elements a Kerf component replaces `Discouraged` (recommendation
+`avoid` with `prefer-kerf` alternatives), lists all 70 under a collapsed
+`Web Awesome Integration` sidebar section, and the package profile defaults
+avoid each one so `KUI-L301` reports a raw tag. `ui/docs/component-selection.md`
+(section "Web Awesome integration"), `ui/ai/skill.md`, `ui/llms.txt`,
+`ui/docs/design-philosophy.md`, and `ui/docs/webawesome-theme.md` no longer
+send applications to `wa-*` when no Kerf component fits; they name a native
+element and the integration path instead. `ui/docs/webawesome-migration.md`
+maps every replaced element to its Kerf component and lists the steps to
+remove Web Awesome.
 
 `Select` is Kerf's own control (KF-CF0FEN, wa-independence stage 1: it no
 longer renders `wa-select` / `wa-option`). Rendering it is pure: a `kui-select`
@@ -492,9 +505,9 @@ entries name the local documentation as Kerf integration guidance. The typed
 projection derives these paths without adding a public runtime export.
 Decorative chrome, Web Awesome controls, and production components share
 semantic theme tokens. All 70 free Web Awesome 3.12 modules have focused routes
-under a distinct collapsible ecosystem section with category subgroups. The
-canonical recommendation metadata projects visible `Discouraged` sidebar tags
-onto the 15 superseded or exceptional choices while leaving Popup available as
+under a distinct collapsible `Web Awesome Integration` section with category
+subgroups. The canonical recommendation metadata projects visible
+`Discouraged` sidebar tags onto the 28 superseded or exceptional choices while leaving Popup available as
 a conditional low-level primitive. Catalog entries expose reusable short tags
 for the same kind of decision metadata, while a
 dedicated gallery spans Web Awesome actions, forms, structure/navigation,
@@ -819,6 +832,6 @@ width policy. Keep primary actions visible and offer a complementary overflow
 group. See `docs/component-contract.md` "Toolbar width visibility" for lifecycle
 details.
 
-Dialog scaffolds use explicit `@kerfjs/ui/surface-scaffold/register` to register Web Awesome and repair native accessible names; their geometry-only entry remains registration-free.
+Dialog scaffolds use explicit `@kerfjs/ui/surface-scaffold/register` to wire close requests, Escape, backdrop dismissal, floating-chrome clearance, and bottom-sheet behavior for every native `DialogSurface`; their geometry-only entry remains registration-free.
 
 Toolbar visibility measurement probes and invisible state children are helper-owned and survive Kerf rerenders through `data-morph-preserve`. Actual CSS visibility stays stable while rendering removes transient parent markers, preventing geometry-driven render feedback and repeated probe recreation. Toolbar replacement, explicit internal-node removal and disposal retain their existing behavior.

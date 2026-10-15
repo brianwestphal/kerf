@@ -1159,8 +1159,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Actions",
     "kind": "component",
     "source": "webawesome",
-    "description": "Action control with semantic variants, appearances, loading, and icon support.",
-    "recommendation": "supported",
+    "description": "Ecosystem action button; use Kerf Button or IconButton.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon",
       "wa-spinner"
@@ -1203,8 +1203,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Actions",
     "kind": "component",
     "source": "webawesome",
-    "description": "Action-menu primitive; prefer Kerf Select when choosing a value.",
-    "recommendation": "conditional",
+    "description": "Ecosystem action menu; use Kerf PopupMenu, or Select when choosing a value.",
+    "recommendation": "avoid",
     "uses": [
       "wa-dropdown-item",
       "wa-popup"
@@ -1218,8 +1218,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Actions",
     "kind": "component",
     "source": "webawesome",
-    "description": "Action-menu row; prefer Kerf Select options for value selection.",
-    "recommendation": "conditional",
+    "description": "Ecosystem action-menu row; use Kerf PopupMenu items or Select choices.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon"
     ],
@@ -1232,8 +1232,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Binary form control with checked, indeterminate, and disabled states.",
-    "recommendation": "supported",
+    "description": "Ecosystem checkbox; use Kerf Checkbox.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon"
     ],
@@ -1246,8 +1246,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Labels and validates a related set of checkboxes.",
-    "recommendation": "supported",
+    "description": "Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.",
+    "recommendation": "avoid",
     "uses": [
       "wa-checkbox"
     ],
@@ -1277,8 +1277,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Text input with labels, hints, clear controls, and semantic appearances.",
-    "recommendation": "supported",
+    "description": "Ecosystem text input; use Kerf TextField.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon"
     ],
@@ -1317,8 +1317,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Underlying ecosystem option; prefer choices passed to Kerf Select.",
-    "recommendation": "underlying",
+    "description": "Ecosystem select option; use Kerf Select choices.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon"
     ],
@@ -1343,8 +1343,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Single-choice control used inside a radio group.",
-    "recommendation": "supported",
+    "description": "Ecosystem radio; use Kerf RadioGroup choices.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon"
     ],
@@ -1357,8 +1357,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Labels and manages a mutually exclusive set of radios.",
-    "recommendation": "supported",
+    "description": "Ecosystem radio group; use Kerf RadioGroup, ChoiceChips, or SegmentedControl.",
+    "recommendation": "avoid",
     "uses": [
       "wa-radio"
     ],
@@ -1385,8 +1385,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Underlying ecosystem field; prefer Kerf Select for app UI.",
-    "recommendation": "underlying",
+    "description": "Ecosystem select field; use Kerf Select.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon",
       "wa-popup",
@@ -1416,8 +1416,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Immediate on/off setting control.",
-    "recommendation": "supported",
+    "description": "Ecosystem switch; use Kerf Switch.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1428,8 +1428,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Multiline text field with labels, hints, and resize behavior.",
-    "recommendation": "supported",
+    "description": "Ecosystem multi-line input; use Kerf TextField with multiline.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1509,8 +1509,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Modal surface for focused tasks and confirmations.",
-    "recommendation": "supported",
+    "description": "Ecosystem dialog; use Kerf DialogSurface with openDialog and closeDialog.",
+    "recommendation": "avoid",
     "uses": [
       "wa-button"
     ],
@@ -1573,8 +1573,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Alternative split API; prefer Kerf ResizableRegion for application panes.",
-    "recommendation": "conditional",
+    "description": "Alternative split API; use Kerf ResizableRegion for application panes.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1626,8 +1626,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "webawesome",
-    "description": "Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.",
-    "recommendation": "conditional",
+    "description": "Ecosystem tab label; use Kerf TabBar or SegmentedControl.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1638,8 +1638,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "webawesome",
-    "description": "Ecosystem tabs; prefer Kerf TabBar or SegmentedControl.",
-    "recommendation": "conditional",
+    "description": "Ecosystem tabs; use Kerf TabBar or SegmentedControl.",
+    "recommendation": "avoid",
     "uses": [
       "wa-button",
       "wa-tab",
@@ -1654,8 +1654,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "webawesome",
-    "description": "Ecosystem tab panel; prefer app-owned panels with Kerf navigation.",
-    "recommendation": "conditional",
+    "description": "Ecosystem tab panel; use Kerf TabBar with application-owned panels.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1696,8 +1696,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Compact status or count label with semantic variants.",
-    "recommendation": "supported",
+    "description": "Ecosystem badge; use Kerf Badge.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1744,8 +1744,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Placeholder shape for content that is still loading.",
-    "recommendation": "supported",
+    "description": "Ecosystem placeholder; use Kerf Skeleton.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1756,8 +1756,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Compact indeterminate activity indicator.",
-    "recommendation": "supported",
+    "description": "Ecosystem spinner; use Kerf LoadingSpinner.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1768,8 +1768,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Compact categorization label with optional removal action.",
-    "recommendation": "supported",
+    "description": "Ecosystem tag; use Kerf Chip.",
+    "recommendation": "avoid",
     "uses": [
       "wa-button"
     ],

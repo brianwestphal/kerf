@@ -329,7 +329,7 @@ app-owned "More" `PopupMenu` (in a `single` group with `nestedDropdown`).
 `DisclosureArrow` defaults to an 18px root-scaled decorative visual. Pass a
 typed `size` (for example `size={remify(24)}` from `@kerfjs/ui/css-values`)
 when a consumer needs another size; the owning control still supplies interaction, naming, and
-expanded state. Kerf `Select` retains its independent Web Awesome expand-glyph
+expanded state. Kerf `Select` keeps its own expand-glyph
 scale of `.5` through `--kui-disclosure-icon-scale`. Author replacement
 `DisclosureArrow` icon content facing right before its configured direction
 transform is applied. Direction changes take the shortest rotation path; a
@@ -860,22 +860,22 @@ options retain the standard icon-to-label gap. When a compact Select is wrapped
 in a `ToolbarControlGroup`, use `focusRingOwner="group"`; the group paints the
 focus ring with its configured pill or rounded geometry.
 
-For application choices and panes, prefer Kerf's purpose-built primitives:
-`Select` over direct Web Awesome selection/dropdown composition,
-`SegmentedControl` over Button Group, `TabBar` or `SegmentedControl` over Web
-Awesome Tabs, `LucideIcon` over Web Awesome Icon, and `ResizableRegion` over
-Split Panel. `ResizableRegion` includes Hot Sheet 2's 1px separator and
+For application choices and panes, use Kerf's purpose-built primitives;
+Web Awesome is an optional integration, and the
+[migration guide](./docs/webawesome-migration.md) maps each Web Awesome
+element a Kerf component replaces (`Select`, `PopupMenu`, `SegmentedControl`,
+`TabBar`, `LucideIcon`, `ResizableRegion`, and the native form controls). `ResizableRegion` includes Hot Sheet 2's 1px separator and
 hover/focus grip. Its optional `handleIcon` replaces only the decorative glyph;
 the component and `wireResizableRegions()` retain separator semantics and
 pointer/keyboard behavior. Typed policies cover separator visibility,
 instant-track/composited-content collapse, popup-safe overflow,
 inline/overlay/hidden responsive presentation, `responsiveFillAt` single-track
 replacement, and safe-area restore controls;
-the same policies are available on `Workbench` and `CollapsiblePanel`. Consider
-Web Awesome Popup when its anchored-positioning
-engine removes custom placement code; treat Tree, Animated Image, Comparison,
-Zoomable Frame, and the displaced alternatives above as exceptional rather
-than default patterns. The detailed rationale lives in the theme contract.
+the same policies are available on `Workbench` and `CollapsiblePanel`. In an
+integration application, consider Web Awesome Popup when its anchored-positioning
+engine removes custom placement code, and treat Tree, Animated Image,
+Comparison, and Zoomable Frame as exceptional rather than default patterns.
+The detailed rationale lives in the theme contract.
 
 ## Design and tool guidance
 
@@ -887,10 +887,11 @@ than default patterns. The detailed rationale lives in the theme contract.
 - [Component and integration contract](./docs/component-contract.md)
 - [Spacing and application layout](./docs/layout.md)
 - [Web Awesome theme contract](./docs/webawesome-theme.md)
+- [Moving an application off Web Awesome](./docs/webawesome-migration.md)
 - [UX catalog contract](./docs/ux-demo.md)
 - [AI guide](./ai/skill.md)
 
-Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route; all 70 free Web Awesome 3.12 components have focused routes under the collapsible ecosystem section. Every detail visibly links its first-party demo source and existing guidance while showing the repository-relative paths; first-party components also link their implementation source, and Web Awesome entries label local guidance as Kerf integration guidance. One grouped `Related components` selector contains derived `Uses` / `Used by` navigation across both sets. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.
+Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route; all 70 free Web Awesome 3.12 components have focused routes under the collapsible Web Awesome Integration section. Every detail visibly links its first-party demo source and existing guidance while showing the repository-relative paths; first-party components also link their implementation source, and Web Awesome entries label local guidance as Kerf integration guidance. One grouped `Related components` selector contains derived `Uses` / `Used by` navigation across both sets. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.
 
 Run `npm run format` after editing source or structured content. The narrower
 `npm run format:css` command remains available for style-only work. The normal

@@ -113,5 +113,5 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 ## Related
 
 - Components: [LucideIcon](./lucide-icon.md), [Badge](./badge.md), [SegmentedControl](./segmented-control.md), [Select](./wa-select.md), [Dropdown](./wa-dropdown.md), [Combobox](./combobox.md).
-- Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#web-awesome-overlap-policy`](../../docs/component-selection.md#web-awesome-overlap-policy).
+- Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#web-awesome-integration`](../../docs/component-selection.md#web-awesome-integration).
 - UX catalog route: `?component=select`.

@@ -11,6 +11,7 @@ Edge-anchored modal surface for navigation or secondary tasks.
 **Not when:**
 
 - Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.
+- Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead.
 
 ## Imports
 

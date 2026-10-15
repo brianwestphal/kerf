@@ -339,36 +339,27 @@ static content and labels that constraint next to the rendered output.
 
 ## Component selection guidance
 
-The catalog lists every free Web Awesome component so support can be inspected;
-listing does not make each component the preferred Kerf application pattern.
-The [need-first decision matrix](./component-selection.md#web-awesome-overlap-policy)
-is the exhaustive Kerf/Web Awesome overlap index; the rules below explain the
-highest-risk choices.
+The catalog lists every free Web Awesome component so an integration
+application can inspect support; listing does not make any of them the
+preferred Kerf pattern. Kerf components and native elements come first. The
+[integration table](./component-selection.md#web-awesome-integration) names the
+Kerf choice for every overlapping element, and the
+[migration guide](./webawesome-migration.md) shows how to move an existing
+application off them.
 
-- Consider `wa-popup` for low-level anchored positioning when its flip, shift,
-  or placement behavior avoids custom positioning code. Prefer the higher-level
-  Tooltip or Popover when their interaction semantics already fit.
-- For ordinary app value selection, use Kerf `Select` instead of directly
-  composing Web Awesome Dropdown, Dropdown Item, Select, or Option. Kerf Select
-  owns the compact spacing and disclosure-arrow treatment while registering
-  only its reachable Web Awesome dependencies. Use an action-menu pattern only
-  when the choices truly perform commands rather than select a value.
-- Avoid Web Awesome Button Group as a general visual pattern. Use controlled
-  `SegmentedControl` for a small exclusive choice set, including lightweight
-  view selection inside an inspector. Reserve Button Group for an exceptional
-  grouped-action requirement that is not a selection.
-- Prefer `TabBar` for reorderable or horizontally overflowing application tabs,
-  and `SegmentedControl` for compact local views, instead of Web Awesome Tab,
-  Tab Group, and Tab Panel.
+- Elements a Kerf component replaces are tagged `Discouraged` in the catalog:
+  Button, Dropdown, Dropdown Item, Button Group, Input, Textarea, Tag,
+  Checkbox, Checkbox Group, Radio, Radio Group, Switch, Select, Option,
+  Dialog, Tab, Tab Group, Tab Panel, Badge, Spinner, Skeleton, Split Panel, Icon, and
+  Zoomable Frame. Never render them in application markup.
+- Consider `wa-popup` for low-level anchored positioning only in an
+  integration application; `kerfjs/overlay`'s `positionAnchored()` covers the
+  same need without Web Awesome.
 - Use Web Awesome Tree, Tree Item, Animated Image, and Comparison only for a
   specific product requirement that needs their specialized behavior.
-- Avoid Web Awesome Zoomable Frame and Icon. Use application-owned media
-  presentation and Kerf `LucideIcon`, respectively.
-- Prefer Kerf `ResizableRegion` over Web Awesome Split Panel for Hot Sheet-style
-  application panes. It provides the persistent 1px separator, hover/focus
-  grip, accessible keyboard and pointer resizing, controlled size, collapse
-  support, and application-owned persistence. Use Split Panel only when its
-  distinct Web Awesome API is itself required.
+- Use the remaining supported elements (Card, Details, Carousel, Rating, and
+  the rest of the coverage list) when their native semantic contract matches
+  the product need and the application has adopted the integration.
 
 ## Customization
 

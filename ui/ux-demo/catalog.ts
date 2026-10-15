@@ -86,7 +86,7 @@ export const webAwesomeCatalogSections = webAwesomeCategories.map(
   }),
 );
 
-/** Popup is the one conditional low-level primitive the overlap policy encourages when useful. */
+/** Popup is the one conditional low-level primitive the integration policy encourages when useful. */
 export function isDiscouragedWebAwesome(entry: CatalogEntry): boolean {
   return (
     entry.source === 'webawesome' &&

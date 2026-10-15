@@ -88,29 +88,29 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 ## Web Awesome — Actions
 
-- [Button](./wa-button.md) — Action control with semantic variants, appearances, loading, and icon support.
+- [Button](./wa-button.md) (avoid) — Ecosystem action button; use Kerf Button or IconButton.
 - [Button Group](./wa-button-group.md) (conditional) — Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.
 - [Copy Button](./wa-copy-button.md) — Copies a supplied value and announces success or failure.
-- [Dropdown](./wa-dropdown.md) (conditional) — Action-menu primitive; prefer Kerf Select when choosing a value.
-- [Dropdown Item](./wa-dropdown-item.md) (conditional) — Action-menu row; prefer Kerf Select options for value selection.
+- [Dropdown](./wa-dropdown.md) (avoid) — Ecosystem action menu; use Kerf PopupMenu, or Select when choosing a value.
+- [Dropdown Item](./wa-dropdown-item.md) (avoid) — Ecosystem action-menu row; use Kerf PopupMenu items or Select choices.
 
 ## Web Awesome — Forms
 
-- [Checkbox](./wa-checkbox.md) — Binary form control with checked, indeterminate, and disabled states.
-- [Checkbox Group](./wa-checkbox-group.md) — Labels and validates a related set of checkboxes.
+- [Checkbox](./wa-checkbox.md) (avoid) — Ecosystem checkbox; use Kerf Checkbox.
+- [Checkbox Group](./wa-checkbox-group.md) (avoid) — Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.
 - [Color Picker](./wa-color-picker.md) — Color input with swatches, formats, opacity, and eyedropper support.
-- [Input](./wa-input.md) — Text input with labels, hints, clear controls, and semantic appearances.
+- [Input](./wa-input.md) (avoid) — Ecosystem text input; use Kerf TextField.
 - [Known Date](./wa-known-date.md) — Experimental segmented field for partially or fully known dates.
 - [Number Input](./wa-number-input.md) — Numeric input with keyboard and stepper controls.
-- [Option](./wa-option.md) (underlying) — Underlying ecosystem option; prefer choices passed to Kerf Select.
+- [Option](./wa-option.md) (avoid) — Ecosystem select option; use Kerf Select choices.
 - [OTP Input](./wa-otp-input.md) — Experimental segmented one-time-password input.
-- [Radio](./wa-radio.md) — Single-choice control used inside a radio group.
-- [Radio Group](./wa-radio-group.md) — Labels and manages a mutually exclusive set of radios.
+- [Radio](./wa-radio.md) (avoid) — Ecosystem radio; use Kerf RadioGroup choices.
+- [Radio Group](./wa-radio-group.md) (avoid) — Ecosystem radio group; use Kerf RadioGroup, ChoiceChips, or SegmentedControl.
 - [Rating](./wa-rating.md) — Interactive rating control with accessible labeling.
-- [Select](./wa-select.md) (underlying) — Underlying ecosystem field; prefer Kerf Select for app UI.
+- [Select](./wa-select.md) (avoid) — Ecosystem select field; use Kerf Select.
 - [Slider](./wa-slider.md) — Range input with markers and value tooltip support.
-- [Switch](./wa-switch.md) — Immediate on/off setting control.
-- [Textarea](./wa-textarea.md) — Multiline text field with labels, hints, and resize behavior.
+- [Switch](./wa-switch.md) (avoid) — Ecosystem switch; use Kerf Switch.
+- [Textarea](./wa-textarea.md) (avoid) — Ecosystem multi-line input; use Kerf TextField with multiline.
 - [Time Input](./wa-time-input.md) — Experimental segmented time field with an optional picker.
 
 ## Web Awesome — Layout
@@ -119,33 +119,33 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Accordion Item](./wa-accordion-item.md) — Experimental labeled disclosure section used by an accordion.
 - [Card](./wa-card.md) — Groups related content and optional header, media, and footer slots.
 - [Details](./wa-details.md) — Single disclosure panel for secondary information.
-- [Dialog](./wa-dialog.md) — Modal surface for focused tasks and confirmations.
+- [Dialog](./wa-dialog.md) (avoid) — Ecosystem dialog; use Kerf DialogSurface with openDialog and closeDialog.
 - [Divider](./wa-divider.md) — Visual separator for related groups of content.
 - [Drawer](./wa-drawer.md) — Edge-anchored modal surface for navigation or secondary tasks.
 - [Page](./wa-page.md) — Responsive application shell with navigation, banner, and main slots.
 - [Scroller](./wa-scroller.md) — Overflow container with accessible scrolling affordances.
-- [Split Panel](./wa-split-panel.md) (conditional) — Alternative split API; prefer Kerf ResizableRegion for application panes.
+- [Split Panel](./wa-split-panel.md) (avoid) — Alternative split API; use Kerf ResizableRegion for application panes.
 
 ## Web Awesome — Navigation
 
 - [Breadcrumb](./wa-breadcrumb.md) — Ordered navigation trail for the current location.
 - [Breadcrumb Item](./wa-breadcrumb-item.md) — One link or current-location item in a breadcrumb.
 - [Pagination](./wa-pagination.md) — Experimental page navigation for a bounded result set.
-- [Tab](./wa-tab.md) (conditional) — Ecosystem tab label; prefer Kerf TabBar or SegmentedControl.
-- [Tab Group](./wa-tab-group.md) (conditional) — Ecosystem tabs; prefer Kerf TabBar or SegmentedControl.
-- [Tab Panel](./wa-tab-panel.md) (conditional) — Ecosystem tab panel; prefer app-owned panels with Kerf navigation.
+- [Tab](./wa-tab.md) (avoid) — Ecosystem tab label; use Kerf TabBar or SegmentedControl.
+- [Tab Group](./wa-tab-group.md) (avoid) — Ecosystem tabs; use Kerf TabBar or SegmentedControl.
+- [Tab Panel](./wa-tab-panel.md) (avoid) — Ecosystem tab panel; use Kerf TabBar with application-owned panels.
 - [Tree](./wa-tree.md) (exceptional) — Specialized hierarchy; use only when the product requires tree behavior.
 - [Tree Item](./wa-tree-item.md) (exceptional) — Specialized tree row; use only as part of a required tree.
 
 ## Web Awesome — Feedback
 
-- [Badge](./wa-badge.md) — Compact status or count label with semantic variants.
+- [Badge](./wa-badge.md) (avoid) — Ecosystem badge; use Kerf Badge.
 - [Callout](./wa-callout.md) — Prominent contextual message with semantic variants.
 - [Progress Bar](./wa-progress-bar.md) — Linear indicator for determinate or indeterminate progress.
 - [Progress Ring](./wa-progress-ring.md) — Circular indicator for determinate or indeterminate progress.
-- [Skeleton](./wa-skeleton.md) — Placeholder shape for content that is still loading.
-- [Spinner](./wa-spinner.md) — Compact indeterminate activity indicator.
-- [Tag](./wa-tag.md) — Compact categorization label with optional removal action.
+- [Skeleton](./wa-skeleton.md) (avoid) — Ecosystem placeholder; use Kerf Skeleton.
+- [Spinner](./wa-spinner.md) (avoid) — Ecosystem spinner; use Kerf LoadingSpinner.
+- [Tag](./wa-tag.md) (avoid) — Ecosystem tag; use Kerf Chip.
 - [Toast](./wa-toast.md) — Placement-aware stack of transient notifications.
 - [Toast Item](./wa-toast-item.md) — One dismissible notification inside a toast stack.
 - [Tooltip](./wa-tooltip.md) — Brief contextual label anchored to a control.
