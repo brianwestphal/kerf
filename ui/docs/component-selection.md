@@ -575,7 +575,10 @@ application markup. `ToolbarText` is the standard identity/title; use
 hover treatment, or overflow behavior. A standalone primary `wa-button` keeps
 its own Web Awesome chrome and fits naturally in the trailing zone. Bare
 controls retain their own styling and accessibility responsibilities; the
-toolbar only positions them within the zone.
+toolbar only positions them within the zone. A toolbar with a single zone (only
+`leading`, only `trailing`, or only `center`) gives that zone the whole content
+box: an absent zone leaves no empty track or gap, so content set to fill the row
+reaches the opposite inset.
 For a title that opens an editor, set `action` on a direct `ToolbarText`: it
 renders a native button that keeps its content width when possible and
 ellipsizes before an adjacent status chip when the leading zone narrows. The

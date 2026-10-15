@@ -311,6 +311,9 @@ when it adds useful context. Set `responsive="wrap"` on a heading whose title
 must stay whole: it keeps one row while everything fits and otherwise moves the
 trailing actions below the title instead of truncating it.
 
+A toolbar with a single zone gives it the whole content box, so content set to
+fill the row reaches both insets; an absent zone leaves no empty track or gap.
+
 A toolbar never clips an action. Its trailing zone wraps whole control groups
 onto another trailing-aligned row under every `responsive` policy, and a
 `responsive="stack"` toolbar wraps its stacked center and trailing groups the

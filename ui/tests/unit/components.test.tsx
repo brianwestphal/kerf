@@ -720,6 +720,19 @@ describe('production UI primitives', () => {
     ).toContain(
       'data-has-center="false" data-center-align="center" data-responsive="none" data-responsive-at="narrow"',
     );
+    // A lone zone spans every track, so an absent zone's track and its column
+    // gap never narrow it.
+    expect(
+      readFileSync(
+        resolve(
+          import.meta.dirname,
+          '../../src/components/actions/toolbar/toolbar.css',
+        ),
+        'utf8',
+      ),
+    ).toMatch(
+      /\.kui-toolbar\[data-has-center="false"\]:has\(> \.kui-toolbar__trailing:empty\)\s*> \.kui-toolbar__leading,[\s\S]*?> \.kui-toolbar__center,\s*\.kui-toolbar\[data-has-center="false"\]:has\(> \.kui-toolbar__leading:empty\)\s*> \.kui-toolbar__trailing \{\s*grid-column: 1 \/ -1;/,
+    );
     expect(asHtml(ToolbarText({ text: 'Default' }))).toContain(
       'data-size="default"',
     );

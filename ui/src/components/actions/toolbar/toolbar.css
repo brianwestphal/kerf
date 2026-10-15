@@ -355,6 +355,21 @@
   margin-inline-start: auto;
 }
 
+/* A lone zone spans every column track, so an absent (empty, hidden) zone's
+   track and the column gap before it never narrow it: leading-only content
+   set to fill the row reaches the toolbar's inline-end inset, and
+   trailing-only content its inline-start inset. */
+.kui-toolbar[data-has-center="false"]:has(> .kui-toolbar__trailing:empty)
+  > .kui-toolbar__leading,
+.kui-toolbar:has(> .kui-toolbar__leading:empty):has(
+    > .kui-toolbar__trailing:empty
+  )
+  > .kui-toolbar__center,
+.kui-toolbar[data-has-center="false"]:has(> .kui-toolbar__leading:empty)
+  > .kui-toolbar__trailing {
+  grid-column: 1 / -1;
+}
+
 .kui-toolbar[data-has-center="false"] .kui-toolbar__center,
 .kui-toolbar__leading:empty,
 .kui-toolbar__trailing:empty {
