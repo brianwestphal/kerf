@@ -1,5 +1,5 @@
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
-import { delegate, mount } from 'kerfjs';
+import { delegate, delegateCapture, mount } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 
 import type { RecipeController } from './types.js';
@@ -33,10 +33,11 @@ export function mountRecipe(
     '.kui-text-field__input',
     dispatchChange,
   );
-  const stopDialogs = delegate(
+  // A DialogSurface's native `close` does not bubble, so listen in capture.
+  const stopDialogs = delegateCapture(
     root,
-    'wa-after-hide',
-    'wa-dialog',
+    'close',
+    'dialog.kui-dialog-surface',
     (_event, element) => controller.afterHide?.(element as HTMLElement),
   );
   const stopNav = wireNavStack(root, {

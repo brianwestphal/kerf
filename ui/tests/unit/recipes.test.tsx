@@ -238,6 +238,31 @@ describe('production composition recipes', () => {
     expect(announcements.at(-1)).toBe('Draft reset');
   });
 
+  it('reports a closed DialogSurface to the recipe until disposed', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const closed: HTMLElement[] = [];
+    const stop = mountRecipe(root, {
+      render: () => (
+        <div>
+          <dialog class="kui-dialog-surface" />
+          <dialog class="other" />
+        </div>
+      ),
+      action: () => undefined,
+      afterHide: (element) => closed.push(element),
+    });
+    const [surface, other] = [...root.querySelectorAll('dialog')];
+    // `close` does not bubble.
+    surface!.dispatchEvent(new Event('close'));
+    other!.dispatchEvent(new Event('close'));
+    expect(closed).toEqual([surface]);
+    stop();
+    surface!.dispatchEvent(new Event('close'));
+    expect(closed).toHaveLength(1);
+    root.remove();
+  });
+
   it('mounts copyable recipe wiring at one stable root and disposes every listener', () => {
     const announcements: string[] = [];
     const root = document.createElement('div');

@@ -5,6 +5,7 @@ export interface RecipeController {
   render(): SafeHtml;
   action(command: string, element: HTMLElement): void;
   change?(element: HTMLElement): void;
+  /** Runs after a recipe's DialogSurface closes (its native `close`). */
   afterHide?(element: HTMLElement): void;
   /**
    * Install any imperative wiring the recipe owns on its mounted root (e.g.
