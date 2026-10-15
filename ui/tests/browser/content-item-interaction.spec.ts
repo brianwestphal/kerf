@@ -92,8 +92,9 @@ test('keyboard activation forwards Shift, Ctrl, and Meta to the click', async ({
     const seen: string[] = [];
     (window as unknown as { seenClicks: string[] }).seenClicks = seen;
     element.addEventListener('click', (event) => {
+      const click = event as MouseEvent;
       const flags = (['shiftKey', 'ctrlKey', 'metaKey', 'altKey'] as const)
-        .filter((flag) => event[flag])
+        .filter((flag) => click[flag])
         .join('+');
       seen.push(flags || 'plain');
     });
