@@ -39,12 +39,20 @@ const fits = async (surface: Locator) => {
 test('an anchored surface fits the room beside its anchor inside the viewport gutter', async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 390, height: 520 });
+  await page.setViewportSize({ width: 390, height: 360 });
   await page.goto('/?component=search-field');
   const button = page
     .locator('[data-demo="search-field"]')
     .getByRole('button', { name: 'Search Help' });
-  await button.scrollIntoViewIfNeeded();
+  // Put the field a little above the middle so it opens below, where a
+  // shorter viewport shrinks the room.
+  await button.evaluate((element) => {
+    element.scrollIntoView({ block: 'center' });
+    let scroller = element.parentElement;
+    while (scroller && scroller.scrollHeight <= scroller.clientHeight)
+      scroller = scroller.parentElement;
+    (scroller ?? document.scrollingElement)?.scrollBy(0, 40);
+  });
   await button.click();
   const surface = page.getByRole('dialog', { name: 'Search Syntax' });
   await expect(surface).toBeVisible();
@@ -66,7 +74,7 @@ test('an anchored surface fits the room beside its anchor inside the viewport gu
   ).toBe(true);
 
   // A shorter viewport refits on resize and scroll, still with no app CSS.
-  await page.setViewportSize({ width: 390, height: 460 });
+  await page.setViewportSize({ width: 390, height: 320 });
   await button.scrollIntoViewIfNeeded();
   await expect.poll(() => fits(surface)).toBe(true);
   const second = await geometry(surface);
@@ -75,9 +83,7 @@ test('an anchored surface fits the room beside its anchor inside the viewport gu
   await surface.evaluate((element) => {
     element.scrollTop = element.scrollHeight;
   });
-  await expect(
-    surface.getByText('The exact phrase', { exact: true }),
-  ).toBeInViewport();
+  await expect(surface.getByText(/^Combine filters with/)).toBeInViewport();
 });
 
 // An app that caps the surface below its content height (here through an
@@ -87,7 +93,7 @@ test('an anchored surface fits the room beside its anchor inside the viewport gu
 test('an app-capped surface that fits the preferred side stays there', async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 390, height: 520 });
+  await page.setViewportSize({ width: 390, height: 340 });
   await page.goto('/?component=search-field');
   const button = page
     .locator('[data-demo="search-field"]')
@@ -145,7 +151,7 @@ test('an app-capped surface that fits the preferred side stays there', async ({
 // viewport (so the room above is larger), open its help surface, and return
 // the room on each side.
 const openBelowMiddle = async (page: Page) => {
-  await page.setViewportSize({ width: 390, height: 520 });
+  await page.setViewportSize({ width: 390, height: 340 });
   await page.goto('/?component=search-field');
   const button = page
     .locator('[data-demo="search-field"]')
@@ -355,7 +361,9 @@ test('an above placement mid-expand grows upward from its anchor', async ({
     element.style.transition = 'none';
     element.style.maxHeight = '0px';
     globalThis.getComputedStyle(element).getPropertyValue('max-height');
-    element.style.transition = 'max-height 1500ms linear';
+    // Fast enough that the sampled frames see real growth toward a short
+    // phone's cap, slow enough that it is still running after them.
+    element.style.transition = 'max-height 1000ms linear';
     element.style.maxHeight = `${cap}px`;
     await frame();
     await frame();
@@ -363,7 +371,7 @@ test('an above placement mid-expand grows upward from its anchor', async ({
     // above, so kerf places it there.
     globalThis.dispatchEvent(new Event('resize'));
     const rects: { top: number; bottom: number }[] = [];
-    for (let index = 0; index < 12; index++) {
+    for (let index = 0; index < 24; index++) {
       await frame();
       await frame();
       const rect = element.getBoundingClientRect();

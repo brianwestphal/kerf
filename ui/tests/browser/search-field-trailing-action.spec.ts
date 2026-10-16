@@ -74,3 +74,24 @@ test('SearchField help toggle fills its slot and opens syntax help by pointer an
     );
   }
 });
+
+test('SearchField syntax help chips insert their filter once', async ({
+  page,
+}) => {
+  await page.goto('/?component=search-field');
+  const demo = page.locator('[data-demo="search-field"]');
+  const field = demo.locator('[data-search-field-id="catalog-search"]');
+  await demo.getByRole('button', { name: 'Search Help' }).click();
+  const surface = page.getByRole('dialog', { name: 'Search Syntax' });
+  await expect(
+    surface.getByRole('heading', { name: 'Search Syntax' }),
+  ).toBeVisible();
+  const status = surface.getByRole('group', { name: 'Status' });
+  await status.getByRole('button', { name: 'Insert filter is:open' }).click();
+  await expect(page.locator('.catalog-log')).toHaveText('Inserted is:open');
+  await expect(field.getByText('is:open', { exact: true })).toHaveCount(1);
+  // A filter already in the field is not inserted twice.
+  await status.getByRole('button', { name: 'Insert filter is:open' }).click();
+  await expect(field.getByText('is:open', { exact: true })).toHaveCount(1);
+  await expect(surface).toBeVisible();
+});

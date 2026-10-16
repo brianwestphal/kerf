@@ -1102,10 +1102,28 @@ const stopActions = delegateActions(app, 'click', {
       initialFocus: false,
     });
     handle.el.id = TOKEN_SEARCH_HELP_SURFACE_ID;
+    // The surface mounts outside the app root, so its filter chips get their
+    // own delegated handler: each one appends its filter to the field.
+    const stopHelpActions = delegateActions(handle.el, 'click', {
+      'insert-search-help-filter': (_chipEvent, chip) => {
+        const value = chip.getAttribute('data-item-id');
+        if (
+          !value ||
+          searchFieldTokens.value.some((token) => token.value === value)
+        )
+          return;
+        searchFieldTokens.value = [
+          ...searchFieldTokens.value,
+          { value, label: value, offset: searchFieldQuery.value.length },
+        ];
+        actionLog.value = `Inserted ${value}`;
+      },
+    });
     searchFieldHelp = handle;
     searchFieldHelpOpen.value = true;
     actionLog.value = 'Search help opened';
     void handle.result.then(() => {
+      stopHelpActions();
       if (searchFieldHelp === handle) searchFieldHelp = undefined;
       searchFieldHelpOpen.value = false;
     });

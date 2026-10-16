@@ -1,12 +1,12 @@
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { Chip } from '@kerfjs/ui/chip';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { SearchField } from '@kerfjs/ui/search-field';
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
-import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { CircleHelp, CircleX } from 'lucide';
 
 import {
@@ -24,18 +24,55 @@ import {
 
 export const TOKEN_SEARCH_HELP_SURFACE_ID = 'catalog-search-field-help-surface';
 
-/** Syntax help the Structured Ticket Search help toggle opens. */
+/** Filters the syntax help offers, grouped as the help popup shows them. */
+export const SEARCH_HELP_FILTERS: readonly {
+  label: string;
+  filters: readonly string[];
+}[] = [
+  { label: 'Tags', filters: ['tag:client', 'tag:release', 'tag:urgent'] },
+  { label: 'Status', filters: ['is:open', 'is:closed', 'is:active'] },
+];
+
+/**
+ * Syntax help the Structured Ticket Search help toggle opens: a title, one
+ * line, and groups of filter chips that insert themselves into the field.
+ */
 export function SearchFieldHelp() {
   return (
-    <ValueTable label="Search Syntax" density="compact">
-      <ValueTableRow label="tag:name" value="Tickets with that tag" />
-      <ValueTableRow label="is:open" value="Open tickets only" />
-      <ValueTableRow label="is:closed" value="Closed tickets only" />
-      <ValueTableRow label="NOT term" value="Exclude a word or filter" />
-      <ValueTableRow label="a AND b" value="Both terms must match" />
-      <ValueTableRow label="a OR b" value="Either term may match" />
-      <ValueTableRow label='"a b"' value="The exact phrase" />
-    </ValueTable>
+    <List gap="s" contentWidth="compact">
+      <List gap="2xs">
+        <Text variant="h2" size="medium" flush>
+          Search Syntax
+        </Text>
+        <Text size="compact" tone="quiet" flush>
+          Type words, then add any filters you need.
+        </Text>
+      </List>
+      {SEARCH_HELP_FILTERS.map((group) => (
+        <List
+          gap="2xs"
+          rootAttributes={{ role: 'group', 'aria-label': group.label }}
+        >
+          <Text size="compact" tone="quiet" flush>
+            {group.label}
+          </Text>
+          <Row wrap>
+            {group.filters.map((filter) => (
+              <Chip
+                action="insert-search-help-filter"
+                actionLabel={`Insert filter ${filter}`}
+                itemId={filter}
+              >
+                {filter}
+              </Chip>
+            ))}
+          </Row>
+        </List>
+      ))}
+      <Text size="compact" tone="quiet" flush>
+        Combine filters with AND, OR, NOT, and "quoted phrases".
+      </Text>
+    </List>
   );
 }
 
@@ -71,7 +108,7 @@ export function SearchFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Structured Ticket Search"
-        note="Text and atomic filters remain in one keyboard-focusable editor. The trailing help toggle reports its open state and opens syntax help beside the field."
+        note="Text and filter chips share one editor. The help button lists filters to insert."
         align="inline-control"
       >
         <List gap="xs">
@@ -108,7 +145,7 @@ export function SearchFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Grammar Assisted Search"
-        note="Type tag: or is: for suggestions below the field. Longer lists scroll inside a rounded popup. Committed tags leave the list; whitespace commits filters. Add release tag works directly or with an unfinished tag:rel prefix. Load saved search replaces the current draft."
+        note="Type tag: or is: for suggestions. A space commits a filter."
         align="inline-control"
       >
         <List gap="xs">
