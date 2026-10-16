@@ -25,8 +25,6 @@ import { FoundationDemo } from './foundation.js';
 import { FramedListDemo } from './framed-list.js';
 import { GridDemo } from './grid.js';
 import { HeadersDemo } from './headers.js';
-import { IconButtonDemo } from './icon-button.js';
-import { IconToggleButtonDemo } from './icon-toggle-button.js';
 import { LayoutDemo } from './layout.js';
 import { ListDemo } from './list.js';
 import { ListActionRowDemo } from './list-action-row.js';
@@ -119,13 +117,11 @@ export const demos = {
   combobox: ComboboxDemo,
   'summary-row': SummaryRowDemo,
   'edge-activity-indicator': EdgeActivityIndicatorDemo,
-  'icon-button': IconButtonDemo,
   button: ButtonDemo,
   'text-field': TextFieldDemo,
   checkbox: CheckboxDemo,
   'radio-group': RadioGroupDemo,
   switch: SwitchDemo,
-  'icon-toggle-button': IconToggleButtonDemo,
   'split-button': SplitButtonDemo,
   'framed-list': FramedListDemo,
   'sunken-panel': SunkenPanelDemo,

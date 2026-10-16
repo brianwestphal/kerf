@@ -15,13 +15,13 @@ Turn a setting on or off the moment it changes, such as live updates or a prefer
 **Not when:**
 
 - Do not use for an option a form submits later; use Checkbox.
-- Do not use for an icon-only toolbar toggle; use IconToggleButton or a ToolbarControlGroup toggle.
+- Do not use for an icon-only toolbar toggle; use an icon-only Button with pressed, or a ToolbarControlGroup toggle.
 
 **Alternatives:**
 
 - [Switch](./wa-switch.md) (prefer-over)
 - [Checkbox](./checkbox.md) (nearest) — Use Checkbox for an option a form submits.
-- [IconToggleButton](./icon-toggle-button.md) (nearest) — Use IconToggleButton for an icon-only toggle.
+- [Button](./button.md) (nearest) — Use an icon-only Button with pressed for an icon-only toggle.
 
 ## Imports
 
@@ -76,6 +76,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Switch](./wa-switch.md), [Checkbox](./checkbox.md), [IconToggleButton](./icon-toggle-button.md).
+- Components: [Switch](./wa-switch.md), [Checkbox](./checkbox.md), [Button](./button.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=switch`.

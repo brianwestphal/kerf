@@ -657,12 +657,13 @@ const buttonTags = () =>
     .map(viewOf);
 
 describe('icon-only toolbar button help tags', () => {
-  it('show for a standalone IconToggleButton outside any group', () => {
+  it('show for a standalone icon-only Button outside any group', () => {
     const { group, control, icon } = toolbarControl({
       label: 'Open conversation',
       inGroup: false,
     });
-    control.className = 'kui-icon-toggle-button';
+    control.className = 'kui-button';
+    control.setAttribute('data-icon-only', '');
     pointerOver(icon);
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     const [tag] = buttonTags();

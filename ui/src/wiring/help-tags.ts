@@ -2,8 +2,9 @@
 //
 // An icon-only `Select` (single `selectedPresentation="icon-only"` or the
 // multiple `triggerIcon` filter), an icon-only `PopupMenu` (a `label` instead
-// of visible `text`), and an icon-only `<button>` or link inside a
-// `ToolbarControlGroup` (named only by `aria-label`) carry their purpose — and
+// of visible `text`), an icon-only `<button>` or link inside a
+// `ToolbarControlGroup` (named only by `aria-label`), and an icon-only
+// `Button` carry their purpose — and
 // a Select its current choice — only in the accessible name. Sighted pointer
 // and keyboard users see just the icon, so the registration boundary shows a
 // tag naming the control (Apple HIG "help tag"):
@@ -153,7 +154,7 @@ const ariaLabel = (control: Element): string =>
 
 /**
  * An icon-only toolbar button or link (inside a `ToolbarControlGroup`) or an
- * `IconToggleButton`: named by `aria-label`, with no visible text, and without
+ * icon-only `Button`: named by `aria-label`, with no visible text, and without
  * a native `title` or a Web Awesome tooltip of its own that a second tag would
  * duplicate.
  */
@@ -161,7 +162,9 @@ function isToolbarIconControl(target: HTMLElement): boolean {
   if (!target.matches('button, a[href]')) return false;
   if (!ariaLabel(target) || target.hasAttribute('title') || words(target))
     return false;
-  if (!target.closest('.kui-toolbar-control-group, .kui-icon-toggle-button'))
+  if (
+    !target.closest('.kui-toolbar-control-group, .kui-button[data-icon-only]')
+  )
     return false;
   return !(
     target.id &&

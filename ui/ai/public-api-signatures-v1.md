@@ -5643,47 +5643,6 @@ declare function openAnchoredSurfaceAt(point: AnchoredSurfacePoint, content: Ove
 export { type AnchoredSurfaceOptions, type AnchoredSurfacePoint, type AnchoredSurfaceTone, openAnchoredSurface, openAnchoredSurfaceAt };
 ```
 
-## `@kerfjs/ui/icon-button`
-
-```ts
-import * as kerfjs from 'kerfjs';
-import { LucideNode } from './lucide-icon.js';
-import { ButtonTone, ButtonEmphasis, ButtonSize, ButtonType, ButtonRootAttributes } from './button.js';
-import 'lucide';
-import './css-values.js';
-import './semantic-content-BbzjvSu9.js';
-
-interface IconButtonProps {
-    /** The Lucide-compatible icon node shown alone in the button. */
-    icon: LucideNode;
-    /** The icon's stable name, as `LucideIcon` takes it. */
-    iconName: string;
-    /** Accessible name; the button has no visible text, so it is required. */
-    label: string;
-    /** Delegated `data-action` the application handles. */
-    action?: string;
-    tone?: ButtonTone;
-    emphasis?: ButtonEmphasis;
-    size?: ButtonSize;
-    type?: ButtonType;
-    disabled?: boolean;
-    id?: string;
-    className?: string;
-    /** Safe `data-*` metadata; the Button's own markers stay protected. */
-    rootAttributes?: ButtonRootAttributes;
-    /** Native named-slot assignment when composed inside a web component. */
-    slot?: string;
-}
-/**
- * An icon-only `Button` with a `LucideIcon`: a square one control height on
- * each side, so it matches an adjacent field or `Select`, named by `label`.
- * Outside a toolbar; inside one, compose a `ToolbarControlGroup`.
- */
-declare function IconButton({ icon, iconName, label, ...options }: IconButtonProps): kerfjs.SafeHtml;
-
-export { IconButton, type IconButtonProps };
-```
-
 ## `@kerfjs/ui/button`
 
 ```ts
@@ -5699,6 +5658,8 @@ type ButtonTone = 'neutral' | 'brand' | 'danger';
 type ButtonEmphasis = 'primary' | 'secondary' | 'plain';
 /** `default` is the 44px control height; `compact` is 33px with smaller text. */
 type ButtonSize = 'default' | 'compact';
+/** Corner shape: the shared `rounded` control radius (default) or a full `pill`. */
+type ButtonShape = 'rounded' | 'pill';
 /** What a form button does: `button` (default), `submit`, or `reset`. */
 type ButtonType = 'button' | 'submit' | 'reset';
 /** Application `data-*` metadata; the Button's own markers stay protected. */
@@ -5727,6 +5688,14 @@ interface ButtonOptions {
     tone?: ButtonTone;
     emphasis?: ButtonEmphasis;
     size?: ButtonSize;
+    /** Corner shape (default `rounded`). */
+    shape?: ButtonShape;
+    /**
+     * Make it a toggle: `aria-pressed` reports the state, and a pressed look is
+     * drawn on top of the tone and emphasis. The application owns the state and
+     * flips it in its `action` handler. A link (`href`) cannot be a toggle.
+     */
+    pressed?: boolean;
     /**
      * Busy: a spinner replaces the label (which still names it) and the button
      * reports `aria-busy`. Presses still reach it; the application decides
@@ -5756,61 +5725,15 @@ interface ButtonOptions {
 /**
  * A standalone action button: a native `<button>` (or a link with `href`)
  * in one of three tones and three emphases, at the 44px control height or
- * compact, with a label or as an icon-only square. Inside a
+ * compact, with a label or as an icon-only square, rounded or pill-shaped,
+ * and optionally a `pressed` toggle. Inside a
  * `ToolbarControlGroup`, use a plain `<button>`, which the group styles; use
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, icon, loading, disabled, type, name, value, form, href, target, action, ariaLabel, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, pressed, icon, loading, disabled, type, name, value, form, href, target, action, ariaLabel, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
-export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonSize, type ButtonTone, type ButtonType };
-```
-
-## `@kerfjs/ui/icon-toggle-button`
-
-```ts
-import * as kerfjs from 'kerfjs';
-import { LucideNode } from './lucide-icon.js';
-import 'lucide';
-import './css-values.js';
-
-/** Corner shape: fully round `pill` (default) or a softer `rounded` square. */
-type IconToggleButtonShape = 'pill' | 'rounded';
-type IconToggleButtonRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
-    'data-component'?: never;
-    'data-action'?: never;
-    'data-shape'?: never;
-}>;
-interface IconToggleButtonProps {
-    /** The Lucide-compatible icon node. */
-    icon: LucideNode;
-    /** The icon's stable name, as `LucideIcon` takes it. */
-    iconName: string;
-    /** Accessible name and hover help tag; required because no text is shown. */
-    label: string;
-    /** Pressed state, exposed as `aria-pressed`; the application owns it. */
-    pressed: boolean;
-    /** Delegated `data-action` the application handles to flip `pressed`. */
-    action?: string;
-    shape?: IconToggleButtonShape;
-    disabled?: boolean;
-    id?: string;
-    className?: string;
-    /** Safe `data-*` metadata; IconToggleButton-owned markers stay protected. */
-    rootAttributes?: IconToggleButtonRootAttributes;
-    /** Native named-slot assignment when composed inside a web component. */
-    slot?: string;
-}
-/**
- * A standalone, icon-only toggle: a native `<button aria-pressed>` with the
- * geometry and pressed chrome of a single contained `ToolbarControlGroup`
- * (44px, a 2px-inset face that rises when pressed), for content and pane
- * footers where no `Toolbar` belongs. Inside a toolbar, use a
- * `ToolbarControlGroup` instead.
- */
-declare function IconToggleButton({ icon, iconName, label, pressed, action, shape, disabled, id, className, rootAttributes, slot, }: IconToggleButtonProps): kerfjs.SafeHtml;
-
-export { IconToggleButton, type IconToggleButtonProps, type IconToggleButtonShape };
+export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```
 
 ## `@kerfjs/ui/split-button`

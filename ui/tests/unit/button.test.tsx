@@ -134,4 +134,51 @@ describe('Button', () => {
     expect(square.getAttribute('aria-label')).toBe('Add');
     expect(square.querySelector('.kui-button__label')).toBe(null);
   });
+
+  it('is a toggle with pressed, reporting aria-pressed only when set', () => {
+    const plain = render(<Button action="go">Go</Button>);
+    expect(plain.hasAttribute('aria-pressed')).toBe(false);
+    const on = render(
+      <Button pressed emphasis="plain" action="toggle">
+        Live
+      </Button>,
+    );
+    expect(on.getAttribute('aria-pressed')).toBe('true');
+    expect(on.dataset.emphasis).toBe('plain');
+    const off = render(
+      <Button pressed={false} icon={<span />} ariaLabel="Show Conversation" />,
+    );
+    expect(off.getAttribute('aria-pressed')).toBe('false');
+    expect(off.hasAttribute('data-icon-only')).toBe(true);
+  });
+
+  it('takes a pill shape and protects its shape marker', () => {
+    expect(render(<Button>Rounded</Button>).hasAttribute('data-shape')).toBe(
+      false,
+    );
+    const pill = render(
+      <Button
+        shape="pill"
+        rootAttributes={
+          { 'data-shape': 'rounded' } as Record<`data-${string}`, string>
+        }
+      >
+        Pill
+      </Button>,
+    );
+    expect(pill.dataset.shape).toBe('pill');
+  });
+
+  it('refuses to make a link a toggle', () => {
+    expect(() =>
+      Button({ children: 'Docs', href: '/docs', pressed: true }),
+    ).toThrow(/link Button cannot be a toggle/);
+    expect(
+      render(
+        <Button href="/docs" shape="pill">
+          Docs
+        </Button>,
+      ).dataset.shape,
+    ).toBe('pill');
+  });
 });

@@ -141,9 +141,7 @@ describe('SegmentedControl corner geometry', () => {
         node.type === 'rule' &&
         node.selector.includes('[data-content="mixed"]') &&
         node.selector.includes('[data-nested-dropdown="true"]') &&
-        node.selector.includes(
-          'wa-button:not(:where(.kui-icon-button))::part(base)',
-        ),
+        node.selector.includes('wa-button::part(base)'),
     );
 
     if (!rule || rule.type !== 'rule')
@@ -160,9 +158,7 @@ describe('SegmentedControl corner geometry', () => {
         node.type === 'rule' &&
         node.selector.includes('[data-content="mixed"]') &&
         node.selector.includes('[data-nested-dropdown="true"]') &&
-        node.selector.includes(
-          'wa-button:not(:where(.kui-icon-button))::part(base)',
-        ) &&
+        node.selector.includes('wa-button::part(base)') &&
         node.nodes.some(
           (child) => child.type === 'decl' && child.prop === 'width',
         ),
@@ -203,7 +199,7 @@ describe('SegmentedControl corner geometry', () => {
     for (const [sheet, selector] of [
       [
         root,
-        '.kui-toolbar-control-group[data-content="mixed"] wa-button:not(:where(.kui-popup-menu > *, .kui-icon-button))',
+        '.kui-toolbar-control-group[data-content="mixed"] wa-button:not(:where(.kui-popup-menu > *))',
       ],
       [
         popupRoot,

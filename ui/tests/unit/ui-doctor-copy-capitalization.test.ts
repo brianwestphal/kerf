@@ -142,8 +142,8 @@ describe('titleStyleLabels', () => {
             <FieldLabel>Needed by</FieldLabel>
             <button type="button" aria-label="Add project"><LucideIcon node={plus} /></button>
             <wa-button aria-label="Refresh tickets"><LucideIcon node={refresh} /></wa-button>
-            <IconButton label="Browse for a folder" icon={folder} action="browse" />
-            <IconToggleButton label="Show conversation" icon={chat} pressed={false} action="chat" />
+            <Button ariaLabel="Browse for a folder" icon={folder} action="browse" />
+            <Button ariaLabel="Show conversation" icon={chat} pressed={false} action="chat" />
             <PopupMenu label="More actions" items={items} />
             <SplitButton label="Publish" optionsLabel="Publish options" action="a" optionsAction="b" />
             <SearchField id="s" label="Search" clearLabel="Clear search" />
@@ -167,8 +167,8 @@ describe('titleStyleLabels', () => {
       'FieldLabel: Needed by',
       '<button> aria-label: Add project',
       '<wa-button> aria-label: Refresh tickets',
-      'IconButton label: Browse for a folder',
-      'IconToggleButton label: Show conversation',
+      'Button ariaLabel: Browse for a folder',
+      'Button ariaLabel: Show conversation',
       'PopupMenu label: More actions',
       'PopupMenu items: Copy link',
       'PopupMenu items: Sort by',
@@ -205,8 +205,8 @@ describe('titleStyleLabels', () => {
       `
         export const View = () => (
           <>
-            <IconButton label={\`Edit \${shortcut.name} shortcut\`} />
-            <IconButton label={\`Reset \${shortcut.name} Shortcut\`} />
+            <Button ariaLabel={\`Edit \${shortcut.name} shortcut\`} />
+            <Button ariaLabel={\`Reset \${shortcut.name} Shortcut\`} />
             <Toolbar label={\`\${name} for \${owner}\`} />
             <ListHeader label={\`\${count}s in the \${place}\`} />
             <section aria-label={\`the \${region}\`} />
@@ -218,8 +218,8 @@ describe('titleStyleLabels', () => {
       `,
     );
     expect(found.map(({ owner, display }) => `${owner}: ${display}`)).toEqual([
-      'IconButton label: Edit ${shortcut.name} shortcut',
-      'IconButton label: Reset ${shortcut.name} Shortcut',
+      'Button ariaLabel: Edit ${shortcut.name} shortcut',
+      'Button ariaLabel: Reset ${shortcut.name} Shortcut',
       'Toolbar label: ${name} for ${owner}',
       'ListHeader label: ${count}s in the ${place}',
       '<section> aria-label: the ${region}',
@@ -442,7 +442,7 @@ describe('checkCopyCapitalization', () => {
         ],
         [
           'src/template.tsx',
-          'export const Row = () => <IconButton label={`Edit ${shortcut.name} shortcut`} />;',
+          'export const Row = () => <Button ariaLabel={`Edit ${shortcut.name} shortcut`} />;',
         ],
       ] as const;
       for (const [name, source] of files)
@@ -468,7 +468,7 @@ describe('checkCopyCapitalization', () => {
       );
       expect(findings[0]?.action).toContain('Use "Save Draft"');
       expect(findings[3]?.message).toBe(
-        'IconButton label "Edit ${shortcut.name} shortcut" is not title-style capitalized ("shortcut").',
+        'Button ariaLabel "Edit ${shortcut.name} shortcut" is not title-style capitalized ("shortcut").',
       );
       expect(findings[3]?.action).toContain(
         'Use "Edit ${shortcut.name} Shortcut"',

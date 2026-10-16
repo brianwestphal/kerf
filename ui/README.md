@@ -273,8 +273,6 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `createSearchFieldModel`                                     | `@kerfjs/ui/search-field-model`         | —                                        |
 | `StateBanner`                                                | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`            |
 | `Button`                                                     | `@kerfjs/ui/button`                     | `@kerfjs/ui/button.css`                  |
-| `IconButton`                                                 | `@kerfjs/ui/icon-button`                | `@kerfjs/ui/icon-button.css`             |
-| `IconToggleButton`                                           | `@kerfjs/ui/icon-toggle-button`         | `@kerfjs/ui/icon-toggle-button.css`      |
 | `SplitButton`                                                | `@kerfjs/ui/split-button`               | `@kerfjs/ui/split-button.css`            |
 | `FramedList`, `FramedListRow`                                | `@kerfjs/ui/framed-list`                | `@kerfjs/ui/framed-list.css`             |
 | `SummaryRow`                                                 | `@kerfjs/ui/summary-row`                | `@kerfjs/ui/summary-row.css`             |

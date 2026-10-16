@@ -186,7 +186,7 @@ covers these string literals:
   `wa-select`, `wa-textarea`, or `wa-radio-group` in an application using the
   optional Web Awesome integration;
 - the accessible names of icon-only controls, which the rule also gives title
-  style: `IconButton` and `IconToggleButton` `label`, `PopupMenu` `label`,
+  style: an icon-only `Button`'s `ariaLabel`, `PopupMenu` `label`,
   `SplitButton` `optionsLabel`, `SearchField` and `TextField`
   `clearLabel`, and the
   `aria-label` of a `button` or `wa-button` whose only content is an icon. A

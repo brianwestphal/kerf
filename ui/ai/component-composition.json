@@ -5277,63 +5277,6 @@
       }
     },
     {
-      "key": "@kerfjs/ui:icon-button",
-      "package": "@kerfjs/ui",
-      "id": "icon-button",
-      "name": "IconButton",
-      "kind": "component",
-      "source": "kerf",
-      "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
-      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
-      "state": [
-        {
-          "id": "the delegated action",
-          "owner": "application",
-          "required": false
-        },
-        {
-          "id": "the accessible name",
-          "owner": "application",
-          "required": false
-        },
-        {
-          "id": "tone, emphasis, and size choice",
-          "owner": "application",
-          "required": false
-        }
-      ],
-      "wiring": {
-        "required": false,
-        "helpers": [],
-        "obligations": [],
-        "stateAttributes": []
-      },
-      "responsive": { "owner": "not-applicable", "behaviors": [] },
-      "layout": {
-        "roles": ["controls"],
-        "geometry": { "margin": "none", "border": "self", "padding": "self" }
-      },
-      "accessibility": {
-        "obligations": [
-          "A native button named by the required label (aria-label); the icon is decorative, since the button shows no text."
-        ]
-      },
-      "cssValueProps": [],
-      "boundaries": {
-        "rootClass": null,
-        "publicClasses": [],
-        "rootElement": "button",
-        "publicTokens": []
-      },
-      "diagnostics": [],
-      "provenance": {
-        "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
-      }
-    },
-    {
       "key": "@kerfjs/ui:button",
       "package": "@kerfjs/ui",
       "id": "button",
@@ -5371,7 +5314,8 @@
       "accessibility": {
         "obligations": [
           "A native <button> (type=\"button\" unless set) or, with href, an <a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring.",
-          "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\"."
+          "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\".",
+          "With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus."
         ]
       },
       "cssValueProps": [],
@@ -5404,72 +5348,6 @@
           "--kui-font-m",
           "--kui-font-s",
           "--kui-layout-rounded-radius"
-        ]
-      },
-      "diagnostics": [],
-      "provenance": {
-        "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
-      }
-    },
-    {
-      "key": "@kerfjs/ui:icon-toggle-button",
-      "package": "@kerfjs/ui",
-      "id": "icon-toggle-button",
-      "name": "IconToggleButton",
-      "kind": "component",
-      "source": "kerf",
-      "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
-      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
-      "state": [
-        {
-          "id": "the pressed state and its delegated action",
-          "owner": "application",
-          "required": false
-        },
-        {
-          "id": "the accessible name",
-          "owner": "application",
-          "required": false
-        }
-      ],
-      "wiring": {
-        "required": false,
-        "helpers": [],
-        "obligations": [],
-        "stateAttributes": []
-      },
-      "responsive": { "owner": "not-applicable", "behaviors": [] },
-      "layout": {
-        "roles": ["controls"],
-        "geometry": { "margin": "none", "border": "self", "padding": "self" }
-      },
-      "accessibility": {
-        "obligations": [
-          "Native button with aria-pressed and a required aria-label; with help tags registered it shows that label on hover and keyboard focus."
-        ]
-      },
-      "cssValueProps": [],
-      "boundaries": {
-        "rootClass": "kui-icon-toggle-button",
-        "publicClasses": [
-          "kui-icon-toggle-button",
-          "kui-icon-toggle-button__face"
-        ],
-        "rootElement": "button",
-        "publicTokens": [
-          "--kui-color-neutral-border-normal",
-          "--kui-color-neutral-fill-normal",
-          "--kui-color-neutral-on-quiet",
-          "--kui-color-surface",
-          "--kui-color-brand-on-quiet",
-          "--kui-shadow-s",
-          "--kui-focus-ring",
-          "--kui-layout-pill-radius",
-          "--kui-layout-rounded-radius",
-          "--kui-layout-highlight-inset"
         ]
       },
       "diagnostics": [],

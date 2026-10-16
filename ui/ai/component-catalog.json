@@ -1931,9 +1931,9 @@
           "relationship": "prefer-over"
         },
         {
-          "id": "icon-toggle-button",
+          "id": "button",
           "relationship": "nearest",
-          "when": "Outside a Toolbar, a standalone icon-only toggle is an IconToggleButton."
+          "when": "Outside a Toolbar, a standalone icon-only toggle is an icon-only Button with pressed."
         }
       ],
       "appOwns": [
@@ -6305,7 +6305,7 @@
       ],
       "avoidWhen": [
         "Do not use for an option a form submits later; use Checkbox.",
-        "Do not use for an icon-only toolbar toggle; use IconToggleButton or a ToolbarControlGroup toggle."
+        "Do not use for an icon-only toolbar toggle; use an icon-only Button with pressed, or a ToolbarControlGroup toggle."
       ],
       "alternatives": [
         {
@@ -6318,9 +6318,9 @@
           "when": "Use Checkbox for an option a form submits."
         },
         {
-          "id": "icon-toggle-button",
+          "id": "button",
           "relationship": "nearest",
-          "when": "Use IconToggleButton for an icon-only toggle."
+          "when": "Use an icon-only Button with pressed for an icon-only toggle."
         }
       ],
       "appOwns": [
@@ -6573,81 +6573,6 @@
       }
     },
     {
-      "id": "icon-button",
-      "name": "IconButton",
-      "category": "Controls",
-      "kind": "component",
-      "source": "kerf",
-      "description": "Square, icon-only Button with a LucideIcon and a required accessible name.",
-      "uses": [
-        "button",
-        "lucide-icon"
-      ],
-      "purpose": "Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.",
-      "publicExports": [
-        "IconButton"
-      ],
-      "useWhen": [
-        "An icon-only action stands alone or beside a form field, such as a Browse button next to a path input."
-      ],
-      "avoidWhen": [
-        "Do not use inside a ToolbarControlGroup; the group owns its controls' geometry, so compose a native button with a LucideIcon there.",
-        "Do not use when the action needs a visible text label; use Button with a label."
-      ],
-      "alternatives": [
-        {
-          "id": "button",
-          "relationship": "nearest",
-          "when": "Use Button when the action needs a visible text label."
-        },
-        {
-          "id": "wa-button",
-          "relationship": "prefer-over",
-          "when": "Web Awesome squares a button only for a lone wa-icon; with a LucideIcon use IconButton."
-        },
-        {
-          "id": "list-inset-control",
-          "relationship": "composes-with",
-          "when": "Beside a field in a ListInsetControl the square keeps its size and aligns with the field below its label."
-        }
-      ],
-      "appOwns": [
-        "the delegated action",
-        "the accessible name",
-        "tone, emphasis, and size choice"
-      ],
-      "variants": [
-        "neutral, brand, or danger tone",
-        "primary, secondary, or plain emphasis",
-        "default or compact size",
-        "disabled"
-      ],
-      "accessibility": [
-        "A native button named by the required label (aria-label); the icon is decorative, since the button shows no text."
-      ],
-      "geometry": {
-        "margin": "none",
-        "border": "self",
-        "padding": "self"
-      },
-      "delivery": {
-        "browserImport": "@kerfjs/ui/icon-button",
-        "manualCssImport": "@kerfjs/ui/icon-button.css",
-        "sideEffects": [
-          "browser-condition-css"
-        ]
-      },
-      "wiring": [],
-      "publicClasses": [],
-      "publicTokens": [],
-      "rootElement": "button",
-      "links": {
-        "catalogRoute": "?component=icon-button",
-        "documentation": "docs/component-selection.md",
-        "recipe": "docs/component-selection.md#problem-to-component-matrix"
-      }
-    },
-    {
       "id": "button",
       "name": "Button",
       "category": "Controls",
@@ -6668,18 +6593,13 @@
       ],
       "avoidWhen": [
         "Do not use inside a ToolbarControlGroup; give the group plain <button> controls, which it styles.",
-        "Do not use for an icon-only action; use IconButton (or IconToggleButton for an on/off toggle).",
+        "Do not use for an icon-only action; use an icon-only Button (with pressed for an on/off toggle).",
         "Do not use for a menu trigger; use PopupMenu."
       ],
       "alternatives": [
         {
           "id": "wa-button",
           "relationship": "prefer-over"
-        },
-        {
-          "id": "icon-button",
-          "relationship": "nearest",
-          "when": "Use IconButton for an icon-only action."
         },
         {
           "id": "toolbar-control-group",
@@ -6696,14 +6616,18 @@
         "neutral, brand, or danger tone",
         "primary, secondary, or plain emphasis",
         "default or compact size",
+        "rounded (default) or pill shape",
         "leading icon",
+        "icon-only square (icon and ariaLabel, no label)",
+        "pressed toggle (aria-pressed) on any tone and emphasis",
         "loading",
         "disabled",
         "link (href)"
       ],
       "accessibility": [
         "A native <button> (type=\"button\" unless set) or, with href, an <a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring.",
-        "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\"."
+        "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\".",
+        "With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus."
       ],
       "geometry": {
         "margin": "none",
@@ -6748,89 +6672,6 @@
       "rootElement": "button",
       "links": {
         "catalogRoute": "?component=button",
-        "documentation": "docs/component-selection.md",
-        "recipe": "docs/component-selection.md#problem-to-component-matrix"
-      }
-    },
-    {
-      "id": "icon-toggle-button",
-      "name": "IconToggleButton",
-      "category": "Controls",
-      "kind": "component",
-      "source": "kerf",
-      "description": "A standalone icon-only toggle with a single contained toolbar group's geometry and pressed chrome.",
-      "uses": [
-        "lucide-icon"
-      ],
-      "purpose": "Render an icon-only aria-pressed toggle in content or a pane footer, where a Toolbar does not belong, with the 44px contained geometry and raised pressed face of a single ToolbarControlGroup.",
-      "publicExports": [
-        "IconToggleButton"
-      ],
-      "useWhen": [
-        "An icon-only on/off control (show a panel, a conversation) sits in content or a pane footer outside any Toolbar."
-      ],
-      "avoidWhen": [
-        "Do not use inside a Toolbar; compose a ToolbarControlGroup there.",
-        "Do not use for a momentary action; use IconButton.",
-        "Do not use for one-of-several choices; use SegmentedControl."
-      ],
-      "alternatives": [
-        {
-          "id": "toolbar-control-group",
-          "relationship": "nearest",
-          "when": "Inside a Toolbar, a single ToolbarControlGroup with a pressed button is the same control."
-        },
-        {
-          "id": "icon-button",
-          "relationship": "nearest",
-          "when": "Use IconButton for a momentary icon-only action."
-        }
-      ],
-      "appOwns": [
-        "the pressed state and its delegated action",
-        "the accessible name"
-      ],
-      "variants": [
-        "pressed",
-        "unpressed",
-        "pill or rounded shape",
-        "disabled"
-      ],
-      "accessibility": [
-        "Native button with aria-pressed and a required aria-label; with help tags registered it shows that label on hover and keyboard focus."
-      ],
-      "geometry": {
-        "margin": "none",
-        "border": "self",
-        "padding": "self"
-      },
-      "delivery": {
-        "browserImport": "@kerfjs/ui/icon-toggle-button",
-        "manualCssImport": "@kerfjs/ui/icon-toggle-button.css",
-        "sideEffects": [
-          "browser-condition-css"
-        ]
-      },
-      "wiring": [],
-      "publicClasses": [
-        "kui-icon-toggle-button",
-        "kui-icon-toggle-button__face"
-      ],
-      "publicTokens": [
-        "--kui-color-neutral-border-normal",
-        "--kui-color-neutral-fill-normal",
-        "--kui-color-neutral-on-quiet",
-        "--kui-color-surface",
-        "--kui-color-brand-on-quiet",
-        "--kui-shadow-s",
-        "--kui-focus-ring",
-        "--kui-layout-pill-radius",
-        "--kui-layout-rounded-radius",
-        "--kui-layout-highlight-inset"
-      ],
-      "rootElement": "button",
-      "links": {
-        "catalogRoute": "?component=icon-toggle-button",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }
@@ -7750,30 +7591,25 @@
       "category": "Actions",
       "kind": "component",
       "source": "webawesome",
-      "description": "Ecosystem action button; use Kerf Button or IconButton.",
+      "description": "Ecosystem action button; use Kerf Button.",
       "uses": [
         "wa-icon",
         "wa-spinner"
       ],
-      "purpose": "Ecosystem action button; use Kerf Button or IconButton.",
+      "purpose": "Ecosystem action button; use Kerf Button.",
       "customElement": "wa-button",
       "useWhen": [
         "Action control with semantic variants, appearances, loading, and icon support."
       ],
       "avoidWhen": [
-        "Do not use it in Kerf UI; use Button for a text or text-and-icon action and IconButton for an icon-only action."
+        "Do not use it in Kerf UI; use Button for a text, text-and-icon, or icon-only action."
       ],
       "recommendation": "avoid",
       "alternatives": [
         {
           "id": "button",
           "relationship": "prefer-kerf",
-          "when": "Use Button for a text or text-and-icon action and IconButton for an icon-only action."
-        },
-        {
-          "id": "icon-button",
-          "relationship": "prefer-kerf",
-          "when": "Use Button for a text or text-and-icon action and IconButton for an icon-only action."
+          "when": "Use Button for a text, text-and-icon, or icon-only action."
         }
       ],
       "geometry": {

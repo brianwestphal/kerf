@@ -312,7 +312,7 @@ Stage 2 of the Web Awesome independence work (code): Web Awesome is an optional 
 
 `@kerfjs/ui` `TextField` (stage 2 of the Web Awesome independence work) is a native input or textarea in one labeled box with hint and error text (its `aria-description`; an error sets `aria-invalid`), an optional leading icon, clear button, growing rows, and live count, matching the old `wa-input` / `wa-textarea` look; `wireTextFields` clears and counts, and the catalog no longer renders `wa-input` or `wa-textarea` outside the Web Awesome routes.
 
-`@kerfjs/ui` `Button` (stage 2 of the Web Awesome independence work) is a native button in a `tone` × `emphasis` × `size` with an optional icon, loading, link, and form type, matching the old `wa-button` look; `IconButton` is its icon-only square, and the catalog no longer renders `wa-button` outside the Web Awesome routes.
+`@kerfjs/ui` `Button` (stage 2 of the Web Awesome independence work) is a native button in a `tone` × `emphasis` × `size` with an optional icon, loading, link, and form type, matching the old `wa-button` look; an `icon` with `ariaLabel` makes its icon-only square, `pressed` makes it a toggle and `shape` a pill (KF-TQCJSS retired `IconButton` / `IconToggleButton` into it), and the catalog no longer renders `wa-button` outside the Web Awesome routes.
 
 `@kerfjs/ui` supports every Web Awesome 3.x from 3.14 (optional peer `^3.14.0`): stage 1 of the Web Awesome independence work retired every prototype patch, and CI tests the newest 3.x alongside the 3.14.0 floor.
 

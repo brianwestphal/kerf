@@ -81,7 +81,7 @@
     "action-button": {
       "preferred": "@kerfjs/ui:button",
       "avoid": ["@kerfjs/ui:wa-button"],
-      "rationale": "Render Button, a native button with Kerf tones and sizes; use IconButton for an icon-only action."
+      "rationale": "Render Button, a native button with Kerf tones and sizes, icon-only with ariaLabel, or a toggle with pressed."
     },
     "text-entry": {
       "preferred": "@kerfjs/ui:text-field",

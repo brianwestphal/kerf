@@ -134,6 +134,7 @@ import {
   adoptionReadout,
   adoptionTokens,
   bannerTone,
+  buttonToggleConversationOpen,
   checkboxTasks,
   choiceChipsColor,
   choiceChipsDialogColor,
@@ -158,7 +159,6 @@ import {
   grammarSearchModel,
   gridTileSelections,
   iconTileCurrent,
-  iconToggleConversationOpen,
   inspectorSection,
   itemTypes,
   menuActionCurrent,
@@ -928,9 +928,9 @@ const stopActions = delegateActions(app, 'click', {
   'toggle-edge-activity-message-demo': () => {
     edgeActivityMessage.value = !edgeActivityMessage.value;
   },
-  'toggle-icon-toggle-demo': () => {
-    iconToggleConversationOpen.value = !iconToggleConversationOpen.value;
-    actionLog.value = iconToggleConversationOpen.value
+  'toggle-button-demo': () => {
+    buttonToggleConversationOpen.value = !buttonToggleConversationOpen.value;
+    actionLog.value = buttonToggleConversationOpen.value
       ? 'Conversation shown'
       : 'Conversation hidden';
   },

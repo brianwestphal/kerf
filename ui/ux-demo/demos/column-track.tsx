@@ -13,7 +13,7 @@ const columns = [
   },
   { id: 'doing', title: 'In Progress', cards: ['Paged board snapping'] },
   { id: 'review', title: 'Review', cards: ['ColumnTrack demo', 'Docs pass'] },
-  { id: 'done', title: 'Done', cards: ['Ship IconButton'] },
+  { id: 'done', title: 'Done', cards: ['Ship Button toggles'] },
   { id: 'later', title: 'Later', cards: ['File drop zone'] },
 ];
 

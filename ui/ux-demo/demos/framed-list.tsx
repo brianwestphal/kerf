@@ -1,9 +1,10 @@
 import '@awesome.me/webawesome/dist/components/button/button.js';
 
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { FramedList, FramedListRow } from '@kerfjs/ui/framed-list';
-import { IconButton } from '@kerfjs/ui/icon-button';
 import { List } from '@kerfjs/ui/list';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 import { Pencil, RotateCcw } from 'lucide';
@@ -50,17 +51,15 @@ export function FramedListDemo() {
                 <Text variant="span" font="monospace" wrap="nowrap">
                   {shortcut.keys}
                 </Text>
-                <IconButton
-                  icon={Pencil}
-                  iconName="pencil"
-                  label={`Edit ${shortcut.name} Shortcut`}
+                <Button
+                  icon={<LucideIcon icon={Pencil} name="pencil" />}
+                  ariaLabel={`Edit ${shortcut.name} Shortcut`}
                   emphasis="plain"
                   action="log-edit-shortcut"
                 />
-                <IconButton
-                  icon={RotateCcw}
-                  iconName="rotate-ccw"
-                  label={`Reset ${shortcut.name} Shortcut`}
+                <Button
+                  icon={<LucideIcon icon={RotateCcw} name="rotate-ccw" />}
+                  ariaLabel={`Reset ${shortcut.name} Shortcut`}
                   emphasis="plain"
                   action="log-reset-shortcut"
                 />

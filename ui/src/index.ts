@@ -6,6 +6,7 @@ export {
   type ButtonOptions,
   type ButtonProps,
   type ButtonRootAttributes,
+  type ButtonShape,
   type ButtonSize,
   type ButtonTone,
   type ButtonType,
@@ -15,15 +16,6 @@ export {
   type FloatingToolbarPosition,
   type FloatingToolbarProps,
 } from './components/actions/floating-toolbar/floating-toolbar.js';
-export {
-  IconButton,
-  type IconButtonProps,
-} from './components/actions/icon-button/icon-button.js';
-export {
-  IconToggleButton,
-  type IconToggleButtonProps,
-  type IconToggleButtonShape,
-} from './components/actions/icon-toggle-button/icon-toggle-button.js';
 export {
   closePopupMenu,
   openPopupMenu,

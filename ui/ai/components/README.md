@@ -69,9 +69,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [RadioGroup](./radio-group.md) — Choose exactly one of a few options that should stay visible with room for a label and hint each, with native keyboard behavior and form participation.
 - [Switch](./switch.md) — Turn a setting on or off the moment it changes, such as live updates or a preference, without Web Awesome.
 - [PopupMenu](./popup-menu.md) — A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.
-- [IconButton](./icon-button.md) — Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.
 - [Button](./button.md) — Trigger an action from a dialog footer, a form, or content outside any Toolbar, with Kerf's button chrome and native button semantics.
-- [IconToggleButton](./icon-toggle-button.md) — Render an icon-only aria-pressed toggle in content or a pane footer, where a Toolbar does not belong, with the 44px contained geometry and raised pressed face of a single ToolbarControlGroup.
 - [SplitButton](./split-button.md) — Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.
 - [FilePicker](./file-picker.md) — Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.
 
@@ -88,7 +86,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 ## Web Awesome — Actions
 
-- [Button](./wa-button.md) (avoid) — Ecosystem action button; use Kerf Button or IconButton.
+- [Button](./wa-button.md) (avoid) — Ecosystem action button; use Kerf Button.
 - [Button Group](./wa-button-group.md) (avoid) — Ecosystem button group; use Kerf ToolbarControlGroup, SplitButton, or SegmentedControl.
 - [Copy Button](./wa-copy-button.md) — Copies a supplied value and announces success or failure.
 - [Dropdown](./wa-dropdown.md) (avoid) — Ecosystem action menu; use Kerf PopupMenu, or Select when choosing a value.

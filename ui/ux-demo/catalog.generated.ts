@@ -736,21 +736,6 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
-    "id": "icon-button",
-    "name": "IconButton",
-    "category": "Controls",
-    "kind": "component",
-    "source": "kerf",
-    "description": "Render an icon-only action as a square one form-control height on each side, so it matches an adjacent wa-input or Select, without ::part overrides.",
-    "uses": [
-      "button",
-      "lucide-icon"
-    ],
-    "demoSource": "ui/ux-demo/demos/icon-button.tsx",
-    "componentSource": "ui/src/components/actions/icon-button/icon-button.tsx",
-    "documentation": "ui/docs/component-selection.md"
-  },
-  {
     "id": "button",
     "name": "Button",
     "category": "Controls",
@@ -763,20 +748,6 @@ export const generatedKerfCatalog = [
     "demoSource": "ui/ux-demo/demos/button.tsx",
     "componentSource": "ui/src/components/actions/button/button.tsx",
     "designTemplate": "ui/docs/design/templates/button.svg",
-    "documentation": "ui/docs/component-selection.md"
-  },
-  {
-    "id": "icon-toggle-button",
-    "name": "IconToggleButton",
-    "category": "Controls",
-    "kind": "component",
-    "source": "kerf",
-    "description": "Render an icon-only aria-pressed toggle in content or a pane footer, where a Toolbar does not belong, with the 44px contained geometry and raised pressed face of a single ToolbarControlGroup.",
-    "uses": [
-      "lucide-icon"
-    ],
-    "demoSource": "ui/ux-demo/demos/icon-toggle-button.tsx",
-    "componentSource": "ui/src/components/actions/icon-toggle-button/icon-toggle-button.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -1166,7 +1137,7 @@ export const generatedWebAwesomeCatalog = [
     "category": "Actions",
     "kind": "component",
     "source": "webawesome",
-    "description": "Ecosystem action button; use Kerf Button or IconButton.",
+    "description": "Ecosystem action button; use Kerf Button.",
     "recommendation": "avoid",
     "uses": [
       "wa-icon",

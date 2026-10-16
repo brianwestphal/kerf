@@ -14,6 +14,8 @@ export type ButtonEmphasis = 'primary' | 'secondary' | 'plain';
 /** `default` is the 44px control height; `compact` is 33px with smaller text. */
 export type ButtonSize = 'default' | 'compact';
 
+/** Corner shape: the shared `rounded` control radius (default) or a full `pill`. */
+export type ButtonShape = 'rounded' | 'pill';
 /** What a form button does: `button` (default), `submit`, or `reset`. */
 export type ButtonType = 'button' | 'submit' | 'reset';
 
@@ -25,6 +27,7 @@ const BUTTON_PROTECTED = new Set([
   'data-size',
   'data-loading',
   'data-icon-only',
+  'data-shape',
 ]);
 
 /** Application `data-*` metadata; the Button's own markers stay protected. */
@@ -62,6 +65,14 @@ export interface ButtonOptions {
   tone?: ButtonTone;
   emphasis?: ButtonEmphasis;
   size?: ButtonSize;
+  /** Corner shape (default `rounded`). */
+  shape?: ButtonShape;
+  /**
+   * Make it a toggle: `aria-pressed` reports the state, and a pressed look is
+   * drawn on top of the tone and emphasis. The application owns the state and
+   * flips it in its `action` handler. A link (`href`) cannot be a toggle.
+   */
+  pressed?: boolean;
   /**
    * Busy: a spinner replaces the label (which still names it) and the button
    * reports `aria-busy`. Presses still reach it; the application decides
@@ -92,7 +103,8 @@ export interface ButtonOptions {
 /**
  * A standalone action button: a native `<button>` (or a link with `href`)
  * in one of three tones and three emphases, at the 44px control height or
- * compact, with a label or as an icon-only square. Inside a
+ * compact, with a label or as an icon-only square, rounded or pill-shaped,
+ * and optionally a `pressed` toggle. Inside a
  * `ToolbarControlGroup`, use a plain `<button>`, which the group styles; use
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
@@ -102,6 +114,8 @@ export function Button({
   tone = 'neutral',
   emphasis = 'primary',
   size = 'default',
+  shape = 'rounded',
+  pressed,
   icon,
   loading = false,
   disabled = false,
@@ -128,6 +142,7 @@ export function Button({
     'data-size': size,
     'data-loading': loading ? '' : undefined,
     'data-icon-only': children === undefined ? '' : undefined,
+    'data-shape': shape === 'pill' ? 'pill' : undefined,
     'data-action': action,
     'aria-label': ariaLabel,
     'aria-busy': loading ? 'true' : undefined,
@@ -151,7 +166,9 @@ export function Button({
     </>
   );
   // A disabled link has no destination and is announced as disabled.
-  if (href !== undefined)
+  if (href !== undefined) {
+    if (pressed !== undefined)
+      throw new TypeError('A link Button cannot be a toggle (pressed).');
     return (
       <a
         {...shared}
@@ -163,6 +180,7 @@ export function Button({
         {content}
       </a>
     );
+  }
   return (
     <button
       {...shared}
@@ -171,6 +189,7 @@ export function Button({
       value={value}
       form={form}
       disabled={disabled}
+      aria-pressed={pressed === undefined ? undefined : String(pressed)}
     >
       {content}
     </button>

@@ -17,13 +17,12 @@ Trigger an action from a dialog footer, a form, or content outside any Toolbar, 
 **Not when:**
 
 - Do not use inside a ToolbarControlGroup; give the group plain \<button> controls, which it styles.
-- Do not use for an icon-only action; use IconButton (or IconToggleButton for an on/off toggle).
+- Do not use for an icon-only action; use an icon-only Button (with pressed for an on/off toggle).
 - Do not use for a menu trigger; use PopupMenu.
 
 **Alternatives:**
 
 - [Button](./wa-button.md) (prefer-over)
-- [IconButton](./icon-button.md) (nearest) — Use IconButton for an icon-only action.
 - [ToolbarControlGroup](./toolbar-control-group.md) (nearest) — Inside a Toolbar, compose plain buttons in a ToolbarControlGroup.
 
 ## Imports
@@ -41,7 +40,10 @@ Exact prop names and types: [`@kerfjs/ui/button`](../public-api-signatures-v1.md
 - neutral, brand, or danger tone
 - primary, secondary, or plain emphasis
 - default or compact size
+- rounded (default) or pill shape
 - leading icon
+- icon-only square (icon and ariaLabel, no label)
+- pressed toggle (aria-pressed) on any tone and emphasis
 - loading
 - disabled
 - link (href)
@@ -67,6 +69,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 
 - A native \<button> (type="button" unless set) or, with href, an \<a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring.
 - Loading shows a spinner in place of the label, which still names the button, and sets aria-busy="true". A disabled link drops its href and reports aria-disabled="true".
+- With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus.
 
 ## Styling boundary
 
@@ -82,6 +85,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LoadingSpinner](./loading-spinner.md), [Button](./wa-button.md), [IconButton](./icon-button.md), [ToolbarControlGroup](./toolbar-control-group.md).
+- Components: [LoadingSpinner](./loading-spinner.md), [Button](./wa-button.md), [ToolbarControlGroup](./toolbar-control-group.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=button`.

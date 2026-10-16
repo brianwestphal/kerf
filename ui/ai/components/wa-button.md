@@ -6,18 +6,17 @@
 
 ## When to use
 
-Ecosystem action button; use Kerf Button or IconButton.
+Ecosystem action button; use Kerf Button.
 
 - Action control with semantic variants, appearances, loading, and icon support.
 
 **Not when:**
 
-- Do not use it in Kerf UI; use Button for a text or text-and-icon action and IconButton for an icon-only action.
+- Do not use it in Kerf UI; use Button for a text, text-and-icon, or icon-only action.
 
 **Alternatives:**
 
-- [Button](./button.md) (prefer-kerf) — Use Button for a text or text-and-icon action and IconButton for an icon-only action.
-- [IconButton](./icon-button.md) (prefer-kerf) — Use Button for a text or text-and-icon action and IconButton for an icon-only action.
+- [Button](./button.md) (prefer-kerf) — Use Button for a text, text-and-icon, or icon-only action.
 
 ## Imports
 
@@ -57,6 +56,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Icon](./wa-icon.md), [Spinner](./wa-spinner.md), [Button](./button.md), [IconButton](./icon-button.md).
+- Components: [Icon](./wa-icon.md), [Spinner](./wa-spinner.md), [Button](./button.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage).
 - UX catalog route: `?component=wa-button`.

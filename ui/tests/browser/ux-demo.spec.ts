@@ -7694,7 +7694,7 @@ test('communicates preferred Kerf patterns on ecosystem alternatives', async ({
       'wa-icon',
       'Ecosystem icon renderer; use Kerf LucideIcon in application UI.',
     ],
-    ['wa-button', 'Ecosystem action button; use Kerf Button or IconButton.'],
+    ['wa-button', 'Ecosystem action button; use Kerf Button.'],
     ['wa-input', 'Ecosystem text input; use Kerf TextField.'],
     [
       'wa-zoomable-frame',

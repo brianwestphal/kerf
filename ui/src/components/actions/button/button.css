@@ -75,6 +75,81 @@
   flex-shrink: 0;
   padding: 0;
 }
+/* A pill: fully round ends (a circle when icon-only). */
+.kui-button[data-shape="pill"] {
+  border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
+}
+/* A pressed neutral toggle takes the brand accent, as a pressed toolbar group
+   control and a selected chip do; brand and danger keep their own tone. */
+.kui-button[aria-pressed="true"]:not(
+    [data-tone="brand"],
+    [data-tone="danger"]
+  ) {
+  --_kui-button-fill: var(--kui-color-brand-fill-loud);
+  --_kui-button-text: var(--kui-color-brand-on-loud);
+  --_kui-button-quiet: var(--kui-color-brand-fill-quiet);
+  --_kui-button-on-quiet: var(--kui-color-brand-on-quiet);
+  --_kui-button-outline: var(--kui-color-brand-border-loud);
+}
+/* A pressed toggle draws on top of its tone and emphasis. Secondary and plain
+   take the tone's quiet fill with a doubled tone outline; primary keeps its
+   loud fill (darkened for brand and danger) with an inset ring. The second pixel of outline marks
+   the state without relying on hue. */
+.kui-button[aria-pressed="true"]:is(
+    [data-emphasis="secondary"],
+    [data-emphasis="plain"]
+  ) {
+  --_kui-button-fill: var(--_kui-button-quiet);
+  --_kui-button-text: var(--_kui-button-on-quiet);
+  --_kui-button-border: var(--_kui-button-outline);
+  box-shadow: inset 0 0 0 1px var(--_kui-button-outline);
+}
+.kui-button[aria-pressed="true"]:not(
+    [data-emphasis="secondary"],
+    [data-emphasis="plain"]
+  ) {
+  box-shadow: inset 0 0 0 2px
+    color-mix(in oklab, var(--_kui-button-text) 45%, transparent);
+}
+.kui-button[data-tone="brand"][aria-pressed="true"]:not(
+    [data-emphasis="secondary"],
+    [data-emphasis="plain"]
+  ) {
+  --_kui-button-fill: color-mix(
+    in oklab,
+    var(--kui-color-brand-fill-loud),
+    light-dark(#000, #fff) 18%
+  );
+}
+.kui-button[data-tone="danger"][aria-pressed="true"]:not(
+    [data-emphasis="secondary"],
+    [data-emphasis="plain"]
+  ) {
+  --_kui-button-fill: color-mix(
+    in oklab,
+    var(--kui-color-danger-fill-loud),
+    light-dark(#000, #fff) 18%
+  );
+}
+@media (hover: hover) {
+  .kui-button[aria-pressed="true"]:is(
+      [data-emphasis="secondary"],
+      [data-emphasis="plain"]
+    ):not(:disabled, [aria-disabled="true"], [data-loading]):hover {
+    background-color: color-mix(
+      in oklab,
+      var(--_kui-button-quiet),
+      var(--_kui-button-outline) 12%
+    );
+  }
+}
+@media (forced-colors: active) {
+  .kui-button[aria-pressed="true"] {
+    border-color: Highlight;
+    color: HighlightText;
+    background: Highlight;
+  }
+}
 /* In a Toolbar's trailing zone, a standalone Button keeps the first control
    band's axis, as a ToolbarControlGroup does, so taller siblings never move
    it. `--_kui-toolbar-band` is the context the Toolbar provides. */

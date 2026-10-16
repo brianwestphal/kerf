@@ -85,8 +85,6 @@ const entries = [
   'switch',
   'edge-activity-indicator',
   'button',
-  'icon-button',
-  'icon-toggle-button',
   'split-button',
   'framed-list',
   'summary-row',

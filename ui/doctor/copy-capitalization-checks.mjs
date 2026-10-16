@@ -157,8 +157,8 @@ const titleStyleProps = new Map([
   ['StateBanner', { props: ['title'] }],
   ['SplitButton', { props: ['label', 'optionsLabel'] }],
   ['Combobox', { props: ['label'] }],
-  ['IconButton', { props: ['label'] }],
-  ['IconToggleButton', { props: ['label'] }],
+  // An icon-only Button is named by ariaLabel; its visible text is read below.
+  ['Button', { props: ['ariaLabel'] }],
   ['SearchField', { props: ['clearLabel'] }],
   // NavStack view titles and backText, plus the stack's region name and each
   // view's toolbar and pane region names.

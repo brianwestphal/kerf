@@ -676,11 +676,11 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   fill with a native primary button and an options trigger (`aria-expanded`,
   `aria-haspopup`); `tone`, `fill`, `busy`, and `disabled` are props. Never
   build one from `wa-button-group` or app CSS on native buttons.
-- **Use `IconToggleButton` for an icon toggle outside a Toolbar.** In content or a
-  pane footer, `IconToggleButton({ icon, iconName, label, pressed, action })`
-  gives a native `aria-pressed` button the single contained toolbar group's
-  geometry; never wrap a `ToolbarControlGroup` outside a toolbar or restyle a
-  button to match it.
+- **Make any `Button` a toggle with `pressed`.** In content or a pane footer,
+  `<Button icon={…} ariaLabel="Show Conversation" emphasis="plain" pressed={open} action="toggle-chat" />`
+  renders a native `aria-pressed` button whose pressed look draws on top of
+  its tone and emphasis; the app flips the state. Never wrap a
+  `ToolbarControlGroup` outside a toolbar or restyle a button to fake it.
 - **Let an icon-state toggle skip selected chrome.** When a pressed toggle's
   glyph already shows its state (an empty or filled star), set
   `data-selected-chrome="none"` on that button, or `selectedChrome="none"` on
@@ -705,12 +705,13 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   that keeps the first and last rows' focus rings inside the clip, and the
   typed `CssLength` bounds need no flex-column ancestor. Never wrap a List in
   an app div with `max-height`, `overflow`, and a border.
-- **Use `Button` for a standalone action, `IconButton` for an icon-only one.**
+- **Use `Button` for every standalone action, icon-only included.**
   `Button` (`@kerfjs/ui/button`) is a native button in a `tone` (`neutral`,
   `brand`, `danger`) and an `emphasis` (`primary`, `secondary`, `plain`), at
   the 44px control height or `size="compact"`, with an optional `icon`,
-  `loading`, `href`, and form `type`. `IconButton({ icon, iconName, label })`
-  (label required) is its icon-only square. Inside a `ToolbarControlGroup`
+  `loading`, `href`, form `type`, `shape` (`rounded` or `pill`), and `pressed`
+  for a toggle. With an `icon` and `ariaLabel` but no label it is an icon-only
+  square (a circle as a pill). Inside a `ToolbarControlGroup`
   keep a native `button`; the group owns its geometry.
 - **Paint a strip's surface with `List surface`.** `surface="base"` or
   `"raised"` fills a List and its insets with a solid surface (a banner strip

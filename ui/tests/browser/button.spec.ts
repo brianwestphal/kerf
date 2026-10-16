@@ -128,3 +128,42 @@ test('Buttons are 44px tall, or 33px compact, at wide and narrow widths', async 
     expect(overflow).toBe(false);
   }
 });
+
+test('a pressed Button toggles, stays legible, and an icon-only one shows its help tag', async ({
+  page,
+}) => {
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('/?component=button');
+    const demo = page.locator('[data-demo="button"]');
+    const icon = demo.getByRole('button', { name: 'Show Conversation' });
+    const labeled = demo.getByRole('button', {
+      name: 'Conversation',
+      exact: true,
+    });
+    await expect(icon).toHaveAttribute('aria-pressed', 'false');
+    await icon.click();
+    await expect(icon).toHaveAttribute('aria-pressed', 'true');
+    await expect(labeled).toHaveAttribute('aria-pressed', 'true');
+    // The pressed label keeps its quiet-tone text, never the loud on-fill
+    // color over a pale fill.
+    const colors = await labeled.evaluate((element) => {
+      const style = globalThis.getComputedStyle(element);
+      return { text: style.color, fill: style.backgroundColor };
+    });
+    expect(colors.text).not.toBe(colors.fill);
+    expect(colors.text).not.toBe('rgb(255, 255, 255)');
+    expect(
+      await demo
+        .getByRole('button', { name: 'Inspector (Pill, Pressed)' })
+        .evaluate(
+          (element) => globalThis.getComputedStyle(element).borderTopLeftRadius,
+        ),
+    ).not.toBe('12px');
+  }
+  const refresh = page
+    .locator('[data-demo="button"]')
+    .getByRole('button', { name: 'Refresh', exact: true });
+  await refresh.hover();
+  await expect(page.locator('.kui-help-tag')).toHaveText('Refresh');
+});
