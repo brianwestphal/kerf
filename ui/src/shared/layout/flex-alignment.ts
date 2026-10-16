@@ -30,9 +30,14 @@ export type VerticalAlignment =
 
 export type ListVerticalAlignment = Exclude<VerticalAlignment, 'baseline'>;
 
-export type CanonicalHorizontalAlignment = 'left' | 'center' | 'right' | 'full';
+/**
+ * `center`/`middle` gather the children in the middle with their gap;
+ * `around` (from `space-around`) spreads equal space around each child.
+ */
+export type CanonicalHorizontalAlignment =
+  'left' | 'center' | 'around' | 'right' | 'full';
 export type CanonicalVerticalAlignment =
-  'top' | 'middle' | 'bottom' | 'full' | 'baseline';
+  'top' | 'middle' | 'around' | 'bottom' | 'full' | 'baseline';
 
 export function horizontalAlignment(
   value: HorizontalAlignment,
@@ -44,8 +49,9 @@ export function horizontalAlignment(
       return 'left';
     case 'center':
     case 'c':
-    case 'space-around':
       return 'center';
+    case 'space-around':
+      return 'around';
     case 'right':
     case 'r':
     case 'flex-end':
@@ -68,8 +74,9 @@ export function verticalAlignment(
     case 'middle':
     case 'm':
     case 'c':
-    case 'space-around':
       return 'middle';
+    case 'space-around':
+      return 'around';
     case 'bottom':
     case 'b':
     case 'flex-end':

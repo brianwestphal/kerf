@@ -795,10 +795,13 @@ defaults to `hAlign="left"`, `vAlign="full"`, `gap="xs"`, and no wrapping;
 Both components accept the same physical-axis vocabulary, with baseline
 alignment additionally available on the horizontal `Row` cross axis:
 
-| Axis       | Values and aliases                                                                                                                                  | Flex behavior                                                             |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Horizontal | `left` / `l` / `flex-start`; `center` / `c` / `space-around`; `right` / `r` / `flex-end`; `full` / `f` / `space-between`                            | Distributes a Row's children; aligns a List's children across its width.  |
-| Vertical   | `top` / `t` / `flex-start`; `middle` / `m` / `c` / `space-around`; `bottom` / `b` / `flex-end`; `full` / `f` / `space-between`; Row-only `baseline` | Aligns a Row's children across its height; distributes a List's children. |
+| Axis       | Values and aliases                                                                                                                                 | Flex behavior                                                             |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Horizontal | `left` / `l` / `flex-start`; `center` / `c`; `space-around`; `right` / `r` / `flex-end`; `full` / `f` / `space-between`                            | Distributes a Row's children; aligns a List's children across its width.  |
+| Vertical   | `top` / `t` / `flex-start`; `middle` / `m` / `c`; `space-around`; `bottom` / `b` / `flex-end`; `full` / `f` / `space-between`; Row-only `baseline` | Aligns a Row's children across its height; distributes a List's children. |
+
+`center` and `middle` gather the children in the middle and keep their `gap`;
+`space-around` spreads equal space around each child instead.
 
 Cross-axis `space-around` and `space-between` are not valid `align-items`
 values. Kerf therefore maps `middle` to centered items and `full` to stretched

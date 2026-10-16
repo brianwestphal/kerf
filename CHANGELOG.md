@@ -114,6 +114,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **`List` `vAlign="middle"` and `Row` `hAlign="center"` gather their children in the middle** with their `gap`, instead of spreading them with `space-around`. `space-around` is now its own explicit value (`data-*-align="around"`), and `center`/`middle` on the cross axis center wrapped lines (`KF-3ZJ9PF`).
 - **A SearchField no longer shows its placeholder over typed text after an unrelated re-render.** Re-rendering the host for another reason, such as an error message beside the field, reset the field's placeholder state from the app's query while the editor still held typed text. `wireSearchFields` now re-derives it from the live editor (`KF-PZ5J93`).
 - **`<details name>` typechecks in kerf JSX.** The intrinsic `details` element now accepts `name`, the native exclusive-accordion group, so `<details name="faq">` no longer fails to typecheck (`KF-KFH2VT`).
 - **A `SplitView` column's only `Pane` now fills the column in `@kerfjs/ui`.** It used to take only its content height, so the Pane's footer sat right below its content instead of at the column's end (`KF-P9VSX1`).

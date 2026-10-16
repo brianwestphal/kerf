@@ -60,7 +60,8 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
 
   const horizontal = [
     ['Left', 'left', 'flex-start'],
-    ['Center', 'center', 'space-around'],
+    ['Center', 'center', 'center'],
+    ['Space Around', 'around', 'space-around'],
     ['Right', 'right', 'flex-end'],
     ['Full', 'full', 'space-between'],
   ] as const;
@@ -78,7 +79,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
 
   const vertical = [
     ['Top', 'top', 'flex-start', 'flex-start'],
-    ['Middle', 'middle', 'center', 'space-around'],
+    ['Middle', 'middle', 'center', 'center'],
     ['Bottom', 'bottom', 'flex-end', 'flex-end'],
     ['Full', 'full', 'stretch', 'space-between'],
     ['Baseline', 'baseline', 'baseline', 'baseline'],

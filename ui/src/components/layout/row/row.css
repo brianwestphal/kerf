@@ -75,7 +75,13 @@
   flex-wrap: wrap;
 }
 
+/* `center` gathers the children in the middle, keeping their gap;
+   `space-around` (`around`) spreads them. */
 .kui-row[data-h-align="center"] {
+  justify-content: center;
+}
+
+.kui-row[data-h-align="around"] {
   justify-content: space-around;
 }
 
@@ -93,6 +99,11 @@
 }
 
 .kui-row[data-v-align="middle"] {
+  align-items: center;
+  align-content: center;
+}
+
+.kui-row[data-v-align="around"] {
   align-items: center;
   align-content: space-around;
 }

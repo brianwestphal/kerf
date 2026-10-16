@@ -14,7 +14,12 @@ const horizontal: readonly [string, HorizontalAlignment, string][] = [
   [
     'Center',
     'center',
-    'Center distributes the free space around every child (space-around).',
+    'Center gathers the group in the middle, keeping its gap.',
+  ],
+  [
+    'Space Around',
+    'space-around',
+    'Space around distributes the free space around every child.',
   ],
   ['Right', 'right', 'Right pins the group to the trailing edge.'],
   [
@@ -61,7 +66,7 @@ export function RowDemo() {
         >
           <DemoFrameShell>
             <Row hAlign={alignment} vAlign="middle">
-              {chips(label)}
+              {chips(label.split(' ').at(-1)!)}
             </Row>
           </DemoFrameShell>
         </CatalogExample>

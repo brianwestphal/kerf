@@ -129,6 +129,11 @@
 
 .kui-list[data-h-align="center"] {
   align-items: center;
+  align-content: center;
+}
+
+.kui-list[data-h-align="around"] {
+  align-items: center;
   align-content: space-around;
 }
 
@@ -137,7 +142,13 @@
   align-content: flex-end;
 }
 
+/* `middle` gathers the children in the middle, keeping their gap;
+   `space-around` (`around`) spreads them. */
 .kui-list[data-v-align="middle"] {
+  justify-content: center;
+}
+
+.kui-list[data-v-align="around"] {
   justify-content: space-around;
 }
 
