@@ -7648,7 +7648,8 @@
         "dragging",
         "disabled",
         "accept filter",
-        "multiple or single"
+        "multiple or single",
+        "dropScope: a selector for an enclosing panel that also takes drops, highlighting the zone while files are over any part of it"
       ],
       "accessibility": [
         "Each control is a label around a real file input that receives keyboard focus; the visible control shows the focus ring. Give the input an accessibleLabel when the visible copy is short."

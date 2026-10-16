@@ -6555,6 +6555,13 @@ interface FileDropZoneProps extends FileInputProps {
     icon?: SafeHtml;
     /** Accessible name of the file input when it should say more than `title`. */
     accessibleLabel?: string;
+    /**
+     * A selector for an enclosing element (the zone's ancestor) that also
+     * takes drops, such as an attachments panel: while files are dragged over
+     * any part of it the zone is highlighted, and files dropped there are
+     * reported for this zone (`via: 'drop'`).
+     */
+    dropScope?: string;
 }
 /**
  * A compact, link-toned trigger that opens the native file chooser: a label

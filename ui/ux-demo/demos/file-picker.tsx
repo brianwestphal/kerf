@@ -15,10 +15,10 @@ export function FilePickerDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'file-picker' }}>
       <CatalogExample
         label="Browse Trigger and Drop Zone"
-        note="Choose files with Add or by clicking the zone, or drop files on the zone; wireFilePickers reports both and highlights the zone while dragging."
+        note="Choose files with Add or by clicking the zone, or drop files anywhere on the attachments panel: the zone's dropScope names the panel, so wireFilePickers highlights the zone while files are over any part of it and reports drops there for the zone."
         viewport={{ width: 'medium' }}
       >
-        <List gap="xs">
+        <List gap="xs" rootAttributes={{ 'data-demo-attachments-panel': '' }}>
           <Row
             hAlign="space-between"
             vAlign="middle"
@@ -49,6 +49,7 @@ export function FilePickerDemo() {
             accept="image/*,.pdf"
             multiple
             pickerId="demo-drop"
+            dropScope="[data-demo-attachments-panel]"
           />
         </List>
       </CatalogExample>

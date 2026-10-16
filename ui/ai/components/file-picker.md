@@ -40,6 +40,7 @@ Exact prop names and types: [`@kerfjs/ui/file-picker`](../public-api-signatures-
 - disabled
 - accept filter
 - multiple or single
+- dropScope: a selector for an enclosing panel that also takes drops, highlighting the zone while files are over any part of it
 
 ## Composition
 

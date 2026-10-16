@@ -31,6 +31,13 @@ export interface FileDropZoneProps extends FileInputProps {
   icon?: SafeHtml;
   /** Accessible name of the file input when it should say more than `title`. */
   accessibleLabel?: string;
+  /**
+   * A selector for an enclosing element (the zone's ancestor) that also
+   * takes drops, such as an attachments panel: while files are dragged over
+   * any part of it the zone is highlighted, and files dropped there are
+   * reported for this zone (`via: 'drop'`).
+   */
+  dropScope?: string;
 }
 
 function fileInput(props: FileInputProps, label: string | undefined) {
@@ -94,12 +101,14 @@ export function FileDropZone(props: FileDropZoneProps) {
     accessibleLabel,
     pickerId,
     disabled,
+    dropScope,
     className = '',
   } = props;
   return (
     <label
       class={`kui-file-picker ${className}`.trim()}
       data-component="file-drop-zone"
+      data-drop-scope={dropScope}
       data-presentation="drop-zone"
       data-file-picker-id={pickerId}
       data-disabled={disabled ? 'true' : undefined}

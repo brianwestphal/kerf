@@ -53,3 +53,50 @@ test('FilePicker reports chosen and dropped files and shows focus', async ({
   );
   expect(outline).not.toBe('none');
 });
+
+test('a scoped FileDropZone lights up and takes drops anywhere on its panel', async ({
+  page,
+}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=file-picker');
+    const demo = page.locator('[data-demo="file-picker"]');
+    const zone = demo.locator('[data-component="file-drop-zone"]').first();
+    const heading = demo.getByRole('heading', { name: 'Attachments' });
+    const drag = (type: string, related?: string) =>
+      heading.evaluate(
+        (node, [eventType, outside]) => {
+          const transfer = new DataTransfer();
+          transfer.items.add(
+            new File(['x'], 'panel.png', { type: 'image/png' }),
+          );
+          const event = new DragEvent(eventType!, {
+            bubbles: true,
+            cancelable: true,
+            dataTransfer: transfer,
+            relatedTarget: outside ? document.body : null,
+          });
+          node.dispatchEvent(event);
+          return event.defaultPrevented;
+        },
+        [type, related],
+      );
+    const resting = await zone.evaluate(
+      (node) => globalThis.getComputedStyle(node).borderColor,
+    );
+    expect(await drag('dragover')).toBe(true);
+    await expect(zone).toHaveAttribute('data-dragging', 'true');
+    // The highlight is visible, not just an attribute.
+    expect(
+      await zone.evaluate(
+        (node) => globalThis.getComputedStyle(node).borderColor,
+      ),
+    ).not.toBe(resting);
+    await drag('dragleave', 'outside');
+    await expect(zone).not.toHaveAttribute('data-dragging');
+    await drag('dragover');
+    await drag('drop');
+    await expect(zone).not.toHaveAttribute('data-dragging');
+    await expect(demo).toContainText('panel.png');
+  }
+});

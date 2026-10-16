@@ -183,6 +183,57 @@ describe('wireFilePickers', () => {
     stop();
   });
 
+  it('highlights a scoped zone and takes drops anywhere in its enclosing element', () => {
+    const root = document.createElement('div');
+    root.innerHTML = `<section class="panel"><p class="row">Row</p>${String(
+      FileDropZone({
+        title: 'Drop',
+        pickerId: 'attachments',
+        multiple: true,
+        dropScope: '.panel',
+      }),
+    )}</section><section class="off"><p class="off-row">Off</p>${String(
+      FileDropZone({ title: 'Off', disabled: true, dropScope: '.off' }),
+    )}</section><section class="lost">${String(
+      FileDropZone({ title: 'Lost', dropScope: '.nowhere' }),
+    )}</section><p class="outside">Outside</p>`;
+    document.body.append(root);
+    const zone = root.querySelector<HTMLElement>('.panel [data-component]')!;
+    expect(zone.dataset.dropScope).toBe('.panel');
+    const row = root.querySelector('.row')!;
+    const onFiles = vi.fn();
+    const stop = wireFilePickers(root, { onFiles });
+    // Over the panel, outside the zone itself, the zone lights up.
+    const over = dragEvent('dragover');
+    row.dispatchEvent(over);
+    expect(over.defaultPrevented).toBe(true);
+    expect(zone.dataset.dragging).toBe('true');
+    // Moving from the panel into the zone keeps it; leaving the panel clears it.
+    const intoZone = dragEvent('dragleave');
+    Object.defineProperty(intoZone, 'relatedTarget', { value: zone });
+    row.dispatchEvent(intoZone);
+    expect(zone.dataset.dragging).toBe('true');
+    zone.dispatchEvent(dragEvent('dragleave'));
+    expect(zone.dataset.dragging).toBeUndefined();
+    // A drop on the panel is reported for the zone.
+    row.dispatchEvent(dragEvent('drop', [file('a.txt', 'text/plain')]));
+    expect(onFiles).toHaveBeenCalledWith(
+      expect.objectContaining({ picker: zone, id: 'attachments', via: 'drop' }),
+    );
+    // A disabled scoped zone, an unmatched scope, and the outside take nothing.
+    const offOver = dragEvent('dragover');
+    root.querySelector('.off-row')!.dispatchEvent(offOver);
+    expect(offOver.defaultPrevented).toBe(false);
+    const outside = dragEvent('dragover');
+    root.querySelector('.outside')!.dispatchEvent(outside);
+    expect(outside.defaultPrevented).toBe(false);
+    const lost = root.querySelector<HTMLElement>('.lost [data-component]')!;
+    lost.dispatchEvent(dragEvent('dragover'));
+    expect(lost.dataset.dragging).toBe('true');
+    stop();
+    root.remove();
+  });
+
   it('keeps every accepted file for a multiple zone and works on a document root', () => {
     document.body.innerHTML = String(
       FileDropZone({ title: 'Drop', multiple: true }),

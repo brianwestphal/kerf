@@ -44,8 +44,9 @@ function inputOf(picker: HTMLElement): HTMLInputElement | null {
 
 /**
  * Report files chosen through any `FilePickerTrigger` or `FileDropZone` below
- * root, or dropped on a `FileDropZone`, and mark a zone `data-dragging` while
- * files are dragged over it. Dropped files are filtered by the input's
+ * root, or dropped on a `FileDropZone` (or anywhere in the enclosing element
+ * its `dropScope` names), and mark a zone `data-dragging` while files are
+ * dragged over it or its scope. Dropped files are filtered by the input's
  * `accept` (and to one when it is not `multiple`); a disabled picker ignores
  * drops. The input is reset after each report, so choosing the same file again
  * reports again. Dispose with the owning application.
@@ -71,34 +72,53 @@ export function wireFilePickers(
     report(picker, [...input.files!], 'browse');
     input.value = '';
   };
-  const zoneOf = (event: Event): HTMLElement | null => {
-    const zone =
-      event.target instanceof Element
-        ? event.target.closest<HTMLElement>(DROP_ZONE)
-        : null;
-    return zone && zone.dataset.disabled !== 'true' ? zone : null;
+  // The zone a drag event targets, and the area that counts as over it: the
+  // zone itself, or the enclosing element its `dropScope` names.
+  const zoneOf = (
+    event: Event,
+  ): { zone: HTMLElement; area: HTMLElement } | null => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return null;
+    const direct = target.closest<HTMLElement>(DROP_ZONE);
+    if (direct)
+      return direct.dataset.disabled === 'true'
+        ? null
+        : { zone: direct, area: areaOf(direct) };
+    for (const zone of root.querySelectorAll<HTMLElement>(
+      `${DROP_ZONE}[data-drop-scope]`,
+    )) {
+      const area = areaOf(zone);
+      if (area !== zone && area.contains(target))
+        return zone.dataset.disabled === 'true' ? null : { zone, area };
+    }
+    return null;
+  };
+  const areaOf = (zone: HTMLElement): HTMLElement => {
+    const scope = zone.dataset.dropScope;
+    return (scope && zone.parentElement?.closest<HTMLElement>(scope)) || zone;
   };
   const carriesFiles = (event: DragEvent) =>
     [...(event.dataTransfer?.types ?? [])].includes('Files');
   const onDragOver = (event: Event) => {
     const drag = event as DragEvent;
-    const zone = zoneOf(drag);
-    if (!zone || !carriesFiles(drag)) return;
+    const over = zoneOf(drag);
+    if (!over || !carriesFiles(drag)) return;
     drag.preventDefault();
     // carriesFiles guarantees a DataTransfer.
     drag.dataTransfer!.dropEffect = 'copy';
-    zone.dataset.dragging = 'true';
+    over.zone.dataset.dragging = 'true';
   };
   const onDragLeave = (event: Event) => {
-    const zone = zoneOf(event);
+    const over = zoneOf(event);
     const related = (event as DragEvent).relatedTarget;
-    if (zone && !(related instanceof Node && zone.contains(related)))
-      delete zone.dataset.dragging;
+    if (over && !(related instanceof Node && over.area.contains(related)))
+      delete over.zone.dataset.dragging;
   };
   const onDrop = (event: Event) => {
     const drag = event as DragEvent;
-    const zone = zoneOf(drag);
-    if (!zone) return;
+    const over = zoneOf(drag);
+    if (!over) return;
+    const { zone } = over;
     drag.preventDefault();
     delete zone.dataset.dragging;
     const input = inputOf(zone);
