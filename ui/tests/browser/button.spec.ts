@@ -166,6 +166,12 @@ test('a pressed Button toggles, stays legible, and an icon-only one shows its he
     .getByRole('button', { name: 'Refresh', exact: true });
   await refresh.hover();
   await expect(page.locator('.kui-help-tag')).toHaveText('Refresh');
+  // A disabled toggle (the old IconToggleButton) shows the not-allowed cursor.
+  await expect(
+    page
+      .locator('[data-demo="button"]')
+      .getByRole('button', { name: 'Inspector (Disabled)' }),
+  ).toHaveCSS('cursor', 'not-allowed');
   // A title replaces the help tag with native hover text.
   const remove = page.locator(
     '[data-demo="button"] [title="Delete the Selected Draft"]',
