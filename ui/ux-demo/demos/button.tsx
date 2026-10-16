@@ -94,7 +94,7 @@ export function ButtonDemo() {
       </CatalogExample>
       <CatalogExample
         label="Icon-Only"
-        note="With no label, a Button is a square one control height on each side, named by ariaLabel. Beside a field, it lines up with the field below its label."
+        note="With no label, a Button is a square one control height on each side, named by ariaLabel; its help tag repeats that name, and a title (Delete) gives longer native hover text instead. Beside a field, it lines up with the field below its label."
         viewport={{ width: 'medium' }}
       >
         <ListInsetControl>
@@ -122,6 +122,7 @@ export function ButtonDemo() {
           <Button
             icon={<LucideIcon icon={Trash2} name="trash-2" />}
             ariaLabel="Delete"
+            title="Delete the Selected Draft"
             tone="danger"
             emphasis="secondary"
             action="log-delete"

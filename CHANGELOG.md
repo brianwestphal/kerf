@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`Button` `title`.** A Button takes native hover text that says more than its name ("Delete the Selected Draft" on an icon-only Delete). An icon-only Button already shows its `ariaLabel` as a help tag; a `title` replaces that tag (`KF-8MYB8B`).
 - **`WorkbenchDialog` in `@kerfjs/ui`, the modal workbench dialog type.** `@kerfjs/ui/workbench-dialog` renders a header-less modal around a `Workbench`. The work area's toolbar carries the dialog's title, actions, and close control; the side rails keep their own toolbars and run the dialog's full height. On compact devices the dialog fills the screen and its rails become overlays over the work area, shown by their toolbar toggles; with `wireWorkbench`, Escape closes an open rail before the dialog (`KF-Q9ERQ6`).
   - `WorkbenchMainToolbar` gains `end`: groups after a hidden right rail's relocated toggle, so a dialog's close control stays outermost.
 - **`ColorField` in `@kerfjs/ui`.** `@kerfjs/ui/color-field` puts a color in a form or inspector: a label above a trigger that shows the color as a swatch (over a checkerboard) and its hex value, with a hint or error, compact size, and a hidden input under `name`.

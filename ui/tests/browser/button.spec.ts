@@ -166,4 +166,15 @@ test('a pressed Button toggles, stays legible, and an icon-only one shows its he
     .getByRole('button', { name: 'Refresh', exact: true });
   await refresh.hover();
   await expect(page.locator('.kui-help-tag')).toHaveText('Refresh');
+  // A title replaces the help tag with native hover text.
+  const remove = page.locator(
+    '[data-demo="button"] [title="Delete the Selected Draft"]',
+  );
+  await expect(remove).toHaveAccessibleName('Delete');
+  await expect(remove).toHaveAttribute('title', 'Delete the Selected Draft');
+  await remove.hover();
+  await page.waitForTimeout(800);
+  await expect(
+    page.locator('.kui-help-tag', { hasText: 'Delete' }),
+  ).toHaveCount(0);
 });

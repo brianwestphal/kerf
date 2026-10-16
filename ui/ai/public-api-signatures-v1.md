@@ -6357,6 +6357,13 @@ interface ButtonOptions {
     target?: '_self' | '_blank' | '_parent' | '_top';
     /** Delegated `data-action` the application handles. */
     action?: string;
+    /**
+     * Native hover text that says more than the name, such as "More Actions
+     * for report.pdf". An icon-only Button already gets a help tag with its
+     * `ariaLabel` (with `@kerfjs/ui/help-tags-register`); a `title` replaces
+     * that tag.
+     */
+    title?: string;
     id?: string;
     className?: string;
     /** Safe `data-*` metadata (a `data-key`, `data-dialog-close`). */
@@ -6373,7 +6380,7 @@ interface ButtonOptions {
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, pressed, icon, loading, disabled, type, name, value, form, href, target, action, ariaLabel, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, pressed, icon, loading, disabled, type, name, value, form, href, target, action, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
 export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```

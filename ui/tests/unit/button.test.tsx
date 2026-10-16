@@ -25,6 +25,7 @@ describe('Button', () => {
     );
     for (const attribute of [
       'aria-label',
+      'title',
       'aria-busy',
       'data-loading',
       'data-icon-only',
@@ -180,5 +181,21 @@ describe('Button', () => {
         </Button>,
       ).dataset.shape,
     ).toBe('pill');
+  });
+
+  it('carries a native hover title beside an icon-only name', () => {
+    const button = render(
+      Button({
+        icon: <svg data-lucide="ellipsis" />,
+        ariaLabel: 'More Actions',
+        title: 'More Actions for report.pdf',
+      }),
+    );
+    expect(button.getAttribute('aria-label')).toBe('More Actions');
+    expect(button.getAttribute('title')).toBe('More Actions for report.pdf');
+    const link = render(
+      Button({ children: 'Docs', href: '/docs', title: 'Open the docs' }),
+    );
+    expect(link.getAttribute('title')).toBe('Open the docs');
   });
 });

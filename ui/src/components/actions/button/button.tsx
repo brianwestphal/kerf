@@ -92,6 +92,13 @@ export interface ButtonOptions {
   target?: '_self' | '_blank' | '_parent' | '_top';
   /** Delegated `data-action` the application handles. */
   action?: string;
+  /**
+   * Native hover text that says more than the name, such as "More Actions
+   * for report.pdf". An icon-only Button already gets a help tag with its
+   * `ariaLabel` (with `@kerfjs/ui/help-tags-register`); a `title` replaces
+   * that tag.
+   */
+  title?: string;
   id?: string;
   className?: string;
   /** Safe `data-*` metadata (a `data-key`, `data-dialog-close`). */
@@ -127,6 +134,7 @@ export function Button({
   target,
   action,
   ariaLabel,
+  title,
   id,
   className = '',
   rootAttributes = {},
@@ -145,6 +153,7 @@ export function Button({
     'data-shape': shape === 'pill' ? 'pill' : undefined,
     'data-action': action,
     'aria-label': ariaLabel,
+    title,
     'aria-busy': loading ? 'true' : undefined,
     slot,
   };
