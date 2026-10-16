@@ -43,6 +43,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 - align start (default), center, or end for centered status copy or trailing values
 - controlMargins selects exterior 8px gutters with canonical physical Sides
 - wrap normal, anywhere, nowrap, or truncate; truncate places its ellipsis at the end, the start (keeping the tail), or the middle (keeping the last path segment or a character suffix)
+- size="medium" for a 16px heading, such as an in-list group title that wraps a long name
 
 ## Composition
 

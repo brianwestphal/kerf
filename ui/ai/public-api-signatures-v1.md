@@ -5035,7 +5035,12 @@ declare function FieldLabel({ children, class: classValue, className, ...attribu
 
 type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 type TextTone = 'default' | 'quiet' | 'danger';
-type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
+/**
+ * `compact` (xs), `default` (the element's own size), `medium` (the 16px
+ * body size, for a heading such as an in-list group title), `large`, or
+ * `xlarge`.
+ */
+type TextSize = 'compact' | 'default' | 'medium' | 'large' | 'xlarge';
 type TextFont = 'default' | 'monospace';
 type TextBorder = 'transparent' | 'none';
 type TextLineHeight = 'default' | 'tight';

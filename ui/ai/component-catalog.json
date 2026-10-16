@@ -2930,7 +2930,8 @@
         "flush item geometry and tight line height",
         "align start (default), center, or end for centered status copy or trailing values",
         "controlMargins selects exterior 8px gutters with canonical physical Sides",
-        "wrap normal, anywhere, nowrap, or truncate; truncate places its ellipsis at the end, the start (keeping the tail), or the middle (keeping the last path segment or a character suffix)"
+        "wrap normal, anywhere, nowrap, or truncate; truncate places its ellipsis at the end, the start (keeping the tail), or the middle (keeping the last path segment or a character suffix)",
+        "size=\"medium\" for a 16px heading, such as an in-list group title that wraps a long name"
       ],
       "accessibility": [
         "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance, or span for inline secondary text.",

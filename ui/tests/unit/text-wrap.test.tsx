@@ -203,3 +203,13 @@ describe('Text control margins', () => {
     expect(html).toContain('data-max-lines="2"');
   });
 });
+
+describe('Text size', () => {
+  it('renders a medium heading at the body size with heading semantics', () => {
+    const html = String(
+      Text({ variant: 'h3', size: 'medium', children: 'Batch 1' }),
+    );
+    expect(html).toContain('<h3');
+    expect(html).toContain('data-size="medium"');
+  });
+});

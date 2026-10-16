@@ -512,3 +512,26 @@ test('Text control margins add exterior gutters without changing owned padding',
       );
   }
 });
+
+test('a medium heading is 16px with heading weight and wraps', async ({
+  page,
+}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=text');
+    const heading = page.locator('[data-demo-copy="medium-heading"]');
+    await expect(heading).toHaveJSProperty('localName', 'h3');
+    await expect(heading).toHaveCSS('font-size', '16px');
+    const metrics = await heading.evaluate((element) => {
+      const style = globalThis.getComputedStyle(element);
+      return {
+        weight: Number(style.fontWeight),
+        lines: Math.round(
+          element.getBoundingClientRect().height / parseFloat(style.lineHeight),
+        ),
+      };
+    });
+    expect(metrics.weight).toBeGreaterThanOrEqual(600);
+    if (width < 500) expect(metrics.lines).toBeGreaterThan(1);
+  }
+});

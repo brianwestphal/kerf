@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 420400,
-  "measuredLargestJavaScriptGzip": 164221,
-  "measuredTotalJavaScriptGzip": 420371,
+  "totalJavaScriptGzip": 420600,
+  "measuredLargestJavaScriptGzip": 164222,
+  "measuredTotalJavaScriptGzip": 420516,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5459,6 +5459,22 @@
         "measuredTotalJavaScriptGzip": 420371,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 420400
+      }
+    },
+    {
+      "at": "2026-10-16T11:59:40.718Z",
+      "reason": "Text medium heading demo (KF-43XH56)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 420371,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 420400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164222,
+        "measuredTotalJavaScriptGzip": 420516,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 420600
       }
     }
   ]

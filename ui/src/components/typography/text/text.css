@@ -98,6 +98,10 @@ span.kui-text[data-wrap="truncate"] {
   font-size: var(--kui-font-xs);
 }
 
+.kui-text[data-size="medium"] {
+  font-size: var(--kui-font-m);
+}
+
 .kui-text[data-size="large"] {
   font-size: var(--kui-font-l);
 }

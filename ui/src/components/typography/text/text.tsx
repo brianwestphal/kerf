@@ -12,7 +12,12 @@ export {
 export type TextVariant =
   'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 export type TextTone = 'default' | 'quiet' | 'danger';
-export type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
+/**
+ * `compact` (xs), `default` (the element's own size), `medium` (the 16px
+ * body size, for a heading such as an in-list group title), `large`, or
+ * `xlarge`.
+ */
+export type TextSize = 'compact' | 'default' | 'medium' | 'large' | 'xlarge';
 export type TextFont = 'default' | 'monospace';
 export type TextBorder = 'transparent' | 'none';
 export type TextLineHeight = 'default' | 'tight';

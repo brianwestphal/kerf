@@ -47,6 +47,16 @@ export function TextDemo() {
         </Text>
       </CatalogExample>
       <CatalogExample
+        label="Group Title"
+        note='size="medium" keeps a heading at the 16px body size with its heading weight, for a group title inside a list; it wraps a long name instead of truncating it.'
+        viewport={{ width: 'compact' }}
+        rootAttributes={{ 'data-demo-section': 'group-title' }}
+      >
+        <Text variant="h3" size="medium" data-demo-copy="medium-heading">
+          Attachments from the March design review with the extended team
+        </Text>
+      </CatalogExample>
+      <CatalogExample
         label="Presentation Roles"
         note="Tone, size, and font are independent of the native semantic element, so applications can express supporting copy, errors, compact metadata, prominent copy, and code without global utility classes."
         align="inline-control"

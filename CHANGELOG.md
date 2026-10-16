@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`Text` `size="medium"`.** A heading at the 16px body size keeps its heading weight and wraps, for an in-list group title with a long user-authored name (`KF-43XH56`).
 - **`List` `contentWidth` and `contentAlign`.** A page column caps its content at a readable measure (`compact` 440px, `medium` 640px, `wide` 864px) plus its own insets and centers it (or keeps it at the start), composing with `inset="document"`, so a settings page needs no application `max-width` CSS (`KF-P3069N`).
 - **`Select` `maxTriggerWidth` and `minTriggerWidth`.** Typed `CssLength` bounds on the closed trigger under any presentation (title and inline included). The value or `renderSelected` content ellipsizes inside the cap and the caret stays, so an app no longer wraps a Select in its own sized element (`KF-DQANHZ`).
 - **`LucideIcon` `title`.** An icon takes hover text as an SVG `<title>` over its whole box (not just its strokes), so a labeled status icon carries its own explanation without an application wrapper (`KF-2V9XJQ`).
