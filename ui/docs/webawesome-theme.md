@@ -268,6 +268,11 @@ That scale applies to each Web Awesome component's intrinsic glyph and is
 independent of Kerf `DisclosureArrow`, whose default box is 18px relative to
 the root font size and whose consumer override is its typed `size` prop.
 
+A loading step that is also the active `wa-stepper` step draws its spinner in
+the marker's on-accent foreground. Upstream colors that spinner with the same
+accent that fills an active marker, which would leave a blank disc; the theme
+corrects it through the public `spinner` part.
+
 Tooltip and Popover use arrowless floating surfaces by default, matching Hot
 Sheet 2. The theme sets Web Awesome's public `--wa-tooltip-arrow-size` token to
 `0px` and maps each popover's public `--arrow-size` property from

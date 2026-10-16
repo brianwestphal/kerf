@@ -155,6 +155,7 @@ describe('Web Awesome consumer guidance', () => {
 
     expect(css).toContain(':is(wa-accordion, wa-card)[appearance="sunken"]');
     expect(css).toContain('wa-details[appearance="sunken"]::part(details)');
+    expect(css).toContain('wa-step[active][loading]::part(spinner)');
     expect(css).toContain('--kui-wa-sunken-background');
     expect(css).toContain('--kui-wa-sunken-radius');
     expect(css).toContain('var(--kui-sunken-surface');

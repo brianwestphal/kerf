@@ -7645,6 +7645,32 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
   ).toContainText('components');
 });
 
+test('draws a loading active wa-step spinner against its filled marker', async ({
+  page,
+}) => {
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('/?component=wa-step');
+    const step = page.locator('wa-step[name="checks"]');
+    await expect(step).toHaveAttribute('loading', '');
+    const colors = await step.evaluate(async (element) => {
+      await customElements.whenDefined('wa-spinner');
+      const marker = element.shadowRoot!.querySelector('[part~="marker"]')!;
+      const spinner = element.shadowRoot!.querySelector('[part~="spinner"]')!;
+      return {
+        marker: getComputedStyle(marker).backgroundColor,
+        foreground: getComputedStyle(marker).color,
+        spinner:
+          getComputedStyle(spinner).getPropertyValue('--indicator-color'),
+        color: getComputedStyle(spinner).color,
+      };
+    });
+    expect(colors.spinner.trim()).toBe('currentColor');
+    expect(colors.color).toBe(colors.foreground);
+    expect(colors.color).not.toBe(colors.marker);
+  }
+});
+
 test('communicates preferred Kerf patterns on ecosystem alternatives', async ({
   page,
   browserName,

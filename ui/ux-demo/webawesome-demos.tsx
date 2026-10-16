@@ -487,9 +487,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         Upload
         <span slot="description">Completed step</span>
       </wa-step>
-      <wa-step name="checks">
+      <wa-step name="checks" loading>
         Run checks
-        <span slot="description">Active step</span>
+        <span slot="description">Active step while loading</span>
       </wa-step>
       <wa-step name="deploy" loading>
         Deploy

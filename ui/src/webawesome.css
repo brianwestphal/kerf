@@ -557,6 +557,15 @@
     --arrow-size: var(--kui-wa-popover-arrow-size);
   }
 
+  /* An active step fills its marker with its accent, which upstream is also
+     its spinner's color, so a loading active step would draw a blank disc.
+     Draw the spinner in the marker's on-accent foreground instead. */
+  wa-step[active][loading]::part(spinner) {
+    color: inherit;
+    --indicator-color: currentColor;
+    --track-color: color-mix(in oklab, currentColor 30%, transparent);
+  }
+
   /* Default-size single-line controls share Kerf's 44px control height (the
      Select field, toolbar groups, and list rows), so a Web Awesome field,
      button, or button radio sits flush beside a Kerf Select instead of 9px
