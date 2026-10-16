@@ -831,50 +831,56 @@ export const COMPONENTS = {
         label: 'Label, Readout, and Hint',
         height: 90,
         render: () =>
-          Slider({
-            id: 'dt-volume',
-            label: 'Volume',
-            value: 35,
-            showValue: true,
-            unit: '%',
-            hint: 'Applies to every output device.',
-          }),
+          staticRange(
+            Slider({
+              id: 'dt-volume',
+              label: 'Volume',
+              value: 35,
+              showValue: true,
+              unit: '%',
+              hint: 'Applies to every output device.',
+            }),
+          ),
       },
       {
         id: 'ticks',
         label: 'Stepped with Ticks',
         height: 90,
         render: () =>
-          Slider({
-            id: 'dt-zoom',
-            label: 'Zoom',
-            value: 100,
-            min: 50,
-            max: 200,
-            step: 25,
-            showValue: true,
-            unit: '%',
-            ticks: [
-              { value: 50, label: '50%' },
-              { value: 100, label: '100%' },
-              { value: 150, label: '150%' },
-              { value: 200, label: '200%' },
-            ],
-          }),
+          staticRange(
+            Slider({
+              id: 'dt-zoom',
+              label: 'Zoom',
+              value: 100,
+              min: 50,
+              max: 200,
+              step: 25,
+              showValue: true,
+              unit: '%',
+              ticks: [
+                { value: 50, label: '50%' },
+                { value: 100, label: '100%' },
+                { value: 150, label: '150%' },
+                { value: 200, label: '200%' },
+              ],
+            }),
+          ),
       },
       {
         id: 'compact',
         label: 'Compact',
         height: 60,
         render: () =>
-          Slider({
-            id: 'dt-opacity',
-            label: 'Layer Opacity',
-            value: 80,
-            showValue: true,
-            unit: '%',
-            size: 'compact',
-          }),
+          staticRange(
+            Slider({
+              id: 'dt-opacity',
+              label: 'Layer Opacity',
+              value: 80,
+              showValue: true,
+              unit: '%',
+              size: 'compact',
+            }),
+          ),
       },
     ],
   },
@@ -1909,7 +1915,27 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 .dt-button[data-variant="brand"] { border-color: var(--kui-color-brand-border-loud); color: var(--kui-color-brand-on-loud); background: var(--kui-color-brand-fill-loud); }
 .dt-icon-button { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: var(--kui-radius-m); color: var(--kui-color-text); background: transparent; cursor: pointer; }
 .dt-icon-button svg { width: 18px; height: 18px; }
+.dt-range { position: relative; display: block; width: 100%; height: var(--_kui-slider-thumb); }
+.dt-range > span { position: absolute; top: 50%; translate: 0 -50%; }
+.dt-range__track, .dt-range__fill { height: var(--_kui-slider-track); border-radius: var(--kui-radius-pill); }
+.dt-range__track { left: 0; right: 0; background: var(--kui-color-neutral-fill-normal); }
+.dt-range__fill { left: 0; width: calc(var(--_kui-slider-thumb) / 2 + (100% - var(--_kui-slider-thumb)) * var(--dt-fraction)); background: var(--_kui-slider-fill-color); }
+.dt-range__thumb { left: calc((100% - var(--_kui-slider-thumb)) * var(--dt-fraction)); width: var(--_kui-slider-thumb); height: var(--_kui-slider-thumb); border: 1px solid var(--kui-color-neutral-border-normal); border-radius: 50%; background: var(--kui-color-surface-raised); box-shadow: var(--kui-shadow-s); }
 `;
+
+// A native range input's track and thumb are pseudo-elements the capture
+// cannot draw faithfully (it rendered the 4px rounded track as a tapering
+// wedge). Template-only: stand real elements in for the input that draw the
+// same track, fill, and thumb from the Slider's own tokens and fill value.
+function staticRange(markup) {
+  return raw(
+    String(markup).replace(
+      /<input class="kui-slider__input"[^>]*style="--_kui-slider-fill:([\d.]+)%"[^>]*>/,
+      (_match, fill) =>
+        `<div class="dt-range" style="--_kui-slider-fill:${fill}%;--dt-fraction:${Number(fill) / 100}" aria-hidden="true"><span class="dt-range__track"></span><span class="dt-range__fill"></span><span class="dt-range__thumb"></span></div>`,
+    ),
+  );
+}
 
 // `ui-monospace` resolves to different fonts on developer and hosted macOS
 // machines. Keep the public component fallback unchanged, but pin the capture

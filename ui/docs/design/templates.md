@@ -26,7 +26,10 @@ use them; `ResizableRegion` and the whole-screen layouts (`NavStack`,
 interaction-/viewport-driven screens rather than component cards — the live UX
 catalog and the app-layouts docs cover those. `ColorPicker` is not templated
 either: its hue and opacity tracks are range-input pseudo-elements a static
-capture cannot reproduce.
+capture cannot reproduce. For the same reason the `Slider` templates draw
+its track, fill, and thumb with template-only stand-in elements built from
+the Slider's own tokens and fill value (`staticRange` in
+`scripts/build-design-templates.mjs`).
 
 ## Layout
 
