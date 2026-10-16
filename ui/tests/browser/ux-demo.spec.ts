@@ -7658,11 +7658,12 @@ test('draws a loading active wa-step spinner against its filled marker', async (
       const marker = element.shadowRoot!.querySelector('[part~="marker"]')!;
       const spinner = element.shadowRoot!.querySelector('[part~="spinner"]')!;
       return {
-        marker: getComputedStyle(marker).backgroundColor,
-        foreground: getComputedStyle(marker).color,
-        spinner:
-          getComputedStyle(spinner).getPropertyValue('--indicator-color'),
-        color: getComputedStyle(spinner).color,
+        marker: globalThis.getComputedStyle(marker).backgroundColor,
+        foreground: globalThis.getComputedStyle(marker).color,
+        spinner: globalThis
+          .getComputedStyle(spinner)
+          .getPropertyValue('--indicator-color'),
+        color: globalThis.getComputedStyle(spinner).color,
       };
     });
     expect(colors.spinner.trim()).toBe('currentColor');
