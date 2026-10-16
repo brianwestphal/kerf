@@ -74,8 +74,32 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "is_beta=$IS_BETA" >> "$GITHUB_OUTPUT"
 
+  # ─── Gate: kerfjs core reaches npm first ────────────────────────────
+  #
+  # The four lockstep release workflows fire on the same tag, so without this
+  # gate a dependent can publish before the kerfjs version it names exists.
+  # Polls npm for kerfjs@<version> and fails fast if the core release.yml run
+  # for this commit fails. Tokenless: read-only contents + actions.
+
+  wait-for-core:
+    needs: detect
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+      - name: Wait for kerfjs@${{ needs.detect.outputs.version }} on npm
+        run: node scripts/wait-for-core-release.mjs "${{ needs.detect.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
   npm-publish:
-    needs: [validate-and-build, detect]
+    needs: [validate-and-build, detect, wait-for-core]
     runs-on: ubuntu-latest
     environment: npm-publish-ui
     permissions:

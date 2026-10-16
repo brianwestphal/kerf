@@ -288,7 +288,8 @@ from a single git tag in lockstep — not a workspace monorepo, just sibling
 directories each with their own `package.json`, `package-lock.json`, and a
 dedicated CI workflow (e.g. `.github/workflows/release-eslint-plugin.yml`,
 `release-create-kerf-component.yml`, `release-ui.yml`) gated on an npm Trusted-Publisher
-environment. A third-party component package follows the same shape: build with
+environment. The three dependent workflows wait for the same `kerfjs` version to
+reach npm before publishing, so the core package always lands first. A third-party component package follows the same shape: build with
 `tsup`, emit ESM + `.d.ts`, publish with npm provenance. There is no npm org/scope
 requirement — `@kerfjs/ui` is scoped; the other three publish unscoped. See
 [`21-ui-package.md`](21-ui-package.md) for the first-party component contract.

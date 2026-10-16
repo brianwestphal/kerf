@@ -837,7 +837,9 @@ whenever a file under `ui/tests` is selected by no script that `check` or
 `release-ui.yml` workflow validates/builds without an OIDC token, applies the
 exact release metadata with `scripts/prepare-release-package.mjs`, packs the
 package into a tarball (`npm pack --ignore-scripts`), and transfers only that
-tarball as an artifact. The token-holding job checks out no repository code,
+tarball as an artifact. A tokenless `wait-for-core` job holds the publish until
+`kerfjs@<version>` is on npm (and fails fast if the core release run fails), so
+the core package always publishes first. The token-holding job checks out no repository code,
 runs no dependency install or build, and publishes the downloaded tarball with
 `npm publish --ignore-scripts`. Beta versions are applied ephemerally.
 
