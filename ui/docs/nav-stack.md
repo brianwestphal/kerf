@@ -241,8 +241,12 @@ scrolls visibly, blurred, beneath it.
   includes that padding, so views clear the chrome and the safe area exactly
   once.
 - **Transitions.** Only the live chrome is measured, never a cross-fading
-  copy. The copy keeps painting over the top edge with the same material while
-  it fades, and the incoming view settles at the incoming chrome's clearance.
+  copy. An overlay bar (top chrome or bottom toolbar) cross-fades its
+  contents, never its material: the live bar keeps the material at full
+  opacity while its new contents fade in, and the copy fading out above it
+  carries only the old contents, so the sliding views never show through the
+  chrome mid push or pop. The incoming view settles at the incoming chrome's
+  clearance.
 - **Classic scrollbars.** Where the active view's scroller (the view, or a
   sole header-less Pane's content) shows a classic, space-taking scrollbar,
   `wireNavStack` measures it and the chrome ends where its track begins, so

@@ -291,6 +291,63 @@
   }
 }
 
+/* An overlay bar cross-fades its contents, never its material. Fading the
+   bar itself would fade its backdrop filter with it (WebKit drops the blur
+   outright), so mid push or pop the sliding views would show through the
+   chrome. Instead the live bar keeps its material at full opacity while its
+   contents fade in, and the copy cross-fading out above it carries no
+   material of its own (nor a clear bar's scroll edge), only the old
+   contents and divider. */
+.kui-nav-stack[data-chrome-presentation="overlay"] > .kui-nav-stack__chrome,
+.kui-nav-stack[data-bottom-toolbar-presentation="overlay"]
+  > .kui-nav-stack__bottom {
+  opacity: 1;
+  transition: none;
+}
+
+.kui-nav-stack[data-chrome-presentation="overlay"]
+  > .kui-nav-stack__chrome:not(.kui-nav-stack__chrome-copy)
+  > *,
+.kui-nav-stack[data-bottom-toolbar-presentation="overlay"]
+  > .kui-nav-stack__bottom:not(.kui-nav-stack__chrome-copy)
+  > * {
+  transition: opacity var(--kui-nav-stack-transition-duration, 200ms) ease;
+}
+
+.kui-nav-stack[data-chrome-presentation="overlay"]
+  > .kui-nav-stack__chrome--entering:not(.kui-nav-stack__chrome-copy)
+  > *,
+.kui-nav-stack[data-bottom-toolbar-presentation="overlay"]
+  > .kui-nav-stack__chrome--entering:not(.kui-nav-stack__chrome-copy)
+  > * {
+  transition: none;
+  opacity: 0;
+}
+
+.kui-nav-stack[data-chrome-presentation="overlay"]
+  > .kui-nav-stack__chrome.kui-nav-stack__chrome-copy,
+.kui-nav-stack[data-bottom-toolbar-presentation="overlay"]
+  > .kui-nav-stack__bottom.kui-nav-stack__chrome-copy {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: transparent;
+  transition: opacity var(--kui-nav-stack-transition-duration, 200ms) ease;
+}
+
+.kui-nav-stack[data-chrome-presentation="overlay"]
+  > .kui-nav-stack__chrome.kui-nav-stack__chrome-copy--exiting,
+.kui-nav-stack[data-bottom-toolbar-presentation="overlay"]
+  > .kui-nav-stack__bottom.kui-nav-stack__chrome-copy--exiting {
+  opacity: 0;
+}
+
+.kui-nav-stack[data-chrome-material="clear"][data-scroll-edge]
+  > .kui-nav-stack__chrome.kui-nav-stack__chrome-copy::before,
+.kui-nav-stack[data-bottom-toolbar-material="clear"][data-scroll-edge]
+  > .kui-nav-stack__bottom.kui-nav-stack__chrome-copy::before {
+  content: none;
+}
+
 /* `clear` chrome and bottom toolbar: overlay bars (the same measuring,
    placement, and edge insets as above) that are fully transparent, for
    chrome over imagery. With `scrollEdge="material"` a pseudo-element
@@ -521,7 +578,13 @@
   .kui-nav-stack__view,
   .kui-nav-stack__chrome,
   .kui-nav-stack__bottom,
-  .kui-nav-stack__chrome-copy {
+  .kui-nav-stack__chrome-copy,
+  .kui-nav-stack[data-chrome-presentation="overlay"]
+    > .kui-nav-stack__chrome
+    > *,
+  .kui-nav-stack[data-bottom-toolbar-presentation="overlay"]
+    > .kui-nav-stack__bottom
+    > * {
     transition: none;
   }
 }

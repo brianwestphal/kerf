@@ -447,3 +447,86 @@ test('increased contrast resolves the material to the opaque surface', async ({
   const result = await material(page, 'black', STATUS);
   expect(result.alpha).toBe(255);
 });
+
+/**
+ * Run `step` under a paused page clock and a long transition, so a busy
+ * browser cannot settle it between commands; release its first frame, then
+ * freeze every running transition halfway and read both overlay bars.
+ */
+async function midTransitionBars(page: Page, step: 'push' | 'pop') {
+  await page.addStyleTag({
+    content:
+      '[data-region="wired"] .kui-nav-stack { --kui-nav-stack-transition-duration: 5000ms !important; }',
+  });
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10_000);
+  await page.evaluate(
+    (name) => (globalThis as unknown as Record<string, () => void>)[name]!(),
+    step,
+  );
+  await page.clock.runFor(100);
+  return page
+    .locator('[data-region="wired"] .kui-nav-stack')
+    .evaluate((stack) => {
+      for (const animation of stack.getAnimations({ subtree: true })) {
+        animation.pause();
+        animation.currentTime =
+          Number(animation.effect?.getTiming().duration ?? 0) / 2;
+      }
+      const read = (bar: HTMLElement) => {
+        const style = globalThis.getComputedStyle(bar);
+        const toolbar = bar.querySelector('[data-component="toolbar"]')!;
+        return {
+          opacity: parseFloat(style.opacity),
+          filter:
+            style.backdropFilter ||
+            (style as unknown as { webkitBackdropFilter?: string })
+              .webkitBackdropFilter ||
+            'none',
+          background: style.backgroundColor,
+          contents: parseFloat(globalThis.getComputedStyle(toolbar).opacity),
+        };
+      };
+      const bars = (copy: boolean) =>
+        [
+          ...stack.querySelectorAll<HTMLElement>(
+            ':scope > :is([data-nav-stack-chrome], [data-nav-stack-bottom])',
+          ),
+        ]
+          .filter((bar) => bar.hasAttribute('data-nav-chrome-copy') === copy)
+          .map(read);
+      return { live: bars(false), copies: bars(true) };
+    });
+}
+
+// KF-H3NNP6 overlay bars mid-transition: fading a bar's own opacity faded its
+// backdrop filter with it (WebKit dropped the blur outright), so the sliding
+// views showed through the chrome during a push or pop.
+for (const step of ['push', 'pop'] as const)
+  test(`mid-${step}, both overlay bars keep their material at full opacity and cross-fade only their contents`, async ({
+    page,
+  }) => {
+    await page.clock.install();
+    await mountFixture(page);
+    if (step === 'pop') {
+      await page.evaluate(() =>
+        (globalThis as unknown as { push(): void }).push(),
+      );
+      await settle(page);
+    }
+    const { live, copies } = await midTransitionBars(page, step);
+    expect(live).toHaveLength(2);
+    expect(copies).toHaveLength(2);
+    for (const bar of live) {
+      expect(bar.opacity).toBe(1);
+      expect(bar.filter).toContain('blur');
+      expect(bar.contents).toBeGreaterThan(0);
+      expect(bar.contents).toBeLessThan(1);
+    }
+    // The outgoing copy above it carries only the old contents.
+    for (const copy of copies) {
+      expect(copy.filter).toBe('none');
+      expect(copy.background).toBe('rgba(0, 0, 0, 0)');
+      expect(copy.opacity).toBeGreaterThan(0);
+      expect(copy.opacity).toBeLessThan(1);
+    }
+  });

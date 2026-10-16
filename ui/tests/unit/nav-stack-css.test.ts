@@ -37,7 +37,7 @@ describe('NavStack overlay chrome CSS', () => {
       .filter((entry) => entry.selector === selector && entry.media === media)
       .map(({ decl }) => decl);
 
-  it('paints the chrome (and its cross-fading copies) with the chrome material', () => {
+  it('paints the chrome with the chrome material', () => {
     expect(at(`${OVERLAY} > .kui-nav-stack__chrome`)).toEqual([
       '-webkit-backdrop-filter:var(--kui-chrome-material-filter)',
       'backdrop-filter:var(--kui-chrome-material-filter)',
@@ -110,7 +110,7 @@ describe('NavStack overlay bottom toolbar CSS', () => {
       .filter((entry) => entry.selector === selector && entry.media === media)
       .map(({ decl }) => decl);
 
-  it('paints the bottom toolbar (and its cross-fading copies) with the chrome material', () => {
+  it('paints the bottom toolbar with the chrome material', () => {
     expect(at(`${BOTTOM} > .kui-nav-stack__bottom`)).toEqual([
       '-webkit-backdrop-filter:var(--kui-chrome-material-filter)',
       'backdrop-filter:var(--kui-chrome-material-filter)',
@@ -205,5 +205,68 @@ describe('controls and Lists around overlay NavStack bars', () => {
         )
         .map(({ decl }) => decl),
     ).toEqual(['flex-shrink:0']);
+  });
+});
+
+// KF-H3NNP6 overlay bars cross-fade their contents, never their material:
+// fading the bar faded its backdrop filter too (WebKit dropped the blur), so
+// the sliding views showed through the chrome mid push or pop.
+describe('NavStack overlay bar cross-fade CSS', () => {
+  const all = declarations();
+  // Match each complex selector of a group whole.
+  const of = (selector: string, media = '') =>
+    all
+      .filter(
+        (entry) =>
+          entry.media === media &&
+          entry.selector.split(/,\s*(?=\.kui-nav-stack)/).includes(selector),
+      )
+      .map(({ decl }) => decl);
+  const LIVE = ':not(.kui-nav-stack__chrome-copy)';
+  const FADE =
+    'transition:opacity var(--kui-nav-stack-transition-duration, 200ms) ease';
+  const BARS = [
+    [OVERLAY, '.kui-nav-stack__chrome'],
+    [BOTTOM, '.kui-nav-stack__bottom'],
+  ];
+
+  it.each(BARS)(
+    '%s keeps the bar opaque and fades its contents',
+    (stack, bar) => {
+      expect(of(`${stack} > ${bar}`)).toEqual(
+        expect.arrayContaining(['opacity:1', 'transition:none']),
+      );
+      expect(of(`${stack} > ${bar}${LIVE} > *`)).toEqual([FADE]);
+      expect(
+        of(`${stack} > .kui-nav-stack__chrome--entering${LIVE} > *`),
+      ).toEqual(['transition:none', 'opacity:0']);
+    },
+  );
+
+  it.each(BARS)(
+    '%s strips the material from the outgoing copy',
+    (stack, bar) => {
+      expect(of(`${stack} > ${bar}.kui-nav-stack__chrome-copy`)).toEqual([
+        '-webkit-backdrop-filter:none',
+        'backdrop-filter:none',
+        'background:transparent',
+        FADE,
+      ]);
+      expect(
+        of(`${stack} > ${bar}.kui-nav-stack__chrome-copy--exiting`),
+      ).toEqual(['opacity:0']);
+    },
+  );
+
+  it('drops a clear bar copy scroll-edge material', () => {
+    for (const [material, bar] of [
+      ['chrome', 'chrome'],
+      ['bottom-toolbar', 'bottom'],
+    ])
+      expect(
+        of(
+          `.kui-nav-stack[data-${material}-material="clear"][data-scroll-edge] > .kui-nav-stack__${bar}.kui-nav-stack__chrome-copy::before`,
+        ),
+      ).toEqual(['content:none']);
   });
 });
