@@ -676,8 +676,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   the inset rounded card; never restyle a card into a strip.
 - **Use `SplitButton` for a primary action with options.** One loud semantic
   fill with a native primary button and an options trigger (`aria-expanded`,
-  `aria-haspopup`); `tone`, `fill`, `busy`, and `disabled` are props. Never
-  build one from `wa-button-group` or app CSS on native buttons.
+  `aria-haspopup`); `tone`, `fill`, `shape` (`rounded` or `pill`, as on
+  `Button`), `busy`, and `disabled` are props. Never build one from
+  `wa-button-group` or app CSS on native buttons.
 - **Make any `Button` a toggle with `pressed`.** In content or a pane footer,
   `<Button icon={…} ariaLabel="Show Conversation" emphasis="plain" pressed={open} action="toggle-chat" />`
   renders a native `aria-pressed` button whose pressed look draws on top of

@@ -888,7 +888,7 @@ export const generatedKerfCatalog = [
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
-    "description": "Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.",
+    "description": "Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a rounded or pill shape, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.",
     "uses": [
       "lucide-icon",
       "loading-spinner"

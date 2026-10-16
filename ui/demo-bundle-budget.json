@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 424100,
-  "measuredLargestJavaScriptGzip": 164220,
-  "measuredTotalJavaScriptGzip": 424049,
+  "totalJavaScriptGzip": 424300,
+  "measuredLargestJavaScriptGzip": 164222,
+  "measuredTotalJavaScriptGzip": 424230,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5603,6 +5603,22 @@
         "measuredTotalJavaScriptGzip": 424049,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 424100
+      }
+    },
+    {
+      "at": "2026-10-16T23:37:36.301Z",
+      "reason": "SplitButton shape adds a documented pill prop and a catalog demo specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164220,
+        "measuredTotalJavaScriptGzip": 424049,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 424100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164222,
+        "measuredTotalJavaScriptGzip": 424230,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 424300
       }
     }
   ]

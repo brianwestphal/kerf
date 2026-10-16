@@ -6105,6 +6105,7 @@
           "--kui-color-danger-on-loud",
           "--kui-focus-ring",
           "--kui-font-weight-semibold",
+          "--kui-layout-pill-radius",
           "--kui-layout-rounded-radius",
           "--kui-space-s",
           "--kui-space-xs"

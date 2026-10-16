@@ -81,4 +81,36 @@ describe('SplitButton', () => {
       '<span class="kui-split-button__icon" aria-hidden="true"><svg></svg></span>',
     );
   });
+
+  it('marks the pill shape on the group and leaves the default rounded unmarked', () => {
+    const base = {
+      label: 'Deploy',
+      action: 'deploy',
+      optionsLabel: 'Deploy Options',
+      optionsAction: 'deploy-options',
+    };
+    expect(String(SplitButton({ ...base, shape: 'pill' }))).toContain(
+      '<div class="kui-split-button" data-component="split-button" data-tone="brand" data-shape="pill" role="group">',
+    );
+    expect(String(SplitButton({ ...base, shape: 'rounded' }))).not.toContain(
+      'data-shape',
+    );
+    expect(String(SplitButton(base))).not.toContain('data-shape');
+  });
+
+  it('keeps data-shape protected from rootAttributes', () => {
+    const html = String(
+      SplitButton({
+        label: 'Deploy',
+        action: 'deploy',
+        optionsLabel: 'Deploy Options',
+        optionsAction: 'deploy-options',
+        rootAttributes: { 'data-shape': 'pill' } as unknown as Record<
+          `data-${string}`,
+          string
+        >,
+      }),
+    );
+    expect(html).not.toContain('data-shape');
+  });
 });

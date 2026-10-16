@@ -1001,6 +1001,12 @@ const stopActions = delegateActions(app, 'click', {
       ? 'Drive started'
       : 'Drive stopped';
   },
+  'log-split-button-pill': (_event, element) => {
+    actionLog.value = `${(element as HTMLElement).textContent?.trim() ?? ''} started`;
+  },
+  'log-split-button-pill-options': (_event, element) => {
+    actionLog.value = `${(element as HTMLElement).getAttribute('aria-label') ?? ''} requested`;
+  },
   'toggle-split-button-options-demo': () => {
     splitButtonOptionsOpen.value = !splitButtonOptionsOpen.value;
     actionLog.value = splitButtonOptionsOpen.value

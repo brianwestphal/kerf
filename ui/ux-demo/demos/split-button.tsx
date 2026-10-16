@@ -2,7 +2,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { SplitButton } from '@kerfjs/ui/split-button';
-import { Play, Rocket } from 'lucide';
+import { Download, Play, Rocket } from 'lucide';
 
 import { splitButtonOptionsOpen, splitButtonRunning } from './state.js';
 
@@ -50,6 +50,30 @@ export function SplitButtonDemo() {
             optionsAction="log-publish-options"
             disabled
             title="Nothing to publish"
+          />
+        </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Pill Shape"
+        note="The pill shape fully rounds both outer ends, as on Button; the divider between the halves stays square."
+        align="inline-control"
+      >
+        <Row wrap>
+          <SplitButton
+            shape="pill"
+            label="Export"
+            action="log-split-button-pill"
+            icon={<LucideIcon icon={Download} name="download" />}
+            optionsLabel="Export Formats"
+            optionsAction="log-split-button-pill-options"
+          />
+          <SplitButton
+            shape="pill"
+            label="Run Checks"
+            action="log-split-button-pill"
+            optionsLabel="Check Options"
+            optionsAction="log-split-button-pill-options"
+            tone="neutral"
           />
         </Row>
       </CatalogExample>

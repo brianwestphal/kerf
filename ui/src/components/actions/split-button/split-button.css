@@ -1,18 +1,31 @@
 /* One loud semantic fill split into a primary half and a narrow options
    trigger, with a hairline divider in the foreground color. Both halves are
-   native buttons on the shared fill; each brightens on its own hover. */
+   native buttons on the shared fill; each brightens on its own hover. The
+   outer corners take the shared control radius, or full round ends as a
+   pill; the divider seam between the halves stays square. */
 .kui-split-button {
   --_kui-split-button-fill: var(--kui-color-brand-fill-loud);
   --_kui-split-button-on: var(--kui-color-brand-on-loud);
+  --_kui-split-button-radius: var(
+    --kui-layout-rounded-radius,
+    calc(1px + remify(11px))
+  );
   display: inline-grid;
   min-width: 0;
   min-height: remify(44px);
   overflow: hidden;
-  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  border-radius: var(--_kui-split-button-radius);
   color: var(--_kui-split-button-on);
   background: var(--_kui-split-button-fill);
   grid-template-columns: minmax(0, auto) remify(40px);
   font-weight: var(--kui-font-weight-semibold);
+}
+
+.kui-split-button[data-shape="pill"] {
+  --_kui-split-button-radius: var(
+    --kui-layout-pill-radius,
+    calc(1px + remify(21px))
+  );
 }
 
 .kui-split-button[data-tone="neutral"] {
@@ -67,6 +80,18 @@
 
 .kui-split-button > button:hover:not(:disabled) {
   background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+/* Each half rounds its outer corners with the group, so its hover fill and
+   inset focus ring follow the rounded or pill end. */
+.kui-split-button > .kui-split-button__primary {
+  border-start-start-radius: var(--_kui-split-button-radius);
+  border-end-start-radius: var(--_kui-split-button-radius);
+}
+
+.kui-split-button > .kui-split-button__options {
+  border-start-end-radius: var(--_kui-split-button-radius);
+  border-end-end-radius: var(--_kui-split-button-radius);
 }
 
 /* The group clips outer outlines at its rounded corners, so the ring sits

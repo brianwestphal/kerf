@@ -8,7 +8,7 @@ A primary action with an attached options trigger on one loud semantic fill.
 
 ## When to use
 
-Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.
+Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a rounded or pill shape, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.
 
 - A prominent primary action has a closely related set of options chosen from an attached trigger, such as Drive with a provider menu or Deploy with targets.
 
@@ -37,6 +37,7 @@ Exact prop names and types: [`@kerfjs/ui/split-button`](../public-api-signatures
 
 - brand, neutral, success, warning, or danger tone
 - content width or fill
+- rounded or pill shape
 - busy
 - disabled primary or options
 
@@ -69,7 +70,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-split-button`, `kui-split-button__options`, `kui-split-button__icon`, `kui-split-button__label` on an element you write; render `SplitButton` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-brand-fill-loud`, `--kui-color-brand-on-loud`, `--kui-color-neutral-fill-loud`, `--kui-color-neutral-on-loud`, `--kui-color-success-fill-loud`, `--kui-color-success-on-loud`, `--kui-color-warning-fill-loud`, `--kui-color-warning-on-loud`, `--kui-color-danger-fill-loud`, `--kui-color-danger-on-loud`, `--kui-focus-ring`, `--kui-font-weight-semibold`, `--kui-layout-rounded-radius`, `--kui-space-s`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-brand-fill-loud`, `--kui-color-brand-on-loud`, `--kui-color-neutral-fill-loud`, `--kui-color-neutral-on-loud`, `--kui-color-success-fill-loud`, `--kui-color-success-on-loud`, `--kui-color-warning-fill-loud`, `--kui-color-warning-on-loud`, `--kui-color-danger-fill-loud`, `--kui-color-danger-on-loud`, `--kui-focus-ring`, `--kui-font-weight-semibold`, `--kui-layout-pill-radius`, `--kui-layout-rounded-radius`, `--kui-space-s`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

@@ -9,11 +9,15 @@ import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 export type SplitButtonTone =
   'brand' | 'neutral' | 'success' | 'warning' | 'danger';
 
+/** Corner shape: the shared `rounded` control radius (default) or a full `pill`, as on `Button`. */
+export type SplitButtonShape = 'rounded' | 'pill';
+
 const splitButtonProtected = new Set([
   'data-component',
   'data-tone',
   'data-fill',
   'data-busy',
+  'data-shape',
 ]);
 
 type SplitButtonRootAttributes = Readonly<
@@ -22,6 +26,7 @@ type SplitButtonRootAttributes = Readonly<
     'data-tone'?: never;
     'data-fill'?: never;
     'data-busy'?: never;
+    'data-shape'?: never;
   }
 >;
 
@@ -48,6 +53,8 @@ export interface SplitButtonProps {
   tone?: SplitButtonTone;
   /** Span the full width of the parent instead of sizing to the label. */
   fill?: boolean;
+  /** Corner shape (default `rounded`); `pill` fully rounds both outer ends. */
+  shape?: SplitButtonShape;
   /** Show work in progress: a spinner replaces the icon and the primary is `aria-busy`. */
   busy?: boolean;
   /** Disable the primary half. */
@@ -82,6 +89,7 @@ export function SplitButton({
   optionsControls,
   tone = 'brand',
   fill = false,
+  shape = 'rounded',
   busy = false,
   disabled = false,
   optionsDisabled = false,
@@ -98,6 +106,7 @@ export function SplitButton({
       data-component="split-button"
       data-tone={tone}
       data-fill={fill ? 'true' : undefined}
+      data-shape={shape === 'pill' ? 'pill' : undefined}
       data-busy={busy ? 'true' : undefined}
       role="group"
       slot={slot}

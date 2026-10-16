@@ -6520,11 +6520,14 @@ import { SafeHtml } from 'kerfjs';
 
 /** The loud fill the whole split button paints. */
 type SplitButtonTone = 'brand' | 'neutral' | 'success' | 'warning' | 'danger';
+/** Corner shape: the shared `rounded` control radius (default) or a full `pill`, as on `Button`. */
+type SplitButtonShape = 'rounded' | 'pill';
 type SplitButtonRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-tone'?: never;
     'data-fill'?: never;
     'data-busy'?: never;
+    'data-shape'?: never;
 }>;
 interface SplitButtonProps {
     /** Visible primary label. */
@@ -6549,6 +6552,8 @@ interface SplitButtonProps {
     tone?: SplitButtonTone;
     /** Span the full width of the parent instead of sizing to the label. */
     fill?: boolean;
+    /** Corner shape (default `rounded`); `pill` fully rounds both outer ends. */
+    shape?: SplitButtonShape;
     /** Show work in progress: a spinner replaces the icon and the primary is `aria-busy`. */
     busy?: boolean;
     /** Disable the primary half. */
@@ -6570,9 +6575,9 @@ interface SplitButtonProps {
  * technology directly; the application opens its own menu from the options
  * action and owns the running state.
  */
-declare function SplitButton({ label, action, icon, accessibleLabel, optionsLabel, optionsAction, optionsExpanded, optionsPopup, optionsControls, tone, fill, busy, disabled, optionsDisabled, title, className, rootAttributes, slot, }: SplitButtonProps): SafeHtml;
+declare function SplitButton({ label, action, icon, accessibleLabel, optionsLabel, optionsAction, optionsExpanded, optionsPopup, optionsControls, tone, fill, shape, busy, disabled, optionsDisabled, title, className, rootAttributes, slot, }: SplitButtonProps): SafeHtml;
 
-export { SplitButton, type SplitButtonProps, type SplitButtonTone };
+export { SplitButton, type SplitButtonProps, type SplitButtonShape, type SplitButtonTone };
 ```
 
 ## `@kerfjs/ui/file-picker`

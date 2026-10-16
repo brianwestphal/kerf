@@ -7542,7 +7542,7 @@
         "lucide-icon",
         "loading-spinner"
       ],
-      "purpose": "Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.",
+      "purpose": "Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a rounded or pill shape, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.",
       "publicExports": [
         "SplitButton"
       ],
@@ -7574,6 +7574,7 @@
       "variants": [
         "brand, neutral, success, warning, or danger tone",
         "content width or fill",
+        "rounded or pill shape",
         "busy",
         "disabled primary or options"
       ],
@@ -7612,6 +7613,7 @@
         "--kui-color-danger-on-loud",
         "--kui-focus-ring",
         "--kui-font-weight-semibold",
+        "--kui-layout-pill-radius",
         "--kui-layout-rounded-radius",
         "--kui-space-s",
         "--kui-space-xs"

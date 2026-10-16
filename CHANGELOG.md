@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`SplitButton` `shape`.** `shape="pill"` fully rounds both outer ends of a SplitButton, the same `rounded` (default) or `pill` choice `Button` takes; the divider between the halves stays square, and each half's hover fill and focus ring follow its rounded end (`KF-4GC1J4`).
 - **`wirePaneChrome`.** `@kerfjs/ui/wire-pane-chrome` makes a Pane's open `overlay` compact chrome transient: Escape or a press outside it closes it through the app's `compactChromeOpen` signals, and focus returns to the control that opened it (`KF-EEGAT7`).
 - **ChoiceChips icon picker.** `presentation="icons"` renders square 36px icon-only choices, each named by its label (hidden, and its hover title), and `maxHeight` scrolls a long grid, with native radio (or toggle, or listbox) semantics unchanged (`KF-K60RRM`).
 - **`Pane` `compactChrome`.** A Pane declares what its header and footer do when its container presents compactly: `fixed` (default), `scroll` (inline with the content; a footer settles at the end and scrolls past long content), or `overlay` (over the content on the chrome material, shown while the app's `compactChromeOpen` says so). NavStack views, TabNavigator scenes, full-screen dialogs, and compact Workbenches apply it; roomy containers ignore it. `PaneConfig` forwards both props (`KF-Q8EMWE`).

@@ -33,6 +33,7 @@ export {
 export {
   SplitButton,
   type SplitButtonProps,
+  type SplitButtonShape,
   type SplitButtonTone,
 } from './components/actions/split-button/split-button.js';
 export {
