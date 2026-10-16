@@ -1,6 +1,6 @@
 # Public API signatures for the UI authoring corpus
 
-Generated from emitted declarations for `@kerfjs/ui@5.0.0` and `kerfjs@4.4.1`. This bounded reference covers only APIs used by the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.
+Generated from emitted declarations for `@kerfjs/ui@5.0.0` and `kerfjs@5.0.0-beta.105`. This bounded reference covers only APIs used by the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.
 
 ## `@kerfjs/ui/css-values`
 
@@ -4123,8 +4123,8 @@ export { type SearchFieldCollapsibleOptions, type SearchFieldEdit, type SearchFi
 ## `kerfjs/actions`
 
 ```ts
-import { A as AttrSpec } from './attrSelector-Cmu2ZoGO.js';
-import { D as DelegateOptions } from './delegate-CL9VTZFb.js';
+import { A as AttrSpec } from './attr-Cmu2ZoGO.js';
+import { D as DelegateOptions } from './delegate--CrfgYtC.js';
 
 /**
  * `kerfjs/actions` — the delegated action-table helper.

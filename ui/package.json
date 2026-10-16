@@ -717,7 +717,7 @@
   },
   "peerDependencies": {
     "@awesome.me/webawesome": "^3.14.0",
-    "kerfjs": "^4.0.0",
+    "kerfjs": "^5.0.0-0",
     "lucide": "^1.43.0",
     "playwright": "^1.63.0"
   },

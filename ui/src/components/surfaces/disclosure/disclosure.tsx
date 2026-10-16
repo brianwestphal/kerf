@@ -85,9 +85,7 @@ export function Disclosure({
       data-component="disclosure"
       data-appearance={appearance}
       data-action={toggleAction}
-      // kerfjs's HTMLDetailsAttrs lacks the native exclusive-group `name`
-      // until KF-KFH2VT lands, so it rides in a typed attribute spread.
-      {...((name === undefined ? {} : { name }) as Record<string, string>)}
+      name={name}
       open={open || undefined}
       slot={slot}
     >
