@@ -29,6 +29,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Toolbar](./toolbar.md) — Leading, centered, and trailing toolbar composition.
 - [ToolbarControlGroup](./toolbar-control-group.md) — Provide complete toolbar action geometry through configuration, including semantic anchors, overflow containment, and dropdown menu insets without application CSS.
 - [Surface Scaffolds](./surface-scaffold.md) — Configure recurring dialog and popup geometry without consumer ::part() overrides.
+- [ListDetailDialog](./list-detail-dialog.md) — Present a selectable list beside the selected item's detail inside a modal, with the dialog's title and close control in the detail column and a one-pane drill-down on compact devices.
 - [FloatingToolbar](./floating-toolbar.md) — A transparent, forced-dark toolbar that floats over its container's content.
 - [ToolbarText](./toolbar-text.md) — Extra-large through extra-small toolbar identity text.
 - [Text](./text.md) — Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.
@@ -183,7 +184,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Desktop Application Shell](./recipe-app-shell.md) — App bar above a Workbench with resizable navigation and inspector rails, relocated rail toggles, narrow-container overlays, and explicit pane scroll owners.
 - [Navigation Sidebar](./recipe-navigation-sidebar.md) — Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.
 - [Workspace Header](./recipe-workspace-header.md) — Page identity with primary, secondary, and overflow actions that relocate at narrow widths.
-- [List-detail dialog](./recipe-list-detail-dialog.md) — Production modal laid out as a workbench: a full-height SplitView list sidebar with its own toolbar beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.
+- [List-detail dialog](./recipe-list-detail-dialog.md) — Production ListDetailDialog: a full-height list column with its own title beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.
 - [Composer Form](./recipe-composer-form.md) — One visible publishing-form surface with Toolbar heading hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.
 - [List Workspace States](./recipe-list-workspace-states.md) — Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.
 - [Compact Toolbar Choices and Actions](./recipe-compact-toolbar.md) — A compact toolbar that distinguishes grouped commands, a visible exclusive choice, a longer Select, and one ordinary action.

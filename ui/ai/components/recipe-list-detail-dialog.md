@@ -6,7 +6,7 @@
 
 ## When to use
 
-Production modal laid out as a workbench: a full-height SplitView list sidebar with its own toolbar beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.
+Production ListDetailDialog: a full-height list column with its own title beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.
 
 - A focused task compares several records without leaving the current workspace.
 
@@ -17,7 +17,7 @@ Production modal laid out as a workbench: a full-height SplitView list sidebar w
 ## Imports
 
 - Nothing to import: this is a reference composition.
-- Declared side effects: lazy-recipe-css, individual-custom-element-registration.
+- Declared side effects: lazy-recipe-css.
 
 ## Props
 
@@ -28,7 +28,7 @@ No props: this entry has no JavaScript API.
 - Parents: used at the root of a screen or reference, not nested.
 - Contexts: `application-reference`.
 - Children: unrestricted.
-- Built from: [Surface Scaffolds](./surface-scaffold.md), [SplitView](./split-view.md), [NavStack](./nav-stack.md), [Row](./row.md), [List](./list.md), [ListHeader](./list-header.md), [ListItem](./list-item.md), [ValueTable](./value-table.md), [LucideIcon](./lucide-icon.md), [Dialog](./wa-dialog.md), [Button](./wa-button.md).
+- Built from: [ListDetailDialog](./list-detail-dialog.md), [Row](./row.md), [List](./list.md), [ListItem](./list-item.md), [ValueTable](./value-table.md), [LucideIcon](./lucide-icon.md), [Button](./button.md).
 
 ## State and wiring
 
@@ -42,7 +42,7 @@ Margin: composed · border: composed · padding: composed (layout role: referenc
 
 ## Accessibility
 
-- Web Awesome owns modal focus, Escape, and the labeled header with its close control; the application adapter restores the invoking control after hide, and the compact NavStack back control returns to the list.
+- ListDetailDialog's native modal dialog owns focus, Escape, and inertness, and returns focus to the opener on close; the close control sits in the detail column (or each compact view), and the compact NavStack back control returns to the list.
 
 ## Styling boundary
 
@@ -52,6 +52,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Surface Scaffolds](./surface-scaffold.md), [SplitView](./split-view.md), [NavStack](./nav-stack.md), [Row](./row.md), [List](./list.md), [ListHeader](./list-header.md), [ListItem](./list-item.md), [ValueTable](./value-table.md), [LucideIcon](./lucide-icon.md), [Dialog](./wa-dialog.md), [Button](./wa-button.md).
+- Components: [ListDetailDialog](./list-detail-dialog.md), [Row](./row.md), [List](./list.md), [ListItem](./list-item.md), [ValueTable](./value-table.md), [LucideIcon](./lucide-icon.md), [Button](./button.md).
 - Docs: [`docs/recipes.md#list-detail-dialog`](../../docs/recipes.md#list-detail-dialog).
 - UX catalog route: `?component=recipe-list-detail-dialog`.

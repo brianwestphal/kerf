@@ -33,10 +33,13 @@ export interface SplitViewResizable extends Pick<
   max: number;
 }
 
-/** One compact view's top- and bottom-toolbar content (see `NavStackView`). */
+/**
+ * One compact view's top- and bottom-toolbar content and pinned footer (see
+ * `NavStackView`).
+ */
 export type SplitViewCompactViewToolbars = Pick<
   NavStackView,
-  'toolbar' | 'bottomToolbar'
+  'toolbar' | 'bottomToolbar' | 'footer'
 >;
 
 /**

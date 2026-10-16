@@ -389,29 +389,6 @@ export function SurfaceScaffoldDemo() {
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
-        label="Filled List-Detail Modal"
-        note='height gives the modal a definite, viewport-bounded size and bodyLayout="fill" hands the whole body to one SplitView.'
-        align="inline-control"
-      >
-        <Button
-          action="show-dialog"
-          rootAttributes={{ 'data-dialog-id': 'catalog-filled-dialog' }}
-        >
-          Open Project Details
-        </Button>
-        <DialogSurface
-          id="catalog-filled-dialog"
-          label="Project Details"
-          size="large"
-          viewportGutter={remify(8)}
-          height={remify(480)}
-          bodyInset="none"
-          bodyLayout="fill"
-        >
-          {projectSplit('catalog-filled-dialog-split')}
-        </DialogSurface>
-      </CatalogExample>
-      <CatalogExample
         label="Chat Dialog"
         note='footerPresentation="floating" lays a MessageComposer over the body, 8px from the panel edges so its text aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills the rest; with scrollClearance="block-end" the transcript scrolls beneath the composer and its last message still rests above it.'
         align="inline-control"

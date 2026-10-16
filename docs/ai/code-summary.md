@@ -857,6 +857,8 @@ Entry outputs share chunks where tsup finds common code; some entries also retai
 
 Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it up from their own `node_modules`.
 
+`ui/src/components/surfaces/list-detail-dialog/list-detail-dialog.tsx` (`@kerfjs/ui/list-detail-dialog`, CSS entry `ui/src/list-detail-dialog.css` importing the DialogSurface, SplitView, NavStack, Pane, and toolbar stylesheets) renders `ListDetailDialog`: a header-less `DialogSurface` whose body is a `SplitView` of two `Pane` columns (title, actions, and close in the detail column's toolbar), or a full-screen compact `NavStack` drill-down; it re-exports `openDialog` / `closeDialog`. Requirements live in `ui/docs/list-detail-dialog.md`; catalog route `?component=list-detail-dialog` (`ui/ux-demo/demos/list-detail-dialog.tsx`), recipe `ui/ux-demo/recipes/list-detail-dialog.tsx`. Tests: `ui/tests/unit/list-detail-dialog.test.tsx`, `ui/tests/browser/list-detail-dialog.spec.ts`.
+
 `npm --prefix ui run build` independently emits the ESM/type entry shims for
 `@kerfjs/ui`, compiles pixel-first `remify(<px>)` author CSS into standard
 `dist/styles/*.css`, then derives component-to-component reachability from

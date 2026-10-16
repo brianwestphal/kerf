@@ -28,6 +28,7 @@ import { HeadersDemo } from './headers.js';
 import { LayoutDemo } from './layout.js';
 import { ListDemo } from './list.js';
 import { ListActionRowDemo } from './list-action-row.js';
+import { ListDetailDialogDemo } from './list-detail-dialog.js';
 import { ListHeaderDemo } from './list-header.js';
 import { ListInsetControlDemo } from './list-inset-control.js';
 import { ListInsetTextDemo } from './list-inset-text.js';
@@ -78,6 +79,7 @@ export const demos = {
   'floating-toolbar': FloatingToolbarDemo,
   'segmented-control': SegmentedControlDemo,
   'choice-chips': ChoiceChipsDemo,
+  'list-detail-dialog': ListDetailDialogDemo,
   'message-composer': MessageComposerDemo,
   'search-field': SearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,

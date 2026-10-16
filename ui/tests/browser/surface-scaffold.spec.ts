@@ -369,9 +369,11 @@ test('a definite-height DialogSurface hands its whole body to one filling child'
   page,
 }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
-  await page.goto('/?component=surface-scaffold');
+  // ListDetailDialog is a definite-height DialogSurface whose fill body is
+  // one SplitView.
+  await page.goto('/?component=list-detail-dialog');
   await page.getByRole('button', { name: 'Open Project Details' }).click();
-  const dialog = page.locator('#catalog-filled-dialog');
+  const dialog = page.locator('#list-detail-dialog-demo');
   await expect(dialog).toHaveAttribute('open', '');
   await expect
     .poll(() =>
@@ -444,7 +446,7 @@ test('PopoverDialogSurface is a centered, bounded, non-modal light-dismiss dialo
     // Non-modal: the controls behind it are not made inert.
     expect(
       await page
-        .getByRole('button', { name: 'Open Project Details' })
+        .getByRole('button', { name: 'Open Repository Status' })
         .evaluate((element) => element.closest('[inert]') === null),
     ).toBe(true);
     await page.keyboard.press('Escape');

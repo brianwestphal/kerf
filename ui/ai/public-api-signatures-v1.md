@@ -1727,8 +1727,11 @@ interface SplitViewResizable extends Pick<ResizableRegionProps, 'separator' | 'h
     min: number;
     max: number;
 }
-/** One compact view's top- and bottom-toolbar content (see `NavStackView`). */
-type SplitViewCompactViewToolbars = Pick<NavStackView, 'toolbar' | 'bottomToolbar'>;
+/**
+ * One compact view's top- and bottom-toolbar content and pinned footer (see
+ * `NavStackView`).
+ */
+type SplitViewCompactViewToolbars = Pick<NavStackView, 'toolbar' | 'bottomToolbar' | 'footer'>;
 /**
  * The compact `NavStack`'s configuration: its toolbar configuration, back
  * control, persistent bottom toolbar, chrome dividers, and chrome and
@@ -4752,6 +4755,128 @@ interface PopupSurfaceProps {
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
 export { type DialogCloseSource, type DialogRequestCloseDetail, DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfaceName, type DialogSurfaceOptions, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset, closeDialog, openDialog };
+```
+
+## `@kerfjs/ui/list-detail-dialog`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
+import { SplitViewListWidth } from './split-view.js';
+import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
+export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
+import './nav-stack-CU_0dKtI.js';
+import './pane.js';
+import './scroll-clearance-BikHljTc.js';
+import './list.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
+import './sides-BPSWde0A.js';
+import './panel-toolbar-vg6Ir5Dy.js';
+import './toolbar.js';
+import './lucide-icon.js';
+import 'lucide';
+import './toolbar-text.js';
+import './resizable-region.js';
+
+/** The list column: a secondary title, its own controls, and the list. */
+interface ListDetailDialogList {
+    /**
+     * The column's title, at the default toolbar size so it reads as pane
+     * identity beside the detail's primary title. On compact devices it titles
+     * the root view.
+     */
+    title: string;
+    /** Controls after the title in the column's header, such as a `ToolbarControlGroup`. */
+    toolbar?: KerfUiContent;
+    /** The list, usually a `List` of selectable `ListItem`s. */
+    content: KerfUiContent;
+    /** Content pinned below the list, such as an add control. */
+    footer?: KerfUiContent;
+    /**
+     * The column's width on roomy devices (default 280px, at most 40% of the
+     * dialog's width).
+     */
+    width?: SplitViewListWidth;
+}
+/** The detail column: the dialog's primary title, actions, and close control. */
+interface ListDetailDialogDetail {
+    /**
+     * The dialog's primary title: an xl heading at the top of the detail
+     * column on roomy devices, and the pushed view's title on compact devices.
+     */
+    title: string;
+    /** A short supporting line under the roomy title. */
+    description?: string;
+    /**
+     * Header controls before the close control, such as a
+     * `ToolbarControlGroup`. Primary record actions usually go in `footer`.
+     */
+    actions?: KerfUiContent;
+    /** The selected item's detail. */
+    content: KerfUiContent;
+    /** Content pinned below the detail, usually its buttons. */
+    footer?: KerfUiContent;
+}
+/**
+ * Application `data-*` identity on the dialog root, such as `data-key`; the
+ * dialog's own configuration attributes stay protected.
+ */
+type ListDetailDialogRootAttributes = DialogSurfaceRootAttributes;
+interface ListDetailDialogProps {
+    /**
+     * The dialog's id, for `openDialog(document.getElementById(id))`. Also
+     * prefixes the ids of the split and the detail title.
+     */
+    id: string;
+    /** The dialog's accessible name. */
+    label: string;
+    list: ListDetailDialogList;
+    detail: ListDetailDialogDetail;
+    /**
+     * One pane at a time: derive from `deviceClass().value.compact`. The dialog
+     * fills the screen and drills from the list into the detail as a
+     * `NavStack`; every view keeps the close control.
+     */
+    compact?: boolean;
+    /** On compact devices, whether the detail is pushed over the list. */
+    detailActive?: boolean;
+    /** The compact back control's accessible name (default `Back`). */
+    backLabel?: string;
+    /** The close control's accessible name (default `Close`). */
+    closeLabel?: string;
+    /** Close on a press on the backdrop; otherwise the panel pulses. */
+    lightDismiss?: boolean;
+    /** Roomy preferred width preset (default `large`). */
+    size?: DialogSurfaceSize;
+    /** Roomy preferred width; takes precedence over `size`. */
+    preferredWidth?: CssLength;
+    /** Roomy definite height (default 560px), bounded by the viewport. */
+    height?: DialogSurfaceHeight;
+    /** Roomy height cap in place of a definite height. */
+    maxHeight?: DialogSurfaceMaxHeight;
+    /** Roomy edge clearance from the viewport. */
+    viewportGutter?: CssLength;
+    rootAttributes?: ListDetailDialogRootAttributes;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A list-detail dialog: a modal whose list column and detail column each run
+ * its full height. The list column carries a secondary title and its own
+ * controls; the detail column carries the dialog's primary title, its
+ * actions, and the close control, so the divider between them runs from top
+ * to bottom. On compact devices it fills the screen and becomes a `NavStack`
+ * that drills from the list into the detail. Open it with `openDialog()`;
+ * the app owns the selection and, on compact devices, `detailActive` (the
+ * stack's back control dispatches `nav-back`). Built from `DialogSurface`,
+ * `SplitView`, and `Pane`.
+ */
+declare function ListDetailDialog({ id, label, list, detail, compact, detailActive, backLabel, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, rootAttributes, className, slot, }: ListDetailDialogProps): kerfjs.SafeHtml;
+
+export { ListDetailDialog, type ListDetailDialogDetail, type ListDetailDialogList, type ListDetailDialogProps, type ListDetailDialogRootAttributes };
 ```
 
 ## `@kerfjs/ui/text`

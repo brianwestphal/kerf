@@ -1,0 +1,11 @@
+/* Public stylesheet entry; implementation is colocated with the component.
+   ListDetailDialog adds no rules of its own (a header-less DialogSurface around
+   a SplitView of Panes), so this entry pulls in the stylesheets it renders. */
+@import "./surface-scaffold.css";
+@import "./split-view.css";
+@import "./nav-stack.css";
+@import "./pane.css";
+@import "./toolbar.css";
+@import "./toolbar-control-group.css";
+@import "./toolbar-text.css";
+@import "./lucide-icon.css";

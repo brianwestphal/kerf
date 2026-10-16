@@ -77,27 +77,21 @@ controls relocate without changing focus order.
 
 [Open the recipe](../ux-demo/?component=recipe-list-detail-dialog) · [TSX source](../ux-demo/recipes/list-detail-dialog.tsx)
 
-A list-detail dialog is laid out like a `Workbench` with a left sidebar: on
-roomy devices the list is a full-height sidebar and the detail is a full-height
-main column, each a `Pane` with its own top `Toolbar`. The sidebar's toolbar
-carries its quiet default-size title (and it may add a bottom toolbar for
-sidebar-only actions); the main column's toolbar carries the dialog's primary
-extra-large title and the close control, and its footer carries the record
-actions. The Web Awesome dialog therefore renders `without-header` there —
-its label still names the modal — and the close button uses
-`data-dialog="close"`. Web Awesome keeps modal focus and Escape, and the thin
-recipe adapter restores the invoking control after the hide event.
-`DialogSurface` chooses the large modal with no body inset, because the panes
-own their geometry. Its explicit 16px `viewportGutter` and `maxHeight="viewport"`
-bound the roomy modal to the dynamic viewport; the compact fullscreen
-presentation retains its existing geometry. Application render state chooses
-the presentation and can likewise choose gutter/cap values for a compact modal.
-On compact devices the dialog becomes a full-screen sheet
-with its own labeled header and footer actions, and `SplitView` becomes a
-`NavStack` drill-down whose back control the application pops. The
-application owns open state, selection, the pushed detail, dismissal policy,
-and record actions. Do not put the primary title in a header spanning both
-columns, rebuild the dialog, or reach into private shadow parts.
+The recipe renders `ListDetailDialog` (`@kerfjs/ui/list-detail-dialog`). On
+roomy devices the list and the detail are full-height columns, each a `Pane`
+with its own top `Toolbar`, so the divider runs the dialog's full height. The
+list column's toolbar carries its quiet default-size title; the detail
+column's toolbar carries the dialog's primary extra-large title and the close
+control, and its pinned footer carries the record actions. The surface draws
+no header of its own, and its label still names the modal. Its explicit 16px
+`viewportGutter` bounds the roomy modal to the dynamic viewport. On compact
+devices the same component fills the screen and becomes a `NavStack`
+drill-down whose back control the application pops; every view keeps the
+close control and the detail keeps its pinned actions. The application owns
+open state, selection, the pushed detail, dismissal policy, and record
+actions. Do not compose `DialogSurface` around a `SplitView` by hand for this
+layout: the surface header would span both columns and stop the divider below
+it. See [ListDetailDialog](./list-detail-dialog.md).
 
 ## Composer Form
 

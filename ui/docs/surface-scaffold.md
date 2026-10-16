@@ -6,6 +6,12 @@ and presented by its props. `PopoverDialogSurface` is its non-modal sibling,
 and `PopupSurface` insets a raw Web Awesome dropdown. The application owns
 open state, dismissal policy, ids, names, and content.
 
+`DialogSurface` is the single-pane dialog type. For a modal that picks a
+record from a list and shows its detail beside it, use
+[`ListDetailDialog`](./list-detail-dialog.md) instead of wrapping a
+`SplitView` in a `DialogSurface`: it draws no surface header, so the title and
+close control sit in the detail column and the divider runs the full height.
+
 ```tsx
 import { DialogSurface, openDialog } from '@kerfjs/ui/surface-scaffold';
 

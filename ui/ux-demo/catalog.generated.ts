@@ -246,6 +246,27 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/surface-scaffold.md"
   },
   {
+    "id": "list-detail-dialog",
+    "name": "ListDetailDialog",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Present a selectable list beside the selected item's detail inside a modal, with the dialog's title and close control in the detail column and a one-pane drill-down on compact devices.",
+    "uses": [
+      "surface-scaffold",
+      "split-view",
+      "nav-stack",
+      "pane",
+      "toolbar",
+      "toolbar-text",
+      "toolbar-control-group",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/list-detail-dialog.tsx",
+    "componentSource": "ui/src/components/surfaces/list-detail-dialog/list-detail-dialog.tsx",
+    "documentation": "ui/docs/list-detail-dialog.md"
+  },
+  {
     "id": "floating-toolbar",
     "name": "FloatingToolbar",
     "category": "Structure",
@@ -945,19 +966,15 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "Production modal laid out as a workbench: a full-height SplitView list sidebar with its own toolbar beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.",
+    "description": "Production ListDetailDialog: a full-height list column with its own title beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.",
     "uses": [
-      "surface-scaffold",
-      "split-view",
-      "nav-stack",
+      "list-detail-dialog",
       "row",
       "list",
-      "list-header",
       "list-item",
       "value-table",
       "lucide-icon",
-      "wa-dialog",
-      "wa-button"
+      "button"
     ],
     "demoSource": "ui/ux-demo/recipes/list-detail-dialog.tsx",
     "documentation": "ui/docs/recipes.md#list-detail-dialog"

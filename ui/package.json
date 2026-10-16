@@ -263,6 +263,11 @@
       "browser": "./dist/browser/split-view.js",
       "import": "./dist/split-view.js"
     },
+    "./list-detail-dialog": {
+      "types": "./dist/list-detail-dialog.d.ts",
+      "browser": "./dist/browser/list-detail-dialog.js",
+      "import": "./dist/list-detail-dialog.js"
+    },
     "./pane": {
       "types": "./dist/pane.d.ts",
       "browser": "./dist/browser/pane.js",
@@ -523,6 +528,7 @@
     "./tab-bar.css": "./dist/styles/tab-bar.css",
     "./nav-stack.css": "./dist/styles/nav-stack.css",
     "./split-view.css": "./dist/styles/split-view.css",
+    "./list-detail-dialog.css": "./dist/styles/list-detail-dialog.css",
     "./pane.css": "./dist/styles/pane.css",
     "./workbench.css": "./dist/styles/workbench.css",
     "./collapsible-panel.css": "./dist/styles/collapsible-panel.css",

@@ -45,6 +45,7 @@ const entries = [
   'wire-nav-stack',
   'wire-content-items',
   'split-view',
+  'list-detail-dialog',
   'pane',
   'workbench',
   'collapsible-panel',

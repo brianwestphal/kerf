@@ -102,6 +102,12 @@ import {
   RESTORE_DRAWER_ID,
   restoreDrawerCollapsed,
 } from './demos/collapsible-panel.js';
+import {
+  popListDetailDialogDemo,
+  resetListDetailDialogDemo,
+  SELECT_LIST_DETAIL_PROJECT_ACTION,
+  selectListDetailDialogProject,
+} from './demos/list-detail-dialog.js';
 import { SEND_COMPOSER_DEMO_ACTION } from './demos/message-composer.js';
 import {
   popConfiguredNavStackDemo,
@@ -737,6 +743,12 @@ const stopActions = delegateActions(app, 'click', {
       const transcript = dialog?.querySelector('[data-demo-chat-transcript]');
       transcript?.scrollTo({ top: transcript.scrollHeight });
     });
+  },
+  [SELECT_LIST_DETAIL_PROJECT_ACTION]: (_event, target) => {
+    const id = target.getAttribute('data-item-id');
+    if (!id) return;
+    selectListDetailDialogProject(id);
+    actionLog.value = `Selected ${id}`;
   },
   [SEND_COMPOSER_DEMO_ACTION]: (_event, target) => {
     const id = target.getAttribute('data-message-composer-id') ?? '';
@@ -1573,6 +1585,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
       });
       return () => stops.forEach((stop) => stop());
     },
+  },
+  'list-detail-dialog': {
+    reset: resetListDetailDialogDemo,
+    target: 'canvas',
+    wire: (canvas) => wireNavStack(canvas, { onBack: popListDetailDialogDemo }),
   },
   'surface-scaffold': {
     reset: resetSurfaceScaffoldDemo,

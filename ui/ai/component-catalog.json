@@ -2361,6 +2361,135 @@
       ]
     },
     {
+      "id": "list-detail-dialog",
+      "name": "ListDetailDialog",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A modal list-detail dialog whose list and detail columns each run its full height: the list column carries a secondary title and its own controls, the detail column carries the dialog's primary title, actions, and close control, and compact devices get a full-screen drill-down.",
+      "uses": [
+        "surface-scaffold",
+        "split-view",
+        "nav-stack",
+        "pane",
+        "toolbar",
+        "toolbar-text",
+        "toolbar-control-group",
+        "lucide-icon"
+      ],
+      "purpose": "Present a selectable list beside the selected item's detail inside a modal, with the dialog's title and close control in the detail column and a one-pane drill-down on compact devices.",
+      "publicExports": [
+        "ListDetailDialog",
+        "ListDetailDialogProps",
+        "ListDetailDialogList",
+        "ListDetailDialogDetail",
+        "ListDetailDialogRootAttributes",
+        "openDialog",
+        "closeDialog"
+      ],
+      "useWhen": [
+        "A modal task picks one record from a list and shows its detail beside it (project details, account switcher, settings categories): render ListDetailDialog with list and detail, open it with openDialog(), and pass compact from deviceClass().value.compact.",
+        "The dialog's primary title, actions, and close control belong to the selected item's detail rather than spanning both columns, and the column divider should run the dialog's full height."
+      ],
+      "avoidWhen": [
+        "Do not use it for a single-pane dialog; use DialogSurface.",
+        "Do not compose DialogSurface around a SplitView by hand for this layout; the surface header would span both columns and stop the divider below it.",
+        "Do not use it when the task needs a durable route or more working space than a modal; use a page with SplitView."
+      ],
+      "alternatives": [
+        {
+          "id": "surface-scaffold",
+          "relationship": "nearest",
+          "when": "Use DialogSurface for a single-pane dialog."
+        },
+        {
+          "id": "split-view",
+          "relationship": "responsive-alternative",
+          "when": "Use SplitView for the same list-detail flow as a page rather than a modal."
+        }
+      ],
+      "appOwns": [
+        "open state (openDialog and closeDialog)",
+        "device-class policy (compact)",
+        "selected item and, on compact devices, detailActive and the back action (nav-back)",
+        "list and detail content, their titles, toolbar controls, and footers",
+        "dismissal policy (lightDismiss)"
+      ],
+      "variants": [
+        "roomy modal: a full-height list column and a full-height detail column with a fixed list width (default 280px, at most 40% of the dialog)",
+        "list column header controls and a pinned list footer",
+        "detail header actions before the close control, a description under the title, and a pinned detail footer",
+        "compact full-screen NavStack drill-down with the close control on every view",
+        "definite height (default 560px) or a viewport height cap, viewport gutter, size or preferred width, and light dismiss"
+      ],
+      "accessibility": [
+        "It is a native modal <dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.",
+        "On roomy devices the detail title is a level-2 heading; every presentation keeps a close control named Close (closeLabel), and the compact back control is named by backLabel."
+      ],
+      "geometry": {
+        "margin": "parent",
+        "border": "self",
+        "padding": "child",
+        "notes": [
+          "The dialog draws no header and no body inset; each column is a Pane that owns its chrome and content insets, and the column divider runs the dialog's full height."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/list-detail-dialog",
+        "browserImport": "@kerfjs/ui/list-detail-dialog",
+        "manualCssImport": "@kerfjs/ui/list-detail-dialog.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireNavStack",
+          "import": "@kerfjs/ui/wire-nav-stack",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-nav-chrome-transition",
+              "on": "kui-nav-stack",
+              "meaning": "\"true\" while the chrome cross-fades between the outgoing and incoming view."
+            },
+            {
+              "name": "data-nav-chrome-copy",
+              "on": "kui-nav-stack__chrome-copy",
+              "meaning": "Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade."
+            },
+            {
+              "name": "data-nav-revealed",
+              "on": "kui-nav-stack__view",
+              "meaning": "\"true\" on the preserved, aria-hidden previous view while an incoming view slides over it."
+            },
+            {
+              "name": "data-nav-exiting",
+              "on": "kui-nav-stack__view",
+              "meaning": "\"true\" on a popped view the helper briefly re-inserts to slide it out."
+            },
+            {
+              "name": "data-chrome-overlay",
+              "on": "kui-nav-stack",
+              "meaning": "measured once the helper has measured the compact stack's overlay chrome (compactStack.chromePresentation: overlay) and published its border-box height on the stack root. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-bottom-toolbar-overlay",
+              "on": "kui-nav-stack",
+              "meaning": "measured once the helper has measured the compact stack's overlay bottom toolbar (compactStack.bottomToolbarPresentation: overlay) and published its border-box height on the stack root. Re-applied if a re-render drops it."
+            }
+          ]
+        }
+      ],
+      "publicClasses": [],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=list-detail-dialog",
+        "documentation": "docs/list-detail-dialog.md",
+        "recipe": "docs/recipes.md#list-detail-dialog"
+      }
+    },
+    {
       "id": "floating-toolbar",
       "name": "FloatingToolbar",
       "category": "Structure",
@@ -10817,19 +10946,15 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "Production modal laid out as a workbench: a full-height SplitView list sidebar with its own toolbar beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.",
+      "purpose": "Production ListDetailDialog: a full-height list column with its own title beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.",
       "uses": [
-        "surface-scaffold",
-        "split-view",
-        "nav-stack",
+        "list-detail-dialog",
         "row",
         "list",
-        "list-header",
         "list-item",
         "value-table",
         "lucide-icon",
-        "wa-dialog",
-        "wa-button"
+        "button"
       ],
       "useWhen": [
         "A focused task compares several records without leaving the current workspace."
@@ -10845,12 +10970,11 @@
         "record actions"
       ],
       "accessibility": [
-        "Web Awesome owns modal focus, Escape, and the labeled header with its close control; the application adapter restores the invoking control after hide, and the compact NavStack back control returns to the list."
+        "ListDetailDialog's native modal dialog owns focus, Escape, and inertness, and returns focus to the opener on close; the close control sits in the detail column (or each compact view), and the compact NavStack back control returns to the list."
       ],
       "delivery": {
         "sideEffects": [
-          "lazy-recipe-css",
-          "individual-custom-element-registration"
+          "lazy-recipe-css"
         ]
       },
       "links": {

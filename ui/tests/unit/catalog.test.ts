@@ -537,6 +537,7 @@ describe('UX catalog metadata', () => {
       'Toolbar',
       'ToolbarControlGroup',
       'Surface Scaffolds',
+      'ListDetailDialog',
       'FloatingToolbar',
       'ToolbarText',
       'Text',

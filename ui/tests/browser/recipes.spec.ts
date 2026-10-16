@@ -375,44 +375,34 @@ test('lays the project dialog out as a workbench on roomy devices and a drill-do
     }
 
     const geometry = await dialog.evaluate((root) => {
-      const range = document.createRange();
       const panel = root.getBoundingClientRect();
-      const title = root.querySelector('.kui-dialog-surface__title')!;
-      range.selectNodeContents(title);
       const split = root
         .querySelector<HTMLElement>('[data-component="split-view"]')!
         .getBoundingClientRect();
       const firstRow = root
         .querySelector<HTMLElement>('[data-item-id="alpha"]')!
         .getBoundingClientRect();
-      const footer = [
-        ...root.querySelectorAll<HTMLElement>(
-          '.kui-dialog-surface__footer > *',
-        ),
-      ].map((button) => button.getBoundingClientRect());
       return {
-        footerEndInset: panel.right - footer.at(-1)!.right,
-        footerTopDelta: Math.abs(footer[0]!.top - footer[1]!.top),
-        footerOrdered: footer[0]!.right <= footer[1]!.left,
+        surfaceHeader: root.querySelector('.kui-dialog-surface__header'),
         panelWidth: panel.width,
         rowInset: firstRow.left - split.left,
         splitEndInset: panel.right - split.right,
         splitStartInset: split.left - panel.left,
-        titleShown: range.getBoundingClientRect().width > 0,
       };
     });
 
-    // Handsets get a full-screen sheet with its own labeled header; the split
-    // view sits flush in its body and drills list → detail.
+    // Handsets get a full-screen dialog whose NavStack chrome carries each
+    // view's title and the close control; the split view sits flush in it
+    // and drills list → detail.
     expect(compact).toBe(true);
-    expect(geometry.titleShown).toBe(true);
+    expect(geometry.surfaceHeader).toBeNull();
     expect(geometry.splitStartInset).toBeCloseTo(0, 0);
     expect(geometry.splitEndInset).toBeCloseTo(0, 0);
     expect(geometry.rowInset).toBeCloseTo(8, 0);
-    expect(geometry.footerEndInset).toBeCloseTo(16, 0);
-    expect(geometry.footerTopDelta).toBeLessThanOrEqual(1);
-    expect(geometry.footerOrdered).toBe(true);
     expect(geometry.panelWidth).toBeCloseTo(viewport.width, 0);
+    const chrome = dialog.locator('[data-nav-stack-chrome]');
+    await expect(chrome.getByText('Recent Projects')).toBeVisible();
+    await expect(chrome.getByRole('button', { name: 'Close' })).toBeVisible();
     const stack = dialog.locator('[data-component="nav-stack"]');
     await expect(stack).toHaveAttribute('data-depth', '1');
     await dialog.locator('[data-item-id="beta"]').click();
@@ -420,6 +410,42 @@ test('lays the project dialog out as a workbench on roomy devices and a drill-do
     await expect(
       dialog.locator('.kui-value-table', { hasText: 'Sam Rivera' }),
     ).toBeVisible();
+    await expect(chrome.getByRole('button', { name: 'Close' })).toBeVisible();
+    // Once the detail has slid in, the record actions are pinned below it on
+    // the 8px control inset.
+    await expect(stack).not.toHaveAttribute(
+      'data-nav-chrome-transition',
+      'true',
+    );
+    await expect
+      .poll(() =>
+        dialog.evaluate(
+          (root) =>
+            root.getBoundingClientRect().right -
+            root
+              .querySelector('[data-nav-key="detail"]')!
+              .getBoundingClientRect().right,
+        ),
+      )
+      .toBeCloseTo(0, 0);
+    const actions = await dialog.evaluate((root) => {
+      const panel = root.getBoundingClientRect();
+      const buttons = [
+        ...root.querySelectorAll<HTMLElement>(
+          '[data-nav-key="detail"] .kui-button',
+        ),
+      ].map((button) => button.getBoundingClientRect());
+      return {
+        endInset: panel.right - buttons.at(-1)!.right,
+        bottomInset: panel.bottom - buttons.at(-1)!.bottom,
+        topDelta: Math.abs(buttons[0]!.top - buttons[1]!.top),
+        ordered: buttons[0]!.right <= buttons[1]!.left,
+      };
+    });
+    expect(actions.endInset).toBeCloseTo(8, 0);
+    expect(actions.bottomInset).toBeLessThanOrEqual(48);
+    expect(actions.topDelta).toBeLessThanOrEqual(1);
+    expect(actions.ordered).toBe(true);
     await dialog.getByRole('button', { name: 'Back to Projects' }).click();
     await expect(stack).toHaveAttribute('data-depth', '1');
 
