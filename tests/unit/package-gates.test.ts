@@ -38,6 +38,35 @@ describe('selectPackageGates', () => {
     ]);
   });
 
+  it('runs the eslint-plugin tests when the ui data its rules read changes', () => {
+    // A Discouraged-list change in the ui catalog/profile broke the plugin's
+    // rule tests in CI while the ui-only local gate stayed green.
+    expect(names(['ui/ai/application-ui-profile.defaults.json'])).toEqual([
+      'ui:check',
+      'eslint-plugin:test',
+    ]);
+    expect(names(['ui/ai/component-catalog.json'])).toEqual([
+      'ui:check',
+      'eslint-plugin:test',
+    ]);
+    expect(names(['ui/package.json'])).toEqual([
+      'ui:check',
+      'eslint-plugin:test',
+    ]);
+    // ui source alone stays ui-only.
+    expect(names(['ui/src/components/actions/button/button.tsx'])).toEqual([
+      'ui:check',
+    ]);
+  });
+
+  it('runs the scaffold tests when a schema it bundles changes', () => {
+    expect(names(['ui/ai/component-composition.schema.json'])).toEqual([
+      'ui:check',
+      'eslint-plugin:test',
+      'create-kerf-component:test',
+    ]);
+  });
+
   it('runs nothing for changes no package gate covers', () => {
     expect(
       names(['docs/4-render.md', 'CHANGELOG.md', 'tests/unit/a.ts']),

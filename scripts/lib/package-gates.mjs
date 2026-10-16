@@ -25,13 +25,22 @@ export const PACKAGE_GATES = [
     name: 'eslint-plugin:test',
     dir: 'eslint-plugin',
     args: ['test'],
-    triggers: ['eslint-plugin/'],
+    // The plugin's rules read @kerfjs/ui's shipped AI data (the component
+    // catalog, composition, and profile defaults), so a ui-only change to
+    // that data can break its tests: a Discouraged-list change once turned
+    // both eslint-plugin CI jobs red while every local gate passed.
+    triggers: ['eslint-plugin/', 'ui/ai/', 'ui/package.json'],
   },
   {
     name: 'create-kerf-component:test',
     dir: 'create-kerf-component',
     args: ['test'],
-    triggers: ['create-kerf-component/'],
+    // The scaffold bundles copies of these @kerfjs/ui contract schemas.
+    triggers: [
+      'create-kerf-component/',
+      'ui/ai/component-composition.schema.json',
+      'ui/ai/component-catalog-extension.schema.json',
+    ],
   },
 ];
 
