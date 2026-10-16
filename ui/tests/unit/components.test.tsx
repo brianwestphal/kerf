@@ -46,9 +46,9 @@ import {
 import { Row } from '../../src/components/layout/row/row.js';
 import { Spacer } from '../../src/components/layout/spacer/spacer.js';
 import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
-import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
 import { DisclosureArrow } from '../../src/components/navigation/disclosure-arrow/disclosure-arrow.js';
 import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
+import { TabBarItem } from '../../src/components/navigation/tab-bar-item/tab-bar-item.js';
 import { ContentItem } from '../../src/components/surfaces/content-item/content-item.js';
 import {
   DialogSurface,
@@ -2401,7 +2401,7 @@ describe('production UI primitives', () => {
       role: 'menuitem',
     };
     const selected = asHtml(
-      AppTab({
+      TabBarItem({
         id: 'first',
         name: 'First',
         selected: true,
@@ -2431,7 +2431,9 @@ describe('production UI primitives', () => {
     expect(selected).toContain(
       'data-presentation="segmented" data-size="compact"',
     );
-    expect(selected).toContain('style="--kui-app-tab-label-max-width:144px"');
+    expect(selected).toContain(
+      'style="--kui-tab-bar-item-label-max-width:144px"',
+    );
     expect(selected).toContain('data-project-id="project-one"');
     expect(selected).toContain('data-tab-id="first"');
     expect(selected).not.toContain('ignored-case-variant');
@@ -2451,7 +2453,7 @@ describe('production UI primitives', () => {
     const host = document.createElement('div');
     host.innerHTML = selected;
     const selectedRoot = host.querySelector<HTMLElement>(
-      '[data-component="app-tab"]',
+      '[data-component="tab-bar-item"]',
     )!;
     expect(selectedRoot.dataset.tabId).toBe('first');
     expect(selectedRoot.dataset.selected).toBe('true');
@@ -2463,14 +2465,14 @@ describe('production UI primitives', () => {
     expect(selectedRoot.hasAttribute('data-action')).toBe(false);
     expect(selectedRoot.hasAttribute('role')).toBe(false);
     const closeIcon = selectedRoot.querySelector<HTMLElement>(
-      '.kui-app-tab__close-icon',
+      '.kui-tab-bar-item__close-icon',
     )!;
     expect(closeIcon.getAttribute('aria-hidden')).toBe('true');
     expect(
       closeIcon.querySelector('[data-custom-close-icon]')?.textContent,
     ).toBe('×');
     const fixed = asHtml(
-      AppTab({ id: 'fixed', name: 'Fixed', closable: false }),
+      TabBarItem({ id: 'fixed', name: 'Fixed', closable: false }),
     );
     expect(fixed).toContain('tabindex="-1"');
     expect(fixed).not.toContain('Close Fixed');
@@ -2484,7 +2486,7 @@ describe('production UI primitives', () => {
         allocation: 'fill',
         presentation: 'inspector',
         trailingPlacement: 'adjacent',
-        children: [AppTab({ id: 'first', name: 'First', selected: true })],
+        children: [TabBarItem({ id: 'first', name: 'First', selected: true })],
       }),
     );
     expect(bar).toContain(
@@ -2505,7 +2507,7 @@ describe('production UI primitives', () => {
         presentation: 'segmented',
         iconOnlyAt: 'wide',
         children: [
-          AppTab({
+          TabBarItem({
             id: 'overview',
             name: 'Overview',
             closable: false,
@@ -2517,10 +2519,10 @@ describe('production UI primitives', () => {
     );
     expect(responsiveBar).toContain('data-icon-only-at="wide"');
     expect(responsiveBar).toContain(
-      'class="kui-app-tab__name">Overview</span>',
+      'class="kui-tab-bar-item__name">Overview</span>',
     );
     const iconOnly = asHtml(
-      AppTab({
+      TabBarItem({
         id: 'icon',
         name: 'Activity',
         leading: icon,
@@ -2530,28 +2532,28 @@ describe('production UI primitives', () => {
     );
     expect(iconOnly).toContain('aria-label="Activity"');
     expect(iconOnly).toContain(
-      'class="kui-app-tab__name" aria-hidden="true">Activity</span>',
+      'class="kui-tab-bar-item__name" aria-hidden="true">Activity</span>',
     );
 
-    AppTab({
+    TabBarItem({
       id: 'unsafe',
       name: 'Unsafe',
       // @ts-expect-error The noninteractive tab root cannot own delegated actions.
       rootAttributes: { 'data-action': 'unsafe' },
     });
-    AppTab({
+    TabBarItem({
       id: 'unsafe',
       name: 'Unsafe',
       // @ts-expect-error Tab identity is component-owned.
       rootAttributes: { 'data-tab-id': 'unsafe' },
     });
-    AppTab({
+    TabBarItem({
       id: 'unsafe',
       name: 'Unsafe',
       // @ts-expect-error Drag lifecycle state is wireTabBars-owned.
       rootAttributes: { 'data-tab-dragging': 'true' },
     });
-    AppTab({
+    TabBarItem({
       id: 'unsafe',
       name: 'Unsafe',
       // @ts-expect-error Drop lifecycle state is wireTabBars-owned.

@@ -15,7 +15,7 @@ test('renders typed tab presentations without consumer descendant CSS', async ({
     'data-trailing-placement',
     'adjacent',
   );
-  const inspectorTabs = inspector.locator('[data-component="app-tab"]');
+  const inspectorTabs = inspector.locator('[data-component="tab-bar-item"]');
   await expect(inspectorTabs).toHaveCount(5);
   const tabGeometry = (tab: typeof inspectorTabs) =>
     tab.evaluate((element) => ({
@@ -23,7 +23,7 @@ test('renders typed tab presentations without consumer descendant CSS', async ({
       flexGrow: window.getComputedStyle(element).flexGrow,
       radius: window.getComputedStyle(element).borderRadius,
       labelWidth: element
-        .querySelector('.kui-app-tab__name')!
+        .querySelector('.kui-tab-bar-item__name')!
         .getBoundingClientRect().width,
     }));
   const geometry = await tabGeometry(inspectorTabs.first());
@@ -34,14 +34,14 @@ test('renders typed tab presentations without consumer descendant CSS', async ({
   expect(
     await inspectorTabs
       .first()
-      .locator('.kui-app-tab__name')
+      .locator('.kui-tab-bar-item__name')
       .evaluate((element) => window.getComputedStyle(element).textOverflow),
   ).toBe('ellipsis');
 
   // Fill allocation stretches every tab across the bar with no consumer CSS.
   const fill = demo.locator('[data-tab-bar-id="segmented-tab-bar"]');
   await expect(fill).toHaveAttribute('data-allocation', 'fill');
-  const fillTabs = fill.locator('[data-component="app-tab"]');
+  const fillTabs = fill.locator('[data-component="tab-bar-item"]');
   await expect(fillTabs).toHaveCount(2);
   const fillGeometry = await tabGeometry(fillTabs.first());
   expect(fillGeometry.height).toBe(32);
@@ -49,27 +49,27 @@ test('renders typed tab presentations without consumer descendant CSS', async ({
   expect(fillGeometry.labelWidth).toBeLessThanOrEqual(120);
 
   await page.goto('/?component=tabs');
-  const appTabDemo = page.locator('[data-demo="tabs"]');
-  const iconTab = appTabDemo.locator(
-    '[data-component="app-tab"][data-tab-id="status"]',
+  const tabBarItemDemo = page.locator('[data-demo="tabs"]');
+  const iconTab = tabBarItemDemo.locator(
+    '[data-component="tab-bar-item"][data-tab-id="status"]',
   );
   await expect(iconTab.getByRole('tab', { name: 'Status' })).toBeVisible();
   expect(
     await iconTab.evaluate((element) => element.getBoundingClientRect().width),
   ).toBe(32);
-  await appTabDemo.screenshot({
+  await tabBarItemDemo.screenshot({
     path: testInfo.outputPath('tab-presentations.png'),
   });
 });
 
-test('a pending AppTab keeps its name, stays selectable and undimmed, and swaps in place', async ({
+test('a pending TabBarItem keeps its name, stays selectable and undimmed, and swaps in place', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 850 });
   await page.goto('/?component=tabs');
-  const bar = page.locator('[data-tab-bar-id="app-tab-pending"]');
+  const bar = page.locator('[data-tab-bar-id="tab-bar-item-pending"]');
   const pending = bar.locator(
-    '[data-component="app-tab"][data-tab-id="alpha"]',
+    '[data-component="tab-bar-item"][data-tab-id="alpha"]',
   );
   await expect(pending).toHaveAttribute('data-pending', 'true');
   await expect(pending).toHaveAttribute('aria-busy', 'true');
@@ -83,7 +83,7 @@ test('a pending AppTab keeps its name, stays selectable and undimmed, and swaps 
   await expect(pending).toHaveCSS('opacity', '1');
   await expect(tab).toHaveAttribute('data-action', 'select-tab');
   await expect(pending).toHaveAttribute('draggable', 'false');
-  await expect(pending.locator('.kui-app-tab__name')).toHaveText('alpha');
+  await expect(pending.locator('.kui-tab-bar-item__name')).toHaveText('alpha');
   const colors = await pending.evaluate((element) => {
     const probe = document.createElement('span');
     probe.style.color = 'var(--kui-color-text-quiet)';
@@ -92,19 +92,19 @@ test('a pending AppTab keeps its name, stays selectable and undimmed, and swaps 
     probe.remove();
     return {
       name: window.getComputedStyle(
-        element.querySelector('.kui-app-tab__name')!,
+        element.querySelector('.kui-tab-bar-item__name')!,
       ).color,
       quiet,
     };
   });
   expect(colors.name).toBe(colors.quiet);
   await expect(
-    pending.locator('.kui-app-tab__trailing .kui-loading-spinner'),
+    pending.locator('.kui-tab-bar-item__trailing .kui-loading-spinner'),
   ).toBeVisible();
 
   // Hovering never reveals the disabled close button.
   await pending.hover();
-  await expect(pending.locator('.kui-app-tab__close')).toBeHidden();
+  await expect(pending.locator('.kui-tab-bar-item__close')).toBeHidden();
 
   // Swapping to the live tab in place keeps the pill's geometry.
   const pendingBox = await pending.evaluate((element) => {
@@ -114,7 +114,7 @@ test('a pending AppTab keeps its name, stays selectable and undimmed, and swaps 
   const liveBox = await pending.evaluate((element) => {
     element.removeAttribute('data-pending');
     element.removeAttribute('aria-busy');
-    element.querySelector('.kui-app-tab__trailing')!.replaceChildren();
+    element.querySelector('.kui-tab-bar-item__trailing')!.replaceChildren();
     const rect = element.getBoundingClientRect();
     return { width: rect.width, height: rect.height };
   });

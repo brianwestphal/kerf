@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
 import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
 import {
   reorderTabs,
   wireTabBars,
 } from '../../src/components/navigation/tab-bar/wiring/wire-tab-bars.js';
+import { TabBarItem } from '../../src/components/navigation/tab-bar-item/tab-bar-item.js';
 
 const roots: HTMLElement[] = [];
 let originalScrollIntoView: typeof Element.prototype.scrollIntoView;
@@ -18,20 +18,20 @@ function bar(id = 'documents', snapTabs = false) {
       label: 'Documents',
       snapTabs,
       children: [
-        AppTab({
+        TabBarItem({
           id: 'one',
           name: 'One',
           selected: true,
           draggable: true,
           rootAttributes: { 'data-domain-tab': 'one' },
         }),
-        AppTab({
+        TabBarItem({
           id: 'two',
           name: 'Two',
           draggable: true,
           rootAttributes: { 'data-domain-tab': 'two' },
         }),
-        AppTab({
+        TabBarItem({
           id: 'three',
           name: 'Three',
           draggable: true,
@@ -169,7 +169,7 @@ describe('TabBar wiring', () => {
     root.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
       if (!target.matches('[role="tab"]')) return;
-      const id = target.closest<HTMLElement>('[data-component="app-tab"]')!
+      const id = target.closest<HTMLElement>('[data-component="tab-bar-item"]')!
         .dataset.tabId;
       for (const button of root.querySelectorAll('[role="tab"]'))
         button.setAttribute('aria-selected', String(button === target));
@@ -178,7 +178,7 @@ describe('TabBar wiring', () => {
       );
       expect(
         root.querySelector(
-          `[data-component="app-tab"][data-tab-id="${id}"] [role="tab"]`,
+          `[data-component="tab-bar-item"][data-tab-id="${id}"] [role="tab"]`,
         ),
       ).not.toBe(target);
     });
@@ -196,7 +196,7 @@ describe('TabBar wiring', () => {
       );
       await Promise.resolve();
       const replacement = root.querySelector<HTMLElement>(
-        `[data-component="app-tab"][data-tab-id="${id}"] [role="tab"]`,
+        `[data-component="tab-bar-item"][data-tab-id="${id}"] [role="tab"]`,
       )!;
       expect(document.activeElement).toBe(replacement);
       expect(replacement.getAttribute('aria-selected')).toBe('true');
@@ -263,7 +263,7 @@ describe('TabBar wiring', () => {
     expect(document.activeElement).toBe(tabs[2]);
     const close = vi.spyOn(
       root.querySelector<HTMLButtonElement>(
-        '[data-tab-id="three"].kui-app-tab__close',
+        '[data-tab-id="three"].kui-tab-bar-item__close',
       )!,
       'click',
     );
@@ -321,8 +321,8 @@ describe('TabBar wiring', () => {
         label: id,
         activation,
         children: [
-          AppTab({ id: 'one', name: 'One', selected: true }),
-          AppTab({ id: 'two', name: 'Two' }),
+          TabBarItem({ id: 'one', name: 'One', selected: true }),
+          TabBarItem({ id: 'two', name: 'Two' }),
         ],
       }),
     );
@@ -401,13 +401,13 @@ describe('TabBar wiring', () => {
     const onReorder = vi.fn();
     const stop = wireTabBars(root, { onReorder });
     const source = root.querySelector<HTMLElement>(
-      '[data-tab-bar-id="documents"] .kui-app-tab[data-tab-id="one"]',
+      '[data-tab-bar-id="documents"] .kui-tab-bar-item[data-tab-id="one"]',
     )!;
     const target = root.querySelector<HTMLElement>(
-      '[data-tab-bar-id="documents"] .kui-app-tab[data-tab-id="two"]',
+      '[data-tab-bar-id="documents"] .kui-tab-bar-item[data-tab-id="two"]',
     )!;
     const crossBar = root.querySelector<HTMLElement>(
-      '[data-tab-bar-id="other"] .kui-app-tab[data-tab-id="two"]',
+      '[data-tab-bar-id="other"] .kui-tab-bar-item[data-tab-id="two"]',
     )!;
     Object.defineProperty(target, 'getBoundingClientRect', {
       value: () => ({
@@ -445,7 +445,7 @@ describe('TabBar wiring', () => {
     expect(target.dataset.domainTab).toBe('two');
     expect(transfer.dropEffect).toBe('move');
     const third = root.querySelector<HTMLElement>(
-      '[data-tab-bar-id="documents"] .kui-app-tab[data-tab-id="three"]',
+      '[data-tab-bar-id="documents"] .kui-tab-bar-item[data-tab-id="three"]',
     )!;
     Object.defineProperty(third, 'getBoundingClientRect', {
       value: () => ({
@@ -522,7 +522,7 @@ describe('TabBar wiring', () => {
     const root = bar();
     const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
     const source = root.querySelector<HTMLElement>(
-      '.kui-app-tab[data-tab-id="one"]',
+      '.kui-tab-bar-item[data-tab-id="one"]',
     )!;
     Object.defineProperties(strip, {
       clientWidth: { configurable: true, value: 200 },
@@ -618,7 +618,7 @@ describe('TabBar wiring', () => {
     const onReorder = vi.fn();
     const stop = wireTabBars(root, { onReorder });
     const tab = root.querySelector<HTMLElement>(
-      '.kui-app-tab[data-tab-id="one"]',
+      '.kui-tab-bar-item[data-tab-id="one"]',
     )!;
     tab.setAttribute('draggable', 'false');
     tab.dispatchEvent(new Event('dragstart', { bubbles: true }));
@@ -634,7 +634,7 @@ describe('TabBar wiring', () => {
     );
     root.insertAdjacentHTML(
       'beforeend',
-      '<div data-component="app-tab" draggable="true" data-tab-id="orphan"><button role="tab">Orphan</button></div>',
+      '<div data-component="tab-bar-item" draggable="true" data-tab-id="orphan"><button role="tab">Orphan</button></div>',
     );
     root.lastElementChild!.dispatchEvent(
       new Event('dragstart', { bubbles: true }),
@@ -642,7 +642,7 @@ describe('TabBar wiring', () => {
     const tabs = root.querySelector('[data-kui-tab-list]')!;
     tabs.insertAdjacentHTML(
       'beforeend',
-      '<div data-component="app-tab" draggable="true"><button role="tab">No id</button></div>',
+      '<div data-component="tab-bar-item" draggable="true"><button role="tab">No id</button></div>',
     );
     tabs.lastElementChild!.dispatchEvent(
       new Event('dragstart', { bubbles: true }),
@@ -652,7 +652,7 @@ describe('TabBar wiring', () => {
     )!;
     barRoot.insertAdjacentHTML(
       'beforeend',
-      '<div data-component="app-tab" data-tab-id="outside" draggable="true"><button role="tab">Outside list</button></div>',
+      '<div data-component="tab-bar-item" data-tab-id="outside" draggable="true"><button role="tab">Outside list</button></div>',
     );
     barRoot
       .lastElementChild!.querySelector('[role="tab"]')!
@@ -662,11 +662,11 @@ describe('TabBar wiring', () => {
     const savedBarId = barRoot.dataset.tabBarId;
     delete barRoot.dataset.tabBarId;
     root
-      .querySelector('.kui-app-tab')!
+      .querySelector('.kui-tab-bar-item')!
       .dispatchEvent(new Event('dragstart', { bubbles: true }));
     barRoot.dataset.tabBarId = savedBarId!;
     const fixedMarkup = String(
-      AppTab({ id: 'fixed', name: 'Fixed', closable: false }),
+      TabBarItem({ id: 'fixed', name: 'Fixed', closable: false }),
     );
     tabs.insertAdjacentHTML('beforeend', fixedMarkup);
     tabs
@@ -733,7 +733,9 @@ describe('TabBar wiring', () => {
       );
       const root = bar('resizing', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const tabs = [...strip.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      const tabs = [
+        ...strip.querySelectorAll<HTMLElement>('.kui-tab-bar-item'),
+      ];
       tabs[0]!.dataset.pinned = 'true';
       Object.defineProperty(strip, 'scrollWidth', {
         get: () =>
@@ -798,7 +800,9 @@ describe('TabBar wiring', () => {
       vi.stubGlobal('ResizeObserver', undefined);
       const root = bar('settling', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const tabs = [...strip.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      const tabs = [
+        ...strip.querySelectorAll<HTMLElement>('.kui-tab-bar-item'),
+      ];
       tabs[0]!.dataset.pinned = 'true';
       const extra = () =>
         strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra');
@@ -834,7 +838,9 @@ describe('TabBar wiring', () => {
     it('aligns RTL snap peers and handles empty and unpinned strips', async () => {
       const root = bar('rtl-snap', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const tabs = [...strip.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      const tabs = [
+        ...strip.querySelectorAll<HTMLElement>('.kui-tab-bar-item'),
+      ];
       const buttons = root.querySelectorAll<HTMLElement>('[role="tab"]');
       strip.style.direction = 'rtl';
       Object.defineProperty(strip, 'scrollWidth', { value: 220 });
@@ -892,7 +898,9 @@ describe('TabBar wiring', () => {
       vi.stubGlobal('ResizeObserver', undefined);
       const root = bar('no-resize-observer', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const tabs = [...strip.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      const tabs = [
+        ...strip.querySelectorAll<HTMLElement>('.kui-tab-bar-item'),
+      ];
       Object.defineProperty(strip, 'scrollWidth', { value: 260 });
       Object.defineProperty(strip, 'clientWidth', { value: 180 });
       const rect = (left: number, right: number) =>
@@ -917,7 +925,7 @@ describe('TabBar wiring', () => {
     it('reserves end room and aligns a selected peer beside a pinned tab in snap mode', async () => {
       const root = bar('snap', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const tabs = [...root.querySelectorAll<HTMLElement>('.kui-app-tab')];
+      const tabs = [...root.querySelectorAll<HTMLElement>('.kui-tab-bar-item')];
       tabs[0]!.dataset.pinned = 'true';
       Object.defineProperty(strip, 'scrollWidth', {
         get: () =>
@@ -1016,7 +1024,7 @@ describe('TabBar wiring', () => {
       const root = bar();
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
       const pinned = root.querySelector<HTMLElement>(
-        '.kui-app-tab[data-tab-id="one"]',
+        '.kui-tab-bar-item[data-tab-id="one"]',
       )!;
       pinned.dataset.pinned = 'true';
       Object.defineProperty(strip, 'scrollWidth', { value: 300 });
@@ -1050,13 +1058,13 @@ describe('TabBar wiring', () => {
       const root = bar();
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
       const pinned = root.querySelector<HTMLElement>(
-        '.kui-app-tab[data-tab-id="one"]',
+        '.kui-tab-bar-item[data-tab-id="one"]',
       )!;
       const second = root.querySelector<HTMLElement>(
-        '.kui-app-tab[data-tab-id="two"] [role="tab"]',
+        '.kui-tab-bar-item[data-tab-id="two"] [role="tab"]',
       )!;
       const third = root.querySelector<HTMLElement>(
-        '.kui-app-tab[data-tab-id="three"] [role="tab"]',
+        '.kui-tab-bar-item[data-tab-id="three"] [role="tab"]',
       )!;
       strip.style.direction = 'rtl';
       pinned.dataset.pinned = 'true';

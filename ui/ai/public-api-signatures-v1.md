@@ -1295,13 +1295,13 @@ declare function ValueTable({ label, density, labelWidth, presentation, stackBel
 export { ValueTable, type ValueTablePresentation, type ValueTableProps, ValueTableRow, type ValueTableRowProps, type ValueTableStackBelow };
 ```
 
-## `@kerfjs/ui/app-tab`
+## `@kerfjs/ui/tab-bar-item`
 
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
-type AppTabRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+type TabBarItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-action'?: never;
     'data-tab-id'?: never;
@@ -1313,10 +1313,10 @@ type AppTabRootAttributes = Readonly<Record<`data-${string}`, string | undefined
     'data-name-overflow'?: never;
     'data-pinned'?: never;
 }>;
-type AppTabPresentation = 'pill' | 'segmented' | 'icon-only';
-type AppTabSize = 'default' | 'compact';
-type AppTabNameOverflow = 'ellipsis' | 'visible';
-interface AppTabProps {
+type TabBarItemPresentation = 'pill' | 'segmented' | 'icon-only';
+type TabBarItemSize = 'default' | 'compact';
+type TabBarItemNameOverflow = 'ellipsis' | 'visible';
+interface TabBarItemProps {
     id: string;
     name: string;
     selected?: boolean;
@@ -1331,13 +1331,13 @@ interface AppTabProps {
     leading?: KerfUiContent;
     trailing?: KerfUiContent;
     /** Visual treatment within a TabBar. Icon-only tabs retain `name` as their accessible name. */
-    presentation?: AppTabPresentation;
+    presentation?: TabBarItemPresentation;
     /** Compact tabs use the 32px application-rail height. */
-    size?: AppTabSize;
+    size?: TabBarItemSize;
     /** Maximum visible label width in CSS pixels before ellipsis. */
     labelMaxWidth?: number;
     /** Keep the full name visible for an inline loading treatment. */
-    nameOverflow?: AppTabNameOverflow;
+    nameOverflow?: TabBarItemNameOverflow;
     /** Decorative dormant content for the close button. Must not contain interactive descendants. */
     closeIcon?: SafeHtml;
     selectAction?: string;
@@ -1356,13 +1356,13 @@ interface AppTabProps {
      * `placeholder` wins when both are set.
      */
     pending?: boolean;
-    rootAttributes?: AppTabRootAttributes;
+    rootAttributes?: TabBarItemRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function AppTab({ id, name, selected, attention, dropTarget, pinned, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: AppTabProps): SafeHtml;
+declare function TabBarItem({ id, name, selected, attention, dropTarget, pinned, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
 
-export { AppTab, type AppTabNameOverflow, type AppTabPresentation, type AppTabProps, type AppTabSize };
+export { TabBarItem, type TabBarItemNameOverflow, type TabBarItemPresentation, type TabBarItemProps, type TabBarItemSize };
 ```
 
 ## `@kerfjs/ui/tab-bar`
@@ -1375,7 +1375,7 @@ type TabActivation = 'automatic' | 'manual';
 type TabBarAllocation = 'intrinsic' | 'fill';
 type TabBarPresentation = 'rail' | 'segmented' | 'inspector';
 type TabBarTrailingPlacement = 'separate' | 'adjacent';
-/** Tablist width where segmented AppTabs switch to icon-only. */
+/** Tablist width where segmented TabBarItems switch to icon-only. */
 type TabBarIconOnlyAt = 'wide' | 'narrow' | 'compact';
 interface TabBarProps {
     id: string;
@@ -1398,11 +1398,11 @@ interface TabBarProps {
      * selects with Enter / Space / click — use it when selecting a tab is a heavy action.
      */
     activation?: TabActivation;
-    /** How available strip width is allocated across child AppTabs. */
+    /** How available strip width is allocated across child TabBarItems. */
     allocation?: TabBarAllocation;
     /** Named strip chrome for application rails, segmented tabs, or inspectors. */
     presentation?: TabBarPresentation;
-    /** Switch segmented AppTabs to icon-only at tablist widths of 832, 704, or 448px. Each tab needs a leading icon. */
+    /** Switch segmented TabBarItems to icon-only at tablist widths of 832, 704, or 448px. Each tab needs a leading icon. */
     iconOnlyAt?: TabBarIconOnlyAt;
     /** Keep a trailing action beside the final tab or at the far edge of the bar. */
     trailingPlacement?: TabBarTrailingPlacement;

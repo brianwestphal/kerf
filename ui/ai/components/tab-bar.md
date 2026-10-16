@@ -52,12 +52,12 @@ Exact prop names and types: [`@kerfjs/ui/tab-bar`](../public-api-signatures-v1.m
 
 - Parents: any.
 - Contexts: `tabpanel-navigation`.
-- Children: only `app-tab` (required: `app-tab`).
-- Built from: [AppTab](./tabs.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
+- Children: only `tab-bar-item` (required: `tab-bar-item`).
+- Built from: [TabBarItem](./tabs.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md).
 
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
-- `tabs` — JSX prop `children`; accepts [AppTab](./tabs.md); at least 1.
+- `tabs` — JSX prop `children`; accepts [TabBarItem](./tabs.md); at least 1.
 - `leading` — JSX prop `leading`; accepts [ToolbarControlGroup](./toolbar-control-group.md); 0–1.
 - `trailing` — JSX prop `trailing`; accepts [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md); 0–1.
 - `end` — JSX prop `end`; accepts [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md); 0–1.
@@ -73,8 +73,8 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 
-- `data-tab-dragging` on `AppTab (data-component="app-tab")` (`wireTabBars`): "true" on the tab being dragged.
-- `data-tab-drop-position` on `AppTab (data-component="app-tab")` (`wireTabBars`): "before" or "after" on the tab under the pointer: where the dragged tab would land.
+- `data-tab-dragging` on `TabBarItem (data-component="tab-bar-item")` (`wireTabBars`): "true" on the tab being dragged.
+- `data-tab-drop-position` on `TabBarItem (data-component="tab-bar-item")` (`wireTabBars`): "before" or "after" on the tab under the pointer: where the dragged tab would land.
 - `data-tab-autoscroll` on `kui-tab-bar__tabs` (`wireTabBars`): "start" or "end" while a drag near that edge auto-scrolls the strip.
 - `data-scroll-overflow` on `kui-tab-bar__tabs` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
 - `data-scroll-divider` on `chrome named in wireScrollDividers targets (a TabBar strip has none)` (`wireScrollDividers`): The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it.
@@ -109,6 +109,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [AppTab](./tabs.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md), [SegmentedControl](./segmented-control.md), [Select](./select.md), [Tab Group](./wa-tab-group.md).
+- Components: [TabBarItem](./tabs.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md), [SegmentedControl](./segmented-control.md), [Select](./select.md), [Tab Group](./wa-tab-group.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/accessibility.md#tabs`](../../docs/accessibility.md#tabs).
 - UX catalog route: `?component=tab-bar`.

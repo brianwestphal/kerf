@@ -20,7 +20,7 @@ Switch among two to five co-equal top-level destinations on compact devices whil
 
 **Alternatives:**
 
-- [AppTab](./tabs.md) (semantic-alternative) — Use TabBar and AppTab for document-style tabpanels, overflow, closing, or reordering.
+- [TabBarItem](./tabs.md) (semantic-alternative) — Use TabBar and TabBarItem for document-style tabpanels, overflow, closing, or reordering.
 - [Workbench](./workbench.md) (roomy-alternative) — Promote top-level destinations to a rail or sidebar on desktop-class layouts.
 
 ## Imports
@@ -100,6 +100,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Badge](./badge.md), [AppTab](./tabs.md), [Workbench](./workbench.md).
+- Components: [Badge](./badge.md), [TabBarItem](./tabs.md), [Workbench](./workbench.md).
 - Docs: [`docs/tab-navigator.md`](../../docs/tab-navigator.md), [`docs/app-layouts.md#decision-matrix`](../../docs/app-layouts.md#decision-matrix).
 - UX catalog route: `?component=tab-navigator`.

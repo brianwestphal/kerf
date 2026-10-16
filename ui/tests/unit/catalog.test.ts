@@ -553,7 +553,7 @@ describe('UX catalog metadata', () => {
       'ListInsetControl',
       'ListInsetText',
       'ContentItem',
-      'AppTab',
+      'TabBarItem',
       'TabBar',
       'SegmentedControl',
       'ChoiceChips',

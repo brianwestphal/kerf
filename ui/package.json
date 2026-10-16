@@ -182,10 +182,10 @@
       "types": "./dist/device-class.d.ts",
       "import": "./dist/device-class.js"
     },
-    "./app-tab": {
-      "types": "./dist/app-tab.d.ts",
-      "browser": "./dist/browser/app-tab.js",
-      "import": "./dist/app-tab.js"
+    "./tab-bar-item": {
+      "types": "./dist/tab-bar-item.d.ts",
+      "browser": "./dist/browser/tab-bar-item.js",
+      "import": "./dist/tab-bar-item.js"
     },
     "./catalog": {
       "types": "./dist/catalog.d.ts",
@@ -528,7 +528,7 @@
     "./list-inset-text.css": "./dist/styles/list-inset-text.css",
     "./content-item.css": "./dist/styles/content-item.css",
     "./resizable-region.css": "./dist/styles/resizable-region.css",
-    "./app-tab.css": "./dist/styles/app-tab.css",
+    "./tab-bar-item.css": "./dist/styles/tab-bar-item.css",
     "./catalog.css": "./dist/styles/catalog.css",
     "./tab-bar.css": "./dist/styles/tab-bar.css",
     "./nav-stack.css": "./dist/styles/nav-stack.css",

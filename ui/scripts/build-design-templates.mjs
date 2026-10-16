@@ -53,7 +53,7 @@ import {
   TriangleAlert,
 } from 'lucide';
 
-import { AppTab } from '../dist/app-tab.js';
+import { TabBarItem } from '../dist/tab-bar-item.js';
 import { Button } from '../dist/button.js';
 import { Checkbox } from '../dist/checkbox.js';
 import { Chip } from '../dist/chip.js';
@@ -984,7 +984,7 @@ export const COMPONENTS = {
     ],
   },
   'tab-bar': {
-    css: ['foundation', 'layout', 'lucide-icon', 'tab-bar', 'app-tab'],
+    css: ['foundation', 'layout', 'lucide-icon', 'tab-bar', 'tab-bar-item'],
     selector: '#frame',
     width: 640,
     frameWidth: 600,
@@ -998,18 +998,18 @@ export const COMPONENTS = {
             id: 'files',
             label: 'Open Files',
             children: [
-              AppTab({
+              TabBarItem({
                 id: 'readme',
                 name: 'README.md',
                 leading: glyph(FileText, 'file-text'),
                 selected: true,
               }),
-              AppTab({
+              TabBarItem({
                 id: 'index',
                 name: 'index.ts',
                 leading: glyph(FileText, 'file-text'),
               }),
-              AppTab({
+              TabBarItem({
                 id: 'styles',
                 name: 'styles.css',
                 leading: glyph(FileText, 'file-text'),

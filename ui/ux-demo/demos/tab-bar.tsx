@@ -1,13 +1,13 @@
-import { AppTab } from '@kerfjs/ui/app-tab';
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
+import { TabBarItem } from '@kerfjs/ui/tab-bar-item';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { LayoutGrid, PanelLeft, Plus, SquarePlus } from 'lucide';
 
 const tabs = (presentation: 'pill' | 'segmented' = 'pill') => [
-  <AppTab
+  <TabBarItem
     id={`${presentation}-one`}
     name="Overview"
     selected
@@ -15,7 +15,7 @@ const tabs = (presentation: 'pill' | 'segmented' = 'pill') => [
     presentation={presentation}
     size={presentation === 'segmented' ? 'compact' : 'default'}
   />,
-  <AppTab
+  <TabBarItem
     id={`${presentation}-two`}
     name="Activity"
     closable={false}
@@ -31,7 +31,7 @@ const splitTabs = [
   'Automations',
   'Settings',
 ].map((name, index) => (
-  <AppTab
+  <TabBarItem
     id={`split-${name.toLowerCase()}`}
     name={name}
     selected={index === 0}
@@ -53,7 +53,7 @@ const overflowTabs = [
   'Integrations',
   'Members',
 ].map((name, index) => (
-  <AppTab
+  <TabBarItem
     id={`overflow-${name.toLowerCase()}`}
     name={name}
     selected={index === 0}
@@ -90,7 +90,7 @@ export function TabBarDemo() {
           presentation="segmented"
           iconOnlyAt="wide"
         >
-          <AppTab
+          <TabBarItem
             id="responsive-overview"
             name="Overview"
             selected
@@ -99,7 +99,7 @@ export function TabBarDemo() {
             size="compact"
             leading={<LucideIcon icon={PanelLeft} name="panel-left" />}
           />
-          <AppTab
+          <TabBarItem
             id="responsive-activity"
             name="Activity"
             closable={false}
@@ -167,13 +167,13 @@ export function TabBarDemo() {
             '--kui-tab-bar-strip-radius': '10px',
             '--kui-tab-bar-strip-background':
               'var(--kui-color-neutral-fill-quiet)',
-            '--kui-app-tab-attention-color':
+            '--kui-tab-bar-item-attention-color':
               'var(--kui-color-warning-on-quiet)',
           },
         }}
       >
         <TabBar id="compact-project-tab-bar" label="Compact Project Tabs">
-          <AppTab
+          <TabBarItem
             id="compact-inspector"
             name="Inspector"
             presentation="icon-only"
@@ -181,7 +181,7 @@ export function TabBarDemo() {
             closable={false}
             leading={<LucideIcon icon={PanelLeft} name="panel-left" />}
           />
-          <AppTab
+          <TabBarItem
             id="compact-attention"
             name="A Project with a Longer Name"
             size="compact"
@@ -230,7 +230,7 @@ export function TabBarDemo() {
         }}
       >
         <TabBar id="pinned-tab-bar" label="Pinned Project Tabs">
-          <AppTab
+          <TabBarItem
             id="project-grid"
             name="Project Grid"
             pinned
@@ -250,7 +250,7 @@ export function TabBarDemo() {
             'Milestones',
             'Reports',
           ].map((name) => (
-            <AppTab
+            <TabBarItem
               id={`pinned-${name.toLowerCase().replaceAll(' ', '-')}`}
               name={name}
               closable={false}

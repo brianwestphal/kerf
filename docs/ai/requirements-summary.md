@@ -390,7 +390,7 @@ recipes, and apps no longer hand-write `.kui-content-item` modifier classes.
 and foregrounds with `StateBanner`. `transparent` is the default. A lowered
 inset surface around a stack remains `SunkenPanel`.
 
-The root `@kerfjs/ui` declaration barrel re-exports the named AppTab, TabBar,
+The root `@kerfjs/ui` declaration barrel re-exports the named TabBarItem, TabBar,
 ToolbarControlGroup, and Select presentation axes; source and packed-tarball
 consumer compilation guard that convenience surface against subpath drift.
 
@@ -452,17 +452,17 @@ accessible name, and avoids false chevrons on ordinary navigation. The root
 fills its available inline width, keeping a separate 44px action at the logical
 end while its visible glyph defaults to 18px.
 
-`AppTab` now accepts runtime-filtered domain `data-*` metadata while protecting
+`TabBarItem` now accepts runtime-filtered domain `data-*` metadata while protecting
 component and transient drag/drop attributes case-insensitively; its optional
 close glyph and `ResizableRegion`'s optional handle glyph remain decorative
 slots, leaving close, reorder, resize, persistence, and disposal ownership on
 the existing controls, wiring, and application state. Automatic TabBar
 activation preserves logical tab focus when controlled selection replaces the
 strip.
-The app can set `AppTab.dropTarget` during content drag-over to show a themed
+The app can set `TabBarItem.dropTarget` during content drag-over to show a themed
 highlight independently of selection, and `nameOverflow="visible"` to display
 the full name during inline loading instead of the default ellipsis.
-`AppTab.pinned` keeps the leading tab visible inside the scrolling TabBar
+`TabBarItem.pinned` keeps the leading tab visible inside the scrolling TabBar
 tablist, including its keyboard and selection semantics. Focus and controlled
 selection reveal peers beyond the pinned tab.
 

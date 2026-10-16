@@ -58,7 +58,7 @@ const CHROME: readonly ChromeSpec[] = [
 
 // Select's placeholder is a separate static box (not the live Select trigger), so its
 // label, box, chevron, and hint are compared part-by-part in placeholder.spec.ts.
-// ListHeader and AppTab are not in the recipe; their own tests below cover them,
+// ListHeader and TabBarItem are not in the recipe; their own tests below cover them,
 // and placeholder-fixture.spec.ts diffs every placeholder component against a
 // live render with identical props.
 
@@ -238,7 +238,7 @@ test('a placeholder ListHeader keeps its action at the live tone', async ({
   ).toBe('rgba(0, 0, 0, 0)');
 });
 
-test('a placeholder AppTab keeps the live pill tone; only the name is a skeleton', async ({
+test('a placeholder TabBarItem keeps the live pill tone; only the name is a skeleton', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -260,7 +260,7 @@ test('a placeholder AppTab keeps the live pill tone; only the name is a skeleton
             height: element.getBoundingClientRect().height,
           };
         };
-        const select = tab.querySelector('.kui-app-tab__select')!;
+        const select = tab.querySelector('.kui-tab-bar-item__select')!;
         return {
           root: pick(tab),
           select: pick(select),
@@ -269,8 +269,8 @@ test('a placeholder AppTab keeps the live pill tone; only the name is a skeleton
       });
   // Web Awesome's native `button:disabled` used to dim the placeholder pill
   // to 50% with a not-allowed cursor.
-  const placeholder = await read('.kui-app-tab[data-placeholder="true"]');
-  const live = await read('.kui-app-tab[data-tab-id="beta"]');
+  const placeholder = await read('.kui-tab-bar-item[data-placeholder="true"]');
+  const live = await read('.kui-tab-bar-item[data-tab-id="beta"]');
   expect(placeholder.root).toEqual(live.root);
   expect(placeholder.select).toEqual(live.select);
   expect(placeholder.cursor).toBe('default');

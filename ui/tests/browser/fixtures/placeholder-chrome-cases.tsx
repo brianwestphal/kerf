@@ -13,7 +13,7 @@ import '@kerfjs/ui/list-item.css';
 import '@kerfjs/ui/list-action-row.css';
 import '@kerfjs/ui/list-header.css';
 import '@kerfjs/ui/loading-spinner.css';
-import '@kerfjs/ui/app-tab.css';
+import '@kerfjs/ui/tab-bar-item.css';
 import '@kerfjs/ui/segmented-control.css';
 import '@kerfjs/ui/state-banner.css';
 import '@kerfjs/ui/value-table.css';
@@ -24,7 +24,6 @@ import '@kerfjs/ui/select/register';
 // look live with it loaded, as in the catalog and most applications.
 import '@kerfjs/ui/webawesome.css';
 
-import { AppTab } from '@kerfjs/ui/app-tab';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -32,6 +31,7 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { TabBarItem } from '@kerfjs/ui/tab-bar-item';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import type { SafeHtml } from 'kerfjs';
@@ -322,14 +322,14 @@ export const cases: Record<string, Case> = {
       placeholder={placeholder}
     />
   ),
-  'app-tab': (placeholder) => (
+  'tab-bar-item': (placeholder) => (
     <div role="tablist" aria-label="Tabs">
-      <AppTab id="notes" name="Notes" placeholder={placeholder} />
+      <TabBarItem id="notes" name="Notes" placeholder={placeholder} />
     </div>
   ),
-  'app-tab-segmented': (placeholder) => (
+  'tab-bar-item-segmented': (placeholder) => (
     <div role="tablist" aria-label="Tabs">
-      <AppTab
+      <TabBarItem
         id="notes"
         name="Notes"
         presentation="segmented"

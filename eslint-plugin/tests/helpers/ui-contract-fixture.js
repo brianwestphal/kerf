@@ -70,7 +70,7 @@ export const catalog = {
         },
       ],
     }),
-    component('tabs', 'AppTab', {
+    component('tabs', 'TabBarItem', {
       parents: { mode: 'listed', entries: ['@kerfjs/ui:tab-bar'] },
       zones: [
         {
@@ -245,7 +245,7 @@ export const selectionCatalog = {
       entry.id === 'workbench'
         ? { moduleImport: '@kerfjs/ui/workbench' }
         : entry.id === 'tabs'
-          ? { browserImport: '@kerfjs/ui/app-tab' }
+          ? { browserImport: '@kerfjs/ui/tab-bar-item' }
           : entry.id === 'tab-bar'
             ? { browserImport: '@kerfjs/ui/tab-bar' }
             : { browserImport: `@kerfjs/ui/${entry.id}` },

@@ -138,7 +138,7 @@ rejecting every stylesheet attached to a `kind: composition` catalog entry.
   `.kui-list-item__label`, `.acme-meter`), its `[data-component="…"]` root, or
   a Web Awesome tag the package themes (`wa-button`, `wa-select`), and the rule
   sets at least one ordinary property. It also catches a raw descendant of
-  cataloged component anatomy, such as `.kui-app-tab__select > svg`, even when
+  cataloged component anatomy, such as `.kui-tab-bar-item__select > svg`, even when
   the component class is not the final compound. A component root used only as
   context (`.kui-toolbar > .my-widget`) and app-named descendants remain
   available for app-owned content. In component mode, classless element subjects

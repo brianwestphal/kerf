@@ -65,7 +65,7 @@ interface CaseRule {
   /**
    * Elements whose styling legitimately differs: it carries a value (the
    * selected segment) or is a documented dormant-state affordance (a dormant
-   * AppTab hides its disabled close button but keeps its geometry).
+   * TabBarItem hides its disabled close button but keeps its geometry).
    */
   ignoreStyles?: readonly string[];
 }
@@ -77,8 +77,11 @@ const RULES: Record<string, CaseRule> = {
   // A trailing slot is a value, and its width moves the flexible label.
   'list-item-trailing': { block: true },
   'list-item-busy-trailing': { block: true },
-  'app-tab': { block: true, ignoreStyles: ['.kui-app-tab__close'] },
-  'app-tab-segmented': { block: true, ignoreStyles: ['.kui-app-tab__close'] },
+  'tab-bar-item': { block: true, ignoreStyles: ['.kui-tab-bar-item__close'] },
+  'tab-bar-item-segmented': {
+    block: true,
+    ignoreStyles: ['.kui-tab-bar-item__close'],
+  },
   'state-banner': { block: true },
   'state-banner-no-detail': { block: true },
   'segmented-control-icons': {

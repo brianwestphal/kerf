@@ -329,7 +329,7 @@ test(
       await writeFile(
         resolve(root, 'src/view.css'),
         '.view { color: var(--kui-not-public); }\n' +
-          '.ticket-inspector__tabs .kui-app-tab__select > svg { width: 0.9rem; }\n',
+          '.ticket-inspector__tabs .kui-tab-bar-item__select > svg { width: 0.9rem; }\n',
       );
       await writeFile(
         resolve(root, 'src/model.ts'),
@@ -996,7 +996,7 @@ test(
           "import { Toolbar } from '@kerfjs/ui/toolbar';",
           "import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';",
           "import { TabBar } from '@kerfjs/ui/tab-bar';",
-          "import { AppTab } from '@kerfjs/ui/app-tab';",
+          "import { TabBarItem } from '@kerfjs/ui/tab-bar-item';",
           "import { ToolbarControlGroup, ToolbarActionLink } from '@kerfjs/ui/toolbar-control-group';",
           'export const view = () => (',
           '  <>',
@@ -1019,7 +1019,7 @@ test(
           '    leading={<ToolbarControlGroup label="View modes" single><button type="button">Boards</button></ToolbarControlGroup>}',
           '    trailing={<ToolbarControlGroup label="Project actions" single><button type="button">Add project</button></ToolbarControlGroup>}',
           '    end={<ToolbarControlGroup label="Workspace actions" single><button type="button">New ticket</button></ToolbarControlGroup>}',
-          '  ><AppTab id="project-one" name="Project one" /></TabBar>',
+          '  ><TabBarItem id="project-one" name="Project one" /></TabBar>',
           '  </>',
           ');',
           '',
@@ -1119,7 +1119,7 @@ test(
           "import { Toolbar } from '@kerfjs/ui/toolbar';",
           "import { ToolbarText } from '@kerfjs/ui/toolbar-text';",
           "import { TabBar } from '@kerfjs/ui/tab-bar';",
-          "import { AppTab } from '@kerfjs/ui/app-tab';",
+          "import { TabBarItem } from '@kerfjs/ui/tab-bar-item';",
           '',
           "import { DemandSegmentsControl } from './demand-segments-control.js';",
           '',
@@ -1136,7 +1136,7 @@ test(
                 '    leading={<DemandSegmentsControl visible />}',
                 '    trailing={<DemandSegmentsControl visible />}',
                 '    end={<DemandSegmentsControl visible />}',
-                '  ><AppTab id="project-one" name="Project one" /></TabBar>',
+                '  ><TabBarItem id="project-one" name="Project one" /></TabBar>',
               ]
             : []),
           '  </>',

@@ -74,10 +74,10 @@
 }
 /* A segmented strip's outer ends follow the pill track: a compact tab is inset
    from the track's ends by the same distance as from its top and bottom, so
-   each end is concentric with the track. AppTab rounds its own outer corners
-   to match in this context (see app-tab.css); TabBar never styles AppTab. */
+   each end is concentric with the track. TabBarItem rounds its own outer corners
+   to match in this context (see tab-bar-item.css); TabBar never styles TabBarItem. */
 .kui-tab-bar[data-presentation="segmented"]
-  .kui-tab-bar__tabs:has(> .kui-app-tab[data-size="compact"]) {
+  .kui-tab-bar__tabs:has(> .kui-tab-bar-item[data-size="compact"]) {
   padding-inline: calc(
     (var(--kui-toolbar-group-size, calc(2px + remify(42px))) - remify(32px)) /
       2 - 1px
@@ -159,10 +159,10 @@
 }
 
 .kui-tab-bar[data-presentation="rail"]:dir(ltr):not(
-    :has(> .kui-tab-bar__tabs > .kui-app-tab[data-pinned="true"])
+    :has(> .kui-tab-bar__tabs > .kui-tab-bar-item[data-pinned="true"])
   ):has(> .kui-tab-bar__tabs[data-scroll-overflow*="l"])::before,
 .kui-tab-bar[data-presentation="rail"]:dir(rtl):not(
-    :has(> .kui-tab-bar__tabs > .kui-app-tab[data-pinned="true"])
+    :has(> .kui-tab-bar__tabs > .kui-tab-bar-item[data-pinned="true"])
   ):has(> .kui-tab-bar__tabs[data-scroll-overflow*="r"])::before,
 .kui-tab-bar[data-presentation="rail"]:dir(ltr):has(
     > .kui-tab-bar__tabs[data-scroll-overflow*="r"]
@@ -178,7 +178,7 @@
 
 .kui-tab-bar:not([data-presentation="rail"])
   > .kui-tab-bar__tabs[data-scroll-overflow*="l"]:not(
-    :dir(ltr):has(> .kui-app-tab[data-pinned="true"])
+    :dir(ltr):has(> .kui-tab-bar-item[data-pinned="true"])
   ) {
   border-left-color: var(
     --kui-tab-bar-divider-color,
@@ -188,7 +188,7 @@
 
 .kui-tab-bar:not([data-presentation="rail"])
   > .kui-tab-bar__tabs[data-scroll-overflow*="r"]:not(
-    :dir(rtl):has(> .kui-app-tab[data-pinned="true"])
+    :dir(rtl):has(> .kui-tab-bar-item[data-pinned="true"])
   ) {
   border-right-color: var(
     --kui-tab-bar-divider-color,

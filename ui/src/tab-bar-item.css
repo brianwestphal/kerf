@@ -1,2 +1,2 @@
 /* Public stylesheet entry; implementation is colocated with the component. */
-@import "./components/navigation/app-tab/app-tab.css";
+@import "./components/navigation/tab-bar-item/tab-bar-item.css";

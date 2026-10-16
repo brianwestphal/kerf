@@ -55,7 +55,7 @@ export function reorderTabs<T>(
 
 function tabRoot(target: EventTarget | null): TabRoot | undefined {
   return target instanceof Element
-    ? (target.closest<TabRoot>('[data-component="app-tab"]') ?? undefined)
+    ? (target.closest<TabRoot>('[data-component="tab-bar-item"]') ?? undefined)
     : undefined;
 }
 
@@ -89,7 +89,7 @@ function reveal(tab: HTMLElement | null | undefined): void {
   if (
     tab
       ?.closest('[data-kui-tab-list]')
-      ?.querySelector(':scope > .kui-app-tab[data-pinned="true"]')
+      ?.querySelector(':scope > .kui-tab-bar-item[data-pinned="true"]')
   )
     revealInStrip(tab);
 }
@@ -106,11 +106,11 @@ function revealInStrip(tab: HTMLElement): void {
   const bounds = strip.getBoundingClientRect();
   const snap = strip.dataset.snapTabs === 'true';
   const box = snap
-    ? (tab.closest<HTMLElement>('.kui-app-tab')?.getBoundingClientRect() ??
+    ? (tab.closest<HTMLElement>('.kui-tab-bar-item')?.getBoundingClientRect() ??
       tab.getBoundingClientRect())
     : tab.getBoundingClientRect();
   const pinned = strip.querySelector<HTMLElement>(
-    ':scope > .kui-app-tab[data-pinned="true"]',
+    ':scope > .kui-tab-bar-item[data-pinned="true"]',
   );
   if (pinned?.contains(tab)) return;
   const pinnedBox = pinned?.getBoundingClientRect();
@@ -248,7 +248,7 @@ export function wireTabBars(
     snapStrips.add(strip);
     observeSnap(strip);
     const tabs = [
-      ...strip.querySelectorAll<HTMLElement>(':scope > .kui-app-tab'),
+      ...strip.querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item'),
     ];
     tabs.forEach(observeSnap);
     const pinned = tabs.find(
@@ -314,7 +314,7 @@ export function wireTabBars(
   };
   const syncPinned = (strip: HTMLElement) => {
     const pinned = strip.querySelector<HTMLElement>(
-      ':scope > .kui-app-tab[data-pinned="true"]',
+      ':scope > .kui-tab-bar-item[data-pinned="true"]',
     );
     if (!pinned) return;
     if (!pinnedObserved.has(strip)) {
@@ -363,13 +363,13 @@ export function wireTabBars(
       return;
     const peers = [
       ...strip.querySelectorAll<HTMLElement>(
-        ':scope > .kui-app-tab:not([data-pinned="true"])',
+        ':scope > .kui-tab-bar-item:not([data-pinned="true"])',
       ),
     ];
     if (!peers.length) return;
     const bounds = strip.getBoundingClientRect();
     const pinned = strip.querySelector<HTMLElement>(
-      ':scope > .kui-app-tab[data-pinned="true"]',
+      ':scope > .kui-tab-bar-item[data-pinned="true"]',
     );
     const pinnedBox = pinned?.getBoundingClientRect();
     const rtl = view.getComputedStyle(strip).direction === 'rtl';
@@ -492,7 +492,7 @@ export function wireTabBars(
     globalThis.queueMicrotask(() => {
       if (disposed) return;
       const tab = [
-        ...root.querySelectorAll<TabRoot>('[data-component="app-tab"]'),
+        ...root.querySelectorAll<TabRoot>('[data-component="tab-bar-item"]'),
       ].find((candidate) => {
         const candidateBar = tabBar(candidate);
         return (
@@ -591,7 +591,9 @@ export function wireTabBars(
     const bar = tab && tabBar(tab);
     if (!button || !tab || !bar) return;
     if (keyboardEvent.key === 'Delete' || keyboardEvent.key === 'Backspace') {
-      const close = tab.querySelector<HTMLButtonElement>('.kui-app-tab__close');
+      const close = tab.querySelector<HTMLButtonElement>(
+        '.kui-tab-bar-item__close',
+      );
       if (!close) return;
       keyboardEvent.preventDefault();
       close.click();

@@ -204,7 +204,7 @@ visible text get no tag: their visible text already names them. A button that
 carries a native `title`, or that the application has already given a
 `wa-tooltip` `for` its `id`, keeps that and gets no second tag, so nothing is
 shown twice. Zero-JS components that name an icon control with a native `title`
-(the `ListHeader` action, the `AppTab` close button, the `SearchField`
+(the `ListHeader` action, the `TabBarItem` close button, the `SearchField`
 reveal and clear buttons, and `SegmentedControl` choice titles) keep the
 browser's own tooltip, which needs no script; the installer deliberately skips
 them rather than stacking a second tag on the first. Icon-only buttons outside
@@ -402,7 +402,7 @@ overlay's own floating toolbars stay.
 
 ## Tabs
 
-`AppTab` renders one controlled tab. `TabBar` supplies the containing tab list,
+`TabBarItem` renders one controlled tab. `TabBar` supplies the containing tab list,
 fixed leading/trailing/end regions, and a horizontally scrollable strip.
 Use `TabBar.presentation` for rail, segmented, or inspector chrome,
 `allocation="fill"` when peers should divide the strip, and
@@ -414,7 +414,7 @@ trailing, and end actions remain visible and do not shrink. The component owns
 that geometry; applications must not override its anatomy to create the split.
 `trailing` and `end` each accept one `ToolbarControlGroup` for grouped controls
 or one standalone `Button` when a primary action needs its own chrome. Do not add a wrapper or flex margins to position the action.
-`AppTab` provides compact 32px, segmented, truncating-label, and icon-only
+`TabBarItem` provides compact 32px, segmented, truncating-label, and icon-only
 presentations. Icon-only tabs keep the required `name` as the tab button's
 accessible name while visually hiding the duplicate label. The default name
 overflow is an ellipsis; `nameOverflow="visible"` lets an inline loading
@@ -428,12 +428,12 @@ show placeholder content in its panel until loading completes; its close
 button is disabled and hidden and it is not draggable. A `placeholder` tab
 (unknown) is instead disabled, out of the tab order, and not draggable. These props own
 component appearance only; the application still owns the bar's outer placement.
-`AppTab.rootAttributes` accepts application `data-*` metadata only; runtime
+`TabBarItem.rootAttributes` accepts application `data-*` metadata only; runtime
 filtering rejects roles plus case variants of component- or wiring-owned
 action, identity, selection, drag, drop, and component attributes. An optional
 `closeIcon` is decorative dormant content inside the already named close button
 and must not contain interactive descendants.
-The first `AppTab` can set `pinned` to stay at the inline start while its peers
+The first `TabBarItem` can set `pinned` to stay at the inline start while its peers
 scroll. It remains a normal tab within the same tablist and roving-focus order;
 focus and controlled selection reveal peers beyond the pinned tab. Pin only the
 leading tab of a strip.

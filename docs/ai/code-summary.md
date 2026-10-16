@@ -888,7 +888,7 @@ also exports the CSS-free `css-values` builders and brands; source and packed
 contracts keep lengths, flex shorthands, and colors distinct from one another
 and from intermediate expressions. List gaps, List flex, Skeleton dimensions,
 and Select choice colors accept only their property-specific contracts. It
-also re-exports every named AppTab, TabBar, ToolbarControlGroup, and Select
+also re-exports every named TabBarItem, TabBar, ToolbarControlGroup, and Select
 presentation axis; the source and packed consumer contract compile the same
 type-only import fixture. `@kerfjs/ui` Select (KF-CF0FEN: no longer
 `wa-select`) renders a `kui-select` root, a native trigger `<button
@@ -915,17 +915,17 @@ diffs the Loading Inspector recipe's loading and loaded chrome, and
 component live and as a placeholder from identical props
 (`ui/tests/browser/fixtures/placeholder-chrome-cases.tsx`) and diffs each
 element's rect and computed chrome by structural path, excluding value slots.
-`AppTab.rootAttributes` uses the shared extension filter to accept only domain
+`TabBarItem.rootAttributes` uses the shared extension filter to accept only domain
 `data-*` values while protecting component/action/identity/selection and
-wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and
+wire-owned drag/drop markers case-insensitively. `TabBarItem.closeIcon` and
 `ResizableRegion.handleIcon` replace decorative SafeHtml content without
 moving interaction or lifecycle ownership out of their existing controls and
 disposer-returning wiring. `TabBar.end` provides a separately pinned far-edge
 action while an adjacent `trailing` action follows its shrinkable, horizontally
-scrolling tabs; the component owns that split geometry. `AppTab.dropTarget`
+scrolling tabs; the component owns that split geometry. `TabBarItem.dropTarget`
 paints its highlight through public tokens independently of `aria-selected`,
 while `nameOverflow="visible"` removes the label width cap and ellipsis.
-`AppTab.pinned` uses sticky positioning and an opaque surface token within the
+`TabBarItem.pinned` uses sticky positioning and an opaque surface token within the
 scroll strip. `wireTabBars` accounts for its width when revealing focused or
 selected peers, including in right-to-left strips.
 `wireTabBars` resolves replacement focus by logical

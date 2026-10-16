@@ -9,7 +9,7 @@ test('compact tab strip keeps icon names, truncates long names, and applies geom
     const bar = page.locator('[data-tab-bar-id="compact-project-tab-bar"]');
     const icon = bar.getByRole('tab', { name: 'Inspector' });
     const attention = bar.locator(
-      '.kui-app-tab[data-tab-id="compact-attention"]',
+      '.kui-tab-bar-item[data-tab-id="compact-attention"]',
     );
     await expect(icon).toBeVisible();
     await expect(icon).toHaveAccessibleName('Inspector');
@@ -18,11 +18,11 @@ test('compact tab strip keeps icon names, truncates long names, and applies geom
       const strip = element.querySelector('.kui-tab-bar__tabs')!;
       const stripStyle = window.getComputedStyle(strip);
       const name = element.querySelector(
-        '[data-tab-id="compact-attention"] .kui-app-tab__name',
+        '[data-tab-id="compact-attention"] .kui-tab-bar-item__name',
       )!;
       const nameStyle = window.getComputedStyle(name);
       const plainName = element.querySelector(
-        '[data-tab-id="compact-inspector"] .kui-app-tab__name',
+        '[data-tab-id="compact-inspector"] .kui-tab-bar-item__name',
       )!;
       return {
         stripHeight: strip.getBoundingClientRect().height,

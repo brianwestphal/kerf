@@ -7,20 +7,23 @@ import '@kerfjs/ui/toolbar-control-group.css';
 import '@kerfjs/ui/toolbar-text.css';
 import '@kerfjs/ui/list.css';
 import '@kerfjs/ui/content-item.css';
-import '@kerfjs/ui/app-tab.css';
+import '@kerfjs/ui/tab-bar-item.css';
 import '@kerfjs/ui/tab-bar.css';
 import '@kerfjs/ui/resizable-region.css';
 import '@kerfjs/ui/workbench.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/tab-navigator.css';
 
-import { AppTab, type AppTabPresentation } from '@kerfjs/ui/app-tab';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
 import { Pane } from '@kerfjs/ui/pane';
 import { TabBar, type TabBarPresentation } from '@kerfjs/ui/tab-bar';
+import {
+  TabBarItem,
+  type TabBarItemPresentation,
+} from '@kerfjs/ui/tab-bar-item';
 import { TabNavigator } from '@kerfjs/ui/tab-navigator';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -96,7 +99,7 @@ const tabBar = (
   presentation: TabBarPresentation,
   dir?: 'rtl',
 ) => {
-  const tab: AppTabPresentation =
+  const tab: TabBarItemPresentation =
     presentation === 'segmented' ? 'segmented' : 'pill';
   return (
     <div data-case={name} dir={dir} style="width: 360px">
@@ -108,7 +111,7 @@ const tabBar = (
         trailing={iconGroup('Add Tab', Plus, 'plus')}
       >
         {NAMES.map((label, index) => (
-          <AppTab
+          <TabBarItem
             id={`${name}-${index}`}
             name={label}
             selected={index === 0}

@@ -13,7 +13,7 @@ route and three-engine browser coverage.
 ## 1. Motivation
 
 `@kerfjs/ui` today ships composable geometry primitives — `.kui-pane`,
-`ResizableRegion`, `TabBar`, `AppTab` (see [`layout.md`](../ui/docs/layout.md)) —
+`ResizableRegion`, `TabBar`, `TabBarItem` (see [`layout.md`](../ui/docs/layout.md)) —
 but no opinionated, whole-screen layouts. Every real app therefore hand-rolls
 the same four or five shells: a pushed/popped navigation stack, a list-detail
 split, an IDE-style multi-panel workspace, and a mobile bottom-tab scaffold. It
@@ -403,7 +403,7 @@ drawer**, each independently **collapsible**, around a central work area. Any of
 the three may be absent (a left-rail-only variant is common).
 
 **Name.** Shipped as **`Workbench`** (§7) — it reads as a tool/IDE workspace,
-does not collide with the existing `TabBar`/`AppTab`/`ResizableRegion`
+does not collide with the existing `TabBar`/`TabBarItem`/`ResizableRegion`
 vocabulary, and avoids the PWA-loaded "app shell" term.
 
 - Rails collapse with the **instant-width / sliding-content** animation proven in
@@ -809,7 +809,7 @@ tab clicks to `onSelect(tabId)` and returns a disposer:
 const active = signal<"home" | "search">("home");
 // render:
 <TabNavigator
-  id="app-tabs"
+  id="tab-bar-items"
   label="Sections"
   active={active.value}
   tabs={[

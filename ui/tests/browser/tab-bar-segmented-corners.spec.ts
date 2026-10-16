@@ -17,7 +17,7 @@ test('a filled segmented TabBar ends its strip concentric with the pill track', 
     const track = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
     const tabs = [
       ...track.querySelectorAll<HTMLElement>(
-        ':scope > [data-component="app-tab"]',
+        ':scope > [data-component="tab-bar-item"]',
       ),
     ];
     const first = tabs[0]!;
@@ -78,7 +78,7 @@ test('inspector tabs follow the rounded strip without changing segmented pill co
       await bar.scrollIntoViewIfNeeded();
       const radii = await bar.evaluate((element) => {
         const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
-        const tab = strip.querySelector<HTMLElement>('.kui-app-tab')!;
+        const tab = strip.querySelector<HTMLElement>('.kui-tab-bar-item')!;
         return {
           strip: parseFloat(window.getComputedStyle(strip).borderTopLeftRadius),
           tab: parseFloat(window.getComputedStyle(tab).borderTopLeftRadius),
@@ -98,7 +98,7 @@ test('inspector tabs follow the rounded strip without changing segmented pill co
       );
       const customRadii = await bar.evaluate((element) => {
         const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
-        const tab = strip.querySelector<HTMLElement>('.kui-app-tab')!;
+        const tab = strip.querySelector<HTMLElement>('.kui-tab-bar-item')!;
         return {
           strip: parseFloat(window.getComputedStyle(strip).borderTopLeftRadius),
           tab: parseFloat(window.getComputedStyle(tab).borderTopLeftRadius),

@@ -142,7 +142,7 @@ because neither has one unambiguous returned root; `CollapsiblePanelToggle`
 supports it as a normal single-root control.
 
 `ListItem.rootAttributes`, `ListHeader.rootAttributes`,
-`ListActionRow.rootAttributes`, `AppTab.rootAttributes`,
+`ListActionRow.rootAttributes`, `TabBarItem.rootAttributes`,
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` carry typed
 application `data-*` metadata without
 teaching the package domain fields. `ListHeader.triggerAttributes` and
@@ -247,7 +247,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | Content and navigation composition                           | —                                       | `@kerfjs/ui/layout.css`                  |
 | `ResizableRegion`                                            | `@kerfjs/ui/resizable-region`           | `@kerfjs/ui/resizable-region.css`        |
 | `wireResizableRegions`                                       | `@kerfjs/ui/wire-resizable-regions`     | —                                        |
-| `AppTab`                                                     | `@kerfjs/ui/app-tab`                    | `@kerfjs/ui/app-tab.css`                 |
+| `TabBarItem`                                                 | `@kerfjs/ui/tab-bar-item`               | `@kerfjs/ui/tab-bar-item.css`            |
 | `TabBar`                                                     | `@kerfjs/ui/tab-bar`                    | `@kerfjs/ui/tab-bar.css`                 |
 | `wireTabBars`, `reorderTabs`                                 | `@kerfjs/ui/wire-tab-bars`              | —                                        |
 | `wireScrollDividers`                                         | `@kerfjs/ui/wire-scroll-dividers`       | —                                        |
@@ -691,7 +691,7 @@ and `danger` palettes. Override an individual banner with
 `--kui-state-banner-action-hover-background`. To retheme one tone everywhere,
 override `--kui-state-banner-{tone}-{background|border|foreground}`. Other
 stateful components follow the same public-variable pattern, including
-`--kui-toolbar-control-*`, `--kui-segmented-*`, `--kui-app-tab-*`, and
+`--kui-toolbar-control-*`, `--kui-segmented-*`, `--kui-tab-bar-item-*`, and
 `--kui-tab-bar-*`.
 
 `SegmentedControl` is a controlled exclusive-choice component. Use
@@ -826,7 +826,7 @@ chips through `--kui-search-field-token-{background|foreground}`. Override
 `--kui-search-field-line-size` only when the complete first-line geometry must
 change together.
 
-`TabBar` is controlled: pass ordered `AppTab` children, then wire its keyboard
+`TabBar` is controlled: pass ordered `TabBarItem` children, then wire its keyboard
 and same-bar drag behavior with `wireTabBars(root, { onReorder })`. During a
 drag, the scroll strip automatically moves toward either edge with speed based
 on pointer proximity, exposing earlier or later drop targets. Apply the reported
@@ -837,7 +837,7 @@ at the opposite edge, set `trailingPlacement="adjacent"`, pass the local action
 through `trailing`, and pass the workspace action through `end`. TabBar owns the
 flex geometry: the tab strip shrinks and scrolls while both action regions stay
 visible. Do not recreate that split with descendant CSS overrides.
-Use `AppTab.rootAttributes` for domain `data-*` metadata and `closeIcon` for a
+Use `TabBarItem.rootAttributes` for domain `data-*` metadata and `closeIcon` for a
 decorative replacement glyph. The runtime rejects roles and case variants of
 the component- or wiring-owned action, tab identity, selection, drag, drop, and
 component markers. Keep the icon free of interactive descendants; the named

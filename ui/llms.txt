@@ -641,7 +641,7 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Placeholder loading state, don't rebuild it.** For a value or component that is
   still loading, set `placeholder` on the component (`Select`, `ListHeader`,
   `ListItem`, `ValueTableRow`, `SegmentedControl`, `StateBanner`,
-  `AppTab`, `ToolbarText`, `ListActionRow`): it renders its real chrome with value
+  `TabBarItem`, `ToolbarText`, `ListActionRow`): it renders its real chrome with value
   slots as subtle **unanimated** skeleton blocks and interactivity disabled. Only
   unknown values change: a placeholder is never dimmed or styled as disabled (a
   control you disabled keeps its live disabled tone), so a parent composes a
@@ -761,18 +761,18 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   closed value ellipsizes when space runs out. `presentation="title"` gives a
   rail view heading a 36px bold, flush-start trigger and adjacent caret;
   `focusRingInset` keeps its ring inside clipping ancestors.
-- **Configure application tabs at their owners.** AppTab's `icon-only`
+- **Configure application tabs at their owners.** TabBarItem's `icon-only`
   presentation keeps `name` accessible, `labelMaxWidth` ellipsizes a long name,
   `nameOverflow="visible"` shows the full name during inline loading, and
   `dropTarget` highlights a drag-over without changing selection. `attention`
-  uses `--kui-app-tab-attention-color`. TabBar's public
+  uses `--kui-tab-bar-item-attention-color`. TabBar's public
   `--kui-tab-bar-strip-*` tokens set compact strip geometry.
   An inspector TabBar uses the shared rounded rectangle radius on its strip
   and inset segmented tabs; an ordinary segmented TabBar keeps pill ends and
   smaller interior tab corners. Configure the presentation instead of
-  restyling AppTab.
-  Set `pinned` on the first AppTab to keep it visible within a scrolling
-  tablist; it remains in keyboard order. Use `--kui-app-tab-pinned-background`
+  restyling TabBarItem.
+  Set `pinned` on the first TabBarItem to keep it visible within a scrolling
+  tablist; it remains in keyboard order. Use `--kui-tab-bar-item-pinned-background`
   for the surrounding surface and keep that backdrop opaque.
 - **Use `Badge` for compact non-interactive metadata.** Configure its semantic
   tone, appearance, shape, and size instead of creating badge CSS in an app or
@@ -853,7 +853,7 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 `ListItem`, `ListActionRow` (+ `wireListReorder`, `reorderListItems`), `wireListFocusScroll`, `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`, `ChoiceChips`, `Composer`,
 `Select`, `SearchField` (+ `readSearchField`, `placeSearchFieldCaret`,
-`wireSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
+`wireSearchFields`), `TabBarItem`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `wireScrollDividers` (scroll-state dividers for every `Pane`, `NavStack`,
 `TabNavigator`, and `TabBar`),
 `ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,

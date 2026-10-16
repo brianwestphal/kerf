@@ -72,8 +72,8 @@ function lucideIconModules(result: Awaited<ReturnType<typeof build>>) {
 /**
  * The `kui-*` classes a stylesheet's rules actually style: the rightmost
  * compound of each selector, ignoring `:has()` / `:not()` / `:is()` arguments.
- * A component may name a parent as context (`.kui-tab-bar … > .kui-app-tab`) or
- * a child as a condition (`:has(> .kui-app-tab)`); only the subject says whose
+ * A component may name a parent as context (`.kui-tab-bar … > .kui-tab-bar-item`) or
+ * a child as a condition (`:has(> .kui-tab-bar-item)`); only the subject says whose
  * styles a bundle ships.
  */
 function styledClasses(css: string): Set<string> {
@@ -281,7 +281,7 @@ describe('consumer bundle boundaries', () => {
     expect(css).toContain('.kui-list-action-row');
     expect(css).toContain('--kui-color-text');
     expect(css).not.toContain('.kui-list-item');
-    expect(css).not.toContain('.kui-app-tab');
+    expect(css).not.toContain('.kui-tab-bar-item');
     expect(css).not.toContain('remify(');
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
@@ -405,24 +405,24 @@ describe('consumer bundle boundaries', () => {
     expect(javascript).toContain('kui-tab-bar');
     expect(javascript).toContain('application/x-kerf-tab');
     expect(css).toContain('.kui-tab-bar');
-    // TabBar may name AppTab as a condition, but ships no AppTab rules.
+    // TabBar may name TabBarItem as a condition, but ships no TabBarItem rules.
     expect(styledClasses(css).has('.kui-tab-bar')).toBe(true);
-    expect(styledClasses(css).has('.kui-app-tab')).toBe(false);
+    expect(styledClasses(css).has('.kui-tab-bar-item')).toBe(false);
     expect(css).not.toContain('.kui-toolbar');
     expect(inputs).not.toContain('select-register');
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
-  it('ships AppTab and ResizableRegion from isolated styled browser subpaths', async () => {
+  it('ships TabBarItem and ResizableRegion from isolated styled browser subpaths', async () => {
     const tabs = await bundle(
-      "import { AppTab } from '@kerfjs/ui/app-tab'; console.log(AppTab);",
+      "import { TabBarItem } from '@kerfjs/ui/tab-bar-item'; console.log(TabBarItem);",
     );
     const tabInputs = Object.keys(tabs.metafile!.inputs).join('\n');
     const tabCss = output(tabs, '.css');
-    expect(tabInputs).toContain('dist/browser/app-tab.js');
-    expect(tabCss).toContain('.kui-app-tab');
-    // AppTab styles itself in TabBar context but ships no TabBar rules.
-    expect(styledClasses(tabCss).has('.kui-app-tab')).toBe(true);
+    expect(tabInputs).toContain('dist/browser/tab-bar-item.js');
+    expect(tabCss).toContain('.kui-tab-bar-item');
+    // TabBarItem styles itself in TabBar context but ships no TabBar rules.
+    expect(styledClasses(tabCss).has('.kui-tab-bar-item')).toBe(true);
     expect(styledClasses(tabCss).has('.kui-tab-bar')).toBe(false);
     expect(tabCss).not.toContain('.kui-resizable-region');
 
@@ -433,7 +433,7 @@ describe('consumer bundle boundaries', () => {
     const resizeCss = output(resize, '.css');
     expect(resizeInputs).toContain('dist/browser/resizable-region.js');
     expect(resizeCss).toContain('.kui-resizable-region');
-    expect(resizeCss).not.toContain('.kui-app-tab');
+    expect(resizeCss).not.toContain('.kui-tab-bar-item');
     expect(resizeCss).not.toContain('.kui-tab-bar');
   });
 
@@ -823,9 +823,9 @@ describe('consumer bundle boundaries', () => {
       types: './dist/help-tags-register.d.ts',
       import: './dist/help-tags-register.js',
     });
-    expect(pkg.exports['./app-tab']).toMatchObject({
-      browser: './dist/browser/app-tab.js',
-      import: './dist/app-tab.js',
+    expect(pkg.exports['./tab-bar-item']).toMatchObject({
+      browser: './dist/browser/tab-bar-item.js',
+      import: './dist/tab-bar-item.js',
     });
     expect(pkg.exports['./resizable-region']).toMatchObject({
       browser: './dist/browser/resizable-region.js',

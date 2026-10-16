@@ -146,8 +146,8 @@
     "contexts": ["tabpanel-navigation"],
     "children": {
       "mode": "listed",
-      "concepts": ["app-tab"],
-      "requiredConcepts": ["app-tab"]
+      "concepts": ["tab-bar-item"],
+      "requiredConcepts": ["tab-bar-item"]
     },
     "zones": [
       {

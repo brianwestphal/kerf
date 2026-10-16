@@ -30,7 +30,7 @@ const entries = [
   'resizable-region',
   'wire-resizable-regions',
   'device-class',
-  'app-tab',
+  'tab-bar-item',
   'catalog',
   'catalog-resources',
   'wire-catalog',

@@ -53,7 +53,7 @@ npm install @kerfjs/ui
 ```
 
 ```ts
-import { AppTab } from "@kerfjs/ui/app-tab";
+import { TabBarItem } from "@kerfjs/ui/tab-bar-item";
 import { ContentItem } from "@kerfjs/ui/content-item";
 import { calc, pct, plus, rem, space } from "@kerfjs/ui/css-values";
 import { ListActionRow } from "@kerfjs/ui/list-action-row";
@@ -133,7 +133,7 @@ tokens are rejected). Do not cast between their opaque brands or generate raw
 row `style` strings; use `className`, public tokens, and cataloged props.
 
 Menu adapters may pass product event/drop metadata through the typed
-`rootAttributes` `data-*` slot on ListItem, ListHeader, ListActionRow, and AppTab instead
+`rootAttributes` `data-*` slot on ListItem, ListHeader, ListActionRow, and TabBarItem instead
 of copying their markup. `ListHeader.triggerAttributes` and
 `ListActionRow.trailingActionAttributes` are the narrow exceptions for native
 popover target/action and `aria-controls`/`aria-haspopup` relationships. Do not pass
@@ -164,18 +164,18 @@ a separate action at the logical end in a 44px target; its visible glyph default
 to 18px through `--kui-list-header-action-icon-size`. Configured arrow
 directions animate over the shortest path; a 180-degree closed-to-open tie uses
 counterclockwise rotation.
-AppTab additionally protects tab identity plus transient drag/drop markers at
+TabBarItem additionally protects tab identity plus transient drag/drop markers at
 runtime. Its `closeIcon` and ResizableRegion's `handleIcon` replace decorative,
 noninteractive content only; the existing named controls and wiring retain
 their lifecycle ownership.
-Use AppTab's `dropTarget` while content is dragged over a tab; it highlights the
+Use TabBarItem's `dropTarget` while content is dragged over a tab; it highlights the
 target independently of selection. For an inline loading treatment that needs
 an untruncated label, use `nameOverflow="visible"` instead of changing the
 tab's accessible name.
-Set `pinned` on the first AppTab when it must remain visible as other tabs
+Set `pinned` on the first TabBarItem when it must remain visible as other tabs
 scroll; it stays within TabBar's tablist and keyboard order. Its opaque
 background can be matched to the surrounding surface through
-`--kui-app-tab-pinned-background`.
+`--kui-tab-bar-item-pinned-background`.
 `ListItem.trailing` is dormant content. When the trailing region must be a
 separate native control, use `ListActionRow`; its noninteractive root contains
 primary and trailing sibling buttons with independent action, name, disabled,

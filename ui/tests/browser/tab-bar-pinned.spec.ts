@@ -38,7 +38,7 @@ test('whole-tab snapping keeps scrolling peers clear of the pinned tab', async (
         )!;
         const peers = [
           ...strip.querySelectorAll<HTMLElement>(
-            ':scope > .kui-app-tab:not([data-pinned="true"])',
+            ':scope > .kui-tab-bar-item:not([data-pinned="true"])',
           ),
         ];
         const pinnedBox = pinned.getBoundingClientRect();
@@ -106,7 +106,7 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
     const bar = page.locator('[data-tab-bar-id="pinned-tab-bar"]');
     await bar.scrollIntoViewIfNeeded();
     const strip = bar.locator('.kui-tab-bar__tabs');
-    const pinned = bar.locator('.kui-app-tab[data-pinned="true"]');
+    const pinned = bar.locator('.kui-tab-bar-item[data-pinned="true"]');
     const buttons = strip.getByRole('tab');
     await expect(buttons).toHaveCount(9);
     await expect(pinned).toHaveAttribute('data-pinned', 'true');
@@ -164,7 +164,7 @@ test('pinned leading tab stays in the tablist and visible while peers scroll', a
             tabBox.left + tabBox.width / 2,
             tabBox.top + tabBox.height / 2,
           )
-          ?.closest('[data-component="app-tab"]')
+          ?.closest('[data-component="tab-bar-item"]')
           ?.getAttribute('data-tab-id'),
         lastRight: scroller.lastElementChild!.getBoundingClientRect().right,
         stripRight: stripBox.right,

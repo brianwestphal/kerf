@@ -1,4 +1,3 @@
-import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { em } from '@kerfjs/ui/css-values';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
@@ -7,6 +6,7 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Skeleton } from '@kerfjs/ui/skeleton';
 import { TabBar } from '@kerfjs/ui/tab-bar';
+import { TabBarItem } from '@kerfjs/ui/tab-bar-item';
 import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { PanelLeft, Plus } from 'lucide';
@@ -55,7 +55,7 @@ export function ApplicationTabsDemo() {
               }
             >
               {tabBarTabs.value.map((tab) => (
-                <AppTab
+                <TabBarItem
                   id={tab.id}
                   name={tab.name}
                   selected={tabBarActive.value === tab.id}

@@ -13,7 +13,6 @@ import { Workbench } from '../../src/components/layout/workbench/workbench.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
 import { TabNavigator } from '../../src/components/navigation/tab-navigator/tab-navigator.js';
 import {
-  AppTab,
   Badge,
   ContentItem,
   DialogSurface,
@@ -40,6 +39,7 @@ import {
   StateBanner,
   SunkenPanel,
   TabBar,
+  TabBarItem,
   Text,
   Toolbar,
   ToolbarActionLink,
@@ -61,8 +61,8 @@ const catalogSections = [
 
 const cases: SlotCase[] = [
   {
-    name: 'AppTab',
-    render: (slot) => AppTab({ id: 'tab', name: 'Tab', slot }),
+    name: 'TabBarItem',
+    render: (slot) => TabBarItem({ id: 'tab', name: 'Tab', slot }),
   },
   { name: 'Badge', render: (slot) => Badge({ children: '1', slot }) },
   {

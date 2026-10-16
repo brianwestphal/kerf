@@ -51,8 +51,8 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ListHeader](./list-header.md) — Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and optional count or combined badge/status indicators from a logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.
 - [ListActionRow](./list-action-row.md) — Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.
 - [ListItem](./list-item.md) — Selectable, disabled, trailing, and multiline action or link rows.
-- [Application Tabs](./application-tabs.md) — Show AppTab and TabBar in a complete controlled composition.
-- [AppTab](./tabs.md) — Render a controlled application tab with compact or icon-only presentation, a visible drop target, optional full-name display, and an optional pinned leading position.
+- [Application Tabs](./application-tabs.md) — Show TabBarItem and TabBar in a complete controlled composition.
+- [TabBarItem](./tabs.md) — Render a controlled application tab with compact or icon-only presentation, a visible drop target, optional full-name display, and an optional pinned leading position.
 - [TabBar](./tab-bar.md) — Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.
 
 ## Kerf UI — Controls

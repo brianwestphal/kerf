@@ -4960,12 +4960,12 @@ test('catalog supports its stateful controls', async ({
   await page.locator('#kui-catalog-left-rail [data-item-id="tabs"]').click();
   await expect(
     page.locator('[data-demo="tabs"] [data-component="tab-bar"]').first(),
-  ).toHaveAttribute('data-tab-bar-id', 'app-tab-selected');
+  ).toHaveAttribute('data-tab-bar-id', 'tab-bar-item-selected');
   await expect(
     page.locator('[data-demo="tabs"] [data-kui-tab-list]').first(),
-  ).toHaveAttribute('aria-label', 'Selected AppTab Specimen');
+  ).toHaveAttribute('aria-label', 'Selected TabBarItem Specimen');
   const guidelinesRoot = page.locator(
-    '[data-demo="tabs"] .kui-app-tab[data-tab-id="guidelines"]',
+    '[data-demo="tabs"] .kui-tab-bar-item[data-tab-id="guidelines"]',
   );
   await expect(guidelinesRoot).toHaveAttribute(
     'data-demo-tab-source',
@@ -4975,11 +4975,11 @@ test('catalog supports its stateful controls', async ({
   await expect(guidelinesRoot).not.toHaveAttribute('role');
   await expect(
     guidelinesRoot.locator(
-      '.kui-app-tab__close [data-lucide="custom-tab-close"]',
+      '.kui-tab-bar-item__close [data-lucide="custom-tab-close"]',
     ),
   ).toHaveAttribute('aria-hidden', 'true');
   await expect(
-    guidelinesRoot.locator('.kui-app-tab__close-icon'),
+    guidelinesRoot.locator('.kui-tab-bar-item__close-icon'),
   ).toHaveAttribute('aria-hidden', 'true');
   await page
     .locator('[data-action="select-tab"][data-tab-id="guidelines"]')
@@ -4999,7 +4999,7 @@ test('catalog supports its stateful controls', async ({
   if (browserName === 'chromium')
     await page
       .locator('[data-demo="tabs"]')
-      .screenshot({ path: 'test-results/app-tab-shared-tab-bar.png' });
+      .screenshot({ path: 'test-results/tab-bar-item-shared-tab-bar.png' });
 
   await page
     .locator('#kui-catalog-left-rail [data-item-id="feedback"]')
@@ -7487,14 +7487,14 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
     });
 });
 
-test('keeps AppTab extension metadata and replacement close icons inside the shared tab lifecycle', async ({
+test('keeps TabBarItem extension metadata and replacement close icons inside the shared tab lifecycle', async ({
   page,
   browserName,
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=tabs');
   const demo = page.locator('[data-demo="tabs"]');
-  const root = demo.locator('.kui-app-tab[data-tab-id="guidelines"]');
+  const root = demo.locator('.kui-tab-bar-item[data-tab-id="guidelines"]');
   const tab = root.getByRole('tab', { name: 'Guidelines' });
   const close = root.getByRole('button', { name: 'Close Guidelines' });
 
@@ -7507,7 +7507,7 @@ test('keeps AppTab extension metadata and replacement close icons inside the sha
   await expect(
     close.locator('[data-lucide="custom-tab-close"]'),
   ).toHaveAttribute('aria-hidden', 'true');
-  await expect(close.locator('.kui-app-tab__close-icon')).toHaveAttribute(
+  await expect(close.locator('.kui-tab-bar-item__close-icon')).toHaveAttribute(
     'aria-hidden',
     'true',
   );
@@ -7522,35 +7522,39 @@ test('keeps AppTab extension metadata and replacement close icons inside the sha
   if (browserName === 'chromium') {
     await tab.focus();
     await page.screenshot({
-      path: 'test-results/app-tab-extension-light-wide.png',
+      path: 'test-results/tab-bar-item-extension-light-wide.png',
       fullPage: true,
     });
     await page.locator('[data-action="toggle-theme"]').click();
     await root.hover();
     await page.screenshot({
-      path: 'test-results/app-tab-extension-dark-wide.png',
+      path: 'test-results/tab-bar-item-extension-dark-wide.png',
       fullPage: true,
     });
     await page.setViewportSize({ width: 390, height: 844 });
     await root.hover();
     await page.screenshot({
-      path: 'test-results/app-tab-extension-dark-narrow.png',
+      path: 'test-results/tab-bar-item-extension-dark-narrow.png',
       fullPage: true,
     });
   }
 });
 
-test('separates focused AppTab and TabBar specimens from the application-tabs composition', async ({
+test('separates focused TabBarItem and TabBar specimens from the application-tabs composition', async ({
   page,
   browserName,
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=tabs');
-  const appTabs = page.locator('[data-demo="tabs"]');
-  await expect(appTabs.locator('[data-catalog-example]')).toHaveCount(6);
-  await expect(appTabs.locator('[data-component="app-tab"]')).toHaveCount(10);
+  const tabBarItems = page.locator('[data-demo="tabs"]');
+  await expect(tabBarItems.locator('[data-catalog-example]')).toHaveCount(6);
+  await expect(
+    tabBarItems.locator('[data-component="tab-bar-item"]'),
+  ).toHaveCount(10);
   if (browserName === 'chromium')
-    await appTabs.screenshot({ path: 'test-results/app-tab-focused-wide.png' });
+    await tabBarItems.screenshot({
+      path: 'test-results/tab-bar-item-focused-wide.png',
+    });
 
   await page.goto('/?component=tab-bar');
   const tabBars = page.locator('[data-demo="tab-bar"]');
@@ -8047,8 +8051,10 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
   );
   await added.press('Backspace');
   await expect(bar.getByRole('tab')).toHaveCount(7);
-  const source = bar.locator('.kui-app-tab[data-tab-id="components"]');
-  const target = bar.locator('.kui-app-tab[data-tab-id="design-guidance"]');
+  const source = bar.locator('.kui-tab-bar-item[data-tab-id="components"]');
+  const target = bar.locator(
+    '.kui-tab-bar-item[data-tab-id="design-guidance"]',
+  );
   await strip.evaluate((node) => {
     node.scrollLeft = 0;
   });
@@ -8178,7 +8184,7 @@ test('autoscrolls the TabBar while a dragged tab rests near either scroll edge',
   const frame = page.locator('[data-demo-application-tabs-frame]');
   const bar = frame.locator('[data-tab-bar-id="catalog-tabs"]');
   const strip = bar.locator('[data-kui-tab-list]');
-  const source = bar.locator('.kui-app-tab').first();
+  const source = bar.locator('.kui-tab-bar-item').first();
   const stripBounds = await strip.boundingBox();
   expect(stripBounds).not.toBeNull();
   await source.dispatchEvent('dragstart');
@@ -8200,7 +8206,7 @@ test('autoscrolls the TabBar while a dragged tab rests near either scroll edge',
     node.scrollLeft = node.scrollWidth - node.clientWidth;
     return node.scrollLeft;
   });
-  const endSource = bar.locator('.kui-app-tab').last();
+  const endSource = bar.locator('.kui-tab-bar-item').last();
   await endSource.dispatchEvent('dragstart');
   const startEdgeBounds = await strip.boundingBox();
   expect(startEdgeBounds).not.toBeNull();

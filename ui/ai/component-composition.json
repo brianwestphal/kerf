@@ -3947,7 +3947,7 @@
       "key": "@kerfjs/ui:tabs",
       "package": "@kerfjs/ui",
       "id": "tabs",
-      "name": "AppTab",
+      "name": "TabBarItem",
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "listed", "entries": ["@kerfjs/ui:tab-bar"] },
@@ -4013,28 +4013,28 @@
       },
       "cssValueProps": [],
       "boundaries": {
-        "rootClass": "kui-app-tab",
+        "rootClass": "kui-tab-bar-item",
         "publicClasses": [
-          "kui-app-tab",
-          "kui-app-tab__close",
-          "kui-app-tab__close-icon",
-          "kui-app-tab__name",
-          "kui-app-tab__select",
-          "kui-app-tab__trailing"
+          "kui-tab-bar-item",
+          "kui-tab-bar-item__close",
+          "kui-tab-bar-item__close-icon",
+          "kui-tab-bar-item__name",
+          "kui-tab-bar-item__select",
+          "kui-tab-bar-item__trailing"
         ],
         "publicTokens": [
-          "--kui-app-tab-attention-color",
-          "--kui-app-tab-color",
-          "--kui-app-tab-drop-indicator",
-          "--kui-app-tab-drop-target-background",
-          "--kui-app-tab-drop-target-color",
-          "--kui-app-tab-drop-target-ring",
-          "--kui-app-tab-hover-background",
-          "--kui-app-tab-pinned-background",
-          "--kui-app-tab-pinned-hover-background",
-          "--kui-app-tab-selected-background",
-          "--kui-app-tab-selected-border",
-          "--kui-app-tab-selected-color",
+          "--kui-tab-bar-item-attention-color",
+          "--kui-tab-bar-item-color",
+          "--kui-tab-bar-item-drop-indicator",
+          "--kui-tab-bar-item-drop-target-background",
+          "--kui-tab-bar-item-drop-target-color",
+          "--kui-tab-bar-item-drop-target-ring",
+          "--kui-tab-bar-item-hover-background",
+          "--kui-tab-bar-item-pinned-background",
+          "--kui-tab-bar-item-pinned-hover-background",
+          "--kui-tab-bar-item-selected-background",
+          "--kui-tab-bar-item-selected-border",
+          "--kui-tab-bar-item-selected-color",
           "--kui-color-brand-border-normal",
           "--kui-color-brand-on-quiet",
           "--kui-color-neutral-border-normal",
@@ -4096,8 +4096,8 @@
       ],
       "children": {
         "mode": "listed",
-        "concepts": ["app-tab"],
-        "requiredConcepts": ["app-tab"]
+        "concepts": ["tab-bar-item"],
+        "requiredConcepts": ["tab-bar-item"]
       },
       "state": [
         { "id": "selected-tab", "owner": "controlled", "required": true }
@@ -4112,13 +4112,13 @@
         "stateAttributes": [
           {
             "name": "data-tab-dragging",
-            "on": "AppTab (data-component=\"app-tab\")",
+            "on": "TabBarItem (data-component=\"tab-bar-item\")",
             "helper": "wireTabBars",
             "meaning": "\"true\" on the tab being dragged."
           },
           {
             "name": "data-tab-drop-position",
-            "on": "AppTab (data-component=\"app-tab\")",
+            "on": "TabBarItem (data-component=\"tab-bar-item\")",
             "helper": "wireTabBars",
             "meaning": "\"before\" or \"after\" on the tab under the pointer: where the dragged tab would land."
           },

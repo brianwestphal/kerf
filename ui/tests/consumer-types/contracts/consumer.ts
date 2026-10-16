@@ -1,7 +1,4 @@
 import type {
-  AppTabNameOverflow,
-  AppTabPresentation,
-  AppTabSize,
   KerfUiContent,
   SelectFocusRingOwner,
   SelectPresentation,
@@ -9,6 +6,9 @@ import type {
   SelectSize,
   SemanticTone,
   TabBarAllocation,
+  TabBarItemNameOverflow,
+  TabBarItemPresentation,
+  TabBarItemSize,
   TabBarPresentation,
   TabBarTrailingPlacement,
   TextFont,
@@ -650,17 +650,17 @@ void evaluationContexts;
 // KUI-T014 positive: every stable single-root visual component accepts the
 // explicit native slot attribute without opening an arbitrary-attribute bag.
 const slottedContent = UI.Text({ children: 'Content', slot: 'named' });
-UI.AppTab({ id: 'tab', name: 'Tab', slot: 'named' });
-const appTabNameOverflow: AppTabNameOverflow = 'visible';
-UI.AppTab({
+UI.TabBarItem({ id: 'tab', name: 'Tab', slot: 'named' });
+const tabBarItemNameOverflow: TabBarItemNameOverflow = 'visible';
+UI.TabBarItem({
   id: 'drop',
   name: 'Drop target',
   dropTarget: true,
   pinned: true,
-  nameOverflow: appTabNameOverflow,
+  nameOverflow: tabBarItemNameOverflow,
 });
-// @ts-expect-error AppTab name overflow has a finite public vocabulary.
-UI.AppTab({ id: 'bad-overflow', name: 'Bad', nameOverflow: 'wrap' });
+// @ts-expect-error TabBarItem name overflow has a finite public vocabulary.
+UI.TabBarItem({ id: 'bad-overflow', name: 'Bad', nameOverflow: 'wrap' });
 UI.Badge({ children: '1', slot: 'named' });
 Catalog({
   brand: { title: 'Catalog' },
@@ -884,9 +884,9 @@ UI.Badge({ size: 'compact' });
 // KUI-T010 positive: every finite presentation axis is available from the
 // convenience root barrel in both source and packed declarations.
 const rootBarrelPresentationTypes: [
-  AppTabNameOverflow,
-  AppTabPresentation,
-  AppTabSize,
+  TabBarItemNameOverflow,
+  TabBarItemPresentation,
+  TabBarItemSize,
   TabBarAllocation,
   TabBarPresentation,
   TabBarTrailingPlacement,

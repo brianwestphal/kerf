@@ -50,7 +50,7 @@ Every component styles only itself. How it looks and sits is configuration —
 typed props and data attributes such as size, density, inset, presentation,
 tone, `dividerSides`, `ToolbarConfig`, and `PaneConfig` — never a stylesheet
 somewhere else reaching into it. When a component must adapt inside another
-(a `PopupMenu` inside a compact `ToolbarControlGroup`, an `AppTab` in a
+(a `PopupMenu` inside a compact `ToolbarControlGroup`, an `TabBarItem` in a
 segmented `TabBar`), the **child** styles itself in that context, in its own
 stylesheet; the parent keys only its own elements on a child's state
 (`:has(> .kui-select[open])`) and names kerf children by class, not by `wa-*`

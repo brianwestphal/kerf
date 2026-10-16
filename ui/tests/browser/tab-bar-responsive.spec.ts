@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('segmented AppTabs switch to accessible icon-only at tablist container breakpoints', async ({
+test('segmented TabBarItems switch to accessible icon-only at tablist container breakpoints', async ({
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -9,7 +9,7 @@ test('segmented AppTabs switch to accessible icon-only at tablist container brea
   const tabs = bar.locator('.kui-tab-bar__tabs');
   const overview = bar.getByRole('tab', { name: 'Overview' });
   const activity = bar.getByRole('tab', { name: 'Activity' });
-  const name = bar.locator('.kui-app-tab__name').first();
+  const name = bar.locator('.kui-tab-bar-item__name').first();
   const setWidth = async (width: number) => {
     await bar.evaluate((element, value) => {
       element.style.width = `${value}px`;
@@ -25,7 +25,10 @@ test('segmented AppTabs switch to accessible icon-only at tablist container brea
     await bar.screenshot({ path: testInfo.outputPath('tab-bar-wide.png') });
   await setWidth(780);
   await expect(name).toHaveCSS('position', 'absolute');
-  await expect(bar.locator('.kui-app-tab').first()).toHaveCSS('width', '32px');
+  await expect(bar.locator('.kui-tab-bar-item').first()).toHaveCSS(
+    'width',
+    '32px',
+  );
   await expect(overview).toHaveAttribute('aria-selected', 'true');
   await expect(activity).toBeVisible();
   if (testInfo.project.name === 'chromium')
@@ -35,7 +38,10 @@ test('segmented AppTabs switch to accessible icon-only at tablist container brea
   await bar.evaluate((element) => {
     element.dataset.allocation = 'fill';
   });
-  await expect(bar.locator('.kui-app-tab').first()).toHaveCSS('width', '32px');
+  await expect(bar.locator('.kui-tab-bar-item').first()).toHaveCSS(
+    'width',
+    '32px',
+  );
   await bar.evaluate((element) => {
     element.dataset.allocation = 'intrinsic';
   });

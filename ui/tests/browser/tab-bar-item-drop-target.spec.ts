@@ -7,11 +7,13 @@ test('app tab drop target and visible name keep selection independent', async ({
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/?component=tabs');
 
-    const bar = page.locator('[data-tab-bar-id="app-tab-drop-target"]');
-    const selected = bar.locator('.kui-app-tab[data-tab-id="project-grid"]');
-    const target = bar.locator('.kui-app-tab[data-tab-id="accounting"]');
+    const bar = page.locator('[data-tab-bar-id="tab-bar-item-drop-target"]');
+    const selected = bar.locator(
+      '.kui-tab-bar-item[data-tab-id="project-grid"]',
+    );
+    const target = bar.locator('.kui-tab-bar-item[data-tab-id="accounting"]');
     const truncatedName = page.locator(
-      '[data-tab-bar-id="app-tab-truncated"] .kui-app-tab__name',
+      '[data-tab-bar-id="tab-bar-item-truncated"] .kui-tab-bar-item__name',
     );
 
     await expect(selected.getByRole('tab')).toHaveAttribute(
@@ -30,7 +32,7 @@ test('app tab drop target and visible name keep selection independent', async ({
 
     const appearance = await target.evaluate((element) => {
       const rootStyle = window.getComputedStyle(element);
-      const name = element.querySelector('.kui-app-tab__name')!;
+      const name = element.querySelector('.kui-tab-bar-item__name')!;
       const nameStyle = window.getComputedStyle(name);
       return {
         background: rootStyle.backgroundColor,
@@ -48,7 +50,7 @@ test('app tab drop target and visible name keep selection independent', async ({
     await expect(truncatedName).toHaveCSS('text-overflow', 'ellipsis');
 
     await bar.screenshot({
-      path: testInfo.outputPath(`app-tab-drop-target-${width}.png`),
+      path: testInfo.outputPath(`tab-bar-item-drop-target-${width}.png`),
     });
 
     await target.evaluate((element) =>

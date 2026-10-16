@@ -304,7 +304,7 @@ paths each entry owns, relative to the consumer package root.
 - Consumers configure presentation through component props and documented `--kui-*` semantic tokens. Foundation tokens provide opinionated neutral, brand/info, non-status pop, success, warning, and danger fill/border/foreground roles. Application stylesheets must not select package component classes or descendants. If genuinely new structure needs CSS, encapsulate that structure and its stylesheet in an application-owned component; configure any nested Kerf components through their public APIs. A thin composition that only connects other components should normally have no stylesheet. It may style only raw elements or layout it owns, never its component children.
 
 `ListItem.rootAttributes`, `ListActionRow.rootAttributes`,
-`ListHeader.rootAttributes`, `AppTab.rootAttributes`,
+`ListHeader.rootAttributes`, `TabBarItem.rootAttributes`,
 `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` accept
 application-owned `data-*` metadata without
 adding product fields to the shared API. A `ListActionRow` trailing action uses
@@ -318,7 +318,7 @@ component or helper writes its protected attributes after the accepted metadata.
 structurally widened, and JavaScript callers therefore cannot replace its
 contract.
 
-`AppTab.closeIcon` and `ResizableRegion.handleIcon` replace dormant decorative
+`TabBarItem.closeIcon` and `ResizableRegion.handleIcon` replace dormant decorative
 glyph content only. They must not contain controls or interactive roles. The
 component continues to own the named close button or focusable separator, and
 `wireTabBars()` / `wireResizableRegions()` continue to own transient behavior
@@ -360,10 +360,10 @@ the child's own class (or one of the child's own unclassed internals below
 it), and the child reads context values the parent provides under the
 parent's name. `ResizableRegion` widens its edge extent by the unsafe inset a
 split `SplitView` provides, and a `Skeleton` derives its fill from a solid
-`Badge`'s on-solid color, both in their own stylesheets; an `AppTab` rounds its
+`Badge`'s on-solid color, both in their own stylesheets; an `TabBarItem` rounds its
 outer corners in a segmented `TabBar` and shares a fill-allocated strip from
-`app-tab.css`. An inspector `TabBar` uses the shared 12px rounded rectangle
-radius on its strip; its segmented `AppTab` corners follow that strip's inner
+`tab-bar-item.css`. An inspector `TabBar` uses the shared 12px rounded rectangle
+radius on its strip; its segmented `TabBarItem` corners follow that strip's inner
 curve, while an ordinary segmented strip keeps its pill ends and smaller
 interior corners. A `PopupMenu` sizes
 its trigger and applies a group's `menuInset` in its own stylesheet, and an
@@ -493,7 +493,7 @@ mode; the detail reads as secondary through its smaller, regular-weight type, an
 only the neutral tone quiets it, to `--kui-color-neutral-on-quiet`. Its five built-in
 tones can be rethemed globally with
 `--kui-state-banner-{tone}-{background|border|foreground}`. Toolbar control,
-segmented-control, app-tab, and tab-bar colors likewise use their public
+segmented-control, tab-bar-item, and tab-bar colors likewise use their public
 `--kui-*-*` variables. `SegmentedControl` exposes surface, border, foreground,
 hover, and selected-state variables, so rounded, pill, and toolbar presentations
 remain opinionated but locally overridable. Its label color switches with the
@@ -803,7 +803,7 @@ the only shrinking, horizontally scrolling region; `leading`, `trailing`, and
 trailing action belongs immediately after the final tab and use `end` for a
 separate action pinned to the far edge. Applications own the action content,
 but must not restyle TabBar descendants to recreate that allocation.
-When a leading AppTab is pinned, the leading scroll divider appears at that
+When a leading TabBarItem is pinned, the leading scroll divider appears at that
 tab's trailing edge while peer tabs scroll beneath it, including in RTL.
 With `snapTabs`, `wireTabBars` measures the pinned tab and settles peers at
 whole-tab starts after scroll and selection changes, reserving end room so the

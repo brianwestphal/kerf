@@ -4,7 +4,7 @@ export type TabActivation = 'automatic' | 'manual';
 export type TabBarAllocation = 'intrinsic' | 'fill';
 export type TabBarPresentation = 'rail' | 'segmented' | 'inspector';
 export type TabBarTrailingPlacement = 'separate' | 'adjacent';
-/** Tablist width where segmented AppTabs switch to icon-only. */
+/** Tablist width where segmented TabBarItems switch to icon-only. */
 export type TabBarIconOnlyAt = 'wide' | 'narrow' | 'compact';
 
 export interface TabBarProps {
@@ -28,11 +28,11 @@ export interface TabBarProps {
    * selects with Enter / Space / click — use it when selecting a tab is a heavy action.
    */
   activation?: TabActivation;
-  /** How available strip width is allocated across child AppTabs. */
+  /** How available strip width is allocated across child TabBarItems. */
   allocation?: TabBarAllocation;
   /** Named strip chrome for application rails, segmented tabs, or inspectors. */
   presentation?: TabBarPresentation;
-  /** Switch segmented AppTabs to icon-only at tablist widths of 832, 704, or 448px. Each tab needs a leading icon. */
+  /** Switch segmented TabBarItems to icon-only at tablist widths of 832, 704, or 448px. Each tab needs a leading icon. */
   iconOnlyAt?: TabBarIconOnlyAt;
   /** Keep a trailing action beside the final tab or at the far edge of the bar. */
   trailingPlacement?: TabBarTrailingPlacement;

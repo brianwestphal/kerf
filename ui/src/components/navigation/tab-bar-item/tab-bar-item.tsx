@@ -18,7 +18,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-pinned',
 ]);
 
-type AppTabRootAttributes = Readonly<
+type TabBarItemRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-action'?: never;
@@ -33,11 +33,11 @@ type AppTabRootAttributes = Readonly<
   }
 >;
 
-export type AppTabPresentation = 'pill' | 'segmented' | 'icon-only';
-export type AppTabSize = 'default' | 'compact';
-export type AppTabNameOverflow = 'ellipsis' | 'visible';
+export type TabBarItemPresentation = 'pill' | 'segmented' | 'icon-only';
+export type TabBarItemSize = 'default' | 'compact';
+export type TabBarItemNameOverflow = 'ellipsis' | 'visible';
 
-export interface AppTabProps {
+export interface TabBarItemProps {
   id: string;
   name: string;
   selected?: boolean;
@@ -52,13 +52,13 @@ export interface AppTabProps {
   leading?: KerfUiContent;
   trailing?: KerfUiContent;
   /** Visual treatment within a TabBar. Icon-only tabs retain `name` as their accessible name. */
-  presentation?: AppTabPresentation;
+  presentation?: TabBarItemPresentation;
   /** Compact tabs use the 32px application-rail height. */
-  size?: AppTabSize;
+  size?: TabBarItemSize;
   /** Maximum visible label width in CSS pixels before ellipsis. */
   labelMaxWidth?: number;
   /** Keep the full name visible for an inline loading treatment. */
-  nameOverflow?: AppTabNameOverflow;
+  nameOverflow?: TabBarItemNameOverflow;
   /** Decorative dormant content for the close button. Must not contain interactive descendants. */
   closeIcon?: SafeHtml;
   selectAction?: string;
@@ -77,7 +77,7 @@ export interface AppTabProps {
    * `placeholder` wins when both are set.
    */
   pending?: boolean;
-  rootAttributes?: AppTabRootAttributes;
+  rootAttributes?: TabBarItemRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
@@ -98,7 +98,7 @@ function CloseIcon() {
   );
 }
 
-export function AppTab({
+export function TabBarItem({
   id,
   name,
   selected = false,
@@ -121,7 +121,7 @@ export function AppTab({
   pending = false,
   rootAttributes = {},
   slot,
-}: AppTabProps) {
+}: TabBarItemProps) {
   // Both loading states disable close and dragging; a `placeholder` (unknown
   // tab) is also unselectable and hides its name, while a `pending` (known,
   // still opening) tab stays selectable so its panel can show placeholders.
@@ -140,8 +140,8 @@ export function AppTab({
   return (
     <div
       {...extensionAttributes}
-      class={`kui-app-tab ${className}`.trim()}
-      data-component="app-tab"
+      class={`kui-tab-bar-item ${className}`.trim()}
+      data-component="tab-bar-item"
       data-tab-id={id}
       data-selected={String(selected)}
       data-attention={attention ? 'true' : undefined}
@@ -157,7 +157,7 @@ export function AppTab({
       style={
         labelMaxWidth === undefined
           ? undefined
-          : `--kui-app-tab-label-max-width:${labelMaxWidth}px`
+          : `--kui-tab-bar-item-label-max-width:${labelMaxWidth}px`
       }
       slot={slot}
     >
@@ -165,21 +165,21 @@ export function AppTab({
         <button
           type="button"
           tabindex="-1"
-          class="kui-app-tab__close"
+          class="kui-tab-bar-item__close"
           data-action={dormant ? undefined : closeAction}
           data-tab-id={id}
           disabled={dormant || undefined}
           aria-label={`Close ${name}`}
           title={`Close ${name}`}
         >
-          <span class="kui-app-tab__close-icon" aria-hidden="true">
+          <span class="kui-tab-bar-item__close-icon" aria-hidden="true">
             {closeIcon ?? <CloseIcon />}
           </span>
         </button>
       )}
       <button
         type="button"
-        class="kui-app-tab__select"
+        class="kui-tab-bar-item__select"
         role="tab"
         aria-selected={String(selected)}
         aria-label={presentation === 'icon-only' || named ? name : undefined}
@@ -191,13 +191,13 @@ export function AppTab({
       >
         {leading}
         <span
-          class="kui-app-tab__name"
+          class="kui-tab-bar-item__name"
           aria-hidden={presentation === 'icon-only' ? 'true' : undefined}
         >
           {placeholder ? <Skeleton width={em(7)} /> : name}
         </span>
         {closable || trailing ? (
-          <span class="kui-app-tab__trailing">{trailing}</span>
+          <span class="kui-tab-bar-item__trailing">{trailing}</span>
         ) : undefined}
       </button>
     </div>

@@ -1151,7 +1151,7 @@
         {
           "id": "tabs",
           "relationship": "semantic-alternative",
-          "when": "Use TabBar and AppTab for document-style tabpanels, overflow, closing, or reordering."
+          "when": "Use TabBar and TabBarItem for document-style tabpanels, overflow, closing, or reordering."
         },
         {
           "id": "workbench",
@@ -4128,7 +4128,7 @@
         "A settings or command row identifies each entry by a colored icon tile (iconTile) instead of a bare glyph."
       ],
       "avoidWhen": [
-        "Use ListItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls.",
+        "Use ListItem when trailing content is dormant metadata; use TabBarItem only for tablist semantics and ToolbarControlGroup only for toolbar controls.",
         "Do not inject declaration strings; use className, public tokens, and cataloged component props for application styling."
       ],
       "alternatives": [
@@ -4750,10 +4750,10 @@
         "text",
         "pane"
       ],
-      "purpose": "Show AppTab and TabBar in a complete controlled composition.",
+      "purpose": "Show TabBarItem and TabBar in a complete controlled composition.",
       "publicExports": [],
       "useWhen": [
-        "Compose application state, panels, actions, overflow, and reordering around TabBar and AppTab."
+        "Compose application state, panels, actions, overflow, and reordering around TabBar and TabBarItem."
       ],
       "avoidWhen": [
         "Use SegmentedControl instead for a compact local choice."
@@ -4795,7 +4795,7 @@
     },
     {
       "id": "tabs",
-      "name": "AppTab",
+      "name": "TabBarItem",
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
@@ -4805,7 +4805,7 @@
       ],
       "purpose": "Render a controlled application tab with compact or icon-only presentation, a visible drop target, optional full-name display, and an optional pinned leading position.",
       "publicExports": [
-        "AppTab"
+        "TabBarItem"
       ],
       "useWhen": [
         "Render one controlled application tab inside TabBar."
@@ -4855,34 +4855,34 @@
         "padding": "self"
       },
       "delivery": {
-        "browserImport": "@kerfjs/ui/app-tab",
-        "manualCssImport": "@kerfjs/ui/app-tab.css",
+        "browserImport": "@kerfjs/ui/tab-bar-item",
+        "manualCssImport": "@kerfjs/ui/tab-bar-item.css",
         "sideEffects": [
           "browser-condition-css"
         ]
       },
       "wiring": [],
       "publicClasses": [
-        "kui-app-tab",
-        "kui-app-tab__close",
-        "kui-app-tab__close-icon",
-        "kui-app-tab__name",
-        "kui-app-tab__select",
-        "kui-app-tab__trailing"
+        "kui-tab-bar-item",
+        "kui-tab-bar-item__close",
+        "kui-tab-bar-item__close-icon",
+        "kui-tab-bar-item__name",
+        "kui-tab-bar-item__select",
+        "kui-tab-bar-item__trailing"
       ],
       "publicTokens": [
-        "--kui-app-tab-attention-color",
-        "--kui-app-tab-color",
-        "--kui-app-tab-drop-indicator",
-        "--kui-app-tab-drop-target-background",
-        "--kui-app-tab-drop-target-color",
-        "--kui-app-tab-drop-target-ring",
-        "--kui-app-tab-hover-background",
-        "--kui-app-tab-pinned-background",
-        "--kui-app-tab-pinned-hover-background",
-        "--kui-app-tab-selected-background",
-        "--kui-app-tab-selected-border",
-        "--kui-app-tab-selected-color",
+        "--kui-tab-bar-item-attention-color",
+        "--kui-tab-bar-item-color",
+        "--kui-tab-bar-item-drop-indicator",
+        "--kui-tab-bar-item-drop-target-background",
+        "--kui-tab-bar-item-drop-target-color",
+        "--kui-tab-bar-item-drop-target-ring",
+        "--kui-tab-bar-item-hover-background",
+        "--kui-tab-bar-item-pinned-background",
+        "--kui-tab-bar-item-pinned-hover-background",
+        "--kui-tab-bar-item-selected-background",
+        "--kui-tab-bar-item-selected-border",
+        "--kui-tab-bar-item-selected-color",
         "--kui-color-brand-border-normal",
         "--kui-color-brand-on-quiet",
         "--kui-color-neutral-border-normal",
@@ -4987,12 +4987,12 @@
           "stateAttributes": [
             {
               "name": "data-tab-dragging",
-              "on": "AppTab (data-component=\"app-tab\")",
+              "on": "TabBarItem (data-component=\"tab-bar-item\")",
               "meaning": "\"true\" on the tab being dragged."
             },
             {
               "name": "data-tab-drop-position",
-              "on": "AppTab (data-component=\"app-tab\")",
+              "on": "TabBarItem (data-component=\"tab-bar-item\")",
               "meaning": "\"before\" or \"after\" on the tab under the pointer: where the dragged tab would land."
             },
             {

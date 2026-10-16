@@ -42,7 +42,7 @@ test('every placeholder-supporting component demos its placeholder case', async 
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  // Each single-component demo (AppTab via `tabs`, ValueTableRow via `value-table`)
+  // Each single-component demo (TabBarItem via `tabs`, ValueTableRow via `value-table`)
   // must surface its placeholder=true variant so the loading state is discoverable
   // where the component is evaluated, not only inside the loading-inspector recipe.
   const components = [

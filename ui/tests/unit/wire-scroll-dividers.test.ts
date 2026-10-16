@@ -7,9 +7,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Toolbar } from '../../src/components/actions/toolbar/toolbar.js';
 import { Pane } from '../../src/components/layout/pane/pane.js';
 import { SplitView } from '../../src/components/layout/split-view/split-view.js';
-import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
 import { TabBar } from '../../src/components/navigation/tab-bar/tab-bar.js';
+import { TabBarItem } from '../../src/components/navigation/tab-bar-item/tab-bar-item.js';
 import { TabNavigator } from '../../src/components/navigation/tab-navigator/tab-navigator.js';
 import { wireScrollDividers } from '../../src/wiring/wire-scroll-dividers.js';
 import { componentStylesheet } from './helpers/component-stylesheet.js';
@@ -459,8 +459,8 @@ describe('wireScrollDividers — horizontal edges', () => {
           id: 'docs',
           label: 'Documents',
           children: [
-            AppTab({ id: 'one', name: 'One', selected: true }),
-            AppTab({ id: 'two', name: 'Two' }),
+            TabBarItem({ id: 'one', name: 'One', selected: true }),
+            TabBarItem({ id: 'two', name: 'Two' }),
           ],
         }),
       ),

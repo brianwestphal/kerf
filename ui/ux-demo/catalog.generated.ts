@@ -507,7 +507,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "composition",
     "source": "kerf",
-    "description": "Show AppTab and TabBar in a complete controlled composition.",
+    "description": "Show TabBarItem and TabBar in a complete controlled composition.",
     "uses": [
       "tabs",
       "tab-bar",
@@ -520,7 +520,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "tabs",
-    "name": "AppTab",
+    "name": "TabBarItem",
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
@@ -529,7 +529,7 @@ export const generatedKerfCatalog = [
       "lucide-icon"
     ],
     "demoSource": "ui/ux-demo/demos/tabs.tsx",
-    "componentSource": "ui/src/components/navigation/app-tab/app-tab.tsx",
+    "componentSource": "ui/src/components/navigation/tab-bar-item/tab-bar-item.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
   {

@@ -16,13 +16,13 @@ Keep a selectable primary row action and an independently named trailing action 
 
 **Not when:**
 
-- Use ListItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls.
+- Use ListItem when trailing content is dormant metadata; use TabBarItem only for tablist semantics and ToolbarControlGroup only for toolbar controls.
 - Do not inject declaration strings; use className, public tokens, and cataloged component props for application styling.
 
 **Alternatives:**
 
 - [ListItem](./list-item.md) (nearest) — Trailing content is noninteractive.
-- [AppTab](./tabs.md) (semantic alternative) — The primary control selects a tabpanel inside TabBar.
+- [TabBarItem](./tabs.md) (semantic alternative) — The primary control selects a tabpanel inside TabBar.
 
 ## Imports
 
@@ -103,6 +103,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [LoadingSpinner](./loading-spinner.md), [PopupMenu](./popup-menu.md), [ListItem](./list-item.md), [AppTab](./tabs.md).
+- Components: [LucideIcon](./lucide-icon.md), [LoadingSpinner](./loading-spinner.md), [PopupMenu](./popup-menu.md), [ListItem](./list-item.md), [TabBarItem](./tabs.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=list-action-row`.

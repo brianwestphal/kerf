@@ -369,13 +369,6 @@ export {
   type LucideNode,
 } from './components/media/lucide-icon/lucide-icon.js';
 export {
-  AppTab,
-  type AppTabNameOverflow,
-  type AppTabPresentation,
-  type AppTabProps,
-  type AppTabSize,
-} from './components/navigation/app-tab/app-tab.js';
-export {
   DisclosureArrow,
   type DisclosureArrowProps,
   type DisclosureDirection,
@@ -396,6 +389,13 @@ export {
   wireTabBars,
   type WireTabBarsOptions,
 } from './components/navigation/tab-bar/wiring/wire-tab-bars.js';
+export {
+  TabBarItem,
+  type TabBarItemNameOverflow,
+  type TabBarItemPresentation,
+  type TabBarItemProps,
+  type TabBarItemSize,
+} from './components/navigation/tab-bar-item/tab-bar-item.js';
 export {
   BackdropImage,
   type BackdropImageFit,

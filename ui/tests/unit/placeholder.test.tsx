@@ -12,7 +12,7 @@ import { StateBanner } from '../../src/components/feedback/state-banner/state-ba
 import { SegmentedControl } from '../../src/components/forms/segmented-control/segmented-control.js';
 import { Select } from '../../src/components/forms/select/select.js';
 import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
-import { AppTab } from '../../src/components/navigation/app-tab/app-tab.js';
+import { TabBarItem } from '../../src/components/navigation/tab-bar-item/tab-bar-item.js';
 import { em, pct, px, rem } from '../../src/shared/styles/css-values.js';
 
 const asHtml = (value: unknown) => String(value);
@@ -327,9 +327,9 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('3 unpriced');
   });
 
-  it('AppTab skeletons the name, disables its buttons, and is not draggable', () => {
+  it('TabBarItem skeletons the name, disables its buttons, and is not draggable', () => {
     const html = asHtml(
-      AppTab({
+      TabBarItem({
         id: 't1',
         name: 'Overview',
         draggable: true,
@@ -344,9 +344,9 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('>Overview<');
   });
 
-  it('AppTab pending keeps its name, stays selectable, and is busy and named by it', () => {
+  it('TabBarItem pending keeps its name, stays selectable, and is busy and named by it', () => {
     const html = asHtml(
-      AppTab({
+      TabBarItem({
         id: 'alpha',
         name: 'alpha',
         draggable: true,
@@ -373,13 +373,13 @@ describe('component placeholder mode', () => {
     expect(html).toMatch(/role="tab"[^>]*aria-label="alpha"/);
     expect(html).toMatch(/role="tab"[^>]*tabindex="0"/);
     expect(html).not.toMatch(/role="tab"[^>]*disabled/);
-    expect(html).toMatch(/kui-app-tab__close"[^>]*disabled/);
+    expect(html).toMatch(/kui-tab-bar-item__close"[^>]*disabled/);
     expect(html).toContain('class="spinner"');
   });
 
-  it('AppTab placeholder wins over pending', () => {
+  it('TabBarItem placeholder wins over pending', () => {
     const html = asHtml(
-      AppTab({ id: 'a', name: 'alpha', placeholder: true, pending: true }),
+      TabBarItem({ id: 'a', name: 'alpha', placeholder: true, pending: true }),
     );
     expect(html).toContain('data-placeholder="true"');
     expect(html).not.toContain('data-pending');

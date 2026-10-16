@@ -69,19 +69,19 @@ describe('downstream component ownership rules', () => {
 
   it('catches raw descendants of cataloged anatomy without treating app content as component-owned', () => {
     expect(
-      restyled('.ticket-inspector__tabs .kui-app-tab__select > svg'),
-    ).toEqual(['@kerfjs/ui:tabs descendant .kui-app-tab__select']);
-    expect(restyled('.kui-app-tab__select svg path')).toEqual([
-      '@kerfjs/ui:tabs descendant .kui-app-tab__select',
+      restyled('.ticket-inspector__tabs .kui-tab-bar-item__select > svg'),
+    ).toEqual(['@kerfjs/ui:tabs descendant .kui-tab-bar-item__select']);
+    expect(restyled('.kui-tab-bar-item__select svg path')).toEqual([
+      '@kerfjs/ui:tabs descendant .kui-tab-bar-item__select',
     ]);
-    expect(restyled('.kui-app-tab__select > .app-icon')).toEqual([]);
-    expect(restyled('.kui-app-tab__select .app-icon > svg')).toEqual([]);
-    expect(restyled('.kui-app-tab > svg')).toEqual([]);
-    expect(restyled('.kui-app-tab__select:has(> svg)')).toEqual([
-      '@kerfjs/ui:tabs class .kui-app-tab__select',
+    expect(restyled('.kui-tab-bar-item__select > .app-icon')).toEqual([]);
+    expect(restyled('.kui-tab-bar-item__select .app-icon > svg')).toEqual([]);
+    expect(restyled('.kui-tab-bar-item > svg')).toEqual([]);
+    expect(restyled('.kui-tab-bar-item__select:has(> svg)')).toEqual([
+      '@kerfjs/ui:tabs class .kui-tab-bar-item__select',
     ]);
     expect(
-      restyledComponents('.kui-app-tab__select > svg', facts, () => false),
+      restyledComponents('.kui-tab-bar-item__select > svg', facts, () => false),
     ).toEqual([]);
   });
 
@@ -1278,11 +1278,11 @@ export const App = () => <Toolbar className="my-toolbar" />;
     });
   });
 
-  it('reports a downstream override of raw AppTab anatomy in CSS', async () => {
+  it('reports a downstream override of raw TabBarItem anatomy in CSS', async () => {
     const root = await project({
       'src/ticket-inspector.css': [
-        '.ticket-inspector__tabs .kui-app-tab__select > svg { width: 0.9rem; height: 0.9rem; }',
-        '.ticket-inspector__tabs .kui-app-tab__select > .app-icon { width: 0.9rem; }',
+        '.ticket-inspector__tabs .kui-tab-bar-item__select > svg { width: 0.9rem; height: 0.9rem; }',
+        '.ticket-inspector__tabs .kui-tab-bar-item__select > .app-icon { width: 0.9rem; }',
         '',
       ].join('\n'),
     });
@@ -1296,7 +1296,7 @@ export const App = () => <Toolbar className="my-toolbar" />;
       evidence: {
         component: '@kerfjs/ui:tabs',
         via: 'descendant',
-        target: '.kui-app-tab__select',
+        target: '.kui-tab-bar-item__select',
         properties: ['width', 'height'],
       },
     });

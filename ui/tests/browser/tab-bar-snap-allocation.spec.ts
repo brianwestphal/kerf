@@ -20,7 +20,7 @@ const setUp = async (page: Page, tabCount: number) => {
     element.style.width = '1100px';
     const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
     const tabs = [
-      ...strip.querySelectorAll<HTMLElement>(':scope > .kui-app-tab'),
+      ...strip.querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item'),
     ];
     for (const tab of tabs.slice(tabCount)) tab.remove();
     for (let index = tabs.length; index < tabCount; index += 1) {
@@ -36,7 +36,9 @@ const setUp = async (page: Page, tabCount: number) => {
     strip.dataset.snapTabs = 'true';
   }, tabCount);
   await expect(strip).toHaveAttribute('data-snap-tabs', 'true');
-  await expect(strip.locator(':scope > .kui-app-tab')).toHaveCount(tabCount);
+  await expect(strip.locator(':scope > .kui-tab-bar-item')).toHaveCount(
+    tabCount,
+  );
   await settle(page);
   return { bar, strip };
 };
@@ -141,7 +143,7 @@ for (const [label, width] of [
         .poll(() =>
           strip.evaluate((element) => {
             const last = element
-              .querySelectorAll<HTMLElement>(':scope > .kui-app-tab')
+              .querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item')
               .item(11);
             return Math.abs(
               last.getBoundingClientRect().left -

@@ -1,2 +1,2 @@
 // Public package entry; implementation is grouped by component ownership.
-export * from './components/navigation/app-tab/app-tab.js';
+export * from './components/navigation/tab-bar-item/tab-bar-item.js';

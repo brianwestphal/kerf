@@ -471,7 +471,7 @@
     },
     {
       "at": "2026-09-27T00:44:24.763Z",
-      "reason": "KF-8913PN: AppTab pending state and its tabs-demo Pending example",
+      "reason": "KF-8913PN: TabBarItem pending state and its tabs-demo Pending example",
       "old": {
         "measuredLargestJavaScriptGzip": 136355,
         "measuredTotalJavaScriptGzip": 285216,
@@ -711,7 +711,7 @@
     },
     {
       "at": "2026-09-27T23:15:00.599Z",
-      "reason": "Pending AppTab specimen note now explains the selectable contract (KF-X017Y6)",
+      "reason": "Pending TabBarItem specimen note now explains the selectable contract (KF-X017Y6)",
       "old": {
         "measuredLargestJavaScriptGzip": 143248,
         "measuredTotalJavaScriptGzip": 290703,
@@ -1255,7 +1255,7 @@
     },
     {
       "at": "2026-09-30T04:18:37.299Z",
-      "reason": "AppTab attention and configurable TabBar strip add a reviewed catalog specimen",
+      "reason": "TabBarItem attention and configurable TabBar strip add a reviewed catalog specimen",
       "old": {
         "measuredLargestJavaScriptGzip": 126040,
         "measuredTotalJavaScriptGzip": 304618,
@@ -1447,7 +1447,7 @@
     },
     {
       "at": "2026-09-30T11:06:45.853Z",
-      "reason": "AppTab drop-target and visible-name catalog example",
+      "reason": "TabBarItem drop-target and visible-name catalog example",
       "old": {
         "measuredLargestJavaScriptGzip": 126040,
         "measuredTotalJavaScriptGzip": 307270,
@@ -1463,7 +1463,7 @@
     },
     {
       "at": "2026-09-30T11:37:36.375Z",
-      "reason": "Pinned AppTab catalog example and scroll reveal",
+      "reason": "Pinned TabBarItem catalog example and scroll reveal",
       "old": {
         "measuredLargestJavaScriptGzip": 126041,
         "measuredTotalJavaScriptGzip": 307452,
@@ -1623,7 +1623,7 @@
     },
     {
       "at": "2026-09-30T18:42:38.424Z",
-      "reason": "Container-responsive segmented AppTab icon-only presentation",
+      "reason": "Container-responsive segmented TabBarItem icon-only presentation",
       "old": {
         "measuredLargestJavaScriptGzip": 126040,
         "measuredTotalJavaScriptGzip": 309927,

@@ -500,24 +500,24 @@ tester.run('ui-composition', composition, {
       settings,
     },
     {
-      code: "import * as UI from '@kerfjs/ui'; const alternate = true; <UI.TabBar>{alternate ? <UI.AppTab /> : [<UI.AppTab />, <UI.AppTab />]}</UI.TabBar>;",
+      code: "import * as UI from '@kerfjs/ui'; const alternate = true; <UI.TabBar>{alternate ? <UI.TabBarItem /> : [<UI.TabBarItem />, <UI.TabBarItem />]}</UI.TabBar>;",
       settings,
     },
     {
-      code: "import { TabBar as Tabs } from '@kerfjs/ui/tab-bar'; import { AppTab as Tab } from '@kerfjs/ui/app-tab'; const ready = true; <Tabs>{ready && <Tab />}</Tabs>;",
+      code: "import { TabBar as Tabs } from '@kerfjs/ui/tab-bar'; import { TabBarItem as Tab } from '@kerfjs/ui/tab-bar-item'; const ready = true; <Tabs>{ready && <Tab />}</Tabs>;",
       settings,
     },
     {
-      code: "import { TabBar, AppTab } from '@kerfjs/ui'; <TabBar trailing={<wa-button>Add tab</wa-button>} end={<wa-button variant='brand'>New ticket</wa-button>}><AppTab /></TabBar>;",
+      code: "import { TabBar, TabBarItem } from '@kerfjs/ui'; <TabBar trailing={<wa-button>Add tab</wa-button>} end={<wa-button variant='brand'>New ticket</wa-button>}><TabBarItem /></TabBar>;",
       settings: shippedUiSettings,
     },
     {
-      code: "import { TabBar, AppTab, ToolbarControlGroup } from '@kerfjs/ui'; <TabBar leading={<ToolbarControlGroup />} trailing={<ToolbarControlGroup />} end={<ToolbarControlGroup />}><AppTab /></TabBar>;",
+      code: "import { TabBar, TabBarItem, ToolbarControlGroup } from '@kerfjs/ui'; <TabBar leading={<ToolbarControlGroup />} trailing={<ToolbarControlGroup />} end={<ToolbarControlGroup />}><TabBarItem /></TabBar>;",
       settings: shippedUiSettings,
     },
     // Zone validation deliberately stops at a local binding.
     {
-      code: "import { TabBar, AppTab } from '@kerfjs/ui'; const actions = <div><wa-button>New ticket</wa-button></div>; <TabBar trailing={actions}><AppTab /></TabBar>;",
+      code: "import { TabBar, TabBarItem } from '@kerfjs/ui'; const actions = <div><wa-button>New ticket</wa-button></div>; <TabBar trailing={actions}><TabBarItem /></TabBar>;",
       settings: shippedUiSettings,
     },
     {
@@ -567,12 +567,12 @@ tester.run('ui-composition', composition, {
       errors: [{ messageId: 'zone' }],
     },
     {
-      code: "import { TabBar, AppTab } from '@kerfjs/ui'; <TabBar end={<div><wa-button>New ticket</wa-button></div>}><AppTab /></TabBar>;",
+      code: "import { TabBar, TabBarItem } from '@kerfjs/ui'; <TabBar end={<div><wa-button>New ticket</wa-button></div>}><TabBarItem /></TabBar>;",
       settings: shippedUiSettings,
       errors: [{ messageId: 'zone' }],
     },
     {
-      code: "import { AppTab, LucideIcon } from '@kerfjs/ui'; <div><AppTab closeIcon={<><LucideIcon /><LucideIcon /></>} /></div>;",
+      code: "import { TabBarItem, LucideIcon } from '@kerfjs/ui'; <div><TabBarItem closeIcon={<><LucideIcon /><LucideIcon /></>} /></div>;",
       settings,
       errors: [{ messageId: 'parent' }, { messageId: 'cardinality' }],
     },

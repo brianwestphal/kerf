@@ -37,7 +37,7 @@ const setUp = async (
     (element, { snap, wrapperStyle, shrinkableTrailing }) => {
       const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
       const tabs = [
-        ...strip.querySelectorAll<HTMLElement>(':scope > .kui-app-tab'),
+        ...strip.querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item'),
       ];
       for (let index = tabs.length; index < 12; index += 1) {
         const clone = tabs[index % tabs.length]!.cloneNode(true) as HTMLElement;
