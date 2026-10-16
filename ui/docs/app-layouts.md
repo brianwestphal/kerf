@@ -179,6 +179,13 @@ compact width (448px or less) — and ignores it when roomy. Pass it through a
 view's or panel's `pane` configuration (`pane: { compactChrome: { footer:
 'scroll' } }`).
 
+Make open `overlay` chrome transient with `wirePaneChrome(root, { header,
+footer })` from `@kerfjs/ui/wire-pane-chrome`, passing the signals the Pane
+renders as `compactChromeOpen`: Escape, or a press that starts and ends outside
+the open chrome, sets its signal to false, and focus left inside the chrome
+returns to the control that opened it. The app's own toggle keeps working,
+because the dismissal is decided at the click.
+
 ## Decision matrix
 
 | Situation                                                                    | Layout                                                                                           | Device threshold                                                                                                                   |

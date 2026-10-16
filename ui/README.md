@@ -251,6 +251,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `Pane`                                                       | `@kerfjs/ui/pane`                       | `@kerfjs/ui/pane.css`                    |
 | `NavStack`                                                   | `@kerfjs/ui/nav-stack`                  | `@kerfjs/ui/nav-stack.css`               |
 | `wireNavStack`                                               | `@kerfjs/ui/wire-nav-stack`             | —                                        |
+| `wirePaneChrome`                                             | `@kerfjs/ui/wire-pane-chrome`           | —                                        |
 | `SplitView`                                                  | `@kerfjs/ui/split-view`                 | `@kerfjs/ui/split-view.css`              |
 | `TabNavigator`                                               | `@kerfjs/ui/tab-navigator`              | `@kerfjs/ui/tab-navigator.css`           |
 | `wireTabNavigator`                                           | `@kerfjs/ui/wire-tab-navigator`         | —                                        |

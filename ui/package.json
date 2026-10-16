@@ -259,6 +259,10 @@
       "types": "./dist/wire-nav-stack.d.ts",
       "import": "./dist/wire-nav-stack.js"
     },
+    "./wire-pane-chrome": {
+      "types": "./dist/wire-pane-chrome.d.ts",
+      "import": "./dist/wire-pane-chrome.js"
+    },
     "./wire-content-items": {
       "types": "./dist/wire-content-items.d.ts",
       "import": "./dist/wire-content-items.js"

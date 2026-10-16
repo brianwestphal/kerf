@@ -245,7 +245,8 @@ const overlayDetailView = (label: string): NavStackView => ({
 
 /** The delegated action that shows and hides the compact example's filters. */
 export const TOGGLE_COMPACT_CHROME_DEMO_ACTION = 'toggle-compact-chrome-demo';
-const compactFiltersOpen = signal(false);
+/** The compact example's filter overlay; `wirePaneChrome` closes it. */
+export const compactFiltersOpen = signal(false);
 
 export function toggleCompactChromeDemo(): boolean {
   compactFiltersOpen.value = !compactFiltersOpen.value;

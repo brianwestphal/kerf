@@ -115,3 +115,34 @@ test('the NavStack Compact Chrome example opens its overlay filters and settles 
     expect(foot!.y).toBeGreaterThanOrEqual(last!.y + last!.height - 1);
   }
 });
+
+test('wirePaneChrome closes open overlay chrome on Escape or an outside press', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto('/?component=nav-stack');
+  const stack = page.locator('#catalog-nav-stack-compact-chrome');
+  await stack.scrollIntoViewIfNeeded();
+  const header = stack
+    .locator('.kui-pane')
+    .first()
+    .locator('.kui-pane__header');
+  // From the keyboard, so WebKit focuses the toggle to return to.
+  await stack.getByRole('button', { name: 'Show Filters' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(header).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(header).toBeHidden();
+  await expect(
+    stack.getByRole('button', { name: 'Show Filters' }),
+  ).toBeFocused();
+  // An outside press closes it; the toggle itself still toggles.
+  await stack.getByRole('button', { name: 'Show Filters' }).click();
+  await expect(header).toBeVisible();
+  await stack.locator('.kui-list-item').nth(4).click();
+  await expect(header).toBeHidden();
+  await stack.getByRole('button', { name: 'Show Filters' }).click();
+  await expect(header).toBeVisible();
+  await stack.getByRole('button', { name: 'Hide Filters' }).click();
+  await expect(header).toBeHidden();
+});

@@ -390,7 +390,9 @@ On compact devices, let a Pane's chrome give way through
 `compactChrome: { header, footer }` (`scroll` puts it inline with the content,
 `overlay` lays it over the content until `compactChromeOpen` opens it), passed
 through a view's or panel's `pane` configuration; the NavStack view, tab
-scene, full-screen dialog, or compact Workbench applies it.
+scene, full-screen dialog, or compact Workbench applies it. Call
+`wirePaneChrome(root, { header, footer })` from `@kerfjs/ui/wire-pane-chrome`
+with the open signals so overlay chrome closes on Escape or an outside press.
 
 When a whole panel should accept dropped files, give its `FileDropZone` a
 `dropScope` selector for the panel instead of setting `data-dragging` yourself.

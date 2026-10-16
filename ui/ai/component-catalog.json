@@ -759,6 +759,12 @@
               "meaning": "measured once the wiring has measured an overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root (and a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered); the header then lies over the content, which clears it. Both are re-applied if a re-render drops them."
             }
           ]
+        },
+        {
+          "export": "wirePaneChrome",
+          "import": "@kerfjs/ui/wire-pane-chrome",
+          "required": false,
+          "stateAttributes": []
         }
       ],
       "publicClasses": [

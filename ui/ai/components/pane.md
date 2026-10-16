@@ -37,6 +37,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 - JavaScript: `@kerfjs/ui/pane` — exports `Pane`, `wireScrollDividers`.
 - CSS: the browser build of `@kerfjs/ui/pane` pulls its CSS automatically; import `@kerfjs/ui/pane.css` manually only without the `browser` export condition.
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
+- Wiring: `wirePaneChrome` from `@kerfjs/ui/wire-pane-chrome` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
@@ -77,7 +78,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 **The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it); whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig); an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it); an optional scoped tint (tint: { color, scheme }, also in PaneConfig): the color and the declared light or dark scheme it belongs to; Kerf does no color detection; an optional tint accent (tint.accent) that re-derives the brand ramp, links, and focus ring inside the tinted scope at AA.
 
-**Wiring:** `wireScrollDividers` is optional.
+**Wiring:** `wireScrollDividers`, `wirePaneChrome` is optional.
 
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 

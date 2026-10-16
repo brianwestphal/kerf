@@ -55,6 +55,7 @@ import {
 import { wireMessageComposers } from '@kerfjs/ui/wire-message-composers';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireOverlaySheets } from '@kerfjs/ui/wire-overlay-sheets';
+import { wirePaneChrome } from '@kerfjs/ui/wire-pane-chrome';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSearchFields } from '@kerfjs/ui/wire-search-fields';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
@@ -132,6 +133,7 @@ import {
 } from './demos/list-detail-dialog.js';
 import { SEND_COMPOSER_DEMO_ACTION } from './demos/message-composer.js';
 import {
+  compactFiltersOpen,
   popConfiguredNavStackDemo,
   popNavStackDemo,
   popOverlayNavStackDemo,
@@ -1670,6 +1672,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
         const stack = canvas.querySelector(selector);
         return stack ? wireNavStack(stack, { onBack }) : () => {};
       });
+      const compact = canvas.querySelector<HTMLElement>(
+        '#catalog-nav-stack-compact-chrome',
+      );
+      if (compact)
+        stops.push(wirePaneChrome(compact, { header: compactFiltersOpen }));
       return () => stops.forEach((stop) => stop());
     },
   },

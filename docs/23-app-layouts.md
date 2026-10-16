@@ -1409,6 +1409,13 @@ content `overflow: visible`) and sticks a `fixed` partner slot to its edge;
 `overlay` absolutely positions the slot on the chrome material, translated out
 and `visibility: hidden` until opened.
 
+`wirePaneChrome(root, { header?, footer? })` (`@kerfjs/ui/wire-pane-chrome`,
+KF-EEGAT7) makes open overlay chrome transient: Escape (the chrome holding
+focus first, else the last opened) or a press that starts and ends outside it
+sets the app's signal to false, and an effect returns focus stranded in the
+closed chrome to the element that had focus when it opened. It writes no
+attributes.
+
 Verification: `ui/tests/unit/pane.test.tsx` (attributes and dropping),
 `ui/tests/browser/pane-compact-chrome.spec.ts` (every compact context versus a
 roomy Workbench and no container, open and closed), and the NavStack

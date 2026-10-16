@@ -44,6 +44,7 @@ const entries = [
   'wire-toolbar-visibility',
   'nav-stack',
   'wire-nav-stack',
+  'wire-pane-chrome',
   'wire-content-items',
   'split-view',
   'list-detail-dialog',

@@ -673,7 +673,7 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": ["wireScrollDividers"],
+        "helpers": ["wireScrollDividers", "wirePaneChrome"],
         "obligations": [],
         "stateAttributes": [
           {
