@@ -22,6 +22,7 @@ export type {
   CatalogSection,
   CatalogSettingsConfig,
   CatalogStageRootAttributes,
+  CatalogTagFilter,
   CatalogUxReview,
 } from './catalog/types.js';
 export {

@@ -62,6 +62,15 @@ description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
   primary sections with a quieter treatment: `{ label, sections, collapsible?,
 expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
   `expanded` (the app owns it; wire it with `wireCatalog`'s `onToggleSecondary`).
+  An optional `tagFilter: { tag, label, show }` adds a compact `Switch` at the
+  top of the open group that leaves out every entry carrying `tag` (and any
+  section it empties) until `show` is true. The active entry is always listed,
+  so a direct route still shows where it is. The app owns `show`; wire it with
+  `wireCatalog`'s `onToggleSecondaryFilter(show)` (action
+  `catalog-toggle-secondary-filter`, configurable through
+  `toggleSecondaryFilterAction`). Hidden entries are not rendered, so the
+  sidebar filter does not search them. The UX catalog uses it to hide
+  `Discouraged` Web Awesome entries by default.
 - Optional slots: `headerActions` (extra header controls), `sidebarFooter` (extra
   sidebar content), and `status` (a footer status line).
 - **`settings`** — the active entry's settings (variant and state controls for

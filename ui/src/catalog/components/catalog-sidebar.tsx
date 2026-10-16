@@ -18,6 +18,7 @@ interface CatalogSidebarProps {
   footer?: KerfUiContent;
   selectAction: string;
   toggleSecondaryAction: string;
+  toggleSecondaryFilterAction: string;
 }
 
 /** The catalog navigation: brand subtitle, entry sections, and footer. */
@@ -29,6 +30,7 @@ export function CatalogSidebar({
   footer,
   selectAction,
   toggleSecondaryAction,
+  toggleSecondaryFilterAction,
 }: CatalogSidebarProps) {
   return (
     <nav aria-label={`${brand.title} Components`} data-catalog-sidebar>
@@ -51,6 +53,7 @@ export function CatalogSidebar({
             active={active}
             selectAction={selectAction}
             toggleAction={toggleSecondaryAction}
+            filterAction={toggleSecondaryFilterAction}
           />
         ) : null}
         <ListInsetText

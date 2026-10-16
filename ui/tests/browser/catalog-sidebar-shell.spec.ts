@@ -195,8 +195,13 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await expect(
     sidebar.locator('[data-catalog-section="Foundation"]'),
   ).toBeHidden();
+  // The filter searches listed entries; Discouraged ones stay hidden until
+  // the Show Discouraged switch lists them.
   await filter.fill('Input');
-  await expect(sidebar.locator('[data-item-id="wa-input"]')).toBeVisible();
+  await expect(sidebar.locator('[data-item-id="wa-input"]')).toHaveCount(0);
+  await expect(
+    sidebar.locator('[data-item-id="wa-number-input"]'),
+  ).toBeVisible();
   await expect(
     sidebar.getByRole('button', { name: 'Web Awesome Integration' }),
   ).toHaveAttribute('aria-expanded', 'true');

@@ -29,6 +29,11 @@ export interface WireCatalogOptions {
   onToggleSettings?: () => void;
   /** Invoked when the secondary (ecosystem) group's disclosure toggle is activated. */
   onToggleSecondary?: () => void;
+  /**
+   * Invoked with the switch's new state when the secondary group's tag-filter
+   * switch changes; the app updates `tagFilter.show`.
+   */
+  onToggleSecondaryFilter?: (show: boolean) => void;
   /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
   urlParam?: string;
   /**
@@ -43,6 +48,7 @@ export interface WireCatalogOptions {
   toggleMotionAction?: string;
   selectBackgroundAction?: string;
   toggleSecondaryAction?: string;
+  toggleSecondaryFilterAction?: string;
   toggleSettingsAction?: string;
   /**
    * The sidebar's app-owned collapsed flag. With it, the catalog's Workbench
@@ -277,6 +283,7 @@ export function wireCatalog(
     onToggleMotion,
     onSelectBackground,
     onToggleSecondary,
+    onToggleSecondaryFilter,
     onToggleSettings,
     urlParam,
     revealSelection,
@@ -287,6 +294,7 @@ export function wireCatalog(
     toggleMotionAction = 'catalog-toggle-motion',
     selectBackgroundAction = 'catalog-select-background',
     toggleSecondaryAction = 'catalog-toggle-secondary',
+    toggleSecondaryFilterAction = 'catalog-toggle-secondary-filter',
     toggleSettingsAction = 'catalog-toggle-settings',
     collapsed,
     sidebarSize,
@@ -402,6 +410,17 @@ export function wireCatalog(
     disposers.push(
       delegate(root, 'click', `[data-action="${toggleSecondaryAction}"]`, () =>
         onToggleSecondary(),
+      ),
+    );
+  }
+  if (onToggleSecondaryFilter) {
+    disposers.push(
+      delegate(
+        root,
+        'change',
+        `[data-action="${toggleSecondaryFilterAction}"]`,
+        (_event, element) =>
+          onToggleSecondaryFilter((element as HTMLInputElement).checked),
       ),
     );
   }

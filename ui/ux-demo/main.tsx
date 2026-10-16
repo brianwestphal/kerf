@@ -269,6 +269,9 @@ const selectedDemo = signal<CatalogId>(initialDemo);
 const webAwesomeExpanded = signal(
   findCatalogEntry(initialDemo)?.source === 'webawesome',
 );
+// Discouraged Web Awesome entries stay out of the sidebar until the viewer
+// asks for them; a direct ?component= route still lists its own entry.
+const showDiscouragedWebAwesome = signal(false);
 const sidebarCollapsed = signal(false);
 const settingsCollapsed = signal(false);
 const recipeNotesVisible = signal(false);
@@ -521,6 +524,11 @@ mount(app, () => {
         collapsible: true,
         expanded: webAwesomeExpanded.value,
         sections: kuiWebAwesomeSections,
+        tagFilter: {
+          tag: 'Discouraged',
+          label: 'Show Discouraged',
+          show: showDiscouragedWebAwesome.value,
+        },
       }}
       active={selectedDemo.value}
       collapsed={sidebarCollapsed.value}
@@ -1376,6 +1384,12 @@ const stopCatalog = wireCatalog(app, {
         sunken: 'Sunken',
       }[style]
     }`;
+  },
+  onToggleSecondaryFilter: (show) => {
+    showDiscouragedWebAwesome.value = show;
+    actionLog.value = show
+      ? 'Discouraged Web Awesome entries shown'
+      : 'Discouraged Web Awesome entries hidden';
   },
   onToggleSecondary: () => {
     webAwesomeExpanded.value = !webAwesomeExpanded.value;

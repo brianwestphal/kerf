@@ -368,6 +368,61 @@ describe('Catalog', () => {
     expect(collapsed).toContain('data-action="catalog-toggle-secondary"');
   });
 
+  it('hides tagged secondary entries behind a tag-filter switch', () => {
+    const group = {
+      label: 'Ecosystem',
+      collapsible: true,
+      expanded: true,
+      sections: [
+        {
+          category: 'Forms',
+          entries: [
+            { id: 'wa-input', name: 'Input', tags: ['Discouraged'] },
+            { id: 'wa-rating', name: 'Rating' },
+          ],
+        },
+        {
+          category: 'Ecosystem Status',
+          entries: [{ id: 'wa-badge', name: 'Badge', tags: ['Discouraged'] }],
+        },
+      ],
+    };
+    const render = (show: boolean, active = 'button') =>
+      asHtml(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active,
+          content: raw('<b/>'),
+          secondarySections: {
+            ...group,
+            tagFilter: { tag: 'Discouraged', label: 'Show Discouraged', show },
+          },
+        }),
+      );
+    const hidden = render(false);
+    expect(hidden).toContain('data-catalog-secondary-filter');
+    expect(hidden).toContain('data-action="catalog-toggle-secondary-filter"');
+    expect(hidden).toContain('Show Discouraged');
+    expect(hidden).toContain('data-item-id="wa-rating"');
+    expect(hidden).not.toContain('data-item-id="wa-input"');
+    // A section whose every entry is hidden disappears with them.
+    expect(hidden).not.toContain('data-catalog-section="Ecosystem Status"');
+    expect(hidden).not.toMatch(/data-catalog-secondary-filter[^>]*checked/);
+
+    const shown = render(true);
+    expect(shown).toContain('data-item-id="wa-input"');
+    expect(shown).toContain('data-item-id="wa-badge"');
+    expect(shown).toMatch(
+      /<input[^>]*checked[^>]*data-action="catalog-toggle-secondary-filter"|data-action="catalog-toggle-secondary-filter"[^>]*checked/,
+    );
+
+    // The active entry stays listed even while its tag is hidden.
+    const active = render(false, 'wa-badge');
+    expect(active).toContain('data-item-id="wa-badge"');
+    expect(active).not.toContain('data-item-id="wa-input"');
+  });
+
   it('finds an active entry inside the secondary group for the detail header', () => {
     const secondarySections = {
       label: 'Ecosystem',
@@ -1567,6 +1622,44 @@ describe('wireCatalog', () => {
       .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(onToggleSecondary).toHaveBeenCalledTimes(1);
     stop();
+  });
+
+  it('reports the secondary-group tag-filter switch state', () => {
+    const root = mountShell(
+      asHtml(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active: 'button',
+          content: raw('<b/>'),
+          secondarySections: {
+            label: 'Eco',
+            sections: [],
+            tagFilter: {
+              tag: 'Discouraged',
+              label: 'Show Discouraged',
+              show: false,
+            },
+          },
+        }),
+      ),
+    );
+    const onToggleSecondaryFilter = vi.fn();
+    const stop = wireCatalog(root, {
+      onSelect: vi.fn(),
+      onToggleSecondaryFilter,
+    });
+    const input = root.querySelector<HTMLInputElement>(
+      '[data-action="catalog-toggle-secondary-filter"]',
+    )!;
+    input.checked = true;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.checked = false;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(onToggleSecondaryFilter.mock.calls).toEqual([[true], [false]]);
+    stop();
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(onToggleSecondaryFilter).toHaveBeenCalledTimes(2);
   });
 
   it('ignores a related-menu item with no id', () => {

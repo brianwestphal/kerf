@@ -4,6 +4,7 @@ import {
   catalog,
   catalogRepositoryHref,
   catalogSections,
+  isDiscouragedWebAwesome,
   kerfCatalog,
 } from '../../ux-demo/catalog.js';
 import { minPaintedTextContrast } from './painted-contrast.js';
@@ -1518,8 +1519,9 @@ test('loads the Web Awesome specimen bundle only when a matching route needs it'
   ).toBe(false);
 
   await page.locator('[data-action="toggle-webawesome-catalog"]').click();
-  await page.locator('[data-item-id="wa-button"]').click();
-  await expect(page.locator('[data-demo="wa-button"]')).toBeVisible();
+  // Discouraged entries are hidden by default; open a supported one.
+  await page.locator('[data-item-id="wa-copy-button"]').click();
+  await expect(page.locator('[data-demo="wa-copy-button"]')).toBeVisible();
   expect(
     await page.evaluate(() =>
       performance
@@ -4780,10 +4782,21 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
   const discouraged = secondary.locator('.kui-list-item__status', {
     hasText: 'Discouraged',
   });
-  await expect(discouraged).toHaveCount(34);
+  // Hidden by default: only the routed entry stays listed, so a direct
+  // link still shows where it is.
+  const showDiscouraged = page.getByRole('switch', {
+    name: 'Show Discouraged',
+  });
+  await expect(showDiscouraged).not.toBeChecked();
+  await expect(discouraged).toHaveCount(1);
   await expect(
     page.locator('[data-item-id="wa-button-group"] .kui-list-item__status'),
   ).toHaveText('Discouraged');
+  await expect(page.locator('[data-item-id="wa-popup"]')).toHaveCount(0);
+  await expect(page.locator('[data-item-id="wa-copy-button"]')).toHaveCount(1);
+
+  await showDiscouraged.check();
+  await expect(discouraged).toHaveCount(34);
   await expect(
     page.locator('[data-item-id="wa-popup"] .kui-list-item__status'),
   ).toHaveText('Discouraged');
@@ -4866,9 +4879,17 @@ test('catalog supports its stateful controls', async ({
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'false');
   await ecosystemToggle.click();
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'true');
+  // Discouraged Web Awesome entries stay hidden until the switch shows them.
+  await expect(
+    page.locator('#kui-catalog-left-rail [data-component="list-item"]:visible'),
+  ).toHaveCount(
+    catalog.filter((entry) => !isDiscouragedWebAwesome(entry)).length,
+  );
+  await page.getByRole('switch', { name: 'Show Discouraged' }).check();
   await expect(
     page.locator('#kui-catalog-left-rail [data-component="list-item"]:visible'),
   ).toHaveCount(catalog.length);
+  await page.getByRole('switch', { name: 'Show Discouraged' }).uncheck();
   await expect(
     page.locator(
       '[data-catalog-secondary] [data-catalog-section] > [data-component="list-header"]',

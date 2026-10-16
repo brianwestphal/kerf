@@ -63,6 +63,7 @@ export function Catalog({
   toggleMotionAction = 'catalog-toggle-motion',
   selectBackgroundAction = 'catalog-select-background',
   toggleSecondaryAction = 'catalog-toggle-secondary',
+  toggleSecondaryFilterAction = 'catalog-toggle-secondary-filter',
   toggleSettingsAction = 'catalog-toggle-settings',
   headerPlacement = 'auto',
   footerPlacement = 'auto',
@@ -158,6 +159,7 @@ export function Catalog({
               footer={sidebarFooter}
               selectAction={selectAction}
               toggleSecondaryAction={toggleSecondaryAction}
+              toggleSecondaryFilterAction={toggleSecondaryFilterAction}
             />
           ),
         }}

@@ -39,6 +39,23 @@ export interface CatalogSecondaryGroup {
   sections: readonly CatalogSection[];
   collapsible?: boolean;
   expanded?: boolean;
+  /**
+   * A switch, shown while the group is open, that hides every entry carrying
+   * `tag` until it is turned on, such as entries an integration discourages.
+   * The active entry always stays listed, so a direct route still shows where
+   * it is.
+   */
+  tagFilter?: CatalogTagFilter;
+}
+
+/** A controlled show/hide switch for one entry tag in a secondary group. */
+export interface CatalogTagFilter {
+  /** The entry tag the switch hides, matched exactly. */
+  tag: string;
+  /** The switch's visible label and accessible name, such as `Show Discouraged`. */
+  label: string;
+  /** Whether entries carrying `tag` are listed (the switch is on). */
+  show: boolean;
 }
 
 export interface CatalogBrand {
@@ -182,6 +199,8 @@ export interface CatalogProps {
   toggleMotionAction?: string;
   selectBackgroundAction?: string;
   toggleSecondaryAction?: string;
+  /** The secondary group's tag-filter switch `data-action` (default `catalog-toggle-secondary-filter`). */
+  toggleSecondaryFilterAction?: string;
   /** The settings pane toggle's `data-action` (default `catalog-toggle-settings`). */
   toggleSettingsAction?: string;
   /**
