@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`PopupMenu` `triggerContent`.** App content, such as a `Badge` showing a status, can be the whole trigger: Kerf owns the bare button around it (no chrome, a pill focus ring, the pointer cursor, `aria-haspopup`), `label` names it, the caret is off by default, and no help tag repeats the name. Submenus and checked choices work as on any PopupMenu (`KF-PHGQ6D`).
 - **Corner count badges.** `Badge` takes `placement="corner"` to straddle the top-trailing corner of the control it sits in (an icon-only `Button` or a button in a `ToolbarControlGroup`, which positions itself for it). `Button` takes `badge` (a count, short text, or `true` for a dot), `badgeLabel` (added to the button's name; the count stays out of it otherwise), and `badgeTone` (default `danger`) (`KF-WT2EMZ`).
 - **`Text` `size="medium"`.** A heading at the 16px body size keeps its heading weight and wraps, for an in-list group title with a long user-authored name (`KF-43XH56`).
 - **`List` `contentWidth` and `contentAlign`.** A page column caps its content at a readable measure (`compact` 440px, `medium` 640px, `wide` 864px) plus its own insets and centers it (or keeps it at the start), composing with `inset="document"`, so a settings page needs no application `max-width` CSS (`KF-P3069N`).

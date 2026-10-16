@@ -432,3 +432,41 @@ describe('PopupMenu open and close helpers', () => {
     document.removeEventListener('beforetoggle', listener, true);
   });
 });
+
+describe('PopupMenu content trigger', () => {
+  it('renders the content as the whole trigger, named by label, without a caret', () => {
+    const root = render(
+      asHtml(
+        PopupMenu({
+          label: 'Status: Started',
+          triggerContent: <span class="kui-badge">Started</span>,
+          items: [{ label: 'Completed', action: 'complete' }],
+        }),
+      ),
+    );
+    expect(root.dataset.trigger).toBe('content');
+    const trigger = root.querySelector('.kui-popup-menu__trigger')!;
+    expect(trigger.getAttribute('aria-haspopup')).toBe('menu');
+    const content = trigger.querySelector('.kui-popup-menu__trigger-content')!;
+    expect(content.getAttribute('aria-hidden')).toBe('true');
+    expect(content.textContent).toBe('Started');
+    expect(trigger.querySelector('.kui-popup-menu__label')!.textContent).toBe(
+      'Status: Started',
+    );
+    expect(trigger.querySelector('.kui-popup-menu__caret')).toBeNull();
+    const withCaret = render(
+      asHtml(
+        PopupMenu({
+          label: 'Status',
+          triggerContent: <span>Open</span>,
+          caret: true,
+          items: [],
+        }),
+      ),
+    );
+    expect(withCaret.querySelector('.kui-popup-menu__caret')).not.toBeNull();
+    expect(
+      render(asHtml(PopupMenu({ text: 'Sort', items: [] }))).dataset.trigger,
+    ).toBe('button');
+  });
+});

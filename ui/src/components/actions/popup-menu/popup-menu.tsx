@@ -74,6 +74,7 @@ type PopupMenuTriggerName =
       /** Visible trigger text, which is also its accessible name. */
       text: string;
       label?: never;
+      triggerContent?: never;
     }
   | {
       text?: never;
@@ -82,6 +83,23 @@ type PopupMenuTriggerName =
        * text inside the trigger button.
        */
       label: string;
+      triggerContent?: never;
+    }
+  | {
+      text?: never;
+      /**
+       * The trigger's accessible name ("Status: Started"); the visible
+       * content is hidden from assistive technology.
+       */
+      label: string;
+      /**
+       * Visible content that is the whole trigger, such as a `Badge` showing
+       * the current status. Kerf owns the bare button around it (no chrome,
+       * a pill focus ring, the pointer cursor, `aria-haspopup`), and the
+       * caret is off unless `caret` is set.
+       */
+      triggerContent: KerfUiContent;
+      icon?: never;
     };
 
 /** A context PopupMenu's viewport anchor point. */
@@ -95,6 +113,7 @@ type PopupMenuTrigger =
   | {
       context: true;
       label: string;
+      triggerContent?: never;
       /**
        * The viewport point (CSS pixels, as in `MouseEvent.clientX/Y`) the
        * menu opens from. Rendered into the menu itself, so it survives
@@ -292,6 +311,7 @@ interface PopupMenuContentProps {
   context: boolean;
   label: string | undefined;
   icon: KerfUiContent;
+  triggerContent: KerfUiContent;
   text: string | undefined;
   caret: boolean;
   disabled: boolean;
@@ -303,6 +323,7 @@ function renderContent({
   context,
   label,
   icon,
+  triggerContent,
   text,
   caret,
   disabled,
@@ -326,6 +347,11 @@ function renderContent({
           disabled={disabled}
         >
           {icon}
+          {triggerContent === undefined ? null : (
+            <span class="kui-popup-menu__trigger-content" aria-hidden="true">
+              {triggerContent}
+            </span>
+          )}
           {text ? (
             <span class="kui-popup-menu__text">{text}</span>
           ) : (
@@ -358,9 +384,10 @@ export function PopupMenu({
   text,
   label,
   icon,
+  triggerContent,
   items,
   placement = 'bottom-start',
-  caret = true,
+  caret = triggerContent === undefined,
   disabled = false,
   rootAttributes = {},
   slot,
@@ -386,6 +413,8 @@ export function PopupMenu({
       String(caret),
       String(disabled),
       String(context),
+      // Only a content trigger adds a part, so other menus keep their keys.
+      ...(triggerContent === undefined ? [] : [String(triggerContent)]),
     ],
     items,
   );
@@ -395,6 +424,7 @@ export function PopupMenu({
       context,
       label,
       icon,
+      triggerContent,
       text,
       caret,
       disabled,
@@ -409,7 +439,13 @@ export function PopupMenu({
       data-component="popup-menu"
       data-key={key}
       data-morph-skip-children
-      data-trigger={context ? 'context' : 'button'}
+      data-trigger={
+        context
+          ? 'context'
+          : triggerContent === undefined
+            ? 'button'
+            : 'content'
+      }
       data-placement={placement}
       style={
         anchor

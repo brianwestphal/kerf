@@ -186,7 +186,12 @@ function helpTagHost(path: readonly EventTarget[]): HelpTagHost | null {
       selectedPresentation === 'icon-only'
     )
       return target;
-    if (component === 'popup-menu' && target.querySelector(MENU_LABEL))
+    // A content trigger (a Badge) shows its own meaning, so it gets no tag.
+    if (
+      component === 'popup-menu' &&
+      target.dataset.trigger !== 'content' &&
+      target.querySelector(MENU_LABEL)
+    )
       return target;
   }
   return null;

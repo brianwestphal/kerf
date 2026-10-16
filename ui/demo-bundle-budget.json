@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 421100,
+  "totalJavaScriptGzip": 421300,
   "measuredLargestJavaScriptGzip": 164223,
-  "measuredTotalJavaScriptGzip": 421010,
+  "measuredTotalJavaScriptGzip": 421252,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5491,6 +5491,22 @@
         "measuredTotalJavaScriptGzip": 421010,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 421100
+      }
+    },
+    {
+      "at": "2026-10-16T12:32:54.922Z",
+      "reason": "PopupMenu badge trigger demo (KF-PHGQ6D)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164223,
+        "measuredTotalJavaScriptGzip": 421010,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 421100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164223,
+        "measuredTotalJavaScriptGzip": 421252,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 421300
       }
     }
   ]

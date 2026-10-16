@@ -1,3 +1,4 @@
+import { Badge } from '@kerfjs/ui/badge';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -94,6 +95,33 @@ export function PopupMenuDemo() {
               />
             </ToolbarControlGroup>
           }
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Status Badge Trigger"
+        note="triggerContent makes a Badge the whole trigger: Kerf owns the bare button, its pill focus ring, and aria-haspopup, and label names it. The menu keeps checked choices and a submenu."
+        align="text-trigger"
+      >
+        <PopupMenu
+          label="Status: Started"
+          triggerContent={
+            <Badge tone="info" appearance="solid">
+              Started
+            </Badge>
+          }
+          rootAttributes={{ 'data-popup-badge-menu': '' }}
+          items={[
+            { label: 'Not Started', action: 'log-more', checked: false },
+            {
+              label: 'Started',
+              checked: true,
+              submenu: [
+                { label: 'Working', action: 'log-more', checked: true },
+                { label: 'Testing', action: 'log-more', checked: false },
+              ],
+            },
+            { label: 'Completed', action: 'log-more', checked: false },
+          ]}
         />
       </CatalogExample>
       <CatalogExample

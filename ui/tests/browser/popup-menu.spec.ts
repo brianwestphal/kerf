@@ -963,3 +963,42 @@ test('PopupMenu menus and Select listboxes share the scroll-edge cue', async ({
     });
   expect(attachments(listboxStyle)).toEqual(cue);
 });
+
+test('a Badge content trigger opens the menu, keeps its submenu, and draws a pill ring', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/?component=popup-menu');
+    const menu = page.locator('[data-popup-badge-menu]');
+    const trigger = menu.getByRole('button', { name: 'Status: Started' });
+    await expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+    await expect(menu).toHaveAttribute('data-trigger', 'content');
+    // The button adds no chrome around the badge.
+    const [button, badge] = await Promise.all([
+      trigger.boundingBox(),
+      trigger.locator('.kui-badge').boundingBox(),
+    ]);
+    expect(Math.abs(button!.width - badge!.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(button!.height - badge!.height)).toBeLessThanOrEqual(1);
+    await expect(trigger).toHaveCSS('cursor', 'pointer');
+    // The keyboard opens it.
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(
+      menu.getByRole('menu', { name: 'Status: Started' }),
+    ).toBeVisible();
+    await menu
+      .getByRole('menuitemcheckbox', { name: 'Started', exact: true })
+      .hover();
+    await expect(
+      menu.getByRole('menuitemcheckbox', { name: 'Testing' }),
+    ).toBeVisible();
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
+    // No help tag repeats the name over a visible badge.
+    await trigger.hover();
+    await page.waitForTimeout(800);
+    await expect(page.locator('.kui-help-tag:popover-open')).toHaveCount(0);
+  }
+});

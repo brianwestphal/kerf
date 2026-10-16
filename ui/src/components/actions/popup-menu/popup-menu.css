@@ -61,6 +61,28 @@
   margin-inline-start: var(--kui-space-xs);
 }
 
+/* A content trigger (a Badge showing a status): a bare button that is just
+   its content, with a pill focus ring around it. */
+.kui-popup-menu[data-trigger="content"] > .kui-popup-menu__trigger {
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--kui-radius-pill);
+  color: inherit;
+  font-weight: inherit;
+}
+@media (hover: hover) {
+  .kui-popup-menu[data-trigger="content"]
+    > .kui-popup-menu__trigger:not(:disabled):hover {
+    background-color: transparent;
+    filter: brightness(0.96);
+  }
+}
+.kui-popup-menu__trigger-content {
+  display: inline-flex;
+  align-items: center;
+}
+
 /* An icon-only trigger's accessible name: present, but visually hidden. */
 .kui-popup-menu__label {
   position: absolute;

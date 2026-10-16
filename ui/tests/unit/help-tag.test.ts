@@ -355,6 +355,13 @@ describe('icon-only trigger help tags', () => {
     vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
     expect(tagOf(text.host)).toBeNull();
 
+    // A content trigger (a Badge) shows its meaning itself.
+    const content = popupMenu({ label: 'Status: Started' });
+    content.host.dataset.trigger = 'content';
+    pointerOver(content.trigger);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    expect(tagOf(content.host)).toBeNull();
+
     const filter = select({ multipleSummary: '' });
     pointerOver(filter.listbox);
     pointerOver(filter.option);

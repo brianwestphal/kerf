@@ -550,6 +550,7 @@ type PopupMenuTriggerName = {
     /** Visible trigger text, which is also its accessible name. */
     text: string;
     label?: never;
+    triggerContent?: never;
 } | {
     text?: never;
     /**
@@ -557,6 +558,22 @@ type PopupMenuTriggerName = {
      * text inside the trigger button.
      */
     label: string;
+    triggerContent?: never;
+} | {
+    text?: never;
+    /**
+     * The trigger's accessible name ("Status: Started"); the visible
+     * content is hidden from assistive technology.
+     */
+    label: string;
+    /**
+     * Visible content that is the whole trigger, such as a `Badge` showing
+     * the current status. Kerf owns the bare button around it (no chrome,
+     * a pill focus ring, the pointer cursor, `aria-haspopup`), and the
+     * caret is off unless `caret` is set.
+     */
+    triggerContent: KerfUiContent;
+    icon?: never;
 };
 /** A context PopupMenu's viewport anchor point. */
 interface PopupMenuAnchor {
@@ -569,6 +586,7 @@ type PopupMenuTrigger = (PopupMenuTriggerName & {
 }) | {
     context: true;
     label: string;
+    triggerContent?: never;
     /**
      * The viewport point (CSS pixels, as in `MouseEvent.clientX/Y`) the
      * menu opens from. Rendered into the menu itself, so it survives
@@ -624,7 +642,7 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  * submenus appear above or below their parent menu so their rows do not cover
  * the parent list.
  */
-declare function PopupMenu({ text, label, icon, items, placement, caret, disabled, rootAttributes, slot, context, anchor, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, rootAttributes, slot, context, anchor, }: PopupMenuProps): SafeHtml;
 
 export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, closePopupMenu, openPopupMenu, openPopupMenuAt };
 ```

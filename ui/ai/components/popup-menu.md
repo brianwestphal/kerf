@@ -11,6 +11,7 @@ A typed action menu with nested choices, selected state, and optional pointer-an
 - Offer a short list of commands behind one trigger, such as a toolbar sort or More menu.
 - Group related commands under headings and dividers in one popup.
 - Nest decisions under a parent command, show checked or trailing choice state, or open a context menu at pointer coordinates.
+- Make a status Badge the trigger of a menu (a ticket status with a nested phase submenu): pass triggerContent with the Badge and label for the name, instead of wrapping the Badge in an application button.
 
 **Not when:**
 
@@ -47,6 +48,7 @@ Exact prop names and types: [`@kerfjs/ui/popup-menu`](../public-api-signatures-v
 - danger tone and disabled reasons
 - context trigger with a rendered anchor point and a zero-footprint anchor host
 - placement
+- triggerContent: app content such as a Badge as the whole trigger, a bare button named by label with a pill focus ring
 
 ## Composition
 
