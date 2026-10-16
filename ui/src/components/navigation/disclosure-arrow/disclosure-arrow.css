@@ -16,6 +16,26 @@
   height: 100%;
 }
 
+/* In a Disclosure the native <details> owns the open state, so the arrow
+   follows its live [open] rather than the render-time rotation. */
+.kui-disclosure > .kui-disclosure__summary > .kui-disclosure-arrow {
+  transform: rotate(0deg);
+}
+
+.kui-disclosure[open] > .kui-disclosure__summary > .kui-disclosure-arrow {
+  transform: rotate(90deg);
+}
+
+.kui-disclosure:dir(rtl) > .kui-disclosure__summary > .kui-disclosure-arrow {
+  transform: rotate(180deg);
+}
+
+.kui-disclosure[open]:dir(rtl)
+  > .kui-disclosure__summary
+  > .kui-disclosure-arrow {
+  transform: rotate(90deg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .kui-disclosure-arrow {
     transition-duration: 0s;

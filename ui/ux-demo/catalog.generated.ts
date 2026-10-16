@@ -523,6 +523,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/layout.md"
   },
   {
+    "id": "disclosure",
+    "name": "Disclosure",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Keep secondary or optional content one press away under a summary, or let a person open one of several sections at a time.",
+    "uses": [
+      "disclosure-arrow",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/disclosure.tsx",
+    "componentSource": "ui/src/components/surfaces/disclosure/disclosure.tsx",
+    "documentation": "ui/docs/disclosure.md"
+  },
+  {
     "id": "application-tabs",
     "name": "Application Tabs",
     "category": "Navigation",
@@ -1489,8 +1504,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Coordinates one or more collapsible content sections.",
-    "recommendation": "supported",
+    "description": "Ecosystem accordion; use Kerf Disclosures sharing a name.",
+    "recommendation": "avoid",
     "uses": [
       "wa-accordion-item"
     ],
@@ -1503,8 +1518,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Experimental labeled disclosure section used by an accordion.",
-    "recommendation": "supported",
+    "description": "Ecosystem accordion item; use a Kerf Disclosure in a named group.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon"
     ],
@@ -1529,8 +1544,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Single disclosure panel for secondary information.",
-    "recommendation": "supported",
+    "description": "Ecosystem disclosure; use the Kerf Disclosure.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon"
     ],

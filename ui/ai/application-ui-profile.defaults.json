@@ -162,6 +162,15 @@
       "preferred": "@kerfjs/ui:tooltip",
       "avoid": ["@kerfjs/ui:wa-tooltip"],
       "rationale": "Call tooltip() from kerfjs/overlay with @kerfjs/ui/overlay-tooltip.css imported instead of a Web Awesome tooltip; icon-only Kerf controls already get help tags."
+    },
+    "show-hide-content": {
+      "preferred": "@kerfjs/ui:disclosure",
+      "avoid": [
+        "@kerfjs/ui:wa-details",
+        "@kerfjs/ui:wa-accordion",
+        "@kerfjs/ui:wa-accordion-item"
+      ],
+      "rationale": "Use the Kerf Disclosure (a native details element) for show-and-hide content, and Disclosures sharing a name for an accordion."
     }
   },
   "theme": {

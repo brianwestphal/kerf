@@ -148,17 +148,15 @@ test('shared translucent sunken surfaces compound at each nesting level', async 
         '[aria-label="Layered Pane"] .kui-pane__content',
       )!;
       const card = document.querySelector(
-        '[data-demo="sunken-panel"] [aria-label="Nested Web Awesome Details"]',
+        '[data-demo="sunken-panel"] [aria-label="Nested Sunken Disclosure"]',
       )!;
-      const details = card.querySelector('wa-details')!;
+      const details = card.querySelector('.kui-disclosure')!;
       return {
         colors,
         layers,
         pane: window.getComputedStyle(pane).backgroundColor,
         card: window.getComputedStyle(card).backgroundColor,
-        details: window.getComputedStyle(
-          details.shadowRoot!.querySelector('[part~="details"]')!,
-        ).backgroundColor,
+        details: window.getComputedStyle(details).backgroundColor,
       };
     });
     expect(result.colors[0]).toMatch(/^rgba\(/);

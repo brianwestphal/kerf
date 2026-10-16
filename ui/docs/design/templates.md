@@ -11,13 +11,13 @@ component picture without running the app.
 
 Templated components (each with light + dark variants):
 `ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `List`, `ListItem`, `ListHeader`,
-`ListActionRow`, `ValueTable`, `StateBanner`, `EmptyState`, `Skeleton`,
+`ListActionRow`, `ValueTable`, `Disclosure`, `StateBanner`, `EmptyState`, `Skeleton`,
 `SegmentedControl`, `TabBar`/`TabBarItem`, `SearchField`, `Chip`, `ChoiceChips`,
 `MessageComposer`, and the native form controls `Button`, `TextField`, `Checkbox`,
 `RadioGroup`, `Switch`, and `Select`.
 
 Deliberately **not** templated (they don't read as a single static component
-picture): `DialogSurface` is a modal `<dialog>` that only presents as a dialog
+picture): `DialogSurface` and `ListDetailDialog` are modal `<dialog>`s that only present as a dialog
 in the browser's top layer, so the catalog's surface-scaffold route shows it
 instead; `LucideIcon` and
 `DisclosureArrow` are decorative primitives best seen inside the components that

@@ -61,6 +61,7 @@ import { ChoiceChips } from '../dist/choice-chips.js';
 import { MessageComposer } from '../dist/message-composer.js';
 import { em, fillColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
+import { Disclosure } from '../dist/disclosure.js';
 import { List } from '../dist/list.js';
 import { ListActionRow } from '../dist/list-action-row.js';
 import { ListHeader } from '../dist/list-header.js';
@@ -74,6 +75,7 @@ import { Skeleton } from '../dist/skeleton.js';
 import { StateBanner } from '../dist/state-banner.js';
 import { Switch } from '../dist/switch.js';
 import { TabBar } from '../dist/tab-bar.js';
+import { Text } from '../dist/text.js';
 import { TextField } from '../dist/text-field.js';
 import { Toolbar } from '../dist/toolbar.js';
 import { ToolbarControlGroup } from '../dist/toolbar-control-group.js';
@@ -616,6 +618,68 @@ export const COMPONENTS = {
               }),
               ValueTableRow({ label: 'Region', value: 'us-east-1' }),
               ValueTableRow({ label: 'Last Deploy', value: '2 hours ago' }),
+            ],
+          }),
+      },
+    ],
+  },
+  disclosure: {
+    css: [
+      'foundation',
+      'layout',
+      'lucide-icon',
+      'disclosure-arrow',
+      'text',
+      'list',
+      'disclosure',
+    ],
+    selector: '#frame',
+    width: 460,
+    frameWidth: 420,
+    variants: [
+      {
+        id: 'plain',
+        label: 'Closed and Open',
+        height: 140,
+        render: () =>
+          List({
+            gap: 'xs',
+            children: [
+              Disclosure({
+                title: 'Advanced Settings',
+                detail: '3 options',
+                children: Text({
+                  children: 'Proxy, timeout, and retry limits.',
+                }),
+              }),
+              Disclosure({
+                title: 'Release Notes',
+                open: true,
+                children: Text({ children: 'Faster sync and four fixes.' }),
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'framed-sunken',
+        label: 'Framed and Sunken',
+        height: 150,
+        render: () =>
+          List({
+            gap: 'xs',
+            children: [
+              Disclosure({
+                title: 'When am I billed?',
+                appearance: 'framed',
+                open: true,
+                children: Text({ children: 'On the first of each month.' }),
+              }),
+              Disclosure({
+                title: 'Build Log',
+                detail: '412 lines',
+                appearance: 'sunken',
+                children: Text({ children: 'npm run build' }),
+              }),
             ],
           }),
       },

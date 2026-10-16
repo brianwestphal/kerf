@@ -45,6 +45,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ListInsetControl](./list-inset-control.md) — Apply the standard 8px outer margin to all physical sides of a self-bordered control by default, or only the sides selected with the canonical Sides contract.
 - [ListInsetText](./list-inset-text.md) — Apply the full 8px margin + 1px transparent border + 8px padding to all physical sides of bare text by default, or only the sides selected with the canonical Sides contract.
 - [ContentItem](./content-item.md) — Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, radius, and optional coordinated surface colors.
+- [Disclosure](./disclosure.md) — Keep secondary or optional content one press away under a summary, or let a person open one of several sections at a time.
 
 ## Kerf UI — Navigation
 
@@ -117,10 +118,10 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 ## Web Awesome — Layout
 
-- [Accordion](./wa-accordion.md) — Coordinates one or more collapsible content sections.
-- [Accordion Item](./wa-accordion-item.md) — Experimental labeled disclosure section used by an accordion.
+- [Accordion](./wa-accordion.md) (avoid) — Ecosystem accordion; use Kerf Disclosures sharing a name.
+- [Accordion Item](./wa-accordion-item.md) (avoid) — Ecosystem accordion item; use a Kerf Disclosure in a named group.
 - [Card](./wa-card.md) (avoid) — Ecosystem card; use Kerf ContentItem or SunkenPanel.
-- [Details](./wa-details.md) — Single disclosure panel for secondary information.
+- [Details](./wa-details.md) (avoid) — Ecosystem disclosure; use the Kerf Disclosure.
 - [Dialog](./wa-dialog.md) (avoid) — Ecosystem dialog; use Kerf DialogSurface with openDialog and closeDialog.
 - [Divider](./wa-divider.md) — Visual separator for related groups of content.
 - [Drawer](./wa-drawer.md) (avoid) — Ecosystem drawer; use Kerf DialogSurface sheets or CollapsiblePanel.

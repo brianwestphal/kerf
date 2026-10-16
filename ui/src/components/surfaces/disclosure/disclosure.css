@@ -1,0 +1,98 @@
+/* A native <details> on the shared content-item geometry: the summary row and
+   the content share one 8px inset inside the item's 1px border, so the title
+   and the first content line up on the text column. */
+.kui-disclosure {
+  --_kui-disclosure-border: transparent;
+  --_kui-disclosure-background: transparent;
+
+  display: block;
+  min-width: 0;
+  margin: 0 var(--kui-layout-inline-margin, remify(8px));
+  padding: 0;
+  box-sizing: border-box;
+  border: var(--kui-layout-item-border-width, 1px) solid
+    var(--_kui-disclosure-border);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: inherit;
+  background: var(--_kui-disclosure-background);
+}
+
+.kui-disclosure[data-appearance="framed"] {
+  --_kui-disclosure-border: var(--kui-color-neutral-border-normal);
+}
+
+.kui-disclosure[data-appearance="sunken"] {
+  --_kui-disclosure-border: var(--kui-color-neutral-border-normal);
+  --_kui-disclosure-background: var(--kui-sunken-surface);
+}
+
+.kui-disclosure__summary {
+  display: flex;
+  min-height: remify(42px);
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--kui-layout-item-padding, remify(8px));
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--kui-space-xs);
+  border-radius: inherit;
+  font-weight: var(--kui-font-weight-semibold, 500);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The DisclosureArrow is the marker; drop the platform's, and any marker a
+   page-wide details stylesheet (such as Web Awesome's native.css) adds. */
+.kui-disclosure__summary::after {
+  content: none;
+}
+
+.kui-disclosure__summary::-webkit-details-marker {
+  display: none;
+}
+
+.kui-disclosure__summary::marker {
+  content: "";
+}
+
+.kui-disclosure__summary:hover {
+  background: var(--kui-color-neutral-fill-quiet);
+}
+
+.kui-disclosure__summary:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+
+.kui-disclosure__title {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.kui-disclosure__detail {
+  flex: none;
+  color: var(--kui-color-text-quiet);
+  font-weight: normal;
+}
+
+/* Kerf block content (Text, a List, a ValueTable) brings the shared 1px +
+   8px inset, so the content area adds only what puts that inset on the
+   title's text column: the arrow and the summary gap, less the 1px border
+   the content draws. Its own bottom inset closes the item. */
+.kui-disclosure__content {
+  padding-inline: calc(
+      var(--kui-disclosure-arrow-size, remify(18px)) + var(--kui-space-xs) -
+        var(--kui-layout-item-border-width, 1px)
+    )
+    0;
+}
+
+@media (forced-colors: active) {
+  .kui-disclosure[data-appearance="framed"],
+  .kui-disclosure[data-appearance="sunken"] {
+    border-color: CanvasText;
+  }
+}

@@ -372,7 +372,10 @@ describe('UX catalog metadata', () => {
       'wa-select',
       'wa-switch',
       'wa-textarea',
+      'wa-accordion',
+      'wa-accordion-item',
       'wa-card',
+      'wa-details',
       'wa-dialog',
       'wa-drawer',
       'wa-page',
@@ -403,6 +406,7 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-tooltip')?.recommendation).toBe('avoid');
     expect(findCatalogEntry('wa-toast')?.recommendation).toBe('avoid');
     expect(findCatalogEntry('wa-toast-item')?.recommendation).toBe('avoid');
+    expect(findCatalogEntry('wa-details')?.recommendation).toBe('avoid');
   });
 
   it('keeps routes unique and dependency references valid', () => {
@@ -560,6 +564,7 @@ describe('UX catalog metadata', () => {
       'ListInsetControl',
       'ListInsetText',
       'ContentItem',
+      'Disclosure',
       'TabBarItem',
       'TabBar',
       'SegmentedControl',
@@ -690,6 +695,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(39);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(42);
   });
 });

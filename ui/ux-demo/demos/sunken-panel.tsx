@@ -1,8 +1,7 @@
-import '@awesome.me/webawesome/dist/components/details/details.js';
-
 import { ContentItem } from '@kerfjs/ui';
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { Disclosure } from '@kerfjs/ui/disclosure';
 import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
 import { StateBanner } from '@kerfjs/ui/state-banner';
@@ -99,12 +98,12 @@ export function SunkenPanelDemo() {
           </SunkenPanel>
         </Pane>
       </CatalogExample>
-      <CatalogExample label="Web Awesome Nested Surfaces">
-        <SunkenPanel ariaLabel="Nested Web Awesome Details">
+      <CatalogExample label="Nested Sunken Surfaces">
+        <SunkenPanel ariaLabel="Nested Sunken Disclosure">
           <Text>Kerf sunken panel</Text>
-          <wa-details appearance="sunken" summary="Nested Details" open>
-            <Text>Shared theme colors compound here too.</Text>
-          </wa-details>
+          <Disclosure title="Nested Details" appearance="sunken" open>
+            <Text>The lowered surface compounds here too.</Text>
+          </Disclosure>
         </SunkenPanel>
       </CatalogExample>
     </CatalogExampleStack>

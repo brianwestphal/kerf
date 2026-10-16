@@ -65,6 +65,11 @@
       "browser": "./dist/browser/lucide-icon.js",
       "import": "./dist/lucide-icon.js"
     },
+    "./disclosure": {
+      "types": "./dist/disclosure.d.ts",
+      "browser": "./dist/browser/disclosure.js",
+      "import": "./dist/disclosure.js"
+    },
     "./disclosure-arrow": {
       "types": "./dist/disclosure-arrow.d.ts",
       "browser": "./dist/browser/disclosure-arrow.js",
@@ -508,6 +513,7 @@
     "./button.css": "./dist/styles/button.css",
     "./chip.css": "./dist/styles/chip.css",
     "./disclosure-arrow.css": "./dist/styles/disclosure-arrow.css",
+    "./disclosure.css": "./dist/styles/disclosure.css",
     "./toolbar.css": "./dist/styles/toolbar.css",
     "./toolbar-control-group.css": "./dist/styles/toolbar-control-group.css",
     "./surface-scaffold.css": "./dist/styles/surface-scaffold.css",

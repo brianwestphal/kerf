@@ -4868,6 +4868,89 @@
       }
     },
     {
+      "id": "disclosure",
+      "name": "Disclosure",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Content a person shows and hides under a summary row: a native details element with a DisclosureArrow, a title, and an optional quiet detail, on content-item geometry, with plain, framed, and sunken appearances and native exclusive (accordion) groups.",
+      "uses": [
+        "disclosure-arrow",
+        "lucide-icon"
+      ],
+      "purpose": "Keep secondary or optional content one press away under a summary, or let a person open one of several sections at a time.",
+      "publicExports": [
+        "Disclosure",
+        "DisclosureProps",
+        "DisclosureAppearance",
+        "DisclosureRootAttributes"
+      ],
+      "useWhen": [
+        "Optional or advanced content should stay out of the way until a person asks for it (advanced settings, a build log, release notes).",
+        "A list of questions or sections should open one at a time: give the Disclosures the same name for a native exclusive accordion."
+      ],
+      "avoidWhen": [
+        "Do not use it to switch between peer views; use a SegmentedControl or TabBar.",
+        "Do not use it for primary navigation or a collapsible sidebar; use a List or CollapsiblePanel.",
+        "Do not hand-build a details element with its own marker CSS, and do not use wa-details or wa-accordion."
+      ],
+      "alternatives": [
+        {
+          "id": "collapsible-panel",
+          "relationship": "nearest",
+          "when": "Use a CollapsiblePanel for a rail or drawer that collapses beside the work area."
+        }
+      ],
+      "appOwns": [
+        "the title, detail, and content",
+        "the initial open state, and closing it from code (element.open = false)",
+        "the exclusive group name",
+        "reacting to the native toggle event (captured, through toggleAction)"
+      ],
+      "variants": [
+        "plain, framed, or sunken appearance",
+        "open or closed initially",
+        "a quiet detail after the title",
+        "an exclusive accordion group sharing a name"
+      ],
+      "accessibility": [
+        "The native summary is a button that Enter and Space toggle and that reports its expanded state; the DisclosureArrow is decorative.",
+        "Keep the title a short, meaningful name for the hidden content; the open state survives re-renders because the platform owns it."
+      ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "The root takes the content-item geometry (8px inline margin, a 1px border, 8px padding); the content starts on the title's text column."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/disclosure",
+        "browserImport": "@kerfjs/ui/disclosure",
+        "manualCssImport": "@kerfjs/ui/disclosure.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-disclosure",
+        "kui-disclosure__summary",
+        "kui-disclosure__title",
+        "kui-disclosure__detail",
+        "kui-disclosure__content"
+      ],
+      "publicTokens": [
+        "--kui-disclosure-arrow-size"
+      ],
+      "links": {
+        "catalogRoute": "?component=disclosure",
+        "documentation": "docs/disclosure.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "application-tabs",
       "name": "Application Tabs",
       "category": "Navigation",
@@ -8843,21 +8926,26 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Coordinates one or more collapsible content sections.",
+      "description": "Ecosystem accordion; use Kerf Disclosures sharing a name.",
       "uses": [
         "wa-accordion-item"
       ],
-      "purpose": "Coordinates one or more collapsible content sections.",
+      "purpose": "Ecosystem accordion; use Kerf Disclosures sharing a name.",
       "customElement": "wa-accordion",
       "useWhen": [
         "Coordinates one or more collapsible content sections."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use Disclosure (@kerfjs/ui/disclosure), a native details element, and give Disclosures the same name for an accordion."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "disclosure",
+          "relationship": "prefer-kerf",
+          "when": "Use Disclosure for show-and-hide content; Disclosures sharing a name form an accordion."
+        }
+      ],
       "variants": [
         "sunken appearance"
       ],
@@ -8882,7 +8970,7 @@
       "links": {
         "catalogRoute": "?component=wa-accordion",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -8891,21 +8979,26 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Experimental labeled disclosure section used by an accordion.",
+      "description": "Ecosystem accordion item; use a Kerf Disclosure in a named group.",
       "uses": [
         "wa-icon"
       ],
-      "purpose": "Experimental labeled disclosure section used by an accordion.",
+      "purpose": "Ecosystem accordion item; use a Kerf Disclosure in a named group.",
       "customElement": "wa-accordion-item",
       "useWhen": [
         "Experimental labeled disclosure section used by an accordion."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use Disclosure (@kerfjs/ui/disclosure), a native details element, and give Disclosures the same name for an accordion."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "disclosure",
+          "relationship": "prefer-kerf",
+          "when": "Use Disclosure for show-and-hide content; Disclosures sharing a name form an accordion."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -8921,7 +9014,7 @@
       "links": {
         "catalogRoute": "?component=wa-accordion-item",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -8986,21 +9079,26 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Single disclosure panel for secondary information.",
+      "description": "Ecosystem disclosure; use the Kerf Disclosure.",
       "uses": [
         "wa-icon"
       ],
-      "purpose": "Single disclosure panel for secondary information.",
+      "purpose": "Ecosystem disclosure; use the Kerf Disclosure.",
       "customElement": "wa-details",
       "useWhen": [
         "Single disclosure panel for secondary information."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use Disclosure (@kerfjs/ui/disclosure), a native details element, and give Disclosures the same name for an accordion."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "disclosure",
+          "relationship": "prefer-kerf",
+          "when": "Use Disclosure for show-and-hide content; Disclosures sharing a name form an accordion."
+        }
+      ],
       "variants": [
         "sunken appearance"
       ],
@@ -9025,7 +9123,7 @@
       "links": {
         "catalogRoute": "?component=wa-details",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {

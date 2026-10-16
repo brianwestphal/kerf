@@ -14,6 +14,7 @@ import { ComboboxDemo } from './combobox.js';
 import { ContentItemDemo } from './content-item.js';
 import { ContentSwapDemo } from './content-swap.js';
 import { CornerStatusDemo } from './corner-status.js';
+import { DisclosureDemo } from './disclosure.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { DocumentBaselineDemo } from './document-baseline.js';
 import { EdgeActivityIndicatorDemo } from './edge-activity-indicator.js';
@@ -81,6 +82,7 @@ export const demos = {
   'floating-toolbar': FloatingToolbarDemo,
   'segmented-control': SegmentedControlDemo,
   'choice-chips': ChoiceChipsDemo,
+  disclosure: DisclosureDemo,
   'list-detail-dialog': ListDetailDialogDemo,
   'message-composer': MessageComposerDemo,
   toast: ToastDemo,

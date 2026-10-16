@@ -7,6 +7,7 @@ const entries = [
   'css-values',
   'lucide-icon',
   'disclosure-arrow',
+  'disclosure',
   'toolbar',
   'toolbar-control-group',
   'surface-scaffold',

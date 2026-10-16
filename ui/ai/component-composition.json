@@ -4002,6 +4002,81 @@
       }
     },
     {
+      "key": "@kerfjs/ui:disclosure",
+      "package": "@kerfjs/ui",
+      "id": "disclosure",
+      "name": "Disclosure",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the title, detail, and content",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the initial open state, and closing it from code (element.open = false)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the exclusive group name",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "reacting to the native toggle event (captured, through toggleAction)",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "self",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "The root takes the content-item geometry (8px inline margin, a 1px border, 8px padding); the content starts on the title's text column."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The native summary is a button that Enter and Space toggle and that reports its expanded state; the DisclosureArrow is decorative.",
+          "Keep the title a short, meaningful name for the hidden content; the open state survives re-renders because the platform owns it."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-disclosure",
+        "publicClasses": [
+          "kui-disclosure",
+          "kui-disclosure__summary",
+          "kui-disclosure__title",
+          "kui-disclosure__detail",
+          "kui-disclosure__content"
+        ],
+        "publicTokens": ["--kui-disclosure-arrow-size"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:application-tabs",
       "package": "@kerfjs/ui",
       "id": "application-tabs",

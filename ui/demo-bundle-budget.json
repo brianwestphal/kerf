@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "largestJavaScriptGzip": 150500,
-  "totalJavaScriptGzip": 406200,
-  "measuredLargestJavaScriptGzip": 150476,
-  "measuredTotalJavaScriptGzip": 406177,
+  "largestJavaScriptGzip": 152000,
+  "totalJavaScriptGzip": 406300,
+  "measuredLargestJavaScriptGzip": 151998,
+  "measuredTotalJavaScriptGzip": 406284,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5283,6 +5283,22 @@
         "measuredTotalJavaScriptGzip": 406177,
         "largestJavaScriptGzip": 150500,
         "totalJavaScriptGzip": 406200
+      }
+    },
+    {
+      "at": "2026-10-16T07:36:24.114Z",
+      "reason": "Disclosure catalog page and the sunken Disclosure specimen replacing wa-details",
+      "old": {
+        "measuredLargestJavaScriptGzip": 150476,
+        "measuredTotalJavaScriptGzip": 406177,
+        "largestJavaScriptGzip": 150500,
+        "totalJavaScriptGzip": 406200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 151998,
+        "measuredTotalJavaScriptGzip": 406284,
+        "largestJavaScriptGzip": 152000,
+        "totalJavaScriptGzip": 406300
       }
     }
   ]

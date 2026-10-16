@@ -1245,12 +1245,15 @@ const discouragedTags = [
   ['wa-toast', 'toast'],
   ['wa-toast-item', 'toast'],
   ['wa-tooltip', 'tooltip'],
+  ['wa-details', 'disclosure'],
+  ['wa-accordion', 'disclosure'],
+  ['wa-accordion-item', 'disclosure'],
 ];
 
 tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
   valid: [
     // Integration elements no Kerf component replaces stay allowed.
-    ...['wa-details', 'wa-copy-button', 'wa-carousel', 'wa-rating'].map(
+    ...['wa-qr-code', 'wa-copy-button', 'wa-carousel', 'wa-rating'].map(
       (tag) => ({
         code: `<div><${tag} /></div>;`,
         filename: appFile,
