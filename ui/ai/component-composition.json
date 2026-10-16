@@ -4384,10 +4384,10 @@
       }
     },
     {
-      "key": "@kerfjs/ui:token-search-field",
+      "key": "@kerfjs/ui:search-field",
       "package": "@kerfjs/ui",
-      "id": "token-search-field",
-      "name": "TokenSearchField",
+      "id": "search-field",
+      "name": "SearchField",
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
@@ -4416,29 +4416,29 @@
       ],
       "wiring": {
         "required": true,
-        "helpers": ["wireTokenSearchFields"],
+        "helpers": ["wireSearchFields"],
         "obligations": [
           "Retain and invoke the disposer.",
-          "Use readTokenSearchField for DOM-owned text.",
+          "Use readSearchField for DOM-owned text.",
           "With a managed model, read model.state.peek() (never model.state.value) in the host render and bind model.result as a signal hole; the field itself re-renders only when model.structure changes, not per keystroke."
         ],
         "stateAttributes": [
           {
-            "name": "data-token-search-text",
-            "on": "the text span inside kui-token-search__editor",
-            "helper": "wireTokenSearchFields",
+            "name": "data-search-field-text",
+            "on": "the text span inside kui-search-field__editor",
+            "helper": "wireSearchFields",
             "meaning": "Marks the plain-text span the helper inserts when the editor is emptied."
           },
           {
             "name": "data-empty",
-            "on": "the text span inside kui-token-search__editor",
-            "helper": "wireTokenSearchFields",
+            "on": "the text span inside kui-search-field__editor",
+            "helper": "wireSearchFields",
             "meaning": "\"true\" on that span while it holds no text."
           },
           {
             "name": "data-placeholder-visible",
-            "on": "the kui-token-search root",
-            "helper": "wireTokenSearchFields",
+            "on": "the kui-search-field root",
+            "helper": "wireSearchFields",
             "meaning": "Tracks whether the DOM-owned editor is empty so its placeholder stays outside the editable area."
           }
         ]
@@ -4453,25 +4453,25 @@
           "Announce result changes when useful and keep tokens atomic during editing.",
           "Keep leading and trailing controls aligned to the first text line while content wraps. Managed Clear restores replacement focus before the next input task, preserving immediate typing and later focus handoffs without a frame delay.",
           "Wire Enter to submit without inserting a contenteditable line break and preserve focus plus the text-relative caret across controlled keyboard chip deletion before the next keystroke. Select All deletion preserves managed open state and replacement focus; persist both edited query and tokens. Visual wrapping remains available.",
-          "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out.",
-          "The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireTokenSearchFields focus the editor from a label click. The app validates required input."
+          "In collapsible mode, wireSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out.",
+          "The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireSearchFields focus the editor from a label click. The app validates required input."
         ]
       },
       "cssValueProps": [],
       "boundaries": {
-        "rootClass": "kui-token-search",
+        "rootClass": "kui-search-field",
         "publicClasses": [
-          "kui-token-search",
-          "kui-token-search__clear",
-          "kui-token-search__editor",
-          "kui-token-search__expand",
-          "kui-token-search__leading",
-          "kui-token-search__token",
-          "kui-token-search__token-edit",
-          "kui-token-search__token-remove",
-          "kui-token-search__suggestions",
-          "kui-token-search__suggestion",
-          "kui-token-search__trailing"
+          "kui-search-field",
+          "kui-search-field__clear",
+          "kui-search-field__editor",
+          "kui-search-field__expand",
+          "kui-search-field__leading",
+          "kui-search-field__token",
+          "kui-search-field__token-edit",
+          "kui-search-field__token-remove",
+          "kui-search-field__suggestions",
+          "kui-search-field__suggestion",
+          "kui-search-field__trailing"
         ],
         "publicTokens": [
           "--kui-color-brand-fill-normal",
@@ -4485,26 +4485,26 @@
           "--kui-font-s",
           "--kui-font-xs",
           "--kui-radius-pill",
-          "--kui-token-search-background",
-          "--kui-token-search-border",
-          "--kui-token-search-editor-min-width",
-          "--kui-token-search-line-size",
-          "--kui-token-search-token-background",
-          "--kui-token-search-token-foreground",
-          "--kui-token-search-expanded-width"
+          "--kui-search-field-background",
+          "--kui-search-field-border",
+          "--kui-search-field-editor-min-width",
+          "--kui-search-field-line-size",
+          "--kui-search-field-token-background",
+          "--kui-search-field-token-foreground",
+          "--kui-search-field-expanded-width"
         ]
       },
       "diagnostics": [
         {
           "id": "KUI-C105",
           "severity": "error",
-          "when": "wireTokenSearchFields is absent",
-          "message": "TokenSearchField requires its public wiring helper for keyboard and collapsible behavior."
+          "when": "wireSearchFields is absent",
+          "message": "SearchField requires its public wiring helper for keyboard and collapsible behavior."
         }
       ],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "docs/accessibility.md#tokensearchfield"
+        "composition": "docs/accessibility.md#searchfield"
       }
     },
     {

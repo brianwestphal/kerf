@@ -68,17 +68,17 @@ for (const width of [1100, 390]) {
   });
 }
 
-test('token search editor shrinks inside a narrow group', async ({ page }) => {
-  await page.goto('/?component=token-search-field');
+test('search field editor shrinks inside a narrow group', async ({ page }) => {
+  await page.goto('/?component=search-field');
   const geometry = await page.evaluate(() => {
     const host = document.createElement('div');
     host.style.width = '120px';
     host.innerHTML =
-      '<div class="kui-token-search"><span class="kui-token-search__leading"></span><div class="kui-token-search__editor" role="searchbox">Find</div></div>';
+      '<div class="kui-search-field"><span class="kui-search-field__leading"></span><div class="kui-search-field__editor" role="searchbox">Find</div></div>';
     document.body.append(host);
-    const field = host.querySelector<HTMLElement>('.kui-token-search')!;
+    const field = host.querySelector<HTMLElement>('.kui-search-field')!;
     const editor = host.querySelector<HTMLElement>(
-      '.kui-token-search__editor',
+      '.kui-search-field__editor',
     )!;
     const result = {
       editorMinWidth: window.getComputedStyle(editor).minWidth,

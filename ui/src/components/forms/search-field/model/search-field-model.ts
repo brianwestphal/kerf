@@ -6,12 +6,9 @@ import {
   signal,
 } from 'kerfjs';
 
-import type {
-  TokenSearchFieldValue,
-  TokenSearchToken,
-} from '../token-search-field.js';
+import type { SearchFieldToken, SearchFieldValue } from '../search-field.js';
 
-export interface TokenSearchRule {
+export interface SearchFieldRule {
   /** The word before `:` (for example `tag` or `status`). */
   name: string;
   /** Return a canonical value, or undefined to leave invalid input as text. */
@@ -21,21 +18,21 @@ export interface TokenSearchRule {
   /** Suggestions for the unfinished value after `name:`, with current committed tokens. */
   suggest?: (
     input: string,
-    state: TokenSearchState,
+    state: SearchFieldState,
   ) => readonly (string | { value: string; label: string })[];
 }
 
-export interface TokenSearchResolvedToken extends TokenSearchToken {
+export interface SearchFieldResolvedToken extends SearchFieldToken {
   kind: string;
   parsedValue: string;
 }
 
-export interface TokenSearchState {
+export interface SearchFieldState {
   query: string;
-  tokens: TokenSearchResolvedToken[];
+  tokens: SearchFieldResolvedToken[];
 }
 
-export interface TokenSearchSuggestion {
+export interface SearchFieldSuggestion {
   value: string;
   label: string;
 }
@@ -44,7 +41,7 @@ export interface TokenSearchSuggestion {
  * The render-relevant shape of a managed field: everything a host render
  * needs to re-run for. Plain text edits do not change it.
  */
-export interface TokenSearchStructure {
+export interface SearchFieldStructure {
   /** Whether the free text is non-empty (drives clear, placeholder, and collapsed state). */
   hasQuery: boolean;
   /** Committed token values in editor order. */
@@ -53,28 +50,28 @@ export interface TokenSearchStructure {
   editorRevision: number;
 }
 
-export interface TokenSearchModel<Result = unknown> {
+export interface SearchFieldModel<Result = unknown> {
   /**
    * The live query and tokens. Changes on every keystroke: read it with
    * `.peek()` (or in an event handler) to avoid subscribing a render per key.
    */
-  state: Signal<TokenSearchState>;
+  state: Signal<SearchFieldState>;
   /** Changes when a model action must replace DOM-owned editor text. */
   editorRevision: Signal<number>;
   /**
    * Changes only on structural edits (a token committed, removed, or
    * reordered; the text becoming empty or non-empty; an editor revision), and
-   * keeps the same reference otherwise. `TokenSearchField` subscribes to this
+   * keeps the same reference otherwise. `SearchField` subscribes to this
    * instead of `state`, so typing does not re-run the host render.
    */
-  structure: ReadonlySignal<TokenSearchStructure>;
+  structure: ReadonlySignal<SearchFieldStructure>;
   /** Visible suggestions. Publishes only when the list's content changes. */
-  suggestions: Signal<readonly TokenSearchSuggestion[]>;
+  suggestions: Signal<readonly SearchFieldSuggestion[]>;
   result: Signal<Result | undefined>;
-  edit(value: TokenSearchFieldValue, commit?: boolean): void;
+  edit(value: SearchFieldValue, commit?: boolean): void;
   /** Replace app-owned search state and rebuild the DOM-owned editor text. */
-  replace(value: TokenSearchFieldValue): void;
-  submit(value: TokenSearchFieldValue): void;
+  replace(value: SearchFieldValue): void;
+  submit(value: SearchFieldValue): void;
   choose(value: string): void;
   /** Commit a value for the active `name:` prefix, even when it is not suggested. */
   commit(value: string): void;
@@ -84,12 +81,12 @@ export interface TokenSearchModel<Result = unknown> {
   dismiss(): void;
 }
 
-export interface TokenSearchModelOptions<Result> {
-  rules?: readonly TokenSearchRule[];
-  initial?: TokenSearchFieldValue;
+export interface SearchFieldModelOptions<Result> {
+  rules?: readonly SearchFieldRule[];
+  initial?: SearchFieldValue;
   /** Runs after every state change, including initial state. */
-  evaluate?: (state: TokenSearchState) => Result;
-  onSubmit?: (state: TokenSearchState, result: Result | undefined) => void;
+  evaluate?: (state: SearchFieldState) => Result;
+  onSubmit?: (state: SearchFieldState, result: Result | undefined) => void;
 }
 
 const escapePattern = (text: string) =>
@@ -103,19 +100,19 @@ const unquote = (text: string) =>
     ? text.slice(1, -1).replace(/\\(["\\])/g, '$1')
     : text;
 
-/** Opt-in state, token parsing, suggestions, and evaluation for TokenSearchField. */
-export function createTokenSearchModel<Result = unknown>({
+/** Opt-in state, token parsing, suggestions, and evaluation for SearchField. */
+export function createSearchFieldModel<Result = unknown>({
   rules = [],
   initial = { query: '', tokens: [] },
   evaluate,
   onSubmit,
-}: TokenSearchModelOptions<Result> = {}): TokenSearchModel<Result> {
+}: SearchFieldModelOptions<Result> = {}): SearchFieldModel<Result> {
   const byName = new Map(rules.map((rule) => [rule.name.toLowerCase(), rule]));
   if (
     byName.size !== rules.length ||
     rules.some((rule) => !/^[\w-]+$/.test(rule.name))
   )
-    throw new Error('Token search rule names must be unique words');
+    throw new Error('Search field rule names must be unique words');
   const names = [...byName.keys()].map(escapePattern).join('|');
   const pattern = names
     ? new RegExp(
@@ -133,7 +130,7 @@ export function createTokenSearchModel<Result = unknown>({
   const resolve = (
     raw: string,
     offset: number,
-  ): TokenSearchResolvedToken | undefined => {
+  ): SearchFieldResolvedToken | undefined => {
     const separator = raw.indexOf(':');
     const kind = raw.slice(0, separator).toLowerCase();
     const rule = byName.get(kind);
@@ -152,13 +149,13 @@ export function createTokenSearchModel<Result = unknown>({
   };
 
   const rehydrate = (
-    token: TokenSearchToken,
-  ): TokenSearchResolvedToken | undefined => {
+    token: SearchFieldToken,
+  ): SearchFieldResolvedToken | undefined => {
     const resolved = resolve(token.value, token.offset ?? 0);
     return resolved ? { ...resolved, ...token } : undefined;
   };
 
-  const state = signal<TokenSearchState>({
+  const state = signal<SearchFieldState>({
     query: initial.query,
     tokens: initial.tokens.flatMap((token) => {
       const resolved = rehydrate(token);
@@ -166,10 +163,10 @@ export function createTokenSearchModel<Result = unknown>({
     }),
   });
   const editorRevision = signal(0);
-  let lastStructure: TokenSearchStructure | undefined;
-  const structure = computed<TokenSearchStructure>(() => {
+  let lastStructure: SearchFieldStructure | undefined;
+  const structure = computed<SearchFieldStructure>(() => {
     const { query, tokens } = state.value;
-    const next: TokenSearchStructure = {
+    const next: SearchFieldStructure = {
       hasQuery: query.length > 0,
       tokenValues: tokens.map((token) => token.value),
       editorRevision: editorRevision.value,
@@ -185,10 +182,10 @@ export function createTokenSearchModel<Result = unknown>({
       return lastStructure;
     return (lastStructure = next);
   });
-  const suggestions = signal<readonly TokenSearchSuggestion[]>([]);
+  const suggestions = signal<readonly SearchFieldSuggestion[]>([]);
   const result = signal<Result | undefined>(evaluate?.(state.peek()));
   let activeStart: number | undefined;
-  let activeRule: TokenSearchRule | undefined;
+  let activeRule: SearchFieldRule | undefined;
 
   const refreshSuggestions = () => {
     const match = activePattern?.exec(state.peek().query);
@@ -229,7 +226,7 @@ export function createTokenSearchModel<Result = unknown>({
     )
       suggestions.value = next;
   };
-  const publish = (next: TokenSearchState) =>
+  const publish = (next: SearchFieldState) =>
     batch(() => {
       state.value = next;
       result.value = evaluate?.(next);
@@ -237,10 +234,10 @@ export function createTokenSearchModel<Result = unknown>({
     });
   refreshSuggestions();
 
-  const edit = (value: TokenSearchFieldValue, commit = false) => {
+  const edit = (value: SearchFieldValue, commit = false) => {
     let query = '';
     let cursor = 0;
-    const added: TokenSearchResolvedToken[] = [];
+    const added: SearchFieldResolvedToken[] = [];
     const removed: Array<{ start: number; end: number }> = [];
     for (const match of value.query.matchAll(pattern ?? /(?!) /g)) {
       const raw = match[1];
@@ -281,7 +278,7 @@ export function createTokenSearchModel<Result = unknown>({
     publish({ query, tokens });
   };
 
-  const commitResolved = (token: TokenSearchResolvedToken | undefined) => {
+  const commitResolved = (token: SearchFieldResolvedToken | undefined) => {
     if (!token || activeStart === undefined) return;
     const query = state.peek().query.slice(0, activeStart);
     publish({ query, tokens: [...state.peek().tokens, token] });

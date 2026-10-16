@@ -146,7 +146,7 @@ describe('titleStyleLabels', () => {
             <IconToggleButton label="Show conversation" icon={chat} pressed={false} action="chat" />
             <PopupMenu label="More actions" items={items} />
             <SplitButton label="Publish" optionsLabel="Publish options" action="a" optionsAction="b" />
-            <TokenSearchField id="s" label="Search" clearLabel="Clear search" />
+            <SearchField id="s" label="Search" clearLabel="Clear search" />
           </section>
         );
       `),
@@ -176,7 +176,7 @@ describe('titleStyleLabels', () => {
       'PopupMenu items: Move to trash',
       'SplitButton label: Publish',
       'SplitButton optionsLabel: Publish options',
-      'TokenSearchField clearLabel: Clear search',
+      'SearchField clearLabel: Clear search',
     ]);
   });
 

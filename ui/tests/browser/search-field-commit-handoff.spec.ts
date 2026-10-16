@@ -6,7 +6,7 @@ import { build } from 'esbuild';
 
 const fixtureBundle = build({
   entryPoints: [
-    resolve(import.meta.dirname, 'fixtures/token-search-commit-consumer.tsx'),
+    resolve(import.meta.dirname, 'fixtures/search-field-commit-consumer.tsx'),
   ],
   bundle: true,
   format: 'iife',
@@ -15,7 +15,7 @@ const fixtureBundle = build({
   write: false,
 });
 
-const css = ['foundation', 'token-search-field']
+const css = ['foundation', 'search-field']
   .map((name) =>
     readFileSync(
       resolve(import.meta.dirname, `../../dist/styles/${name}.css`),
@@ -61,7 +61,7 @@ test('typing at full speed across app-committed chips keeps every key and the ca
       tokens: ['site:north', 'site:annex'],
       query: 'pump',
     });
-  await expect(page.locator('[data-token-search-editor]')).toBeFocused();
+  await expect(page.locator('[data-search-field-editor]')).toBeFocused();
   // The caret stayed after the last chip, at the end of the query.
   await page.keyboard.type('s');
   await expect
@@ -82,7 +82,7 @@ test('typing at full speed across app-committed chips keeps every key and the ca
       tokens: ['site:north'],
       query: 'pumps',
     });
-  await expect(page.locator('[data-token-search-editor]')).toBeFocused();
+  await expect(page.locator('[data-search-field-editor]')).toBeFocused();
   await page.keyboard.type('x', { delay: 0 });
   await expect.poll(async () => (await state(page)).query).toBe('xpumps');
 });

@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test';
 
-test('TokenSearchField form presentation matches TextField geometry and metadata', async ({
+test('SearchField form presentation matches TextField geometry and metadata', async ({
   page,
 }) => {
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto('/?component=token-search-field');
+    await page.goto('/?component=search-field');
     const pair = page.locator('[data-demo-token-form]');
-    const field = pair.locator('[data-token-search-form-field]');
+    const field = pair.locator('[data-search-field-form-field]');
     const editor = field.getByRole('searchbox', { name: 'Search Query' });
     await expect(editor).toHaveAttribute('aria-required', 'true');
     await expect(editor).toHaveAttribute(
@@ -15,9 +15,9 @@ test('TokenSearchField form presentation matches TextField geometry and metadata
       'saved-view-query-hint',
     );
     await expect(
-      field.locator('.kui-token-search__field-required'),
+      field.locator('.kui-search-field__field-required'),
     ).toBeVisible();
-    await expect(field.locator('.kui-token-search__field-hint')).toHaveText(
+    await expect(field.locator('.kui-search-field__field-hint')).toHaveText(
       'Add filters to narrow the view.',
     );
     const geometry = await pair.evaluate((container) => {
@@ -35,16 +35,16 @@ test('TokenSearchField form presentation matches TextField geometry and metadata
         '.kui-text-field__required',
       )!;
       const search = container.querySelector<HTMLElement>(
-        '[data-component="token-search-field"]',
+        '[data-component="search-field"]',
       )!;
       const searchLabel = container.querySelector<HTMLElement>(
-        '.kui-token-search__field-label',
+        '.kui-search-field__field-label',
       )!;
       const searchHint = container.querySelector<HTMLElement>(
-        '.kui-token-search__field-hint',
+        '.kui-search-field__field-hint',
       )!;
       const searchRequired = container.querySelector<HTMLElement>(
-        '.kui-token-search__field-required',
+        '.kui-search-field__field-required',
       )!;
       const style = (element: Element) => {
         const css = globalThis.getComputedStyle(element);
@@ -95,43 +95,43 @@ test('TokenSearchField form presentation matches TextField geometry and metadata
     expect(geometry.searchControlRadius).toBe(geometry.textControlRadius);
     expect(geometry.searchRequiredColor).toBe(geometry.textRequiredColor);
 
-    await field.locator('[data-token-search-form-label]').click();
+    await field.locator('[data-search-field-form-label]').click();
     await expect(editor).toBeFocused();
     await pair.screenshot({
-      path: `test-results/token-search-form-${width}.png`,
+      path: `test-results/search-field-form-${width}.png`,
     });
   }
 });
 
-test('TokenSearchField accepts inherited app color tokens in form and standalone presentations', async ({
+test('SearchField accepts inherited app color tokens in form and standalone presentations', async ({
   page,
 }) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
   await page.addStyleTag({
     content: `
-    [data-demo="token-search-field"] {
-      --kui-token-search-background: #f9f7fb;
-      --kui-token-search-border: #8b6f9c;
-      --kui-token-search-token-background: #e8dff0;
-      --kui-token-search-token-foreground: #342547;
+    [data-demo="search-field"] {
+      --kui-search-field-background: #f9f7fb;
+      --kui-search-field-border: #8b6f9c;
+      --kui-search-field-token-background: #e8dff0;
+      --kui-search-field-token-foreground: #342547;
     }
   `,
   });
   const colors = await page
-    .locator('[data-demo="token-search-field"]')
+    .locator('[data-demo="search-field"]')
     .evaluate((demo) => {
       const form = demo.querySelector<HTMLElement>(
-        '[data-demo-token-form] .kui-token-search',
+        '[data-demo-token-form] .kui-search-field',
       )!;
       const formToken = form.querySelector<HTMLElement>(
-        '.kui-token-search__token',
+        '.kui-search-field__token',
       )!;
       const standalone = demo.querySelector<HTMLElement>(
-        '[data-token-search-id="catalog-search"]',
+        '[data-search-field-id="catalog-search"]',
       )!;
       const token = standalone.querySelector<HTMLElement>(
-        '.kui-token-search__token',
+        '.kui-search-field__token',
       )!;
       const style = (element: HTMLElement) =>
         globalThis.getComputedStyle(element);
@@ -159,10 +159,10 @@ test('TokenSearchField accepts inherited app color tokens in form and standalone
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 844 });
     await page.locator('[data-demo-token-form]').screenshot({
-      path: `test-results/token-search-colors-form-chip-${width}.png`,
+      path: `test-results/search-field-colors-form-chip-${width}.png`,
     });
-    await page.locator('[data-token-search-id="catalog-search"]').screenshot({
-      path: `test-results/token-search-colors-tokens-${width}.png`,
+    await page.locator('[data-search-field-id="catalog-search"]').screenshot({
+      path: `test-results/search-field-colors-tokens-${width}.png`,
     });
   }
 });

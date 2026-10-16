@@ -225,11 +225,11 @@ describe('local AI regression foundation', { timeout: 30_000 }, () => {
         caseId: 'public-api-signatures',
         files: {
           'app.tsx':
-            `import { TokenSearchField } from '@kerfjs/ui/token-search-field';\n` +
+            `import { SearchField } from '@kerfjs/ui/search-field';\n` +
             `import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';\n` +
             `declare const root: HTMLElement;\n` +
             `const stop = wireResizableRegions(root, { onCommit: () => undefined });\n` +
-            `const field = <TokenSearchField id="search" label="Search" />;\n` +
+            `const field = <SearchField id="search" label="Search" />;\n` +
             `const dialog = <wa-dialog label="Confirm"><wa-button appearance="accent">Save</wa-button></wa-dialog>;\n` +
             `stop(); void field; void dialog;\n`,
           'app.css': '.app { display: block; }\n',
@@ -367,11 +367,11 @@ describe('local AI regression foundation', { timeout: 30_000 }, () => {
     const result = await compileAiRegressionResponse(root, {
       files: {
         'app.tsx':
-          `import { TokenSearchField } from '@kerfjs/ui/token-search-field';\n` +
+          `import { SearchField } from '@kerfjs/ui/search-field';\n` +
           `import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';\n` +
           `declare const root: HTMLElement;\n` +
           `wireResizableRegions(root, { onResize: () => undefined });\n` +
-          `const field = <TokenSearchField id="search" label="Search" unknownProp />;\n` +
+          `const field = <SearchField id="search" label="Search" unknownProp />;\n` +
           `void field;\n`,
       },
     });

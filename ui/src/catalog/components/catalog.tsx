@@ -5,7 +5,7 @@ import { ToolbarControlGroup } from '../../components/actions/toolbar-control-gr
 import { ToolbarText } from '../../components/actions/toolbar-text/toolbar-text.js';
 import { ListInsetControl } from '../../components/collections/list-inset-control/list-inset-control.js';
 import { ListInsetText } from '../../components/collections/list-inset-text/list-inset-text.js';
-import { TokenSearchField } from '../../components/forms/token-search-field/token-search-field.js';
+import { SearchField } from '../../components/forms/search-field/search-field.js';
 import { Workbench } from '../../components/layout/workbench/workbench.js';
 import { LucideIcon } from '../../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../../components/typography/text/text.js';
@@ -137,7 +137,7 @@ export function Catalog({
           },
           header: (
             <ListInsetControl sides="rbl">
-              <TokenSearchField
+              <SearchField
                 id={`${id}-filter`}
                 label="Filter Catalog"
                 placeholder="Filter items or headings"

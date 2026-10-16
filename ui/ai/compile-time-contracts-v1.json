@@ -38,19 +38,19 @@
     },
     {
       "id": "KUI-T005",
-      "catalogKey": "@kerfjs/ui:token-search-field",
-      "publicImport": "@kerfjs/ui/token-search-field",
-      "symbols": ["TokenSearchFieldProps"],
+      "catalogKey": "@kerfjs/ui:search-field",
+      "publicImport": "@kerfjs/ui/search-field",
+      "symbols": ["SearchFieldProps"],
       "kind": "discriminated-union",
-      "summary": "Expanded state and expand-action inputs exist only for collapsible TokenSearchField variants."
+      "summary": "Expanded state and expand-action inputs exist only for collapsible SearchField variants."
     },
     {
       "id": "KUI-T006",
-      "catalogKey": "@kerfjs/ui:token-search-field",
-      "publicImport": "@kerfjs/ui/token-search-field",
-      "symbols": ["TokenSearchEditorAttributes"],
+      "catalogKey": "@kerfjs/ui:search-field",
+      "publicImport": "@kerfjs/ui/search-field",
+      "symbols": ["SearchFieldEditorAttributes"],
       "kind": "protected-attributes",
-      "summary": "TokenSearchField editor metadata cannot replace component-owned identity, morph, count, or placeholder attributes."
+      "summary": "SearchField editor metadata cannot replace component-owned identity, morph, count, or placeholder attributes."
     },
     {
       "id": "KUI-T007",
@@ -69,9 +69,9 @@
     },
     {
       "id": "KUI-T009",
-      "catalogKey": "@kerfjs/ui:token-search-field",
-      "publicImport": "@kerfjs/ui/wire-token-search-fields",
-      "symbols": ["TokenSearchKeyboardOptions", "WireTokenSearchFieldsOptions"],
+      "catalogKey": "@kerfjs/ui:search-field",
+      "publicImport": "@kerfjs/ui/wire-search-fields",
+      "symbols": ["SearchFieldKeyboardOptions", "WireSearchFieldsOptions"],
       "kind": "controlled-callback",
       "summary": "Adjacent-token removal requires the callback that commits removal to application-owned state."
     },

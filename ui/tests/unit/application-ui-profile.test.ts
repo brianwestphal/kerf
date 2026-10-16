@@ -135,7 +135,7 @@ describe('application UI profile policy', () => {
         scope: 'package',
         preferences: {
           navigation: { preferred: '@kerfjs/ui:list-item' },
-          search: { preferred: '@kerfjs/ui:token-search-field' },
+          search: { preferred: '@kerfjs/ui:search-field' },
         },
         theme: {
           colorScheme: 'light',
@@ -181,7 +181,7 @@ describe('application UI profile policy', () => {
       scope: 'directory',
       preferences: {
         navigation: { preferred: '@acme/ui:navigation-row' },
-        search: { preferred: '@kerfjs/ui:token-search-field' },
+        search: { preferred: '@kerfjs/ui:search-field' },
       },
       theme: {
         colorScheme: 'dark',

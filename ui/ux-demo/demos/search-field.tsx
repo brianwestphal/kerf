@@ -3,9 +3,9 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
+import { SearchField } from '@kerfjs/ui/search-field';
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
-import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { CircleHelp, CircleX } from 'lucide';
 
@@ -17,15 +17,15 @@ import {
   adoptionTokens,
   collapsibleSearchOpen,
   grammarSearchModel,
-  tokenSearchHelpOpen,
-  tokenSearchQuery,
-  tokenSearchTokens,
+  searchFieldHelpOpen,
+  searchFieldQuery,
+  searchFieldTokens,
 } from './state.js';
 
-export const TOKEN_SEARCH_HELP_SURFACE_ID = 'catalog-token-search-help-surface';
+export const TOKEN_SEARCH_HELP_SURFACE_ID = 'catalog-search-field-help-surface';
 
 /** Syntax help the Structured Ticket Search help toggle opens. */
-export function TokenSearchHelp() {
+export function SearchFieldHelp() {
   return (
     <ValueTable label="Search Syntax" density="compact">
       <ValueTableRow label="tag:name" value="Tickets with that tag" />
@@ -39,11 +39,11 @@ export function TokenSearchHelp() {
   );
 }
 
-export function TokenSearchFieldDemo() {
+export function SearchFieldDemo() {
   return (
     <CatalogExampleStack
-      label="TokenSearchField States"
-      rootAttributes={{ 'data-demo': 'token-search-field' }}
+      label="SearchField States"
+      rootAttributes={{ 'data-demo': 'search-field' }}
     >
       <CatalogExample
         label="Saved-View Form Fields"
@@ -58,7 +58,7 @@ export function TokenSearchFieldDemo() {
             required
             value="Open procurement"
           />
-          <TokenSearchField
+          <SearchField
             id="saved-view-query"
             label="Search Query"
             presentation="form-field"
@@ -75,34 +75,34 @@ export function TokenSearchFieldDemo() {
         align="inline-control"
       >
         <List gap="xs">
-          <TokenSearchField
+          <SearchField
             id="catalog-search"
             label="Search Tickets"
-            query={tokenSearchQuery.value}
-            tokens={tokenSearchTokens.value}
+            query={searchFieldQuery.value}
+            tokens={searchFieldTokens.value}
             autofocus
             trailingAction={{
               icon: <LucideIcon icon={CircleHelp} name="circle-help" />,
               label: 'Search Help',
-              action: 'toggle-token-search-help',
-              id: 'catalog-token-search-help',
-              expanded: tokenSearchHelpOpen.value,
+              action: 'toggle-search-field-help',
+              id: 'catalog-search-field-help',
+              expanded: searchFieldHelpOpen.value,
               haspopup: 'dialog',
-              controls: tokenSearchHelpOpen.value
+              controls: searchFieldHelpOpen.value
                 ? TOKEN_SEARCH_HELP_SURFACE_ID
                 : undefined,
             }}
-            editorAttributes={{ 'data-demo-token-search': 'true' }}
+            editorAttributes={{ 'data-demo-search-field': 'true' }}
           />
           <Text
             variant="span"
             tone="quiet"
             size="compact"
             aria-live="polite"
-            data-demo-token-search-readout
+            data-demo-search-field-readout
           >
-            {tokenSearchTokens.value.length} filters ·{' '}
-            {tokenSearchQuery.value || 'No free text'}
+            {searchFieldTokens.value.length} filters ·{' '}
+            {searchFieldQuery.value || 'No free text'}
           </Text>
         </List>
       </CatalogExample>
@@ -112,7 +112,7 @@ export function TokenSearchFieldDemo() {
         align="inline-control"
       >
         <List gap="xs">
-          <TokenSearchField
+          <SearchField
             id="grammar-search"
             label="Search with Filters"
             model={grammarSearchModel}
@@ -147,13 +147,13 @@ export function TokenSearchFieldDemo() {
           <>
             Empty and unfocused, it collapses to one iconic action; activating
             it reveals the editor and focuses it, and it re-collapses when focus
-            leaves while empty. <code>wireTokenSearchFields</code> manages the
+            leaves while empty. <code>wireSearchFields</code> manages the
             expand/collapse/focus.
           </>
         }
         align="inline-control"
       >
-        <TokenSearchField
+        <SearchField
           id="collapsible-search"
           label="Find Records"
           collapsible
@@ -172,7 +172,7 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <TokenSearchField
+        <SearchField
           id="disabled-search"
           label="Saved Search"
           query="release"
@@ -191,10 +191,10 @@ export function TokenSearchFieldDemo() {
         label="Adoption Knobs"
         note={
           <>
-            The <code>wireTokenSearchFields</code> hooks a real app reaches for:
+            The <code>wireSearchFields</code> hooks a real app reaches for:
             opt-in chip keyboard (Backspace/Delete remove the adjacent chip,
             ArrowRight moves the caret past it), a{' '}
-            <code>data-token-search-keep-open</code> suggestions surface that
+            <code>data-search-field-keep-open</code> suggestions surface that
             does not collapse the empty field, and an <code>onEdit</code>{' '}
             readout.
           </>
@@ -202,7 +202,7 @@ export function TokenSearchFieldDemo() {
         align="inline-control"
       >
         <List gap="xs">
-          <TokenSearchField
+          <SearchField
             id="adoption-search"
             clearAction="clear-adoption-search"
             label="Filter Records"
@@ -216,7 +216,7 @@ export function TokenSearchFieldDemo() {
             editorAttributes={{ 'data-demo-adoption-search': 'true' }}
           />
           <div
-            data-token-search-keep-open
+            data-search-field-keep-open
             role="group"
             aria-label="Filter Suggestions"
           >

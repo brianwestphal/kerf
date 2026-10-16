@@ -390,7 +390,7 @@ smallest subtree that needs a different identity:
 }
 ```
 
-Kerf components read only `--kui-*` tokens. `TokenSearchField` with
+Kerf components read only `--kui-*` tokens. `SearchField` with
 `presentation="form-field"` follows `--kui-layout-rounded-radius` for its
 corners, as `TextField`, `Select`, and `Button` do, so the fields in a form
 change together.

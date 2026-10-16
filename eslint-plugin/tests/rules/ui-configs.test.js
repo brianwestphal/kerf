@@ -256,12 +256,12 @@ export default [
   await writeFile(
     resolve(consumer, 'src/view.jsx'),
     `import * as UI from '@kerfjs/ui';
-import * as Field from '@kerfjs/ui/token-search-field';
+import * as Field from '@kerfjs/ui/search-field';
 import * as NavWiring from '@kerfjs/ui/wire-nav-stack';
-const dispose = UI.wireTokenSearchFields(root);
+const dispose = UI.wireSearchFields(root);
 const disposeResize = UI.wireResizableRegions(root);
 const disposeNav = NavWiring.wireNavStack(root);
-export const view = <><UI.Toolbar leading={<button>Save</button>} /><UI.SplitView list={<div />} /><Field.TokenSearchField tokens={[]} onTokensChange={() => {}} /></>;
+export const view = <><UI.Toolbar leading={<button>Save</button>} /><UI.SplitView list={<div />} /><Field.SearchField tokens={[]} onTokensChange={() => {}} /></>;
 void dispose;
 void disposeResize;
 void disposeNav;

@@ -1,5 +1,5 @@
-import type { TokenSearchToken } from '@kerfjs/ui/token-search-field';
-import { createTokenSearchModel } from '@kerfjs/ui/token-search-model';
+import type { SearchFieldToken } from '@kerfjs/ui/search-field';
+import { createSearchFieldModel } from '@kerfjs/ui/search-field-model';
 import { signal } from 'kerfjs';
 
 export const regionSize = signal(276);
@@ -32,9 +32,9 @@ export const disclosureOpen = signal(false);
 export const customDisclosureOpen = signal(false);
 export const sizedDisclosureOpen = signal(false);
 export const menuToolsOpen = signal(true);
-export const tokenSearchHelpOpen = signal(false);
-export const tokenSearchQuery = signal('NOT  AND parser');
-export const tokenSearchTokens = signal<TokenSearchToken[]>([
+export const searchFieldHelpOpen = signal(false);
+export const searchFieldQuery = signal('NOT  AND parser');
+export const searchFieldTokens = signal<SearchFieldToken[]>([
   {
     value: 'tag:client',
     label: 'tag:client',
@@ -43,7 +43,7 @@ export const tokenSearchTokens = signal<TokenSearchToken[]>([
   },
   { value: 'is:active', label: 'is:active', offset: 4 },
 ]);
-export const grammarSearchModel = createTokenSearchModel({
+export const grammarSearchModel = createSearchFieldModel({
   rules: [
     {
       name: 'tag',
@@ -114,9 +114,9 @@ export const toolbarAvatarChoice = signal<'primary' | 'secondary'>('primary');
 export const floatingToolbarOpen = signal(false);
 export const adoptionOpen = signal(true);
 export const adoptionQuery = signal('');
-export const adoptionTokens = signal<TokenSearchToken[]>([]);
+export const adoptionTokens = signal<SearchFieldToken[]>([]);
 export const adoptionReadout = signal('No edits yet');
-export const ADOPTION_SUGGESTIONS: readonly TokenSearchToken[] = [
+export const ADOPTION_SUGGESTIONS: readonly SearchFieldToken[] = [
   { value: 'status:open', label: 'status:open' },
   { value: 'owner:me', label: 'owner:me' },
   { value: 'due:today', label: 'due:today' },

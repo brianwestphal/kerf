@@ -1,27 +1,27 @@
 import { expect, test } from '@playwright/test';
 
-// KF-EPEM88: an expanded collapsible TokenSearchField placed directly in a flex
+// KF-EPEM88: an expanded collapsible SearchField placed directly in a flex
 // column must stay a single line tall. It previously took its expanded WIDTH as a
 // `flex-basis`, which the column read as the field's HEIGHT — stretching it to
 // ~480px. The fix drives the inline size through `width` and uses `flex: 0 1 auto`,
 // so the field never leaks its width into the cross axis.
 const FIELD = `
-  <div class="kui-token-search" data-component="token-search-field"
+  <div class="kui-search-field" data-component="search-field"
        data-collapsible="true" data-expanded="true" data-disabled="false"
        data-has-trailing="false">
-    <span class="kui-token-search__leading" aria-hidden="true"></span>
-    <div class="kui-token-search__editor" role="searchbox" contenteditable="true"
+    <span class="kui-search-field__leading" aria-hidden="true"></span>
+    <div class="kui-search-field__editor" role="searchbox" contenteditable="true"
          data-placeholder="Search"></div>
   </div>`;
 
 test('a collapsible field in a flex column stays a single line tall', async ({
   page,
 }) => {
-  // Load the page that pulls in token-search-field.css + the foundation tokens.
-  await page.goto('/?component=token-search-field');
+  // Load the page that pulls in search-field.css + the foundation tokens.
+  await page.goto('/?component=search-field');
   await expect(
     page
-      .locator('[data-demo="token-search-field"] [data-collapsible="true"]')
+      .locator('[data-demo="search-field"] [data-collapsible="true"]')
       .first(),
   ).toBeVisible();
 
@@ -34,7 +34,7 @@ test('a collapsible field in a flex column stays a single line tall', async ({
       host.style.width = '360px';
       host.innerHTML = markup;
       document.body.appendChild(host);
-      const field = host.querySelector('.kui-token-search') as HTMLElement;
+      const field = host.querySelector('.kui-search-field') as HTMLElement;
       const height = field.getBoundingClientRect().height;
       host.remove();
       return height;

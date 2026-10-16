@@ -78,6 +78,10 @@ import {
   Row,
   type VerticalAlignment,
 } from '@kerfjs/ui/row';
+import {
+  SearchField,
+  type SearchFieldEditorAttributes,
+} from '@kerfjs/ui/search-field';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select, type SelectChoice } from '@kerfjs/ui/select';
 import { Skeleton } from '@kerfjs/ui/skeleton';
@@ -92,10 +96,6 @@ import { SunkenPanel, type SunkenPanelShape } from '@kerfjs/ui/sunken-panel';
 import { type TabActivation, TabBar } from '@kerfjs/ui/tab-bar';
 import { TabNavigator } from '@kerfjs/ui/tab-navigator';
 import { Text } from '@kerfjs/ui/text';
-import {
-  type TokenSearchEditorAttributes,
-  TokenSearchField,
-} from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarControlGroup,
@@ -111,8 +111,8 @@ import {
   type ScrollDividerTarget,
   wireScrollDividers,
 } from '@kerfjs/ui/wire-scroll-dividers';
+import { wireSearchFields } from '@kerfjs/ui/wire-search-fields';
 import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
-import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { Workbench } from '@kerfjs/ui/workbench';
 
@@ -833,7 +833,7 @@ TabNavigator({
   slot: 'named',
 });
 wireTabNavigator(document.body, { onSelect: () => undefined });
-UI.TokenSearchField({ id: 'search', label: 'Search', slot: 'named' });
+UI.SearchField({ id: 'search', label: 'Search', slot: 'named' });
 UI.Toolbar({ leading: slottedContent, slot: 'named' });
 UI.ToolbarActionLink({ href: '/', label: 'Home', slot: 'named' });
 UI.ToolbarControlGroup({ children: slottedContent, slot: 'named' });
@@ -998,15 +998,15 @@ SegmentedControl({
 });
 
 // KUI-T005 positive: collapsible-only state is carried only by that variant.
-TokenSearchField({
+SearchField({
   id: 'search',
   label: 'Search',
   collapsible: true,
   expanded: false,
   expandLabel: 'Open search',
 });
-TokenSearchField({ id: 'search', label: 'Search' });
-TokenSearchField({
+SearchField({ id: 'search', label: 'Search' });
+SearchField({
   id: 'saved-query',
   label: 'Search Query',
   presentation: 'form-field',
@@ -1014,27 +1014,27 @@ TokenSearchField({
   required: true,
 });
 // @ts-expect-error A visible hint requires the form-field presentation.
-TokenSearchField({ id: 'search', label: 'Search', hint: 'Add filters.' });
+SearchField({ id: 'search', label: 'Search', hint: 'Add filters.' });
 // @ts-expect-error KUI-T005 expanded has no effect on a non-collapsible field.
-TokenSearchField({ id: 'search', label: 'Search', expanded: true });
+SearchField({ id: 'search', label: 'Search', expanded: true });
 
 // KUI-T006 positive: author metadata cannot replace editor-owned wiring state.
-const editorAttributes: TokenSearchEditorAttributes = {
+const editorAttributes: SearchFieldEditorAttributes = {
   'data-domain': 'tickets',
 };
-TokenSearchField({ id: 'search', label: 'Search', editorAttributes });
-TokenSearchField({
+SearchField({ id: 'search', label: 'Search', editorAttributes });
+SearchField({
   id: 'search',
   label: 'Search',
   editorAttributes: {
-    // @ts-expect-error KUI-T006 TokenSearchField owns editor identity.
-    'data-token-search-editor': 'replacement',
+    // @ts-expect-error KUI-T006 SearchField owns editor identity.
+    'data-search-field-editor': 'replacement',
   },
 });
 
 // A stateful trailing action: a disclosure (expanded) or a toggle (pressed),
 // never both, with domain data-* metadata but no replacement data-action.
-TokenSearchField({
+SearchField({
   id: 'search',
   label: 'Search',
   trailingAction: {
@@ -1047,7 +1047,7 @@ TokenSearchField({
     attributes: { 'data-help-topic': 'syntax' },
   },
 });
-TokenSearchField({
+SearchField({
   id: 'search',
   label: 'Search',
   trailingAction: {
@@ -1057,7 +1057,7 @@ TokenSearchField({
     pressed: false,
   },
 });
-TokenSearchField({
+SearchField({
   id: 'search',
   label: 'Search',
   trailingAction: {
@@ -1069,7 +1069,7 @@ TokenSearchField({
     pressed: true,
   },
 });
-TokenSearchField({
+SearchField({
   id: 'search',
   label: 'Search',
   trailingAction: {
@@ -1159,17 +1159,17 @@ TabNavigator({
 });
 
 // KUI-T009 positive: adjacent-token removal requires a controlled-state callback.
-wireTokenSearchFields(document.body, {
+wireSearchFields(document.body, {
   keyboard: { onRemoveToken: () => undefined },
 });
-wireTokenSearchFields(document.body, {
+wireSearchFields(document.body, {
   keyboard: { removeAdjacentToken: false, moveCaretPastToken: true },
 });
-wireTokenSearchFields(document.body, {
+wireSearchFields(document.body, {
   // @ts-expect-error KUI-T009 `true` cannot supply the required removal callback.
   keyboard: true,
 });
-wireTokenSearchFields(document.body, {
+wireSearchFields(document.body, {
   keyboard: {
     removeAdjacentToken: false,
     // @ts-expect-error KUI-T009 a removal callback is invalid when removal is disabled.

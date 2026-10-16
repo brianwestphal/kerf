@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import {
-  createTokenSearchModel,
-  type TokenSearchState,
-} from '../../src/components/forms/token-search-field/model/token-search-model.js';
+  createSearchFieldModel,
+  type SearchFieldState,
+} from '../../src/components/forms/search-field/model/search-field-model.js';
 
 const rules = [
   {
@@ -22,13 +22,13 @@ const rules = [
   },
 ];
 
-describe('createTokenSearchModel', () => {
+describe('createSearchFieldModel', () => {
   it('commits grammar tokens, preserves boolean text and offsets, and evaluates state', () => {
-    const evaluate = vi.fn(({ query, tokens }: TokenSearchState) => ({
+    const evaluate = vi.fn(({ query, tokens }: SearchFieldState) => ({
       query,
       filters: tokens.map((token) => [token.kind, token.parsedValue]),
     }));
-    const model = createTokenSearchModel({ rules, evaluate });
+    const model = createSearchFieldModel({ rules, evaluate });
     model.edit({ query: 'NOT tag:"design system" AND is:OPEN ', tokens: [] });
     expect(model.state.value).toMatchObject({
       query: 'NOT  AND ',
@@ -48,7 +48,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('leaves unfinished and invalid expressions as text until a valid commit', () => {
-    const model = createTokenSearchModel({ rules });
+    const model = createSearchFieldModel({ rules });
     model.edit({ query: 'is:other ', tokens: [] });
     expect(model.state.value).toEqual({ query: 'is:other ', tokens: [] });
     model.edit({ query: 'is:open', tokens: [] });
@@ -62,7 +62,7 @@ describe('createTokenSearchModel', () => {
 
   it('suggests values, accepts a choice, removes, clears, and refills', () => {
     const onSubmit = vi.fn();
-    const model = createTokenSearchModel({ rules, onSubmit });
+    const model = createSearchFieldModel({ rules, onSubmit });
     model.edit({ query: 'hello tag:cl', tokens: [] });
     expect(model.suggestions.value).toEqual([
       { value: 'tag:client', label: 'tag:client' },
@@ -87,7 +87,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('replaces DOM-owned text when clearing a query with no chips', () => {
-    const model = createTokenSearchModel({ rules });
+    const model = createSearchFieldModel({ rules });
     model.edit({ query: 'plain text', tokens: [] });
     expect(model.editorRevision.value).toBe(0);
     model.clear();
@@ -96,7 +96,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('replaces programmatic search state and advances the editor revision even without chip changes', () => {
-    const model = createTokenSearchModel({ rules });
+    const model = createSearchFieldModel({ rules });
     model.edit({ query: 'draft', tokens: [] });
     model.replace({ query: 'roadmap', tokens: [] });
     expect(model.state.value).toEqual({ query: 'roadmap', tokens: [] });
@@ -120,7 +120,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('keeps existing chip positions correct when committing text around them', () => {
-    const model = createTokenSearchModel({ rules });
+    const model = createSearchFieldModel({ rules });
     model.edit({
       query: 'tag:client before  after ',
       tokens: [{ value: 'is:open', label: 'is:open', offset: 18 }],
@@ -135,7 +135,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('expands a chip for editing, dismisses suggestions, and handles repeated empty/refill transitions', () => {
-    const model = createTokenSearchModel({ rules });
+    const model = createSearchFieldModel({ rules });
     model.edit({ query: 'tag:client ', tokens: [] });
     model.expandToken('tag:client');
     expect(model.state.value).toEqual({ query: 'tag:client ', tokens: [] });
@@ -158,19 +158,19 @@ describe('createTokenSearchModel', () => {
 
   it('rejects ambiguous rule names', () => {
     expect(() =>
-      createTokenSearchModel({ rules: [{ name: 'tag' }, { name: 'TAG' }] }),
+      createSearchFieldModel({ rules: [{ name: 'tag' }, { name: 'TAG' }] }),
     ).toThrow('unique words');
   });
 
   it('accepts an empty grammar and keeps ordinary text as text', () => {
-    const model = createTokenSearchModel();
+    const model = createSearchFieldModel();
     model.edit({ query: 'plain words', tokens: [] }, true);
     expect(model.state.value).toEqual({ query: 'plain words', tokens: [] });
     expect(model.suggestions.value).toEqual([]);
   });
 
   it('rejects empty values and invalid suggestions without losing the active query', () => {
-    const model = createTokenSearchModel({
+    const model = createSearchFieldModel({
       rules: [
         {
           name: 'is',
@@ -192,7 +192,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('expands a middle chip and shifts later offsets across an existing query', () => {
-    const model = createTokenSearchModel({
+    const model = createSearchFieldModel({
       rules,
       initial: {
         query: 'one two',
@@ -210,7 +210,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('ignores empty saved tokens and invalid editor chips while retaining valid chips without offsets', () => {
-    const model = createTokenSearchModel({
+    const model = createSearchFieldModel({
       rules,
       initial: { query: '', tokens: [{ value: 'tag:', label: 'Empty' }] },
     });
@@ -228,7 +228,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('keeps a preceding chip in place when expanding the final chip', () => {
-    const model = createTokenSearchModel({
+    const model = createSearchFieldModel({
       rules,
       initial: {
         query: 'text',
@@ -246,7 +246,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('rehydrates saved valid tokens, skips invalid ones, and labels object suggestions', () => {
-    const model = createTokenSearchModel({
+    const model = createSearchFieldModel({
       rules: [
         {
           name: 'tag',
@@ -273,7 +273,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('passes committed tokens to suggestions after initial state and each transition', () => {
-    const suggest = vi.fn((input: string, state: TokenSearchState) =>
+    const suggest = vi.fn((input: string, state: SearchFieldState) =>
       ['client', 'design'].filter(
         (value) =>
           value.startsWith(input) &&
@@ -282,7 +282,7 @@ describe('createTokenSearchModel', () => {
           ),
       ),
     );
-    const model = createTokenSearchModel({
+    const model = createSearchFieldModel({
       rules: [{ name: 'tag', suggest }],
       initial: {
         query: 'tag:c',
@@ -306,7 +306,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('commits a computed value for the active prefix outside suggestions', () => {
-    const model = createTokenSearchModel({ rules });
+    const model = createSearchFieldModel({ rules });
     model.commit('release');
     expect(model.state.value).toEqual({ query: '', tokens: [] });
 
@@ -341,7 +341,7 @@ describe('createTokenSearchModel', () => {
   });
 
   it('publishes structure and suggestions only on structural changes, not per keystroke', () => {
-    const model = createTokenSearchModel({ rules });
+    const model = createSearchFieldModel({ rules });
     const structures = [model.structure.value];
     const suggestionLists = [model.suggestions.value];
     const record = () => {

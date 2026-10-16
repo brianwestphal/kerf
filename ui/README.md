@@ -207,88 +207,88 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 
 ## Component subpaths
 
-| Component                                                           | Browser import (includes reachable CSS) | Manual CSS export                        |
-| ------------------------------------------------------------------- | --------------------------------------- | ---------------------------------------- |
-| `LucideIcon`                                                        | `@kerfjs/ui/lucide-icon`                | `@kerfjs/ui/lucide-icon.css`             |
-| `Badge`                                                             | `@kerfjs/ui/badge`                      | `@kerfjs/ui/badge.css`                   |
-| `Chip`                                                              | `@kerfjs/ui/chip`                       | `@kerfjs/ui/chip.css`                    |
-| `DisclosureArrow`                                                   | `@kerfjs/ui/disclosure-arrow`           | `@kerfjs/ui/disclosure-arrow.css`        |
-| `Toolbar`                                                           | `@kerfjs/ui/toolbar`                    | `@kerfjs/ui/toolbar.css`                 |
-| `ToolbarControlGroup`, `ToolbarActionLink`                          | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css`   |
-| `DialogSurface`, `PopupSurface`                                     | `@kerfjs/ui/surface-scaffold`           | `@kerfjs/ui/surface-scaffold.css`        |
-| `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`        |
-| `PopupMenu` (register with `@kerfjs/ui/popup-menu/register`)        | `@kerfjs/ui/popup-menu`                 | `@kerfjs/ui/popup-menu.css`              |
-| `openAnchoredSurface`, `openAnchoredSurfaceAt`                      | `@kerfjs/ui/anchored-surface`           | `@kerfjs/ui/anchored-surface.css`        |
-| `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`            |
-| `Text`, `FieldLabel`                                                | `@kerfjs/ui/text`                       | `@kerfjs/ui/text.css`                    |
-| `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                    |
-| `Row`                                                               | `@kerfjs/ui/row`                        | `@kerfjs/ui/row.css`                     |
-| `Grid`                                                              | `@kerfjs/ui/grid`                       | `@kerfjs/ui/grid.css`                    |
-| `Spacer`                                                            | `@kerfjs/ui/spacer`                     | `@kerfjs/ui/spacer.css`                  |
-| Typed CSS dimension builders                                        | `@kerfjs/ui/css-values`                 | —                                        |
-| `ListActionRow`                                                     | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`         |
-| `ListItem`                                                          | `@kerfjs/ui/list-item`                  | `@kerfjs/ui/list-item.css`               |
-| `wireListReorder`, `reorderListItems`                               | `@kerfjs/ui/wire-list-reorder`          | —                                        |
-| `wireListFocusScroll`                                               | `@kerfjs/ui/wire-list-focus-scroll`     | —                                        |
-| `ListHeader`                                                        | `@kerfjs/ui/list-header`                | `@kerfjs/ui/list-header.css`             |
-| `ListInsetControl`                                                  | `@kerfjs/ui/list-inset-control`         | `@kerfjs/ui/list-inset-control.css`      |
-| `ListInsetText`                                                     | `@kerfjs/ui/list-inset-text`            | `@kerfjs/ui/list-inset-text.css`         |
-| `ContentItem`                                                       | `@kerfjs/ui/content-item`               | `@kerfjs/ui/content-item.css`            |
-| `Pane`                                                              | `@kerfjs/ui/pane`                       | `@kerfjs/ui/pane.css`                    |
-| `NavStack`                                                          | `@kerfjs/ui/nav-stack`                  | `@kerfjs/ui/nav-stack.css`               |
-| `wireNavStack`                                                      | `@kerfjs/ui/wire-nav-stack`             | —                                        |
-| `SplitView`                                                         | `@kerfjs/ui/split-view`                 | `@kerfjs/ui/split-view.css`              |
-| `TabNavigator`                                                      | `@kerfjs/ui/tab-navigator`              | `@kerfjs/ui/tab-navigator.css`           |
-| `wireTabNavigator`                                                  | `@kerfjs/ui/wire-tab-navigator`         | —                                        |
-| `Workbench`                                                         | `@kerfjs/ui/workbench`                  | `@kerfjs/ui/workbench.css`               |
-| `wireWorkbench`                                                     | `@kerfjs/ui/wire-workbench`             | —                                        |
-| `CollapsiblePanel`, `CollapsiblePanelToggle`                        | `@kerfjs/ui/collapsible-panel`          | `@kerfjs/ui/collapsible-panel.css`       |
-| `wireSidebar`                                                       | `@kerfjs/ui/wire-sidebar`               | —                                        |
-| Content and navigation composition                                  | —                                       | `@kerfjs/ui/layout.css`                  |
-| `ResizableRegion`                                                   | `@kerfjs/ui/resizable-region`           | `@kerfjs/ui/resizable-region.css`        |
-| `wireResizableRegions`                                              | `@kerfjs/ui/wire-resizable-regions`     | —                                        |
-| `AppTab`                                                            | `@kerfjs/ui/app-tab`                    | `@kerfjs/ui/app-tab.css`                 |
-| `TabBar`                                                            | `@kerfjs/ui/tab-bar`                    | `@kerfjs/ui/tab-bar.css`                 |
-| `wireTabBars`, `reorderTabs`                                        | `@kerfjs/ui/wire-tab-bars`              | —                                        |
-| `wireScrollDividers`                                                | `@kerfjs/ui/wire-scroll-dividers`       | —                                        |
-| `wireToolbarVisibility`                                             | `@kerfjs/ui/wire-toolbar-visibility`    | —                                        |
-| `wireOverlaySheets`                                                 | `@kerfjs/ui/wire-overlay-sheets`        | `@kerfjs/ui/overlay-sheet.css`           |
-| `LoadingSpinner`                                                    | `@kerfjs/ui/loading-spinner`            | `@kerfjs/ui/loading-spinner.css`         |
-| `Skeleton`                                                          | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`                |
-| `SunkenPanel`                                                       | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`            |
-| `BackdropImage`                                                     | `@kerfjs/ui/backdrop-image`             | `@kerfjs/ui/backdrop-image.css`          |
-| `Select`                                                            | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                  |
-| `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |
-| `ChoiceChips`                                                       | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |
-| `TextField`                                                         | `@kerfjs/ui/text-field`                 | `@kerfjs/ui/text-field.css`              |
-| `wireTextFields`                                                    | `@kerfjs/ui/wire-text-fields`           | —                                        |
-| `Checkbox`                                                          | `@kerfjs/ui/checkbox`                   | `@kerfjs/ui/checkbox.css`                |
-| `wireCheckboxes`                                                    | `@kerfjs/ui/wire-checkboxes`            | —                                        |
-| `RadioGroup`                                                        | `@kerfjs/ui/radio-group`                | `@kerfjs/ui/radio-group.css`             |
-| `Switch`                                                            | `@kerfjs/ui/switch`                     | `@kerfjs/ui/switch.css`                  |
-| `Composer`                                                          | `@kerfjs/ui/composer`                   | `@kerfjs/ui/composer.css`                |
-| `wireComposers`                                                     | `@kerfjs/ui/wire-composers`             | —                                        |
-| `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`      |
-| `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                        |
-| `createTokenSearchModel`                                            | `@kerfjs/ui/token-search-model`         | —                                        |
-| `StateBanner`                                                       | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`            |
-| `Button`                                                            | `@kerfjs/ui/button`                     | `@kerfjs/ui/button.css`                  |
-| `IconButton`                                                        | `@kerfjs/ui/icon-button`                | `@kerfjs/ui/icon-button.css`             |
-| `IconToggleButton`                                                  | `@kerfjs/ui/icon-toggle-button`         | `@kerfjs/ui/icon-toggle-button.css`      |
-| `SplitButton`                                                       | `@kerfjs/ui/split-button`               | `@kerfjs/ui/split-button.css`            |
-| `FramedList`, `FramedListRow`                                       | `@kerfjs/ui/framed-list`                | `@kerfjs/ui/framed-list.css`             |
-| `SummaryRow`                                                        | `@kerfjs/ui/summary-row`                | `@kerfjs/ui/summary-row.css`             |
-| `ColumnTrack`                                                       | `@kerfjs/ui/column-track`               | `@kerfjs/ui/column-track.css`            |
-| `ContentSwap`                                                       | `@kerfjs/ui/content-swap`               | `@kerfjs/ui/content-swap.css`            |
-| `FilePickerTrigger`, `FileDropZone`                                 | `@kerfjs/ui/file-picker`                | `@kerfjs/ui/file-picker.css`             |
-| `wireFilePickers`, `fileMatchesAccept`                              | `@kerfjs/ui/wire-file-pickers`          | —                                        |
-| `Combobox`                                                          | `@kerfjs/ui/combobox`                   | `@kerfjs/ui/combobox.css`                |
-| `wireComboboxes`                                                    | `@kerfjs/ui/wire-comboboxes`            | —                                        |
-| `CornerStatus`                                                      | `@kerfjs/ui/corner-status`              | `@kerfjs/ui/corner-status.css`           |
-| `EdgeActivityIndicator`                                             | `@kerfjs/ui/edge-activity-indicator`    | `@kerfjs/ui/edge-activity-indicator.css` |
-| `wireCornerStatus`                                                  | `@kerfjs/ui/wire-corner-status`         | —                                        |
-| `EmptyState`                                                        | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`             |
-| `ValueTable`, `ValueTableRow`                                       | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`             |
+| Component                                                    | Browser import (includes reachable CSS) | Manual CSS export                        |
+| ------------------------------------------------------------ | --------------------------------------- | ---------------------------------------- |
+| `LucideIcon`                                                 | `@kerfjs/ui/lucide-icon`                | `@kerfjs/ui/lucide-icon.css`             |
+| `Badge`                                                      | `@kerfjs/ui/badge`                      | `@kerfjs/ui/badge.css`                   |
+| `Chip`                                                       | `@kerfjs/ui/chip`                       | `@kerfjs/ui/chip.css`                    |
+| `DisclosureArrow`                                            | `@kerfjs/ui/disclosure-arrow`           | `@kerfjs/ui/disclosure-arrow.css`        |
+| `Toolbar`                                                    | `@kerfjs/ui/toolbar`                    | `@kerfjs/ui/toolbar.css`                 |
+| `ToolbarControlGroup`, `ToolbarActionLink`                   | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css`   |
+| `DialogSurface`, `PopupSurface`                              | `@kerfjs/ui/surface-scaffold`           | `@kerfjs/ui/surface-scaffold.css`        |
+| `FloatingToolbar`                                            | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`        |
+| `PopupMenu` (register with `@kerfjs/ui/popup-menu/register`) | `@kerfjs/ui/popup-menu`                 | `@kerfjs/ui/popup-menu.css`              |
+| `openAnchoredSurface`, `openAnchoredSurfaceAt`               | `@kerfjs/ui/anchored-surface`           | `@kerfjs/ui/anchored-surface.css`        |
+| `ToolbarText`                                                | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`            |
+| `Text`, `FieldLabel`                                         | `@kerfjs/ui/text`                       | `@kerfjs/ui/text.css`                    |
+| `List`                                                       | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                    |
+| `Row`                                                        | `@kerfjs/ui/row`                        | `@kerfjs/ui/row.css`                     |
+| `Grid`                                                       | `@kerfjs/ui/grid`                       | `@kerfjs/ui/grid.css`                    |
+| `Spacer`                                                     | `@kerfjs/ui/spacer`                     | `@kerfjs/ui/spacer.css`                  |
+| Typed CSS dimension builders                                 | `@kerfjs/ui/css-values`                 | —                                        |
+| `ListActionRow`                                              | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`         |
+| `ListItem`                                                   | `@kerfjs/ui/list-item`                  | `@kerfjs/ui/list-item.css`               |
+| `wireListReorder`, `reorderListItems`                        | `@kerfjs/ui/wire-list-reorder`          | —                                        |
+| `wireListFocusScroll`                                        | `@kerfjs/ui/wire-list-focus-scroll`     | —                                        |
+| `ListHeader`                                                 | `@kerfjs/ui/list-header`                | `@kerfjs/ui/list-header.css`             |
+| `ListInsetControl`                                           | `@kerfjs/ui/list-inset-control`         | `@kerfjs/ui/list-inset-control.css`      |
+| `ListInsetText`                                              | `@kerfjs/ui/list-inset-text`            | `@kerfjs/ui/list-inset-text.css`         |
+| `ContentItem`                                                | `@kerfjs/ui/content-item`               | `@kerfjs/ui/content-item.css`            |
+| `Pane`                                                       | `@kerfjs/ui/pane`                       | `@kerfjs/ui/pane.css`                    |
+| `NavStack`                                                   | `@kerfjs/ui/nav-stack`                  | `@kerfjs/ui/nav-stack.css`               |
+| `wireNavStack`                                               | `@kerfjs/ui/wire-nav-stack`             | —                                        |
+| `SplitView`                                                  | `@kerfjs/ui/split-view`                 | `@kerfjs/ui/split-view.css`              |
+| `TabNavigator`                                               | `@kerfjs/ui/tab-navigator`              | `@kerfjs/ui/tab-navigator.css`           |
+| `wireTabNavigator`                                           | `@kerfjs/ui/wire-tab-navigator`         | —                                        |
+| `Workbench`                                                  | `@kerfjs/ui/workbench`                  | `@kerfjs/ui/workbench.css`               |
+| `wireWorkbench`                                              | `@kerfjs/ui/wire-workbench`             | —                                        |
+| `CollapsiblePanel`, `CollapsiblePanelToggle`                 | `@kerfjs/ui/collapsible-panel`          | `@kerfjs/ui/collapsible-panel.css`       |
+| `wireSidebar`                                                | `@kerfjs/ui/wire-sidebar`               | —                                        |
+| Content and navigation composition                           | —                                       | `@kerfjs/ui/layout.css`                  |
+| `ResizableRegion`                                            | `@kerfjs/ui/resizable-region`           | `@kerfjs/ui/resizable-region.css`        |
+| `wireResizableRegions`                                       | `@kerfjs/ui/wire-resizable-regions`     | —                                        |
+| `AppTab`                                                     | `@kerfjs/ui/app-tab`                    | `@kerfjs/ui/app-tab.css`                 |
+| `TabBar`                                                     | `@kerfjs/ui/tab-bar`                    | `@kerfjs/ui/tab-bar.css`                 |
+| `wireTabBars`, `reorderTabs`                                 | `@kerfjs/ui/wire-tab-bars`              | —                                        |
+| `wireScrollDividers`                                         | `@kerfjs/ui/wire-scroll-dividers`       | —                                        |
+| `wireToolbarVisibility`                                      | `@kerfjs/ui/wire-toolbar-visibility`    | —                                        |
+| `wireOverlaySheets`                                          | `@kerfjs/ui/wire-overlay-sheets`        | `@kerfjs/ui/overlay-sheet.css`           |
+| `LoadingSpinner`                                             | `@kerfjs/ui/loading-spinner`            | `@kerfjs/ui/loading-spinner.css`         |
+| `Skeleton`                                                   | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`                |
+| `SunkenPanel`                                                | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`            |
+| `BackdropImage`                                              | `@kerfjs/ui/backdrop-image`             | `@kerfjs/ui/backdrop-image.css`          |
+| `Select`                                                     | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                  |
+| `SegmentedControl`                                           | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |
+| `ChoiceChips`                                                | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |
+| `TextField`                                                  | `@kerfjs/ui/text-field`                 | `@kerfjs/ui/text-field.css`              |
+| `wireTextFields`                                             | `@kerfjs/ui/wire-text-fields`           | —                                        |
+| `Checkbox`                                                   | `@kerfjs/ui/checkbox`                   | `@kerfjs/ui/checkbox.css`                |
+| `wireCheckboxes`                                             | `@kerfjs/ui/wire-checkboxes`            | —                                        |
+| `RadioGroup`                                                 | `@kerfjs/ui/radio-group`                | `@kerfjs/ui/radio-group.css`             |
+| `Switch`                                                     | `@kerfjs/ui/switch`                     | `@kerfjs/ui/switch.css`                  |
+| `Composer`                                                   | `@kerfjs/ui/composer`                   | `@kerfjs/ui/composer.css`                |
+| `wireComposers`                                              | `@kerfjs/ui/wire-composers`             | —                                        |
+| `SearchField`, `readSearchField`, `placeSearchFieldCaret`    | `@kerfjs/ui/search-field`               | `@kerfjs/ui/search-field.css`            |
+| `wireSearchFields`                                           | `@kerfjs/ui/wire-search-fields`         | —                                        |
+| `createSearchFieldModel`                                     | `@kerfjs/ui/search-field-model`         | —                                        |
+| `StateBanner`                                                | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`            |
+| `Button`                                                     | `@kerfjs/ui/button`                     | `@kerfjs/ui/button.css`                  |
+| `IconButton`                                                 | `@kerfjs/ui/icon-button`                | `@kerfjs/ui/icon-button.css`             |
+| `IconToggleButton`                                           | `@kerfjs/ui/icon-toggle-button`         | `@kerfjs/ui/icon-toggle-button.css`      |
+| `SplitButton`                                                | `@kerfjs/ui/split-button`               | `@kerfjs/ui/split-button.css`            |
+| `FramedList`, `FramedListRow`                                | `@kerfjs/ui/framed-list`                | `@kerfjs/ui/framed-list.css`             |
+| `SummaryRow`                                                 | `@kerfjs/ui/summary-row`                | `@kerfjs/ui/summary-row.css`             |
+| `ColumnTrack`                                                | `@kerfjs/ui/column-track`               | `@kerfjs/ui/column-track.css`            |
+| `ContentSwap`                                                | `@kerfjs/ui/content-swap`               | `@kerfjs/ui/content-swap.css`            |
+| `FilePickerTrigger`, `FileDropZone`                          | `@kerfjs/ui/file-picker`                | `@kerfjs/ui/file-picker.css`             |
+| `wireFilePickers`, `fileMatchesAccept`                       | `@kerfjs/ui/wire-file-pickers`          | —                                        |
+| `Combobox`                                                   | `@kerfjs/ui/combobox`                   | `@kerfjs/ui/combobox.css`                |
+| `wireComboboxes`                                             | `@kerfjs/ui/wire-comboboxes`            | —                                        |
+| `CornerStatus`                                               | `@kerfjs/ui/corner-status`              | `@kerfjs/ui/corner-status.css`           |
+| `EdgeActivityIndicator`                                      | `@kerfjs/ui/edge-activity-indicator`    | `@kerfjs/ui/edge-activity-indicator.css` |
+| `wireCornerStatus`                                           | `@kerfjs/ui/wire-corner-status`         | —                                        |
+| `EmptyState`                                                 | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`             |
+| `ValueTable`, `ValueTableRow`                                | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`             |
 
 Application layouts are separate component subpaths. Browser-condition imports
 include their reachable CSS; use the matching manual CSS export when your
@@ -780,14 +780,14 @@ Add `headerPresentation="floating"` with a `fill` body and
 `scrollClearance="both"` to let the transcript scroll beneath a translucent
 title bar as well.
 
-`TokenSearchField` is a token-controlled contenteditable searchbox that keeps
+`SearchField` is a token-controlled contenteditable searchbox that keeps
 free text and ordered filter chips in one field. Its editable text stays
 DOM-owned between token changes so typing does not replace the caret. Tokens
 expose stable edit/remove actions and remain atomic during editing; the app owns
 parsing, suggestions, query execution, and state in manual mode. For automatic
-handling, create a model with `createTokenSearchModel({ rules, evaluate })`,
+handling, create a model with `createSearchFieldModel({ rules, evaluate })`,
 pass it as the field's `model`, and register it under the field id in
-`wireTokenSearchFields(root, { models })`. Rules parse `name:value` expressions;
+`wireSearchFields(root, { models })`. Rules parse `name:value` expressions;
 their optional `suggest` function supplies selectable completions. The model
 commits valid expressions on whitespace or Enter, owns chips and clear/edit/
 remove actions, and exposes `state`, `suggestions`, and the latest `result` as
@@ -796,10 +796,10 @@ token is committed or removed, the text becomes empty or non-empty, or the
 editor revision changes, so typing plain text never re-runs the host render.
 Keep it that way in the host: read `model.state.peek()` in render, and bind
 `model.result` (or a `computed`) as a fine-grained signal hole rather than
-reading `model.state.value`. Omit the model to retain full manual control. Use `readTokenSearchField()`
+reading `model.state.value`. Omit the model to retain full manual control. Use `readSearchField()`
 after browser input to recover text plus token offsets, and
-`placeTokenSearchCaret()` when restoring focus after a controlled update.
-Call `wireTokenSearchFields()` once at a stable root to make Enter submit through
+`placeSearchFieldCaret()` when restoring focus after a controlled update.
+Call `wireSearchFields()` once at a stable root to make Enter submit through
 `onSubmit` without inserting a contenteditable line break and to preserve focus
 plus the text-relative caret when keyboard deletion of a chip causes controlled
 rendering to replace the editor. A select-all deletion is normalized to a truly
@@ -821,9 +821,9 @@ and respect reduced-motion preferences. The field works standalone or inside a
 `ToolbarControlGroup`; the application owns the transient focused/open signal,
 focus transfer, and focusout policy. The catalog's Toolbar route demonstrates
 that composition at wide and narrow sizes.
-Override its surface through `--kui-token-search-{background|border}` and its
-chips through `--kui-token-search-token-{background|foreground}`. Override
-`--kui-token-search-line-size` only when the complete first-line geometry must
+Override its surface through `--kui-search-field-{background|border}` and its
+chips through `--kui-search-field-token-{background|foreground}`. Override
+`--kui-search-field-line-size` only when the complete first-line geometry must
 change together.
 
 `TabBar` is controlled: pass ordered `AppTab` children, then wire its keyboard

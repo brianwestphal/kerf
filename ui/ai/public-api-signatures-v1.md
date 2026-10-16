@@ -3880,27 +3880,27 @@ declare function SunkenPanel({ children, ariaLabel, shape, flex, fill, tabIndex,
 export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape, ensureSunkenTexture };
 ```
 
-## `@kerfjs/ui/token-search-field`
+## `@kerfjs/ui/search-field`
 
 ```ts
-export { T as TokenSearchEditorAttributes, a as TokenSearchField, b as TokenSearchFieldProps, c as TokenSearchFieldValue, k as TokenSearchToken, l as TokenSearchTrailingAction, m as TokenSearchTrailingActionAttributes, p as placeTokenSearchCaret, r as readTokenSearchField } from './token-search-model-JA1i8z4D.js';
+export { S as SearchField, a as SearchFieldEditorAttributes, d as SearchFieldProps, j as SearchFieldToken, k as SearchFieldTrailingAction, l as SearchFieldTrailingActionAttributes, m as SearchFieldValue, p as placeSearchFieldCaret, r as readSearchField } from './search-field-CrGTN5sa.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 ```
 
-## `@kerfjs/ui/wire-token-search-fields`
+## `@kerfjs/ui/wire-search-fields`
 
 ```ts
 import { Signal } from 'kerfjs';
-import { d as TokenSearchModel } from './token-search-model-JA1i8z4D.js';
+import { b as SearchFieldModel } from './search-field-CrGTN5sa.js';
 import './semantic-content-BbzjvSu9.js';
 
-interface TokenSearchSubmit {
+interface SearchFieldSubmit {
     id: string;
     editor: HTMLElement;
 }
-/** Reported to {@link WireTokenSearchFieldsOptions.onEdit} on every editor input. */
-interface TokenSearchEdit extends TokenSearchSubmit {
+/** Reported to {@link WireSearchFieldsOptions.onEdit} on every editor input. */
+interface SearchFieldEdit extends SearchFieldSubmit {
     /**
      * The `InputEvent` that mutated the editor — read `event.inputType` / `event.data`
      * to gate commit behavior (e.g. only parse a chip on whitespace-terminated input)
@@ -3909,7 +3909,7 @@ interface TokenSearchEdit extends TokenSearchSubmit {
     event: InputEvent;
 }
 /** Reported when adjacent-token keyboard deletion asks the app to drop a chip. */
-interface TokenSearchTokenRemoval {
+interface SearchFieldTokenRemoval {
     id: string;
     /** The `data-token-value` of the token the app should remove from its state. */
     value: string;
@@ -3920,11 +3920,11 @@ interface TokenSearchTokenRemoval {
 /**
  * Opt-in keyboard behavior for the atomic token chips. Off unless `keyboard` is
  * set; each piece defaults on once opted in. The helper never mutates app state:
- * a removal is reported through {@link TokenSearchKeyboardOptions.onRemoveToken}
+ * a removal is reported through {@link SearchFieldKeyboardOptions.onRemoveToken}
  * for the caller to apply, while caret movement past a chip is a pure ephemeral
  * mechanic the helper performs itself.
  */
-interface TokenSearchKeyboardBaseOptions {
+interface SearchFieldKeyboardBaseOptions {
     /**
      * From a collapsed caret with no selection, Backspace removes the token
      * immediately before it and Delete the token immediately after — reported via
@@ -3936,20 +3936,20 @@ interface TokenSearchKeyboardBaseOptions {
      */
     moveCaretPastToken?: boolean;
 }
-type TokenSearchKeyboardOptions = TokenSearchKeyboardBaseOptions & ({
+type SearchFieldKeyboardOptions = SearchFieldKeyboardBaseOptions & ({
     removeAdjacentToken?: true;
     /** Apply the reported removal to your controlled state, then re-render. */
-    onRemoveToken: (removal: TokenSearchTokenRemoval) => void;
+    onRemoveToken: (removal: SearchFieldTokenRemoval) => void;
 } | {
     removeAdjacentToken: false;
     onRemoveToken?: never;
 });
 /**
- * Managed collapsible behavior for the iconic TokenSearchField. Every piece is on
+ * Managed collapsible behavior for the iconic SearchField. Every piece is on
  * by default; disable a specific one to own it in the app. Provide `signals` to
  * drive app-owned `expanded` signals per field id instead of helper-created ones.
  */
-interface TokenSearchCollapsibleOptions {
+interface SearchFieldCollapsibleOptions {
     /** Expand the field and focus its editor when the iconic trigger is activated. Default: true. */
     expandOnActivate?: boolean;
     /** Collapse the field when focus leaves it while it is empty. Default: true. */
@@ -3962,7 +3962,7 @@ interface TokenSearchCollapsibleOptions {
      * Keep an empty field expanded when focus moves to a caller-owned surface
      * rendered outside the field — a suggestions dropdown, date picker, or help
      * popover shown beside it. Return true for any focus target that must NOT
-     * trigger collapse-on-empty-blur. An element carrying `data-token-search-keep-open`
+     * trigger collapse-on-empty-blur. An element carrying `data-search-field-keep-open`
      * (or any node inside one) is always exempt, so this predicate is only needed
      * for surfaces you cannot mark declaratively.
      */
@@ -3970,24 +3970,24 @@ interface TokenSearchCollapsibleOptions {
     /** App-owned `expanded` signals keyed by field id; adopted instead of helper-created. */
     signals?: Readonly<Record<string, Signal<boolean>>>;
 }
-interface WireTokenSearchFieldsOptions {
-    /** Optional automatic grammar/suggestion models, keyed by TokenSearchField id. */
-    models?: Readonly<Record<string, TokenSearchModel>>;
-    onSubmit?: (submission: TokenSearchSubmit) => void;
+interface WireSearchFieldsOptions {
+    /** Optional automatic grammar/suggestion models, keyed by SearchField id. */
+    models?: Readonly<Record<string, SearchFieldModel>>;
+    onSubmit?: (submission: SearchFieldSubmit) => void;
     /** Fired on every editor `input`, after the browser mutates it, so a caller can drop its own `input` listener. */
-    onEdit?: (edit: TokenSearchEdit) => void;
+    onEdit?: (edit: SearchFieldEdit) => void;
     /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
-    collapsible?: boolean | TokenSearchCollapsibleOptions;
+    collapsible?: boolean | SearchFieldCollapsibleOptions;
     /** Opt-in atomic-chip keyboard behavior (off by default). */
-    keyboard?: false | TokenSearchKeyboardOptions;
+    keyboard?: false | SearchFieldKeyboardOptions;
 }
 /**
- * The value returned from {@link wireTokenSearchFields}: call it (or `dispose()`) to
+ * The value returned from {@link wireSearchFields}: call it (or `dispose()`) to
  * tear down. When collapsible behavior is managed, it also exposes the transient
  * `expanded` state per field id so the app can read it in render, hand in its own
  * signal, or drive it imperatively.
  */
-interface TokenSearchFieldsHandle {
+interface SearchFieldsHandle {
     (): void;
     dispose(): void;
     /** The managed `expanded` signal for a field id (adopted or helper-created); undefined when unmanaged. */
@@ -3998,14 +3998,14 @@ interface TokenSearchFieldsHandle {
     close(id: string): void;
 }
 /**
- * Wire every TokenSearchField under `root`: submit on Enter, preserve the caret across
+ * Wire every SearchField under `root`: submit on Enter, preserve the caret across
  * controlled token deletion, and (by default) manage the collapsible field's transient
- * expand/collapse/focus. Returns a {@link TokenSearchFieldsHandle} — a disposer that also
+ * expand/collapse/focus. Returns a {@link SearchFieldsHandle} — a disposer that also
  * exposes the managed `expanded` state per field id.
  */
-declare function wireTokenSearchFields(root: HTMLElement, { models, onSubmit, onEdit, collapsible, keyboard, }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
+declare function wireSearchFields(root: HTMLElement, { models, onSubmit, onEdit, collapsible, keyboard, }?: WireSearchFieldsOptions): SearchFieldsHandle;
 
-export { type TokenSearchCollapsibleOptions, type TokenSearchEdit, type TokenSearchFieldsHandle, type TokenSearchKeyboardOptions, type TokenSearchSubmit, type TokenSearchTokenRemoval, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
+export { type SearchFieldCollapsibleOptions, type SearchFieldEdit, type SearchFieldKeyboardOptions, type SearchFieldSubmit, type SearchFieldTokenRemoval, type SearchFieldsHandle, type WireSearchFieldsOptions, wireSearchFields };
 ```
 
 ## `kerfjs/actions`
@@ -5260,10 +5260,10 @@ declare function wireChoiceChips(root: HTMLElement | Document): () => void;
 export { readChoiceChips, wireChoiceChips };
 ```
 
-## `@kerfjs/ui/token-search-model`
+## `@kerfjs/ui/search-field-model`
 
 ```ts
-export { d as TokenSearchModel, e as TokenSearchModelOptions, f as TokenSearchResolvedToken, g as TokenSearchRule, h as TokenSearchState, i as TokenSearchStructure, j as TokenSearchSuggestion, n as createTokenSearchModel } from './token-search-model-JA1i8z4D.js';
+export { b as SearchFieldModel, c as SearchFieldModelOptions, e as SearchFieldResolvedToken, f as SearchFieldRule, g as SearchFieldState, h as SearchFieldStructure, i as SearchFieldSuggestion, n as createSearchFieldModel } from './search-field-CrGTN5sa.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 ```

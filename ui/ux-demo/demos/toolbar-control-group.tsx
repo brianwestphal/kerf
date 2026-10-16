@@ -6,10 +6,10 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
+import { SearchField } from '@kerfjs/ui/search-field';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { Text } from '@kerfjs/ui/text';
-import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarActionLink,
@@ -484,8 +484,8 @@ export function ToolbarControlGroupDemo() {
             An empty, unfocused search collapses to one iconic control in the
             group; activating it expands the group to reveal the editor, and it
             re-collapses when focus leaves while empty.{' '}
-            <code>wireTokenSearchFields</code> manages the
-            expand/collapse/focus. Set <code>expandedOverflow="visible"</code>
+            <code>wireSearchFields</code> manages the expand/collapse/focus. Set{' '}
+            <code>expandedOverflow="visible"</code>
             when app-owned suggestions, date pickers, or help surfaces must
             extend below the group; the group remains their positioning anchor.
           </>
@@ -502,7 +502,7 @@ export function ToolbarControlGroupDemo() {
             expanded={toolbarGroupSearchOpen.value}
             single={!toolbarGroupSearchOpen.value}
           >
-            <TokenSearchField
+            <SearchField
               id="toolbar-group-search"
               label="Search Views"
               collapsible
@@ -533,7 +533,7 @@ export function ToolbarControlGroupDemo() {
                   single
                   label="Search"
                 >
-                  <TokenSearchField
+                  <SearchField
                     id="toolbar-group-grow-search"
                     label="Search Tickets"
                     collapsible
@@ -586,7 +586,7 @@ export function ToolbarControlGroupDemo() {
                   single={!toolbarStackSearchOpen.value}
                   label="Search"
                 >
-                  <TokenSearchField
+                  <SearchField
                     id="toolbar-stack-search"
                     label="Search Tickets"
                     collapsible

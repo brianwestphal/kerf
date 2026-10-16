@@ -4,17 +4,17 @@ test('select-all deletion keeps a controlled search open before delayed frames a
   page,
   browserName,
 }, testInfo) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: /^\s*Adoption Knobs\s*$/,
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Filter Records' });
-  const chips = editor.locator('[data-component="token-search-token"]');
+  const chips = editor.locator('[data-component="search-field-token"]');
   const outside = page.locator('[data-action="toggle-theme"]').first();
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
@@ -37,7 +37,7 @@ test('select-all deletion keeps a controlled search open before delayed frames a
         const callbacks: FrameRequestCallback[] = [];
         window.requestAnimationFrame = (callback) => -callbacks.push(callback);
         Object.assign(window, {
-          flushTokenSearchFrames: () => {
+          flushSearchFieldFrames: () => {
             window.requestAnimationFrame = requestFrame;
             for (const callback of callbacks) callback(performance.now());
           },
@@ -57,8 +57,8 @@ test('select-all deletion keeps a controlled search open before delayed frames a
       await editor.press('ControlOrMeta+A');
       await page.evaluate(() => {
         (
-          window as unknown as { flushTokenSearchFrames(): void }
-        ).flushTokenSearchFrames();
+          window as unknown as { flushSearchFieldFrames(): void }
+        ).flushSearchFieldFrames();
       });
       await page.keyboard.type('replacement');
       await expect(editor).toHaveText('replacement');
@@ -82,29 +82,29 @@ test('select-all deletion keeps a controlled search open before delayed frames a
   }
 });
 
-// KF-17GS8R: the "Adoption knobs" TokenSearchField demo exercises the opt-in
-// wireTokenSearchFields hooks a real app reaches for — a focusout keep-open
+// KF-17GS8R: the "Adoption knobs" SearchField demo exercises the opt-in
+// wireSearchFields hooks a real app reaches for — a focusout keep-open
 // exception, the atomic-chip keyboard, and the onEdit readout — across all three
 // engines.
 test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 900 });
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
 
   const field = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: /^\s*Adoption Knobs\s*$/,
       }),
     })
-    .locator('[data-component="token-search-field"]');
+    .locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Filter Records' });
   const readout = page.locator('[data-demo-adoption-readout]');
-  const chips = field.locator('[data-component="token-search-token"]');
+  const chips = field.locator('[data-component="search-field-token"]');
   const suggestion = (name: string) =>
-    page.locator('[data-token-search-keep-open] .kui-button', {
+    page.locator('[data-search-field-keep-open] .kui-button', {
       hasText: name,
     });
 
@@ -130,7 +130,7 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
   });
   await expect(field).toHaveAttribute('data-expanded', 'true');
 
-  // Keep-open exception: focus moving into the data-token-search-keep-open
+  // Keep-open exception: focus moving into the data-search-field-keep-open
   // suggestions surface does NOT collapse the empty field.
   await editor.click();
   await suggestion('status:open').focus();
@@ -193,7 +193,7 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
     return (
       before
         .cloneContents()
-        .querySelector('[data-component="token-search-token"]') !== null
+        .querySelector('[data-component="search-field-token"]') !== null
     );
   });
   expect(chipBehindCaret).toBe(true);
@@ -207,15 +207,15 @@ test('managed clear keeps immediate typing and later focus ownership before dela
   // runs it in ~22s unloaded (Chromium ~6s, WebKit ~8s), so full-suite load
   // pushed it past the 30s default; give Firefox the triple "slow" budget.
   test.slow(browserName === 'firefox', 'long input matrix; ~22s unloaded');
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: /^\s*Adoption Knobs\s*$/,
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Filter Records' });
   const clear = field.getByRole('button', { name: 'Clear Search' });
   const outside = page.locator('[data-action="toggle-theme"]').first();
@@ -232,7 +232,7 @@ test('managed clear keeps immediate typing and later focus ownership before dela
       (event) => {
         clearing =
           event.target instanceof Element &&
-          Boolean(event.target.closest('.kui-token-search__clear'));
+          Boolean(event.target.closest('.kui-search-field__clear'));
       },
       true,
     );
@@ -266,7 +266,7 @@ test('managed clear keeps immediate typing and later focus ownership before dela
         .getByRole('button', { name: 'status:open', exact: true })
         .click();
       await expect(
-        editor.locator('[data-component="token-search-token"]'),
+        editor.locator('[data-component="search-field-token"]'),
       ).toHaveCount(1);
       await editor.focus();
       await clear.click();
@@ -279,7 +279,7 @@ test('managed clear keeps immediate typing and later focus ownership before dela
       ).toEqual({ focused: true, text: query });
       await expect(field).toHaveAttribute('data-expanded', 'true');
       await expect(
-        editor.locator('[data-component="token-search-token"]'),
+        editor.locator('[data-component="search-field-token"]'),
       ).toHaveCount(0);
       await expect(page.locator('[data-demo-adoption-readout]')).toContainText(
         `"${query}" · 0 filters`,

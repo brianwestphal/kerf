@@ -340,14 +340,13 @@ describe('UX catalog metadata', () => {
       'wireResizableRegions',
     ]);
     expect(
-      artifact.entries.find(({ id }) => id === 'token-search-field')
-        ?.publicExports,
+      artifact.entries.find(({ id }) => id === 'search-field')?.publicExports,
     ).toEqual([
-      'TokenSearchField',
-      'readTokenSearchField',
-      'placeTokenSearchCaret',
-      'wireTokenSearchFields',
-      'createTokenSearchModel',
+      'SearchField',
+      'readSearchField',
+      'placeSearchFieldCaret',
+      'wireSearchFields',
+      'createSearchFieldModel',
     ]);
     expect(
       artifact.entries.find(({ id }) => id === 'select')?.delivery
@@ -559,7 +558,7 @@ describe('UX catalog metadata', () => {
       'SegmentedControl',
       'ChoiceChips',
       'Composer',
-      'TokenSearchField',
+      'SearchField',
       'ResizableRegion',
       'Select',
       'Combobox',
@@ -654,9 +653,7 @@ describe('UX catalog metadata', () => {
       'recipe-compact-toolbar',
       'recipe-loading-inspector',
     ]);
-    expect(findCatalogEntry('token-search-field')?.uses).toEqual([
-      'lucide-icon',
-    ]);
+    expect(findCatalogEntry('search-field')?.uses).toEqual(['lucide-icon']);
     expect(findCatalogEntry('list-action-row')?.uses).toEqual([
       'lucide-icon',
       'loading-spinner',

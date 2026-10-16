@@ -64,7 +64,7 @@ export const packageClassRoots = new Map([
     'toolbar-control-group.css',
     ['kui-toolbar-control-group', 'kui-toolbar-action-link'],
   ],
-  ['token-search-field.css', ['kui-token-search']],
+  ['search-field.css', ['kui-search-field']],
 ]);
 
 /**

@@ -55,7 +55,7 @@ describe('component composition catalog contract', () => {
       '../../ai/component-composition.json',
     );
     const entry = composition.entries.find(
-      (item) => item.id === 'token-search-field',
+      (item) => item.id === 'search-field',
     )!;
     entry.wiring.sources = [
       { export: entry.wiring.helpers[0], source: 'src/interactions/search.ts' },
@@ -78,7 +78,7 @@ describe('component composition catalog contract', () => {
       '../../ai/component-composition.json',
     );
     const entry = composition.entries.find(
-      (item) => item.id === 'token-search-field',
+      (item) => item.id === 'search-field',
     )!;
     entry.wiring = {
       ...entry.wiring,

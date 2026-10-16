@@ -3,9 +3,9 @@ import { Search, X } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
-import type { TokenSearchModel } from './model/token-search-model.js';
+import type { SearchFieldModel } from './model/search-field-model.js';
 
-export interface TokenSearchToken {
+export interface SearchFieldToken {
   value: string;
   label: string;
   offset?: number;
@@ -16,7 +16,7 @@ export interface TokenSearchToken {
  * Domain `data-*` metadata for a trailing action button. The component owns
  * `data-action` (pass `action`) and its state attributes.
  */
-export type TokenSearchTrailingActionAttributes = Readonly<
+export type SearchFieldTrailingActionAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-action'?: never;
     'data-component'?: never;
@@ -24,7 +24,7 @@ export type TokenSearchTrailingActionAttributes = Readonly<
   }
 >;
 
-interface TokenSearchTrailingActionBase {
+interface SearchFieldTrailingActionBase {
   /** Decorative glyph, such as a `LucideIcon`. */
   icon: SafeHtml;
   /** Accessible name and tooltip, in title style ("Search Help"). */
@@ -37,7 +37,7 @@ interface TokenSearchTrailingActionBase {
   /** `aria-haspopup` for a button that opens a dialog, menu, or listbox. */
   haspopup?: 'dialog' | 'menu' | 'listbox' | 'true';
   /** Domain `data-*` metadata for the app's delegated handler. */
-  attributes?: TokenSearchTrailingActionAttributes;
+  attributes?: SearchFieldTrailingActionAttributes;
 }
 
 /**
@@ -45,30 +45,30 @@ interface TokenSearchTrailingActionBase {
  * the clear button. Pass `expanded` for a disclosure (a help surface it opens)
  * or `pressed` for a toggle; the button shows the state with its hover fill.
  */
-export type TokenSearchTrailingAction = TokenSearchTrailingActionBase &
+export type SearchFieldTrailingAction = SearchFieldTrailingActionBase &
   (
     | { expanded?: boolean; pressed?: never }
     | { expanded?: never; pressed?: boolean }
   );
 
-export type TokenSearchEditorAttributes = Readonly<
+export type SearchFieldEditorAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-key'?: never;
     'data-morph-skip'?: never;
-    'data-token-search-editor'?: never;
+    'data-search-field-editor'?: never;
     'data-token-count'?: never;
     'data-placeholder'?: never;
   }
 >;
 
-interface TokenSearchFieldBaseProps {
+interface SearchFieldBaseProps {
   id: string;
   label: string;
   query?: string;
-  tokens?: readonly TokenSearchToken[];
+  tokens?: readonly SearchFieldToken[];
   /** Opt-in grammar, suggestion, and evaluation state. Overrides `query` and `tokens`. */
-  model?: TokenSearchModel;
+  model?: SearchFieldModel;
   /**
    * Editor identity for a programmatic text replacement. The editor's text is
    * DOM-owned between token changes, so a new `query` with the same tokens
@@ -92,16 +92,16 @@ interface TokenSearchFieldBaseProps {
   /** Icon for the clear button. Default: the Lucide `x` glyph token chips also use. */
   clearIcon?: SafeHtml;
   className?: string;
-  editorAttributes?: TokenSearchEditorAttributes;
+  editorAttributes?: SearchFieldEditorAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
 
-type TokenSearchTrailingProps =
+type SearchFieldTrailingProps =
   | { trailing?: KerfUiContent; trailingAction?: never }
-  | { trailing?: never; trailingAction: TokenSearchTrailingAction };
+  | { trailing?: never; trailingAction: SearchFieldTrailingAction };
 
-type TokenSearchPresentationProps =
+type SearchFieldPresentationProps =
   | {
       /** Standalone field chrome or the inset visual layer of a configured toolbar group. */
       presentation?: 'standalone' | 'toolbar-group';
@@ -116,7 +116,7 @@ type TokenSearchPresentationProps =
       required?: boolean;
     };
 
-type TokenSearchCollapsibleProps =
+type SearchFieldCollapsibleProps =
   | {
       /** Allow an empty field to render as one iconic action. */
       collapsible: true;
@@ -132,23 +132,23 @@ type TokenSearchCollapsibleProps =
       expandLabel?: never;
     };
 
-export type TokenSearchFieldProps = TokenSearchFieldBaseProps &
-  TokenSearchCollapsibleProps &
-  TokenSearchTrailingProps &
-  TokenSearchPresentationProps;
+export type SearchFieldProps = SearchFieldBaseProps &
+  SearchFieldCollapsibleProps &
+  SearchFieldTrailingProps &
+  SearchFieldPresentationProps;
 
-export interface TokenSearchFieldValue {
+export interface SearchFieldValue {
   query: string;
-  tokens: TokenSearchToken[];
+  tokens: SearchFieldToken[];
 }
 
-type TokenSearchPart =
-  { kind: 'text'; value: string } | { kind: 'token'; token: TokenSearchToken };
+type SearchFieldPart =
+  { kind: 'text'; value: string } | { kind: 'token'; token: SearchFieldToken };
 
 function orderedParts(
   query: string,
-  tokens: readonly TokenSearchToken[],
-): TokenSearchPart[] {
+  tokens: readonly SearchFieldToken[],
+): SearchFieldPart[] {
   const ordered = tokens
     .map((token, index) => ({
       token,
@@ -158,7 +158,7 @@ function orderedParts(
     .sort(
       (left, right) => left.offset - right.offset || left.index - right.index,
     );
-  const parts: TokenSearchPart[] = [];
+  const parts: SearchFieldPart[] = [];
   let cursor = 0;
   for (const { token, offset } of ordered) {
     parts.push({ kind: 'text', value: query.slice(cursor, offset) });
@@ -173,7 +173,7 @@ function CloseIcon() {
   return <LucideIcon icon={X} name="x" />;
 }
 
-export function TokenSearchField({
+export function SearchField({
   id,
   label,
   query = '',
@@ -187,7 +187,7 @@ export function TokenSearchField({
   fill = false,
   collapsible = false,
   expanded = false,
-  expandAction = 'expand-token-search',
+  expandAction = 'expand-search-field',
   expandLabel,
   leading,
   trailing,
@@ -197,13 +197,13 @@ export function TokenSearchField({
   required = false,
   editAction = 'edit-search-token',
   removeAction = 'remove-search-token',
-  clearAction = 'clear-token-search',
+  clearAction = 'clear-search-field',
   clearLabel = 'Clear Search',
   clearIcon,
   className = '',
   editorAttributes = {},
   slot,
-}: TokenSearchFieldProps) {
+}: SearchFieldProps) {
   // A managed model subscribes the host render to `structure` (token,
   // emptiness, and revision changes) only. The live text is DOM-owned between
   // structural changes, so it is peeked, not read: typing must not re-run the
@@ -222,9 +222,9 @@ export function TokenSearchField({
     !collapsible || expanded || query.length > 0 || tokens.length > 0;
   const control = (
     <div
-      class={`kui-token-search ${presentation === 'form-field' ? '' : className}`.trim()}
-      data-component="token-search-field"
-      data-token-search-id={id}
+      class={`kui-search-field ${presentation === 'form-field' ? '' : className}`.trim()}
+      data-component="search-field"
+      data-search-field-id={id}
       data-disabled={String(disabled)}
       data-collapsible={String(collapsible)}
       data-expanded={String(resolvedExpanded)}
@@ -240,7 +240,7 @@ export function TokenSearchField({
       {!resolvedExpanded ? (
         <button
           type="button"
-          class="kui-token-search__expand"
+          class="kui-search-field__expand"
           data-action={expandAction}
           aria-label={expandLabel ?? label}
           title={expandLabel ?? label}
@@ -250,15 +250,15 @@ export function TokenSearchField({
         </button>
       ) : (
         <>
-          <span class="kui-token-search__leading" aria-hidden="true">
+          <span class="kui-search-field__leading" aria-hidden="true">
             {leading ?? <LucideIcon icon={Search} name="search" />}
           </span>
           <div
             {...editorAttributes}
-            class="kui-token-search__editor"
+            class="kui-search-field__editor"
             data-key={key}
             data-morph-skip
-            data-token-search-editor={id}
+            data-search-field-editor={id}
             data-token-count={tokens.length}
             data-placeholder={tokens.length ? tokenPlaceholder : placeholder}
             role="searchbox"
@@ -278,21 +278,21 @@ export function TokenSearchField({
             {parts.map((part) =>
               part.kind === 'text' ? (
                 <span
-                  data-token-search-text
+                  data-search-field-text
                   data-empty={String(part.value.length === 0)}
                 >
                   {part.value || (tokens.length ? '\u200b' : '')}
                 </span>
               ) : (
                 <span
-                  class="kui-token-search__token"
+                  class="kui-search-field__token"
                   contenteditable="false"
-                  data-component="token-search-token"
+                  data-component="search-field-token"
                   data-token-value={part.token.value}
                 >
                   <button
                     type="button"
-                    class="kui-token-search__token-edit"
+                    class="kui-search-field__token-edit"
                     data-action={editAction}
                     data-token-value={part.token.value}
                     aria-label={`Edit ${part.token.accessibleLabel ?? part.token.label}`}
@@ -302,7 +302,7 @@ export function TokenSearchField({
                   </button>
                   <button
                     type="button"
-                    class="kui-token-search__token-remove"
+                    class="kui-search-field__token-remove"
                     data-action={removeAction}
                     data-token-value={part.token.value}
                     aria-label={`Remove ${part.token.accessibleLabel ?? part.token.label}`}
@@ -317,7 +317,7 @@ export function TokenSearchField({
           {(query || tokens.length > 0) && (
             <button
               type="button"
-              class="kui-token-search__clear"
+              class="kui-search-field__clear"
               data-action={clearAction}
               aria-label={clearLabel}
               title={clearLabel}
@@ -330,7 +330,7 @@ export function TokenSearchField({
             <button
               {...trailingAction.attributes}
               type="button"
-              class="kui-token-search__trailing-action"
+              class="kui-search-field__trailing-action"
               id={trailingAction.id}
               data-action={trailingAction.action}
               aria-label={trailingAction.label}
@@ -352,18 +352,18 @@ export function TokenSearchField({
               {trailingAction.icon}
             </button>
           ) : trailing ? (
-            <span class="kui-token-search__trailing">{trailing}</span>
+            <span class="kui-search-field__trailing">{trailing}</span>
           ) : null}
           {!disabled && suggestions.length > 0 && (
             <div
-              class="kui-token-search__suggestions"
-              data-token-search-keep-open
+              class="kui-search-field__suggestions"
+              data-search-field-keep-open
             >
               {suggestions.map((suggestion) => (
                 <button
                   type="button"
-                  class="kui-token-search__suggestion"
-                  data-token-search-suggestion={suggestion.value}
+                  class="kui-search-field__suggestion"
+                  data-search-field-suggestion={suggestion.value}
                 >
                   {suggestion.label}
                 </button>
@@ -377,24 +377,24 @@ export function TokenSearchField({
   if (presentation !== 'form-field') return control;
   return (
     <div
-      class={`kui-token-search__field ${className}`.trim()}
-      data-token-search-form-field={id}
+      class={`kui-search-field__field ${className}`.trim()}
+      data-search-field-form-field={id}
     >
       <div
-        class="kui-token-search__field-label"
+        class="kui-search-field__field-label"
         id={`${id}-label`}
-        data-token-search-form-label={id}
+        data-search-field-form-label={id}
       >
         {label}
         {required && (
-          <span class="kui-token-search__field-required" aria-hidden="true">
+          <span class="kui-search-field__field-required" aria-hidden="true">
             *
           </span>
         )}
       </div>
       {control}
       {hint && (
-        <div class="kui-token-search__field-hint" id={`${id}-hint`}>
+        <div class="kui-search-field__field-hint" id={`${id}-hint`}>
           {hint}
         </div>
       )}
@@ -402,13 +402,13 @@ export function TokenSearchField({
   );
 }
 
-/** Read editable text and ordered token offsets from a rendered TokenSearchField editor. */
-export function readTokenSearchField(
+/** Read editable text and ordered token offsets from a rendered SearchField editor. */
+export function readSearchField(
   editor: HTMLElement,
-  knownTokens: readonly TokenSearchToken[] = [],
-): TokenSearchFieldValue {
+  knownTokens: readonly SearchFieldToken[] = [],
+): SearchFieldValue {
   let query = '';
-  const tokens: TokenSearchToken[] = [];
+  const tokens: SearchFieldToken[] = [];
   const visit = (node: Node): void => {
     if (node.nodeType === Node.TEXT_NODE) {
       query += (node.textContent ?? '')
@@ -417,7 +417,7 @@ export function readTokenSearchField(
       return;
     }
     if (!(node instanceof HTMLElement)) return;
-    if (node.matches('[data-component="token-search-token"]')) {
+    if (node.matches('[data-component="search-field-token"]')) {
       const value = node.dataset.tokenValue;
       const known = knownTokens.find((token) => token.value === value);
       if (known) tokens.push({ ...known, offset: query.length });
@@ -436,7 +436,7 @@ export function readTokenSearchField(
 }
 
 /** Focus an editor and place its caret at a text offset, skipping atomic token chips. */
-export function placeTokenSearchCaret(
+export function placeSearchFieldCaret(
   editor: HTMLElement,
   offset?: number,
 ): void {
@@ -452,7 +452,7 @@ export function placeTokenSearchCaret(
     let found = false;
     const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT, {
       acceptNode: (node) =>
-        node.parentElement?.closest('[data-component="token-search-token"]')
+        node.parentElement?.closest('[data-component="search-field-token"]')
           ? NodeFilter.FILTER_REJECT
           : NodeFilter.FILTER_ACCEPT,
     });

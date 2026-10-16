@@ -254,15 +254,15 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
-  it('keeps TokenSearchField and its reachable icon CSS isolated', async () => {
+  it('keeps SearchField and its reachable icon CSS isolated', async () => {
     const result = await bundle(
-      "import { TokenSearchField } from '@kerfjs/ui/token-search-field'; console.log(String(TokenSearchField({ id: 'search', label: 'Search' }))); ",
+      "import { SearchField } from '@kerfjs/ui/search-field'; console.log(String(SearchField({ id: 'search', label: 'Search' }))); ",
     );
     const inputs = Object.keys(result.metafile!.inputs).join('\n');
     const css = output(result, '.css');
-    expect(inputs).toContain('dist/browser/token-search-field.js');
-    expect(css).toContain('.kui-token-search');
-    expect(css).toContain('.kui-token-search[data-presentation=toolbar-group]');
+    expect(inputs).toContain('dist/browser/search-field.js');
+    expect(css).toContain('.kui-search-field');
+    expect(css).toContain('.kui-search-field[data-presentation=toolbar-group]');
     expect(css).toContain('[data-lucide]');
     expect(inputs).not.toContain('dist/styles/toolbar-control-group.css');
     expect(css).not.toContain('.kui-toolbar-control-group');
@@ -833,7 +833,7 @@ describe('consumer bundle boundaries', () => {
     });
     expect(pkg.exports['./tab-bar']).toBeDefined();
     expect(pkg.exports['./segmented-control']).toBeDefined();
-    expect(pkg.exports['./token-search-field']).toBeDefined();
+    expect(pkg.exports['./search-field']).toBeDefined();
     expect(pkg.exports['./catalog-resources']).toMatchObject({
       types: './dist/catalog-resources.d.ts',
       import: './dist/catalog-resources.js',
@@ -938,8 +938,8 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./segmented-control.css']).toBe(
       './dist/styles/segmented-control.css',
     );
-    expect(pkg.exports['./token-search-field.css']).toBe(
-      './dist/styles/token-search-field.css',
+    expect(pkg.exports['./search-field.css']).toBe(
+      './dist/styles/search-field.css',
     );
     expect(pkg.exports['./sunken-panel']).toMatchObject({
       types: './dist/sunken-panel.d.ts',

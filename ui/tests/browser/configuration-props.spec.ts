@@ -194,12 +194,10 @@ for (const { name, width, height } of [
       expect(fieldLabel).toEqual(sm);
     });
 
-    test('TokenSearchField clearIcon replaces the clear glyph', async ({
-      page,
-    }) => {
-      await page.goto('/?component=token-search-field');
+    test('SearchField clearIcon replaces the clear glyph', async ({ page }) => {
+      await page.goto('/?component=search-field');
       const disabled = page.locator(
-        '[data-token-search-id="disabled-search"] .kui-token-search__clear',
+        '[data-search-field-id="disabled-search"] .kui-search-field__clear',
       );
       await expect(disabled).toHaveAccessibleName('Clear Search');
       await expect(
@@ -214,9 +212,9 @@ for (const { name, width, height } of [
       // Square, allowing Firefox's sub-pixel rounding (13.59999 vs 13.60001).
       expect(Math.abs(glyph.width - glyph.height)).toBeLessThan(0.01);
       await page
-        .locator('[data-token-search-id="disabled-search"]')
+        .locator('[data-search-field-id="disabled-search"]')
         .screenshot({
-          path: `test-results/configuration-props-token-search-${name}.png`,
+          path: `test-results/configuration-props-search-field-${name}.png`,
         });
     });
 

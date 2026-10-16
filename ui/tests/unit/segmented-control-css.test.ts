@@ -109,14 +109,14 @@ describe('SegmentedControl corner geometry', () => {
   it('shares the toolbar group highlight radius with a collapsible search', async () => {
     const file = resolve(
       import.meta.dirname,
-      '../../src/components/forms/token-search-field/token-search-field.css',
+      '../../src/components/forms/search-field/search-field.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
       (node) =>
         node.type === 'rule' &&
         node.selector ===
-          '.kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"]',
+          '.kui-search-field[data-presentation="toolbar-group"][data-collapsible="true"]',
     );
 
     if (!rule || rule.type !== 'rule')

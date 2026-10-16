@@ -284,7 +284,7 @@ export function analyzeCatalogDemoSource({
         if (attributeName === 'data-demo') directMetadata.push(property);
         if (!['class', 'className'].includes(attributeName)) continue;
         const customStyleClass = collectStaticStrings(property).find((value) =>
-          /\b(?:demo|wa-demo|token-search)-[a-z0-9_-]+\b/i.test(value),
+          /\b(?:demo|wa-demo|search-field)-[a-z0-9_-]+\b/i.test(value),
         );
         if (customStyleClass)
           diagnostics.push(

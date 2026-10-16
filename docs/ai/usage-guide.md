@@ -195,8 +195,8 @@ For filled command rows, scope `--kui-list-item-background`,
 `--kui-list-item-selected-border` to the list or row. Keep the global neutral
 and brand border colors available for other components.
 
-Use `wireTokenSearchFields` for managed search focus, including controlled clear
-and Select All deletion. Persist both query and tokens from `readTokenSearchField`
+Use `wireSearchFields` for managed search focus, including controlled clear
+and Select All deletion. Persist both query and tokens from `readSearchField`
 on input. The helper keeps the replacement editor open and restores clear/deletion
 focus before the next keystroke; do not add an application reopen callback or
 a delayed animation-frame caret reset. The editor's text is DOM-owned, so a new
@@ -205,7 +205,7 @@ a delayed animation-frame caret reset. The editor's text is DOM-owned, so a new
 applying a saved search).
 
 For a compact icon button beside the clear button, such as a search-syntax
-help glyph, pass `TokenSearchField.trailingAction` with `icon`, `label`, and
+help glyph, pass `SearchField.trailingAction` with `icon`, `label`, and
 `action`. Set `expanded` for a disclosure (with `haspopup`, and `controls` while
 open) or `pressed` for a toggle. Put domain `data-*` in `attributes`. It matches
 the clear button in every presentation, so the app writes no button CSS.
@@ -213,7 +213,7 @@ the clear button in every presentation, so the app writes no button CSS.
 For a model-managed field, use `model.replace({ query, tokens })` instead: it
 publishes parsed state and advances the editor revision even without a chip
 change.
-For grammar-assisted search, `createTokenSearchModel` calls each rule's
+For grammar-assisted search, `createSearchFieldModel` calls each rule's
 `suggest(input, state)` with the current committed tokens. Use that state to
 exclude selected values; existing one-argument callbacks remain valid.
 An application date picker or other helper can call `model.commit(value)` to
@@ -319,7 +319,7 @@ Text supports `controlMargins` with canonical physical Sides for an exterior 8px
 
 `ToolbarControlGroup.tileTone` selects `neutral`, `brand`, `success`, `warning`, or `danger` quiet fill, matching quiet border, and on-quiet foreground for a non-interactive icon tile. Compose a contained `single` group whose only child is a direct decorative LucideIcon (`aria-hidden="true"`). Omission preserves the normal group palette. The prop does not recolor interactive, mixed, multi-control, or borderless groups; keep real actions in controls with their existing focus/hover/pressed treatments.
 `ToolbarControlGroup` `material="glass"` paints a group that floats over imagery or a clear toolbar on the translucent chrome material with a specular edge and soft shadow; its controls take the normal text color (AA over any content), selections paint an opaque surface pill, and the fill turns opaque under reduced transparency, increased contrast, static effects, or without backdrop-filter (Canvas/CanvasText in forced colors). Keep the solid default on an opaque toolbar.
-Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-token-search-keep-open` or `collapsible.keepOpenOn` for focus.
+Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-search-field-keep-open` or `collapsible.keepOpenOn` for focus.
 
 Use `Text` from `@kerfjs/ui/text` for ordinary headings, paragraphs, and inline
 secondary copy outside toolbar title zones. It renders `p` by default; set

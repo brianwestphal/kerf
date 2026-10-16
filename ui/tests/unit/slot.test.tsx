@@ -32,6 +32,7 @@ import {
   Pane,
   PopupSurface,
   Row,
+  SearchField,
   SegmentedControl,
   Select,
   Skeleton,
@@ -40,7 +41,6 @@ import {
   SunkenPanel,
   TabBar,
   Text,
-  TokenSearchField,
   Toolbar,
   ToolbarActionLink,
   ToolbarControlGroup,
@@ -271,8 +271,8 @@ const cases: SlotCase[] = [
   },
   { name: 'Text', render: (slot) => Text({ children: 'Copy', slot }) },
   {
-    name: 'TokenSearchField',
-    render: (slot) => TokenSearchField({ id: 'search', label: 'Search', slot }),
+    name: 'SearchField',
+    render: (slot) => SearchField({ id: 'search', label: 'Search', slot }),
   },
   { name: 'Toolbar', render: (slot) => Toolbar({ leading: content, slot }) },
   {

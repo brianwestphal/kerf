@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import { FloatingToolbar } from '../../src/components/actions/floating-toolbar/floating-toolbar.js';
 import { ListHeader } from '../../src/components/collections/list-header/list-header.js';
-import { TokenSearchField } from '../../src/components/forms/token-search-field/token-search-field.js';
+import { SearchField } from '../../src/components/forms/search-field/search-field.js';
 import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 import { DisclosureArrow } from '../../src/components/navigation/disclosure-arrow/disclosure-arrow.js';
 import { px, remify, space } from '../../src/shared/styles/css-values.js';
@@ -120,18 +120,18 @@ describe('props that replace raw token overrides', () => {
     expect(html).not.toMatch(/<h[1-6]/);
   });
 
-  it('replaces the TokenSearchField clear glyph only when clearIcon is given', () => {
+  it('replaces the SearchField clear glyph only when clearIcon is given', () => {
     const clear = (html: string) =>
-      /<button[^>]*kui-token-search__clear[^>]*>([\s\S]*?)<\/button>/.exec(
+      /<button[^>]*kui-search-field__clear[^>]*>([\s\S]*?)<\/button>/.exec(
         html,
       )?.[1] ?? '';
     const plain = asHtml(
-      TokenSearchField({ id: 'search', label: 'Search', query: 'a' }),
+      SearchField({ id: 'search', label: 'Search', query: 'a' }),
     );
     expect(clear(plain)).toContain('data-lucide="x"');
 
     const custom = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'search',
         label: 'Search',
         query: 'a',

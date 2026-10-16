@@ -69,10 +69,10 @@
     {
       "id": "tokenized-search",
       "prompt": "prompts/tokenized-search.md",
-      "requiredComponentIds": ["token-search-field"],
-      "requiredImports": ["@kerfjs/ui/token-search-field"],
+      "requiredComponentIds": ["search-field"],
+      "requiredImports": ["@kerfjs/ui/search-field"],
       "requiredClasses": [],
-      "requiredWiring": [{ "name": "readTokenSearchField", "specifier": "@kerfjs/ui/token-search-field", "captured": false }, { "name": "placeTokenSearchCaret", "specifier": "@kerfjs/ui/token-search-field", "captured": false }],
+      "requiredWiring": [{ "name": "readSearchField", "specifier": "@kerfjs/ui/search-field", "captured": false }, { "name": "placeSearchFieldCaret", "specifier": "@kerfjs/ui/search-field", "captured": false }],
       "forbiddenComponentIds": ["wa-input"],
       "forbiddenPatterns": ["token-chip-copy", "search-editor-copy"],
       "forbidHardcodedSpacing": false,

@@ -113,31 +113,31 @@
   },
   {
     "name": "state attributes not a list",
-    "path": "entries.id:token-search-field.wiring.stateAttributes",
+    "path": "entries.id:search-field.wiring.stateAttributes",
     "value": "data-resizing",
     "message": "wiring.stateAttributes must be an array"
   },
   {
     "name": "state attribute without the data- prefix",
-    "path": "entries.id:token-search-field.wiring.stateAttributes.0.name",
+    "path": "entries.id:search-field.wiring.stateAttributes.0.name",
     "value": "handle-inset",
     "message": "must be a data-* name"
   },
   {
     "name": "duplicate state attribute",
-    "path": "entries.id:token-search-field.wiring.stateAttributes.1.name",
-    "copyFrom": "entries.id:token-search-field.wiring.stateAttributes.0.name",
+    "path": "entries.id:search-field.wiring.stateAttributes.1.name",
+    "copyFrom": "entries.id:search-field.wiring.stateAttributes.0.name",
     "message": "is declared twice"
   },
   {
     "name": "state attribute without an element",
-    "path": "entries.id:token-search-field.wiring.stateAttributes.0.on",
+    "path": "entries.id:search-field.wiring.stateAttributes.0.on",
     "value": "",
     "message": "needs a non-empty on"
   },
   {
     "name": "state attribute from an unlisted helper",
-    "path": "entries.id:token-search-field.wiring.stateAttributes.0.helper",
+    "path": "entries.id:search-field.wiring.stateAttributes.0.helper",
     "value": "wireSomethingElse",
     "message": "which is not in wiring.helpers"
   },

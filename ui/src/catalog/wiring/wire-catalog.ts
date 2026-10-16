@@ -1,6 +1,6 @@
 import { delegate, type Signal } from 'kerfjs';
 
-import { readTokenSearchField } from '../../components/forms/token-search-field/token-search-field.js';
+import { readSearchField } from '../../components/forms/search-field/search-field.js';
 import {
   wireWorkbench,
   type WireWorkbenchOptions,
@@ -129,11 +129,11 @@ function wireCatalogFilter(root: HTMLElement): () => void {
     if (!editor || !nav) return;
     if (editor !== currentEditor) {
       currentEditor = editor;
-      if (readTokenSearchField(editor).query !== filterValue)
+      if (readSearchField(editor).query !== filterValue)
         editor.textContent = filterValue;
     }
     const field = editor.closest<HTMLElement>(
-      '[data-component="token-search-field"]',
+      '[data-component="search-field"]',
     )!;
     field.dataset.catalogFilterActive = String(Boolean(query));
     const placeholderVisible = String(!filterValue);
@@ -205,7 +205,7 @@ function wireCatalogFilter(root: HTMLElement): () => void {
     const target = event.target as HTMLElement | null;
     const editor = target?.closest<HTMLElement>('[data-catalog-filter]');
     if (!editor || !root.contains(editor)) return;
-    filterValue = readTokenSearchField(editor).query;
+    filterValue = readSearchField(editor).query;
     query = filterValue.trim().toLocaleLowerCase();
     apply();
   };

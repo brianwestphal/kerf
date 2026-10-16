@@ -71,7 +71,7 @@
       "rationale": "Render ResizableRegion for application panes instead of a Web Awesome split panel."
     },
     "structured-search": {
-      "preferred": "@kerfjs/ui:token-search-field"
+      "preferred": "@kerfjs/ui:search-field"
     },
     "value-selection": {
       "preferred": "@kerfjs/ui:select",

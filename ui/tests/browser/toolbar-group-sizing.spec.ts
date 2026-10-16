@@ -101,7 +101,7 @@ test('grow, fill, and tiny collapsed visibility follow toolbar container width',
         trailingWidth: trailing.getBoundingClientRect().width,
         growWidth: grow.getBoundingClientRect().width,
         fieldWidth: grow
-          .querySelector<HTMLElement>('.kui-token-search')!
+          .querySelector<HTMLElement>('.kui-search-field')!
           .getBoundingClientRect().width,
         growTop: grow.getBoundingClientRect().top,
         siblingTops: siblings.map((group) => group.getBoundingClientRect().top),

@@ -78,7 +78,7 @@ import { TextField } from '../dist/text-field.js';
 import { Toolbar } from '../dist/toolbar.js';
 import { ToolbarControlGroup } from '../dist/toolbar-control-group.js';
 import { ToolbarText } from '../dist/toolbar-text.js';
-import { TokenSearchField } from '../dist/token-search-field.js';
+import { SearchField } from '../dist/search-field.js';
 import { ValueTable, ValueTableRow } from '../dist/value-table.js';
 
 const execFileAsync = promisify(execFile);
@@ -1019,13 +1019,13 @@ export const COMPONENTS = {
       },
     ],
   },
-  'token-search-field': {
+  'search-field': {
     css: [
       'foundation',
       'layout',
       'lucide-icon',
       'toolbar-control-group',
-      'token-search-field',
+      'search-field',
     ],
     selector: '#frame',
     width: 560,
@@ -1036,7 +1036,7 @@ export const COMPONENTS = {
         label: 'Text with Atomic Tokens',
         height: 60,
         render: () =>
-          TokenSearchField({
+          SearchField({
             id: 'search',
             label: 'Search Tickets',
             query: 'payments is:open ',
@@ -1049,7 +1049,7 @@ export const COMPONENTS = {
         label: 'Empty, Expanded',
         height: 60,
         render: () =>
-          TokenSearchField({
+          SearchField({
             id: 'search-empty',
             label: 'Search',
             placeholder: 'Search tickets',

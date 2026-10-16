@@ -1,18 +1,18 @@
 import { expect, test } from '@playwright/test';
 
-test('TokenSearchField help toggle fills its slot and opens syntax help by pointer and keyboard', async ({
+test('SearchField help toggle fills its slot and opens syntax help by pointer and keyboard', async ({
   page,
   browserName,
 }) => {
-  await page.goto('/?component=token-search-field');
-  const demo = page.locator('[data-demo="token-search-field"]');
+  await page.goto('/?component=search-field');
+  const demo = page.locator('[data-demo="search-field"]');
   const button = demo.getByRole('button', { name: 'Search Help' });
   await page.evaluate(() => {
     document.body.dataset.searchHelpClicks = '0';
     document.addEventListener('click', (event) => {
       if (
         event.target instanceof Element &&
-        event.target.closest('#catalog-token-search-help')
+        event.target.closest('#catalog-search-field-help')
       )
         document.body.dataset.searchHelpClicks = String(
           Number(document.body.dataset.searchHelpClicks) + 1,
@@ -43,11 +43,11 @@ test('TokenSearchField help toggle fills its slot and opens syntax help by point
       padding: '0px',
       borderWidth: '0px',
       label: 'Search Help',
-      action: 'toggle-token-search-help',
+      action: 'toggle-search-field-help',
     });
     if (browserName === 'chromium')
       await page.screenshot({
-        path: `test-results/token-search-trailing-action-${width}.png`,
+        path: `test-results/search-field-trailing-action-${width}.png`,
       });
     await expect(button).toHaveAttribute('aria-expanded', 'false');
     await button.click();
@@ -61,7 +61,7 @@ test('TokenSearchField help toggle fills its slot and opens syntax help by point
     );
     if (browserName === 'chromium')
       await page.screenshot({
-        path: `test-results/token-search-help-open-${width}.png`,
+        path: `test-results/search-field-help-open-${width}.png`,
       });
     // The help is read-only, so focus stays on the toggle; Enter closes it.
     await button.focus();

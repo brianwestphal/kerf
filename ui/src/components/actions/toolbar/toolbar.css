@@ -121,7 +121,7 @@
   ) {
   grid-template-columns:
     minmax(0, 1fr)
-    minmax(0, var(--kui-token-search-expanded-width, remify(480px)));
+    minmax(0, var(--kui-search-field-expanded-width, remify(480px)));
 }
 
 .kui-toolbar {

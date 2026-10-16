@@ -43,6 +43,7 @@ import { PopupMenuDemo } from './popup-menu.js';
 import { RadioGroupDemo } from './radio-group.js';
 import { ResizeDemo } from './resize.js';
 import { RowDemo } from './row.js';
+import { SearchFieldDemo } from './search-field.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
 import { SkeletonDemo } from './skeleton.js';
@@ -59,7 +60,6 @@ import { TabNavigatorDemo } from './tab-navigator.js';
 import { TabsDemo } from './tabs.js';
 import { TextDemo } from './text.js';
 import { TextFieldDemo } from './text-field.js';
-import { TokenSearchFieldDemo } from './token-search-field.js';
 import { ToolbarDemo } from './toolbar.js';
 import { ToolbarControlGroupDemo } from './toolbar-control-group.js';
 import { ToolbarTextDemo } from './toolbar-text.js';
@@ -81,7 +81,7 @@ export const demos = {
   'segmented-control': SegmentedControlDemo,
   'choice-chips': ChoiceChipsDemo,
   composer: ComposerDemo,
-  'token-search-field': TokenSearchFieldDemo,
+  'search-field': SearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
   text: TextDemo,
   list: ListDemo,

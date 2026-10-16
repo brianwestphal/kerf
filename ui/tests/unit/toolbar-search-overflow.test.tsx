@@ -35,7 +35,7 @@ describe('ToolbarControlGroup expanded search overflow', () => {
     const html = String(
       ToolbarControlGroup({
         children: (
-          <section data-token-search-keep-open>
+          <section data-search-field-keep-open>
             <button type="button">Choose date</button>
           </section>
         ),
@@ -45,7 +45,7 @@ describe('ToolbarControlGroup expanded search overflow', () => {
         busy: true,
       }),
     );
-    expect(html).toContain('data-token-search-keep-open');
+    expect(html).toContain('data-search-field-keep-open');
     expect(html).toContain('inert');
     expect(html).toContain('role="status"');
   });

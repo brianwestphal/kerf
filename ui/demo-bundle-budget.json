@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 405400,
-  "measuredLargestJavaScriptGzip": 149143,
-  "measuredTotalJavaScriptGzip": 405382,
+  "totalJavaScriptGzip": 405700,
+  "measuredLargestJavaScriptGzip": 149145,
+  "measuredTotalJavaScriptGzip": 405642,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -887,7 +887,7 @@
     },
     {
       "at": "2026-09-28T09:18:01.987Z",
-      "reason": "Typed configuration props (FloatingToolbar inset, DisclosureArrow size, ListHeader headingLevel, TokenSearchField clearIcon) with their catalog demos, integrated with NavStack's Toolbar chrome and the forwarded Pane/List configuration",
+      "reason": "Typed configuration props (FloatingToolbar inset, DisclosureArrow size, ListHeader headingLevel, SearchField clearIcon) with their catalog demos, integrated with NavStack's Toolbar chrome and the forwarded Pane/List configuration",
       "old": {
         "measuredLargestJavaScriptGzip": 146108,
         "measuredTotalJavaScriptGzip": 294488,
@@ -2151,7 +2151,7 @@
     },
     {
       "at": "2026-10-01T12:46:25.254Z",
-      "reason": "Add typed TokenSearchField trailing action and production-backed demo",
+      "reason": "Add typed SearchField trailing action and production-backed demo",
       "old": {
         "measuredLargestJavaScriptGzip": 126044,
         "measuredTotalJavaScriptGzip": 315698,
@@ -2167,7 +2167,7 @@
     },
     {
       "at": "2026-10-01T13:11:54.849Z",
-      "reason": "Add opt-in TokenSearchField fill sizing for stretched Toolbar centers",
+      "reason": "Add opt-in SearchField fill sizing for stretched Toolbar centers",
       "old": {
         "measuredLargestJavaScriptGzip": 126043,
         "measuredTotalJavaScriptGzip": 315794,
@@ -2311,7 +2311,7 @@
     },
     {
       "at": "2026-10-01T23:21:49.270Z",
-      "reason": "Labeled TokenSearchField form specimen",
+      "reason": "Labeled SearchField form specimen",
       "old": {
         "measuredLargestJavaScriptGzip": 126043,
         "measuredTotalJavaScriptGzip": 317463,
@@ -2967,7 +2967,7 @@
     },
     {
       "at": "2026-10-06T03:44:30.047Z",
-      "reason": "KF-8NVT20 uses the standard TokenSearchField in the ToolbarText demo",
+      "reason": "KF-8NVT20 uses the standard SearchField in the ToolbarText demo",
       "old": {
         "measuredLargestJavaScriptGzip": 124512,
         "measuredTotalJavaScriptGzip": 327479,
@@ -3015,7 +3015,7 @@
     },
     {
       "at": "2026-10-06T23:39:04.202Z",
-      "reason": "Fixed catalog header now includes TokenSearchField and its clear action",
+      "reason": "Fixed catalog header now includes SearchField and its clear action",
       "old": {
         "measuredLargestJavaScriptGzip": 124514,
         "measuredTotalJavaScriptGzip": 328331,
@@ -3575,7 +3575,7 @@
     },
     {
       "at": "2026-10-12T14:12:37.031Z",
-      "reason": "TokenSearchField app-edit caret handoff (KF-96TEF4)",
+      "reason": "SearchField app-edit caret handoff (KF-96TEF4)",
       "old": {
         "measuredLargestJavaScriptGzip": 129040,
         "measuredTotalJavaScriptGzip": 345720,
@@ -4199,7 +4199,7 @@
     },
     {
       "at": "2026-10-13T12:18:50.865Z",
-      "reason": "TokenSearchField stateful help trailing action and syntax help demo (KF-R056AJ)",
+      "reason": "SearchField stateful help trailing action and syntax help demo (KF-R056AJ)",
       "old": {
         "measuredLargestJavaScriptGzip": 146338,
         "measuredTotalJavaScriptGzip": 364179,
@@ -5111,7 +5111,7 @@
     },
     {
       "at": "2026-10-15T12:50:50.788Z",
-      "reason": "Merge main (TokenSearchField structure signal, single-zone Toolbar) into the Web Awesome independence branch",
+      "reason": "Merge main (SearchField structure signal, single-zone Toolbar) into the Web Awesome independence branch",
       "old": {
         "measuredLargestJavaScriptGzip": 137615,
         "measuredTotalJavaScriptGzip": 391804,
@@ -5187,6 +5187,22 @@
         "measuredTotalJavaScriptGzip": 405382,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 405400
+      }
+    },
+    {
+      "at": "2026-10-16T03:07:09.182Z",
+      "reason": "TokenSearchField renamed to SearchField; renamed identifiers and class names compress differently (KF-TF4N13)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 149143,
+        "measuredTotalJavaScriptGzip": 405382,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 405400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 149145,
+        "measuredTotalJavaScriptGzip": 405642,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 405700
       }
     }
   ]

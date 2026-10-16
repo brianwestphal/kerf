@@ -1,7 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { TokenSearchField } from '@kerfjs/ui/token-search-field';
+import { SearchField } from '@kerfjs/ui/search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -86,7 +86,7 @@ export function ToolbarTextDemo() {
               sizing="grow"
               expanded
             >
-              <TokenSearchField
+              <SearchField
                 id="toolbar-text-demand-search"
                 label="Search Demands"
                 placeholder="Search demands"

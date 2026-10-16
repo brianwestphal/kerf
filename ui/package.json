@@ -334,18 +334,18 @@
       "types": "./dist/wire-composers.d.ts",
       "import": "./dist/wire-composers.js"
     },
-    "./token-search-field": {
-      "types": "./dist/token-search-field.d.ts",
-      "browser": "./dist/browser/token-search-field.js",
-      "import": "./dist/token-search-field.js"
+    "./search-field": {
+      "types": "./dist/search-field.d.ts",
+      "browser": "./dist/browser/search-field.js",
+      "import": "./dist/search-field.js"
     },
-    "./token-search-model": {
-      "types": "./dist/token-search-model.d.ts",
-      "import": "./dist/token-search-model.js"
+    "./search-field-model": {
+      "types": "./dist/search-field-model.d.ts",
+      "import": "./dist/search-field-model.js"
     },
-    "./wire-token-search-fields": {
-      "types": "./dist/wire-token-search-fields.d.ts",
-      "import": "./dist/wire-token-search-fields.js"
+    "./wire-search-fields": {
+      "types": "./dist/wire-search-fields.d.ts",
+      "import": "./dist/wire-search-fields.js"
     },
     "./popup-menu": {
       "types": "./dist/popup-menu.d.ts",
@@ -546,7 +546,7 @@
     "./segmented-control.css": "./dist/styles/segmented-control.css",
     "./choice-chips.css": "./dist/styles/choice-chips.css",
     "./composer.css": "./dist/styles/composer.css",
-    "./token-search-field.css": "./dist/styles/token-search-field.css",
+    "./search-field.css": "./dist/styles/search-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",
     "./corner-status.css": "./dist/styles/corner-status.css",
     "./column-track.css": "./dist/styles/column-track.css",

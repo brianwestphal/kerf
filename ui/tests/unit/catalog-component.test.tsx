@@ -1004,7 +1004,7 @@ describe('wireCatalog', () => {
     await vi.waitFor(() => expect(input().textContent).toBe('nothing'));
     expect(visible()).toEqual([]);
     const field = () =>
-      root.querySelector<HTMLElement>('[data-component="token-search-field"]')!;
+      root.querySelector<HTMLElement>('[data-component="search-field"]')!;
     field().dataset.placeholderVisible = 'true';
     await vi.waitFor(() =>
       expect(field().dataset.placeholderVisible).toBe('false'),

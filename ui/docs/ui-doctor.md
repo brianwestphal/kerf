@@ -187,7 +187,7 @@ covers these string literals:
   optional Web Awesome integration;
 - the accessible names of icon-only controls, which the rule also gives title
   style: `IconButton` and `IconToggleButton` `label`, `PopupMenu` `label`,
-  `SplitButton` `optionsLabel`, `TokenSearchField` and `TextField`
+  `SplitButton` `optionsLabel`, `SearchField` and `TextField`
   `clearLabel`, and the
   `aria-label` of a `button` or `wa-button` whose only content is an icon. A
   button with visible text is judged by that text, never by its `aria-label`.

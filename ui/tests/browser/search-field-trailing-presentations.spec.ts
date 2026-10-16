@@ -8,7 +8,7 @@ const fixtureBundle = build({
   entryPoints: [
     resolve(
       import.meta.dirname,
-      'fixtures/token-search-trailing-presentations.tsx',
+      'fixtures/search-field-trailing-presentations.tsx',
     ),
   ],
   bundle: true,
@@ -22,7 +22,7 @@ const css = [
   'foundation',
   'lucide-icon',
   'toolbar-control-group',
-  'token-search-field',
+  'search-field',
 ]
   .map((name) =>
     readFileSync(
@@ -71,11 +71,11 @@ for (const presentation of ['standalone', 'form-field', 'toolbar-group']) {
     await expect(help).toHaveAttribute('aria-haspopup', 'dialog');
     await expect(help).toHaveAttribute('data-action', 'toggle-help');
 
-    const clear = await chrome(page, presentation, '.kui-token-search__clear');
+    const clear = await chrome(page, presentation, '.kui-search-field__clear');
     const rest = await chrome(
       page,
       presentation,
-      '.kui-token-search__trailing-action',
+      '.kui-search-field__trailing-action',
     );
     // Same compact slot, row, shape, and cursor as the clear button.
     expect(rest).toMatchObject({
@@ -95,7 +95,7 @@ for (const presentation of ['standalone', 'form-field', 'toolbar-group']) {
     const expanded = await chrome(
       page,
       presentation,
-      '.kui-token-search__trailing-action',
+      '.kui-search-field__trailing-action',
     );
     expect(expanded.background).not.toBe('rgba(0, 0, 0, 0)');
     expect(expanded.width).toBe(rest.width);

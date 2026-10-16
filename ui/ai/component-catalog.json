@@ -5363,8 +5363,8 @@
       }
     },
     {
-      "id": "token-search-field",
-      "name": "TokenSearchField",
+      "id": "search-field",
+      "name": "SearchField",
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
@@ -5374,15 +5374,15 @@
       ],
       "purpose": "Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.",
       "publicExports": [
-        "TokenSearchField",
-        "readTokenSearchField",
-        "placeTokenSearchCaret",
-        "wireTokenSearchFields",
-        "createTokenSearchModel"
+        "SearchField",
+        "readSearchField",
+        "placeSearchFieldCaret",
+        "wireSearchFields",
+        "createSearchFieldModel"
       ],
       "publicExportImports": {
-        "wireTokenSearchFields": "@kerfjs/ui/wire-token-search-fields",
-        "createTokenSearchModel": "@kerfjs/ui/token-search-model"
+        "wireSearchFields": "@kerfjs/ui/wire-search-fields",
+        "createSearchFieldModel": "@kerfjs/ui/search-field-model"
       },
       "useWhen": [
         "Combine DOM-owned free text with ordered editable/removable filter tokens in one searchbox.",
@@ -5400,10 +5400,10 @@
       ],
       "appOwns": [
         "the grammar and evaluation callback when using the optional managed model, or parsing, suggestions, tokens, and query execution in manual mode",
-        "reading the managed model without subscribing per keystroke: TokenSearchField subscribes only to model.structure (committed tokens, empty or non-empty text, editor revision) and model.suggestions, so plain typing never re-runs the host render; in the host's own render, read model.state.peek() or bind model.result (or a computed) as a fine-grained signal hole instead of reading model.state.value",
+        "reading the managed model without subscribing per keystroke: SearchField subscribes only to model.structure (committed tokens, empty or non-empty text, editor revision) and model.suggestions, so plain typing never re-runs the host render; in the host's own render, read model.state.peek() or bind model.result (or a computed) as a fine-grained signal hole instead of reading model.state.value",
         "results",
         "the revision that rebuilds the DOM-owned editor for a programmatic text replacement",
-        "optional override of the collapsible expand/collapse/focus, which wireTokenSearchFields manages by default (adopt an app expanded signal, opt out per behavior, or drive it via the returned handle)",
+        "optional override of the collapsible expand/collapse/focus, which wireSearchFields manages by default (adopt an app expanded signal, opt out per behavior, or drive it via the returned handle)",
         "validation of a required form-field value"
       ],
       "variants": [
@@ -5417,8 +5417,8 @@
         "Announce result changes when useful and keep tokens atomic during editing.",
         "Keep leading and trailing controls aligned to the first text line while content wraps. Managed Clear restores replacement focus before the next input task, preserving immediate typing and later focus handoffs without a frame delay.",
         "Wire Enter to submit without inserting a contenteditable line break and preserve focus plus the text-relative caret across controlled keyboard chip deletion before the next keystroke. Select All deletion preserves managed open state and replacement focus; persist both edited query and tokens. Visual wrapping remains available.",
-        "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out.",
-        "The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireTokenSearchFields focus the editor from a label click. The app validates required input."
+        "In collapsible mode, wireSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out.",
+        "The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireSearchFields focus the editor from a label click. The app validates required input."
       ],
       "geometry": {
         "margin": "none",
@@ -5426,58 +5426,58 @@
         "padding": "self"
       },
       "delivery": {
-        "browserImport": "@kerfjs/ui/token-search-field",
-        "manualCssImport": "@kerfjs/ui/token-search-field.css",
+        "browserImport": "@kerfjs/ui/search-field",
+        "manualCssImport": "@kerfjs/ui/search-field.css",
         "sideEffects": [
           "browser-condition-css"
         ]
       },
       "wiring": [
         {
-          "export": "readTokenSearchField",
-          "import": "@kerfjs/ui/token-search-field",
+          "export": "readSearchField",
+          "import": "@kerfjs/ui/search-field",
           "required": true
         },
         {
-          "export": "placeTokenSearchCaret",
-          "import": "@kerfjs/ui/token-search-field",
+          "export": "placeSearchFieldCaret",
+          "import": "@kerfjs/ui/search-field",
           "required": false
         },
         {
-          "export": "wireTokenSearchFields",
-          "import": "@kerfjs/ui/wire-token-search-fields",
+          "export": "wireSearchFields",
+          "import": "@kerfjs/ui/wire-search-fields",
           "required": true,
           "stateAttributes": [
             {
-              "name": "data-token-search-text",
-              "on": "the text span inside kui-token-search__editor",
+              "name": "data-search-field-text",
+              "on": "the text span inside kui-search-field__editor",
               "meaning": "Marks the plain-text span the helper inserts when the editor is emptied."
             },
             {
               "name": "data-empty",
-              "on": "the text span inside kui-token-search__editor",
+              "on": "the text span inside kui-search-field__editor",
               "meaning": "\"true\" on that span while it holds no text."
             },
             {
               "name": "data-placeholder-visible",
-              "on": "the kui-token-search root",
+              "on": "the kui-search-field root",
               "meaning": "Tracks whether the DOM-owned editor is empty so its placeholder stays outside the editable area."
             }
           ]
         }
       ],
       "publicClasses": [
-        "kui-token-search",
-        "kui-token-search__clear",
-        "kui-token-search__editor",
-        "kui-token-search__expand",
-        "kui-token-search__leading",
-        "kui-token-search__token",
-        "kui-token-search__token-edit",
-        "kui-token-search__token-remove",
-        "kui-token-search__suggestions",
-        "kui-token-search__suggestion",
-        "kui-token-search__trailing"
+        "kui-search-field",
+        "kui-search-field__clear",
+        "kui-search-field__editor",
+        "kui-search-field__expand",
+        "kui-search-field__leading",
+        "kui-search-field__token",
+        "kui-search-field__token-edit",
+        "kui-search-field__token-remove",
+        "kui-search-field__suggestions",
+        "kui-search-field__suggestion",
+        "kui-search-field__trailing"
       ],
       "publicTokens": [
         "--kui-color-brand-fill-normal",
@@ -5491,18 +5491,18 @@
         "--kui-font-s",
         "--kui-font-xs",
         "--kui-radius-pill",
-        "--kui-token-search-background",
-        "--kui-token-search-border",
-        "--kui-token-search-editor-min-width",
-        "--kui-token-search-line-size",
-        "--kui-token-search-token-background",
-        "--kui-token-search-token-foreground",
-        "--kui-token-search-expanded-width"
+        "--kui-search-field-background",
+        "--kui-search-field-border",
+        "--kui-search-field-editor-min-width",
+        "--kui-search-field-line-size",
+        "--kui-search-field-token-background",
+        "--kui-search-field-token-foreground",
+        "--kui-search-field-expanded-width"
       ],
       "links": {
-        "catalogRoute": "?component=token-search-field",
+        "catalogRoute": "?component=search-field",
         "documentation": "docs/component-selection.md",
-        "recipe": "docs/accessibility.md#tokensearchfield"
+        "recipe": "docs/accessibility.md#searchfield"
       }
     },
     {
@@ -5838,7 +5838,7 @@
       ],
       "avoidWhen": [
         "Do not use when only existing values are allowed and nothing needs typing; use Select.",
-        "Do not use for free text plus removable filter tokens in one editor; use TokenSearchField.",
+        "Do not use for free text plus removable filter tokens in one editor; use SearchField.",
         "Do not style a native input with a datalist from app CSS."
       ],
       "alternatives": [
@@ -5848,9 +5848,9 @@
           "when": "Use Select when only existing values are allowed."
         },
         {
-          "id": "token-search-field",
+          "id": "search-field",
           "relationship": "nearest",
-          "when": "Use TokenSearchField for search text with removable filter tokens."
+          "when": "Use SearchField for search text with removable filter tokens."
         }
       ],
       "appOwns": [
@@ -5954,7 +5954,7 @@
       "avoidWhen": [
         "Do not use when only existing values are allowed; use Select.",
         "Do not use when people pick among suggestions or create tags; use Combobox.",
-        "Do not use for search text with removable filter tokens; use TokenSearchField.",
+        "Do not use for search text with removable filter tokens; use SearchField.",
         "Do not use for a chat-style message with a send action; use Composer."
       ],
       "alternatives": [
@@ -8130,19 +8130,19 @@
         "Text input with labels, hints, clear controls, and semantic appearances."
       ],
       "avoidWhen": [
-        "Do not use it in Kerf UI; use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor."
+        "Do not use it in Kerf UI; use TextField for free text; use SearchField only when text and ordered filter tokens form one editor."
       ],
       "recommendation": "avoid",
       "alternatives": [
         {
           "id": "text-field",
           "relationship": "prefer-kerf",
-          "when": "Use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor."
+          "when": "Use TextField for free text; use SearchField only when text and ordered filter tokens form one editor."
         },
         {
-          "id": "token-search-field",
+          "id": "search-field",
           "relationship": "prefer-kerf",
-          "when": "Use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor."
+          "when": "Use TextField for free text; use SearchField only when text and ordered filter tokens form one editor."
         }
       ],
       "geometry": {
@@ -8685,15 +8685,15 @@
       ],
       "avoidWhen": [
         "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Do not use it for search filters; TokenSearchField combines free text with ordered, editable filter tokens.",
+        "Do not use it for search filters; SearchField combines free text with ordered, editable filter tokens.",
         "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
       ],
       "recommendation": "supported",
       "alternatives": [
         {
-          "id": "token-search-field",
+          "id": "search-field",
           "relationship": "prefer-kerf",
-          "when": "Use TokenSearchField when the tags are search filters rather than submitted form values."
+          "when": "Use SearchField when the tags are search filters rather than submitted form values."
         }
       ],
       "geometry": {
@@ -9863,7 +9863,7 @@
           "when": "Use Chip for a removable or disabled tag."
         },
         {
-          "id": "token-search-field",
+          "id": "search-field",
           "relationship": "prefer-kerf",
           "when": "Use Chip for a removable or disabled tag."
         }

@@ -12,12 +12,12 @@ Ecosystem text input; use Kerf TextField.
 
 **Not when:**
 
-- Do not use it in Kerf UI; use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor.
+- Do not use it in Kerf UI; use TextField for free text; use SearchField only when text and ordered filter tokens form one editor.
 
 **Alternatives:**
 
-- [TextField](./text-field.md) (prefer-kerf) — Use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor.
-- [TokenSearchField](./token-search-field.md) (prefer-kerf) — Use TextField for free text; use TokenSearchField only when text and ordered filter tokens form one editor.
+- [TextField](./text-field.md) (prefer-kerf) — Use TextField for free text; use SearchField only when text and ordered filter tokens form one editor.
+- [SearchField](./search-field.md) (prefer-kerf) — Use TextField for free text; use SearchField only when text and ordered filter tokens form one editor.
 
 ## Imports
 
@@ -57,6 +57,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Icon](./wa-icon.md), [TextField](./text-field.md), [TokenSearchField](./token-search-field.md).
+- Components: [Icon](./wa-icon.md), [TextField](./text-field.md), [SearchField](./search-field.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage), [`docs/component-selection.md#web-awesome-integration`](../../docs/component-selection.md#web-awesome-integration).
 - UX catalog route: `?component=wa-input`.

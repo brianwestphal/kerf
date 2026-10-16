@@ -590,12 +590,12 @@ Use `sizing="grow"` on an expanded search group in a wrapping zone: it grows fro
 row at 480px container width or less. The basis remains its intrinsic minimum
 in a wider, non-stacked Toolbar, so sibling trailing groups can share the
 row. The collapsed search stays icon-sized. The group owns the open and
-close motion: its flex size animates while a collapsible `TokenSearchField`
+close motion: its flex size animates while a collapsible `SearchField`
 inside fills it on every frame, laid out at least basis-wide and clipped by the
 group, so a query never wraps or leaves an empty band mid-transition. At 480px
 container width or less, and under reduced motion, it opens in one frame.
 A plain collapsible search group (no `sizing`) animates its own width the same
-way: the `TokenSearchField` follows the group on every frame and keeps its
+way: the `SearchField` follows the group on every frame and keeps its
 query on one line until the opening ends, so it never shows an empty band or a
 query wrapped in a narrow, still-opening field.
 Use `sizing="fill"` for a group, including a non-search segmented control,
@@ -742,7 +742,7 @@ overrides load later in the cascade or set scoped `--kui-*` variables. JavaScrip
 modules are pure except the browser style wrappers and `@kerfjs/ui/select/register`,
 which registers exactly the Web Awesome elements used by `Select`. Eventful
 helpers such as `wireResizableRegions` and `wireTabBars` attach listeners only
-when called and return disposers. `wireTokenSearchFields` goes one step further:
+when called and return disposers. `wireSearchFields` goes one step further:
 by default it also owns the collapsible field's transient expand/collapse/focus
 (activate to reveal and focus, Escape or empty blur to collapse), holding that
 state in a signal it exposes on the returned handle. An app reads that signal in
@@ -757,7 +757,7 @@ renders in a microtask in that same click task, so the click's render and the
 collapse share one style recalculation and layout. A click that stops
 propagating before the window, or a press without a click, collapses in the
 next task instead.
-`TokenSearchField.trailingAction` supplies an icon, accessible `label`, delegated
+`SearchField.trailingAction` supplies an icon, accessible `label`, delegated
 `action`, and optional `id`; the field renders a 24px wide button that fills its
 34px line slot (32px in `toolbar-group`), including the hit target, disabled
 state, hover, focus ring, and the clear button's radius in each presentation.
@@ -780,7 +780,7 @@ entrypoint only re-exports the folder modules, and the CSS entrypoint only
 imports their owner stylesheets. A shared public name is not permission to put
 several component implementations or visual contracts back into one file.
 
-`wireTokenSearchFields` is a deliberate exception, not the rule for `wire…`
+`wireSearchFields` is a deliberate exception, not the rule for `wire…`
 helpers. Its collapse behavior was _rich and error-prone_ — reveal, focus
 transfer, Escape, empty-blur collapse, focus return — the kind of transient chrome
 apps kept reimplementing inconsistently, so the helper owns it. Everywhere else the

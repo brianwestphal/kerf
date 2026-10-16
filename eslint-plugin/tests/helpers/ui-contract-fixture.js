@@ -109,10 +109,10 @@ export const catalog = {
       ],
     }),
     component('wa-button-group', 'WaButtonGroup'),
-    component('token-search-field', 'TokenSearchField', {
+    component('search-field', 'SearchField', {
       wiring: {
         required: true,
-        helpers: ['wireTokenSearchFields'],
+        helpers: ['wireSearchFields'],
       },
     }),
     component('select', 'Select', {
@@ -223,8 +223,8 @@ export const selectionCatalog = {
   entries: catalog.entries.map((entry) => ({
     id: entry.id,
     publicExports:
-      entry.id === 'token-search-field'
-        ? [entry.name, 'wireTokenSearchFields']
+      entry.id === 'search-field'
+        ? [entry.name, 'wireSearchFields']
         : entry.id === 'list'
           ? [
               entry.name,
@@ -250,11 +250,11 @@ export const selectionCatalog = {
             ? { browserImport: '@kerfjs/ui/tab-bar' }
             : { browserImport: `@kerfjs/ui/${entry.id}` },
     wiring:
-      entry.id === 'token-search-field'
+      entry.id === 'search-field'
         ? [
             {
-              export: 'wireTokenSearchFields',
-              import: '@kerfjs/ui/wire-token-search-fields',
+              export: 'wireSearchFields',
+              import: '@kerfjs/ui/wire-search-fields',
               required: true,
             },
           ]

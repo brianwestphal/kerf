@@ -1,20 +1,20 @@
 import { expect, test } from '@playwright/test';
 
-test('the TokenSearchField demo shows and drives the collapsible state', async ({
+test('the SearchField demo shows and drives the collapsible state', async ({
   page,
   browserName,
 }) => {
   await page.setViewportSize({ width: 1100, height: 700 });
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
 
   const example = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: /^\s*Collapsible\s*$/,
       }),
     });
-  const field = example.locator('[data-component="token-search-field"]');
+  const field = example.locator('[data-component="search-field"]');
   const trigger = field.getByRole('button', { name: 'Open find' });
   const editor = field.getByRole('searchbox', { name: 'Find Records' });
 
@@ -25,7 +25,7 @@ test('the TokenSearchField demo shows and drives the collapsible state', async (
   await expect(editor).toBeHidden();
   if (browserName === 'chromium')
     await example.screenshot({
-      path: 'test-results/token-search-collapsed.png',
+      path: 'test-results/search-field-collapsed.png',
     });
 
   // Activating reveals the editor and focuses it (helper-managed).
@@ -35,7 +35,7 @@ test('the TokenSearchField demo shows and drives the collapsible state', async (
   await editor.pressSequentially('priority');
   if (browserName === 'chromium')
     await example.screenshot({
-      path: 'test-results/token-search-expanded.png',
+      path: 'test-results/search-field-expanded.png',
     });
 
   // Non-empty field stays open when focus leaves.
@@ -62,22 +62,22 @@ test('empty blur waits for the pressed control click before collapsing a shiftin
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 1000 });
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const example = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: /^\s*Collapsible\s*$/,
       }),
     });
-  const field = example.locator('[data-component="token-search-field"]');
+  const field = example.locator('[data-component="search-field"]');
   await field.getByRole('button', { name: 'Open find' }).click();
   await expect(
     field.getByRole('searchbox', { name: 'Find Records' }),
   ).toBeFocused();
   await example.evaluate((node) => {
     const search = node.querySelector<HTMLElement>(
-      '[data-component="token-search-field"]',
+      '[data-component="search-field"]',
     )!;
     const target = document.createElement('button');
     target.type = 'button';
@@ -150,15 +150,15 @@ test('disposing the demo wiring cancels pending collapsible focus restoration', 
   page,
 }) => {
   for (const transition of ['open', 'close'] as const) {
-    await page.goto('/?component=token-search-field');
+    await page.goto('/?component=search-field');
     const example = page
-      .locator('[data-demo="token-search-field"] [data-catalog-example]')
+      .locator('[data-demo="search-field"] [data-catalog-example]')
       .filter({
         has: page.locator('[data-catalog-example-label]', {
           hasText: /^\s*Collapsible\s*$/,
         }),
       });
-    const field = example.locator('[data-component="token-search-field"]');
+    const field = example.locator('[data-component="search-field"]');
     if (transition === 'close') {
       await field.getByRole('button', { name: 'Open find' }).click();
       await expect(
@@ -168,7 +168,7 @@ test('disposing the demo wiring cancels pending collapsible focus restoration', 
     await page.evaluate((kind) => {
       const container = [
         ...document.querySelectorAll<HTMLElement>(
-          '[data-demo="token-search-field"] [data-catalog-example]',
+          '[data-demo="search-field"] [data-catalog-example]',
         ),
       ].find(
         (example) =>
@@ -178,11 +178,11 @@ test('disposing the demo wiring cancels pending collapsible focus restoration', 
       )!;
       if (kind === 'open') {
         container
-          .querySelector<HTMLElement>('.kui-token-search__expand')!
+          .querySelector<HTMLElement>('.kui-search-field__expand')!
           .click();
       } else {
         container
-          .querySelector<HTMLElement>('[data-token-search-editor]')!
+          .querySelector<HTMLElement>('[data-search-field-editor]')!
           .dispatchEvent(
             new KeyboardEvent('keydown', {
               key: 'Escape',
@@ -214,12 +214,12 @@ test('clearing a blurred, expanded field with ✕ collapses it without taking fo
   // KF-77TPZ2: the ✕ press keeps focus where it was; an emptied field used to
   // stay expanded until it was focused and blurred again.
   await page.setViewportSize({ width: 1100, height: 700 });
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const field = page.locator(
-    '[data-component="token-search-field"][data-token-search-id="adoption-search"]',
+    '[data-component="search-field"][data-search-field-id="adoption-search"]',
   );
   const trigger = field.getByRole('button', { name: 'Open filter' });
-  const editor = field.locator('[data-token-search-editor]');
+  const editor = field.locator('[data-search-field-editor]');
   // This field starts expanded.
   await editor.click();
   await editor.pressSequentially('priority');
@@ -227,7 +227,7 @@ test('clearing a blurred, expanded field with ✕ collapses it without taking fo
   await outside.focus();
   await expect(editor).toBeVisible();
 
-  await field.locator('.kui-token-search__clear').click();
+  await field.locator('.kui-search-field__clear').click();
   await expect(field).toHaveAttribute('data-expanded', 'false');
   await expect(trigger).toBeVisible();
   await expect(outside).toBeFocused();

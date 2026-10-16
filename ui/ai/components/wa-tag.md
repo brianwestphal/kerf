@@ -17,7 +17,7 @@ Ecosystem tag; use Kerf Chip.
 **Alternatives:**
 
 - [Chip](./chip.md) (prefer-kerf) — Use Chip for a removable or disabled tag.
-- [TokenSearchField](./token-search-field.md) (prefer-kerf) — Use Chip for a removable or disabled tag.
+- [SearchField](./search-field.md) (prefer-kerf) — Use Chip for a removable or disabled tag.
 
 ## Imports
 
@@ -57,6 +57,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Button](./wa-button.md), [Chip](./chip.md), [TokenSearchField](./token-search-field.md).
+- Components: [Button](./wa-button.md), [Chip](./chip.md), [SearchField](./search-field.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage), [`docs/component-selection.md#web-awesome-integration`](../../docs/component-selection.md#web-awesome-integration).
 - UX catalog route: `?component=wa-tag`.

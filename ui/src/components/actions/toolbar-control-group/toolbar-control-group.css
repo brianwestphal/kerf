@@ -183,7 +183,7 @@
      query instead of re-wrapping it every frame (KF-CXQB30). */
   --_kui-toolbar-group-search-width-duration: 0s;
   --_kui-toolbar-group-search-reveal-duration: 0.25s;
-  width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
+  width: min(var(--kui-search-field-expanded-width, remify(480px)), 100%);
   max-width: 100%;
   height: auto;
   min-width: 0;
@@ -196,14 +196,14 @@
 }
 
 .kui-toolbar-control-group[data-content="search"]:has(
-    > .kui-token-search[data-expanded="true"][data-fill="true"]
+    > .kui-search-field[data-expanded="true"][data-fill="true"]
   ) {
   width: 100%;
   flex: 1 1 auto;
 }
 
 .kui-toolbar-control-group[data-content="search"]:has(
-    .kui-token-search__suggestions
+    .kui-search-field__suggestions
   ) {
   overflow: visible;
 }
@@ -217,7 +217,7 @@
 }
 
 .kui-toolbar-control-group[data-content="search"]:has(
-    > .kui-token-search[data-expanded="false"][data-fill="true"]
+    > .kui-search-field[data-expanded="false"][data-fill="true"]
   ) {
   width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   flex: 0 0 auto;

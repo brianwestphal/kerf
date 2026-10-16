@@ -159,7 +159,7 @@ const titleStyleProps = new Map([
   ['Combobox', { props: ['label'] }],
   ['IconButton', { props: ['label'] }],
   ['IconToggleButton', { props: ['label'] }],
-  ['TokenSearchField', { props: ['clearLabel'] }],
+  ['SearchField', { props: ['clearLabel'] }],
   // NavStack view titles and backText, plus the stack's region name and each
   // view's toolbar and pane region names.
   [

@@ -86,16 +86,16 @@ const registrationInit = join(wiringRoot, 'registration-init.ts');
 const registrationUnrelated = join(wiringRoot, 'registration-unrelated.ts');
 writeFileSync(
   wiringEntry,
-  "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);\n",
+  "import './leaf'; import '@kerfjs/ui/select/register'; import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; const dispose = wireSearchFields(root);\n",
 );
 writeFileSync(
   wiringLeaf,
-  "import { TokenSearchField, Select } from '@kerfjs/ui'; export const View = () => <><TokenSearchField /><Select /></>;\n",
+  "import { SearchField, Select } from '@kerfjs/ui'; export const View = () => <><SearchField /><Select /></>;\n",
 );
 writeFileSync(wiringEntryTwo, "import('./leaf');\n");
 writeFileSync(
   currencyLeaf,
-  "import { TokenSearchField } from '@kerfjs/ui/token-search-field'; export const CurrenciesView = () => <TokenSearchField id='currency-filter' />;\n",
+  "import { SearchField } from '@kerfjs/ui/search-field'; export const CurrenciesView = () => <SearchField id='currency-filter' />;\n",
 );
 writeFileSync(wiringApp, "import { init } from './init.js'; init();\n");
 writeFileSync(
@@ -104,7 +104,7 @@ writeFileSync(
 );
 writeFileSync(
   wiringRootHelper,
-  "import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; export function wireShellSearch(root) { return wireTokenSearchFields(root, { onEdit({ id }) { if (id === 'currency-filter') updateFilter(); } }); }\n",
+  "import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; export function wireShellSearch(root) { return wireSearchFields(root, { onEdit({ id }) { if (id === 'currency-filter') updateFilter(); } }); }\n",
 );
 writeFileSync(
   registrationEntry,
@@ -141,7 +141,7 @@ const moduleScopeSettings = uiSettings({
   catalog: {
     ...settings.kerfjs.ui.catalog,
     entries: settings.kerfjs.ui.catalog.entries.map((entry) =>
-      entry.id === 'token-search-field'
+      entry.id === 'search-field'
         ? { ...entry, wiring: { ...entry.wiring, scope: 'module' } }
         : entry,
     ),
@@ -1332,7 +1332,7 @@ tester.run('ui-wiring', wiring, {
       settings: appSettings,
     },
     {
-      code: "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);",
+      code: "import './leaf'; import '@kerfjs/ui/select/register'; import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; const dispose = wireSearchFields(root);",
       filename: wiringEntry,
       settings: entrySettings,
     },
@@ -1347,7 +1347,7 @@ tester.run('ui-wiring', wiring, {
       settings: registrationSettings,
     },
     {
-      code: "import { TokenSearchField, Select } from '@kerfjs/ui'; <><TokenSearchField /><Select /></>;",
+      code: "import { SearchField, Select } from '@kerfjs/ui'; <><SearchField /><Select /></>;",
       filename: wiringLeaf,
       settings: twoEntrySettings,
     },
@@ -1357,32 +1357,32 @@ tester.run('ui-wiring', wiring, {
       settings: rootHelperSettings,
     },
     {
-      code: "import { TokenSearchField } from '@kerfjs/ui/token-search-field'; export const CurrenciesView = () => <TokenSearchField id='currency-filter' />;",
+      code: "import { SearchField } from '@kerfjs/ui/search-field'; export const CurrenciesView = () => <SearchField id='currency-filter' />;",
       filename: currencyLeaf,
       settings: rootHelperSettings,
     },
     {
-      code: "import { TokenSearchField } from '@kerfjs/ui'; import { wireTokenSearchFields as wire } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wire(root); <TokenSearchField />;",
+      code: "import { SearchField } from '@kerfjs/ui'; import { wireSearchFields as wire } from '@kerfjs/ui/wire-search-fields'; const dispose = wire(root); <SearchField />;",
       settings,
     },
     {
-      code: "import { TokenSearchField } from '@kerfjs/ui'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; void wireTokenSearchFields(root); <TokenSearchField />;",
+      code: "import { SearchField } from '@kerfjs/ui'; import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; void wireSearchFields(root); <SearchField />;",
       settings,
     },
     {
-      code: "import { TokenSearchField, wireTokenSearchFields as wire } from '@kerfjs/ui'; const dispose = wire(root); <TokenSearchField />;",
+      code: "import { SearchField, wireSearchFields as wire } from '@kerfjs/ui'; const dispose = wire(root); <SearchField />;",
       settings,
     },
     {
-      code: "import * as UI from '@kerfjs/ui'; const dispose = UI.wireTokenSearchFields(root); <UI.TokenSearchField />;",
+      code: "import * as UI from '@kerfjs/ui'; const dispose = UI.wireSearchFields(root); <UI.SearchField />;",
       settings,
     },
     {
-      code: "import { TokenSearchField } from '@kerfjs/ui'; import * as Wiring from '@kerfjs/ui/wire-token-search-fields'; const dispose = Wiring.wireTokenSearchFields(root); <TokenSearchField />;",
+      code: "import { SearchField } from '@kerfjs/ui'; import * as Wiring from '@kerfjs/ui/wire-search-fields'; const dispose = Wiring.wireSearchFields(root); <SearchField />;",
       settings,
     },
     {
-      code: "import * as Field from '@kerfjs/ui/token-search-field'; import * as UI from '@kerfjs/ui'; const dispose = UI.wireTokenSearchFields(root); <Field.TokenSearchField />;",
+      code: "import * as Field from '@kerfjs/ui/search-field'; import * as UI from '@kerfjs/ui'; const dispose = UI.wireSearchFields(root); <Field.SearchField />;",
       settings,
     },
     {
@@ -1447,7 +1447,7 @@ tester.run('ui-wiring', wiring, {
       errors: [{ messageId: 'missing' }, { messageId: 'missing' }],
     },
     {
-      code: "import './leaf'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; const dispose = wireTokenSearchFields(root);",
+      code: "import './leaf'; import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; const dispose = wireSearchFields(root);",
       filename: wiringEntry,
       settings: entrySettings,
       errors: [{ messageId: 'missing' }],
@@ -1465,29 +1465,29 @@ tester.run('ui-wiring', wiring, {
       errors: [{ messageId: 'missing' }],
     },
     {
-      code: "import './leaf'; import '@kerfjs/ui/select/register'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; wireTokenSearchFields(root);",
+      code: "import './leaf'; import '@kerfjs/ui/select/register'; import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; wireSearchFields(root);",
       filename: wiringEntry,
       settings: entrySettings,
       errors: [{ messageId: 'cleanup' }],
     },
     {
-      code: "import { TokenSearchField } from '@kerfjs/ui'; <TokenSearchField />;",
+      code: "import { SearchField } from '@kerfjs/ui'; <SearchField />;",
       filename: wiringLeaf,
       settings: moduleScopeSettings,
       errors: [{ messageId: 'missing' }],
     },
     {
-      code: "import { TokenSearchField } from '@kerfjs/ui'; <TokenSearchField />;",
+      code: "import { SearchField } from '@kerfjs/ui'; <SearchField />;",
       settings,
       errors: [{ messageId: 'missing' }],
     },
     {
-      code: "import { TokenSearchField } from '@kerfjs/ui'; import { wireTokenSearchFields } from 'other-ui'; const dispose = wireTokenSearchFields(root); <TokenSearchField />;",
+      code: "import { SearchField } from '@kerfjs/ui'; import { wireSearchFields } from 'other-ui'; const dispose = wireSearchFields(root); <SearchField />;",
       settings,
       errors: [{ messageId: 'missing' }],
     },
     {
-      code: "import { TokenSearchField } from '@kerfjs/ui'; import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields'; wireTokenSearchFields(root); <TokenSearchField />;",
+      code: "import { SearchField } from '@kerfjs/ui'; import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; wireSearchFields(root); <SearchField />;",
       settings,
       errors: [{ messageId: 'cleanup' }],
     },

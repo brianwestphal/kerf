@@ -22,7 +22,7 @@ const geometry = (surface: Locator) =>
     };
   });
 
-// The token search help surface is taller than the room on either side of
+// The search field help surface is taller than the room on either side of
 // its field on a short phone. It must stay inside an 8px viewport gutter, cap
 // itself to the room beside the field, scroll the rest, and refit as the
 // viewport changes, with no application media queries.
@@ -40,9 +40,9 @@ test('an anchored surface fits the room beside its anchor inside the viewport gu
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 520 });
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const button = page
-    .locator('[data-demo="token-search-field"]')
+    .locator('[data-demo="search-field"]')
     .getByRole('button', { name: 'Search Help' });
   await button.scrollIntoViewIfNeeded();
   await button.click();
@@ -88,9 +88,9 @@ test('an app-capped surface that fits the preferred side stays there', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 520 });
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const button = page
-    .locator('[data-demo="token-search-field"]')
+    .locator('[data-demo="search-field"]')
     .getByRole('button', { name: 'Search Help' });
   // Put the field a little below the middle so the room above is larger.
   await button.evaluate((element) => {
@@ -141,14 +141,14 @@ test('an app-capped surface that fits the preferred side stays there', async ({
   expect(scrolled).toBe(40);
 });
 
-// Put the token search field a little below the middle of a short phone
+// Put the search field a little below the middle of a short phone
 // viewport (so the room above is larger), open its help surface, and return
 // the room on each side.
 const openBelowMiddle = async (page: Page) => {
   await page.setViewportSize({ width: 390, height: 520 });
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const button = page
-    .locator('[data-demo="token-search-field"]')
+    .locator('[data-demo="search-field"]')
     .getByRole('button', { name: 'Search Help' });
   await button.evaluate((element) => {
     element.scrollIntoView({ block: 'center' });

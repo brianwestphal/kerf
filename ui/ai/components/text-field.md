@@ -18,7 +18,7 @@ Collect free text (names, addresses, notes, comments) with Kerf's field chrome, 
 
 - Do not use when only existing values are allowed; use Select.
 - Do not use when people pick among suggestions or create tags; use Combobox.
-- Do not use for search text with removable filter tokens; use TokenSearchField.
+- Do not use for search text with removable filter tokens; use SearchField.
 - Do not use for a chat-style message with a send action; use Composer.
 
 **Alternatives:**

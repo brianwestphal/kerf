@@ -7,21 +7,21 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ToolbarControlGroup } from '../../src/components/actions/toolbar-control-group/toolbar-control-group.js';
 import {
-  placeTokenSearchCaret,
-  readTokenSearchField,
-  TokenSearchField,
-  type TokenSearchToken,
-} from '../../src/components/forms/token-search-field/token-search-field.js';
+  placeSearchFieldCaret,
+  readSearchField,
+  SearchField,
+  type SearchFieldToken,
+} from '../../src/components/forms/search-field/search-field.js';
 import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 
 const asHtml = (value: unknown) => String(value);
 
-describe('TokenSearchField', () => {
+describe('SearchField', () => {
   beforeEach(() => document.body.replaceChildren());
 
   it('renders a visible form label, hint, and required searchbox without toolbar geometry', () => {
     const html = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'saved-query',
         label: 'Search Query',
         presentation: 'form-field',
@@ -29,11 +29,11 @@ describe('TokenSearchField', () => {
         required: true,
       }),
     );
-    expect(html).toContain('class="kui-token-search__field"');
+    expect(html).toContain('class="kui-search-field__field"');
     expect(html).toContain('id="saved-query-label"');
-    expect(html).toContain('data-token-search-form-label="saved-query"');
+    expect(html).toContain('data-search-field-form-label="saved-query"');
     expect(html).toContain(
-      'class="kui-token-search__field-required" aria-hidden="true"',
+      'class="kui-search-field__field-required" aria-hidden="true"',
     );
     expect(html).toContain('id="saved-query-hint"');
     expect(html).toContain('aria-labelledby="saved-query-label"');
@@ -43,7 +43,7 @@ describe('TokenSearchField', () => {
     expect(html).not.toContain('kui-toolbar');
 
     const optional = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'optional-query',
         label: 'Optional query',
         presentation: 'form-field',
@@ -52,33 +52,33 @@ describe('TokenSearchField', () => {
     expect(optional).toContain('aria-labelledby="optional-query-label"');
     expect(optional).not.toContain('aria-describedby');
     expect(optional).not.toContain('aria-required');
-    expect(optional).not.toContain('kui-token-search__field-hint');
+    expect(optional).not.toContain('kui-search-field__field-hint');
   });
 
   it('places className on the rendered root in every presentation', () => {
     const form = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'form-query',
         label: 'Search',
         presentation: 'form-field',
         className: 'query-colors',
       }),
     );
-    expect(form).toContain('class="kui-token-search__field query-colors"');
-    expect(form).toContain('class="kui-token-search"');
-    expect(form).not.toContain('class="kui-token-search query-colors"');
+    expect(form).toContain('class="kui-search-field__field query-colors"');
+    expect(form).toContain('class="kui-search-field"');
+    expect(form).not.toContain('class="kui-search-field query-colors"');
     const standalone = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'plain-query',
         label: 'Search',
         className: 'query-colors',
       }),
     );
-    expect(standalone).toContain('class="kui-token-search query-colors"');
+    expect(standalone).toContain('class="kui-search-field query-colors"');
   });
 
   it('renders ordered, editable atomic tokens inside a labeled searchbox', () => {
-    const tokens: TokenSearchToken[] = [
+    const tokens: SearchFieldToken[] = [
       {
         value: 'tag:server',
         label: 'tag:server',
@@ -88,7 +88,7 @@ describe('TokenSearchField', () => {
       { value: 'is:active', label: 'is:active', offset: 0 },
     ];
     const html = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'tickets',
         label: 'Search Tickets',
         query: 'NOT  AND parser',
@@ -98,10 +98,10 @@ describe('TokenSearchField', () => {
       }),
     );
     expect(html).toContain(
-      'data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"',
+      'data-component="search-field" data-search-field-id="tickets" data-disabled="false"',
     );
     expect(html).toContain(
-      'data-workspace-search="true" class="kui-token-search__editor"',
+      'data-workspace-search="true" class="kui-search-field__editor"',
     );
     expect(html).toContain('data-has-trailing="false"');
     expect(html).toContain(
@@ -113,13 +113,13 @@ describe('TokenSearchField', () => {
     expect(html).toContain('aria-label="Edit server tag"');
     expect(html).toContain('aria-label="Remove server tag"');
     expect(html).toContain(
-      'data-action="clear-token-search" aria-label="Clear Search"',
+      'data-action="clear-search-field" aria-label="Clear Search"',
     );
   });
 
   it('clamps token offsets and preserves input order for ties', () => {
     const html = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'bounds',
         label: 'Bounded search',
         query: 'middle',
@@ -135,7 +135,7 @@ describe('TokenSearchField', () => {
 
   it('marks expanded fill without changing a collapsed search action', () => {
     const expanded = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'fill-search',
         label: 'Fill search',
         collapsible: true,
@@ -147,7 +147,7 @@ describe('TokenSearchField', () => {
     expect(expanded).toContain('data-fill="true"');
     expect(expanded).toContain('data-expanded="true"');
     const collapsed = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'fill-search',
         label: 'Fill search',
         collapsible: true,
@@ -157,12 +157,12 @@ describe('TokenSearchField', () => {
     );
     expect(collapsed).toContain('data-fill="true"');
     expect(collapsed).toContain('data-expanded="false"');
-    expect(collapsed).toContain('class="kui-token-search__expand"');
+    expect(collapsed).toContain('class="kui-search-field__expand"');
   });
 
   it('renders a stateful trailing action with ARIA state and domain metadata', () => {
     const disclosure = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'help',
         label: 'Search',
         query: 'status:open',
@@ -178,15 +178,15 @@ describe('TokenSearchField', () => {
       }),
     );
     expect(disclosure).toContain(
-      '<button data-help-topic="syntax" type="button" class="kui-token-search__trailing-action" data-action="toggle-search-help" aria-label="Search Help" aria-expanded="true" aria-controls="search-help-surface" aria-haspopup="dialog" title="Search Help">',
+      '<button data-help-topic="syntax" type="button" class="kui-search-field__trailing-action" data-action="toggle-search-help" aria-label="Search Help" aria-expanded="true" aria-controls="search-help-surface" aria-haspopup="dialog" title="Search Help">',
     );
     expect(disclosure).not.toContain('aria-pressed');
     // The clear button precedes the trailing action in the same row.
-    expect(disclosure.indexOf('kui-token-search__clear')).toBeLessThan(
-      disclosure.indexOf('kui-token-search__trailing-action'),
+    expect(disclosure.indexOf('kui-search-field__clear')).toBeLessThan(
+      disclosure.indexOf('kui-search-field__trailing-action'),
     );
     const collapsedDisclosure = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'help',
         label: 'Search',
         presentation: 'form-field',
@@ -200,7 +200,7 @@ describe('TokenSearchField', () => {
     );
     expect(collapsedDisclosure).toContain('aria-expanded="false"');
     const toggle = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'case',
         label: 'Search',
         trailingAction: {
@@ -217,7 +217,7 @@ describe('TokenSearchField', () => {
 
   it('supports custom actions, adornments, disabled state, and token-aware placeholders', () => {
     const html = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'saved',
         label: 'Saved query',
         tokens: [{ value: 'tag:client', label: 'tag:client' }],
@@ -236,7 +236,7 @@ describe('TokenSearchField', () => {
         className: 'compact',
       }),
     );
-    expect(html).toContain('class="kui-token-search compact"');
+    expect(html).toContain('class="kui-search-field compact"');
     expect(html).toContain('data-placeholder="Add search…"');
     expect(html).toContain('aria-disabled="true" contenteditable="false"');
     expect(html.match(/ disabled/g)).toHaveLength(4);
@@ -249,22 +249,22 @@ describe('TokenSearchField', () => {
     expect(html).toContain('data-lucide="help"');
     expect(html).toContain('data-has-trailing="true"');
     expect(html).toContain(
-      'class="kui-token-search__trailing-action" id="saved-search-help" data-action="show-saved-search-help" aria-label="Saved Search Help" title="Saved Search Help" disabled',
+      'class="kui-search-field__trailing-action" id="saved-search-help" data-action="show-saved-search-help" aria-label="Saved Search Help" title="Saved Search Help" disabled',
     );
     expect(
       asHtml(
-        TokenSearchField({
+        SearchField({
           id: 'passive',
           label: 'Passive trailing',
           trailing: <span>⌘K</span>,
         }),
       ),
     ).toContain(
-      '<span class="kui-token-search__trailing"><span>⌘K</span></span>',
+      '<span class="kui-search-field__trailing"><span>⌘K</span></span>',
     );
     expect(
       asHtml(
-        TokenSearchField({
+        SearchField({
           id: 'empty',
           label: 'Search',
           placeholder: 'Find Records',
@@ -277,32 +277,32 @@ describe('TokenSearchField', () => {
     const css = await readFile(
       resolve(
         import.meta.dirname,
-        '../../src/components/forms/token-search-field/token-search-field.css',
+        '../../src/components/forms/search-field/search-field.css',
       ),
       'utf8',
     );
-    expect(css).toContain('--kui-token-search-line-size: remify(34px)');
+    expect(css).toContain('--kui-search-field-line-size: remify(34px)');
     expect(css).toMatch(
-      /\.kui-token-search__leading[^}]+var\(--kui-token-search-line-size\)[^}]+remify\(16px\)/s,
+      /\.kui-search-field__leading[^}]+var\(--kui-search-field-line-size\)[^}]+remify\(16px\)/s,
     );
     expect(css).toMatch(
-      /\.kui-token-search__editor[^}]+min-height: var\(--kui-token-search-line-size\)[^}]+1\.35em/s,
+      /\.kui-search-field__editor[^}]+min-height: var\(--kui-search-field-line-size\)[^}]+1\.35em/s,
     );
     expect(css).toMatch(
-      /\.kui-token-search__clear,[^}]+height: var\(--kui-token-search-line-size\)[^}]+place-items: center/s,
+      /\.kui-search-field__clear,[^}]+height: var\(--kui-search-field-line-size\)[^}]+place-items: center/s,
     );
     expect(css).toMatch(
-      /\.kui-token-search__clear \{[^}]+border-radius: var\(--kui-radius-pill\)/s,
+      /\.kui-search-field__clear \{[^}]+border-radius: var\(--kui-radius-pill\)/s,
     );
     expect(css).toContain('max-height: remify(240px)');
     expect(css).toContain(
-      '.kui-token-search__suggestions:has(> :nth-child(2))',
+      '.kui-search-field__suggestions:has(> :nth-child(2))',
     );
   });
 
   it('optionally collapses to an iconic field, stays open with content, and animates standalone or grouped', async () => {
     const collapsed = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'find',
         label: 'Find Records',
         collapsible: true,
@@ -310,15 +310,15 @@ describe('TokenSearchField', () => {
       }),
     );
     expect(collapsed).toContain(
-      'data-component="token-search-field" data-token-search-id="find" data-disabled="false" data-collapsible="true" data-expanded="false"',
+      'data-component="search-field" data-search-field-id="find" data-disabled="false" data-collapsible="true" data-expanded="false"',
     );
     expect(collapsed).toContain(
-      'class="kui-token-search__expand" data-action="open-find" aria-label="Find Records" title="Find Records"',
+      'class="kui-search-field__expand" data-action="open-find" aria-label="Find Records" title="Find Records"',
     );
     expect(collapsed).not.toContain('role="searchbox"');
 
     const focused = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'find',
         label: 'Find Records',
         collapsible: true,
@@ -329,11 +329,11 @@ describe('TokenSearchField', () => {
     expect(focused).toContain('data-collapsible="true" data-expanded="true"');
     expect(focused).toContain('data-presentation="toolbar-group"');
     expect(focused).toContain('role="searchbox"');
-    expect(focused).not.toContain('data-action="expand-token-search"');
+    expect(focused).not.toContain('data-action="expand-search-field"');
 
     const grouped = asHtml(
       ToolbarControlGroup({
-        children: TokenSearchField({
+        children: SearchField({
           id: 'group-find',
           label: 'Find grouped records',
           collapsible: true,
@@ -350,7 +350,7 @@ describe('TokenSearchField', () => {
     );
 
     const populated = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'find',
         label: 'Find Records',
         collapsible: true,
@@ -363,7 +363,7 @@ describe('TokenSearchField', () => {
     const fieldCss = await readFile(
       resolve(
         import.meta.dirname,
-        '../../src/components/forms/token-search-field/token-search-field.css',
+        '../../src/components/forms/search-field/search-field.css',
       ),
       'utf8',
     );
@@ -375,7 +375,7 @@ describe('TokenSearchField', () => {
       'utf8',
     );
     expect(fieldCss).toMatch(
-      /\.kui-token-search\[data-collapsible="true"\][^{]*\{[^}]+width var\(--_kui-toolbar-group-search-width-duration, 0\.25s\) ease/s,
+      /\.kui-search-field\[data-collapsible="true"\][^{]*\{[^}]+width var\(--_kui-toolbar-group-search-width-duration, 0\.25s\) ease/s,
     );
     // Every search group owns the open/close motion and zeroes the field's
     // width transition; it asks the field's editor to stay on one line while it
@@ -385,10 +385,10 @@ describe('TokenSearchField', () => {
       /\.kui-toolbar-control-group\[data-content="search"\] \{[^}]+--_kui-toolbar-group-search-width-duration: 0s;\s*--_kui-toolbar-group-search-reveal-duration: 0\.25s;/s,
     );
     expect(fieldCss).toMatch(
-      /> \.kui-token-search__editor \{\s*animation: kui-token-search-reveal\s+var\(--_kui-toolbar-group-search-reveal-duration, 0s\) linear;/,
+      /> \.kui-search-field__editor \{\s*animation: kui-search-field-reveal\s+var\(--_kui-toolbar-group-search-reveal-duration, 0s\) linear;/,
     );
     expect(fieldCss).toMatch(
-      /@keyframes kui-token-search-reveal \{[^}]*\{\s*overflow-wrap: normal;\s*white-space: pre;/,
+      /@keyframes kui-search-field-reveal \{[^}]*\{\s*overflow-wrap: normal;\s*white-space: pre;/,
     );
     expect(groupCss).toMatch(
       /\.kui-toolbar-control-group\[data-content="search"\]\[data-sizing="grow"\] \{[^}]+--_kui-toolbar-group-search-reveal-duration: 0s;[^}]+transition-property:\s*width, flex-basis, flex-grow, min-width/s,
@@ -397,10 +397,10 @@ describe('TokenSearchField', () => {
       /--_kui-toolbar-group-grow-search-min-width: calc\(\s*var\(--kui-toolbar-group-grow-basis/,
     );
     expect(fieldCss).toMatch(
-      /\.kui-token-search\[data-collapsible="true"\]\[data-expanded="true"\] \{\s*min-width: var\(--_kui-toolbar-group-grow-search-min-width, 0px\);/,
+      /\.kui-search-field\[data-collapsible="true"\]\[data-expanded="true"\] \{\s*min-width: var\(--_kui-toolbar-group-grow-search-min-width, 0px\);/,
     );
     expect(fieldCss).toMatch(
-      /\.kui-token-search\[data-presentation="toolbar-group"\]\[data-collapsible="true"\]/,
+      /\.kui-search-field\[data-presentation="toolbar-group"\]\[data-collapsible="true"\]/,
     );
     expect(groupCss).toMatch(
       /\.kui-toolbar-control-group\[data-content="search"\][^{]*\{[^}]+width 0\.25s ease/s,
@@ -412,7 +412,7 @@ describe('TokenSearchField', () => {
 
   it('reads browser-edited text and token offsets without chip button text', () => {
     document.body.innerHTML = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'tickets',
         label: 'Search Tickets',
         query: 'NOT  AND parser',
@@ -420,14 +420,14 @@ describe('TokenSearchField', () => {
       }),
     );
     const editor = document.querySelector<HTMLElement>(
-      '[data-token-search-editor]',
+      '[data-search-field-editor]',
     )!;
     editor.append(
       document.createElement('br'),
       document.createTextNode('owner'),
     );
     expect(
-      readTokenSearchField(editor, [
+      readSearchField(editor, [
         { value: 'tag:server', label: 'Server', accessibleLabel: 'server tag' },
       ]),
     ).toEqual({
@@ -444,14 +444,14 @@ describe('TokenSearchField', () => {
     editor.querySelector<HTMLElement>(
       '[data-token-value="tag:server"]',
     )!.dataset.tokenValue = 'status:open';
-    expect(readTokenSearchField(editor).tokens).toEqual([
+    expect(readSearchField(editor).tokens).toEqual([
       { value: 'status:open', label: 'status:open', offset: 4 },
     ]);
     delete editor.querySelector<HTMLElement>(
-      '[data-component="token-search-token"]',
+      '[data-component="search-field-token"]',
     )!.dataset.tokenValue;
     editor.prepend(document.createComment('ignored'));
-    expect(readTokenSearchField(editor).tokens).toEqual([]);
+    expect(readSearchField(editor).tokens).toEqual([]);
   });
 
   it('keeps DOM-owned text across query renders and rebuilds the editor on a new revision', () => {
@@ -461,7 +461,7 @@ describe('TokenSearchField', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const stop = mount(root, () =>
-      TokenSearchField({
+      SearchField({
         id: 'reseed',
         label: 'Search',
         query: query.value,
@@ -470,19 +470,19 @@ describe('TokenSearchField', () => {
       }),
     );
     const editor = () =>
-      root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+      root.querySelector<HTMLElement>('[data-search-field-editor]')!;
     const first = editor();
     expect(first.dataset.key).toBe('reseed:tag:docs');
     // A query render with unchanged tokens leaves the typed-into editor alone.
     query.value = 'typed';
     expect(editor()).toBe(first);
-    expect(readTokenSearchField(editor()).query).not.toContain('typed');
+    expect(readSearchField(editor()).query).not.toContain('typed');
     // A new revision replaces the text programmatically.
     query.value = '() AND (saved)';
     revision.value = 1;
     expect(editor()).not.toBe(first);
     expect(editor().dataset.key).toBe('reseed@1:tag:docs');
-    expect(readTokenSearchField(editor())).toMatchObject({
+    expect(readSearchField(editor())).toMatchObject({
       query: '() AND (saved)',
       tokens: [{ value: 'tag:docs', offset: 0 }],
     });
@@ -491,7 +491,7 @@ describe('TokenSearchField', () => {
 
   it('places the caret at a text offset or at the end while skipping chip text', () => {
     document.body.innerHTML = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'tickets',
         label: 'Search Tickets',
         query: 'beforeafter',
@@ -499,36 +499,36 @@ describe('TokenSearchField', () => {
       }),
     );
     const editor = document.querySelector<HTMLElement>(
-      '[data-token-search-editor]',
+      '[data-search-field-editor]',
     )!;
-    placeTokenSearchCaret(editor, 3);
+    placeSearchFieldCaret(editor, 3);
     expect(document.activeElement).toBe(editor);
     expect(globalThis.getSelection()?.anchorNode?.textContent).toBe('before');
     expect(globalThis.getSelection()?.anchorOffset).toBe(3);
-    placeTokenSearchCaret(editor);
+    placeSearchFieldCaret(editor);
     expect(globalThis.getSelection()?.getRangeAt(0).collapsed).toBe(true);
-    placeTokenSearchCaret(editor, 100);
+    placeSearchFieldCaret(editor, 100);
     expect(globalThis.getSelection()?.getRangeAt(0).collapsed).toBe(true);
 
     const emptyEditor = document.createElement('div');
     emptyEditor.innerHTML = asHtml(
-      TokenSearchField({
+      SearchField({
         id: 'empty-token',
         label: 'Empty token',
         tokens: [{ value: 'tag:a', label: 'tag:a', offset: 0 }],
       }),
     );
     const nestedEditor = emptyEditor.querySelector<HTMLElement>(
-      '[data-token-search-editor]',
+      '[data-search-field-editor]',
     )!;
     document.body.append(nestedEditor);
-    placeTokenSearchCaret(nestedEditor, 0);
+    placeSearchFieldCaret(nestedEditor, 0);
     expect(globalThis.getSelection()?.anchorOffset).toBe(0);
 
     const getSelection = vi
       .spyOn(globalThis, 'getSelection')
       .mockReturnValue(null);
-    expect(() => placeTokenSearchCaret(nestedEditor)).not.toThrow();
+    expect(() => placeSearchFieldCaret(nestedEditor)).not.toThrow();
     getSelection.mockRestore();
   });
 });

@@ -1,19 +1,19 @@
 import {
-  readTokenSearchField,
-  TokenSearchField,
-  type TokenSearchToken,
-} from '@kerfjs/ui/token-search-field';
-import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
+  readSearchField,
+  SearchField,
+  type SearchFieldToken,
+} from '@kerfjs/ui/search-field';
+import { wireSearchFields } from '@kerfjs/ui/wire-search-fields';
 import { batch, mount, signal } from 'kerfjs';
 
 // The "commit typed grammar to a chip" pattern: onEdit turns each
 // whitespace-terminated `key:value` into a token and keeps the rest as query.
 const query = signal('');
-const tokens = signal<TokenSearchToken[]>([]);
+const tokens = signal<SearchFieldToken[]>([]);
 const root = document.querySelector<HTMLElement>('[data-app]')!;
 
 mount(root, () => (
-  <TokenSearchField
+  <SearchField
     id="commit-search"
     label="Search"
     query={query.value}
@@ -22,10 +22,10 @@ mount(root, () => (
   />
 ));
 
-wireTokenSearchFields(root, {
+wireSearchFields(root, {
   collapsible: false,
   onEdit: ({ editor }) => {
-    const value = readTokenSearchField(editor, tokens.value);
+    const value = readSearchField(editor, tokens.value);
     const committed = [...value.tokens];
     let rest = value.query;
     for (

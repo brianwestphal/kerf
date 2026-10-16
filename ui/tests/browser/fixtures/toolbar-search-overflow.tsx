@@ -1,11 +1,11 @@
 import '@kerfjs/ui/foundation.css';
 import '@kerfjs/ui/document.css';
 import '@kerfjs/ui/toolbar-control-group.css';
-import '@kerfjs/ui/token-search-field.css';
+import '@kerfjs/ui/search-field.css';
 
-import { TokenSearchField } from '@kerfjs/ui/token-search-field';
+import { SearchField } from '@kerfjs/ui/search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
+import { wireSearchFields } from '@kerfjs/ui/wire-search-fields';
 import { mount, signal } from 'kerfjs';
 
 const open = signal(false);
@@ -18,7 +18,7 @@ mount(root, () => (
       single={!open.value}
       expandedOverflow="visible"
     >
-      <TokenSearchField
+      <SearchField
         id="search-anchor"
         label="Search Views"
         presentation="toolbar-group"
@@ -29,7 +29,7 @@ mount(root, () => (
       {open.value ? (
         <section
           data-test-search-surface
-          data-token-search-keep-open
+          data-search-field-keep-open
           aria-label="Choose Updated Date"
           style="position:absolute;inset-block-start:calc(100% + 8px);inset-inline-start:0;width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--kui-color-neutral-border-normal);border-radius:12px;background:var(--kui-color-surface);color:var(--kui-color-text);z-index:10"
         >
@@ -46,7 +46,7 @@ mount(root, () => (
     </ToolbarControlGroup>
   </main>
 ));
-wireTokenSearchFields(root, {
+wireSearchFields(root, {
   collapsible: { signals: { 'search-anchor': open } },
 });
 root.addEventListener('click', (event) => {

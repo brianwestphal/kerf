@@ -9,7 +9,7 @@ These are normative contracts for package components and consuming applications.
 - `ListItem` uses native button Enter/Space behavior. `selected` maps to `aria-current="page"`; `pressed` maps to `aria-pressed`. Selected rows keep the normal foreground over their brand-tinted fill so text retains WCAG AA contrast in light and dark themes. Its leading icon visual is 18px while the row retains its 44px minimum target; multiline icons align to the first text line. Its `trailing` content is dormant and must not contain controls. Its `rootAttributes` slot accepts only application `data-*` metadata and deliberately cannot emit `role="menuitem"` in isolation—a true ARIA menu must own arrow, Home/End, Escape, and focus behavior as one widget.
 - `ListItemLink` shares that row content and geometry but uses native anchor Enter behavior and requires `href`. It has no `action` or `pressed` state. `external` opens a new tab with `rel="noopener noreferrer"`; the default accessible name announces the new tab for a string label, so an explicit `accessibleLabel` should do the same. Disabled and loading links omit `href`, expose `aria-disabled`, and leave the tab order. Its trailing content remains dormant.
 - `ListHeader` owns action naming, disabled state, and disclosure `aria-expanded`. Toggle mode supplies one decorative 18px `DisclosureArrow` when `actionIcon` is omitted; it mirrors `expanded` while the native button's accessible name stays stable. The application must update that controlled state and reveal or hide real content. A valid `count` is visually rendered in an `aria-hidden` neutral pill while the required localized `countLabel` becomes part of the owning heading or disclosure button's accessible name; zero remains a real count. Optional `badge` and `status` content can appear together and should each carry meaningful text. Its narrow `triggerAttributes` slot may describe a native popover or controlled-content relationship with `popoverTarget`, `popoverTargetAction`, `aria-controls`, and `aria-haspopup`; the application owns the target surface and its focus/dismissal behavior.
-- Dispose `wireTabBars` and `wireTokenSearchFields` with their owning view. Disposal cancels queued controlled-render focus restoration, so a torn-down view cannot reclaim focus from its successor.
+- Dispose `wireTabBars` and `wireSearchFields` with their owning view. Disposal cancels queued controlled-render focus restoration, so a torn-down view cannot reclaim focus from its successor.
 - `wireNavStack` moves focus into every newly active top view and remembers the last focused descendant of each mounted view for pop restoration. Mark a preferred initial heading or control with `data-nav-focus` (and `tabindex="-1"` when it is not normally tabbable); otherwise the helper uses the first enabled focusable descendant, then a programmatically focusable view-container fallback.
 - In any `.kui-pane`, menu rows, `ListHeader` actions, and toolbar groups keep a minimum 44px target in both dimensions. A `ListHeader` fills the available inline width and keeps that action at the logical end, including in RTL. Its action visual defaults to 18px through `--kui-list-header-action-icon-size` inside a fitted 36px hover square; a transparent hit layer extends the pointer target to at least 44 × 44 around that square without moving layout or enlarging the painted surface. Compact headers are 36px tall like the rest of the compact List family, so their action target is 44px wide and clamped to the 36px header height instead of reaching into a neighboring row. Do not reduce the target to the visible icon, and do not force the button itself to 44px.
 - `LoadingSpinner` is either labeled (`role="img"`) or hidden. Its rotation stops for reduced motion.
@@ -204,7 +204,7 @@ visible text get no tag: their visible text already names them. A button that
 carries a native `title`, or that the application has already given a
 `wa-tooltip` `for` its `id`, keeps that and gets no second tag, so nothing is
 shown twice. Zero-JS components that name an icon control with a native `title`
-(the `ListHeader` action, the `AppTab` close button, the `TokenSearchField`
+(the `ListHeader` action, the `AppTab` close button, the `SearchField`
 reveal and clear buttons, and `SegmentedControl` choice titles) keep the
 browser's own tooltip, which needs no script; the installer deliberately skips
 them rather than stacking a second tag on the first. Icon-only buttons outside
@@ -596,20 +596,20 @@ disabled field, or a disabled, loading, or `aria-disabled` action sends
 nothing. A visible hint may also state the shortcut when the audience may not
 expect it.
 
-## TokenSearchField
+## SearchField
 
 Use `presentation="form-field"` when a structured search query sits beside
 Web Awesome form controls. It renders the visible `label` with the same inset
 and typography, an optional `hint`, and an optional `required` marker. The
 searchbox references the label and hint with `aria-labelledby` and
 `aria-describedby`, and `required` sets `aria-required`; the application
-validates the value before submission. `wireTokenSearchFields()` also moves
+validates the value before submission. `wireSearchFields()` also moves
 focus to the editor when the visible label is clicked. The field stands outside
 a Toolbar and fills the same inline space as a neighboring `TextField`.
 Its control radius follows the shared `--kui-layout-rounded-radius`, so the two
 controls read as one form.
 
-`TokenSearchField` exposes the editable surface as a named `searchbox`. Each
+`SearchField` exposes the editable surface as a named `searchbox`. Each
 chip is atomic (`contenteditable="false"`) and contains separately named edit
 and remove buttons; the clear action is also named. A `trailingAction` is a
 named button whose `label` is also its tooltip; a help toggle sets `expanded`
@@ -617,10 +617,10 @@ named button whose `label` is also its tooltip; a help toggle sets `expanded`
 an on/off toggle sets `pressed` (`aria-pressed`). Disabled fields publish
 `aria-disabled` and stop editing without hiding the current expression. The
 application owns query parsing and must announce result-count or loading
-changes separately when that feedback is useful. Use `readTokenSearchField()`
+changes separately when that feedback is useful. Use `readSearchField()`
 to ignore the chip buttons' visible text when reading browser-edited content,
-and `placeTokenSearchCaret()` to restore a text caret without landing inside a
-chip. Call `wireTokenSearchFields()` once at a stable root so Enter submits
+and `placeSearchFieldCaret()` to restore a text caret without landing inside a
+chip. Call `wireSearchFields()` once at a stable root so Enter submits
 without inserting a contenteditable line break and keyboard chip deletion
 restores focus plus the text-relative caret after controlled rendering replaces
 the editor. Restoration finishes after synchronous input listeners and before
@@ -650,12 +650,12 @@ the complete component. Text or tokens keep the field expanded even when that
 transient state is false. Width animation is disabled under reduced motion.
 Clearing with ✕ follows where focus was when it was pressed: from inside the
 field (the editor, or ✕ reached by keyboard) the caret returns to the emptied
-editor; with focus elsewhere, `wireTokenSearchFields` leaves focus where it is
+editor; with focus elsewhere, `wireSearchFields` leaves focus where it is
 and collapses the emptied field, as it would on blur.
 
 When the field is composed with a caller-owned surface rendered outside it — a
 suggestions listbox, date picker, or help popover — mark that surface (or wrap
-it) with `data-token-search-keep-open`, or pass `collapsible.keepOpenOn(target)`,
+it) with `data-search-field-keep-open`, or pass `collapsible.keepOpenOn(target)`,
 so focus or pointer activation moving into it does not collapse an empty field.
 The helper preserves the pointer target when a browser omits
 `focusout.relatedTarget`, preventing the field or target from disappearing
@@ -663,7 +663,7 @@ between pointerdown and click. For an empty field losing focus during a pointer
 press, managed collapse waits until that press's click has dispatched (or the
 press ends without a click), then rechecks focus and content before closing.
 This keeps a shifting search row from moving the pressed control mid-click.
-`wireTokenSearchFields`
+`wireSearchFields`
 can also, opt-in via `keyboard`, own atomic-chip editing keys: from a collapsed
 caret with no selection, Backspace removes the token before the caret and Delete
 the token after it (reported through `onRemoveToken` for the app to apply to its
@@ -671,10 +671,10 @@ controlled state), and ArrowRight moves the caret past a trailing chip so typed
 text lands after it. An optional `onEdit({ id, editor, event })` — with the
 originating `InputEvent` so a caller can gate on `inputType`/`data` — fires on every editor
 `input`, letting a caller drop its own `input` listener; the application still
-owns query parsing and result-count/loading announcements. When the app's `onEdit` or `onRemoveToken` changes tokens and the controlled render replaces the focused editor, `wireTokenSearchFields` moves focus and caret to the replacement at the same mutation checkpoint (a caret at the end of the query stays at the end; any other caret keeps its place in the remaining text), so keys typed at full speed are not lost.
+owns query parsing and result-count/loading announcements. When the app's `onEdit` or `onRemoveToken` changes tokens and the controlled render replaces the focused editor, `wireSearchFields` moves focus and caret to the replacement at the same mutation checkpoint (a caret at the end of the query stays at the end; any other caret keeps its place in the remaining text), so keys typed at full speed are not lost.
 
-With a `createTokenSearchModel` passed to the field and registered in
-`wireTokenSearchFields(root, { models })`, grammar parsing, chips, clear/edit/
+With a `createSearchFieldModel` passed to the field and registered in
+`wireSearchFields(root, { models })`, grammar parsing, chips, clear/edit/
 remove actions, and suggestions are managed. Arrow Down moves from the editor
 to suggestions, arrow keys move between suggestions, Enter selects one, and
 Escape returns focus to the editor. The application still announces results

@@ -245,7 +245,7 @@ title-style labels as `KUI-D040`. See
   `width`, `height`, `border`, `background`, a wrapper card, or a decoration,
   check whether the component, pane, or content-item already owns it. Prefer a
   component prop — `FloatingToolbar inset`, `DisclosureArrow size`, `ListHeader
-headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
+headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   visibly bounded content item — over overriding its `--kui-*` token. CSS for genuinely new structure
   belongs to the application-owned component that renders it and must not select
   nested Kerf or Web Awesome components.
@@ -273,8 +273,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   copy; `ValueTable density="compact"` reduces row spacing,
   with public row column, padding, and gap tokens for specific metadata layouts.
   `ToolbarText size="xsmall"` suits a dense rail heading. The
-  `TokenSearchField` editor shrinks in narrow groups; its minimum width can be
-  set with `--kui-token-search-editor-min-width`.
+  `SearchField` editor shrinks in narrow groups; its minimum width can be
+  set with `--kui-search-field-editor-min-width`.
 - **Label read-only field previews.** Use `FieldLabel` from `@kerfjs/ui/text`
   in `ListInsetControl sides="trl"` above a `ContentItem` value. Connect its
   id to the preview group's `aria-labelledby`; use the live control's own
@@ -442,7 +442,7 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Make room for an expanded search instead of growing it past what fits.** A
   collapsible search group grows into the space beside its sibling groups; if
   that space is too small, the siblings wrap onto a new row while it opens.
-  Size the expanded search to what fits (`--kui-token-search-expanded-width`,
+  Size the expanded search to what fits (`--kui-search-field-expanded-width`,
   or `sizing="grow"` with a `growBasis` that fits), and if a useful search
   cannot fit beside the other controls, set aside those controls while the
   search is open: mark them `visibility="yield-to-expanded-sibling"` (they
@@ -452,7 +452,7 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never put a bare
   button, input, link, or loose markup in a `leading`/`center`/`trailing` zone.
   Wrap every control — `SegmentedControl`, `Select`, a collapsible
-  `TokenSearchField`, Web Awesome controls — inside a `ToolbarControlGroup`. For an
+  `SearchField`, Web Awesome controls — inside a `ToolbarControlGroup`. For an
   ordinary icon/action control inside the group use a **plain `<button>`** (the
   group styles it fully) — that is the default; a standalone `Button` belongs
   outside a group. A toolbar popup menu is a `PopupMenu`
@@ -511,7 +511,7 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `ToolbarControlGroup` `material="glass"` paints a group that floats over imagery or a clear (transparent) toolbar on the translucent chrome material (`--kui-chrome-material` with the blur/saturate `--kui-chrome-material-filter`), with a specular edge in place of the gray border and a soft shadow. Its controls take `--kui-color-text`, so they stay at AA over any content; a raised or outline selection paints an opaque surface pill. The fill turns opaque under reduced transparency, increased contrast, static effects (`update: slow` or `:root[data-kui-effects="static"]`), or without backdrop-filter support, and paints Canvas/CanvasText in forced colors. A `tone="dark"` glass group keeps its loud fill and gains the blur and edge; a borderless group has no surface and ignores the material. Keep the solid default on an opaque toolbar, and never add your own `backdrop-filter` or translucent background to a group.
   `ListItem`, `ListItemLink`, and `ListActionRow` take `iconTile` to present their leading `icon` in a filled 32px rounded tile holding an 18px glyph, for settings or command rows that identify each entry by color. Pass a tone (`neutral`, `brand`, `success`, `warning`, or `danger`) for the same quiet fill, matching quiet border, and on-quiet foreground as `ToolbarControlGroup.tileTone`, or `{ color, foreground? }` for an application color: `color` is a `CssColor` (`uiColor()`, `colorVar()`, or `fillColor('#e5484d')`) and `foreground` a `CssForegroundColor`; without one, the glyph is black or white, whichever contrasts with the fill. The tile sits 6px clear of a standard 44px row (a compact row is at least 42px tall), moves the label to the tile's edge, and keeps its colors when the row is hovered or selected. Never wrap the icon in your own tile or resize the row's icon slot.
   Toolbar zones accept `KerfUiContent` directly. Use `ToolbarText` for identity and `ToolbarControlGroup` for related controls that need its shared chrome; a bare control keeps its own styling and accessibility responsibilities.
-  Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-token-search-keep-open` or `collapsible.keepOpenOn` for focus.
+  Expanded search groups accept `expandedOverflow="visible"` to anchor app-owned suggestion/date/help surfaces below their relative root; collapsed/default groups retain existing clipping. Apps own surface placement/dismissal and use `data-search-field-keep-open` or `collapsible.keepOpenOn` for focus.
 
 - **Space by the five-step scale, by relationship not by eye.** `0`
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
@@ -606,7 +606,7 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   list shrinks and scrolls, without application descendant CSS. Each action
   zone accepts one ToolbarControlGroup or a standalone `Button` for its own
   chrome. Managed
-  TokenSearchField clear also preserves open state and replacement
+  SearchField clear also preserves open state and replacement
   editor focus before the next input task, so shortcut-letter typing stays in search.
   Select All deletion does the same; deletion
   restoration finishes before the next keystroke rather than on a delayed frame.
@@ -622,13 +622,13 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   (committed tokens, empty or non-empty text, editor revision), so typing plain
   text never re-runs it; in the host's own render read `model.state.peek()` and
   bind `model.result` as a signal hole instead of reading `model.state.value`.
-  The one richer case is `wireTokenSearchFields`, which manages the
+  The one richer case is `wireSearchFields`, which manages the
   collapsible field's expand/collapse/focus by default (on, per-behavior opt-out) and
   exposes the `expanded` signal on its handle — bind it in render or hand in your own
   via `collapsible.signals`. Do not hand-roll open/collapse/focus that helper
   provides; but do keep a plain disclosure toggle (a one-line boolean the app already
   renders from) in the app. For real-app composition it also offers a focusout
-  keep-open exception (`data-token-search-keep-open` regions or `collapsible.keepOpenOn`,
+  keep-open exception (`data-search-field-keep-open` regions or `collapsible.keepOpenOn`,
   so a sibling suggestions/date popover does not collapse an empty field), opt-in
   atomic-chip keyboard (`keyboard`: Backspace/Delete remove the adjacent chip via
   `onRemoveToken`, ArrowRight moves the caret past a trailing chip), and an
@@ -852,8 +852,8 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 `Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `FloatingToolbar`, `ToolbarText`, `Text`,
 `ListItem`, `ListActionRow` (+ `wireListReorder`, `reorderListItems`), `wireListFocusScroll`, `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`, `ChoiceChips`, `Composer`,
-`Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
-`wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
+`Select`, `SearchField` (+ `readSearchField`, `placeSearchFieldCaret`,
+`wireSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `wireScrollDividers` (scroll-state dividers for every `Pane`, `NavStack`,
 `TabNavigator`, and `TabBar`),
 `ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,

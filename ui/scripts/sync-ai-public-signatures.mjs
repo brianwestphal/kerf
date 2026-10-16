@@ -59,8 +59,8 @@ const curatedEntries = [
   ['@kerfjs/ui/loading-spinner', 'dist/loading-spinner.d.ts'],
   ['@kerfjs/ui/skeleton', 'dist/skeleton.d.ts'],
   ['@kerfjs/ui/sunken-panel', 'dist/sunken-panel.d.ts'],
-  ['@kerfjs/ui/token-search-field', 'dist/token-search-field.d.ts'],
-  ['@kerfjs/ui/wire-token-search-fields', 'dist/wire-token-search-fields.d.ts'],
+  ['@kerfjs/ui/search-field', 'dist/search-field.d.ts'],
+  ['@kerfjs/ui/wire-search-fields', 'dist/wire-search-fields.d.ts'],
   ['kerfjs/actions', 'node_modules/kerfjs/dist/actions.d.ts'],
 ];
 const uiPackage = JSON.parse(

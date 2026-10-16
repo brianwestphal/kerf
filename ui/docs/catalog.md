@@ -82,7 +82,7 @@ expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
   `ListInsetControl` + `Select` (or other form components) so they share the
   pane's text column; the Catalog owns the pane, its title, and its toggle.
 
-The sidebar includes a `TokenSearchField` in its fixed header for every Catalog
+The sidebar includes a `SearchField` in its fixed header for every Catalog
 consumer, so the filter remains visible while the entries scroll. `wireCatalog`
 filters entry names and section headings as text is typed,
 ignoring case. A heading match shows all its entries; a matching secondary
@@ -333,7 +333,7 @@ facts that source can prove without guessing at rendered intent:
 - every `@kerfjs/ui` import is a published package export and relative imports
   do not reach into `ui/src`;
 - focused demos have no relative stylesheet imports, inline style attributes,
-  or styling-only `demo-*`, `wa-demo-*`, and token-search class names;
+  or styling-only `demo-*`, `wa-demo-*`, and search-field class names;
 - demo JSX does not copy private `kui-catalog-*` structural classes;
 - recipe sources (checked by `npm run check:recipes` with the same shared
   analyzer) import no stylesheet other than public `@kerfjs/ui` CSS, set no

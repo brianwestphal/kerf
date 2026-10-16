@@ -11,12 +11,12 @@ Form field that collects a list of short values as removable tags, each submitte
 **Not when:**
 
 - Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.
-- Do not use it for search filters; TokenSearchField combines free text with ordered, editable filter tokens.
+- Do not use it for search filters; SearchField combines free text with ordered, editable filter tokens.
 - Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead.
 
 **Alternatives:**
 
-- [TokenSearchField](./token-search-field.md) (prefer-kerf) — Use TokenSearchField when the tags are search filters rather than submitted form values.
+- [SearchField](./search-field.md) (prefer-kerf) — Use SearchField when the tags are search filters rather than submitted form values.
 
 ## Imports
 
@@ -56,6 +56,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Icon](./wa-icon.md), [Tag](./wa-tag.md), [TokenSearchField](./token-search-field.md).
+- Components: [Icon](./wa-icon.md), [Tag](./wa-tag.md), [SearchField](./search-field.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage).
 - UX catalog route: `?component=wa-tag-input`.

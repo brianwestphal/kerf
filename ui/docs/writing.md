@@ -120,7 +120,7 @@ interpolated value keeps its own spelling. The covered props are:
   `wa-textarea`, or `wa-radio-group`;
 - the accessible names of icon-only controls: `IconButton` and
   `IconToggleButton` `label`, `PopupMenu` `label`, `SplitButton`
-  `optionsLabel`, `TokenSearchField` and `TextField` `clearLabel`, and the `aria-label` of a
+  `optionsLabel`, `SearchField` and `TextField` `clearLabel`, and the `aria-label` of a
   `button` or `wa-button` whose only content is an icon.
 
 The check never judges sentence-style surfaces (including `Checkbox` and

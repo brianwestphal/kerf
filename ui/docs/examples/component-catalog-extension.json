@@ -8,12 +8,12 @@
       "id": "acme-filter-chip",
       "name": "FilterChip",
       "kind": "component",
-      "purpose": "A removable application filter displayed inside a token-search workflow.",
+      "purpose": "A removable application filter displayed inside a search-field workflow.",
       "useWhen": [
         "A saved application filter needs a compact visible label and remove action."
       ],
       "avoidWhen": [
-        "The value belongs to TokenSearchField's own controlled token collection."
+        "The value belongs to SearchField's own controlled token collection."
       ],
       "publicClasses": ["acme-filter-chip"],
       "publicTokens": ["--acme-filter-chip-accent"],

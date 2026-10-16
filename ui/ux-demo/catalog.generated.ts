@@ -595,8 +595,8 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/composer.md"
   },
   {
-    "id": "token-search-field",
-    "name": "TokenSearchField",
+    "id": "search-field",
+    "name": "SearchField",
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
@@ -604,9 +604,9 @@ export const generatedKerfCatalog = [
     "uses": [
       "lucide-icon"
     ],
-    "demoSource": "ui/ux-demo/demos/token-search-field.tsx",
-    "componentSource": "ui/src/components/forms/token-search-field/token-search-field.tsx",
-    "designTemplate": "ui/docs/design/templates/token-search-field.svg",
+    "demoSource": "ui/ux-demo/demos/search-field.tsx",
+    "componentSource": "ui/src/components/forms/search-field/search-field.tsx",
+    "designTemplate": "ui/docs/design/templates/search-field.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {

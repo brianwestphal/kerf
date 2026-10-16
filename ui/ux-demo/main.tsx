@@ -29,10 +29,10 @@ import {
   openPopupMenuAt,
   type PopupMenuElement,
 } from '@kerfjs/ui/popup-menu';
+import { readSearchField } from '@kerfjs/ui/search-field';
 import { applySelection, selectionGesture } from '@kerfjs/ui/selection';
 import { closeDialog, openDialog } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
-import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import { wireCheckboxes } from '@kerfjs/ui/wire-checkboxes';
@@ -52,11 +52,11 @@ import {
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireOverlaySheets } from '@kerfjs/ui/wire-overlay-sheets';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
+import { wireSearchFields } from '@kerfjs/ui/wire-search-fields';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
 import { wireTextFields } from '@kerfjs/ui/wire-text-fields';
-import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
 import {
@@ -114,6 +114,10 @@ import {
 } from './demos/nav-stack.js';
 import { demos, demoSettings } from './demos/registry.js';
 import {
+  SearchFieldHelp,
+  TOKEN_SEARCH_HELP_SURFACE_ID,
+} from './demos/search-field.js';
+import {
   clearSplitViewSelection,
   resetSplitViewDemo,
   RESIZABLE_SPLIT_VIEW_LIST_ID,
@@ -167,6 +171,9 @@ import {
   reorderCommands,
   reorderFiles,
   reorderSelection,
+  searchFieldHelpOpen,
+  searchFieldQuery,
+  searchFieldTokens,
   selectedChoice,
   selectViewTitle,
   sizedDisclosureOpen,
@@ -178,9 +185,6 @@ import {
   tabBarTabs,
   ticketLabelFilter,
   ticketLabels,
-  tokenSearchHelpOpen,
-  tokenSearchQuery,
-  tokenSearchTokens,
   toolbarAvatarChoice,
   toolbarChoice,
   toolbarFindOpen,
@@ -207,10 +211,6 @@ import {
   selectOverlayTabNavigatorDemo,
   selectTabNavigatorDemo,
 } from './demos/tab-navigator.js';
-import {
-  TOKEN_SEARCH_HELP_SURFACE_ID,
-  TokenSearchHelp,
-} from './demos/token-search-field.js';
 import {
   COLLAPSED_WORKBENCH_ID,
   NAVIGATION_STACK_ID,
@@ -282,7 +282,7 @@ let nextDemoTabNumber = tabBarTabs.value.length + 1;
 /** How long a newly added application tab stays pending in the demo. */
 const DEMO_TAB_LOAD_MS = 1200;
 const actionLog = signal('Catalog ready');
-let tokenSearchHelp: OverlayHandle | undefined;
+let searchFieldHelp: OverlayHandle | undefined;
 const uxReviewProject = signal<string | null>(null);
 let displayStorage: Storage | null = null;
 try {
@@ -983,49 +983,49 @@ const stopActions = delegateActions(app, 'click', {
   'replace-grammar-search': () => {
     grammarSearchModel.replace({ query: 'roadmap', tokens: [] });
   },
-  'toggle-token-search-help': (_event, element) => {
-    if (tokenSearchHelp) {
-      tokenSearchHelp.close();
+  'toggle-search-field-help': (_event, element) => {
+    if (searchFieldHelp) {
+      searchFieldHelp.close();
       return;
     }
-    const handle = openAnchoredSurface(element, () => <TokenSearchHelp />, {
+    const handle = openAnchoredSurface(element, () => <SearchFieldHelp />, {
       label: 'Search Syntax',
       align: 'end',
       initialFocus: false,
     });
     handle.el.id = TOKEN_SEARCH_HELP_SURFACE_ID;
-    tokenSearchHelp = handle;
-    tokenSearchHelpOpen.value = true;
+    searchFieldHelp = handle;
+    searchFieldHelpOpen.value = true;
     actionLog.value = 'Search help opened';
     void handle.result.then(() => {
-      if (tokenSearchHelp === handle) tokenSearchHelp = undefined;
-      tokenSearchHelpOpen.value = false;
+      if (searchFieldHelp === handle) searchFieldHelp = undefined;
+      searchFieldHelpOpen.value = false;
     });
   },
   'edit-search-token': (_event, element) => {
     const value = element.getAttribute('data-token-value');
-    const token = tokenSearchTokens.value.find(
+    const token = searchFieldTokens.value.find(
       (candidate) => candidate.value === value,
     );
     if (!token) return;
-    const offset = token.offset ?? tokenSearchQuery.value.length;
+    const offset = token.offset ?? searchFieldQuery.value.length;
     batch(() => {
-      tokenSearchTokens.value = tokenSearchTokens.value.filter(
+      searchFieldTokens.value = searchFieldTokens.value.filter(
         (candidate) => candidate.value !== value,
       );
-      tokenSearchQuery.value = `${tokenSearchQuery.value.slice(0, offset)}${token.value} ${tokenSearchQuery.value.slice(offset)}`;
+      searchFieldQuery.value = `${searchFieldQuery.value.slice(0, offset)}${token.value} ${searchFieldQuery.value.slice(offset)}`;
     });
     actionLog.value = `Editing ${token.label}`;
   },
   'remove-search-token': (_event, element) => {
     const value = element.getAttribute('data-token-value');
-    tokenSearchTokens.value = tokenSearchTokens.value.filter(
+    searchFieldTokens.value = searchFieldTokens.value.filter(
       (token) => token.value !== value,
     );
     actionLog.value = `Removed ${value}`;
   },
   'add-adoption-token': (_event, element) => {
-    // Clicking a suggestion in the data-token-search-keep-open surface must not
+    // Clicking a suggestion in the data-search-field-keep-open surface must not
     // collapse the empty field — the wire helper's keep-open exception guards it.
     const value = element.getAttribute('data-token-value');
     const suggestion = ADOPTION_SUGGESTIONS.find(
@@ -1049,8 +1049,8 @@ const stopActions = delegateActions(app, 'click', {
   },
   'clear-adoption-search': (_event, element) => {
     const editor = element
-      .closest('[data-component="token-search-field"]')
-      ?.querySelector<HTMLElement>('[data-token-search-editor]');
+      .closest('[data-component="search-field"]')
+      ?.querySelector<HTMLElement>('[data-search-field-editor]');
     if (editor) editor.textContent = '';
     batch(() => {
       adoptionQuery.value = '';
@@ -1058,21 +1058,21 @@ const stopActions = delegateActions(app, 'click', {
       adoptionReadout.value = 'Search cleared';
     });
   },
-  'clear-token-search': (_event, element) => {
+  'clear-search-field': (_event, element) => {
     const editor = element
-      .closest('[data-component="token-search-field"]')
-      ?.querySelector<HTMLElement>('[data-token-search-editor]');
+      .closest('[data-component="search-field"]')
+      ?.querySelector<HTMLElement>('[data-search-field-editor]');
     if (editor) editor.textContent = '';
     batch(() => {
-      tokenSearchQuery.value = '';
-      tokenSearchTokens.value = [];
+      searchFieldQuery.value = '';
+      searchFieldTokens.value = [];
     });
     actionLog.value = 'Search cleared';
   },
   'clear-toolbar-find': (_event, element) => {
     const editor = element
-      .closest('[data-component="token-search-field"]')
-      ?.querySelector<HTMLElement>('[data-token-search-editor]');
+      .closest('[data-component="search-field"]')
+      ?.querySelector<HTMLElement>('[data-search-field-editor]');
     if (editor) editor.textContent = '';
     batch(() => {
       toolbarFindOpen.value = true;
@@ -1735,17 +1735,17 @@ const stopRecipeDialogs = delegateCapture(
         ?.afterHide?.(element as HTMLElement);
   },
 );
-const stopTokenSearch = delegate(
+const stopSearchField = delegate(
   app,
   'input',
-  '[data-demo-token-search="true"]',
+  '[data-demo-search-field="true"]',
   (_event, element) => {
-    const value = readTokenSearchField(
+    const value = readSearchField(
       element as HTMLElement,
-      tokenSearchTokens.value,
+      searchFieldTokens.value,
     );
-    tokenSearchQuery.value = value.query;
-    tokenSearchTokens.value = value.tokens;
+    searchFieldQuery.value = value.query;
+    searchFieldTokens.value = value.tokens;
   },
 );
 const stopToolbarFind = delegate(
@@ -1753,13 +1753,13 @@ const stopToolbarFind = delegate(
   'input',
   '[data-demo-toolbar-find="true"]',
   (_event, element) => {
-    toolbarFindQuery.value = readTokenSearchField(element as HTMLElement).query;
+    toolbarFindQuery.value = readSearchField(element as HTMLElement).query;
   },
 );
 // The collapsible fields' expand/collapse/focus is managed by the wire helper (on by
 // default). The app only adopts each field's open signal so the render reflects it;
 // the standalone collapsible field tracks no query — the helper reads live DOM.
-const stopTokenSearchSubmits = wireTokenSearchFields(app, {
+const stopSearchFieldSubmits = wireSearchFields(app, {
   models: { 'grammar-search': grammarSearchModel },
   onSubmit: ({ id }) => {
     actionLog.value =
@@ -1800,7 +1800,7 @@ const stopFilePickers = wireFilePickers(app, {
 });
 // The opt-in chip keyboard + onEdit are demonstrated ONLY on the adoption-knobs
 // field, so wire a second helper scoped to that field's container (the app-wide
-// helper above stays keyboard-free, leaving the other token-search demos on their
+// helper above stays keyboard-free, leaving the other search-field demos on their
 // browser-removal + caret-restore path). Collapse stays owned by the app-wide
 // helper; this scoped one only adds the keyboard + onEdit hooks.
 // The floating toolbar is a manual on/off toggle that auto-hides when the viewer
@@ -1821,15 +1821,15 @@ const stopAdoptionKeyboardEffect = effect(() => {
   window.requestAnimationFrame(() => {
     stopAdoptionKeyboard?.();
     stopAdoptionKeyboard = null;
-    if (id !== 'token-search-field') return;
+    if (id !== 'search-field') return;
     const container = app
       .querySelector<HTMLElement>('[data-demo-adoption-search]')
       ?.closest<HTMLElement>('[data-catalog-example]');
     if (!container) return;
-    stopAdoptionKeyboard = wireTokenSearchFields(container, {
+    stopAdoptionKeyboard = wireSearchFields(container, {
       collapsible: false,
       onEdit: ({ editor, event }) => {
-        const value = readTokenSearchField(editor, adoptionTokens.value);
+        const value = readSearchField(editor, adoptionTokens.value);
         batch(() => {
           adoptionQuery.value = value.query;
           adoptionTokens.value = value.tokens;
@@ -2197,9 +2197,9 @@ window.addEventListener(
     stopRecipeChanges();
     stopRecipeInputs();
     stopRecipeDialogs();
-    stopTokenSearch();
+    stopSearchField();
     stopToolbarFind();
-    stopTokenSearchSubmits();
+    stopSearchFieldSubmits();
     stopToolbarWidthVisibility();
     stopAdoptionKeyboard?.();
     stopAdoptionKeyboardEffect();

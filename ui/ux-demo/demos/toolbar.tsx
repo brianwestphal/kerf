@@ -4,7 +4,7 @@ import { px } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
-import { TokenSearchField } from '@kerfjs/ui/token-search-field';
+import { SearchField } from '@kerfjs/ui/search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -207,7 +207,7 @@ export function ToolbarDemo() {
                 expanded={findExpanded}
                 single={!findExpanded}
               >
-                <TokenSearchField
+                <SearchField
                   id="toolbar-find"
                   label="Find in Workspace"
                   query={toolbarFindQuery.value}
@@ -396,7 +396,7 @@ export function ToolbarDemo() {
           trailing={
             <>
               <ToolbarControlGroup content="search" expanded>
-                <TokenSearchField
+                <SearchField
                   id="trailing-priority-search"
                   label="Search Tickets"
                   collapsible

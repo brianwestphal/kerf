@@ -34,7 +34,7 @@ test('expanded grouped search anchors clickable app surfaces and restores collap
     content: bundle.outputFiles.find((file) => file.path.endsWith('.js'))!.text,
   });
   const group = page.locator('[data-component="toolbar-control-group"]');
-  const field = group.locator('[data-component="token-search-field"]');
+  const field = group.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search Views' });
   await expect(group).toHaveAttribute('data-expanded-overflow', 'visible');
   await expect(group).toHaveCSS('overflow', 'hidden');

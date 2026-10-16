@@ -1,6 +1,6 @@
 import { expect, type Page, test } from '@playwright/test';
 
-// A collapsible toolbar-group TokenSearchField inside a search group must
+// A collapsible toolbar-group SearchField inside a search group must
 // expand (and collapse) as ONE surface: the field fills the group on every
 // frame, so the pill never shows an empty band beside a narrower field, and a
 // query never wraps while the group is still opening. This holds for a
@@ -31,9 +31,9 @@ async function mountFixture(page: Page, width: number, grow = true) {
       // The same group without `sizing="grow"` is a plain search group.
       if (!isGrow) group.removeAttribute('data-sizing');
       group.dataset.expandFixtureGroup = '';
-      const field = group.querySelector<HTMLElement>('.kui-token-search')!;
+      const field = group.querySelector<HTMLElement>('.kui-search-field')!;
       const collapsedField = document.querySelector<HTMLElement>(
-        '[data-demo-section="toolbar-group-search"] .kui-token-search',
+        '[data-demo-section="toolbar-group-search"] .kui-search-field',
       )!;
       const expandedMarkup = field.innerHTML;
       const collapsedMarkup = collapsedField.innerHTML;
@@ -47,7 +47,7 @@ async function mountFixture(page: Page, width: number, grow = true) {
         field.innerHTML = expanded ? expandedMarkup : collapsedMarkup;
         if (expanded) {
           const text = field.querySelector<HTMLElement>(
-            '[data-token-search-text]',
+            '[data-search-field-text]',
           )!;
           text.textContent = 'pump site:north Zseal';
           text.dataset.empty = 'false';
@@ -74,8 +74,8 @@ async function sample(page: Page, expanded: boolean): Promise<Frame[]> {
         const frames: Frame[] = [];
         const start = performance.now();
         const measure = () => {
-          const field = group.querySelector<HTMLElement>('.kui-token-search')!;
-          const text = field.querySelector('[data-token-search-text]');
+          const field = group.querySelector<HTMLElement>('.kui-search-field')!;
+          const text = field.querySelector('[data-search-field-text]');
           let lines = 0;
           if (text?.firstChild) {
             const range = document.createRange();
@@ -143,7 +143,7 @@ for (const { width, animates } of [
     if (animates) expect(early.group).toBeLessThan(settledOpen.group);
     else expect(opening[0]!.group).toBe(settledOpen.group);
     await host.screenshot({
-      path: `test-results/token-search-grow-expanded-${width}.png`,
+      path: `test-results/search-field-grow-expanded-${width}.png`,
     });
 
     const closing = await sample(page, false);
@@ -155,7 +155,7 @@ for (const { width, animates } of [
         closing[index - 1]!.group,
       );
     await host.screenshot({
-      path: `test-results/token-search-grow-collapsed-${width}.png`,
+      path: `test-results/search-field-grow-collapsed-${width}.png`,
     });
   });
 }
@@ -203,7 +203,7 @@ for (const width of [1440, 420]) {
     const early = opening.find((frame) => frame.t > 0 && frame.t < 120)!;
     expect(early.group).toBeLessThan(settled.group);
     await host.screenshot({
-      path: `test-results/token-search-plain-expanded-${width}.png`,
+      path: `test-results/search-field-plain-expanded-${width}.png`,
     });
 
     const closing = await sample(page, false);

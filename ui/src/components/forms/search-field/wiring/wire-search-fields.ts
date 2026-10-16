@@ -8,19 +8,16 @@ import {
 } from '@floating-ui/dom';
 import { delegate, delegateCapture, type Signal, signal } from 'kerfjs';
 
-import type { TokenSearchModel } from '../model/token-search-model.js';
-import {
-  placeTokenSearchCaret,
-  readTokenSearchField,
-} from '../token-search-field.js';
+import type { SearchFieldModel } from '../model/search-field-model.js';
+import { placeSearchFieldCaret, readSearchField } from '../search-field.js';
 
-export interface TokenSearchSubmit {
+export interface SearchFieldSubmit {
   id: string;
   editor: HTMLElement;
 }
 
-/** Reported to {@link WireTokenSearchFieldsOptions.onEdit} on every editor input. */
-export interface TokenSearchEdit extends TokenSearchSubmit {
+/** Reported to {@link WireSearchFieldsOptions.onEdit} on every editor input. */
+export interface SearchFieldEdit extends SearchFieldSubmit {
   /**
    * The `InputEvent` that mutated the editor — read `event.inputType` / `event.data`
    * to gate commit behavior (e.g. only parse a chip on whitespace-terminated input)
@@ -30,7 +27,7 @@ export interface TokenSearchEdit extends TokenSearchSubmit {
 }
 
 /** Reported when adjacent-token keyboard deletion asks the app to drop a chip. */
-export interface TokenSearchTokenRemoval {
+export interface SearchFieldTokenRemoval {
   id: string;
   /** The `data-token-value` of the token the app should remove from its state. */
   value: string;
@@ -42,11 +39,11 @@ export interface TokenSearchTokenRemoval {
 /**
  * Opt-in keyboard behavior for the atomic token chips. Off unless `keyboard` is
  * set; each piece defaults on once opted in. The helper never mutates app state:
- * a removal is reported through {@link TokenSearchKeyboardOptions.onRemoveToken}
+ * a removal is reported through {@link SearchFieldKeyboardOptions.onRemoveToken}
  * for the caller to apply, while caret movement past a chip is a pure ephemeral
  * mechanic the helper performs itself.
  */
-interface TokenSearchKeyboardBaseOptions {
+interface SearchFieldKeyboardBaseOptions {
   /**
    * From a collapsed caret with no selection, Backspace removes the token
    * immediately before it and Delete the token immediately after — reported via
@@ -60,22 +57,22 @@ interface TokenSearchKeyboardBaseOptions {
   /** Apply the reported removal to your controlled state, then re-render. */
 }
 
-export type TokenSearchKeyboardOptions = TokenSearchKeyboardBaseOptions &
+export type SearchFieldKeyboardOptions = SearchFieldKeyboardBaseOptions &
   (
     | {
         removeAdjacentToken?: true;
         /** Apply the reported removal to your controlled state, then re-render. */
-        onRemoveToken: (removal: TokenSearchTokenRemoval) => void;
+        onRemoveToken: (removal: SearchFieldTokenRemoval) => void;
       }
     | { removeAdjacentToken: false; onRemoveToken?: never }
   );
 
 /**
- * Managed collapsible behavior for the iconic TokenSearchField. Every piece is on
+ * Managed collapsible behavior for the iconic SearchField. Every piece is on
  * by default; disable a specific one to own it in the app. Provide `signals` to
  * drive app-owned `expanded` signals per field id instead of helper-created ones.
  */
-export interface TokenSearchCollapsibleOptions {
+export interface SearchFieldCollapsibleOptions {
   /** Expand the field and focus its editor when the iconic trigger is activated. Default: true. */
   expandOnActivate?: boolean;
   /** Collapse the field when focus leaves it while it is empty. Default: true. */
@@ -88,7 +85,7 @@ export interface TokenSearchCollapsibleOptions {
    * Keep an empty field expanded when focus moves to a caller-owned surface
    * rendered outside the field — a suggestions dropdown, date picker, or help
    * popover shown beside it. Return true for any focus target that must NOT
-   * trigger collapse-on-empty-blur. An element carrying `data-token-search-keep-open`
+   * trigger collapse-on-empty-blur. An element carrying `data-search-field-keep-open`
    * (or any node inside one) is always exempt, so this predicate is only needed
    * for surfaces you cannot mark declaratively.
    */
@@ -97,25 +94,25 @@ export interface TokenSearchCollapsibleOptions {
   signals?: Readonly<Record<string, Signal<boolean>>>;
 }
 
-export interface WireTokenSearchFieldsOptions {
-  /** Optional automatic grammar/suggestion models, keyed by TokenSearchField id. */
-  models?: Readonly<Record<string, TokenSearchModel>>;
-  onSubmit?: (submission: TokenSearchSubmit) => void;
+export interface WireSearchFieldsOptions {
+  /** Optional automatic grammar/suggestion models, keyed by SearchField id. */
+  models?: Readonly<Record<string, SearchFieldModel>>;
+  onSubmit?: (submission: SearchFieldSubmit) => void;
   /** Fired on every editor `input`, after the browser mutates it, so a caller can drop its own `input` listener. */
-  onEdit?: (edit: TokenSearchEdit) => void;
+  onEdit?: (edit: SearchFieldEdit) => void;
   /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
-  collapsible?: boolean | TokenSearchCollapsibleOptions;
+  collapsible?: boolean | SearchFieldCollapsibleOptions;
   /** Opt-in atomic-chip keyboard behavior (off by default). */
-  keyboard?: false | TokenSearchKeyboardOptions;
+  keyboard?: false | SearchFieldKeyboardOptions;
 }
 
 /**
- * The value returned from {@link wireTokenSearchFields}: call it (or `dispose()`) to
+ * The value returned from {@link wireSearchFields}: call it (or `dispose()`) to
  * tear down. When collapsible behavior is managed, it also exposes the transient
  * `expanded` state per field id so the app can read it in render, hand in its own
  * signal, or drive it imperatively.
  */
-export interface TokenSearchFieldsHandle {
+export interface SearchFieldsHandle {
   (): void;
   dispose(): void;
   /** The managed `expanded` signal for a field id (adopted or helper-created); undefined when unmanaged. */
@@ -139,7 +136,7 @@ function editorFromEvent(
 ): HTMLElement | undefined {
   const target = event.target;
   if (!(target instanceof Element)) return;
-  const editor = target.closest<HTMLElement>('[data-token-search-editor]');
+  const editor = target.closest<HTMLElement>('[data-search-field-editor]');
   return editor && root.contains(editor) ? editor : undefined;
 }
 
@@ -153,7 +150,7 @@ function caretQueryOffset(editor: HTMLElement): number | undefined {
   prefixRange.setEnd(selectionRange.startContainer, selectionRange.startOffset);
   const prefix = editor.ownerDocument.createElement('div');
   prefix.append(prefixRange.cloneContents());
-  return readTokenSearchField(prefix).query.length;
+  return readSearchField(prefix).query.length;
 }
 
 function replacementEditor(
@@ -161,12 +158,12 @@ function replacementEditor(
   id: string,
 ): HTMLElement | undefined {
   return [
-    ...root.querySelectorAll<HTMLElement>('[data-token-search-editor]'),
-  ].find((editor) => editor.dataset.tokenSearchEditor === id);
+    ...root.querySelectorAll<HTMLElement>('[data-search-field-editor]'),
+  ].find((editor) => editor.dataset.searchFieldEditor === id);
 }
 
 function editorIsEmpty(editor: HTMLElement): boolean {
-  const value = readTokenSearchField(editor);
+  const value = readSearchField(editor);
   return value.query.length === 0 && value.tokens.length === 0;
 }
 
@@ -181,8 +178,8 @@ function selectionCoversEditor(editor: HTMLElement): boolean {
   // text nodes. Compare the selected logical value instead of DOM boundaries.
   const selectedHost = editor.ownerDocument.createElement('div');
   selectedHost.append(selected.cloneContents());
-  const fullValue = readTokenSearchField(editor);
-  const selectedValue = readTokenSearchField(selectedHost);
+  const fullValue = readSearchField(editor);
+  const selectedValue = readSearchField(selectedHost);
   return (
     selectedValue.query === fullValue.query &&
     selectedValue.tokens.length === fullValue.tokens.length &&
@@ -192,13 +189,13 @@ function selectionCoversEditor(editor: HTMLElement): boolean {
   );
 }
 
-const TOKEN_SELECTOR = '[data-component="token-search-token"]';
-const TEXT_SELECTOR = '[data-token-search-text]';
+const TOKEN_SELECTOR = '[data-component="search-field-token"]';
+const TEXT_SELECTOR = '[data-search-field-text]';
 const stripZwsp = (text: string): string => text.replaceAll('​', '');
 
 /**
  * A `contenteditable` host emptied by select-all + Delete (or Backspace) leaves a
- * bogus `<br>` in every engine: it renders as a stray newline and `readTokenSearchField`
+ * bogus `<br>` in every engine: it renders as a stray newline and `readSearchField`
  * reads it back as a space. Strip those line breaks after a delete, and when the field
  * is otherwise empty (no chips, no visible text) restore the canonical empty text span
  * and place the caret in it so typing resumes cleanly. Called only after the browser has
@@ -215,7 +212,7 @@ function normalizeEmptiedEditor(
   if (!selectedAll && stripZwsp(editor.textContent ?? '') !== '') return;
   const doc = editor.ownerDocument;
   const span = doc.createElement('span');
-  span.setAttribute('data-token-search-text', '');
+  span.setAttribute('data-search-field-text', '');
   span.setAttribute('data-empty', 'true');
   editor.replaceChildren(span);
   if (doc.activeElement !== editor) return;
@@ -324,12 +321,12 @@ function placeCaretAfterToken(editor: HTMLElement, chip: HTMLElement): void {
 }
 
 /**
- * Wire every TokenSearchField under `root`: submit on Enter, preserve the caret across
+ * Wire every SearchField under `root`: submit on Enter, preserve the caret across
  * controlled token deletion, and (by default) manage the collapsible field's transient
- * expand/collapse/focus. Returns a {@link TokenSearchFieldsHandle} — a disposer that also
+ * expand/collapse/focus. Returns a {@link SearchFieldsHandle} — a disposer that also
  * exposes the managed `expanded` state per field id.
  */
-export function wireTokenSearchFields(
+export function wireSearchFields(
   root: HTMLElement,
   {
     models = {},
@@ -337,8 +334,8 @@ export function wireTokenSearchFields(
     onEdit,
     collapsible = true,
     keyboard = false,
-  }: WireTokenSearchFieldsOptions = {},
-): TokenSearchFieldsHandle {
+  }: WireSearchFieldsOptions = {},
+): SearchFieldsHandle {
   const managed = collapsible !== false;
   const config = typeof collapsible === 'object' ? collapsible : {};
   const expandOnActivate = managed && (config.expandOnActivate ?? true);
@@ -363,7 +360,7 @@ export function wireTokenSearchFields(
 
   const syncSuggestions = () => {
     const current = new Set(
-      root.querySelectorAll<HTMLElement>('.kui-token-search__suggestions'),
+      root.querySelectorAll<HTMLElement>('.kui-search-field__suggestions'),
     );
     for (const [popup, stop] of positionedSuggestions) {
       if (current.has(popup)) continue;
@@ -373,7 +370,7 @@ export function wireTokenSearchFields(
     for (const popup of current) {
       if (positionedSuggestions.has(popup)) continue;
       const field = popup.closest<HTMLElement>(
-        '[data-component="token-search-field"]',
+        '[data-component="search-field"]',
       );
       if (!field) continue;
       let active = true;
@@ -436,7 +433,7 @@ export function wireTokenSearchFields(
   /** True when focus moving to `element` should keep an empty field expanded. */
   const isExemptTarget = (element: Element | null): boolean => {
     if (!element) return false;
-    if (element.closest('[data-token-search-keep-open]')) return true;
+    if (element.closest('[data-search-field-keep-open]')) return true;
     return keepOpenOn ? keepOpenOn(element) : false;
   };
 
@@ -525,7 +522,7 @@ export function wireTokenSearchFields(
     const restore = () => {
       if (disposed) return stop();
       const field = root.querySelector<HTMLElement>(
-        `[data-component="token-search-field"][data-token-search-id="${CSS.escape(id)}"]`,
+        `[data-component="search-field"][data-search-field-id="${CSS.escape(id)}"]`,
       );
       const target = field?.querySelector<HTMLElement>(selector);
       if (!field || !target) return;
@@ -541,8 +538,8 @@ export function wireTokenSearchFields(
       )
         return stop();
       stop();
-      if (target.matches('[data-token-search-editor]'))
-        placeTokenSearchCaret(target);
+      if (target.matches('[data-search-field-editor]'))
+        placeSearchFieldCaret(target);
       else target.focus();
     };
     const observer = new MutationObserver(restore);
@@ -560,28 +557,28 @@ export function wireTokenSearchFields(
   };
   const openField = (id: string) => {
     setExpanded(id, true);
-    if (manageFocus) focusAfterRender(id, '[data-token-search-editor]');
+    if (manageFocus) focusAfterRender(id, '[data-search-field-editor]');
   };
   const closeField = (id: string) => {
     setExpanded(id, false);
-    if (manageFocus) focusAfterRender(id, '.kui-token-search__expand');
+    if (manageFocus) focusAfterRender(id, '.kui-search-field__expand');
   };
 
   const clearing = new Map<string, () => void>();
-  /** Whether a token search field held focus when its ✕ was pressed. */
+  /** Whether a search field held focus when its ✕ was pressed. */
   const focusAtClearPress = new WeakMap<Element, boolean>();
   const pending = new Map<string, PendingTokenDeletion>();
   const deleting = new Map<string, () => void>();
   const selectAllIntents = new WeakSet<HTMLElement>();
   // editorFromEvent's selector guarantees this data attribute is present.
   const intentId = (editor: HTMLElement): string =>
-    editor.dataset.tokenSearchEditor!;
+    editor.dataset.searchFieldEditor!;
   const captureDeletion = (editor: HTMLElement, selectedAll?: boolean) => {
     if (editor.ownerDocument.activeElement !== editor) return;
     const field = editor.closest<HTMLElement>(
-      '[data-component="token-search-field"]',
+      '[data-component="search-field"]',
     );
-    const id = field?.dataset.tokenSearchId;
+    const id = field?.dataset.searchFieldId;
     const offset = selectedAll ? 0 : caretQueryOffset(editor);
     if (!id || offset === undefined || field?.dataset.disabled === 'true')
       return;
@@ -589,7 +586,7 @@ export function wireTokenSearchFields(
       id,
       offset,
       tokenCount: editor.querySelectorAll(
-        '[data-component="token-search-token"]',
+        '[data-component="search-field-token"]',
       ).length,
       selectedAll: selectedAll ?? selectionCoversEditor(editor),
     });
@@ -626,7 +623,7 @@ export function wireTokenSearchFields(
         active !== replacement.ownerDocument.body
       )
         return;
-      placeTokenSearchCaret(
+      placeSearchFieldCaret(
         replacement,
         typeof deletion.offset === 'number'
           ? deletion.offset
@@ -650,12 +647,12 @@ export function wireTokenSearchFields(
     if (editor.ownerDocument.activeElement !== editor) return;
     const offset = caretQueryOffset(editor);
     if (offset === undefined) return;
-    const before = readTokenSearchField(editor).query.length;
+    const before = readSearchField(editor).query.length;
     restoreDeletion(editor, {
       id,
       offset: (replacement) => {
         if (offset >= before) return undefined;
-        const after = readTokenSearchField(replacement).query.length;
+        const after = readSearchField(replacement).query.length;
         return Math.min(after, Math.max(0, offset - (before - after)));
       },
     });
@@ -679,32 +676,32 @@ export function wireTokenSearchFields(
       restoreDeletion(editor, deletion);
       if (
         manageFocus &&
-        editor.closest<HTMLElement>('[data-component="token-search-field"]')
-          ?.dataset.collapsible === 'true'
+        editor.closest<HTMLElement>('[data-component="search-field"]')?.dataset
+          .collapsible === 'true'
       )
         setExpanded(editorId, true);
     }
     const field = editor.closest<HTMLElement>(
-      '[data-component="token-search-field"]',
+      '[data-component="search-field"]',
     );
     if (field)
       field.dataset.placeholderVisible = String(
         !editor.querySelector(TOKEN_SELECTOR) &&
-          readTokenSearchField(editor).query.length === 0,
+          readSearchField(editor).query.length === 0,
       );
-    const id = field?.dataset.tokenSearchId;
+    const id = field?.dataset.searchFieldId;
     if (id && field?.dataset.disabled !== 'true') {
       const model = models[id];
       if (model) {
         const before = editor.querySelectorAll(TOKEN_SELECTOR).length;
-        const current = readTokenSearchField(editor, model.state.value.tokens);
+        const current = readSearchField(editor, model.state.value.tokens);
         const input = event as InputEvent;
         const commit =
           (typeof input.data === 'string' && /\s$/.test(input.data)) ||
           (input.inputType === 'insertFromPaste' && /\s$/.test(current.query));
         model.edit(current, commit);
         if (model.state.value.tokens.length > before)
-          focusAfterRender(id, '[data-token-search-editor]', true);
+          focusAfterRender(id, '[data-search-field-editor]', true);
       }
       if (onEdit) {
         if (!restore && !model && !deleting.has(id)) handOffAppEdit(editor, id);
@@ -783,14 +780,14 @@ export function wireTokenSearchFields(
     delegate(
       root,
       'click',
-      '[data-token-search-form-label]',
+      '[data-search-field-form-label]',
       (_event, label) => {
         const field = label.parentElement?.querySelector<HTMLElement>(
-          '[data-component="token-search-field"]',
+          '[data-component="search-field"]',
         );
         if (field?.dataset.disabled === 'true') return;
         field
-          ?.querySelector<HTMLElement>('[data-token-search-editor]')
+          ?.querySelector<HTMLElement>('[data-search-field-editor]')
           ?.focus();
       },
     ),
@@ -800,30 +797,28 @@ export function wireTokenSearchFields(
     delegate(
       root,
       'keydown',
-      '[data-token-search-editor]',
+      '[data-search-field-editor]',
       (event, element) => {
         const keyboardEvent = event as KeyboardEvent;
         const editor = element as HTMLElement;
         if (keyboardEvent.isComposing) return;
         const field = editor.closest<HTMLElement>(
-          '[data-component="token-search-field"]',
+          '[data-component="search-field"]',
         );
-        const id = field?.dataset.tokenSearchId;
+        const id = field?.dataset.searchFieldId;
         if (!id || field?.dataset.disabled === 'true') return;
         const keyboardForField = keyboard !== false || Boolean(models[id]);
         if (keyboardEvent.key === 'Enter') {
           keyboardEvent.preventDefault();
           const model = models[id];
           if (model)
-            model.submit(
-              readTokenSearchField(editor, model.state.value.tokens),
-            );
+            model.submit(readSearchField(editor, model.state.value.tokens));
           onSubmit?.({ id, editor });
           return;
         }
         if (models[id] && keyboardEvent.key === 'ArrowDown') {
           const first = field.querySelector<HTMLButtonElement>(
-            '[data-token-search-suggestion]',
+            '[data-search-field-suggestion]',
           );
           if (first) {
             keyboardEvent.preventDefault();
@@ -842,7 +837,7 @@ export function wireTokenSearchFields(
           const chip = adjacentToken(editor, direction);
           if (chip) {
             keyboardEvent.preventDefault();
-            const removal: TokenSearchTokenRemoval = {
+            const removal: SearchFieldTokenRemoval = {
               id,
               value: chip.dataset.tokenValue ?? '',
               editor,
@@ -885,21 +880,21 @@ export function wireTokenSearchFields(
       delegate(
         root,
         'keydown',
-        '[data-token-search-suggestion]',
+        '[data-search-field-suggestion]',
         (event, element) => {
           const keyboard = event as KeyboardEvent;
           const button = element as HTMLButtonElement;
           const buttons = [
             ...button.parentElement!.querySelectorAll<HTMLButtonElement>(
-              '[data-token-search-suggestion]',
+              '[data-search-field-suggestion]',
             ),
           ];
           const index = buttons.indexOf(button);
           if (keyboard.key === 'Escape') {
             keyboard.preventDefault();
             button
-              .closest<HTMLElement>('[data-component="token-search-field"]')
-              ?.querySelector<HTMLElement>('[data-token-search-editor]')
+              .closest<HTMLElement>('[data-component="search-field"]')
+              ?.querySelector<HTMLElement>('[data-search-field-editor]')
               ?.focus();
           } else if (
             keyboard.key === 'ArrowDown' ||
@@ -917,27 +912,27 @@ export function wireTokenSearchFields(
       delegate(
         root,
         'click',
-        '[data-token-search-suggestion]',
+        '[data-search-field-suggestion]',
         (_event, element) => {
           const field = element.closest<HTMLElement>(
-            '[data-component="token-search-field"]',
+            '[data-component="search-field"]',
           );
-          const id = field?.dataset.tokenSearchId;
-          const value = (element as HTMLElement).dataset.tokenSearchSuggestion;
+          const id = field?.dataset.searchFieldId;
+          const value = (element as HTMLElement).dataset.searchFieldSuggestion;
           if (!id || !value || field?.dataset.disabled === 'true') return;
           models[id]?.choose(value);
-          focusAfterRender(id, '[data-token-search-editor]', true);
+          focusAfterRender(id, '[data-search-field-editor]', true);
         },
       ),
       delegate(
         root,
         'click',
-        '.kui-token-search__token-edit',
+        '.kui-search-field__token-edit',
         (_event, element) => {
           const field = element.closest<HTMLElement>(
-            '[data-component="token-search-field"]',
+            '[data-component="search-field"]',
           );
-          const id = field?.dataset.tokenSearchId;
+          const id = field?.dataset.searchFieldId;
           const value = (element as HTMLElement).dataset.tokenValue;
           if (
             !id ||
@@ -947,28 +942,28 @@ export function wireTokenSearchFields(
           )
             return;
           models[id].expandToken(value);
-          focusAfterRender(id, '[data-token-search-editor]', true);
+          focusAfterRender(id, '[data-search-field-editor]', true);
         },
       ),
       delegate(
         root,
         'click',
-        '.kui-token-search__token-remove',
+        '.kui-search-field__token-remove',
         (_event, element) => {
           const field = element.closest<HTMLElement>(
-            '[data-component="token-search-field"]',
+            '[data-component="search-field"]',
           );
-          const id = field?.dataset.tokenSearchId;
+          const id = field?.dataset.searchFieldId;
           const value = (element as HTMLElement).dataset.tokenValue;
           if (id && value && field?.dataset.disabled !== 'true')
             models[id]?.remove(value);
         },
       ),
-      delegate(root, 'click', '.kui-token-search__clear', (_event, element) => {
+      delegate(root, 'click', '.kui-search-field__clear', (_event, element) => {
         const field = element.closest<HTMLElement>(
-          '[data-component="token-search-field"]',
+          '[data-component="search-field"]',
         );
-        const id = field?.dataset.tokenSearchId;
+        const id = field?.dataset.searchFieldId;
         if (id && field?.dataset.disabled !== 'true') models[id]?.clear();
       }),
     );
@@ -979,13 +974,13 @@ export function wireTokenSearchFields(
       delegate(
         root,
         'click',
-        '.kui-token-search__expand',
+        '.kui-search-field__expand',
         (_event, element) => {
           // The selector guarantees a collapsible field ancestor; only skip a disabled one.
           const field = (element as HTMLElement).closest<HTMLElement>(
-            '[data-component="token-search-field"]',
+            '[data-component="search-field"]',
           );
-          const id = field?.dataset.tokenSearchId;
+          const id = field?.dataset.searchFieldId;
           if (id && field?.dataset.disabled !== 'true') openField(id);
         },
       ),
@@ -1000,11 +995,9 @@ export function wireTokenSearchFields(
       delegateCapture(
         root,
         'pointerdown',
-        '.kui-token-search__clear',
+        '.kui-search-field__clear',
         (_event, element) => {
-          const field = element.closest(
-            '[data-component="token-search-field"]',
-          );
+          const field = element.closest('[data-component="search-field"]');
           focusAtClearPress.set(
             element,
             !!field?.contains(root.ownerDocument.activeElement),
@@ -1014,12 +1007,12 @@ export function wireTokenSearchFields(
       delegateCapture(
         root,
         'click',
-        '.kui-token-search__clear',
+        '.kui-search-field__clear',
         (_event, element) => {
           const field = element.closest<HTMLElement>(
-            '[data-component="token-search-field"]',
+            '[data-component="search-field"]',
           );
-          const id = field?.dataset.tokenSearchId;
+          const id = field?.dataset.searchFieldId;
           if (
             !id ||
             (field.dataset.collapsible !== 'true' && !models[id]) ||
@@ -1066,7 +1059,7 @@ export function wireTokenSearchFields(
             if (!replacement || replacement === editor) return;
             stop();
             if (!focusedBefore) collapseIfEmpty();
-            else if (ownsFocus(replacement)) placeTokenSearchCaret(replacement);
+            else if (ownsFocus(replacement)) placeSearchFieldCaret(replacement);
           });
           // Native clicks can drain microtasks between capture and bubble listeners.
           // Observe the actual controlled replacement before the app clears; a frame
@@ -1084,7 +1077,7 @@ export function wireTokenSearchFields(
           // Keyboard activation may start on the clear button. Own the current
           // editor now, and its replacement at the mutation checkpoint. Expiration
           // only disconnects observation; it never moves a later caret or focus.
-          if (current && ownsFocus(current)) placeTokenSearchCaret(current);
+          if (current && ownsFocus(current)) placeSearchFieldCaret(current);
         },
       ),
     );
@@ -1144,7 +1137,7 @@ export function wireTokenSearchFields(
       delegate(
         root,
         'mousedown',
-        '[data-component="token-search-field"][data-collapsible="true"] button',
+        '[data-component="search-field"][data-collapsible="true"] button',
         (event) => {
           event.preventDefault();
         },
@@ -1154,13 +1147,13 @@ export function wireTokenSearchFields(
       delegate(
         root,
         'focusout',
-        '[data-token-search-editor]',
+        '[data-search-field-editor]',
         (event, element) => {
           const editor = element as HTMLElement;
           const field = editor.closest<HTMLElement>(
-            '[data-component="token-search-field"]',
+            '[data-component="search-field"]',
           );
-          const id = field?.dataset.tokenSearchId;
+          const id = field?.dataset.searchFieldId;
           if (
             !id ||
             field?.dataset.collapsible !== 'true' ||
@@ -1203,7 +1196,7 @@ export function wireTokenSearchFields(
     for (const stop of focusing.values()) stop();
     for (const stop of disposers.splice(0)) stop();
   };
-  const handle = (() => dispose()) as TokenSearchFieldsHandle;
+  const handle = (() => dispose()) as SearchFieldsHandle;
   handle.dispose = dispose;
   handle.expanded = (id) => (managed ? signalFor(id) : undefined);
   handle.open = (id) => {

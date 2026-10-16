@@ -3,17 +3,17 @@ import { expect, test } from '@playwright/test';
 test('long suggestions scroll in a rounded list and clear uses a pill highlight', async ({
   page,
 }, testInfo) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: 'Grammar Assisted Search',
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
-  const suggestions = field.locator('.kui-token-search__suggestions');
+  const suggestions = field.locator('.kui-search-field__suggestions');
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
     await editor.fill('tag:');
@@ -82,17 +82,17 @@ test('long suggestions scroll in a rounded list and clear uses a pill highlight'
 test('suggestions stay in the viewport and track their field while scrolling', async ({
   page,
 }, testInfo) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: 'Grammar Assisted Search',
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
-  const suggestions = field.locator('.kui-token-search__suggestions');
+  const suggestions = field.locator('.kui-search-field__suggestions');
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 420 });
@@ -131,7 +131,7 @@ test('suggestions stay in the viewport and track their field while scrolling', a
     await editor.press('ArrowDown');
     await suggestions.locator('button').first().press('Enter');
     await expect(
-      field.locator('[data-component="token-search-token"]'),
+      field.locator('[data-component="search-field-token"]'),
     ).toHaveCount(1);
     await field.getByRole('button', { name: 'Clear Search' }).click();
 
@@ -184,19 +184,19 @@ test('suggestions stay in the viewport and track their field while scrolling', a
 test('a committed chip does not reclaim focus from the next form control', async ({
   page,
 }) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: 'Grammar Assisted Search',
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const next = page.locator('[data-after-commit-input]');
   await demo.evaluate((element) => {
     const editor = element.querySelector<HTMLElement>(
-      '[data-token-search-editor]',
+      '[data-search-field-editor]',
     )!;
     const input = document.createElement('input');
     input.setAttribute('data-after-commit-input', '');
@@ -213,7 +213,7 @@ test('a committed chip does not reclaim focus from the next form control', async
     input.focus();
   });
   await expect(
-    field.locator('[data-component="token-search-token"]'),
+    field.locator('[data-component="search-field-token"]'),
   ).toHaveCount(1);
   await expect(next).toBeFocused();
   await page.evaluate(
@@ -228,17 +228,17 @@ test('a committed chip does not reclaim focus from the next form control', async
 test('grammar model suggests, commits, edits, removes, and clears in the real catalog', async ({
   page,
 }, testInfo) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: 'Grammar Assisted Search',
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
-  const chips = field.locator('[data-component="token-search-token"]');
+  const chips = field.locator('[data-component="search-field-token"]');
   const result = demo.locator('[data-demo-grammar-result]');
 
   for (const width of [1100, 390]) {
@@ -261,7 +261,7 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
     await expect(editor).toBeFocused();
     await editor.pressSequentially('tag:c');
     await expect(
-      field.locator('[data-token-search-suggestion="tag:client"]'),
+      field.locator('[data-search-field-suggestion="tag:client"]'),
     ).toHaveCount(0);
     for (let index = 0; index < 'tag:c'.length; index++)
       await editor.press('Backspace');
@@ -293,17 +293,17 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
 test('an app helper commits an active grammar value outside suggestions', async ({
   page,
 }, testInfo) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: 'Grammar Assisted Search',
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
-  const chips = field.locator('[data-component="token-search-token"]');
+  const chips = field.locator('[data-component="search-field-token"]');
   const helper = demo.getByRole('button', { name: 'Add Release Tag' });
 
   for (const width of [1100, 390]) {
@@ -318,7 +318,7 @@ test('an app helper commits an active grammar value outside suggestions', async 
     await expect(chips).toHaveCount(0);
     await editor.click();
     await editor.pressSequentially('tag:rel');
-    await expect(field.locator('[data-token-search-suggestion]')).toHaveCount(
+    await expect(field.locator('[data-search-field-suggestion]')).toHaveCount(
       0,
     );
     await helper.click();
@@ -343,17 +343,17 @@ test('an app helper commits an active grammar value outside suggestions', async 
 test('model chip keys and plain-field clear keep the replacement editor focused', async ({
   page,
 }) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: 'Grammar Assisted Search',
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
-  const chips = field.locator('[data-component="token-search-token"]');
+  const chips = field.locator('[data-component="search-field-token"]');
   const helper = demo.getByRole('button', { name: 'Add Release Tag' });
   const clear = field.getByRole('button', { name: 'Clear Search' });
 
@@ -365,7 +365,7 @@ test('model chip keys and plain-field clear keep the replacement editor focused'
       await expect(chips).toHaveCount(1);
       await editor.evaluate((element, direction) => {
         const chip = element.querySelector(
-          '[data-component="token-search-token"]',
+          '[data-component="search-field-token"]',
         )!;
         const range = document.createRange();
         if (direction === 'Backspace') range.setStartAfter(chip);
@@ -393,15 +393,15 @@ test('model chip keys and plain-field clear keep the replacement editor focused'
 test('an app helper replaces DOM-owned draft text from saved search state', async ({
   page,
 }, testInfo) => {
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const demo = page
-    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .locator('[data-demo="search-field"] [data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
         hasText: 'Grammar Assisted Search',
       }),
     });
-  const field = demo.locator('[data-component="token-search-field"]');
+  const field = demo.locator('[data-component="search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Search with Filters' });
   const helper = demo.getByRole('button', { name: 'Load Saved Search' });
 

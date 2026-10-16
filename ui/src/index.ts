@@ -247,6 +247,35 @@ export {
   type RadioGroupSize,
 } from './components/forms/radio-group/radio-group.js';
 export {
+  createSearchFieldModel,
+  type SearchFieldModel,
+  type SearchFieldModelOptions,
+  type SearchFieldResolvedToken,
+  type SearchFieldRule,
+  type SearchFieldState,
+  type SearchFieldStructure,
+  type SearchFieldSuggestion,
+} from './components/forms/search-field/model/search-field-model.js';
+export {
+  placeSearchFieldCaret,
+  readSearchField,
+  SearchField,
+  type SearchFieldEditorAttributes,
+  type SearchFieldProps,
+  type SearchFieldToken,
+  type SearchFieldTrailingAction,
+  type SearchFieldTrailingActionAttributes,
+  type SearchFieldValue,
+} from './components/forms/search-field/search-field.js';
+export {
+  type SearchFieldCollapsibleOptions,
+  type SearchFieldEdit,
+  type SearchFieldsHandle,
+  type SearchFieldSubmit,
+  wireSearchFields,
+  type WireSearchFieldsOptions,
+} from './components/forms/search-field/wiring/wire-search-fields.js';
+export {
   SegmentedControl,
   type SegmentedControlAppearance,
   type SegmentedControlChoice,
@@ -280,35 +309,6 @@ export {
   type TextFieldType,
 } from './components/forms/text-field/text-field.js';
 export { wireTextFields } from './components/forms/text-field/wiring/wire-text-fields.js';
-export {
-  createTokenSearchModel,
-  type TokenSearchModel,
-  type TokenSearchModelOptions,
-  type TokenSearchResolvedToken,
-  type TokenSearchRule,
-  type TokenSearchState,
-  type TokenSearchStructure,
-  type TokenSearchSuggestion,
-} from './components/forms/token-search-field/model/token-search-model.js';
-export {
-  placeTokenSearchCaret,
-  readTokenSearchField,
-  type TokenSearchEditorAttributes,
-  TokenSearchField,
-  type TokenSearchFieldProps,
-  type TokenSearchFieldValue,
-  type TokenSearchToken,
-  type TokenSearchTrailingAction,
-  type TokenSearchTrailingActionAttributes,
-} from './components/forms/token-search-field/token-search-field.js';
-export {
-  type TokenSearchCollapsibleOptions,
-  type TokenSearchEdit,
-  type TokenSearchFieldsHandle,
-  type TokenSearchSubmit,
-  wireTokenSearchFields,
-  type WireTokenSearchFieldsOptions,
-} from './components/forms/token-search-field/wiring/wire-token-search-fields.js';
 export {
   ColumnTrack,
   type ColumnTrackLayout,

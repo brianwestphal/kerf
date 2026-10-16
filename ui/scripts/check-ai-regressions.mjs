@@ -438,7 +438,7 @@ for (const testCase of corpus.cases) {
     'utf8',
   );
   if (
-    /@kerfjs|\bkui-|\b(?:Toolbar|ListItem|ListHeader|ListActionRow|SegmentedControl|TokenSearchField|ResizableRegion|StateBanner|EmptyState)\b/.test(
+    /@kerfjs|\bkui-|\b(?:Toolbar|ListItem|ListHeader|ListActionRow|SegmentedControl|SearchField|ResizableRegion|StateBanner|EmptyState)\b/.test(
       prompt,
     )
   ) {

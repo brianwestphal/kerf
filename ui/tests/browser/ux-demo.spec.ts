@@ -703,7 +703,7 @@ test('actionable ToolbarText stays beside its chip, ellipsizes, and activates by
   await expect(example.locator('input')).toHaveCount(0);
   expect(
     await example
-      .locator('.kui-token-search')
+      .locator('.kui-search-field')
       .evaluate((field) => window.getComputedStyle(field, '::before').content),
   ).toBe('"Search demands"');
   // The catalog stack caps examples at 736px. Lift that cap so the roomy
@@ -2972,16 +2972,16 @@ test('keeps ValueTableRow block padding root-scaled and separators aligned', asy
   }
 });
 
-test('keeps token-search focus and caret when Delete removes a controlled token', async ({
+test('keeps search-field focus and caret when Delete removes a controlled token', async ({
   page,
   browserName,
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
-  await page.goto('/?component=token-search-field');
-  const demo = page.locator('[data-demo="token-search-field"]');
+  await page.goto('/?component=search-field');
+  const demo = page.locator('[data-demo="search-field"]');
   const editor = demo.getByRole('searchbox', { name: 'Search Tickets' });
   await editor.evaluate((element) => {
-    const text = element.querySelector('[data-token-search-text]')!.firstChild!;
+    const text = element.querySelector('[data-search-field-text]')!.firstChild!;
     const range = document.createRange();
     range.setStart(text, 4);
     range.collapse(true);
@@ -2995,16 +2995,16 @@ test('keeps token-search focus and caret when Delete removes a controlled token'
 
   await expect(editor).toBeFocused();
   await expect(
-    editor.locator('[data-component="token-search-token"]'),
+    editor.locator('[data-component="search-field-token"]'),
   ).toHaveCount(1);
   await expect(
     editor.locator(
-      '[data-component="token-search-token"][data-token-value="tag:client"]',
+      '[data-component="search-field-token"][data-token-value="tag:client"]',
     ),
   ).toHaveCount(0);
   await expect(
     editor.locator(
-      '[data-component="token-search-token"][data-token-value="is:active"]',
+      '[data-component="search-field-token"][data-token-value="is:active"]',
     ),
   ).toHaveCount(1);
   expect(
@@ -3017,29 +3017,29 @@ test('keeps token-search focus and caret when Delete removes a controlled token'
       const clone = document.createElement('div');
       clone.append(prefix.cloneContents());
       clone
-        .querySelectorAll('[data-component="token-search-token"]')
+        .querySelectorAll('[data-component="search-field-token"]')
         .forEach((token) => token.remove());
       return (clone.textContent ?? '').replaceAll('\u200b', '').length;
     }),
   ).toBe(4);
   await page.keyboard.type('owner ');
   await expect(editor).toContainText('NOT owner is:active AND parser');
-  await expect(demo.locator('[data-demo-token-search-readout]')).toContainText(
+  await expect(demo.locator('[data-demo-search-field-readout]')).toContainText(
     '1 filters · NOT owner  AND parser',
   );
   if (browserName === 'chromium')
     await demo
       .locator('.kui-catalog-example')
       .first()
-      .screenshot({ path: 'test-results/token-search-field-delete-caret.png' });
+      .screenshot({ path: 'test-results/search-field-delete-caret.png' });
 });
 
-test('token-search select-all + Delete empties cleanly without a stray newline', async ({
+test('search-field select-all + Delete empties cleanly without a stray newline', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
-  await page.goto('/?component=token-search-field');
-  const demo = page.locator('[data-demo="token-search-field"]');
+  await page.goto('/?component=search-field');
+  const demo = page.locator('[data-demo="search-field"]');
   const editor = demo.getByRole('searchbox', { name: 'Search Tickets' });
   const selectAll = 'ControlOrMeta+A';
 
@@ -3063,7 +3063,7 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
       editor.evaluate((el) => (el.textContent ?? '').replaceAll('​', '')),
     )
     .toBe('');
-  await expect(editor.locator('[data-token-search-text]')).toHaveCount(1);
+  await expect(editor.locator('[data-search-field-text]')).toHaveCount(1);
   // The caret survives: typing resumes in place with no leading newline/space.
   await editor.type('x');
   await expect
@@ -3089,7 +3089,7 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
     .toBe('hell');
 
   // Tokened: select-all + Delete also removes every chip and leaves no artifact.
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   const editor2 = demo.getByRole('searchbox', { name: 'Search Tickets' });
   await editor2.focus();
   await page.keyboard.press(selectAll);
@@ -3098,7 +3098,7 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
     .poll(() => editor2.evaluate((el) => el.querySelectorAll('br').length))
     .toBe(0);
   await expect(
-    editor2.locator('[data-component="token-search-token"]'),
+    editor2.locator('[data-component="search-field-token"]'),
   ).toHaveCount(0);
   await expect
     .poll(() =>
@@ -3107,17 +3107,17 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
     .toBe('');
 });
 
-test('edits, removes, and clears controlled token search content', async ({
+test('edits, removes, and clears controlled search field content', async ({
   page,
   browserName,
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
-  await page.goto('/?component=token-search-field');
-  const demo = page.locator('[data-demo="token-search-field"]');
+  await page.goto('/?component=search-field');
+  const demo = page.locator('[data-demo="search-field"]');
   const editor = demo.getByRole('searchbox', { name: 'Search Tickets' });
   await expect(editor).toBeFocused();
   await expect(
-    editor.locator('[data-component="token-search-token"]'),
+    editor.locator('[data-component="search-field-token"]'),
   ).toHaveCount(2);
   const disabled = demo.getByRole('searchbox', { name: 'Saved Search' });
   await expect(disabled).toHaveAttribute('contenteditable', 'false');
@@ -3126,10 +3126,10 @@ test('edits, removes, and clears controlled token search content', async ({
   await expect(disabled.locator('button').last()).toBeDisabled();
   const tokenGeometry = await editor.evaluate((element) => {
     const token = element.querySelector<HTMLElement>(
-      '[data-component="token-search-token"]',
+      '[data-component="search-field-token"]',
     )!;
     const text = element.querySelector<HTMLElement>(
-      '[data-token-search-text]',
+      '[data-search-field-text]',
     )!;
     const tokenRect = token.getBoundingClientRect();
     const textRange = document.createRange();
@@ -3153,27 +3153,27 @@ test('edits, removes, and clears controlled token search content', async ({
   expect(tokenGeometry.centerDelta).toBeLessThan(2);
   if (browserName === 'chromium')
     await page.screenshot({
-      path: 'test-results/token-search-field-light-wide.png',
+      path: 'test-results/search-field-light-wide.png',
       fullPage: true,
     });
 
   await demo.getByRole('button', { name: 'Remove client tag' }).click();
   await expect(
-    editor.locator('[data-component="token-search-token"]'),
+    editor.locator('[data-component="search-field-token"]'),
   ).toHaveCount(1);
   await demo.getByRole('button', { name: 'Edit is:active' }).click();
   await expect(editor).toContainText('is:active');
   await expect(
-    editor.locator('[data-component="token-search-token"]'),
+    editor.locator('[data-component="search-field-token"]'),
   ).toHaveCount(0);
   await editor.press('End');
   await editor.pressSequentially(' owner');
-  await expect(demo.locator('[data-demo-token-search-readout]')).toContainText(
+  await expect(demo.locator('[data-demo-search-field-readout]')).toContainText(
     'owner',
   );
 
   await demo
-    .locator('[data-token-search-id="catalog-search"]')
+    .locator('[data-search-field-id="catalog-search"]')
     .getByRole('button', { name: 'Clear Search' })
     .click();
   await expect(editor).toHaveText('');
@@ -3182,19 +3182,19 @@ test('edits, removes, and clears controlled token search content', async ({
   await editor.pressSequentially('hello');
   const alignment = () =>
     demo
-      .locator('[data-token-search-id="catalog-search"]')
+      .locator('[data-search-field-id="catalog-search"]')
       .evaluate((field) => {
         const fieldRect = field.getBoundingClientRect();
         const leadingRect = field
-          .querySelector<HTMLElement>('.kui-token-search__leading')!
+          .querySelector<HTMLElement>('.kui-search-field__leading')!
           .getBoundingClientRect();
         const editorElement = field.querySelector<HTMLElement>(
-          '.kui-token-search__editor',
+          '.kui-search-field__editor',
         )!;
         const editorRect = editorElement.getBoundingClientRect();
         const editorStyle = window.getComputedStyle(editorElement);
         const clearRect = field
-          .querySelector<HTMLElement>('.kui-token-search__clear')!
+          .querySelector<HTMLElement>('.kui-search-field__clear')!
           .getBoundingClientRect();
         return {
           height: fieldRect.height,
@@ -3221,8 +3221,8 @@ test('edits, removes, and clears controlled token search content', async ({
   );
   await page.mouse.move(0, 0);
   if (browserName === 'chromium')
-    await demo.locator('[data-token-search-id="catalog-search"]').screenshot({
-      path: 'test-results/token-search-field-alignment-single-line-wide.png',
+    await demo.locator('[data-search-field-id="catalog-search"]').screenshot({
+      path: 'test-results/search-field-alignment-single-line-wide.png',
     });
 
   await editor.pressSequentially(
@@ -3234,8 +3234,8 @@ test('edits, removes, and clears controlled token search content', async ({
   expect(multiline.firstLineCenter).toBeCloseTo(singleLine.firstLineCenter, 1);
   expect(multiline.clearCenter).toBeCloseTo(singleLine.clearCenter, 1);
   if (browserName === 'chromium')
-    await demo.locator('[data-token-search-id="catalog-search"]').screenshot({
-      path: 'test-results/token-search-field-alignment-multiline-wide.png',
+    await demo.locator('[data-search-field-id="catalog-search"]').screenshot({
+      path: 'test-results/search-field-alignment-multiline-wide.png',
     });
 
   await page.reload();
@@ -3243,7 +3243,7 @@ test('edits, removes, and clears controlled token search content', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   if (browserName === 'chromium')
     await page.screenshot({
-      path: 'test-results/token-search-field-dark-narrow.png',
+      path: 'test-results/search-field-dark-narrow.png',
       fullPage: true,
     });
 });
@@ -3259,7 +3259,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   );
   const editor = toolbar.getByRole('searchbox', { name: 'Find in Workspace' });
   const trigger = toolbar.getByRole('button', { name: 'Open find' });
-  const field = toolbar.locator('[data-component="token-search-field"]');
+  const field = toolbar.locator('[data-component="search-field"]');
   const group = field.locator('..');
   const outsideControl = page.locator('[data-action="toggle-theme"]');
   await expect(editor).toBeHidden();
@@ -3359,7 +3359,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
   const expandedIconInset = await field.evaluate((element) => {
     const fieldRect = element.getBoundingClientRect();
     const iconRect = element
-      .querySelector('.kui-token-search__leading svg')!
+      .querySelector('.kui-search-field__leading svg')!
       .getBoundingClientRect();
     return iconRect.left + iconRect.width / 2 - fieldRect.left;
   });
@@ -3367,7 +3367,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
     Math.abs(expandedIconInset - collapsedIconGeometry.inset),
   ).toBeLessThan(0.5);
   const trailingCenterBeforeInput = await field
-    .locator('.kui-token-search__trailing')
+    .locator('.kui-search-field__trailing')
     .evaluate((element) => {
       const rect = element.getBoundingClientRect();
       return rect.left + rect.width / 2;
@@ -3377,7 +3377,7 @@ test('renders an interactive responsive find field inside a toolbar', async ({
     toolbar.getByRole('button', { name: 'Clear Search' }),
   ).toBeVisible();
   const trailingCenterAfterInput = await field
-    .locator('.kui-token-search__trailing')
+    .locator('.kui-search-field__trailing')
     .evaluate((element) => {
       const rect = element.getBoundingClientRect();
       return rect.left + rect.width / 2;
@@ -6899,29 +6899,29 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
   const group = page
     .locator('[data-demo-section="toolbar-group-search"]')
     .locator('[data-component="toolbar-control-group"]');
-  const field = group.locator('.kui-token-search');
+  const field = group.locator('.kui-search-field');
   const groupHeight = () =>
     group.evaluate((node) => Math.round(node.getBoundingClientRect().height));
 
   await page.getByRole('button', { name: 'Rounded' }).click();
   await expect(group).toHaveCSS('border-radius', '12px');
   await expect(field).toHaveCSS('border-radius', '10px');
-  await expect(field.locator('.kui-token-search__expand')).toHaveCSS(
+  await expect(field.locator('.kui-search-field__expand')).toHaveCSS(
     'border-radius',
     '10px',
   );
 
   // Collapsed: one iconic control at the toolbar-control height (not a tall box).
   await expect(field).toHaveAttribute('data-expanded', 'false');
-  await expect(group.locator('.kui-token-search__editor')).toBeHidden();
+  await expect(group.locator('.kui-search-field__editor')).toBeHidden();
   expect(await groupHeight()).toBeLessThanOrEqual(48);
 
   // Activating the iconic control expands the editor in place; the group stays a
   // single toolbar row (the group's row-oriented flex-basis must not size its
   // height in the demo's column layout).
-  await group.locator('.kui-token-search__expand').click();
+  await group.locator('.kui-search-field__expand').click();
   await expect(field).toHaveAttribute('data-expanded', 'true');
-  await expect(group.locator('.kui-token-search__editor')).toBeVisible();
+  await expect(group.locator('.kui-search-field__editor')).toBeVisible();
   expect(await groupHeight()).toBeLessThanOrEqual(48);
   await expect(field).toHaveCSS('border-radius', '10px');
   if (browserName === 'chromium')
@@ -6929,7 +6929,7 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
       path: 'test-results/toolbar-control-group-rounded-search.png',
     });
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(group.locator('.kui-token-search__editor')).toBeVisible();
+  await expect(group.locator('.kui-search-field__editor')).toBeVisible();
   await expect
     .poll(() =>
       group.evaluate((node) => {
@@ -6942,9 +6942,9 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
     await group.screenshot({
       path: 'test-results/toolbar-control-group-search-narrow.png',
     });
-  await group.locator('.kui-token-search__editor').blur();
+  await group.locator('.kui-search-field__editor').blur();
   await expect(field).toHaveAttribute('data-expanded', 'false');
-  await expect(group.locator('.kui-token-search__editor')).toBeHidden();
+  await expect(group.locator('.kui-search-field__editor')).toBeHidden();
 });
 
 test('intrinsically sizes popup, compact mixed, and catalog dropdown content across group shapes', async ({

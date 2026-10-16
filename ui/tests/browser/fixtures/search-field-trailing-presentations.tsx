@@ -1,5 +1,5 @@
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { TokenSearchField } from '@kerfjs/ui/token-search-field';
+import { SearchField } from '@kerfjs/ui/search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
@@ -22,7 +22,7 @@ const help = (id: string) => ({
 mount(root, () => (
   <div style="display:grid;gap:24px;width:360px">
     <div data-case="standalone">
-      <TokenSearchField
+      <SearchField
         id="standalone-search"
         label="Standalone Search"
         query="status:open"
@@ -30,7 +30,7 @@ mount(root, () => (
       />
     </div>
     <div data-case="form-field">
-      <TokenSearchField
+      <SearchField
         id="form-search"
         label="Form Search"
         presentation="form-field"
@@ -40,7 +40,7 @@ mount(root, () => (
     </div>
     <div data-case="toolbar-group">
       <ToolbarControlGroup content="search" expanded>
-        <TokenSearchField
+        <SearchField
           id="toolbar-search"
           label="Toolbar Search"
           collapsible

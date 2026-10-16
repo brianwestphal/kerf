@@ -15,13 +15,13 @@ Let people pick an existing value or create a new one by typing (tags, labels, r
 **Not when:**
 
 - Do not use when only existing values are allowed and nothing needs typing; use Select.
-- Do not use for free text plus removable filter tokens in one editor; use TokenSearchField.
+- Do not use for free text plus removable filter tokens in one editor; use SearchField.
 - Do not style a native input with a datalist from app CSS.
 
 **Alternatives:**
 
 - [Select](./select.md) (nearest) — Use Select when only existing values are allowed.
-- [TokenSearchField](./token-search-field.md) (nearest) — Use TokenSearchField for search text with removable filter tokens.
+- [SearchField](./search-field.md) (nearest) — Use SearchField for search text with removable filter tokens.
 
 ## Imports
 
@@ -83,6 +83,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Select](./select.md), [TokenSearchField](./token-search-field.md).
+- Components: [Select](./select.md), [SearchField](./search-field.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=combobox`.

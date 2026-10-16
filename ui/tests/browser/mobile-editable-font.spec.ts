@@ -39,7 +39,7 @@ async function readWebAwesomeSizes(page: Page) {
 
 async function readTokenSize(page: Page) {
   return page
-    .locator('[data-demo-token-form] [data-token-search-editor]')
+    .locator('[data-demo-token-form] [data-search-field-editor]')
     .evaluate((editor) => parseFloat(window.getComputedStyle(editor).fontSize));
 }
 
@@ -50,7 +50,7 @@ test('editable text keeps compact desktop typography', async ({
   await expect(page.locator('wa-input').first()).toBeVisible();
   const webAwesome = await readWebAwesomeSizes(page);
   for (const size of Object.values(webAwesome)) expect(size).toBeLessThan(16);
-  await page.goto('/?component=token-search-field');
+  await page.goto('/?component=search-field');
   expect(await readTokenSize(page)).toBeLessThan(16);
   await page.locator('[data-demo-token-form]').screenshot({
     path: `test-results/mobile-editable-font-desktop-${testInfo.project.name}.png`,
@@ -77,7 +77,7 @@ test.describe('coarse touch', () => {
     await page.locator('[data-mobile-editable-specimen]').screenshot({
       path: `test-results/mobile-editable-webawesome-touch-${testInfo.project.name}.png`,
     });
-    await page.goto('/?component=token-search-field');
+    await page.goto('/?component=search-field');
     expect(await readTokenSize(page)).toBeGreaterThanOrEqual(16);
     await expect(page.locator('meta[name="viewport"]')).toHaveAttribute(
       'content',
@@ -85,7 +85,7 @@ test.describe('coarse touch', () => {
     );
 
     const editor = page.locator(
-      '[data-demo-token-form] [data-token-search-editor]',
+      '[data-demo-token-form] [data-search-field-editor]',
     );
     await editor.focus();
     await expect(editor).toBeFocused();

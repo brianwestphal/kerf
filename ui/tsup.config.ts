@@ -60,9 +60,9 @@ const entries = [
   'choice-chips',
   'composer',
   'wire-composers',
-  'token-search-field',
-  'token-search-model',
-  'wire-token-search-fields',
+  'search-field',
+  'search-field-model',
+  'wire-search-fields',
   'select-register',
   'help-tags-register',
   'webawesome',
@@ -98,7 +98,7 @@ const entries = [
 export default defineConfig({
   entry: entries.map(
     (entry) =>
-      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'token-search-model' || entry === 'selection' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
+      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'search-field-model' || entry === 'selection' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
   ),
   format: ['esm'],
   outDir: 'dist',

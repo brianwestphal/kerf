@@ -11,7 +11,7 @@ const headerGeometry = async (page: Page) =>
       '#kui-catalog-left-rail .kui-pane__header [data-component="toolbar-text"][aria-level="1"]',
     );
     const filter = rect(
-      '#kui-catalog-left-rail [data-component="token-search-field"]',
+      '#kui-catalog-left-rail [data-component="search-field"]',
     );
     const contentStart = (selector: string) => {
       const element = document.querySelector<HTMLElement>(selector)!;
@@ -32,9 +32,7 @@ const headerGeometry = async (page: Page) =>
       logoTitleCenterDelta: Math.abs(centerY(logo) - centerY(title)),
       filterBelowTitle: filter.top >= title.bottom - 1,
       filterStartsBeforeTitle:
-        contentStart(
-          '#kui-catalog-left-rail [data-component="token-search-field"]',
-        ) <
+        contentStart('#kui-catalog-left-rail [data-component="search-field"]') <
         contentStart(
           '#kui-catalog-left-rail .kui-pane__header [data-component="toolbar-text"][aria-level="1"]',
         ),
@@ -176,7 +174,7 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
     0,
   );
   await expect(filter).toHaveAttribute(
-    'data-token-search-editor',
+    'data-search-field-editor',
     'kui-catalog-filter',
   );
   const scroll = sidebar.locator('.kui-pane__content');
@@ -211,7 +209,7 @@ test('filters shared catalog entries and headings, including collapsed ecosystem
   await sidebar.locator('[data-item-id="toolbar"]').click();
   await expect(page).toHaveURL(/component=toolbar/);
   await expect(filter).toHaveText('Toolbar');
-  const field = sidebar.locator('[data-component="token-search-field"]');
+  const field = sidebar.locator('[data-component="search-field"]');
   await expect(field).toHaveAttribute('data-placeholder-visible', 'false');
   expect(
     await field.evaluate(
