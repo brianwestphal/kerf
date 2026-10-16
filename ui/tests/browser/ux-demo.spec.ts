@@ -985,7 +985,7 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
   const demo = page.locator('[data-demo="lucide-icon"]');
   await expect(demo).toHaveClass(/kui-catalog-example-stack/);
   const examples = demo.locator('.kui-catalog-example');
-  await expect(examples).toHaveCount(6);
+  await expect(examples).toHaveCount(7);
   // Each example is a ListHeader label + a note with aligned left edges.
   await expect(examples.nth(0).locator('.kui-list-header')).toHaveText(
     /Decorative/,
@@ -994,18 +994,21 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
     /Meaningful/,
   );
   await expect(examples.nth(2).locator('.kui-list-header')).toHaveText(
-    /Icon Sizes/,
+    /Status with Hover Text/,
   );
   await expect(examples.nth(3).locator('.kui-list-header')).toHaveText(
-    /Outline and Solid/,
+    /Icon Sizes/,
   );
   await expect(examples.nth(4).locator('.kui-list-header')).toHaveText(
-    /Icon Colors/,
+    /Outline and Solid/,
   );
   await expect(examples.nth(5).locator('.kui-list-header')).toHaveText(
+    /Icon Colors/,
+  );
+  await expect(examples.nth(6).locator('.kui-list-header')).toHaveText(
     /Inline with Text/,
   );
-  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(6);
+  await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(7);
   const alignedLeftEdges = await examples.evaluateAll((nodes) =>
     nodes.map((example) => {
       const contentLeft = (selector: string) => {
@@ -1040,7 +1043,7 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
     .locator('svg[data-lucide]')
     .evaluateAll((nodes) => nodes.map((node) => node.innerHTML));
   expect(glyphs[0]).toBe(glyphs[1]);
-  const appearances = examples.nth(3).locator('svg[data-lucide]');
+  const appearances = examples.nth(4).locator('svg[data-lucide]');
   await expect(appearances).toHaveCount(2);
   await expect(appearances.nth(0)).toHaveAttribute('fill', 'none');
   await expect(appearances.nth(1)).toHaveAttribute('fill', 'currentColor');
