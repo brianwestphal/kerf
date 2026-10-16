@@ -1236,13 +1236,18 @@ const discouragedTags = [
   ['wa-tag', 'chip'],
   ['wa-spinner', 'loading-spinner'],
   ['wa-skeleton', 'skeleton'],
+  ['wa-drawer', 'surface-scaffold'],
+  ['wa-card', 'content-item'],
+  ['wa-page', 'recipe-app-shell'],
+  ['wa-callout', 'state-banner'],
+  ['wa-popover', 'anchored-surface'],
+  ['wa-popup', 'anchored-surface'],
 ];
 
 tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
   valid: [
-    // Integration elements no Kerf component replaces and the one
-    // encouraged conditional primitive stay allowed.
-    ...['wa-card', 'wa-popup', 'wa-drawer', 'wa-carousel'].map((tag) => ({
+    // Integration elements no Kerf component replaces stay allowed.
+    ...['wa-details', 'wa-tooltip', 'wa-carousel', 'wa-rating'].map((tag) => ({
       code: `<div><${tag} /></div>;`,
       filename: appFile,
       settings: shippedDefaultsSettings,
