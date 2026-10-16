@@ -4804,7 +4804,7 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
     page.locator('[data-item-id="wa-popup"] .kui-list-item__status'),
   ).toHaveText('Discouraged');
   await expect(
-    page.locator('[data-item-id="wa-tooltip"] .kui-list-item__status'),
+    page.locator('[data-item-id="wa-copy-button"] .kui-list-item__status'),
   ).toHaveCount(0);
 
   const sidebar = page.locator('#kui-catalog-left-rail');
