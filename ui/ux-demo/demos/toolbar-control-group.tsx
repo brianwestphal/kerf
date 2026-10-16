@@ -1,4 +1,5 @@
 import { BackdropImage } from '@kerfjs/ui/backdrop-image';
+import { Badge } from '@kerfjs/ui/badge';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { remify, uiColor } from '@kerfjs/ui/css-values';
@@ -22,6 +23,7 @@ import {
   ChevronRight,
   Columns3,
   ExternalLink,
+  EyeOff,
   Flag,
   GitCompare,
   List,
@@ -111,6 +113,31 @@ export function ToolbarControlGroupDemo() {
               { value: 'rounded', label: 'Rounded' },
             ]}
           />
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample
+        label="Corner Count"
+        note='A Badge with placement="corner" pins a count over the top-trailing corner of the button, which names the count itself.'
+        align="inline-control"
+      >
+        <ToolbarControlGroup shape={shape} single>
+          <button
+            type="button"
+            aria-label="Hidden Workspaces, 3 hidden"
+            data-action="log-more"
+            data-demo-corner-count=""
+          >
+            <LucideIcon icon={EyeOff} name="eye-off" />
+            <Badge
+              tone="warning"
+              appearance="solid"
+              size="compact"
+              placement="corner"
+              ariaHidden
+            >
+              3
+            </Badge>
+          </button>
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Segmented Choices" align="inline-control">

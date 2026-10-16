@@ -1,5 +1,6 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import { Badge, type BadgeTone } from '../../feedback/badge/badge.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
 
 /** The color family: `neutral` (default), `brand` for the main action, `danger` for a destructive one. */
@@ -93,6 +94,16 @@ export interface ButtonOptions {
   /** Delegated `data-action` the application handles. */
   action?: string;
   /**
+   * A count, short text, or `true` for a text-free dot over the button's
+   * top-trailing corner, such as how many items a filter hides. It stays out
+   * of the accessible name unless `badgeLabel` names it.
+   */
+  badge?: number | string | true;
+  /** Words for the badge ("3 hidden"), added to the button's name. */
+  badgeLabel?: string;
+  /** The badge's tone (default `danger`). */
+  badgeTone?: BadgeTone;
+  /**
    * Native hover text that says more than the name, such as "More Actions
    * for report.pdf". An icon-only Button already gets a help tag with its
    * `ariaLabel` (with `@kerfjs/ui/help-tags-register`); a `title` replaces
@@ -133,6 +144,9 @@ export function Button({
   href,
   target,
   action,
+  badge,
+  badgeLabel,
+  badgeTone = 'danger',
   ariaLabel,
   title,
   id,
@@ -152,7 +166,10 @@ export function Button({
     'data-icon-only': children === undefined ? '' : undefined,
     'data-shape': shape === 'pill' ? 'pill' : undefined,
     'data-action': action,
-    'aria-label': ariaLabel,
+    'aria-label':
+      ariaLabel && badge !== undefined && badgeLabel
+        ? `${ariaLabel}, ${badgeLabel}`
+        : ariaLabel,
     title,
     'aria-busy': loading ? 'true' : undefined,
     slot,
@@ -166,6 +183,28 @@ export function Button({
       )}
       {children === undefined ? null : (
         <span class="kui-button__label">{children}</span>
+      )}
+      {badge === undefined || badge === '' ? null : badge === true ? (
+        <Badge
+          tone={badgeTone}
+          size="dot"
+          placement="corner"
+          {...(ariaLabel || !badgeLabel
+            ? { ariaHidden: true as const }
+            : { label: badgeLabel })}
+        />
+      ) : (
+        <Badge
+          tone={badgeTone}
+          appearance="solid"
+          size="compact"
+          placement="corner"
+          {...(ariaLabel || !badgeLabel
+            ? { ariaHidden: true as const }
+            : { label: badgeLabel })}
+        >
+          {String(badge)}
+        </Badge>
       )}
       {loading ? (
         <span class="kui-button__spinner" aria-hidden="true">

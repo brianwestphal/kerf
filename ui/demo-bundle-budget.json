@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 420600,
-  "measuredLargestJavaScriptGzip": 164222,
-  "measuredTotalJavaScriptGzip": 420516,
+  "totalJavaScriptGzip": 421100,
+  "measuredLargestJavaScriptGzip": 164223,
+  "measuredTotalJavaScriptGzip": 421010,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5475,6 +5475,22 @@
         "measuredTotalJavaScriptGzip": 420516,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 420600
+      }
+    },
+    {
+      "at": "2026-10-16T12:14:41.136Z",
+      "reason": "Corner badges (KF-WT2EMZ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164222,
+        "measuredTotalJavaScriptGzip": 420516,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 420600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164223,
+        "measuredTotalJavaScriptGzip": 421010,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 421100
       }
     }
   ]

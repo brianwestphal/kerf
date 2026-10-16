@@ -46,7 +46,8 @@
         "labeled or decorative duplicate",
         "leading icon",
         "title tooltip and data-* rootAttributes",
-        "maxWidth caps the badge and truncates long text with an ellipsis, defaulting the title to string or number content"
+        "maxWidth caps the badge and truncates long text with an ellipsis, defaulting the title to string or number content",
+        "placement=\"corner\": a count or dot straddling the top-trailing corner of an icon-only Button or a ToolbarControlGroup button"
       ],
       "accessibility": [
         "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component. A text-free dot must take either label (exposed as an image) or ariaHidden, which the types enforce.",
@@ -7458,7 +7459,8 @@
         "pressed toggle (aria-pressed) on any tone and emphasis",
         "loading",
         "disabled",
-        "link (href)"
+        "link (href)",
+        "badge (a count, short text, or true for a dot) over the corner, named through badgeLabel, with badgeTone"
       ],
       "accessibility": [
         "A native <button> (type=\"button\" unless set) or, with href, an <a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring.",

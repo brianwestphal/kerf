@@ -94,7 +94,7 @@ export function ButtonDemo() {
       </CatalogExample>
       <CatalogExample
         label="Icon-Only"
-        note="With no label, a Button is a square one control height on each side, named by ariaLabel; its help tag repeats that name, and a title (Delete) gives longer native hover text instead. Beside a field, it lines up with the field below its label."
+        note="With no label, a Button is a square one control height on each side, named by ariaLabel; badge pins a count or dot to its corner, named by badgeLabel; its help tag repeats that name, and a title (Delete) gives longer native hover text instead. Beside a field, it lines up with the field below its label."
         viewport={{ width: 'medium' }}
       >
         <ListInsetControl>
@@ -126,6 +126,23 @@ export function ButtonDemo() {
             tone="danger"
             emphasis="secondary"
             action="log-delete"
+          />
+          <Button
+            icon={<LucideIcon icon={MessageSquare} name="message-square" />}
+            ariaLabel="Messages"
+            badge={4}
+            badgeLabel="4 unread"
+            action="log-more"
+            rootAttributes={{ 'data-demo-badge': 'count' }}
+          />
+          <Button
+            icon={<LucideIcon icon={Download} name="download" />}
+            ariaLabel="Downloads"
+            badge
+            badgeLabel="new download"
+            badgeTone="info"
+            action="log-more"
+            rootAttributes={{ 'data-demo-badge': 'dot' }}
           />
           <Button
             icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}

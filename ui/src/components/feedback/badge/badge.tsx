@@ -20,6 +20,7 @@ const badgeProtectedAttributes = new Set([
   'data-size',
   'data-has-icon',
   'data-truncate',
+  'data-placement',
 ]);
 
 /** Application `data-*` identity on the badge root; Badge-owned markers stay protected. */
@@ -32,11 +33,20 @@ export type BadgeRootAttributes = Readonly<
     'data-size'?: never;
     'data-has-icon'?: never;
     'data-truncate'?: never;
+    'data-placement'?: never;
   }
 >;
 
+/**
+ * `inline` (default) flows with its content; `corner` pins the badge to the
+ * top-trailing corner of the control it sits in (an icon-only `Button`, or a
+ * button in a `ToolbarControlGroup`), out of the pointer's way.
+ */
+export type BadgePlacement = 'inline' | 'corner';
+
 interface BadgeCommonProps {
   tone?: SemanticTone;
+  placement?: BadgePlacement;
   /** Native tooltip text that explains the badge on hover. */
   title?: string;
   /** Safe `data-*` identity, such as a status band, on the badge root. */
@@ -104,6 +114,7 @@ export type BadgeProps = BadgeTextProps | BadgeDotProps;
 export function Badge(props: BadgeProps) {
   const {
     tone = 'neutral',
+    placement = 'inline',
     title,
     rootAttributes = {},
     className = '',
@@ -124,6 +135,7 @@ export function Badge(props: BadgeProps) {
         data-tone={tone}
         data-appearance="solid"
         data-size="dot"
+        data-placement={placement === 'corner' ? 'corner' : undefined}
         role={label ? 'img' : undefined}
         aria-label={label || undefined}
         aria-hidden={label ? undefined : 'true'}
@@ -161,6 +173,7 @@ export function Badge(props: BadgeProps) {
       data-size={size}
       data-has-icon={icon === undefined ? undefined : 'true'}
       data-truncate={truncates ? 'true' : undefined}
+      data-placement={placement === 'corner' ? 'corner' : undefined}
       style={truncates ? `--_kui-badge-max-width:${maxWidth}` : undefined}
       role={named ? 'img' : undefined}
       aria-label={named ? label : undefined}

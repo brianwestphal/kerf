@@ -4157,9 +4157,17 @@ type BadgeRootAttributes = Readonly<Record<`data-${string}`, string | undefined>
     'data-size'?: never;
     'data-has-icon'?: never;
     'data-truncate'?: never;
+    'data-placement'?: never;
 }>;
+/**
+ * `inline` (default) flows with its content; `corner` pins the badge to the
+ * top-trailing corner of the control it sits in (an icon-only `Button`, or a
+ * button in a `ToolbarControlGroup`), out of the pointer's way.
+ */
+type BadgePlacement = 'inline' | 'corner';
 interface BadgeCommonProps {
     tone?: SemanticTone;
+    placement?: BadgePlacement;
     /** Native tooltip text that explains the badge on hover. */
     title?: string;
     /** Safe `data-*` identity, such as a status band, on the badge root. */
@@ -4220,7 +4228,7 @@ type BadgeProps = BadgeTextProps | BadgeDotProps;
 /** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
 declare function Badge(props: BadgeProps): SafeHtml;
 
-export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgeProps, type BadgeRootAttributes, type BadgeShape, type BadgeSize, type BadgeTextProps, type BadgeTone, SemanticTone };
+export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgePlacement, type BadgeProps, type BadgeRootAttributes, type BadgeShape, type BadgeSize, type BadgeTextProps, type BadgeTone, SemanticTone };
 ```
 
 ## `@kerfjs/ui/chip`
@@ -6325,6 +6333,9 @@ export { type AnchoredSurfaceOptions, type AnchoredSurfacePoint, type AnchoredSu
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { BadgeTone } from './badge.js';
+import './css-values.js';
+import './semantic-tone-CdW013KF.js';
 
 /** The color family: `neutral` (default), `brand` for the main action, `danger` for a destructive one. */
 type ButtonTone = 'neutral' | 'brand' | 'danger';
@@ -6393,6 +6404,16 @@ interface ButtonOptions {
     /** Delegated `data-action` the application handles. */
     action?: string;
     /**
+     * A count, short text, or `true` for a text-free dot over the button's
+     * top-trailing corner, such as how many items a filter hides. It stays out
+     * of the accessible name unless `badgeLabel` names it.
+     */
+    badge?: number | string | true;
+    /** Words for the badge ("3 hidden"), added to the button's name. */
+    badgeLabel?: string;
+    /** The badge's tone (default `danger`). */
+    badgeTone?: BadgeTone;
+    /**
      * Native hover text that says more than the name, such as "More Actions
      * for report.pdf". An icon-only Button already gets a help tag with its
      * `ariaLabel` (with `@kerfjs/ui/help-tags-register`); a `title` replaces
@@ -6415,7 +6436,7 @@ interface ButtonOptions {
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, pressed, icon, loading, disabled, type, name, value, form, href, target, action, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, pressed, icon, loading, disabled, type, name, value, form, href, target, action, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
 export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```

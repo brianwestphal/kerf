@@ -569,6 +569,10 @@
   display: inline-flex;
 }
 
+.kui-toolbar-control-group > button:has(> .kui-badge[data-placement="corner"]) {
+  position: relative;
+}
+
 .kui-toolbar-control-group > button {
   appearance: none;
   display: grid;

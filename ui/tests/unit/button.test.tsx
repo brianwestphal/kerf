@@ -198,4 +198,54 @@ describe('Button', () => {
     );
     expect(link.getAttribute('title')).toBe('Open the docs');
   });
+
+  it('pins a count or dot badge to the corner, named only through badgeLabel', () => {
+    const named = render(
+      Button({
+        icon: <svg data-lucide="mail" />,
+        ariaLabel: 'Messages',
+        badge: 4,
+        badgeLabel: '4 unread',
+      }),
+    );
+    expect(named.getAttribute('aria-label')).toBe('Messages, 4 unread');
+    const count = named.querySelector('.kui-badge')!;
+    expect(count.getAttribute('data-placement')).toBe('corner');
+    expect(count.getAttribute('data-tone')).toBe('danger');
+    expect(count.getAttribute('aria-hidden')).toBe('true');
+    expect(count.textContent).toBe('4');
+    // Without badgeLabel the count stays out of the name.
+    const quiet = render(
+      Button({ icon: <svg data-lucide="mail" />, ariaLabel: 'Mail', badge: 2 }),
+    );
+    expect(quiet.getAttribute('aria-label')).toBe('Mail');
+    // A labeled button names the badge through the badge itself.
+    const labeled = render(
+      Button({
+        children: 'Inbox',
+        badge: true,
+        badgeLabel: 'new mail',
+        badgeTone: 'info',
+      }),
+    );
+    const dot = labeled.querySelector('.kui-badge')!;
+    expect(dot.getAttribute('data-size')).toBe('dot');
+    expect(dot.getAttribute('aria-label')).toBe('new mail');
+    expect(dot.getAttribute('data-tone')).toBe('info');
+    const text = render(
+      Button({ children: 'Inbox', badge: 'New', badgeLabel: 'new mail' }),
+    );
+    expect(text.querySelector('.kui-badge')!.getAttribute('aria-label')).toBe(
+      'new mail',
+    );
+    const decorativeDot = render(Button({ children: 'Inbox', badge: true }));
+    expect(
+      decorativeDot.querySelector('.kui-badge')!.getAttribute('aria-hidden'),
+    ).toBe('true');
+    expect(
+      render(Button({ children: 'Inbox', badge: '' })).querySelector(
+        '.kui-badge',
+      ),
+    ).toBe(null);
+  });
 });

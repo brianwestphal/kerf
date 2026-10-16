@@ -47,6 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/button`](../public-api-signatures-v1.md
 - loading
 - disabled
 - link (href)
+- badge (a count, short text, or true for a dot) over the corner, named through badgeLabel, with badgeTone
 
 ## Composition
 

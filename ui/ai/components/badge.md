@@ -37,6 +37,7 @@ Exact prop names and types: [`@kerfjs/ui/badge`](../public-api-signatures-v1.md#
 - leading icon
 - title tooltip and data-\* rootAttributes
 - maxWidth caps the badge and truncates long text with an ellipsis, defaulting the title to string or number content
+- placement="corner": a count or dot straddling the top-trailing corner of an icon-only Button or a ToolbarControlGroup button
 
 ## Composition
 

@@ -140,3 +140,18 @@
   margin-inline-end: var(--kui-layout-item-gap, remify(8px));
   vertical-align: baseline;
 }
+
+/* `corner`: over the top-trailing corner of the control it sits in, which
+   positions itself for it (button.css, toolbar-control-group.css). A count
+   straddles the corner, growing inward; the dot sits just inside it. */
+.kui-badge[data-placement="corner"] {
+  position: absolute;
+  inset-block-start: remify(-4px);
+  inset-inline-end: remify(-4px);
+  pointer-events: none;
+}
+
+.kui-badge[data-placement="corner"][data-size="dot"] {
+  inset-block-start: remify(2px);
+  inset-inline-end: remify(2px);
+}

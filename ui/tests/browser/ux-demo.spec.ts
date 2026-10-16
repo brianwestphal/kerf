@@ -6720,6 +6720,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
     'Icon Tile Tones',
     'Shape',
+    'Corner Count',
     'Segmented Choices',
     'Popup Menu',
     'Action Link',
@@ -6741,7 +6742,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Wrapping Zone Sizing',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  const expectedGroupCount = 32;
+  const expectedGroupCount = 33;
   await expect(groups).toHaveCount(expectedGroupCount);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
