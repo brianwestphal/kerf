@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 421500,
-  "measuredLargestJavaScriptGzip": 164221,
-  "measuredTotalJavaScriptGzip": 421419,
+  "totalJavaScriptGzip": 421700,
+  "measuredLargestJavaScriptGzip": 164223,
+  "measuredTotalJavaScriptGzip": 421644,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5523,6 +5523,22 @@
         "measuredTotalJavaScriptGzip": 421419,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 421500
+      }
+    },
+    {
+      "at": "2026-10-16T12:55:26.339Z",
+      "reason": "Vertical Slider demo (KF-SVDPSR)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 421419,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 421500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164223,
+        "measuredTotalJavaScriptGzip": 421644,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 421700
       }
     }
   ]

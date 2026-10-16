@@ -51,8 +51,9 @@
 
 .kui-slider__input {
   display: block;
-  width: 100%;
-  height: var(--_kui-slider-thumb);
+  /* Logical sizes, so a vertical slider (writing-mode) draws the same way. */
+  inline-size: 100%;
+  block-size: var(--_kui-slider-thumb);
   margin: 0;
   padding: 0;
   border: 0;
@@ -67,7 +68,7 @@
 
 /* The track: the fill up to the value, the neutral rest after it. */
 .kui-slider__input::-webkit-slider-runnable-track {
-  height: var(--_kui-slider-track);
+  block-size: var(--_kui-slider-track);
   border-radius: var(--kui-radius-pill);
   background: linear-gradient(
     to right,
@@ -85,13 +86,13 @@
 }
 
 .kui-slider__input::-moz-range-track {
-  height: var(--_kui-slider-track);
+  block-size: var(--_kui-slider-track);
   border-radius: var(--kui-radius-pill);
   background: var(--kui-color-neutral-fill-normal);
 }
 
 .kui-slider__input::-moz-range-progress {
-  height: var(--_kui-slider-track);
+  block-size: var(--_kui-slider-track);
   border-radius: var(--kui-radius-pill);
   background: var(--_kui-slider-fill-color);
 }
@@ -129,6 +130,34 @@
 .kui-slider__input:focus-visible::-moz-range-thumb {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
+}
+
+/* Vertical: a native vertical range, its minimum at the bottom, `length`
+   tall; the label row sits above it and the fill runs upward. */
+.kui-slider[data-orientation="vertical"] {
+  width: fit-content;
+  align-self: flex-start;
+  align-items: center;
+}
+
+.kui-slider[data-orientation="vertical"] .kui-slider__input {
+  inline-size: var(--_kui-slider-length, remify(160px));
+  writing-mode: vertical-lr;
+  direction: rtl;
+}
+
+.kui-slider[data-orientation="vertical"]
+  .kui-slider__input::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to top,
+    var(--_kui-slider-fill-color) var(--_kui-slider-fill, 0%),
+    var(--kui-color-neutral-fill-normal) var(--_kui-slider-fill, 0%)
+  );
+}
+
+/* Firefox sizes a vertical track's length from its content; fill it. */
+.kui-slider[data-orientation="vertical"] .kui-slider__input::-moz-range-track {
+  inline-size: 100%;
 }
 
 .kui-slider__input:disabled {

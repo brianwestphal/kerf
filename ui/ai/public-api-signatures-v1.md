@@ -6207,9 +6207,12 @@ export { Switch, type SwitchProps, type SwitchRootAttributes, type SwitchSize };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { CssLength } from './css-values.js';
 
 /** `default` is a 4px track with a 20px thumb at 16px text; `compact` 3px, 16px, and 14px. */
 type SliderSize = 'default' | 'compact';
+/** `horizontal` (default), or `vertical` with its minimum at the bottom. */
+type SliderOrientation = 'horizontal' | 'vertical';
 /**
  * A labeled stop under the track: a value and the text shown for it. The
  * labels are visual; the input still reports its value to assistive
@@ -6242,6 +6245,13 @@ type SliderProps = {
     hint?: string;
     /** Labeled stops under the track. */
     ticks?: readonly SliderTick[];
+    /**
+     * `vertical` stands the slider up (a volume control in a popup), minimum at
+     * the bottom, `length` tall; it takes no `ticks`.
+     */
+    orientation?: SliderOrientation;
+    /** A vertical slider's length (default 160px). */
+    length?: CssLength;
     size?: SliderSize;
     disabled?: boolean;
     /** Delegated `data-action` on the input; listen for `input` or `change`. */
@@ -6267,9 +6277,9 @@ type SliderProps = {
  * `wireSliders` from `@kerfjs/ui/wire-sliders` above it so the fill and the
  * readout follow a drag before the app re-renders.
  */
-declare function Slider({ id, value, min, max, step, name, label, ariaLabel, showValue, unit, hint, ticks, size, disabled, action, form, className, rootAttributes, slot, }: SliderProps): kerfjs.SafeHtml;
+declare function Slider({ id, value, min, max, step, name, label, ariaLabel, showValue, unit, hint, ticks, size, orientation, length, disabled, action, form, className, rootAttributes, slot, }: SliderProps): kerfjs.SafeHtml;
 
-export { Slider, type SliderProps, type SliderRootAttributes, type SliderSize, type SliderTick };
+export { Slider, type SliderOrientation, type SliderProps, type SliderRootAttributes, type SliderSize, type SliderTick };
 ```
 
 ## `@kerfjs/ui/anchored-surface`

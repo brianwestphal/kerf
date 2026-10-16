@@ -55,3 +55,26 @@ test('Slider steps by keyboard and pointer, and its fill and readout follow', as
     ).toBeDisabled();
   }
 });
+
+test('a vertical Slider stands up, steps with the arrow keys, and fills upward', async ({
+  page,
+}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=slider');
+    const level = page.getByRole('slider', { name: 'Level' });
+    await level.scrollIntoViewIfNeeded();
+    const box = (await level.boundingBox())!;
+    expect(box.height).toBeCloseTo(120, 0);
+    expect(box.width).toBeLessThan(30);
+    await level.focus();
+    await page.keyboard.press('ArrowUp');
+    await expect(level).toHaveValue('61');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowDown');
+    await expect(level).toHaveValue('59');
+    // The minimum is at the bottom: a press near the bottom sets a low value.
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height - 2);
+    expect(Number(await level.inputValue())).toBeLessThan(10);
+  }
+});

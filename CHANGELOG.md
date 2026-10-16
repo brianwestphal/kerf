@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Vertical `Slider`.** `orientation="vertical"` stands a Slider up with its minimum at the bottom, `length` tall (default 160px), drawn the same in Chromium, Firefox, and WebKit; the AnchoredSurface media volume popup is vertical again (`KF-SVDPSR`).
 - **`FileDropZone` `dropScope`.** A selector for an enclosing element (an attachments panel) that also takes drops: `wireFilePickers` highlights the zone while files are dragged over any part of it and reports drops there for the zone with `via: 'drop'`, so an app no longer writes the zone's `data-dragging` itself (`KF-HNRWM9`).
 - **`PopupMenu` `triggerContent`.** App content, such as a `Badge` showing a status, can be the whole trigger: Kerf owns the bare button around it (no chrome, a pill focus ring, the pointer cursor, `aria-haspopup`), `label` names it, the caret is off by default, and no help tag repeats the name. Submenus and checked choices work as on any PopupMenu (`KF-PHGQ6D`).
 - **Corner count badges.** `Badge` takes `placement="corner"` to straddle the top-trailing corner of the control it sits in (an icon-only `Button` or a button in a `ToolbarControlGroup`, which positions itself for it). `Button` takes `badge` (a count, short text, or `true` for a dot), `badgeLabel` (added to the button's name; the count stays out of it otherwise), and `badgeTone` (default `danger`) (`KF-WT2EMZ`).

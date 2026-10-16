@@ -1,7 +1,11 @@
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import type { CssLength } from '../../../shared/styles/css-values.js';
 
 /** `default` is a 4px track with a 20px thumb at 16px text; `compact` 3px, 16px, and 14px. */
 export type SliderSize = 'default' | 'compact';
+
+/** `horizontal` (default), or `vertical` with its minimum at the bottom. */
+export type SliderOrientation = 'horizontal' | 'vertical';
 
 /**
  * A labeled stop under the track: a value and the text shown for it. The
@@ -19,7 +23,12 @@ export type SliderRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined>
 >;
 
-const SLIDER_PROTECTED = new Set(['data-component', 'data-size', 'data-unit']);
+const SLIDER_PROTECTED = new Set([
+  'data-component',
+  'data-size',
+  'data-orientation',
+  'data-unit',
+]);
 
 export type SliderProps = {
   /** The input's id; it also derives the readout, hint, and tick ids. */
@@ -41,6 +50,13 @@ export type SliderProps = {
   hint?: string;
   /** Labeled stops under the track. */
   ticks?: readonly SliderTick[];
+  /**
+   * `vertical` stands the slider up (a volume control in a popup), minimum at
+   * the bottom, `length` tall; it takes no `ticks`.
+   */
+  orientation?: SliderOrientation;
+  /** A vertical slider's length (default 160px). */
+  length?: CssLength;
   size?: SliderSize;
   disabled?: boolean;
   /** Delegated `data-action` on the input; listen for `input` or `change`. */
@@ -85,6 +101,8 @@ export function Slider({
   hint,
   ticks,
   size = 'default',
+  orientation = 'horizontal',
+  length,
   disabled = false,
   action,
   form,
@@ -96,6 +114,8 @@ export function Slider({
     throw new RangeError('Slider max must be a number at least min.');
   if (!Number.isFinite(step) || step <= 0)
     throw new RangeError('Slider step must be a positive number.');
+  if (orientation === 'vertical' && ticks !== undefined)
+    throw new TypeError('A vertical Slider takes no ticks.');
   const current = Math.min(
     max,
     Math.max(min, value ?? min + Math.round((max - min) / 2 / step) * step),
@@ -108,7 +128,11 @@ export function Slider({
       class={`kui-slider ${className}`.trim()}
       data-component="slider"
       data-size={size}
+      data-orientation={orientation === 'vertical' ? 'vertical' : undefined}
       data-unit={unit || undefined}
+      style={
+        length === undefined ? undefined : `--_kui-slider-length:${length}`
+      }
       slot={slot}
     >
       {label === undefined && !showValue ? null : (

@@ -5,6 +5,7 @@ import {
   syncSlider,
   wireSliders,
 } from '../../src/components/forms/slider/wiring/wire-sliders.js';
+import { rem } from '../../src/shared/styles/css-values.js';
 
 function render(html: unknown): HTMLElement {
   const host = document.createElement('div');
@@ -111,6 +112,32 @@ describe('Slider', () => {
     expect(() => Slider({ id: 'a', ariaLabel: 'A', step: 0 })).toThrow(
       'Slider step must be a positive number.',
     );
+    expect(() =>
+      Slider({
+        id: 'a',
+        ariaLabel: 'A',
+        orientation: 'vertical',
+        ticks: [{ value: 0 }],
+      }),
+    ).toThrow('A vertical Slider takes no ticks.');
+  });
+
+  it('stands up vertically with an optional length', () => {
+    const host = render(
+      Slider({
+        id: 'level',
+        ariaLabel: 'Level',
+        orientation: 'vertical',
+        length: rem(7.5),
+      }),
+    );
+    const root = host.querySelector<HTMLElement>('.kui-slider')!;
+    expect(root.dataset.orientation).toBe('vertical');
+    expect(root.getAttribute('style')).toBe('--_kui-slider-length:7.5rem');
+    const flat = render(Slider({ id: 'flat', ariaLabel: 'Flat' }));
+    const flatRoot = flat.querySelector<HTMLElement>('.kui-slider')!;
+    expect(flatRoot.hasAttribute('data-orientation')).toBe(false);
+    expect(flatRoot.hasAttribute('style')).toBe(false);
   });
 });
 

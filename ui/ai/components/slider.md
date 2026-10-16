@@ -42,6 +42,7 @@ Exact prop names and types: [`@kerfjs/ui/slider`](../public-api-signatures-v1.md
 - compact size
 - disabled
 - ariaLabel without a visible label
+- orientation="vertical" with a length, minimum at the bottom, for a volume control in a popup
 
 ## Composition
 

@@ -1,4 +1,5 @@
 import { openAnchoredSurface } from '@kerfjs/ui/anchored-surface';
+import { remify } from '@kerfjs/ui/css-values';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Slider } from '@kerfjs/ui/slider';
@@ -36,6 +37,8 @@ function MediaVolumeSurface() {
         showValue
         unit="%"
         size="compact"
+        orientation="vertical"
+        length={remify(120)}
         disabled={muted}
         rootAttributes={{ 'data-media-volume': '' }}
       />

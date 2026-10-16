@@ -36,6 +36,9 @@ const stop = wireSliders(root);
 - `hint` is supporting text below it and its accessible description.
 - `size="compact"` is a 3px track, a 16px thumb, and 14px text; `disabled`
   dims it.
+- `orientation="vertical"` stands it up, minimum at the bottom, `length`
+  tall (default 160px), with the label row above and the fill running upward.
+  A vertical Slider takes no `ticks`. Arrow keys still step it.
 - `action` puts a `data-action` on the input. Listen for `input` (live) or
   `change` (committed) and store the value the app re-renders with.
 
@@ -48,7 +51,8 @@ before the app re-renders. `syncSlider(input)` recomputes one by hand.
 
 ## Geometry and accessibility
 
-The Slider fills the available width with the shared block-content inset (a
+A horizontal Slider fills the available width (a vertical one is as wide as
+its label row) with the shared block-content inset (a
 transparent 1px border and 8px padding), so its label sits on the same text
 column as `Text`. Keyboard and screen-reader behavior are the platform's:
 arrow keys, Page Up and Down, Home, and End step it. The readout is hidden

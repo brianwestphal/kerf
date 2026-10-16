@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { remify } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { Slider } from '@kerfjs/ui/slider';
 import { signal } from 'kerfjs';
@@ -6,7 +7,7 @@ import { signal } from 'kerfjs';
 /** The delegated action every demo Slider reports its value through. */
 export const SET_SLIDER_DEMO_ACTION = 'set-slider-demo';
 
-const INITIAL = { volume: 30, zoom: 100, opacity: 80 } as const;
+const INITIAL = { volume: 30, zoom: 100, opacity: 80, level: 60 } as const;
 type SliderDemoId = keyof typeof INITIAL;
 const values = signal<Record<SliderDemoId, number>>({ ...INITIAL });
 
@@ -86,6 +87,22 @@ export function SliderDemo() {
             disabled
           />
         </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Vertical"
+        note='orientation="vertical" stands the slider up, minimum at the bottom, length tall (here 120px), for a volume control in a popup; arrow keys still step it and the fill runs upward.'
+      >
+        <Slider
+          id="slider-demo-level"
+          label="Level"
+          value={current.level}
+          showValue
+          unit="%"
+          size="compact"
+          orientation="vertical"
+          length={remify(120)}
+          action={SET_SLIDER_DEMO_ACTION}
+        />
       </CatalogExample>
     </CatalogExampleStack>
   );

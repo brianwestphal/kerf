@@ -7171,7 +7171,8 @@
         "stepped with labeled ticks",
         "compact size",
         "disabled",
-        "ariaLabel without a visible label"
+        "ariaLabel without a visible label",
+        "orientation=\"vertical\" with a length, minimum at the bottom, for a volume control in a popup"
       ],
       "accessibility": [
         "It is a native range input: arrow keys, Page Up and Down, Home, and End step it, and the platform announces its value (with a unit, as aria-valuetext).",
