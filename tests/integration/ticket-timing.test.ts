@@ -14,6 +14,8 @@ import { promisify } from 'node:util';
 
 import { describe, expect, it } from 'vitest';
 
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
+
 const execFileAsync = promisify(execFile);
 const script = resolve(import.meta.dirname, '../../scripts/ticket-timing.mjs');
 const guard = resolve(
@@ -72,7 +74,7 @@ function runWithInput(
 
 // These drive real git/node subprocess round trips (the skip sequence runs
 // about ten), so allow for full-suite CPU contention.
-describe('ticket timing CLI', { timeout: 30_000 }, () => {
+describe('ticket timing CLI', { timeout: loadScaledTimeout(30_000) }, () => {
   it('runs a real command and appends a sanitized durable interval note', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ticket-timing-'));
     const log = join(root, 'notes.jsonl');

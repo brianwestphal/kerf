@@ -14,6 +14,8 @@ import process from 'node:process';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
+
 const repoRoot = resolve(import.meta.dirname, '../..');
 const fixtureRoot = mkdtempSync(join(tmpdir(), 'kerf-release-package-'));
 const betaVersion = '5.0.0-beta.2';
@@ -99,256 +101,279 @@ beforeAll(() => {
     }>;
     tarballs.set(name, join(out, basename(packResult[0].filename)));
   }
-}, 30_000);
+}, loadScaledTimeout(30_000));
 
 afterAll(() => rmSync(fixtureRoot, { recursive: true, force: true }));
 
-describe('release package preparation', { timeout: 30_000 }, () => {
-  it('repairs scaffold schema drift from the canonical UI contract and then passes its release gate', () => {
-    const script = join(
-      fixtureRoot,
-      'scripts/sync-scaffold-catalog-schema.mjs',
-    );
-    const schemas = [
-      'component-composition.schema.json',
-      'component-catalog-extension.schema.json',
-    ];
-    for (const name of schemas) {
-      const scaffoldSchema = join(fixtureRoot, 'create-kerf-component', name);
-      writeFileSync(scaffoldSchema, '{}\n');
+describe(
+  'release package preparation',
+  { timeout: loadScaledTimeout(30_000) },
+  () => {
+    it('repairs scaffold schema drift from the canonical UI contract and then passes its release gate', () => {
+      const script = join(
+        fixtureRoot,
+        'scripts/sync-scaffold-catalog-schema.mjs',
+      );
+      const schemas = [
+        'component-composition.schema.json',
+        'component-catalog-extension.schema.json',
+      ];
+      for (const name of schemas) {
+        const scaffoldSchema = join(fixtureRoot, 'create-kerf-component', name);
+        writeFileSync(scaffoldSchema, '{}\n');
+        expect(() =>
+          execFileSync(
+            process.execPath,
+            [script, '--check', '--root', fixtureRoot],
+            { stdio: 'pipe' },
+          ),
+        ).toThrow();
+        execFileSync(
+          process.execPath,
+          [script, '--write', '--root', fixtureRoot],
+          { stdio: 'pipe' },
+        );
+      }
       expect(() =>
         execFileSync(
           process.execPath,
           [script, '--check', '--root', fixtureRoot],
           { stdio: 'pipe' },
         ),
-      ).toThrow();
-      execFileSync(
-        process.execPath,
-        [script, '--write', '--root', fixtureRoot],
-        { stdio: 'pipe' },
-      );
-    }
-    expect(() =>
-      execFileSync(
-        process.execPath,
-        [script, '--check', '--root', fixtureRoot],
-        { stdio: 'pipe' },
-      ),
-    ).not.toThrow();
-    for (const name of schemas)
-      expect(
-        readFileSync(join(fixtureRoot, 'create-kerf-component', name), 'utf8'),
-      ).toBe(readFileSync(join(fixtureRoot, 'ui/ai', name), 'utf8'));
-  });
-
-  it('packs synchronized beta metadata into all four release artifacts', () => {
-    const coreTarball = tarballs.get('kerfjs')!;
-    expect(JSON.parse(packedText(coreTarball, 'package.json')).version).toBe(
-      betaVersion,
-    );
-    expect(
-      JSON.parse(packedText(coreTarball, 'ai/manifest.json')).kerfjsVersion,
-    ).toBe(betaVersion);
-    expect(packedText(coreTarball, 'setup/cli.mjs')).toContain(
-      '#!/usr/bin/env node',
-    );
-
-    const pluginTarball = tarballs.get('eslint-plugin-kerfjs')!;
-    expect(JSON.parse(packedText(pluginTarball, 'package.json')).version).toBe(
-      betaVersion,
-    );
-    expect(packedText(pluginTarball, 'index.js')).toContain(
-      `version: '${betaVersion}'`,
-    );
-
-    const createTarball = tarballs.get('create-kerf-component')!;
-    expect(JSON.parse(packedText(createTarball, 'package.json')).version).toBe(
-      betaVersion,
-    );
-    const template = JSON.parse(
-      packedText(createTarball, 'template/package.json'),
-    );
-    expect(template.peerDependencies.kerfjs).toBe('^5.0.0-0');
-    expect(template.devDependencies.kerfjs).toBe(`^${betaVersion}`);
-    expect(template.devDependencies['@kerfjs/ui']).toBe(`^${betaVersion}`);
-    expect(packedText(createTarball, 'catalog.js')).toContain(
-      'runCatalogCommand',
-    );
-    expect(
-      JSON.parse(packedText(createTarball, 'component-metadata.schema.json'))
-        .title,
-    ).toBe('Kerf consumer component metadata source');
-    expect(
-      JSON.parse(packedText(createTarball, 'component-composition.schema.json'))
-        .title,
-    ).toBe('Kerf UI composition catalog');
-    expect(
-      JSON.parse(
-        packedText(createTarball, 'component-catalog-extension.schema.json'),
-      ).title,
-    ).toBe('Kerf UI consumer component catalog extension');
-
-    const uiTarball = tarballs.get('@kerfjs/ui')!;
-    const uiManifest = JSON.parse(packedText(uiTarball, 'package.json'));
-    expect(uiManifest.version).toBe(betaVersion);
-    expect(uiManifest.peerDependencies.kerfjs).toBe('^5.0.0-0');
-    expect(packedText(uiTarball, 'ai/public-api-signatures-v1.md')).toContain(
-      `@kerfjs/ui@${betaVersion}\` and \`kerfjs@${betaVersion}`,
-    );
-    expect(
-      packedText(uiTarball, 'ai/webawesome-jsx-signatures-v1.md'),
-    ).toContain(`@kerfjs/ui@${betaVersion}`);
-  });
-
-  it('builds a project generated by the packed initializer with TypeScript 6', () => {
-    const artifactRoot = join(fixtureRoot, 'create-artifact');
-    const generatedRoot = join(fixtureRoot, 'generated-component');
-    mkdirSync(artifactRoot, { recursive: true });
-    execFileSync('tar', [
-      '-xf',
-      tarballs.get('create-kerf-component')!,
-      '-C',
-      artifactRoot,
-    ]);
-    execFileSync(process.execPath, [
-      join(artifactRoot, 'package/index.js'),
-      generatedRoot,
-    ]);
-
-    // Exercise the generated package with the repository's installed build
-    // toolchain without a network-dependent install inside the test fixture.
-    symlinkSync(
-      join(repoRoot, 'node_modules'),
-      join(generatedRoot, 'node_modules'),
-      'dir',
-    );
-    const typescriptPackage = JSON.parse(
-      readFileSync(
-        join(generatedRoot, 'node_modules/typescript/package.json'),
-        'utf8',
-      ),
-    );
-    expect(typescriptPackage.version).toMatch(/^6\./);
-    // The template's prepublishOnly runs `check:styles` (kerf-ui-analyze from
-    // @kerfjs/ui), which the root install does not provide. Put this
-    // repository's analyzer first on PATH so the gate never depends on a bin
-    // some other project happens to leave on the developer's PATH.
-    const binRoot = join(fixtureRoot, 'bin');
-    mkdirSync(binRoot, { recursive: true });
-    symlinkSync(
-      join(repoRoot, 'ui/analyzer/cli.mjs'),
-      join(binRoot, 'kerf-ui-analyze'),
-    );
-    const generatedEnv = {
-      ...process.env,
-      PATH: `${binRoot}${delimiter}${process.env.PATH ?? ''}`,
-      npm_config_cache: join(fixtureRoot, 'npm-cache'),
-    };
-
-    expect(() =>
-      execFileSync('npm', ['run', 'build'], {
-        cwd: generatedRoot,
-        stdio: 'pipe',
-        env: {
-          ...process.env,
-          npm_config_cache: join(fixtureRoot, 'npm-cache'),
-        },
-      }),
-    ).not.toThrow();
-    expect(() =>
-      execFileSync('npm', ['run', 'catalog:check'], {
-        cwd: generatedRoot,
-        stdio: 'pipe',
-      }),
-    ).not.toThrow();
-    expect(() =>
-      execFileSync('npm', ['publish', '--dry-run', '--offline', '--json'], {
-        cwd: generatedRoot,
-        stdio: 'pipe',
-        env: generatedEnv,
-      }),
-    ).not.toThrow();
-    expect(
-      readFileSync(join(generatedRoot, 'dist/counter.d.ts'), 'utf8'),
-    ).toContain('createCounter');
-    expect(
-      readFileSync(join(generatedRoot, 'dist/counter.js'), 'utf8'),
-    ).toContain('createCounter');
-  }, 40_000);
-
-  it('keeps preparation and packing outside every OIDC publish job and publishes local paths', () => {
-    const workflows = [
-      'release.yml',
-      'release-eslint-plugin.yml',
-      'release-create-kerf-component.yml',
-      'release-ui.yml',
-    ];
-
-    const releasePackage = join(fixtureRoot, 'release-package');
-    mkdirSync(releasePackage, { recursive: true });
-    const coreTarball = tarballs.get('kerfjs')!;
-    cpSync(coreTarball, join(releasePackage, basename(coreTarball)));
-
-    for (const workflow of workflows) {
-      const source = readFileSync(
-        join(repoRoot, '.github/workflows', workflow),
-        'utf8',
-      );
-      const publishJob = source.slice(source.indexOf('  npm-publish:\n'));
-      const beforePublish = source.slice(0, source.indexOf('  npm-publish:\n'));
-      const publishCommands = [
-        ...publishJob.matchAll(/run: (npm publish (\S+)[^\n]*)/g),
-      ].map((match) => ({ command: match[1], artifact: match[2] }));
-
-      expect(beforePublish).toContain('scripts/prepare-release-package.mjs');
-      expect(beforePublish).toContain('npm pack --ignore-scripts');
-      expect(publishJob).toContain('actions/download-artifact@');
-      expect(publishCommands).toHaveLength(2);
-      expect(publishCommands[0]!.command).not.toContain('--tag beta');
-      expect(publishCommands[1]!.command).toContain('--tag beta');
-      expect(publishJob).not.toContain('scripts/prepare-release-package.mjs');
-      expect(publishJob).not.toContain('npm version');
-      expect(publishJob).not.toContain('npm install');
-      expect(publishJob).not.toContain('actions/checkout@');
-      expect(publishJob).toContain(
-        "node-version: '${{ env.PUBLISH_NODE_VERSION }}'",
-      );
-
-      for (const { artifact } of publishCommands) {
-        const expandedArgument = artifact.replace(
-          '*.tgz',
-          basename(coreTarball),
-        );
-        expect(() =>
-          execFileSync(
-            'npm',
-            [
-              'publish',
-              expandedArgument,
-              '--dry-run',
-              '--offline',
-              '--ignore-scripts',
-              // npm 11+ rejects every prerelease publish without an explicit
-              // non-latest dist-tag, including dry runs. The fixture tarball
-              // is intentionally a beta even when validating the stable
-              // workflow's local artifact path; this tag applies only to the
-              // validation command, while the assertions above keep the
-              // actual stable publish command tag-free.
-              '--tag',
-              'beta',
-            ],
-            {
-              cwd: fixtureRoot,
-              stdio: 'pipe',
-              env: {
-                ...process.env,
-                npm_config_cache: join(fixtureRoot, 'npm-cache'),
-              },
-            },
+      ).not.toThrow();
+      for (const name of schemas)
+        expect(
+          readFileSync(
+            join(fixtureRoot, 'create-kerf-component', name),
+            'utf8',
           ),
+        ).toBe(readFileSync(join(fixtureRoot, 'ui/ai', name), 'utf8'));
+    });
+
+    it('packs synchronized beta metadata into all four release artifacts', () => {
+      const coreTarball = tarballs.get('kerfjs')!;
+      expect(JSON.parse(packedText(coreTarball, 'package.json')).version).toBe(
+        betaVersion,
+      );
+      expect(
+        JSON.parse(packedText(coreTarball, 'ai/manifest.json')).kerfjsVersion,
+      ).toBe(betaVersion);
+      expect(packedText(coreTarball, 'setup/cli.mjs')).toContain(
+        '#!/usr/bin/env node',
+      );
+
+      const pluginTarball = tarballs.get('eslint-plugin-kerfjs')!;
+      expect(
+        JSON.parse(packedText(pluginTarball, 'package.json')).version,
+      ).toBe(betaVersion);
+      expect(packedText(pluginTarball, 'index.js')).toContain(
+        `version: '${betaVersion}'`,
+      );
+
+      const createTarball = tarballs.get('create-kerf-component')!;
+      expect(
+        JSON.parse(packedText(createTarball, 'package.json')).version,
+      ).toBe(betaVersion);
+      const template = JSON.parse(
+        packedText(createTarball, 'template/package.json'),
+      );
+      expect(template.peerDependencies.kerfjs).toBe('^5.0.0-0');
+      expect(template.devDependencies.kerfjs).toBe(`^${betaVersion}`);
+      expect(template.devDependencies['@kerfjs/ui']).toBe(`^${betaVersion}`);
+      expect(packedText(createTarball, 'catalog.js')).toContain(
+        'runCatalogCommand',
+      );
+      expect(
+        JSON.parse(packedText(createTarball, 'component-metadata.schema.json'))
+          .title,
+      ).toBe('Kerf consumer component metadata source');
+      expect(
+        JSON.parse(
+          packedText(createTarball, 'component-composition.schema.json'),
+        ).title,
+      ).toBe('Kerf UI composition catalog');
+      expect(
+        JSON.parse(
+          packedText(createTarball, 'component-catalog-extension.schema.json'),
+        ).title,
+      ).toBe('Kerf UI consumer component catalog extension');
+
+      const uiTarball = tarballs.get('@kerfjs/ui')!;
+      const uiManifest = JSON.parse(packedText(uiTarball, 'package.json'));
+      expect(uiManifest.version).toBe(betaVersion);
+      expect(uiManifest.peerDependencies.kerfjs).toBe('^5.0.0-0');
+      expect(packedText(uiTarball, 'ai/public-api-signatures-v1.md')).toContain(
+        `@kerfjs/ui@${betaVersion}\` and \`kerfjs@${betaVersion}`,
+      );
+      expect(
+        packedText(uiTarball, 'ai/webawesome-jsx-signatures-v1.md'),
+      ).toContain(`@kerfjs/ui@${betaVersion}`);
+    });
+
+    it(
+      'builds a project generated by the packed initializer with TypeScript 6',
+      () => {
+        const artifactRoot = join(fixtureRoot, 'create-artifact');
+        const generatedRoot = join(fixtureRoot, 'generated-component');
+        mkdirSync(artifactRoot, { recursive: true });
+        execFileSync('tar', [
+          '-xf',
+          tarballs.get('create-kerf-component')!,
+          '-C',
+          artifactRoot,
+        ]);
+        execFileSync(process.execPath, [
+          join(artifactRoot, 'package/index.js'),
+          generatedRoot,
+        ]);
+
+        // Exercise the generated package with the repository's installed build
+        // toolchain without a network-dependent install inside the test fixture.
+        symlinkSync(
+          join(repoRoot, 'node_modules'),
+          join(generatedRoot, 'node_modules'),
+          'dir',
+        );
+        const typescriptPackage = JSON.parse(
+          readFileSync(
+            join(generatedRoot, 'node_modules/typescript/package.json'),
+            'utf8',
+          ),
+        );
+        expect(typescriptPackage.version).toMatch(/^6\./);
+        // The template's prepublishOnly runs `check:styles` (kerf-ui-analyze from
+        // @kerfjs/ui), which the root install does not provide. Put this
+        // repository's analyzer first on PATH so the gate never depends on a bin
+        // some other project happens to leave on the developer's PATH.
+        const binRoot = join(fixtureRoot, 'bin');
+        mkdirSync(binRoot, { recursive: true });
+        symlinkSync(
+          join(repoRoot, 'ui/analyzer/cli.mjs'),
+          join(binRoot, 'kerf-ui-analyze'),
+        );
+        const generatedEnv = {
+          ...process.env,
+          PATH: `${binRoot}${delimiter}${process.env.PATH ?? ''}`,
+          npm_config_cache: join(fixtureRoot, 'npm-cache'),
+        };
+
+        expect(() =>
+          execFileSync('npm', ['run', 'build'], {
+            cwd: generatedRoot,
+            stdio: 'pipe',
+            env: {
+              ...process.env,
+              npm_config_cache: join(fixtureRoot, 'npm-cache'),
+            },
+          }),
         ).not.toThrow();
-      }
-    }
-  }, 40_000);
-});
+        expect(() =>
+          execFileSync('npm', ['run', 'catalog:check'], {
+            cwd: generatedRoot,
+            stdio: 'pipe',
+          }),
+        ).not.toThrow();
+        expect(() =>
+          execFileSync('npm', ['publish', '--dry-run', '--offline', '--json'], {
+            cwd: generatedRoot,
+            stdio: 'pipe',
+            env: generatedEnv,
+          }),
+        ).not.toThrow();
+        expect(
+          readFileSync(join(generatedRoot, 'dist/counter.d.ts'), 'utf8'),
+        ).toContain('createCounter');
+        expect(
+          readFileSync(join(generatedRoot, 'dist/counter.js'), 'utf8'),
+        ).toContain('createCounter');
+      },
+      loadScaledTimeout(40_000),
+    );
+
+    it(
+      'keeps preparation and packing outside every OIDC publish job and publishes local paths',
+      () => {
+        const workflows = [
+          'release.yml',
+          'release-eslint-plugin.yml',
+          'release-create-kerf-component.yml',
+          'release-ui.yml',
+        ];
+
+        const releasePackage = join(fixtureRoot, 'release-package');
+        mkdirSync(releasePackage, { recursive: true });
+        const coreTarball = tarballs.get('kerfjs')!;
+        cpSync(coreTarball, join(releasePackage, basename(coreTarball)));
+
+        for (const workflow of workflows) {
+          const source = readFileSync(
+            join(repoRoot, '.github/workflows', workflow),
+            'utf8',
+          );
+          const publishJob = source.slice(source.indexOf('  npm-publish:\n'));
+          const beforePublish = source.slice(
+            0,
+            source.indexOf('  npm-publish:\n'),
+          );
+          const publishCommands = [
+            ...publishJob.matchAll(/run: (npm publish (\S+)[^\n]*)/g),
+          ].map((match) => ({ command: match[1], artifact: match[2] }));
+
+          expect(beforePublish).toContain(
+            'scripts/prepare-release-package.mjs',
+          );
+          expect(beforePublish).toContain('npm pack --ignore-scripts');
+          expect(publishJob).toContain('actions/download-artifact@');
+          expect(publishCommands).toHaveLength(2);
+          expect(publishCommands[0]!.command).not.toContain('--tag beta');
+          expect(publishCommands[1]!.command).toContain('--tag beta');
+          expect(publishJob).not.toContain(
+            'scripts/prepare-release-package.mjs',
+          );
+          expect(publishJob).not.toContain('npm version');
+          expect(publishJob).not.toContain('npm install');
+          expect(publishJob).not.toContain('actions/checkout@');
+          expect(publishJob).toContain(
+            "node-version: '${{ env.PUBLISH_NODE_VERSION }}'",
+          );
+
+          for (const { artifact } of publishCommands) {
+            const expandedArgument = artifact.replace(
+              '*.tgz',
+              basename(coreTarball),
+            );
+            expect(() =>
+              execFileSync(
+                'npm',
+                [
+                  'publish',
+                  expandedArgument,
+                  '--dry-run',
+                  '--offline',
+                  '--ignore-scripts',
+                  // npm 11+ rejects every prerelease publish without an explicit
+                  // non-latest dist-tag, including dry runs. The fixture tarball
+                  // is intentionally a beta even when validating the stable
+                  // workflow's local artifact path; this tag applies only to the
+                  // validation command, while the assertions above keep the
+                  // actual stable publish command tag-free.
+                  '--tag',
+                  'beta',
+                ],
+                {
+                  cwd: fixtureRoot,
+                  stdio: 'pipe',
+                  env: {
+                    ...process.env,
+                    npm_config_cache: join(fixtureRoot, 'npm-cache'),
+                  },
+                },
+              ),
+            ).not.toThrow();
+          }
+        }
+      },
+      loadScaledTimeout(40_000),
+    );
+  },
+);

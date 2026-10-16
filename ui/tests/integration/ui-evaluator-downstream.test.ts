@@ -14,6 +14,7 @@ import { setTimeout } from 'node:timers';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { evaluateUi } from '../../evaluator/index.mjs';
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
 
 const fixtures = resolve('tests/fixtures/ui-evaluator');
 const packageProfile = resolve('ai/application-ui-profile.defaults.json');
@@ -68,8 +69,8 @@ const oneContext = [
 // This case visits 18 contexts across three browser engines sequentially.
 // Under the full package gate it exceeded the old 60s budget. Focused cases
 // that launch a real browser use 30s; simulated launch cases keep the default.
-const ALL_CONTEXTS_TIMEOUT = 120_000;
-const ONE_CONTEXT_TIMEOUT = 30_000;
+const ALL_CONTEXTS_TIMEOUT = loadScaledTimeout(120_000);
+const ONE_CONTEXT_TIMEOUT = loadScaledTimeout(30_000);
 
 describe('browser evaluator against running downstream fixtures', () => {
   it(
@@ -106,101 +107,105 @@ describe('browser evaluator against running downstream fixtures', () => {
   );
 
   for (const browser of ['chromium', 'firefox', 'webkit'] as const) {
-    it(`reports the deterministic failure set in ${browser}`, async () => {
-      const outputDirectory = join(temporaryRoot, browser);
-      const report = await evaluateUi({
-        url: `${origin}/bad`,
-        workspaceRoot: resolve('.'),
-        startDirectory: resolve('.'),
-        packageProfile,
-        browsers: [browser],
-        contexts: oneContext,
-        outputDirectory,
-        recordedAt: '2026-09-21T00:00:00.000Z',
-        retention: 'always',
-      });
-      const codes = new Set(report.diagnostics.map(({ code }) => code));
-      for (const code of [
-        'KUI-B010',
-        'KUI-B011',
-        'KUI-B012',
-        'KUI-B020',
-        'KUI-B021',
-        'KUI-B022',
-        'KUI-B023',
-        'KUI-B030',
-        'KUI-B040',
-        'KUI-B050',
-        'KUI-B060',
-        'KUI-B070',
-        'KUI-B080',
-      ] as const)
-        expect(codes.has(code), `${browser} missing ${code}`).toBe(true);
-      expect(
-        report.diagnostics.some(
-          ({ code, selector }) =>
-            code === 'KUI-B021' && selector === 'button.duplicate',
-        ),
-      ).toBe(true);
-      const evidence = report.contexts[0].evidence as {
-        focusSequence: Array<{ identity: string; selector: string }>;
-      };
-      expect(
-        evidence.focusSequence.filter(
-          ({ selector }) => selector === 'button.duplicate',
-        ),
-      ).toHaveLength(2);
-      expect(report.diagnostics).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ code: 'KUI-B022', selector: '#switch' }),
-          expect.objectContaining({
-            code: 'KUI-B030',
-            selector: '#aria-hidden-name',
-          }),
-          expect.objectContaining({
-            code: 'KUI-B011',
-            selector: 'button.offscreen',
-          }),
-          expect.objectContaining({
-            code: 'KUI-B040',
-            selector: 'button.alpha-contrast',
-          }),
-          // A ::before that ignores pointer events is decoration, not a hit
-          // layer, so the fitted 36px box is still the whole target.
-          expect.objectContaining({
-            code: 'KUI-B050',
-            selector: '#decorative-layer',
-            evidence: expect.objectContaining({
-              box: { width: 36, height: 36 },
+    it(
+      `reports the deterministic failure set in ${browser}`,
+      async () => {
+        const outputDirectory = join(temporaryRoot, browser);
+        const report = await evaluateUi({
+          url: `${origin}/bad`,
+          workspaceRoot: resolve('.'),
+          startDirectory: resolve('.'),
+          packageProfile,
+          browsers: [browser],
+          contexts: oneContext,
+          outputDirectory,
+          recordedAt: '2026-09-21T00:00:00.000Z',
+          retention: 'always',
+        });
+        const codes = new Set(report.diagnostics.map(({ code }) => code));
+        for (const code of [
+          'KUI-B010',
+          'KUI-B011',
+          'KUI-B012',
+          'KUI-B020',
+          'KUI-B021',
+          'KUI-B022',
+          'KUI-B023',
+          'KUI-B030',
+          'KUI-B040',
+          'KUI-B050',
+          'KUI-B060',
+          'KUI-B070',
+          'KUI-B080',
+        ] as const)
+          expect(codes.has(code), `${browser} missing ${code}`).toBe(true);
+        expect(
+          report.diagnostics.some(
+            ({ code, selector }) =>
+              code === 'KUI-B021' && selector === 'button.duplicate',
+          ),
+        ).toBe(true);
+        const evidence = report.contexts[0].evidence as {
+          focusSequence: Array<{ identity: string; selector: string }>;
+        };
+        expect(
+          evidence.focusSequence.filter(
+            ({ selector }) => selector === 'button.duplicate',
+          ),
+        ).toHaveLength(2);
+        expect(report.diagnostics).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ code: 'KUI-B022', selector: '#switch' }),
+            expect.objectContaining({
+              code: 'KUI-B030',
+              selector: '#aria-hidden-name',
             }),
-          }),
-        ]),
-      );
-      const decorative = report.diagnostics.find(
-        ({ code, selector }) =>
-          code === 'KUI-B050' && selector === '#decorative-layer',
-      )?.evidence as { width: number; height: number };
-      expect(decorative.width).toBeLessThan(38);
-      expect(decorative.height).toBeLessThan(38);
-      // Compact density lowers only the height floor (to the 36px row):
-      // 44x36 still fails outside a compact row, and a compact target shorter
-      // than the row still fails.
-      const target = (selector: string) =>
-        report.diagnostics.find(
-          (item) => item.code === 'KUI-B050' && item.selector === selector,
+            expect.objectContaining({
+              code: 'KUI-B011',
+              selector: 'button.offscreen',
+            }),
+            expect.objectContaining({
+              code: 'KUI-B040',
+              selector: 'button.alpha-contrast',
+            }),
+            // A ::before that ignores pointer events is decoration, not a hit
+            // layer, so the fitted 36px box is still the whole target.
+            expect.objectContaining({
+              code: 'KUI-B050',
+              selector: '#decorative-layer',
+              evidence: expect.objectContaining({
+                box: { width: 36, height: 36 },
+              }),
+            }),
+          ]),
         );
-      expect(target('#standard-44x36')?.evidence).toMatchObject({
-        required: { width: 44, height: 44 },
-      });
-      expect(target('#compact-44x30')?.evidence).toMatchObject({
-        required: { width: 44, height: 36 },
-      });
-      expect(report.artifacts.files).toHaveLength(1);
-      expect(report.artifacts.files[0].sha256).toMatch(/^[a-f0-9]{64}$/);
-      await expect(
-        stat(join(outputDirectory, report.artifacts.files[0].path)),
-      ).resolves.toBeTruthy();
-    }, 30_000);
+        const decorative = report.diagnostics.find(
+          ({ code, selector }) =>
+            code === 'KUI-B050' && selector === '#decorative-layer',
+        )?.evidence as { width: number; height: number };
+        expect(decorative.width).toBeLessThan(38);
+        expect(decorative.height).toBeLessThan(38);
+        // Compact density lowers only the height floor (to the 36px row):
+        // 44x36 still fails outside a compact row, and a compact target shorter
+        // than the row still fails.
+        const target = (selector: string) =>
+          report.diagnostics.find(
+            (item) => item.code === 'KUI-B050' && item.selector === selector,
+          );
+        expect(target('#standard-44x36')?.evidence).toMatchObject({
+          required: { width: 44, height: 44 },
+        });
+        expect(target('#compact-44x30')?.evidence).toMatchObject({
+          required: { width: 44, height: 36 },
+        });
+        expect(report.artifacts.files).toHaveLength(1);
+        expect(report.artifacts.files[0].sha256).toMatch(/^[a-f0-9]{64}$/);
+        await expect(
+          stat(join(outputDirectory, report.artifacts.files[0].path)),
+        ).resolves.toBeTruthy();
+      },
+      loadScaledTimeout(30_000),
+    );
   }
 
   it(

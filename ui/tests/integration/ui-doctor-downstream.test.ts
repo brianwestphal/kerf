@@ -7,6 +7,8 @@ import { promisify } from 'node:util';
 
 import { expect, test } from 'vitest';
 
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
+
 const execFileAsync = promisify(execFile);
 const uiRoot = resolve(import.meta.dirname, '../..');
 const repositoryRoot = resolve(uiRoot, '..');
@@ -14,7 +16,7 @@ const repositoryRoot = resolve(uiRoot, '..');
 // Each case spawns the doctor (a full TypeScript program) and ESLint more than
 // once. ~5s per case unloaded, but under a loaded full-suite run it measured
 // ~28s against the old 30s budget, so it flaked. 60s keeps a real ceiling.
-const DOCTOR_TEST_TIMEOUT = 60_000;
+const DOCTOR_TEST_TIMEOUT = loadScaledTimeout(60_000);
 
 test(
   'doctor CLI reports component style names and clears after repair',

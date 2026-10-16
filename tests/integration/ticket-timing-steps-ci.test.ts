@@ -8,6 +8,7 @@ import { promisify } from 'node:util';
 import { describe, expect, it } from 'vitest';
 
 import { parseTimingRecords } from '../../scripts/lib/ticket-timing.mjs';
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
 
 const execFileAsync = promisify(execFile);
 const timing = resolve(import.meta.dirname, '../../scripts/ticket-timing.mjs');
@@ -63,105 +64,109 @@ function spawnTiming(
   return { child, done };
 }
 
-describe('step-timed check chain', { timeout: 30_000 }, () => {
-  it('runs each && segment, stops at the first failure, and logs step durations', async () => {
-    const dir = await scratch('kerf-check-steps-');
-    await writeFile(
-      join(dir.root, 'package.json'),
-      JSON.stringify({
-        scripts: {
-          chain: [
-            node(''),
-            node('process.exit(4)'),
-            node('require("fs").writeFileSync("third", "")'),
-          ].join(' && '),
-        },
-      }),
-    );
-    const stepLog = join(dir.root, 'steps.json');
-    await expect(
-      execFileAsync(process.execPath, [runner, 'chain'], {
-        cwd: dir.root,
-        env: { ...process.env, KERF_CHECK_STEP_LOG: stepLog },
-      }),
-    ).rejects.toMatchObject({ code: 4 });
-    const log = JSON.parse(await readFile(stepLog, 'utf8')) as {
-      steps: Array<{ name: string; outcome: string; duration_ms: number }>;
-    };
-    expect(log.steps.map((step) => [step.name, step.outcome])).toEqual([
-      ['node', 'passed'],
-      ['node-2', 'failed'],
-    ]);
-    await expect(readFile(join(dir.root, 'third'))).rejects.toMatchObject({
-      code: 'ENOENT',
+describe(
+  'step-timed check chain',
+  { timeout: loadScaledTimeout(30_000) },
+  () => {
+    it('runs each && segment, stops at the first failure, and logs step durations', async () => {
+      const dir = await scratch('kerf-check-steps-');
+      await writeFile(
+        join(dir.root, 'package.json'),
+        JSON.stringify({
+          scripts: {
+            chain: [
+              node(''),
+              node('process.exit(4)'),
+              node('require("fs").writeFileSync("third", "")'),
+            ].join(' && '),
+          },
+        }),
+      );
+      const stepLog = join(dir.root, 'steps.json');
+      await expect(
+        execFileAsync(process.execPath, [runner, 'chain'], {
+          cwd: dir.root,
+          env: { ...process.env, KERF_CHECK_STEP_LOG: stepLog },
+        }),
+      ).rejects.toMatchObject({ code: 4 });
+      const log = JSON.parse(await readFile(stepLog, 'utf8')) as {
+        steps: Array<{ name: string; outcome: string; duration_ms: number }>;
+      };
+      expect(log.steps.map((step) => [step.name, step.outcome])).toEqual([
+        ['node', 'passed'],
+        ['node-2', 'failed'],
+      ]);
+      await expect(readFile(join(dir.root, 'third'))).rejects.toMatchObject({
+        code: 'ENOENT',
+      });
     });
-  });
 
-  it('preserves a failed pre-push gate without writing a timing note', async () => {
-    const dir = await scratch('kerf-check-steps-push-');
-    const repo = join(dir.root, 'repo');
-    await mkdir(repo);
-    await execFileAsync('git', ['init', '-b', 'main'], { cwd: repo });
-    await writeFile(
-      join(repo, 'package.json'),
-      JSON.stringify({
-        scripts: {
-          'check:core': `npm run --silent ok && ${node('process.exit(2)')}`,
-          ok: node(''),
+    it('preserves a failed pre-push gate without writing a timing note', async () => {
+      const dir = await scratch('kerf-check-steps-push-');
+      const repo = join(dir.root, 'repo');
+      await mkdir(repo);
+      await execFileAsync('git', ['init', '-b', 'main'], { cwd: repo });
+      await writeFile(
+        join(repo, 'package.json'),
+        JSON.stringify({
+          scripts: {
+            'check:core': `npm run --silent ok && ${node('process.exit(2)')}`,
+            ok: node(''),
+          },
+        }),
+      );
+      const { done } = spawnTiming(
+        [
+          'pre-push',
+          'origin',
+          'test://origin',
+          '--',
+          process.execPath,
+          runner,
+          'check:core',
+        ],
+        {
+          cwd: repo,
+          env: { ...dir.env, KERF_TICKET_TIMING_TICKETS: 'KF-STEP1' },
         },
-      }),
-    );
-    const { done } = spawnTiming(
-      [
-        'pre-push',
-        'origin',
-        'test://origin',
-        '--',
-        process.execPath,
-        runner,
-        'check:core',
-      ],
-      {
-        cwd: repo,
-        env: { ...dir.env, KERF_TICKET_TIMING_TICKETS: 'KF-STEP1' },
-      },
-    );
-    expect(await done).toBe(2);
-    expect(await readFile(dir.log, 'utf8')).toBe('');
-  });
+      );
+      expect(await done).toBe(2);
+      expect(await readFile(dir.log, 'utf8')).toBe('');
+    });
 
-  it('records an interrupted attempt when the wrapped gate is stopped', async () => {
-    const dir = await scratch('kerf-check-steps-int-');
-    const { child, done } = spawnTiming(
-      [
-        'run',
-        'KF-INT1',
-        '--phase',
-        'local_verification',
-        '--gate',
-        'root:check',
-        '--',
-        process.execPath,
-        '-e',
-        'console.log("ready"); setTimeout(() => {}, 20000)',
-      ],
-      { env: dir.env },
-    );
-    await new Promise<void>((resolvePromise) =>
-      child.stdout.once('data', () => resolvePromise()),
-    );
-    child.kill('SIGINT');
-    expect(await done).toBe(130);
-    expect(await dir.records()).toEqual([
-      expect.objectContaining({
-        outcome: 'interrupted',
-        failure_category: 'signal',
-      }),
-    ]);
-  });
-});
+    it('records an interrupted attempt when the wrapped gate is stopped', async () => {
+      const dir = await scratch('kerf-check-steps-int-');
+      const { child, done } = spawnTiming(
+        [
+          'run',
+          'KF-INT1',
+          '--phase',
+          'local_verification',
+          '--gate',
+          'root:check',
+          '--',
+          process.execPath,
+          '-e',
+          'console.log("ready"); setTimeout(() => {}, 20000)',
+        ],
+        { env: dir.env },
+      );
+      await new Promise<void>((resolvePromise) =>
+        child.stdout.once('data', () => resolvePromise()),
+      );
+      child.kill('SIGINT');
+      expect(await done).toBe(130);
+      expect(await dir.records()).toEqual([
+        expect.objectContaining({
+          outcome: 'interrupted',
+          failure_category: 'signal',
+        }),
+      ]);
+    });
+  },
+);
 
-describe('active and CI timing', { timeout: 30_000 }, () => {
+describe('active and CI timing', { timeout: loadScaledTimeout(30_000) }, () => {
   it('wraps Hot Sheet claim and release with an active session', async () => {
     const dir = await scratch('kerf-timing-claim-');
     await execFileAsync(

@@ -13,6 +13,7 @@ import {
   checkPackageStylesheet,
   ownershipExceptions,
 } from '../../scripts/lib/css-ownership.mjs';
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
 
 const execFileAsync = promisify(execFile);
 const uiRoot = resolve(import.meta.dirname, '../..');
@@ -51,7 +52,7 @@ function ownedMarkupClasses(source: string) {
   return owned;
 }
 
-describe('CSS ownership gate', { timeout: 30_000 }, () => {
+describe('CSS ownership gate', { timeout: loadScaledTimeout(30_000) }, () => {
   it('keeps the TabNavigator source rename paired with its stable DOM class', () => {
     const filename = 'components/navigation/tab-navigator/tab-navigator.css';
     const css =

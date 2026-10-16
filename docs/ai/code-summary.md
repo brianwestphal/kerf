@@ -59,6 +59,7 @@ pnpm, Yarn Classic, and Yarn Berry. Each manager case runs only when its exact
 pinned binary/version is detected; otherwise its non-empty test is skipped with
 the detected reason. These fixtures prove no-network local-artifact behavior,
 not a registry-cache implementation.
+`tests/helpers/load-scaled-timeout.ts` (with a `ui/tests/helpers` twin) stretches the subprocess-heavy integration suites' fixed timeouts by the one-minute load average per core (1..4x, 1 in CI, `KERF_TEST_TIMEOUT_SCALE` overrides) so a busy machine does not fail the pre-push gate (KF-S4XNEM); `tests/unit/load-scaled-timeout.test.ts` covers the factor.
 `tests/unit/guidance-integrity.test.ts` covers byte snapshots and the
 changed/created/deleted comparison matrix, while
 `tests/integration/guidance-integrity.test.ts` drives the real command wrapper

@@ -18,6 +18,8 @@ import { promisify } from 'node:util';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
+
 const exec = promisify(execFile);
 const repositoryRoot = resolve(import.meta.dirname, '../..');
 const releaseVersion = JSON.parse(
@@ -268,27 +270,32 @@ beforeAll(async () => {
       resolve(packedModules, ...name.split('/')),
       resolve(repositoryRoot, 'node_modules', ...name.split('/')),
     );
-}, 60_000);
+}, loadScaledTimeout(60_000));
 
 afterAll(async () => {
   await rm(temporaryRoot, { recursive: true, force: true });
 });
 
-describe('packed AI-first setup', { timeout: 30_000 }, () => {
-  it('initializes a minimal core consumer that builds, lints, and discovers guidance', async () => {
-    const root = resolve(temporaryRoot, 'core-consumer');
-    await mkdir(resolve(root, 'src'), { recursive: true });
-    await writeFile(
-      resolve(root, 'package.json'),
-      `${JSON.stringify({ name: 'core-consumer', private: true, type: 'module', scripts: { build: 'tsc --noEmit' } })}\n`,
-    );
-    await writeFile(
-      resolve(root, 'src/index.ts'),
-      'export const ready = true;\n',
-    );
-    await writeFile(
-      resolve(root, 'tsconfig.json'),
-      `{
+describe(
+  'packed AI-first setup',
+  { timeout: loadScaledTimeout(30_000) },
+  () => {
+    it(
+      'initializes a minimal core consumer that builds, lints, and discovers guidance',
+      async () => {
+        const root = resolve(temporaryRoot, 'core-consumer');
+        await mkdir(resolve(root, 'src'), { recursive: true });
+        await writeFile(
+          resolve(root, 'package.json'),
+          `${JSON.stringify({ name: 'core-consumer', private: true, type: 'module', scripts: { build: 'tsc --noEmit' } })}\n`,
+        );
+        await writeFile(
+          resolve(root, 'src/index.ts'),
+          'export const ready = true;\n',
+        );
+        await writeFile(
+          resolve(root, 'tsconfig.json'),
+          `{
   // Packed consumers commonly start from JSONC.
   "compilerOptions": {
     "strict": true,
@@ -296,279 +303,295 @@ describe('packed AI-first setup', { timeout: 30_000 }, () => {
   "include": ["src",],
 }
 `,
-    );
-    await prepareModules(root);
-    await exec(
-      resolve(root, 'node_modules/.bin/kerfjs'),
-      ['--core', '--write', '--yes', '--no-install'],
-      { cwd: root },
-    );
-    await run('npm', ['run', 'build'], root);
-    await run('npm', ['run', 'kerf:check'], root);
-    expect(
-      await readFile(resolve(root, '.claude/skills/kerf-app/SKILL.md'), 'utf8'),
-    ).toContain('kerf-skill-version:');
-    const configuredTsconfig = await readFile(
-      resolve(root, 'tsconfig.json'),
-      'utf8',
-    );
-    expect(configuredTsconfig).toContain(
-      '// Packed consumers commonly start from JSONC.',
-    );
-    expect(configuredTsconfig).toContain('"include": ["src",],');
-    const { stdout } = await exec(
-      resolve(root, 'node_modules/.bin/kerfjs'),
-      ['--core'],
-      { cwd: root },
-    );
-    expect(stdout).toContain('No changes.');
-    const manifestPath = resolve(root, 'package.json');
-    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-    manifest.scripts['kerf:check'] = 'custom-check';
-    await writeFile(manifestPath, `${JSON.stringify(manifest)}\n`);
-    await expect(
-      exec(resolve(root, 'node_modules/.bin/kerfjs'), ['--core'], {
-        cwd: root,
-      }),
-    ).rejects.toMatchObject({
-      code: 2,
-      stdout: expect.stringContaining(
-        '--resolve package.json#scripts.kerf:check=keep|kerf',
-      ),
-    });
-    await exec(
-      resolve(root, 'node_modules/.bin/kerfjs'),
-      [
-        '--core',
-        '--resolve',
-        'package.json#scripts.kerf:check=keep',
-        '--write',
-        '--yes',
-        '--no-install',
-      ],
-      { cwd: root },
-    );
-    expect(
-      JSON.parse(await readFile(manifestPath, 'utf8')).scripts['kerf:check'],
-    ).toBe('custom-check');
-  }, 30_000);
-
-  it('initializes a selected UI monorepo package with catalog and doctor discovery', async () => {
-    const root = resolve(temporaryRoot, 'ui-workspace');
-    const app = resolve(root, 'packages/app');
-    await mkdir(resolve(app, 'src'), { recursive: true });
-    await writeFile(
-      resolve(root, 'package.json'),
-      `${JSON.stringify({ name: 'ui-workspace', private: true, workspaces: ['packages/*'] })}\n`,
-    );
-    await writeFile(
-      resolve(app, 'package.json'),
-      `${JSON.stringify({ name: '@acme/ui-app', private: true, type: 'module', dependencies: { '@kerfjs/ui': releaseVersion, kerfjs: releaseVersion }, scripts: { build: 'tsc --noEmit' } })}\n`,
-    );
-    await writeFile(
-      resolve(app, 'src/index.ts'),
-      'export const ready = true;\n',
-    );
-    await writeFile(
-      resolve(app, 'src/index.css'),
-      '.split-view { --kui-split-view-list-width: 22rem; }\n',
-    );
-    await prepareModules(root);
-    await exec(
-      resolve(root, 'node_modules/.bin/kerfjs'),
-      ['--package', '@acme/ui-app', '--write', '--yes', '--no-install'],
-      { cwd: root },
-    );
-    await writeFile(
-      resolve(app, 'eslint.config.js'),
-      "export default [{ files: ['**/*.{js,ts}'], rules: { 'no-empty-pattern': 'error' } }];\n",
-    );
-    await writeFile(
-      resolve(app, 'src/playwright.spec.js'),
-      [
-        "import { test } from '@playwright/test';",
-        '',
-        "test('empty fixture', async (",
-        '  // eslint-disable-next-line no-empty-pattern',
-        '  {},',
-        ') => {});',
-        '',
-      ].join('\n'),
-    );
-    await run('npm', ['run', 'build'], app);
-    await run(
-      resolve(root, 'node_modules/.bin/eslint'),
-      ['src/playwright.spec.js'],
-      app,
-    );
-    await run('npm', ['run', 'catalog:generate'], app);
-    await run('npm', ['run', 'catalog:check'], app);
-    await run('npm', ['run', 'kerf:check'], app);
-    await run('npm', ['run', 'kerf:doctor'], app);
-    const profile = JSON.parse(
-      await readFile(resolve(root, '.kerf-ui-profile.json'), 'utf8'),
-    );
-    expect(profile.catalogs).toContainEqual({
-      package: '@acme/ui-app',
-      composition: {
-        path: './packages/app/component-composition.json',
-        schemaVersion: 1,
-      },
-    });
-    expect(
-      JSON.parse(
-        await readFile(resolve(app, 'component-composition.json'), 'utf8'),
-      ).entries,
-    ).toEqual([]);
-  }, 60_000);
-
-  for (const managerCase of managerCases) {
-    const availability = detectManager(managerCase);
-    const test = availability.executable ? it : it.skip;
-    test(`uses a real packed CLI with ${managerCase.label} local-artifact offline hit/miss rollback${availability.reason ? ` [skipped: ${availability.reason}]` : ''}`, async () => {
-      const executable = availability.executable!;
-      const manager = managerCase.manager;
-      const packageManager = managerCase.packageManager;
-      const manifest = {
-        name: `${manager}-offline-consumer`,
-        private: true,
-        type: 'module',
-        packageManager,
-        dependencies: { kerfjs: '' },
-        devDependencies: Object.fromEntries(
-          Object.keys(offlinePackages)
-            .filter((name) => name !== 'kerfjs')
-            .map((name) => [name, '']),
-        ),
-      };
-      const createCase = async (label: string, missing = false) => {
-        const id = `${manager}-${managerCase.variant ?? 'default'}-${label}`;
-        const root = resolve(temporaryRoot, id);
-        const artifacts = resolve(root, 'artifacts');
-        await mkdir(artifacts, { recursive: true });
-        const localTarballs: Record<string, string> = {};
-        for (const [name, source] of Object.entries(offlineTarballs)) {
-          const destination = resolve(
-            artifacts,
-            `${name.replaceAll('/', '-').replaceAll('@', '')}.tgz`,
-          );
-          await copyFile(source, destination);
-          localTarballs[name] = destination;
-        }
-        manifest.dependencies.kerfjs = `file:${localTarballs.kerfjs}`;
-        manifest.devDependencies = Object.fromEntries(
-          Object.keys(offlinePackages)
-            .filter((name) => name !== 'kerfjs')
-            .map((name) => [name, `file:${localTarballs[name]}`]),
         );
+        await prepareModules(root);
+        await exec(
+          resolve(root, 'node_modules/.bin/kerfjs'),
+          ['--core', '--write', '--yes', '--no-install'],
+          { cwd: root },
+        );
+        await run('npm', ['run', 'build'], root);
+        await run('npm', ['run', 'kerf:check'], root);
+        expect(
+          await readFile(
+            resolve(root, '.claude/skills/kerf-app/SKILL.md'),
+            'utf8',
+          ),
+        ).toContain('kerf-skill-version:');
+        const configuredTsconfig = await readFile(
+          resolve(root, 'tsconfig.json'),
+          'utf8',
+        );
+        expect(configuredTsconfig).toContain(
+          '// Packed consumers commonly start from JSONC.',
+        );
+        expect(configuredTsconfig).toContain('"include": ["src",],');
+        const { stdout } = await exec(
+          resolve(root, 'node_modules/.bin/kerfjs'),
+          ['--core'],
+          { cwd: root },
+        );
+        expect(stdout).toContain('No changes.');
+        const manifestPath = resolve(root, 'package.json');
+        const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+        manifest.scripts['kerf:check'] = 'custom-check';
+        await writeFile(manifestPath, `${JSON.stringify(manifest)}\n`);
+        await expect(
+          exec(resolve(root, 'node_modules/.bin/kerfjs'), ['--core'], {
+            cwd: root,
+          }),
+        ).rejects.toMatchObject({
+          code: 2,
+          stdout: expect.stringContaining(
+            '--resolve package.json#scripts.kerf:check=keep|kerf',
+          ),
+        });
+        await exec(
+          resolve(root, 'node_modules/.bin/kerfjs'),
+          [
+            '--core',
+            '--resolve',
+            'package.json#scripts.kerf:check=keep',
+            '--write',
+            '--yes',
+            '--no-install',
+          ],
+          { cwd: root },
+        );
+        expect(
+          JSON.parse(await readFile(manifestPath, 'utf8')).scripts[
+            'kerf:check'
+          ],
+        ).toBe('custom-check');
+      },
+      loadScaledTimeout(30_000),
+    );
+
+    it(
+      'initializes a selected UI monorepo package with catalog and doctor discovery',
+      async () => {
+        const root = resolve(temporaryRoot, 'ui-workspace');
+        const app = resolve(root, 'packages/app');
+        await mkdir(resolve(app, 'src'), { recursive: true });
         await writeFile(
           resolve(root, 'package.json'),
-          `${JSON.stringify(manifest)}\n`,
+          `${JSON.stringify({ name: 'ui-workspace', private: true, workspaces: ['packages/*'] })}\n`,
         );
-        if (managerCase.variant === 'berry')
-          await writeFile(
-            resolve(root, '.yarnrc.yml'),
-            'enableGlobalCache: false\nenableNetwork: false\nnodeLinker: node-modules\n',
-          );
-        const bin = resolve(root, '.manager-bin');
-        await mkdir(bin);
-        const wrapper = resolve(bin, manager);
         await writeFile(
-          wrapper,
-          `#!/bin/sh\nexec ${JSON.stringify(executable)} "$@"\n`,
+          resolve(app, 'package.json'),
+          `${JSON.stringify({ name: '@acme/ui-app', private: true, type: 'module', dependencies: { '@kerfjs/ui': releaseVersion, kerfjs: releaseVersion }, scripts: { build: 'tsc --noEmit' } })}\n`,
         );
-        await chmod(wrapper, 0o755);
-        const environment = {
-          ...process.env,
-          PATH: `${bin}:${process.env.PATH ?? ''}`,
-          npm_config_cache: resolve(root, '.npm-cache'),
-          npm_config_registry: 'http://127.0.0.1:9',
-          npm_config_store_dir: resolve(root, '.pnpm-store'),
-          YARN_CACHE_FOLDER: resolve(root, '.yarn-classic-cache'),
-          YARN_REGISTRY: 'http://127.0.0.1:9',
-          YARN_ENABLE_NETWORK: '0',
-        };
-        await exec(executable, [...managerCase.seedArgs], {
-          cwd: root,
-          env: environment,
-        });
-        await rm(resolve(root, 'node_modules'), {
-          recursive: true,
-          force: true,
-        });
-        if (missing) {
-          await rm(localTarballs.kerfjs);
-          await rm(resolve(root, '.npm-cache'), {
-            recursive: true,
-            force: true,
-          });
-          await rm(resolve(root, '.pnpm-store'), {
-            recursive: true,
-            force: true,
-          });
-          await rm(resolve(root, '.yarn-classic-cache'), {
-            recursive: true,
-            force: true,
-          });
-          await rm(resolve(root, '.yarn/cache'), {
-            recursive: true,
-            force: true,
-          });
-        }
-        return { environment, root };
-      };
-      const resolutionArgs = [
-        'package.json#dependencies.kerfjs',
-        ...Object.keys(offlinePackages)
-          .filter((name) => name !== 'kerfjs')
-          .map((name) => `package.json#devDependencies.${name}`),
-      ].flatMap((id) => ['--resolve', `${id}=keep`]);
-      const hit = await createCase('hit');
-      await exec(
-        resolve(packedModules, 'kerfjs/setup/cli.mjs'),
-        ['--core', ...resolutionArgs, '--offline', '--write', '--yes'],
-        { cwd: hit.root, env: hit.environment },
-      );
-      expect(
-        JSON.parse(
-          await readFile(resolve(hit.root, '.kerf-ai-setup.json'), 'utf8'),
-        ).packageManager,
-      ).toBe(manager);
-
-      const miss = await createCase('miss', true);
-      const originalManifest = await readFile(
-        resolve(miss.root, 'package.json'),
-        'utf8',
-      );
-      const originalLock = await readFile(
-        resolve(miss.root, managerCase.lockName),
-        'utf8',
-      );
-      await expect(
-        exec(
-          resolve(packedModules, 'kerfjs/setup/cli.mjs'),
-          ['--core', ...resolutionArgs, '--offline', '--write', '--yes'],
-          {
-            cwd: miss.root,
-            env: miss.environment,
+        await writeFile(
+          resolve(app, 'src/index.ts'),
+          'export const ready = true;\n',
+        );
+        await writeFile(
+          resolve(app, 'src/index.css'),
+          '.split-view { --kui-split-view-list-width: 22rem; }\n',
+        );
+        await prepareModules(root);
+        await exec(
+          resolve(root, 'node_modules/.bin/kerfjs'),
+          ['--package', '@acme/ui-app', '--write', '--yes', '--no-install'],
+          { cwd: root },
+        );
+        await writeFile(
+          resolve(app, 'eslint.config.js'),
+          "export default [{ files: ['**/*.{js,ts}'], rules: { 'no-empty-pattern': 'error' } }];\n",
+        );
+        await writeFile(
+          resolve(app, 'src/playwright.spec.js'),
+          [
+            "import { test } from '@playwright/test';",
+            '',
+            "test('empty fixture', async (",
+            '  // eslint-disable-next-line no-empty-pattern',
+            '  {},',
+            ') => {});',
+            '',
+          ].join('\n'),
+        );
+        await run('npm', ['run', 'build'], app);
+        await run(
+          resolve(root, 'node_modules/.bin/eslint'),
+          ['src/playwright.spec.js'],
+          app,
+        );
+        await run('npm', ['run', 'catalog:generate'], app);
+        await run('npm', ['run', 'catalog:check'], app);
+        await run('npm', ['run', 'kerf:check'], app);
+        await run('npm', ['run', 'kerf:doctor'], app);
+        const profile = JSON.parse(
+          await readFile(resolve(root, '.kerf-ui-profile.json'), 'utf8'),
+        );
+        expect(profile.catalogs).toContainEqual({
+          package: '@acme/ui-app',
+          composition: {
+            path: './packages/app/component-composition.json',
+            schemaVersion: 1,
           },
-        ),
-      ).rejects.toThrow();
-      expect(await readFile(resolve(miss.root, 'package.json'), 'utf8')).toBe(
-        originalManifest,
+        });
+        expect(
+          JSON.parse(
+            await readFile(resolve(app, 'component-composition.json'), 'utf8'),
+          ).entries,
+        ).toEqual([]);
+      },
+      loadScaledTimeout(60_000),
+    );
+
+    for (const managerCase of managerCases) {
+      const availability = detectManager(managerCase);
+      const test = availability.executable ? it : it.skip;
+      test(
+        `uses a real packed CLI with ${managerCase.label} local-artifact offline hit/miss rollback${availability.reason ? ` [skipped: ${availability.reason}]` : ''}`,
+        async () => {
+          const executable = availability.executable!;
+          const manager = managerCase.manager;
+          const packageManager = managerCase.packageManager;
+          const manifest = {
+            name: `${manager}-offline-consumer`,
+            private: true,
+            type: 'module',
+            packageManager,
+            dependencies: { kerfjs: '' },
+            devDependencies: Object.fromEntries(
+              Object.keys(offlinePackages)
+                .filter((name) => name !== 'kerfjs')
+                .map((name) => [name, '']),
+            ),
+          };
+          const createCase = async (label: string, missing = false) => {
+            const id = `${manager}-${managerCase.variant ?? 'default'}-${label}`;
+            const root = resolve(temporaryRoot, id);
+            const artifacts = resolve(root, 'artifacts');
+            await mkdir(artifacts, { recursive: true });
+            const localTarballs: Record<string, string> = {};
+            for (const [name, source] of Object.entries(offlineTarballs)) {
+              const destination = resolve(
+                artifacts,
+                `${name.replaceAll('/', '-').replaceAll('@', '')}.tgz`,
+              );
+              await copyFile(source, destination);
+              localTarballs[name] = destination;
+            }
+            manifest.dependencies.kerfjs = `file:${localTarballs.kerfjs}`;
+            manifest.devDependencies = Object.fromEntries(
+              Object.keys(offlinePackages)
+                .filter((name) => name !== 'kerfjs')
+                .map((name) => [name, `file:${localTarballs[name]}`]),
+            );
+            await writeFile(
+              resolve(root, 'package.json'),
+              `${JSON.stringify(manifest)}\n`,
+            );
+            if (managerCase.variant === 'berry')
+              await writeFile(
+                resolve(root, '.yarnrc.yml'),
+                'enableGlobalCache: false\nenableNetwork: false\nnodeLinker: node-modules\n',
+              );
+            const bin = resolve(root, '.manager-bin');
+            await mkdir(bin);
+            const wrapper = resolve(bin, manager);
+            await writeFile(
+              wrapper,
+              `#!/bin/sh\nexec ${JSON.stringify(executable)} "$@"\n`,
+            );
+            await chmod(wrapper, 0o755);
+            const environment = {
+              ...process.env,
+              PATH: `${bin}:${process.env.PATH ?? ''}`,
+              npm_config_cache: resolve(root, '.npm-cache'),
+              npm_config_registry: 'http://127.0.0.1:9',
+              npm_config_store_dir: resolve(root, '.pnpm-store'),
+              YARN_CACHE_FOLDER: resolve(root, '.yarn-classic-cache'),
+              YARN_REGISTRY: 'http://127.0.0.1:9',
+              YARN_ENABLE_NETWORK: '0',
+            };
+            await exec(executable, [...managerCase.seedArgs], {
+              cwd: root,
+              env: environment,
+            });
+            await rm(resolve(root, 'node_modules'), {
+              recursive: true,
+              force: true,
+            });
+            if (missing) {
+              await rm(localTarballs.kerfjs);
+              await rm(resolve(root, '.npm-cache'), {
+                recursive: true,
+                force: true,
+              });
+              await rm(resolve(root, '.pnpm-store'), {
+                recursive: true,
+                force: true,
+              });
+              await rm(resolve(root, '.yarn-classic-cache'), {
+                recursive: true,
+                force: true,
+              });
+              await rm(resolve(root, '.yarn/cache'), {
+                recursive: true,
+                force: true,
+              });
+            }
+            return { environment, root };
+          };
+          const resolutionArgs = [
+            'package.json#dependencies.kerfjs',
+            ...Object.keys(offlinePackages)
+              .filter((name) => name !== 'kerfjs')
+              .map((name) => `package.json#devDependencies.${name}`),
+          ].flatMap((id) => ['--resolve', `${id}=keep`]);
+          const hit = await createCase('hit');
+          await exec(
+            resolve(packedModules, 'kerfjs/setup/cli.mjs'),
+            ['--core', ...resolutionArgs, '--offline', '--write', '--yes'],
+            { cwd: hit.root, env: hit.environment },
+          );
+          expect(
+            JSON.parse(
+              await readFile(resolve(hit.root, '.kerf-ai-setup.json'), 'utf8'),
+            ).packageManager,
+          ).toBe(manager);
+
+          const miss = await createCase('miss', true);
+          const originalManifest = await readFile(
+            resolve(miss.root, 'package.json'),
+            'utf8',
+          );
+          const originalLock = await readFile(
+            resolve(miss.root, managerCase.lockName),
+            'utf8',
+          );
+          await expect(
+            exec(
+              resolve(packedModules, 'kerfjs/setup/cli.mjs'),
+              ['--core', ...resolutionArgs, '--offline', '--write', '--yes'],
+              {
+                cwd: miss.root,
+                env: miss.environment,
+              },
+            ),
+          ).rejects.toThrow();
+          expect(
+            await readFile(resolve(miss.root, 'package.json'), 'utf8'),
+          ).toBe(originalManifest);
+          expect(
+            await readFile(resolve(miss.root, managerCase.lockName), 'utf8'),
+          ).toBe(originalLock);
+          await expect(
+            readFile(resolve(miss.root, '.kerf-ai-setup.json')),
+          ).rejects.toThrow();
+          expect(await readdir(miss.root)).not.toContain('.kerf-ai-setup.lock');
+          expect(
+            (await readdir(miss.root)).some((name) =>
+              name.includes('.kerf-setup-'),
+            ),
+          ).toBe(false);
+        },
+        loadScaledTimeout(60_000),
       );
-      expect(
-        await readFile(resolve(miss.root, managerCase.lockName), 'utf8'),
-      ).toBe(originalLock);
-      await expect(
-        readFile(resolve(miss.root, '.kerf-ai-setup.json')),
-      ).rejects.toThrow();
-      expect(await readdir(miss.root)).not.toContain('.kerf-ai-setup.lock');
-      expect(
-        (await readdir(miss.root)).some((name) =>
-          name.includes('.kerf-setup-'),
-        ),
-      ).toBe(false);
-    }, 60_000);
-  }
-});
+    }
+  },
+);

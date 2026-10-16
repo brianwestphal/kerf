@@ -13,6 +13,8 @@ import { env as processEnvironment } from 'node:process';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
+
 const repoRoot = resolve(import.meta.dirname, '../..');
 const temporaryRoots: string[] = [];
 
@@ -137,79 +139,83 @@ afterEach(() => {
 // under a second, but on a saturated machine (the parallel pre-push gate)
 // process startup dominates and the 5 s vitest default is too tight, so they
 // carry the same 30 s budget as the other CLI-driving integration suites.
-describe('automatic beta release dry run', { timeout: 30_000 }, () => {
-  it('continues beta.23 as beta.24 instead of starting a stable-derived line', () => {
-    const root = mkdtempSync(join(tmpdir(), 'kerf-beta-auto-'));
-    temporaryRoots.push(root);
-    writeReleaseFixture(root);
+describe(
+  'automatic beta release dry run',
+  { timeout: loadScaledTimeout(30_000) },
+  () => {
+    it('continues beta.23 as beta.24 instead of starting a stable-derived line', () => {
+      const root = mkdtempSync(join(tmpdir(), 'kerf-beta-auto-'));
+      temporaryRoots.push(root);
+      writeReleaseFixture(root);
 
-    git(root, ['init', '-b', 'main']);
-    git(root, ['add', '.']);
-    git(root, ['commit', '-m', 'fixture']);
-    tagHead(root, ['v4.4.1', 'v5.0.0-beta.1', 'v5.0.0-beta.23']);
+      git(root, ['init', '-b', 'main']);
+      git(root, ['add', '.']);
+      git(root, ['commit', '-m', 'fixture']);
+      tagHead(root, ['v4.4.1', 'v5.0.0-beta.1', 'v5.0.0-beta.23']);
 
-    const output = runBetaDryRun(root, '- Test release\n');
+      const output = runBetaDryRun(root, '- Test release\n');
 
-    expect(output).toContain(
-      'Active prerelease series v5.0.0-beta.23 is current',
-    );
-    expect(output).toContain('would create + push v5.0.0-beta.24');
-  });
+      expect(output).toContain(
+        'Active prerelease series v5.0.0-beta.23 is current',
+      );
+      expect(output).toContain('would create + push v5.0.0-beta.24');
+    });
 
-  it('ignores hook-local Git variables when creating and running the fixture', () => {
-    const outer = mkdtempSync(join(tmpdir(), 'kerf-beta-outer-'));
-    const linkedParent = mkdtempSync(join(tmpdir(), 'kerf-beta-linked-'));
-    const linked = join(linkedParent, 'worktree');
-    const root = mkdtempSync(join(tmpdir(), 'kerf-beta-nested-'));
-    temporaryRoots.push(linkedParent, outer, root);
+    it('ignores hook-local Git variables when creating and running the fixture', () => {
+      const outer = mkdtempSync(join(tmpdir(), 'kerf-beta-outer-'));
+      const linkedParent = mkdtempSync(join(tmpdir(), 'kerf-beta-linked-'));
+      const linked = join(linkedParent, 'worktree');
+      const root = mkdtempSync(join(tmpdir(), 'kerf-beta-nested-'));
+      temporaryRoots.push(linkedParent, outer, root);
 
-    git(outer, ['init', '-b', 'main']);
-    writeFileSync(join(outer, 'outer.txt'), 'outer repository\n');
-    git(outer, ['add', '.']);
-    git(outer, ['commit', '-m', 'outer fixture']);
-    git(outer, ['worktree', 'add', '-b', 'hook-worktree', linked]);
-    const [linkedHead, linkedCommonDir, linkedGitDir] = git(linked, [
-      'rev-parse',
-      'HEAD',
-      '--git-common-dir',
-      '--absolute-git-dir',
-    ]).split('\n');
+      git(outer, ['init', '-b', 'main']);
+      writeFileSync(join(outer, 'outer.txt'), 'outer repository\n');
+      git(outer, ['add', '.']);
+      git(outer, ['commit', '-m', 'outer fixture']);
+      git(outer, ['worktree', 'add', '-b', 'hook-worktree', linked]);
+      const [linkedHead, linkedCommonDir, linkedGitDir] = git(linked, [
+        'rev-parse',
+        'HEAD',
+        '--git-common-dir',
+        '--absolute-git-dir',
+      ]).split('\n');
 
-    const hookEnvironment: GitEnvironment = {
-      ...processEnvironment,
-      GIT_COMMON_DIR: linkedCommonDir,
-      GIT_DIR: linkedGitDir,
-      GIT_INDEX_FILE: join(linkedGitDir, 'index'),
-      GIT_PREFIX: '',
-      GIT_WORK_TREE: linked,
-    };
+      const hookEnvironment: GitEnvironment = {
+        ...processEnvironment,
+        GIT_COMMON_DIR: linkedCommonDir,
+        GIT_DIR: linkedGitDir,
+        GIT_INDEX_FILE: join(linkedGitDir, 'index'),
+        GIT_PREFIX: '',
+        GIT_WORK_TREE: linked,
+      };
 
-    writeFileSync(join(root, 'nested.txt'), 'nested repository\n');
-    git(root, ['init', '-b', 'main'], hookEnvironment);
-    git(root, ['add', '.'], hookEnvironment);
-    git(root, ['commit', '-m', 'nested fixture'], hookEnvironment);
+      writeFileSync(join(root, 'nested.txt'), 'nested repository\n');
+      git(root, ['init', '-b', 'main'], hookEnvironment);
+      git(root, ['add', '.'], hookEnvironment);
+      git(root, ['commit', '-m', 'nested fixture'], hookEnvironment);
 
-    expect(
-      git(
+      expect(
+        git(
+          root,
+          ['rev-parse', '--absolute-git-dir', '--show-toplevel'],
+          hookEnvironment,
+        ).split('\n'),
+      ).toEqual([join(realpathSync(root), '.git'), realpathSync(root)]);
+
+      writeReleaseFixture(root);
+      git(root, ['add', '.'], hookEnvironment);
+      git(root, ['commit', '-m', 'release files'], hookEnvironment);
+      tagHead(root, ['v4.4.1', 'v5.0.0-beta.23'], hookEnvironment);
+
+      const output = runBetaDryRun(
         root,
-        ['rev-parse', '--absolute-git-dir', '--show-toplevel'],
+        '- Hook-safe release test\n',
         hookEnvironment,
-      ).split('\n'),
-    ).toEqual([join(realpathSync(root), '.git'), realpathSync(root)]);
+      );
 
-    writeReleaseFixture(root);
-    git(root, ['add', '.'], hookEnvironment);
-    git(root, ['commit', '-m', 'release files'], hookEnvironment);
-    tagHead(root, ['v4.4.1', 'v5.0.0-beta.23'], hookEnvironment);
-
-    const output = runBetaDryRun(
-      root,
-      '- Hook-safe release test\n',
-      hookEnvironment,
-    );
-
-    expect(output).toContain('would create + push v5.0.0-beta.24');
-    expect(git(linked, ['rev-parse', 'HEAD'])).toBe(linkedHead);
-    expect(git(linked, ['status', '--short'])).toBe('');
-  });
-});
+      expect(output).toContain('would create + push v5.0.0-beta.24');
+      expect(git(linked, ['rev-parse', 'HEAD'])).toBe(linkedHead);
+      expect(git(linked, ['status', '--short'])).toBe('');
+    });
+  },
+);

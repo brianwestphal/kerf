@@ -13,8 +13,9 @@ import { cwd, execPath } from 'node:process';
 import { describe, expect, it } from 'vitest';
 
 import { redirects } from '../../site/redirects.mjs';
+import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
 
-describe('site config', { timeout: 30_000 }, () => {
+describe('site config', { timeout: loadScaledTimeout(30_000) }, () => {
   it('defines one normalized legacy redirect for the renamed raw-sanitize example', () => {
     const legacyRedirects = Object.entries(redirects).filter(
       ([from]) =>
