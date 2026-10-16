@@ -4893,6 +4893,8 @@ test('catalog supports its stateful controls', async ({
     page.locator('#kui-catalog-left-rail [data-component="list-item"]:visible'),
   ).toHaveCount(catalog.length);
   await page.getByRole('switch', { name: 'Show Discouraged' }).uncheck();
+  // Every Web Awesome feedback element now has a Kerf replacement, so the
+  // Feedback section empties and leaves while Discouraged entries are hidden.
   await expect(
     page.locator(
       '[data-catalog-secondary] [data-catalog-section] > [data-component="list-header"]',
@@ -4902,7 +4904,6 @@ test('catalog supports its stateful controls', async ({
     'Forms',
     'Layout',
     'Navigation',
-    'Feedback',
     'Media',
     'Helpers',
   ]);
