@@ -645,6 +645,22 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/color-picker.md"
   },
   {
+    "id": "color-field",
+    "name": "ColorField",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Put a color choice in a form or inspector without keeping a full picker open.",
+    "uses": [
+      "color-picker",
+      "anchored-surface",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/color-field.tsx",
+    "componentSource": "ui/src/components/forms/color-field/color-field.tsx",
+    "documentation": "ui/docs/color-field.md"
+  },
+  {
     "id": "message-composer",
     "name": "MessageComposer",
     "category": "Controls",
@@ -1378,8 +1394,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Color input with swatches, formats, opacity, and eyedropper support.",
-    "recommendation": "supported",
+    "description": "Ecosystem color picker; use the Kerf ColorField or ColorPicker.",
+    "recommendation": "avoid",
     "uses": [
       "wa-button",
       "wa-button-group",

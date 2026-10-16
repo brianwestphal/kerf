@@ -63,6 +63,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ChoiceChips](./choice-chips.md) — Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.
 - [ColorSwatches](./color-swatches.md) — Let a person choose one color from a small fixed palette (a label, tag, or command color), or no color.
 - [ColorPicker](./color-picker.md) — Let a person choose any color precisely, by dragging, typing channel or hex values, sampling the screen, or picking a preset or saved sample.
+- [ColorField](./color-field.md) — Put a color choice in a form or inspector without keeping a full picker open.
 - [MessageComposer](./message-composer.md) — Write a chat message or prompt in a raised frame whose border turns brand while focus is within, with a field that grows between row bounds and a trailing send action.
 - [SearchField](./search-field.md) — Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.
 - [TagField](./tag-field.md) — Collect a list of short values (labels, recipients, keywords) as removable tags, each submitted as its own form value.
@@ -106,7 +107,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 - [Checkbox](./wa-checkbox.md) (avoid) — Ecosystem checkbox; use Kerf Checkbox.
 - [Checkbox Group](./wa-checkbox-group.md) (avoid) — Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.
-- [Color Picker](./wa-color-picker.md) — Color input with swatches, formats, opacity, and eyedropper support.
+- [Color Picker](./wa-color-picker.md) (avoid) — Ecosystem color picker; use the Kerf ColorField or ColorPicker.
 - [Input](./wa-input.md) (avoid) — Ecosystem text input; use Kerf TextField.
 - [Known Date](./wa-known-date.md) — Experimental segmented field for partially or fully known dates.
 - [Number Input](./wa-number-input.md) — Numeric input with keyboard and stepper controls.

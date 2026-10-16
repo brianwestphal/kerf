@@ -1,0 +1,125 @@
+/* ColorField: a label above a trigger box (a swatch, the hex value, and a
+   chevron) that matches TextField's box, then supporting or error text. */
+.kui-color-field {
+  --_kui-color-field-height: round(2.75em, 1px);
+
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  font-size: var(--kui-font-m, remify(16px));
+  font-weight: 400;
+}
+
+.kui-color-field[data-size="compact"] {
+  --_kui-color-field-height: round(calc(1rem + 1.2em), 1px);
+
+  font-size: var(--kui-font-s, remify(14px));
+}
+
+/* The label matches every Kerf form control's label. */
+.kui-color-field__label {
+  display: block;
+  margin-block-end: remify(6px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.kui-color-field__required {
+  margin-inline-start: 0.1em;
+}
+
+.kui-color-field__trigger {
+  display: flex;
+  min-height: var(--_kui-color-field-height);
+  box-sizing: border-box;
+  align-items: center;
+  gap: remify(8px);
+  padding: 0 remify(8px);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: var(--kui-color-text);
+  background-color: var(--kui-color-surface);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  appearance: none;
+}
+
+.kui-color-field__trigger:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-color-field__trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.kui-color-field[data-invalid] > .kui-color-field__trigger {
+  border-color: var(--kui-color-danger-border-loud);
+}
+
+/* The swatch shows the color over a checkerboard, so transparency reads. */
+.kui-color-field__swatch {
+  width: 1.25em;
+  height: 1.25em;
+  box-sizing: border-box;
+  flex: none;
+  border-radius: var(--kui-radius-m);
+  background:
+    linear-gradient(
+      var(--_kui-color-field-color),
+      var(--_kui-color-field-color)
+    ),
+    repeating-conic-gradient(
+        var(--kui-color-neutral-fill-normal) 0% 25%,
+        var(--kui-color-surface) 0% 50%
+      )
+      0 0 / 0.5em 0.5em;
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--kui-color-text) 20%, transparent);
+}
+
+.kui-color-field__hex {
+  min-width: 0;
+  flex: 1;
+  font-family: var(--kui-font-mono, ui-monospace, monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.kui-color-field__chevron {
+  display: inline-flex;
+  flex: none;
+  color: var(--kui-color-neutral-on-quiet);
+}
+
+.kui-color-field__hint,
+.kui-color-field__error {
+  margin-block-start: remify(6px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  font-size: var(--kui-font-s, remify(14px));
+  line-height: 1.4;
+}
+
+.kui-color-field__hint {
+  color: var(--kui-color-text-quiet);
+}
+
+.kui-color-field__error {
+  color: var(--kui-color-danger-on-quiet);
+}
+
+@media (forced-colors: active) {
+  .kui-color-field__trigger {
+    border-color: CanvasText;
+  }
+
+  .kui-color-field__swatch {
+    forced-color-adjust: none;
+  }
+}

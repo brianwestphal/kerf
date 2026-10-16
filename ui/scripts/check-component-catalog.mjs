@@ -1,5 +1,5 @@
 import { access, readFile } from 'node:fs/promises';
-import { dirname, extname, resolve } from 'node:path';
+import { dirname, extname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import ts from 'typescript';
@@ -313,12 +313,30 @@ for (const entry of artifact.entries) {
     }
     // A wire may delegate to a shared internal implementation module (the
     // resize wiring behind wireResizableRegions and wireWorkbench); what that
-    // module writes is what the wire writes.
+    // module writes is what the wire writes. Another component's public
+    // module (an AnchoredSurface the wire opens) writes that component's
+    // state, not this one's, so only its internal/ modules are followed.
+    const componentsDir = resolve(root, 'src/components');
+    const ownComponent = relative(componentsDir, implementationPath)
+      .split(sep)
+      .slice(0, 2)
+      .join(sep);
     for (const [, module] of source.matchAll(
       /^import\s+\{[^}]*\}\s+from\s+'(\.\.?\/[^']+)\.js';/gm,
     )) {
       if (module.split('/').at(-1).startsWith('wire-')) continue;
       const target = resolve(dirname(implementationPath), module);
+      const targetComponent = relative(componentsDir, target)
+        .split(sep)
+        .slice(0, 2)
+        .join(sep);
+      if (
+        !ownComponent.startsWith('..') &&
+        !targetComponent.startsWith('..') &&
+        targetComponent !== ownComponent &&
+        !target.split(sep).includes('internal')
+      )
+        continue;
       source += await readFile(`${target}.ts`, 'utf8').catch(() =>
         readFile(`${target}.tsx`, 'utf8').catch(() => ''),
       );

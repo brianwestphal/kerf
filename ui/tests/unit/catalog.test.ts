@@ -365,6 +365,7 @@ describe('UX catalog metadata', () => {
       'wa-dropdown-item',
       'wa-checkbox',
       'wa-checkbox-group',
+      'wa-color-picker',
       'wa-input',
       'wa-option',
       'wa-radio',
@@ -575,6 +576,7 @@ describe('UX catalog metadata', () => {
       'ChoiceChips',
       'ColorSwatches',
       'ColorPicker',
+      'ColorField',
       'MessageComposer',
       'SearchField',
       'TagField',
@@ -705,6 +707,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(46);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(47);
   });
 });

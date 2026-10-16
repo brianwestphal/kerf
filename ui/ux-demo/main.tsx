@@ -39,6 +39,7 @@ import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import { wireCheckboxes } from '@kerfjs/ui/wire-checkboxes';
 import { readChoiceChips, wireChoiceChips } from '@kerfjs/ui/wire-choice-chips';
+import { wireColorFields } from '@kerfjs/ui/wire-color-fields';
 import { wireColorPickers } from '@kerfjs/ui/wire-color-pickers';
 import { wireComboboxes } from '@kerfjs/ui/wire-comboboxes';
 import {
@@ -107,6 +108,11 @@ import {
   RESTORE_DRAWER_ID,
   restoreDrawerCollapsed,
 } from './demos/collapsible-panel.js';
+import {
+  COLOR_FIELD_DEMO_PRESETS,
+  resetColorFieldDemo,
+  setColorFieldDemo,
+} from './demos/color-field.js';
 import {
   ADD_COLOR_SAMPLE_DEMO_ACTION,
   addColorSampleDemo,
@@ -1642,6 +1648,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
+  'color-field': {
+    reset: resetColorFieldDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
   'color-picker': {
     reset: resetColorPickerDemo,
     target: 'canvas',
@@ -1894,6 +1905,16 @@ const stopMessageComposers = wireMessageComposers(app);
 const stopTextFields = wireTextFields(app);
 const stopCheckboxes = wireCheckboxes(app);
 const stopSliders = wireSliders(app);
+const stopColorFields = wireColorFields(app, {
+  onChange: ({ id, value, mode }) => {
+    setColorFieldDemo(id, value, mode);
+    actionLog.value = `${id}: ${value}`;
+  },
+  pickers: {
+    'color-field-demo-fill': { presets: COLOR_FIELD_DEMO_PRESETS },
+    'color-field-demo-border': { presets: COLOR_FIELD_DEMO_PRESETS },
+  },
+});
 const stopColorPickers = wireColorPickers(app, {
   onChange: ({ id, value, mode }) => {
     if (id === 'color-picker-demo') setColorPickerDemo(value, mode);
@@ -2361,6 +2382,7 @@ window.addEventListener(
     stopTextFields();
     stopCheckboxes();
     stopSliders();
+    stopColorFields();
     stopColorPickers();
     stopSwatchDemo();
     stopTagFields();

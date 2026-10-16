@@ -1252,6 +1252,7 @@ const discouragedTags = [
   ['wa-progress-ring', 'progress-ring'],
   ['wa-slider', 'slider'],
   ['wa-tag-input', 'tag-field'],
+  ['wa-color-picker', 'color-field'],
 ];
 
 tester.run('ui-preferences discouraged Web Awesome tags', preferences, {

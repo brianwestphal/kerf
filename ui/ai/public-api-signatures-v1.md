@@ -5621,6 +5621,62 @@ declare function ColorPicker({ id, label, value, mode, alpha, name, form, eyedro
 export { COLOR_PICKER_CHANNELS, COLOR_PICKER_SWATCH_ACTION, ColorPicker, type ColorPickerMode, type ColorPickerProps, type ColorPickerRootAttributes, type ColorPickerSamples, colorPickerAreaText, colorPickerChannels, colorPickerStyle };
 ```
 
+## `@kerfjs/ui/color-field`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { ColorPickerMode } from './color-picker.js';
+import './color-swatches.js';
+import './css-values.js';
+
+/** `default` matches TextField's box; `compact` its compact size. */
+type ColorFieldSize = 'default' | 'compact';
+/** Application `data-*` metadata; the field's own markers stay protected. */
+type ColorFieldRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+type ColorFieldProps = {
+    /** The trigger's id; it also prefixes the hint and error ids. */
+    id: string;
+    /** CSS color text; invalid text shows black. */
+    value: string;
+    /** The picker's model when it opens (default `rgb`). */
+    mode?: ColorPickerMode;
+    /** Offer opacity in the picker (default true). */
+    alpha?: boolean;
+    /** A form field name the hex value submits under. */
+    name?: string;
+    /** Associate the hidden input with a form outside its ancestor chain. */
+    form?: string;
+    /** Supporting text below the field, also its description. */
+    hint?: string;
+    /** An error below the field that marks it invalid. */
+    error?: string;
+    size?: ColorFieldSize;
+    disabled?: boolean;
+    required?: boolean;
+    className?: string;
+    rootAttributes?: ColorFieldRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+} & ({
+    label: string;
+    ariaLabel?: never;
+} | {
+    label?: never;
+    ariaLabel: string;
+});
+/**
+ * A form field for a color: a label above a trigger that shows the current
+ * color as a swatch and its hex value. Pressing it opens a ColorPicker in an
+ * AnchoredSurface anchored to the field; Escape or a press outside closes it
+ * and focus returns to the trigger. Wire `wireColorFields` from
+ * `@kerfjs/ui/wire-color-fields`; it previews edits on the trigger, reports
+ * them, and the app re-renders with the new value.
+ */
+declare function ColorField({ id, value, mode, alpha, name, form, label, ariaLabel, hint, error, size, disabled, required, className, rootAttributes, slot, }: ColorFieldProps): kerfjs.SafeHtml;
+
+export { ColorField, type ColorFieldProps, type ColorFieldRootAttributes, type ColorFieldSize };
+```
+
 ## `@kerfjs/ui/search-field-model`
 
 ```ts

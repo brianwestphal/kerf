@@ -9,6 +9,7 @@ import { CheckboxDemo } from './checkbox.js';
 import { ChipDemo } from './chip.js';
 import { ChoiceChipsDemo } from './choice-chips.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
+import { ColorFieldDemo } from './color-field.js';
 import { ColorPickerDemo } from './color-picker.js';
 import { ColorSwatchesDemo } from './color-swatches.js';
 import { ColumnTrackDemo } from './column-track.js';
@@ -88,6 +89,7 @@ export const demos = {
   'floating-toolbar': FloatingToolbarDemo,
   'segmented-control': SegmentedControlDemo,
   'choice-chips': ChoiceChipsDemo,
+  'color-field': ColorFieldDemo,
   'color-picker': ColorPickerDemo,
   'color-swatches': ColorSwatchesDemo,
   disclosure: DisclosureDemo,

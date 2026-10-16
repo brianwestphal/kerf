@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 417200,
-  "measuredLargestJavaScriptGzip": 164223,
-  "measuredTotalJavaScriptGzip": 417155,
+  "totalJavaScriptGzip": 418500,
+  "measuredLargestJavaScriptGzip": 164222,
+  "measuredTotalJavaScriptGzip": 418442,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5379,6 +5379,22 @@
         "measuredTotalJavaScriptGzip": 417155,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 417200
+      }
+    },
+    {
+      "at": "2026-10-16T10:28:59.183Z",
+      "reason": "ColorField demo, component, and wiring (KF-PZBW7F)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164223,
+        "measuredTotalJavaScriptGzip": 417155,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 417200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164222,
+        "measuredTotalJavaScriptGzip": 418442,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 418500
       }
     }
   ]

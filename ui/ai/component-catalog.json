@@ -5698,6 +5698,116 @@
       }
     },
     {
+      "id": "color-field",
+      "name": "ColorField",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A form field for a color: a label above a trigger that shows the color as a swatch (over a checkerboard) and its hex value, opening a ColorPicker in an AnchoredSurface below it, with a hint or error, compact size, required, disabled, and a hidden input for the hex value.",
+      "uses": [
+        "color-picker",
+        "anchored-surface",
+        "lucide-icon"
+      ],
+      "purpose": "Put a color choice in a form or inspector without keeping a full picker open.",
+      "publicExports": [
+        "ColorField",
+        "ColorFieldProps",
+        "ColorFieldSize",
+        "ColorFieldRootAttributes"
+      ],
+      "useWhen": [
+        "A form or inspector row sets one color (a fill, border, or theme color): render ColorField with id, label, value, and mode, wire wireColorFields with onChange, and re-render with the reported value and mode.",
+        "The popup picker should offer presets or samples: pass them through wireColorFields' pickers option, keyed by field id."
+      ],
+      "avoidWhen": [
+        "Do not use it when the color is the main task of the view; show a ColorPicker inline.",
+        "Do not use it for a small curated palette; use ColorSwatches.",
+        "Do not use wa-color-picker."
+      ],
+      "alternatives": [
+        {
+          "id": "color-picker",
+          "relationship": "nearest",
+          "when": "Use an inline ColorPicker when choosing the color is the view's main task."
+        },
+        {
+          "id": "color-swatches",
+          "relationship": "nearest",
+          "when": "Use ColorSwatches for a fixed palette."
+        }
+      ],
+      "appOwns": [
+        "the value and model (update them from onChange and re-render)",
+        "per-field picker presets and samples (wireColorFields pickers)",
+        "the field name and form association"
+      ],
+      "variants": [
+        "with a hint",
+        "compact size",
+        "with opacity or opaque (alpha)",
+        "error",
+        "disabled",
+        "required"
+      ],
+      "accessibility": [
+        "The trigger is a button named by the label and the current hex value, with aria-haspopup dialog and aria-expanded; the hint and error describe it.",
+        "The picker opens in a non-modal AnchoredSurface named by the label; Escape or a press outside closes it and focus returns to the trigger."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "The trigger matches TextField's box, label, hint, and error geometry."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/color-field",
+        "browserImport": "@kerfjs/ui/color-field",
+        "manualCssImport": "@kerfjs/ui/color-field.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireColorFields",
+          "import": "@kerfjs/ui/wire-color-fields",
+          "required": true,
+          "stateAttributes": [
+            {
+              "name": "data-value",
+              "on": "kui-color-field",
+              "meaning": "The committed color, updated by the wiring until the app re-renders, so reopening the picker starts from the last edit."
+            },
+            {
+              "name": "data-mode",
+              "on": "kui-color-field",
+              "meaning": "The committed color model, updated the same way as data-value."
+            }
+          ]
+        }
+      ],
+      "publicClasses": [
+        "kui-color-field",
+        "kui-color-field__label",
+        "kui-color-field__required",
+        "kui-color-field__trigger",
+        "kui-color-field__swatch",
+        "kui-color-field__hex",
+        "kui-color-field__chevron",
+        "kui-color-field__hint",
+        "kui-color-field__error"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=color-field",
+        "documentation": "docs/color-field.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "message-composer",
       "name": "MessageComposer",
       "category": "Controls",
@@ -8826,24 +8936,39 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Color input with swatches, formats, opacity, and eyedropper support.",
+      "description": "Ecosystem color picker; use the Kerf ColorField or ColorPicker.",
       "uses": [
         "wa-button",
         "wa-button-group",
         "wa-input",
         "wa-popup"
       ],
-      "purpose": "Color input with swatches, formats, opacity, and eyedropper support.",
+      "purpose": "Ecosystem color picker; use the Kerf ColorField or ColorPicker.",
       "customElement": "wa-color-picker",
       "useWhen": [
-        "Color input with swatches, formats, opacity, and eyedropper support."
+        "Only inside an application that has already adopted the optional Web Awesome integration."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use ColorField (@kerfjs/ui/color-field) for a field that opens a picker, ColorPicker (@kerfjs/ui/color-picker) inline, or ColorSwatches for a fixed palette."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "color-field",
+          "relationship": "prefer-kerf",
+          "when": "Use ColorField for a color in a form or inspector."
+        },
+        {
+          "id": "color-picker",
+          "relationship": "prefer-kerf",
+          "when": "Use an inline ColorPicker when the color is the view's main task."
+        },
+        {
+          "id": "color-swatches",
+          "relationship": "prefer-kerf",
+          "when": "Use ColorSwatches for a fixed palette."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -8859,7 +8984,7 @@
       "links": {
         "catalogRoute": "?component=wa-color-picker",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {

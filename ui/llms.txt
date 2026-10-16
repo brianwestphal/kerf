@@ -788,6 +788,10 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 - **Choose any color with `ColorPicker`** (`@kerfjs/ui/color-picker`): an area,
   hue and opacity sliders, RGB/HSL/HSB/Grayscale fields, hex, presets, and
   samples; call `wireColorPickers(root, { onChange })` and re-render.
+- **Put a color in a form with `ColorField`** (`@kerfjs/ui/color-field`): a
+  swatch-and-hex trigger that opens a ColorPicker below it; call
+  `wireColorFields(root, { onChange, pickers })` and re-render. Never use
+  `wa-color-picker`.
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
   `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
   selected text, use the public color, font-size, and font-weight tokens; the

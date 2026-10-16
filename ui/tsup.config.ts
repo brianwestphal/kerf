@@ -65,6 +65,8 @@ const entries = [
   'color-swatches',
   'color-picker',
   'wire-color-pickers',
+  'color-field',
+  'wire-color-fields',
   'message-composer',
   'wire-message-composers',
   'search-field',

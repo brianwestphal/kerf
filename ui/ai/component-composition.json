@@ -4687,6 +4687,93 @@
       }
     },
     {
+      "key": "@kerfjs/ui:color-field",
+      "package": "@kerfjs/ui",
+      "id": "color-field",
+      "name": "ColorField",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the value and model (update them from onChange and re-render)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "per-field picker presets and samples (wireColorFields pickers)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the field name and form association",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireColorFields"],
+        "obligations": ["Use wireColorFields as documented."],
+        "stateAttributes": [
+          {
+            "name": "data-value",
+            "on": "kui-color-field",
+            "helper": "wireColorFields",
+            "meaning": "The committed color, updated by the wiring until the app re-renders, so reopening the picker starts from the last edit."
+          },
+          {
+            "name": "data-mode",
+            "on": "kui-color-field",
+            "helper": "wireColorFields",
+            "meaning": "The committed color model, updated the same way as data-value."
+          }
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "The trigger matches TextField's box, label, hint, and error geometry."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The trigger is a button named by the label and the current hex value, with aria-haspopup dialog and aria-expanded; the hint and error describe it.",
+          "The picker opens in a non-modal AnchoredSurface named by the label; Escape or a press outside closes it and focus returns to the trigger."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-color-field",
+        "publicClasses": [
+          "kui-color-field",
+          "kui-color-field__label",
+          "kui-color-field__required",
+          "kui-color-field__trigger",
+          "kui-color-field__swatch",
+          "kui-color-field__hex",
+          "kui-color-field__chevron",
+          "kui-color-field__hint",
+          "kui-color-field__error"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:message-composer",
       "package": "@kerfjs/ui",
       "id": "message-composer",

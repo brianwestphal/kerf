@@ -324,7 +324,9 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('./webawesome-migration.md');
     expect(guidance).toContain('Popover and Popup give way to');
     expect(guidance).toContain('`positionAnchored()`');
-    expect(guidance).toContain('Tooltip, Toast, and Toast Item stay supported');
+    expect(guidance).toContain(
+      "Toast, and Toast Item give way to `kerfjs/overlay`'s `tooltip()`",
+    );
     for (const element of [
       'Button',
       'Input',

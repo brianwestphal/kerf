@@ -360,16 +360,15 @@ application off them.
   Checkbox, Checkbox Group, Radio, Radio Group, Switch, Select, Option,
   Dialog, Drawer, Card, Page, Callout, Popover, Popup, Tab, Tab Group, Tab
   Panel, Badge, Spinner, Skeleton, Toast, Toast Item, Tooltip, Details, Accordion,
-  Accordion Item, Progress Bar, Progress Ring, Slider, Tag Input, Split Panel, Icon,
-  Scroller, Include, and Zoomable Frame.
+  Accordion Item, Progress Bar, Progress Ring, Slider, Tag Input, Color Picker,
+  Split Panel, Icon, Scroller, Include, and Zoomable Frame.
   Never render them in application markup. Popover and Popup give way to
-  `AnchoredSurface` and `kerfjs/overlay`'s `positionAnchored()`.
-- Tooltip, Toast, and Toast Item stay supported until Kerf ships a styled
-  general tooltip and toast; in a Kerf-only application use a native `title`
-  and `StateBanner` or `CornerStatus`.
+  `AnchoredSurface` and `kerfjs/overlay`'s `positionAnchored()`; Tooltip,
+  Toast, and Toast Item give way to `kerfjs/overlay`'s `tooltip()` and
+  `toast()` with their Kerf stylesheets.
 - Use Web Awesome Tree, Tree Item, Animated Image, and Comparison only for a
   specific product requirement that needs their specialized behavior.
-- Use the remaining supported elements (Details, Carousel, Rating, and
+- Use the remaining supported elements (Carousel, Rating, and
   the rest of the coverage list) when their native semantic contract matches
   the product need and the application has adopted the integration.
 

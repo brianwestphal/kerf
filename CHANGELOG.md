@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`ColorField` in `@kerfjs/ui`.** `@kerfjs/ui/color-field` puts a color in a form or inspector: a label above a trigger that shows the color as a swatch (over a checkerboard) and its hex value, with a hint or error, compact size, and a hidden input under `name`.
+  - `wireColorFields(root, { onInput, onChange, pickers })` (`@kerfjs/ui/wire-color-fields`) opens a `ColorPicker` in an `AnchoredSurface` below the trigger, with per-field presets and samples. Edits preview on the trigger at once; Escape or a press outside closes the picker and returns focus.
+  - `wa-color-picker` is now `Discouraged` (47 in all), and the profile defaults avoid it (`KF-PZBW7F`).
 - **`ColorPicker` in `@kerfjs/ui`.** `@kerfjs/ui/color-picker` is a full inline picker: a saturation and brightness area, hue and opacity sliders, an RGB/HSL/HSB/Grayscale model menu with channel fields, a hex field (8 digits below full opacity), an opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches with an "Add to Samples" action.
   - `wireColorPickers(root, { onInput, onChange })` (`@kerfjs/ui/wire-color-pickers`) makes it interactive: pointer drags and arrow keys on the area, native range sliders, field commits, model switching, and swatches.
   - Each change reports `#rrggbb` or `#rrggbbaa` through bubbling `kui-color-input`/`kui-color-change` events and the callbacks, and the picker adopts a new controlled value.

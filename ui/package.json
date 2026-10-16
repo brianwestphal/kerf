@@ -340,6 +340,15 @@
       "browser": "./dist/browser/segmented-control.js",
       "import": "./dist/segmented-control.js"
     },
+    "./color-field": {
+      "types": "./dist/color-field.d.ts",
+      "browser": "./dist/browser/color-field.js",
+      "import": "./dist/color-field.js"
+    },
+    "./wire-color-fields": {
+      "types": "./dist/wire-color-fields.d.ts",
+      "import": "./dist/wire-color-fields.js"
+    },
     "./color-picker": {
       "types": "./dist/color-picker.d.ts",
       "browser": "./dist/browser/color-picker.js",
@@ -595,6 +604,7 @@
     "./choice-chips.css": "./dist/styles/choice-chips.css",
     "./color-swatches.css": "./dist/styles/color-swatches.css",
     "./color-picker.css": "./dist/styles/color-picker.css",
+    "./color-field.css": "./dist/styles/color-field.css",
     "./message-composer.css": "./dist/styles/message-composer.css",
     "./search-field.css": "./dist/styles/search-field.css",
     "./tag-field.css": "./dist/styles/tag-field.css",

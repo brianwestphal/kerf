@@ -191,6 +191,11 @@
       "preferred": "@kerfjs/ui:tag-field",
       "avoid": ["@kerfjs/ui:wa-tag-input"],
       "rationale": "Use the Kerf TagField, SearchField's token editor as a form field with a hidden input per tag, wired by wireTagFields."
+    },
+    "color-input": {
+      "preferred": "@kerfjs/ui:color-field",
+      "avoid": ["@kerfjs/ui:wa-color-picker"],
+      "rationale": "Use the Kerf ColorField, which opens a ColorPicker from a swatch and hex trigger, or an inline ColorPicker or ColorSwatches."
     }
   },
   "theme": {
