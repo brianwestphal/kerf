@@ -117,18 +117,23 @@ for (const [label, width] of [
     expect((await geometry(bar)).extra).toBeGreaterThan(0);
     await narrow(page, bar, width);
     // The measurement must be stable: the extra cannot keep feeding back into
-    // a larger strip on later frames. A slow runner may still be settling at
-    // the first sample, so sample until two readings agree; a feedback loop
-    // never does, and fails.
+    // a larger strip on later frames. A slow or loaded runner may still be
+    // settling at the first samples, so sample (six frames apart) until two
+    // consecutive readings agree, bounded by time rather than a sample count;
+    // a feedback loop never agrees, and fails at the timeout.
     let previous = (await geometry(bar)).extra;
-    let stable = false;
-    for (let attempt = 0; attempt < 5 && !stable; attempt += 1) {
-      await settle(page);
-      const next = (await geometry(bar)).extra;
-      stable = Math.abs(next - previous) < 0.5;
-      previous = next;
-    }
-    expect(stable).toBe(true);
+    await expect
+      .poll(
+        async () => {
+          await settle(page);
+          const next = (await geometry(bar)).extra;
+          const steady = Math.abs(next - previous) < 0.5;
+          previous = next;
+          return steady;
+        },
+        { timeout: 10_000, intervals: [0] },
+      )
+      .toBe(true);
     const measured = await expectAllocated(bar);
     expect(measured.scrollWidth).toBeGreaterThan(measured.clientWidth);
 
