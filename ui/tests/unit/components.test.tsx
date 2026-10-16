@@ -2832,6 +2832,8 @@ describe('production UI primitives', () => {
         selectedPresentation: 'icon-only',
         focusRingOwner: 'group',
         labelMaxWidth: 120,
+        maxTriggerWidth: rem(10),
+        minTriggerWidth: rem(5),
         renderSelected: (choice) => <strong>{choice.label}</strong>,
       }),
     );
@@ -2839,9 +2841,11 @@ describe('production UI primitives', () => {
       'kui-select--custom-selected kui-select--fit-menu',
     );
     expect(grouped).toContain(
-      'data-presentation="toolbar-borderless" data-size="compact" data-trigger-width="fit-content" data-selected-presentation="icon-only" data-focus-ring-owner="group"',
+      'data-presentation="toolbar-borderless" data-size="compact" data-trigger-width="fit-content" data-trigger-max="" data-trigger-min="" data-selected-presentation="icon-only" data-focus-ring-owner="group"',
     );
-    expect(grouped).toContain('style="--kui-select-label-max-width:120px"');
+    expect(grouped).toContain(
+      'style="--kui-select-label-max-width:120px;--_kui-select-trigger-max:10rem;--_kui-select-trigger-min:5rem"',
+    );
     expect(grouped).toContain('role="group" aria-label="Recommended"');
     const roundIcon = asHtml(
       Select({

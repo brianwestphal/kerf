@@ -4,6 +4,7 @@ import { Check } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { PopupCaretGlyph } from '../../../shared/popup/popup-glyphs.js';
+import type { CssLength } from '../../../shared/styles/css-values.js';
 import {
   type CssForegroundColor,
   em,
@@ -89,6 +90,13 @@ interface SelectBaseProps<Value extends string = string> {
   size?: SelectSize;
   /** Closed trigger width; omit to keep the presentation's default. */
   triggerWidth?: SelectTriggerWidth;
+  /**
+   * The widest the closed trigger grows, under any presentation; its value
+   * (or `renderSelected` content) ellipsizes inside it and the caret stays.
+   */
+  maxTriggerWidth?: CssLength;
+  /** The narrowest the closed trigger gets. */
+  minTriggerWidth?: CssLength;
   /** Show the disclosure caret (default); omit it for a compact icon-only trigger. */
   caret?: boolean;
   /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
@@ -213,6 +221,8 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     presentation = 'form',
     size = 'default',
     triggerWidth,
+    maxTriggerWidth,
+    minTriggerWidth,
     caret = true,
     focusRingOwner = 'select',
     focusRingInset = false,
@@ -230,14 +240,26 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     props.multiple && props.selectedPresentation === 'icon-only';
   const accessibleName = label || ariaLabel;
   const style =
-    labelMaxWidth === undefined
-      ? undefined
-      : `--kui-select-label-max-width:${labelMaxWidth}px`;
+    [
+      labelMaxWidth === undefined
+        ? undefined
+        : `--kui-select-label-max-width:${labelMaxWidth}px`,
+      maxTriggerWidth === undefined
+        ? undefined
+        : `--_kui-select-trigger-max:${maxTriggerWidth}`,
+      minTriggerWidth === undefined
+        ? undefined
+        : `--_kui-select-trigger-min:${minTriggerWidth}`,
+    ]
+      .filter(Boolean)
+      .join(';') || undefined;
   const rootData = {
     'data-component': 'select',
     'data-presentation': presentation,
     'data-size': size,
     'data-trigger-width': triggerWidth,
+    'data-trigger-max': maxTriggerWidth === undefined ? undefined : '',
+    'data-trigger-min': minTriggerWidth === undefined ? undefined : '',
     'data-caret': caret ? undefined : 'false',
     'data-selected-presentation': selectedPresentation,
     'data-focus-ring-owner': focusRingOwner,

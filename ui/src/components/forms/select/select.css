@@ -556,3 +556,21 @@
   width: max-content;
   max-width: var(--kui-select-trigger-max-width, 100%);
 }
+/* `maxTriggerWidth` / `minTriggerWidth` bound the closed trigger under any
+   presentation; the value or custom selected content ellipsizes inside. */
+.kui-select[data-trigger-max] {
+  max-width: min(var(--_kui-select-trigger-max), 100%);
+}
+.kui-select[data-trigger-min] {
+  min-width: var(--_kui-select-trigger-min);
+}
+/* Under a cap, a max-content trigger (title, inline) and its value or custom
+   content shrink to fit, so the text ellipsizes before the caret. */
+.kui-select[data-trigger-max] > .kui-select__trigger {
+  max-width: 100%;
+}
+.kui-select[data-trigger-max] .kui-select__value,
+.kui-select[data-trigger-max] .kui-select__custom-selected {
+  min-width: 0;
+  flex-shrink: 1;
+}

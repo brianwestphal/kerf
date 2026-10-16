@@ -479,7 +479,8 @@ be reached or announced either way. When the dialog's task depends on that
 progress, show it inside the dialog.
 
 For a compact `Select`, set `triggerWidth` to `"fit-content"`, `"max-content"`,
-or `"fill"` and cap it with `--kui-select-trigger-max-width` when needed.
+or `"fill"`, and bound it with `maxTriggerWidth` / `minTriggerWidth` (under any
+presentation; the value or `renderSelected` content ellipsizes before the caret).
 For a round icon-only toolbar trigger, set `selectedPresentation="icon-only"`
 and `caret={false}`. The control keeps its accessible name, current choice help
 tag, and keyboard-operated listbox; the selected icon stays centered even when

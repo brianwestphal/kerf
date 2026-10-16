@@ -1,6 +1,6 @@
 import { Badge } from '@kerfjs/ui/badge';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { uiColor } from '@kerfjs/ui/css-values';
+import { remify, uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -220,7 +220,6 @@ export function SelectDemo() {
         align="inline-control"
         viewport={{
           tokens: {
-            '--kui-select-trigger-max-width': '160px',
             '--kui-select-selected-color': 'var(--kui-color-text-quiet)',
             '--kui-select-selected-font-size': 'var(--kui-font-2xs)',
             '--kui-select-selected-font-weight': '650',
@@ -234,6 +233,7 @@ export function SelectDemo() {
           presentation="toolbar-borderless"
           size="compact"
           triggerWidth="fit-content"
+          maxTriggerWidth={remify(160)}
           choices={[{ value: 'long', label: 'A Very Long Workspace Name' }]}
           renderSelected={(choice) => <span>{choice.label}</span>}
         />

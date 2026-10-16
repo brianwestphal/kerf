@@ -3585,7 +3585,7 @@ export { wireMessageComposers };
 import { SafeHtml } from 'kerfjs';
 import { KerfCustomElement } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { CssForegroundColor } from './css-values.js';
+import { CssForegroundColor, CssLength } from './css-values.js';
 import { LucideNode } from './lucide-icon.js';
 import 'lucide';
 
@@ -3660,6 +3660,13 @@ interface SelectBaseProps<Value extends string = string> {
     size?: SelectSize;
     /** Closed trigger width; omit to keep the presentation's default. */
     triggerWidth?: SelectTriggerWidth;
+    /**
+     * The widest the closed trigger grows, under any presentation; its value
+     * (or `renderSelected` content) ellipsizes inside it and the caret stays.
+     */
+    maxTriggerWidth?: CssLength;
+    /** The narrowest the closed trigger gets. */
+    minTriggerWidth?: CssLength;
     /** Show the disclosure caret (default); omit it for a compact icon-only trigger. */
     caret?: boolean;
     /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */

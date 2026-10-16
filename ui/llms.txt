@@ -793,7 +793,8 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `wireColorFields(root, { onChange, pickers })` and re-render. Never use
   `wa-color-picker`.
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
-  `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
+  `max-content`, or `fill`; `maxTriggerWidth`/`minTriggerWidth` bound it under any
+  presentation, ellipsizing even `renderSelected` content. For custom
   selected text, use the public color, font-size, and font-weight tokens; the
   closed value ellipsizes when space runs out. `presentation="title"` gives a
   rail view heading a 36px bold, flush-start trigger and adjacent caret;

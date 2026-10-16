@@ -58,6 +58,7 @@ Exact prop names and types: [`@kerfjs/ui/select`](../public-api-signatures-v1.md
 - disabled choice with an optional reason
 - opt-in select-all and clear actions for multiple selection
 - multiple icon-only filter trigger with a fixed triggerIcon
+- maxTriggerWidth / minTriggerWidth bounds on the closed trigger under any presentation, ellipsizing custom selected content
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 

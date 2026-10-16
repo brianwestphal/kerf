@@ -41,6 +41,27 @@ test('Select width policies and selected typography work at wide and narrow size
     expect(details.overflow).toBe('hidden');
     expect(details.textOverflow).toBe('ellipsis');
     expect(details.textWidth).toBeGreaterThan(details.boxWidth);
+    // maxTriggerWidth caps it and keeps the caret.
+    await expect(compact).toHaveAttribute('data-trigger-max', '');
+    await expect(compact.locator('.kui-select__caret')).toBeVisible();
+    // The cap holds without a triggerWidth too (the view-title Select).
+    const title = page.locator('[name="view-title-demo"]');
+    const capped = await title.evaluate((element) => {
+      element.setAttribute('data-trigger-max', '');
+      (element as HTMLElement).style.setProperty(
+        '--_kui-select-trigger-max',
+        '3rem',
+      );
+      const caret = element.querySelector('.kui-select__caret')!;
+      const box = element.getBoundingClientRect();
+      const caretBox = caret.getBoundingClientRect();
+      return {
+        width: box.width,
+        caretInside: caretBox.width > 0 && caretBox.right <= box.right + 0.5,
+      };
+    });
+    expect(capped.width).toBeLessThanOrEqual(48.5);
+    expect(capped.caretInside).toBe(true);
     await compact.screenshot({
       path: testInfo.outputPath(`select-compact-${width}.png`),
     });
