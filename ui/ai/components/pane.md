@@ -59,6 +59,7 @@ Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#k
 - app-chosen background color (background), replacing the default or sunken fill
 - scoped tint re-deriving surface and text tokens from an app color (tint)
 - clear (transparent) overlay header, optionally with the scroll-edge material (headerPresentation: clear, scrollEdge: material)
+- compactChrome { header, footer }: fixed, scroll, or overlay (opened by compactChromeOpen), applied by a NavStack view, TabNavigator scene, full-screen dialog, or compact Workbench
 
 ## Composition
 

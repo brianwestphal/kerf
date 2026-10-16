@@ -158,6 +158,27 @@ its block padding and `scroll-padding`, alongside the safe-area and
 `deepInset` insets, so its first and last items still rest clear of the
 chrome. See `docs/layout.md` "Scroll clearance".
 
+### Compact chrome
+
+A `Pane` declares what its header and footer do when its container presents
+compactly, with `compactChrome: { header?, footer? }`:
+
+- `fixed` (default) keeps the chrome docked; it shrinks the content area.
+- `scroll` puts the chrome inline with the content: the pane scrolls as one
+  column, and a footer settles at the bottom of short content and scrolls
+  past long content. Chrome left `fixed` stays stuck to its edge.
+- `overlay` lays the chrome over the content's edge on the chrome material,
+  hidden until the app opens it with `compactChromeOpen` from a control the
+  person can reach (a toolbar button in the view).
+
+The Pane only declares the policy. Its container applies it in its compact
+presentation — a `NavStack` view (so a compact `SplitView` and
+`ListDetailDialog` too), a `TabNavigator` scene, a full-screen
+`DialogSurface` (so a compact `WorkbenchDialog`), or a `Workbench` at its
+compact width (448px or less) — and ignores it when roomy. Pass it through a
+view's or panel's `pane` configuration (`pane: { compactChrome: { footer:
+'scroll' } }`).
+
 ## Decision matrix
 
 | Situation                                                                    | Layout                                                                                           | Device threshold                                                                                                                   |

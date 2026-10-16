@@ -23,6 +23,8 @@ export function paneConfigProps(
     separators: config?.separators,
     safeAreaEdges: config?.safeAreaEdges,
     chromeDividers: config?.chromeDividers,
+    compactChrome: config?.compactChrome,
+    compactChromeOpen: config?.compactChromeOpen,
     headerPresentation: config?.headerPresentation,
     scrollEdge: config?.scrollEdge,
     scrollEdgeDistance: config?.scrollEdgeDistance,

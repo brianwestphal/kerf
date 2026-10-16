@@ -500,3 +500,257 @@
   > [data-component="pane"]:only-child {
   height: 100%;
 }
+
+/* Compact chrome (`compactChrome`): the pane declares a policy for its header
+   and footer, and applies it only where its container presents compactly — a
+   NavStack view, a TabNavigator scene, a full-screen dialog, or a Workbench at
+   its compact width (448px or less). Elsewhere the chrome stays docked. */
+
+/* `scroll`: the pane scrolls as one column. Scrolling chrome moves with
+     the content; a footer settles at the bottom of short content and
+     scrolls past long content. Fixed chrome stays stuck to its edge. */
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane:is([data-compact-header="scroll"], [data-compact-footer="scroll"]) {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  grid-template-rows: auto minmax(max-content, 1fr) auto;
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane:is([data-compact-header="scroll"], [data-compact-footer="scroll"])
+  > .kui-pane__content {
+  overflow: visible;
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-footer="scroll"]:not([data-compact-header])
+  > .kui-pane__header,
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-header="scroll"]:not([data-compact-footer])
+  > .kui-pane__footer {
+  position: sticky;
+  z-index: 1;
+  background: var(--kui-pane-chrome-background, var(--kui-color-surface));
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-footer="scroll"]:not([data-compact-header])
+  > .kui-pane__header {
+  inset-block-start: 0;
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-header="scroll"]:not([data-compact-footer])
+  > .kui-pane__footer {
+  inset-block-end: 0;
+}
+
+/* `overlay`: the chrome lies over the content's edge on the chrome
+     material, out of the way until the app opens it. The content keeps the
+     whole pane. */
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-header="overlay"]
+  > .kui-pane__header,
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-footer="overlay"]
+  > .kui-pane__footer {
+  position: absolute;
+  z-index: 2;
+  inset-inline: 0;
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  background: var(--kui-chrome-material);
+  transition:
+    translate 200ms ease,
+    visibility 0s 200ms;
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-header="overlay"]
+  > .kui-pane__header {
+  inset-block-start: 0;
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-footer="overlay"]
+  > .kui-pane__footer {
+  inset-block-end: 0;
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-header="overlay"]:not([data-compact-header-open])
+  > .kui-pane__header {
+  visibility: hidden;
+  translate: 0 -100%;
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-footer="overlay"]:not([data-compact-footer-open])
+  > .kui-pane__footer {
+  visibility: hidden;
+  translate: 0 100%;
+}
+
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-header-open]
+  > .kui-pane__header,
+:is(
+    .kui-nav-stack__view,
+    .kui-tab-scaffold__scene,
+    .kui-dialog-surface[data-presentation="fullscreen"]
+  )
+  .kui-pane[data-compact-footer-open]
+  > .kui-pane__footer {
+  transition: translate 200ms ease;
+}
+
+@container kui-workbench (max-width: remify(448px)) {
+  /* `scroll`: the pane scrolls as one column. Scrolling chrome moves with
+     the content; a footer settles at the bottom of short content and
+     scrolls past long content. Fixed chrome stays stuck to its edge. */
+  :where(.kui-workbench)
+    .kui-pane:is(
+      [data-compact-header="scroll"],
+      [data-compact-footer="scroll"]
+    ) {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    grid-template-rows: auto minmax(max-content, 1fr) auto;
+  }
+
+  :where(.kui-workbench)
+    .kui-pane:is([data-compact-header="scroll"], [data-compact-footer="scroll"])
+    > .kui-pane__content {
+    overflow: visible;
+  }
+
+  :where(.kui-workbench)
+    .kui-pane[data-compact-footer="scroll"]:not([data-compact-header])
+    > .kui-pane__header,
+  :where(.kui-workbench)
+    .kui-pane[data-compact-header="scroll"]:not([data-compact-footer])
+    > .kui-pane__footer {
+    position: sticky;
+    z-index: 1;
+    background: var(--kui-pane-chrome-background, var(--kui-color-surface));
+  }
+
+  :where(.kui-workbench)
+    .kui-pane[data-compact-footer="scroll"]:not([data-compact-header])
+    > .kui-pane__header {
+    inset-block-start: 0;
+  }
+
+  :where(.kui-workbench)
+    .kui-pane[data-compact-header="scroll"]:not([data-compact-footer])
+    > .kui-pane__footer {
+    inset-block-end: 0;
+  }
+
+  /* `overlay`: the chrome lies over the content's edge on the chrome
+     material, out of the way until the app opens it. The content keeps the
+     whole pane. */
+  :where(.kui-workbench)
+    .kui-pane[data-compact-header="overlay"]
+    > .kui-pane__header,
+  :where(.kui-workbench)
+    .kui-pane[data-compact-footer="overlay"]
+    > .kui-pane__footer {
+    position: absolute;
+    z-index: 2;
+    inset-inline: 0;
+    -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+    backdrop-filter: var(--kui-chrome-material-filter);
+    background: var(--kui-chrome-material);
+    transition:
+      translate 200ms ease,
+      visibility 0s 200ms;
+  }
+
+  :where(.kui-workbench)
+    .kui-pane[data-compact-header="overlay"]
+    > .kui-pane__header {
+    inset-block-start: 0;
+  }
+
+  :where(.kui-workbench)
+    .kui-pane[data-compact-footer="overlay"]
+    > .kui-pane__footer {
+    inset-block-end: 0;
+  }
+
+  :where(.kui-workbench)
+    .kui-pane[data-compact-header="overlay"]:not([data-compact-header-open])
+    > .kui-pane__header {
+    visibility: hidden;
+    translate: 0 -100%;
+  }
+
+  :where(.kui-workbench)
+    .kui-pane[data-compact-footer="overlay"]:not([data-compact-footer-open])
+    > .kui-pane__footer {
+    visibility: hidden;
+    translate: 0 100%;
+  }
+
+  :where(.kui-workbench)
+    .kui-pane[data-compact-header-open]
+    > .kui-pane__header,
+  :where(.kui-workbench)
+    .kui-pane[data-compact-footer-open]
+    > .kui-pane__footer {
+    transition: translate 200ms ease;
+  }
+}

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 421700,
-  "measuredLargestJavaScriptGzip": 164223,
-  "measuredTotalJavaScriptGzip": 421644,
+  "totalJavaScriptGzip": 422100,
+  "measuredLargestJavaScriptGzip": 164221,
+  "measuredTotalJavaScriptGzip": 422085,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5539,6 +5539,22 @@
         "measuredTotalJavaScriptGzip": 421644,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 421700
+      }
+    },
+    {
+      "at": "2026-10-16T13:51:17.398Z",
+      "reason": "Pane compactChrome demo (KF-Q8EMWE)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164223,
+        "measuredTotalJavaScriptGzip": 421644,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 421700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 422085,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 422100
       }
     }
   ]

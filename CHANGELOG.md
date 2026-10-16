@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`Pane` `compactChrome`.** A Pane declares what its header and footer do when its container presents compactly: `fixed` (default), `scroll` (inline with the content; a footer settles at the end and scrolls past long content), or `overlay` (over the content on the chrome material, shown while the app's `compactChromeOpen` says so). NavStack views, TabNavigator scenes, full-screen dialogs, and compact Workbenches apply it; roomy containers ignore it. `PaneConfig` forwards both props (`KF-Q8EMWE`).
 - **Vertical `Slider`.** `orientation="vertical"` stands a Slider up with its minimum at the bottom, `length` tall (default 160px), drawn the same in Chromium, Firefox, and WebKit; the AnchoredSurface media volume popup is vertical again (`KF-SVDPSR`).
 - **`FileDropZone` `dropScope`.** A selector for an enclosing element (an attachments panel) that also takes drops: `wireFilePickers` highlights the zone while files are dragged over any part of it and reports drops there for the zone with `via: 'drop'`, so an app no longer writes the zone's `data-dragging` itself (`KF-HNRWM9`).
 - **`PopupMenu` `triggerContent`.** App content, such as a `Badge` showing a status, can be the whole trigger: Kerf owns the bare button around it (no chrome, a pill focus ring, the pointer cursor, `aria-haspopup`), `label` names it, the caret is off by default, and no help tag repeats the name. Submenus and checked choices work as on any PopupMenu (`KF-PHGQ6D`).

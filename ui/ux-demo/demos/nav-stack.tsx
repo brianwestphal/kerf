@@ -12,6 +12,7 @@ import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
+import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
@@ -242,11 +243,60 @@ const overlayDetailView = (label: string): NavStackView => ({
   content: inboxList('log-inbox'),
 });
 
+/** The delegated action that shows and hides the compact example's filters. */
+export const TOGGLE_COMPACT_CHROME_DEMO_ACTION = 'toggle-compact-chrome-demo';
+const compactFiltersOpen = signal(false);
+
+export function toggleCompactChromeDemo(): boolean {
+  compactFiltersOpen.value = !compactFiltersOpen.value;
+  return compactFiltersOpen.value;
+}
+
+// A compact view whose Pane declares its chrome policy: the filter header
+// lies over the messages until the toolbar's Filter button opens it, and the
+// footer action scrolls with the list instead of shrinking it.
+const compactChromeView = (open: boolean): NavStackView => ({
+  key: 'compact',
+  toolbar: {
+    title: 'Messages',
+    trailing: (
+      <ToolbarControlGroup label="Filter" appearance="borderless" single>
+        <button
+          type="button"
+          aria-label={open ? 'Hide Filters' : 'Show Filters'}
+          aria-pressed={String(open)}
+          data-action={TOGGLE_COMPACT_CHROME_DEMO_ACTION}
+        >
+          <LucideIcon icon={Funnel} name="funnel" />
+        </button>
+      </ToolbarControlGroup>
+    ),
+  },
+  header: (
+    <Text size="compact" tone="quiet" flush>
+      Showing unread messages from this week
+    </Text>
+  ),
+  headerList: { textInsets: 'trbl' },
+  footer: (
+    <Text size="compact" tone="quiet" flush>
+      18 messages, updated just now
+    </Text>
+  ),
+  footerList: { textInsets: 'trbl' },
+  pane: {
+    compactChrome: { header: 'overlay', footer: 'scroll' },
+    compactChromeOpen: { header: open },
+  },
+  content: inboxList('log-inbox'),
+});
+
 const demoViews = signal<NavStackView[]>([rootView()]);
 const configuredViews = signal<NavStackView[]>([configuredRootView()]);
 const overlayViews = signal<NavStackView[]>([overlayRootView()]);
 
 export function resetNavStackDemo(): void {
+  compactFiltersOpen.value = false;
   demoViews.value = [rootView()];
   configuredViews.value = [configuredRootView()];
   overlayViews.value = [overlayRootView()];
@@ -352,6 +402,22 @@ export function NavStackDemo() {
           chromePresentation="overlay"
           bottomToolbarPresentation="overlay"
           bottomToolbar={overlayBottomToolbar}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Compact Chrome"
+        note="A view's Pane declares compactChrome and the stack applies it in its compact presentation: the filter header (overlay) lies over the messages until Filter opens it, and the status footer (scroll) settles after the last message instead of taking room from the list."
+        viewport={{
+          layout: 'grid',
+          width: 'compact',
+          height: 'tall',
+          frame: 'solid',
+        }}
+      >
+        <NavStack
+          id="catalog-nav-stack-compact-chrome"
+          label="Compact Chrome Messages"
+          views={[compactChromeView(compactFiltersOpen.value)]}
         />
       </CatalogExample>
     </CatalogExampleStack>

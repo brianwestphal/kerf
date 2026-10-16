@@ -386,6 +386,12 @@ Hard rules:
 
 18. When a recurring concept has no matching export or production recipe, keep its semantics in a thin application adapter while reusing the public layout vocabulary. The composer recipe uses one visible form surface, toolbar title/supporting-copy ids, shared 8px field/action gutters, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface; do not turn every section into a card or double-inset intrinsically bordered controls. For multi-line banner copy use `copyLayout="stacked"`; use `actionPlacement="below"` for an action that always takes its own trailing row (the default trailing action already wraps onto that row when a narrow banner leaves the copy too little room, so never switch placement per breakpoint). For a full-width status band at a layout edge (above a workspace), use `presentation="strip"` with optional `dividerSides` (bottom by default) instead of zeroing the card's margin, radius, and border tokens. For non-dismissible app-level progress with no home beside the affected work ("Loading…", "Updating… 3 of 12"), host the banner in `CornerStatus` and call `wireCornerStatus` once instead of fixed-position CSS or a toast with its close part hidden. For an icon-only `wa-button` with a `LucideIcon` (a Browse button beside a field), use an icon-only `Button` (`icon` plus a required `ariaLabel`, no label) rather than overriding `wa-button::part(base)` width, min-height, or padding. The application-local `../docs/examples/command-palette-adapter.tsx` is reference source for one such missing concept, not an `@kerfjs/ui` runtime export or catalog recipe. The application owns its registration, ranking, history, permissions, availability, shortcut policy, focus policy, dispatch, and copy. If a missing concept recurs across products, open an upstream component or recipe request.
 
+On compact devices, let a Pane's chrome give way through
+`compactChrome: { header, footer }` (`scroll` puts it inline with the content,
+`overlay` lays it over the content until `compactChromeOpen` opens it), passed
+through a view's or panel's `pane` configuration; the NavStack view, tab
+scene, full-screen dialog, or compact Workbench applies it.
+
 When a whole panel should accept dropped files, give its `FileDropZone` a
 `dropScope` selector for the panel instead of setting `data-dragging` yourself.
 

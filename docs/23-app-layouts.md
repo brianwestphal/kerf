@@ -1389,6 +1389,31 @@ Verification:
   the divider, and contrast in all three engines, and the opaque fallbacks in
   Chromium.
 
+### 3.8 Compact chrome — `Pane.compactChrome` (KF-Q8EMWE: the pane declares, the container interprets)
+
+`Pane` takes `compactChrome: { header?, footer? }` (`fixed` default,
+`scroll`, `overlay`) and `compactChromeOpen: { header?, footer? }` (app-owned,
+for `overlay`). The Pane renders `data-compact-header` / `data-compact-footer`
+(only for a slot it renders and a policy other than `fixed`) and
+`data-compact-*-open`; `PaneConfig` forwards both, so NavStack views,
+Workbench panels and work areas, CollapsiblePanel, and SplitView compact
+stacks pass them through.
+
+`pane.css` applies the policy only in a compact context: under a
+`.kui-nav-stack__view`, a `.kui-tab-scaffold__scene`, a
+`.kui-dialog-surface[data-presentation="fullscreen"]`, or inside
+`@container kui-workbench (max-width: 448px)`. `workbench.css` makes the
+Workbench that container whenever it holds such a Pane. `scroll` makes the
+pane the scroller (`grid-template-rows: auto minmax(max-content, 1fr) auto`,
+content `overflow: visible`) and sticks a `fixed` partner slot to its edge;
+`overlay` absolutely positions the slot on the chrome material, translated out
+and `visibility: hidden` until opened.
+
+Verification: `ui/tests/unit/pane.test.tsx` (attributes and dropping),
+`ui/tests/browser/pane-compact-chrome.spec.ts` (every compact context versus a
+roomy Workbench and no container, open and closed), and the NavStack
+catalog's Compact Chrome example.
+
 ## 4. Responsive presentation matrix
 
 The rule each layout encodes, summarized (`compact` = handset or portrait

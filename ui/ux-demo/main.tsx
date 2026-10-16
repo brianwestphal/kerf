@@ -139,6 +139,8 @@ import {
   pushNavStackDemo,
   pushOverlayNavStackDemo,
   resetNavStackDemo,
+  TOGGLE_COMPACT_CHROME_DEMO_ACTION,
+  toggleCompactChromeDemo,
 } from './demos/nav-stack.js';
 import {
   resetProgressDemo,
@@ -800,6 +802,11 @@ const stopActions = delegateActions(app, 'click', {
     if (!id) return;
     selectListDetailDialogProject(id);
     actionLog.value = `Selected ${id}`;
+  },
+  [TOGGLE_COMPACT_CHROME_DEMO_ACTION]: () => {
+    actionLog.value = toggleCompactChromeDemo()
+      ? 'Filters shown'
+      : 'Filters hidden';
   },
   [SELECT_WORKBENCH_DIALOG_LAYER_ACTION]: (_event, target) => {
     const id = target.getAttribute('data-item-id');

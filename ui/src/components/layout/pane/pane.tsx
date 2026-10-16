@@ -29,6 +29,10 @@ export type PaneContentElement = 'div' | 'main' | 'nav' | 'section';
 const paneProtectedAttributes = new Set([
   'data-component',
   'data-chrome-placement',
+  'data-compact-header',
+  'data-compact-footer',
+  'data-compact-header-open',
+  'data-compact-footer-open',
   'data-chrome-dividers',
   'data-appearance',
   'data-background',
@@ -84,11 +88,31 @@ type PaneRootAttributes = Readonly<
     'data-scroll-edge'?: never;
     'data-scroll-edge-distance'?: never;
     'data-header-overlay'?: never;
+    'data-compact-header'?: never;
+    'data-compact-footer'?: never;
+    'data-compact-header-open'?: never;
+    'data-compact-footer-open'?: never;
   }
 >;
 
 /** How a Pane's header and footer relate to its scrolling content. */
 export type PaneChromePlacement = 'fixed' | 'auto';
+
+/**
+ * How a header or footer behaves when the pane's container presents
+ * compactly (a `NavStack` view, a `TabNavigator` scene, a full-screen dialog,
+ * or a compact `Workbench`): `fixed` stays docked and shrinks the content
+ * area; `scroll` sits inline with the content (a footer settles at the end
+ * and scrolls past when the content is longer); `overlay` lies over the
+ * content on the chrome material, shown only while the app opens it.
+ */
+export type PaneCompactChrome = 'fixed' | 'scroll' | 'overlay';
+
+/** The compact chrome policy for a Pane's header and footer. */
+export interface PaneCompactChromePolicy {
+  header?: PaneCompactChrome;
+  footer?: PaneCompactChrome;
+}
 
 /**
  * When a Pane draws the divider between its pinned header or footer and its
@@ -153,6 +177,18 @@ export interface PaneProps {
    * text in the normal text color: quiet text can fall below AA over the
    * content passing beneath it.
    */
+  /**
+   * What the header and footer do when the pane's container presents
+   * compactly (default `fixed`); roomy containers ignore it. The container
+   * interprets it, so set it on panes inside a `NavStack`, `TabNavigator`,
+   * full-screen dialog, or `Workbench`.
+   */
+  compactChrome?: PaneCompactChromePolicy;
+  /**
+   * Which `overlay` compact chrome is showing. The app owns it and flips it
+   * from a control the person can reach while the chrome is hidden.
+   */
+  compactChromeOpen?: { header?: boolean; footer?: boolean };
   headerPresentation?: PaneHeaderPresentation;
   /**
    * With `headerPresentation="clear"`, `material` fades the chrome material
@@ -244,6 +280,8 @@ export type PaneConfig = Pick<
   | 'separators'
   | 'safeAreaEdges'
   | 'chromeDividers'
+  | 'compactChrome'
+  | 'compactChromeOpen'
   | 'headerPresentation'
   | 'scrollEdge'
   | 'scrollEdgeDistance'
@@ -285,6 +323,8 @@ export function Pane({
   footer,
   chromePlacement = 'fixed',
   chromeDividers,
+  compactChrome = {},
+  compactChromeOpen = {},
   headerPresentation = 'docked',
   scrollEdge = 'none',
   scrollEdgeDistance,
@@ -369,6 +409,22 @@ export function Pane({
     'data-header-material': clearHeader ? 'clear' : undefined,
     ...scrollEdgeAttributes(scrollEdge, scrollEdgeDistance, clearHeader),
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
+    'data-compact-header':
+      header !== undefined && compactChrome.header !== 'fixed'
+        ? compactChrome.header
+        : undefined,
+    'data-compact-footer':
+      footer !== undefined && compactChrome.footer !== 'fixed'
+        ? compactChrome.footer
+        : undefined,
+    'data-compact-header-open':
+      compactChrome.header === 'overlay' && compactChromeOpen.header
+        ? ''
+        : undefined,
+    'data-compact-footer-open':
+      compactChrome.footer === 'overlay' && compactChromeOpen.footer
+        ? ''
+        : undefined,
     'data-chrome-dividers':
       resolvedChromeDividers === 'always' || resolvedChromeDividers === 'none'
         ? resolvedChromeDividers

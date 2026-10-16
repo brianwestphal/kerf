@@ -641,9 +641,16 @@
    separator — below the Workbench's own container breakpoint (`narrow`: 704px
    or less, `compact`: 448px or less, as `ResizableRegion`'s
    `responsiveFillAt`), and inline above it. The Workbench becomes a named
-   inline-size container only when a panel opts in. The work area keeps its
+   inline-size container only when a panel opts in, or when a Pane inside it
+   declares `compactChrome` (which applies at its compact width). The work area keeps its
    safe-area inset under an overlay panel. */
 .kui-workbench[data-responsive-overlay="true"] {
+  container: kui-workbench / inline-size;
+}
+
+.kui-workbench:has(
+  [data-component="pane"]:is([data-compact-header], [data-compact-footer])
+) {
   container: kui-workbench / inline-size;
 }
 

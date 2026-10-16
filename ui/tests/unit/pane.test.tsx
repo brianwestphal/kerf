@@ -220,6 +220,41 @@ describe('Pane', () => {
     ).not.toContain('data-chrome-placement');
   });
 
+  it('declares a compact chrome policy and open overlay chrome for its container', () => {
+    const html = String(
+      Pane({
+        header: <span>Filters</span>,
+        footer: <span>Status</span>,
+        compactChrome: { header: 'overlay', footer: 'scroll' },
+        compactChromeOpen: { header: true, footer: true },
+        children: <span>Rows</span>,
+      }),
+    );
+    expect(html).toContain('data-compact-header="overlay"');
+    expect(html).toContain('data-compact-footer="scroll"');
+    expect(html).toContain('data-compact-header-open=""');
+    // Only overlay chrome opens.
+    expect(html).not.toContain('data-compact-footer-open');
+    const footerOverlay = String(
+      Pane({
+        footer: <span>Status</span>,
+        compactChrome: { header: 'scroll', footer: 'overlay' },
+        compactChromeOpen: { footer: true },
+      }),
+    );
+    // A policy for a slot the pane does not render is dropped.
+    expect(footerOverlay).not.toContain('data-compact-header');
+    expect(footerOverlay).toContain('data-compact-footer-open=""');
+    const fixed = String(
+      Pane({
+        header: <span>Title</span>,
+        compactChrome: { header: 'fixed' },
+        rootAttributes: { 'data-compact-header': 'scroll' },
+      } as unknown as Parameters<typeof Pane>[0]),
+    );
+    expect(fixed).not.toContain('data-compact-header');
+  });
+
   it('opts into sunken scroll painting without changing chrome or metadata ownership', () => {
     const normal = String(Pane({ children: <span>Body</span> }));
     expect(normal).not.toContain('data-appearance');
