@@ -630,6 +630,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/color-swatches.md"
   },
   {
+    "id": "color-picker",
+    "name": "ColorPicker",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Let a person choose any color precisely, by dragging, typing channel or hex values, sampling the screen, or picking a preset or saved sample.",
+    "uses": [
+      "color-swatches",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/color-picker.tsx",
+    "componentSource": "ui/src/components/forms/color-picker/color-picker.tsx",
+    "documentation": "ui/docs/color-picker.md"
+  },
+  {
     "id": "message-composer",
     "name": "MessageComposer",
     "category": "Controls",

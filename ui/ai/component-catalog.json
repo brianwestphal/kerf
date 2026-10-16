@@ -5584,6 +5584,120 @@
       }
     },
     {
+      "id": "color-picker",
+      "name": "ColorPicker",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A full inline color picker: a saturation and brightness area, hue and opacity sliders, an RGB/HSL/HSB/Grayscale model menu with channel fields, a hex field (8 digits below full opacity) and opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches.",
+      "uses": [
+        "color-swatches",
+        "lucide-icon"
+      ],
+      "purpose": "Let a person choose any color precisely, by dragging, typing channel or hex values, sampling the screen, or picking a preset or saved sample.",
+      "publicExports": [
+        "ColorPicker",
+        "ColorPickerProps",
+        "ColorPickerMode",
+        "ColorPickerSamples",
+        "ColorPickerRootAttributes",
+        "colorPickerChannels",
+        "colorPickerAreaText",
+        "colorPickerStyle"
+      ],
+      "useWhen": [
+        "Any color is allowed and the person may need precision (a fill, stroke, or brand color): render ColorPicker with value, wire wireColorPickers with onChange, and re-render with the reported value and mode.",
+        "A design tool keeps presets or saved colors: pass presets, samples, and addSampleAction."
+      ],
+      "avoidWhen": [
+        "Do not use it for a small curated palette; use ColorSwatches.",
+        "Do not leave it always open in a form; use ColorField, which opens it from a swatch and hex trigger.",
+        "Do not use wa-color-picker or a native color input styled by hand."
+      ],
+      "alternatives": [
+        {
+          "id": "color-swatches",
+          "relationship": "nearest",
+          "when": "Use ColorSwatches for a fixed palette."
+        }
+      ],
+      "appOwns": [
+        "the value and mode (update them from onChange and re-render)",
+        "presets and samples, and adding to samples on addSampleAction",
+        "the field name and form association"
+      ],
+      "variants": [
+        "with or without opacity",
+        "RGB, HSL, HSB, or Grayscale channel fields",
+        "presets and titled sample groups with an add button",
+        "screen sampler where the EyeDropper API exists",
+        "disabled"
+      ],
+      "accessibility": [
+        "The area is a slider named Saturation and Brightness with a spoken value; the arrow keys move it (Shift for 10% steps), Page Up and Down change brightness, Home and End saturation.",
+        "Hue and opacity are native range inputs; every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "The panel takes the shared block-content inset and a 320px maximum width; its rows are 12px apart."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/color-picker",
+        "browserImport": "@kerfjs/ui/color-picker",
+        "manualCssImport": "@kerfjs/ui/color-picker.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireColorPickers",
+          "import": "@kerfjs/ui/wire-color-pickers",
+          "required": true,
+          "stateAttributes": [
+            {
+              "name": "data-shown",
+              "on": "kui-color-picker__channel",
+              "meaning": "The text a channel, hex, or opacity field last showed, so leaving an unedited field commits nothing."
+            },
+            {
+              "name": "data-count",
+              "on": "kui-color-picker__channels",
+              "meaning": "How many channel fields the current model shows (1 for Grayscale, 3 otherwise)."
+            }
+          ]
+        }
+      ],
+      "publicClasses": [
+        "kui-color-picker",
+        "kui-color-picker__surface",
+        "kui-color-picker__area",
+        "kui-color-picker__area-thumb",
+        "kui-color-picker__hue",
+        "kui-color-picker__opacity",
+        "kui-color-picker__controls",
+        "kui-color-picker__mode-wrap",
+        "kui-color-picker__mode-icon",
+        "kui-color-picker__mode",
+        "kui-color-picker__tool",
+        "kui-color-picker__channels",
+        "kui-color-picker__hex-row",
+        "kui-color-picker__field",
+        "kui-color-picker__field-label",
+        "kui-color-picker__field--hex"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=color-picker",
+        "documentation": "docs/color-picker.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "message-composer",
       "name": "MessageComposer",
       "category": "Controls",

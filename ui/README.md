@@ -225,6 +225,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `TagField`                                                   | `@kerfjs/ui/tag-field`                  | `@kerfjs/ui/tag-field.css`               |
 | `wireTagFields`                                              | `@kerfjs/ui/wire-tag-fields`            | —                                        |
 | `ColorSwatches`                                              | `@kerfjs/ui/color-swatches`             | `@kerfjs/ui/color-swatches.css`          |
+| `ColorPicker`                                                | `@kerfjs/ui/color-picker`               | `@kerfjs/ui/color-picker.css`            |
+| `wireColorPickers`                                           | `@kerfjs/ui/wire-color-pickers`         | —                                        |
 | `FloatingToolbar`                                            | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`        |
 | `PopupMenu` (register with `@kerfjs/ui/popup-menu/register`) | `@kerfjs/ui/popup-menu`                 | `@kerfjs/ui/popup-menu.css`              |
 | `openAnchoredSurface`, `openAnchoredSurfaceAt`               | `@kerfjs/ui/anchored-surface`           | `@kerfjs/ui/anchored-surface.css`        |

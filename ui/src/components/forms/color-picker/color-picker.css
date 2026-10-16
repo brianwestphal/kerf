@@ -1,0 +1,331 @@
+/* ColorPicker: a saturation and brightness area, hue and opacity sliders, a
+   color-model menu with its tools, channel fields, a hex and opacity row,
+   then preset and sample swatches. The surface's custom properties
+   (--_kui-color-picker-h/s/v/a and the opaque color) place the thumbs and
+   paint the tracks; the wiring updates them while a person drags. */
+.kui-color-picker {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: remify(320px);
+  box-sizing: border-box;
+  gap: var(--kui-space-s, remify(12px));
+  /* The shared block-content inset, so the panel's edges line up with the
+     text column beside it. */
+  padding: var(--kui-layout-item-padding, remify(8px));
+  border: var(--kui-layout-item-border-width, 1px) solid transparent;
+  color: var(--kui-color-text);
+  font-size: var(--kui-font-m, remify(16px));
+}
+
+.kui-color-picker__surface {
+  --_kui-color-picker-checker: repeating-conic-gradient(
+      var(--kui-color-neutral-fill-normal) 0% 25%,
+      var(--kui-color-surface) 0% 50%
+    )
+    0 0 / remify(12px) remify(12px);
+
+  display: grid;
+  min-width: 0;
+  gap: var(--kui-space-s, remify(12px));
+}
+
+/* The area: white to the hue left to right, darkening to black downward. */
+.kui-color-picker__area {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  background:
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to right, #fff, hsl(var(--_kui-color-picker-h) 100% 50%));
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.kui-color-picker__area:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}
+
+.kui-color-picker__area-thumb {
+  position: absolute;
+  top: calc(100% - var(--_kui-color-picker-v));
+  left: var(--_kui-color-picker-s);
+  width: remify(16px);
+  height: remify(16px);
+  box-sizing: border-box;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--_kui-color-picker-color);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.3),
+    var(--kui-shadow-s);
+  pointer-events: none;
+  translate: -50% -50%;
+}
+
+/* The hue and opacity sliders: native ranges drawn as 12px tracks with a
+   round thumb that shows the color at that point. */
+.kui-color-picker__hue,
+.kui-color-picker__opacity {
+  --_kui-color-picker-thumb: remify(20px);
+
+  display: block;
+  width: 100%;
+  height: var(--_kui-color-picker-thumb);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+}
+
+.kui-color-picker__hue {
+  --_kui-color-picker-track: linear-gradient(
+    to right,
+    #f00,
+    #ff0,
+    #0f0,
+    #0ff,
+    #00f,
+    #f0f,
+    #f00
+  );
+  --_kui-color-picker-thumb-color: hsl(var(--_kui-color-picker-h) 100% 50%);
+}
+
+.kui-color-picker__opacity {
+  --_kui-color-picker-track:
+    linear-gradient(to right, transparent, var(--_kui-color-picker-color)),
+    var(--_kui-color-picker-checker);
+  --_kui-color-picker-thumb-color: color-mix(
+    in srgb,
+    var(--_kui-color-picker-color) var(--_kui-color-picker-a),
+    #fff
+  );
+}
+
+.kui-color-picker__hue::-webkit-slider-runnable-track,
+.kui-color-picker__opacity::-webkit-slider-runnable-track {
+  height: remify(12px);
+  border-radius: var(--kui-radius-pill);
+  background: var(--_kui-color-picker-track);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
+}
+
+.kui-color-picker__hue::-moz-range-track,
+.kui-color-picker__opacity::-moz-range-track {
+  height: remify(12px);
+  border-radius: var(--kui-radius-pill);
+  background: var(--_kui-color-picker-track);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
+}
+
+.kui-color-picker__hue::-webkit-slider-thumb,
+.kui-color-picker__opacity::-webkit-slider-thumb {
+  width: var(--_kui-color-picker-thumb);
+  height: var(--_kui-color-picker-thumb);
+  box-sizing: border-box;
+  margin-block-start: calc((remify(12px) - var(--_kui-color-picker-thumb)) / 2);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--_kui-color-picker-thumb-color);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.2),
+    var(--kui-shadow-s);
+  appearance: none;
+}
+
+.kui-color-picker__hue::-moz-range-thumb,
+.kui-color-picker__opacity::-moz-range-thumb {
+  width: var(--_kui-color-picker-thumb);
+  height: var(--_kui-color-picker-thumb);
+  box-sizing: border-box;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--_kui-color-picker-thumb-color);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.2),
+    var(--kui-shadow-s);
+}
+
+.kui-color-picker__hue:focus-visible,
+.kui-color-picker__opacity:focus-visible {
+  outline: none;
+}
+
+.kui-color-picker__hue:focus-visible::-webkit-slider-thumb,
+.kui-color-picker__opacity:focus-visible::-webkit-slider-thumb {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-color-picker__hue:focus-visible::-moz-range-thumb,
+.kui-color-picker__opacity:focus-visible::-moz-range-thumb {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+/* The model menu leads; the tools trail. */
+.kui-color-picker__controls {
+  display: flex;
+  min-height: remify(32px);
+  align-items: center;
+  gap: var(--kui-space-2xs, remify(4px));
+}
+
+.kui-color-picker__mode-wrap {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  margin-inline-end: auto;
+  align-items: center;
+}
+
+/* The menu's chevrons sit over the select's end; presses pass through. */
+.kui-color-picker__mode-icon {
+  display: inline-flex;
+  position: absolute;
+  inset-inline-end: remify(4px);
+  pointer-events: none;
+}
+
+.kui-color-picker__mode {
+  min-width: 0;
+  margin: 0;
+  padding-block: remify(4px);
+  padding-inline: remify(4px) remify(24px);
+  appearance: none;
+  border: 0;
+  border-radius: var(--kui-radius-m);
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-weight: var(--kui-font-weight-semibold, 500);
+  cursor: pointer;
+}
+
+.kui-color-picker__mode:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 0;
+}
+
+.kui-color-picker__tool {
+  display: inline-grid;
+  width: remify(32px);
+  height: remify(32px);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text-quiet);
+  background: transparent;
+  cursor: pointer;
+}
+
+.kui-color-picker__tool[hidden] {
+  display: none;
+}
+
+.kui-color-picker__tool:hover:not(:disabled) {
+  color: var(--kui-color-text);
+  background: var(--kui-color-neutral-fill-quiet);
+}
+
+.kui-color-picker__tool:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 0;
+}
+
+/* Channel fields: a quiet letter and a right-aligned number in a filled
+   box; one column for grayscale. */
+.kui-color-picker__channels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--kui-space-xs, remify(8px));
+}
+
+.kui-color-picker__channels[data-count="1"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.kui-color-picker__hex-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--kui-space-xs, remify(8px));
+}
+
+.kui-color-picker:not([data-alpha]) .kui-color-picker__hex-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.kui-color-picker__field {
+  display: flex;
+  min-width: 0;
+  height: remify(36px);
+  box-sizing: border-box;
+  align-items: center;
+  gap: var(--kui-space-xs, remify(8px));
+  padding-inline: remify(10px);
+  border: 1px solid transparent;
+  border-radius: var(--kui-radius-m);
+  background: var(--kui-color-neutral-fill-quiet);
+  cursor: text;
+}
+
+.kui-color-picker__field[hidden] {
+  display: none;
+}
+
+.kui-color-picker__field:focus-within {
+  border-color: var(--kui-color-brand-fill-loud);
+  background: var(--kui-color-surface);
+  box-shadow: 0 0 0 1px var(--kui-color-brand-fill-loud);
+}
+
+.kui-color-picker__field-label {
+  flex: none;
+  color: var(--kui-color-text-quiet);
+}
+
+.kui-color-picker__field input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  outline: none;
+}
+
+.kui-color-picker__field--hex input {
+  text-align: start;
+  text-transform: uppercase;
+  font-family: var(--kui-font-mono, ui-monospace, monospace);
+}
+
+.kui-color-picker[data-disabled] .kui-color-picker__surface {
+  opacity: 0.5;
+}
+
+.kui-color-picker[data-disabled] .kui-color-picker__area {
+  cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  .kui-color-picker__area,
+  .kui-color-picker__area-thumb,
+  .kui-color-picker__hue,
+  .kui-color-picker__opacity {
+    forced-color-adjust: none;
+  }
+
+  .kui-color-picker__field {
+    border-color: CanvasText;
+  }
+}

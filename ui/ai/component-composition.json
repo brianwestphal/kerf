@@ -4593,6 +4593,100 @@
       }
     },
     {
+      "key": "@kerfjs/ui:color-picker",
+      "package": "@kerfjs/ui",
+      "id": "color-picker",
+      "name": "ColorPicker",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the value and mode (update them from onChange and re-render)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "presets and samples, and adding to samples on addSampleAction",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the field name and form association",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireColorPickers"],
+        "obligations": ["Use wireColorPickers as documented."],
+        "stateAttributes": [
+          {
+            "name": "data-shown",
+            "on": "kui-color-picker__channel",
+            "helper": "wireColorPickers",
+            "meaning": "The text a channel, hex, or opacity field last showed, so leaving an unedited field commits nothing."
+          },
+          {
+            "name": "data-count",
+            "on": "kui-color-picker__channels",
+            "helper": "wireColorPickers",
+            "meaning": "How many channel fields the current model shows (1 for Grayscale, 3 otherwise)."
+          }
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "The panel takes the shared block-content inset and a 320px maximum width; its rows are 12px apart."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The area is a slider named Saturation and Brightness with a spoken value; the arrow keys move it (Shift for 10% steps), Page Up and Down change brightness, Home and End saturation.",
+          "Hue and opacity are native range inputs; every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-color-picker",
+        "publicClasses": [
+          "kui-color-picker",
+          "kui-color-picker__surface",
+          "kui-color-picker__area",
+          "kui-color-picker__area-thumb",
+          "kui-color-picker__hue",
+          "kui-color-picker__opacity",
+          "kui-color-picker__controls",
+          "kui-color-picker__mode-wrap",
+          "kui-color-picker__mode-icon",
+          "kui-color-picker__mode",
+          "kui-color-picker__tool",
+          "kui-color-picker__channels",
+          "kui-color-picker__hex-row",
+          "kui-color-picker__field",
+          "kui-color-picker__field-label",
+          "kui-color-picker__field--hex"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:message-composer",
       "package": "@kerfjs/ui",
       "id": "message-composer",

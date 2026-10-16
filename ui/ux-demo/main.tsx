@@ -39,6 +39,7 @@ import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import { wireCheckboxes } from '@kerfjs/ui/wire-checkboxes';
 import { readChoiceChips, wireChoiceChips } from '@kerfjs/ui/wire-choice-chips';
+import { wireColorPickers } from '@kerfjs/ui/wire-color-pickers';
 import { wireComboboxes } from '@kerfjs/ui/wire-comboboxes';
 import {
   isContentItemActivation,
@@ -106,6 +107,12 @@ import {
   RESTORE_DRAWER_ID,
   restoreDrawerCollapsed,
 } from './demos/collapsible-panel.js';
+import {
+  ADD_COLOR_SAMPLE_DEMO_ACTION,
+  addColorSampleDemo,
+  resetColorPickerDemo,
+  setColorPickerDemo,
+} from './demos/color-picker.js';
 import {
   PICK_SWATCH_DEMO_ACTION,
   pickSwatchDemo,
@@ -783,6 +790,10 @@ const stopActions = delegateActions(app, 'click', {
   },
   [STEP_PROGRESS_DEMO_ACTION]: () => {
     actionLog.value = `Uploaded ${stepProgressDemo()} of 12 files`;
+  },
+  [ADD_COLOR_SAMPLE_DEMO_ACTION]: () => {
+    addColorSampleDemo();
+    actionLog.value = 'Added to User Colors';
   },
   [SEND_COMPOSER_DEMO_ACTION]: (_event, target) => {
     const id = target.getAttribute('data-message-composer-id') ?? '';
@@ -1631,6 +1642,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
+  'color-picker': {
+    reset: resetColorPickerDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
   'color-swatches': {
     reset: resetColorSwatchesDemo,
     target: 'canvas',
@@ -1878,6 +1894,12 @@ const stopMessageComposers = wireMessageComposers(app);
 const stopTextFields = wireTextFields(app);
 const stopCheckboxes = wireCheckboxes(app);
 const stopSliders = wireSliders(app);
+const stopColorPickers = wireColorPickers(app, {
+  onChange: ({ id, value, mode }) => {
+    if (id === 'color-picker-demo') setColorPickerDemo(value, mode);
+    actionLog.value = `${id}: ${value}`;
+  },
+});
 const stopSwatchDemo = delegate(
   app,
   'change',
@@ -2339,6 +2361,7 @@ window.addEventListener(
     stopTextFields();
     stopCheckboxes();
     stopSliders();
+    stopColorPickers();
     stopSwatchDemo();
     stopTagFields();
     stopSliderDemo();

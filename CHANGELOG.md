@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`ColorPicker` in `@kerfjs/ui`.** `@kerfjs/ui/color-picker` is a full inline picker: a saturation and brightness area, hue and opacity sliders, an RGB/HSL/HSB/Grayscale model menu with channel fields, a hex field (8 digits below full opacity), an opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches with an "Add to Samples" action.
+  - `wireColorPickers(root, { onInput, onChange })` (`@kerfjs/ui/wire-color-pickers`) makes it interactive: pointer drags and arrow keys on the area, native range sliders, field commits, model switching, and swatches.
+  - Each change reports `#rrggbb` or `#rrggbbaa` through bubbling `kui-color-input`/`kui-color-change` events and the callbacks, and the picker adopts a new controlled value.
+  - Hue survives gray colors, and conversions round-trip without drift (`KF-HBE31H`).
 - **`ColorSwatches` in `@kerfjs/ui`.** `@kerfjs/ui/color-swatches` chooses one color from a fixed palette. It is a native radio group of round swatches with no visible text: one Tab stop, arrow keys to move, and the chosen value submitted under `name`. Each swatch is named by its color label, also shown as its hover hint. The chosen swatch wears a ring in the text color, so the choice never depends on hue. A `'transparent'` swatch offers no color. It has `default` and `compact` sizes, a disabled state, and the shared block-content inset (`KF-E4GC0B`).
 - **`TagField` in `@kerfjs/ui`.** `@kerfjs/ui/tag-field` collects short values as removable tags, each submitted as a hidden input under `name`. It is built on SearchField's token editor in its `form-field` presentation, with a label, a hint or `error`, a tag glyph, a clear button, `max`, and `required`/`disabled`.
   - `wireTagFields(root, { onChange })` (`@kerfjs/ui/wire-tag-fields`) adds a tag on Enter or a delimiter (and several from pasted text), and adds the typed text on Tab or when focus leaves the editor.

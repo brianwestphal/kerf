@@ -40,6 +40,10 @@ export interface WireTagFieldsOptions {
 
 const defaultNormalize = (value: string) => value.trim() || undefined;
 
+/** The field's id and a chip's value: attributes the render always writes. */
+const idOf = (field: HTMLElement) => field.dataset.tagFieldId!;
+const tokenOf = (element: HTMLElement) => element.dataset.tokenValue!;
+
 function tagFieldOf(element: Element): HTMLElement | null {
   return element.closest<HTMLElement>('[data-component="tag-field"]');
 }
@@ -49,7 +53,7 @@ function tagsOf(field: HTMLElement): string[] {
     ...field.querySelectorAll<HTMLElement>(
       '[data-component="search-field-token"]',
     ),
-  ].map((chip) => chip.dataset.tokenValue ?? '');
+  ].map(tokenOf);
 }
 
 function editorOf(field: HTMLElement): HTMLElement | null {
@@ -71,7 +75,7 @@ function textBeforeCaret(editor: HTMLElement): string | undefined {
     '[data-component="search-field-token"]',
   ))
     chip.remove();
-  return (fragment.textContent ?? '').replaceAll('​', '');
+  return fragment.textContent!.replaceAll('​', '');
 }
 
 /**
@@ -134,7 +138,7 @@ export function wireTagFields(
 
   /** Add the editor's text as tags; returns whether any text was taken. */
   const commit = (field: HTMLElement, editor: HTMLElement): boolean => {
-    const id = field.dataset.tagFieldId ?? '';
+    const id = idOf(field);
     const text = readSearchField(editor).query;
     const parts = delimiters.reduce<string[]>(
       (pieces, delimiter) => pieces.flatMap((piece) => piece.split(delimiter)),
@@ -218,9 +222,9 @@ export function wireTagFields(
             )) as HTMLElement | null;
           if (!chip?.matches('[data-component="search-field-token"]')) return;
           key.preventDefault();
-          const value = chip.dataset.tokenValue ?? '';
+          const value = tokenOf(chip);
           change(
-            field.dataset.tagFieldId ?? '',
+            idOf(field),
             tagsOf(field).filter((tag) => tag !== value),
           );
           return;
@@ -245,9 +249,9 @@ export function wireTagFields(
         else chips[index + 1]!.focus();
       } else if (key.key === 'Backspace' || key.key === 'Delete') {
         key.preventDefault();
-        const value = target.dataset.tokenValue ?? '';
+        const value = tokenOf(target);
         change(
-          field.dataset.tagFieldId ?? '',
+          idOf(field),
           tagsOf(field).filter((tag) => tag !== value),
         );
         globalThis.queueMicrotask(() => {
@@ -300,8 +304,8 @@ export function wireTagFields(
       const button = element as HTMLElement;
       const field = tagFieldOf(button);
       if (!field) return;
-      const id = field.dataset.tagFieldId ?? '';
-      const value = button.dataset.tokenValue ?? '';
+      const id = idOf(field);
+      const value = tokenOf(button);
       switch (button.dataset.action) {
         case tagFieldActions.remove:
           change(

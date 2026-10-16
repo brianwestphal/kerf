@@ -5528,6 +5528,99 @@ declare function ColorSwatches({ name, swatches, value, label, ariaLabel, size, 
 export { type ColorSwatch, ColorSwatches, type ColorSwatchesProps, type ColorSwatchesRootAttributes, type ColorSwatchesSize };
 ```
 
+## `@kerfjs/ui/color-picker`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { ColorSwatch } from './color-swatches.js';
+import './css-values.js';
+
+/** Hue 0–360, saturation and value (brightness) 0–1, and alpha 0–1. */
+interface Hsva {
+    h: number;
+    s: number;
+    v: number;
+    a: number;
+}
+
+/** The channel fields the picker shows: RGB, HSL, HSB (HSV), or one gray level. */
+type ColorPickerMode = 'rgb' | 'hsl' | 'hsb' | 'gray';
+/** A titled group of app-owned colors, such as "Document Colors". */
+interface ColorPickerSamples {
+    title: string;
+    swatches: readonly ColorSwatch[];
+}
+/** Application `data-*` metadata; the picker's own markers stay protected. */
+type ColorPickerRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+/** The delegated action every preset and sample swatch carries. */
+declare const COLOR_PICKER_SWATCH_ACTION = "kui-color-picker-swatch";
+interface ColorPickerProps {
+    /** The picker's id; it also prefixes its inner ids. */
+    id: string;
+    /** The picker's accessible name. */
+    label: string;
+    /**
+     * The color, as CSS color text (`#rrggbb[aa]`, `rgb()`, `hsl()`); invalid
+     * text shows black. The picker reports `#rrggbb`, or `#rrggbbaa` below
+     * full opacity.
+     */
+    value: string;
+    /** The channel fields shown (default `rgb`). */
+    mode?: ColorPickerMode;
+    /** Offer opacity: an alpha slider and field (default true). */
+    alpha?: boolean;
+    /** A form field name the hex value submits under. */
+    name?: string;
+    /** Associate the hidden input with a form outside its ancestor chain. */
+    form?: string;
+    /**
+     * Offer a button that samples a color from the screen, where the browser
+     * provides the EyeDropper API (default true; hidden elsewhere).
+     */
+    eyedropper?: boolean;
+    /** A preset row of swatches under the controls. */
+    presets?: readonly ColorSwatch[];
+    /** Titled groups of app-owned colors under the presets. */
+    samples?: readonly ColorPickerSamples[];
+    /**
+     * A `data-action` for an "Add to Samples" button in the controls row; the
+     * app reads the picker's current value and adds it to its samples.
+     */
+    addSampleAction?: string;
+    disabled?: boolean;
+    className?: string;
+    rootAttributes?: ColorPickerRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/** The labels, accessible names, and maximum of each channel field per mode. */
+declare const COLOR_PICKER_CHANNELS: Record<ColorPickerMode, readonly {
+    short: string;
+    name: string;
+    max: number;
+}[]>;
+/** The rounded channel values a mode shows for an HSV color. */
+declare function colorPickerChannels(mode: ColorPickerMode, hsv: Hsva): number[];
+/** The area's spoken value. */
+declare function colorPickerAreaText(hsv: Hsva): string;
+/** The CSS custom properties that place the thumbs and paint the tracks. */
+declare function colorPickerStyle(hsv: Hsva): string;
+/**
+ * A full color picker panel: a saturation and brightness area, a hue slider,
+ * an optional opacity slider on a checkerboard, a color-model menu (RGB, HSL,
+ * HSB, Grayscale) with its channel fields, a hex field (8 digits below full
+ * opacity) and an opacity field, an optional screen sampler (EyeDropper), and
+ * optional preset and sample swatches. The controlled `value` renders it;
+ * wire `wireColorPickers` from `@kerfjs/ui/wire-color-pickers` to make it
+ * interactive. The interactive surface belongs to that wiring after the first
+ * render, so a drag never fights a re-render; a new `value` from the app
+ * resynchronizes it.
+ */
+declare function ColorPicker({ id, label, value, mode, alpha, name, form, eyedropper, presets, samples, addSampleAction, disabled, className, rootAttributes, slot, }: ColorPickerProps): kerfjs.SafeHtml;
+
+export { COLOR_PICKER_CHANNELS, COLOR_PICKER_SWATCH_ACTION, ColorPicker, type ColorPickerMode, type ColorPickerProps, type ColorPickerRootAttributes, type ColorPickerSamples, colorPickerAreaText, colorPickerChannels, colorPickerStyle };
+```
+
 ## `@kerfjs/ui/search-field-model`
 
 ```ts

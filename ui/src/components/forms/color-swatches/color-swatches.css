@@ -113,3 +113,10 @@
     outline-color: Highlight;
   }
 }
+
+/* As a ColorPicker's preset or sample row the picker already insets its
+   content, so the row drops its own inline inset. */
+[data-component="color-picker"] > .kui-color-swatches {
+  padding-inline: 0;
+  border-inline-width: 0;
+}
