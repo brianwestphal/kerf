@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150500,
-  "totalJavaScriptGzip": 405200,
-  "measuredLargestJavaScriptGzip": 150477,
-  "measuredTotalJavaScriptGzip": 405144,
+  "totalJavaScriptGzip": 406200,
+  "measuredLargestJavaScriptGzip": 150476,
+  "measuredTotalJavaScriptGzip": 406177,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5267,6 +5267,22 @@
         "measuredTotalJavaScriptGzip": 405144,
         "largestJavaScriptGzip": 150500,
         "totalJavaScriptGzip": 405200
+      }
+    },
+    {
+      "at": "2026-10-16T06:57:30.081Z",
+      "reason": "Tooltip catalog page wires core tooltip() styled by overlay-tooltip.css",
+      "old": {
+        "measuredLargestJavaScriptGzip": 150477,
+        "measuredTotalJavaScriptGzip": 405144,
+        "largestJavaScriptGzip": 150500,
+        "totalJavaScriptGzip": 405200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 150476,
+        "measuredTotalJavaScriptGzip": 406177,
+        "largestJavaScriptGzip": 150500,
+        "totalJavaScriptGzip": 406200
       }
     }
   ]

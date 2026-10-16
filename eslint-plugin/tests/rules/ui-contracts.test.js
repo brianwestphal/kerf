@@ -1242,16 +1242,21 @@ const discouragedTags = [
   ['wa-callout', 'state-banner'],
   ['wa-popover', 'anchored-surface'],
   ['wa-popup', 'anchored-surface'],
+  ['wa-toast', 'toast'],
+  ['wa-toast-item', 'toast'],
+  ['wa-tooltip', 'tooltip'],
 ];
 
 tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
   valid: [
     // Integration elements no Kerf component replaces stay allowed.
-    ...['wa-details', 'wa-tooltip', 'wa-carousel', 'wa-rating'].map((tag) => ({
-      code: `<div><${tag} /></div>;`,
-      filename: appFile,
-      settings: shippedDefaultsSettings,
-    })),
+    ...['wa-details', 'wa-copy-button', 'wa-carousel', 'wa-rating'].map(
+      (tag) => ({
+        code: `<div><${tag} /></div>;`,
+        filename: appFile,
+        settings: shippedDefaultsSettings,
+      }),
+    ),
     // Unknown custom elements and plain HTML are application-owned.
     {
       code: '<my-widget><div /></my-widget>;',

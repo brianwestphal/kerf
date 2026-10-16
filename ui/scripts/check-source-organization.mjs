@@ -11,6 +11,7 @@ const globalRootStyles = new Set([
   'layout.css',
   'overlay-sheet.css',
   'overlay-toast.css',
+  'overlay-tooltip.css',
   'styles.css',
   'webawesome.css',
 ]);

@@ -38,6 +38,7 @@ const overlaps = [
   'wa-callout',
   'wa-toast',
   'wa-toast-item',
+  'wa-tooltip',
   'wa-popup',
   'wa-tooltip',
   'wa-popover',

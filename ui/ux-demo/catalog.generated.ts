@@ -843,6 +843,17 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/overlay-toast.md"
   },
   {
+    "id": "tooltip",
+    "name": "Tooltip",
+    "category": "Feedback",
+    "kind": "composition",
+    "source": "kerf",
+    "description": "Explain a control or value on hover and keyboard focus with a styled tooltip, without hand-written tooltip CSS.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/tooltip.tsx",
+    "documentation": "ui/docs/overlay-tooltip.md"
+  },
+  {
     "id": "corner-status",
     "name": "CornerStatus",
     "category": "Feedback",
@@ -1863,8 +1874,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Brief contextual label anchored to a control.",
-    "recommendation": "supported",
+    "description": "Ecosystem tooltip; use kerfjs/overlay tooltip() with @kerfjs/ui/overlay-tooltip.css.",
+    "recommendation": "avoid",
     "uses": [
       "wa-popup"
     ],

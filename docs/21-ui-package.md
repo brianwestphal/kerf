@@ -200,8 +200,8 @@ SunkenPanel), `wa-drawer` (DialogSurface sheets or CollapsiblePanel), and
 `wa-page` (the app layouts), and moved `wa-button-group` from conditional to
 avoid; first-party demos no longer render `wa-card`. `wa-toast` and
 `wa-toast-item` became avoid once `@kerfjs/ui/overlay-toast.css` (KF-FYTF2Z:
-styled region for core `toast()`) shipped. `wa-tooltip` stays supported until
-Kerf ships a styled tooltip (KF-VKDRWA): core `tooltip()` ships no CSS. `ui/docs/component-selection.md`
+styled region for core `toast()`) shipped. `wa-tooltip` followed once
+`@kerfjs/ui/overlay-tooltip.css` (KF-VKDRWA: styled core `tooltip()`) shipped. `ui/docs/component-selection.md`
 (section "Web Awesome integration"), `ui/ai/skill.md`, `ui/llms.txt`,
 `ui/docs/design-philosophy.md`, and `ui/docs/webawesome-theme.md` no longer
 send applications to `wa-*` when no Kerf component fits; they name a native

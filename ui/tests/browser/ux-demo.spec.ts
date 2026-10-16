@@ -4731,7 +4731,7 @@ test('labels composition entries without repeating the kind in their names', asy
 
   await expect(
     page.locator('.kui-list-item__status', { hasText: 'Composition' }),
-  ).toHaveCount(7);
+  ).toHaveCount(8);
   await expect(
     page.locator('[data-item-id="document-baseline"] .kui-list-item__label'),
   ).toHaveText('Document Baseline');
@@ -4799,7 +4799,7 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
   await expect(page.locator('[data-item-id="wa-copy-button"]')).toHaveCount(1);
 
   await showDiscouraged.check();
-  await expect(discouraged).toHaveCount(38);
+  await expect(discouraged).toHaveCount(39);
   await expect(
     page.locator('[data-item-id="wa-popup"] .kui-list-item__status'),
   ).toHaveText('Discouraged');

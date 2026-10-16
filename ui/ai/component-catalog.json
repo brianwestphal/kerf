@@ -7304,6 +7304,79 @@
       ]
     },
     {
+      "id": "tooltip",
+      "name": "Tooltip",
+      "category": "Feedback",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Styling for kerfjs/overlay's tooltip(): the help tag's look (loud neutral fill, on-loud 14px text, 3px radius) for a hover and focus tooltip on any element, wrapping at 40 characters, with entrance and exit motion.",
+      "uses": [],
+      "purpose": "Explain a control or value on hover and keyboard focus with a styled tooltip, without hand-written tooltip CSS.",
+      "publicExports": [],
+      "useWhen": [
+        "A control or value needs a short explanation on hover and keyboard focus (a longer action description, a chart point, a truncated label): import @kerfjs/ui/overlay-tooltip.css once and call tooltip(anchor, content) from kerfjs/overlay with exitClass 'kui-tooltip-exit' and exitDuration 100.",
+        "The explanation has structure (a bold line over a detail): pass a render function; its content inherits the tooltip's colors."
+      ],
+      "avoidWhen": [
+        "Do not add a tooltip to an icon-only control in a ToolbarControlGroup, an icon-only Button, Select, or PopupMenu; @kerfjs/ui/help-tags-register already shows its help tag.",
+        "Do not put interactive content or the only copy of important information in a tooltip; use an AnchoredSurface or visible text.",
+        "Do not hand-write tooltip CSS or use wa-tooltip."
+      ],
+      "alternatives": [
+        {
+          "id": "anchored-surface",
+          "relationship": "nearest",
+          "when": "Use an AnchoredSurface for interactive or persistent help that the person opens."
+        }
+      ],
+      "appOwns": [
+        "which elements get a tooltip and its content",
+        "placement, delay, and native top-layer hosting",
+        "the disposer that removes a tooltip's listeners"
+      ],
+      "variants": [
+        "plain text tooltip, wrapped at 40 characters",
+        "structured content from a render function",
+        "any placement tooltip() supports (top by default)",
+        "native: true top-layer hosting"
+      ],
+      "accessibility": [
+        "tooltip() shows on hover and on keyboard focus, gives the wrapper role tooltip, and hides on leave or blur; keep the anchor's accessible name complete without it.",
+        "The loud neutral fill with on-loud text meets WCAG AA; forced colors draw CanvasText on Canvas, and the entrance is skipped under prefers-reduced-motion or the static-effects switch."
+      ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "tooltip() positions the wrapper beside its anchor; the stylesheet caps its width at 40 characters within the viewport."
+        ]
+      },
+      "delivery": {
+        "manualCssImport": "@kerfjs/ui/overlay-tooltip.css",
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kerf-tooltip",
+        "kui-tooltip-exit"
+      ],
+      "placeableClasses": [
+        "kerf-tooltip",
+        "kui-tooltip-exit"
+      ],
+      "publicTokens": [
+        "--kui-overlay-tooltip-z-index"
+      ],
+      "links": {
+        "catalogRoute": "?component=tooltip",
+        "documentation": "docs/overlay-tooltip.md",
+        "recipe": "docs/component-selection.md#web-awesome-integration"
+      }
+    },
+    {
       "id": "corner-status",
       "name": "CornerStatus",
       "category": "Feedback",
@@ -10051,21 +10124,26 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Brief contextual label anchored to a control.",
+      "description": "Ecosystem tooltip; use kerfjs/overlay tooltip() with @kerfjs/ui/overlay-tooltip.css.",
       "uses": [
         "wa-popup"
       ],
-      "purpose": "Brief contextual label anchored to a control.",
+      "purpose": "Ecosystem tooltip; use kerfjs/overlay tooltip() with @kerfjs/ui/overlay-tooltip.css.",
       "customElement": "wa-tooltip",
       "useWhen": [
         "Brief contextual label anchored to a control."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; call tooltip() from kerfjs/overlay with @kerfjs/ui/overlay-tooltip.css imported. Icon-only Kerf controls already get help tags."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "tooltip",
+          "relationship": "prefer-kerf",
+          "when": "Use kerfjs/overlay tooltip() styled by @kerfjs/ui/overlay-tooltip.css for a hover and focus tooltip."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -10081,7 +10159,7 @@
       "links": {
         "catalogRoute": "?component=wa-tooltip",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {

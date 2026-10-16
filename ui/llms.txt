@@ -763,6 +763,11 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 'kui-toast-exit'` and `exitDuration: 200`: a bottom-edge, safe-area-aware
   stack on the raised surface, `variant` tones, a `StateBanner` as the only
   content, and reduced-motion-aware motion. Never use `wa-toast`.
+- **Style hover tooltips with `@kerfjs/ui/overlay-tooltip.css`.** Import it
+  once and call `tooltip(anchor, content)` from `kerfjs/overlay` with
+  `exitClass: 'kui-tooltip-exit'` and `exitDuration: 100`: the help tag's look,
+  wrapping at 40 characters. Icon-only Kerf controls already get help tags.
+  Never use `wa-tooltip`.
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
   `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
   selected text, use the public color, font-size, and font-weight tokens; the

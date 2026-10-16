@@ -80,6 +80,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Feedback](./feedback.md) — Banners, empty states, and labeled progress.
 - [StateBanner](./state-banner.md) — Present persistent inline feedback or attractive non-status emphasis with a named semantic tone.
 - [Toast](./toast.md) — Show a brief, non-blocking confirmation or status message that dismisses itself, without hand-written toast CSS.
+- [Tooltip](./tooltip.md) — Explain a control or value on hover and keyboard focus with a styled tooltip, without hand-written tooltip CSS.
 - [CornerStatus](./corner-status.md) — Show ongoing app-level progress such as "Loading…" or "Updating Tickets… 3 of 12" in a viewport corner above page chrome and any dialog opened before it, without a close button, light dismiss, Escape, or focus change.
 - [EdgeActivityIndicator](./edge-activity-indicator.md) — Signal ambient background activity (server work, sync) along the top edge of the viewport without allocating layout or taking the pointer, with Kerf-owned motion and reduced-motion handling.
 - [EmptyState](./empty-state.md) — Actionable empty and busy content states.
@@ -151,7 +152,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Tag](./wa-tag.md) (avoid) — Ecosystem tag; use Kerf Chip.
 - [Toast](./wa-toast.md) (avoid) — Ecosystem toast stack; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.
 - [Toast Item](./wa-toast-item.md) (avoid) — Ecosystem toast item; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.
-- [Tooltip](./wa-tooltip.md) — Brief contextual label anchored to a control.
+- [Tooltip](./wa-tooltip.md) (avoid) — Ecosystem tooltip; use kerfjs/overlay tooltip() with @kerfjs/ui/overlay-tooltip.css.
 
 ## Web Awesome — Media
 

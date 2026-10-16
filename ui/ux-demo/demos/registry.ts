@@ -63,6 +63,7 @@ import { ToastDemo } from './toast.js';
 import { ToolbarDemo } from './toolbar.js';
 import { ToolbarControlGroupDemo } from './toolbar-control-group.js';
 import { ToolbarTextDemo } from './toolbar-text.js';
+import { TooltipDemo } from './tooltip.js';
 import { ValueTableDemo } from './value-table.js';
 import { WorkbenchDemo } from './workbench.js';
 
@@ -83,6 +84,7 @@ export const demos = {
   'list-detail-dialog': ListDetailDialogDemo,
   'message-composer': MessageComposerDemo,
   toast: ToastDemo,
+  tooltip: TooltipDemo,
   'search-field': SearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
   text: TextDemo,

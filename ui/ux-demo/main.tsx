@@ -2,6 +2,7 @@ import '@kerfjs/ui/surface-scaffold/register';
 import '@kerfjs/ui/document.css';
 import '@kerfjs/ui/overlay-sheet.css';
 import '@kerfjs/ui/overlay-toast.css';
+import '@kerfjs/ui/overlay-tooltip.css';
 import '@kerfjs/ui/help-tags/register';
 import '@kerfjs/ui/popup-menu/register';
 import '@kerfjs/ui/select/register';
@@ -220,6 +221,7 @@ import {
   selectTabNavigatorDemo,
 } from './demos/tab-navigator.js';
 import { SHOW_TOAST_DEMO_ACTION, showToastDemo } from './demos/toast.js';
+import { wireTooltipDemo } from './demos/tooltip.js';
 import {
   COLLAPSED_WORKBENCH_ID,
   NAVIGATION_STACK_ID,
@@ -1592,6 +1594,10 @@ const routeWires: Partial<Record<string, RouteWire>> = {
       });
       return () => stops.forEach((stop) => stop());
     },
+  },
+  tooltip: {
+    target: 'canvas',
+    wire: (canvas) => wireTooltipDemo(canvas),
   },
   'list-detail-dialog': {
     reset: resetListDetailDialogDemo,

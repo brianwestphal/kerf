@@ -390,6 +390,7 @@ describe('UX catalog metadata', () => {
       'wa-tag',
       'wa-toast',
       'wa-toast-item',
+      'wa-tooltip',
       'wa-animated-image',
       'wa-comparison',
       'wa-icon',
@@ -399,7 +400,7 @@ describe('UX catalog metadata', () => {
       'wa-popup',
     ]);
     expect(findCatalogEntry('wa-popup')?.recommendation).toBe('avoid');
-    expect(findCatalogEntry('wa-tooltip')?.recommendation).toBe('supported');
+    expect(findCatalogEntry('wa-tooltip')?.recommendation).toBe('avoid');
     expect(findCatalogEntry('wa-toast')?.recommendation).toBe('avoid');
     expect(findCatalogEntry('wa-toast-item')?.recommendation).toBe('avoid');
   });
@@ -596,6 +597,7 @@ describe('UX catalog metadata', () => {
       ['application-tabs', 'Application Tabs'],
       ['feedback', 'Feedback'],
       ['toast', 'Toast'],
+      ['tooltip', 'Tooltip'],
     ]);
     expect(
       kerfCatalog
@@ -688,6 +690,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(38);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(39);
   });
 });

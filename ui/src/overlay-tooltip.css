@@ -1,0 +1,55 @@
+/* Tooltip presentation for the core `kerfjs/overlay` `tooltip()`. The core
+   ships no CSS: it shows a `.kerf-tooltip` wrapper (a `<div>`, or a
+   `[popover]` with `native: true`) that it positions next to its anchor, with
+   plain text wrapped in `.kerf-tooltip__text`. This opt-in stylesheet gives it
+   the help tag's look, the one icon-only controls already show: the loud
+   neutral fill with on-loud text at 14px, a 3px radius, and a short fade-in
+   (a scale would distort the box tooltip() measures to place it). It wraps
+   longer text at 40 characters and never takes the pointer. Pass
+   `exitClass: 'kui-tooltip-exit'` with `exitDuration: 100` and it fades out
+   as it hides. */
+.kerf-tooltip {
+  z-index: var(--kui-overlay-tooltip-z-index, 1200);
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(40ch, calc(100vw - remify(16px)));
+  padding: 0.25em 0.5em;
+  overflow: hidden;
+  border: 1px solid var(--kui-color-neutral-fill-loud, #48484a);
+  border-radius: remify(3px);
+  color: var(--kui-color-neutral-on-loud, #fff);
+  background: var(--kui-color-neutral-fill-loud, #48484a);
+  font: inherit;
+  font-size: var(--kui-font-s, 0.875rem);
+  line-height: 1.6;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-kui-effects="static"]) .kerf-tooltip {
+    transition: opacity 150ms ease;
+  }
+
+  @starting-style {
+    :root:not([data-kui-effects="static"]) .kerf-tooltip {
+      opacity: 0;
+    }
+  }
+}
+
+.kerf-tooltip.kui-tooltip-exit {
+  opacity: 0;
+}
+
+@media (forced-colors: active) {
+  .kerf-tooltip {
+    border-color: CanvasText;
+    color: CanvasText;
+    background: Canvas;
+  }
+}

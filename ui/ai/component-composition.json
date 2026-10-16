@@ -5877,6 +5877,71 @@
       }
     },
     {
+      "key": "@kerfjs/ui:tooltip",
+      "package": "@kerfjs/ui",
+      "id": "tooltip",
+      "name": "Tooltip",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "which elements get a tooltip and its content",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "placement, delay, and native top-layer hosting",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the disposer that removes a tooltip's listeners",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": {
+          "margin": "self",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "tooltip() positions the wrapper beside its anchor; the stylesheet caps its width at 40 characters within the viewport."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "tooltip() shows on hover and on keyboard focus, gives the wrapper role tooltip, and hides on leave or blur; keep the anchor's accessible name complete without it.",
+          "The loud neutral fill with on-loud text meets WCAG AA; forced colors draw CanvasText on Canvas, and the entrance is skipped under prefers-reduced-motion or the static-effects switch."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kerf-tooltip",
+        "publicClasses": ["kerf-tooltip", "kui-tooltip-exit"],
+        "placeableClasses": ["kerf-tooltip", "kui-tooltip-exit"],
+        "publicTokens": ["--kui-overlay-tooltip-z-index"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:corner-status",
       "package": "@kerfjs/ui",
       "id": "corner-status",

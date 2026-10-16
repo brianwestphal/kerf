@@ -157,6 +157,11 @@
       "preferred": "@kerfjs/ui:toast",
       "avoid": ["@kerfjs/ui:wa-toast", "@kerfjs/ui:wa-toast-item"],
       "rationale": "Call toast() from kerfjs/overlay with @kerfjs/ui/overlay-toast.css imported instead of a Web Awesome toast stack."
+    },
+    "hover-explanation": {
+      "preferred": "@kerfjs/ui:tooltip",
+      "avoid": ["@kerfjs/ui:wa-tooltip"],
+      "rationale": "Call tooltip() from kerfjs/overlay with @kerfjs/ui/overlay-tooltip.css imported instead of a Web Awesome tooltip; icon-only Kerf controls already get help tags."
     }
   },
   "theme": {
