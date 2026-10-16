@@ -59,6 +59,7 @@ import { TabNavigatorDemo } from './tab-navigator.js';
 import { TabsDemo } from './tabs.js';
 import { TextDemo } from './text.js';
 import { TextFieldDemo } from './text-field.js';
+import { ToastDemo } from './toast.js';
 import { ToolbarDemo } from './toolbar.js';
 import { ToolbarControlGroupDemo } from './toolbar-control-group.js';
 import { ToolbarTextDemo } from './toolbar-text.js';
@@ -81,6 +82,7 @@ export const demos = {
   'choice-chips': ChoiceChipsDemo,
   'list-detail-dialog': ListDetailDialogDemo,
   'message-composer': MessageComposerDemo,
+  toast: ToastDemo,
   'search-field': SearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
   text: TextDemo,

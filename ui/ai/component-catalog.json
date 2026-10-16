@@ -7223,6 +7223,87 @@
       }
     },
     {
+      "id": "toast",
+      "name": "Toast",
+      "category": "Feedback",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Styling for kerfjs/overlay's toast(): a bottom-edge region of stacked, auto-dismissing notifications on the raised surface, with info, success, and warning tones, StateBanner content, and enter and exit motion.",
+      "uses": [
+        "state-banner"
+      ],
+      "purpose": "Show a brief, non-blocking confirmation or status message that dismisses itself, without hand-written toast CSS.",
+      "publicExports": [],
+      "useWhen": [
+        "A completed action needs brief, non-blocking confirmation (saved, copied, published): import @kerfjs/ui/overlay-toast.css once and call toast() from kerfjs/overlay with exitClass 'kui-toast-exit' and exitDuration 200.",
+        "A status message needs a tone or an icon and detail: pass variant ('info', 'success', 'warning') for a plain message, or render a StateBanner as the toast's only content.",
+        "A rapid sequence (repeated copy actions) should collapse to the latest message: mode 'replace'."
+      ],
+      "avoidWhen": [
+        "Do not use a toast for an error the person must act on or a decision; use a StateBanner in the affected surface, or a DialogSurface.",
+        "Do not put controls that must stay reachable in a toast that dismisses itself; set duration 0 and dismiss it from your own action, or use a StateBanner.",
+        "Do not hand-write toast placement, stacking, or motion CSS, and do not use wa-toast."
+      ],
+      "alternatives": [
+        {
+          "id": "state-banner",
+          "relationship": "nearest",
+          "when": "Use a StateBanner in place for a persistent status or an error tied to one surface."
+        }
+      ],
+      "appOwns": [
+        "when to show a toast and its message",
+        "duration, variant, and replace mode",
+        "an app-owned container with data-placement=\"top\" for top-edge stacking",
+        "dismissing a persistent (duration 0) toast"
+      ],
+      "variants": [
+        "plain message on the raised surface",
+        "info, success, or warning tone (variant)",
+        "StateBanner as the toast's only content, taking the banner's tone and chrome",
+        "replace mode collapsing a rapid sequence to the latest",
+        "bottom-edge region by default, or top-edge stacking on an app-owned container with data-placement=\"top\""
+      ],
+      "accessibility": [
+        "The core region is an aria-live polite region and each toast is role status, so assistive technology announces it without moving focus.",
+        "Toasts dismiss themselves after four seconds by default; give longer messages a longer duration, and never rely on a toast for the only path to an action.",
+        "The entrance and exit only fade under prefers-reduced-motion or the static-effects switch, and forced colors draw a CanvasText border on Canvas."
+      ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "The region insets 16px from the viewport edge plus the safe area and caps its width at 480px; toasts stack with an 8px gap."
+        ]
+      },
+      "delivery": {
+        "manualCssImport": "@kerfjs/ui/overlay-toast.css",
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kerf-toasts",
+        "kerf-toast",
+        "kui-toast-exit"
+      ],
+      "publicTokens": [
+        "--kui-overlay-toast-z-index"
+      ],
+      "links": {
+        "catalogRoute": "?component=toast",
+        "documentation": "docs/overlay-toast.md",
+        "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "placeableClasses": [
+        "kerf-toasts",
+        "kerf-toast",
+        "kui-toast-exit"
+      ]
+    },
+    {
       "id": "corner-status",
       "name": "CornerStatus",
       "category": "Feedback",
@@ -9871,28 +9952,29 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Placement-aware stack of transient notifications.",
+      "description": "Ecosystem toast stack; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.",
       "uses": [
         "wa-toast-item"
       ],
-      "purpose": "Placement-aware stack of transient notifications.",
+      "purpose": "Ecosystem toast stack; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.",
       "customElement": "wa-toast",
       "useWhen": [
         "Placement-aware stack of transient notifications."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; call toast() from kerfjs/overlay with @kerfjs/ui/overlay-toast.css imported, which styles the region, tones, StateBanner content, and motion."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
-          "id": "state-banner",
-          "relationship": "prefer-kerf"
+          "id": "toast",
+          "relationship": "prefer-kerf",
+          "when": "Use kerfjs/overlay toast() styled by @kerfjs/ui/overlay-toast.css for a transient notification."
         },
         {
-          "id": "empty-state",
-          "relationship": "prefer-kerf"
+          "id": "state-banner",
+          "relationship": "prefer-kerf",
+          "when": "Use a StateBanner in place for a persistent status tied to one surface."
         }
       ],
       "geometry": {
@@ -9919,29 +10001,30 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "One dismissible notification inside a toast stack.",
+      "description": "Ecosystem toast item; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.",
       "uses": [
         "wa-icon",
         "wa-progress-ring"
       ],
-      "purpose": "One dismissible notification inside a toast stack.",
+      "purpose": "Ecosystem toast item; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.",
       "customElement": "wa-toast-item",
       "useWhen": [
         "One dismissible notification inside a toast stack."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; call toast() from kerfjs/overlay with @kerfjs/ui/overlay-toast.css imported, which styles the region, tones, StateBanner content, and motion."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
-          "id": "state-banner",
-          "relationship": "prefer-kerf"
+          "id": "toast",
+          "relationship": "prefer-kerf",
+          "when": "Use kerfjs/overlay toast() styled by @kerfjs/ui/overlay-toast.css for a transient notification."
         },
         {
-          "id": "empty-state",
-          "relationship": "prefer-kerf"
+          "id": "state-banner",
+          "relationship": "prefer-kerf",
+          "when": "Use a StateBanner in place for a persistent status tied to one surface."
         }
       ],
       "geometry": {

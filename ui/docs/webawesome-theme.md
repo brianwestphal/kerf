@@ -359,8 +359,8 @@ application off them.
   Button, Dropdown, Dropdown Item, Button Group, Input, Textarea, Tag,
   Checkbox, Checkbox Group, Radio, Radio Group, Switch, Select, Option,
   Dialog, Drawer, Card, Page, Callout, Popover, Popup, Tab, Tab Group, Tab
-  Panel, Badge, Spinner, Skeleton, Split Panel, Icon, Scroller, Include, and
-  Zoomable Frame.
+  Panel, Badge, Spinner, Skeleton, Toast, Toast Item, Split Panel, Icon,
+  Scroller, Include, and Zoomable Frame.
   Never render them in application markup. Popover and Popup give way to
   `AnchoredSurface` and `kerfjs/overlay`'s `positionAnchored()`.
 - Tooltip, Toast, and Toast Item stay supported until Kerf ships a styled

@@ -1,0 +1,149 @@
+/* Toast presentation for the core `kerfjs/overlay` `toast()`. The core ships
+   no CSS: it appends each toast (`.kerf-toast`, plus `.kerf-toast--<variant>`)
+   to one body-level `.kerf-toasts` live region. This opt-in stylesheet places
+   that region above the bottom edge (clear of the safe area), stacks its
+   toasts newest last with an 8px gap, gives each toast the raised surface,
+   fades each one in as it arrives, and fades it out on the core's
+   `exitClass: 'kui-toast-exit'` with an `exitDuration` of 200. A toast whose only child is a `StateBanner` takes
+   the banner's tone and chrome instead of its own. Put `data-placement="top"`
+   on an app-owned region (passed as `container`) to stack from the top. */
+.kerf-toasts {
+  position: fixed;
+  z-index: var(--kui-overlay-toast-z-index, 1100);
+  display: flex;
+  box-sizing: border-box;
+  width: min(100%, remify(480px));
+  padding: var(--kui-space-m);
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--kui-space-xs);
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding-block-end: calc(
+    var(--kui-space-m) +
+      var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  /* The region spans the edge but never blocks the page; each toast takes
+     its own presses. */
+  pointer-events: none;
+}
+
+.kerf-toasts:empty {
+  display: none;
+}
+
+.kerf-toasts[data-placement="top"] {
+  flex-direction: column-reverse;
+  inset-block: 0 auto;
+  padding-block: calc(
+      var(--kui-space-m) +
+        var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+    )
+    var(--kui-space-m);
+}
+
+.kerf-toast {
+  --_kui-overlay-toast-background: var(--kui-color-surface-raised);
+  --_kui-overlay-toast-border: var(--kui-color-neutral-border-normal);
+  --_kui-overlay-toast-foreground: var(--kui-color-text);
+  --_kui-overlay-toast-tone: transparent;
+
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--kui-space-s) var(--kui-space-m);
+  border: 1px solid var(--_kui-overlay-toast-border);
+  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  color: var(--_kui-overlay-toast-foreground);
+  /* A tone is a quiet fill over the opaque raised surface, so the page never
+     shows through. */
+  background:
+    linear-gradient(
+      var(--_kui-overlay-toast-tone),
+      var(--_kui-overlay-toast-tone)
+    ),
+    var(--_kui-overlay-toast-background);
+  box-shadow: var(--kui-shadow-l);
+  font: inherit;
+  font-size: var(--kui-font-size-m, 1rem);
+  line-height: var(--kui-line-height-normal, 1.4);
+  overflow-wrap: anywhere;
+  pointer-events: auto;
+}
+
+.kerf-toast--info {
+  --_kui-overlay-toast-tone: var(--kui-color-brand-fill-quiet);
+  --_kui-overlay-toast-border: var(--kui-color-brand-border-quiet);
+  --_kui-overlay-toast-foreground: var(--kui-color-brand-on-fill);
+}
+
+.kerf-toast--success {
+  --_kui-overlay-toast-tone: var(--kui-color-success-fill-quiet);
+  --_kui-overlay-toast-border: var(--kui-color-success-border-normal);
+  --_kui-overlay-toast-foreground: var(--kui-color-success-on-fill);
+}
+
+.kerf-toast--warning {
+  --_kui-overlay-toast-tone: var(--kui-color-warning-fill-quiet);
+  --_kui-overlay-toast-border: var(--kui-color-warning-border-normal);
+  --_kui-overlay-toast-foreground: var(--kui-color-warning-on-fill);
+}
+
+/* A StateBanner as the toast's only content draws the tone, border, and
+   inset itself (from its own stylesheet); the toast keeps only its elevation
+   and corner. */
+.kerf-toast:has(> .kui-state-banner:only-child) {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* Entrance: a new toast rises from the region's edge and fades in, with no
+   class to pass. Exit: pass `exitClass: 'kui-toast-exit'` and
+   `exitDuration: 200`, and it sinks and fades out before removal. */
+.kerf-toast {
+  transition:
+    opacity 200ms ease,
+    translate 200ms ease;
+}
+
+@starting-style {
+  .kerf-toast {
+    opacity: 0;
+    translate: 0 remify(12px);
+  }
+
+  .kerf-toasts[data-placement="top"] > .kerf-toast {
+    translate: 0 remify(-12px);
+  }
+}
+
+.kerf-toast.kui-toast-exit {
+  opacity: 0;
+  translate: 0 remify(12px);
+}
+
+.kerf-toasts[data-placement="top"] > .kerf-toast.kui-toast-exit {
+  translate: 0 remify(-12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kerf-toast,
+  .kerf-toasts[data-placement="top"] > .kerf-toast {
+    translate: none !important;
+  }
+}
+
+:root[data-kui-effects="static"] .kerf-toast {
+  translate: none !important;
+  transition: none !important;
+}
+
+@media (forced-colors: active) {
+  .kerf-toast {
+    border-color: CanvasText;
+    color: CanvasText;
+    background: Canvas;
+    box-shadow: none;
+  }
+}

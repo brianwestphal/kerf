@@ -44,6 +44,9 @@ export const packageClassRoots = new Map([
       'kui-overlay-sheet-handle',
     ],
   ],
+  // Styles the core kerfjs/overlay toast region and toasts (`.kerf-toasts`,
+  // `.kerf-toast`), which no kerf UI component owns.
+  ['overlay-toast.css', ['kerf-toasts', 'kerf-toast', 'kui-toast-exit']],
   [
     'layout.css',
     [

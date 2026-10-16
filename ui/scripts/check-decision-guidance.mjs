@@ -51,6 +51,8 @@ const overlaps = [
   'wa-page',
   'wa-include',
   'wa-scroller',
+  'wa-toast',
+  'wa-toast-item',
 ];
 
 const [

@@ -758,6 +758,11 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `wireCornerStatus` once: a top-layer manual popover at a safe-area-aware
   corner, with no close button, light dismiss, Escape, or focus change. Never
   position a banner with fixed-position CSS or hide a toast's close part.
+- **Style transient toasts with `@kerfjs/ui/overlay-toast.css`.** Import it
+  once and call `toast()` from `kerfjs/overlay` with `exitClass:
+'kui-toast-exit'` and `exitDuration: 200`: a bottom-edge, safe-area-aware
+  stack on the raised surface, `variant` tones, a `StateBanner` as the only
+  content, and reduced-motion-aware motion. Never use `wa-toast`.
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
   `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
   selected text, use the public color, font-size, and font-weight tokens; the

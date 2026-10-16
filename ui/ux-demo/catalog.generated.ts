@@ -830,6 +830,19 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "toast",
+    "name": "Toast",
+    "category": "Feedback",
+    "kind": "composition",
+    "source": "kerf",
+    "description": "Show a brief, non-blocking confirmation or status message that dismisses itself, without hand-written toast CSS.",
+    "uses": [
+      "state-banner"
+    ],
+    "demoSource": "ui/ux-demo/demos/toast.tsx",
+    "documentation": "ui/docs/overlay-toast.md"
+  },
+  {
     "id": "corner-status",
     "name": "CornerStatus",
     "category": "Feedback",
@@ -1821,8 +1834,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Placement-aware stack of transient notifications.",
-    "recommendation": "supported",
+    "description": "Ecosystem toast stack; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.",
+    "recommendation": "avoid",
     "uses": [
       "wa-toast-item"
     ],
@@ -1835,8 +1848,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "One dismissible notification inside a toast stack.",
-    "recommendation": "supported",
+    "description": "Ecosystem toast item; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon",
       "wa-progress-ring"

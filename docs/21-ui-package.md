@@ -198,10 +198,10 @@ re-review Web Awesome recommendations) added `wa-popover` and `wa-popup`
 (AnchoredSurface), `wa-callout` (StateBanner), `wa-card` (ContentItem or
 SunkenPanel), `wa-drawer` (DialogSurface sheets or CollapsiblePanel), and
 `wa-page` (the app layouts), and moved `wa-button-group` from conditional to
-avoid; first-party demos no longer render `wa-card`. `wa-tooltip`, `wa-toast`,
-and `wa-toast-item` stay supported until Kerf ships a styled tooltip
-(KF-VKDRWA) and toast region (KF-FYTF2Z): core `tooltip()` and `toast()` ship
-no CSS. `ui/docs/component-selection.md`
+avoid; first-party demos no longer render `wa-card`. `wa-toast` and
+`wa-toast-item` became avoid once `@kerfjs/ui/overlay-toast.css` (KF-FYTF2Z:
+styled region for core `toast()`) shipped. `wa-tooltip` stays supported until
+Kerf ships a styled tooltip (KF-VKDRWA): core `tooltip()` ships no CSS. `ui/docs/component-selection.md`
 (section "Web Awesome integration"), `ui/ai/skill.md`, `ui/llms.txt`,
 `ui/docs/design-philosophy.md`, and `ui/docs/webawesome-theme.md` no longer
 send applications to `wa-*` when no Kerf component fits; they name a native

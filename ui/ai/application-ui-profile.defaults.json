@@ -152,6 +152,11 @@
       "preferred": "@kerfjs/ui:pane",
       "avoid": ["@kerfjs/ui:wa-scroller"],
       "rationale": "Let a Pane own vertical scrolling with scroll edges, or use ColumnTrack for a horizontal track, instead of a Web Awesome scroller."
+    },
+    "transient-notification": {
+      "preferred": "@kerfjs/ui:toast",
+      "avoid": ["@kerfjs/ui:wa-toast", "@kerfjs/ui:wa-toast-item"],
+      "rationale": "Call toast() from kerfjs/overlay with @kerfjs/ui/overlay-toast.css imported instead of a Web Awesome toast stack."
     }
   },
   "theme": {

@@ -5806,6 +5806,77 @@
       }
     },
     {
+      "key": "@kerfjs/ui:toast",
+      "package": "@kerfjs/ui",
+      "id": "toast",
+      "name": "Toast",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "when to show a toast and its message",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "duration, variant, and replace mode",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "an app-owned container with data-placement=\"top\" for top-edge stacking",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "dismissing a persistent (duration 0) toast",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": {
+          "margin": "self",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "The region insets 16px from the viewport edge plus the safe area and caps its width at 480px; toasts stack with an 8px gap."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The core region is an aria-live polite region and each toast is role status, so assistive technology announces it without moving focus.",
+          "Toasts dismiss themselves after four seconds by default; give longer messages a longer duration, and never rely on a toast for the only path to an action.",
+          "The entrance and exit only fade under prefers-reduced-motion or the static-effects switch, and forced colors draw a CanvasText border on Canvas."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kerf-toasts",
+        "publicClasses": ["kerf-toasts", "kerf-toast", "kui-toast-exit"],
+        "placeableClasses": ["kerf-toasts", "kerf-toast", "kui-toast-exit"],
+        "publicTokens": ["--kui-overlay-toast-z-index"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:corner-status",
       "package": "@kerfjs/ui",
       "id": "corner-status",

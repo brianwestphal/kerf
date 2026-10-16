@@ -332,6 +332,7 @@ describe('component composition catalog contract', () => {
         'kui-content-item--pill',
         'kui-content-item--framed',
       ],
+      toast: ['kerf-toasts', 'kerf-toast', 'kui-toast-exit'],
       'wa-dialog': ['hide-actions'],
     });
     const toolbar = composition.entries.find(

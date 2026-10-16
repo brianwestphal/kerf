@@ -1101,6 +1101,7 @@ global style entry, export `@kerfjs/ui/overlay-sheet.css`, class roots
 styles `.kerf-overlay[data-presentation="bottom-sheet"]` on the plain and native
 hosts; `ui/tests/browser/overlay-sheet.spec.ts` (fixture imports the repo core)
 checks geometry, keyboard padding, the exit, and reduced motion.
+Core toast styles (KF-FYTF2Z, a styled region for `kerfjs/overlay` `toast()`): `ui/src/overlay-toast.css` (root global style entry, export `@kerfjs/ui/overlay-toast.css`, class roots `kerf-toasts` / `kerf-toast` / `kui-toast-exit` in `scripts/lib/css-ownership.mjs`) places the `.kerf-toasts` region at the bottom edge (`data-placement="top"` on an app-owned region), tones `.kerf-toast--info|success|warning`, enters with `@starting-style`, and exits on `kui-toast-exit`; `state-banner.css` styles a banner that is a toast's only child. Catalog route `?component=toast` (`ui/ux-demo/demos/toast.tsx`), docs `ui/docs/overlay-toast.md`, test `ui/tests/browser/overlay-toast.spec.ts`.
 Resizable core sheets (KF-P16FST, a grabber for core bottom sheets reusing
 DialogSurface's): `ui/src/components/surfaces/surface-scaffold/internal/sheet-handle.ts`
 (the shared separator grabber: keyboard/pointer resize, bounds, ARIA values,

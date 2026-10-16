@@ -1,6 +1,7 @@
 import '@kerfjs/ui/surface-scaffold/register';
 import '@kerfjs/ui/document.css';
 import '@kerfjs/ui/overlay-sheet.css';
+import '@kerfjs/ui/overlay-toast.css';
 import '@kerfjs/ui/help-tags/register';
 import '@kerfjs/ui/popup-menu/register';
 import '@kerfjs/ui/select/register';
@@ -218,6 +219,7 @@ import {
   selectOverlayTabNavigatorDemo,
   selectTabNavigatorDemo,
 } from './demos/tab-navigator.js';
+import { SHOW_TOAST_DEMO_ACTION, showToastDemo } from './demos/toast.js';
 import {
   COLLAPSED_WORKBENCH_ID,
   NAVIGATION_STACK_ID,
@@ -749,6 +751,11 @@ const stopActions = delegateActions(app, 'click', {
     if (!id) return;
     selectListDetailDialogProject(id);
     actionLog.value = `Selected ${id}`;
+  },
+  [SHOW_TOAST_DEMO_ACTION]: (_event, target) => {
+    const kind = target.getAttribute('data-toast') ?? 'plain';
+    showToastDemo(kind);
+    actionLog.value = `Toast shown: ${kind}`;
   },
   [SEND_COMPOSER_DEMO_ACTION]: (_event, target) => {
     const id = target.getAttribute('data-message-composer-id') ?? '';

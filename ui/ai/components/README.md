@@ -79,6 +79,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [AnchoredSurface](./anchored-surface.md) — Present arbitrary app-owned content next to an element or pointer with Kerf UI surface styling and kerfjs/overlay lifecycle.
 - [Feedback](./feedback.md) — Banners, empty states, and labeled progress.
 - [StateBanner](./state-banner.md) — Present persistent inline feedback or attractive non-status emphasis with a named semantic tone.
+- [Toast](./toast.md) — Show a brief, non-blocking confirmation or status message that dismisses itself, without hand-written toast CSS.
 - [CornerStatus](./corner-status.md) — Show ongoing app-level progress such as "Loading…" or "Updating Tickets… 3 of 12" in a viewport corner above page chrome and any dialog opened before it, without a close button, light dismiss, Escape, or focus change.
 - [EdgeActivityIndicator](./edge-activity-indicator.md) — Signal ambient background activity (server work, sync) along the top edge of the viewport without allocating layout or taking the pointer, with Kerf-owned motion and reduced-motion handling.
 - [EmptyState](./empty-state.md) — Actionable empty and busy content states.
@@ -148,8 +149,8 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Skeleton](./wa-skeleton.md) (avoid) — Ecosystem placeholder; use Kerf Skeleton.
 - [Spinner](./wa-spinner.md) (avoid) — Ecosystem spinner; use Kerf LoadingSpinner.
 - [Tag](./wa-tag.md) (avoid) — Ecosystem tag; use Kerf Chip.
-- [Toast](./wa-toast.md) — Placement-aware stack of transient notifications.
-- [Toast Item](./wa-toast-item.md) — One dismissible notification inside a toast stack.
+- [Toast](./wa-toast.md) (avoid) — Ecosystem toast stack; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.
+- [Toast Item](./wa-toast-item.md) (avoid) — Ecosystem toast item; use kerfjs/overlay toast() with @kerfjs/ui/overlay-toast.css.
 - [Tooltip](./wa-tooltip.md) — Brief contextual label anchored to a control.
 
 ## Web Awesome — Media

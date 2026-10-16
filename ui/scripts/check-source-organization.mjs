@@ -10,6 +10,7 @@ const globalRootStyles = new Set([
   'foundation.css',
   'layout.css',
   'overlay-sheet.css',
+  'overlay-toast.css',
   'styles.css',
   'webawesome.css',
 ]);
