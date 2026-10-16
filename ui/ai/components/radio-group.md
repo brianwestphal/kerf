@@ -62,7 +62,7 @@ No wiring helper.
 
 Margin: none · border: none · padding: self (layout role: controls). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- The label and hint sit on the text column (1px + 8px); the choices sit on the 8px control column, 12px apart.
+- The label and hint sit on the text column (1px + 8px); each choice's 20px circle (18px compact) sits on the group's inline-start edge, where a Checkbox draws its box, 8px (7px) before its label; choices stack 12px apart, and a choice hint aligns with its label text.
 
 ## Accessibility
 

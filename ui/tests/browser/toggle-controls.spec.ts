@@ -219,6 +219,35 @@ test('drawn controls keep the Web Awesome geometry at wide and narrow widths', a
     const second = await box(circles.nth(1));
     expect([first.width, first.height]).toEqual([20, 20]);
     expect(second.y - first.y - first.height).toBeCloseTo(12, 0);
+    // A radio circle sits where a Checkbox draws its box: on the control's
+    // inline-start edge (the same x in the same catalog example column), 8px
+    // before its label, with a choice hint on the label's column.
+    const group = demo.getByRole('radiogroup', { name: 'Layout Density' });
+    expect(first.x).toBeCloseTo((await box(group)).x, 0);
+    expect(first.x).toBeCloseTo(drawn.x, 0);
+    const choiceLabel = await box(
+      group.locator('.kui-radio-group__choice-label').nth(0),
+    );
+    expect(choiceLabel.x - first.x - first.width).toBeCloseTo(8, 0);
+    const choiceHint = await box(
+      group.locator('.kui-radio-group__choice-hint'),
+    );
+    expect(choiceHint.x).toBeCloseTo(first.x, 0);
+    expect(
+      await group
+        .locator('.kui-radio-group__choice-hint')
+        .evaluate((element) =>
+          parseFloat(window.getComputedStyle(element).paddingInlineStart),
+        ),
+    ).toBeCloseTo(28, 0);
+    const compactCircle = await box(
+      demo
+        .getByRole('radiogroup', { name: 'Release Channel' })
+        .locator('.kui-radio-group__circle')
+        .nth(0),
+    );
+    expect([compactCircle.width, compactCircle.height]).toEqual([18, 18]);
+    expect(compactCircle.x).toBeCloseTo(drawn.x, 0);
 
     const overflow = await page.evaluate(
       () =>

@@ -1,6 +1,8 @@
-/* RadioGroup: the group label, the choices on the text column (each a drawn
-   circle beside its label, the native radio invisibly over the circle), and
-   hint and error text below. */
+/* RadioGroup: the group label, the choices (each a drawn circle beside its
+   label, the native radio invisibly over the circle), and hint and error text
+   below. Each circle sits on the group's inline-start edge, where a
+   Checkbox draws its box, so stacked checkboxes and radios share one control
+   column. */
 .kui-radio-group {
   --_kui-radio-group-size: remify(20px);
   --_kui-radio-group-gap: remify(8px);
@@ -37,7 +39,6 @@
   display: flex;
   flex-direction: column;
   gap: remify(12px);
-  padding-inline: var(--kui-layout-item-padding, remify(8px));
 }
 .kui-radio-group[data-orientation="horizontal"] .kui-radio-group__choices {
   flex-direction: row;

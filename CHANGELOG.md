@@ -126,6 +126,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **`RadioGroup` circles line up with Checkbox boxes.** Each radio circle now sits on the group's inline-start edge, where a `Checkbox` draws its box, instead of 8px further in, so stacked checkboxes and radios share one control column; the group label and hint keep the text column (`KF-F68AZ9`).
 - **`Combobox` suggestions are no longer clipped inside popups.** The listbox is a top-layer popover placed below the field at its width (flipping above when short), so an `AnchoredSurface`, a dialog, or a scrolling `List` around the field no longer cuts it off. The `--kui-combobox-z-index` token is gone; the top layer needs none (`KF-C558Z9`).
 - **`List` `vAlign="middle"` and `Row` `hAlign="center"` gather their children in the middle** with their `gap`, instead of spreading them with `space-around`. `space-around` is now its own explicit value (`data-*-align="around"`), and `center`/`middle` on the cross axis center wrapped lines (`KF-3ZJ9PF`).
 - **A SearchField no longer shows its placeholder over typed text after an unrelated re-render.** Re-rendering the host for another reason, such as an error message beside the field, reset the field's placeholder state from the app's query while the editor still held typed text. `wireSearchFields` now re-derives it from the live editor (`KF-PZ5J93`).
