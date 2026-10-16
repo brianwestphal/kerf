@@ -32,7 +32,9 @@ tiles on the same rendered line and Up/Down moves to the nearest tile in the
 adjacent rendered line; Home/End reaches the first/last enabled tile. The
 navigation reads live geometry, so responsive column changes need no rewiring.
 The application changes selection
-on card activation and handles its own Shift/Cmd range gestures.
+on card activation; `applySelection` and `selectionGesture` from
+`@kerfjs/ui/selection` give it the platform-normalized replace,
+Cmd/Ctrl-toggle, and Shift-range model.
 With delegated click actions, use `isContentItemActivation(event, card)` in the
 card's selection handler so a nested menu trigger or other control does not
 also select the card.
@@ -490,13 +492,27 @@ focused radio, and the checked pill adds a second pixel of border so the
 selection does not rely on hue alone; forced-colors mode paints it with
 `Highlight`.
 
-With `multiple`, the group renders `role="group"` with the same naming, and
-each choice is a native `<input type="checkbox">` inside its pill. Every pill
-is its own Tab stop, Space toggles it, assistive technology reads its native
-checked state, and every checked box submits its value under `name`
-(`FormData.getAll(name)`). Native `required` on a checkbox demands that one
-box, so a multiple group takes no `required`; validate an "at least one" rule
-in the application. Every chip color is a theme token resolved through
+With `multiple: 'toggle'`, the group renders `role="group"` with the same
+naming, and each choice is a native `<input type="checkbox">` inside its pill.
+Every pill is its own Tab stop, Space toggles it, assistive technology reads
+its native checked state, and every checked box submits its value under
+`name` (`FormData.getAll(name)`). Native `required` on a checkbox demands that
+one box, so a multiple group takes no `required`; validate an "at least one"
+rule in the application.
+
+With `multiple: true`, the group is a named `role="listbox"` with
+`aria-multiselectable="true"` and `aria-orientation="horizontal"`, and each
+pill is a `role="option"` whose `aria-selected` reports its state and whose
+visible label is its name; a disabled chip is `aria-disabled`. The listbox is
+one Tab stop (roving `tabindex` on the first selected enabled chip). With
+`wireChoiceChips`: Left/Right (mirrored in right-to-left text), Up/Down,
+Home, and End move focus and select only that chip; Shift with them extends
+the range from the anchor; Cmd on Apple platforms or Ctrl elsewhere with them
+moves focus without changing the selection; Space toggles the focused chip
+and Shift+Space extends to it; Cmd/Ctrl+A selects every enabled chip. A
+click selects one chip, Cmd/Ctrl-click toggles one, and Shift-click extends.
+Hidden inputs submit each selected value under `name`. The focus ring follows
+`:focus-visible` on the option. Every chip color is a theme token resolved through
 `light-dark()`, so inside a dark appearance scope (`.wa-dark`, `.wa-invert`,
 or any `color-scheme: dark` ancestor) the pills, labels, checked tint, and
 focus ring read on inverse chrome without overrides.

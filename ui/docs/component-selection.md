@@ -395,7 +395,7 @@ group; set `--kui-token-search-editor-min-width` only when a wider editor is
 required.
 
 - `Toolbar` serves persistent app chrome and headings; the zone contents and accessible naming distinguish the purpose.
-- `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `ChoiceChips` keeps a larger exclusive set (or, with `multiple`, any-number set) visible as wrapping pills; `Select` handles a longer value list.
+- `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `ChoiceChips` keeps a larger exclusive set (or, with `multiple`, an any-number set) visible as wrapping pills; `Select` handles a longer value list.
 
 Use `AppTab presentation="icon-only"` with its `name` kept as the accessible
 tab name. For segmented tabs that should show names in a wide reader and icons
@@ -860,7 +860,11 @@ hover, focus, and disabled paint in its reserved 1px frame (see
 For a multi-select card containing its own controls, place
 `selectionMode="multiple"` ContentItems inside a labeled
 `List selectionMode="multiple"`; the app supplies each card's `selected`
-state and handles range gestures.
+state. Resolve each card activation with `applySelection` and
+`selectionGesture` from `@kerfjs/ui/selection`, which implement the same
+platform-normalized replace, Cmd/Ctrl-toggle, and Shift-range model as
+`ChoiceChips` `multiple` (`isApplePlatform` decides between Cmd and Ctrl); `wireContentItems` forwards those modifiers from
+Enter and Space.
 For wrapped document tiles, use `Grid minColumnWidth={px(160)}` with
 `selectionMode="multiple"` and `ariaLabel`. The same ContentItem row/gridcell
 contract applies, while `wireContentItems` follows the rendered tile layout
@@ -1016,14 +1020,28 @@ visible `FieldLabel`.
 
 ### Wrapping multiple choices
 
-Set `multiple` when the person may turn any number of the visible options on
-or off — label filters, or the intents an annotation carries. The same pills
-are then native checkboxes in a `role="group"`: each pill is a Tab stop, Space
-toggles it, and every checked value submits under `name`. `value` becomes a
-`readonly Value[]` (the type rejects a single value, and a single group
-rejects an array). Delegate the `action` on `change` and read the checked
-boxes by `name`, which lists them in choice order. A multiple group takes no `required`. Prefer a
-multiple `Select` when the option list is long or space is tight.
+When the person may turn any number of the visible options on, `value`
+becomes a `readonly Value[]` (the type rejects a single value, and a single
+group rejects an array) and `multiple` picks the model:
+
+- `multiple: 'toggle'` — each pill toggles alone, as label filters or the
+  intents an annotation carries do. The pills are native checkboxes in a
+  `role="group"`: each pill is a Tab stop, a click or Space toggles it, and
+  every checked value submits under `name`. Delegate the `action` on `change`
+  and read the checked boxes by `name`, which lists them in choice order.
+- `multiple: true` — the desktop multi-select, for picking a working set
+  where a plain click should mean "just this one". The group is an
+  `aria-multiselectable` listbox: a click selects one chip, Cmd (Apple
+  platforms) or Ctrl (elsewhere) toggles one, and Shift extends a range from
+  the last plain or toggled chip. It is one Tab stop; arrows, Home, and End
+  move the selection, Shift with them extends it, Cmd/Ctrl with them moves
+  focus alone, Space toggles, and Cmd/Ctrl+A selects all. Wire it once with
+  `wireChoiceChips` from `@kerfjs/ui/wire-choice-chips`; it fires
+  `change` on the group (which carries the `action`), and `readChoiceChips`
+  returns the new set. Hidden inputs submit each selected value under `name`.
+
+A multiple group takes no `required`. Prefer a multiple `Select` when the
+option list is long or space is tight.
 
 On dark inverse chrome, such as a media viewer, put the chips inside a dark
 appearance scope (`.wa-dark`, or any `color-scheme: dark` ancestor) rather
@@ -1033,7 +1051,7 @@ than restyling them: every chip color is a theme token that follows the scope.
 <ChoiceChips
   name="intents"
   label="Annotation Intents"
-  multiple
+  multiple="toggle"
   value={annotation.intents}
   action="toggle-annotation-intent"
   choices={[
@@ -1078,7 +1096,7 @@ component below, and file a component gap rather than dropping to the raw tag.
 | `wa-button`, `wa-dropdown`, `wa-dropdown-item`                  | Use `Button` (or `IconButton`) for actions and `PopupMenu` for a command menu. Use `ListItem` for a navigation row and `Select` for a value.                                                                                                                                                                                                                      |
 | `wa-button-group`                                               | Use `ToolbarControlGroup` or `SplitButton` for grouped actions and `SegmentedControl` for one-of-many selection.                                                                                                                                                                                                                                                  |
 | `wa-input`, `wa-textarea`, `wa-tag`                             | Use `TextField` for free text (`multiline` for a textarea) and `Chip` for removable or disabled tags; use `TokenSearchField` only when text and ordered filter tokens form one editor.                                                                                                                                                                            |
-| `wa-checkbox`, `wa-checkbox-group`, `wa-switch`                 | Use `Checkbox` for a submitted option (a group of them in a `List`, or `ChoiceChips` `multiple` for wrapping pills) and `Switch` for a setting that applies immediately.                                                                                                                                                                                          |
+| `wa-checkbox`, `wa-checkbox-group`, `wa-switch`                 | Use `Checkbox` for a submitted option (a group of them in a `List`, or `ChoiceChips` `multiple: 'toggle'` for wrapping pills) and `Switch` for a setting that applies immediately.                                                                                                                                                                                |
 | `wa-radio-group`, `wa-radio`                                    | Use `RadioGroup` for a few labeled options, `ChoiceChips` for wrapping pills, and `SegmentedControl` for a view switch.                                                                                                                                                                                                                                           |
 | `wa-select`, `wa-option`                                        | Use `Select`, which owns Kerf spacing, controlled rendering, and form participation.                                                                                                                                                                                                                                                                              |
 | `wa-dialog`, `wa-drawer`                                        | Use `DialogSurface` with `openDialog` / `closeDialog` (`presentation="side-sheet"` or `"bottom-sheet"` for a drawer), or a `kerfjs/overlay` dialog. Use `CollapsiblePanel` for a rail that overlays content on compact devices.                                                                                                                                   |

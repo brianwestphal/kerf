@@ -29,17 +29,19 @@ Choose one value, or with multiple any number of values, from a visible set too 
 
 - JavaScript: `@kerfjs/ui/choice-chips` — exports `ChoiceChips`.
 - JavaScript: `@kerfjs/ui/css-values` — exports `fillColor`.
+- JavaScript: `@kerfjs/ui/wire-choice-chips` — exports `wireChoiceChips`, `readChoiceChips`.
 - CSS: the browser build of `@kerfjs/ui/choice-chips` pulls its CSS automatically; import `@kerfjs/ui/choice-chips.css` manually only without the `browser` export condition.
+- Wiring: `wireChoiceChips` from `@kerfjs/ui/wire-choice-chips` (required).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures-v1.md#kerfjsuichoice-chips), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures-v1.md#kerfjsuichoice-chips), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values), [`@kerfjs/ui/wire-choice-chips`](../public-api-signatures-v1.md#kerfjsuiwire-choice-chips) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
 - color swatch, transparent (struck-through) swatch, icon, or text-only choices
-- single (radios) or multiple (checkboxes) selection
+- single (radios), multiple: 'toggle' (checkboxes), or multiple: true (a modifier-key multi-select listbox)
 - default or compact size
 - disabled group or disabled choices
 - required (single selection only)
@@ -59,7 +61,9 @@ Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures
 
 - value — controlled
 
-No wiring helper.
+**Wiring:** `wireChoiceChips` is required.
+
+- Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group. Radio and toggle groups use native inputs and need no wiring.
 
 ## Geometry
 

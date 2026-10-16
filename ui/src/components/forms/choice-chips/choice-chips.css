@@ -1,6 +1,8 @@
-/* ChoiceChips: separated pills that wrap with the control gap. Each pill is a
-   <label> around a native radio, so the radio owns focus, arrow keys, and the
-   form value; the pill paints the radio's state through :has(). */
+/* ChoiceChips: separated pills that wrap with the control gap. In the radio
+   and toggle modes each pill is a <label> around a native input, which owns
+   focus, keys, and the form value; the pill paints its state through :has().
+   In the multiple mode each pill is itself a listbox option (aria-selected),
+   and hidden inputs carry the form value. */
 .kui-choice-chips {
   display: flex;
   min-width: 0;
@@ -57,12 +59,16 @@
 }
 
 .kui-choice-chips__chip:hover:not([data-disabled]):not(
-    :has(> .kui-choice-chips__input:checked)
+    :has(> .kui-choice-chips__input:checked),
+    [aria-selected="true"]
   ) {
   background: var(--kui-color-neutral-fill-quiet);
 }
 
-.kui-choice-chips__chip:has(> .kui-choice-chips__input:checked) {
+.kui-choice-chips__chip:is(
+  :has(> .kui-choice-chips__input:checked),
+  [aria-selected="true"]
+) {
   --_kui-choice-chips-border: var(--kui-color-brand-border-loud);
 
   color: var(--kui-color-brand-on-fill);
@@ -71,9 +77,16 @@
   box-shadow: inset 0 0 0 1px var(--_kui-choice-chips-border);
 }
 
-.kui-choice-chips__chip:has(> .kui-choice-chips__input:focus-visible) {
+.kui-choice-chips__chip:is(
+  :has(> .kui-choice-chips__input:focus-visible),
+  [role="option"]:focus-visible
+) {
   outline: var(--kui-focus-ring);
   outline-offset: 2px;
+}
+
+.kui-choice-chips__chip[role="option"]:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .kui-choice-chips__chip[data-disabled] {
@@ -136,7 +149,10 @@
     border-color: ButtonBorder;
   }
 
-  .kui-choice-chips__chip:has(> .kui-choice-chips__input:checked) {
+  .kui-choice-chips__chip:is(
+    :has(> .kui-choice-chips__input:checked),
+    [aria-selected="true"]
+  ) {
     border-color: Highlight;
     color: HighlightText;
     background: Highlight;

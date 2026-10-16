@@ -196,9 +196,14 @@ export {
   ChoiceChips,
   type ChoiceChipsChoice,
   type ChoiceChipsProps,
+  type ChoiceChipsSelectionMode,
   type ChoiceChipsSize,
   type ChoiceChipsSwatch,
 } from './components/forms/choice-chips/choice-chips.js';
+export {
+  readChoiceChips,
+  wireChoiceChips,
+} from './components/forms/choice-chips/wiring/wire-choice-chips.js';
 export {
   Combobox,
   type ComboboxProps,
@@ -455,6 +460,15 @@ export {
   type TextVariant,
 } from './components/typography/text/text.js';
 export { type KerfUiContent } from './shared/content/semantic-content.js';
+export {
+  applySelection,
+  type ApplySelectionOptions,
+  isApplePlatform,
+  type SelectionGesture,
+  selectionGesture,
+  type SelectionModifiers,
+  type SelectionResult,
+} from './shared/selection/selection.js';
 export {
   calc,
   colorVar,

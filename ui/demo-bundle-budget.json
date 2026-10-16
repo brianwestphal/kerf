@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 403700,
-  "measuredLargestJavaScriptGzip": 149136,
-  "measuredTotalJavaScriptGzip": 403661,
+  "totalJavaScriptGzip": 405400,
+  "measuredLargestJavaScriptGzip": 149143,
+  "measuredTotalJavaScriptGzip": 405382,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5171,6 +5171,22 @@
         "measuredTotalJavaScriptGzip": 403661,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 403700
+      }
+    },
+    {
+      "at": "2026-10-16T02:03:08.988Z",
+      "reason": "ChoiceChips multiple: true listbox mode, wireChoiceChips, and the shared @kerfjs/ui/selection model, plus their catalog demos (KF-346HEG)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 149136,
+        "measuredTotalJavaScriptGzip": 403661,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 403700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 149143,
+        "measuredTotalJavaScriptGzip": 405382,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 405400
       }
     }
   ]

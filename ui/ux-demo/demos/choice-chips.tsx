@@ -27,6 +27,7 @@ import {
   choiceChipsIntents,
   choiceChipsLabels,
   choiceChipsView,
+  choiceChipsWorkspaces,
 } from './state.js';
 
 const labelChoices: readonly ChoiceChipsChoice[] = [
@@ -35,6 +36,15 @@ const labelChoices: readonly ChoiceChipsChoice[] = [
   { value: 'docs', label: 'Docs', swatch: fillColor('#22c55e') },
   { value: 'design', label: 'Design', swatch: fillColor('#a855f7') },
   { value: 'chore', label: 'Chore', swatch: fillColor('#6b7280') },
+];
+
+const workspaceChoices: readonly ChoiceChipsChoice[] = [
+  { value: 'atlas', label: 'Atlas' },
+  { value: 'borealis', label: 'Borealis' },
+  { value: 'cirrus', label: 'Cirrus' },
+  { value: 'delta', label: 'Delta', disabled: true, title: 'Archived' },
+  { value: 'ember', label: 'Ember' },
+  { value: 'fjord', label: 'Fjord' },
 ];
 
 const intentChoices: readonly ChoiceChipsChoice[] = [
@@ -174,17 +184,31 @@ export function ChoiceChipsDemo() {
         />
       </CatalogExample>
       <CatalogExample
-        label="Multiple Selection"
-        note="With multiple, each pill is a checkbox: Tab reaches every pill, Space toggles it, and every checked value submits."
+        label="Toggle Selection"
+        note="With multiple: 'toggle', each pill is a checkbox: Tab reaches every pill, a click or Space toggles it alone, and every checked value submits."
       >
         <ChoiceChips
           id="choice-chips-labels"
           name="labels"
           label="Labels"
-          multiple
+          multiple="toggle"
           value={choiceChipsLabels.value}
           action="choice-chips-demo"
           choices={labelChoices}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Multi-Select Listbox"
+        note="With multiple: true, a click selects one chip, Cmd (Apple) or Ctrl toggles one, and Shift extends a range. The group is one Tab stop: arrows select, Shift+arrows extend, Space toggles, and Cmd/Ctrl+A selects all."
+      >
+        <ChoiceChips
+          id="choice-chips-workspaces"
+          name="workspaces"
+          label="Workspaces"
+          multiple
+          value={choiceChipsWorkspaces.value}
+          action="choice-chips-demo"
+          choices={workspaceChoices}
         />
       </CatalogExample>
       <CatalogExample
@@ -196,7 +220,7 @@ export function ChoiceChipsDemo() {
             id="choice-chips-intents"
             name="intents"
             label="Annotation Intents"
-            multiple
+            multiple="toggle"
             size="compact"
             value={choiceChipsIntents.value}
             action="choice-chips-demo"

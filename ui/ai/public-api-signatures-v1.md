@@ -3379,12 +3379,16 @@ interface ChoiceChipsChoice<Value extends string = string> {
 }
 interface ChoiceChipsCommonProps<Value extends string> {
     /**
-     * Native input `name`: the form field the selected value (or, with
-     * `multiple`, every checked value) submits under.
+     * Form field name: the selected value (or, with `multiple`, every selected
+     * value) submits under it.
      */
     name: string;
     choices: readonly ChoiceChipsChoice<Value>[];
-    /** Delegated `data-action` on every input; listen for `change`. */
+    /**
+     * Delegated `data-action`; listen for `change`. It sits on every native
+     * input, or for `multiple: true` on the group, which `wireChoiceChips`
+     * fires `change` on.
+     */
     action?: string;
     size?: ChoiceChipsSize;
     /** Disable the whole group. */
@@ -3406,16 +3410,32 @@ interface ChoiceChipsSingleProps<Value extends string = string> {
 }
 /**
  * Any number of values, backed by native checkboxes: each pill is its own Tab
- * stop, Space toggles it, and every checked value submits under `name`.
+ * stop, a click or Space toggles it alone, and every checked value submits
+ * under `name`.
  */
-interface ChoiceChipsMultipleProps<Value extends string = string> {
-    multiple: true;
+interface ChoiceChipsToggleProps<Value extends string = string> {
+    multiple: 'toggle';
     /** The checked values. Omit (or pass `[]`) for none. */
     value?: readonly NoInfer<Value>[];
     /**
-     * Native `required` on a checkbox demands that one box, so a multiple group
+     * Native `required` on a checkbox demands that one box, so a toggle group
      * has no "at least one" requirement; validate the checked set in the app.
      */
+    required?: never;
+}
+/**
+ * Any number of values with the conventional desktop selection model, as an
+ * ARIA multi-select listbox: a click selects one chip, Cmd (Apple) or Ctrl
+ * (elsewhere) toggles one, and Shift extends a range. The group is one Tab
+ * stop; arrows move the selection, Shift+arrows extend it, Cmd/Ctrl+arrows
+ * move focus alone, Space toggles, and Cmd/Ctrl+A selects all. Hidden inputs
+ * submit every selected value under `name`. Requires `wireChoiceChips`.
+ */
+interface ChoiceChipsMultipleProps<Value extends string = string> {
+    multiple: true;
+    /** The selected values. Omit (or pass `[]`) for none. */
+    value?: readonly NoInfer<Value>[];
+    /** Validate the selected set in the app; a listbox has no native `required`. */
     required?: never;
 }
 /** A group is named either by a string or by a visible heading's id. */
@@ -3426,17 +3446,20 @@ type ChoiceChipsNaming = {
     labelledBy: string;
     label?: never;
 };
-type ChoiceChipsProps<Value extends string = string> = ChoiceChipsCommonProps<Value> & (ChoiceChipsSingleProps<Value> | ChoiceChipsMultipleProps<Value>) & ChoiceChipsNaming;
+type ChoiceChipsProps<Value extends string = string> = ChoiceChipsCommonProps<Value> & (ChoiceChipsSingleProps<Value> | ChoiceChipsToggleProps<Value> | ChoiceChipsMultipleProps<Value>) & ChoiceChipsNaming;
+/** Which selection model a ChoiceChips group renders. */
+type ChoiceChipsSelectionMode = 'single' | 'toggle' | 'multiple';
 /**
- * A wrapping set of pill chips backed by native inputs. By default it is an
- * exclusive radio group: one Tab stop, arrow-key selection, and a real form
- * value. With `multiple` it is a checkbox group: each pill toggles on its own
- * and every checked value submits. Each choice may lead with a color swatch
- * (including a struck-through transparent swatch) or an icon.
+ * A wrapping set of pill chips. By default it is an exclusive radio group:
+ * one Tab stop, arrow-key selection, and a real form value. With
+ * `multiple: 'toggle'` it is a checkbox group: each pill toggles on its own.
+ * With `multiple: true` it is a multi-select listbox with modifier-key
+ * selection (wire it with `wireChoiceChips`). Each choice may lead with a
+ * color swatch (including a struck-through transparent swatch) or an icon.
  */
 declare function ChoiceChips<Value extends string>(props: ChoiceChipsProps<Value>): SafeHtml;
 
-export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsProps, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch };
+export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsProps, type ChoiceChipsSelectionMode, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch, type ChoiceChipsToggleProps };
 ```
 
 ## `@kerfjs/ui/composer`
@@ -5154,6 +5177,87 @@ interface SpacerProps {
 declare function Spacer({ flex, width, height, className, slot, }: SpacerProps): kerfjs.SafeHtml;
 
 export { CssLength, Spacer, type SpacerProps, UiSpaceName };
+```
+
+## `@kerfjs/ui/selection`
+
+```ts
+/**
+ * What a pointer or key activation does to a multi-selection:
+ * - `replace`: select only the target (a plain click or Enter);
+ * - `toggle`: add or remove the target, keeping the rest (Cmd on Apple
+ *   platforms, Ctrl elsewhere);
+ * - `extend`: select the range from the anchor to the target (Shift).
+ */
+type SelectionGesture = 'replace' | 'toggle' | 'extend';
+/** The modifier state of a `MouseEvent` or `KeyboardEvent`. */
+interface SelectionModifiers {
+    readonly shiftKey: boolean;
+    readonly metaKey: boolean;
+    readonly ctrlKey: boolean;
+}
+/** True on macOS, iOS, and iPadOS, where Cmd (not Ctrl) toggles one item. */
+declare function isApplePlatform(navigatorLike?: Pick<Navigator, 'platform' | 'userAgent'> | undefined): boolean;
+/**
+ * Map an activation's modifiers to a {@link SelectionGesture}, normalized for
+ * the host platform: Shift extends; Cmd on Apple platforms, Ctrl elsewhere,
+ * toggles; anything else replaces.
+ */
+declare function selectionGesture(modifiers: SelectionModifiers, apple?: boolean): SelectionGesture;
+interface ApplySelectionOptions<Id> {
+    /** Every selectable id, in display order (leave out disabled items). */
+    readonly items: readonly Id[];
+    /** The current selection. */
+    readonly selected: readonly Id[];
+    /**
+     * The last replaced or toggled item; a Shift range starts here. Without
+     * one, the range starts at the first selected item, then at the target.
+     */
+    readonly anchor?: Id;
+    /** The activated item. */
+    readonly target: Id;
+    readonly gesture: SelectionGesture;
+}
+interface SelectionResult<Id> {
+    /** The new selection, in display order. */
+    readonly selected: Id[];
+    /** The anchor for the next Shift range. */
+    readonly anchor: Id;
+}
+/**
+ * Apply one selection gesture to a multi-selection, the conventional desktop
+ * list model: `replace` selects only the target, `toggle` flips it and keeps
+ * the rest, and `extend` selects the range from the anchor (the first
+ * selected item when there is none, else the target) to the target. The anchor moves to the target on
+ * `replace` and `toggle` and stays put on `extend`, so successive Shift
+ * activations pivot around one item. A target missing from `items` (such as a
+ * disabled item) leaves the selection unchanged.
+ */
+declare function applySelection<Id>({ items, selected, anchor, target, gesture, }: ApplySelectionOptions<Id>): SelectionResult<Id>;
+
+export { type ApplySelectionOptions, type SelectionGesture, type SelectionModifiers, type SelectionResult, applySelection, isApplePlatform, selectionGesture };
+```
+
+## `@kerfjs/ui/wire-choice-chips`
+
+```ts
+/** The selected values of a `multiple: true` ChoiceChips group, in choice order. */
+declare function readChoiceChips(group: Element): string[];
+/**
+ * Give every `multiple: true` ChoiceChips group under `root` its listbox
+ * behavior: a click selects one chip, Cmd (Apple platforms) or Ctrl
+ * (elsewhere) toggles one, and Shift extends a range from the last plain or
+ * toggled chip. On the keyboard the group is one Tab stop: arrows, Home, and
+ * End move the selection, Shift with them extends it, Cmd/Ctrl with them
+ * moves focus alone, Space toggles the focused chip (Shift+Space extends to
+ * it), and Cmd/Ctrl+A selects every chip. Disabled chips keep their state.
+ * Each change updates `aria-selected` and the hidden form inputs, then fires
+ * a bubbling `change` on the group, whose `data-action` is the group's
+ * `action`; read the new set with `readChoiceChips`. Returns a disposer.
+ */
+declare function wireChoiceChips(root: HTMLElement | Document): () => void;
+
+export { readChoiceChips, wireChoiceChips };
 ```
 
 ## `@kerfjs/ui/token-search-model`

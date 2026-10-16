@@ -4630,7 +4630,10 @@
       "uses": [],
       "purpose": "Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, radius, and optional coordinated surface colors.",
       "publicExports": [
-        "ContentItem"
+        "ContentItem",
+        "applySelection",
+        "selectionGesture",
+        "isApplePlatform"
       ],
       "useWhen": [
         "An ordinary surface-like child of a Pane or .kui-content stack needs the shared content-item geometry so its content edge lands at the standard 17px inset.",
@@ -4726,6 +4729,11 @@
         "catalogRoute": "?component=content-item",
         "documentation": "docs/layout.md",
         "recipe": "docs/layout.md#content-items"
+      },
+      "publicExportImports": {
+        "applySelection": "@kerfjs/ui/selection",
+        "selectionGesture": "@kerfjs/ui/selection",
+        "isApplePlatform": "@kerfjs/ui/selection"
       }
     },
     {
@@ -5167,10 +5175,14 @@
       "purpose": "Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.",
       "publicExports": [
         "ChoiceChips",
-        "fillColor"
+        "fillColor",
+        "wireChoiceChips",
+        "readChoiceChips"
       ],
       "publicExportImports": {
-        "fillColor": "@kerfjs/ui/css-values"
+        "fillColor": "@kerfjs/ui/css-values",
+        "wireChoiceChips": "@kerfjs/ui/wire-choice-chips",
+        "readChoiceChips": "@kerfjs/ui/wire-choice-chips"
       },
       "cssValueProps": [
         {
@@ -5229,14 +5241,15 @@
       ],
       "variants": [
         "color swatch, transparent (struck-through) swatch, icon, or text-only choices",
-        "single (radios) or multiple (checkboxes) selection",
+        "single (radios), multiple: 'toggle' (checkboxes), or multiple: true (a modifier-key multi-select listbox)",
         "default or compact size",
         "disabled group or disabled choices",
         "required (single selection only)"
       ],
       "accessibility": [
         "The single group is a named role=\"radiogroup\" of native radios: one Tab stop, arrow keys move the selection, and the checked radio submits the form value.",
-        "A multiple group is a named role=\"group\" of native checkboxes: each pill is a Tab stop, Space toggles it, its checked state is native, and every checked value submits under name.",
+        "A multiple: 'toggle' group is a named role=\"group\" of native checkboxes: each pill is a Tab stop, a click or Space toggles it alone, its checked state is native, and every checked value submits under name.",
+        "A multiple: true group is a named role=\"listbox\" with aria-multiselectable whose chips are role=\"option\" with aria-selected: one Tab stop (roving tabindex). A click selects one chip, Cmd on Apple platforms or Ctrl elsewhere toggles one, and Shift extends a range from the anchor; arrows, Home, and End move the selection, Shift with them extends it, Cmd/Ctrl with them moves focus alone, Space toggles, Shift+Space extends, and Cmd/Ctrl+A selects all. Hidden inputs submit every selected value under name, and wireChoiceChips fires change on the group.",
         "Every choice keeps a visible text label; the swatch is decorative and the selection adds a heavier border, so neither relies on color alone.",
         "Every color is a theme token, so a dark appearance scope (.wa-dark, .wa-invert, or any color-scheme: dark ancestor) restyles the chips for inverse chrome."
       ],
@@ -5252,7 +5265,15 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireChoiceChips",
+          "import": "@kerfjs/ui/wire-choice-chips",
+          "required": true,
+          "reason": "Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group. Radio and toggle groups use native inputs and need no wiring.",
+          "stateAttributes": []
+        }
+      ],
       "publicClasses": [
         "kui-choice-chips"
       ],

@@ -79,6 +79,8 @@ const entries = [
   'wire-text-fields',
   'checkbox',
   'wire-checkboxes',
+  'wire-choice-chips',
+  'selection',
   'radio-group',
   'switch',
   'edge-activity-indicator',
@@ -96,7 +98,7 @@ const entries = [
 export default defineConfig({
   entry: entries.map(
     (entry) =>
-      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'token-search-model' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
+      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry.endsWith('-register') || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'token-search-model' || entry === 'selection' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
   ),
   format: ['esm'],
   outDir: 'dist',

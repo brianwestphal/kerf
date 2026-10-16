@@ -371,6 +371,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   For selectable document tiles, use `selectionMode="multiple"` and a required
   `ariaLabel`, with `ContentItem selectionMode="multiple"` children. Wire
   `wireContentItems` for spatial arrow navigation and Enter/Space activation.
+  Resolve each activation with `applySelection` and `selectionGesture` from
+  `@kerfjs/ui/selection` (plain replaces, Cmd/Ctrl toggles, Shift extends).
 - **Give a layout root `fill`, not a frame `Pane`.** A Row, List, or Grid that
   is the sole layout root of a definite-height parent takes its full height
   with `fill` and carries safe `data-*` markers through `rootAttributes`.
@@ -809,9 +811,13 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   (`CssColor` such as `fillColor('#3b82f6')`, or `'transparent'` for the struck-through no-color dot) or an
   `icon`, and handle the delegated `action` on `change`. Never wrap a
   `SegmentedControl` or a joined button group instead. Set
-  `multiple` (with a `readonly Value[]` `value`) when any number may be on:
-  the same pills become native checkboxes in a `role="group"`, each a Tab stop
-  that Space toggles, and every checked value submits under `name`. On dark
+  `multiple: 'toggle'` (with a `readonly Value[]` `value`) when any number may
+  be on and each pill toggles alone: native checkboxes in a `role="group"`,
+  each a Tab stop that Space toggles. Set `multiple: true` for the desktop
+  multi-select: a listbox where a click selects one, Cmd/Ctrl toggles, Shift
+  extends, and hidden inputs submit under `name`; wire it with
+  `wireChoiceChips` (`@kerfjs/ui/wire-choice-chips`) and read the set with
+  `readChoiceChips`. On dark
   inverse chrome, place the chips in a dark appearance scope (`.wa-dark`)
   instead of restyling them.
 

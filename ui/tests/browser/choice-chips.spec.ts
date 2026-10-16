@@ -212,3 +212,76 @@ test('A multiple ChoiceChips group toggles native checkboxes by pointer and Spac
   expect(narrow.rows).toBeGreaterThan(1);
   expect(narrow.overflow).toBe(false);
 });
+
+test('A multiple: true ChoiceChips listbox selects with clicks, modifier keys, and the keyboard', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=choice-chips');
+  const listbox = page.getByRole('listbox', { name: 'Workspaces' });
+  await expect(listbox).toHaveAttribute('aria-multiselectable', 'true');
+  const option = (name: string) => listbox.getByRole('option', { name });
+  const selected = () =>
+    listbox
+      .locator('[aria-selected="true"]')
+      .evaluateAll((chips) =>
+        chips.map((chip) => (chip as HTMLElement).dataset.choiceValue),
+      );
+  const log = page.locator('.catalog-log');
+  const toggleKey = (await page.evaluate(() =>
+    /mac|iphone|ipad/i.test(globalThis.navigator.platform),
+  ))
+    ? 'Meta'
+    : 'Control';
+
+  expect(await selected()).toEqual(['atlas']);
+  await option('Cirrus').click();
+  expect(await selected()).toEqual(['cirrus']);
+  await expect(log).toHaveText('Selected: cirrus');
+  await option('Fjord').click({ modifiers: ['Shift'] });
+  // The archived Delta chip is disabled and stays out of the range.
+  expect(await selected()).toEqual(['cirrus', 'ember', 'fjord']);
+  await option('Atlas').click({ modifiers: [toggleKey] });
+  expect(await selected()).toEqual(['atlas', 'cirrus', 'ember', 'fjord']);
+  await option('Ember').click({ modifiers: [toggleKey] });
+  expect(await selected()).toEqual(['atlas', 'cirrus', 'fjord']);
+
+  // Keyboard: one Tab stop, arrows select, Shift extends, Space toggles.
+  await option('Borealis').click();
+  await expect(option('Borealis')).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect(option('Cirrus')).toBeFocused();
+  expect(await selected()).toEqual(['cirrus']);
+  await page.keyboard.press('Shift+ArrowRight');
+  await expect(option('Ember')).toBeFocused();
+  expect(await selected()).toEqual(['cirrus', 'ember']);
+  await page.keyboard.press(`${toggleKey}+ArrowLeft`);
+  await expect(option('Cirrus')).toBeFocused();
+  await page.keyboard.press(`${toggleKey}+ArrowLeft`);
+  await expect(option('Borealis')).toBeFocused();
+  await page.keyboard.press('Space');
+  expect(await selected()).toEqual(['borealis', 'cirrus', 'ember']);
+  await page.keyboard.press(`${toggleKey}+a`);
+  expect(await selected()).toEqual([
+    'atlas',
+    'borealis',
+    'cirrus',
+    'ember',
+    'fjord',
+  ]);
+  await expect(log).toHaveText(
+    'Selected: atlas, borealis, cirrus, ember, fjord',
+  );
+  const tabStops = await listbox
+    .getByRole('option')
+    .evaluateAll((chips) =>
+      chips.map((chip) => (chip as HTMLElement).tabIndex),
+    );
+  expect(tabStops.filter((index) => index === 0)).toHaveLength(1);
+  await expect(option('Borealis')).toHaveCSS('outline-style', 'solid');
+  if (browserName === 'chromium')
+    await listbox.screenshot({
+      path: 'test-results/choice-chips-listbox.png',
+    });
+});

@@ -32,12 +32,13 @@ Render one self-contained .kui-content child that owns its 8px inline margin, re
 ## Imports
 
 - JavaScript: `@kerfjs/ui/content-item` — exports `ContentItem`.
+- JavaScript: `@kerfjs/ui/selection` — exports `applySelection`, `selectionGesture`, `isApplePlatform`.
 - CSS: the browser build of `@kerfjs/ui/content-item` pulls its CSS automatically; import `@kerfjs/ui/content-item.css` manually only without the `browser` export condition.
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures-v1.md#kerfjsuicontent-item) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures-v1.md#kerfjsuicontent-item), [`@kerfjs/ui/selection`](../public-api-signatures-v1.md#kerfjsuiselection) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 

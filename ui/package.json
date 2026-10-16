@@ -449,6 +449,14 @@
       "types": "./dist/wire-checkboxes.d.ts",
       "import": "./dist/wire-checkboxes.js"
     },
+    "./wire-choice-chips": {
+      "types": "./dist/wire-choice-chips.d.ts",
+      "import": "./dist/wire-choice-chips.js"
+    },
+    "./selection": {
+      "types": "./dist/selection.d.ts",
+      "import": "./dist/selection.js"
+    },
     "./backdrop-image": {
       "types": "./dist/backdrop-image.d.ts",
       "browser": "./dist/browser/backdrop-image.js",

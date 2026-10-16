@@ -29,12 +29,14 @@ import {
   openPopupMenuAt,
   type PopupMenuElement,
 } from '@kerfjs/ui/popup-menu';
+import { applySelection, selectionGesture } from '@kerfjs/ui/selection';
 import { closeDialog, openDialog } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import { wireCheckboxes } from '@kerfjs/ui/wire-checkboxes';
+import { readChoiceChips, wireChoiceChips } from '@kerfjs/ui/wire-choice-chips';
 import { wireComboboxes } from '@kerfjs/ui/wire-comboboxes';
 import { wireComposers } from '@kerfjs/ui/wire-composers';
 import {
@@ -134,6 +136,7 @@ import {
   choiceChipsIntents,
   choiceChipsLabels,
   choiceChipsView,
+  choiceChipsWorkspaces,
   collapsibleSearchOpen,
   comboboxTags,
   contentCardChoice,
@@ -613,6 +616,33 @@ mount(app, () => {
 if (findCatalogEntry(initialDemo)?.source === 'webawesome')
   revealCatalogEntry(app, initialDemo, { block: 'center' });
 
+// Multi-select List and Grid cards use the shared desktop selection model:
+// a click (or Enter/Space) selects one card, Cmd/Ctrl toggles one, and Shift
+// extends a range from the anchor kept per selection group.
+const selectionAnchors = new WeakMap<Element, string>();
+function selectCard(
+  event: Event,
+  card: HTMLElement,
+  selected: readonly string[],
+): string[] {
+  const group = card.closest('[aria-multiselectable="true"]')!;
+  const items = Array.from(
+    group.querySelectorAll<HTMLElement>(
+      '[data-selection-mode="multiple"][data-item-id]:not([data-disabled="true"])',
+    ),
+  )
+    .filter((item) => item.closest('[aria-multiselectable="true"]') === group)
+    .map((item) => item.dataset.itemId!);
+  const result = applySelection({
+    items,
+    selected,
+    anchor: selectionAnchors.get(group),
+    target: card.dataset.itemId!,
+    gesture: selectionGesture(event as MouseEvent),
+  });
+  selectionAnchors.set(group, result.anchor);
+  return result.selected;
+}
 const stopActions = delegateActions(app, 'click', {
   'width-refresh': () => {
     actionLog.value = 'Workspace refreshed';
@@ -1197,18 +1227,20 @@ const stopActions = delegateActions(app, 'click', {
   },
   'select-rich-card': (event, element) => {
     if (!isContentItemActivation(event, element as HTMLElement)) return;
-    const id = element.getAttribute('data-item-id') ?? '';
-    contentCardSelections.value = contentCardSelections.value.includes(id)
-      ? contentCardSelections.value.filter((selected) => selected !== id)
-      : [...contentCardSelections.value, id];
+    contentCardSelections.value = selectCard(
+      event,
+      element as HTMLElement,
+      contentCardSelections.value,
+    );
     actionLog.value = `Selected ${contentCardSelections.value.length} demand lines`;
   },
   'select-grid-tile': (event, element) => {
     if (!isContentItemActivation(event, element as HTMLElement)) return;
-    const id = element.getAttribute('data-item-id') ?? '';
-    gridTileSelections.value = gridTileSelections.value.includes(id)
-      ? gridTileSelections.value.filter((selected) => selected !== id)
-      : [...gridTileSelections.value, id];
+    gridTileSelections.value = selectCard(
+      event,
+      element as HTMLElement,
+      gridTileSelections.value,
+    );
     actionLog.value = `Selected ${gridTileSelections.value.length} document tiles`;
   },
   'log-sidebar': () => {
@@ -1756,6 +1788,7 @@ const stopComboboxes = wireComboboxes(app, {
 const stopComposers = wireComposers(app);
 const stopTextFields = wireTextFields(app);
 const stopCheckboxes = wireCheckboxes(app);
+const stopChoiceChips = wireChoiceChips(app);
 const stopFilePickers = wireFilePickers(app, {
   onFiles: ({ files, via }) => {
     filePickerFiles.value = [
@@ -2005,6 +2038,14 @@ const stopChoiceChipsDemo = delegateActions(app, 'change', {
     actionLog.value = `${label}: ${input.checked ? 'on' : 'off'}`;
   },
   'choice-chips-demo': (_event, element) => {
+    if (element.getAttribute('role') === 'listbox') {
+      // A multi-select listbox fires change on the group itself.
+      const selected = readChoiceChips(element);
+      if (element.id === 'choice-chips-workspaces')
+        choiceChipsWorkspaces.value = selected;
+      actionLog.value = `Selected: ${selected.join(', ') || 'none'}`;
+      return;
+    }
     const input = element as HTMLInputElement;
     const group = input.closest('[data-component="choice-chips"]')?.id;
     if (group === 'choice-chips-color') choiceChipsColor.value = input.value;
@@ -2168,6 +2209,7 @@ window.addEventListener(
     stopFilePickers();
     stopTextFields();
     stopCheckboxes();
+    stopChoiceChips();
     stopComboboxes();
     stopListItemDragOver();
     stopListItemDrop();

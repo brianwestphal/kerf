@@ -4289,9 +4289,11 @@
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [{ "id": "value", "owner": "controlled", "required": false }],
       "wiring": {
-        "required": false,
-        "helpers": [],
-        "obligations": [],
+        "required": true,
+        "helpers": ["wireChoiceChips"],
+        "obligations": [
+          "Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group. Radio and toggle groups use native inputs and need no wiring."
+        ],
         "stateAttributes": []
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },

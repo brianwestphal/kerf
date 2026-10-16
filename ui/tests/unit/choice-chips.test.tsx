@@ -202,7 +202,7 @@ describe('ChoiceChips', () => {
         id: 'intents',
         name: 'intents',
         label: 'Intents',
-        multiple: true,
+        multiple: 'toggle',
         value: ['bug', 'question'],
         action: 'toggle-intent',
         size: 'compact',
@@ -255,7 +255,7 @@ describe('ChoiceChips', () => {
       ChoiceChips({
         name: 'intents',
         label: 'Intents',
-        multiple: true,
+        multiple: 'toggle',
         choices: colors,
       }),
     );
@@ -267,7 +267,7 @@ describe('ChoiceChips', () => {
         ChoiceChips({
           name: 'colors',
           labelledBy: 'colors-label',
-          multiple: true,
+          multiple: 'toggle',
           value: ['transparent', 'teal'],
           choices: colors,
         }),
@@ -295,7 +295,7 @@ describe('ChoiceChips', () => {
       ChoiceChips({
         name: 'colors',
         label: 'Colors',
-        multiple: true,
+        multiple: 'toggle',
         value: value.value,
         choices: colors,
       }),

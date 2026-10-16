@@ -237,8 +237,19 @@ test('multi-select rich rows keep selection and nested controls independent', as
   await expect(first).toHaveAttribute('aria-selected', 'true');
   await first.press('ArrowDown');
   await expect(second).toBeFocused();
+  // Rows use the desktop selection model: plain Space selects only the
+  // focused row, while Cmd (Apple) or Ctrl elsewhere adds it to the set.
+  const toggleKey = (await page.evaluate(() =>
+    /mac|iphone|ipad/i.test(globalThis.navigator.platform),
+  ))
+    ? 'Meta'
+    : 'Control';
   await second.focus();
   await second.press('Space');
+  await expect(second).toHaveAttribute('aria-selected', 'true');
+  await expect(first).toHaveAttribute('aria-selected', 'false');
+  await first.focus();
+  await first.press(`${toggleKey}+Space`);
   await expect(second).toHaveAttribute('aria-selected', 'true');
   await expect(first).toHaveAttribute('aria-selected', 'true');
 
