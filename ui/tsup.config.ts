@@ -55,6 +55,8 @@ const entries = [
   'wire-tab-navigator',
   'wire-workbench',
   'loading-spinner',
+  'progress-bar',
+  'progress-ring',
   'skeleton',
   'sunken-panel',
   'select',

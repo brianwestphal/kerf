@@ -22,6 +22,8 @@
 @import "./catalog.css";
 @import "./tab-bar.css";
 @import "./loading-spinner.css";
+@import "./progress-bar.css";
+@import "./progress-ring.css";
 @import "./skeleton.css";
 @import "./select.css";
 @import "./popup-menu.css";

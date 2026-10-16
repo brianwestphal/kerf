@@ -772,6 +772,10 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   native details element with a DisclosureArrow on content-item geometry,
   `plain` / `framed` / `sunken`; Disclosures sharing a `name` form an
   accordion. Never use `wa-details` or `wa-accordion`.
+- **Show progress with `ProgressBar` or `ProgressRing`** (`@kerfjs/ui/progress-bar`,
+  `@kerfjs/ui/progress-ring`): `value` of `max` (omit `value` for
+  indeterminate), a `label`, `valueText`, tones. Never use `wa-progress-bar` or
+  `wa-progress-ring`.
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
   `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
   selected text, use the public color, font-size, and font-weight tokens; the

@@ -535,6 +535,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/disclosure.tsx",
     "componentSource": "ui/src/components/surfaces/disclosure/disclosure.tsx",
+    "designTemplate": "ui/docs/design/templates/disclosure.svg",
     "documentation": "ui/docs/disclosure.md"
   },
   {
@@ -921,6 +922,30 @@ export const generatedKerfCatalog = [
     "demoSource": "ui/ux-demo/demos/loading-spinner.tsx",
     "componentSource": "ui/src/components/feedback/loading-spinner/loading-spinner.tsx",
     "documentation": "ui/docs/component-selection.md"
+  },
+  {
+    "id": "progress-bar",
+    "name": "ProgressBar",
+    "category": "Feedback",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Show how far a measurable task has gone (an upload, a migration, a quota) or that work of unknown size is under way.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/progress-bar.tsx",
+    "componentSource": "ui/src/components/feedback/progress-bar/progress-bar.tsx",
+    "documentation": "ui/docs/progress.md"
+  },
+  {
+    "id": "progress-ring",
+    "name": "ProgressRing",
+    "category": "Feedback",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Show compact progress (a claim's time remaining, a per-row upload) where a bar does not fit.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/progress-ring.tsx",
+    "componentSource": "ui/src/components/feedback/progress-ring/progress-ring.tsx",
+    "documentation": "ui/docs/progress.md"
   },
   {
     "id": "skeleton",
@@ -1798,8 +1823,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Linear indicator for determinate or indeterminate progress.",
-    "recommendation": "supported",
+    "description": "Ecosystem progress bar; use the Kerf ProgressBar.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1810,8 +1835,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Circular indicator for determinate or indeterminate progress.",
-    "recommendation": "supported",
+    "description": "Ecosystem progress ring; use the Kerf ProgressRing.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"

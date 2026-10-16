@@ -1,0 +1,168 @@
+/* A label row above a native <progress> track, on the shared block-content
+   inset and the full available width. The track resets the
+   platform's appearance in every engine and paints the fill in the tone; an
+   indeterminate bar (no value) sweeps a band across the track instead. */
+.kui-progress-bar {
+  --_kui-progress-bar-fill: var(--kui-color-brand-fill-loud);
+  --_kui-progress-bar-track: var(--kui-color-neutral-fill-normal);
+  --_kui-progress-bar-height: remify(6px);
+
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  align-self: stretch;
+  flex-direction: column;
+  gap: var(--kui-space-2xs);
+  /* The shared block-content inset (a transparent 1px border and 8px
+     padding), so the label sits on the same text column as Text. */
+  padding: var(--kui-layout-item-padding, remify(8px));
+  border: var(--kui-layout-item-border-width, 1px) solid transparent;
+}
+
+.kui-progress-bar[data-size="compact"] {
+  --_kui-progress-bar-height: remify(4px);
+}
+
+.kui-progress-bar[data-tone="success"] {
+  --_kui-progress-bar-fill: var(--kui-color-success-fill-loud);
+}
+
+.kui-progress-bar[data-tone="warning"] {
+  --_kui-progress-bar-fill: var(--kui-color-warning-fill-loud);
+}
+
+.kui-progress-bar[data-tone="danger"] {
+  --_kui-progress-bar-fill: var(--kui-color-danger-fill-loud);
+}
+
+.kui-progress-bar__header {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: var(--kui-space-xs);
+  font-size: var(--kui-font-s, 0.875rem);
+  line-height: 1.4;
+}
+
+.kui-progress-bar__label {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.kui-progress-bar__value {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--kui-color-text-quiet);
+  font-variant-numeric: tabular-nums;
+}
+
+.kui-progress-bar__track {
+  display: block;
+  width: 100%;
+  height: var(--_kui-progress-bar-height);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--kui-radius-pill);
+  color: var(--_kui-progress-bar-fill);
+  background: var(--_kui-progress-bar-track);
+  appearance: none;
+}
+
+.kui-progress-bar__track::-webkit-progress-bar {
+  border-radius: inherit;
+  background: var(--_kui-progress-bar-track);
+}
+
+.kui-progress-bar__track::-webkit-progress-value {
+  border-radius: inherit;
+  background: var(--_kui-progress-bar-fill);
+  transition: inline-size 200ms ease;
+}
+
+.kui-progress-bar__track::-moz-progress-bar {
+  border-radius: inherit;
+  background: var(--_kui-progress-bar-fill);
+}
+
+/* Indeterminate: a band sweeps across the track. */
+.kui-progress-bar__track:indeterminate {
+  background:
+    linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--_kui-progress-bar-fill) 35%,
+        var(--_kui-progress-bar-fill) 65%,
+        transparent 100%
+      )
+      no-repeat,
+    var(--_kui-progress-bar-track);
+  background-size:
+    40% 100%,
+    auto;
+  animation: kui-progress-bar-sweep 1.4s ease-in-out infinite;
+}
+
+.kui-progress-bar__track:indeterminate::-webkit-progress-bar {
+  background: transparent;
+}
+
+.kui-progress-bar__track:indeterminate::-moz-progress-bar {
+  background: transparent;
+}
+
+@keyframes kui-progress-bar-sweep {
+  from {
+    background-position:
+      -60% 0,
+      0 0;
+  }
+
+  to {
+    background-position:
+      160% 0,
+      0 0;
+  }
+}
+
+/* Without motion the indeterminate band holds still in the middle. */
+@media (prefers-reduced-motion: reduce) {
+  .kui-progress-bar__track:indeterminate {
+    background-position:
+      50% 0,
+      0 0;
+    animation: none;
+  }
+
+  .kui-progress-bar__track::-webkit-progress-value {
+    transition: none;
+  }
+}
+
+:root[data-kui-effects="static"] .kui-progress-bar__track:indeterminate {
+  background-position:
+    50% 0,
+    0 0;
+  animation: none;
+}
+
+@media (forced-colors: active) {
+  .kui-progress-bar__track {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+
+  .kui-progress-bar__track::-webkit-progress-value,
+  .kui-progress-bar__track::-moz-progress-bar {
+    background: Highlight;
+  }
+
+  .kui-progress-bar__track:indeterminate {
+    background: linear-gradient(90deg, Highlight, Highlight) no-repeat 50% 0 /
+      40% 100%;
+  }
+}

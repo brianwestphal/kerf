@@ -6122,3 +6122,109 @@ declare function EdgeActivityIndicator({ busy, message, tone, inset, className, 
 
 export { EdgeActivityIndicator, type EdgeActivityIndicatorProps };
 ```
+
+## `@kerfjs/ui/progress-bar`
+
+```ts
+import * as kerfjs from 'kerfjs';
+
+/** The fill color: `brand` (default), or a status tone. */
+type ProgressTone = 'brand' | 'success' | 'warning' | 'danger';
+/** `default` is a 6px track; `compact` is 4px, for a row or table cell. */
+type ProgressBarSize = 'default' | 'compact';
+/**
+ * Application `data-*` identity on the ProgressBar root, such as `data-key`;
+ * its own configuration attributes stay protected.
+ */
+type ProgressBarRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+type ProgressBarProps = {
+    /**
+     * Work done so far, from 0 to `max`. Omit it for indeterminate progress
+     * (work whose size is unknown), which animates instead.
+     */
+    value?: number;
+    /** The amount that means done (default 1). */
+    max?: number;
+    /**
+     * Spoken progress in place of the percentage, such as "3 of 12 files". With
+     * `showValue` it is also the visible text.
+     */
+    valueText?: string;
+    /** Show the value (or `valueText`) at the end of the label row. */
+    showValue?: boolean;
+    tone?: ProgressTone;
+    size?: ProgressBarSize;
+    id?: string;
+    rootAttributes?: ProgressBarRootAttributes;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+} & ({
+    /** A visible label above the bar that also names it. */
+    label: string;
+    ariaLabel?: never;
+} | {
+    label?: never;
+    /** The bar's accessible name when it shows no visible label. */
+    ariaLabel: string;
+});
+/**
+ * A linear progress indicator on the native `<progress>` element: determinate
+ * (`value` of `max`) or indeterminate (no `value`, an animated sweep), named
+ * by a visible `label` or an `ariaLabel`, toned, and in two track sizes. The
+ * native element carries the progressbar role and its value to assistive
+ * technology; `valueText` replaces the spoken percentage.
+ */
+declare function ProgressBar({ value, max, valueText, showValue, label, ariaLabel, tone, size, id, rootAttributes, className, slot, }: ProgressBarProps): kerfjs.SafeHtml;
+
+export { ProgressBar, type ProgressBarProps, type ProgressBarRootAttributes, type ProgressBarSize, type ProgressTone };
+```
+
+## `@kerfjs/ui/progress-ring`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { ProgressTone } from './progress-bar.js';
+
+/**
+ * The ring's diameter: `small` (16px) sits in a line of text, `medium` (24px,
+ * the default) beside an icon in a row or toolbar, and `large` (40px) on its
+ * own.
+ */
+type ProgressRingSize = 'small' | 'medium' | 'large';
+/**
+ * Application `data-*` identity on the ProgressRing root, such as `data-key`;
+ * its own configuration attributes stay protected.
+ */
+type ProgressRingRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+interface ProgressRingProps {
+    /**
+     * Work done so far, from 0 to `max`. Omit it for indeterminate progress,
+     * which spins a short arc instead.
+     */
+    value?: number;
+    /** The amount that means done (default 1). */
+    max?: number;
+    /** The ring's accessible name, such as "Claim time remaining". */
+    label: string;
+    /** Spoken progress in place of the percentage, such as "12 minutes left". */
+    valueText?: string;
+    tone?: ProgressTone;
+    size?: ProgressRingSize;
+    id?: string;
+    rootAttributes?: ProgressRingRootAttributes;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A circular progress indicator: an SVG track and arc, determinate (`value`
+ * of `max`, filling clockwise from the top) or indeterminate (no `value`, a
+ * spinning arc), sized to sit inline in text, a row, or a toolbar. It is a
+ * `role="progressbar"` named by `label`, with `aria-valuenow` (as a
+ * percentage) or `valueText`.
+ */
+declare function ProgressRing({ value, max, label, valueText, tone, size, id, rootAttributes, className, slot, }: ProgressRingProps): kerfjs.SafeHtml;
+
+export { ProgressRing, type ProgressRingProps, type ProgressRingRootAttributes, type ProgressRingSize, ProgressTone };
+```

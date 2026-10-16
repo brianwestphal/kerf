@@ -305,6 +305,16 @@
       "types": "./dist/wire-workbench.d.ts",
       "import": "./dist/wire-workbench.js"
     },
+    "./progress-bar": {
+      "types": "./dist/progress-bar.d.ts",
+      "browser": "./dist/browser/progress-bar.js",
+      "import": "./dist/progress-bar.js"
+    },
+    "./progress-ring": {
+      "types": "./dist/progress-ring.d.ts",
+      "browser": "./dist/browser/progress-ring.js",
+      "import": "./dist/progress-ring.js"
+    },
     "./loading-spinner": {
       "types": "./dist/loading-spinner.d.ts",
       "browser": "./dist/browser/loading-spinner.js",
@@ -542,6 +552,8 @@
     "./collapsible-panel.css": "./dist/styles/collapsible-panel.css",
     "./tab-navigator.css": "./dist/styles/tab-navigator.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
+    "./progress-bar.css": "./dist/styles/progress-bar.css",
+    "./progress-ring.css": "./dist/styles/progress-ring.css",
     "./select.css": "./dist/styles/select.css",
     "./popup-menu.css": "./dist/styles/popup-menu.css",
     "./anchored-surface.css": "./dist/styles/anchored-surface.css",

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 152000,
-  "totalJavaScriptGzip": 406300,
+  "totalJavaScriptGzip": 408100,
   "measuredLargestJavaScriptGzip": 151998,
-  "measuredTotalJavaScriptGzip": 406284,
+  "measuredTotalJavaScriptGzip": 408016,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5299,6 +5299,22 @@
         "measuredTotalJavaScriptGzip": 406284,
         "largestJavaScriptGzip": 152000,
         "totalJavaScriptGzip": 406300
+      }
+    },
+    {
+      "at": "2026-10-16T07:56:20.263Z",
+      "reason": "ProgressBar and ProgressRing catalog pages with a shared step action",
+      "old": {
+        "measuredLargestJavaScriptGzip": 151998,
+        "measuredTotalJavaScriptGzip": 406284,
+        "largestJavaScriptGzip": 152000,
+        "totalJavaScriptGzip": 406300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 151998,
+        "measuredTotalJavaScriptGzip": 408016,
+        "largestJavaScriptGzip": 152000,
+        "totalJavaScriptGzip": 408100
       }
     }
   ]

@@ -6296,6 +6296,132 @@
       }
     },
     {
+      "key": "@kerfjs/ui:progress-bar",
+      "package": "@kerfjs/ui",
+      "id": "progress-bar",
+      "name": "ProgressBar",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the value, max, and valueText",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the label or ariaLabel",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "the tone and size", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "It fills the available width with the shared block-content inset (a transparent 1px border and 8px padding); the label row sits 4px above the track."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The native progress element is the progressbar: a visible label names it through aria-labelledby (or ariaLabel without one), and valueText replaces the spoken percentage.",
+          "The indeterminate sweep holds still under prefers-reduced-motion or the static-effects switch; forced colors draw a CanvasText-bordered track with a Highlight fill."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-progress-bar",
+        "publicClasses": [
+          "kui-progress-bar",
+          "kui-progress-bar__header",
+          "kui-progress-bar__label",
+          "kui-progress-bar__value",
+          "kui-progress-bar__track"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:progress-ring",
+      "package": "@kerfjs/ui",
+      "id": "progress-ring",
+      "name": "ProgressRing",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the value, max, and valueText",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "the label", "owner": "application", "required": false },
+        { "id": "the tone and size", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "Its box is exactly its diameter, so it aligns with icons of the same size."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "It is role progressbar named by label, with aria-valuenow as a percentage (or valueText); the SVG is decorative.",
+          "The spin holds still under prefers-reduced-motion or the static-effects switch; forced colors draw a GrayText track and a Highlight arc."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-progress-ring",
+        "publicClasses": [
+          "kui-progress-ring",
+          "kui-progress-ring__track",
+          "kui-progress-ring__arc"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:skeleton",
       "package": "@kerfjs/ui",
       "id": "skeleton",

@@ -63,6 +63,8 @@ import { em, fillColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
 import { Disclosure } from '../dist/disclosure.js';
 import { List } from '../dist/list.js';
+import { ProgressBar } from '../dist/progress-bar.js';
+import { ProgressRing } from '../dist/progress-ring.js';
 import { ListActionRow } from '../dist/list-action-row.js';
 import { ListHeader } from '../dist/list-header.js';
 import { ListItem } from '../dist/list-item.js';
@@ -680,6 +682,101 @@ export const COMPONENTS = {
                 appearance: 'sunken',
                 children: Text({ children: 'npm run build' }),
               }),
+            ],
+          }),
+      },
+    ],
+  },
+  'progress-bar': {
+    css: ['foundation', 'layout', 'list', 'progress-bar'],
+    selector: '#frame',
+    width: 460,
+    frameWidth: 420,
+    variants: [
+      {
+        id: 'determinate',
+        label: 'Labeled with a Readout',
+        height: 60,
+        render: () =>
+          ProgressBar({
+            label: 'Uploading Files',
+            value: 4,
+            max: 12,
+            valueText: '4 of 12 files',
+            showValue: true,
+          }),
+      },
+      {
+        id: 'tones',
+        label: 'Tones and Compact',
+        height: 150,
+        render: () =>
+          List({
+            gap: 'xs',
+            children: [
+              ProgressBar({
+                label: 'Confidence',
+                value: 0.82,
+                tone: 'success',
+                showValue: true,
+              }),
+              ProgressBar({
+                label: 'Storage Used',
+                value: 0.93,
+                tone: 'warning',
+                showValue: true,
+              }),
+              ProgressBar({
+                ariaLabel: 'Sync Progress',
+                value: 0.4,
+                size: 'compact',
+              }),
+            ],
+          }),
+      },
+    ],
+  },
+  'progress-ring': {
+    css: ['foundation', 'layout', 'row', 'progress-ring'],
+    selector: '#frame',
+    width: 300,
+    frameWidth: 'max-content',
+    variants: [
+      {
+        id: 'sizes',
+        label: 'Small, Medium, and Large',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'm',
+            vAlign: 'middle',
+            children: [
+              ProgressRing({
+                label: 'Upload, small',
+                value: 0.33,
+                size: 'small',
+              }),
+              ProgressRing({ label: 'Upload, medium', value: 0.33 }),
+              ProgressRing({
+                label: 'Upload, large',
+                value: 0.33,
+                size: 'large',
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'tones',
+        label: 'Tones',
+        height: 32,
+        render: () =>
+          Row({
+            gap: 'm',
+            vAlign: 'middle',
+            children: [
+              ProgressRing({ label: 'Done', value: 0.75, tone: 'success' }),
+              ProgressRing({ label: 'Quota', value: 0.9, tone: 'warning' }),
+              ProgressRing({ label: 'Budget', value: 0.98, tone: 'danger' }),
             ],
           }),
       },

@@ -40,6 +40,8 @@ import { MessageComposerDemo } from './message-composer.js';
 import { NavStackDemo } from './nav-stack.js';
 import { PaneDemo } from './pane.js';
 import { PopupMenuDemo } from './popup-menu.js';
+import { ProgressBarDemo } from './progress-bar.js';
+import { ProgressRingDemo } from './progress-ring.js';
 import { RadioGroupDemo } from './radio-group.js';
 import { ResizeDemo } from './resize.js';
 import { RowDemo } from './row.js';
@@ -84,6 +86,8 @@ export const demos = {
   'choice-chips': ChoiceChipsDemo,
   disclosure: DisclosureDemo,
   'list-detail-dialog': ListDetailDialogDemo,
+  'progress-bar': ProgressBarDemo,
+  'progress-ring': ProgressRingDemo,
   'message-composer': MessageComposerDemo,
   toast: ToastDemo,
   tooltip: TooltipDemo,

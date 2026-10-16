@@ -86,6 +86,8 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [EdgeActivityIndicator](./edge-activity-indicator.md) — Signal ambient background activity (server work, sync) along the top edge of the viewport without allocating layout or taking the pointer, with Kerf-owned motion and reduced-motion handling.
 - [EmptyState](./empty-state.md) — Actionable empty and busy content states.
 - [LoadingSpinner](./loading-spinner.md) — Meaningfully labeled or decorative progress.
+- [ProgressBar](./progress-bar.md) — Show how far a measurable task has gone (an upload, a migration, a quota) or that work of unknown size is under way.
+- [ProgressRing](./progress-ring.md) — Show compact progress (a claim's time remaining, a per-row upload) where a bar does not fit.
 - [Skeleton](./skeleton.md) — A subtle, unanimated loading placeholder block for a not-yet-known value slot.
 
 ## Web Awesome — Actions
@@ -146,8 +148,8 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 - [Badge](./wa-badge.md) (avoid) — Ecosystem badge; use Kerf Badge.
 - [Callout](./wa-callout.md) (avoid) — Ecosystem callout; use Kerf StateBanner.
-- [Progress Bar](./wa-progress-bar.md) — Linear indicator for determinate or indeterminate progress.
-- [Progress Ring](./wa-progress-ring.md) — Circular indicator for determinate or indeterminate progress.
+- [Progress Bar](./wa-progress-bar.md) (avoid) — Ecosystem progress bar; use the Kerf ProgressBar.
+- [Progress Ring](./wa-progress-ring.md) (avoid) — Ecosystem progress ring; use the Kerf ProgressRing.
 - [Skeleton](./wa-skeleton.md) (avoid) — Ecosystem placeholder; use Kerf Skeleton.
 - [Spinner](./wa-spinner.md) (avoid) — Ecosystem spinner; use Kerf LoadingSpinner.
 - [Tag](./wa-tag.md) (avoid) — Ecosystem tag; use Kerf Chip.

@@ -1,0 +1,91 @@
+/* An SVG track and arc. The arc starts at the top and fills clockwise; an
+   indeterminate ring spins a quarter arc. */
+.kui-progress-ring {
+  --_kui-progress-ring-fill: var(--kui-color-brand-fill-loud);
+
+  display: inline-flex;
+  width: var(--_kui-progress-ring-size, remify(24px));
+  height: var(--_kui-progress-ring-size, remify(24px));
+  flex: none;
+  vertical-align: middle;
+}
+
+.kui-progress-ring[data-tone="success"] {
+  --_kui-progress-ring-fill: var(--kui-color-success-fill-loud);
+}
+
+.kui-progress-ring[data-tone="warning"] {
+  --_kui-progress-ring-fill: var(--kui-color-warning-fill-loud);
+}
+
+.kui-progress-ring[data-tone="danger"] {
+  --_kui-progress-ring-fill: var(--kui-color-danger-fill-loud);
+}
+
+.kui-progress-ring svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  rotate: -90deg;
+}
+
+.kui-progress-ring__track,
+.kui-progress-ring__arc {
+  fill: none;
+  stroke-width: 3;
+}
+
+.kui-progress-ring__track {
+  stroke: var(--kui-color-neutral-fill-normal);
+}
+
+.kui-progress-ring__arc {
+  stroke: var(--_kui-progress-ring-fill);
+  stroke-linecap: round;
+  transition: stroke-dasharray 200ms ease;
+}
+
+/* A zero value draws no dot. */
+.kui-progress-ring[aria-valuenow="0"] .kui-progress-ring__arc {
+  stroke-linecap: butt;
+}
+
+.kui-progress-ring[data-indeterminate] svg {
+  animation: kui-progress-ring-spin 1s linear infinite;
+}
+
+@keyframes kui-progress-ring-spin {
+  from {
+    rotate: -90deg;
+  }
+
+  to {
+    rotate: 270deg;
+  }
+}
+
+/* Without motion an indeterminate ring holds a still quarter arc. */
+@media (prefers-reduced-motion: reduce) {
+  .kui-progress-ring[data-indeterminate] svg {
+    animation: none;
+  }
+
+  .kui-progress-ring__arc {
+    transition: none;
+  }
+}
+
+:root[data-kui-effects="static"] .kui-progress-ring[data-indeterminate] svg {
+  animation: none;
+}
+
+@media (forced-colors: active) {
+  .kui-progress-ring__track {
+    stroke: GrayText;
+  }
+
+  .kui-progress-ring__arc {
+    stroke: Highlight;
+  }
+}

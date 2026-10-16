@@ -7794,6 +7794,170 @@
       }
     },
     {
+      "id": "progress-bar",
+      "name": "ProgressBar",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A linear progress indicator on the native progress element: determinate value of max or an indeterminate sweep, a visible label or ariaLabel, an optional value or valueText readout, brand or status tones, and a default or compact track.",
+      "uses": [],
+      "purpose": "Show how far a measurable task has gone (an upload, a migration, a quota) or that work of unknown size is under way.",
+      "publicExports": [
+        "ProgressBar",
+        "ProgressBarProps",
+        "ProgressBarSize",
+        "ProgressBarRootAttributes",
+        "ProgressTone"
+      ],
+      "useWhen": [
+        "A task reports measurable progress (files uploaded, steps completed, quota used): pass value and max, a label, and showValue or valueText for the readout.",
+        "Work of unknown length is under way and a full-width indicator fits: omit value for the indeterminate sweep."
+      ],
+      "avoidWhen": [
+        "Do not use it for a small inline busy state; use LoadingSpinner or an indeterminate ProgressRing.",
+        "Do not use it for a scale reading that is not progress (a rating, a level); use a native meter.",
+        "Do not use wa-progress-bar."
+      ],
+      "alternatives": [
+        {
+          "id": "progress-ring",
+          "relationship": "nearest",
+          "when": "Use a ProgressRing where a bar does not fit, inline in a row or toolbar."
+        },
+        {
+          "id": "loading-spinner",
+          "relationship": "nearest",
+          "when": "Use a LoadingSpinner for a brief busy state with no measurable progress."
+        }
+      ],
+      "appOwns": [
+        "the value, max, and valueText",
+        "the label or ariaLabel",
+        "the tone and size"
+      ],
+      "variants": [
+        "determinate with a label and value readout",
+        "indeterminate sweep",
+        "brand, success, warning, or danger tone",
+        "default 6px or compact 4px track",
+        "ariaLabel without a visible label"
+      ],
+      "accessibility": [
+        "The native progress element is the progressbar: a visible label names it through aria-labelledby (or ariaLabel without one), and valueText replaces the spoken percentage.",
+        "The indeterminate sweep holds still under prefers-reduced-motion or the static-effects switch; forced colors draw a CanvasText-bordered track with a Highlight fill."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "It fills the available width with the shared block-content inset (a transparent 1px border and 8px padding); the label row sits 4px above the track."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/progress-bar",
+        "browserImport": "@kerfjs/ui/progress-bar",
+        "manualCssImport": "@kerfjs/ui/progress-bar.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-progress-bar",
+        "kui-progress-bar__header",
+        "kui-progress-bar__label",
+        "kui-progress-bar__value",
+        "kui-progress-bar__track"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=progress-bar",
+        "documentation": "docs/progress.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "progress-ring",
+      "name": "ProgressRing",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A circular progress indicator: an SVG track and arc, determinate (filling clockwise from the top) or an indeterminate spinning arc, in small, medium, and large sizes to sit inline in text, a row, or a toolbar, as a named progressbar.",
+      "uses": [],
+      "purpose": "Show compact progress (a claim's time remaining, a per-row upload) where a bar does not fit.",
+      "publicExports": [
+        "ProgressRing",
+        "ProgressRingProps",
+        "ProgressRingSize",
+        "ProgressRingRootAttributes",
+        "ProgressTone"
+      ],
+      "useWhen": [
+        "Progress belongs beside an item in a row, a toolbar, or a line of text: pass value and max, a label, and valueText for speech.",
+        "A compact indicator of work of unknown length: omit value for the spinning arc."
+      ],
+      "avoidWhen": [
+        "Do not use it where a full-width readout fits and the amount matters; use ProgressBar.",
+        "Do not use wa-progress-ring."
+      ],
+      "alternatives": [
+        {
+          "id": "progress-bar",
+          "relationship": "nearest",
+          "when": "Use a ProgressBar where a full-width bar with a label row fits."
+        },
+        {
+          "id": "loading-spinner",
+          "relationship": "nearest",
+          "when": "Use a LoadingSpinner for a brief busy glyph inside a control."
+        }
+      ],
+      "appOwns": [
+        "the value, max, and valueText",
+        "the label",
+        "the tone and size"
+      ],
+      "variants": [
+        "determinate arc",
+        "indeterminate spinning arc",
+        "small (16px), medium (24px), or large (40px)",
+        "brand, success, warning, or danger tone"
+      ],
+      "accessibility": [
+        "It is role progressbar named by label, with aria-valuenow as a percentage (or valueText); the SVG is decorative.",
+        "The spin holds still under prefers-reduced-motion or the static-effects switch; forced colors draw a GrayText track and a Highlight arc."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "Its box is exactly its diameter, so it aligns with icons of the same size."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/progress-ring",
+        "browserImport": "@kerfjs/ui/progress-ring",
+        "manualCssImport": "@kerfjs/ui/progress-ring.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-progress-ring",
+        "kui-progress-ring__track",
+        "kui-progress-ring__arc"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=progress-ring",
+        "documentation": "docs/progress.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "skeleton",
       "name": "Skeleton",
       "category": "Feedback",
@@ -9916,19 +10080,24 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Linear indicator for determinate or indeterminate progress.",
+      "description": "Ecosystem progress bar; use the Kerf ProgressBar.",
       "uses": [],
-      "purpose": "Linear indicator for determinate or indeterminate progress.",
+      "purpose": "Ecosystem progress bar; use the Kerf ProgressBar.",
       "customElement": "wa-progress-bar",
       "useWhen": [
         "Linear indicator for determinate or indeterminate progress."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use ProgressBar (@kerfjs/ui/progress-bar)."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "progress-bar",
+          "relationship": "prefer-kerf",
+          "when": "Use the Kerf component for determinate or indeterminate progress."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -9944,7 +10113,7 @@
       "links": {
         "catalogRoute": "?component=wa-progress-bar",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9953,19 +10122,24 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Circular indicator for determinate or indeterminate progress.",
+      "description": "Ecosystem progress ring; use the Kerf ProgressRing.",
       "uses": [],
-      "purpose": "Circular indicator for determinate or indeterminate progress.",
+      "purpose": "Ecosystem progress ring; use the Kerf ProgressRing.",
       "customElement": "wa-progress-ring",
       "useWhen": [
         "Circular indicator for determinate or indeterminate progress."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use ProgressRing (@kerfjs/ui/progress-ring)."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "progress-ring",
+          "relationship": "prefer-kerf",
+          "when": "Use the Kerf component for determinate or indeterminate progress."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -9981,7 +10155,7 @@
       "links": {
         "catalogRoute": "?component=wa-progress-ring",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {

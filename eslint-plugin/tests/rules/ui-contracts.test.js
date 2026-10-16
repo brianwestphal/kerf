@@ -1248,6 +1248,8 @@ const discouragedTags = [
   ['wa-details', 'disclosure'],
   ['wa-accordion', 'disclosure'],
   ['wa-accordion-item', 'disclosure'],
+  ['wa-progress-bar', 'progress-bar'],
+  ['wa-progress-ring', 'progress-ring'],
 ];
 
 tester.run('ui-preferences discouraged Web Awesome tags', preferences, {

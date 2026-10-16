@@ -218,6 +218,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `DialogSurface`, `PopupSurface`                              | `@kerfjs/ui/surface-scaffold`           | `@kerfjs/ui/surface-scaffold.css`        |
 | `ListDetailDialog`                                           | `@kerfjs/ui/list-detail-dialog`         | `@kerfjs/ui/list-detail-dialog.css`      |
 | `Disclosure`                                                 | `@kerfjs/ui/disclosure`                 | `@kerfjs/ui/disclosure.css`              |
+| `ProgressBar`                                                | `@kerfjs/ui/progress-bar`               | `@kerfjs/ui/progress-bar.css`            |
+| `ProgressRing`                                               | `@kerfjs/ui/progress-ring`              | `@kerfjs/ui/progress-ring.css`           |
 | `FloatingToolbar`                                            | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`        |
 | `PopupMenu` (register with `@kerfjs/ui/popup-menu/register`) | `@kerfjs/ui/popup-menu`                 | `@kerfjs/ui/popup-menu.css`              |
 | `openAnchoredSurface`, `openAnchoredSurfaceAt`               | `@kerfjs/ui/anchored-surface`           | `@kerfjs/ui/anchored-surface.css`        |

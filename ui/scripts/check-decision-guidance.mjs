@@ -42,6 +42,8 @@ const overlaps = [
   'wa-details',
   'wa-accordion',
   'wa-accordion-item',
+  'wa-progress-bar',
+  'wa-progress-ring',
   'wa-popup',
   'wa-tooltip',
   'wa-popover',

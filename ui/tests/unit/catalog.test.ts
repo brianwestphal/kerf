@@ -388,6 +388,8 @@ describe('UX catalog metadata', () => {
       'wa-tree-item',
       'wa-badge',
       'wa-callout',
+      'wa-progress-bar',
+      'wa-progress-ring',
       'wa-skeleton',
       'wa-spinner',
       'wa-tag',
@@ -588,6 +590,8 @@ describe('UX catalog metadata', () => {
       'EdgeActivityIndicator',
       'EmptyState',
       'LoadingSpinner',
+      'ProgressBar',
+      'ProgressRing',
       'Skeleton',
     ]);
     expect(
@@ -695,6 +699,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(42);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(44);
   });
 });

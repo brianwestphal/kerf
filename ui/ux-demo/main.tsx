@@ -120,6 +120,11 @@ import {
   pushOverlayNavStackDemo,
   resetNavStackDemo,
 } from './demos/nav-stack.js';
+import {
+  resetProgressDemo,
+  STEP_PROGRESS_DEMO_ACTION,
+  stepProgressDemo,
+} from './demos/progress-bar.js';
 import { demos, demoSettings } from './demos/registry.js';
 import {
   SearchFieldHelp,
@@ -758,6 +763,9 @@ const stopActions = delegateActions(app, 'click', {
     const kind = target.getAttribute('data-toast') ?? 'plain';
     showToastDemo(kind);
     actionLog.value = `Toast shown: ${kind}`;
+  },
+  [STEP_PROGRESS_DEMO_ACTION]: () => {
+    actionLog.value = `Uploaded ${stepProgressDemo()} of 12 files`;
   },
   [SEND_COMPOSER_DEMO_ACTION]: (_event, target) => {
     const id = target.getAttribute('data-message-composer-id') ?? '';
@@ -1594,6 +1602,16 @@ const routeWires: Partial<Record<string, RouteWire>> = {
       });
       return () => stops.forEach((stop) => stop());
     },
+  },
+  'progress-bar': {
+    reset: resetProgressDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
+  'progress-ring': {
+    reset: resetProgressDemo,
+    target: 'canvas',
+    wire: () => () => {},
   },
   tooltip: {
     target: 'canvas',

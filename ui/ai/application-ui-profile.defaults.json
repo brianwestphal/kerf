@@ -171,6 +171,16 @@
         "@kerfjs/ui:wa-accordion-item"
       ],
       "rationale": "Use the Kerf Disclosure (a native details element) for show-and-hide content, and Disclosures sharing a name for an accordion."
+    },
+    "progress-indicator": {
+      "preferred": "@kerfjs/ui:progress-bar",
+      "avoid": ["@kerfjs/ui:wa-progress-bar"],
+      "rationale": "Use the Kerf ProgressBar, a native progress element with a label row, tones, and an indeterminate sweep."
+    },
+    "compact-progress": {
+      "preferred": "@kerfjs/ui:progress-ring",
+      "avoid": ["@kerfjs/ui:wa-progress-ring"],
+      "rationale": "Use the Kerf ProgressRing where a bar does not fit, inline in text, a row, or a toolbar."
     }
   },
   "theme": {
