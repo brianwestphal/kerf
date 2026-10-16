@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 405700,
-  "measuredLargestJavaScriptGzip": 149145,
-  "measuredTotalJavaScriptGzip": 405642,
+  "totalJavaScriptGzip": 405900,
+  "measuredLargestJavaScriptGzip": 149142,
+  "measuredTotalJavaScriptGzip": 405882,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -4103,7 +4103,7 @@
     },
     {
       "at": "2026-10-13T10:57:26.305Z",
-      "reason": "Composer component and its catalog route; Chat Dialog uses it (KF-S5EG5K)",
+      "reason": "MessageComposer component and its catalog route; Chat Dialog uses it (KF-S5EG5K)",
       "old": {
         "measuredLargestJavaScriptGzip": 144762,
         "measuredTotalJavaScriptGzip": 362591,
@@ -4135,7 +4135,7 @@
     },
     {
       "at": "2026-10-13T11:48:18.918Z",
-      "reason": "Composer submitOnEnter and wireComposers (KF-DGD5QS)",
+      "reason": "MessageComposer submitOnEnter and wireMessageComposers (KF-DGD5QS)",
       "old": {
         "measuredLargestJavaScriptGzip": 145748,
         "measuredTotalJavaScriptGzip": 363584,
@@ -5203,6 +5203,22 @@
         "measuredTotalJavaScriptGzip": 405642,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 405700
+      }
+    },
+    {
+      "at": "2026-10-16T03:54:29.448Z",
+      "reason": "MessageComposer rename plus its Toolbar action row and the demo's leading attach control (KF-ANFPGA)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 149145,
+        "measuredTotalJavaScriptGzip": 405642,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 405700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 149142,
+        "measuredTotalJavaScriptGzip": 405882,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 405900
       }
     }
   ]

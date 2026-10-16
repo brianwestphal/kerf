@@ -58,7 +58,7 @@ import { Button } from '../dist/button.js';
 import { Checkbox } from '../dist/checkbox.js';
 import { Chip } from '../dist/chip.js';
 import { ChoiceChips } from '../dist/choice-chips.js';
-import { Composer } from '../dist/composer.js';
+import { MessageComposer } from '../dist/message-composer.js';
 import { em, fillColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
 import { List } from '../dist/list.js';
@@ -946,24 +946,24 @@ export const COMPONENTS = {
       },
     ],
   },
-  composer: {
-    css: ['foundation', 'layout', 'text', 'composer'],
+  'message-composer': {
+    css: ['foundation', 'layout', 'text', 'message-composer'],
     selector: '#frame',
     width: 600,
     frameWidth: 560,
     variants: [
       {
         id: 'chat',
-        label: 'Chat Composer with Hint',
+        label: 'Chat MessageComposer with Hint',
         height: 120,
         render: () =>
-          Composer({
+          MessageComposer({
             id: 'message',
             name: 'message',
             label: 'Message',
             placeholder: 'Ask about this build',
             hint: 'Answers use the latest nightly build.',
-            actions: raw(brandButton('Send')),
+            trailing: raw(brandButton('Send')),
           }),
       },
       {
@@ -971,14 +971,14 @@ export const COMPONENTS = {
         label: 'Prompt with Taller Bounds',
         height: 168,
         render: () =>
-          Composer({
+          MessageComposer({
             id: 'prompt',
             name: 'prompt',
             label: 'Prompt',
             placeholder: 'Describe the change you want',
             minRows: 3,
             maxRows: 12,
-            actions: raw(brandButton('Generate')),
+            trailing: raw(brandButton('Generate')),
           }),
       },
     ],

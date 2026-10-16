@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Composer } from '../../src/components/forms/composer/composer.js';
+import { MessageComposer } from '../../src/components/forms/message-composer/message-composer.js';
 
 const send = <button type="button">Send</button>;
 
@@ -10,26 +10,26 @@ function render(html: unknown): HTMLElement {
   return host;
 }
 
-describe('Composer', () => {
+describe('MessageComposer', () => {
   it('renders a framed, named message field above a hint and trailing actions', () => {
     const host = render(
-      Composer({
+      MessageComposer({
         id: 'chat',
         name: 'message',
         label: 'Message',
         placeholder: 'Ask about this build',
         hint: 'Answers use the latest nightly build.',
-        actions: send,
+        trailing: send,
       }),
     );
-    const root = host.querySelector<HTMLElement>('.kui-composer')!;
-    expect(root.dataset.component).toBe('composer');
+    const root = host.querySelector<HTMLElement>('.kui-message-composer')!;
+    expect(root.dataset.component).toBe('message-composer');
     expect(root.getAttribute('style')).toBe(
-      '--_kui-composer-min-rows:1;--_kui-composer-max-rows:8',
+      '--_kui-message-composer-min-rows:1;--_kui-message-composer-max-rows:8',
     );
     expect(root.hasAttribute('data-disabled')).toBe(false);
     const field = root.querySelector('textarea')!;
-    expect(field.className).toBe('kui-composer__field');
+    expect(field.className).toBe('kui-message-composer__field');
     expect(field.id).toBe('chat');
     expect(field.name).toBe('message');
     expect(field.getAttribute('rows')).toBe('1');
@@ -41,19 +41,23 @@ describe('Composer', () => {
     expect(field.getAttribute('aria-describedby')).toBe('chat-hint');
     const hint = host.querySelector('#chat-hint')!;
     expect(hint.textContent).toBe('Answers use the latest nightly build.');
-    expect(hint.closest('.kui-composer__hint')).not.toBeNull();
+    expect(hint.closest('.kui-toolbar__leading')).not.toBeNull();
     expect(hint.getAttribute('data-tone')).toBe('quiet');
-    // The action row follows the field; actions sit in the trailing zone.
-    const actions = root.querySelector('.kui-composer__actions')!;
-    expect(field.nextElementSibling).toBe(actions);
+    // The action row is a compact footer Toolbar after the field; trailing
+    // actions sit in its trailing zone.
+    const row = root.querySelector<HTMLElement>(':scope > .kui-toolbar')!;
+    expect(field.nextElementSibling).toBe(row);
+    expect(row.tagName).toBe('FOOTER');
+    expect(row.dataset.density).toBe('compact');
+    expect(row.getAttribute('aria-label')).toBe('Message Actions');
     expect(
-      actions.querySelector('.kui-composer__trailing > button')?.textContent,
+      row.querySelector('.kui-toolbar__trailing > button')?.textContent,
     ).toBe('Send');
   });
 
   it('serializes row bounds, a draft, disabled state, slot, and safe data attributes', () => {
     const host = render(
-      Composer({
+      MessageComposer({
         name: 'prompt',
         label: 'Prompt',
         value: 'Draft <b>text</b>',
@@ -66,17 +70,17 @@ describe('Composer', () => {
           'data-key': 'chat',
           'data-component': 'spoofed',
         } as Record<`data-${string}`, string>,
-        actions: send,
+        trailing: send,
       }),
     );
-    const root = host.querySelector<HTMLElement>('.kui-composer')!;
-    expect(root.className).toBe('kui-composer app-composer');
+    const root = host.querySelector<HTMLElement>('.kui-message-composer')!;
+    expect(root.className).toBe('kui-message-composer app-composer');
     expect(root.getAttribute('slot')).toBe('footer');
     expect(root.dataset.key).toBe('chat');
-    expect(root.dataset.component).toBe('composer');
+    expect(root.dataset.component).toBe('message-composer');
     expect(root.dataset.disabled).toBe('true');
     expect(root.getAttribute('style')).toBe(
-      '--_kui-composer-min-rows:3;--_kui-composer-max-rows:12',
+      '--_kui-message-composer-min-rows:3;--_kui-message-composer-max-rows:12',
     );
     const field = root.querySelector('textarea')!;
     expect(field.getAttribute('rows')).toBe('3');
@@ -85,21 +89,41 @@ describe('Composer', () => {
     expect(field.hasAttribute('id')).toBe(false);
     expect(field.hasAttribute('placeholder')).toBe(false);
     expect(field.hasAttribute('aria-describedby')).toBe(false);
-    expect(root.querySelector('.kui-composer__hint')?.childElementCount).toBe(
-      0,
+    // Without a hint or leading controls the leading zone stays empty.
+    expect(
+      root.querySelector('.kui-toolbar__leading')?.childElementCount ?? 0,
+    ).toBe(0);
+  });
+
+  it('puts leading controls before the hint in the action row', () => {
+    const host = render(
+      MessageComposer({
+        name: 'message',
+        label: 'Prompt',
+        hint: 'Shift+Enter adds a line.',
+        leading: <button type="button" aria-label="Attach File" />,
+        trailing: send,
+      }),
+    );
+    const leading = host.querySelector('.kui-toolbar__leading')!;
+    expect(leading.firstElementChild?.getAttribute('aria-label')).toBe(
+      'Attach File',
+    );
+    expect(leading.lastElementChild?.textContent).toBe(
+      'Shift+Enter adds a line.',
     );
   });
 
   it('shows a hint without an id but does not describe the field with it', () => {
     const host = render(
-      Composer({
+      MessageComposer({
         name: 'message',
         label: 'Message',
         hint: 'Visible only.',
-        actions: send,
+        trailing: send,
       }),
     );
-    expect(host.querySelector('.kui-composer__hint')?.textContent).toBe(
+    expect(host.querySelector('.kui-toolbar__leading')?.textContent).toBe(
       'Visible only.',
     );
     expect(
@@ -108,15 +132,15 @@ describe('Composer', () => {
   });
 
   it('rejects row bounds that are not positive integers or that invert', () => {
-    const base = { name: 'm', label: 'Message', actions: send };
-    expect(() => Composer({ ...base, minRows: 0 })).toThrow(
-      'Composer minRows must be a positive integer.',
+    const base = { name: 'm', label: 'Message', trailing: send };
+    expect(() => MessageComposer({ ...base, minRows: 0 })).toThrow(
+      'MessageComposer minRows must be a positive integer.',
     );
-    expect(() => Composer({ ...base, maxRows: 2.5 })).toThrow(
-      'Composer maxRows must be a positive integer.',
+    expect(() => MessageComposer({ ...base, maxRows: 2.5 })).toThrow(
+      'MessageComposer maxRows must be a positive integer.',
     );
-    expect(() => Composer({ ...base, minRows: 4, maxRows: 2 })).toThrow(
-      'Composer maxRows must be at least minRows.',
+    expect(() => MessageComposer({ ...base, minRows: 4, maxRows: 2 })).toThrow(
+      'MessageComposer maxRows must be at least minRows.',
     );
   });
 });

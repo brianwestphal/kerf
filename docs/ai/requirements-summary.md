@@ -524,14 +524,14 @@ are native checkboxes in a `role="group"`: each a Tab stop that Space toggles,
 every checked value submitted under `name`, no `required`; the token palette
 follows a dark appearance scope (`.wa-dark`) for inverse chrome.
 
-Composer (shipped, `ui/docs/composer.md`) is the chat or prompt composer: a
+MessageComposer (shipped, `ui/docs/message-composer.md`) is the chat or prompt composer: a
 raised frame (standard border, large radius, `shadow-l`) whose border turns
 brand while focus is within, a borderless native textarea that grows with
 `field-sizing: content` between `minRows` and `maxRows` lines (a fixed
 three-line scrolling fallback elsewhere), and an action row with an optional
 hint (the field's description when an `id` is given) and trailing actions.
 The app owns the value and sending. Opt-in `submitOnEnter` with
-`wireComposers(root)` (`@kerfjs/ui/wire-composers`) turns Enter or
+`wireMessageComposers(root)` (`@kerfjs/ui/wire-message-composers`) turns Enter or
 Cmd/Ctrl+Enter into a click on the first trailing action; Shift+Enter, IME
 composition commits, empty messages, auto-repeat, and a disabled field or
 action never send.

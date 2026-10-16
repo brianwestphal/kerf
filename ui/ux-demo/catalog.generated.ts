@@ -580,19 +580,20 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
-    "id": "composer",
-    "name": "Composer",
+    "id": "message-composer",
+    "name": "MessageComposer",
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
     "description": "Write a chat message or prompt in a raised frame whose border turns brand while focus is within, with a field that grows between row bounds and a trailing send action.",
     "uses": [
-      "text"
+      "text",
+      "toolbar"
     ],
-    "demoSource": "ui/ux-demo/demos/composer.tsx",
-    "componentSource": "ui/src/components/forms/composer/composer.tsx",
-    "designTemplate": "ui/docs/design/templates/composer.svg",
-    "documentation": "ui/docs/composer.md"
+    "demoSource": "ui/ux-demo/demos/message-composer.tsx",
+    "componentSource": "ui/src/components/forms/message-composer/message-composer.tsx",
+    "designTemplate": "ui/docs/design/templates/message-composer.svg",
+    "documentation": "ui/docs/message-composer.md"
   },
   {
     "id": "search-field",

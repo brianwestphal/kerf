@@ -1,6 +1,6 @@
 type Root = HTMLElement | Document;
 
-const COMPOSER = '[data-component="composer"]';
+const COMPOSER = '[data-component="message-composer"]';
 const ACTION = 'wa-button, button, [data-action]';
 
 /** IME keydowns report keyCode 229 (WebKit sends it after compositionend). */
@@ -11,7 +11,7 @@ function composerFieldOf(
 ): HTMLTextAreaElement | null {
   if (
     !(target instanceof HTMLTextAreaElement) ||
-    !target.classList.contains('kui-composer__field')
+    !target.classList.contains('kui-message-composer__field')
   )
     return null;
   const composer = target.closest<HTMLElement>(COMPOSER);
@@ -29,7 +29,7 @@ function isUnavailable(action: Element): boolean {
 }
 
 /**
- * Enter-to-send for every `Composer` rendered with `submitOnEnter` below
+ * Enter-to-send for every `MessageComposer` rendered with `submitOnEnter` below
  * root. In its field, Enter (alone or with Cmd or Ctrl) activates the
  * composer's first trailing action, so a keyboard send runs the same
  * delegated handler as a click. Shift+Enter and Alt+Enter insert a newline.
@@ -41,7 +41,7 @@ function isUnavailable(action: Element): boolean {
  * `compositionend`) is left to the input method. Dispose with the owning
  * application.
  */
-export function wireComposers(root: Root): () => void {
+export function wireMessageComposers(root: Root): () => void {
   const composing = new WeakSet<HTMLTextAreaElement>();
   const onCompositionStart = (event: Event) => {
     const field = composerFieldOf(event.target);
@@ -63,7 +63,7 @@ export function wireComposers(root: Root): () => void {
     // composerFieldOf found the field inside a composer.
     const action = field
       .closest(COMPOSER)!
-      .querySelector('.kui-composer__trailing')
+      .querySelector(':scope > .kui-toolbar > .kui-toolbar__trailing')
       ?.querySelector<HTMLElement>(ACTION);
     if (!action || isUnavailable(action)) return;
     action.click();

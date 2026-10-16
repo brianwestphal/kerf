@@ -88,7 +88,7 @@ For custom chrome colors in auto mode, set `--kui-pane-chrome-background`
 on the Pane; it defaults to `--kui-color-surface`.
 
 ```tsx
-<Pane appearance="sunken" footer={<Composer />}>
+<Pane appearance="sunken" footer={<MessageComposer />}>
   <Conversation />
 </Pane>
 ```

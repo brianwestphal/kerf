@@ -5,9 +5,9 @@
    quiet hint and trailing actions. The 8px padding puts the field's text on
    the 17px text column when the composer sits 8px from a container edge. */
 
-.kui-composer {
-  --_kui-composer-min-rows: 1;
-  --_kui-composer-max-rows: 8;
+.kui-message-composer {
+  --_kui-message-composer-min-rows: 1;
+  --_kui-message-composer-max-rows: 8;
   display: flex;
   flex-direction: column;
   gap: var(--kui-layout-control-gap, remify(8px));
@@ -25,11 +25,11 @@
 }
 
 /* The frame is the field's boundary, so it carries the focus state. */
-.kui-composer:focus-within {
+.kui-message-composer:focus-within {
   border-color: var(--kui-color-brand-border-loud);
 }
 
-.kui-composer__field {
+.kui-message-composer__field {
   display: block;
   width: 100%;
   min-width: 0;
@@ -45,54 +45,38 @@
   line-height: 1.6;
   resize: none;
   field-sizing: content;
-  min-height: calc(var(--_kui-composer-min-rows) * 1lh + remify(8px));
-  max-height: calc(var(--_kui-composer-max-rows) * 1lh + remify(8px));
+  min-height: calc(var(--_kui-message-composer-min-rows) * 1lh + remify(8px));
+  max-height: calc(var(--_kui-message-composer-max-rows) * 1lh + remify(8px));
   overflow-y: auto;
 }
 
 /* Engines without content sizing keep a three-line field, clamped to the
    row bounds, that scrolls once the message is longer. */
 @supports not (field-sizing: content) {
-  .kui-composer__field {
+  .kui-message-composer__field {
     height: calc(
-      clamp(var(--_kui-composer-min-rows), 3, var(--_kui-composer-max-rows)) *
+      clamp(
+          var(--_kui-message-composer-min-rows),
+          3,
+          var(--_kui-message-composer-max-rows)
+        ) *
         1lh + remify(8px)
     );
   }
 }
 
-.kui-composer__field::placeholder {
+.kui-message-composer__field::placeholder {
   color: var(--kui-color-neutral-on-quiet);
   opacity: 1;
 }
 
-.kui-composer__field:disabled {
+.kui-message-composer__field:disabled {
   color: var(--kui-color-neutral-on-quiet);
   cursor: not-allowed;
 }
 
-.kui-composer__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--kui-layout-control-gap, remify(8px));
-  min-width: 0;
-}
-
-.kui-composer__hint {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.kui-composer__trailing {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: var(--kui-layout-control-gap, remify(8px));
-  margin-inline-start: auto;
-}
-
 @media (forced-colors: active) {
-  .kui-composer:focus-within {
+  .kui-message-composer:focus-within {
     border-color: Highlight;
     outline: 2px solid Highlight;
     outline-offset: 1px;

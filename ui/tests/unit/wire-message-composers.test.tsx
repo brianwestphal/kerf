@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  Composer,
-  type ComposerProps,
-} from '../../src/components/forms/composer/composer.js';
-import { wireComposers } from '../../src/components/forms/composer/wiring/wire-composers.js';
+  MessageComposer,
+  type MessageComposerProps,
+} from '../../src/components/forms/message-composer/message-composer.js';
+import { wireMessageComposers } from '../../src/components/forms/message-composer/wiring/wire-message-composers.js';
 
 const disposers: Array<() => void> = [];
 
@@ -14,8 +14,8 @@ afterEach(() => {
 });
 
 function setup(
-  props: Partial<ComposerProps> = {},
-  actions: unknown = (
+  props: Partial<MessageComposerProps> = {},
+  trailing: unknown = (
     <button type="button" data-action="send">
       Send
     </button>
@@ -23,16 +23,16 @@ function setup(
 ) {
   const host = document.createElement('div');
   host.innerHTML = String(
-    Composer({
+    MessageComposer({
       name: 'message',
       label: 'Message',
       submitOnEnter: true,
-      actions: actions as ComposerProps['actions'],
+      trailing: trailing as MessageComposerProps['trailing'],
       ...props,
     }),
   );
   document.body.append(host);
-  disposers.push(wireComposers(host));
+  disposers.push(wireMessageComposers(host));
   const field = host.querySelector('textarea')!;
   const sent = vi.fn();
   host.addEventListener('click', (event) => {
@@ -57,21 +57,21 @@ function press(
   return event;
 }
 
-describe('Composer submitOnEnter', () => {
+describe('MessageComposer submitOnEnter', () => {
   it('marks the root and announces the Enter shortcut on the field', () => {
     const host = document.createElement('div');
     host.innerHTML = String(
-      Composer({
+      MessageComposer({
         name: 'message',
         label: 'Message',
         submitOnEnter: true,
         rootAttributes: {
           'data-submit-on-enter': 'spoofed',
         } as Record<`data-${string}`, string>,
-        actions: <button type="button">Send</button>,
+        trailing: <button type="button">Send</button>,
       }),
     );
-    const root = host.querySelector<HTMLElement>('.kui-composer')!;
+    const root = host.querySelector<HTMLElement>('.kui-message-composer')!;
     expect(root.dataset.submitOnEnter).toBe('true');
     expect(
       host.querySelector('textarea')!.getAttribute('aria-keyshortcuts'),
@@ -81,16 +81,16 @@ describe('Composer submitOnEnter', () => {
   it('is off by default and cannot be spoofed through rootAttributes', () => {
     const host = document.createElement('div');
     host.innerHTML = String(
-      Composer({
+      MessageComposer({
         name: 'message',
         label: 'Message',
         rootAttributes: {
           'data-submit-on-enter': 'true',
         } as Record<`data-${string}`, string>,
-        actions: <button type="button">Send</button>,
+        trailing: <button type="button">Send</button>,
       }),
     );
-    const root = host.querySelector<HTMLElement>('.kui-composer')!;
+    const root = host.querySelector<HTMLElement>('.kui-message-composer')!;
     expect(root.hasAttribute('data-submit-on-enter')).toBe(false);
     expect(
       host.querySelector('textarea')!.hasAttribute('aria-keyshortcuts'),
@@ -98,7 +98,7 @@ describe('Composer submitOnEnter', () => {
   });
 });
 
-describe('wireComposers', () => {
+describe('wireMessageComposers', () => {
   it('sends on Enter, Cmd+Enter, and Ctrl+Enter by clicking the first trailing action', () => {
     const { field, sent } = setup();
     field.value = 'Hello';
@@ -233,11 +233,11 @@ describe('wireComposers', () => {
   it('stops listening once disposed', () => {
     const host = document.createElement('div');
     host.innerHTML = String(
-      Composer({
+      MessageComposer({
         name: 'message',
         label: 'Message',
         submitOnEnter: true,
-        actions: (
+        trailing: (
           <button type="button" data-action="send">
             Send
           </button>
@@ -247,7 +247,7 @@ describe('wireComposers', () => {
     document.body.append(host);
     const sent = vi.fn();
     host.addEventListener('click', sent);
-    const dispose = wireComposers(document);
+    const dispose = wireMessageComposers(document);
     const field = host.querySelector('textarea')!;
     field.value = 'Hello';
     dispose();

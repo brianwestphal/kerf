@@ -833,17 +833,18 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   a hard edge (overlay on a solid `fadeTo` band) under reduced transparency. Never hand-roll scroll listeners or
   `background-attachment: fixed`.
 
-- **Use `Composer` for a chat or prompt composer.** `@kerfjs/ui/composer`
+- **Use `MessageComposer` for a chat or prompt composer.** `@kerfjs/ui/message-composer`
   renders a raised frame (standard border, large radius, `shadow-l`) whose
   border turns brand while focus is within, a borderless textarea that grows
   between `minRows` (default 1) and `maxRows` (default 8) lines and then
-  scrolls, and an action row with an optional quiet `hint` and the trailing
-  `actions` (a brand Send button). Name it with a title-style `label`; give it
+  scrolls, and a compact `Toolbar` action row: optional `leading` controls
+  (attach, a model `Select`), an optional quiet `hint`, and `trailing` actions
+  (a brand Send `Button`). Name it with a title-style `label`; give it
   an `id` so the hint describes the field. Pass it as a `DialogSurface`'s
   floating `footer` (`footerInset="none"`) over a transcript. Never rebuild
   composer chrome around a `wa-textarea` with app CSS. For Enter-to-send, set
-  `submitOnEnter` and call `wireComposers(root)` from
-  `@kerfjs/ui/wire-composers` once: Enter or Cmd/Ctrl+Enter clicks the first
+  `submitOnEnter` and call `wireMessageComposers(root)` from
+  `@kerfjs/ui/wire-message-composers` once: Enter or Cmd/Ctrl+Enter clicks the first
   trailing action, Shift+Enter inserts a newline, and an IME composition
   commit or an empty message never sends. Never hand-roll that handler.
 
@@ -851,7 +852,7 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 
 `Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `FloatingToolbar`, `ToolbarText`, `Text`,
 `ListItem`, `ListActionRow` (+ `wireListReorder`, `reorderListItems`), `wireListFocusScroll`, `ListHeader`, `ListInsetControl`,
-`ListInsetText`, `SegmentedControl`, `ChoiceChips`, `Composer`,
+`ListInsetText`, `SegmentedControl`, `ChoiceChips`, `MessageComposer`,
 `Select`, `SearchField` (+ `readSearchField`, `placeSearchFieldCaret`,
 `wireSearchFields`), `TabBarItem`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
 `wireScrollDividers` (scroll-state dividers for every `Pane`, `NavStack`,

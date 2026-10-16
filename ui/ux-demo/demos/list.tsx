@@ -43,7 +43,7 @@ const RESULT_PICKER_CANDIDATES = [
   },
   {
     id: 'result-3',
-    title: 'Composer grows past the panel on phones',
+    title: 'MessageComposer grows past the panel on phones',
     detail: 'Closed in September, composer',
   },
   {

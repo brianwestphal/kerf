@@ -59,7 +59,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 - [SegmentedControl](./segmented-control.md) — Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.
 - [ChoiceChips](./choice-chips.md) — Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.
-- [Composer](./composer.md) — Write a chat message or prompt in a raised frame whose border turns brand while focus is within, with a field that grows between row bounds and a trailing send action.
+- [MessageComposer](./message-composer.md) — Write a chat message or prompt in a raised frame whose border turns brand while focus is within, with a field that grows between row bounds and a trailing send action.
 - [SearchField](./search-field.md) — Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.
 - [ResizableRegion](./resize.md) — Pointer and keyboard-operable split region with a customizable handle icon.
 - [Select](./select.md) — Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.

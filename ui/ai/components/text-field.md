@@ -19,14 +19,14 @@ Collect free text (names, addresses, notes, comments) with Kerf's field chrome, 
 - Do not use when only existing values are allowed; use Select.
 - Do not use when people pick among suggestions or create tags; use Combobox.
 - Do not use for search text with removable filter tokens; use SearchField.
-- Do not use for a chat-style message with a send action; use Composer.
+- Do not use for a chat-style message with a send action; use MessageComposer.
 
 **Alternatives:**
 
 - [Input](./wa-input.md) (prefer-over)
 - [Textarea](./wa-textarea.md) (prefer-over)
 - [Combobox](./combobox.md) (nearest) — Use Combobox when people pick among suggestions or create a value.
-- [Composer](./composer.md) (nearest) — Use Composer for a message with a send action.
+- [MessageComposer](./message-composer.md) (nearest) — Use MessageComposer for a message with a send action.
 
 ## Imports
 
@@ -93,6 +93,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [Input](./wa-input.md), [Textarea](./wa-textarea.md), [Combobox](./combobox.md), [Composer](./composer.md).
+- Components: [LucideIcon](./lucide-icon.md), [Input](./wa-input.md), [Textarea](./wa-textarea.md), [Combobox](./combobox.md), [MessageComposer](./message-composer.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=text-field`.

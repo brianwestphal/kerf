@@ -266,8 +266,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `wireCheckboxes`                                             | `@kerfjs/ui/wire-checkboxes`            | —                                        |
 | `RadioGroup`                                                 | `@kerfjs/ui/radio-group`                | `@kerfjs/ui/radio-group.css`             |
 | `Switch`                                                     | `@kerfjs/ui/switch`                     | `@kerfjs/ui/switch.css`                  |
-| `Composer`                                                   | `@kerfjs/ui/composer`                   | `@kerfjs/ui/composer.css`                |
-| `wireComposers`                                              | `@kerfjs/ui/wire-composers`             | —                                        |
+| `MessageComposer`                                            | `@kerfjs/ui/message-composer`           | `@kerfjs/ui/message-composer.css`        |
+| `wireMessageComposers`                                       | `@kerfjs/ui/wire-message-composers`     | —                                        |
 | `SearchField`, `readSearchField`, `placeSearchFieldCaret`    | `@kerfjs/ui/search-field`               | `@kerfjs/ui/search-field.css`            |
 | `wireSearchFields`                                           | `@kerfjs/ui/wire-search-fields`         | —                                        |
 | `createSearchFieldModel`                                     | `@kerfjs/ui/search-field-model`         | —                                        |
@@ -751,26 +751,26 @@ change handler. A multiple group takes no `required`. On dark inverse chrome,
 place the chips in a dark appearance scope (`.wa-dark`) instead of restyling
 them.
 
-`Composer` is the chat or prompt composer: a raised frame (the standard
+`MessageComposer` is the chat or prompt composer: a raised frame (the standard
 border, large radius, and `shadow-l`) whose border turns brand while focus is
 within. Its borderless message field grows with its content between `minRows`
 (default 1) and `maxRows` (default 8) lines, then scrolls, above an action row
 with an optional quiet `hint` and the trailing `actions`:
 
 ```tsx
-<Composer
+<MessageComposer
   id="assistant-message"
   name="message"
   label="Message"
   placeholder="Ask about this build"
   hint="Answers use the latest nightly build."
-  actions={<Button tone="brand" action="send-message">Send</Button>}
+  trailing={<Button tone="brand" action="send-message">Send</Button>}
 />
 ```
 
 The app reads and clears the textarea from its send action. For
-Enter-to-send, set `submitOnEnter` and call `wireComposers(root)` from
-`@kerfjs/ui/wire-composers` once: Enter or Cmd/Ctrl+Enter clicks the first
+Enter-to-send, set `submitOnEnter` and call `wireMessageComposers(root)` from
+`@kerfjs/ui/wire-message-composers` once: Enter or Cmd/Ctrl+Enter clicks the first
 trailing action, Shift+Enter inserts a newline, and an IME composition commit
 or an empty message never sends. Put it in a `DialogSurface` with
 `footerPresentation="floating"` (`slot="footer"`) to float it over a

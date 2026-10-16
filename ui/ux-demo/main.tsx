@@ -38,7 +38,6 @@ import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import { wireCheckboxes } from '@kerfjs/ui/wire-checkboxes';
 import { readChoiceChips, wireChoiceChips } from '@kerfjs/ui/wire-choice-chips';
 import { wireComboboxes } from '@kerfjs/ui/wire-comboboxes';
-import { wireComposers } from '@kerfjs/ui/wire-composers';
 import {
   isContentItemActivation,
   wireContentItems,
@@ -49,6 +48,7 @@ import {
   reorderListItems,
   wireListReorder,
 } from '@kerfjs/ui/wire-list-reorder';
+import { wireMessageComposers } from '@kerfjs/ui/wire-message-composers';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireOverlaySheets } from '@kerfjs/ui/wire-overlay-sheets';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
@@ -102,7 +102,7 @@ import {
   RESTORE_DRAWER_ID,
   restoreDrawerCollapsed,
 } from './demos/collapsible-panel.js';
-import { SEND_COMPOSER_DEMO_ACTION } from './demos/composer.js';
+import { SEND_COMPOSER_DEMO_ACTION } from './demos/message-composer.js';
 import {
   popConfiguredNavStackDemo,
   popNavStackDemo,
@@ -738,7 +738,7 @@ const stopActions = delegateActions(app, 'click', {
     });
   },
   [SEND_COMPOSER_DEMO_ACTION]: (_event, target) => {
-    const id = target.getAttribute('data-composer-id') ?? '';
+    const id = target.getAttribute('data-message-composer-id') ?? '';
     const field = document.getElementById(id);
     if (!(field instanceof HTMLTextAreaElement)) return;
     const text = field.value.trim();
@@ -1242,6 +1242,9 @@ const stopActions = delegateActions(app, 'click', {
       gridTileSelections.value,
     );
     actionLog.value = `Selected ${gridTileSelections.value.length} document tiles`;
+  },
+  'attach-composer-demo': () => {
+    actionLog.value = 'Attach requested';
   },
   'log-sidebar': () => {
     actionLog.value = 'Sidebar requested';
@@ -1785,7 +1788,7 @@ const stopComboboxes = wireComboboxes(app, {
     actionLog.value = `${created ? 'Created' : 'Added'} tag ${tag}`;
   },
 });
-const stopComposers = wireComposers(app);
+const stopMessageComposers = wireMessageComposers(app);
 const stopTextFields = wireTextFields(app);
 const stopCheckboxes = wireCheckboxes(app);
 const stopChoiceChips = wireChoiceChips(app);
@@ -2205,7 +2208,7 @@ window.addEventListener(
     stopAdoptionKeyboardEffect();
     stopFloatingToolbarReset();
     stopEdgeActivityReset();
-    stopComposers();
+    stopMessageComposers();
     stopFilePickers();
     stopTextFields();
     stopCheckboxes();

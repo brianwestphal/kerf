@@ -258,8 +258,8 @@
       ]
     }
   },
-  "@kerfjs/ui:composer": {
-    "_source": "docs/accessibility.md#composer",
+  "@kerfjs/ui:message-composer": {
+    "_source": "docs/accessibility.md#messagecomposer",
     "contexts": ["chat-composer", "dialog-floating-footer"],
     "zones": [
       {

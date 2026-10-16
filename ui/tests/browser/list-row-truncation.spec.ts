@@ -138,7 +138,7 @@ for (const viewport of VIEWPORTS) {
     const words = [
       'Quick',
       'Ticket',
-      'Composer',
+      'MessageComposer',
       'Board',
       'Column',
       'Header',

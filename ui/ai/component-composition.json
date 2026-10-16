@@ -4335,10 +4335,10 @@
       }
     },
     {
-      "key": "@kerfjs/ui:composer",
+      "key": "@kerfjs/ui:message-composer",
       "package": "@kerfjs/ui",
-      "id": "composer",
-      "name": "Composer",
+      "id": "message-composer",
+      "name": "MessageComposer",
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
@@ -4356,7 +4356,7 @@
       "state": [{ "id": "value", "owner": "controlled", "required": false }],
       "wiring": {
         "required": false,
-        "helpers": ["wireComposers"],
+        "helpers": ["wireMessageComposers"],
         "obligations": [],
         "stateAttributes": []
       },
@@ -4373,14 +4373,14 @@
       },
       "cssValueProps": [],
       "boundaries": {
-        "rootClass": "kui-composer",
-        "publicClasses": ["kui-composer"],
+        "rootClass": "kui-message-composer",
+        "publicClasses": ["kui-message-composer"],
         "publicTokens": []
       },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "docs/accessibility.md#composer"
+        "composition": "docs/accessibility.md#messagecomposer"
       }
     },
     {

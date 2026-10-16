@@ -1,12 +1,12 @@
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { Composer } from '@kerfjs/ui/composer';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { remify } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
+import { MessageComposer } from '@kerfjs/ui/message-composer';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
 import { SplitView } from '@kerfjs/ui/split-view';
@@ -413,7 +413,7 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Chat Dialog"
-        note='footerPresentation="floating" lays a Composer over the body, 8px from the panel edges so its text aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills the rest; with scrollClearance="block-end" the transcript scrolls beneath the composer and its last message still rests above it.'
+        note='footerPresentation="floating" lays a MessageComposer over the body, 8px from the panel edges so its text aligns with the transcript; bodyLayout="fill-last" keeps the notice at its height while the transcript fills the rest; with scrollClearance="block-end" the transcript scrolls beneath the composer and its last message still rests above it.'
         align="inline-control"
       >
         <Button
@@ -433,13 +433,13 @@ export function SurfaceScaffoldDemo() {
           footerOffset={remify(8)}
           footerInset="none"
           footer={
-            <Composer
+            <MessageComposer
               submitOnEnter
               id="catalog-chat-message"
               name="catalog-chat-message"
               label="Message"
               placeholder="Ask about this build"
-              actions={
+              trailing={
                 <Button tone="brand" action={SEND_CHAT_DIALOG_MESSAGE_ACTION}>
                   Send
                 </Button>
@@ -492,13 +492,13 @@ export function SurfaceScaffoldDemo() {
           footerOffset={remify(8)}
           footerInset="none"
           footer={
-            <Composer
+            <MessageComposer
               submitOnEnter
               id="catalog-thread-message"
               name="catalog-thread-message"
               label="Message"
               placeholder="Reply to the thread"
-              actions={
+              trailing={
                 <Button tone="brand" action={SEND_CHAT_DIALOG_MESSAGE_ACTION}>
                   Send
                 </Button>

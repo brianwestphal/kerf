@@ -315,10 +315,10 @@ Choose the offset like any other responsive value: the scaffold adds no
 breakpoint. An 8px offset lines a composer up with the transcript's
 content-item edges when the body has `bodyInset="none"` and list geometry;
 `viewportGutter` and `footerOffset` can follow `deviceClass()` when a phone
-needs tighter edges. Put a [`Composer`](./composer.md) in the floating footer
+needs tighter edges. Put a [`MessageComposer`](./message-composer.md) in the floating footer
 with `footerInset="none"`: its raised frame and shadow lift it over the
 transcript, and its field grows the measured footer. With `submitOnEnter` and
-`wireComposers(root)`, Enter sends through the same action as the Send button.
+`wireMessageComposers(root)`, Enter sends through the same action as the Send button.
 
 ```tsx
 <DialogSurface
@@ -330,7 +330,7 @@ transcript, and its field grows the measured footer. With `submitOnEnter` and
   footerPresentation="floating"
   footerOffset={remify(8)}
   footerInset="none"
-  footer={<Composer submitOnEnter id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={<Button tone="brand" action="send-message">Send</Button>} />}
+  footer={<MessageComposer submitOnEnter id="assistant-message" name="message" label="Message" placeholder="Ask about this build" trailing={<Button tone="brand" action="send-message">Send</Button>} />}
 >
   <StateBanner title="Answers use the latest nightly build." tone="neutral" />
   <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">
@@ -380,7 +380,7 @@ composer and `scrollClearance="both"`, the transcript scrolls beneath both:
   footerPresentation="floating"
   footerOffset={remify(8)}
   footerInset="none"
-  footer={<Composer submitOnEnter id="thread-message" name="message" label="Message" placeholder="Reply to the thread" actions={<Button tone="brand" action="send-message">Send</Button>} />}
+  footer={<MessageComposer submitOnEnter id="thread-message" name="message" label="Message" placeholder="Reply to the thread" trailing={<Button tone="brand" action="send-message">Send</Button>} />}
 >
   <List gap="xs" controlInsets="tb" scrollable scrollClearance="both">
     {bubbles}

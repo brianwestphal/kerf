@@ -215,12 +215,6 @@ export {
   type WireComboboxesOptions,
 } from './components/forms/combobox/wiring/wire-comboboxes.js';
 export {
-  Composer,
-  type ComposerProps,
-  type ComposerRootAttributes,
-} from './components/forms/composer/composer.js';
-export { wireComposers } from './components/forms/composer/wiring/wire-composers.js';
-export {
   FieldLabel,
   type FieldLabelProps,
 } from './components/forms/field-label/field-label.js';
@@ -236,6 +230,12 @@ export {
   wireFilePickers,
   type WireFilePickersOptions,
 } from './components/forms/file-picker/wiring/wire-file-pickers.js';
+export {
+  MessageComposer,
+  type MessageComposerProps,
+  type MessageComposerRootAttributes,
+} from './components/forms/message-composer/message-composer.js';
+export { wireMessageComposers } from './components/forms/message-composer/wiring/wire-message-composers.js';
 export {
   RadioGroup,
   type RadioGroupChoice,

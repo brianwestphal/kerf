@@ -1070,18 +1070,18 @@ or the struck-through `'transparent'` dot) or `icon`. The CSS paints checked
 and focus-visible state on the pill through `:has()`; the browser owns keyboard
 selection and the form value. Tests: `ui/tests/unit/choice-chips.test.tsx`,
 `ui/tests/browser/choice-chips.spec.ts`.
-`ui/src/components/forms/composer/composer.tsx` (`@kerfjs/ui/composer`) renders
+`ui/src/components/forms/message-composer/message-composer.tsx` (`@kerfjs/ui/message-composer`) renders
 the chat or prompt composer: a raised frame with a focus-within brand border, a
 borderless native textarea sized by `field-sizing: content` between
 `minRows`/`maxRows` lines, and an action row (hint + trailing actions). Its
-requirements live in `ui/docs/composer.md`. Tests:
-`ui/tests/unit/composer.test.tsx`, `ui/tests/browser/composer.spec.ts`.
-`ui/src/components/forms/composer/wiring/wire-composers.ts`
-(`@kerfjs/ui/wire-composers`) is the opt-in Enter-to-send wiring for a
+requirements live in `ui/docs/message-composer.md`. Tests:
+`ui/tests/unit/message-composer.test.tsx`, `ui/tests/browser/message-composer.spec.ts`.
+`ui/src/components/forms/message-composer/wiring/wire-message-composers.ts`
+(`@kerfjs/ui/wire-message-composers`) is the opt-in Enter-to-send wiring for a
 `submitOnEnter` composer: one root `keydown` listener (plus composition
 tracking) that clicks the first trailing action. Tests:
-`ui/tests/unit/wire-composers.test.tsx`, the submitOnEnter case in
-`ui/tests/browser/composer.spec.ts`, and the chat dialog case in
+`ui/tests/unit/wire-message-composers.test.tsx`, the submitOnEnter case in
+`ui/tests/browser/message-composer.spec.ts`, and the chat dialog case in
 `ui/tests/browser/surface-scaffold.spec.ts`.
 `ui/src/components/forms/select/select.tsx` renders disabled choices and opt-in multiple-select action
 buttons; the Select controller applies select-all or clear and publishes a

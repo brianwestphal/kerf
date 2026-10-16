@@ -1,6 +1,6 @@
-# Composer
+# MessageComposer
 
-`Composer` (`@kerfjs/ui/composer`, CSS `@kerfjs/ui/composer.css`) is the chat
+`MessageComposer` (`@kerfjs/ui/message-composer`, CSS `@kerfjs/ui/message-composer.css`) is the chat
 or prompt composer: the place a person writes a message, assistant prompt, or
 reply and sends it with a trailing action. It replaces app-owned composer
 chrome, such as a `wa-textarea` and a button wrapped in application CSS that
@@ -9,7 +9,7 @@ draws a frame, a focus border, and a shadow.
 ## Contract
 
 ```tsx
-<Composer
+<MessageComposer
   id="assistant-message"
   name="message"
   label="Message"
@@ -17,7 +17,7 @@ draws a frame, a focus border, and a shadow.
   hint="Answers use the latest nightly build."
   minRows={1}
   maxRows={8}
-  actions={
+  trailing={
     <Button tone="brand" action="send-message">
       Send
     </Button>
@@ -34,12 +34,17 @@ draws a frame, a focus border, and a shadow.
 - **Field.** A native, borderless `<textarea>` named by `label`. It sizes to
   its content with `field-sizing: content`, between `minRows` (default 1) and
   `maxRows` (default 8) lines, and scrolls past the maximum. Both bounds are
-  positive integers, and `maxRows` is at least `minRows`; otherwise `Composer`
+  positive integers, and `maxRows` is at least `minRows`; otherwise `MessageComposer`
   throws a `RangeError`. In an engine without `field-sizing`, the field keeps
   a fixed height of three lines, clamped to the bounds, and scrolls.
-- **Action row.** Below the field: an optional quiet `hint` at the text start
-  and the trailing `actions`, normally one brand Send button. With an `id`,
-  the hint is the field's accessible description (`<id>-hint`).
+- **Action row.** Below the field, a compact `Toolbar` (footer semantics,
+  named "<label> Actions") that the composer insets for you. Its leading zone
+  holds optional `leading` controls, such as an attach button or a model
+  `Select` in a `ToolbarControlGroup`, then the optional quiet `hint`; its
+  trailing zone holds `trailing`, normally one brand Send `Button`. Every
+  toolbar convention applies, from control groups to responsive relocation.
+  With an `id`, the hint is the field's accessible description
+  (`<id>-hint`).
 - **Value.** `value` seeds the field (a restored draft, or `''`). The app
   reads the textarea in its send action, clears it, and re-renders.
 - **Disabled.** `disabled` disables the field; the app disables or marks busy
@@ -56,13 +61,13 @@ like, and where the composer sits.
 
 ## Enter to send
 
-Set `submitOnEnter` and call `wireComposers` once over an ancestor of every
+Set `submitOnEnter` and call `wireMessageComposers` once over an ancestor of every
 such composer; it returns a disposer:
 
 ```ts
-import { wireComposers } from '@kerfjs/ui/wire-composers';
+import { wireMessageComposers } from '@kerfjs/ui/wire-message-composers';
 
-const stopComposers = wireComposers(app);
+const stopMessageComposers = wireMessageComposers(app);
 ```
 
 In an opted-in composer's field:
@@ -108,7 +113,7 @@ composer into the footer:
   footerPresentation="floating"
   footerOffset={remify(8)}
   footerInset="none"
-  footer={<Composer submitOnEnter id="assistant-message" name="message" label="Message" placeholder="Ask about this build" actions={send} />}
+  footer={<MessageComposer submitOnEnter id="assistant-message" name="message" label="Message" placeholder="Ask about this build" trailing={send} />}
 >
   <StateBanner title="Answers use the latest nightly build." tone="neutral" />
   <List gap="xs" controlInsets="tb" scrollable scrollClearance="block-end">{messages}</List>
@@ -133,10 +138,10 @@ instead.
 
 ## Verification
 
-`tests/unit/composer.test.tsx` covers serialization, the hint description,
-row bounds, and protected attributes; `tests/unit/wire-composers.test.tsx`
+`tests/unit/message-composer.test.tsx` covers serialization, the hint description,
+row bounds, and protected attributes; `tests/unit/wire-message-composers.test.tsx`
 covers the Enter-to-send matrix (modifiers, IME, empty, repeat, disabled
-field and actions, first action only, disposal). `tests/browser/composer.spec.ts` covers
+field and actions, first action only, disposal). `tests/browser/message-composer.spec.ts` covers
 the focus-within border, growth up to `maxRows` and then scrolling, the action
 row geometry, and the send flow at wide and phone widths, and, in Chromium,
 Firefox, and WebKit, Enter, Shift+Enter, Cmd/Ctrl+Enter, empty messages, and

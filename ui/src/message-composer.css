@@ -1,2 +1,2 @@
 /* Public stylesheet entry; implementation is colocated with the component. */
-@import "./components/forms/composer/composer.css";
+@import "./components/forms/message-composer/message-composer.css";

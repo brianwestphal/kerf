@@ -3462,18 +3462,18 @@ declare function ChoiceChips<Value extends string>(props: ChoiceChipsProps<Value
 export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsProps, type ChoiceChipsSelectionMode, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch, type ChoiceChipsToggleProps };
 ```
 
-## `@kerfjs/ui/composer`
+## `@kerfjs/ui/message-composer`
 
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /**
- * Application `data-*` identity on the Composer root, such as `data-key`;
+ * Application `data-*` identity on the MessageComposer root, such as `data-key`;
  * the composer's own configuration attributes stay protected.
  */
-type ComposerRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
-interface ComposerProps {
+type MessageComposerRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+interface MessageComposerProps {
     /** The message field's accessible name, in title style ("Message"). */
     label: string;
     /** Native textarea `name`: the form field the message submits under. */
@@ -3497,14 +3497,22 @@ interface ComposerProps {
      * `minRows`.
      */
     maxRows?: number;
-    /** Quiet, sentence-style supporting copy at the start of the action row. */
+    /**
+     * Quiet, sentence-style supporting copy in the action row's leading zone,
+     * after any `leading` controls.
+     */
     hint?: string;
+    /**
+     * Controls at the start of the action row, such as an attach button or a
+     * model `Select`, normally in a `ToolbarControlGroup`.
+     */
+    leading?: KerfUiContent;
     /** Trailing controls in the action row, normally one brand Send button. */
-    actions: KerfUiContent;
+    trailing: KerfUiContent;
     /** Disable the field; the app disables its own actions. */
     disabled?: boolean;
     /**
-     * Opt in to Enter-to-send: with `wireComposers` running over an ancestor,
+     * Opt in to Enter-to-send: with `wireMessageComposers` running over an ancestor,
      * Enter (or Cmd/Ctrl+Enter) in the field activates the first trailing
      * action, Shift+Enter inserts a newline, and an Enter that commits an IME
      * composition or meets an empty message does not send. The field announces
@@ -3512,7 +3520,7 @@ interface ComposerProps {
      */
     submitOnEnter?: boolean;
     /** Safe `data-*` identity on the root. */
-    rootAttributes?: ComposerRootAttributes;
+    rootAttributes?: MessageComposerRootAttributes;
     className?: string;
     /** Native named-slot assignment, such as a `wa-dialog`'s `footer`. */
     slot?: string;
@@ -3520,21 +3528,21 @@ interface ComposerProps {
 /**
  * A chat or prompt composer: a raised frame whose border turns brand while
  * focus is within, holding a borderless message field that grows with its
- * content between `minRows` and `maxRows` lines, above an action row with an
- * optional hint and trailing actions. The app owns the value and sending;
- * `submitOnEnter` with `wireComposers` adds Enter-to-send.
+ * content between `minRows` and `maxRows` lines, above a compact `Toolbar`
+ * action row: optional `leading` controls and `hint`, then `trailing` actions. The app owns the value and sending;
+ * `submitOnEnter` with `wireMessageComposers` adds Enter-to-send.
  */
-declare function Composer({ label, name, id, value, placeholder, minRows, maxRows, hint, actions, disabled, submitOnEnter, rootAttributes, className, slot, }: ComposerProps): kerfjs.SafeHtml;
+declare function MessageComposer({ label, name, id, value, placeholder, minRows, maxRows, hint, leading, trailing, disabled, submitOnEnter, rootAttributes, className, slot, }: MessageComposerProps): kerfjs.SafeHtml;
 
-export { Composer, type ComposerProps, type ComposerRootAttributes };
+export { MessageComposer, type MessageComposerProps, type MessageComposerRootAttributes };
 ```
 
-## `@kerfjs/ui/wire-composers`
+## `@kerfjs/ui/wire-message-composers`
 
 ```ts
 type Root = HTMLElement | Document;
 /**
- * Enter-to-send for every `Composer` rendered with `submitOnEnter` below
+ * Enter-to-send for every `MessageComposer` rendered with `submitOnEnter` below
  * root. In its field, Enter (alone or with Cmd or Ctrl) activates the
  * composer's first trailing action, so a keyboard send runs the same
  * delegated handler as a click. Shift+Enter and Alt+Enter insert a newline.
@@ -3546,9 +3554,9 @@ type Root = HTMLElement | Document;
  * `compositionend`) is left to the input method. Dispose with the owning
  * application.
  */
-declare function wireComposers(root: Root): () => void;
+declare function wireMessageComposers(root: Root): () => void;
 
-export { wireComposers };
+export { wireMessageComposers };
 ```
 
 ## `@kerfjs/ui/select`

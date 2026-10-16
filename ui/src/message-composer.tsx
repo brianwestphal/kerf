@@ -1,2 +1,2 @@
 // Public package entry; implementation is grouped by component ownership.
-export * from './components/forms/composer/composer.js';
+export * from './components/forms/message-composer/message-composer.js';

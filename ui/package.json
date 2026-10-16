@@ -325,14 +325,14 @@
       "browser": "./dist/browser/choice-chips.js",
       "import": "./dist/choice-chips.js"
     },
-    "./composer": {
-      "types": "./dist/composer.d.ts",
-      "browser": "./dist/browser/composer.js",
-      "import": "./dist/composer.js"
+    "./message-composer": {
+      "types": "./dist/message-composer.d.ts",
+      "browser": "./dist/browser/message-composer.js",
+      "import": "./dist/message-composer.js"
     },
-    "./wire-composers": {
-      "types": "./dist/wire-composers.d.ts",
-      "import": "./dist/wire-composers.js"
+    "./wire-message-composers": {
+      "types": "./dist/wire-message-composers.d.ts",
+      "import": "./dist/wire-message-composers.js"
     },
     "./search-field": {
       "types": "./dist/search-field.d.ts",
@@ -545,7 +545,7 @@
     "./sunken-panel.css": "./dist/styles/sunken-panel.css",
     "./segmented-control.css": "./dist/styles/segmented-control.css",
     "./choice-chips.css": "./dist/styles/choice-chips.css",
-    "./composer.css": "./dist/styles/composer.css",
+    "./message-composer.css": "./dist/styles/message-composer.css",
     "./search-field.css": "./dist/styles/search-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",
     "./corner-status.css": "./dist/styles/corner-status.css",

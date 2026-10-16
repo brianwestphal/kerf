@@ -177,6 +177,13 @@
   );
 }
 
+/* A MessageComposer's action row: the composer frame already insets it and
+   spaces it from the field, so the toolbar keeps only its control band. */
+.kui-message-composer > .kui-toolbar {
+  min-height: var(--_kui-toolbar-band);
+  padding: 0;
+}
+
 /* Compact density: a 34px band (the compact ToolbarControlGroup's size) with
    3px block insets makes a 40px header for an embedded panel or card. The
    inline insets and zone gap keep the standard 8px. */

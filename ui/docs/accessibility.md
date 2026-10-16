@@ -572,9 +572,9 @@ Hints sit on the label's text column, not under the drawn shape. Safari's
 default Tab order skips checkboxes and radios as it does buttons; the
 controls keep that platform setting.
 
-## Composer
+## MessageComposer
 
-`Composer`'s message field is a native `<textarea>` named by `label`
+`MessageComposer`'s message field is a native `<textarea>` named by `label`
 (`aria-label`, title style). With an `id`, the `hint` renders with the id
 `<id>-hint` and becomes the field's `aria-describedby`; without an `id`, the
 hint is visible only. The field draws no border or outline of its own: the
@@ -584,7 +584,7 @@ outline). Each trailing action keeps its own name and focus ring. `disabled`
 disables the field only; the app disables its actions. Sending and
 announcing a sent message stay with the app.
 
-With `submitOnEnter` and `wireComposers`, the field carries
+With `submitOnEnter` and `wireMessageComposers`, the field carries
 `aria-keyshortcuts="Enter"`, so assistive technology announces the shortcut.
 Enter and Cmd/Ctrl+Enter activate the first trailing action, the same control
 a pointer or Tab-and-Space user reaches; Shift+Enter inserts a newline. An

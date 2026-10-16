@@ -13,13 +13,15 @@ async function tokenColor(page: Page, token: string) {
   }, token);
 }
 
-test('Composer frames a growing field above a hint and a trailing send action', async ({
+test('MessageComposer frames a growing field above a hint and a trailing send action', async ({
   page,
 }) => {
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/?component=composer');
-    const root = page.locator('[data-demo="composer"] .kui-composer').first();
+    await page.goto('/?component=message-composer');
+    const root = page
+      .locator('[data-demo="message-composer"] .kui-message-composer')
+      .first();
     const field = root.getByRole('textbox', { name: 'Message' });
     await expect(field).toHaveAccessibleDescription(
       'Answers use the latest nightly build.',
@@ -32,10 +34,10 @@ test('Composer frames a growing field above a hint and a trailing send action', 
         const box = element.getBoundingClientRect();
         const fieldBox = textarea.getBoundingClientRect();
         const hint = element
-          .querySelector('.kui-composer__hint')!
+          .querySelector(':scope > .kui-toolbar .kui-toolbar__leading > *')!
           .getBoundingClientRect();
         const send = element
-          .querySelector('.kui-composer__trailing > *')!
+          .querySelector(':scope > .kui-toolbar .kui-toolbar__trailing > *')!
           .getBoundingClientRect();
         const fieldStyle = window.getComputedStyle(textarea);
         return {
@@ -105,9 +107,9 @@ test('Composer frames a growing field above a hint and a trailing send action', 
   }
 });
 
-test('Composer minRows starts the field taller', async ({ page }) => {
+test('MessageComposer minRows starts the field taller', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/?component=composer');
+  await page.goto('/?component=message-composer');
   const field = page.getByRole('textbox', { name: 'Prompt' });
   const metrics = await field.evaluate((element) => ({
     height: element.getBoundingClientRect().height,
@@ -117,11 +119,11 @@ test('Composer minRows starts the field taller', async ({ page }) => {
   expect(metrics.height).toBeCloseTo(3 * metrics.line + 8, 0);
 });
 
-test('Composer submitOnEnter sends on Enter, keeps Shift+Enter newlines, and waits out IME composition', async ({
+test('MessageComposer submitOnEnter sends on Enter, keeps Shift+Enter newlines, and waits out IME composition', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/?component=composer');
+  await page.goto('/?component=message-composer');
   const log = page.locator('output.catalog-log');
   const field = page.getByRole('textbox', { name: 'Message' });
   await expect(field).toHaveAttribute('aria-keyshortcuts', 'Enter');
@@ -204,7 +206,7 @@ test('Composer submitOnEnter sends on Enter, keeps Shift+Enter newlines, and wai
   await expect(prompt).toHaveValue('One\nTwo');
 });
 
-test('Composer submitOnEnter survives a real Chromium IME composition driven through CDP', async ({
+test('MessageComposer submitOnEnter survives a real Chromium IME composition driven through CDP', async ({
   page,
   browserName,
 }) => {
@@ -213,7 +215,7 @@ test('Composer submitOnEnter survives a real Chromium IME composition driven thr
     'Only Chromium exposes an IME driver (CDP Input.imeSetComposition).',
   );
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/?component=composer');
+  await page.goto('/?component=message-composer');
   const log = page.locator('output.catalog-log');
   const field = page.getByRole('textbox', { name: 'Message' });
   const initialLog = (await log.textContent()) ?? '';
