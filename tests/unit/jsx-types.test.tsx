@@ -392,6 +392,14 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(button.getAttribute('command')).toBe('show-modal');
     expect(button.getAttribute('commandfor')).toBe('dlg');
 
+    // <details name> groups exclusive accordions.
+    host.innerHTML = String(
+      <details name="faq" open>
+        <summary>Billing</summary>
+      </details>,
+    );
+    expect(host.firstElementChild!.getAttribute('name')).toBe('faq');
+
     // <input dirname> / <textarea dirname>, <img ismap>.
     host.innerHTML = String(<input name="comment" dirName="comment.dir" />);
     expect(host.firstElementChild!.getAttribute('dirname')).toBe('comment.dir');

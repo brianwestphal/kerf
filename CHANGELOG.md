@@ -98,6 +98,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **`<details name>` typechecks in kerf JSX.** The intrinsic `details` element now accepts `name`, the native exclusive-accordion group, so `<details name="faq">` no longer fails to typecheck (`KF-KFH2VT`).
 - **A `SplitView` column's only `Pane` now fills the column in `@kerfjs/ui`.** It used to take only its content height, so the Pane's footer sat right below its content instead of at the column's end (`KF-P9VSX1`).
 - A busy `ToolbarControlGroup` whose control shows text (`content="text"` or `"mixed"`) now hides the whole control under its spinner, label included, while keeping its size. Before, only icons were hidden, so the spinner drew over the label ("Pric◌ Check") (`KF-HCN9BH`).
 - `@kerfjs/ui/webawesome.css` draws a loading active `wa-step`'s spinner in the marker's on-accent color. Web Awesome 3.14 colors that spinner with the same accent that fills an active marker, so it was invisible. The fix goes through the step's public `spinner` part (`KF-AW993A`).

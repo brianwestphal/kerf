@@ -740,6 +740,11 @@ export interface HTMLTrackAttrs extends KerfBaseAttrs {
 
 export interface HTMLDetailsAttrs extends KerfBaseAttrs {
   open?: AttrLike<boolean>;
+  /**
+   * Exclusive accordion group: opening one `<details>` closes the others
+   * that share this name.
+   */
+  name?: AttrLike<string>;
 }
 
 export interface HTMLDialogAttrs extends KerfBaseAttrs {
