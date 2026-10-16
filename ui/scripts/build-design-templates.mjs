@@ -1208,6 +1208,47 @@ export const COMPONENTS = {
             ],
           }),
       },
+      {
+        id: 'toggles',
+        label: 'Toggle, Resting and Pressed',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            children: [
+              Button({ children: 'Favorite', pressed: false }),
+              Button({
+                children: 'Favorite',
+                icon: glyph(Star, 'star'),
+                pressed: true,
+              }),
+              Button({ children: 'Pinned', tone: 'brand', pressed: true }),
+              Button({
+                icon: glyph(Star, 'star'),
+                ariaLabel: 'Favorite',
+                pressed: true,
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'pill',
+        label: 'Pill Shape',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            children: [
+              Button({ children: 'Follow', tone: 'brand', shape: 'pill' }),
+              Button({ children: 'Share', shape: 'pill' }),
+              Button({
+                icon: glyph(Plus, 'plus'),
+                ariaLabel: 'Add',
+                shape: 'pill',
+              }),
+            ],
+          }),
+      },
     ],
   },
   'text-field': {
