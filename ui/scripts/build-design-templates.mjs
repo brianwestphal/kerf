@@ -62,6 +62,7 @@ import { MessageComposer } from '../dist/message-composer.js';
 import { em, fillColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
 import { ColorField } from '../dist/color-field.js';
+import { ColorPicker } from '../dist/color-picker.js';
 import { ColorSwatches } from '../dist/color-swatches.js';
 import { Disclosure } from '../dist/disclosure.js';
 import { List } from '../dist/list.js';
@@ -626,6 +627,63 @@ export const COMPONENTS = {
               ValueTableRow({ label: 'Last Deploy', value: '2 hours ago' }),
             ],
           }),
+      },
+    ],
+  },
+  'color-picker': {
+    css: [
+      'foundation',
+      'layout',
+      'lucide-icon',
+      'color-swatches',
+      'color-picker',
+    ],
+    selector: '#frame',
+    width: 380,
+    frameWidth: 340,
+    variants: [
+      {
+        id: 'rgb',
+        label: 'RGB with Presets',
+        height: 470,
+        render: () =>
+          staticColorPicker(
+            ColorPicker({
+              id: 'dt-fill',
+              label: 'Fill Color',
+              value: '#0a84ffcc',
+              eyedropper: false,
+              presets: [
+                '#ff3b30',
+                '#ff9500',
+                '#ffcc00',
+                '#34c759',
+                '#0a84ff',
+                '#5e5ce6',
+                '#bf5af2',
+              ].map((value) => ({
+                value,
+                label: value.toUpperCase(),
+                color: fillColor(value),
+              })),
+            }),
+          ),
+      },
+      {
+        id: 'gray',
+        label: 'Opaque Grayscale',
+        height: 430,
+        render: () =>
+          staticColorPicker(
+            ColorPicker({
+              id: 'dt-ink',
+              label: 'Ink',
+              value: '#6b6b6b',
+              mode: 'gray',
+              alpha: false,
+              eyedropper: false,
+            }),
+          ),
       },
     ],
   },
@@ -1968,6 +2026,17 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 .dt-button[data-variant="brand"] { border-color: var(--kui-color-brand-border-loud); color: var(--kui-color-brand-on-loud); background: var(--kui-color-brand-fill-loud); }
 .dt-icon-button { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: var(--kui-radius-m); color: var(--kui-color-text); background: transparent; cursor: pointer; }
 .dt-icon-button svg { width: 18px; height: 18px; }
+.dt-picker .kui-color-picker__area { background: none; }
+.dt-picker-area { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; }
+.dt-picker-area > svg { display: block; width: 100%; height: 100%; }
+.dt-picker .kui-color-picker__area-thumb { z-index: 1; }
+.dt-picker-range { position: relative; height: 20px; }
+.dt-checker-light { fill: var(--kui-color-surface); }
+.dt-checker-dark { fill: var(--kui-color-neutral-fill-normal); }
+.dt-picker-track { border-radius: 6px; }
+.dt-picker-track { position: absolute; top: 4px; left: 0; width: 100%; height: 12px; overflow: hidden; }
+.dt-picker-track > svg { display: block; width: 100%; height: 100%; }
+.dt-picker-thumb { position: absolute; top: 0; left: calc((100% - 20px) * var(--dt-fraction)); width: 20px; height: 20px; box-sizing: border-box; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.2), var(--kui-shadow-s); }
 .kui-color-field__swatch.dt-swatch { position: relative; overflow: hidden; background: var(--kui-color-surface); }
 .dt-swatch > span { position: absolute; }
 .dt-swatch__tile { inset: 0 50% 50% 0; background: var(--kui-color-neutral-fill-normal); }
@@ -1992,6 +2061,56 @@ function staticRange(markup) {
       (_match, fill) =>
         `<div class="dt-range" style="--_kui-slider-fill:${fill}%;--dt-fraction:${Number(fill) / 100}" aria-hidden="true"><span class="dt-range__track"></span><span class="dt-range__fill"></span><span class="dt-range__thumb"></span></div>`,
     ),
+  );
+}
+
+// A ColorPicker paints its area and its hue and opacity tracks with CSS
+// gradients on range inputs, which the capture cannot keep as vectors.
+// Template-only: draw them as inline SVG gradients (and an SVG checkerboard
+// pattern) from the picker's own hue, saturation, brightness, and opacity.
+function staticColorPicker(markup) {
+  const source = String(markup);
+  const value = (name) =>
+    Number(new RegExp(`--_kui-color-picker-${name}:([\\d.]+)`).exec(source)[1]);
+  const [h, s, v, a] = ['h', 's', 'v', 'a'].map(value);
+  const color = /--_kui-color-picker-color:(#[0-9a-f]+)/.exec(source)[1];
+  const hue = `hsl(${h} 100% 50%)`;
+  // Checker squares as plain rects: the capture does not resolve a pattern's
+  // CSS colors.
+  const checker = Array.from({ length: 50 }, (_, column) =>
+    [0, 1]
+      .map(
+        (row) =>
+          `<rect x="${column * 6}" y="${row * 6}" width="6" height="6" class="${(column + row) % 2 ? 'dt-checker-dark' : 'dt-checker-light'}"/>`,
+      )
+      .join(''),
+  ).join('');
+  const track = (id, stops, under = '') =>
+    `<span class="dt-picker-track"><svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="${id}-clip"><rect width="300" height="12" rx="6"/></clipPath><linearGradient id="${id}">${stops}</linearGradient></defs><g clip-path="url(#${id}-clip)">${under}</g><rect width="300" height="12" rx="6" fill="url(#${id})"/></svg></span>`;
+  const rainbow = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#f00']
+    .map((stop, index) => `<stop offset="${index / 6}" stop-color="${stop}"/>`)
+    .join('');
+  const thumb = (fraction, fill) =>
+    `<span class="dt-picker-thumb" style="--dt-fraction:${fraction};background:${fill}"></span>`;
+  return raw(
+    source
+      .replace('class="kui-color-picker"', 'class="kui-color-picker dt-picker"')
+      .replace(
+        '<span class="kui-color-picker__area-thumb"></span>',
+        `<span class="dt-picker-area"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="dt-area-hue"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="${hue}"/></linearGradient><linearGradient id="dt-area-dark" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient></defs><rect width="100" height="100" fill="url(#dt-area-hue)"/><rect width="100" height="100" fill="url(#dt-area-dark)"/></svg></span><span class="kui-color-picker__area-thumb"></span>`,
+      )
+      .replace(
+        /<input class="kui-color-picker__hue"[^>]*>/,
+        `<div class="dt-picker-range">${track('dt-hue', rainbow)}${thumb(h / 360, hue)}</div>`,
+      )
+      .replace(
+        /<input class="kui-color-picker__opacity"[^>]*>/,
+        `<div class="dt-picker-range">${track(
+          'dt-opacity',
+          `<stop offset="0" stop-color="${color}" stop-opacity="0"/><stop offset="1" stop-color="${color}"/>`,
+          checker,
+        )}${thumb(a / 100, color)}</div>`,
+      ),
   );
 }
 

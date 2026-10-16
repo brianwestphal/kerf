@@ -662,6 +662,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/color-picker.tsx",
     "componentSource": "ui/src/components/forms/color-picker/color-picker.tsx",
+    "designTemplate": "ui/docs/design/templates/color-picker.svg",
     "documentation": "ui/docs/color-picker.md"
   },
   {
