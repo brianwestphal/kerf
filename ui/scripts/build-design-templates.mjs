@@ -61,6 +61,7 @@ import { ChoiceChips } from '../dist/choice-chips.js';
 import { MessageComposer } from '../dist/message-composer.js';
 import { em, fillColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
+import { ColorField } from '../dist/color-field.js';
 import { ColorSwatches } from '../dist/color-swatches.js';
 import { Disclosure } from '../dist/disclosure.js';
 import { List } from '../dist/list.js';
@@ -625,6 +626,58 @@ export const COMPONENTS = {
               ValueTableRow({ label: 'Last Deploy', value: '2 hours ago' }),
             ],
           }),
+      },
+    ],
+  },
+  'color-field': {
+    css: ['foundation', 'layout', 'lucide-icon', 'color-field'],
+    selector: '#frame',
+    width: 460,
+    frameWidth: 420,
+    variants: [
+      {
+        id: 'hint',
+        label: 'Label, Color, and Hint',
+        height: 100,
+        render: () =>
+          staticSwatch(
+            ColorField({
+              id: 'dt-fill',
+              label: 'Fill',
+              value: '#0a84ff',
+              hint: 'Applies to the selected shapes.',
+            }),
+          ),
+      },
+      {
+        id: 'compact',
+        label: 'Compact with Opacity',
+        height: 70,
+        render: () =>
+          staticSwatch(
+            ColorField({
+              id: 'dt-border',
+              label: 'Border',
+              value: '#1c1c1e80',
+              size: 'compact',
+            }),
+          ),
+      },
+      {
+        id: 'error',
+        label: 'Disabled with an Error',
+        height: 100,
+        render: () =>
+          staticSwatch(
+            ColorField({
+              id: 'dt-accent',
+              label: 'Theme Accent',
+              value: '#bf5af2',
+              alpha: false,
+              disabled: true,
+              error: 'The theme locks this color.',
+            }),
+          ),
       },
     ],
   },
@@ -1915,6 +1968,11 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 .dt-button[data-variant="brand"] { border-color: var(--kui-color-brand-border-loud); color: var(--kui-color-brand-on-loud); background: var(--kui-color-brand-fill-loud); }
 .dt-icon-button { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: var(--kui-radius-m); color: var(--kui-color-text); background: transparent; cursor: pointer; }
 .dt-icon-button svg { width: 18px; height: 18px; }
+.kui-color-field__swatch.dt-swatch { position: relative; overflow: hidden; background: var(--kui-color-surface); }
+.dt-swatch > span { position: absolute; }
+.dt-swatch__tile { inset: 0 50% 50% 0; background: var(--kui-color-neutral-fill-normal); }
+.dt-swatch__tile[data-far] { inset: 50% 0 0 50%; }
+.dt-swatch__color { inset: 0; }
 .dt-range { position: relative; display: block; width: 100%; height: var(--_kui-slider-thumb); }
 .dt-range > span { position: absolute; top: 50%; translate: 0 -50%; }
 .dt-range__track, .dt-range__fill { height: var(--_kui-slider-track); border-radius: var(--kui-radius-pill); }
@@ -1933,6 +1991,19 @@ function staticRange(markup) {
       /<input class="kui-slider__input"[^>]*style="--_kui-slider-fill:([\d.]+)%"[^>]*>/,
       (_match, fill) =>
         `<div class="dt-range" style="--_kui-slider-fill:${fill}%;--dt-fraction:${Number(fill) / 100}" aria-hidden="true"><span class="dt-range__track"></span><span class="dt-range__fill"></span><span class="dt-range__thumb"></span></div>`,
+    ),
+  );
+}
+
+// A ColorField swatch paints its checkerboard with a conic gradient, which the
+// capture embeds as a nested SVG that design tools cannot load. Template-only:
+// stand plain squares in for the gradient under the same color.
+function staticSwatch(markup) {
+  return raw(
+    String(markup).replace(
+      /<span class="kui-color-field__swatch" style="--_kui-color-field-color:(#[0-9a-f]+)" aria-hidden="true"><\/span>/,
+      (_match, color) =>
+        `<span class="kui-color-field__swatch dt-swatch" aria-hidden="true"><span class="dt-swatch__tile"></span><span class="dt-swatch__tile" data-far=""></span><span class="dt-swatch__color" style="background:${color}"></span></span>`,
     ),
   );
 }

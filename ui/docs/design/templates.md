@@ -13,7 +13,7 @@ Templated components (each with light + dark variants):
 `ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `List`, `ListItem`, `ListHeader`,
 `ListActionRow`, `ValueTable`, `Disclosure`, `ProgressBar`, `ProgressRing`, `StateBanner`, `EmptyState`, `Skeleton`,
 `SegmentedControl`, `TabBar`/`TabBarItem`, `SearchField`, `TagField`, `Chip`, `ChoiceChips`,
-`MessageComposer`, `ColorSwatches`, and the native form controls `Button`, `TextField`, `Checkbox`,
+`MessageComposer`, `ColorField`, `ColorSwatches`, and the native form controls `Button`, `TextField`, `Checkbox`,
 `RadioGroup`, `Switch`, `Slider`, and `Select`.
 
 Deliberately **not** templated (they don't read as a single static component
@@ -29,7 +29,7 @@ either: its hue and opacity tracks are range-input pseudo-elements a static
 capture cannot reproduce. For the same reason the `Slider` templates draw
 its track, fill, and thumb with template-only stand-in elements built from
 the Slider's own tokens and fill value (`staticRange` in
-`scripts/build-design-templates.mjs`).
+`scripts/build-design-templates.mjs`). The `ColorField` templates likewise draw the swatch's checkerboard with plain squares (`staticSwatch`), since the capture would embed its conic gradient as a nested SVG.
 
 ## Layout
 

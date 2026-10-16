@@ -678,6 +678,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/color-field.tsx",
     "componentSource": "ui/src/components/forms/color-field/color-field.tsx",
+    "designTemplate": "ui/docs/design/templates/color-field.svg",
     "documentation": "ui/docs/color-field.md"
   },
   {
