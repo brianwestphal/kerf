@@ -1554,8 +1554,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Overflow container with accessible scrolling affordances.",
-    "recommendation": "supported",
+    "description": "Ecosystem scroll container; use Kerf Pane scroll edges or ColumnTrack.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -2016,8 +2016,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Helpers",
     "kind": "component",
     "source": "webawesome",
-    "description": "Loads and injects an external HTML fragment.",
-    "recommendation": "supported",
+    "description": "Ecosystem remote HTML include; fetch with kerfjs/async and render Kerf content.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"

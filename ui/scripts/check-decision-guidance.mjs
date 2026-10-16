@@ -49,6 +49,8 @@ const overlaps = [
   'wa-card',
   'wa-drawer',
   'wa-page',
+  'wa-include',
+  'wa-scroller',
 ];
 
 const [

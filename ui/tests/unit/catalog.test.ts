@@ -376,6 +376,7 @@ describe('UX catalog metadata', () => {
       'wa-dialog',
       'wa-drawer',
       'wa-page',
+      'wa-scroller',
       'wa-split-panel',
       'wa-tab',
       'wa-tab-group',
@@ -391,6 +392,7 @@ describe('UX catalog metadata', () => {
       'wa-comparison',
       'wa-icon',
       'wa-zoomable-frame',
+      'wa-include',
       'wa-popover',
       'wa-popup',
     ]);
@@ -681,6 +683,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(34);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(36);
   });
 });

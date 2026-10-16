@@ -603,7 +603,7 @@ sizes through a private property.
 `ui/src/components/media/lucide-icon/lucide-icon.tsx` accepts an optional typed foreground color for both outline stroke and solid fill, caches each icon node's child markup, and returns the identical `SafeHtml` for a repeated node and props (bounded at 64 variants per node); `ui/src/shared/styles/css-values.ts` mints semantic, variable, and custom CSS foregrounds.
 `LucideIcon.inline` marks its SVG for inline-block layout so it can flow inside `Text` without changing size or accessible naming.
 
-Web Awesome is an optional integration with no default role in guidance: `ui/docs/component-selection.md#web-awesome-integration` maps every overlapping `wa-*` element to its Kerf choice, `ui/docs/webawesome-migration.md` is the application migration guide, the catalog marks the 34 replaced elements `recommendation: "avoid"` with `prefer-kerf` alternatives, and `ui/ai/application-ui-profile.defaults.json` avoids each one (`KUI-L301`).
+Web Awesome is an optional integration with no default role in guidance: `ui/docs/component-selection.md#web-awesome-integration` maps every overlapping `wa-*` element to its Kerf choice, `ui/docs/webawesome-migration.md` is the application migration guide, the catalog marks the 36 replaced elements `recommendation: "avoid"` with `prefer-kerf` alternatives, and `ui/ai/application-ui-profile.defaults.json` avoids each one (`KUI-L301`).
 
 The optional `ui/src/webawesome.css` bridge gives filled badges a contrast-safe
 quiet-fill/normal-text pair with two public override tokens, and maps Dialog

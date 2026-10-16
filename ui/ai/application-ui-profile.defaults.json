@@ -142,6 +142,16 @@
       "preferred": "@kerfjs/ui:state-banner",
       "avoid": ["@kerfjs/ui:wa-callout"],
       "rationale": "Render StateBanner for persistent inline status instead of a Web Awesome callout."
+    },
+    "fetched-content": {
+      "preferred": "@kerfjs/ui:content-item",
+      "avoid": ["@kerfjs/ui:wa-include"],
+      "rationale": "Fetch remote content with resource() from kerfjs/async and render it as Kerf content inside a ContentItem; never inject fetched markup."
+    },
+    "scroll-region": {
+      "preferred": "@kerfjs/ui:pane",
+      "avoid": ["@kerfjs/ui:wa-scroller"],
+      "rationale": "Let a Pane own vertical scrolling with scroll edges, or use ColumnTrack for a horizontal track, instead of a Web Awesome scroller."
     }
   },
   "theme": {

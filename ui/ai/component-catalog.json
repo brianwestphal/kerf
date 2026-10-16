@@ -8939,19 +8939,29 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Overflow container with accessible scrolling affordances.",
+      "description": "Ecosystem scroll container; use Kerf Pane scroll edges or ColumnTrack.",
       "uses": [],
-      "purpose": "Overflow container with accessible scrolling affordances.",
+      "purpose": "Ecosystem scroll container; use Kerf Pane scroll edges or ColumnTrack.",
       "customElement": "wa-scroller",
       "useWhen": [
         "Overflow container with accessible scrolling affordances."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use a Pane's scroll edges (or wireScrollDividers) for vertical overflow and ColumnTrack for a horizontal track."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "pane",
+          "relationship": "prefer-kerf",
+          "when": "Use a Pane's scrollEdge and wireScrollDividers to signal vertical overflow."
+        },
+        {
+          "id": "column-track",
+          "relationship": "prefer-kerf",
+          "when": "Use ColumnTrack for a horizontally scrolling track of columns."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "child",
@@ -8967,7 +8977,7 @@
       "links": {
         "catalogRoute": "?component=wa-scroller",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -10367,18 +10377,17 @@
       "category": "Helpers",
       "kind": "component",
       "source": "webawesome",
-      "description": "Loads and injects an external HTML fragment.",
+      "description": "Ecosystem remote HTML include; fetch with kerfjs/async and render Kerf content.",
       "uses": [],
-      "purpose": "Loads and injects an external HTML fragment.",
+      "purpose": "Ecosystem remote HTML include; fetch with kerfjs/async and render Kerf content.",
       "customElement": "wa-include",
       "useWhen": [
         "Loads and injects an external HTML fragment."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI: it injects fetched markup outside kerf's SafeHtml escaping. Fetch with resource() from kerfjs/async and render the result as Kerf content."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [],
       "geometry": {
         "margin": "self",
@@ -10395,7 +10404,7 @@
       "links": {
         "catalogRoute": "?component=wa-include",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {

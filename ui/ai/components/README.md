@@ -122,7 +122,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Divider](./wa-divider.md) — Visual separator for related groups of content.
 - [Drawer](./wa-drawer.md) (avoid) — Ecosystem drawer; use Kerf DialogSurface sheets or CollapsiblePanel.
 - [Page](./wa-page.md) (avoid) — Ecosystem page shell; use the Kerf app layouts.
-- [Scroller](./wa-scroller.md) — Overflow container with accessible scrolling affordances.
+- [Scroller](./wa-scroller.md) (avoid) — Ecosystem scroll container; use Kerf Pane scroll edges or ColumnTrack.
 - [Split Panel](./wa-split-panel.md) (avoid) — Alternative split API; use Kerf ResizableRegion for application panes.
 
 ## Web Awesome — Navigation
@@ -169,7 +169,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Format Bytes](./wa-format-bytes.md) — Locale-aware byte and bit value formatter.
 - [Format Date](./wa-format-date.md) — Locale-aware date and time formatter.
 - [Format Number](./wa-format-number.md) — Locale-aware number, currency, unit, and percentage formatter.
-- [Include](./wa-include.md) — Loads and injects an external HTML fragment.
+- [Include](./wa-include.md) (avoid) — Ecosystem remote HTML include; fetch with kerfjs/async and render Kerf content.
 - [Intersection Observer](./wa-intersection-observer.md) — Declaratively emits visibility changes for slotted content.
 - [Mutation Observer](./wa-mutation-observer.md) — Declaratively emits DOM mutation records for slotted content.
 - [Popover](./wa-popover.md) (avoid) — Ecosystem popover; use Kerf AnchoredSurface.
