@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 408100,
+  "totalJavaScriptGzip": 410600,
   "measuredLargestJavaScriptGzip": 164221,
-  "measuredTotalJavaScriptGzip": 408091,
+  "measuredTotalJavaScriptGzip": 410522,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5331,6 +5331,22 @@
         "measuredTotalJavaScriptGzip": 408091,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 408100
+      }
+    },
+    {
+      "at": "2026-10-16T08:58:58.131Z",
+      "reason": "TagField catalog page and wireTagFields wiring in the catalog shell",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 408091,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 408100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 410522,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 410600
       }
     }
   ]

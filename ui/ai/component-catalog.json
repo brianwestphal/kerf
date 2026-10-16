@@ -5722,6 +5722,92 @@
       }
     },
     {
+      "id": "tag-field",
+      "name": "TagField",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A form field that collects short values as removable tags: SearchField's token editor in its form-field presentation, with a label, hint or error, a leading tag glyph, chips that edit or remove, a clear button, an optional max, and a hidden input per tag submitted under its name.",
+      "uses": [
+        "search-field",
+        "lucide-icon"
+      ],
+      "purpose": "Collect a list of short values (labels, recipients, keywords) as removable tags, each submitted as its own form value.",
+      "publicExports": [
+        "TagField",
+        "TagFieldProps"
+      ],
+      "useWhen": [
+        "A form collects several short values of one kind (labels, recipients, keywords): render TagField with tags and name, wire wireTagFields with onChange, and re-render with the list it reports.",
+        "Values must be checked (an email shape, a known label) or capped: pass normalize and max, and show onReject's reason as the field's error."
+      ],
+      "avoidWhen": [
+        "Do not use it for search filters; SearchField combines free text with ordered, editable filter tokens.",
+        "Do not use it to pick from a short fixed set; use ChoiceChips or a multiple Select.",
+        "Do not use wa-tag-input."
+      ],
+      "alternatives": [
+        {
+          "id": "search-field",
+          "relationship": "nearest",
+          "when": "Use SearchField when the tokens are search filters rather than submitted form values."
+        },
+        {
+          "id": "choice-chips",
+          "relationship": "nearest",
+          "when": "Use ChoiceChips to pick several from a short known set."
+        }
+      ],
+      "appOwns": [
+        "the tag list (update it from onChange and re-render)",
+        "validation and normalization (normalize) and showing refusals (onReject, error)",
+        "the field name and form association"
+      ],
+      "variants": [
+        "labels with a hint",
+        "validated with max and an error",
+        "required",
+        "disabled",
+        "custom delimiters and duplicate policy (wireTagFields options)"
+      ],
+      "accessibility": [
+        "The editor is named by the visible label and described by the hint or error; each chip has an edit button (its label) and a remove button named for the tag.",
+        "Enter or a delimiter adds the typed text, Backspace at the start removes the last tag, ArrowLeft and ArrowRight move between chips and the editor, and Backspace or Delete on a focused chip removes it."
+      ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child",
+        "notes": [
+          "The SearchField form-field presentation draws the label, frame, chips, and hint; TagField adds no geometry of its own."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/tag-field",
+        "browserImport": "@kerfjs/ui/tag-field",
+        "manualCssImport": "@kerfjs/ui/tag-field.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireTagFields",
+          "import": "@kerfjs/ui/wire-tag-fields",
+          "required": true
+        }
+      ],
+      "publicClasses": [
+        "kui-tag-field"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=tag-field",
+        "documentation": "docs/tag-field.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "resize",
       "name": "ResizableRegion",
       "category": "Controls",
@@ -9141,27 +9227,30 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Form field that collects a list of short values as removable tags, each submitted as its own form value.",
+      "description": "Ecosystem tag input; use the Kerf TagField.",
       "uses": [
         "wa-icon",
         "wa-tag"
       ],
-      "purpose": "Form field that collects a list of short values as removable tags, each submitted as its own form value.",
+      "purpose": "Ecosystem tag input; use the Kerf TagField.",
       "customElement": "wa-tag-input",
       "useWhen": [
-        "Form field that collects a list of short values as removable tags, each submitted as its own form value."
+        "Only inside an application that has already adopted the optional Web Awesome integration."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Do not use it for search filters; SearchField combines free text with ordered, editable filter tokens.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use TagField (@kerfjs/ui/tag-field) with wireTagFields for tags submitted as form values, or SearchField for search filters."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
+        {
+          "id": "tag-field",
+          "relationship": "prefer-kerf",
+          "when": "Use TagField for a list of short values submitted as form values."
+        },
         {
           "id": "search-field",
           "relationship": "prefer-kerf",
-          "when": "Use SearchField when the tags are search filters rather than submitted form values."
+          "when": "Use SearchField when the tags are search filters."
         }
       ],
       "geometry": {
@@ -9179,7 +9268,7 @@
       "links": {
         "catalogRoute": "?component=wa-tag-input",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {

@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`TagField` in `@kerfjs/ui`.** `@kerfjs/ui/tag-field` collects short values as removable tags, each submitted as a hidden input under `name`. It is built on SearchField's token editor in its `form-field` presentation, with a label, a hint or `error`, a tag glyph, a clear button, `max`, and `required`/`disabled`.
+  - `wireTagFields(root, { onChange })` (`@kerfjs/ui/wire-tag-fields`) adds a tag on Enter or a delimiter (and several from pasted text), and adds the typed text on Tab or when focus leaves the editor.
+  - It enforces duplicates, `max`, and `normalize`, reporting each refusal to `onReject`.
+  - Removing: a chip's × or Backspace at the start removes a tag, a chip's label moves it back to edit, and the clear button empties the list.
+  - Moving: arrows move between the chips and the editor. A `wireSearchFields` on the same root leaves a TagField's keys to `wireTagFields`.
+  - `wa-tag-input` is now `Discouraged` (46 in all), and the profile defaults avoid it (`KF-PZ5J93`).
 - **`Slider` in `@kerfjs/ui`.** `@kerfjs/ui/slider` is a native `<input type="range">` drawn as a track, a brand fill up to the value, and a round thumb, the same in Chromium, Firefox, and WebKit. It has a label row, an optional live readout (`showValue`, `unit`, also spoken as the value text), labeled `ticks`, a `hint`, a `compact` size, and a disabled state. It fills its width on the shared block-content inset. `wireSliders(root)` (`@kerfjs/ui/wire-sliders`) keeps the fill and readout in step with a drag before the app re-renders. `wa-slider` is now `Discouraged` (45 in all), and the profile defaults avoid it (`KF-0R9G4Y`).
 - **`ProgressBar` and `ProgressRing` in `@kerfjs/ui`.**
   - `@kerfjs/ui/progress-bar` is a native `<progress>`. It is determinate (`value` of `max`) or, without a `value`, an indeterminate sweep. A visible `label` names it through `aria-labelledby`, or `ariaLabel` does without one. `showValue` adds a readout, and `valueText` replaces the spoken percentage. It takes brand and status `tone`s and a `compact` 4px track.
@@ -98,6 +104,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **A SearchField no longer shows its placeholder over typed text after an unrelated re-render.** Re-rendering the host for another reason, such as an error message beside the field, reset the field's placeholder state from the app's query while the editor still held typed text. `wireSearchFields` now re-derives it from the live editor (`KF-PZ5J93`).
 - **`<details name>` typechecks in kerf JSX.** The intrinsic `details` element now accepts `name`, the native exclusive-accordion group, so `<details name="faq">` no longer fails to typecheck (`KF-KFH2VT`).
 - **A `SplitView` column's only `Pane` now fills the column in `@kerfjs/ui`.** It used to take only its content height, so the Pane's footer sat right below its content instead of at the column's end (`KF-P9VSX1`).
 - A busy `ToolbarControlGroup` whose control shows text (`content="text"` or `"mixed"`) now hides the whole control under its spinner, label included, while keeping its size. Before, only icons were hidden, so the spinner drew over the label ("Pric◌ Check") (`KF-HCN9BH`).

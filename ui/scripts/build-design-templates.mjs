@@ -77,6 +77,7 @@ import { Skeleton } from '../dist/skeleton.js';
 import { StateBanner } from '../dist/state-banner.js';
 import { Slider } from '../dist/slider.js';
 import { Switch } from '../dist/switch.js';
+import { TagField } from '../dist/tag-field.js';
 import { TabBar } from '../dist/tab-bar.js';
 import { Text } from '../dist/text.js';
 import { TextField } from '../dist/text-field.js';
@@ -837,6 +838,38 @@ export const COMPONENTS = {
             showValue: true,
             unit: '%',
             size: 'compact',
+          }),
+      },
+    ],
+  },
+  'tag-field': {
+    css: ['foundation', 'layout', 'lucide-icon', 'search-field', 'tag-field'],
+    selector: '#frame',
+    width: 460,
+    frameWidth: 420,
+    variants: [
+      {
+        id: 'tags',
+        label: 'Label, Tags, and Hint',
+        height: 110,
+        render: () =>
+          TagField({
+            id: 'dt-labels',
+            label: 'Labels',
+            tags: ['bug', 'docs', 'perf'],
+            hint: 'Press Enter or a comma to add a label.',
+          }),
+      },
+      {
+        id: 'error',
+        label: 'Error',
+        height: 110,
+        render: () =>
+          TagField({
+            id: 'dt-recipients',
+            label: 'Recipients',
+            tags: ['mara@example.com'],
+            error: 'Remove a recipient to add another.',
           }),
       },
     ],

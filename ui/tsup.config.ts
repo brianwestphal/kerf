@@ -67,6 +67,8 @@ const entries = [
   'search-field',
   'search-field-model',
   'wire-search-fields',
+  'tag-field',
+  'wire-tag-fields',
   'select-register',
   'help-tags-register',
   'webawesome',

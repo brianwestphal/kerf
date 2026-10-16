@@ -4695,6 +4695,70 @@
       }
     },
     {
+      "key": "@kerfjs/ui:tag-field",
+      "package": "@kerfjs/ui",
+      "id": "tag-field",
+      "name": "TagField",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the tag list (update it from onChange and re-render)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "validation and normalization (normalize) and showing refusals (onReject, error)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the field name and form association",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireTagFields"],
+        "obligations": ["Use wireTagFields as documented."],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "child",
+          "border": "child",
+          "padding": "child",
+          "notes": [
+            "The SearchField form-field presentation draws the label, frame, chips, and hint; TagField adds no geometry of its own."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The editor is named by the visible label and described by the hint or error; each chip has an edit button (its label) and a remove button named for the tag.",
+          "Enter or a delimiter adds the typed text, Backspace at the start removes the last tag, ArrowLeft and ArrowRight move between chips and the editor, and Backspace or Delete on a focused chip removes it."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-tag-field",
+        "publicClasses": ["kui-tag-field"],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:resize",
       "package": "@kerfjs/ui",
       "id": "resize",

@@ -59,6 +59,7 @@ import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { wireSliders } from '@kerfjs/ui/wire-sliders';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
+import { wireTagFields } from '@kerfjs/ui/wire-tag-fields';
 import { wireTextFields } from '@kerfjs/ui/wire-text-fields';
 import { wireToolbarVisibility } from '@kerfjs/ui/wire-toolbar-visibility';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
@@ -231,6 +232,11 @@ import {
   selectOverlayTabNavigatorDemo,
   selectTabNavigatorDemo,
 } from './demos/tab-navigator.js';
+import {
+  rejectTagFieldDemoValue,
+  resetTagFieldDemo,
+  setTagFieldDemoTags,
+} from './demos/tag-field.js';
 import { SHOW_TOAST_DEMO_ACTION, showToastDemo } from './demos/toast.js';
 import { wireTooltipDemo } from './demos/tooltip.js';
 import {
@@ -1620,6 +1626,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
+  'tag-field': {
+    reset: resetTagFieldDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
   tooltip: {
     target: 'canvas',
     wire: (canvas) => wireTooltipDemo(canvas),
@@ -1857,6 +1868,22 @@ const stopMessageComposers = wireMessageComposers(app);
 const stopTextFields = wireTextFields(app);
 const stopCheckboxes = wireCheckboxes(app);
 const stopSliders = wireSliders(app);
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const stopTagFields = wireTagFields(app, {
+  onChange: ({ id, tags }) => {
+    setTagFieldDemoTags(id, tags);
+    actionLog.value = `${tags.length} tags`;
+  },
+  onReject: ({ id, value, reason }) =>
+    rejectTagFieldDemoValue(id, value, reason),
+  normalize: (value, id) => {
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    if (id === 'tag-field-demo-recipients' && !EMAIL.test(trimmed))
+      return undefined;
+    return trimmed;
+  },
+});
 const stopSliderDemo = delegate(
   app,
   'change',
@@ -2292,6 +2319,7 @@ window.addEventListener(
     stopTextFields();
     stopCheckboxes();
     stopSliders();
+    stopTagFields();
     stopSliderDemo();
     stopChoiceChips();
     stopComboboxes();

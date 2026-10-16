@@ -779,6 +779,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 - **Pick a value on a range with `Slider`** (`@kerfjs/ui/slider`): a native
   range input drawn as a track, fill, and thumb, with `showValue`/`unit`,
   `ticks`, and `hint`; call `wireSliders(root)` once. Never use `wa-slider`.
+- **Collect tags with `TagField`** (`@kerfjs/ui/tag-field`): SearchField's
+  token editor as a form field, a hidden input per tag; call
+  `wireTagFields(root, { onChange })` and re-render. Never use `wa-tag-input`.
 - **Size a Select through its API.** `triggerWidth` chooses `fit-content`,
   `max-content`, or `fill`; `--kui-select-trigger-max-width` caps it. For custom
   selected text, use the public color, font-size, and font-weight tokens; the

@@ -373,6 +373,7 @@ describe('UX catalog metadata', () => {
       'wa-slider',
       'wa-switch',
       'wa-textarea',
+      'wa-tag-input',
       'wa-accordion',
       'wa-accordion-item',
       'wa-card',
@@ -574,6 +575,7 @@ describe('UX catalog metadata', () => {
       'ChoiceChips',
       'MessageComposer',
       'SearchField',
+      'TagField',
       'ResizableRegion',
       'Select',
       'Combobox',
@@ -701,6 +703,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(45);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(46);
   });
 });

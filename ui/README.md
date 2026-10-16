@@ -222,6 +222,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `ProgressRing`                                               | `@kerfjs/ui/progress-ring`              | `@kerfjs/ui/progress-ring.css`           |
 | `Slider`                                                     | `@kerfjs/ui/slider`                     | `@kerfjs/ui/slider.css`                  |
 | `wireSliders`, `syncSlider`                                  | `@kerfjs/ui/wire-sliders`               | —                                        |
+| `TagField`                                                   | `@kerfjs/ui/tag-field`                  | `@kerfjs/ui/tag-field.css`               |
+| `wireTagFields`                                              | `@kerfjs/ui/wire-tag-fields`            | —                                        |
 | `FloatingToolbar`                                            | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`        |
 | `PopupMenu` (register with `@kerfjs/ui/popup-menu/register`) | `@kerfjs/ui/popup-menu`                 | `@kerfjs/ui/popup-menu.css`              |
 | `openAnchoredSurface`, `openAnchoredSurfaceAt`               | `@kerfjs/ui/anchored-surface`           | `@kerfjs/ui/anchored-surface.css`        |

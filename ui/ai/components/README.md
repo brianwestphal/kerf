@@ -63,6 +63,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ChoiceChips](./choice-chips.md) — Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.
 - [MessageComposer](./message-composer.md) — Write a chat message or prompt in a raised frame whose border turns brand while focus is within, with a field that grows between row bounds and a trailing send action.
 - [SearchField](./search-field.md) — Token-controlled, optionally collapsible search editor with ordered, editable, removable filter chips.
+- [TagField](./tag-field.md) — Collect a list of short values (labels, recipients, keywords) as removable tags, each submitted as its own form value.
 - [ResizableRegion](./resize.md) — Pointer and keyboard-operable split region with a customizable handle icon.
 - [Select](./select.md) — Choose one or more controlled values, keep unavailable choices visible, and optionally select all enabled choices or clear a multiple selection.
 - [Combobox](./combobox.md) — Let people pick an existing value or create a new one by typing (tags, labels, recipients), with the themed field chrome, the ARIA combobox pattern, and a touch-safe font size, without a native datalist or app CSS.
@@ -117,7 +118,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Switch](./wa-switch.md) (avoid) — Ecosystem switch; use Kerf Switch.
 - [Textarea](./wa-textarea.md) (avoid) — Ecosystem multi-line input; use Kerf TextField with multiline.
 - [Time Input](./wa-time-input.md) — Experimental segmented time field with an optional picker.
-- [Tag Input](./wa-tag-input.md) — Form field that collects a list of short values as removable tags, each submitted as its own form value.
+- [Tag Input](./wa-tag-input.md) (avoid) — Ecosystem tag input; use the Kerf TagField.
 
 ## Web Awesome — Layout
 

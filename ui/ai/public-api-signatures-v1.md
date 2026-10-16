@@ -5475,6 +5475,63 @@ import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 ```
 
+## `@kerfjs/ui/tag-field`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+/** The delegated actions a TagField's controls carry; `wireTagFields` handles them. */
+declare const tagFieldActions: {
+    readonly edit: "edit-tag-field-tag";
+    readonly remove: "remove-tag-field-tag";
+    readonly clear: "clear-tag-field";
+};
+interface TagFieldProps {
+    /** The field's id: the editor's identity and the prefix of its label and hint ids. */
+    id: string;
+    /** The visible label, which also names the field. */
+    label: string;
+    /** The tags, in order. Each is submitted as its own `name` value. */
+    tags: readonly string[];
+    /** The form field name each tag submits under. */
+    name?: string;
+    /** Associate the hidden inputs with a form outside their ancestor chain. */
+    form?: string;
+    /** Placeholder while the field is empty (default `Add tag…`). */
+    placeholder?: string;
+    /** Placeholder after the last tag (default `Add another…`). */
+    morePlaceholder?: string;
+    /** Supporting text below the field, also its description. */
+    hint?: string;
+    /** An error that replaces the hint and marks the field invalid. */
+    error?: string;
+    /** The most tags it accepts; `wireTagFields` refuses more. */
+    max?: number;
+    required?: boolean;
+    disabled?: boolean;
+    /** The leading glyph (default a Lucide `tag`). */
+    icon?: KerfUiContent;
+    /** The clear button's accessible name (default `Clear Tags`). */
+    clearLabel?: string;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A form field that collects short values as removable tags: SearchField's
+ * token editor in its `form-field` presentation, with each tag a chip and a
+ * hidden input that submits it under `name`. Typing then Enter (or a
+ * delimiter such as a comma) adds a tag; Backspace at the start removes the
+ * last one; each chip's label edits it and its × removes it. The app owns
+ * the tag list: wire `wireTagFields` from `@kerfjs/ui/wire-tag-fields` and
+ * re-render with the list its `onChange` reports.
+ */
+declare function TagField({ id, label, tags, name, form, placeholder, morePlaceholder, hint, error, max, required, disabled, icon, clearLabel, className, slot, }: TagFieldProps): kerfjs.SafeHtml;
+
+export { TagField, type TagFieldProps, tagFieldActions };
+```
+
 ## `@kerfjs/ui/combobox`
 
 ```ts

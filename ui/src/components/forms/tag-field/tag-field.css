@@ -1,0 +1,8 @@
+/* TagField is SearchField's form-field presentation plus hidden inputs; the
+   SearchField draws the frame, chips, label, and hint, and styles its invalid
+   state in this field's context from its own stylesheet. */
+.kui-tag-field {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}

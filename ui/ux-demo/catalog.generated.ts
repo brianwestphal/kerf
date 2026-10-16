@@ -648,6 +648,22 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "tag-field",
+    "name": "TagField",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Collect a list of short values (labels, recipients, keywords) as removable tags, each submitted as its own form value.",
+    "uses": [
+      "search-field",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/tag-field.tsx",
+    "componentSource": "ui/src/components/forms/tag-field/tag-field.tsx",
+    "designTemplate": "ui/docs/design/templates/tag-field.svg",
+    "documentation": "ui/docs/tag-field.md"
+  },
+  {
     "id": "resize",
     "name": "ResizableRegion",
     "category": "Controls",
@@ -1529,8 +1545,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Form field that collects a list of short values as removable tags, each submitted as its own form value.",
-    "recommendation": "supported",
+    "description": "Ecosystem tag input; use the Kerf TagField.",
+    "recommendation": "avoid",
     "uses": [
       "wa-icon",
       "wa-tag"

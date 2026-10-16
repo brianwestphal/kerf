@@ -91,6 +91,14 @@ describe('ProgressBar', () => {
     ).toBe('100%');
   });
 
+  it('renders a label row without a readout', () => {
+    const host = render(ProgressBar({ label: 'Indexing', value: 0.5 }));
+    expect(host.querySelector('.kui-progress-bar__label')?.textContent).toBe(
+      'Indexing',
+    );
+    expect(host.querySelector('.kui-progress-bar__value')).toBeNull();
+  });
+
   it('rejects an invalid max or value', () => {
     expect(() => ProgressBar({ ariaLabel: 'X', max: 0 })).toThrow(
       'ProgressBar max must be a positive number.',

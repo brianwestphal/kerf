@@ -35,6 +35,7 @@ const overlaps = [
   'wa-progress-bar',
   'wa-progress-ring',
   'wa-slider',
+  'wa-tag-input',
   'wa-skeleton',
   'wa-callout',
   'wa-toast',

@@ -12,7 +12,7 @@ component picture without running the app.
 Templated components (each with light + dark variants):
 `ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `List`, `ListItem`, `ListHeader`,
 `ListActionRow`, `ValueTable`, `Disclosure`, `ProgressBar`, `ProgressRing`, `StateBanner`, `EmptyState`, `Skeleton`,
-`SegmentedControl`, `TabBar`/`TabBarItem`, `SearchField`, `Chip`, `ChoiceChips`,
+`SegmentedControl`, `TabBar`/`TabBarItem`, `SearchField`, `TagField`, `Chip`, `ChoiceChips`,
 `MessageComposer`, and the native form controls `Button`, `TextField`, `Checkbox`,
 `RadioGroup`, `Switch`, `Slider`, and `Select`.
 

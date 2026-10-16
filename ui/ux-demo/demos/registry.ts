@@ -61,6 +61,7 @@ import { SwitchDemo } from './switch.js';
 import { TabBarDemo } from './tab-bar.js';
 import { TabNavigatorDemo } from './tab-navigator.js';
 import { TabsDemo } from './tabs.js';
+import { TagFieldDemo } from './tag-field.js';
 import { TextDemo } from './text.js';
 import { TextFieldDemo } from './text-field.js';
 import { ToastDemo } from './toast.js';
@@ -91,6 +92,7 @@ export const demos = {
   'progress-ring': ProgressRingDemo,
   'message-composer': MessageComposerDemo,
   slider: SliderDemo,
+  'tag-field': TagFieldDemo,
   toast: ToastDemo,
   tooltip: TooltipDemo,
   'search-field': SearchFieldDemo,

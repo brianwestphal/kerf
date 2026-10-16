@@ -426,3 +426,16 @@
     border: 1px solid ButtonText;
   }
 }
+
+/* In an invalid TagField the frame and the hint (its error) take the danger
+   color. */
+.kui-tag-field[data-invalid] .kui-search-field {
+  --kui-search-field-border: var(
+    --kui-color-danger-border-loud,
+    var(--kui-color-danger-fill-loud)
+  );
+}
+
+.kui-tag-field[data-invalid] .kui-search-field__field-hint {
+  color: var(--kui-color-danger-on-quiet, var(--kui-color-danger-fill-loud));
+}

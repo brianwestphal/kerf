@@ -157,4 +157,24 @@ describe('wireSliders', () => {
     stop();
     host.remove();
   });
+
+  it('shows a readout without a label, a label without a readout, and syncs a bare input', () => {
+    const readoutOnly = render(
+      Slider({ id: 'r', ariaLabel: 'R', value: 4, showValue: true }),
+    );
+    expect(readoutOnly.querySelector('.kui-slider__label')).toBeNull();
+    expect(readoutOnly.querySelector('output')?.textContent).toBe('4');
+    const labelOnly = render(Slider({ id: 'l', label: 'L', value: 4 }));
+    expect(labelOnly.querySelector('output')).toBeNull();
+    const bare = document.createElement('input');
+    bare.type = 'range';
+    bare.className = 'kui-slider__input';
+    bare.removeAttribute('min');
+    bare.removeAttribute('max');
+    bare.value = '25';
+    syncSlider(bare);
+    expect(bare.style.getPropertyValue('--_kui-slider-fill')).toBe('25%');
+    readoutOnly.remove();
+    labelOnly.remove();
+  });
 });

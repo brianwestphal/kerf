@@ -428,6 +428,31 @@ export function wireSearchFields(
   };
   const suggestionsObserver = new MutationObserver(syncSuggestions);
   suggestionsObserver.observe(root, { childList: true, subtree: true });
+
+  // The typed text is DOM-owned, but a host re-render for any other reason
+  // (an error message beside the field, say) re-renders the field's
+  // placeholder state from the app's query, which may be empty while text is
+  // typed. Re-derive it from the live editor whenever a render resets it.
+  const placeholderObserver = new MutationObserver((records) => {
+    for (const record of records) {
+      const field = record.target as HTMLElement;
+      if (field.dataset.placeholderVisible !== 'true') continue;
+      const editor = field.querySelector<HTMLElement>(
+        ':scope > .kui-search-field__editor',
+      );
+      if (
+        editor &&
+        (editor.querySelector(TOKEN_SELECTOR) ||
+          readSearchField(editor).query.length > 0)
+      )
+        field.dataset.placeholderVisible = 'false';
+    }
+  });
+  placeholderObserver.observe(root, {
+    attributes: true,
+    attributeFilter: ['data-placeholder-visible'],
+    subtree: true,
+  });
   syncSuggestions();
 
   /** True when focus moving to `element` should keep an empty field expanded. */
@@ -807,7 +832,12 @@ export function wireSearchFields(
         );
         const id = field?.dataset.searchFieldId;
         if (!id || field?.dataset.disabled === 'true') return;
-        const keyboardForField = keyboard !== false || Boolean(models[id]);
+        // A TagField's editor is a SearchField whose keys `wireTagFields`
+        // owns (adding, removing, and moving between tags), so the token
+        // keyboard behavior here leaves it alone.
+        const keyboardForField =
+          !editor.closest('[data-component="tag-field"]') &&
+          (keyboard !== false || Boolean(models[id]));
         if (keyboardEvent.key === 'Enter') {
           keyboardEvent.preventDefault();
           const model = models[id];
@@ -1191,6 +1221,7 @@ export function wireSearchFields(
     view().removeEventListener('click', flushAfterClickDispatch);
     pendingPointerBlurCollapses.clear();
     suggestionsObserver.disconnect();
+    placeholderObserver.disconnect();
     for (const stop of positionedSuggestions.values()) stop();
     positionedSuggestions.clear();
     for (const stop of focusing.values()) stop();

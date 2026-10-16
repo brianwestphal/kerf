@@ -186,6 +186,11 @@
       "preferred": "@kerfjs/ui:slider",
       "avoid": ["@kerfjs/ui:wa-slider"],
       "rationale": "Use the Kerf Slider, a native range input drawn as a track, fill, and thumb, with wireSliders for its live readout."
+    },
+    "tag-list": {
+      "preferred": "@kerfjs/ui:tag-field",
+      "avoid": ["@kerfjs/ui:wa-tag-input"],
+      "rationale": "Use the Kerf TagField, SearchField's token editor as a form field with a hidden input per tag, wired by wireTagFields."
     }
   },
   "theme": {
