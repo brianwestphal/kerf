@@ -2406,6 +2406,11 @@
           "id": "split-view",
           "relationship": "responsive-alternative",
           "when": "Use SplitView for the same list-detail flow as a page rather than a modal."
+        },
+        {
+          "id": "workbench-dialog",
+          "relationship": "nearest",
+          "when": "Use WorkbenchDialog for an editing task with side panels."
         }
       ],
       "appOwns": [
@@ -2487,6 +2492,129 @@
         "catalogRoute": "?component=list-detail-dialog",
         "documentation": "docs/list-detail-dialog.md",
         "recipe": "docs/recipes.md#list-detail-dialog"
+      }
+    },
+    {
+      "id": "workbench-dialog",
+      "name": "WorkbenchDialog",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A modal workbench dialog: a header-less DialogSurface whose body is a Workbench. The work area's toolbar carries the dialog's primary title, actions, and close control; side rails keep their own toolbars and run the dialog's full height; compact devices get a full-screen dialog whose rails open as overlays over the work area.",
+      "uses": [
+        "surface-scaffold",
+        "workbench",
+        "pane",
+        "toolbar",
+        "toolbar-text",
+        "toolbar-control-group",
+        "lucide-icon"
+      ],
+      "purpose": "Present an editing task with side panels (layers, an inspector) inside a modal, with the dialog's title and close control in the work area and rails that overlay the work area on compact devices instead of narrowing it.",
+      "publicExports": [
+        "WorkbenchDialog",
+        "WorkbenchDialogProps",
+        "WorkbenchDialogRootAttributes",
+        "openDialog",
+        "closeDialog"
+      ],
+      "useWhen": [
+        "A modal editing task needs a work area with side panels (a slide or record editor with layers and an inspector): render WorkbenchDialog with main and leftRail/rightRail, open it with openDialog(), pass compact from deviceClass().value.compact, and wire wireWorkbench on the Workbench id (<id>-workbench) with each rail's collapsed signal.",
+        "On compact devices the rails should start hidden and open as overlays from toolbar toggles, keeping the work area's width."
+      ],
+      "avoidWhen": [
+        "Do not use it for a single-pane dialog; use DialogSurface.",
+        "Do not use it to pick a record from a list beside its detail; use ListDetailDialog.",
+        "Do not compose DialogSurface around a Workbench by hand for this layout; the surface header would span the rails and the close control would not follow a hidden rail's toggle.",
+        "Do not use it when the task needs a durable route; use a page with Workbench."
+      ],
+      "alternatives": [
+        {
+          "id": "list-detail-dialog",
+          "relationship": "nearest",
+          "when": "Use ListDetailDialog to pick a record from a list and show its detail."
+        },
+        {
+          "id": "surface-scaffold",
+          "relationship": "nearest",
+          "when": "Use DialogSurface for a single-pane dialog."
+        },
+        {
+          "id": "workbench",
+          "relationship": "responsive-alternative",
+          "when": "Use Workbench for the same layout as a page rather than a modal."
+        }
+      ],
+      "appOwns": [
+        "open state (openDialog and closeDialog)",
+        "device-class policy (compact), and starting the rails collapsed on compact devices",
+        "each rail's collapsed state and toggle actions (wireWorkbench closes an overlay rail on Escape or an outside press)",
+        "the work area, rail content, actions, and bottom toolbar",
+        "dismissal policy (lightDismiss)"
+      ],
+      "variants": [
+        "roomy modal: full-height left and right rails with their own toolbars beside the work area",
+        "a hidden rail's toggle relocates into the work area's toolbar, before the close control",
+        "work-area leading groups, actions, a description under the title, a fixed footer, and a bottom toolbar",
+        "a bottom drawer under the work area",
+        "compact full-screen dialog with overlay rails that start hidden",
+        "definite height (default 560px) or a height cap, viewport gutter, size or preferred width, and light dismiss"
+      ],
+      "accessibility": [
+        "It is a native modal <dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.",
+        "The title is a level-2 heading; the close control is named Close (closeLabel) and stays the outermost trailing control. An open overlay rail takes focus, keeps Tab inside it, and closes on Escape before the dialog does."
+      ],
+      "geometry": {
+        "margin": "parent",
+        "border": "self",
+        "padding": "child",
+        "notes": [
+          "The dialog draws no header and no body inset; the Workbench's work area and rails own their chrome and content insets, and the rail dividers run the dialog's full height."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/workbench-dialog",
+        "browserImport": "@kerfjs/ui/workbench-dialog",
+        "manualCssImport": "@kerfjs/ui/workbench-dialog.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireWorkbench",
+          "import": "@kerfjs/ui/wire-workbench",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-responsive-overlay-active",
+              "on": "kui-workbench__rail and kui-workbench__drawer",
+              "meaning": "Present while a panel's numeric responsiveOverlayAt threshold applies to the Workbench width; the same measurement drives overlay layout and collapsed-state transitions."
+            },
+            {
+              "name": "data-numeric-overlays",
+              "on": "kui-workbench",
+              "meaning": "Space-separated left, right, drawer, rail-open, and open tokens mirror numeric overlay state for local CSS invalidation. Absent when no numeric overlay is active."
+            },
+            {
+              "name": "data-handle-inset",
+              "on": "kui-workbench__rail",
+              "meaning": "Written by the shared resize wiring when the work-area minimum or a parent clamp holds a rail's maximum near its size. It carries no Workbench styling; the Workbench handle stays at the rail's inner edge."
+            },
+            {
+              "name": "data-resizing",
+              "on": "kui-workbench__rail",
+              "meaning": "Present on a resizable rail or the drawer while a pointer drag resizes it."
+            }
+          ]
+        }
+      ],
+      "publicClasses": [],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=workbench-dialog",
+        "documentation": "docs/workbench-dialog.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }
     },
     {

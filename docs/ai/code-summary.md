@@ -859,6 +859,8 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 
 `ui/src/components/surfaces/list-detail-dialog/list-detail-dialog.tsx` (`@kerfjs/ui/list-detail-dialog`, CSS entry `ui/src/list-detail-dialog.css` importing the DialogSurface, SplitView, NavStack, Pane, and toolbar stylesheets) renders `ListDetailDialog`: a header-less `DialogSurface` whose body is a `SplitView` of two `Pane` columns (title, actions, and close in the detail column's toolbar), or a full-screen compact `NavStack` drill-down; it re-exports `openDialog` / `closeDialog`. Requirements live in `ui/docs/list-detail-dialog.md`; catalog route `?component=list-detail-dialog` (`ui/ux-demo/demos/list-detail-dialog.tsx`), recipe `ui/ux-demo/recipes/list-detail-dialog.tsx`. Tests: `ui/tests/unit/list-detail-dialog.test.tsx`, `ui/tests/browser/list-detail-dialog.spec.ts`.
 
+`ui/src/components/surfaces/workbench-dialog/workbench-dialog.tsx` (`@kerfjs/ui/workbench-dialog`, CSS entry `ui/src/workbench-dialog.css` importing the stylesheets it renders) renders `WorkbenchDialog`: a header-less `DialogSurface` around a `Workbench` whose `mainToolbar.end` holds the close control. Docs `ui/docs/workbench-dialog.md`; catalog route `?component=workbench-dialog` (`ui/ux-demo/demos/workbench-dialog.tsx`, wired with `wireWorkbench`). Tests: `ui/tests/unit/workbench-dialog.test.tsx`, `ui/tests/browser/workbench-dialog.spec.ts`.
+
 `npm --prefix ui run build` independently emits the ESM/type entry shims for
 `@kerfjs/ui`, compiles pixel-first `remify(<px>)` author CSS into standard
 `dist/styles/*.css`, then derives component-to-component reachability from

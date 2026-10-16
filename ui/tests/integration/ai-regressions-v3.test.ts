@@ -121,6 +121,7 @@ describe(
         'ai/components/workbench.md',
         'ai/components/toolbar.md',
         'ai/components/toolbar-control-group.md',
+        'ai/components/workbench-dialog.md',
         'ai/components/toolbar-text.md',
         'ai/components/value-table.md',
         'ai/components/list.md',

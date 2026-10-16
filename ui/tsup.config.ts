@@ -47,6 +47,7 @@ const entries = [
   'wire-content-items',
   'split-view',
   'list-detail-dialog',
+  'workbench-dialog',
   'pane',
   'workbench',
   'collapsible-panel',

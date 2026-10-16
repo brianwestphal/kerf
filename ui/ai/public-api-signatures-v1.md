@@ -2079,6 +2079,11 @@ interface WorkbenchMainToolbar extends ToolbarConfig {
     center?: KerfUiContent;
     /** Groups at the trailing edge, before a collapsed right rail's groups. */
     trailing?: KerfUiContent;
+    /**
+     * Groups after a collapsed right rail's groups, so they stay outermost,
+     * such as a dialog's close control.
+     */
+    end?: KerfUiContent;
 }
 /**
  * The work area's bottom toolbar; a collapsed drawer adds its groups to it.
@@ -4877,6 +4882,108 @@ interface ListDetailDialogProps {
 declare function ListDetailDialog({ id, label, list, detail, compact, detailActive, backLabel, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, rootAttributes, className, slot, }: ListDetailDialogProps): kerfjs.SafeHtml;
 
 export { ListDetailDialog, type ListDetailDialogDetail, type ListDetailDialogList, type ListDetailDialogProps, type ListDetailDialogRootAttributes };
+```
+
+## `@kerfjs/ui/workbench-dialog`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
+import { WorkbenchMainBottomToolbar, WorkbenchPanel } from './workbench.js';
+import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
+export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
+import './nav-stack-CU_0dKtI.js';
+import './pane.js';
+import './scroll-clearance-BikHljTc.js';
+import './list.js';
+import './extension-attributes-mu8MFUl0.js';
+import './flex-alignment-4ms8ZbV8.js';
+import './sides-BPSWde0A.js';
+import './panel-toolbar-vg6Ir5Dy.js';
+import './toolbar.js';
+import './lucide-icon.js';
+import 'lucide';
+import './toolbar-text.js';
+import './resizable-region.js';
+
+/**
+ * Application `data-*` identity on the dialog root, such as `data-key`; the
+ * dialog's own configuration attributes stay protected.
+ */
+type WorkbenchDialogRootAttributes = DialogSurfaceRootAttributes;
+interface WorkbenchDialogProps {
+    /**
+     * The dialog's id, for `openDialog(document.getElementById(id))`. The
+     * Workbench inside is `<id>-workbench`, so its rails are
+     * `<id>-workbench-left-rail` and `<id>-workbench-right-rail`.
+     */
+    id: string;
+    /** The dialog's accessible name. */
+    label: string;
+    /** The dialog's primary title: an xl heading in the work area's toolbar. */
+    title: string;
+    /** A short supporting line under the title. */
+    description?: string;
+    /** Groups after the title in the work area's toolbar. */
+    leading?: KerfUiContent;
+    /** Header controls before the close control, such as a `ToolbarControlGroup`. */
+    actions?: KerfUiContent;
+    /** The work area. */
+    main: KerfUiContent;
+    /** Fixed content over the work area's bottom toolbar, such as a status line. */
+    mainFooter?: KerfUiContent;
+    /** The work area's bottom toolbar, usually the dialog's buttons. */
+    mainBottomToolbar?: WorkbenchMainBottomToolbar;
+    /**
+     * Side rails with their own toolbars. On compact devices each presents as
+     * an overlay over the work area; the app starts it collapsed and its
+     * `toolbar.toggle` shows it.
+     */
+    leftRail?: WorkbenchPanel;
+    rightRail?: WorkbenchPanel;
+    /** A bottom drawer under the work area. */
+    bottomDrawer?: WorkbenchPanel;
+    /**
+     * Fill the screen with the rails as overlays: derive from
+     * `deviceClass().value.compact`.
+     */
+    compact?: boolean;
+    /** The close control's accessible name (default `Close`). */
+    closeLabel?: string;
+    /** Close on a press on the backdrop; otherwise the panel pulses. */
+    lightDismiss?: boolean;
+    /** Roomy preferred width preset (default `large`). */
+    size?: DialogSurfaceSize;
+    /** Roomy preferred width; takes precedence over `size`. */
+    preferredWidth?: CssLength;
+    /** Roomy definite height (default 560px), bounded by the viewport. */
+    height?: DialogSurfaceHeight;
+    /** Roomy height cap in place of a definite height. */
+    maxHeight?: DialogSurfaceMaxHeight;
+    /** Roomy edge clearance from the viewport. */
+    viewportGutter?: CssLength;
+    /** Minimum work-area width beside inline rails, in px (Workbench default 320). */
+    mainMinSize?: number;
+    rootAttributes?: WorkbenchDialogRootAttributes;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A workbench dialog: a modal whose body is a `Workbench`. The work area's
+ * toolbar carries the dialog's primary title, its actions, and the close
+ * control; side rails keep their own toolbars and run the dialog's full
+ * height. On compact devices it fills the screen and its rails become
+ * overlays over the work area, shown by their toolbar toggles, so the work
+ * area keeps its width. Open it with `openDialog()`; the app owns each
+ * rail's `collapsed` state, and `wireWorkbench` closes an overlay rail on
+ * Escape or a press outside it before the dialog sees the Escape. Built from
+ * `DialogSurface` and `Workbench`.
+ */
+declare function WorkbenchDialog({ id, label, title, description, leading, actions, main, mainFooter, mainBottomToolbar, leftRail, rightRail, bottomDrawer, compact, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, mainMinSize, rootAttributes, className, slot, }: WorkbenchDialogProps): kerfjs.SafeHtml;
+
+export { WorkbenchDialog, type WorkbenchDialogProps, type WorkbenchDialogRootAttributes };
 ```
 
 ## `@kerfjs/ui/text`

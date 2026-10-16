@@ -2305,6 +2305,105 @@
       }
     },
     {
+      "key": "@kerfjs/ui:workbench-dialog",
+      "package": "@kerfjs/ui",
+      "id": "workbench-dialog",
+      "name": "WorkbenchDialog",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "open state (openDialog and closeDialog)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "device-class policy (compact), and starting the rails collapsed on compact devices",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "each rail's collapsed state and toggle actions (wireWorkbench closes an overlay rail on Escape or an outside press)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the work area, rail content, actions, and bottom toolbar",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "dismissal policy (lightDismiss)",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": ["wireWorkbench"],
+        "obligations": [],
+        "stateAttributes": [
+          {
+            "name": "data-responsive-overlay-active",
+            "on": "kui-workbench__rail and kui-workbench__drawer",
+            "helper": "wireWorkbench",
+            "meaning": "Present while a panel's numeric responsiveOverlayAt threshold applies to the Workbench width; the same measurement drives overlay layout and collapsed-state transitions."
+          },
+          {
+            "name": "data-numeric-overlays",
+            "on": "kui-workbench",
+            "helper": "wireWorkbench",
+            "meaning": "Space-separated left, right, drawer, rail-open, and open tokens mirror numeric overlay state for local CSS invalidation. Absent when no numeric overlay is active."
+          },
+          {
+            "name": "data-handle-inset",
+            "on": "kui-workbench__rail",
+            "helper": "wireWorkbench",
+            "meaning": "Written by the shared resize wiring when the work-area minimum or a parent clamp holds a rail's maximum near its size. It carries no Workbench styling; the Workbench handle stays at the rail's inner edge."
+          },
+          {
+            "name": "data-resizing",
+            "on": "kui-workbench__rail",
+            "helper": "wireWorkbench",
+            "meaning": "Present on a resizable rail or the drawer while a pointer drag resizes it."
+          }
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "parent",
+          "border": "self",
+          "padding": "child",
+          "notes": [
+            "The dialog draws no header and no body inset; the Workbench's work area and rails own their chrome and content insets, and the rail dividers run the dialog's full height."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "It is a native modal <dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.",
+          "The title is a level-2 heading; the close control is named Close (closeLabel) and stays the outermost trailing control. An open overlay rail takes focus, keeps Tab inside it, and closes on Escape before the dialog does."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:floating-toolbar",
       "package": "@kerfjs/ui",
       "id": "floating-toolbar",

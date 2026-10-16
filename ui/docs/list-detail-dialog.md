@@ -4,11 +4,11 @@
 list column beside the selected item's detail, each running the dialog's full
 height. It is one of three dialog types:
 
-| Type                                                         | Use it for                                               |
-| ------------------------------------------------------------ | -------------------------------------------------------- |
-| `DialogSurface` ([surface-scaffold.md](surface-scaffold.md)) | One pane: a title, a body, and footer buttons.           |
-| `ListDetailDialog` (this page)                               | Pick a record from a list and show its detail beside it. |
-| `WorkbenchDialog`                                            | Planned: a main column with side rails inside a modal.   |
+| Type                                                           | Use it for                                               |
+| -------------------------------------------------------------- | -------------------------------------------------------- |
+| `DialogSurface` ([surface-scaffold.md](surface-scaffold.md))   | One pane: a title, a body, and footer buttons.           |
+| `ListDetailDialog` (this page)                                 | Pick a record from a list and show its detail beside it. |
+| `WorkbenchDialog` ([workbench-dialog.md](workbench-dialog.md)) | An editing task with side panels.                        |
 
 ```ts
 import {

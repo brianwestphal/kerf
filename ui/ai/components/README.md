@@ -30,6 +30,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ToolbarControlGroup](./toolbar-control-group.md) — Provide complete toolbar action geometry through configuration, including semantic anchors, overflow containment, and dropdown menu insets without application CSS.
 - [Surface Scaffolds](./surface-scaffold.md) — Configure recurring dialog and popup geometry without consumer ::part() overrides.
 - [ListDetailDialog](./list-detail-dialog.md) — Present a selectable list beside the selected item's detail inside a modal, with the dialog's title and close control in the detail column and a one-pane drill-down on compact devices.
+- [WorkbenchDialog](./workbench-dialog.md) — Present an editing task with side panels (layers, an inspector) inside a modal, with the dialog's title and close control in the work area and rails that overlay the work area on compact devices instead of narrowing it.
 - [FloatingToolbar](./floating-toolbar.md) — A transparent, forced-dark toolbar that floats over its container's content.
 - [ToolbarText](./toolbar-text.md) — Extra-large through extra-small toolbar identity text.
 - [Text](./text.md) — Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.

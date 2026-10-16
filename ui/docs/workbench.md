@@ -233,8 +233,11 @@ While a panel is closed, marked groups follow their open-panel zone order
 | Panel         | Where they go                                                                                                   |
 | ------------- | --------------------------------------------------------------------------------------------------------------- |
 | Left rail     | The leading edge of `mainToolbar`, before its `title`                                                           |
-| Right rail    | The trailing edge of `mainToolbar`, after its `trailing` groups, so the toggle is the toolbar's last group      |
+| Right rail    | The trailing edge of `mainToolbar`, after its `trailing` groups and before any `end` groups                     |
 | Bottom drawer | The trailing edge of `mainBottomToolbar`; without one, a `FloatingToolbar` in the work area's bottom-end corner |
+
+`mainToolbar.end` takes groups that stay outermost, after a closed right
+rail's toggle, such as a dialog's close control (`WorkbenchDialog` uses it).
 
 A rail with no `mainToolbar` floats its groups in its corner the same way, so
 a closed panel can always be reopened. An open overlay panel carries its own

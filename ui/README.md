@@ -217,6 +217,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `ToolbarControlGroup`, `ToolbarActionLink`                   | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css`   |
 | `DialogSurface`, `PopupSurface`                              | `@kerfjs/ui/surface-scaffold`           | `@kerfjs/ui/surface-scaffold.css`        |
 | `ListDetailDialog`                                           | `@kerfjs/ui/list-detail-dialog`         | `@kerfjs/ui/list-detail-dialog.css`      |
+| `WorkbenchDialog`                                            | `@kerfjs/ui/workbench-dialog`           | `@kerfjs/ui/workbench-dialog.css`        |
 | `Disclosure`                                                 | `@kerfjs/ui/disclosure`                 | `@kerfjs/ui/disclosure.css`              |
 | `ProgressBar`                                                | `@kerfjs/ui/progress-bar`               | `@kerfjs/ui/progress-bar.css`            |
 | `ProgressRing`                                               | `@kerfjs/ui/progress-ring`              | `@kerfjs/ui/progress-ring.css`           |

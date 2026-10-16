@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`WorkbenchDialog` in `@kerfjs/ui`, the modal workbench dialog type.** `@kerfjs/ui/workbench-dialog` renders a header-less modal around a `Workbench`. The work area's toolbar carries the dialog's title, actions, and close control; the side rails keep their own toolbars and run the dialog's full height. On compact devices the dialog fills the screen and its rails become overlays over the work area, shown by their toolbar toggles; with `wireWorkbench`, Escape closes an open rail before the dialog (`KF-Q9ERQ6`).
+  - `WorkbenchMainToolbar` gains `end`: groups after a hidden right rail's relocated toggle, so a dialog's close control stays outermost.
 - **`ColorField` in `@kerfjs/ui`.** `@kerfjs/ui/color-field` puts a color in a form or inspector: a label above a trigger that shows the color as a swatch (over a checkerboard) and its hex value, with a hint or error, compact size, and a hidden input under `name`.
   - `wireColorFields(root, { onInput, onChange, pickers })` (`@kerfjs/ui/wire-color-fields`) opens a `ColorPicker` in an `AnchoredSurface` below the trigger, with per-field presets and samples. Edits preview on the trigger at once; Escape or a press outside closes the picker and returns focus.
   - `wa-color-picker` is now `Discouraged` (47 in all), and the profile defaults avoid it (`KF-PZBW7F`).

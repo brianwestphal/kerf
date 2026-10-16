@@ -23,6 +23,7 @@ Present a selectable list beside the selected item's detail inside a modal, with
 
 - [Surface Scaffolds](./surface-scaffold.md) (nearest) — Use DialogSurface for a single-pane dialog.
 - [SplitView](./split-view.md) (responsive-alternative) — Use SplitView for the same list-detail flow as a page rather than a modal.
+- [WorkbenchDialog](./workbench-dialog.md) (nearest) — Use WorkbenchDialog for an editing task with side panels.
 
 ## Imports
 
@@ -84,6 +85,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Surface Scaffolds](./surface-scaffold.md), [SplitView](./split-view.md), [NavStack](./nav-stack.md), [Pane](./pane.md), [Toolbar](./toolbar.md), [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [LucideIcon](./lucide-icon.md).
+- Components: [Surface Scaffolds](./surface-scaffold.md), [SplitView](./split-view.md), [NavStack](./nav-stack.md), [Pane](./pane.md), [Toolbar](./toolbar.md), [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [LucideIcon](./lucide-icon.md), [WorkbenchDialog](./workbench-dialog.md).
 - Docs: [`docs/list-detail-dialog.md`](../../docs/list-detail-dialog.md), [`docs/recipes.md#list-detail-dialog`](../../docs/recipes.md#list-detail-dialog).
 - UX catalog route: `?component=list-detail-dialog`.

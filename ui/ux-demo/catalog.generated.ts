@@ -267,6 +267,26 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/list-detail-dialog.md"
   },
   {
+    "id": "workbench-dialog",
+    "name": "WorkbenchDialog",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Present an editing task with side panels (layers, an inspector) inside a modal, with the dialog's title and close control in the work area and rails that overlay the work area on compact devices instead of narrowing it.",
+    "uses": [
+      "surface-scaffold",
+      "workbench",
+      "pane",
+      "toolbar",
+      "toolbar-text",
+      "toolbar-control-group",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/workbench-dialog.tsx",
+    "componentSource": "ui/src/components/surfaces/workbench-dialog/workbench-dialog.tsx",
+    "documentation": "ui/docs/workbench-dialog.md"
+  },
+  {
     "id": "floating-toolbar",
     "name": "FloatingToolbar",
     "category": "Structure",

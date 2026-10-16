@@ -17,7 +17,7 @@ Templated components (each with light + dark variants):
 `RadioGroup`, `Switch`, `Slider`, and `Select`.
 
 Deliberately **not** templated (they don't read as a single static component
-picture): `DialogSurface` and `ListDetailDialog` are modal `<dialog>`s that only present as a dialog
+picture): `DialogSurface`, `ListDetailDialog`, and `WorkbenchDialog` are modal `<dialog>`s that only present as a dialog
 in the browser's top layer, so the catalog's surface-scaffold route shows it
 instead; `LucideIcon` and
 `DisclosureArrow` are decorative primitives best seen inside the components that

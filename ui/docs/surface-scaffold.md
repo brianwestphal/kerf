@@ -11,6 +11,9 @@ record from a list and shows its detail beside it, use
 [`ListDetailDialog`](./list-detail-dialog.md) instead of wrapping a
 `SplitView` in a `DialogSurface`: it draws no surface header, so the title and
 close control sit in the detail column and the divider runs the full height.
+For an editing task with side panels, use
+[`WorkbenchDialog`](./workbench-dialog.md), a header-less dialog around a
+`Workbench` whose rails become overlays on compact devices.
 
 ```tsx
 import { DialogSurface, openDialog } from '@kerfjs/ui/surface-scaffold';

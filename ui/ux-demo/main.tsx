@@ -284,6 +284,18 @@ import {
   workbenchTicketRailCollapsed,
 } from './demos/workbench.js';
 import {
+  resetWorkbenchDialogDemo,
+  SELECT_WORKBENCH_DIALOG_LAYER_ACTION,
+  selectWorkbenchDialogLayer,
+  TOGGLE_WORKBENCH_DIALOG_INSPECTOR_ACTION,
+  TOGGLE_WORKBENCH_DIALOG_LAYERS_ACTION,
+  toggleWorkbenchDialogInspector,
+  toggleWorkbenchDialogLayers,
+  WORKBENCH_DIALOG_DEMO_ID,
+  workbenchDialogInspectorCollapsed,
+  workbenchDialogLayersCollapsed,
+} from './demos/workbench-dialog.js';
+import {
   readDemoDisplayPreferences,
   writeDemoDisplayPreferences,
 } from './display-preferences.js';
@@ -788,6 +800,22 @@ const stopActions = delegateActions(app, 'click', {
     if (!id) return;
     selectListDetailDialogProject(id);
     actionLog.value = `Selected ${id}`;
+  },
+  [SELECT_WORKBENCH_DIALOG_LAYER_ACTION]: (_event, target) => {
+    const id = target.getAttribute('data-item-id');
+    if (!id) return;
+    selectWorkbenchDialogLayer(id);
+    actionLog.value = `Selected ${id}`;
+  },
+  [TOGGLE_WORKBENCH_DIALOG_LAYERS_ACTION]: () => {
+    actionLog.value = toggleWorkbenchDialogLayers()
+      ? 'Layers hidden'
+      : 'Layers shown';
+  },
+  [TOGGLE_WORKBENCH_DIALOG_INSPECTOR_ACTION]: () => {
+    actionLog.value = toggleWorkbenchDialogInspector()
+      ? 'Inspector hidden'
+      : 'Inspector shown';
   },
   [SHOW_TOAST_DEMO_ACTION]: (_event, target) => {
     const kind = target.getAttribute('data-toast') ?? 'plain';
@@ -1671,6 +1699,18 @@ const routeWires: Partial<Record<string, RouteWire>> = {
   tooltip: {
     target: 'canvas',
     wire: (canvas) => wireTooltipDemo(canvas),
+  },
+  'workbench-dialog': {
+    reset: resetWorkbenchDialogDemo,
+    target: 'canvas',
+    wire: (canvas) =>
+      wireWorkbench(canvas, {
+        id: `${WORKBENCH_DIALOG_DEMO_ID}-workbench`,
+        panels: {
+          leftRail: { collapsed: workbenchDialogLayersCollapsed },
+          rightRail: { collapsed: workbenchDialogInspectorCollapsed },
+        },
+      }),
   },
   'list-detail-dialog': {
     reset: resetListDetailDialogDemo,

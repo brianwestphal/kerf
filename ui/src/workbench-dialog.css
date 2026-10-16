@@ -1,0 +1,10 @@
+/* Public stylesheet entry; implementation is colocated with the component.
+   WorkbenchDialog adds no rules of its own (a header-less DialogSurface around
+   a Workbench), so this entry pulls in the stylesheets it renders. */
+@import "./surface-scaffold.css";
+@import "./workbench.css";
+@import "./pane.css";
+@import "./toolbar.css";
+@import "./toolbar-control-group.css";
+@import "./toolbar-text.css";
+@import "./lucide-icon.css";

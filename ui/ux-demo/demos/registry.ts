@@ -74,6 +74,7 @@ import { ToolbarTextDemo } from './toolbar-text.js';
 import { TooltipDemo } from './tooltip.js';
 import { ValueTableDemo } from './value-table.js';
 import { WorkbenchDemo } from './workbench.js';
+import { WorkbenchDialogDemo } from './workbench-dialog.js';
 
 export const demos = {
   'anchored-surface': AnchoredSurfaceDemo,
@@ -94,6 +95,7 @@ export const demos = {
   'color-swatches': ColorSwatchesDemo,
   disclosure: DisclosureDemo,
   'list-detail-dialog': ListDetailDialogDemo,
+  'workbench-dialog': WorkbenchDialogDemo,
   'progress-bar': ProgressBarDemo,
   'progress-ring': ProgressRingDemo,
   'message-composer': MessageComposerDemo,

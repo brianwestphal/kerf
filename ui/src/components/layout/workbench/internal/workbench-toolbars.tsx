@@ -60,6 +60,11 @@ export interface WorkbenchMainToolbar extends ToolbarConfig {
   center?: KerfUiContent;
   /** Groups at the trailing edge, before a collapsed right rail's groups. */
   trailing?: KerfUiContent;
+  /**
+   * Groups after a collapsed right rail's groups, so they stay outermost,
+   * such as a dialog's close control.
+   */
+  end?: KerfUiContent;
 }
 
 /**
@@ -321,6 +326,7 @@ export function mainBody({
               <>
                 {mainToolbar.trailing}
                 {right}
+                {mainToolbar.end}
               </>
             }
           />
