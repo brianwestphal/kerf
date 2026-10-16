@@ -440,6 +440,15 @@
       "types": "./dist/wire-text-fields.d.ts",
       "import": "./dist/wire-text-fields.js"
     },
+    "./slider": {
+      "types": "./dist/slider.d.ts",
+      "browser": "./dist/browser/slider.js",
+      "import": "./dist/slider.js"
+    },
+    "./wire-sliders": {
+      "types": "./dist/wire-sliders.d.ts",
+      "import": "./dist/wire-sliders.js"
+    },
     "./checkbox": {
       "types": "./dist/checkbox.d.ts",
       "browser": "./dist/browser/checkbox.js",
@@ -571,6 +580,7 @@
     "./file-picker.css": "./dist/styles/file-picker.css",
     "./text-field.css": "./dist/styles/text-field.css",
     "./checkbox.css": "./dist/styles/checkbox.css",
+    "./slider.css": "./dist/styles/slider.css",
     "./radio-group.css": "./dist/styles/radio-group.css",
     "./switch.css": "./dist/styles/switch.css",
     "./combobox.css": "./dist/styles/combobox.css",

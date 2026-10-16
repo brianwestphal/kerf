@@ -144,9 +144,14 @@ for (const [preference, toggle, pageScheme] of [
       // The mute row works and the slider follows it.
       await mute.click();
       await expect(mute).toHaveAttribute('aria-pressed', 'true');
-      await expect(volume.locator('wa-slider')).toHaveAttribute('disabled', '');
+      await expect(
+        volume.getByRole('slider', { name: 'Volume' }),
+      ).toBeDisabled();
       await mute.click();
       await expect(mute).toHaveAttribute('aria-pressed', 'false');
+      await expect(
+        volume.getByRole('slider', { name: 'Volume' }),
+      ).toBeEnabled();
 
       await page.keyboard.press('Escape');
       await expect(volume).toHaveCount(0);

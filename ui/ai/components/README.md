@@ -70,6 +70,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Checkbox](./checkbox.md) — Turn one independent option on or off in a form or settings list, including a parent whose children are partly checked, without Web Awesome.
 - [RadioGroup](./radio-group.md) — Choose exactly one of a few options that should stay visible with room for a label and hint each, with native keyboard behavior and form participation.
 - [Switch](./switch.md) — Turn a setting on or off the moment it changes, such as live updates or a preference, without Web Awesome.
+- [Slider](./slider.md) — Let a person pick a value from a range where the relative position matters more than an exact number (volume, zoom, opacity, a threshold).
 - [PopupMenu](./popup-menu.md) — A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.
 - [Button](./button.md) — Trigger an action from a dialog footer, a form, or content outside any Toolbar, with Kerf's button chrome and native button semantics.
 - [SplitButton](./split-button.md) — Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.
@@ -112,7 +113,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Radio Group](./wa-radio-group.md) (avoid) — Ecosystem radio group; use Kerf RadioGroup, ChoiceChips, or SegmentedControl.
 - [Rating](./wa-rating.md) — Interactive rating control with accessible labeling.
 - [Select](./wa-select.md) (avoid) — Ecosystem select field; use Kerf Select.
-- [Slider](./wa-slider.md) — Range input with markers and value tooltip support.
+- [Slider](./wa-slider.md) (avoid) — Ecosystem range slider; use the Kerf Slider.
 - [Switch](./wa-switch.md) (avoid) — Ecosystem switch; use Kerf Switch.
 - [Textarea](./wa-textarea.md) (avoid) — Ecosystem multi-line input; use Kerf TextField with multiline.
 - [Time Input](./wa-time-input.md) — Experimental segmented time field with an optional picker.

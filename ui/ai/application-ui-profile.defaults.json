@@ -181,6 +181,11 @@
       "preferred": "@kerfjs/ui:progress-ring",
       "avoid": ["@kerfjs/ui:wa-progress-ring"],
       "rationale": "Use the Kerf ProgressRing where a bar does not fit, inline in text, a row, or a toolbar."
+    },
+    "range-value": {
+      "preferred": "@kerfjs/ui:slider",
+      "avoid": ["@kerfjs/ui:wa-slider"],
+      "rationale": "Use the Kerf Slider, a native range input drawn as a track, fill, and thumb, with wireSliders for its live readout."
     }
   },
   "theme": {

@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`Slider` in `@kerfjs/ui`.** `@kerfjs/ui/slider` is a native `<input type="range">` drawn as a track, a brand fill up to the value, and a round thumb, the same in Chromium, Firefox, and WebKit. It has a label row, an optional live readout (`showValue`, `unit`, also spoken as the value text), labeled `ticks`, a `hint`, a `compact` size, and a disabled state. It fills its width on the shared block-content inset. `wireSliders(root)` (`@kerfjs/ui/wire-sliders`) keeps the fill and readout in step with a drag before the app re-renders. `wa-slider` is now `Discouraged` (45 in all), and the profile defaults avoid it (`KF-0R9G4Y`).
 - **`ProgressBar` and `ProgressRing` in `@kerfjs/ui`.**
   - `@kerfjs/ui/progress-bar` is a native `<progress>`. It is determinate (`value` of `max`) or, without a `value`, an indeterminate sweep. A visible `label` names it through `aria-labelledby`, or `ariaLabel` does without one. `showValue` adds a readout, and `valueText` replaces the spoken percentage. It takes brand and status `tone`s and a `compact` 4px track.
   - `@kerfjs/ui/progress-ring` is an SVG `role="progressbar"` in `small`, `medium`, and `large` sizes for a line of text, a row, or a toolbar. It is determinate (filling clockwise from the top) or a spinning arc.

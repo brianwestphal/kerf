@@ -75,6 +75,7 @@ import { SegmentedControl } from '../dist/segmented-control.js';
 import { Select } from '../dist/select.js';
 import { Skeleton } from '../dist/skeleton.js';
 import { StateBanner } from '../dist/state-banner.js';
+import { Slider } from '../dist/slider.js';
 import { Switch } from '../dist/switch.js';
 import { TabBar } from '../dist/tab-bar.js';
 import { Text } from '../dist/text.js';
@@ -778,6 +779,64 @@ export const COMPONENTS = {
               ProgressRing({ label: 'Quota', value: 0.9, tone: 'warning' }),
               ProgressRing({ label: 'Budget', value: 0.98, tone: 'danger' }),
             ],
+          }),
+      },
+    ],
+  },
+  slider: {
+    css: ['foundation', 'layout', 'list', 'slider'],
+    selector: '#frame',
+    width: 460,
+    frameWidth: 420,
+    variants: [
+      {
+        id: 'readout',
+        label: 'Label, Readout, and Hint',
+        height: 90,
+        render: () =>
+          Slider({
+            id: 'dt-volume',
+            label: 'Volume',
+            value: 35,
+            showValue: true,
+            unit: '%',
+            hint: 'Applies to every output device.',
+          }),
+      },
+      {
+        id: 'ticks',
+        label: 'Stepped with Ticks',
+        height: 90,
+        render: () =>
+          Slider({
+            id: 'dt-zoom',
+            label: 'Zoom',
+            value: 100,
+            min: 50,
+            max: 200,
+            step: 25,
+            showValue: true,
+            unit: '%',
+            ticks: [
+              { value: 50, label: '50%' },
+              { value: 100, label: '100%' },
+              { value: 150, label: '150%' },
+              { value: 200, label: '200%' },
+            ],
+          }),
+      },
+      {
+        id: 'compact',
+        label: 'Compact',
+        height: 60,
+        render: () =>
+          Slider({
+            id: 'dt-opacity',
+            label: 'Layer Opacity',
+            value: 80,
+            showValue: true,
+            unit: '%',
+            size: 'compact',
           }),
       },
     ],

@@ -220,6 +220,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `Disclosure`                                                 | `@kerfjs/ui/disclosure`                 | `@kerfjs/ui/disclosure.css`              |
 | `ProgressBar`                                                | `@kerfjs/ui/progress-bar`               | `@kerfjs/ui/progress-bar.css`            |
 | `ProgressRing`                                               | `@kerfjs/ui/progress-ring`              | `@kerfjs/ui/progress-ring.css`           |
+| `Slider`                                                     | `@kerfjs/ui/slider`                     | `@kerfjs/ui/slider.css`                  |
+| `wireSliders`, `syncSlider`                                  | `@kerfjs/ui/wire-sliders`               | —                                        |
 | `FloatingToolbar`                                            | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`        |
 | `PopupMenu` (register with `@kerfjs/ui/popup-menu/register`) | `@kerfjs/ui/popup-menu`                 | `@kerfjs/ui/popup-menu.css`              |
 | `openAnchoredSurface`, `openAnchoredSurfaceAt`               | `@kerfjs/ui/anchored-surface`           | `@kerfjs/ui/anchored-surface.css`        |

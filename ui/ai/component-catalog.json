@@ -6595,6 +6595,99 @@
       }
     },
     {
+      "id": "slider",
+      "name": "Slider",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A value on a continuous or stepped range: a native range input drawn as a track, a brand fill, and a thumb, with a label row, an optional live readout and unit, labeled tick stops, a hint, compact size, and disabled state.",
+      "uses": [],
+      "purpose": "Let a person pick a value from a range where the relative position matters more than an exact number (volume, zoom, opacity, a threshold).",
+      "publicExports": [
+        "Slider",
+        "SliderProps",
+        "SliderSize",
+        "SliderTick",
+        "SliderRootAttributes"
+      ],
+      "useWhen": [
+        "A setting is a value in a known range and dragging to it is natural (volume, zoom, opacity): render Slider with min, max, step, and a label; add showValue and unit for a readout.",
+        "Discrete stops deserve names under the track: pass ticks."
+      ],
+      "avoidWhen": [
+        "Do not use it when the exact number matters or the range is huge; use a TextField with type number.",
+        "Do not use it for an on/off choice (use Switch) or for a few named options (use SegmentedControl).",
+        "Do not use wa-slider."
+      ],
+      "alternatives": [
+        {
+          "id": "segmented-control",
+          "relationship": "nearest",
+          "when": "Use a SegmentedControl for a handful of named options."
+        },
+        {
+          "id": "text-field",
+          "relationship": "nearest",
+          "when": "Use a numeric TextField when the exact value matters."
+        }
+      ],
+      "appOwns": [
+        "the value (read it on input or change through action) and re-rendering with it",
+        "min, max, step, and ticks",
+        "the label, hint, and unit"
+      ],
+      "variants": [
+        "labeled with a live readout and unit",
+        "stepped with labeled ticks",
+        "compact size",
+        "disabled",
+        "ariaLabel without a visible label"
+      ],
+      "accessibility": [
+        "It is a native range input: arrow keys, Page Up and Down, Home, and End step it, and the platform announces its value (with a unit, as aria-valuetext).",
+        "The label names it, the hint describes it, and the readout is hidden from assistive technology because the input already reports its value; forced colors draw a Highlight fill on a GrayText track."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "It fills the available width with the shared block-content inset (a transparent 1px border and 8px padding), so its label sits on the text column."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/slider",
+        "browserImport": "@kerfjs/ui/slider",
+        "manualCssImport": "@kerfjs/ui/slider.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireSliders",
+          "import": "@kerfjs/ui/wire-sliders",
+          "required": false
+        }
+      ],
+      "publicClasses": [
+        "kui-slider",
+        "kui-slider__header",
+        "kui-slider__label",
+        "kui-slider__value",
+        "kui-slider__input",
+        "kui-slider__ticks",
+        "kui-slider__tick",
+        "kui-slider__hint"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=slider",
+        "documentation": "docs/slider.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "anchored-surface",
       "name": "AnchoredSurface",
       "category": "Feedback",
@@ -8880,21 +8973,26 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Range input with markers and value tooltip support.",
+      "description": "Ecosystem range slider; use the Kerf Slider.",
       "uses": [
         "wa-tooltip"
       ],
-      "purpose": "Range input with markers and value tooltip support.",
+      "purpose": "Ecosystem range slider; use the Kerf Slider.",
       "customElement": "wa-slider",
       "useWhen": [
         "Range input with markers and value tooltip support."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use Slider (@kerfjs/ui/slider), a native range input, with wireSliders for the live readout."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "slider",
+          "relationship": "prefer-kerf",
+          "when": "Use the Kerf Slider for a value on a range."
+        }
+      ],
       "geometry": {
         "margin": "self",
         "border": "none",
@@ -8910,7 +9008,7 @@
       "links": {
         "catalogRoute": "?component=wa-slider",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {

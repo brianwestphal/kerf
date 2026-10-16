@@ -360,7 +360,7 @@ application off them.
   Checkbox, Checkbox Group, Radio, Radio Group, Switch, Select, Option,
   Dialog, Drawer, Card, Page, Callout, Popover, Popup, Tab, Tab Group, Tab
   Panel, Badge, Spinner, Skeleton, Toast, Toast Item, Tooltip, Details, Accordion,
-  Accordion Item, Progress Bar, Progress Ring, Split Panel, Icon,
+  Accordion Item, Progress Bar, Progress Ring, Slider, Split Panel, Icon,
   Scroller, Include, and Zoomable Frame.
   Never render them in application markup. Popover and Popup give way to
   `AnchoredSurface` and `kerfjs/overlay`'s `positionAnchored()`.

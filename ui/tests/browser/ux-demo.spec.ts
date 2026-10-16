@@ -4799,7 +4799,7 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
   await expect(page.locator('[data-item-id="wa-copy-button"]')).toHaveCount(1);
 
   await showDiscouraged.check();
-  await expect(discouraged).toHaveCount(44);
+  await expect(discouraged).toHaveCount(45);
   await expect(
     page.locator('[data-item-id="wa-popup"] .kui-list-item__status'),
   ).toHaveText('Discouraged');

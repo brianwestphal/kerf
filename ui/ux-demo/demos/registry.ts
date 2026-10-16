@@ -49,6 +49,7 @@ import { SearchFieldDemo } from './search-field.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
 import { SkeletonDemo } from './skeleton.js';
+import { SliderDemo } from './slider.js';
 import { SpacerDemo } from './spacer.js';
 import { SplitButtonDemo } from './split-button.js';
 import { SplitViewDemo } from './split-view.js';
@@ -89,6 +90,7 @@ export const demos = {
   'progress-bar': ProgressBarDemo,
   'progress-ring': ProgressRingDemo,
   'message-composer': MessageComposerDemo,
+  slider: SliderDemo,
   toast: ToastDemo,
   tooltip: TooltipDemo,
   'search-field': SearchFieldDemo,

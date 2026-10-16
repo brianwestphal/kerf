@@ -5768,6 +5768,75 @@ declare function Switch({ label, checked, name, value, hint, size, disabled, act
 export { Switch, type SwitchProps, type SwitchRootAttributes, type SwitchSize };
 ```
 
+## `@kerfjs/ui/slider`
+
+```ts
+import * as kerfjs from 'kerfjs';
+
+/** `default` is a 4px track with a 20px thumb at 16px text; `compact` 3px, 16px, and 14px. */
+type SliderSize = 'default' | 'compact';
+/**
+ * A labeled stop under the track: a value and the text shown for it. The
+ * labels are visual; the input still reports its value to assistive
+ * technology. (No `<datalist>`: Chromium shrinks a styled range's track when
+ * the input has a `list`.)
+ */
+interface SliderTick {
+    value: number;
+    label?: string;
+}
+/** Application `data-*` metadata; the Slider's own markers stay protected. */
+type SliderRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+type SliderProps = {
+    /** The input's id; it also derives the readout, hint, and tick ids. */
+    id: string;
+    /** The current value (default the midpoint of `min` and `max`, snapped to `step`). */
+    value?: number;
+    /** The lowest value (default 0). */
+    min?: number;
+    /** The highest value (default 100). */
+    max?: number;
+    /** The step between values (default 1). */
+    step?: number;
+    name?: string;
+    /** Show the current value at the end of the label row, live while dragging. */
+    showValue?: boolean;
+    /** Text after the readout's number, such as `%` or ` px`. */
+    unit?: string;
+    /** Supporting text below the slider, also its description. */
+    hint?: string;
+    /** Labeled stops under the track. */
+    ticks?: readonly SliderTick[];
+    size?: SliderSize;
+    disabled?: boolean;
+    /** Delegated `data-action` on the input; listen for `input` or `change`. */
+    action?: string;
+    /** Associate the input with a form outside its ancestor chain. */
+    form?: string;
+    className?: string;
+    rootAttributes?: SliderRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+} & ({
+    label: string;
+    ariaLabel?: never;
+} | {
+    label?: never;
+    ariaLabel: string;
+});
+/**
+ * A value on a continuous or stepped range: a native `<input type="range">`
+ * drawn as a track, a brand fill up to the value, and a thumb, with a label
+ * row, an optional live readout (`<output>`), labeled tick stops, and a hint.
+ * Keyboard, pointer, and screen-reader behavior are the platform's. Wire
+ * `wireSliders` from `@kerfjs/ui/wire-sliders` above it so the fill and the
+ * readout follow a drag before the app re-renders.
+ */
+declare function Slider({ id, value, min, max, step, name, label, ariaLabel, showValue, unit, hint, ticks, size, disabled, action, form, className, rootAttributes, slot, }: SliderProps): kerfjs.SafeHtml;
+
+export { Slider, type SliderProps, type SliderRootAttributes, type SliderSize, type SliderTick };
+```
+
 ## `@kerfjs/ui/anchored-surface`
 
 ```ts

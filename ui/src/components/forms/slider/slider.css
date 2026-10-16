@@ -1,0 +1,212 @@
+/* Slider: a label row with an optional readout, a native range input drawn
+   as a track, a brand fill up to the value (--_kui-slider-fill), and a round
+   thumb, then optional tick labels and a hint. The input resets the
+   platform look in every engine so all three draw the same control. */
+.kui-slider {
+  --_kui-slider-track: remify(4px);
+  --_kui-slider-thumb: remify(20px);
+  --_kui-slider-fill-color: var(--kui-color-brand-fill-loud);
+
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  align-self: stretch;
+  flex-direction: column;
+  gap: var(--kui-space-2xs);
+  /* The shared block-content inset, so the label sits on the text column. */
+  padding: var(--kui-layout-item-padding, remify(8px));
+  border: var(--kui-layout-item-border-width, 1px) solid transparent;
+  font-size: var(--kui-font-m, remify(16px));
+  line-height: 1.4;
+}
+
+.kui-slider[data-size="compact"] {
+  --_kui-slider-track: remify(3px);
+  --_kui-slider-thumb: remify(16px);
+
+  font-size: var(--kui-font-s, remify(14px));
+}
+
+.kui-slider__header {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: var(--kui-space-xs);
+}
+
+.kui-slider__label {
+  min-width: 0;
+  flex: 1;
+  color: var(--kui-color-text);
+  overflow-wrap: anywhere;
+}
+
+.kui-slider__value {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--kui-color-text-quiet);
+  font-variant-numeric: tabular-nums;
+}
+
+.kui-slider__input {
+  display: block;
+  width: 100%;
+  height: var(--_kui-slider-thumb);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+}
+
+.kui-slider__input:focus-visible {
+  outline: none;
+}
+
+/* The track: the fill up to the value, the neutral rest after it. */
+.kui-slider__input::-webkit-slider-runnable-track {
+  height: var(--_kui-slider-track);
+  border-radius: var(--kui-radius-pill);
+  background: linear-gradient(
+    to right,
+    var(--_kui-slider-fill-color) var(--_kui-slider-fill, 0%),
+    var(--kui-color-neutral-fill-normal) var(--_kui-slider-fill, 0%)
+  );
+}
+
+.kui-slider__input:dir(rtl)::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to left,
+    var(--_kui-slider-fill-color) var(--_kui-slider-fill, 0%),
+    var(--kui-color-neutral-fill-normal) var(--_kui-slider-fill, 0%)
+  );
+}
+
+.kui-slider__input::-moz-range-track {
+  height: var(--_kui-slider-track);
+  border-radius: var(--kui-radius-pill);
+  background: var(--kui-color-neutral-fill-normal);
+}
+
+.kui-slider__input::-moz-range-progress {
+  height: var(--_kui-slider-track);
+  border-radius: var(--kui-radius-pill);
+  background: var(--_kui-slider-fill-color);
+}
+
+/* The thumb: a raised white disc with the neutral border. */
+.kui-slider__input::-webkit-slider-thumb {
+  width: var(--_kui-slider-thumb);
+  height: var(--_kui-slider-thumb);
+  box-sizing: border-box;
+  margin-block-start: calc(
+    (var(--_kui-slider-track) - var(--_kui-slider-thumb)) / 2
+  );
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: 50%;
+  background: var(--kui-color-surface-raised);
+  box-shadow: var(--kui-shadow-s);
+  appearance: none;
+}
+
+.kui-slider__input::-moz-range-thumb {
+  width: var(--_kui-slider-thumb);
+  height: var(--_kui-slider-thumb);
+  box-sizing: border-box;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: 50%;
+  background: var(--kui-color-surface-raised);
+  box-shadow: var(--kui-shadow-s);
+}
+
+.kui-slider__input:focus-visible::-webkit-slider-thumb {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-slider__input:focus-visible::-moz-range-thumb {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-slider__input:disabled {
+  cursor: not-allowed;
+}
+
+.kui-slider:has(.kui-slider__input:disabled) {
+  opacity: 0.5;
+}
+
+/* Tick labels sit under the stops: a stop's center is the thumb's center at
+   that value, half a thumb in from each end. */
+.kui-slider__ticks {
+  position: relative;
+  height: 1lh;
+  margin-inline: calc(var(--_kui-slider-thumb) / 2);
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s, remify(14px));
+}
+
+.kui-slider[data-size="compact"] .kui-slider__ticks {
+  font-size: var(--kui-font-xs, remify(12px));
+}
+
+.kui-slider__tick {
+  position: absolute;
+  inset-inline-start: var(--_kui-slider-tick);
+  translate: -50% 0;
+  white-space: nowrap;
+}
+
+.kui-slider__tick:dir(rtl) {
+  translate: 50% 0;
+}
+
+/* The first and last labels stay inside the slider. */
+.kui-slider__tick:first-child {
+  translate: calc(-1 * var(--_kui-slider-thumb) / 2) 0;
+}
+
+.kui-slider__tick:last-child {
+  translate: calc(-100% + var(--_kui-slider-thumb) / 2) 0;
+}
+
+.kui-slider__hint {
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s, remify(14px));
+  line-height: 1.6;
+}
+
+.kui-slider[data-size="compact"] .kui-slider__hint {
+  font-size: var(--kui-font-xs, remify(12px));
+}
+
+@media (forced-colors: active) {
+  .kui-slider__input::-webkit-slider-runnable-track {
+    background: linear-gradient(
+      to right,
+      Highlight var(--_kui-slider-fill, 0%),
+      GrayText var(--_kui-slider-fill, 0%)
+    );
+  }
+
+  .kui-slider__input::-moz-range-track {
+    background: GrayText;
+  }
+
+  .kui-slider__input::-moz-range-progress {
+    background: Highlight;
+  }
+
+  .kui-slider__input::-webkit-slider-thumb {
+    border-color: CanvasText;
+    background: Canvas;
+  }
+
+  .kui-slider__input::-moz-range-thumb {
+    border-color: CanvasText;
+    background: Canvas;
+  }
+}

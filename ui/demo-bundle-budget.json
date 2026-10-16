@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "largestJavaScriptGzip": 152000,
+  "largestJavaScriptGzip": 164300,
   "totalJavaScriptGzip": 408100,
-  "measuredLargestJavaScriptGzip": 151998,
-  "measuredTotalJavaScriptGzip": 408016,
+  "measuredLargestJavaScriptGzip": 164221,
+  "measuredTotalJavaScriptGzip": 408091,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5314,6 +5314,22 @@
         "measuredLargestJavaScriptGzip": 151998,
         "measuredTotalJavaScriptGzip": 408016,
         "largestJavaScriptGzip": 152000,
+        "totalJavaScriptGzip": 408100
+      }
+    },
+    {
+      "at": "2026-10-16T08:22:22.267Z",
+      "reason": "Slider catalog page; the media popup's switch to Kerf Slider moves the lazy wa-slider module into the lazy Web Awesome demos chunk",
+      "old": {
+        "measuredLargestJavaScriptGzip": 151998,
+        "measuredTotalJavaScriptGzip": 408016,
+        "largestJavaScriptGzip": 152000,
+        "totalJavaScriptGzip": 408100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 408091,
+        "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 408100
       }
     }

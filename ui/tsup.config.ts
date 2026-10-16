@@ -82,6 +82,8 @@ const entries = [
   'text-field',
   'wire-text-fields',
   'checkbox',
+  'slider',
+  'wire-sliders',
   'wire-checkboxes',
   'wire-choice-chips',
   'selection',

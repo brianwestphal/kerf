@@ -14,7 +14,7 @@ Templated components (each with light + dark variants):
 `ListActionRow`, `ValueTable`, `Disclosure`, `ProgressBar`, `ProgressRing`, `StateBanner`, `EmptyState`, `Skeleton`,
 `SegmentedControl`, `TabBar`/`TabBarItem`, `SearchField`, `Chip`, `ChoiceChips`,
 `MessageComposer`, and the native form controls `Button`, `TextField`, `Checkbox`,
-`RadioGroup`, `Switch`, and `Select`.
+`RadioGroup`, `Switch`, `Slider`, and `Select`.
 
 Deliberately **not** templated (they don't read as a single static component
 picture): `DialogSurface` and `ListDetailDialog` are modal `<dialog>`s that only present as a dialog

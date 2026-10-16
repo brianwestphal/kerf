@@ -370,6 +370,7 @@ describe('UX catalog metadata', () => {
       'wa-radio',
       'wa-radio-group',
       'wa-select',
+      'wa-slider',
       'wa-switch',
       'wa-textarea',
       'wa-accordion',
@@ -580,6 +581,7 @@ describe('UX catalog metadata', () => {
       'Checkbox',
       'RadioGroup',
       'Switch',
+      'Slider',
       'AnchoredSurface',
       'PopupMenu',
       'Button',
@@ -699,6 +701,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(44);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(45);
   });
 });

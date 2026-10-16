@@ -34,6 +34,7 @@ const overlaps = [
   'wa-spinner',
   'wa-progress-bar',
   'wa-progress-ring',
+  'wa-slider',
   'wa-skeleton',
   'wa-callout',
   'wa-toast',

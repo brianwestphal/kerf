@@ -746,6 +746,19 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "slider",
+    "name": "Slider",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Let a person pick a value from a range where the relative position matters more than an exact number (volume, zoom, opacity, a threshold).",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/slider.tsx",
+    "componentSource": "ui/src/components/forms/slider/slider.tsx",
+    "designTemplate": "ui/docs/design/templates/slider.svg",
+    "documentation": "ui/docs/slider.md"
+  },
+  {
     "id": "anchored-surface",
     "name": "AnchoredSurface",
     "category": "Feedback",
@@ -1463,8 +1476,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Range input with markers and value tooltip support.",
-    "recommendation": "supported",
+    "description": "Ecosystem range slider; use the Kerf Slider.",
+    "recommendation": "avoid",
     "uses": [
       "wa-tooltip"
     ],

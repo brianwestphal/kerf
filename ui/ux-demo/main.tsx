@@ -56,6 +56,7 @@ import { wireOverlaySheets } from '@kerfjs/ui/wire-overlay-sheets';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSearchFields } from '@kerfjs/ui/wire-search-fields';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
+import { wireSliders } from '@kerfjs/ui/wire-sliders';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
 import { wireTextFields } from '@kerfjs/ui/wire-text-fields';
@@ -130,6 +131,11 @@ import {
   SearchFieldHelp,
   TOKEN_SEARCH_HELP_SURFACE_ID,
 } from './demos/search-field.js';
+import {
+  resetSliderDemo,
+  SET_SLIDER_DEMO_ACTION,
+  setSliderDemoValue,
+} from './demos/slider.js';
 import {
   clearSplitViewSelection,
   resetSplitViewDemo,
@@ -1613,6 +1619,7 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     target: 'canvas',
     wire: () => () => {},
   },
+  slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
   tooltip: {
     target: 'canvas',
     wire: (canvas) => wireTooltipDemo(canvas),
@@ -1849,6 +1856,20 @@ const stopComboboxes = wireComboboxes(app, {
 const stopMessageComposers = wireMessageComposers(app);
 const stopTextFields = wireTextFields(app);
 const stopCheckboxes = wireCheckboxes(app);
+const stopSliders = wireSliders(app);
+const stopSliderDemo = delegate(
+  app,
+  'change',
+  `[data-action="${SET_SLIDER_DEMO_ACTION}"]`,
+  (_event, element) => {
+    const input = element as HTMLInputElement;
+    setSliderDemoValue(
+      input.id.replace('slider-demo-', ''),
+      Number(input.value),
+    );
+    actionLog.value = `${input.id.replace('slider-demo-', '')}: ${input.value}`;
+  },
+);
 const stopChoiceChips = wireChoiceChips(app);
 const stopFilePickers = wireFilePickers(app, {
   onFiles: ({ files, via }) => {
@@ -2270,6 +2291,8 @@ window.addEventListener(
     stopFilePickers();
     stopTextFields();
     stopCheckboxes();
+    stopSliders();
+    stopSliderDemo();
     stopChoiceChips();
     stopComboboxes();
     stopListItemDragOver();

@@ -1,8 +1,8 @@
-import '@awesome.me/webawesome/dist/components/slider/slider.js';
-
 import { openAnchoredSurface } from '@kerfjs/ui/anchored-surface';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Slider } from '@kerfjs/ui/slider';
+import { wireSliders } from '@kerfjs/ui/wire-sliders';
 import { delegate } from 'kerfjs';
 import { Volume2, VolumeX } from 'lucide';
 
@@ -13,7 +13,7 @@ import { mediaMuted, mediaVolume } from './anchored-surface.js';
 
 const TOGGLE_MUTE_ACTION = 'toggle-media-mute';
 
-/** A mute row and a vertical slider: content that inherits the tone. */
+/** A mute row and a volume slider: content that inherits the tone. */
 function MediaVolumeSurface() {
   const muted = mediaMuted.value;
   return (
@@ -29,12 +29,15 @@ function MediaVolumeSurface() {
         }
         pressed={muted}
       />
-      <wa-slider
-        data-media-volume
+      <Slider
+        id="media-volume"
         label="Volume"
-        orientation="vertical"
-        value={String(mediaVolume.value)}
+        value={mediaVolume.value}
+        showValue
+        unit="%"
+        size="compact"
         disabled={muted}
+        rootAttributes={{ 'data-media-volume': '' }}
       />
     </div>
   );
@@ -58,18 +61,18 @@ export function openMediaVolumeSurface(trigger: HTMLElement): void {
       mediaMuted.value = !mediaMuted.value;
     },
   );
+  const stopSliders = wireSliders(handle.el);
   const stopVolume = delegate(
     handle.el,
     'input',
-    '[data-media-volume]',
-    (_event, slider) => {
-      mediaVolume.value = Number(
-        (slider as HTMLElement & { value: number }).value,
-      );
+    '[data-media-volume] .kui-slider__input',
+    (_event, input) => {
+      mediaVolume.value = Number((input as HTMLInputElement).value);
     },
   );
   void handle.result.then(() => {
     stopMute();
+    stopSliders();
     stopVolume();
   });
 }

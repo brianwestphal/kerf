@@ -80,7 +80,7 @@ or an ancestor wins; `light dark` follows the user's preference), and the
 surface is marked `data-tone="dark"`. Nothing else changes. Every semantic
 color token is a `light-dark()` pair, so the surface fill, border, and shadow,
 and the text, borders, and focus rings of the Kerf UI and Web Awesome
-components inside it (a `ListItem` mute row, a `wa-slider`), resolve to the
+components inside it (a `ListItem` mute row, a `Slider`), resolve to the
 other side by inheritance. The content needs no tone props and no overrides.
 Text and focus rings keep WCAG AA in both page schemes. A theme that replaces a
 semantic token with a single color instead of a `light-dark()` pair opts that
