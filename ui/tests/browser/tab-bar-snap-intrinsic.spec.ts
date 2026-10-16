@@ -109,21 +109,26 @@ test('snap room in a shared-shrink strip converges and keeps the zones inside th
   page,
 }) => {
   const bar = await setUp(page, true, 'width: 700px', true);
-  // Converged means two samples 12 frames apart agree. A slow runner may
-  // still be settling at the first sample, so sample until they agree; an
-  // oscillating allocation never does, and fails.
+  // Converged means two samples 12 frames apart agree. A slow or loaded
+  // runner may still be settling at the first samples, so sample until they
+  // agree, bounded by time rather than a sample count; an oscillating
+  // allocation never agrees, and fails at the timeout.
   let settled = await geometry(bar);
   let later = settled;
-  let converged = false;
-  for (let attempt = 0; attempt < 5 && !converged; attempt += 1) {
-    await frames(page, 12);
-    later = await geometry(bar);
-    converged =
-      Math.abs(later.extra - settled.extra) < 0.5 &&
-      Math.abs(later.strip - settled.strip) < 0.5;
-    if (!converged) settled = later;
-  }
-  expect(converged).toBe(true);
+  await expect
+    .poll(
+      async () => {
+        await frames(page, 12);
+        later = await geometry(bar);
+        const converged =
+          Math.abs(later.extra - settled.extra) < 0.5 &&
+          Math.abs(later.strip - settled.strip) < 0.5;
+        settled = later;
+        return converged;
+      },
+      { timeout: 10_000, intervals: [0] },
+    )
+    .toBe(true);
   expect(later.extra).toBeGreaterThan(0);
   expect(later.bar).toBeCloseTo(700, 0);
   expect(later.stripRight).toBeLessThanOrEqual(later.trailingLeft + 1);
