@@ -933,6 +933,7 @@ export const generatedKerfCatalog = [
     "uses": [],
     "demoSource": "ui/ux-demo/demos/progress-bar.tsx",
     "componentSource": "ui/src/components/feedback/progress-bar/progress-bar.tsx",
+    "designTemplate": "ui/docs/design/templates/progress-bar.svg",
     "documentation": "ui/docs/progress.md"
   },
   {
@@ -945,6 +946,7 @@ export const generatedKerfCatalog = [
     "uses": [],
     "demoSource": "ui/ux-demo/demos/progress-ring.tsx",
     "componentSource": "ui/src/components/feedback/progress-ring/progress-ring.tsx",
+    "designTemplate": "ui/docs/design/templates/progress-ring.svg",
     "documentation": "ui/docs/progress.md"
   },
   {
