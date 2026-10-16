@@ -617,6 +617,19 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "color-swatches",
+    "name": "ColorSwatches",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Let a person choose one color from a small fixed palette (a label, tag, or command color), or no color.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/color-swatches.tsx",
+    "componentSource": "ui/src/components/forms/color-swatches/color-swatches.tsx",
+    "designTemplate": "ui/docs/design/templates/color-swatches.svg",
+    "documentation": "ui/docs/color-swatches.md"
+  },
+  {
     "id": "message-composer",
     "name": "MessageComposer",
     "category": "Controls",

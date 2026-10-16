@@ -107,6 +107,11 @@ import {
   restoreDrawerCollapsed,
 } from './demos/collapsible-panel.js';
 import {
+  PICK_SWATCH_DEMO_ACTION,
+  pickSwatchDemo,
+  resetColorSwatchesDemo,
+} from './demos/color-swatches.js';
+import {
   popListDetailDialogDemo,
   resetListDetailDialogDemo,
   SELECT_LIST_DETAIL_PROJECT_ACTION,
@@ -1626,6 +1631,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
+  'color-swatches': {
+    reset: resetColorSwatchesDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
   'tag-field': {
     reset: resetTagFieldDemo,
     target: 'canvas',
@@ -1868,6 +1878,16 @@ const stopMessageComposers = wireMessageComposers(app);
 const stopTextFields = wireTextFields(app);
 const stopCheckboxes = wireCheckboxes(app);
 const stopSliders = wireSliders(app);
+const stopSwatchDemo = delegate(
+  app,
+  'change',
+  `[data-action="${PICK_SWATCH_DEMO_ACTION}"]`,
+  (_event, element) => {
+    const input = element as HTMLInputElement;
+    pickSwatchDemo(input.name, input.value);
+    actionLog.value = `${input.name}: ${input.getAttribute('aria-label') ?? input.value}`;
+  },
+);
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const stopTagFields = wireTagFields(app, {
   onChange: ({ id, tags }) => {
@@ -2319,6 +2339,7 @@ window.addEventListener(
     stopTextFields();
     stopCheckboxes();
     stopSliders();
+    stopSwatchDemo();
     stopTagFields();
     stopSliderDemo();
     stopChoiceChips();

@@ -4522,6 +4522,77 @@
       }
     },
     {
+      "key": "@kerfjs/ui:color-swatches",
+      "package": "@kerfjs/ui",
+      "id": "color-swatches",
+      "name": "ColorSwatches",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the palette and its color names",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the chosen value (read it on change through action)",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the field name and form association",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "The group takes the shared block-content inset (a transparent 1px border and 8px padding), so its label sits on the text column; each swatch keeps 4px of room for its ring, pulled back at the row's edges."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "It is a native radio group: Tab reaches it once and the arrow keys move the choice; each radio is named by its color label, also shown as the swatch's hover hint.",
+          "The chosen swatch wears a ring in the text color set off by a gap, so the choice never depends on hue; forced colors draw it in Highlight."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-color-swatches",
+        "publicClasses": [
+          "kui-color-swatches",
+          "kui-color-swatches__label",
+          "kui-color-swatches__list",
+          "kui-color-swatches__swatch",
+          "kui-color-swatches__input",
+          "kui-color-swatches__dot"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:message-composer",
       "package": "@kerfjs/ui",
       "id": "message-composer",

@@ -5499,6 +5499,91 @@
       }
     },
     {
+      "id": "color-swatches",
+      "name": "ColorSwatches",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A fixed palette: a native radio group of round color swatches with no visible text, each named by its color, the chosen one ringed independently of hue, with a struck-through no-color swatch, compact size, and disabled state.",
+      "uses": [],
+      "purpose": "Let a person choose one color from a small fixed palette (a label, tag, or command color), or no color.",
+      "publicExports": [
+        "ColorSwatches",
+        "ColorSwatchesProps",
+        "ColorSwatch",
+        "ColorSwatchesSize",
+        "ColorSwatchesRootAttributes"
+      ],
+      "useWhen": [
+        "A setting takes one color from a small, curated palette (a label, calendar, or command color): render ColorSwatches with name, a label, swatches, and value, and read the choice on change.",
+        "No color is a valid choice: include a swatch with color 'transparent'."
+      ],
+      "avoidWhen": [
+        "Do not use it when any color is allowed; use a ColorPicker or ColorField.",
+        "Do not use it for choices that are not colors; use ChoiceChips or a RadioGroup.",
+        "Do not put text in the swatches; the color's label names each one."
+      ],
+      "alternatives": [
+        {
+          "id": "choice-chips",
+          "relationship": "nearest",
+          "when": "Use ChoiceChips with swatches when each color also needs a visible name."
+        },
+        {
+          "id": "radio-group",
+          "relationship": "nearest",
+          "when": "Use a RadioGroup for choices that are not colors."
+        }
+      ],
+      "appOwns": [
+        "the palette and its color names",
+        "the chosen value (read it on change through action)",
+        "the field name and form association"
+      ],
+      "variants": [
+        "fixed palette with a visible label",
+        "a no-color swatch",
+        "compact size",
+        "disabled",
+        "ariaLabel without a visible label"
+      ],
+      "accessibility": [
+        "It is a native radio group: Tab reaches it once and the arrow keys move the choice; each radio is named by its color label, also shown as the swatch's hover hint.",
+        "The chosen swatch wears a ring in the text color set off by a gap, so the choice never depends on hue; forced colors draw it in Highlight."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "The group takes the shared block-content inset (a transparent 1px border and 8px padding), so its label sits on the text column; each swatch keeps 4px of room for its ring, pulled back at the row's edges."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/color-swatches",
+        "browserImport": "@kerfjs/ui/color-swatches",
+        "manualCssImport": "@kerfjs/ui/color-swatches.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-color-swatches",
+        "kui-color-swatches__label",
+        "kui-color-swatches__list",
+        "kui-color-swatches__swatch",
+        "kui-color-swatches__input",
+        "kui-color-swatches__dot"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=color-swatches",
+        "documentation": "docs/color-swatches.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "message-composer",
       "name": "MessageComposer",
       "category": "Controls",

@@ -61,6 +61,7 @@ import { ChoiceChips } from '../dist/choice-chips.js';
 import { MessageComposer } from '../dist/message-composer.js';
 import { em, fillColor, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
+import { ColorSwatches } from '../dist/color-swatches.js';
 import { Disclosure } from '../dist/disclosure.js';
 import { List } from '../dist/list.js';
 import { ProgressBar } from '../dist/progress-bar.js';
@@ -622,6 +623,41 @@ export const COMPONENTS = {
               }),
               ValueTableRow({ label: 'Region', value: 'us-east-1' }),
               ValueTableRow({ label: 'Last Deploy', value: '2 hours ago' }),
+            ],
+          }),
+      },
+    ],
+  },
+  'color-swatches': {
+    css: ['foundation', 'layout', 'color-swatches'],
+    selector: '#frame',
+    width: 420,
+    frameWidth: 'max-content',
+    variants: [
+      {
+        id: 'palette',
+        label: 'Palette with a Choice',
+        height: 80,
+        render: () =>
+          ColorSwatches({
+            name: 'dt-color',
+            label: 'Command Color',
+            value: '#0a84ff',
+            swatches: [
+              { value: 'none', label: 'No Color', color: 'transparent' },
+              { value: '#ff3b30', label: 'Red', color: fillColor('#ff3b30') },
+              {
+                value: '#ff9500',
+                label: 'Orange',
+                color: fillColor('#ff9500'),
+              },
+              { value: '#34c759', label: 'Green', color: fillColor('#34c759') },
+              { value: '#0a84ff', label: 'Blue', color: fillColor('#0a84ff') },
+              {
+                value: '#bf5af2',
+                label: 'Purple',
+                color: fillColor('#bf5af2'),
+              },
             ],
           }),
       },

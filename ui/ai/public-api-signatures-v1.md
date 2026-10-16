@@ -5467,6 +5467,67 @@ declare function wireChoiceChips(root: HTMLElement | Document): () => void;
 export { readChoiceChips, wireChoiceChips };
 ```
 
+## `@kerfjs/ui/color-swatches`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { CssColor } from './css-values.js';
+
+/** `default` is a 24px swatch; `compact` is 20px. */
+type ColorSwatchesSize = 'default' | 'compact';
+/** One color in the palette. */
+interface ColorSwatch {
+    /** The submitted value, such as `#0a84ff` or `blue`. */
+    value: string;
+    /** The color's name: the swatch's accessible name and its hover hint. */
+    label: string;
+    /**
+     * The swatch's paint: a `CssColor` from `uiColor()`, `colorVar()`, or
+     * `fillColor()` (`@kerfjs/ui/css-values`), or `'transparent'` for the
+     * no-color swatch, drawn outlined and struck through.
+     */
+    color: CssColor | 'transparent';
+}
+/** Application `data-*` metadata; the group's own markers stay protected. */
+type ColorSwatchesRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+type ColorSwatchesProps = {
+    /** The radio group name the chosen value submits under. */
+    name: string;
+    swatches: readonly ColorSwatch[];
+    /** The chosen swatch's value. */
+    value?: string;
+    size?: ColorSwatchesSize;
+    disabled?: boolean;
+    /** Delegated `data-action` on each radio; listen for `change`. */
+    action?: string;
+    /** Associate the radios with a form outside their ancestor chain. */
+    form?: string;
+    /** The group's id. */
+    id?: string;
+    className?: string;
+    rootAttributes?: ColorSwatchesRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+} & ({
+    label: string;
+    ariaLabel?: never;
+} | {
+    label?: never;
+    ariaLabel: string;
+});
+/**
+ * A fixed palette: a group of round color swatches with no visible text, one
+ * of which is chosen. It is a native radio group, so arrow keys move the
+ * choice, Tab reaches it once, and the chosen value submits under `name`.
+ * Each swatch is named by its color's label (also its hover hint), and the
+ * chosen one wears a ring that does not rely on its hue. A `'transparent'`
+ * swatch offers "no color".
+ */
+declare function ColorSwatches({ name, swatches, value, label, ariaLabel, size, disabled, action, form, id, className, rootAttributes, slot, }: ColorSwatchesProps): kerfjs.SafeHtml;
+
+export { type ColorSwatch, ColorSwatches, type ColorSwatchesProps, type ColorSwatchesRootAttributes, type ColorSwatchesSize };
+```
+
 ## `@kerfjs/ui/search-field-model`
 
 ```ts

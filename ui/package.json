@@ -340,6 +340,11 @@
       "browser": "./dist/browser/segmented-control.js",
       "import": "./dist/segmented-control.js"
     },
+    "./color-swatches": {
+      "types": "./dist/color-swatches.d.ts",
+      "browser": "./dist/browser/color-swatches.js",
+      "import": "./dist/color-swatches.js"
+    },
     "./choice-chips": {
       "types": "./dist/choice-chips.d.ts",
       "browser": "./dist/browser/choice-chips.js",
@@ -579,6 +584,7 @@
     "./sunken-panel.css": "./dist/styles/sunken-panel.css",
     "./segmented-control.css": "./dist/styles/segmented-control.css",
     "./choice-chips.css": "./dist/styles/choice-chips.css",
+    "./color-swatches.css": "./dist/styles/color-swatches.css",
     "./message-composer.css": "./dist/styles/message-composer.css",
     "./search-field.css": "./dist/styles/search-field.css",
     "./tag-field.css": "./dist/styles/tag-field.css",

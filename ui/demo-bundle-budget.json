@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 410600,
-  "measuredLargestJavaScriptGzip": 164221,
-  "measuredTotalJavaScriptGzip": 410522,
+  "totalJavaScriptGzip": 411600,
+  "measuredLargestJavaScriptGzip": 164224,
+  "measuredTotalJavaScriptGzip": 411515,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5347,6 +5347,22 @@
         "measuredTotalJavaScriptGzip": 410522,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 410600
+      }
+    },
+    {
+      "at": "2026-10-16T09:28:59.911Z",
+      "reason": "ColorSwatches catalog page",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 410522,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 410600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164224,
+        "measuredTotalJavaScriptGzip": 411515,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 411600
       }
     }
   ]

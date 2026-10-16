@@ -62,6 +62,7 @@ const entries = [
   'select',
   'segmented-control',
   'choice-chips',
+  'color-swatches',
   'message-composer',
   'wire-message-composers',
   'search-field',

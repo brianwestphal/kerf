@@ -1,0 +1,115 @@
+/* A wrapping row of round swatches over native radios. The radio covers its
+   swatch invisibly; the chosen swatch wears a ring in the text color, set off
+   by a gap in the surface color, so the choice never depends on hue. */
+.kui-color-swatches {
+  --_kui-color-swatches-size: remify(24px);
+
+  min-width: 0;
+  margin: 0;
+  /* The shared block-content inset (a transparent 1px border and 8px
+     padding), so the label sits on the text column. The swatches' own 4px
+     ring room is pulled back out so the first dot's ring aligns with it. */
+  padding: var(--kui-layout-item-padding, remify(8px));
+  border: var(--kui-layout-item-border-width, 1px) solid transparent;
+}
+
+.kui-color-swatches[data-size="compact"] {
+  --_kui-color-swatches-size: remify(20px);
+}
+
+.kui-color-swatches__label {
+  margin-block-end: var(--kui-space-xs);
+  padding: 0;
+  color: var(--kui-color-text);
+  font-size: var(--kui-font-m, remify(16px));
+}
+
+.kui-color-swatches__list {
+  display: flex;
+  margin-inline: remify(-4px);
+  flex-wrap: wrap;
+  gap: var(--kui-space-xs);
+}
+
+.kui-color-swatches__swatch {
+  position: relative;
+  display: inline-grid;
+  /* Room for the 2px ring and its 2px gap around the dot. */
+  padding: remify(4px);
+  flex: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.kui-color-swatches__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: 50%;
+  opacity: 0;
+  cursor: inherit;
+  appearance: none;
+}
+
+.kui-color-swatches__dot {
+  width: var(--_kui-color-swatches-size);
+  height: var(--_kui-color-swatches-size);
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--_kui-color-swatches-color, transparent);
+  /* An inner edge keeps a pale swatch visible against the surface. */
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--kui-color-text) 20%, transparent);
+}
+
+/* The no-color swatch: an outlined dot struck through from corner to corner. */
+.kui-color-swatches__dot[data-swatch="transparent"] {
+  position: relative;
+  box-shadow: inset 0 0 0 1px var(--kui-color-neutral-border-loud);
+}
+
+.kui-color-swatches__dot[data-swatch="transparent"]::after {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 0.75px);
+  width: 1.5px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--kui-color-danger-on-quiet);
+  content: "";
+  transform: rotate(45deg);
+}
+
+/* The chosen swatch's ring. */
+.kui-color-swatches__swatch:has(> .kui-color-swatches__input:checked)
+  > .kui-color-swatches__dot {
+  outline: 2px solid var(--kui-color-text);
+  outline-offset: 2px;
+}
+
+.kui-color-swatches__swatch:has(> .kui-color-swatches__input:focus-visible) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 0;
+}
+
+.kui-color-swatches:disabled .kui-color-swatches__list {
+  opacity: 0.45;
+}
+
+.kui-color-swatches:disabled .kui-color-swatches__swatch {
+  cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  .kui-color-swatches__dot {
+    forced-color-adjust: none;
+    box-shadow: inset 0 0 0 1px CanvasText;
+  }
+
+  .kui-color-swatches__swatch:has(> .kui-color-swatches__input:checked)
+    > .kui-color-swatches__dot {
+    outline-color: Highlight;
+  }
+}
