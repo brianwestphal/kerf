@@ -6,7 +6,7 @@ test('busy toolbar action keeps its dimensions and cannot activate', async ({
   await page.goto('/?component=toolbar-control-group');
   const demo = page.locator('[data-demo="toolbar-control-group"]');
   const group = demo.locator(
-    '[data-component="toolbar-control-group"]:has([data-action="log-pricing-check"])',
+    '[data-component="toolbar-control-group"]:not([data-content="mixed"]):has([data-action="log-pricing-check"])',
   );
   const action = group.locator('[data-action="log-pricing-check"]');
   const toggle = demo.locator('[data-action="toggle-toolbar-group-busy"]');
@@ -24,7 +24,9 @@ test('busy toolbar action keeps its dimensions and cannot activate', async ({
   await expect(
     group.locator('[data-component="loading-spinner"]'),
   ).toBeVisible();
-  await expect(demo.getByRole('status')).toHaveText('Running pricing check');
+  await expect(demo.getByRole('status').first()).toHaveText(
+    'Running pricing check',
+  );
   const during = await group.boundingBox();
   expect(during?.width).toBe(before?.width);
   expect(during?.height).toBe(before?.height);
@@ -50,4 +52,30 @@ test('busy toolbar action keeps its dimensions and cannot activate', async ({
   await toggle.click();
   await expect(group).toHaveAttribute('aria-busy', 'true');
   await expect(group).toBeInViewport();
+});
+
+test('a busy labeled toolbar group hides its text under the spinner and keeps its size', async ({
+  page,
+}) => {
+  await page.goto('/?component=toolbar-control-group');
+  const demo = page.locator('[data-demo="toolbar-control-group"]');
+  const group = demo.locator(
+    '[data-component="toolbar-control-group"][data-content="mixed"]:has([data-action="log-pricing-check"])',
+  );
+  const action = group.locator('[data-action="log-pricing-check"]');
+  await expect(action).toHaveText('Price Check');
+  const before = await group.boundingBox();
+  await demo.locator('[data-action="toggle-toolbar-group-busy"]').click();
+  await expect(group).toHaveAttribute('aria-busy', 'true');
+  // The whole control, text included, is hidden while the spinner shows.
+  await expect(action).toHaveCSS('visibility', 'hidden');
+  await expect(
+    group.locator('[data-component="loading-spinner"]'),
+  ).toBeVisible();
+  const during = await group.boundingBox();
+  expect(during?.width).toBe(before?.width);
+  expect(during?.height).toBe(before?.height);
+  await group.screenshot({
+    path: 'test-results/toolbar-control-group-busy-labeled.png',
+  });
 });

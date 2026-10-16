@@ -230,7 +230,7 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample
         label="Busy Action"
-        note="The original action keeps its size while inert; a status announces the work."
+        note="The original action keeps its size while inert; a status announces the work. A labeled group hides its text under the spinner too."
         align="inline-control"
       >
         <ToolbarControlGroup
@@ -245,6 +245,18 @@ export function ToolbarControlGroupDemo() {
             data-action="log-pricing-check"
           >
             <LucideIcon icon={GitCompare} name="git-compare" />
+          </button>
+        </ToolbarControlGroup>
+        <ToolbarControlGroup
+          single
+          content="mixed"
+          shape={shape}
+          busy={toolbarGroupBusy.value}
+          busyLabel="Running pricing check"
+        >
+          <button type="button" data-action="log-pricing-check">
+            <LucideIcon icon={GitCompare} name="git-compare" />
+            Price Check
           </button>
         </ToolbarControlGroup>
         <button type="button" data-action="toggle-toolbar-group-busy">

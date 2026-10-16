@@ -625,10 +625,12 @@ The position changes the HTML element without changing zones or geometry.
 
 Common toolbar patterns:
 
-For a long-running icon action, set `busy` on its single-control
+For a long-running action, set `busy` on its single-control
 `ToolbarControlGroup` and supply a descriptive `busyLabel`. The group preserves
-the control's dimensions, shows `LoadingSpinner` in its icon slot, sets
-`aria-busy`, and makes the control inert until the app clears `busy`.
+the control's dimensions, shows `LoadingSpinner` in its place, sets
+`aria-busy`, and makes the control inert until the app clears `busy`. An icon
+group hides only the glyph; a `content="text"` or `"mixed"` group hides the
+whole control, label included, so the spinner never draws over text.
 
 | Want                           | Put in the zone                                                                        | Notes                                                                                                          |
 | ------------------------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |

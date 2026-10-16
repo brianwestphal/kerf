@@ -54,6 +54,17 @@
   visibility: hidden;
 }
 
+/* A group that shows text hides its whole control content under the spinner,
+   so the label never shows through it; the content keeps its box, so the
+   group keeps its size. */
+.kui-toolbar-control-group[data-busy="true"]:is(
+    [data-content="text"],
+    [data-content="mixed"]
+  )
+  > :not(.kui-toolbar-control-group__busy-spinner) {
+  visibility: hidden;
+}
+
 .kui-toolbar-control-group__busy-spinner {
   position: absolute;
   inset-block-start: 50%;
