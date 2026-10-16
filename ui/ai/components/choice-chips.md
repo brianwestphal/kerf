@@ -12,6 +12,7 @@ Choose one value, or with multiple any number of values, from a visible set too 
 
 - Expose one exclusive choice among several visible options that must wrap onto more rows, such as a labeled color palette with swatches.
 - Set multiple when the person may turn any number of visible, wrapping options on or off, such as label filters or annotation intents.
+- Pick one icon from many (a command or category icon): presentation="icons" with an icon and label per choice and maxHeight to scroll a long grid, instead of an application grid of buttons.
 
 **Not when:**
 
@@ -45,6 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures
 - default or compact size
 - disabled group or disabled choices
 - required (single selection only)
+- presentation="icons": square 36px icon-only choices (an icon picker) named by hidden labels with hover titles, and maxHeight for a scrolling grid
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 

@@ -168,3 +168,38 @@
     transition: none;
   }
 }
+
+/* `icons`: square icon-only choices (an icon picker). The label stays as the
+   accessible name, visually hidden; the chip's title shows it on hover. */
+.kui-choice-chips[data-presentation="icons"] .kui-choice-chips__chip {
+  width: remify(36px);
+  height: remify(36px);
+  min-height: 0;
+  padding: 0;
+  justify-content: center;
+  border-radius: var(--kui-radius-m);
+}
+
+/* An unsized LucideIcon fills 1em, so the slot's font size sets it. */
+.kui-choice-chips[data-presentation="icons"] .kui-choice-chips__icon {
+  font-size: remify(20px);
+}
+
+.kui-choice-chips[data-presentation="icons"] .kui-choice-chips__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* `maxHeight`: past it the group scrolls, with room for a chip's focus ring
+   (3px ring, 2px offset) inside the clip. */
+.kui-choice-chips[data-scrollable] {
+  max-height: var(--_kui-choice-chips-max-height);
+  padding: remify(5px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  align-content: flex-start;
+}

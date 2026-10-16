@@ -5559,7 +5559,8 @@
       ],
       "useWhen": [
         "Expose one exclusive choice among several visible options that must wrap onto more rows, such as a labeled color palette with swatches.",
-        "Set multiple when the person may turn any number of visible, wrapping options on or off, such as label filters or annotation intents."
+        "Set multiple when the person may turn any number of visible, wrapping options on or off, such as label filters or annotation intents.",
+        "Pick one icon from many (a command or category icon): presentation=\"icons\" with an icon and label per choice and maxHeight to scroll a long grid, instead of an application grid of buttons."
       ],
       "avoidWhen": [
         "Use SegmentedControl for a few compact choices on one track.",
@@ -5593,7 +5594,8 @@
         "single (radios), multiple: 'toggle' (checkboxes), or multiple: true (a modifier-key multi-select listbox)",
         "default or compact size",
         "disabled group or disabled choices",
-        "required (single selection only)"
+        "required (single selection only)",
+        "presentation=\"icons\": square 36px icon-only choices (an icon picker) named by hidden labels with hover titles, and maxHeight for a scrolling grid"
       ],
       "accessibility": [
         "The single group is a named role=\"radiogroup\" of native radios: one Tab stop, arrow keys move the selection, and the checked radio submits the form value.",

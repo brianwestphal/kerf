@@ -285,3 +285,32 @@ test('A multiple: true ChoiceChips listbox selects with clicks, modifier keys, a
       path: 'test-results/choice-chips-listbox.png',
     });
 });
+
+test('an icon ChoiceChips grid picks with the arrows, names each icon, and scrolls', async ({
+  page,
+}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=choice-chips');
+    const group = page.getByRole('radiogroup', { name: 'Command Icon' });
+    const star = group.getByRole('radio', { name: 'Star' });
+    await expect(star).toBeChecked();
+    const box = (await star.locator('xpath=..').boundingBox())!;
+    expect(box.width).toBeCloseTo(36, 0);
+    expect(box.height).toBeCloseTo(36, 0);
+    await star.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(group.getByRole('radio', { name: 'Heart' })).toBeChecked();
+    // The grid is capped and scrolls to its last icon.
+    const scroll = await group.evaluate((el) => ({
+      height: el.clientHeight,
+      content: el.scrollHeight,
+    }));
+    expect(scroll.content).toBeGreaterThan(scroll.height);
+    const last = group.getByRole('radio', { name: 'Lightning' });
+    await last.focus();
+    await page.keyboard.press('Space');
+    await expect(last).toBeChecked();
+    await expect(last.locator('xpath=..')).toBeInViewport();
+  }
+});

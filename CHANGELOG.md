@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **ChoiceChips icon picker.** `presentation="icons"` renders square 36px icon-only choices, each named by its label (hidden, and its hover title), and `maxHeight` scrolls a long grid, with native radio (or toggle, or listbox) semantics unchanged (`KF-K60RRM`).
 - **`Pane` `compactChrome`.** A Pane declares what its header and footer do when its container presents compactly: `fixed` (default), `scroll` (inline with the content; a footer settles at the end and scrolls past long content), or `overlay` (over the content on the chrome material, shown while the app's `compactChromeOpen` says so). NavStack views, TabNavigator scenes, full-screen dialogs, and compact Workbenches apply it; roomy containers ignore it. `PaneConfig` forwards both props (`KF-Q8EMWE`).
 - **Vertical `Slider`.** `orientation="vertical"` stands a Slider up with its minimum at the bottom, `length` tall (default 160px), drawn the same in Chromium, Firefox, and WebKit; the AnchoredSurface media volume popup is vertical again (`KF-SVDPSR`).
 - **`FileDropZone` `dropScope`.** A selector for an enclosing element (an attachments panel) that also takes drops: `wireFilePickers` highlights the zone while files are dragged over any part of it and reports drops there for the zone with `via: 'drop'`, so an app no longer writes the zone's `data-dragging` itself (`KF-HNRWM9`).

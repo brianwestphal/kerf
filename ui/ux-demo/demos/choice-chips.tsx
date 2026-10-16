@@ -4,31 +4,87 @@ import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ChoiceChips, type ChoiceChipsChoice } from '@kerfjs/ui/choice-chips';
 import { ContentItem } from '@kerfjs/ui/content-item';
-import { fillColor, px } from '@kerfjs/ui/css-values';
+import { fillColor, px, rem } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { FieldLabel } from '@kerfjs/ui/text';
 import {
+  Bell,
+  Bookmark,
   Bug,
   Calendar,
+  Camera,
   CircleQuestionMark,
+  Cloud,
+  Code,
+  Coffee,
   Columns3,
+  Flag,
+  Folder,
+  Gift,
+  Globe,
+  Heart,
+  House,
+  Key,
+  Lightbulb,
   List as ListIcon,
+  Mail,
+  Map as MapIcon,
   MessageSquare,
   Minus,
   Move,
+  Music,
   Pencil,
   Plus,
+  Rocket,
+  Settings,
+  Star,
+  Tag,
+  Zap,
 } from 'lucide';
 
 import {
   choiceChipsColor,
   choiceChipsDialogColor,
+  choiceChipsIcon,
   choiceChipsIntents,
   choiceChipsLabels,
   choiceChipsView,
   choiceChipsWorkspaces,
 } from './state.js';
+
+const commandIcons = [
+  ['star', 'Star', Star],
+  ['heart', 'Heart', Heart],
+  ['bell', 'Bell', Bell],
+  ['bookmark', 'Bookmark', Bookmark],
+  ['camera', 'Camera', Camera],
+  ['cloud', 'Cloud', Cloud],
+  ['code', 'Code', Code],
+  ['coffee', 'Coffee', Coffee],
+  ['flag', 'Flag', Flag],
+  ['folder', 'Folder', Folder],
+  ['gift', 'Gift', Gift],
+  ['globe', 'Globe', Globe],
+  ['house', 'House', House],
+  ['key', 'Key', Key],
+  ['lightbulb', 'Light Bulb', Lightbulb],
+  ['mail', 'Mail', Mail],
+  ['map', 'Map', MapIcon],
+  ['music', 'Music', Music],
+  ['rocket', 'Rocket', Rocket],
+  ['settings', 'Settings', Settings],
+  ['tag', 'Tag', Tag],
+  ['zap', 'Lightning', Zap],
+] as const;
+
+const iconChoices: readonly ChoiceChipsChoice[] = commandIcons.map(
+  ([value, label, icon]) => ({
+    value,
+    label,
+    icon: <LucideIcon icon={icon} name={value} />,
+  }),
+);
 
 const labelChoices: readonly ChoiceChipsChoice[] = [
   { value: 'bug', label: 'Bug', swatch: fillColor('#ef4444') },
@@ -181,6 +237,22 @@ export function ChoiceChipsDemo() {
               title: 'Calendar view needs a due-date field',
             },
           ]}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Icon Picker"
+        note='presentation="icons" makes square 36px icon choices, each named by its label (also its hover title); maxHeight scrolls a long grid. Tab reaches the group once and arrow keys move the choice.'
+        viewport={{ width: 'compact' }}
+      >
+        <ChoiceChips<string>
+          id="choice-chips-icon"
+          name="command-icon"
+          label="Command Icon"
+          presentation="icons"
+          maxHeight={rem(7)}
+          value={choiceChipsIcon.value}
+          action="choice-chips-demo"
+          choices={iconChoices}
         />
       </CatalogExample>
       <CatalogExample

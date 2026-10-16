@@ -178,6 +178,7 @@ import {
   checkboxTasks,
   choiceChipsColor,
   choiceChipsDialogColor,
+  choiceChipsIcon,
   choiceChipsIntents,
   choiceChipsLabels,
   choiceChipsView,
@@ -2271,6 +2272,7 @@ const stopChoiceChipsDemo = delegateActions(app, 'change', {
     if (group === 'choice-chips-dialog-color')
       choiceChipsDialogColor.value = input.value;
     if (group === 'choice-chips-view') choiceChipsView.value = input.value;
+    if (group === 'choice-chips-icon') choiceChipsIcon.value = input.value;
     if (input.type === 'checkbox') {
       // A multiple group's value is its checked set, in choice order.
       const checked = [

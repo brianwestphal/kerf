@@ -1,8 +1,16 @@
 import type { SafeHtml } from 'kerfjs';
 
+import type { CssLength } from '../../../shared/styles/css-values.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 
 export type ChoiceChipsSize = 'default' | 'compact';
+
+/**
+ * `chips` (default) are labeled pills; `icons` are square 36px icon-only
+ * choices (an icon picker), each named by its hidden label, which is also
+ * its hover title.
+ */
+export type ChoiceChipsPresentation = 'chips' | 'icons';
 
 /**
  * A leading color dot: a {@link CssColor} from `uiColor()`, `colorVar()`, or
@@ -38,6 +46,11 @@ interface ChoiceChipsCommonProps<Value extends string> {
    */
   action?: string;
   size?: ChoiceChipsSize;
+  presentation?: ChoiceChipsPresentation;
+  /**
+   * Cap the group's height; past it the group scrolls (a long icon grid).
+   */
+  maxHeight?: CssLength;
   /** Disable the whole group. */
   disabled?: boolean;
   /** Associate the inputs with a form outside their ancestor chain. */
@@ -131,6 +144,8 @@ export function ChoiceChips<Value extends string>(
     choices,
     action,
     size = 'default',
+    presentation = 'chips',
+    maxHeight,
     disabled = false,
     form,
     id,
@@ -139,6 +154,19 @@ export function ChoiceChips<Value extends string>(
     label,
     labelledBy,
   } = props;
+  const icons = presentation === 'icons';
+  if (icons && choices.some((choice) => choice.icon === undefined))
+    throw new TypeError('An icons ChoiceChips choice needs an icon.');
+  const shape = {
+    'data-presentation': icons ? 'icons' : undefined,
+    'data-scrollable': maxHeight === undefined ? undefined : '',
+    style:
+      maxHeight === undefined
+        ? undefined
+        : `--_kui-choice-chips-max-height:${maxHeight}`,
+  };
+  const titleOf = (choice: ChoiceChipsChoice<Value>) =>
+    choice.title ?? (icons ? choice.label : undefined);
   if (choices.some((choice) => choice.swatch !== undefined && choice.icon))
     throw new TypeError('A ChoiceChips choice takes a swatch or an icon.');
   const mode: ChoiceChipsSelectionMode =
@@ -188,6 +216,7 @@ export function ChoiceChips<Value extends string>(
         data-component="choice-chips"
         data-selection-mode="multiple"
         data-size={size}
+        {...shape}
         data-disabled={disabled ? '' : undefined}
         data-action={action}
         data-name={name}
@@ -211,7 +240,7 @@ export function ChoiceChips<Value extends string>(
               aria-disabled={unavailable ? 'true' : undefined}
               data-choice-value={choice.value}
               data-disabled={unavailable ? '' : undefined}
-              title={choice.title}
+              title={titleOf(choice)}
             >
               {content(choice)}
             </span>
@@ -240,6 +269,7 @@ export function ChoiceChips<Value extends string>(
       data-component="choice-chips"
       data-selection-mode={mode}
       data-size={size}
+      {...shape}
       data-disabled={disabled ? '' : undefined}
       role={multiple ? 'group' : 'radiogroup'}
       aria-label={label}
@@ -255,7 +285,7 @@ export function ChoiceChips<Value extends string>(
             class="kui-choice-chips__chip"
             data-choice-value={choice.value}
             data-disabled={unavailable ? '' : undefined}
-            title={choice.title}
+            title={titleOf(choice)}
           >
             <input
               class="kui-choice-chips__input"

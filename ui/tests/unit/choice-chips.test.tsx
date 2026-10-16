@@ -11,6 +11,7 @@ import {
   colorVar,
   type CssColor,
   fillColor,
+  rem,
 } from '../../src/shared/styles/css-values.js';
 
 const colors: readonly ChoiceChipsChoice[] = [
@@ -85,6 +86,60 @@ describe('ChoiceChips', () => {
     expect(gray.hasAttribute('data-disabled')).toBe(true);
     expect(gray.title).toBe('Unavailable');
     expect(gray.dataset.choiceValue).toBe('gray');
+  });
+
+  it('renders icon-only choices named by their labels, with a scrolling cap', () => {
+    const icon = <LucideIcon icon={Circle} name="circle" />;
+    const host = render(
+      ChoiceChips({
+        name: 'icon',
+        label: 'Icon',
+        presentation: 'icons',
+        maxHeight: rem(7),
+        value: 'a',
+        choices: [
+          { value: 'a', label: 'Alpha', icon },
+          { value: 'b', label: 'Beta', icon, title: 'Beta, the second' },
+        ],
+      }),
+    );
+    const group = host.querySelector<HTMLElement>('.kui-choice-chips')!;
+    expect(group.dataset.presentation).toBe('icons');
+    expect(group.hasAttribute('data-scrollable')).toBe(true);
+    expect(group.getAttribute('style')).toBe(
+      '--_kui-choice-chips-max-height:7rem',
+    );
+    const chips = [...group.querySelectorAll('.kui-choice-chips__chip')];
+    expect(chips.map((chip) => chip.getAttribute('title'))).toEqual([
+      'Alpha',
+      'Beta, the second',
+    ]);
+    expect(
+      chips[0]!.querySelector('.kui-choice-chips__label')!.textContent,
+    ).toBe('Alpha');
+    const listbox = render(
+      ChoiceChips({
+        name: 'icons',
+        label: 'Icons',
+        presentation: 'icons',
+        multiple: true,
+        choices: [{ value: 'a', label: 'Alpha', icon }],
+      }),
+    );
+    expect(
+      listbox.querySelector('[role="option"]')!.getAttribute('title'),
+    ).toBe('Alpha');
+    expect(
+      listbox.querySelector('.kui-choice-chips')!.hasAttribute('style'),
+    ).toBe(false);
+    expect(() =>
+      ChoiceChips({
+        name: 'x',
+        label: 'X',
+        presentation: 'icons',
+        choices: [{ value: 'a', label: 'Alpha' }],
+      }),
+    ).toThrow('An icons ChoiceChips choice needs an icon.');
   });
 
   it('paints a color dot, the struck transparent dot, and no dot for a text choice', () => {

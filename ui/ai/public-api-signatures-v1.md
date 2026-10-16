@@ -3442,9 +3442,15 @@ export { SegmentedControl, type SegmentedControlAppearance, type SegmentedContro
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { CssColor } from './css-values.js';
+import { CssColor, CssLength } from './css-values.js';
 
 type ChoiceChipsSize = 'default' | 'compact';
+/**
+ * `chips` (default) are labeled pills; `icons` are square 36px icon-only
+ * choices (an icon picker), each named by its hidden label, which is also
+ * its hover title.
+ */
+type ChoiceChipsPresentation = 'chips' | 'icons';
 /**
  * A leading color dot: a {@link CssColor} from `uiColor()`, `colorVar()`, or
  * `fillColor()`, or `'transparent'` for the no-color swatch (an outlined
@@ -3477,6 +3483,11 @@ interface ChoiceChipsCommonProps<Value extends string> {
      */
     action?: string;
     size?: ChoiceChipsSize;
+    presentation?: ChoiceChipsPresentation;
+    /**
+     * Cap the group's height; past it the group scrolls (a long icon grid).
+     */
+    maxHeight?: CssLength;
     /** Disable the whole group. */
     disabled?: boolean;
     /** Associate the inputs with a form outside their ancestor chain. */
@@ -3545,7 +3556,7 @@ type ChoiceChipsSelectionMode = 'single' | 'toggle' | 'multiple';
  */
 declare function ChoiceChips<Value extends string>(props: ChoiceChipsProps<Value>): SafeHtml;
 
-export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsProps, type ChoiceChipsSelectionMode, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch, type ChoiceChipsToggleProps };
+export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsPresentation, type ChoiceChipsProps, type ChoiceChipsSelectionMode, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch, type ChoiceChipsToggleProps };
 ```
 
 ## `@kerfjs/ui/message-composer`
