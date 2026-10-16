@@ -148,7 +148,7 @@ test('shared translucent sunken surfaces compound at each nesting level', async 
         '[aria-label="Layered Pane"] .kui-pane__content',
       )!;
       const card = document.querySelector(
-        '[data-demo="sunken-panel"] wa-card',
+        '[data-demo="sunken-panel"] [aria-label="Nested Web Awesome Details"]',
       )!;
       const details = card.querySelector('wa-details')!;
       return {

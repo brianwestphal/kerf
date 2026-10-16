@@ -190,10 +190,18 @@ rather than moved under `integrations/`, since they were already opt-in.
 
 Stage 3 (KF-F52B04: guidance treats Web Awesome as an integration) makes Kerf
 components and native elements the only default answer. The catalog tags the
-28 Web Awesome elements a Kerf component replaces `Discouraged` (recommendation
+34 Web Awesome elements a Kerf component replaces `Discouraged` (recommendation
 `avoid` with `prefer-kerf` alternatives), lists all 73 under a collapsed
 `Web Awesome Integration` sidebar section, and the package profile defaults
-avoid each one so `KUI-L301` reports a raw tag. `ui/docs/component-selection.md`
+avoid each one so `KUI-L301` reports a raw tag. A later review (KF-AJFRTE:
+re-review Web Awesome recommendations) added `wa-popover` and `wa-popup`
+(AnchoredSurface), `wa-callout` (StateBanner), `wa-card` (ContentItem or
+SunkenPanel), `wa-drawer` (DialogSurface sheets or CollapsiblePanel), and
+`wa-page` (the app layouts), and moved `wa-button-group` from conditional to
+avoid; first-party demos no longer render `wa-card`. `wa-tooltip`, `wa-toast`,
+and `wa-toast-item` stay supported until Kerf ships a styled tooltip
+(KF-VKDRWA) and toast region (KF-FYTF2Z): core `tooltip()` and `toast()` ship
+no CSS. `ui/docs/component-selection.md`
 (section "Web Awesome integration"), `ui/ai/skill.md`, `ui/llms.txt`,
 `ui/docs/design-philosophy.md`, and `ui/docs/webawesome-theme.md` no longer
 send applications to `wa-*` when no Kerf component fits; they name a native
@@ -511,8 +519,7 @@ Decorative chrome, Web Awesome controls, and production components share
 semantic theme tokens. All 73 free Web Awesome 3.14 modules have focused routes
 under a distinct collapsible `Web Awesome Integration` section with category
 subgroups. The canonical recommendation metadata projects visible
-`Discouraged` sidebar tags onto the 28 superseded or exceptional choices while leaving Popup available as
-a conditional low-level primitive. Catalog entries expose reusable short tags
+`Discouraged` sidebar tags onto the 34 superseded or exceptional choices. Catalog entries expose reusable short tags
 for the same kind of decision metadata, while a
 dedicated gallery spans Web Awesome actions, forms, structure/navigation,
 feedback, media, and formatting. The catalog includes every ToolbarControlGroup

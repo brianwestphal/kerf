@@ -86,13 +86,9 @@ export const webAwesomeCatalogSections = webAwesomeCategories.map(
   }),
 );
 
-/** Popup is the one conditional low-level primitive the integration policy encourages when useful. */
+/** A Web Awesome element a Kerf component replaces (anything not plainly supported). */
 export function isDiscouragedWebAwesome(entry: CatalogEntry): boolean {
-  return (
-    entry.source === 'webawesome' &&
-    entry.recommendation !== 'supported' &&
-    entry.id !== 'wa-popup'
-  );
+  return entry.source === 'webawesome' && entry.recommendation !== 'supported';
 }
 
 export function findCatalogEntry(id: string): CatalogEntry | undefined {

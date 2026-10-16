@@ -513,7 +513,7 @@ export const generatedKerfCatalog = [
       "tab-bar",
       "toolbar-control-group",
       "text",
-      "wa-card"
+      "pane"
     ],
     "demoSource": "ui/ux-demo/demos/application-tabs.tsx",
     "documentation": "ui/docs/accessibility.md"
@@ -1180,8 +1180,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Actions",
     "kind": "component",
     "source": "webawesome",
-    "description": "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.",
-    "recommendation": "conditional",
+    "description": "Ecosystem button group; use Kerf ToolbarControlGroup, SplitButton, or SegmentedControl.",
+    "recommendation": "avoid",
     "uses": [
       "wa-button"
     ],
@@ -1504,8 +1504,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Groups related content and optional header, media, and footer slots.",
-    "recommendation": "supported",
+    "description": "Ecosystem card; use Kerf ContentItem or SunkenPanel.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1556,8 +1556,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Edge-anchored modal surface for navigation or secondary tasks.",
-    "recommendation": "supported",
+    "description": "Ecosystem drawer; use Kerf DialogSurface sheets or CollapsiblePanel.",
+    "recommendation": "avoid",
     "uses": [
       "wa-button"
     ],
@@ -1570,8 +1570,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Layout",
     "kind": "component",
     "source": "webawesome",
-    "description": "Responsive application shell with navigation, banner, and main slots.",
-    "recommendation": "supported",
+    "description": "Ecosystem page shell; use the Kerf app layouts.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -1758,8 +1758,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "webawesome",
-    "description": "Prominent contextual message with semantic variants.",
-    "recommendation": "supported",
+    "description": "Ecosystem callout; use Kerf StateBanner.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"
@@ -2080,8 +2080,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Helpers",
     "kind": "component",
     "source": "webawesome",
-    "description": "Anchored non-modal surface built on popup positioning.",
-    "recommendation": "supported",
+    "description": "Ecosystem popover; use Kerf AnchoredSurface.",
+    "recommendation": "avoid",
     "uses": [
       "wa-popup"
     ],
@@ -2094,8 +2094,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Helpers",
     "kind": "component",
     "source": "webawesome",
-    "description": "Preferred low-level anchored positioning when Tooltip or Popover do not fit.",
-    "recommendation": "conditional",
+    "description": "Ecosystem positioning primitive; use Kerf AnchoredSurface or kerfjs/overlay positioning.",
+    "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",
     "documentation": "ui/docs/webawesome-theme.md#coverage"

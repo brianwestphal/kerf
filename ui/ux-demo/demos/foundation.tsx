@@ -1,6 +1,5 @@
-import '@awesome.me/webawesome/dist/components/card/card.js';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { Grid } from '@kerfjs/ui/grid';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
@@ -41,7 +40,7 @@ export function FoundationDemo() {
         note="The public scale keeps application-owned composition aligned with component defaults."
         align="none"
       >
-        <wa-card appearance="outlined">
+        <ContentItem appearance="surface" frame="framed">
           <Text variant="h3">Application heading</Text>
           <Text tone="quiet">
             Body copy uses the shared sans-serif and standard group gap.
@@ -49,7 +48,7 @@ export function FoundationDemo() {
           <Text tone="quiet" size="compact" font="monospace">
             --kui-space-xs · --kui-font-s
           </Text>
-        </wa-card>
+        </ContentItem>
       </CatalogExample>
     </CatalogExampleStack>
   );

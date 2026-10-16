@@ -321,13 +321,18 @@ describe('Web Awesome consumer guidance', () => {
       'Kerf components and native elements come first',
     );
     expect(guidance).toContain('./webawesome-migration.md');
-    expect(guidance).toContain('Consider `wa-popup`');
+    expect(guidance).toContain('Popover and Popup give way to');
     expect(guidance).toContain('`positionAnchored()`');
+    expect(guidance).toContain('Tooltip, Toast, and Toast Item stay supported');
     for (const element of [
       'Button',
       'Input',
       'Select',
       'Dialog',
+      'Drawer',
+      'Card',
+      'Page',
+      'Callout',
       'Split Panel',
     ])
       expect(guidance).toContain(element);

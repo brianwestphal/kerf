@@ -353,14 +353,16 @@ application off them.
 - Elements a Kerf component replaces are tagged `Discouraged` in the catalog:
   Button, Dropdown, Dropdown Item, Button Group, Input, Textarea, Tag,
   Checkbox, Checkbox Group, Radio, Radio Group, Switch, Select, Option,
-  Dialog, Tab, Tab Group, Tab Panel, Badge, Spinner, Skeleton, Split Panel, Icon, and
-  Zoomable Frame. Never render them in application markup.
-- Consider `wa-popup` for low-level anchored positioning only in an
-  integration application; `kerfjs/overlay`'s `positionAnchored()` covers the
-  same need without Web Awesome.
+  Dialog, Drawer, Card, Page, Callout, Popover, Popup, Tab, Tab Group, Tab
+  Panel, Badge, Spinner, Skeleton, Split Panel, Icon, and Zoomable Frame.
+  Never render them in application markup. Popover and Popup give way to
+  `AnchoredSurface` and `kerfjs/overlay`'s `positionAnchored()`.
+- Tooltip, Toast, and Toast Item stay supported until Kerf ships a styled
+  general tooltip and toast; in a Kerf-only application use a native `title`
+  and `StateBanner` or `CornerStatus`.
 - Use Web Awesome Tree, Tree Item, Animated Image, and Comparison only for a
   specific product requirement that needs their specialized behavior.
-- Use the remaining supported elements (Card, Details, Carousel, Rating, and
+- Use the remaining supported elements (Details, Carousel, Rating, and
   the rest of the coverage list) when their native semantic contract matches
   the product need and the application has adopted the integration.
 

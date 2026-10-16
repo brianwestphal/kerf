@@ -1,5 +1,3 @@
-import '@awesome.me/webawesome/dist/components/card/card.js';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { px } from '@kerfjs/ui/css-values';
@@ -7,6 +5,7 @@ import { Grid } from '@kerfjs/ui/grid';
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
 
+import { DemoFrameShell } from './demo-frame-shell.js';
 import { gridTileSelections } from './state.js';
 
 export function GridDemo() {
@@ -27,7 +26,9 @@ export function GridDemo() {
       >
         <Grid columns={4} gap="xs">
           {['Requested', 'Quoted price', 'Reviewed', 'Decided'].map((label) => (
-            <wa-card appearance="outlined">{label}</wa-card>
+            <ContentItem appearance="surface" frame="framed">
+              {label}
+            </ContentItem>
           ))}
         </Grid>
       </CatalogExample>
@@ -41,7 +42,9 @@ export function GridDemo() {
           rootAttributes={{ 'data-demo-grid-gap-axes': '' }}
         >
           {['Plan', 'Build', 'Review', 'Ship'].map((label) => (
-            <wa-card appearance="outlined">{label}</wa-card>
+            <ContentItem appearance="surface" frame="framed">
+              {label}
+            </ContentItem>
           ))}
         </Grid>
       </CatalogExample>
@@ -74,13 +77,15 @@ export function GridDemo() {
         label="Flex Participation"
         note="Like Row and List, Grid can explicitly grow inside a flex-owned parent without changing its equal-track contract."
       >
-        <wa-card appearance="sunken">
+        <DemoFrameShell>
           <Grid columns={3} gap="xs" flex>
             {['One', 'Two', 'Three'].map((label) => (
-              <wa-card appearance="outlined">{label}</wa-card>
+              <ContentItem appearance="surface" frame="framed">
+                {label}
+              </ContentItem>
             ))}
           </Grid>
-        </wa-card>
+        </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
         label="Sparse Document Tiles"
@@ -88,7 +93,9 @@ export function GridDemo() {
         viewport={{ width: 'wide' }}
       >
         <Grid minColumnWidth={px(160)} autoFill gap="m">
-          <wa-card appearance="outlined">One document</wa-card>
+          <ContentItem appearance="surface" frame="framed">
+            One document
+          </ContentItem>
         </Grid>
       </CatalogExample>
       <CatalogExample

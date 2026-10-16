@@ -1,7 +1,6 @@
-import '@awesome.me/webawesome/dist/components/card/card.js';
-
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { Spacer } from '@kerfjs/ui/spacer';
@@ -44,13 +43,15 @@ export function LayoutDemo() {
             />
           }
         >
-          <wa-card appearance="outlined" with-header>
-            <strong slot="header">One owner per item</strong>
-            <Text variant="span">
+          <ContentItem appearance="surface" frame="framed">
+            <Text>
+              <strong>One owner per item</strong>
+            </Text>
+            <Text>
               Each content child owns its margin, border, background, padding,
               and radius.
             </Text>
-          </wa-card>
+          </ContentItem>
           <Row controlInsets="l">
             <Button tone="brand" action="log-add">
               Primary Action

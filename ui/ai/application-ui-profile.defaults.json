@@ -17,7 +17,9 @@
   ],
   "preferences": {
     "application-shell": {
-      "preferred": "@kerfjs/ui:recipe-app-shell"
+      "preferred": "@kerfjs/ui:recipe-app-shell",
+      "avoid": ["@kerfjs/ui:wa-page"],
+      "rationale": "Compose the application shell from Workbench, SplitView, NavStack, or TabNavigator instead of a Web Awesome page."
     },
     "application-tabs": {
       "preferred": "@kerfjs/ui:tab-bar",
@@ -103,8 +105,8 @@
     },
     "modal-dialog": {
       "preferred": "@kerfjs/ui:surface-scaffold",
-      "avoid": ["@kerfjs/ui:wa-dialog"],
-      "rationale": "Render DialogSurface, a native dialog opened with openDialog and closed with closeDialog."
+      "avoid": ["@kerfjs/ui:wa-dialog", "@kerfjs/ui:wa-drawer"],
+      "rationale": "Render DialogSurface, a native dialog opened with openDialog and closed with closeDialog; use its side-sheet or bottom-sheet presentation instead of a Web Awesome drawer."
     },
     "status-badge": {
       "preferred": "@kerfjs/ui:badge",
@@ -125,6 +127,21 @@
       "preferred": "@kerfjs/ui:skeleton",
       "avoid": ["@kerfjs/ui:wa-skeleton"],
       "rationale": "Render Skeleton for a loading placeholder."
+    },
+    "anchored-surface": {
+      "preferred": "@kerfjs/ui:anchored-surface",
+      "avoid": ["@kerfjs/ui:wa-popover", "@kerfjs/ui:wa-popup"],
+      "rationale": "Render AnchoredSurface for anchored interactive help or popup content; position other elements with kerfjs/overlay's positionAnchored."
+    },
+    "content-container": {
+      "preferred": "@kerfjs/ui:content-item",
+      "avoid": ["@kerfjs/ui:wa-card"],
+      "rationale": "Contain related content in a ContentItem (appearance=\"surface\" for a raised card) or a SunkenPanel instead of a Web Awesome card."
+    },
+    "inline-status": {
+      "preferred": "@kerfjs/ui:state-banner",
+      "avoid": ["@kerfjs/ui:wa-callout"],
+      "rationale": "Render StateBanner for persistent inline status instead of a Web Awesome callout."
     }
   },
   "theme": {

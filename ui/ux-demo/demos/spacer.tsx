@@ -1,5 +1,3 @@
-import '@awesome.me/webawesome/dist/components/card/card.js';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { Row } from '@kerfjs/ui/row';
@@ -43,13 +41,13 @@ export function SpacerDemo() {
         label="Vertical Space"
         note="A height-only spacer separates vertical content without introducing semantics or a wrapper gap policy."
       >
-        <wa-card appearance="sunken">
+        <DemoFrameShell>
           <List gap="none">
             {chip('Above')}
             <Spacer height="m" />
             {chip('Below')}
           </List>
-        </wa-card>
+        </DemoFrameShell>
       </CatalogExample>
     </CatalogExampleStack>
   );

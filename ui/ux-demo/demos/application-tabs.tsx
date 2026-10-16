@@ -1,10 +1,10 @@
-import '@awesome.me/webawesome/dist/components/card/card.js';
-
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { em } from '@kerfjs/ui/css-values';
+import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Pane } from '@kerfjs/ui/pane';
 import { Skeleton } from '@kerfjs/ui/skeleton';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { Text } from '@kerfjs/ui/text';
@@ -23,77 +23,81 @@ export function ApplicationTabsDemo() {
     >
       <CatalogExample
         label="Reorderable Application Tabs"
-        viewport={{ width: 'medium' }}
+        viewport={{ width: 'medium', frame: 'solid' }}
       >
-        <wa-card
-          appearance="outlined"
-          with-header
-          with-footer
-          data-demo-application-tabs-frame
+        <Pane
+          rootAttributes={{ 'data-demo-application-tabs-frame': '' }}
+          header={
+            <TabBar
+              id="catalog-tabs"
+              label="Open Catalog Pages"
+              leading={
+                <ToolbarControlGroup appearance="borderless" single>
+                  <button
+                    type="button"
+                    aria-label="Show Navigation"
+                    data-action="log-sidebar"
+                  >
+                    <LucideIcon icon={PanelLeft} name="panel-left" />
+                  </button>
+                </ToolbarControlGroup>
+              }
+              trailing={
+                <ToolbarControlGroup appearance="borderless" single>
+                  <button
+                    type="button"
+                    aria-label="Add Tab"
+                    data-action="add-demo-tab"
+                  >
+                    <LucideIcon icon={Plus} name="plus" />
+                  </button>
+                </ToolbarControlGroup>
+              }
+            >
+              {tabBarTabs.value.map((tab) => (
+                <AppTab
+                  id={tab.id}
+                  name={tab.name}
+                  selected={tabBarActive.value === tab.id}
+                  pending={tab.pending}
+                  trailing={tab.pending ? <LoadingSpinner /> : undefined}
+                  draggable
+                  selectAction="select-reorder-tab"
+                  closeAction="close-reorder-tab"
+                  rootAttributes={{ 'data-demo-tab-id': tab.id }}
+                />
+              ))}
+            </TabBar>
+          }
+          footer={
+            <ListInsetText>
+              <Text tone="quiet" size="compact">
+                Order:{' '}
+                <strong data-tab-order>
+                  {tabBarTabs.value.map((tab) => tab.name).join(' · ')}
+                </strong>
+              </Text>
+            </ListInsetText>
+          }
         >
-          <TabBar
-            slot="header"
-            id="catalog-tabs"
-            label="Open Catalog Pages"
-            leading={
-              <ToolbarControlGroup appearance="borderless" single>
-                <button
-                  type="button"
-                  aria-label="Show Navigation"
-                  data-action="log-sidebar"
-                >
-                  <LucideIcon icon={PanelLeft} name="panel-left" />
-                </button>
-              </ToolbarControlGroup>
-            }
-            trailing={
-              <ToolbarControlGroup appearance="borderless" single>
-                <button
-                  type="button"
-                  aria-label="Add Tab"
-                  data-action="add-demo-tab"
-                >
-                  <LucideIcon icon={Plus} name="plus" />
-                </button>
-              </ToolbarControlGroup>
-            }
-          >
-            {tabBarTabs.value.map((tab) => (
-              <AppTab
-                id={tab.id}
-                name={tab.name}
-                selected={tabBarActive.value === tab.id}
-                pending={tab.pending}
-                trailing={tab.pending ? <LoadingSpinner /> : undefined}
-                draggable
-                selectAction="select-reorder-tab"
-                closeAction="close-reorder-tab"
-                rootAttributes={{ 'data-demo-tab-id': tab.id }}
-              />
-            ))}
-          </TabBar>
           {/* A still-opening tab is selectable; its panel keeps the live
               heading chrome with a placeholder value until loading completes,
-              so the swap does not shift the card. */}
-          <Text
-            variant="h3"
-            role="tabpanel"
-            aria-label={activeTab?.name ?? activeName}
-            aria-busy={activeTab?.pending ? 'true' : undefined}
-          >
-            {activeTab?.pending ? (
-              <Skeleton width={em(6)} label={`Loading ${activeTab.name}…`} />
-            ) : (
-              activeName
-            )}
-          </Text>
-          <Text slot="footer" tone="quiet" size="compact">
-            Order:{' '}
-            <strong data-tab-order>
-              {tabBarTabs.value.map((tab) => tab.name).join(' · ')}
-            </strong>
-          </Text>
-        </wa-card>
+              so the swap does not shift the panel. */}
+          <ListInsetText>
+            <Text
+              variant="h3"
+              role="tabpanel"
+              aria-label={activeTab?.name ?? activeName}
+              aria-busy={activeTab?.pending ? 'true' : undefined}
+            >
+              {activeTab?.pending ? (
+                <Skeleton width={em(6)} label={`Loading ${activeTab.name}…`} />
+              ) : (
+                activeName
+              )}
+            </Text>
+          </ListInsetText>
+        </Pane>
       </CatalogExample>
     </CatalogExampleStack>
   );

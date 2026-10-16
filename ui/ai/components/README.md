@@ -89,7 +89,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 ## Web Awesome — Actions
 
 - [Button](./wa-button.md) (avoid) — Ecosystem action button; use Kerf Button or IconButton.
-- [Button Group](./wa-button-group.md) (conditional) — Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.
+- [Button Group](./wa-button-group.md) (avoid) — Ecosystem button group; use Kerf ToolbarControlGroup, SplitButton, or SegmentedControl.
 - [Copy Button](./wa-copy-button.md) — Copies a supplied value and announces success or failure.
 - [Dropdown](./wa-dropdown.md) (avoid) — Ecosystem action menu; use Kerf PopupMenu, or Select when choosing a value.
 - [Dropdown Item](./wa-dropdown-item.md) (avoid) — Ecosystem action-menu row; use Kerf PopupMenu items or Select choices.
@@ -118,12 +118,12 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 - [Accordion](./wa-accordion.md) — Coordinates one or more collapsible content sections.
 - [Accordion Item](./wa-accordion-item.md) — Experimental labeled disclosure section used by an accordion.
-- [Card](./wa-card.md) — Groups related content and optional header, media, and footer slots.
+- [Card](./wa-card.md) (avoid) — Ecosystem card; use Kerf ContentItem or SunkenPanel.
 - [Details](./wa-details.md) — Single disclosure panel for secondary information.
 - [Dialog](./wa-dialog.md) (avoid) — Ecosystem dialog; use Kerf DialogSurface with openDialog and closeDialog.
 - [Divider](./wa-divider.md) — Visual separator for related groups of content.
-- [Drawer](./wa-drawer.md) — Edge-anchored modal surface for navigation or secondary tasks.
-- [Page](./wa-page.md) — Responsive application shell with navigation, banner, and main slots.
+- [Drawer](./wa-drawer.md) (avoid) — Ecosystem drawer; use Kerf DialogSurface sheets or CollapsiblePanel.
+- [Page](./wa-page.md) (avoid) — Ecosystem page shell; use the Kerf app layouts.
 - [Scroller](./wa-scroller.md) — Overflow container with accessible scrolling affordances.
 - [Split Panel](./wa-split-panel.md) (avoid) — Alternative split API; use Kerf ResizableRegion for application panes.
 
@@ -143,7 +143,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 ## Web Awesome — Feedback
 
 - [Badge](./wa-badge.md) (avoid) — Ecosystem badge; use Kerf Badge.
-- [Callout](./wa-callout.md) — Prominent contextual message with semantic variants.
+- [Callout](./wa-callout.md) (avoid) — Ecosystem callout; use Kerf StateBanner.
 - [Progress Bar](./wa-progress-bar.md) — Linear indicator for determinate or indeterminate progress.
 - [Progress Ring](./wa-progress-ring.md) — Circular indicator for determinate or indeterminate progress.
 - [Skeleton](./wa-skeleton.md) (avoid) — Ecosystem placeholder; use Kerf Skeleton.
@@ -174,8 +174,8 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Include](./wa-include.md) — Loads and injects an external HTML fragment.
 - [Intersection Observer](./wa-intersection-observer.md) — Declaratively emits visibility changes for slotted content.
 - [Mutation Observer](./wa-mutation-observer.md) — Declaratively emits DOM mutation records for slotted content.
-- [Popover](./wa-popover.md) — Anchored non-modal surface built on popup positioning.
-- [Popup](./wa-popup.md) (conditional) — Preferred low-level anchored positioning when Tooltip or Popover do not fit.
+- [Popover](./wa-popover.md) (avoid) — Ecosystem popover; use Kerf AnchoredSurface.
+- [Popup](./wa-popup.md) (avoid) — Ecosystem positioning primitive; use Kerf AnchoredSurface or kerfjs/overlay positioning.
 - [Random Content](./wa-random-content.md) — Experimental helper that selects one slotted item at random.
 - [Relative Time](./wa-relative-time.md) — Locale-aware human description of a date relative to now.
 - [Resize Observer](./wa-resize-observer.md) — Declaratively emits size changes for slotted content.

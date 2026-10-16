@@ -4740,7 +4740,7 @@
         "tab-bar",
         "toolbar-control-group",
         "text",
-        "wa-card"
+        "pane"
       ],
       "purpose": "Show AppTab and TabBar in a complete controlled composition.",
       "publicExports": [],
@@ -7777,20 +7777,19 @@
       "category": "Actions",
       "kind": "component",
       "source": "webawesome",
-      "description": "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.",
+      "description": "Ecosystem button group; use Kerf ToolbarControlGroup, SplitButton, or SegmentedControl.",
       "uses": [
         "wa-button"
       ],
-      "purpose": "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices.",
+      "purpose": "Ecosystem button group; use Kerf ToolbarControlGroup, SplitButton, or SegmentedControl.",
       "customElement": "wa-button-group",
       "useWhen": [
         "Exceptional grouped actions; prefer Kerf SegmentedControl for exclusive choices."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use ToolbarControlGroup or SplitButton for grouped actions and SegmentedControl for one-of-many choices."
       ],
-      "recommendation": "conditional",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "segmented-control",
@@ -8787,19 +8786,29 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Groups related content and optional header, media, and footer slots.",
+      "description": "Ecosystem card; use Kerf ContentItem or SunkenPanel.",
       "uses": [],
-      "purpose": "Groups related content and optional header, media, and footer slots.",
+      "purpose": "Ecosystem card; use Kerf ContentItem or SunkenPanel.",
       "customElement": "wa-card",
       "useWhen": [
         "Groups related content and optional header, media, and footer slots."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use ContentItem (appearance=\"surface\" for a raised card) to contain related content, or SunkenPanel for a lowered region."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "content-item",
+          "relationship": "prefer-kerf",
+          "when": "Use ContentItem, with appearance=\"surface\" for a raised card, to contain related content."
+        },
+        {
+          "id": "sunken-panel",
+          "relationship": "prefer-kerf",
+          "when": "Use SunkenPanel for a lowered region holding a content stack."
+        }
+      ],
       "variants": [
         "sunken appearance"
       ],
@@ -8824,7 +8833,7 @@
       "links": {
         "catalogRoute": "?component=wa-card",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -8968,21 +8977,31 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Edge-anchored modal surface for navigation or secondary tasks.",
+      "description": "Ecosystem drawer; use Kerf DialogSurface sheets or CollapsiblePanel.",
       "uses": [
         "wa-button"
       ],
-      "purpose": "Edge-anchored modal surface for navigation or secondary tasks.",
+      "purpose": "Ecosystem drawer; use Kerf DialogSurface sheets or CollapsiblePanel.",
       "customElement": "wa-drawer",
       "useWhen": [
         "Edge-anchored modal surface for navigation or secondary tasks."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use DialogSurface with presentation=\"side-sheet\" or \"bottom-sheet\" for a modal edge surface, or CollapsiblePanel for a rail that becomes an overlay on compact devices."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "surface-scaffold",
+          "relationship": "prefer-kerf",
+          "when": "Use DialogSurface with presentation=\"side-sheet\" or \"bottom-sheet\" for a modal edge surface."
+        },
+        {
+          "id": "collapsible-panel",
+          "relationship": "prefer-kerf",
+          "when": "Use CollapsiblePanel for a collapsible rail or drawer that overlays content on compact devices."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "child",
@@ -8998,7 +9017,7 @@
       "links": {
         "catalogRoute": "?component=wa-drawer",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9007,19 +9026,34 @@
       "category": "Layout",
       "kind": "component",
       "source": "webawesome",
-      "description": "Responsive application shell with navigation, banner, and main slots.",
+      "description": "Ecosystem page shell; use the Kerf app layouts.",
       "uses": [],
-      "purpose": "Responsive application shell with navigation, banner, and main slots.",
+      "purpose": "Ecosystem page shell; use the Kerf app layouts.",
       "customElement": "wa-page",
       "useWhen": [
         "Responsive application shell with navigation, banner, and main slots."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use Workbench, SplitView, NavStack, or TabNavigator for the application shell."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "workbench",
+          "relationship": "prefer-kerf",
+          "when": "Use Workbench for a desktop-class workspace with collapsible rails."
+        },
+        {
+          "id": "split-view",
+          "relationship": "prefer-kerf",
+          "when": "Use SplitView for a responsive list-detail shell."
+        },
+        {
+          "id": "nav-stack",
+          "relationship": "prefer-kerf",
+          "when": "Use NavStack for a one-pane push and pop shell."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "child",
@@ -9035,7 +9069,7 @@
       "links": {
         "catalogRoute": "?component=wa-page",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -9588,22 +9622,22 @@
       "category": "Feedback",
       "kind": "component",
       "source": "webawesome",
-      "description": "Prominent contextual message with semantic variants.",
+      "description": "Ecosystem callout; use Kerf StateBanner.",
       "uses": [],
-      "purpose": "Prominent contextual message with semantic variants.",
+      "purpose": "Ecosystem callout; use Kerf StateBanner.",
       "customElement": "wa-callout",
       "useWhen": [
         "Prominent contextual message with semantic variants."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use StateBanner for a persistent inline status, alert, or emphasized message."
       ],
-      "recommendation": "supported",
+      "recommendation": "avoid",
       "alternatives": [
         {
           "id": "state-banner",
-          "relationship": "prefer-kerf"
+          "relationship": "prefer-kerf",
+          "when": "Use StateBanner for a persistent inline status, alert, or emphasized message."
         }
       ],
       "geometry": {
@@ -10583,21 +10617,26 @@
       "category": "Helpers",
       "kind": "component",
       "source": "webawesome",
-      "description": "Anchored non-modal surface built on popup positioning.",
+      "description": "Ecosystem popover; use Kerf AnchoredSurface.",
       "uses": [
         "wa-popup"
       ],
-      "purpose": "Anchored non-modal surface built on popup positioning.",
+      "purpose": "Ecosystem popover; use Kerf AnchoredSurface.",
       "customElement": "wa-popover",
       "useWhen": [
         "Anchored non-modal surface built on popup positioning."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use AnchoredSurface (openAnchoredSurface or openAnchoredSurfaceAt) for interactive help or popup content beside a control."
       ],
-      "recommendation": "supported",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "anchored-surface",
+          "relationship": "prefer-kerf",
+          "when": "Use AnchoredSurface for a styled non-modal surface anchored to a control or the pointer."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -10613,7 +10652,7 @@
       "links": {
         "catalogRoute": "?component=wa-popover",
         "documentation": "docs/webawesome-theme.md#coverage",
-        "recipe": "docs/webawesome-theme.md#coverage"
+        "recipe": "docs/component-selection.md#web-awesome-integration"
       }
     },
     {
@@ -10622,19 +10661,24 @@
       "category": "Helpers",
       "kind": "component",
       "source": "webawesome",
-      "description": "Preferred low-level anchored positioning when Tooltip or Popover do not fit.",
+      "description": "Ecosystem positioning primitive; use Kerf AnchoredSurface or kerfjs/overlay positioning.",
       "uses": [],
-      "purpose": "Preferred low-level anchored positioning when Tooltip or Popover do not fit.",
+      "purpose": "Ecosystem positioning primitive; use Kerf AnchoredSurface or kerfjs/overlay positioning.",
       "customElement": "wa-popup",
       "useWhen": [
         "Preferred low-level anchored positioning when Tooltip or Popover do not fit."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use AnchoredSurface for an anchored surface, or positionAnchored and autoReposition from kerfjs/overlay to place an application-owned element."
       ],
-      "recommendation": "conditional",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "anchored-surface",
+          "relationship": "prefer-kerf",
+          "when": "Use AnchoredSurface for an anchored surface; use positionAnchored or autoReposition from kerfjs/overlay for bare positioning."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "child",

@@ -1,5 +1,3 @@
-import '@awesome.me/webawesome/dist/components/card/card.js';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import {
@@ -128,7 +126,7 @@ export function RowDemo() {
         label="Flex Participation"
         note="Row accepts the same boolean, finite-keyword, and typed flex grammar as List when it participates in a parent flex layout."
       >
-        <wa-card appearance="sunken">
+        <DemoFrameShell>
           <List gap="xs" flex>
             <Row flex vAlign="middle" wrap>
               {chips('Growing')}
@@ -137,7 +135,7 @@ export function RowDemo() {
               {chips('Fixed')}
             </Row>
           </List>
-        </wa-card>
+        </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
         label="Side-Selectable Insets"

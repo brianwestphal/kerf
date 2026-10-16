@@ -46,6 +46,9 @@ const overlaps = [
   'wa-animated-image',
   'wa-comparison',
   'wa-zoomable-frame',
+  'wa-card',
+  'wa-drawer',
+  'wa-page',
 ];
 
 const [

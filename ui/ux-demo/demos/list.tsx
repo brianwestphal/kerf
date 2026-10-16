@@ -1,5 +1,3 @@
-import '@awesome.me/webawesome/dist/components/card/card.js';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
 import { flex, rem } from '@kerfjs/ui/css-values';
@@ -28,6 +26,7 @@ import {
 } from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
+import { DemoFrameShell } from './demo-frame-shell.js';
 import { menuToolsOpen } from './state.js';
 
 /** Duplicate candidates for the Result Picker example. */
@@ -79,105 +78,104 @@ export function ListDemo() {
       <CatalogExample
         label="Scrollable Application List"
         note="Pane owns the header/content/footer anatomy; the content List owns flex growth, scrolling, and a typed major gap."
+        viewport={{ frame: 'solid' }}
       >
-        <wa-card appearance="outlined">
-          <Pane
-            header={
-              <Toolbar
-                label="Sidebar Toolbar"
-                leading={<ToolbarText text="Workspace" size="small" />}
-                trailing={
-                  <ToolbarControlGroup appearance="borderless" single>
-                    <button
-                      type="button"
-                      aria-label="Add Workspace"
-                      data-action="log-add"
-                    >
-                      <LucideIcon icon={Plus} name="plus" />
-                    </button>
-                  </ToolbarControlGroup>
-                }
-              />
-            }
-            footer={
-              <Toolbar
-                label="Sidebar Footer"
-                leading={<ToolbarText text="Ready" size="small" />}
-                trailing={
-                  <ToolbarControlGroup appearance="borderless" single>
-                    <button
-                      type="button"
-                      aria-label="Sidebar Settings"
-                      data-action="log-settings"
-                    >
-                      <LucideIcon icon={Settings} name="settings" />
-                    </button>
-                  </ToolbarControlGroup>
-                }
-              />
-            }
-          >
-            <List gap={{ column: 'none', row: 'l' }} flex={flex(1)} scrollable>
-              <section>
-                <List>
-                  {workspaceHeading !== undefined ? (
-                    <ListHeader
-                      label={workspaceHeading}
-                      count={3}
-                      countLabel="3 workspaces"
-                      action="log-add"
-                      actionLabel="Add workspace"
-                      actionIcon={<LucideIcon icon={Plus} name="plus" />}
-                    />
-                  ) : null}
-                  <ListItem
-                    action="log-inbox"
-                    itemId="inbox"
-                    label="Inbox"
-                    icon={<LucideIcon icon={Inbox} name="inbox" />}
-                    trailing={<span>12</span>}
-                    selected
-                  />
-                  {workspaceRows.map((row) => (
-                    <ListItem {...row} />
-                  ))}
-                </List>
-              </section>
-              <section>
-                <List gap="xs">
+        <Pane
+          header={
+            <Toolbar
+              label="Sidebar Toolbar"
+              leading={<ToolbarText text="Workspace" size="small" />}
+              trailing={
+                <ToolbarControlGroup appearance="borderless" single>
+                  <button
+                    type="button"
+                    aria-label="Add Workspace"
+                    data-action="log-add"
+                  >
+                    <LucideIcon icon={Plus} name="plus" />
+                  </button>
+                </ToolbarControlGroup>
+              }
+            />
+          }
+          footer={
+            <Toolbar
+              label="Sidebar Footer"
+              leading={<ToolbarText text="Ready" size="small" />}
+              trailing={
+                <ToolbarControlGroup appearance="borderless" single>
+                  <button
+                    type="button"
+                    aria-label="Sidebar Settings"
+                    data-action="log-settings"
+                  >
+                    <LucideIcon icon={Settings} name="settings" />
+                  </button>
+                </ToolbarControlGroup>
+              }
+            />
+          }
+        >
+          <List gap={{ column: 'none', row: 'l' }} flex={flex(1)} scrollable>
+            <section>
+              <List>
+                {workspaceHeading !== undefined ? (
                   <ListHeader
-                    label="Tools"
-                    toggle
-                    expanded={menuToolsOpen.value}
-                    action="toggle-menu-tools"
-                    triggerAttributes={{
-                      'aria-controls': 'menu-tools-content',
-                    }}
+                    label={workspaceHeading}
+                    count={3}
+                    countLabel="3 workspaces"
+                    action="log-add"
+                    actionLabel="Add workspace"
+                    actionIcon={<LucideIcon icon={Plus} name="plus" />}
                   />
-                  <div id="menu-tools-content" hidden={!menuToolsOpen.value}>
-                    <ListItem
-                      action="log-settings"
-                      label="A multiline item demonstrates content that wraps without clipping"
-                      icon={<LucideIcon icon={Wrench} name="wrench" />}
-                      multiline
-                    />
-                    <ListItem
-                      action="disabled"
-                      label="Unavailable"
-                      icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
-                      disabled
-                    />
-                    <DemoContentItem
-                      title="Shared Item Geometry"
-                      detail="The child owns its margin, border, and padding."
-                      rootAttributes={{ 'data-content-item': '' }}
-                    />
-                  </div>
-                </List>
-              </section>
-            </List>
-          </Pane>
-        </wa-card>
+                ) : null}
+                <ListItem
+                  action="log-inbox"
+                  itemId="inbox"
+                  label="Inbox"
+                  icon={<LucideIcon icon={Inbox} name="inbox" />}
+                  trailing={<span>12</span>}
+                  selected
+                />
+                {workspaceRows.map((row) => (
+                  <ListItem {...row} />
+                ))}
+              </List>
+            </section>
+            <section>
+              <List gap="xs">
+                <ListHeader
+                  label="Tools"
+                  toggle
+                  expanded={menuToolsOpen.value}
+                  action="toggle-menu-tools"
+                  triggerAttributes={{
+                    'aria-controls': 'menu-tools-content',
+                  }}
+                />
+                <div id="menu-tools-content" hidden={!menuToolsOpen.value}>
+                  <ListItem
+                    action="log-settings"
+                    label="A multiline item demonstrates content that wraps without clipping"
+                    icon={<LucideIcon icon={Wrench} name="wrench" />}
+                    multiline
+                  />
+                  <ListItem
+                    action="disabled"
+                    label="Unavailable"
+                    icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+                    disabled
+                  />
+                  <DemoContentItem
+                    title="Shared Item Geometry"
+                    detail="The child owns its margin, border, and padding."
+                    rootAttributes={{ 'data-content-item': '' }}
+                  />
+                </div>
+              </List>
+            </section>
+          </List>
+        </Pane>
       </CatalogExample>
       <CatalogExample
         label="Shared Row Dividers"
@@ -245,19 +243,19 @@ export function ListDemo() {
         label="Physical-Axis Alignment"
         note="List keeps its stretch-and-top defaults when omitted; explicit horizontal and vertical alignment use the same vocabulary as Row."
       >
-        <wa-card appearance="sunken">
+        <DemoFrameShell>
           <List gap="xs" hAlign="right" vAlign="full">
             <Chip>Top</Chip>
             <Chip>Middle</Chip>
             <Chip>Bottom</Chip>
           </List>
-        </wa-card>
+        </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
         label="Side-Selectable Insets"
         note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px, and text wins where both select a side."
       >
-        <wa-card appearance="sunken">
+        <DemoFrameShell>
           <List gap="xs" textInsets="l" controlInsets="rb">
             <Chip>Text-aligned left edge</Chip>
             <TextField label="Inset List Control" value="Control edge" />
@@ -265,7 +263,7 @@ export function ListDemo() {
               <Chip>Nested text-aligned top edge</Chip>
             </List>
           </List>
-        </wa-card>
+        </DemoFrameShell>
       </CatalogExample>
       <CatalogExample
         label="Surface Behind a Strip"

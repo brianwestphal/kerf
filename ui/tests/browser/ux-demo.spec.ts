@@ -1296,7 +1296,9 @@ test('aligns the layout demo action buttons with the card border above them', as
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/?component=layout');
   const demo = page.locator('[data-demo="layout"]');
-  const surface = demo.locator('wa-card[appearance="outlined"]');
+  const surface = demo.locator(
+    '.kui-pane__content > [data-component="content-item"]',
+  );
   const primary = demo.getByRole('button', { name: 'Primary Action' });
   await expect(surface).toBeVisible();
   const [surfaceLeft, buttonLeft] = await Promise.all([
@@ -2723,7 +2725,7 @@ test('aligns a heading-toolbar trailing action with the following content surfac
     '[data-component="pane"] > .kui-pane__header .kui-toolbar__trailing [data-component="toolbar-control-group"]',
   );
   const following = demo.locator(
-    '[data-component="pane"] > .kui-pane__header + .kui-pane__content > wa-card[appearance="outlined"]',
+    '[data-component="pane"] > .kui-pane__header + .kui-pane__content > [data-component="content-item"]',
   );
   await expect(action).toHaveCount(1);
   await expect(following).toHaveCount(1);
@@ -4778,12 +4780,15 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
   const discouraged = secondary.locator('.kui-list-item__status', {
     hasText: 'Discouraged',
   });
-  await expect(discouraged).toHaveCount(28);
+  await expect(discouraged).toHaveCount(34);
   await expect(
     page.locator('[data-item-id="wa-button-group"] .kui-list-item__status'),
   ).toHaveText('Discouraged');
   await expect(
     page.locator('[data-item-id="wa-popup"] .kui-list-item__status'),
+  ).toHaveText('Discouraged');
+  await expect(
+    page.locator('[data-item-id="wa-tooltip"] .kui-list-item__status'),
   ).toHaveCount(0);
 
   const sidebar = page.locator('#kui-catalog-left-rail');
@@ -7626,8 +7631,9 @@ test('communicates preferred Kerf patterns on ecosystem alternatives', async ({
   for (const [route, description] of [
     [
       'wa-popup',
-      'Preferred low-level anchored positioning when Tooltip or Popover do not fit.',
+      'Ecosystem positioning primitive; use Kerf AnchoredSurface or kerfjs/overlay positioning.',
     ],
+    ['wa-card', 'Ecosystem card; use Kerf ContentItem or SunkenPanel.'],
     [
       'wa-split-panel',
       'Alternative split API; use Kerf ResizableRegion for application panes.',

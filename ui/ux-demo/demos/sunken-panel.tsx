@@ -100,12 +100,12 @@ export function SunkenPanelDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample label="Web Awesome Nested Surfaces">
-        <wa-card appearance="sunken">
-          <Text>Web Awesome card</Text>
+        <SunkenPanel ariaLabel="Nested Web Awesome Details">
+          <Text>Kerf sunken panel</Text>
           <wa-details appearance="sunken" summary="Nested Details" open>
             <Text>Shared theme colors compound here too.</Text>
           </wa-details>
-        </wa-card>
+        </SunkenPanel>
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -234,13 +234,14 @@ See the
 [`application-ui-profile.json`](./examples/application-ui-profile.json) example.
 
 The package defaults avoid every `Discouraged` Web Awesome entry — each
-`webawesome` catalog entry whose `recommendation` is not `supported`, except the
-encouraged `wa-popup` primitive — under a concept whose `preferred` value is the
+`webawesome` catalog entry whose `recommendation` is not `supported` — under a concept whose `preferred` value is the
 Kerf component that wraps or replaces it (`command-menu` → `PopupMenu`,
 `value-selection` → `Select`, `application-tabs` → `TabBar`, `icon` →
 `LucideIcon`, `resizable-pane` → `ResizableRegion`, `exclusive-choice` →
 `SegmentedControl`, `hierarchy-navigation` → `List`, `embedded-media` →
-`ContentItem`). `eslint-plugin-kerfjs` `ui-preferences` (`KUI-L301`, also run by
+`ContentItem`, `anchored-surface` → `AnchoredSurface`, `content-container` →
+`ContentItem`, `inline-status` → `StateBanner`, `application-shell` → the
+app-shell recipe, `modal-dialog` → `DialogSurface`). `eslint-plugin-kerfjs` `ui-preferences` (`KUI-L301`, also run by
 `kerf-ui-doctor`) therefore reports a Discouraged element written directly as a
 JSX tag (`<wa-dropdown>`) as well as through an imported component. A declared
 component's own source file is exempt, because that wrapper is the sanctioned

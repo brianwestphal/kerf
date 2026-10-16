@@ -36,7 +36,7 @@ No props: this entry has no JavaScript API.
 - Parents: any.
 - Contexts: `application-ui`.
 - Children: unrestricted.
-- Built from: [AppTab](./tabs.md), [TabBar](./tab-bar.md), [ToolbarControlGroup](./toolbar-control-group.md), [Text](./text.md), [Card](./wa-card.md).
+- Built from: [AppTab](./tabs.md), [TabBar](./tab-bar.md), [ToolbarControlGroup](./toolbar-control-group.md), [Text](./text.md), [Pane](./pane.md).
 
 ## State and wiring
 
@@ -60,6 +60,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [AppTab](./tabs.md), [TabBar](./tab-bar.md), [ToolbarControlGroup](./toolbar-control-group.md), [Text](./text.md), [Card](./wa-card.md).
+- Components: [AppTab](./tabs.md), [TabBar](./tab-bar.md), [ToolbarControlGroup](./toolbar-control-group.md), [Text](./text.md), [Pane](./pane.md).
 - Docs: [`docs/accessibility.md`](../../docs/accessibility.md), [`docs/accessibility.md#tabs`](../../docs/accessibility.md#tabs).
 - UX catalog route: `?component=application-tabs`.

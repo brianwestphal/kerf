@@ -328,7 +328,7 @@ describe('UX catalog metadata', () => {
       artifact.entries.find(({ id }) => id === 'application-tabs'),
     ).toMatchObject({
       kind: 'composition',
-      uses: ['tabs', 'tab-bar', 'toolbar-control-group', 'text', 'wa-card'],
+      uses: ['tabs', 'tab-bar', 'toolbar-control-group', 'text', 'pane'],
       publicExports: [],
     });
     expect(
@@ -373,7 +373,10 @@ describe('UX catalog metadata', () => {
       'wa-select',
       'wa-switch',
       'wa-textarea',
+      'wa-card',
       'wa-dialog',
+      'wa-drawer',
+      'wa-page',
       'wa-split-panel',
       'wa-tab',
       'wa-tab-group',
@@ -381,6 +384,7 @@ describe('UX catalog metadata', () => {
       'wa-tree',
       'wa-tree-item',
       'wa-badge',
+      'wa-callout',
       'wa-skeleton',
       'wa-spinner',
       'wa-tag',
@@ -388,8 +392,12 @@ describe('UX catalog metadata', () => {
       'wa-comparison',
       'wa-icon',
       'wa-zoomable-frame',
+      'wa-popover',
+      'wa-popup',
     ]);
-    expect(findCatalogEntry('wa-popup')?.recommendation).toBe('conditional');
+    expect(findCatalogEntry('wa-popup')?.recommendation).toBe('avoid');
+    expect(findCatalogEntry('wa-tooltip')?.recommendation).toBe('supported');
+    expect(findCatalogEntry('wa-toast')?.recommendation).toBe('supported');
   });
 
   it('keeps routes unique and dependency references valid', () => {
@@ -661,13 +669,16 @@ describe('UX catalog metadata', () => {
 
   it('marks supported ecosystem alternatives without presenting them as defaults', () => {
     expect(findCatalogEntry('wa-popup')?.description).toContain(
-      'Preferred low-level anchored positioning',
+      'use Kerf AnchoredSurface',
+    );
+    expect(findCatalogEntry('wa-card')?.description).toContain(
+      'use Kerf ContentItem',
     );
     expect(findCatalogEntry('wa-split-panel')?.description).toContain(
       'use Kerf ResizableRegion',
     );
     expect(findCatalogEntry('wa-button-group')?.description).toContain(
-      'prefer Kerf SegmentedControl',
+      'use Kerf ToolbarControlGroup',
     );
     expect(findCatalogEntry('wa-icon')?.description).toContain(
       'use Kerf LucideIcon',
@@ -675,6 +686,6 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
       'Avoid for application UI',
     );
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(28);
+    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(34);
   });
 });
