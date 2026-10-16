@@ -4104,7 +4104,8 @@
         "Use selectionMode=\"multiple\" and ariaLabel to group selectable rich ContentItem rows in a multi-select grid.",
         "Use scrollClearance on the scrollable List that reaches an edge overlaid by chrome (a DialogSurface floating footer) so rows scroll visibly beneath it while the first and last rows still rest clear of it.",
         "Render a bounded, framed result picker of ListItem rows (search results, duplicate candidates) with scrollable, frame, and typed maxHeight/minHeight instead of an app-owned bordered scroller.",
-        "Call wireListFocusScroll(root) once when keyboard users move focus through a scrollable List's rows, so Firefox and Safari bring a partly hidden focused row and its ring fully into view as Chromium does."
+        "Call wireListFocusScroll(root) once when keyboard users move focus through a scrollable List's rows, so Firefox and Safari bring a partly hidden focused row and its ring fully into view as Chromium does.",
+        "Cap and center a page-level content column (a settings page or setup form) with contentWidth and, for long prose, inset=\"document\", instead of an application max-width wrapper."
       ],
       "avoidWhen": [
         "Do not use List as semantic list markup; use ul/ol when list semantics are required and apply layout deliberately.",
@@ -4139,7 +4140,8 @@
         "fill: the layout root fills a definite-height parent",
         "rootAttributes: safe data-*, aria-*, and structural role on the root",
         "scroll dividers when named as wireScrollDividers targets chrome",
-        "multi-select grid for rich ContentItem rows"
+        "multi-select grid for rich ContentItem rows",
+        "contentWidth (compact 440px, medium 640px, wide 864px) and contentAlign for a readable, centered page column"
       ],
       "accessibility": [
         "List adds layout only and no list role by default; selectionMode=\"multiple\" makes it an aria-multiselectable grid with a required ariaLabel for selectable ContentItem rows.",

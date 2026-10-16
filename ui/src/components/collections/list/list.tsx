@@ -34,6 +34,8 @@ const listProtectedAttributes = new Set([
   'data-frame',
   'data-surface',
   'data-inset',
+  'data-content-width',
+  'data-content-align',
   'data-text-insets',
   'data-control-insets',
 ]);
@@ -51,6 +53,8 @@ type ListRootAttributes = StructuralRootAttributes &
     'data-frame'?: never;
     'data-surface'?: never;
     'data-inset'?: never;
+    'data-content-width'?: never;
+    'data-content-align'?: never;
     'data-text-insets'?: never;
     'data-control-insets'?: never;
   }>;
@@ -68,6 +72,13 @@ export type ListSurface = 'base' | 'raised';
  * 16px inline below 576px. It replaces any `textInsets`/`controlInsets`.
  */
 export type ListInset = 'document';
+
+/**
+ * A readable measure for a page's content column: `compact` 440px, `medium`
+ * 640px, or `wide` 864px of content, the same steps as a catalog example's
+ * `contentWidth`.
+ */
+export type ListContentWidth = 'compact' | 'medium' | 'wide';
 
 export interface ListProps {
   children?: KerfUiContent;
@@ -134,6 +145,13 @@ export interface ListProps {
   /** Physical divider edges in canonical top/right/bottom/left order. */
   dividerSides?: Sides;
   /** A preset four-sided inset; see `ListInset`. */
+  /**
+   * Cap the list's content at a readable measure, plus its insets, so a page
+   * column needs no application CSS. Composes with `inset="document"`.
+   */
+  contentWidth?: ListContentWidth;
+  /** Where a `contentWidth` column sits: `center` (default) or `start`. */
+  contentAlign?: 'start' | 'center';
   inset?: ListInset;
   /** Physical sides that receive the standard 17px text inset. */
   textInsets?: Sides;
@@ -178,6 +196,8 @@ export function List({
   minHeight,
   surface,
   inset,
+  contentWidth,
+  contentAlign = 'center',
   dividerSides = '',
   textInsets = '',
   controlInsets = '',
@@ -236,6 +256,8 @@ export function List({
       data-frame={frame ? 'true' : undefined}
       data-surface={surface}
       data-inset={inset}
+      data-content-width={contentWidth}
+      data-content-align={contentWidth === undefined ? undefined : contentAlign}
       divider-sides={dividerSides || undefined}
       data-text-insets={textInsets || undefined}
       data-control-insets={controlInsets || undefined}

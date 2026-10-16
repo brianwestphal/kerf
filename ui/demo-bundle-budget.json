@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 420200,
-  "measuredLargestJavaScriptGzip": 164222,
-  "measuredTotalJavaScriptGzip": 420144,
+  "totalJavaScriptGzip": 420400,
+  "measuredLargestJavaScriptGzip": 164221,
+  "measuredTotalJavaScriptGzip": 420371,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5443,6 +5443,22 @@
         "measuredTotalJavaScriptGzip": 420144,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 420200
+      }
+    },
+    {
+      "at": "2026-10-16T11:53:38.145Z",
+      "reason": "List page column demo (KF-P3069N)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164222,
+        "measuredTotalJavaScriptGzip": 420144,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 420200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 420371,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 420400
       }
     }
   ]

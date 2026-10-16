@@ -757,6 +757,8 @@ type ListRootAttributes = StructuralRootAttributes & Readonly<{
     'data-frame'?: never;
     'data-surface'?: never;
     'data-inset'?: never;
+    'data-content-width'?: never;
+    'data-content-align'?: never;
     'data-text-insets'?: never;
     'data-control-insets'?: never;
 }>;
@@ -772,6 +774,12 @@ type ListSurface = 'base' | 'raised';
  * 16px inline below 576px. It replaces any `textInsets`/`controlInsets`.
  */
 type ListInset = 'document';
+/**
+ * A readable measure for a page's content column: `compact` 440px, `medium`
+ * 640px, or `wide` 864px of content, the same steps as a catalog example's
+ * `contentWidth`.
+ */
+type ListContentWidth = 'compact' | 'medium' | 'wide';
 interface ListProps {
     children?: KerfUiContent;
     /** Make this list a labeled multi-select grid for `ContentItem selectionMode="multiple"` rows. */
@@ -837,6 +845,13 @@ interface ListProps {
     /** Physical divider edges in canonical top/right/bottom/left order. */
     dividerSides?: Sides;
     /** A preset four-sided inset; see `ListInset`. */
+    /**
+     * Cap the list's content at a readable measure, plus its insets, so a page
+     * column needs no application CSS. Composes with `inset="document"`.
+     */
+    contentWidth?: ListContentWidth;
+    /** Where a `contentWidth` column sits: `center` (default) or `start`. */
+    contentAlign?: 'start' | 'center';
     inset?: ListInset;
     /** Physical sides that receive the standard 17px text inset. */
     textInsets?: Sides;
@@ -860,9 +875,9 @@ interface ListProps {
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
+export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListContentWidth, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/list-action-row`

@@ -20,6 +20,7 @@ Standardize vertical component layout, optional physical-side text/control inset
 - Use scrollClearance on the scrollable List that reaches an edge overlaid by chrome (a DialogSurface floating footer) so rows scroll visibly beneath it while the first and last rows still rest clear of it.
 - Render a bounded, framed result picker of ListItem rows (search results, duplicate candidates) with scrollable, frame, and typed maxHeight/minHeight instead of an app-owned bordered scroller.
 - Call wireListFocusScroll(root) once when keyboard users move focus through a scrollable List's rows, so Firefox and Safari bring a partly hidden focused row and its ring fully into view as Chromium does.
+- Cap and center a page-level content column (a settings page or setup form) with contentWidth and, for long prose, inset="document", instead of an application max-width wrapper.
 
 **Not when:**
 
@@ -62,6 +63,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 - rootAttributes: safe data-\*, aria-\*, and structural role on the root
 - scroll dividers when named as wireScrollDividers targets chrome
 - multi-select grid for rich ContentItem rows
+- contentWidth (compact 440px, medium 640px, wide 864px) and contentAlign for a readable, centered page column
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 

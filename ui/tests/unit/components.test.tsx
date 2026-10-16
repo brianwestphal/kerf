@@ -1097,6 +1097,14 @@ describe('production UI primitives', () => {
       'role="region" aria-label="Ticket Inspector" aria-busy="true" class="kui-list"',
     );
     expect(region).toContain('data-inset="document"');
+    expect(region).not.toContain('data-content-width');
+    const column = asHtml(List({ inset: 'document', contentWidth: 'medium' }));
+    expect(column).toContain(
+      'data-content-width="medium" data-content-align="center"',
+    );
+    expect(
+      asHtml(List({ contentWidth: 'wide', contentAlign: 'start' })),
+    ).toContain('data-content-width="wide" data-content-align="start"');
     expect(
       asHtml(
         List({

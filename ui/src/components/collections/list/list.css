@@ -122,6 +122,32 @@
   border-radius: var(--kui-radius-m);
 }
 
+/* `contentWidth`: a readable page column. The measure is the content's, so
+   the cap adds the list's own insets; `center` (default) centers the column. */
+.kui-list[data-content-width] {
+  width: 100%;
+  max-width: calc(
+    var(--_kui-list-content-width) + var(--_kui-list-inset-left, 0px) +
+      var(--_kui-list-inset-right, 0px)
+  );
+}
+
+.kui-list[data-content-width="compact"] {
+  --_kui-list-content-width: remify(440px);
+}
+
+.kui-list[data-content-width="medium"] {
+  --_kui-list-content-width: remify(640px);
+}
+
+.kui-list[data-content-width="wide"] {
+  --_kui-list-content-width: remify(864px);
+}
+
+.kui-list[data-content-align="center"] {
+  margin-inline: auto;
+}
+
 .kui-list[data-h-align="left"] {
   align-items: flex-start;
   align-content: flex-start;

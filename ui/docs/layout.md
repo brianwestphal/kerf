@@ -916,6 +916,12 @@ For long reading content, such as a reader view, pass `inset="document"`: 24px
 block and 32px inline on all four sides, narrowing to 16px inline below 576px.
 It replaces any `textInsets`/`controlInsets` on that List.
 
+For a page's content column (a settings page, a setup form), pass
+`contentWidth`: `compact` (440px), `medium` (640px), or `wide` (864px) of
+content, plus the List's own insets, so it composes with `inset="document"`.
+The column is centered by default; `contentAlign="start"` keeps it at the
+leading edge. Never cap and center a page column with application CSS.
+
 A List is transparent by default. Pass `surface="base"` (the page surface) or
 `surface="raised"` to paint a solid background behind the stack and its
 insets — for example a banner strip above a sunken work area, which otherwise

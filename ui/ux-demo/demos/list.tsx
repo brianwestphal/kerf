@@ -307,6 +307,29 @@ export function ListDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
+        label="Page Column"
+        note='contentWidth="compact" caps a page column at a 440px measure plus its insets and centers it, here with the document inset; medium is 640px and wide 864px.'
+        viewport={{
+          width: 'full',
+          frame: 'solid',
+          surface: 'default',
+          overflow: 'hidden',
+        }}
+      >
+        <List
+          inset="document"
+          contentWidth="compact"
+          gap="m"
+          rootAttributes={{ 'data-demo-page-column': '' }}
+        >
+          <Text variant="h3">Settings</Text>
+          <Text>
+            A settings page keeps its forms at a readable width however wide the
+            window grows, with no application CSS around the column.
+          </Text>
+        </List>
+      </CatalogExample>
+      <CatalogExample
         label="Result Picker"
         note="frame draws a 1px neutral border with the control radius and a 4px inset that keeps the first and last rows' focus rings inside the clip; with scrollable, maxHeight and minHeight bound the candidates without an app-owned scroller."
         viewport={{ width: 'compact' }}

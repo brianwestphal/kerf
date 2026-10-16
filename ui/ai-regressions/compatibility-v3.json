@@ -22,11 +22,11 @@
     "eslint-plugin-kerfjs": "5.0.0"
   },
   "artifactDigests": {
-    "selectionCatalog": "bd682489569e7e3af89a8b62e197cba99067ebeb85b1624abeba05dd9d420a08",
+    "selectionCatalog": "a5f35f8fcf240c14e2ff5e35718b8f2e2ec8d8bd399361f841f2ca1c199c0e78",
     "behaviorCatalog": "81ab38e1b466dfb2f7702d03307e8ff8364b244b202af50a93aacc68d09b2afa",
     "diagnosticRegistry": "69d03729ca2c7f2e5def8c03ff8cbbf57f1afd035b40b455d6b3e0ac76652b56",
     "qualityContract": "826cab70c896a6fd685ff5d5cc0707400d88a7632991de261dfb6237710ce5dc",
-    "guidanceContext": "5b4b3523f0972171a03e9dd95f455296c17137e9dc345f84329a36a54c455994"
+    "guidanceContext": "42ed6d5f620a7d6069bcafed02380db7fce23c254182230d5905b969acbeb078"
   },
   "browserContexts": [
     {
