@@ -866,7 +866,10 @@ state. Resolve each card activation with `applySelection` and
 `selectionGesture` from `@kerfjs/ui/selection`, which implement the same
 platform-normalized replace, Cmd/Ctrl-toggle, and Shift-range model as
 `ChoiceChips` `multiple` (`isApplePlatform` decides between Cmd and Ctrl); `wireContentItems` forwards those modifiers from
-Enter and Space.
+Enter and Space, and keeps the grid one Tab stop. Put content that is not
+selectable between those rows (an activity group, a "messages skipped"
+divider) in a `ContentItem gridRow`, never a hand-written `role="row"`
+wrapper.
 For wrapped document tiles, use `Grid minColumnWidth={px(160)}` with
 `selectionMode="multiple"` and `ariaLabel`. The same ContentItem row/gridcell
 contract applies, while `wireContentItems` follows the rendered tile layout

@@ -1152,12 +1152,14 @@ type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | unde
     'data-appearance'?: never;
     'data-outlined'?: never;
     'data-bubble'?: never;
+    'data-grid-row'?: never;
 }>;
 type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-appearance'?: never;
     'data-outlined'?: never;
     'data-bubble'?: never;
+    'data-grid-row'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -1219,6 +1221,14 @@ type ContentItemProps = ContentItemBaseProps & ({
     disabled?: never;
     /** Opt into keyboard (`0`) or programmatic (`-1`) focus. */
     tabIndex?: 0 | -1;
+    /**
+     * A non-selectable row of a multi-select `List` or `Grid`: renders
+     * `role="row"` around a `gridcell`, with no `aria-selected` and no
+     * Tab stop of its own, for content between selectable rows (an
+     * activity group, a "messages skipped" divider). Its controls stay
+     * reachable by Tab; arrow keys skip it.
+     */
+    gridRow?: boolean;
     /** Existing static `data-*` metadata remains available. */
     rootAttributes?: ContentItemRootAttributes;
 } | {
@@ -1231,6 +1241,8 @@ type ContentItemProps = ContentItemBaseProps & ({
     selected?: boolean;
     disabled?: boolean;
     tabIndex?: never;
+    /** An interactive item is already a row in a multi-select grid. */
+    gridRow?: never;
     /** Safe app metadata; interaction attributes are component-owned. */
     rootAttributes?: ContentItemInteractiveRootAttributes;
 });
@@ -1239,7 +1251,7 @@ type ContentItemProps = ContentItemBaseProps & ({
  * border (transparent unless `framed`), 8px padding, and a rounded or pill
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
-declare function ContentItem({ appearance, children, frame, flush, shape, bubble, title, ariaLabel, focusTarget, outlined, tabIndex, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
+declare function ContentItem({ appearance, children, frame, flush, shape, bubble, title, ariaLabel, focusTarget, outlined, tabIndex, gridRow, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
 export { ContentItem, type ContentItemAppearance, type ContentItemBubble, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape, SemanticTone };
 ```

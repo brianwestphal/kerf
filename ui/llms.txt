@@ -370,7 +370,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   standard 17px text and 8px control inset; text wins on overlap.
   For selectable document tiles, use `selectionMode="multiple"` and a required
   `ariaLabel`, with `ContentItem selectionMode="multiple"` children. Wire
-  `wireContentItems` for spatial arrow navigation and Enter/Space activation.
+  `wireContentItems` for spatial arrow navigation, Enter/Space activation, and
+  one roving Tab stop per grid; a non-selectable row between them is a
+  `ContentItem gridRow` (row + gridcell, no selection).
   Resolve each activation with `applySelection` and `selectionGesture` from
   `@kerfjs/ui/selection` (plain replaces, Cmd/Ctrl toggles, Shift extends).
 - **Give a layout root `fill`, not a frame `Pane`.** A Row, List, or Grid that

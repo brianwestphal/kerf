@@ -46,12 +46,14 @@ const contentItemProtectedAttributes = new Set([
   'data-appearance',
   'data-outlined',
   'data-bubble',
+  'data-grid-row',
 ]);
 const interactiveProtectedAttributes = new Set([
   'data-component',
   'data-appearance',
   'data-outlined',
   'data-bubble',
+  'data-grid-row',
   'data-action',
   'data-item-id',
   'data-interactive',
@@ -67,6 +69,7 @@ type ContentItemRootAttributes = Readonly<
     'data-appearance'?: never;
     'data-outlined'?: never;
     'data-bubble'?: never;
+    'data-grid-row'?: never;
   }
 >;
 
@@ -76,6 +79,7 @@ type ContentItemInteractiveRootAttributes = Readonly<
     'data-appearance'?: never;
     'data-outlined'?: never;
     'data-bubble'?: never;
+    'data-grid-row'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -142,6 +146,14 @@ export type ContentItemProps = ContentItemBaseProps &
         disabled?: never;
         /** Opt into keyboard (`0`) or programmatic (`-1`) focus. */
         tabIndex?: 0 | -1;
+        /**
+         * A non-selectable row of a multi-select `List` or `Grid`: renders
+         * `role="row"` around a `gridcell`, with no `aria-selected` and no
+         * Tab stop of its own, for content between selectable rows (an
+         * activity group, a "messages skipped" divider). Its controls stay
+         * reachable by Tab; arrow keys skip it.
+         */
+        gridRow?: boolean;
         /** Existing static `data-*` metadata remains available. */
         rootAttributes?: ContentItemRootAttributes;
       }
@@ -155,6 +167,8 @@ export type ContentItemProps = ContentItemBaseProps &
         selected?: boolean;
         disabled?: boolean;
         tabIndex?: never;
+        /** An interactive item is already a row in a multi-select grid. */
+        gridRow?: never;
         /** Safe app metadata; interaction attributes are component-owned. */
         rootAttributes?: ContentItemInteractiveRootAttributes;
       }
@@ -177,6 +191,7 @@ export function ContentItem({
   focusTarget = false,
   outlined = false,
   tabIndex,
+  gridRow = false,
   interactive = false,
   action,
   itemId,
@@ -223,6 +238,7 @@ export function ContentItem({
     ? 'region'
     : undefined;
   if (interactive) role = roleForSelectionMode(selectionMode);
+  else if (gridRow) role = 'row';
   return (
     <div
       {...safeRootAttributes}
@@ -233,6 +249,7 @@ export function ContentItem({
       data-appearance={appearance}
       data-outlined={outlined ? 'true' : undefined}
       data-bubble={bubble}
+      data-grid-row={!interactive && gridRow ? 'true' : undefined}
       role={role}
       aria-label={ariaLabel}
       aria-selected={
@@ -254,7 +271,8 @@ export function ContentItem({
       }
       slot={slot}
     >
-      {interactive && selectionMode === 'multiple' ? (
+      {(interactive && selectionMode === 'multiple') ||
+      (!interactive && gridRow) ? (
         <div role="gridcell">{children}</div>
       ) : (
         children

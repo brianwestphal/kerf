@@ -274,3 +274,51 @@ test('multi-select rich rows keep selection and nested controls independent', as
       .evaluate((html) => html.scrollWidth <= html.clientWidth),
   ).toBe(true);
 });
+
+test('a multi-select grid is one tab stop and skips non-selectable rows', async ({
+  page,
+}) => {
+  await page.goto('/?component=content-item');
+  const grid = page.getByRole('grid', { name: 'Conversation' });
+  const first = grid.getByRole('row', {
+    name: 'Why did the nightly build fail?',
+  });
+  const second = grid.getByRole('row', {
+    name: 'The bundle budget check failed.',
+  });
+  const third = grid.getByRole('row', {
+    name: 'Rebaseline the budget with a reason.',
+  });
+  // Exactly one selectable row is in the tab order.
+  const zero = await grid
+    .locator('[data-selection-mode="multiple"]')
+    .evaluateAll(
+      (rows) =>
+        rows.filter((row) => row.getAttribute('tabindex') === '0').length,
+    );
+  expect(zero).toBe(1);
+  const nonSelectable = grid.locator('[data-grid-row="true"]');
+  await expect(nonSelectable).toHaveCount(2);
+  await expect(nonSelectable.first()).toHaveAttribute('role', 'row');
+  await expect(nonSelectable.first()).not.toHaveAttribute(
+    'aria-selected',
+    /.*/,
+  );
+
+  await first.focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(second).toBeFocused();
+  // ArrowDown skips the two non-selectable rows.
+  await page.keyboard.press('ArrowDown');
+  await expect(third).toBeFocused();
+  // Leaving and re-entering with Tab returns to the last focused row.
+  await page.keyboard.press('Shift+Tab');
+  await expect(third).not.toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(third).toBeFocused();
+  // The activity row's control stays reachable by Tab.
+  await expect(
+    grid.getByRole('button', { name: 'Show Activity' }),
+  ).toHaveAttribute('type', 'button');
+  await grid.screenshot({ path: 'test-results/content-item-mixed-rows.png' });
+});

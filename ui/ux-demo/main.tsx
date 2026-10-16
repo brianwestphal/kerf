@@ -149,6 +149,7 @@ import {
   contentCardSelections,
   contentSwapFaded,
   contentSwapStep,
+  conversationSelections,
   customDisclosureOpen,
   disclosureOpen,
   displayDensity,
@@ -1233,6 +1234,15 @@ const stopActions = delegateActions(app, 'click', {
       contentCardSelections.value,
     );
     actionLog.value = `Selected ${contentCardSelections.value.length} demand lines`;
+  },
+  'select-conversation-message': (event, element) => {
+    if (!isContentItemActivation(event, element as HTMLElement)) return;
+    conversationSelections.value = selectCard(
+      event,
+      element as HTMLElement,
+      conversationSelections.value,
+    );
+    actionLog.value = `Selected ${conversationSelections.value.length} messages`;
   },
   'select-grid-tile': (event, element) => {
     if (!isContentItemActivation(event, element as HTMLElement)) return;

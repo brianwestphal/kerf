@@ -316,7 +316,7 @@ when a second minimum-width track plus the gap no longer fits. Constrain the
 outer Grid width when the form should have a maximum column count.
 For selectable document tiles, set `Grid selectionMode="multiple"` and
 `ariaLabel`, render `ContentItem selectionMode="multiple"` children, and wire
-`wireContentItems` for arrows, Home/End, and card activation. The app owns the
+`wireContentItems` for arrows, Home/End, card activation, and a single roving Tab stop; wrap non-selectable rows between them (activity groups, dividers) in `ContentItem gridRow` instead of hand-written grid roles. The app owns the
 selection set and each tile's nested controls; in its click handler, pass
 `selectionGesture(event)` and the visible ids to `applySelection` from
 `@kerfjs/ui/selection` so a click replaces, Cmd/Ctrl (`isApplePlatform`

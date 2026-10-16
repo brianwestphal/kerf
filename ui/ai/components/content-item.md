@@ -52,6 +52,7 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 - chat bubble at the start or end of the row (bubble), fit to its content up to 80%
 - named focus-target region
 - multi-select rich grid row
+- gridRow: a non-selectable row (role="row" with a gridcell) between selectable rows of a multi-select List or Grid
 
 ## Composition
 
@@ -77,6 +78,7 @@ Margin: self · border: self · padding: self (layout role: structure). `self` m
 - focusTarget makes the item a programmatic focus target (tabindex="-1", never a tab stop), such as a NavStack view's data-nav-focus target.
 - The frame is decorative and never the only signal of state.
 - selectionMode="multiple" renders a focusable row with aria-selected and a gridcell for nested controls; place it in a labeled List selectionMode="multiple" grid. wireContentItems moves focus among rows with Up/Down and Home/End while nested controls retain those keys. Enter and Space activate the card with a click that carries the key's Shift, Ctrl, and Cmd state, so one delegated click handler implements range and toggle selection for pointer and keyboard alike. Guard the app's delegated card action with isContentItemActivation so a nested control does not select the row.
+- In a multi-select List or Grid, wireContentItems keeps one roving Tab stop (the last focused row, else the first selected, else the first enabled) across re-renders. A gridRow item is a row with a gridcell and no aria-selected or Tab stop; arrow keys skip it and its controls stay reachable by Tab.
 
 ## Styling boundary
 

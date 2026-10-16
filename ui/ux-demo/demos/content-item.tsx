@@ -14,6 +14,7 @@ import {
   contentCardChoice,
   contentCardSelected,
   contentCardSelections,
+  conversationSelections,
 } from './state.js';
 
 const appearances = [
@@ -293,6 +294,58 @@ export function ContentItemDemo() {
                   Approve
                 </button>
               </Row>
+            </ContentItem>
+          ))}
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Mixed Selectable and Non-Selectable Rows"
+        note="A transcript mixes selectable messages with rows that are not selectable: a gridRow item is a grid row with a gridcell and no selection. The grid is one Tab stop; arrow keys move between messages and skip the other rows, whose controls stay reachable by Tab."
+        align="none"
+      >
+        <List selectionMode="multiple" ariaLabel="Conversation">
+          {(
+            [
+              ['message-1', 'Why did the nightly build fail?'],
+              ['message-2', 'The bundle budget check failed.'],
+            ] as const
+          ).map(([id, text]) => (
+            <ContentItem
+              interactive
+              action="select-conversation-message"
+              itemId={id}
+              selectionMode="multiple"
+              selected={conversationSelections.value.includes(id)}
+              ariaLabel={text}
+            >
+              <Text variant="span">{text}</Text>
+            </ContentItem>
+          ))}
+          <ContentItem gridRow>
+            <Text variant="span" tone="quiet" size="compact">
+              3 messages skipped
+            </Text>
+          </ContentItem>
+          <ContentItem gridRow appearance="surface" frame="framed">
+            <Row vAlign="middle">
+              <Text variant="span">Ran 4 checks</Text>
+              <Button size="compact" emphasis="secondary" action="log-more">
+                Show Activity
+              </Button>
+            </Row>
+          </ContentItem>
+          {(
+            [['message-3', 'Rebaseline the budget with a reason.']] as const
+          ).map(([id, text]) => (
+            <ContentItem
+              interactive
+              action="select-conversation-message"
+              itemId={id}
+              selectionMode="multiple"
+              selected={conversationSelections.value.includes(id)}
+              ariaLabel={text}
+            >
+              <Text variant="span">{text}</Text>
             </ContentItem>
           ))}
         </List>

@@ -1,3 +1,4 @@
+import { mount, signal } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
 import { List } from '../../src/components/collections/list/list.js';
@@ -559,5 +560,110 @@ describe('wireContentItems', () => {
     expect(ids).toEqual([]);
     stopInner();
     outer.remove();
+  });
+});
+
+describe('multi-select grid rows', () => {
+  const flush = () =>
+    new Promise((resolve) => globalThis.setTimeout(resolve, 0));
+
+  it('renders a non-selectable gridRow with a gridcell and no tab stop', () => {
+    const host = document.createElement('div');
+    host.innerHTML = String(
+      <ContentItem gridRow>
+        <button type="button">Expand</button>
+      </ContentItem>,
+    );
+    const row = host.firstElementChild as HTMLElement;
+    expect(row.getAttribute('role')).toBe('row');
+    expect(row.dataset.gridRow).toBe('true');
+    expect(row.hasAttribute('aria-selected')).toBe(false);
+    expect(row.hasAttribute('tabindex')).toBe(false);
+    expect(row.firstElementChild?.getAttribute('role')).toBe('gridcell');
+    expect(row.querySelector('button')?.textContent).toBe('Expand');
+  });
+
+  it('roves one tab stop across selectable rows and restores it after a re-render', async () => {
+    const selected = signal<string[]>(['b']);
+    const showC = signal(true);
+    const root = document.createElement('div');
+    document.body.append(root);
+    const dispose = mount(root, () => (
+      <List selectionMode="multiple" ariaLabel="Messages">
+        {(['a', 'b', ...(showC.value ? ['c'] : [])] as string[]).map((id) => (
+          <ContentItem
+            interactive
+            action="pick"
+            itemId={id}
+            selectionMode="multiple"
+            selected={selected.value.includes(id)}
+          >
+            {id}
+          </ContentItem>
+        ))}
+        <ContentItem gridRow>
+          <button type="button">Show activity</button>
+        </ContentItem>
+        <ContentItem
+          interactive
+          action="pick"
+          itemId="d"
+          selectionMode="multiple"
+          disabled
+        >
+          d
+        </ContentItem>
+      </List>
+    ));
+    const stop = wireContentItems(root);
+    const row = (id: string) =>
+      root.querySelector<HTMLElement>(`[data-item-id="${id}"]`)!;
+    const stops = () =>
+      ['a', 'b', 'c', 'd']
+        .filter((id) => root.querySelector(`[data-item-id="${id}"]`))
+        .map((id) => `${id}:${row(id).getAttribute('tabindex')}`);
+    // The first selected row is the only tab stop; disabled stays out.
+    expect(stops()).toEqual(['a:-1', 'b:0', 'c:-1', 'd:-1']);
+    // Focus moves the stop.
+    row('c').focus();
+    expect(stops()).toEqual(['a:-1', 'b:-1', 'c:0', 'd:-1']);
+    // A re-render resets template tabindex; the wiring restores the stop.
+    selected.value = ['a'];
+    await flush();
+    expect(stops()).toEqual(['a:-1', 'b:-1', 'c:0', 'd:-1']);
+    // Removing the active row falls back to the first selected row.
+    showC.value = false;
+    await flush();
+    expect(stops()).toEqual(['a:0', 'b:-1', 'd:-1']);
+    // Arrow keys still move focus and carry the stop with them.
+    row('a').focus();
+    row('a').dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(row('b'));
+    expect(stops()).toEqual(['a:-1', 'b:0', 'd:-1']);
+    // Disposal stops managing the stop.
+    stop();
+    selected.value = [];
+    await flush();
+    expect(row('a').getAttribute('tabindex')).toBe('0');
+    dispose();
+    root.remove();
+  });
+
+  it('ignores focus outside a multi-select grid', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      <ContentItem interactive action="pick" itemId="solo">
+        Solo
+      </ContentItem>,
+    );
+    document.body.append(root);
+    const stop = wireContentItems(root);
+    const solo = root.querySelector<HTMLElement>('[data-item-id="solo"]')!;
+    solo.focus();
+    expect(solo.getAttribute('tabindex')).toBe('0');
+    stop();
+    root.remove();
   });
 });

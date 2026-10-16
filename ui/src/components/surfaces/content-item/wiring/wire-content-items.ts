@@ -3,6 +3,16 @@ const ITEM_SELECTOR =
 const NESTED_CONTROL_SELECTOR =
   'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"]';
 const MULTI_GRID_SELECTOR = '[role="grid"][aria-multiselectable="true"]';
+const MULTI_ROW_SELECTOR = `${ITEM_SELECTOR}[data-selection-mode="multiple"]`;
+
+/** The enabled selectable rows of one multi-select grid, in order. */
+function gridRows(grid: Element): HTMLElement[] {
+  return Array.from(
+    grid.querySelectorAll<HTMLElement>(
+      `${MULTI_ROW_SELECTOR}:not([data-disabled="true"])`,
+    ),
+  ).filter((row) => row.closest(MULTI_GRID_SELECTOR) === grid);
+}
 
 function nextTile(
   item: HTMLElement,
@@ -98,6 +108,62 @@ function activate(item: HTMLElement, modifiers: ActivationModifiers) {
  * platform. Returns a disposer.
  */
 export function wireContentItems(root: HTMLElement): () => void {
+  // Roving tabindex: each multi-select grid is one Tab stop, on the last
+  // focused row, else the first selected, else the first enabled row.
+  const activeRows = new WeakMap<Element, HTMLElement>();
+  const rove = (grid: Element) => {
+    const rows = gridRows(grid);
+    const remembered = activeRows.get(grid);
+    const stop =
+      remembered && rows.includes(remembered)
+        ? remembered
+        : (rows.find((row) => row.getAttribute('aria-selected') === 'true') ??
+          rows[0]);
+    for (const row of rows) {
+      const want = row === stop ? '0' : '-1';
+      if (row.getAttribute('tabindex') !== want)
+        row.setAttribute('tabindex', want);
+    }
+  };
+  const grids = () =>
+    [
+      ...(root.matches(MULTI_GRID_SELECTOR) ? [root] : []),
+      ...root.querySelectorAll(MULTI_GRID_SELECTOR),
+    ] as Element[];
+  // A re-render resets every row's tabindex to its template value, so the
+  // roving stop is restored after each change (deduplicated per task).
+  let roving = false;
+  const scheduleRove = () => {
+    if (roving) return;
+    roving = true;
+    globalThis.queueMicrotask(() => {
+      roving = false;
+      for (const grid of grids()) rove(grid);
+    });
+  };
+  const View = root.ownerDocument.defaultView;
+  const observer =
+    View && 'MutationObserver' in View
+      ? new View.MutationObserver(scheduleRove)
+      : null;
+  observer?.observe(root, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['tabindex', 'aria-selected', 'data-disabled'],
+  });
+  for (const grid of grids()) rove(grid);
+
+  const focusin = (event: FocusEvent) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const row = target.closest<HTMLElement>(MULTI_ROW_SELECTOR);
+    const grid = row?.closest(MULTI_GRID_SELECTOR);
+    if (!row || !grid || !root.contains(grid)) return;
+    activeRows.set(grid, row);
+    rove(grid);
+  };
+
   let pendingSpace: {
     item: HTMLElement;
     modifiers: ActivationModifiers;
@@ -127,11 +193,7 @@ export function wireContentItems(root: HTMLElement): () => void {
     ) {
       const grid = item.closest(MULTI_GRID_SELECTOR);
       if (!grid) return;
-      const rows = Array.from(
-        grid.querySelectorAll<HTMLElement>(
-          `${ITEM_SELECTOR}[data-selection-mode="multiple"]:not([data-disabled="true"])`,
-        ),
-      ).filter((row) => row.closest(MULTI_GRID_SELECTOR) === grid);
+      const rows = gridRows(grid);
       const index = rows.indexOf(item);
       if (index < 0) return;
       const isTileGrid = grid.getAttribute('data-component') === 'grid';
@@ -201,8 +263,11 @@ export function wireContentItems(root: HTMLElement): () => void {
   root.addEventListener('keydown', keydown);
   root.addEventListener('keyup', keyup);
   root.addEventListener('focusout', focusout);
+  root.addEventListener('focusin', focusin);
   return () => {
     clearSpace();
+    observer?.disconnect();
+    root.removeEventListener('focusin', focusin);
     root.removeEventListener('keydown', keydown);
     root.removeEventListener('keyup', keyup);
     root.removeEventListener('focusout', focusout);
