@@ -4324,14 +4324,22 @@ interface LucideIconProps {
     color?: CssForegroundColor;
     /** Flow with surrounding text instead of occupying a block. */
     inline?: boolean;
+    /** The icon's accessible name; without it the icon is decorative. */
     label?: string;
+    /**
+     * Hover text, as an SVG `<title>`: a status icon's explanation ("Session
+     * halted"). With `label`, the label stays the accessible name; alone, the
+     * title also names the icon. The whole icon box shows it, not just its
+     * strokes.
+     */
+    title?: string;
     /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
     size?: LucideIconSize;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-declare function LucideIcon({ icon, name, appearance, className, color, inline, label, size, slot, }: LucideIconProps): SafeHtml;
+declare function LucideIcon({ icon, name, appearance, className, color, inline, label, title, size, slot, }: LucideIconProps): SafeHtml;
 
 export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
 ```

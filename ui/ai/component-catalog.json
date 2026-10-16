@@ -180,7 +180,8 @@
         "labeled",
         "inline text flow",
         "outline (default appearance)",
-        "solid (appearance=solid)"
+        "solid (appearance=solid)",
+        "hover title for a status icon"
       ],
       "usageExamples": [
         {
@@ -200,7 +201,8 @@
         }
       ],
       "accessibility": [
-        "Decorative icons are aria-hidden; meaningful icons require a label."
+        "Decorative icons are aria-hidden; meaningful icons require a label.",
+        "title adds an SVG <title> as hover text over the whole icon box (a transparent hit box fills the 24-unit view box); with label, the label stays the name, and alone the title names the icon."
       ],
       "geometry": {
         "margin": "none",

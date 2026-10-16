@@ -35,6 +35,7 @@ Exact prop names and types: [`@kerfjs/ui/lucide-icon`](../public-api-signatures-
 - inline text flow
 - outline (default appearance)
 - solid (appearance=solid)
+- hover title for a status icon
 
 ## Composition
 
@@ -55,6 +56,7 @@ Margin: none · border: none · padding: none (layout role: foundation). `self` 
 ## Accessibility
 
 - Decorative icons are aria-hidden; meaningful icons require a label.
+- title adds an SVG \<title> as hover text over the whole icon box (a transparent hit box fills the 24-unit view box); with label, the label stays the name, and alone the title names the icon.
 
 ## Usage examples
 

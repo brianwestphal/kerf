@@ -26,7 +26,15 @@ export interface LucideIconProps {
   color?: CssForegroundColor;
   /** Flow with surrounding text instead of occupying a block. */
   inline?: boolean;
+  /** The icon's accessible name; without it the icon is decorative. */
   label?: string;
+  /**
+   * Hover text, as an SVG `<title>`: a status icon's explanation ("Session
+   * halted"). With `label`, the label stays the accessible name; alone, the
+   * title also names the icon. The whole icon box shows it, not just its
+   * strokes.
+   */
+  title?: string;
   /** Named icon scale or positive pixel size, converted to rem. Omit for 1em. */
   size?: LucideIconSize;
   /** Native named-slot assignment when composed inside a web component. */
@@ -90,6 +98,7 @@ export function LucideIcon({
   color,
   inline = false,
   label,
+  title,
   size,
   slot,
 }: LucideIconProps) {
@@ -106,6 +115,7 @@ export function LucideIcon({
     color,
     inline,
     label,
+    title,
     size,
     slot,
   ]);
@@ -122,9 +132,9 @@ export function LucideIcon({
       data-lucide={name}
       data-inline={inline ? 'true' : undefined}
       data-size={size === undefined ? undefined : String(size)}
-      role={label ? 'img' : undefined}
+      role={label || title ? 'img' : undefined}
       aria-label={label}
-      aria-hidden={label ? undefined : 'true'}
+      aria-hidden={label || title ? undefined : 'true'}
       viewBox="0 0 24 24"
       fill={appearance === 'solid' ? 'currentColor' : 'none'}
       stroke="currentColor"
@@ -142,6 +152,13 @@ export function LucideIcon({
           .join(';') || undefined
       }
     >
+      {title ? (
+        <>
+          <title>{title}</title>
+          {/* A transparent box, so hovering between strokes shows the title. */}
+          <rect width="24" height="24" fill="transparent" stroke="none" />
+        </>
+      ) : null}
       {renderChildren(icon)}
     </svg>
   );

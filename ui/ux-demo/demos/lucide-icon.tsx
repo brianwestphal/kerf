@@ -34,6 +34,19 @@ export function LucideIconDemo() {
         />
       </CatalogExample>
       <CatalogExample
+        label="Status with Hover Text"
+        note="A title adds hover text over the whole icon box, here explaining a status icon beside its name."
+        align="glyph"
+      >
+        <LucideIcon
+          icon={Bell}
+          name="bell-status"
+          label="Notifications Paused"
+          title="Notifications resume at 9:00"
+          size="l"
+        />
+      </CatalogExample>
+      <CatalogExample
         label="Icon Sizes"
         note="Named xs/s/m/l/xl steps use 12/16/20/24/32px at a 16px root; a positive numeric pixel size converts to rem. The default remains 1em."
         align="glyph"

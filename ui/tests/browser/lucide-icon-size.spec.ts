@@ -123,3 +123,21 @@ test('LucideIcon inline flows inside Text at wide and narrow widths', async ({
     });
   }
 });
+
+test('a titled LucideIcon takes hover over its whole box and keeps its name', async ({
+  page,
+}) => {
+  await page.goto('/?component=lucide-icon');
+  const icon = page.getByRole('img', { name: 'Notifications Paused' });
+  await expect(icon.locator('title')).toHaveText(
+    'Notifications resume at 9:00',
+  );
+  // A point between the bell's strokes still hits the icon, so the native
+  // title tooltip shows anywhere over it.
+  const hit = await icon.evaluate((svg) => {
+    const box = svg.getBoundingClientRect();
+    const corner = document.elementFromPoint(box.left + 1, box.top + 1);
+    return svg.contains(corner);
+  });
+  expect(hit).toBe(true);
+});

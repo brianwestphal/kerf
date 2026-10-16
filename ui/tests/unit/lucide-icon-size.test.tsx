@@ -181,4 +181,30 @@ describe('LucideIcon child markup cache', () => {
       '<path d="M2 2h20"></path>',
     );
   });
+
+  it('adds a hover title with a full-box hit area, beside or instead of a label', () => {
+    const host = document.createElement('div');
+    host.innerHTML = String(
+      LucideIcon({ ...props, label: 'Halted', title: 'Session halted' }),
+    );
+    const svg = host.querySelector('svg')!;
+    expect(svg.getAttribute('role')).toBe('img');
+    expect(svg.getAttribute('aria-label')).toBe('Halted');
+    expect(svg.hasAttribute('aria-hidden')).toBe(false);
+    expect(svg.firstElementChild!.localName).toBe('title');
+    expect(svg.firstElementChild!.textContent).toBe('Session halted');
+    const box = svg.querySelector('rect')!;
+    expect(box.getAttribute('fill')).toBe('transparent');
+    expect(box.getAttribute('width')).toBe('24');
+    host.innerHTML = String(LucideIcon({ ...props, title: 'Connected' }));
+    const titled = host.querySelector('svg')!;
+    expect(titled.getAttribute('role')).toBe('img');
+    expect(titled.hasAttribute('aria-label')).toBe(false);
+    expect(titled.hasAttribute('aria-hidden')).toBe(false);
+    // The title is part of the cached variant.
+    expect(String(LucideIcon({ ...props, title: 'Connected' }))).toBe(
+      String(LucideIcon({ ...props, title: 'Connected' })),
+    );
+    expect(String(LucideIcon(props))).not.toContain('<title>');
+  });
 });

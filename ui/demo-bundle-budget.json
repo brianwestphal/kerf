@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 420100,
-  "measuredLargestJavaScriptGzip": 164223,
-  "measuredTotalJavaScriptGzip": 420018,
+  "totalJavaScriptGzip": 420200,
+  "measuredLargestJavaScriptGzip": 164222,
+  "measuredTotalJavaScriptGzip": 420144,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5427,6 +5427,22 @@
         "measuredTotalJavaScriptGzip": 420018,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 420100
+      }
+    },
+    {
+      "at": "2026-10-16T11:35:28.060Z",
+      "reason": "LucideIcon title demo (KF-2V9XJQ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164223,
+        "measuredTotalJavaScriptGzip": 420018,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 420100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164222,
+        "measuredTotalJavaScriptGzip": 420144,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 420200
       }
     }
   ]
