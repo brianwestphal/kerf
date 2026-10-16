@@ -1,3 +1,8 @@
+import {
+  followAnchor,
+  positionPopup,
+} from '../../../../shared/popup/position-popup.js';
+
 type Root = HTMLElement | Document;
 
 const INPUT = '.kui-combobox__input';
@@ -63,8 +68,44 @@ function activeOption(parts: Parts): HTMLElement | null {
     : null;
 }
 
+// The listbox is a manual popover in the top layer, so no clipping or
+// scrolling ancestor (an AnchoredSurface, a dialog, a scrolling List) cuts
+// it off; it follows the field while shown.
+const following = new WeakMap<HTMLElement, () => void>();
+
+function show(parts: Parts) {
+  const { listbox } = parts;
+  listbox.hidden = false;
+  if (!listbox.matches(':popover-open')) listbox.showPopover();
+  if (following.has(listbox)) return;
+  const control = parts.input.parentElement!;
+  const place = async () => {
+    if (!listbox.isConnected || listbox.hidden) return;
+    listbox.style.width = `${control.getBoundingClientRect().width}px`;
+    await positionPopup(control, listbox, {
+      placement: 'bottom-start',
+      gap: 4,
+    });
+    // Placement caps the height to the room its side has; keep the list's
+    // own cap too.
+    listbox.style.maxHeight = `min(${listbox.style.maxHeight}, var(--_kui-combobox-max-height))`;
+  };
+  following.set(
+    listbox,
+    followAnchor(control, listbox, () => void place()),
+  );
+}
+
+function hide(parts: Parts) {
+  const { listbox } = parts;
+  listbox.hidden = true;
+  if (listbox.matches(':popover-open')) listbox.hidePopover();
+  following.get(listbox)?.();
+  following.delete(listbox);
+}
+
 function close(parts: Parts) {
-  parts.listbox.hidden = true;
+  hide(parts);
   parts.input.setAttribute('aria-expanded', 'false');
   setActive(parts, null);
 }
@@ -90,7 +131,8 @@ function update(parts: Parts) {
     );
   }
   const options = visibleOptions(parts);
-  parts.listbox.hidden = options.length === 0;
+  if (options.length === 0) hide(parts);
+  else show(parts);
   parts.input.setAttribute('aria-expanded', String(options.length > 0));
   if (!options.includes(activeOption(parts)!)) setActive(parts, null);
 }

@@ -1,7 +1,35 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+
+const floating = vi.hoisted(() => ({
+  updates: [] as (() => void)[],
+  stops: 0,
+}));
+
+vi.mock('@floating-ui/dom', () => ({
+  computePosition: (
+    _anchor: unknown,
+    _popup: HTMLElement,
+    options: { placement: string },
+  ) => Promise.resolve({ x: 10, y: 20, placement: options.placement }),
+  autoUpdate: (_anchor: unknown, _popup: HTMLElement, update: () => void) => {
+    floating.updates.push(update);
+    update();
+    return () => {
+      floating.stops += 1;
+    };
+  },
+  flip: () => ({ name: 'flip', fn: () => ({}) }),
+  shift: () => ({ name: 'shift', fn: () => ({}) }),
+  size: () => ({ name: 'size', fn: () => ({}) }),
+}));
 
 import { Combobox } from '../../src/components/forms/combobox/combobox.js';
 import { wireComboboxes } from '../../src/components/forms/combobox/wiring/wire-comboboxes.js';
+import { installPopoverPolyfill, isShown } from './helpers/popover.js';
+
+beforeAll(() => {
+  installPopoverPolyfill();
+});
 
 function setup(props: Partial<Parameters<typeof Combobox>[0]> = {}) {
   const root = document.createElement('div');
@@ -66,7 +94,7 @@ describe('Combobox', () => {
       'role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="tags-listbox" aria-describedby="tags-hint"',
     );
     expect(html).toContain(
-      '<ul class="kui-combobox__listbox" id="tags-listbox" role="listbox" hidden>',
+      '<ul class="kui-combobox__listbox" id="tags-listbox" role="listbox" popover="manual" hidden>',
     );
     expect(html).toContain(
       '<div class="kui-combobox__hint" id="tags-hint">Press Enter</div>',
@@ -76,6 +104,32 @@ describe('Combobox', () => {
     );
     expect(only).not.toContain('data-create');
     expect(only).not.toContain('aria-describedby');
+  });
+
+  it('shows the listbox in the top layer at the field width, capped, and stops following on close', async () => {
+    const t = setup();
+    const before = floating.stops;
+    t.type('d');
+    expect(isShown(t.listbox)).toBe(true);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(t.listbox.style.maxHeight).toContain(
+      'var(--_kui-combobox-max-height)',
+    );
+    expect(t.listbox.style.width).toMatch(/px$/);
+    // Typing more while open keeps one follower.
+    t.type('do');
+    expect(isShown(t.listbox)).toBe(true);
+    t.key('Escape');
+    expect(isShown(t.listbox)).toBe(false);
+    expect(t.listbox.hidden).toBe(true);
+    expect(floating.stops).toBe(before + 1);
+    // A placement that runs after the list closed does nothing.
+    const width = t.listbox.style.width;
+    floating.updates.at(-1)!();
+    await Promise.resolve();
+    expect(t.listbox.style.width).toBe(width);
+    t.stop();
   });
 
   it('filters, creates, moves the active option, and commits', () => {

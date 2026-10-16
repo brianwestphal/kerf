@@ -58,6 +58,7 @@ Exact prop names and types: [`@kerfjs/ui/combobox`](../public-api-signatures-v1.
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 
 - `data-value` on `the create option (kui-combobox__option[data-create])` (`wireComboboxes`): The typed text the create option would commit; rewritten as the person types.
+- `data-placement` on `kui-combobox__listbox` (`wireComboboxes`): The side the open listbox was placed on (bottom-start, or top-start after a flip when the field is near the viewport's bottom).
 
 ## Geometry
 
@@ -68,6 +69,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 ## Accessibility
 
 - Native input with role=combobox, aria-autocomplete=list, aria-expanded, aria-controls, and aria-activedescendant; options are role=option in a listbox. The visible label is a real label; the hint is aria-describedby.
+- The suggestion listbox is a manual popover in the top layer, placed below the field at its width and flipped when short, so a clipping or scrolling ancestor (an AnchoredSurface, a dialog, a scrolling List) never cuts it off.
 
 ## Styling boundary
 
@@ -77,7 +79,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-combobox`, `kui-combobox__label`, `kui-combobox__hint`, `kui-combobox__control`, `kui-combobox__input`, `kui-combobox__listbox`, `kui-combobox__option` on an element you write; render `Combobox` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-combobox-z-index`, `--kui-color-neutral-on-quiet`, `--kui-color-text-quiet`, `--kui-color-neutral-border-normal`, `--kui-color-text`, `--kui-color-surface`, `--kui-color-surface-raised`, `--kui-color-text-link`, `--kui-color-brand-fill-quiet`, `--kui-font-xs`, `--kui-font-s`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`, `--kui-shadow-l`, `--kui-space-2xs`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-on-quiet`, `--kui-color-text-quiet`, `--kui-color-neutral-border-normal`, `--kui-color-text`, `--kui-color-surface`, `--kui-color-surface-raised`, `--kui-color-text-link`, `--kui-color-brand-fill-quiet`, `--kui-font-xs`, `--kui-font-s`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`, `--kui-shadow-l`, `--kui-space-2xs`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

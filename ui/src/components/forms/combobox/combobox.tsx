@@ -79,7 +79,13 @@ export function Combobox({
           placeholder={placeholder}
           disabled={disabled}
         />
-        <ul class="kui-combobox__listbox" id={listId} role="listbox" hidden>
+        <ul
+          class="kui-combobox__listbox"
+          id={listId}
+          role="listbox"
+          popover="manual"
+          hidden
+        >
           {suggestions.map((suggestion, index) => {
             const option = optionParts(suggestion);
             return (

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 422100,
-  "measuredLargestJavaScriptGzip": 164221,
-  "measuredTotalJavaScriptGzip": 422085,
+  "totalJavaScriptGzip": 422300,
+  "measuredLargestJavaScriptGzip": 164224,
+  "measuredTotalJavaScriptGzip": 422293,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5555,6 +5555,22 @@
         "measuredTotalJavaScriptGzip": 422085,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 422100
+      }
+    },
+    {
+      "at": "2026-10-16T14:02:04.206Z",
+      "reason": "Combobox top-layer listbox (KF-C558Z9)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164221,
+        "measuredTotalJavaScriptGzip": 422085,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 422100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164224,
+        "measuredTotalJavaScriptGzip": 422293,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 422300
       }
     }
   ]

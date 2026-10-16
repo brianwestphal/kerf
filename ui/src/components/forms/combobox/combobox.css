@@ -69,12 +69,14 @@
   }
 }
 
-/* The suggestion list drops below the field over the content that follows. */
+/* The suggestion list drops below the field in the top layer (a manual
+   popover the wiring places), so no clipping ancestor cuts it off. */
 .kui-combobox__listbox {
-  position: absolute;
-  z-index: var(--kui-combobox-z-index, 20);
-  inset: calc(100% + var(--kui-space-2xs)) 0 auto;
-  max-height: remify(240px);
+  --_kui-combobox-max-height: remify(240px);
+
+  position: fixed;
+  inset: auto;
+  max-height: var(--_kui-combobox-max-height);
   margin: 0;
   padding: var(--kui-space-2xs);
   overflow-y: auto;
