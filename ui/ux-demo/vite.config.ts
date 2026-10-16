@@ -106,7 +106,11 @@ export default defineConfig({
         ),
       },
       {
-        find: /^kerfjs\/jsx-runtime$/,
+        // The dev server's automatic JSX transform imports the dev runtime.
+        // Without this alias it resolved to the installed kerfjs, whose
+        // separate signals copy failed the source runtime's Signal check,
+        // so any signal rendered as a JSX child threw.
+        find: /^kerfjs\/jsx-(dev-)?runtime$/,
         replacement: fileURLToPath(
           new URL('../../src/jsx-runtime.ts', import.meta.url),
         ),
