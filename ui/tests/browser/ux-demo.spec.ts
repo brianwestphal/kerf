@@ -6734,7 +6734,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Wrapping Zone Sizing',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  const expectedGroupCount = 31;
+  const expectedGroupCount = 32;
   await expect(groups).toHaveCount(expectedGroupCount);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
