@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164400,
-  "totalJavaScriptGzip": 426600,
-  "measuredLargestJavaScriptGzip": 164318,
-  "measuredTotalJavaScriptGzip": 426507,
+  "totalJavaScriptGzip": 427000,
+  "measuredLargestJavaScriptGzip": 164355,
+  "measuredTotalJavaScriptGzip": 426961,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5795,6 +5795,22 @@
         "measuredTotalJavaScriptGzip": 426507,
         "largestJavaScriptGzip": 164400,
         "totalJavaScriptGzip": 426600
+      }
+    },
+    {
+      "at": "2026-10-17T03:49:42.721Z",
+      "reason": "Merged growth: focusRingInset demos (KF-BZE90H), openPopupMenuAt placement (KF-QGT77X), ColorSwatches/sized specimens on the field column (KF-8YAGME, KF-WH27TY), Checkbox hint (KF-X8F2K5)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164318,
+        "measuredTotalJavaScriptGzip": 426507,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 426600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164355,
+        "measuredTotalJavaScriptGzip": 426961,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 427000
       }
     }
   ]
