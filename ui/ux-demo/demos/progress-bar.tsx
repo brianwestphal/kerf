@@ -33,6 +33,7 @@ export function ProgressBarDemo() {
       <CatalogExample
         label="Determinate"
         viewport={{ width: 'medium' }}
+        align="inline-control"
         note="A native progress element: value of max, a visible label that names it, and the value (or valueText) at the end of the label row. Upload Next File advances it."
       >
         <List gap="xs">
@@ -52,6 +53,7 @@ export function ProgressBarDemo() {
       <CatalogExample
         label="Indeterminate"
         viewport={{ width: 'medium' }}
+        align="inline-control"
         note="Without a value the bar sweeps a band across its track, for work whose size is unknown; the band holds still under reduced motion."
       >
         <ProgressBar
@@ -62,6 +64,7 @@ export function ProgressBarDemo() {
       <CatalogExample
         label="Tones and Compact Size"
         viewport={{ width: 'medium' }}
+        align="inline-control"
         note="tone colors the fill for a status; size compact is a 4px track for a row or table cell. Without a visible label, ariaLabel names it."
       >
         <List gap="xs">

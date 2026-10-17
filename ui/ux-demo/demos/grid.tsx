@@ -14,6 +14,7 @@ export function GridDemo() {
       <CatalogExample
         label="Two Columns"
         note="Related form fields divide the available width evenly with the standard homogeneous-group gap."
+        align="inline-control"
       >
         <Grid columns={2} gap="m">
           <TextField label="Quantity" value="12" />
@@ -52,6 +53,7 @@ export function GridDemo() {
         label="Responsive Form Columns"
         note="Equal tracks stay at least 376px wide, then collapse to one when a second track no longer fits."
         viewport={{ width: 'wide' }}
+        align="inline-control"
       >
         <Grid minColumnWidth={px(376)} gap="m">
           <TextField label="Provider Name" value="Example provider" />

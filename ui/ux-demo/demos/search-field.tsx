@@ -85,7 +85,7 @@ export function SearchFieldDemo() {
       <CatalogExample
         label="Saved-View Form Fields"
         note="The query field shares label, hint, required, and control edges with Web Awesome input without a Toolbar."
-        align="none"
+        align="inline-control"
         viewport={{ layout: 'grid', width: 'compact' }}
       >
         <List gap="m" rootAttributes={{ 'data-demo-token-form': '' }}>

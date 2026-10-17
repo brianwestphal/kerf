@@ -224,8 +224,15 @@ Slider, Switch, Checkbox, RadioGroup, CheckboxGroup, ColorSwatches) uses
 `inline-control`, so field borders and label text share one column across the
 catalog; a field that already insets itself by 8px (Combobox) stays at `none`.
 A field is a control a person fills in or picks a value with inline, swatch
-pickers included. A panel — a multi-part picker or a drop zone such as
-ColorPicker and FilePicker — owns its geometry and stays flush at `none`. A sized
+pickers included. A field composition (fields in a `Grid` or a form `List`)
+uses `inline-control` too. A width-sized content specimen — one that fills a
+sized `viewport` or its container rather than its content, such as a
+ProgressBar, a group-title `Text`, or Web Awesome's Progress Bar, Skeleton, and
+Pagination — joins the same column with `inline-control`, so a bar's label
+lines up with the example label and note text. A panel — a multi-part picker or
+a drop zone such as ColorPicker and FilePicker, or a framed specimen such as
+Web Awesome's Zoomable Frame — owns its geometry and stays flush at `none`, as
+does an edge-to-edge composition (a toolbar, tab bar, or pane). A sized
 `viewport` takes the alignment offset out of its width, so it still ends at the
 example's inline-end edge.
 

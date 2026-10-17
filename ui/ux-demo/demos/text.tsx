@@ -51,6 +51,7 @@ export function TextDemo() {
         note='size="medium" keeps a heading at the 16px body size with its heading weight, for a group title inside a list; it wraps a long name instead of truncating it.'
         viewport={{ width: 'compact' }}
         rootAttributes={{ 'data-demo-section': 'group-title' }}
+        align="inline-control"
       >
         <Text variant="h3" size="medium" data-demo-copy="medium-heading">
           Attachments from the March design review with the extended team

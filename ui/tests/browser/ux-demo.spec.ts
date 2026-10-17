@@ -3604,6 +3604,13 @@ test('puts every Kerf field demo on one border and text column', async ({
     ['radio-group', '.kui-radio-group__circle', '.kui-radio-group__label'],
     ['checkbox-group', '.kui-checkbox__box', '.kui-checkbox-group__label'],
     ['color-swatches', null, '.kui-color-swatches__label'],
+    // Field compositions and width-sized content specimens join the column:
+    // a Grid's and a saved-view form's fields, a ProgressBar's label, and a
+    // group-title Text in a compact frame.
+    ['grid', '.kui-text-field__box', '.kui-text-field__label'],
+    ['search-field', '.kui-text-field__box', '.kui-text-field__label'],
+    ['progress-bar', null, '.kui-progress-bar__label'],
+    ['text', null, '[data-demo-copy="medium-heading"]'],
   ] as const;
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -3931,9 +3938,11 @@ test('gives container-sized Web Awesome specimens a width instead of collapsing'
 
     await page.goto('/?component=wa-skeleton');
     await expect(page.locator('wa-skeleton').first()).toBeVisible();
+    // The compact frame sits on the 8px field column, which comes out of
+    // its width at a narrow stage.
     for (const line of await hostWidths('wa-skeleton'))
       expect(line, `skeleton width at ${width}`).toBeCloseTo(
-        Math.min(440, width - 32),
+        Math.min(440, width - 40),
         0,
       );
 
@@ -3957,6 +3966,63 @@ test('gives container-sized Web Awesome specimens a width instead of collapsing'
     expect(box.width, `zoomable frame width at ${width}`).toBeGreaterThan(300);
     expect(box.iframe).toBeGreaterThan(0);
     expect(box.overrun).toBeLessThan(0.5);
+  }
+});
+
+test('puts width-sized Web Awesome specimens on the Kerf field border column', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  // Each specimen's inline-start edge, relative to its example, and how far
+  // its frame runs past the example's inline-end edge.
+  const edges = (selector: string) =>
+    page.locator(selector).evaluateAll((elements) =>
+      elements.map((element) => {
+        const example = element
+          .closest('[data-catalog-example]')!
+          .getBoundingClientRect();
+        const frame = element.closest('[data-catalog-example-viewport]');
+        return {
+          x: element.getBoundingClientRect().x - example.x,
+          overrun: frame
+            ? frame.getBoundingClientRect().right - example.right
+            : 0,
+        };
+      }),
+    );
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/?component=text-field');
+    const column = await page
+      .locator('[data-demo="text-field"] .kui-text-field__box')
+      .first()
+      .evaluate(
+        (element) =>
+          element.getBoundingClientRect().x -
+          element.closest('[data-catalog-example]')!.getBoundingClientRect().x,
+      );
+    for (const [route, selector] of [
+      ['wa-progress-bar', 'wa-progress-bar'],
+      ['wa-skeleton', 'wa-skeleton'],
+      // Pagination's host is display: contents; its frame carries the offset.
+      ['wa-pagination', '[data-catalog-example-viewport]'],
+    ] as const) {
+      await page.goto(`/?component=${route}`);
+      await expect(page.locator(`[data-demo="${route}"]`)).toBeVisible();
+      const found = await edges(`[data-demo="${route}"] ${selector}`);
+      expect(found.length, `${route} specimens`).toBeGreaterThan(0);
+      for (const edge of found) {
+        expect(edge.x, `${route} edge at ${width}`).toBeCloseTo(column, 0);
+        expect(edge.overrun, `${route} overrun at ${width}`).toBeLessThan(0.5);
+      }
+    }
+    // A framed specimen owns its geometry: its frame stays flush.
+    await page.goto('/?component=wa-zoomable-frame');
+    await expect(page.locator('wa-zoomable-frame')).toBeVisible();
+    const [frame] = await edges(
+      '[data-demo="wa-zoomable-frame"] [data-catalog-example-viewport]',
+    );
+    expect(frame!.x).toBeCloseTo(0, 0);
   }
 });
 

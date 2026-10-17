@@ -1058,6 +1058,24 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
 const unalignedFormSpecimens: ReadonlySet<WebAwesomeCatalogId> =
   new Set<WebAwesomeCatalogId>(['wa-rating']);
 
+// Width-sized content specimens join the same field column as the Kerf
+// ProgressBar demo: a bar's or skeleton's edge, and Pagination's bordered
+// page buttons, sit on the field border column instead of flush at the
+// example's edge. Panels and framed specimens (Zoomable Frame) keep their
+// own geometry.
+const alignedContentSpecimens: ReadonlySet<WebAwesomeCatalogId> =
+  new Set<WebAwesomeCatalogId>([
+    'wa-progress-bar',
+    'wa-skeleton',
+    'wa-pagination',
+  ]);
+
+const specimenAlign = (entry: (typeof webAwesomeCatalog)[number]) =>
+  (entry.category === 'Forms' && !unalignedFormSpecimens.has(entry.id)) ||
+  alignedContentSpecimens.has(entry.id)
+    ? 'inline-control'
+    : 'none';
+
 // A specimen whose host sizes to its container rather than to its content
 // (Known Date's segments and hint, Slider's track, a progress or skeleton
 // bar, a zoomable frame's iframe) collapses in the shrink-to-fit specimen
@@ -1071,6 +1089,9 @@ const sizedSpecimens: Partial<
   'wa-progress-bar': { width: 'medium' },
   'wa-skeleton': { width: 'compact' },
   'wa-zoomable-frame': { width: 'medium' },
+  // Pagination's host is display: contents, so it cannot take the column
+  // offset itself; a plain frame carries it.
+  'wa-pagination': {},
 };
 
 export const webAwesomeComponentDemos: Record<
@@ -1087,11 +1108,7 @@ export const webAwesomeComponentDemos: Record<
         <CatalogExample
           label={entry.name}
           note={`Web Awesome 3.14 · ${entry.category}`}
-          align={
-            entry.category === 'Forms' && !unalignedFormSpecimens.has(entry.id)
-              ? 'inline-control'
-              : 'none'
-          }
+          align={specimenAlign(entry)}
           viewport={sizedSpecimens[entry.id]}
         >
           {specimenRenderers[entry.id]()}
