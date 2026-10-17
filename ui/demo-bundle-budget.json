@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "largestJavaScriptGzip": 164400,
-  "totalJavaScriptGzip": 427000,
-  "measuredLargestJavaScriptGzip": 164356,
-  "measuredTotalJavaScriptGzip": 426980,
+  "largestJavaScriptGzip": 164600,
+  "totalJavaScriptGzip": 427200,
+  "measuredLargestJavaScriptGzip": 164528,
+  "measuredTotalJavaScriptGzip": 427148,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5827,6 +5827,22 @@
         "measuredTotalJavaScriptGzip": 426980,
         "largestJavaScriptGzip": 164400,
         "totalJavaScriptGzip": 427000
+      }
+    },
+    {
+      "at": "2026-10-17T04:36:21.034Z",
+      "reason": "Merged growth: Switch hint (KF-YG5CM2), WA control alignment (KF-44TDSF), CatalogExample grid alignment (KF-EE4WEN)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164356,
+        "measuredTotalJavaScriptGzip": 426980,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 427000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164528,
+        "measuredTotalJavaScriptGzip": 427148,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427200
       }
     }
   ]
