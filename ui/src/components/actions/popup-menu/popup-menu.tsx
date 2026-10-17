@@ -130,7 +130,11 @@ export type PopupMenuProps = PopupMenuTrigger & {
   /** Trigger icon, typically a `LucideIcon`, before any visible text. */
   icon?: KerfUiContent;
   items: readonly PopupMenuEntry[];
-  /** Where the menu opens relative to its trigger. Defaults to `bottom-start`. */
+  /**
+   * Where the menu opens relative to its trigger, or to its anchor point for
+   * a `context` menu (`top-start` opens above the point). Defaults to
+   * `bottom-start`.
+   */
   placement?: PopupMenuPlacement;
   /** Show the disclosure caret after the trigger content. Defaults to true. */
   caret?: boolean;
@@ -277,8 +281,9 @@ function requestOpen(menu: PopupMenuElement, detail: PopupMenuOpenDetail) {
 
 /**
  * Open a PopupMenu at viewport pointer coordinates. A `context` menu rendered
- * without `anchor` moves its invisible anchor there (a menu rendered with
- * `anchor` opens with `openPopupMenu` instead). A button-triggered menu (such
+ * without `anchor` moves its invisible anchor there and opens at its
+ * `placement` (a menu rendered with `anchor` opens with `openPopupMenu`
+ * instead). A button-triggered menu (such
  * as a `ListActionRow` trailing menu) opens `bottom-start` from the point,
  * like a context menu, for this opening only; its next opening returns to its
  * trigger and placement. Needs the `/register` entry.

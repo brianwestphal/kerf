@@ -204,10 +204,17 @@ export function installPopupMenus(doc: Document = document): void {
     if (opener instanceof HTMLButtonElement && opener.disabled) return;
     if (isOpen(menu)) closeMenu(menu, false);
     const context = root.getAttribute('data-trigger') === 'context';
-    const anchor: PopupAnchor =
-      point && !context ? pointAnchor(point.x, point.y) : opener;
+    // A button-triggered menu opened at a pointer point (openPopupMenuAt)
+    // opens bottom-start from it, as pointer menus do, for that opening only:
+    // its placement describes where it sits against its trigger. A context
+    // menu's anchor is always its point, so its placement (top-start above
+    // the point, say) applies there.
+    const pointOpened = point !== undefined && !context;
+    const anchor: PopupAnchor = pointOpened
+      ? pointAnchor(point.x, point.y)
+      : opener;
     const placement = (
-      point || context
+      pointOpened
         ? 'bottom-start'
         : (root.getAttribute('data-placement') ?? 'bottom-start')
     ) as PopupPlacement;

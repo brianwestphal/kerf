@@ -766,7 +766,10 @@ belongs to — never inside an app wrapper with `position: fixed`, a 1px size,
 or a `z-index` (the open menu is in the browser top layer). In the app's
 `contextmenu` handler, prevent the browser menu, store
 `{ x: event.clientX, y: event.clientY }` in the signal the menu renders as
-`anchor`, and call `openPopupMenu` with the menu. Because the point is part of the
+`anchor`, and call `openPopupMenu` with the menu. Its `placement` applies at
+the point: the default `bottom-start` opens below it, and `top-start` or
+`top-end` opens above it (for a menu anchored to a footer or composer), still
+flipping when that side has no room. Because the point is part of the
 menu's own template, it survives re-renders and a rebuilt menu, so the app
 never re-applies it. `openPopupMenuAt` still opens a menu rendered without `anchor` at a given
 point. Call `closePopupMenu` for programmatic dismissal. A pointer-anchored menu

@@ -284,19 +284,36 @@ describe('PopupMenu register: opening and closing', () => {
     });
   });
 
-  it('opens a context menu from its anchor, bottom-start', async () => {
+  it('opens a context menu from its anchor at its placement', async () => {
     const { root, trigger, menu } = setup({
       context: true,
       label: 'Row',
       text: undefined,
     } as Partial<PopupMenuProps>);
-    root.dataset.placement = 'top-end';
+    // The default is bottom-start at the point.
     openPopupMenuAt(root, 5, 6);
     expect(isShown(menu)).toBe(true);
     await flush();
     expect(floating.positions.at(-1)).toMatchObject({
       anchor: trigger,
       placement: 'bottom-start',
+    });
+    closePopupMenu(root);
+    // A context menu's anchor is its point, so its placement applies there,
+    // whether it opens at a pointer point or at its rendered anchor.
+    root.dataset.placement = 'top-end';
+    openPopupMenuAt(root, 5, 6);
+    await flush();
+    expect(floating.positions.at(-1)).toMatchObject({
+      anchor: trigger,
+      placement: 'top-end',
+    });
+    closePopupMenu(root);
+    openPopupMenu(root);
+    await flush();
+    expect(floating.positions.at(-1)).toMatchObject({
+      anchor: trigger,
+      placement: 'top-end',
     });
   });
 
