@@ -309,6 +309,70 @@ describe('positionAnchored() / autoReposition()', () => {
     window.dispatchEvent(new Event('scroll'));
     expect(el.style.top).toBe('320px'); // stopped following
   });
+  describe('autoReposition follows the anchor size', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('repositions when the anchor resizes and disconnects on dispose', () => {
+      const observed: Element[] = [];
+      let callback: (() => void) | undefined;
+      const disconnect = vi.fn();
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(fn: () => void) {
+            callback = fn;
+          }
+          observe(target: Element) {
+            observed.push(target);
+          }
+          disconnect = disconnect;
+        },
+      );
+      setViewport(1000, 800);
+      const anchor = anchorAt({ left: 100, right: 150, top: 200, bottom: 220 });
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+      const stop = autoReposition(el, anchor, { gap: 0 });
+      expect(observed).toEqual([anchor]);
+      expect(el.style.top).toBe('220px');
+
+      // The anchor grows a line: its bottom edge moves with no scroll/resize.
+      anchor.getBoundingClientRect = rectFn({
+        left: 100,
+        right: 150,
+        top: 200,
+        bottom: 260,
+      });
+      callback!();
+      expect(el.style.top).toBe('260px');
+
+      stop();
+      expect(disconnect).toHaveBeenCalledOnce();
+    });
+
+    it('still follows scroll and resize where ResizeObserver is unavailable', () => {
+      vi.stubGlobal('ResizeObserver', undefined);
+      setViewport(1000, 800);
+      const anchor = anchorAt({ left: 100, right: 150, top: 200, bottom: 220 });
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+      const stop = autoReposition(el, anchor, { gap: 0 });
+      anchor.getBoundingClientRect = rectFn({
+        left: 100,
+        right: 150,
+        top: 200,
+        bottom: 260,
+      });
+      window.dispatchEvent(new Event('resize'));
+      expect(el.style.top).toBe('260px');
+      expect(() => stop()).not.toThrow();
+    });
+  });
+
   describe('a containing block for fixed descendants (a transformed/filtered dialog)', () => {
     const anchorRect = {
       left: 100,

@@ -26,7 +26,12 @@ help that leaves focus on its trigger. Escape and an outside press dismiss it;
 `placement` (`bottom` or `top`), `align` (`start` or `end`), `gap`, and
 `viewportMargin` feed the shared `kerfjs/overlay` positioning core: it flips
 vertically when the other side fits, keeps the surface `viewportMargin` (default
-8px) inside the viewport edges, and follows scroll and resize. The surface fits
+8px) inside the viewport edges, and follows scroll, resize, and changes to the
+anchor's own size. Anchor help for a field to the whole field rather than to a
+button inside it: the surface then clears every line of a field that wraps, and
+moves as the field grows (a SearchField's trailing help action opens beside
+`[data-component="search-field"]`, which also keeps typing in the field from
+dismissing it). The surface fits
 its height to the room beside the anchor: when neither side holds it, it opens
 on the roomier side, caps its height to that room, and scrolls its content.
 The room is exposed to the content as `--kui-anchored-surface-available-height`

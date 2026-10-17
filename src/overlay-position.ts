@@ -407,8 +407,11 @@ function fixedBottom(el: HTMLElement, originY: number, scaleY: number): number {
 /**
  * Keep `el` positioned against `anchor` (via {@link positionAnchored}) as the page
  * scrolls or resizes. Positions once immediately, then re-runs on `scroll`
- * (capture phase — catches scrolls in any inner container, not just `window`) and
- * `resize`. Returns a disposer that removes the listeners.
+ * (capture phase — catches scrolls in any inner container, not just `window`),
+ * `resize`, and, where `ResizeObserver` exists, whenever the anchor's own size
+ * changes (a field that grows a line as it fills), so `el` keeps clear of an
+ * anchor that grows under it. Returns a disposer that removes the listeners
+ * and the observer.
  */
 export function autoReposition(
   el: HTMLElement,
@@ -419,8 +422,12 @@ export function autoReposition(
   reposition();
   window.addEventListener('scroll', reposition, true);
   window.addEventListener('resize', reposition);
+  const RO = globalThis.ResizeObserver;
+  const observer = RO ? new RO(reposition) : undefined;
+  observer?.observe(anchor);
   return () => {
     window.removeEventListener('scroll', reposition, true);
     window.removeEventListener('resize', reposition);
+    observer?.disconnect();
   };
 }

@@ -237,6 +237,42 @@ test('popover(): positions below a real anchor, left-aligned (real layout)', asy
   expect(Math.abs(popBox.x - anchorBox.x)).toBeLessThan(2);
 });
 
+test('popover(): follows an anchor that grows, with no scroll or resize', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    const anchor = document.createElement('textarea');
+    anchor.id = 'grow-anchor';
+    Object.assign(anchor.style, {
+      position: 'absolute',
+      left: '120px',
+      top: '120px',
+      height: '40px',
+    });
+    document.body.appendChild(anchor);
+    const { popover } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    (window as any)._pop = popover(
+      anchor,
+      raw('<div class="grow-body" style="width:140px;height:48px">help</div>'),
+      { gap: 6, dismiss: false },
+    );
+  });
+  const gapBelow = async () => {
+    const anchorBox = (await page.locator('#grow-anchor').boundingBox())!;
+    const popBox = (await page.locator('.grow-body').boundingBox())!;
+    return popBox.y - (anchorBox.y + anchorBox.height);
+  };
+  expect(Math.abs((await gapBelow()) - 6)).toBeLessThan(2);
+  // The anchor grows a line: only a ResizeObserver can see that.
+  await page.locator('#grow-anchor').evaluate((anchor) => {
+    (anchor as HTMLElement).style.height = '120px';
+  });
+  await expect
+    .poll(async () => Math.abs((await gapBelow()) - 6))
+    .toBeLessThan(2);
+});
+
 test('tooltip(): shows on real hover and hides on leave', async ({ page }) => {
   await page.evaluate(() => {
     const anchor = document.createElement('button');

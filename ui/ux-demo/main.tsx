@@ -1104,7 +1104,10 @@ const stopActions = delegateActions(app, 'click', {
       searchFieldHelp.close();
       return;
     }
-    const handle = openAnchoredSurface(element, () => <SearchFieldHelp />, {
+    // Anchor to the whole field, not its help button: the help then clears
+    // every line of a field that wraps, and follows the field as it grows.
+    const field = element.closest('[data-component="search-field"]') ?? element;
+    const handle = openAnchoredSurface(field, () => <SearchFieldHelp />, {
       label: 'Search Syntax',
       align: 'end',
       initialFocus: false,
