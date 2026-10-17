@@ -617,15 +617,11 @@
     text-transform: uppercase;
   }
 
-  /* The color picker has no bordered field shell, so its trigger needs the
-     content-item's 8px inline outer inset. Checkbox and radio groups keep
-     their option region flush: each box or circle sits on the group's
-     inline-start edge, where a Kerf Checkbox or RadioGroup draws it, while
-     the group label and hint stay on the 9px text column. */
-  wa-color-picker::part(form-control-input) {
-    margin-inline: var(--kui-layout-inline-margin, remify(8px));
-  }
-
+  /* Checkbox and radio groups and the color picker keep their control region
+     flush: each box, circle, or swatch trigger sits on the host's
+     inline-start edge, where a Kerf Checkbox, RadioGroup, or ColorField draws
+     it, while the label and hint stay on the 9px text column. The slider
+     alone insets its complete interactive region by the shared 8px. */
   wa-slider::part(slider) {
     margin-inline: var(--kui-layout-inline-margin, remify(8px));
   }

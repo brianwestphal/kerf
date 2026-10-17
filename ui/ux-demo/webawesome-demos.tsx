@@ -1044,17 +1044,15 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 };
 
-// Checkbox and radio specimens use the same inline-control alignment as the
-// Kerf Checkbox and RadioGroup demos: the theme keeps each box and circle on
-// the host's inline-start edge, so the catalog offsets the specimen to put the
-// control column and the group label's text column where Kerf's land.
-const inlineControlSpecimens: ReadonlySet<WebAwesomeCatalogId> =
-  new Set<WebAwesomeCatalogId>([
-    'wa-checkbox',
-    'wa-checkbox-group',
-    'wa-radio',
-    'wa-radio-group',
-  ]);
+// Form specimens use the same inline-control alignment as the Kerf TextField,
+// Select, Switch, Checkbox, and RadioGroup demos. The theme keeps each field
+// border, switch track, color swatch, box, and circle on the host's
+// inline-start edge with the label and hint on the 9px text column, so this
+// offset puts the control and text columns where Kerf's land. Rating has no
+// Kerf counterpart, Slider keeps its own 8px track inset, and Tag Input is not
+// yet themed, so those keep their natural geometry.
+const unalignedFormSpecimens: ReadonlySet<WebAwesomeCatalogId> =
+  new Set<WebAwesomeCatalogId>(['wa-rating', 'wa-slider', 'wa-tag-input']);
 
 export const webAwesomeComponentDemos: Record<
   WebAwesomeCatalogId,
@@ -1071,7 +1069,9 @@ export const webAwesomeComponentDemos: Record<
           label={entry.name}
           note={`Web Awesome 3.14 · ${entry.category}`}
           align={
-            inlineControlSpecimens.has(entry.id) ? 'inline-control' : 'none'
+            entry.category === 'Forms' && !unalignedFormSpecimens.has(entry.id)
+              ? 'inline-control'
+              : 'none'
           }
         >
           {specimenRenderers[entry.id]()}

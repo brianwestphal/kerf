@@ -3544,6 +3544,160 @@ test('puts Web Awesome checkbox and radio groups on the Kerf toggle control colu
   }
 });
 
+test('puts Web Awesome fields on the Kerf field border and text columns', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  // The x of the first visible character of `root`'s text, through shadow
+  // roots and slots, so the assertion follows the glyphs a person aligns.
+  const textX = (root: Element) => {
+    const walk = (node: Node): number | null => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent ?? '';
+        const index = text.search(/\S/);
+        if (index >= 0) {
+          const range = document.createRange();
+          range.setStart(node, index);
+          range.setEnd(node, index + 1);
+          const rect = range.getBoundingClientRect();
+          if (rect.width > 0) return rect.x;
+        }
+      }
+      const children: Node[] =
+        node instanceof HTMLSlotElement
+          ? node.assignedNodes({ flatten: true })
+          : [
+              ...((node as Element).shadowRoot?.childNodes ?? []),
+              ...node.childNodes,
+            ];
+      for (const child of children) {
+        const x = walk(child);
+        if (x !== null) return x;
+      }
+      return null;
+    };
+    return walk(root);
+  };
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/?component=text-field');
+    const kerfField = await page
+      .locator(
+        '[data-demo="text-field"] .kui-text-field:has(.kui-text-field__hint)',
+      )
+      .first()
+      .evaluate((element, source) => {
+        const x = new Function(`return ${source}`)() as (
+          root: Element,
+        ) => number | null;
+        return {
+          border: element
+            .querySelector('.kui-text-field__box')!
+            .getBoundingClientRect().x,
+          label: x(element.querySelector('.kui-text-field__label')!),
+          hint: x(element.querySelector('.kui-text-field__hint')!),
+        };
+      }, textX.toString());
+    await page.goto('/?component=switch');
+    const kerfSwitch = await page
+      .locator('[data-demo="switch"] .kui-switch')
+      .first()
+      .evaluate((element, source) => {
+        const x = new Function(`return ${source}`)() as (
+          root: Element,
+        ) => number | null;
+        return {
+          border: element
+            .querySelector('.kui-switch__track')!
+            .getBoundingClientRect().x,
+          label: x(element.querySelector('.kui-switch__label')!),
+        };
+      }, textX.toString());
+
+    // [route, host, bordered or control part, label part, has a hint]
+    const specimens = [
+      ['wa-input', 'wa-input', 'base', 'form-control-label', true],
+      ['wa-select', 'wa-select', 'combobox', 'form-control-label', true],
+      ['wa-option', 'wa-select', 'combobox', 'form-control-label', false],
+      ['wa-textarea', 'wa-textarea', 'base', 'form-control-label', true],
+      [
+        'wa-number-input',
+        'wa-number-input',
+        'base',
+        'form-control-label',
+        true,
+      ],
+      ['wa-time-input', 'wa-time-input', 'base', 'form-control-label', false],
+      [
+        'wa-known-date',
+        'wa-known-date',
+        'field-input',
+        'form-control-label',
+        true,
+      ],
+      ['wa-otp-input', 'wa-otp-input', 'segment', 'label', true],
+      [
+        'wa-color-picker',
+        'wa-color-picker',
+        'trigger',
+        'form-control-label',
+        false,
+      ],
+      ['wa-switch', 'wa-switch', 'control', 'base', false],
+    ] as const;
+    for (const [route, tag, borderPart, labelPart, hasHint] of specimens) {
+      await page.goto(`/?component=${route}`);
+      const host = page.locator(tag).first();
+      await expect
+        .poll(() =>
+          host.evaluate(
+            (element, part) =>
+              (element.shadowRoot
+                ?.querySelector(`[part~="${part}"]`)
+                ?.getBoundingClientRect().width ?? 0) > 0,
+            borderPart,
+          ),
+        )
+        .toBe(true);
+      const geometry = await host.evaluate(
+        (element, [borderPart, labelPart, source]) => {
+          const x = new Function(`return ${source}`)() as (
+            root: Element,
+          ) => number | null;
+          const part = (name: string) =>
+            element.shadowRoot!.querySelector(`[part~="${name}"]`);
+          const hint = part('hint');
+          return {
+            border: part(borderPart)!.getBoundingClientRect().x,
+            label: x(part(labelPart)!),
+            hint: hint ? x(hint) : null,
+          };
+        },
+        [borderPart, labelPart, textX.toString()] as const,
+      );
+      // A switch's track and label text land on the Kerf Switch's; every
+      // other field's border (or the Color Picker's swatch) lands on a Kerf
+      // TextField's, with its label and hint on the same 9px text column.
+      const kerf = tag === 'wa-switch' ? kerfSwitch : kerfField;
+      expect(geometry.border, `${route} border at ${width}`).toBeCloseTo(
+        kerf.border,
+        0,
+      );
+      expect(geometry.label, `${route} label at ${width}`).toBeCloseTo(
+        kerf.label!,
+        0,
+      );
+      if (hasHint) {
+        expect(geometry.hint, `${route} hint at ${width}`).toBeCloseTo(
+          kerfField.hint!,
+          0,
+        );
+      }
+    }
+  }
+});
+
 test('styles and aligns OTP label and hint like a bordered text field', async ({
   page,
 }) => {

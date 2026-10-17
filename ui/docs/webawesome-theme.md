@@ -126,14 +126,23 @@ field's outer border. This covers Input, Known Date, Number Input, OTP Input,
 Select, Textarea, and Time Input hints.
 OTP Input's label and hint both use the 9px field-text inset.
 
-Checkbox Group and Radio Group follow Kerf's `Checkbox` and `RadioGroup`: the
-option region stays flush, so each box or circle sits on the group's
-inline-start edge, while the group label and hint use the same 9px text column
-as field labels. Stacked checkboxes and radios therefore share one control
-column with Kerf's own toggle controls; place the group where you would place a
-Kerf `Checkbox` or `RadioGroup` rather than adding margin to its parts. The
-Color Picker trigger receives the shared 8px inline outer inset through
-`::part(form-control-input)` because it has no bordered field shell. Slider's complete interactive region receives the
+Checkbox Group, Radio Group, and Color Picker follow Kerf's `Checkbox`,
+`RadioGroup`, and `ColorField`: the control region stays flush, so each box,
+circle, or swatch trigger sits on the host's inline-start edge, while the label
+and hint use the same 9px text column as field labels. Stacked checkboxes and
+radios therefore share one control column with Kerf's own toggle controls;
+place the group where you would place a Kerf `Checkbox` or `RadioGroup` rather
+than adding margin to its parts.
+
+Bordered fields (Input, Known Date, Number Input, OTP Input, Select, Textarea,
+and Time Input) and Switch likewise draw their border or track on the host's
+inline-start edge, exactly where Kerf's `TextField`, `Select`, and `Switch`
+draw theirs, with the label and hint on the same 9px text column. Place a Web
+Awesome field where you would place the Kerf field it stands in for, so a mixed
+form shares one border column and one text column; the UX catalog gives these
+specimens the same `inline-control` alignment as the Kerf field demos.
+
+Slider's complete interactive region receives the
 shared 8px logical inline outer inset through `::part(slider)`, keeping its
 track, markers, references, and hint together without moving the label.
 

@@ -398,10 +398,12 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   When a dialog provides another dismissal affordance, add `hide-actions` to
   the `wa-dialog` host; the theme hides its directly exported `header-actions`
   part without an unsupported chained `::part()` selector.
-  Checkbox and Radio Group option regions stay flush, so each box or circle
-  sits on the group's inline-start edge like Kerf's `Checkbox` and
-  `RadioGroup`, with the group label and hint on the 9px text column. The
-  unbordered Color Picker trigger receives the shared 8px inline outer inset.
+  Checkbox and Radio Group option regions and the Color Picker trigger stay
+  flush, so each box, circle, or swatch sits on the host's inline-start edge
+  like Kerf's `Checkbox`, `RadioGroup`, and `ColorField`, with the label and
+  hint on the 9px text column. Bordered fields and Switch draw their border or
+  track on that same edge like `TextField`, `Select`, and `Switch`, so place a
+  Web Awesome field exactly where the Kerf field would go.
   Slider's complete interactive region uses the shared 8px logical inline outer
   inset without shifting its already-aligned label.
   Known Date's Month/Day/Year captions and bordered text-like field hints align
