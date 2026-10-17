@@ -354,6 +354,45 @@ export function SurfaceScaffoldDemo() {
         </DialogSurface>
       </CatalogExample>
       <CatalogExample
+        label="Alert Dialog"
+        note="A confirmation before a destructive action is an alert dialog, described by its message; it closes only from its buttons or Escape."
+        align="inline-control"
+      >
+        <Button
+          tone="danger"
+          action="show-dialog"
+          rootAttributes={{ 'data-dialog-id': 'catalog-alert-dialog' }}
+        >
+          Delete Topic
+        </Button>
+        <DialogSurface
+          id="catalog-alert-dialog"
+          label="Delete Topic"
+          alert
+          describedBy="catalog-alert-dialog-message"
+          size="small"
+          footer={
+            <>
+              <Button rootAttributes={{ 'data-dialog-close': '' }}>
+                Cancel
+              </Button>
+              <Button
+                tone="danger"
+                rootAttributes={{ 'data-dialog-close': '' }}
+              >
+                Delete
+              </Button>
+            </>
+          }
+        >
+          <ListInsetText>
+            <Text variant="span" id="catalog-alert-dialog-message">
+              Delete this topic? Its saved stories are removed too.
+            </Text>
+          </ListInsetText>
+        </DialogSurface>
+      </CatalogExample>
+      <CatalogExample
         label="Capped Modal"
         note="A 480px preferred width and typed 360px maximum stay viewport-bounded while the footer remains outside the scrolling body."
         align="inline-control"

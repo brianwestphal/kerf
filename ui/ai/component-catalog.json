@@ -2171,6 +2171,7 @@
         "small, medium, or large dialog",
         "data-* rootAttributes (a data-key) so sibling dialogs morph by identity",
         "modal, side-sheet, fullscreen, or bottom-sheet dialog",
+        "alert dialog (alert): role=\"alertdialog\" on the native dialog, described by its message through describedBy",
         "bottom sheet attached to the bottom edge: square bottom corners, safe-area and virtual-keyboard clearance behind the panel, slide (or standard) enter and exit motion, and an optional resizable top grabber bounded by minHeight and maxHeight",
         "typed modal preferred width, viewport gutter, and maximum height, including viewport cap",
         "definite viewport-bounded modal height and a fill body layout for one child",

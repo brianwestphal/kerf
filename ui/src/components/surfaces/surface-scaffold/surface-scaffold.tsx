@@ -99,6 +99,14 @@ export interface DialogSurfaceOptions {
    * copy in the body; rendered as `aria-describedby` on the `<dialog>`.
    */
   describedBy?: string;
+  /**
+   * An alert dialog: a confirmation that interrupts the person to report
+   * something urgent or ask before a destructive action ("Delete this
+   * topic?"). Renders `role="alertdialog"` on the `<dialog>`; set
+   * `describedBy` to the element holding the message, and leave
+   * `lightDismiss` off so the person answers it.
+   */
+  alert?: boolean;
   /** The body content. */
   children: KerfUiContent;
   /**
@@ -219,6 +227,7 @@ export function DialogSurface({
   label,
   labelledBy,
   describedBy,
+  alert = false,
   heading,
   headerActions,
   footer,
@@ -273,6 +282,7 @@ export function DialogSurface({
       {...filterDataAttributes(rootAttributes, DIALOG_SURFACE_PROTECTED)}
       id={id}
       class={`kui-dialog-surface ${className}`.trim()}
+      role={alert ? 'alertdialog' : undefined}
       aria-label={label}
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}

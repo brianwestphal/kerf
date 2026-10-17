@@ -4703,6 +4703,14 @@ interface DialogSurfaceOptions {
      * copy in the body; rendered as `aria-describedby` on the `<dialog>`.
      */
     describedBy?: string;
+    /**
+     * An alert dialog: a confirmation that interrupts the person to report
+     * something urgent or ask before a destructive action ("Delete this
+     * topic?"). Renders `role="alertdialog"` on the `<dialog>`; set
+     * `describedBy` to the element holding the message, and leave
+     * `lightDismiss` off so the person answers it.
+     */
+    alert?: boolean;
     /** The body content. */
     children: KerfUiContent;
     /**
@@ -4817,7 +4825,7 @@ interface DialogSurfaceOptions {
  * floating header and footer measurement, the bottom sheet's keyboard
  * clearance and grabber, and re-render resilience while open.
  */
-declare function DialogSurface({ id, label, labelledBy, describedBy, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ id, label, labelledBy, describedBy, alert, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */

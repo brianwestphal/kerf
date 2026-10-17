@@ -47,6 +47,32 @@ test('dialog names follow the label, a native name change, and repeated opens', 
   await expect(dialog).not.toHaveAttribute('open', '');
 });
 
+// `alert` exposes a destructive confirmation as an alert dialog with its
+// message as the description; it closes from its own buttons, not a press on
+// the backdrop.
+test('an alert DialogSurface is an alertdialog described by its message', async ({
+  page,
+}) => {
+  await page.goto('/?component=surface-scaffold');
+  await page.getByRole('button', { name: 'Delete Topic', exact: true }).click();
+  const alert = page.getByRole('alertdialog', { name: 'Delete Topic' });
+  await expect(alert).toBeVisible();
+  await expect(alert).toHaveAccessibleDescription(
+    'Delete this topic? Its saved stories are removed too.',
+  );
+  await expect(page.getByRole('dialog', { name: 'Delete Topic' })).toHaveCount(
+    0,
+  );
+  const box = (await alert.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, Math.max(4, box.y - 24));
+  await expect(alert).toBeVisible();
+  await alert.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(page.locator('#catalog-alert-dialog')).not.toHaveAttribute(
+    'open',
+    '',
+  );
+});
+
 test('modal viewport bounds retain actions and native focus across resize and reopen', async ({
   page,
 }, testInfo) => {

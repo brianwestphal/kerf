@@ -370,7 +370,10 @@ supporting line (or app-owned summary copy in the body) is the dialog's
 accessible description; `WorkbenchDialog` wires its title `description`
 automatically (`<id>-description`), and `ListDetailDialog` takes an explicit
 `describedBy`, since its detail description describes the selection, not the
-dialog. For a **page or view**
+dialog. A `DialogSurface` that asks before a destructive action ("Delete this
+topic?") sets `alert`, which renders `role="alertdialog"` on the native
+`<dialog>`; pair it with `describedBy` on the message so it is announced, and
+leave `lightDismiss` off so the person answers it. For a **page or view**
 title, pass `headingLevel` (usually `1`) to `ToolbarText`: it then exposes
 `role="heading"` with a matching `aria-level`, giving the view a heading landmark
 so screen-reader heading navigation and "main heading" semantics work — the same

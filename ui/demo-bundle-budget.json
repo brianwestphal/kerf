@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 428000,
-  "measuredLargestJavaScriptGzip": 164542,
-  "measuredTotalJavaScriptGzip": 427915,
+  "totalJavaScriptGzip": 428200,
+  "measuredLargestJavaScriptGzip": 164543,
+  "measuredTotalJavaScriptGzip": 428125,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5955,6 +5955,22 @@
         "measuredTotalJavaScriptGzip": 427915,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 428000
+      }
+    },
+    {
+      "at": "2026-10-17T23:12:23.087Z",
+      "reason": "DialogSurface alert prop and its Alert Dialog catalog example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164542,
+        "measuredTotalJavaScriptGzip": 427915,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 428000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 428125,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 428200
       }
     }
   ]

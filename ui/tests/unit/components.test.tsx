@@ -358,6 +358,24 @@ describe('production UI primitives', () => {
     );
     expect(described.outerHTML).not.toContain('spoofed');
 
+    // alert marks a destructive confirmation as an alert dialog, described by
+    // its message; a plain dialog keeps the native dialog role, and a
+    // rootAttributes spoof never sets a role.
+    expect(dialog.hasAttribute('role')).toBe(false);
+    expect(described.hasAttribute('role')).toBe(false);
+    host.innerHTML = asHtml(
+      DialogSurface({
+        label: 'Delete Topic',
+        alert: true,
+        describedBy: 'delete-message',
+        rootAttributes: { role: 'dialog' } as never,
+        children: <p id="delete-message">Delete this topic?</p>,
+      }),
+    );
+    const alertDialog = host.querySelector('dialog')!;
+    expect(alertDialog.getAttribute('role')).toBe('alertdialog');
+    expect(alertDialog.getAttribute('aria-describedby')).toBe('delete-message');
+
     // Only a resizable bottom sheet renders the grabber.
     host.innerHTML = asHtml(
       DialogSurface({
