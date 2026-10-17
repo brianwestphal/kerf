@@ -503,7 +503,9 @@ describe('UX demo copy', () => {
   test('every demo and recipe label, including example captions, is title style', async () => {
     const findings = await checkCopyCapitalization(uiRoot, await demoSources());
     expect(findings.map((item) => item.message)).toEqual([]);
-  });
+    // Parses every demo and recipe source; ~2s alone but past the 5s default
+    // under a loaded parallel run.
+  }, 30_000);
 
   test('demo content item titles are title style', async () => {
     // DemoContentItem is a private demo helper, so the shipped doctor does not
