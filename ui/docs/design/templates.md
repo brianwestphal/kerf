@@ -53,6 +53,13 @@ docs/design/templates/
   viewer's system fonts: real, selectable, and small (no embedded font data). The
   kerf UI design font stack is system-based, so the picture matches; a viewer
   without those fonts falls back to its own.
+- Variant SVGs have a **transparent background** on purpose, so they keep
+  whatever surface they are placed on. Translucent tokens (neutral fills,
+  tracks, skeletons, disabled states at 50% opacity, shadows) therefore blend
+  with that surface exactly as the live component does: place a dark variant on
+  a dark frame. A template-only stand-in that should be opaque must draw its
+  own surface underlay instead of painting translucent fills straight onto the
+  transparent background.
 - The **library** files (`<component>.svg` light, `<component>-dark.svg` dark) lay
   the variants out with captions. The generator writes a temporary HTML page whose
   `<img>` elements reference the individual variant SVGs, then captures that page
