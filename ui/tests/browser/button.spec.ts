@@ -1,5 +1,8 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { contrastRatio } from '../../evaluator/index.mjs';
+import { sampleInsetRing } from './fixtures/focus-ring-inset.js';
+
 // Button is a native button (or link): it activates from the keyboard, never
 // submits a form by default, shows the focus ring on keyboard focus, keeps
 // its accessible name while busy, and dims when disabled.
@@ -39,6 +42,46 @@ test('Enter and Space activate a Button, which shows the focus ring', async ({
     return [style.outlineStyle, style.outlineWidth, style.outlineOffset];
   });
   expect(ring).toEqual(['solid', '3px', '1px']);
+  // Without focusRingInset the ring stays outside, with no inner line.
+  await expect(cancel).not.toHaveAttribute('data-focus-ring-inset');
+  await expect(cancel).toHaveCSS('box-shadow', 'none');
+});
+
+// focusRingInset moves the ring inside the box so a clipping ancestor (the
+// specimen frame clips overflow) cannot crop it. A loud fill can share the
+// ring's hue, so a surface-colored line runs inside the ring: the ring meets
+// a surface color on both edges and clears 3:1 against each, on every tone,
+// in both schemes.
+test('an inset focus ring stays inside a clipping container on every tone', async ({
+  page,
+}) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    const demo = await openDemo(page);
+    const buttons = demo.locator(
+      '[data-demo-section="focus-ring-inset"] > .kui-button',
+    );
+    await expect(buttons).toHaveCount(3);
+    for (const tone of ['neutral', 'brand', 'danger']) {
+      const button = buttons.and(demo.locator(`[data-tone="${tone}"]`));
+      await expect(button).toHaveAttribute('data-focus-ring-inset', 'true');
+      // Button's line runs inside its 1px border, 3px to 6px in.
+      const ring = await sampleInsetRing(page, button, 4.5);
+      expect(ring.clipOverflow).toBe('hidden');
+      expect(ring.clipped).toBe(true);
+      expect(ring.width).toBe(3);
+      expect(ring.offset + ring.width).toBeLessThanOrEqual(0);
+      // The ring paints from the box's very edge, so nothing is cropped.
+      expect(contrastRatio(ring.ringOuter, ring.ringInner)).toBeLessThan(1.1);
+      expect(
+        contrastRatio(ring.ringOuter, ring.outside),
+      ).toBeGreaterThanOrEqual(3);
+      expect(contrastRatio(ring.ringInner, ring.line)).toBeGreaterThanOrEqual(
+        3,
+      );
+      expect(contrastRatio(ring.line, ring.fill)).toBeGreaterThan(1.5);
+    }
+  }
 });
 
 test('a Button never submits its form unless its type says so', async ({

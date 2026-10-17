@@ -48,6 +48,7 @@ Exact prop names and types: [`@kerfjs/ui/button`](../public-api-signatures-v1.md
 - disabled
 - link (href)
 - badge (a count, short text, or true for a dot) over the corner, named through badgeLabel, with badgeTone
+- focusRingInset: the focus ring drawn inside the box for an ancestor that clips overflow
 
 ## Composition
 
@@ -68,7 +69,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 
 ## Accessibility
 
-- A native \<button> (type="button" unless set) or, with href, an \<a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring.
+- A native \<button> (type="button" unless set) or, with href, an \<a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring 1px outside the box; with focusRingInset it is drawn inside the box, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on a loud fill of its own hue.
 - Loading shows a spinner in place of the label, which still names the button, and sets aria-busy="true". A disabled link drops its href and reports aria-disabled="true".
 - With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus. A title gives native hover text that says more than the name and replaces the help tag.
 

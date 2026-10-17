@@ -113,4 +113,29 @@ describe('SplitButton', () => {
     );
     expect(html).not.toContain('data-shape');
   });
+
+  it('marks focusRingInset on the group and protects the marker', () => {
+    const base = {
+      label: 'Deploy',
+      action: 'deploy',
+      optionsLabel: 'Deploy Options',
+      optionsAction: 'deploy-options',
+    };
+    expect(String(SplitButton({ ...base, focusRingInset: true }))).toContain(
+      '<div class="kui-split-button" data-component="split-button" data-tone="brand" data-focus-ring-inset="true" role="group">',
+    );
+    expect(String(SplitButton(base))).not.toContain('data-focus-ring-inset');
+    expect(
+      String(SplitButton({ ...base, focusRingInset: false })),
+    ).not.toContain('data-focus-ring-inset');
+    const forged = String(
+      SplitButton({
+        ...base,
+        rootAttributes: {
+          'data-focus-ring-inset': 'true',
+        } as unknown as Record<`data-${string}`, string>,
+      }),
+    );
+    expect(forged).not.toContain('data-focus-ring-inset');
+  });
 });

@@ -18,6 +18,7 @@ const splitButtonProtected = new Set([
   'data-fill',
   'data-busy',
   'data-shape',
+  'data-focus-ring-inset',
 ]);
 
 type SplitButtonRootAttributes = Readonly<
@@ -27,6 +28,7 @@ type SplitButtonRootAttributes = Readonly<
     'data-fill'?: never;
     'data-busy'?: never;
     'data-shape'?: never;
+    'data-focus-ring-inset'?: never;
   }
 >;
 
@@ -55,6 +57,12 @@ export interface SplitButtonProps {
   fill?: boolean;
   /** Corner shape (default `rounded`); `pill` fully rounds both outer ends. */
   shape?: SplitButtonShape;
+  /**
+   * Keep each half's focus ring inside its box when an ancestor clips
+   * overflow. The inset ring is two-tone, a surface-colored line inside the
+   * ring color, so it stays visible on every loud fill.
+   */
+  focusRingInset?: boolean;
   /** Show work in progress: a spinner replaces the icon and the primary is `aria-busy`. */
   busy?: boolean;
   /** Disable the primary half. */
@@ -90,6 +98,7 @@ export function SplitButton({
   tone = 'brand',
   fill = false,
   shape = 'rounded',
+  focusRingInset = false,
   busy = false,
   disabled = false,
   optionsDisabled = false,
@@ -108,6 +117,7 @@ export function SplitButton({
       data-fill={fill ? 'true' : undefined}
       data-shape={shape === 'pill' ? 'pill' : undefined}
       data-busy={busy ? 'true' : undefined}
+      data-focus-ring-inset={focusRingInset ? 'true' : undefined}
       role="group"
       slot={slot}
     >

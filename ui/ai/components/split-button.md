@@ -40,6 +40,7 @@ Exact prop names and types: [`@kerfjs/ui/split-button`](../public-api-signatures
 - rounded or pill shape
 - busy
 - disabled primary or options
+- focusRingInset: each half's focus ring drawn inside its box for an ancestor that clips overflow
 
 ## Composition
 
@@ -61,6 +62,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 ## Accessibility
 
 - Both halves are native buttons in a group; the options trigger exposes aria-haspopup, aria-expanded, and optional aria-controls, and needs optionsLabel. busy sets aria-busy on the primary.
+- Each half draws the focus ring 1px outside its box; with focusRingInset it is drawn inside, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on every loud fill.
 
 ## Styling boundary
 

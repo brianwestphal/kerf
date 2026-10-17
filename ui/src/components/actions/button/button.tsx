@@ -29,6 +29,7 @@ const BUTTON_PROTECTED = new Set([
   'data-loading',
   'data-icon-only',
   'data-shape',
+  'data-focus-ring-inset',
 ]);
 
 /** Application `data-*` metadata; the Button's own markers stay protected. */
@@ -94,6 +95,12 @@ export interface ButtonOptions {
   /** Delegated `data-action` the application handles. */
   action?: string;
   /**
+   * Keep the button's focus ring inside its box when an ancestor clips
+   * overflow. The inset ring is two-tone, a surface-colored line inside the
+   * ring color, so it stays visible on a loud fill of the ring's own hue.
+   */
+  focusRingInset?: boolean;
+  /**
    * A count, short text, or `true` for a text-free dot over the button's
    * top-trailing corner, such as how many items a filter hides. It stays out
    * of the accessible name unless `badgeLabel` names it.
@@ -144,6 +151,7 @@ export function Button({
   href,
   target,
   action,
+  focusRingInset = false,
   badge,
   badgeLabel,
   badgeTone = 'danger',
@@ -165,6 +173,7 @@ export function Button({
     'data-loading': loading ? '' : undefined,
     'data-icon-only': children === undefined ? '' : undefined,
     'data-shape': shape === 'pill' ? 'pill' : undefined,
+    'data-focus-ring-inset': focusRingInset ? 'true' : undefined,
     'data-action': action,
     'aria-label':
       ariaLabel && badge !== undefined && badgeLabel

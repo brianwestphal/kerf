@@ -80,6 +80,38 @@ export function SplitButtonDemo() {
           />
         </Row>
       </CatalogExample>
+      <CatalogExample
+        label="Inside a Clipping Container"
+        note="focusRingInset keeps each half's focus ring inside its box when an ancestor clips overflow, as this frame does. A surface-colored line inside the ring keeps it visible on every loud fill. Focus a half to see it."
+        align="inline-control"
+        viewport={{ overflow: 'hidden' }}
+      >
+        <Row wrap rootAttributes={{ 'data-demo-section': 'focus-ring-inset' }}>
+          <SplitButton
+            focusRingInset
+            label="Sync"
+            action="log-split-button-pill"
+            optionsLabel="Sync Options"
+            optionsAction="log-split-button-pill-options"
+          />
+          <SplitButton
+            focusRingInset
+            label="Archive"
+            action="log-split-button-pill"
+            optionsLabel="Archive Options"
+            optionsAction="log-split-button-pill-options"
+            tone="neutral"
+          />
+          <SplitButton
+            focusRingInset
+            label="Purge"
+            action="log-split-button-pill"
+            optionsLabel="Purge Options"
+            optionsAction="log-split-button-pill-options"
+            tone="danger"
+          />
+        </Row>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

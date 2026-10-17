@@ -548,6 +548,20 @@ disabled or read-only field's clear button is disabled. `showCount` (with
 `wireTextFields` keeps current. Compact text grows to 16px on coarse-pointer
 touch screens so focusing a field never zooms the page in iOS.
 
+## Button and SplitButton focus
+
+`Button` and each `SplitButton` half draw the 3px focus ring 1px outside the
+box, against the surrounding surface, because a loud fill can share the ring's
+hue (the brand fill matches the focus color in both schemes). An ancestor that
+clips overflow would crop that ring, so `focusRingInset` draws it inside the
+box instead, the name and meaning `Select` uses. An inset ring alone would
+touch the fill (1.0:1 on brand, at most 2.3:1 on any loud fill), so the inset
+ring is two-tone: the ring color on the outer 3px and a 3px surface-colored
+line inside it. The ring then meets a surface color on both edges and clears
+3:1 against each on every tone (about 4.0:1 in light, 9.9:1 in dark against
+the line), whatever the fill. Forced-colors mode drops the line and keeps the
+system ring.
+
 ## Checkbox, RadioGroup, and Switch
 
 Each control is a native input inside its `<label>`, positioned invisibly over

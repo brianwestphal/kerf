@@ -170,6 +170,33 @@ describe('Button', () => {
     expect(pill.dataset.shape).toBe('pill');
   });
 
+  it('marks focusRingInset and protects the marker', () => {
+    expect(
+      render(<Button>Default</Button>).hasAttribute('data-focus-ring-inset'),
+    ).toBe(false);
+    expect(
+      render(<Button focusRingInset={false}>Off</Button>).hasAttribute(
+        'data-focus-ring-inset',
+      ),
+    ).toBe(false);
+    expect(
+      render(<Button focusRingInset>Inset</Button>).dataset.focusRingInset,
+    ).toBe('true');
+    expect(
+      render(
+        <Button href="/docs" focusRingInset>
+          Docs
+        </Button>,
+      ).dataset.focusRingInset,
+    ).toBe('true');
+    const forged = render(
+      <Button rootAttributes={{ 'data-focus-ring-inset': 'true' }}>
+        Forged
+      </Button>,
+    );
+    expect(forged.hasAttribute('data-focus-ring-inset')).toBe(false);
+  });
+
   it('refuses to make a link a toggle', () => {
     expect(() =>
       Button({ children: 'Docs', href: '/docs', pressed: true }),

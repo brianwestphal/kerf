@@ -214,6 +214,24 @@ export function ButtonDemo() {
           />
         </Row>
       </CatalogExample>
+      <CatalogExample
+        label="Inside a Clipping Container"
+        note="focusRingInset keeps the focus ring inside the box when an ancestor clips overflow, as this frame does. A surface-colored line inside the ring keeps it visible on a loud fill of its own hue. Focus one to see it."
+        align="inline-control"
+        viewport={{ overflow: 'hidden' }}
+      >
+        <Row wrap rootAttributes={{ 'data-demo-section': 'focus-ring-inset' }}>
+          <Button focusRingInset action="log-more">
+            Dismiss
+          </Button>
+          <Button tone="brand" focusRingInset action="log-more">
+            Confirm
+          </Button>
+          <Button tone="danger" focusRingInset action="log-more">
+            Erase
+          </Button>
+        </Row>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { contrastRatio } from '../../evaluator/index.mjs';
+import { sampleInsetRing } from './fixtures/focus-ring-inset.js';
 
 // Both halves are native buttons, so the trigger's state reaches the
 // accessibility tree directly; the full-width variant fills its parent.
@@ -121,7 +122,9 @@ test('each SplitButton half draws a visible focus ring outside its fill', async 
     await page.setViewportSize({ width: 1100, height: 900 });
     await page.goto('/?component=split-button');
     const demo = page.locator('[data-demo="split-button"]');
-    const halves = demo.locator('.kui-split-button > button:enabled');
+    const halves = demo.locator(
+      '.kui-split-button:not([data-focus-ring-inset]) > button:enabled',
+    );
     const count = await halves.count();
     expect(count).toBeGreaterThan(6);
     for (let index = 0; index < count; index += 1) {
@@ -169,6 +172,46 @@ test('each SplitButton half draws a visible focus ring outside its fill', async 
       expect(ring.width).toBeGreaterThanOrEqual(2);
       expect(ring.offset).toBeGreaterThanOrEqual(0);
       expect(contrastRatio(ring.color, ring.surface)).toBeGreaterThanOrEqual(3);
+    }
+  }
+});
+
+// focusRingInset moves each half's ring inside its box so a clipping
+// ancestor (the specimen frame clips overflow) cannot crop it. The loud fill
+// can share the ring's hue, so a surface-colored line runs inside the ring:
+// the ring meets a surface color on both edges and clears 3:1 against each,
+// on every tone, in both schemes.
+test('an inset SplitButton ring stays inside a clipping container on every tone', async ({
+  page,
+}) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 1100, height: 900 });
+    await page.goto('/?component=split-button');
+    const demo = page.locator('[data-demo="split-button"]');
+    const groups = demo.locator(
+      '[data-demo-section="focus-ring-inset"] > .kui-split-button',
+    );
+    await expect(groups).toHaveCount(3);
+    for (const tone of ['brand', 'neutral', 'danger']) {
+      const group = groups.and(demo.locator(`[data-tone="${tone}"]`));
+      await expect(group).toHaveAttribute('data-focus-ring-inset', 'true');
+      for (const half of ['primary', 'options']) {
+        const button = group.locator(`.kui-split-button__${half}`);
+        const ring = await sampleInsetRing(page, button, 4.5);
+        expect(ring.clipOverflow).toBe('hidden');
+        expect(ring.clipped).toBe(true);
+        expect(ring.width).toBe(3);
+        expect(ring.offset + ring.width).toBeLessThanOrEqual(0);
+        expect(contrastRatio(ring.ringOuter, ring.ringInner)).toBeLessThan(1.1);
+        expect(
+          contrastRatio(ring.ringOuter, ring.outside),
+        ).toBeGreaterThanOrEqual(3);
+        expect(contrastRatio(ring.ringInner, ring.line)).toBeGreaterThanOrEqual(
+          3,
+        );
+        expect(contrastRatio(ring.line, ring.fill)).toBeGreaterThan(1.5);
+      }
     }
   }
 });

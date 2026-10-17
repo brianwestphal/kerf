@@ -687,6 +687,12 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `aria-haspopup`); `tone`, `fill`, `shape` (`rounded` or `pill`, as on
   `Button`), `busy`, and `disabled` are props. Never build one from
   `wa-button-group` or app CSS on native buttons.
+- **Keep a Button's focus ring inside a clipping ancestor with
+  `focusRingInset`.** `Button` and `SplitButton` draw the ring 1px outside the
+  box; inside a container that clips overflow, set `focusRingInset` and the
+  ring moves inside the box with a surface-colored line inside it, so it keeps
+  3:1 contrast even on a loud fill of its own hue. Never re-offset the outline
+  from app CSS.
 - **Make any `Button` a toggle with `pressed`.** In content or a pane footer,
   `<Button icon={…} ariaLabel="Show Conversation" emphasis="plain" pressed={open} action="toggle-chat" />`
   renders a native `aria-pressed` button whose pressed look draws on top of

@@ -631,7 +631,11 @@ For a rail view heading, use `Select presentation="title"`: its intrinsic
 a caret beside that label. Set `focusRingInset` when a NavStack or panel clips
 outside painting; the Select keeps its focus outline 3px inside the trigger
 and drops it while the listbox is open. Both settings belong to Select, not an
-application `::part()` override.
+application `::part()` override. `Button` and `SplitButton` take the same
+`focusRingInset` for a clipping ancestor: the ring moves inside the box (each
+half's, for a SplitButton) with a surface-colored line inside it, so it stays
+visible on a loud fill of its own hue. Never re-offset their outline from
+application CSS.
 
 Set `menuInset` to configure the menu surface
 without application `::part(menu)` CSS; the default `standard` keeps each menu's

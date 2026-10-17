@@ -108,6 +108,16 @@
   outline-offset: 1px;
 }
 
+/* focusRingInset: inside an ancestor that clips overflow, each half's ring
+   moves inside its box. The loud fill can share the ring's hue (brand), so a
+   surface-colored line runs inside the ring: the ring then meets the surface
+   on both edges, as the outside ring does, on every tone. The line runs 3px
+   past the ring, wide enough to stay solid at a fractional position. */
+.kui-split-button[data-focus-ring-inset="true"] > button:focus-visible {
+  outline-offset: -3px;
+  box-shadow: inset 0 0 0 6px var(--kui-color-surface);
+}
+
 .kui-split-button > button:disabled {
   cursor: not-allowed;
   opacity: 0.6;

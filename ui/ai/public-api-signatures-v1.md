@@ -6607,6 +6607,12 @@ interface ButtonOptions {
     /** Delegated `data-action` the application handles. */
     action?: string;
     /**
+     * Keep the button's focus ring inside its box when an ancestor clips
+     * overflow. The inset ring is two-tone, a surface-colored line inside the
+     * ring color, so it stays visible on a loud fill of the ring's own hue.
+     */
+    focusRingInset?: boolean;
+    /**
      * A count, short text, or `true` for a text-free dot over the button's
      * top-trailing corner, such as how many items a filter hides. It stays out
      * of the accessible name unless `badgeLabel` names it.
@@ -6639,7 +6645,7 @@ interface ButtonOptions {
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, pressed, icon, loading, disabled, type, name, value, form, href, target, action, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, pressed, icon, loading, disabled, type, name, value, form, href, target, action, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
 export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```
@@ -6659,6 +6665,7 @@ type SplitButtonRootAttributes = Readonly<Record<`data-${string}`, string | unde
     'data-fill'?: never;
     'data-busy'?: never;
     'data-shape'?: never;
+    'data-focus-ring-inset'?: never;
 }>;
 interface SplitButtonProps {
     /** Visible primary label. */
@@ -6685,6 +6692,12 @@ interface SplitButtonProps {
     fill?: boolean;
     /** Corner shape (default `rounded`); `pill` fully rounds both outer ends. */
     shape?: SplitButtonShape;
+    /**
+     * Keep each half's focus ring inside its box when an ancestor clips
+     * overflow. The inset ring is two-tone, a surface-colored line inside the
+     * ring color, so it stays visible on every loud fill.
+     */
+    focusRingInset?: boolean;
     /** Show work in progress: a spinner replaces the icon and the primary is `aria-busy`. */
     busy?: boolean;
     /** Disable the primary half. */
@@ -6706,7 +6719,7 @@ interface SplitButtonProps {
  * technology directly; the application opens its own menu from the options
  * action and owns the running state.
  */
-declare function SplitButton({ label, action, icon, accessibleLabel, optionsLabel, optionsAction, optionsExpanded, optionsPopup, optionsControls, tone, fill, shape, busy, disabled, optionsDisabled, title, className, rootAttributes, slot, }: SplitButtonProps): SafeHtml;
+declare function SplitButton({ label, action, icon, accessibleLabel, optionsLabel, optionsAction, optionsExpanded, optionsPopup, optionsControls, tone, fill, shape, focusRingInset, busy, disabled, optionsDisabled, title, className, rootAttributes, slot, }: SplitButtonProps): SafeHtml;
 
 export { SplitButton, type SplitButtonProps, type SplitButtonShape, type SplitButtonTone };
 ```
