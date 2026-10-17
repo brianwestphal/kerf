@@ -1,5 +1,6 @@
-/* Switch: a track and thumb beside its label, with a hint on the label's
-   column. The native input sits invisibly over the track. */
+/* Switch: a track and thumb beside its label, with a hint directly under
+   the label on its column, as a Checkbox hint sits. The native input sits
+   invisibly over the track. */
 .kui-switch {
   --_kui-switch-height: remify(20px);
   --_kui-switch-gap: remify(8px);
@@ -99,7 +100,6 @@
 }
 .kui-switch__hint {
   display: block;
-  margin-block-start: remify(7px);
   padding-inline-start: calc(
     var(--_kui-switch-height) * 1.75 + var(--_kui-switch-gap)
   );

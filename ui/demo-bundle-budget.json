@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164400,
   "totalJavaScriptGzip": 427000,
-  "measuredLargestJavaScriptGzip": 164355,
-  "measuredTotalJavaScriptGzip": 426961,
+  "measuredLargestJavaScriptGzip": 164356,
+  "measuredTotalJavaScriptGzip": 426980,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5809,6 +5809,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 164355,
         "measuredTotalJavaScriptGzip": 426961,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 427000
+      }
+    },
+    {
+      "at": "2026-10-17T04:07:58.758Z",
+      "reason": "KF-YG5CM2: Switch hint sits flush under its label; catalog geometry note reworded",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164355,
+        "measuredTotalJavaScriptGzip": 426961,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 427000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164356,
+        "measuredTotalJavaScriptGzip": 426980,
         "largestJavaScriptGzip": 164400,
         "totalJavaScriptGzip": 427000
       }

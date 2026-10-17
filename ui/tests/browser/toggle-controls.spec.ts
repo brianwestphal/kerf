@@ -226,6 +226,15 @@ test('drawn controls keep the Web Awesome sizes and one 28px stacking pitch at w
         .locator('.kui-switch__track'),
     );
     expect([track.width, track.height]).toEqual([35, 20]);
+    // The hint sits directly under the switch row on the label's column,
+    // the same flush offset as a Checkbox hint.
+    const live = demo.locator('.kui-switch', {
+      has: page.getByRole('switch', { name: 'Live updates' }),
+    });
+    const switchRow = await box(live.locator('.kui-switch__row'));
+    const switchHint = await box(live.locator('.kui-switch__hint'));
+    expect(switchHint.y - switchRow.y - switchRow.height).toBeCloseTo(0, 0);
+    expect(switchHint.x).toBeCloseTo(switchRow.x, 0);
 
     demo = await openDemo(page, 'radio-group', width);
     const circles = demo
