@@ -213,7 +213,10 @@ const BUDGETS = [
     // KF-KY39K1 + KF-XNEK58 (+0.12 KB): popover() / tooltip() forward the exit
     // options, and a surface anchored (or rendered) inside a closing overlay
     // leaves at that close() instead of when an exiting node is removed.
-    budgetKb: 23.2,
+    // KF-PVBPJM (+0.09 KB): fitHeight pins the element's height for the cap
+    // read and puts back a scroll position it moved (WebKit's container-query
+    // layout clamped a scrolled surface to its top).
+    budgetKb: 23.3,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

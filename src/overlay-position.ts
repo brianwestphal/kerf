@@ -171,28 +171,42 @@ const UNBOUNDED_ROOM = '9999999px';
 
 /**
  * The inline properties {@link ownMaxHeight} overrides around its read, in
- * restore order: the published room, then the transition longhands.
+ * restore order: the published room and the pinned height, then the
+ * transition longhands.
  */
 const SWAPPED = [
   AVAILABLE_HEIGHT,
+  'height',
   'transition-property',
   'transition-duration',
   'transition-delay',
 ];
 
+/** Where the transition longhands start in {@link SWAPPED}. */
+const TRANSITIONS = 2;
+
 /**
  * `el`'s own border-box `max-height` in CSS px, excluding the room kerf
  * itself published. The published property is swapped for an unbounded room
- * only around a computed-style read (a style recalc, no layout, so nothing
- * reflows or scrolls) and restored at once, so kerf never reads its own last
- * cap back as the element's.
+ * only around a computed-style read and restored at once, so kerf never reads
+ * its own last cap back as the element's.
+ *
+ * That read is a style recalc, but an engine may also lay the element out for
+ * it: WebKit resolves container queries with an interleaved layout, so a size
+ * container inside `el` (a toolbar with `container-type`) lays `el` out with
+ * the cap lifted. Uncapped, `el` would grow to its content and stop
+ * scrolling, which clamps its scroll position to the top, and every scroll
+ * inside it repositions it. So `el`'s current height is pinned for the read:
+ * the interim layout keeps the same box, scroll range, and scrollbar, and the
+ * scroll position survives. Should an engine still move it, it is put back.
  *
  * A `max-height` transition would report its running value for that read (the
  * published room, not the cap) and start a transition on the swap, so for the
- * read `max-height` is appended to the element's transition list with no
- * duration or delay (the last entry for a property wins); every other running
- * transition keeps running. The restored cap is settled before the app's
- * transitions return, so they see no change to animate.
+ * read `max-height` and `height` are appended to the element's transition
+ * list with no duration or delay (the last entry for a property wins); every
+ * other running transition keeps running. The restored cap and height are
+ * settled before the app's transitions return, so they see no change to
+ * animate.
  *
  * While an animation or transition on `el` drives `max-height`, the cap is
  * the value it is headed to ({@link animatedMaxHeight}) and nothing is
@@ -233,30 +247,41 @@ function swappedMaxHeight(el: HTMLElement, style: CSSStyleDeclaration): string {
   ]);
   // The computed transition lists, read before any of them is overridden.
   const lists = SWAPPED.map((name) => style.getPropertyValue(name).split(','));
-  const transitions = lists[1]!;
+  const transitions = lists[TRANSITIONS]!;
   if (transitions[0] && transitions[0] !== 'none') {
     // Repeat the duration and delay lists to the property list's length, as
-    // CSS does, so appending an entry leaves every existing pairing intact.
-    for (let index = 1; index < 4; index++) {
+    // CSS does, so appending entries leaves every existing pairing intact.
+    for (let index = TRANSITIONS; index < SWAPPED.length; index++) {
       const items = lists[index]!;
+      const appended =
+        index > TRANSITIONS ? ['0s', '0s'] : ['max-height', 'height'];
       inline.setProperty(
         SWAPPED[index]!,
         [
           ...transitions.map((_, entry) => items[entry % items.length]),
-          index > 1 ? '0s' : 'max-height',
+          ...appended,
         ].join(),
         'important',
       );
     }
   }
+  // The current box and scroll position, from the layout positioning just
+  // measured. A height the engine reports in px is pinned for the read.
+  const height = style.height;
+  const { scrollTop, scrollLeft } = el;
+  if (height.endsWith('px')) inline.setProperty('height', height, 'important');
   inline.setProperty(AVAILABLE_HEIGHT, UNBOUNDED_ROOM);
   const maxHeight = style.maxHeight;
   saved.forEach(([name, value, priority], index) => {
     if (value) inline.setProperty(name, value, priority);
     else inline.removeProperty(name);
-    // Settle the restored room before the transitions return.
-    if (!index) style.getPropertyValue('max-height');
+    // Settle the restored room and height before the transitions return.
+    if (index === TRANSITIONS - 1) style.getPropertyValue('max-height');
   });
+  // Only a scrolled element can have lost its position; reading it back
+  // costs a layout, so an unscrolled one skips that.
+  if (scrollTop && el.scrollTop !== scrollTop) el.scrollTop = scrollTop;
+  if (scrollLeft && el.scrollLeft !== scrollLeft) el.scrollLeft = scrollLeft;
   return maxHeight;
 }
 

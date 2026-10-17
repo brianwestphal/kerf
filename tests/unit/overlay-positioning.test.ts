@@ -759,7 +759,7 @@ describe('viewportMargin / fitHeight', () => {
                   );
                 const settled = el.style
                   .getPropertyValue('transition-property')
-                  .match(/max-height$|^none$/);
+                  .match(/max-height,height$|^none$/);
                 return settled ? '300px' : el.style.getPropertyValue(AVAILABLE);
               }
               default: {
@@ -785,12 +785,12 @@ describe('viewportMargin / fitHeight', () => {
       positionAnchored(el, anchor, { fitHeight: true });
       // Read as the 300px cap instead: fits below.
       expect(el.style.top).toBe('454px');
-      // `max-height` appended with no duration or delay; every other
-      // transition paired with its own duration and delay as before.
+      // `max-height` and `height` appended with no duration or delay; every
+      // other transition paired with its own duration and delay as before.
       expect(atRead).toEqual([
-        'opacity,max-height,max-height|important',
-        '1s,2s,0s|important',
-        '0s,0s,0s|important',
+        'opacity,max-height,max-height,height|important',
+        '1s,2s,0s,0s|important',
+        '0s,0s,0s,0s|important',
       ]);
       for (const name of LONGHANDS)
         expect(el.style.getPropertyValue(name)).toBe('');
@@ -800,9 +800,9 @@ describe('viewportMargin / fitHeight', () => {
       el.style.setProperty('transition-duration', '150ms', 'important');
       positionAnchored(el, anchor, { fitHeight: true });
       expect(atRead.slice(3)).toEqual([
-        'opacity,max-height|important',
-        '150ms,0s|important',
-        '0s,0s|important',
+        'opacity,max-height,height|important',
+        '150ms,0s,0s|important',
+        '0s,0s,0s|important',
       ]);
       expect(el.style.getPropertyValue('transition-property')).toBe('opacity');
       expect(el.style.getPropertyPriority('transition-property')).toBe('');
@@ -953,6 +953,124 @@ describe('viewportMargin / fitHeight', () => {
       (el as { getAnimations?: unknown }).getAnimations = undefined;
       positionAnchored(el, anchor, { fitHeight: true });
       expect(el.style.top).toBe('454px');
+    });
+  });
+
+  describe('the scroll position of the element', () => {
+    const realComputedStyle = window.getComputedStyle.bind(window);
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    // happy-dom has no layout: report a laid-out 200px height, and, like
+    // WebKit laying the element out to resolve a container query inside it,
+    // clamp the scroll position to the top when the read lifts the cap
+    // without pinning the height. Records the inline height at each read.
+    function emulateInterleavedLayout(el: HTMLElement): string[] {
+      const heights: string[] = [];
+      vi.spyOn(window, 'getComputedStyle').mockImplementation((target) => {
+        const style = realComputedStyle(target);
+        if (target !== el) return style;
+        return new Proxy(style, {
+          get: (base, key) => {
+            if (key === 'height') return '200px';
+            if (key === 'maxHeight') {
+              heights.push(el.style.getPropertyValue('height'));
+              if (!el.style.getPropertyValue('height')) {
+                el.scrollTop = 0;
+                el.scrollLeft = 0;
+              }
+              return '300px';
+            }
+            const value: unknown = Reflect.get(base, key);
+            return typeof value === 'function' ? value.bind(base) : value;
+          },
+        });
+      });
+      return heights;
+    }
+
+    function scrolledElement(writes: string[] = []): HTMLElement {
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      let top = 0;
+      let left = 0;
+      Object.defineProperties(el, {
+        scrollTop: {
+          get: () => top,
+          set: (value: number) => {
+            writes.push(`top ${value}`);
+            top = value;
+          },
+        },
+        scrollLeft: {
+          get: () => left,
+          set: (value: number) => {
+            writes.push(`left ${value}`);
+            left = value;
+          },
+        },
+      });
+      el.getBoundingClientRect = rectFn({ width: 80, height: 200 });
+      return el;
+    }
+
+    it('pins the current height for the cap read and restores the inline height', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt({ left: 100, right: 150, top: 100, bottom: 120 });
+      const el = scrolledElement();
+      el.style.setProperty('height', '10em');
+      const heights = emulateInterleavedLayout(el);
+      el.scrollTop = 120;
+      el.scrollLeft = 30;
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(heights).toEqual(['200px']);
+      expect(el.style.getPropertyValue('height')).toBe('10em');
+      expect(el.style.getPropertyPriority('height')).toBe('');
+      expect([el.scrollTop, el.scrollLeft]).toEqual([120, 30]);
+    });
+
+    it('puts back a scroll position the read still moved', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt({ left: 100, right: 150, top: 100, bottom: 120 });
+      const el = scrolledElement();
+      const heights = emulateInterleavedLayout(el);
+      // A height the engine does not report in px is not pinned, so the
+      // emulated layout clamps the scroll position: it is restored.
+      vi.mocked(window.getComputedStyle).mockImplementationOnce((target) => {
+        const style = realComputedStyle(target);
+        return new Proxy(style, {
+          get: (base, key) => {
+            if (key === 'height') return 'auto';
+            if (key === 'maxHeight') {
+              heights.push(el.style.getPropertyValue('height'));
+              el.scrollTop = 0;
+              el.scrollLeft = 0;
+              return '300px';
+            }
+            const value: unknown = Reflect.get(base, key);
+            return typeof value === 'function' ? value.bind(base) : value;
+          },
+        });
+      });
+      el.scrollTop = 120;
+      el.scrollLeft = 30;
+      positionAnchored(el, anchor, { fitHeight: true });
+      expect(heights).toEqual(['']);
+      expect(el.style.getPropertyValue('height')).toBe('');
+      expect([el.scrollTop, el.scrollLeft]).toEqual([120, 30]);
+    });
+
+    it('leaves an unscrolled element alone', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt({ left: 100, right: 150, top: 100, bottom: 120 });
+      const writes: string[] = [];
+      const el = scrolledElement(writes);
+      emulateInterleavedLayout(el);
+      el.style.setProperty('height', '');
+      positionAnchored(el, anchor, { fitHeight: true });
+      // Pinned, the read moved nothing, and nothing is written back.
+      expect(writes).toEqual([]);
     });
   });
 
