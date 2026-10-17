@@ -67,6 +67,7 @@ import { EmptyState } from '../dist/empty-state.js';
 import { ColorField } from '../dist/color-field.js';
 import { ColorPicker } from '../dist/color-picker.js';
 import { ColorSwatches } from '../dist/color-swatches.js';
+import { ContentItem } from '../dist/content-item.js';
 import { Disclosure } from '../dist/disclosure.js';
 import { List } from '../dist/list.js';
 import { ProgressBar } from '../dist/progress-bar.js';
@@ -801,6 +802,7 @@ export const COMPONENTS = {
       'disclosure-arrow',
       'text',
       'list',
+      'content-item',
       'disclosure',
     ],
     selector: '#frame',
@@ -851,6 +853,35 @@ export const COMPONENTS = {
                 children: Text({ children: 'npm run build' }),
               }),
             ],
+          }),
+      },
+      {
+        id: 'embedded',
+        label: 'Embedded in a Content Item',
+        height: 110,
+        render: () =>
+          ContentItem({
+            frame: 'framed',
+            children: List({
+              gap: 'xs',
+              children: [
+                Text({
+                  flush: true,
+                  children: 'Move the export button into the toolbar.',
+                }),
+                Disclosure({
+                  title: 'AI Feedback',
+                  detail: '2 suggestions',
+                  appearance: 'embedded',
+                  open: true,
+                  children: Text({
+                    flush: true,
+                    tone: 'quiet',
+                    children: 'Group Export and Share in one group.',
+                  }),
+                }),
+              ],
+            }),
           }),
       },
     ],

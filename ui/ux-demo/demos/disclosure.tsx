@@ -1,6 +1,8 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { Disclosure } from '@kerfjs/ui/disclosure';
 import { List } from '@kerfjs/ui/list';
+import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 
 const FAQ = [
@@ -52,6 +54,43 @@ export function DisclosureDemo() {
             <Text font="monospace">npm run build — completed in 18.4s</Text>
           </Disclosure>
         </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Embedded in a Content Item"
+        note={
+          <>
+            <code>appearance="embedded"</code> drops the Disclosure's own
+            margin, border, and padding inside a ContentItem that already owns
+            them, so the arrow sits on the item's content inset and the summary
+            is a compact row. Give it content without an inset of its own, such
+            as a <code>flush</code> Text.
+          </>
+        }
+        align="none"
+        viewport={{ width: 'medium' }}
+      >
+        <Pane label="Note">
+          <ContentItem
+            frame="framed"
+            rootAttributes={{ 'data-demo-item': 'embedded-disclosure' }}
+          >
+            <List gap="xs">
+              <Text flush>
+                Move the export button into the toolbar so it sits beside Share.
+              </Text>
+              <Disclosure
+                title="AI Feedback"
+                detail="2 suggestions"
+                appearance="embedded"
+              >
+                <Text flush tone="quiet">
+                  Group Export and Share in one control group, and keep Delete
+                  in the overflow menu.
+                </Text>
+              </Disclosure>
+            </List>
+          </ContentItem>
+        </Pane>
       </CatalogExample>
       <CatalogExample
         label="Accordion"

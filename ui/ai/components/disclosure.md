@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:disclosure` · Kerf UI · component · Structure
 
-Content a person shows and hides under a summary row: a native details element with a DisclosureArrow, a title, and an optional quiet detail, on content-item geometry, with plain, framed, and sunken appearances and native exclusive (accordion) groups.
+Content a person shows and hides under a summary row: a native details element with a DisclosureArrow, a title, and an optional quiet detail, on content-item geometry, with plain, framed, and sunken appearances, an embedded appearance for a compact panel inside a ContentItem, and native exclusive (accordion) groups.
 
 ## When to use
 
@@ -12,6 +12,7 @@ Keep secondary or optional content one press away under a summary, or let a pers
 
 - Optional or advanced content should stay out of the way until a person asks for it (advanced settings, a build log, release notes).
 - A list of questions or sections should open one at a time: give the Disclosures the same name for a native exclusive accordion.
+- A compact details panel belongs inside a ContentItem (a note card's AI feedback): use appearance embedded so the item's own inset frames it once.
 
 **Not when:**
 
@@ -36,6 +37,7 @@ Exact prop names and types: [`@kerfjs/ui/disclosure`](../public-api-signatures-v
 **Variants (configure, do not restyle):**
 
 - plain, framed, or sunken appearance
+- embedded appearance inside a ContentItem or other owner chrome: no margin, border, or padding of its own and a 24px minimum summary row
 - open or closed initially
 - a quiet detail after the title
 - an exclusive accordion group sharing a name
@@ -58,6 +60,7 @@ No wiring helper.
 Margin: self · border: self · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
 - The root takes the content-item geometry (8px inline margin, a 1px border, 8px padding); the content starts on the title's text column.
+- appearance embedded drops that geometry inside a ContentItem, which already owns it: the arrow sits on the item's content inset, the summary row is at least 24px tall, and the content (a flush Text or other content without an inset) starts on the title's text column 8px below the summary. Do not use embedded outside owner chrome.
 
 ## Accessibility
 

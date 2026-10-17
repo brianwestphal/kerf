@@ -90,6 +90,43 @@
     0;
 }
 
+/* Embedded: inside owner chrome, such as a ContentItem, that already draws
+   the margin, border, and padding. The root adds none of its own, so the
+   arrow sits on the owner's content inset (icons align to icons), and the
+   summary is a compact inline row. The content expects no inset of its own
+   (a flush Text, inline copy) and starts on the title's text column, one
+   item gap below the summary. A hover fill would touch the arrow and text at
+   the owner's content edge, so the embedded summary keeps only its pointer
+   cursor and draws its focus ring just outside the row. */
+.kui-disclosure[data-appearance="embedded"] {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.kui-disclosure[data-appearance="embedded"] > .kui-disclosure__summary {
+  min-height: remify(24px);
+  padding: 0;
+  border-radius: var(--kui-radius-s, remify(3px));
+}
+
+.kui-disclosure[data-appearance="embedded"] > .kui-disclosure__summary:hover {
+  background: none;
+}
+
+.kui-disclosure[data-appearance="embedded"]
+  > .kui-disclosure__summary:focus-visible {
+  outline-offset: remify(2px);
+}
+
+.kui-disclosure[data-appearance="embedded"] > .kui-disclosure__content {
+  padding-block: var(--kui-layout-item-gap, remify(8px)) 0;
+  padding-inline: calc(
+      var(--kui-disclosure-arrow-size, remify(18px)) + var(--kui-space-xs)
+    )
+    0;
+}
+
 @media (forced-colors: active) {
   .kui-disclosure[data-appearance="framed"],
   .kui-disclosure[data-appearance="sunken"] {

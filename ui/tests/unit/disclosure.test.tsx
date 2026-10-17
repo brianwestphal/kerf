@@ -85,4 +85,37 @@ describe('Disclosure', () => {
     );
     expect(host.querySelector('details')?.dataset.appearance).toBe('framed');
   });
+
+  it('renders the embedded appearance with the same native structure', () => {
+    const host = render(
+      Disclosure({
+        title: 'AI Feedback',
+        detail: '2 suggestions',
+        appearance: 'embedded',
+        open: true,
+        children: <p data-test-content="">Group Export and Share.</p>,
+      }),
+    );
+    const details = host.querySelector('details')!;
+    expect(details.className).toBe('kui-disclosure');
+    expect(details.dataset.appearance).toBe('embedded');
+    expect(details.open).toBe(true);
+    const summary = details.querySelector(':scope > summary')!;
+    expect(summary.className).toBe('kui-disclosure__summary');
+    const arrow = summary.firstElementChild!;
+    expect(arrow.classList.contains('kui-disclosure-arrow')).toBe(true);
+    expect(arrow.getAttribute('aria-hidden')).toBe('true');
+    expect(arrow.getAttribute('data-open')).toBe('true');
+    expect(summary.querySelector('.kui-disclosure__title')?.textContent).toBe(
+      'AI Feedback',
+    );
+    expect(summary.querySelector('.kui-disclosure__detail')?.textContent).toBe(
+      '2 suggestions',
+    );
+    expect(
+      details.querySelector(
+        ':scope > .kui-disclosure__content [data-test-content]',
+      ),
+    ).not.toBeNull();
+  });
 });

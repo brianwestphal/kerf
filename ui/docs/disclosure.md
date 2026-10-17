@@ -26,6 +26,37 @@ prose in `Text` rather than passing a bare string.
   it marks a real distinction.
 - `appearance="sunken"` draws the border on the lowered, textured work surface,
   for something like a log.
+- `appearance="embedded"` is for a Disclosure inside chrome that already owns
+  the content-item geometry, such as a `ContentItem`. See below.
+
+## Embedded in a content item
+
+A compact details panel inside a `ContentItem` (a note card's AI feedback)
+would be framed twice by the default geometry: the item's 8px margin, border,
+and padding, then the Disclosure's own. `appearance="embedded"` drops the
+Disclosure's margin, border, and padding, so the summary row starts on the
+item's content inset and the arrow lines up with the item's other icons. The
+summary is a compact row with a 24px minimum height, and it has no hover
+fill, because a fill would touch the arrow and text at the item's content
+edge. Its focus ring sits just outside the row.
+
+The content starts on the title's text column, 8px below the summary. Inside
+an item, content brings no inset of its own: use a `flush` `Text` or other
+inline content rather than a block `Text`.
+
+```tsx
+<ContentItem frame="framed">
+  <List gap="xs">
+    <Text flush>Move the export button into the toolbar.</Text>
+    <Disclosure title="AI Feedback" detail="2 suggestions" appearance="embedded">
+      <Text flush tone="quiet">Group Export and Share in one control group.</Text>
+    </Disclosure>
+  </List>
+</ContentItem>;
+```
+
+Use `embedded` only inside owner chrome. On a pane or a list, the default
+geometry is what puts the Disclosure on the shared content column.
 
 ## Open state
 

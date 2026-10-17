@@ -4148,7 +4148,8 @@
           "border": "self",
           "padding": "self",
           "notes": [
-            "The root takes the content-item geometry (8px inline margin, a 1px border, 8px padding); the content starts on the title's text column."
+            "The root takes the content-item geometry (8px inline margin, a 1px border, 8px padding); the content starts on the title's text column.",
+            "appearance embedded drops that geometry inside a ContentItem, which already owns it: the arrow sits on the item's content inset, the summary row is at least 24px tall, and the content (a flush Text or other content without an inset) starts on the title's text column 8px below the summary. Do not use embedded outside owner chrome."
           ]
         }
       },

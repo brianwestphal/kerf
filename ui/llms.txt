@@ -796,8 +796,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   Never use `wa-tooltip`.
 - **Show and hide content with `Disclosure`** (`@kerfjs/ui/disclosure`): a
   native details element with a DisclosureArrow on content-item geometry,
-  `plain` / `framed` / `sunken`; Disclosures sharing a `name` form an
-  accordion. Never use `wa-details` or `wa-accordion`.
+  `plain` / `framed` / `sunken`, or `embedded` inside a `ContentItem` (no
+  margin, border, or padding of its own, a compact summary, `flush` `Text`
+  content); Disclosures sharing a `name` form an accordion. Never use `wa-details` or `wa-accordion`.
 - **Show progress with `ProgressBar` or `ProgressRing`** (`@kerfjs/ui/progress-bar`,
   `@kerfjs/ui/progress-ring`): `value` of `max` (omit `value` for
   indeterminate), a `label`, `valueText`, tones. Never use `wa-progress-bar` or

@@ -4,10 +4,12 @@ import { DisclosureArrow } from '../../navigation/disclosure-arrow/disclosure-ar
 
 /**
  * The Disclosure's surface: `plain` (default) on the surrounding surface,
- * `framed` with the standard neutral border, or `sunken` on the lowered,
- * textured work surface with a border.
+ * `framed` with the standard neutral border, `sunken` on the lowered,
+ * textured work surface with a border, or `embedded` inside owner chrome such
+ * as a `ContentItem`: no margin, border, or padding of its own and a compact
+ * summary row, so the arrow sits on the owner's content inset.
  */
-export type DisclosureAppearance = 'plain' | 'framed' | 'sunken';
+export type DisclosureAppearance = 'plain' | 'framed' | 'sunken' | 'embedded';
 
 /**
  * Application `data-*` identity on the `<details>` root, such as `data-key`;
@@ -42,6 +44,11 @@ export interface DisclosureProps {
    * where opening one closes the others (the native `<details name>`).
    */
   name?: string;
+  /**
+   * Surface treatment; defaults to `plain`. Use `embedded` only inside chrome
+   * that already owns the content-item inset, such as a `ContentItem`, and
+   * give it content that draws no inset of its own (`Text flush`).
+   */
   appearance?: DisclosureAppearance;
   /**
    * A `data-action` value on the `<details>` root, for a delegated listener of
@@ -60,7 +67,9 @@ export interface DisclosureProps {
  * Content a person shows and hides under a summary row: a native `<details>`
  * with a `<summary>` that carries a `DisclosureArrow` and the title, on the
  * shared content-item geometry (8px inline margin, a 1px border, 8px
- * padding, the rounded radius). Keyboard and screen-reader behavior is the
+ * padding, the rounded radius). `appearance="embedded"` drops that geometry
+ * for a Disclosure inside owner chrome (a `ContentItem`) that already insets
+ * it. Keyboard and screen-reader behavior is the
  * platform's: the summary is a button that Enter and Space toggle, and it
  * reports its expanded state. Disclosures sharing a `name` form an accordion.
  */
