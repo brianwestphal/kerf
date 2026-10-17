@@ -757,7 +757,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </Row>
   ),
   'wa-markdown': () => (
-    <List hAlign="center" gap="xs">
+    <List gap="xs">
       <Text variant="span">Trusted static Markdown · client-rendered</Text>
       <wa-markdown>
         <script type="text/markdown">{trustedMarkdownDemo}</script>
