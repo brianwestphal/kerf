@@ -659,7 +659,7 @@ UI neutral decorative colors composite naturally through nested surfaces in both
 
 Toolbar width visibility (`KF-MXE9YV`): ToolbarText and ToolbarControlGroup accept typed hideBelow/showBelow CSS lengths, wired by `wireToolbarVisibility`. The nearest Toolbar content box determines strict complementary boundaries; invalid lengths remain visible, token/font changes and relocated items remeasure, and hidden busy groups hide their own status.
 
-Select menus use native viewport shifting with 10px gutters: default menus grow to content (up to 20rem), while `fitMenu` matches trigger width and long labels wrap. Keep popup sizing and position repairs out of consumer CSS.
+Select menus use native viewport shifting with 10px gutters: default menus grow to content (up to 20rem), while `fitMenu` matches trigger width and long labels wrap. A listbox (like a PopupMenu menu) shifts only along its trigger's edge, never over the trigger: when neither side fits, it opens on the side with more room and scrolls inside its capped height, so a second press on the trigger still closes it. Keep popup sizing and position repairs out of consumer CSS.
 
 ### Modal surface viewport configuration
 

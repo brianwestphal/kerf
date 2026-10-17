@@ -1002,3 +1002,69 @@ test('a Badge content trigger opens the menu, keeps its submenu, and draws a pil
     await expect(page.locator('.kui-help-tag:popover-open')).toHaveCount(0);
   }
 });
+
+// A tall button-triggered menu at a short viewport takes the side with more
+// room and scrolls inside its cap instead of shifting over its trigger, so a
+// second press on the trigger reaches it and closes the menu. Before, the
+// menu was shifted up over the trigger and the second press landed on a row.
+test('a tall PopupMenu never covers its trigger at a short viewport', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1024, height: 600 });
+  await page.goto('/?component=popup-menu');
+  const root = page
+    .locator('[data-demo="popup-menu"]')
+    .locator('[data-component="popup-menu"]')
+    .first();
+  const trigger = root.getByRole('button', { name: 'Sort Tickets' });
+  const panel = panelOf(root);
+  // Move the unchanged production group to controlled viewport anchors and
+  // lengthen the menu. No PopupMenu styles are overridden.
+  await root.evaluate((element) => {
+    const group = element.parentElement!;
+    group.style.position = 'fixed';
+    group.style.left = '400px';
+    const menu = element.querySelector(':scope > .kui-popup-menu__menu')!;
+    const item = [
+      ...menu.querySelectorAll('.kui-popup-menu__item:not([aria-haspopup])'),
+    ].find((candidate) => candidate.closest('.kui-popup-menu__menu') === menu)!;
+    for (let index = 0; index < 30; index += 1)
+      item.parentElement!.append(item.cloneNode(true));
+  });
+  for (const [top, side] of [
+    [80, 'bottom'],
+    [460, 'top'],
+  ] as const) {
+    await root.evaluate((element, y) => {
+      element.parentElement!.style.top = `${y}px`;
+    }, top);
+    await trigger.click();
+    await expectOpen(root);
+    await expect
+      .poll(() => panel.getAttribute('data-placement'))
+      .toMatch(new RegExp(`^${side}`));
+    const geometry = await root.evaluate((element) => {
+      const opener = element
+        .querySelector(':scope > .kui-popup-menu__trigger')!
+        .getBoundingClientRect();
+      const menu = element.querySelector<HTMLElement>(
+        ':scope > .kui-popup-menu__menu',
+      )!;
+      const box = menu.getBoundingClientRect();
+      return {
+        overlap:
+          Math.min(box.bottom, opener.bottom) - Math.max(box.top, opener.top),
+        top: box.top,
+        bottom: box.bottom,
+        scrolls: menu.scrollHeight > menu.clientHeight,
+      };
+    });
+    expect(geometry.overlap).toBeLessThanOrEqual(0.5);
+    expect(geometry.top).toBeGreaterThanOrEqual(9.5);
+    expect(geometry.bottom).toBeLessThanOrEqual(600 - 9.5);
+    expect(geometry.scrolls).toBe(true);
+    // The trigger is not covered: a real (actionable) press closes the menu.
+    await trigger.click();
+    await expectOpen(root, false);
+  }
+});

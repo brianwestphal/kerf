@@ -91,9 +91,10 @@ describe('positionPopup', () => {
       padding: POPUP_VIEWPORT_PADDING,
       boundary,
     });
+    // The shift stays along the anchor's edge: it never moves the popup
+    // across (over) its anchor.
     expect(options.middleware[2]!.options).toEqual({
       padding: POPUP_VIEWPORT_PADDING,
-      crossAxis: true,
       boundary,
     });
     expect(popup.style.left).toBe('12px');

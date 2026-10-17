@@ -777,7 +777,10 @@ keeps the same collision placement, focus management, submenu keyboard
 navigation, and outside/Escape dismissal as a trigger-anchored one.
 
 The menu opens in the browser top layer, flips and shifts at viewport edges,
-and limits its height to the available space, scrolling past it. The app
+and limits its height to the available space, scrolling past it. It shifts
+only along its trigger's (or point's) edge, never across it: when neither
+side fits, it opens on the side with more room and scrolls, so a tall menu
+never covers its trigger and a second press on the trigger closes it. The app
 supplies pointer coordinates and command policy; it does not need to calculate
 menu offsets. For other anchored content, use `AnchoredSurface` for help or
 popup content, a native `title` for a plain-text hint, or `kerfjs/overlay`'s

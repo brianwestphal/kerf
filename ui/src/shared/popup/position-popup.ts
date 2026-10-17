@@ -11,10 +11,11 @@ import {
 /**
  * Placement for Kerf-owned popups (a PopupMenu's menu and submenus, a
  * Select's listbox): a top-layer element positioned `fixed` against an
- * anchor, flipped to the other side when its preferred side is short,
- * shifted to stay clear of the viewport edge, and capped to the block size
- * its side has room for. The geometry matches the Web Awesome popup these
- * surfaces replaced: no gap, best-fit flip, 10px shift and size padding.
+ * anchor, flipped to the other side when its preferred side is short (to
+ * the side with more room when neither fits), shifted along the anchor's
+ * edge to stay clear of the viewport edge, and capped to the block size its
+ * side has room for, so a tall popup scrolls instead of covering its anchor.
+ * No gap, best-fit flip, 10px shift and size padding.
  */
 
 /** Where a popup opens: below or above its anchor, at the start, center, or end. */
@@ -92,8 +93,13 @@ export async function positionPopup(
             : { x: ox + sign * gap, y: oy + cross };
         },
       },
+      // When neither side fits, best fit takes the side with more room and
+      // the size cap below scrolls the popup inside it.
       flip({ fallbackStrategy: 'bestFit', padding, boundary }),
-      shift({ padding, crossAxis: true, boundary }),
+      // Shift only along the anchor's edge, never across the anchor: a
+      // popup shifted over its trigger would hide it, and a second press
+      // meant to close the popup would land on a row instead.
+      shift({ padding, boundary }),
       size({
         padding,
         boundary,

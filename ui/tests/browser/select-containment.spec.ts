@@ -154,3 +154,65 @@ for (const width of [1100, 390]) {
     });
   });
 }
+
+// A tall listbox at a short viewport takes the side with more room and
+// scrolls inside its cap instead of shifting over its trigger, so a second
+// press on the trigger reaches it and closes the listbox (the popup contract
+// a PopupMenu shares).
+test('a tall Select listbox never covers its trigger at a short viewport', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1024, height: 600 });
+  await page.goto('/?component=select');
+  const select = page.locator('[name="toolbar-rendering-balance"]');
+  const combobox = select.getByRole('combobox');
+  // Move the unchanged production group to controlled viewport anchors and
+  // lengthen the listbox. No Select or popup styles are overridden.
+  await select.evaluate((element) => {
+    const group = element.parentElement!;
+    group.style.position = 'fixed';
+    group.style.left = '400px';
+    const option = element.querySelector('.kui-select__option')!;
+    for (let index = 0; index < 30; index += 1) {
+      const copy = option.cloneNode(true) as HTMLElement;
+      copy.removeAttribute('id');
+      option.parentElement!.append(copy);
+    }
+  });
+  for (const [top, side] of [
+    [80, 'bottom'],
+    [480, 'top'],
+  ] as const) {
+    await select.evaluate((element, y) => {
+      element.parentElement!.style.top = `${y}px`;
+    }, top);
+    await combobox.click();
+    await expect(select).toHaveAttribute('open');
+    const popup = select.locator(':scope > .kui-select__popup');
+    await expect
+      .poll(() => popup.getAttribute('data-placement'))
+      .toMatch(new RegExp(`^${side}`));
+    const geometry = await select.evaluate((element) => {
+      const trigger = element
+        .querySelector(':scope > .kui-select__trigger')!
+        .getBoundingClientRect();
+      const listbox = element.querySelector<HTMLElement>(
+        ':scope > .kui-select__popup',
+      )!;
+      const box = listbox.getBoundingClientRect();
+      return {
+        overlap:
+          Math.min(box.bottom, trigger.bottom) - Math.max(box.top, trigger.top),
+        top: box.top,
+        bottom: box.bottom,
+        scrolls: listbox.scrollHeight > listbox.clientHeight,
+      };
+    });
+    expect(geometry.overlap).toBeLessThanOrEqual(0.5);
+    expect(geometry.top).toBeGreaterThanOrEqual(9.5);
+    expect(geometry.bottom).toBeLessThanOrEqual(600 - 9.5);
+    expect(geometry.scrolls).toBe(true);
+    await combobox.click();
+    await expect(select).not.toHaveAttribute('open');
+  }
+});
