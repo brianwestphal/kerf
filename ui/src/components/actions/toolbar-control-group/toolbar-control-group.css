@@ -206,7 +206,10 @@
     border-color 0.2s ease;
 }
 
-.kui-toolbar-control-group[data-content="search"]:has(
+/* A fill search spans a content-sized group's line. A `sizing="grow"` group
+   keeps its own grow basis instead (below): taking the whole line would make
+   it the line's hypothetical size and wrap every sibling group. */
+.kui-toolbar-control-group[data-content="search"]:not([data-sizing="grow"]):has(
     > .kui-search-field[data-expanded="true"][data-fill="true"]
   ) {
   width: 100%;
