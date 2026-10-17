@@ -216,7 +216,9 @@ const BUDGETS = [
     // KF-PVBPJM (+0.09 KB): fitHeight pins the element's height for the cap
     // read and puts back a scroll position it moved (WebKit's container-query
     // layout clamped a scrolled surface to its top).
-    budgetKb: 23.3,
+    // KF-S92WX8 (+0.1 KB): autoReposition also observes the surface's own
+    // size, skipping resizes its own positioning writes caused.
+    budgetKb: 23.4,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

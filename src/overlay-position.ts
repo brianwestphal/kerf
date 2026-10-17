@@ -408,23 +408,46 @@ function fixedBottom(el: HTMLElement, originY: number, scaleY: number): number {
  * Keep `el` positioned against `anchor` (via {@link positionAnchored}) as the page
  * scrolls or resizes. Positions once immediately, then re-runs on `scroll`
  * (capture phase — catches scrolls in any inner container, not just `window`),
- * `resize`, and, where `ResizeObserver` exists, whenever the anchor's own size
- * changes (a field that grows a line as it fills), so `el` keeps clear of an
- * anchor that grows under it. Returns a disposer that removes the listeners
- * and the observer.
+ * `resize`, and, where `ResizeObserver` exists, whenever the anchor's or `el`'s
+ * own size changes — a field that grows a line as it fills, or an end-aligned
+ * or above-placed surface whose content grows — so `el` stays lined up with
+ * the anchor edge it hangs from. A size change that `el`'s own repositioning
+ * caused (a published `fitHeight` cap, a shrink-to-fit width near the viewport
+ * edge) is not acted on again, so positioning can never feed itself. Returns
+ * a disposer that removes the listeners and the observer.
  */
 export function autoReposition(
   el: HTMLElement,
   anchor: Element,
   options: AnchorPositionOptions = {},
 ): () => void {
-  const reposition = (): void => positionAnchored(el, anchor, options);
+  const RO = globalThis.ResizeObserver;
+  const nodes = [anchor, el];
+  // The anchor's and `el`'s sizes once the last reposition's writes landed.
+  let settled = '';
+  const sizes = (): string =>
+    nodes
+      .map((node) => {
+        const rect = node.getBoundingClientRect();
+        return [rect.width, rect.height];
+      })
+      .join();
+  const reposition = (): void => {
+    positionAnchored(el, anchor, options);
+    if (RO) settled = sizes();
+  };
   reposition();
   window.addEventListener('scroll', reposition, true);
   window.addEventListener('resize', reposition);
-  const RO = globalThis.ResizeObserver;
-  const observer = RO ? new RO(reposition) : undefined;
-  observer?.observe(anchor);
+  // Only a size that differs from what the last reposition left behind is a
+  // change from outside: the observer's first report, and any resize the
+  // positioning writes themselves caused, match it and are skipped.
+  const observer =
+    RO &&
+    new RO(() => {
+      if (sizes() !== settled) reposition();
+    });
+  nodes.forEach((node) => observer?.observe(node));
   return () => {
     window.removeEventListener('scroll', reposition, true);
     window.removeEventListener('resize', reposition);

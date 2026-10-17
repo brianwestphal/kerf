@@ -273,6 +273,81 @@ test('popover(): follows an anchor that grows, with no scroll or resize', async 
     .toBeLessThan(2);
 });
 
+test('popover(): an above-placed, end-aligned surface that grows stays anchored', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.id = 'self-grow-anchor';
+    anchor.textContent = 'anchor';
+    Object.assign(anchor.style, {
+      position: 'absolute',
+      left: '300px',
+      top: '400px',
+      width: '200px',
+      height: '30px',
+    });
+    document.body.appendChild(anchor);
+    const { popover } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    (window as any)._selfGrowPop = popover(
+      anchor,
+      raw(
+        '<div class="self-grow-body" style="width:100px;height:40px">help</div>',
+      ),
+      { gap: 6, dismiss: false, placement: 'top', align: 'end' },
+    );
+  });
+  const offsets = async () => {
+    const anchorBox = (await page.locator('#self-grow-anchor').boundingBox())!;
+    const popBox = (await page.locator('.self-grow-body').boundingBox())!;
+    return {
+      // Gap between the surface's bottom edge and the anchor's top edge.
+      gap: anchorBox.y - (popBox.y + popBox.height),
+      // Distance between the right edges.
+      right: Math.abs(
+        anchorBox.x + anchorBox.width - (popBox.x + popBox.width),
+      ),
+    };
+  };
+  const initial = await offsets();
+  expect(Math.abs(initial.gap - 6)).toBeLessThan(2);
+  expect(initial.right).toBeLessThan(2);
+  // The surface's own content grows wider and taller, with no scroll, resize,
+  // or anchor change: only observing the surface can see that.
+  await page.locator('.self-grow-body').evaluate((body) => {
+    Object.assign((body as HTMLElement).style, {
+      width: '180px',
+      height: '120px',
+    });
+  });
+  await expect
+    .poll(async () => {
+      const { gap, right } = await offsets();
+      return Math.abs(gap - 6) < 2 && right < 2;
+    })
+    .toBe(true);
+  // Settled: the positioning does not keep re-running against itself.
+  const settled = await page.evaluate(
+    () =>
+      new Promise<string>((resolve) => {
+        const el = document.querySelector('.self-grow-body')!
+          .parentElement as HTMLElement;
+        const before = `${el.style.left},${el.style.top}`;
+        window.requestAnimationFrame(() =>
+          window.requestAnimationFrame(() =>
+            resolve(
+              before === `${el.style.left},${el.style.top}`
+                ? 'stable'
+                : 'moving',
+            ),
+          ),
+        );
+      }),
+  );
+  expect(settled).toBe('stable');
+});
+
 test('tooltip(): shows on real hover and hides on leave', async ({ page }) => {
   await page.evaluate(() => {
     const anchor = document.createElement('button');

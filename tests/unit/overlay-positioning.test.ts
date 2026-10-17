@@ -336,7 +336,7 @@ describe('positionAnchored() / autoReposition()', () => {
       document.body.appendChild(el);
       el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
       const stop = autoReposition(el, anchor, { gap: 0 });
-      expect(observed).toEqual([anchor]);
+      expect(observed).toEqual([anchor, el]);
       expect(el.style.top).toBe('220px');
 
       // The anchor grows a line: its bottom edge moves with no scroll/resize.
@@ -345,12 +345,106 @@ describe('positionAnchored() / autoReposition()', () => {
         right: 150,
         top: 200,
         bottom: 260,
+        height: 60,
       });
       callback!();
       expect(el.style.top).toBe('260px');
 
       stop();
       expect(disconnect).toHaveBeenCalledOnce();
+    });
+
+    function stubObserver(): { notify: () => void } {
+      let callback: (() => void) | undefined;
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(fn: () => void) {
+            callback = fn;
+          }
+          observe() {}
+          disconnect() {}
+        },
+      );
+      return { notify: () => callback!() };
+    }
+
+    it('re-aligns an end-aligned surface whose own width grows', () => {
+      const { notify } = stubObserver();
+      setViewport(1000, 800);
+      const anchor = anchorAt({
+        left: 100,
+        right: 300,
+        top: 200,
+        bottom: 220,
+        width: 200,
+        height: 20,
+      });
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+      const stop = autoReposition(el, anchor, { gap: 0, align: 'end' });
+      expect(el.style.left).toBe('220px');
+      notify(); // the observer's first report: nothing changed
+      expect(el.style.left).toBe('220px');
+
+      el.getBoundingClientRect = rectFn({ width: 150, height: 40 });
+      notify();
+      expect(el.style.left).toBe('150px'); // right edges still line up
+      stop();
+    });
+
+    it('keeps an above-placed surface hanging from the anchor as it grows taller', () => {
+      const { notify } = stubObserver();
+      setViewport(1000, 800);
+      const anchor = anchorAt({
+        left: 100,
+        right: 150,
+        top: 500,
+        bottom: 520,
+        width: 50,
+        height: 20,
+      });
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+      const stop = autoReposition(el, anchor, { gap: 0, placement: 'top' });
+      expect(el.style.top).toBe('460px');
+      el.getBoundingClientRect = rectFn({ width: 80, height: 100 });
+      notify();
+      expect(el.style.top).toBe('400px');
+      stop();
+    });
+
+    it('does not act on a resize its own positioning caused (no feedback loop)', () => {
+      const { notify } = stubObserver();
+      setViewport(1000, 800);
+      const anchor = anchorAt({
+        left: 900,
+        right: 950,
+        top: 200,
+        bottom: 220,
+        width: 50,
+        height: 20,
+      });
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      // A shrink-to-fit box whose width depends on where it was placed: every
+      // reposition moves it, which resizes it, which would reposition again.
+      el.getBoundingClientRect = () =>
+        rectFn({
+          width: 200 - (Number.parseFloat(el.style.left) || 0) / 10,
+          height: 40,
+        })();
+      const stop = autoReposition(el, anchor, { gap: 0 });
+      // Measured 200px wide at left 0, so clamped to 1000 - 200.
+      expect(el.style.left).toBe('800px');
+      // The observer reports the size the positioning itself produced (120px)
+      // over and over: none of those reports repositions, or `left` would
+      // creep toward the edge on every one.
+      for (let report = 0; report < 5; report++) notify();
+      expect(el.style.left).toBe('800px');
+      stop();
     });
 
     it('still follows scroll and resize where ResizeObserver is unavailable', () => {
@@ -366,6 +460,7 @@ describe('positionAnchored() / autoReposition()', () => {
         right: 150,
         top: 200,
         bottom: 260,
+        height: 60,
       });
       window.dispatchEvent(new Event('resize'));
       expect(el.style.top).toBe('260px');
