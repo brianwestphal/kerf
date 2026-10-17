@@ -20,7 +20,18 @@
   font-size: var(--kui-font-m, remify(16px));
 }
 
+/* The area and every slider track carry an inner edge halfway to the text
+   color, so an area or track as dark (or as light) as the surface behind it
+   keeps a visible boundary in either scheme. Every thumb draws a two-tone
+   ring, white inside a dark outline, so it keeps a 3:1 boundary over light
+   and dark colors alike. */
 .kui-color-picker__surface {
+  --_kui-color-picker-track-edge: color-mix(
+    in srgb,
+    var(--kui-color-text) 50%,
+    transparent
+  );
+  --_kui-color-picker-thumb-outline: rgb(0 0 0 / 0.6);
   --_kui-color-picker-checker: repeating-conic-gradient(
       var(--kui-color-neutral-fill-normal) 0% 25%,
       var(--kui-color-surface) 0% 50%
@@ -40,6 +51,7 @@
   background:
     linear-gradient(to top, #000, transparent),
     linear-gradient(to right, #fff, hsl(var(--_kui-color-picker-h) 100% 50%));
+  box-shadow: inset 0 0 0 1px var(--_kui-color-picker-track-edge);
   cursor: crosshair;
   touch-action: none;
 }
@@ -60,7 +72,7 @@
   border-radius: 50%;
   background: var(--_kui-color-picker-color);
   box-shadow:
-    0 0 0 1px rgb(0 0 0 / 0.3),
+    0 0 0 1px var(--_kui-color-picker-thumb-outline),
     var(--kui-shadow-s);
   pointer-events: none;
   translate: -50% -50%;
@@ -71,16 +83,8 @@
    slider's inline style carries its track (the colors its channel produces
    while the others hold, or the full rainbow for hue) and its thumb color.
    Every track runs in the writing direction, as the native range does, and
-   carries an inner edge halfway to the text color, so a track as dark (or as
-   light) as the surface behind it keeps a visible boundary in either
-   scheme. */
+   carries the surface's inner edge. */
 .kui-color-picker__sliders {
-  --_kui-color-picker-track-edge: color-mix(
-    in srgb,
-    var(--kui-color-text) 50%,
-    transparent
-  );
-
   display: grid;
   min-width: 0;
   gap: var(--kui-space-xs, remify(8px));
@@ -152,7 +156,7 @@
   border-radius: 50%;
   background: var(--_kui-color-picker-thumb-color);
   box-shadow:
-    0 0 0 1px rgb(0 0 0 / 0.2),
+    0 0 0 1px var(--_kui-color-picker-thumb-outline),
     var(--kui-shadow-s);
   appearance: none;
 }
@@ -166,7 +170,7 @@
   border-radius: 50%;
   background: var(--_kui-color-picker-thumb-color);
   box-shadow:
-    0 0 0 1px rgb(0 0 0 / 0.2),
+    0 0 0 1px var(--_kui-color-picker-thumb-outline),
     var(--kui-shadow-s);
 }
 
@@ -337,15 +341,15 @@
   cursor: not-allowed;
 }
 
-/* Increased contrast draws the track edge in the full text color. */
+/* Increased contrast draws the area and track edge in the full text color. */
 @media (prefers-contrast: more) {
-  .kui-color-picker__sliders {
+  .kui-color-picker__surface {
     --_kui-color-picker-track-edge: var(--kui-color-text);
   }
 }
 
 @media (forced-colors: active) {
-  .kui-color-picker__sliders {
+  .kui-color-picker__surface {
     --_kui-color-picker-track-edge: CanvasText;
   }
 

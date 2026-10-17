@@ -2215,6 +2215,7 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 .dt-picker .kui-color-picker__area { background: none; }
 .dt-picker-area { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; }
 .dt-picker-area > svg { display: block; width: 100%; height: 100%; }
+.dt-picker-area-edge { position: absolute; inset: 0; border: 1px solid color-mix(in srgb, var(--kui-color-text) 50%, transparent); border-radius: inherit; }
 .dt-picker .kui-color-picker__area-thumb { z-index: 1; }
 .dt-picker-range { position: relative; height: 20px; }
 .dt-checker-light { fill: var(--kui-color-surface); }
@@ -2223,7 +2224,7 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 .dt-picker-track { position: absolute; top: 4px; left: 0; width: 100%; height: 12px; overflow: hidden; }
 .dt-picker-track > svg { display: block; width: 100%; height: 100%; }
 .dt-picker-track-edge { color: var(--kui-color-text); stroke: currentColor; stroke-opacity: 0.5; }
-.dt-picker-thumb { position: absolute; top: 0; left: calc((100% - 20px) * var(--dt-fraction)); width: 20px; height: 20px; box-sizing: border-box; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.2), var(--kui-shadow-s); }
+.dt-picker-thumb { position: absolute; top: 0; left: calc((100% - 20px) * var(--dt-fraction)); width: 20px; height: 20px; box-sizing: border-box; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6), var(--kui-shadow-s); }
 .kui-color-field__swatch.dt-swatch { position: relative; overflow: hidden; background: var(--kui-color-surface); }
 .dt-swatch > span { position: absolute; }
 .dt-swatch__tile { inset: 0 50% 50% 0; background: var(--kui-color-neutral-fill-normal); }
@@ -2303,7 +2304,7 @@ function staticColorPicker(markup) {
       .replace('class="kui-color-picker"', 'class="kui-color-picker dt-picker"')
       .replace(
         '<span class="kui-color-picker__area-thumb"></span>',
-        `<span class="dt-picker-area"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="dt-area-hue"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="${hue}"/></linearGradient><linearGradient id="dt-area-dark" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient></defs><rect width="100" height="100" fill="url(#dt-area-hue)"/><rect width="100" height="100" fill="url(#dt-area-dark)"/></svg></span><span class="kui-color-picker__area-thumb"></span>`,
+        `<span class="dt-picker-area"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="dt-area-hue"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="${hue}"/></linearGradient><linearGradient id="dt-area-dark" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient></defs><rect width="100" height="100" fill="url(#dt-area-hue)"/><rect width="100" height="100" fill="url(#dt-area-dark)"/></svg></span><span class="dt-picker-area-edge"></span><span class="kui-color-picker__area-thumb"></span>`,
       )
       .replace(/<input class="kui-color-picker__slider"[^>]*>/g, channelSlider)
       .replace(

@@ -84,11 +84,16 @@ field is named the same way (Red, Hue, Hex Color, Opacity). The panel takes
 the shared block-content inset, fills its container up to 320px, and spaces
 its rows 12px apart; the sliders form one group 8px apart.
 
-Every slider track draws a 1px inner edge halfway between the text color and
-the track, so a track as dark as a dark surface (a hue at low brightness, a
-faint opacity) or as light as a light one keeps a boundary of at least 3:1
-against the surface around it. Increased contrast draws the edge in the full
-text color and forced colors in `CanvasText`.
+The saturation and brightness area and every slider track draw a 1px inner
+edge halfway between the text color and the color under it, so an area or a
+track as dark as a dark surface (the area's black bottom, a hue at low
+brightness, a faint opacity) or as light as a light one keeps a boundary of at
+least 3:1 against the surface around it. Increased contrast draws the edge in
+the full text color and forced colors in `CanvasText`.
+
+Every thumb draws a two-tone ring: a white border inside a dark outline. The
+white holds at least 3:1 against a dark color and the outline against a light
+one, so a thumb stays findable wherever it sits.
 
 Every track runs in the writing direction, as the native range does: in
 right-to-left text the gradient starts at the right, so the thumb at a

@@ -207,6 +207,96 @@ for (const scheme of ['light', 'dark'] as const) {
   });
 }
 
+/** The strongest contrast a thumb's ring pixels make with the color beside
+ * it, read along a horizontal line through the thumb's center. */
+function ringContrast(
+  pixels: Awaited<ReturnType<typeof paintedPixels>>,
+  x: number,
+  y: number,
+) {
+  // Look toward the side with more room, so the reference stays on the
+  // area or track.
+  const side = x > pixels.width / 2 ? -1 : 1;
+  const beside = pixels.at(x + side * 15, y);
+  let best = 0;
+  // The white border and the dark outline lie 5 to 11px from the center
+  // for both the area thumb and the larger slider thumbs.
+  for (let offset = 5; offset <= 11; offset += 1) {
+    const ratio = contrastRatio(pixels.at(x + side * offset, y), beside) ?? 0;
+    best = Math.max(best, ratio);
+  }
+  return best;
+}
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`ColorPicker area keeps a visible edge on a ${scheme} surface`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    const picker = await openPicker(page, '1A1A40', 'hsb');
+    const area = picker.getByRole('slider', {
+      name: 'Saturation and Brightness',
+    });
+    const box = (await area.boundingBox())!;
+    const pickerBox = (await picker.boundingBox())!;
+    const pixels = await paintedPixels(page, picker);
+    // In a column clear of the rounded corners, walk inward from the surface
+    // above the area (whose top runs to white) and below it (black): the
+    // first painted pixel past the surface is the edge.
+    const x = box.x - pickerBox.x + box.width * 0.1;
+    const top = Math.round(box.y - pickerBox.y);
+    const bottom = Math.round(top + box.height) - 1;
+    for (const [outside, from, step] of [
+      [top - 3, top - 2, 1],
+      [bottom + 3, bottom + 2, -1],
+    ] as const) {
+      const surface = pixels.at(x, outside);
+      let y = from;
+      while (distance(pixels.at(x, y), surface) <= 6) y += step;
+      expect(Math.abs(y - from)).toBeLessThanOrEqual(3);
+      expect(contrastRatio(pixels.at(x, y), surface)).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  test(`ColorPicker thumbs keep a 3:1 outline on light and dark colors in ${scheme}`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    for (const hex of ['F4F0D8', '1A1A40']) {
+      const picker = await openPicker(page, hex, 'hsb');
+      const area = picker.getByRole('slider', {
+        name: 'Saturation and Brightness',
+      });
+      const areaBox = (await area.boundingBox())!;
+      const thumbBox = (await picker
+        .locator('.kui-color-picker__area-thumb')
+        .boundingBox())!;
+      const areaPixels = await paintedPixels(page, area);
+      expect(
+        ringContrast(
+          areaPixels,
+          thumbBox.x + thumbBox.width / 2 - areaBox.x,
+          thumbBox.y + thumbBox.height / 2 - areaBox.y,
+        ),
+      ).toBeGreaterThanOrEqual(3);
+      // The hue track is light where this light color's thumb sits, and
+      // the brightness track dark where the dark color's thumb sits.
+      for (const name of ['Hue', 'Brightness']) {
+        const slider = picker.getByRole('slider', { name, exact: true });
+        const pixels = await paintedPixels(page, slider);
+        const [value, max] = await slider.evaluate(
+          (input: HTMLInputElement) => [Number(input.value), Number(input.max)],
+        );
+        const thumb = pixels.height;
+        const x = thumb / 2 + ((pixels.width - thumb) * value) / max;
+        expect(
+          ringContrast(pixels, x, pixels.height / 2),
+        ).toBeGreaterThanOrEqual(3);
+      }
+    }
+  });
+}
+
 for (const dir of ['ltr', 'rtl'] as const) {
   test(`ColorPicker slider tracks run in the ${dir} writing direction`, async ({
     page,
