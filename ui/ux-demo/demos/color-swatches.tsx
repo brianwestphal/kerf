@@ -42,6 +42,7 @@ export function ColorSwatchesDemo() {
     >
       <CatalogExample
         label="Fixed Palette"
+        align="inline-control"
         note="A native radio group: Tab reaches it once, the arrow keys move the choice, and the chosen value submits under name. Each swatch is named by its color (also its hover hint); the chosen one wears a ring that does not depend on its hue."
         viewport={{ width: 'medium' }}
       >
@@ -55,6 +56,7 @@ export function ColorSwatchesDemo() {
       </CatalogExample>
       <CatalogExample
         label="No Color, Compact, and Disabled"
+        align="inline-control"
         note="A 'transparent' swatch offers no color, drawn outlined and struck through; size compact draws 20px swatches."
         viewport={{ width: 'medium' }}
       >

@@ -220,9 +220,12 @@ for a control whose own inline padding contributes about 8px, and
 example label past the trigger's own padding and border. Use
 `align="none"` (the default) for a content item or composition that owns its
 geometry. Every form field specimen (TextField, Select, ColorField, TagField,
-Slider, Switch, Checkbox, RadioGroup, CheckboxGroup) uses `inline-control`,
-so field borders and label text share one column across the catalog; a field
-that already insets itself by 8px (Combobox) stays at `none`. A sized
+Slider, Switch, Checkbox, RadioGroup, CheckboxGroup, ColorSwatches) uses
+`inline-control`, so field borders and label text share one column across the
+catalog; a field that already insets itself by 8px (Combobox) stays at `none`.
+A field is a control a person fills in or picks a value with inline, swatch
+pickers included. A panel — a multi-part picker or a drop zone such as
+ColorPicker and FilePicker — owns its geometry and stays flush at `none`. A sized
 `viewport` takes the alignment offset out of its width, so it still ends at the
 example's inline-end edge.
 

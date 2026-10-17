@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164400,
-  "totalJavaScriptGzip": 426400,
-  "measuredLargestJavaScriptGzip": 164316,
-  "measuredTotalJavaScriptGzip": 426388,
+  "totalJavaScriptGzip": 426500,
+  "measuredLargestJavaScriptGzip": 164318,
+  "measuredTotalJavaScriptGzip": 426405,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5763,6 +5763,22 @@
         "measuredTotalJavaScriptGzip": 426388,
         "largestJavaScriptGzip": 164400,
         "totalJavaScriptGzip": 426400
+      }
+    },
+    {
+      "at": "2026-10-17T03:26:25.018Z",
+      "reason": "KF-8YAGME: ColorSwatches catalog specimens take inline-control field alignment",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164316,
+        "measuredTotalJavaScriptGzip": 426388,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 426400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164318,
+        "measuredTotalJavaScriptGzip": 426405,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 426500
       }
     }
   ]

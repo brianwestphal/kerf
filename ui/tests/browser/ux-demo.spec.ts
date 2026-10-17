@@ -3589,7 +3589,8 @@ test('puts every Kerf field demo on one border and text column', async ({
 }) => {
   test.setTimeout(120_000);
   // [route, bordered or control part, label part] inside the route's demo.
-  // A Slider has no border, so only its label is checked; a Switch's and a
+  // A Slider and ColorSwatches have no border, so only their label is
+  // checked (ColorPicker and FilePicker are panels and stay flush); a Switch's and a
   // Checkbox's label follows their control, so only the control is.
   const fields = [
     ['text-field', '.kui-text-field__box', '.kui-text-field__label'],
@@ -3602,6 +3603,7 @@ test('puts every Kerf field demo on one border and text column', async ({
     ['checkbox', '.kui-checkbox__box', null],
     ['radio-group', '.kui-radio-group__circle', '.kui-radio-group__label'],
     ['checkbox-group', '.kui-checkbox__box', '.kui-checkbox-group__label'],
+    ['color-swatches', null, '.kui-color-swatches__label'],
   ] as const;
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 1000 });
