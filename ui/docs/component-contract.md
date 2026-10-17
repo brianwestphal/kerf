@@ -419,6 +419,24 @@ a `Pane` overlay header, through `wireScrollDividers`, on its own Pane root).
 A scroll owner reads it only through its own `scrollClearance` prop, or, for an
 overlay-header Pane's content, through its own `headerPresentation`.
 
+The surface context needs no exception either. A component that changes the
+background behind its children publishes, on its own painted element, the
+foundation tokens `--kui-color-surface-current` (the opaque surface beneath:
+a raised `DialogSurface`, popover dialog, `AnchoredSurface`, or `List`
+`surface`, and a sunken Pane's opaque auto chrome, set it and clear both
+layers), `--kui-color-surface-current-region` (a layout region's translucent
+fill: a sunken `Pane`, `Workbench` area, or `TabNavigator` scene), and
+`--kui-color-surface-current-tint` (a content surface's translucent fill: a
+`SunkenPanel`, a sunken `Disclosure`, a lowered `FramedList`, a quiet,
+hovered, pressed, or selected `ContentItem`). They are undeclared at `:root`
+and a scoped `[data-kui-tint]` resets them. A control that must match what
+lies behind it (the inset focus ring's inner line on `Button` and
+`SplitButton`) layers tint over region over the opaque color, falling back to
+`--kui-color-surface`. Custom properties cannot fold an inherited value into a
+new one, so a content surface inside a sunken region composes exactly while a
+third translucent level keeps only the innermost content tint. An application
+surface that paints its own background sets the same tokens on its own root.
+
 Applications and component packages built on the package follow the same
 rules, and the downstream tools enforce them against the composition catalog
 instead of package source: `kerf-ui-analyze` / `kerf-ui-doctor` report a rule
@@ -641,8 +659,9 @@ outside painting; the Select keeps its focus outline 3px inside the trigger
 and drops it while the listbox is open. Both settings belong to Select, not an
 application `::part()` override. `Button` and `SplitButton` take the same
 `focusRingInset` for a clipping ancestor: the ring moves inside the box (each
-half's, for a SplitButton) with a surface-colored line inside it, so it stays
-visible on a loud fill of its own hue. Never re-offset their outline from
+half's, for a SplitButton) with a line inside it in the color of the surface
+it sits on (the surface context), so it stays visible on a loud fill of its
+own hue without a halo on a sunken or tinted surface. Never re-offset their outline from
 application CSS.
 
 Set `menuInset` to configure the menu surface

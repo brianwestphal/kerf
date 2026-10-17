@@ -24,6 +24,7 @@
 .kui-disclosure[data-appearance="sunken"] {
   --_kui-disclosure-border: var(--kui-color-neutral-border-normal);
   --_kui-disclosure-background: var(--kui-sunken-surface);
+  --kui-color-surface-current-tint: var(--kui-color-surface-lowered);
 }
 
 .kui-disclosure__summary {

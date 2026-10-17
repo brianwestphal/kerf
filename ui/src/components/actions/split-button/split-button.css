@@ -112,10 +112,14 @@
    moves inside its box. The loud fill can share the ring's hue (brand), so a
    surface-colored line runs inside the ring: the ring then meets the surface
    on both edges, as the outside ring does, on every tone. The line runs 3px
-   past the ring, wide enough to stay solid at a fractional position. */
+   past the ring, wide enough to stay solid at a fractional position. It
+   paints the surface context, as Button's does (foundation.css). */
 .kui-split-button[data-focus-ring-inset="true"] > button:focus-visible {
   outline-offset: -3px;
-  box-shadow: inset 0 0 0 6px var(--kui-color-surface);
+  box-shadow:
+    inset 0 0 0 6px var(--kui-color-surface-current-tint, transparent),
+    inset 0 0 0 6px var(--kui-color-surface-current-region, transparent),
+    inset 0 0 0 6px var(--kui-color-surface-current, var(--kui-color-surface));
 }
 
 .kui-split-button > button:disabled {

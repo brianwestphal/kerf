@@ -126,6 +126,36 @@
   --kui-content-item-foreground: var(--kui-color-brand-on-fill);
 }
 
+/* The surface context follows the fill an item paints: a quiet appearance,
+   a hover, press, or selection. A transparent item keeps its parent's
+   context; a brand-loud fill shares the focus ring's hue, so a control on it
+   keeps the surface line. A surface appearance is opaque, so it resets. */
+.kui-content-item:is(
+  [data-appearance]:not(
+    [data-appearance="transparent"],
+    [data-appearance="brand-loud"]
+  ),
+  [data-interactive="true"]:hover:not([data-disabled="true"]),
+  [data-interactive="true"]:is(
+    [data-kui-pressed="true"],
+    [data-selected="true"]
+  )
+) {
+  --kui-color-surface-current-tint: var(--kui-content-item-background);
+}
+
+.kui-content-item[data-appearance="surface"]:not(
+    [data-interactive="true"]:is(
+      :hover,
+      [data-kui-pressed="true"],
+      [data-selected="true"]
+    )
+  ) {
+  --kui-color-surface-current: var(--kui-color-surface);
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
+}
+
 .kui-content-item:is(:focus-visible, [data-outlined="true"]) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;

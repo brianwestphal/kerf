@@ -215,10 +215,16 @@
    on both edges, as the outside ring does, whatever the fill. The line is an
    inset shadow from the padding edge (inside the 1px border) to 3px past the
    ring, wide enough to stay solid at a fractional position; a pressed
-   toggle's inset ring lies under the focus ring meanwhile. */
+   toggle's inset ring lies under the focus ring meanwhile. The line paints
+   the surface the button sits on: the surface context's opaque color with
+   its translucent tint (a sunken or quiet fill) layered over it
+   (foundation.css), so it reads as a cut through the fill, not a halo. */
 .kui-button[data-focus-ring-inset="true"]:focus-visible {
   outline-offset: -3px;
-  box-shadow: inset 0 0 0 5px var(--kui-color-surface);
+  box-shadow:
+    inset 0 0 0 5px var(--kui-color-surface-current-tint, transparent),
+    inset 0 0 0 5px var(--kui-color-surface-current-region, transparent),
+    inset 0 0 0 5px var(--kui-color-surface-current, var(--kui-color-surface));
 }
 .kui-button:is(:disabled, [aria-disabled="true"]) {
   cursor: not-allowed;

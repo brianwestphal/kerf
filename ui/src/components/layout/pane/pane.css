@@ -45,10 +45,12 @@
    root scroll in its short mode, while its content remains transparent. */
 .kui-pane[data-appearance="sunken"] > .kui-pane__content {
   background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
+  --kui-color-surface-current-region: var(--kui-color-surface-lowered);
 }
 
 .kui-pane[data-appearance="sunken"][data-chrome-placement="auto"] {
   background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
+  --kui-color-surface-current-region: var(--kui-color-surface-lowered);
 }
 
 .kui-pane[data-appearance="sunken"][data-chrome-placement="auto"]
@@ -56,8 +58,15 @@
   background: transparent;
 }
 
+/* The surface context follows the paint: the auto chrome is opaque again. */
 .kui-pane[data-appearance="sunken"][data-chrome-placement="auto"]
   > :is(.kui-pane__header, .kui-pane__footer) {
+  --kui-color-surface-current: var(
+    --kui-pane-chrome-background,
+    var(--kui-color-surface)
+  );
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
   background: var(--kui-pane-chrome-background, var(--kui-color-surface));
 }
 

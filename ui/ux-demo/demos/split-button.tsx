@@ -3,6 +3,7 @@ import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { SplitButton } from '@kerfjs/ui/split-button';
+import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
 import { Download, Play, Rocket } from 'lucide';
 
 import { splitButtonOptionsOpen, splitButtonRunning } from './state.js';
@@ -111,6 +112,35 @@ export function SplitButtonDemo() {
             tone="danger"
           />
         </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Inset Ring on a Sunken Surface"
+        note="The line inside each inset ring paints the surface the button sits on, so on a sunken or tinted surface it reads as a cut through the fill rather than a light halo."
+        align="inline-control"
+        viewport={{ overflow: 'hidden' }}
+      >
+        <SunkenPanel ariaLabel="Sunken Split Actions">
+          <Row
+            wrap
+            rootAttributes={{ 'data-demo-section': 'focus-ring-inset-sunken' }}
+          >
+            <SplitButton
+              focusRingInset
+              label="Sync"
+              action="log-split-button-pill"
+              optionsLabel="Sync Options"
+              optionsAction="log-split-button-pill-options"
+            />
+            <SplitButton
+              focusRingInset
+              label="Purge"
+              action="log-split-button-pill"
+              optionsLabel="Purge Options"
+              optionsAction="log-split-button-pill-options"
+              tone="danger"
+            />
+          </Row>
+        </SunkenPanel>
       </CatalogExample>
     </CatalogExampleStack>
   );

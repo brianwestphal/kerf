@@ -11,10 +11,14 @@
   border: 1px solid var(--kui-framed-list-border);
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   background: var(--kui-color-surface-lowered);
+  --kui-color-surface-current-tint: var(--kui-color-surface-lowered);
   list-style: none;
 }
 
 .kui-framed-list[data-surface="base"] {
+  --kui-color-surface-current: var(--kui-color-surface);
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
   background: var(--kui-color-surface);
 }
 

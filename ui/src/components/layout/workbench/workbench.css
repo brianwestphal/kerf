@@ -136,6 +136,7 @@
 .kui-workbench__main[data-appearance="sunken"],
 :is(.kui-workbench__rail, .kui-workbench__drawer)[data-appearance="sunken"] {
   background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
+  --kui-color-surface-current-region: var(--kui-color-surface-lowered);
 }
 
 :is(
@@ -143,6 +144,8 @@
     .kui-workbench__drawer
   )[data-appearance="sunken"][data-resizable="true"][data-content-overflow="auto"] {
   background: transparent;
+  /* Only the content paints; the root keeps the inherited context. */
+  --kui-color-surface-current-region: inherit;
 }
 
 :is(
@@ -151,6 +154,7 @@
   )[data-appearance="sunken"][data-resizable="true"][data-content-overflow="auto"]
   > .kui-workbench__panel-content {
   background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
+  --kui-color-surface-current-region: var(--kui-color-surface-lowered);
 }
 
 .kui-workbench__main[data-drawer-inline-expanded="true"] {

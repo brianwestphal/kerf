@@ -273,10 +273,16 @@
 
 /* `surface`: a solid background behind the stack and its insets. */
 .kui-list[data-surface="base"] {
+  --kui-color-surface-current: var(--kui-color-surface);
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
   background: var(--kui-color-surface);
 }
 
 .kui-list[data-surface="raised"] {
+  --kui-color-surface-current: var(--kui-color-surface-raised);
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
   background: var(--kui-color-surface-raised);
 }
 

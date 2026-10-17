@@ -53,6 +53,7 @@
 
 .kui-tab-scaffold__scene[data-appearance="sunken"] {
   background: var(--kui-sunken-panel-background, var(--kui-sunken-surface));
+  --kui-color-surface-current-region: var(--kui-color-surface-lowered);
 }
 
 /* `background`: the navigator's color paints the root and a docked bar (the

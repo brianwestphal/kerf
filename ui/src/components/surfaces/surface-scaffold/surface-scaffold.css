@@ -29,6 +29,9 @@
   color: var(--kui-color-text, inherit);
   border: none;
   border-radius: var(--_kui-dialog-surface-radius);
+  --kui-color-surface-current: var(--kui-color-surface-raised);
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
   background-color: var(--kui-color-surface-raised);
   box-shadow: var(--kui-shadow-l);
   /* Sizes apply at once: a theme's transition on bare dialog elements would
@@ -637,6 +640,9 @@ h2.kui-dialog-surface__title {
     var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
       var(--kui-wa-surface-inset, remify(8px))
   );
+  --kui-color-surface-current: var(--kui-color-surface-raised);
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
   background: var(--kui-color-surface-raised);
   box-shadow: var(--kui-shadow-l);
 }

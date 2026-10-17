@@ -3,6 +3,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
+import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
 import { TextField } from '@kerfjs/ui/text-field';
 import {
   Download,
@@ -247,6 +248,29 @@ export function ButtonDemo() {
             Erase
           </Button>
         </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Inset Ring on a Sunken Surface"
+        note="The line inside an inset ring paints the surface the button sits on, so on a sunken or tinted surface it reads as a cut through the fill rather than a light halo."
+        align="inline-control"
+        viewport={{ overflow: 'hidden' }}
+      >
+        <SunkenPanel ariaLabel="Sunken Actions">
+          <Row
+            wrap
+            rootAttributes={{ 'data-demo-section': 'focus-ring-inset-sunken' }}
+          >
+            <Button focusRingInset action="log-more">
+              Dismiss
+            </Button>
+            <Button tone="brand" focusRingInset action="log-more">
+              Confirm
+            </Button>
+            <Button tone="danger" focusRingInset action="log-more">
+              Erase
+            </Button>
+          </Row>
+        </SunkenPanel>
       </CatalogExample>
     </CatalogExampleStack>
   );

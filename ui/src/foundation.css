@@ -178,6 +178,23 @@
   --kui-sunken-surface:
     var(--kui-sunken-texture) 0 0 / 100px 100px repeat,
     var(--kui-color-surface-lowered);
+  /* The surface context: what a region paints behind its children, for a
+     control that must match it (an inset focus ring's inner line). Left
+     undeclared here, so a reader falls back to the base surface:
+       --kui-color-surface-current: the opaque surface beneath (default
+         --kui-color-surface); an opaque surface (a raised dialog or popup, a
+         base or raised List) sets it and clears the tint.
+       --kui-color-surface-current-region: a layout region's translucent
+         fill over it (a sunken Pane, Workbench area, or TabNavigator scene;
+         default transparent).
+       --kui-color-surface-current-tint: a content surface's translucent
+         fill over that (a SunkenPanel, a sunken Disclosure, a lowered
+         FramedList, a quiet ContentItem; default transparent).
+     A reader layers the tint over the region over the color, so a content
+     surface inside a sunken region (the common nesting) composes exactly;
+     custom properties cannot fold an inherited value into a new one, so a
+     third translucent level keeps only the innermost content tint. A surface sets both on its own
+     painted element, never on a child; a scoped tint resets them below. */
   /* Translucent chrome material: a bar laid over scrolling content (a Pane's
      overlay header) lets the content show through, blurred, beneath it.
      80% of the surface keeps --kui-color-text at AA over any content
@@ -573,6 +590,10 @@
 [data-kui-tint] {
   color: var(--kui-color-text);
   --kui-chrome-material-filter: blur(20px);
+  /* The scope re-derives its surface, so an outer surface context ends here. */
+  --kui-color-surface-current: initial;
+  --kui-color-surface-current-region: initial;
+  --kui-color-surface-current-tint: initial;
 }
 
 @supports (color: oklch(from red l c h)) {

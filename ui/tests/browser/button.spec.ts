@@ -84,6 +84,107 @@ test('an inset focus ring stays inside a clipping container on every tone', asyn
   }
 });
 
+// The sunken grain and the catalog stage's checkerboard vary pixel to pixel
+// under translucent surfaces; sample the flat colors instead (the documented
+// --kui-sunken-texture knob and the stage's own plain sunken backdrop) so one
+// pixel stands for the surface.
+const flatSunken = async (page: Page) => {
+  await page.addStyleTag({ content: ':root { --kui-sunken-texture: none; }' });
+  await page
+    .locator('.kui-catalog__stage')
+    .evaluateAll((stages) =>
+      stages.forEach((stage) =>
+        stage.setAttribute('data-background-style', 'sunken'),
+      ),
+    );
+};
+
+// On a sunken or tinted surface the line paints that surface (the surface
+// context, foundation.css), not the base surface color: it matches the
+// pixels just outside the button, so it reads as a cut rather than a halo,
+// and the ring still clears 3:1 against both.
+test('an inset focus ring line matches the sunken surface it sits on', async ({
+  page,
+}) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    const demo = await openDemo(page);
+    await flatSunken(page);
+    const buttons = demo.locator(
+      '[data-demo-section="focus-ring-inset-sunken"] > .kui-button',
+    );
+    await expect(buttons).toHaveCount(3);
+    for (const tone of ['neutral', 'brand', 'danger']) {
+      const button = buttons.and(demo.locator(`[data-tone="${tone}"]`));
+      const ring = await sampleInsetRing(page, button, 4.5);
+      expect(ring.clipped).toBe(true);
+      expect(contrastRatio(ring.line, ring.outside)).toBeLessThan(1.1);
+      expect(
+        contrastRatio(ring.ringOuter, ring.outside),
+      ).toBeGreaterThanOrEqual(3);
+      expect(contrastRatio(ring.ringInner, ring.line)).toBeGreaterThanOrEqual(
+        3,
+      );
+      expect(contrastRatio(ring.line, ring.fill)).toBeGreaterThan(1.5);
+    }
+  }
+});
+
+// Every surface that paints behind its children publishes the context on its
+// own element: quiet ContentItem fills, a lowered FramedList, a raised List
+// (opaque, so it resets the tint), and a sunken panel nested in a raised
+// surface (the lowered tint over the raised color, not over the base).
+const SURFACES = {
+  'neutral ContentItem':
+    '<div class="kui-content-item" data-appearance="neutral"><div data-slot></div></div>',
+  'info ContentItem':
+    '<div class="kui-content-item" data-appearance="info"><div data-slot></div></div>',
+  'lowered FramedList':
+    '<div class="kui-framed-list" style="padding: 8px"><div data-slot></div></div>',
+  'raised List':
+    '<div class="kui-list" data-surface="raised" style="padding: 8px"><div data-slot></div></div>',
+  'sunken panel in a raised List':
+    '<div class="kui-list" data-surface="raised" style="padding: 8px"><div class="kui-sunken-panel"><div data-slot></div></div></div>',
+};
+
+for (const [name, markup] of Object.entries(SURFACES)) {
+  test(`an inset focus ring line matches a ${name}`, async ({ page }) => {
+    for (const colorScheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme });
+      const demo = await openDemo(page);
+      await flatSunken(page);
+      const frame = demo.locator('[data-demo-section="focus-ring-inset"]');
+      // The demo's real inset Buttons, moved onto the surface inside the
+      // same clipping frame.
+      await frame.evaluate((row, html) => {
+        const host = document.createElement('div');
+        host.innerHTML = html;
+        const surface = host.firstElementChild!;
+        const slot = surface.querySelector('[data-slot]')!;
+        slot.className = row.className;
+        slot.setAttribute('data-demo-section', 'focus-ring-inset-moved');
+        slot.append(...row.children);
+        row.replaceWith(surface);
+      }, markup);
+      const buttons = demo.locator(
+        '[data-demo-section="focus-ring-inset-moved"] > .kui-button',
+      );
+      await expect(buttons).toHaveCount(3);
+      for (const tone of ['neutral', 'brand', 'danger']) {
+        const button = buttons.and(demo.locator(`[data-tone="${tone}"]`));
+        const ring = await sampleInsetRing(page, button, 4.5);
+        expect(contrastRatio(ring.line, ring.outside)).toBeLessThan(1.1);
+        expect(
+          contrastRatio(ring.ringOuter, ring.outside),
+        ).toBeGreaterThanOrEqual(3);
+        expect(contrastRatio(ring.ringInner, ring.line)).toBeGreaterThanOrEqual(
+          3,
+        );
+      }
+    }
+  });
+}
+
 test('a Button never submits its form unless its type says so', async ({
   page,
 }) => {

@@ -20,6 +20,9 @@
   border: 1px solid var(--kui-color-neutral-border-normal);
   border-radius: var(--kui-anchored-surface-radius, var(--kui-radius-m));
   color: var(--kui-color-text, inherit);
+  --kui-color-surface-current: var(--kui-color-surface-raised);
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
   background: var(--kui-color-surface-raised);
   box-shadow: var(--kui-shadow-l);
   font: inherit;

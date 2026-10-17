@@ -562,6 +562,18 @@ line inside it. The ring then meets a surface color on both edges and clears
 the line), whatever the fill. Forced-colors mode drops the line and keeps the
 system ring.
 
+The line paints the surface the control sits on, not always the base surface:
+a surface that changes the background behind its children publishes the
+surface context (`--kui-color-surface-current`, `-region`, and `-tint`; see
+`docs/component-contract.md`), and the line layers it the same way the page
+does. On a sunken panel, a quiet `ContentItem`, a lowered `FramedList`, a
+raised `List`, popup, or dialog, or a sunken Pane, Workbench area, or
+TabNavigator scene, the line matches the pixels outside the box, so it reads
+as a cut through the fill instead of a light halo. On a doubly sunken surface
+the brand ring still clears 3:1 against the line (about 3.2:1 in light, 6.9:1
+in dark). A sunken surface's grain is not part of the line, and a translucent
+glass material, which has no single color, falls back to the base surface.
+
 ## Checkbox, RadioGroup, and Switch
 
 Each control is a native input inside its `<label>`, positioned invisibly over

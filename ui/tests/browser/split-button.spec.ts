@@ -35,9 +35,10 @@ test('SplitButton exposes native halves and follows its controlled state', async
     expect(geometry.width).toBeCloseTo(geometry.parent, 0);
     expect(geometry.trigger).toBe(40);
     // The full-width specimen starts on the same inset as every other
-    // example's specimen instead of the demo column's edge.
+    // example's specimen instead of the demo column's edge. (The sunken
+    // specimen sits inside its panel's padding, by design.)
     const starts = await demo
-      .locator('.kui-catalog-example')
+      .locator('.kui-catalog-example:not(:has(.kui-sunken-panel))')
       .evaluateAll((examples) =>
         examples.map(
           (example) =>
@@ -211,6 +212,49 @@ test('an inset SplitButton ring stays inside a clipping container on every tone'
           3,
         );
         expect(contrastRatio(ring.line, ring.fill)).toBeGreaterThan(1.5);
+      }
+    }
+  }
+});
+
+// On a sunken surface each half's line paints that surface, matching the
+// pixels just outside the half rather than drawing a base-surface halo.
+test('an inset SplitButton ring line matches the sunken surface it sits on', async ({
+  page,
+}) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 1100, height: 900 });
+    await page.goto('/?component=split-button');
+    // The sunken grain and the stage's checkerboard vary pixel to pixel;
+    // sample the flat colors (see button.spec.ts).
+    await page.addStyleTag({
+      content: ':root { --kui-sunken-texture: none; }',
+    });
+    await page
+      .locator('.kui-catalog__stage')
+      .evaluateAll((stages) =>
+        stages.forEach((stage) =>
+          stage.setAttribute('data-background-style', 'sunken'),
+        ),
+      );
+    const demo = page.locator('[data-demo="split-button"]');
+    const groups = demo.locator(
+      '[data-demo-section="focus-ring-inset-sunken"] > .kui-split-button',
+    );
+    await expect(groups).toHaveCount(2);
+    for (const tone of ['brand', 'danger']) {
+      const group = groups.and(demo.locator(`[data-tone="${tone}"]`));
+      for (const half of ['primary', 'options']) {
+        const button = group.locator(`.kui-split-button__${half}`);
+        const ring = await sampleInsetRing(page, button, 4.5);
+        expect(contrastRatio(ring.line, ring.outside)).toBeLessThan(1.1);
+        expect(
+          contrastRatio(ring.ringOuter, ring.outside),
+        ).toBeGreaterThanOrEqual(3);
+        expect(contrastRatio(ring.ringInner, ring.line)).toBeGreaterThanOrEqual(
+          3,
+        );
       }
     }
   }

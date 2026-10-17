@@ -422,6 +422,10 @@ clips focus painting; never restyle Select's parts from application CSS.
 `Button` and `SplitButton` take the same `focusRingInset` for a clipping
 ancestor: the ring moves inside the box, two-tone with a surface-colored line
 inside it so it stays visible on a loud fill; never re-offset their outline.
+The line follows the surface context that sunken, quiet, and raised kerf
+surfaces publish (`--kui-color-surface-current`, `-region`, `-tint`); an
+app-owned surface that paints its own background sets them on its own root.
+
 For a full-width primary action (a form's or a narrow sheet's one main button),
 set `fill` on `Button`, the same `fill` `SplitButton` takes: it spans the
 parent's available inline width with its label centered, a link (`href`) too;
