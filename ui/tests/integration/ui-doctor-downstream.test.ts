@@ -1358,6 +1358,229 @@ test(
 );
 
 test(
+  'the doctor reports an inset-bearing child inside a package-declared inset-free container',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-inset-free-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        JSON.stringify({
+          name: 'feedback-app',
+          private: true,
+          type: 'module',
+          kerfComponentCatalog: {
+            source: 'kerf.components.json',
+            output: 'component-composition.json',
+          },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'tsconfig.json'),
+        JSON.stringify({
+          compilerOptions: {
+            jsx: 'react-jsx',
+            jsxImportSource: 'kerfjs',
+            strict: true,
+            noEmit: true,
+            module: 'esnext',
+            moduleResolution: 'bundler',
+            target: 'es2022',
+            skipLibCheck: true,
+          },
+          include: ['src'],
+        }),
+      );
+      // The package's own container: its embedded appearance already insets
+      // its content, so it declares insetFreeChildren.
+      await writeFile(
+        resolve(root, 'src/feedback-panel.tsx'),
+        [
+          "import type { JSXChildren } from 'kerfjs';",
+          '',
+          'export function FeedbackPanel({',
+          "  appearance = 'framed',",
+          '  children,',
+          '}: {',
+          "  appearance?: 'framed' | 'embedded';",
+          '  children?: JSXChildren;',
+          '}) {',
+          '  return (',
+          '    <section class="feedback-panel" data-appearance={appearance}>',
+          '      {children}',
+          '    </section>',
+          '  );',
+          '}',
+          '',
+        ].join('\n'),
+      );
+      // The package's own inset-bearing child, inset-free when flush.
+      await writeFile(
+        resolve(root, 'src/note.tsx'),
+        [
+          "import type { JSXChildren } from 'kerfjs';",
+          '',
+          'export function Note({',
+          '  flush = false,',
+          '  children,',
+          '}: {',
+          '  flush?: boolean;',
+          '  children?: JSXChildren;',
+          '}) {',
+          '  return (',
+          '    <p class="note" data-flush={flush ? "" : undefined}>',
+          '      {children}',
+          '    </p>',
+          '  );',
+          '}',
+          '',
+        ].join('\n'),
+      );
+      const view = (note: string, text: string) =>
+        [
+          "import { Text } from '@kerfjs/ui/text';",
+          '',
+          "import { FeedbackPanel } from './feedback-panel.js';",
+          "import { Note } from './note.js';",
+          '',
+          'export const view = () => (',
+          '  <FeedbackPanel appearance="embedded">',
+          `    ${note}`,
+          `    ${text}`,
+          '  </FeedbackPanel>',
+          ');',
+          '',
+        ].join('\n');
+      const component = (
+        id: string,
+        name: string,
+        inset: Record<string, unknown>,
+      ) => ({
+        id,
+        name,
+        kind: 'component',
+        purpose: `${name} for the inset-free container check.`,
+        source: `src/${id}.tsx`,
+        publicExports: [{ name }],
+        sourceLinks: [`src/${id}.tsx`],
+        composition: {
+          ...inset,
+          parents: { mode: 'any', entries: [] },
+          contexts: [],
+          zones: [],
+          children: { mode: 'any', concepts: [], requiredConcepts: [] },
+          state: [],
+          wiring: { required: false, helpers: [], obligations: [] },
+          responsive: { owner: 'not-applicable', behaviors: [] },
+          layout: {
+            roles: ['content'],
+            geometry: { margin: 'self', border: 'self', padding: 'self' },
+          },
+        },
+        boundaries: {
+          rootClass: id,
+          publicClasses: [id],
+          publicTokens: [],
+        },
+        accessibility: { obligations: ['The content stays readable.'] },
+        diagnostics: [],
+        provenance: {
+          selection: `src/${id}.tsx`,
+          composition: `src/${id}.tsx`,
+        },
+      });
+      await writeFile(
+        resolve(root, 'kerf.components.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          componentCatalog: 'not-applicable',
+          components: [
+            component('feedback-panel', 'FeedbackPanel', {
+              insetFreeChildren: [{ prop: 'appearance', equals: 'embedded' }],
+            }),
+            component('note', 'Note', {
+              insetFreeWhen: [{ prop: 'flush', equals: true }],
+            }),
+          ],
+        }),
+      );
+      await execFileAsync(
+        process.execPath,
+        [
+          resolve(repositoryRoot, 'create-kerf-component/catalog.js'),
+          '--write',
+        ],
+        { cwd: root },
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'workspace',
+          catalogs: [
+            {
+              package: 'feedback-app',
+              composition: {
+                path: './component-composition.json',
+                schemaVersion: 1,
+              },
+            },
+          ],
+        }),
+      );
+      for (const name of ['typescript', 'eslint', 'kerfjs'])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      for (const name of [
+        '@typescript-eslint/eslint-plugin',
+        '@typescript-eslint/parser',
+      ])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      await link(
+        root,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+      await link(
+        root,
+        'create-kerf-component',
+        resolve(repositoryRoot, 'create-kerf-component'),
+      );
+      await link(root, '@kerfjs/ui', uiRoot);
+
+      // Both the package's Note and @kerfjs/ui's Text bring their own inset.
+      await writeFile(
+        resolve(root, 'src/view.tsx'),
+        view('<Note>Group export.</Note>', '<Text>Share settings.</Text>'),
+      );
+      const broken = await doctor(root);
+      expect(broken.status).toBe(1);
+      expect(broken.report.diagnostics).toMatchObject([
+        { id: 'KUI-L204', location: { file: 'src/view.tsx', line: 8 } },
+        { id: 'KUI-L204', location: { file: 'src/view.tsx', line: 9 } },
+      ]);
+      expect(broken.report.diagnostics[0].message).toContain('set `flush`');
+      expect(broken.report.diagnostics[1].message).toContain(
+        'set `flush` or `variant="span"`',
+      );
+
+      await writeFile(
+        resolve(root, 'src/view.tsx'),
+        view(
+          '<Note flush>Group export.</Note>',
+          '<Text flush>Share settings.</Text>',
+        ),
+      );
+      const clean = await doctor(root);
+      expect(clean.report.diagnostics).toEqual([]);
+      expect(clean.status).toBe(0);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT * 2,
+);
+
+test(
   'the doctor routes component-ownership overrides to configuration, then passes',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-ownership-'));

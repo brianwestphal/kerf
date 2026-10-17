@@ -580,6 +580,99 @@ test('rejects a rendersAs root that does not resolve to a cataloged entry', () =
   });
 });
 
+function withInsetFree(target, field, conditions) {
+  const value = metadata(target);
+  if (conditions === undefined) delete value.components[0].composition[field];
+  else value.components[0].composition[field] = conditions;
+  writeMetadata(target, value);
+}
+
+test('passes insetFreeChildren and insetFreeWhen through to the composition catalog', () => {
+  withScaffold(({ target }) => {
+    const children = [
+      { prop: 'appearance', equals: 'embedded' },
+      { prop: 'density', equals: 2 },
+    ];
+    const when = [
+      { prop: 'flush', equals: true },
+      { prop: 'variant', equals: 'span' },
+    ];
+    withInsetFree(target, 'insetFreeChildren', children);
+    withInsetFree(target, 'insetFreeWhen', when);
+    const [result] = runCatalogCommand({ root: target });
+    assert.deepEqual(result.catalog.entries[0].insetFreeChildren, children);
+    assert.deepEqual(result.catalog.entries[0].insetFreeWhen, when);
+    // The generated entry satisfies the @kerfjs/ui-side validator too.
+    assert.deepEqual(validateComposition(result.catalog), []);
+    const written = JSON.parse(readFileSync(result.outputPath, 'utf8'));
+    assert.deepEqual(written.entries[0].insetFreeChildren, children);
+    assert.deepEqual(written.entries[0].insetFreeWhen, when);
+    assert.doesNotThrow(() => runCatalogCommand({ root: target, check: true }));
+
+    // Undeclared, the entry carries neither field.
+    withInsetFree(target, 'insetFreeChildren', undefined);
+    withInsetFree(target, 'insetFreeWhen', undefined);
+    const [entry] = generateCatalogs(target)[0].catalog.entries;
+    assert.equal('insetFreeChildren' in entry, false);
+    assert.equal('insetFreeWhen' in entry, false);
+  });
+});
+
+test('rejects malformed inset-free conditions at exact metadata paths', () => {
+  withScaffold(({ target }) => {
+    const [validEntry] = generateCatalogs(target)[0].catalog.entries;
+    for (const field of ['insetFreeChildren', 'insetFreeWhen']) {
+      const at = `.components[0].composition.${field}`;
+      const invalid = [
+        [{ prop: 'appearance', equals: 'embedded' }, `${at}: expected array`],
+        [[], `${at}: expected at least 1 item(s)`],
+        [['flush'], `${at}[0]: expected object`],
+        [[{ prop: 'flush' }], `${at}[0].equals: is required`],
+        [[{ equals: true }], `${at}[0].prop: is required`],
+        [
+          [{ prop: 'data-flush', equals: true }],
+          `${at}[0].prop: must match ^[A-Za-z][A-Za-z0-9]*$`,
+        ],
+        [
+          [{ prop: 'flush', equals: null }],
+          `${at}[0].equals: expected string or number or boolean`,
+        ],
+        [
+          [{ prop: 'flush', equals: ['a'] }],
+          `${at}[0].equals: expected string or number or boolean`,
+        ],
+        [
+          [{ prop: 'flush', equals: true, value: true }],
+          `${at}[0].value: additional property is not allowed`,
+        ],
+      ];
+      for (const [conditions, diagnostic] of invalid) {
+        withInsetFree(target, field, conditions);
+        assertCatalogDiagnostic(target, diagnostic);
+        // The ui-side validator rejects the same shape in a generated entry.
+        const entry = { ...validEntry, [field]: conditions };
+        assert.notDeepEqual(
+          validateComposition({ ...uiCatalogShell(), entries: [entry] }),
+          [],
+          `ui validator should reject ${JSON.stringify(conditions)}`,
+        );
+      }
+      withInsetFree(target, field, undefined);
+    }
+  });
+});
+
+function uiCatalogShell() {
+  return {
+    schemaVersion: 1,
+    package: 'my-widgets',
+    compatibility: {
+      componentCatalog: 'not-applicable',
+      identity: 'package:id',
+    },
+  };
+}
+
 test('validates emitted catalogs against the shipped composition schema', () => {
   withScaffold(({ target }) => {
     const [result] = generateCatalogs(target);

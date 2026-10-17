@@ -77,6 +77,17 @@ check:styles` runs `kerf-ui-analyze` (from the `@kerfjs/ui` dev dependency)
   `["@kerfjs/ui:toolbar-control-group"]`), so the `ui-composition` lint treats
   it as that root. Every key must resolve to an entry generated in the same run
   or to an installed package's catalog.
+  A container that already insets its content in some form (an embedded
+  appearance) declares `composition.insetFreeChildren`: prop conditions such as
+  `[{ "prop": "appearance", "equals": "embedded" }]`. While one holds, the
+  `ui-composition` lint reports a direct child whose geometry is `self` on
+  margin, border, and padding as `KUI-L204` (a double inset). An inset-bearing
+  component that has an inset-free form declares `composition.insetFreeWhen`
+  (`[{ "prop": "flush", "equals": true }]`, where a bare boolean prop equals
+  `true`), which the lint accepts and names as the fix. Both fields are
+  optional non-empty lists of `{ prop, equals }`; `prop` is a JSX prop name and
+  `equals` a string, number, or boolean. The generator copies them into the
+  catalog entry unchanged.
   Each `publicExports` item names a `package.json#exports` subpath that maps to
   the `src/` file exporting it. A private, bundled application
   (`package.json#private: true`) has no per-file `dist/` entries and is never

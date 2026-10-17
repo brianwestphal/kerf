@@ -24,6 +24,26 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "propCondition": {
+      "type": "object",
+      "required": ["prop", "equals"],
+      "properties": {
+        "prop": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9]*$",
+          "description": "A JSX prop of the element."
+        },
+        "equals": {
+          "anyOf": [
+            { "type": "string" },
+            { "type": "number" },
+            { "type": "boolean" }
+          ],
+          "description": "The statically written value that satisfies the condition. A bare boolean prop (<Card flush />) equals true."
+        }
+      },
+      "additionalProperties": false
+    },
     "stateAttribute": {
       "type": "object",
       "required": ["name", "on", "helper", "meaning"],
@@ -245,6 +265,18 @@
           "minItems": 1,
           "items": { "type": "string", "pattern": "^[^:]+:[^:]+$" },
           "uniqueItems": true
+        },
+        "insetFreeChildren": {
+          "description": "Prop values under which this component's direct JSX children must bring no content-item inset (for example an embedded appearance that already insets its content). While any condition holds, a child whose layout.geometry is self on margin, border, and padding double-insets this component unless one of the child's insetFreeWhen conditions holds; eslint-plugin-kerfjs reports it as KUI-L204.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/propCondition" },
+          "minItems": 1
+        },
+        "insetFreeWhen": {
+          "description": "Prop values that render this inset-bearing component with no margin, border, or padding of its own (for example a flush prop). Any one condition makes the element inset-free inside a parent that declares insetFreeChildren.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/propCondition" },
+          "minItems": 1
         },
         "parents": {
           "type": "object",

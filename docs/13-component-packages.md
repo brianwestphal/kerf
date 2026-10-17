@@ -554,3 +554,45 @@ omits `private`, declares real subpaths or sets `"private": true`. A zone accept
 declared root; each root's parent contract applies wherever the wrapper is
 placed; and a wrapper used as a parent counts as its roots. A wrapper without
 `rendersAs` keeps the unknown-element behavior (`KUI-L202`).
+
+### Inset-free containers: `insetFreeChildren` / `insetFreeWhen`
+
+Some containers already inset their content in one form, such as an embedded
+appearance whose chrome already provides the inset. Inside that form, a direct child that
+also brings the content-item inset (its `layout.geometry` is `self` on margin,
+border, and padding) double-insets the container. Declare the forms under
+`composition.insetFreeChildren`, and declare a component's own inset-free forms
+under `composition.insetFreeWhen`:
+
+```json
+{
+  "components": [
+    {
+      "id": "feedback-panel",
+      "composition": {
+        "insetFreeChildren": [{ "prop": "appearance", "equals": "embedded" }]
+      }
+    },
+    {
+      "id": "note",
+      "composition": {
+        "insetFreeWhen": [{ "prop": "flush", "equals": true }],
+        "layout": {
+          "roles": ["content"],
+          "geometry": { "margin": "self", "border": "self", "padding": "self" }
+        }
+      }
+    }
+  ]
+}
+```
+
+Each field is an optional, non-empty list of `{ prop, equals }` conditions:
+`prop` is a JSX prop name (`^[A-Za-z][A-Za-z0-9]*$`) and `equals` the statically
+written string, number, or boolean (a bare boolean prop such as `<Note flush />`
+equals `true`). The generator rejects any other shape at its exact metadata
+path, accepting the same set as `@kerfjs/ui`'s catalog validator, and copies
+both fields into the generated entry. The `ui-composition` rule, and so
+`kerf-ui-doctor`, then reports `<FeedbackPanel appearance="embedded"><Note /></FeedbackPanel>`
+as `KUI-L204` and names `flush` as the fix. A child entry from another catalog,
+such as `@kerfjs/ui`'s `Text` (`flush` or `variant="span"`), works the same way.

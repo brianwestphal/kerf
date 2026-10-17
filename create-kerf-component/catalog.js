@@ -84,8 +84,21 @@ function validateSchemaValue(value, rule, path, rootSchema, diagnostics) {
       validateSchemaValue(value, candidate, path, rootSchema, failures);
       return failures;
     });
-    if (alternatives.every((failures) => failures.length))
-      diagnostics.push(`${path}: does not match any allowed schema variant`);
+    if (alternatives.every((failures) => failures.length)) {
+      // A union of bare types (a prop condition's `equals`) names the types.
+      const types = rule.anyOf.every(
+        (candidate) =>
+          Object.keys(candidate).length === 1 &&
+          typeof candidate.type === 'string',
+      )
+        ? rule.anyOf.map((candidate) => candidate.type)
+        : null;
+      diagnostics.push(
+        types
+          ? `${path}: expected ${types.join(' or ')}`
+          : `${path}: does not match any allowed schema variant`,
+      );
+    }
     return;
   }
   if (rule.const !== undefined && value !== rule.const)
@@ -738,6 +751,12 @@ function toEntry(packageName, component) {
     source: component.source,
     ...(component.composition.rendersAs
       ? { rendersAs: component.composition.rendersAs }
+      : {}),
+    ...(component.composition.insetFreeChildren
+      ? { insetFreeChildren: component.composition.insetFreeChildren }
+      : {}),
+    ...(component.composition.insetFreeWhen
+      ? { insetFreeWhen: component.composition.insetFreeWhen }
       : {}),
     parents: component.composition.parents,
     contexts: component.composition.contexts,
