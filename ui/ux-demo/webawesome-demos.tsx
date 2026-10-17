@@ -1120,9 +1120,13 @@ const specimenAlign = (entry: (typeof webAwesomeCatalog)[number]) =>
 
 // A specimen whose host sizes to its container rather than to its content
 // (Known Date's segments and hint, Slider's track, a progress or skeleton
-// bar, a zoomable frame's iframe) collapses in the shrink-to-fit specimen
-// column, so it gets the width its Kerf counterpart's demo gives it: a
-// compact field or text column, or ProgressBar's and Slider's medium track.
+// bar, a zoomable frame's iframe, a carousel's slide track) collapses in the
+// shrink-to-fit specimen column, so it gets the width its Kerf counterpart's
+// demo gives it: a compact field or text column, or ProgressBar's and
+// Slider's medium track. Carousel's scroll container is a `grid-auto-columns:
+// 100%` track under an aspect-ratio, which has no definite intrinsic width:
+// Chromium and WebKit happened to resolve it from the aspect-ratio, while
+// Firefox resolved it to the first slide's text and clipped the slides.
 const sizedSpecimens: Partial<
   Record<WebAwesomeCatalogId, CatalogExampleViewport>
 > = {
@@ -1131,6 +1135,8 @@ const sizedSpecimens: Partial<
   'wa-progress-bar': { width: 'medium' },
   'wa-skeleton': { width: 'compact' },
   'wa-zoomable-frame': { width: 'medium' },
+  'wa-carousel': { width: 'medium' },
+  'wa-carousel-item': { width: 'medium' },
   // Pagination's and Dropdown's hosts are display: contents, so they cannot
   // take the column offset themselves; a plain frame carries it.
   'wa-pagination': {},

@@ -3981,6 +3981,65 @@ test('gives container-sized Web Awesome specimens a width instead of collapsing'
   }
 });
 
+test('gives Carousel specimens full slides in every engine', async ({
+  page,
+}) => {
+  // A carousel's scroll container is a 100%-column grid under an aspect
+  // ratio, so it has no definite intrinsic width: in the shrink-to-fit
+  // specimen column Firefox once sized it to the first slide's text (a 103px
+  // track, 34px tall) and clipped every slide. The medium width tier gives
+  // all three engines the same full slides.
+  for (const id of ['wa-carousel', 'wa-carousel-item'])
+    for (const width of [1100, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/?component=${id}`);
+      const carousel = page.locator(`[data-demo="${id}"] wa-carousel`);
+      await expect(carousel).toBeVisible();
+      const slide = carousel.locator('wa-carousel-item').first();
+      await expect(slide).toContainText(
+        id === 'wa-carousel' ? 'Foundation' : 'Focused carousel item',
+      );
+      const box = await carousel.evaluate((element) => {
+        const scroller = element
+          .shadowRoot!.querySelector('[part~="scroll-container"]')!
+          .getBoundingClientRect();
+        const item = element
+          .querySelector('wa-carousel-item')!
+          .getBoundingClientRect();
+        const card = element.querySelector('wa-card')!.getBoundingClientRect();
+        const example = element
+          .closest('[data-catalog-example]')!
+          .getBoundingClientRect();
+        return {
+          scrollerWidth: scroller.width,
+          scrollerHeight: scroller.height,
+          itemWidth: item.width,
+          card: {
+            left: card.left - scroller.left,
+            right: scroller.right - card.right,
+            top: card.top - scroller.top,
+            bottom: scroller.bottom - card.bottom,
+          },
+          overrun: element.getBoundingClientRect().right - example.right,
+        };
+      });
+      const at = `${id} at ${width}`;
+      expect(box.scrollerWidth, `scroller width ${at}`).toBeGreaterThanOrEqual(
+        200,
+      );
+      expect(
+        box.scrollerWidth,
+        `scroller at least the slide width ${at}`,
+      ).toBeGreaterThanOrEqual(box.itemWidth - 0.5);
+      // The slide's card, and so its text, sits wholly inside the scroller.
+      for (const [side, inset] of Object.entries(box.card))
+        expect(inset, `card ${side} inside the scroller ${at}`).toBeGreaterThan(
+          -0.5,
+        );
+      expect(box.overrun, `overrun ${at}`).toBeLessThan(0.5);
+    }
+});
+
 test('puts width-sized Web Awesome specimens on the Kerf field border column', async ({
   page,
 }) => {

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 427600,
-  "measuredLargestJavaScriptGzip": 164533,
-  "measuredTotalJavaScriptGzip": 427588,
+  "totalJavaScriptGzip": 427700,
+  "measuredLargestJavaScriptGzip": 164543,
+  "measuredTotalJavaScriptGzip": 427602,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5891,6 +5891,22 @@
         "measuredTotalJavaScriptGzip": 427588,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 427600
+      }
+    },
+    {
+      "at": "2026-10-17T08:00:10.326Z",
+      "reason": "KF-0TGNQG: Carousel and Carousel Item catalog specimens take the medium width tier so Firefox renders full slides",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164533,
+        "measuredTotalJavaScriptGzip": 427588,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 427602,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427700
       }
     }
   ]
