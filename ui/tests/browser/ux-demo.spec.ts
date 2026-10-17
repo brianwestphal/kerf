@@ -4223,6 +4223,38 @@ async function visibleSpecimenOverruns(page: Page, route: string) {
     );
 }
 
+// How far each OTP input's code cells run past what the viewer can see: past
+// the inline-end edge of the shadow root's scrolling segments box (which
+// clips a cell silently, so visibleSpecimenOverruns cannot see it) or past
+// the example's inline-end edge. A whole, visible cell measures <= 0.
+async function otpCellOverruns(page: Page, route: string) {
+  return page
+    .locator(`[data-demo="${route}"] [data-catalog-example] wa-otp-input`)
+    .evaluateAll((inputs) =>
+      inputs.map((input) => {
+        const segments = input.shadowRoot!.querySelector('[part~="segments"]')!;
+        const box = segments.getBoundingClientRect();
+        const style = window.getComputedStyle(segments);
+        const clip =
+          box.left + parseFloat(style.borderLeftWidth) + segments.clientWidth;
+        const example = input
+          .closest('[data-catalog-example]')!
+          .getBoundingClientRect().right;
+        const cells = [...input.shadowRoot!.querySelectorAll('.segment')];
+        return {
+          cells: cells.length,
+          overrun: Math.max(
+            segments.scrollWidth - segments.clientWidth,
+            ...cells.map((cell) => {
+              const right = cell.getBoundingClientRect().right;
+              return Math.max(right - clip, right - example);
+            }),
+          ),
+        };
+      }),
+    );
+}
+
 test('keeps Web Awesome media and segmented-field specimens inside their example', async ({
   page,
 }) => {
@@ -4288,6 +4320,18 @@ test('wraps long example labels and keeps specimens inside their example at phon
       }
       for (const overrun of await visibleSpecimenOverruns(page, route))
         expect(overrun, `${route} overrun at ${width}`).toBeLessThan(0.5);
+    }
+    // The OTP specimen's six cells render whole: none is clipped by the
+    // shadow root's scrolling segments box or runs past the example.
+    await page.goto('/?component=wa-otp-input');
+    await expect(page.locator('[data-demo="wa-otp-input"]')).toBeVisible();
+    const otps = await otpCellOverruns(page, 'wa-otp-input');
+    expect(otps.length).toBeGreaterThan(0);
+    for (const { cells, overrun } of otps) {
+      expect(cells, `wa-otp-input cells at ${width}`).toBe(6);
+      expect(overrun, `wa-otp-input cell overrun at ${width}`).toBeLessThan(
+        0.5,
+      );
     }
   }
 });

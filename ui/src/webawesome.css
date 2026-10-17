@@ -667,6 +667,21 @@
         var(--wa-form-control-padding-inline)
     );
   }
+
+  /* An OTP input reserves its segments' focus-ring bleed with padding and an
+     equal negative margin, then caps the padded box at 100% of the host. In a
+     shrink-to-fit host (a start-aligned grid or flex item, an inline layout)
+     the host is only the segments' width minus that bleed, so the cap clips
+     the last cell's inline-end edge inside the scroll container. Cap the box
+     at the host's width plus the bleed instead, which is the space its
+     negative margins actually give it: the segments still scroll inside a
+     host narrower than the code, and never clip one that fits. The contained
+     appearance has no bleed and keeps upstream's cap. */
+  wa-otp-input:not([appearance="contained"])::part(segments) {
+    max-width: calc(
+      100% + 2 * (var(--wa-focus-ring-offset) + var(--wa-focus-ring-width))
+    );
+  }
 }
 
 /* Small Web Awesome fields have 14px hosts by default. Raise only the editable

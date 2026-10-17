@@ -124,7 +124,13 @@ Known Date's field captions and bordered text-like field hints use the same 9px
 inline inset, keeping secondary text aligned with the value rather than the
 field's outer border. This covers Input, Known Date, Number Input, OTP Input,
 Select, Tag Input, Textarea, and Time Input hints.
-OTP Input's label and hint both use the 9px field-text inset.
+OTP Input's label and hint both use the 9px field-text inset. Its code cells
+render whole in a shrink-to-fit host (a start-aligned grid or flex item):
+upstream caps the segments' focus-ring-padded box at the host's width, which
+there is the cells' width minus that padding and so clipped the last cell's
+inline-end edge, and the theme caps it at the host's width plus the padding its
+negative margins reserve. A host narrower than the code still scrolls its
+segments; the `contained` appearance keeps upstream's cap.
 
 Checkbox Group, Radio Group, and Color Picker follow Kerf's `Checkbox`,
 `RadioGroup`, and `ColorField`: the control region stays flush, so each box,
