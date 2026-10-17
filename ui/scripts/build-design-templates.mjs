@@ -2264,15 +2264,15 @@ function staticColorPicker(markup) {
   const color = /--_kui-color-picker-color:(#[0-9a-f]+)/.exec(source)[1];
   const hue = `hsl(${h} 100% 50%)`;
   // Checker squares as plain rects: the capture does not resolve a pattern's
-  // CSS colors.
-  const checker = Array.from({ length: 50 }, (_, column) =>
-    [0, 1]
-      .map(
-        (row) =>
-          `<rect x="${column * 6}" y="${row * 6}" width="6" height="6" class="${(column + row) % 2 ? 'dt-checker-dark' : 'dt-checker-light'}"/>`,
-      )
-      .join(''),
-  ).join('');
+  // CSS colors. The dark squares are the translucent neutral fill, so they
+  // sit on an opaque surface underlay as the CSS checkerboard's do; drawn
+  // straight onto the template's transparent background, they picked up the
+  // viewer's backdrop and showed through the opaque end of a dark track.
+  const checker = `<rect width="300" height="12" class="dt-checker-light"/>${Array.from(
+    { length: 50 },
+    (_, column) =>
+      `<rect x="${column * 6}" y="${((column + 1) % 2) * 6}" width="6" height="6" class="dt-checker-dark"/>`,
+  ).join('')}`;
   const track = (id, stops, under = '') =>
     `<span class="dt-picker-track"><svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="${id}-clip"><rect width="300" height="12" rx="6"/></clipPath><linearGradient id="${id}">${stops}</linearGradient></defs><g clip-path="url(#${id}-clip)">${under}</g><rect width="300" height="12" rx="6" fill="url(#${id})"/><rect class="dt-picker-track-edge" x="0.5" y="0.5" width="299" height="11" rx="5.5" fill="none"/></svg></span>`;
   // A channel slider's inline style carries its track stops and thumb color;
