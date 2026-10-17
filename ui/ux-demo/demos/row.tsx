@@ -78,7 +78,9 @@ export function RowDemo() {
           note={note}
         >
           <DemoFrameShell>
-            <Row hAlign="left" vAlign={alignment}>
+            {/* Wrapping keeps a phone-width stage from cutting off the third
+                chip; each wrapped line keeps the same cross-axis alignment. */}
+            <Row hAlign="left" vAlign={alignment} wrap>
               {chips(label)}
             </Row>
           </DemoFrameShell>

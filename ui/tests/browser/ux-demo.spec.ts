@@ -4288,6 +4288,8 @@ test('wraps long example labels and keeps specimens inside their example at phon
     'feedback',
     'list-header',
     'wa-otp-input',
+    'row',
+    'grid',
   ];
   for (const width of [1100, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });

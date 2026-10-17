@@ -23,10 +23,10 @@ export function GridDemo() {
       </CatalogExample>
       <CatalogExample
         label="Four Columns"
-        note="The same component accepts any positive column count; each minmax track stays equal even when content has different intrinsic widths."
+        note="The same component accepts any positive column count; each minmax track stays equal even when content has different intrinsic widths. A fixed count keeps its tracks at every width, so it suits short content; use minColumnWidth for tiles with longer labels."
       >
         <Grid columns={4} gap="xs">
-          {['Requested', 'Quoted price', 'Reviewed', 'Decided'].map((label) => (
+          {['Q1', 'Q2', 'Q3', 'Q4 est.'].map((label) => (
             <ContentItem appearance="surface" frame="framed">
               {label}
             </ContentItem>
