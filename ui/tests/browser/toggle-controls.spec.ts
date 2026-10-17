@@ -197,6 +197,16 @@ test('drawn controls keep the Web Awesome sizes and one 28px stacking pitch at w
           parseFloat(window.getComputedStyle(element).paddingInlineStart),
         ),
     ).toBeCloseTo(28, 0);
+    // The hint, and a lone error, sit directly under the label row, as a
+    // CheckboxGroup or RadioGroup choice hint does.
+    const hintRow = await box(
+      field('Email summaries').locator('.kui-checkbox__row'),
+    );
+    expect(hint.y - hintRow.y - hintRow.height).toBeCloseTo(0, 0);
+    const terms = field('I accept the release terms');
+    const errorRow = await box(terms.locator('.kui-checkbox__row'));
+    const error = await box(terms.locator('.kui-checkbox__error'));
+    expect(error.y - errorRow.y - errorRow.height).toBeCloseTo(0, 0);
     const compact = await box(
       field('Show archived').locator('.kui-checkbox__box'),
     );

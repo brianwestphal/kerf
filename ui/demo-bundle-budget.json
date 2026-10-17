@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164400,
-  "totalJavaScriptGzip": 426500,
+  "totalJavaScriptGzip": 426600,
   "measuredLargestJavaScriptGzip": 164318,
-  "measuredTotalJavaScriptGzip": 426405,
+  "measuredTotalJavaScriptGzip": 426507,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5779,6 +5779,22 @@
         "measuredTotalJavaScriptGzip": 426405,
         "largestJavaScriptGzip": 164400,
         "totalJavaScriptGzip": 426500
+      }
+    },
+    {
+      "at": "2026-10-17T03:35:36.253Z",
+      "reason": "KF-X8F2K5: Checkbox catalog geometry now says the hint and error sit directly under the label",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164318,
+        "measuredTotalJavaScriptGzip": 426405,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 426500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164318,
+        "measuredTotalJavaScriptGzip": 426507,
+        "largestJavaScriptGzip": 164400,
+        "totalJavaScriptGzip": 426600
       }
     }
   ]
