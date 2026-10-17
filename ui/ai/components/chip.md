@@ -38,6 +38,7 @@ Exact prop names and types: [`@kerfjs/ui/chip`](../public-api-signatures-v1.md#k
 - pill or rounded shape
 - compact or default size
 - removable, link, action, or plain, enabled or disabled
+- rootAttributes: safe data-\* identity on the plain, link, or action root
 
 ## Composition
 

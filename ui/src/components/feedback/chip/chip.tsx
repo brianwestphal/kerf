@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 import type { BadgeAppearance, BadgeShape, BadgeSize } from '../badge/badge.js';
 
@@ -9,6 +10,35 @@ import type { BadgeAppearance, BadgeShape, BadgeSize } from '../badge/badge.js';
  * and derives its fill, border, and focus ring from `currentColor`.
  */
 export type ChipTone = SemanticTone | 'inherit';
+
+const chipProtectedAttributes = new Set([
+  'data-component',
+  'data-tone',
+  'data-appearance',
+  'data-shape',
+  'data-size',
+  'data-disabled',
+  'data-truncate',
+  'data-item-id',
+  'data-link',
+  'data-action',
+]);
+
+/** Safe `data-*` identity on a Chip root; Chip-owned attributes are protected. */
+export type ChipRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-tone'?: never;
+    'data-appearance'?: never;
+    'data-shape'?: never;
+    'data-size'?: never;
+    'data-disabled'?: never;
+    'data-truncate'?: never;
+    'data-item-id'?: never;
+    'data-link'?: never;
+    'data-action'?: never;
+  }
+>;
 
 interface ChipCommonProps {
   /** Decorative leading icon, normally an unsized LucideIcon. */
@@ -20,6 +50,11 @@ interface ChipCommonProps {
   disabled?: boolean;
   /** Record identifier available to an application delegated action handler. */
   itemId?: string;
+  /**
+   * Safe `data-*` identity on the chip root (a plain, link, or action chip),
+   * for tests and delegated handlers; use `itemId` for the record id.
+   */
+  rootAttributes?: ChipRootAttributes;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -145,6 +180,7 @@ export function Chip({
   size = 'default',
   disabled = false,
   itemId,
+  rootAttributes = {},
   className = '',
   slot,
   href,
@@ -182,6 +218,10 @@ export function Chip({
     </>
   );
   const rootClass = `kui-chip ${className}`.trim();
+  const identity = filterDataAttributes(
+    rootAttributes,
+    chipProtectedAttributes,
+  );
   if (href !== undefined) {
     const textLabel =
       typeof children === 'string' || typeof children === 'number'
@@ -189,6 +229,7 @@ export function Chip({
         : undefined;
     return (
       <a
+        {...identity}
         class={rootClass}
         href={disabled ? undefined : href}
         download={disabled ? undefined : downloadValue(download)}
@@ -219,6 +260,7 @@ export function Chip({
   if (action !== undefined) {
     return (
       <button
+        {...identity}
         class={rootClass}
         type="button"
         disabled={disabled}
@@ -240,6 +282,7 @@ export function Chip({
   }
   return (
     <span
+      {...identity}
       class={rootClass}
       data-component="chip"
       data-tone={tone}

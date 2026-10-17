@@ -159,6 +159,12 @@ export interface ListProps {
   controlInsets?: Sides;
   className?: string;
   /**
+   * The list's id, so app code can address it: name it as a
+   * `wireScrollDividers` scroller (with a `Toolbar` above it as its chrome),
+   * or find it in tests.
+   */
+  id?: string;
+  /**
    * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
    * `region`, `aria-busy`); List-owned structural attributes remain
    * protected, and a multi-select List owns its grid role and name.
@@ -202,6 +208,7 @@ export function List({
   textInsets = '',
   controlInsets = '',
   className = '',
+  id,
   rootAttributes = {},
   slot,
 }: ListProps) {
@@ -244,6 +251,7 @@ export function List({
     <div
       {...safeRootAttributes}
       {...gridAttributes}
+      id={id}
       class={`kui-list ${className}`.trim()}
       data-component="list"
       data-gap={String(Boolean(gap))}

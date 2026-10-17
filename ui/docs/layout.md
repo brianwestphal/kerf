@@ -249,7 +249,13 @@ it to its compact stack through `compactStack`.
 
 For an app-owned arrangement outside a `Pane`, name the scroller and its chrome
 by `id` in `targets`; a `Toolbar` or `List` named as chrome draws the divider
-on its side facing the scroller:
+on its side facing the scroller. Both take an `id` prop, so the components
+themselves are named, never a wrapper:
+
+```tsx
+<Toolbar id="results-toolbar" label="Results" leading={title} />
+<List id="results" scrollable flex>{rows}</List>
+```
 
 ```ts
 wireScrollDividers(appRoot, {

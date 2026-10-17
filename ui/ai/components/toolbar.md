@@ -31,7 +31,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 **Variants (configure, do not restyle):**
 
 - no dividers (default)
-- scroll dividers when named as wireScrollDividers targets chrome
+- scroll dividers when named as wireScrollDividers targets chrome (by its id)
 - top/right/bottom/left divider combinations
 - centered content
 - stacked zones at compact or narrow widths

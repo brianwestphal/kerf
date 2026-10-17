@@ -129,6 +129,63 @@ describe('production UI primitives', () => {
     expect(plain).not.toContain('<button');
   });
 
+  it('gives every Chip root safe data-* identity and protects its own attributes', () => {
+    const host = document.createElement('div');
+    const identity = {
+      'data-key': 'topic-ai',
+      'data-tone': 'danger',
+      'data-action': 'spoof',
+      'data-item-id': 'spoof',
+      id: 'spoof',
+      onclick: 'spoof()',
+    } as never;
+    host.innerHTML = [
+      Chip({ children: 'Plain', rootAttributes: identity, itemId: 'ai' }),
+      Chip({ children: 'Link', href: '/topics/ai', rootAttributes: identity }),
+      Chip({
+        children: 'Action',
+        action: 'open-topic',
+        itemId: 'ai',
+        rootAttributes: identity,
+      }),
+      Chip({ children: 'Bare' }),
+    ].join('');
+    const [plain, link, action, bare] = [
+      ...host.querySelectorAll<HTMLElement>('.kui-chip'),
+    ];
+    for (const chip of [plain, link, action]) {
+      expect(chip!.dataset.key).toBe('topic-ai');
+      // Chip-owned attributes and non-data attributes never come through.
+      expect(chip!.dataset.tone).toBe('neutral');
+      expect(chip!.hasAttribute('id')).toBe(false);
+      expect(chip!.hasAttribute('onclick')).toBe(false);
+      expect(chip!.outerHTML).not.toContain('spoof');
+    }
+    expect(plain!.tagName).toBe('SPAN');
+    expect(plain!.dataset.itemId).toBe('ai');
+    expect(link!.tagName).toBe('A');
+    expect(action!.tagName).toBe('BUTTON');
+    expect(action!.dataset.action).toBe('open-topic');
+    expect(bare!.dataset.key).toBeUndefined();
+  });
+
+  it('gives Toolbar and List an addressable id only when set', () => {
+    const host = document.createElement('div');
+    host.innerHTML = [
+      Toolbar({ id: 'app-bar', label: 'App' }),
+      Toolbar({ id: 'status-bar', label: 'Status', position: 'footer' }),
+      List({ id: 'topics', children: <>Topics</> }),
+      Toolbar({ label: 'Plain' }),
+      List({ children: <>Plain</> }),
+    ].join('');
+    expect(host.querySelector('#app-bar')!.tagName).toBe('HEADER');
+    expect(host.querySelector('#status-bar')!.tagName).toBe('FOOTER');
+    expect(host.querySelector('#topics')!.classList.contains('kui-list')).toBe(
+      true,
+    );
+    expect(host.querySelectorAll('[id]')).toHaveLength(3);
+  });
+
   it('configures Badge semantics and presentation without consumer CSS', () => {
     const badge = asHtml(
       Badge({

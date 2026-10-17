@@ -7,6 +7,11 @@ export type ToolbarPosition = 'header' | 'footer';
 export type ToolbarDensity = 'default' | 'compact';
 
 export interface ToolbarProps {
+  /**
+   * The toolbar's id, so app code can address it: name it as a scrolling
+   * List's chrome in `wireScrollDividers({ targets })`, or find it in tests.
+   */
+  id?: string;
   leading?: KerfUiContent;
   center?: KerfUiContent;
   trailing?: KerfUiContent;
@@ -88,6 +93,7 @@ const claim = (
 ) => (edges?.includes(side) ? 'true' : undefined);
 
 export function Toolbar({
+  id,
   leading,
   center,
   trailing,
@@ -103,6 +109,7 @@ export function Toolbar({
   slot,
 }: ToolbarProps) {
   const attributes = {
+    id,
     class: `kui-toolbar ${className}`.trim(),
     'data-component': 'toolbar',
     'data-density': density === 'compact' ? 'compact' : undefined,

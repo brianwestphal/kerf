@@ -5,6 +5,7 @@ import postcss from 'postcss';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Toolbar } from '../../src/components/actions/toolbar/toolbar.js';
+import { List } from '../../src/components/collections/list/list.js';
 import { Pane } from '../../src/components/layout/pane/pane.js';
 import { SplitView } from '../../src/components/layout/split-view/split-view.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
@@ -518,6 +519,28 @@ describe('wireScrollDividers — app-owned targets', () => {
       bottom: at('bottom'),
     };
   }
+
+  // A Toolbar and List take an id, so the components themselves (not
+  // hand-written elements) can be paired: the toolbar is the scrolling
+  // list's chrome and draws its bottom divider once the list scrolls.
+  it('pairs a Toolbar named by id as chrome above a List named by id', () => {
+    const root = mountHtml(
+      String(Toolbar({ id: 'topics-toolbar', label: 'Topics' })) +
+        String(List({ id: 'topics-list', scrollable: true, children: body })),
+    );
+    const toolbar = root.querySelector<HTMLElement>('#topics-toolbar')!;
+    const list = root.querySelector<HTMLElement>('#topics-list')!;
+    expect(toolbar.classList.contains('kui-toolbar')).toBe(true);
+    expect(list.classList.contains('kui-list')).toBe(true);
+    const state = geometry(list, { scrollHeight: 300 });
+    const dispose = wireScrollDividers(root, {
+      targets: [{ scroller: 'topics-list', top: 'topics-toolbar' }],
+    });
+    expect(divider(toolbar)).toBe(null);
+    scrollTo(list, state, { scrollTop: 100 });
+    expect(divider(toolbar)).toBe('b');
+    dispose();
+  });
 
   it('shows each named chrome element its facing divider in every scroll state', () => {
     const { root, top, left, scroller, right, bottom } = arrangement();

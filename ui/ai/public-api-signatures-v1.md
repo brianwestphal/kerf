@@ -172,6 +172,11 @@ type ToolbarPosition = 'header' | 'footer';
 /** Control-band density: `default` (60px with 44px groups) or `compact`. */
 type ToolbarDensity = 'default' | 'compact';
 interface ToolbarProps {
+    /**
+     * The toolbar's id, so app code can address it: name it as a scrolling
+     * List's chrome in `wireScrollDividers({ targets })`, or find it in tests.
+     */
+    id?: string;
     leading?: KerfUiContent;
     center?: KerfUiContent;
     trailing?: KerfUiContent;
@@ -236,7 +241,7 @@ interface ToolbarProps {
  * toolbar) forwards, so the app configures that toolbar instead of styling it.
  */
 type ToolbarConfig = Pick<ToolbarProps, 'density' | 'dividerSides' | 'centerAlign' | 'responsive' | 'responsiveAt' | 'safeAreaEdges'>;
-declare function Toolbar({ leading, center, trailing, label, position, density, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
+declare function Toolbar({ id, leading, center, trailing, label, position, density, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
 
 export { Sides, Toolbar, type ToolbarConfig, type ToolbarDensity, type ToolbarPosition, type ToolbarProps };
 ```
@@ -894,6 +899,12 @@ interface ListProps {
     controlInsets?: Sides;
     className?: string;
     /**
+     * The list's id, so app code can address it: name it as a
+     * `wireScrollDividers` scroller (with a `Toolbar` above it as its chrome),
+     * or find it in tests.
+     */
+    id?: string;
+    /**
      * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
      * `region`, `aria-busy`); List-owned structural attributes remain
      * protected, and a multi-select List owns its grid role and name.
@@ -910,7 +921,7 @@ interface ListProps {
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, id, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListContentWidth, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
 ```
@@ -4326,6 +4337,19 @@ import './css-values.js';
  * and derives its fill, border, and focus ring from `currentColor`.
  */
 type ChipTone = SemanticTone | 'inherit';
+/** Safe `data-*` identity on a Chip root; Chip-owned attributes are protected. */
+type ChipRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-tone'?: never;
+    'data-appearance'?: never;
+    'data-shape'?: never;
+    'data-size'?: never;
+    'data-disabled'?: never;
+    'data-truncate'?: never;
+    'data-item-id'?: never;
+    'data-link'?: never;
+    'data-action'?: never;
+}>;
 interface ChipCommonProps {
     /** Decorative leading icon, normally an unsized LucideIcon. */
     icon?: SafeHtml;
@@ -4336,6 +4360,11 @@ interface ChipCommonProps {
     disabled?: boolean;
     /** Record identifier available to an application delegated action handler. */
     itemId?: string;
+    /**
+     * Safe `data-*` identity on the chip root (a plain, link, or action chip),
+     * for tests and delegated handlers; use `itemId` for the record id.
+     */
+    rootAttributes?: ChipRootAttributes;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -4411,9 +4440,9 @@ type ChipProps = ChipCommonProps & ChipLabelProps & (({
  * `href` is set, or a native button when `action` is set. The application
  * owns removal, the link destination, and the action handler.
  */
-declare function Chip({ children, icon, truncate, tone, appearance, shape, size, disabled, itemId, className, slot, href, download, external, removeAction, removeLabel, action, actionLabel, }: ChipProps): SafeHtml;
+declare function Chip({ children, icon, truncate, tone, appearance, shape, size, disabled, itemId, rootAttributes, className, slot, href, download, external, removeAction, removeLabel, action, actionLabel, }: ChipProps): SafeHtml;
 
-export { Chip, type ChipProps, type ChipTone };
+export { Chip, type ChipProps, type ChipRootAttributes, type ChipTone };
 ```
 
 ## `@kerfjs/ui/lucide-icon`

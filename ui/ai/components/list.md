@@ -61,7 +61,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 - top/right/bottom/left text and control inset combinations
 - fill: the layout root fills a definite-height parent
 - rootAttributes: safe data-\*, aria-\*, and structural role on the root
-- scroll dividers when named as wireScrollDividers targets chrome
+- scroll dividers when named as wireScrollDividers targets chrome or scroller (by its id)
 - multi-select grid for rich ContentItem rows
 - contentWidth (compact 440px, medium 640px, wide 864px) and contentAlign for a readable, centered page column
 

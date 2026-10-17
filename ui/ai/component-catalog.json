@@ -115,7 +115,8 @@
         "quiet, solid, or outline appearance",
         "pill or rounded shape",
         "compact or default size",
-        "removable, link, action, or plain, enabled or disabled"
+        "removable, link, action, or plain, enabled or disabled",
+        "rootAttributes: safe data-* identity on the plain, link, or action root"
       ],
       "accessibility": [
         "The remove control is a native button and requires an action and a specific removeLabel. A disabled chip disables that button and removes it from keyboard interaction.",
@@ -1791,7 +1792,7 @@
       ],
       "variants": [
         "no dividers (default)",
-        "scroll dividers when named as wireScrollDividers targets chrome",
+        "scroll dividers when named as wireScrollDividers targets chrome (by its id)",
         "top/right/bottom/left divider combinations",
         "centered content",
         "stacked zones at compact or narrow widths",
@@ -4153,7 +4154,7 @@
         "top/right/bottom/left text and control inset combinations",
         "fill: the layout root fills a definite-height parent",
         "rootAttributes: safe data-*, aria-*, and structural role on the root",
-        "scroll dividers when named as wireScrollDividers targets chrome",
+        "scroll dividers when named as wireScrollDividers targets chrome or scroller (by its id)",
         "multi-select grid for rich ContentItem rows",
         "contentWidth (compact 440px, medium 640px, wide 864px) and contentAlign for a readable, centered page column"
       ],
