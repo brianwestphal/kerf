@@ -37,6 +37,7 @@ import {
   CircleAlert,
   CircleCheck,
   Columns3,
+  Download,
   FileText,
   Filter,
   Folder,
@@ -44,6 +45,7 @@ import {
   List as ListIcon,
   MoreHorizontal,
   Pencil,
+  Play,
   Plus,
   Rocket,
   Search,
@@ -77,6 +79,7 @@ import { Row } from '../dist/row.js';
 import { SegmentedControl } from '../dist/segmented-control.js';
 import { Select } from '../dist/select.js';
 import { Skeleton } from '../dist/skeleton.js';
+import { SplitButton } from '../dist/split-button.js';
 import { StateBanner } from '../dist/state-banner.js';
 import { Slider } from '../dist/slider.js';
 import { Switch } from '../dist/switch.js';
@@ -1668,6 +1671,125 @@ export const COMPONENTS = {
                 shape: 'pill',
               }),
             ],
+          }),
+      },
+    ],
+  },
+  // A fixed compact-width frame, so the full-width variant has a parent to
+  // fill; the inline variants size to their labels inside it.
+  'split-button': {
+    css: ['foundation', 'layout', 'row', 'lucide-icon', 'split-button'],
+    selector: '#frame',
+    width: 520,
+    frameWidth: 440,
+    variants: [
+      {
+        id: 'tones',
+        label: 'Rounded Tones',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            children: [
+              SplitButton({
+                label: 'Deploy',
+                action: 'deploy',
+                icon: glyph(Rocket, 'rocket'),
+                optionsLabel: 'Deploy Options',
+                optionsAction: 'deploy-options',
+              }),
+              SplitButton({
+                label: 'Run Checks',
+                action: 'run-checks',
+                optionsLabel: 'Check Options',
+                optionsAction: 'check-options',
+                tone: 'neutral',
+              }),
+              SplitButton({
+                label: 'Delete',
+                action: 'delete',
+                optionsLabel: 'Delete Options',
+                optionsAction: 'delete-options',
+                tone: 'danger',
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'pill',
+        label: 'Pill Shape',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            children: [
+              SplitButton({
+                label: 'Export',
+                action: 'export',
+                icon: glyph(Download, 'download'),
+                optionsLabel: 'Export Formats',
+                optionsAction: 'export-formats',
+                shape: 'pill',
+              }),
+              SplitButton({
+                label: 'Run Checks',
+                action: 'run-checks',
+                optionsLabel: 'Check Options',
+                optionsAction: 'check-options',
+                tone: 'neutral',
+                shape: 'pill',
+              }),
+              SplitButton({
+                label: 'Delete',
+                action: 'delete',
+                optionsLabel: 'Delete Options',
+                optionsAction: 'delete-options',
+                tone: 'danger',
+                shape: 'pill',
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'states',
+        label: 'Busy and Disabled',
+        height: 44,
+        render: () =>
+          Row({
+            gap: 'xs',
+            children: [
+              SplitButton({
+                label: 'Deploying',
+                action: 'deploy',
+                icon: glyph(Rocket, 'rocket'),
+                optionsLabel: 'Deploy Options',
+                optionsAction: 'deploy-options',
+                tone: 'neutral',
+                busy: true,
+              }),
+              SplitButton({
+                label: 'Publish',
+                action: 'publish',
+                optionsLabel: 'Publish Options',
+                optionsAction: 'publish-options',
+                disabled: true,
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'full-width',
+        label: 'Full-Width Primary Action',
+        height: 44,
+        render: () =>
+          SplitButton({
+            label: 'Drive with Codex',
+            action: 'drive',
+            icon: glyph(Play, 'play'),
+            optionsLabel: 'Choose Drive Provider, Model, and Effort',
+            optionsAction: 'drive-options',
+            tone: 'success',
+            fill: true,
           }),
       },
     ],

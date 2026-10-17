@@ -895,6 +895,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/split-button.tsx",
     "componentSource": "ui/src/components/actions/split-button/split-button.tsx",
+    "designTemplate": "ui/docs/design/templates/split-button.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {

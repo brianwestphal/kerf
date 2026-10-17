@@ -62,6 +62,7 @@
   padding-inline: var(--kui-space-s);
   border: 0;
   border-radius: 0;
+  appearance: none;
   color: inherit;
   background: transparent;
   cursor: pointer;
