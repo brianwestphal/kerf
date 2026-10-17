@@ -88,4 +88,8 @@ faint opacity) or as light as a light one keeps a boundary of at least 3:1
 against the surface around it. Increased contrast draws the edge in the full
 text color and forced colors in `CanvasText`.
 
+Every track runs in the writing direction, as the native range does: in
+right-to-left text the gradient starts at the right, so the thumb at a
+channel's minimum (or at no opacity) sits over the color it sets.
+
 Use `ColorSwatches` for a small fixed palette.

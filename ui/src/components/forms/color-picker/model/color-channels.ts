@@ -116,7 +116,9 @@ export function colorChannelColor(
 /**
  * The gradient a channel's slider track paints: the colors that channel
  * produces from its minimum to its maximum while every other channel keeps
- * its value.
+ * its value. The gradient runs in the slider's writing direction (its
+ * `--_kui-color-picker-track-direction`, `to left` in right-to-left text),
+ * so the minimum always sits where the native range puts it.
  */
 export function colorChannelTrack(
   mode: ColorPickerMode,
@@ -128,5 +130,5 @@ export function colorChannelTrack(
     next[index] = stop;
     return formatHex(rgbOf(mode, next));
   });
-  return `linear-gradient(to right,${stops.join(',')})`;
+  return `linear-gradient(var(--_kui-color-picker-track-direction,to right),${stops.join(',')})`;
 }

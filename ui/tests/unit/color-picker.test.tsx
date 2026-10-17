@@ -63,7 +63,7 @@ describe('ColorPicker', () => {
         '216',
         '216',
         false,
-        '--_kui-color-picker-track:linear-gradient(to right,#00d8d8,#ffd8d8);--_kui-color-picker-thumb-color:#d8d8d8',
+        '--_kui-color-picker-track:linear-gradient(var(--_kui-color-picker-track-direction,to right),#00d8d8,#ffd8d8);--_kui-color-picker-thumb-color:#d8d8d8',
       ],
       [
         'Green',
@@ -71,7 +71,7 @@ describe('ColorPicker', () => {
         '216',
         '216',
         false,
-        '--_kui-color-picker-track:linear-gradient(to right,#d800d8,#d8ffd8);--_kui-color-picker-thumb-color:#d8d8d8',
+        '--_kui-color-picker-track:linear-gradient(var(--_kui-color-picker-track-direction,to right),#d800d8,#d8ffd8);--_kui-color-picker-thumb-color:#d8d8d8',
       ],
       [
         'Blue',
@@ -79,7 +79,7 @@ describe('ColorPicker', () => {
         '216',
         '216',
         false,
-        '--_kui-color-picker-track:linear-gradient(to right,#d8d800,#d8d8ff);--_kui-color-picker-thumb-color:#d8d8d8',
+        '--_kui-color-picker-track:linear-gradient(var(--_kui-color-picker-track-direction,to right),#d8d800,#d8d8ff);--_kui-color-picker-thumb-color:#d8d8d8',
       ],
     ]);
     expect(
@@ -168,21 +168,21 @@ describe('ColorPicker', () => {
         '360',
         '210',
         '210°',
-        'linear-gradient(to right,#993333,#999933,#339933,#339999,#333399,#993399,#993333)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#993333,#999933,#339933,#339999,#333399,#993399,#993333)',
       ],
       [
         'Saturation',
         '100',
         '67',
         '67%',
-        'linear-gradient(to right,#999999,#004d99)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#999999,#004d99)',
       ],
       [
         'Brightness',
         '100',
         '60',
         '60%',
-        'linear-gradient(to right,#000000,#55aaff)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#000000,#55aaff)',
       ],
     ]);
     expect(sliders('hsl')).toEqual([
@@ -191,21 +191,21 @@ describe('ColorPicker', () => {
         '360',
         '210',
         '210°',
-        'linear-gradient(to right,#993333,#999933,#339933,#339999,#333399,#993399,#993333)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#993333,#999933,#339933,#339999,#333399,#993399,#993333)',
       ],
       [
         'Saturation',
         '100',
         '50',
         '50%',
-        'linear-gradient(to right,#666666,#0066cc)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#666666,#0066cc)',
       ],
       [
         'Lightness',
         '100',
         '40',
         '40%',
-        'linear-gradient(to right,#000000,#4080bf,#ffffff)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#000000,#4080bf,#ffffff)',
       ],
     ]);
     expect(sliders('gray')).toEqual([
@@ -214,7 +214,7 @@ describe('ColorPicker', () => {
         '100',
         '36',
         '36%',
-        'linear-gradient(to right,#000000,#ffffff)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#000000,#ffffff)',
       ],
     ]);
     const host = render(
@@ -292,6 +292,23 @@ describe('ColorPicker channel helpers', () => {
         valueText: '210°',
       }),
     );
+  });
+
+  it('runs every channel track in the writing direction the stylesheet sets', () => {
+    // The stylesheet names `to right`, or `to left` in right-to-left text,
+    // so the gradient's start sits under the native range's minimum.
+    for (const [mode, values] of [
+      ['rgb', [51, 101, 153]],
+      ['hsl', [210, 50, 40]],
+      ['hsb', [210, 67, 60]],
+      ['gray', [40]],
+    ] as const) {
+      values.forEach((_, index) => {
+        expect(colorPickerSlider(mode, index, values)!.style).toMatch(
+          /^--_kui-color-picker-track:linear-gradient\(var\(--_kui-color-picker-track-direction,to right\),#/,
+        );
+      });
+    }
   });
 });
 
@@ -555,7 +572,7 @@ describe('wireColorPickers', () => {
     expect(t.value.value).toBe('#c866cc');
     expect(fields()).toEqual(['200', '102', '204']);
     expect(slider(1).getAttribute('style')).toContain(
-      '--_kui-color-picker-track:linear-gradient(to right,#c800cc,#c8ffcc)',
+      '--_kui-color-picker-track:linear-gradient(var(--_kui-color-picker-track-direction,to right),#c800cc,#c8ffcc)',
     );
     drag(slider(0), '51');
     expect(t.value.value).toBe('#3366cc');
@@ -566,7 +583,7 @@ describe('wireColorPickers', () => {
     drag(slider(1), '40', '0');
     expect(t.value.value).toBe('#cccccc');
     expect(slider(0).getAttribute('style')).toContain(
-      '--_kui-color-picker-track:linear-gradient(to right,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc)',
+      '--_kui-color-picker-track:linear-gradient(var(--_kui-color-picker-track-direction,to right),#cccccc,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc)',
     );
     drag(slider(1), '75');
     expect(t.value.value).toBe('#3366cc');

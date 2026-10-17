@@ -206,3 +206,36 @@ for (const scheme of ['light', 'dark'] as const) {
     }
   });
 }
+
+for (const dir of ['ltr', 'rtl'] as const) {
+  test(`ColorPicker slider tracks run in the ${dir} writing direction`, async ({
+    page,
+  }) => {
+    const picker = await openPicker(page, '0A84FF', 'hsb');
+    await page.evaluate((value) => {
+      document.documentElement.dir = value;
+    }, dir);
+    // Opacity first, while its track still ends in the opaque blue.
+    for (const name of ['Opacity', 'Saturation', 'Brightness']) {
+      const slider = picker.getByRole('slider', { name, exact: true });
+      await slider.focus();
+      await page.keyboard.press('Home');
+      await expect(slider).toHaveValue('0');
+      await slider.blur();
+      const pixels = await paintedPixels(page, slider);
+      const y = pixels.height / 2;
+      // The native range puts its minimum at the inline start. The thumb
+      // there shows the minimum's color, so the track beside it is the
+      // gradient's start and the far end is its end.
+      const start = (offset: number) =>
+        dir === 'rtl' ? pixels.width - 1 - offset : offset;
+      const thumb = pixels.at(start(10), y);
+      const near = pixels.at(start(32), y);
+      const far = pixels.at(start(pixels.width - 8), y);
+      expect(distance(near, thumb)).toBeLessThan(distance(far, thumb));
+      // A channel's near track is close to its thumb's color; the opacity
+      // track's start is the checkerboard, so it is only nearer than the end.
+      if (name !== 'Opacity') expect(distance(near, thumb)).toBeLessThan(180);
+    }
+  });
+}

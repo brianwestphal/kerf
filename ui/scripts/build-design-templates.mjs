@@ -2231,7 +2231,9 @@ function staticColorPicker(markup) {
     if (/\shidden[\s=>]/.test(input)) return '';
     const attr = (name) => new RegExp(`${name}="([^"]*)"`).exec(input)[1];
     const style = attr('style');
-    const stops = /linear-gradient\(to right,([^)]*)\)/
+    // The track runs in the writing direction (a custom property naming
+    // `to right` or `to left`); the left-to-right template draws it as is.
+    const stops = /linear-gradient\(var\([^)]*\),([^)]*)\)/
       .exec(style)[1]
       .split(',');
     const fill = /--_kui-color-picker-thumb-color:(#[0-9a-f]+)/.exec(style)[1];
