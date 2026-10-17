@@ -308,7 +308,7 @@ Stage 3 of the Web Awesome independence work (guidance): Kerf components and nat
 
 Stage 2 of the Web Awesome independence work (code): Web Awesome is an optional integration. Only `@kerfjs/ui/webawesome.css` (and the type-only `@kerfjs/ui/webawesome`) touches it; component CSS reads only `--kui-*` tokens; `foundation.css` has no `wa-*` selectors and its `--wa-*` reads fall back to the Kerf theme's values. Consumer-bundle tests and `ui/tests/browser/webawesome-optional.spec.ts` prove a Kerf-only app renders identically. The existing subpaths were kept rather than renamed to `integrations/webawesome`.
 
-`@kerfjs/ui` `Checkbox`, `RadioGroup`, and `Switch` (stage 2 of the Web Awesome independence work) draw Kerf boxes, circles, and tracks over native inputs with hint and error text, matching the old `wa-checkbox` / `wa-radio` / `wa-switch` look; `wireCheckboxes` sets the native mixed state. `RadioGroup` takes a `choices` array (no separate `Radio`).
+`@kerfjs/ui` `Checkbox`, `RadioGroup`, and `Switch` (stage 2 of the Web Awesome independence work) draw Kerf boxes, circles, and tracks over native inputs with hint and error text, matching the old `wa-checkbox` / `wa-radio` / `wa-switch` look; `wireCheckboxes` sets the native mixed state. `RadioGroup` takes a `choices` array (no separate `Radio`). Stacked radio choices sit 8px apart, the same 28px pitch as standalone Checkboxes stacked in a `List gap="xs"` (a deliberate departure from Web Awesome's 12px radio spacing).
 
 `@kerfjs/ui` `TextField` (stage 2 of the Web Awesome independence work) is a native input or textarea in one labeled box with hint and error text (its `aria-description`; an error sets `aria-invalid`), an optional leading icon, clear button, growing rows, and live count, matching the old `wa-input` / `wa-textarea` look; `wireTextFields` clears and counts, and the catalog no longer renders `wa-input` or `wa-textarea` outside the Web Awesome routes.
 
@@ -413,7 +413,7 @@ Checkbox Group and Radio Group option regions and the Color Picker trigger stay
 flush, so each box, circle, or swatch sits on the host's inline-start edge like
 Kerf's `Checkbox`, `RadioGroup`, and `ColorField`, with the label and hint on
 the 9px text column; bordered fields and Switch draw their border or track on
-that same edge like `TextField`, `Select`, and `Switch`. Known Date
+that same edge like `TextField`, `Select`, and `Switch`. Stacked radios sit 8px apart for the same 28px pitch as `RadioGroup`. Known Date
 field captions and bordered text-like field hints align with values at the 9px
 border-plus-padding inset. OTP Input's label uses the same uppercase xs/650
 treatment as other field labels, and its label and hint both use that inset.

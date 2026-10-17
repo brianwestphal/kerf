@@ -3,7 +3,8 @@ import { expect, type Locator, type Page, test } from '@playwright/test';
 // Checkbox, RadioGroup, and Switch are native inputs drawn as Kerf boxes: the
 // label names each one, the keyboard works natively, the drawn box shows the
 // focus ring, a mixed parent reports the native indeterminate state, and the
-// drawn geometry matches the Web Awesome controls they replace.
+// drawn geometry matches the Web Awesome controls they replace, except that
+// stacked checkboxes and radio choices deliberately share one 28px pitch.
 
 async function openDemo(page: Page, component: string, width = 1100) {
   await page.setViewportSize({ width, height: 1200 });
@@ -167,7 +168,7 @@ test('a Switch toggles its setting and slides its thumb', async ({ page }) => {
   ).toBeDisabled();
 });
 
-test('drawn controls keep the Web Awesome geometry at wide and narrow widths', async ({
+test('drawn controls keep the Web Awesome sizes and one 28px stacking pitch at wide and narrow widths', async ({
   page,
 }) => {
   for (const width of [1100, 390]) {
@@ -200,6 +201,11 @@ test('drawn controls keep the Web Awesome geometry at wide and narrow widths', a
       field('Show archived').locator('.kui-checkbox__box'),
     );
     expect([compact.width, compact.height]).toEqual([18, 18]);
+    // Checkboxes stacked in a List gap="xs" sit 8px apart: a 28px pitch.
+    const previous = await box(
+      field('Include in release').locator('.kui-checkbox__box'),
+    );
+    expect(drawn.y - previous.y).toBeCloseTo(28, 0);
 
     demo = await openDemo(page, 'switch', width);
     const track = await box(
@@ -218,7 +224,10 @@ test('drawn controls keep the Web Awesome geometry at wide and narrow widths', a
     const first = await box(circles.nth(0));
     const second = await box(circles.nth(1));
     expect([first.width, first.height]).toEqual([20, 20]);
-    expect(second.y - first.y - first.height).toBeCloseTo(12, 0);
+    // Choices stack 8px apart, departing from Web Awesome's 12px radio
+    // spacing so a radio column shares the 28px pitch of stacked Checkboxes.
+    expect(second.y - first.y - first.height).toBeCloseTo(8, 0);
+    expect(second.y - first.y).toBeCloseTo(28, 0);
     // A radio circle sits where a Checkbox draws its box: on the control's
     // inline-start edge (the same x in the same catalog example column), 8px
     // before its label, with a choice hint on the label's column.

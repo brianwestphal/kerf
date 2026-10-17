@@ -404,6 +404,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   hint on the 9px text column. Bordered fields and Switch draw their border or
   track on that same edge like `TextField`, `Select`, and `Switch`, so place a
   Web Awesome field exactly where the Kerf field would go.
+  Stacked radios sit 8px apart (`0.25em` block margins) for the same 28px
+  pitch as `RadioGroup`.
   Slider's complete interactive region uses the shared 8px logical inline outer
   inset without shifting its already-aligned label.
   Known Date's Month/Day/Year captions and bordered text-like field hints align
@@ -734,7 +736,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `@kerfjs/ui/wire-checkboxes`), `@kerfjs/ui/radio-group` (`label`, `name`,
   `choices`, `value`; one Tab stop, arrow keys), and `@kerfjs/ui/switch`
   (`role="switch"`, only for a setting that applies immediately) draw Kerf
-  boxes over native inputs with hint and error text. Never render
+  boxes over native inputs with hint and error text. Stack standalone
+  Checkboxes in a `List gap="xs"`: 8px apart, the same 28px pitch as
+  `RadioGroup` choices. Never render
   `wa-checkbox`, `wa-radio-group`, or `wa-switch`.
 - **Use `Combobox` to pick or create a value by typing.** A themed native
   input on the ARIA combobox pattern with filtered suggestions and an optional

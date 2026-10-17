@@ -626,6 +626,24 @@
     margin-inline: var(--kui-layout-inline-margin, remify(8px));
   }
 
+  /* Stacked radios sit 8px apart (0.25em on each side at the 16px default)
+     instead of Web Awesome's 12px, the 28px pitch Kerf's RadioGroup and a
+     Checkbox List share. The first and last radio keep their flush outer
+     edges, and horizontal and button radios keep their own spacing. */
+  wa-radio[appearance="default"]:not(
+      [data-wa-radio-horizontal],
+      [data-wa-radio-first]
+    ) {
+    margin-block-start: 0.25em;
+  }
+
+  wa-radio[appearance="default"]:not(
+      [data-wa-radio-horizontal],
+      [data-wa-radio-last]
+    ) {
+    margin-block-end: 0.25em;
+  }
+
   /* Secondary captions and hints align with the value inside bordered fields:
      1px border + 8px field padding = a 9px logical inset. Checkbox and radio
      group hints share that text column with their group label. */

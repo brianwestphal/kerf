@@ -62,7 +62,7 @@ No wiring helper.
 
 Margin: none · border: none · padding: self (layout role: controls). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- The label and hint sit on the text column (1px + 8px); each choice's 20px circle (18px compact) sits on the group's inline-start edge, where a Checkbox draws its box, 8px (7px) before its label; choices stack 12px apart, and a choice hint aligns with its label text.
+- The label and hint sit on the text column (1px + 8px); each choice's 20px circle (18px compact) sits on the group's inline-start edge, where a Checkbox draws its box, 8px (7px) before its label; choices stack 8px apart (--kui-space-xs), the same 28px pitch as Checkboxes in a List gap="xs", and a choice hint aligns with its label text.
 
 ## Accessibility
 
@@ -77,7 +77,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-radio-group`, `kui-radio-group__label`, `kui-radio-group__choices`, `kui-radio-group__choice`, `kui-radio-group__row`, `kui-radio-group__control`, `kui-radio-group__input`, `kui-radio-group__circle`, `kui-radio-group__choice-label`, `kui-radio-group__choice-hint`, `kui-radio-group__hint`, `kui-radio-group__error` on an element you write; render `RadioGroup` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-brand-fill-loud`, `--kui-color-neutral-border-normal`, `--kui-color-surface`, `--kui-color-text`, `--kui-color-text-quiet`, `--kui-color-danger-border-loud`, `--kui-color-danger-on-quiet`, `--kui-focus-ring`, `--kui-font-m`, `--kui-font-s`, `--kui-font-xs`, `--kui-color-neutral-on-quiet`, `--kui-layout-item-padding`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-brand-fill-loud`, `--kui-color-neutral-border-normal`, `--kui-color-surface`, `--kui-color-text`, `--kui-color-text-quiet`, `--kui-color-danger-border-loud`, `--kui-color-danger-on-quiet`, `--kui-focus-ring`, `--kui-font-m`, `--kui-font-s`, `--kui-font-xs`, `--kui-color-neutral-on-quiet`, `--kui-layout-item-padding`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

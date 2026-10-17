@@ -5557,7 +5557,7 @@
           "border": "self",
           "padding": "none",
           "notes": [
-            "A 20px box (18px compact) 8px (7px) before its label; hint and error align with the label text."
+            "A 20px box (18px compact) 8px (7px) before its label; hint and error align with the label text. Stack standalone Checkboxes in a List gap=\"xs\" (8px), the same 28px pitch as RadioGroup choices."
           ]
         }
       },
@@ -5640,7 +5640,7 @@
           "border": "none",
           "padding": "self",
           "notes": [
-            "The label and hint sit on the text column (1px + 8px); each choice's 20px circle (18px compact) sits on the group's inline-start edge, where a Checkbox draws its box, 8px (7px) before its label; choices stack 12px apart, and a choice hint aligns with its label text."
+            "The label and hint sit on the text column (1px + 8px); each choice's 20px circle (18px compact) sits on the group's inline-start edge, where a Checkbox draws its box, 8px (7px) before its label; choices stack 8px apart (--kui-space-xs), the same 28px pitch as Checkboxes in a List gap=\"xs\", and a choice hint aligns with its label text."
           ]
         }
       },
@@ -5681,7 +5681,8 @@
           "--kui-font-s",
           "--kui-font-xs",
           "--kui-color-neutral-on-quiet",
-          "--kui-layout-item-padding"
+          "--kui-layout-item-padding",
+          "--kui-space-xs"
         ]
       },
       "diagnostics": [],

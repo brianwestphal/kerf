@@ -132,7 +132,11 @@ circle, or swatch trigger sits on the host's inline-start edge, while the label
 and hint use the same 9px text column as field labels. Stacked checkboxes and
 radios therefore share one control column with Kerf's own toggle controls;
 place the group where you would place a Kerf `Checkbox` or `RadioGroup` rather
-than adding margin to its parts.
+than adding margin to its parts. Stacked
+default-appearance Radios sit 8px apart (`0.25em` block margins instead of Web
+Awesome's `0.375em`, the first and last radio still flush), so a Radio Group
+keeps the same 28px pitch as a Kerf `RadioGroup` and a Checkbox Group's 8px
+gap; horizontal and button radios keep Web Awesome's spacing.
 
 Bordered fields (Input, Known Date, Number Input, OTP Input, Select, Textarea,
 and Time Input) and Switch likewise draw their border or track on the host's

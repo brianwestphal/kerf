@@ -63,7 +63,7 @@ Exact prop names and types: [`@kerfjs/ui/checkbox`](../public-api-signatures-v1.
 
 Margin: none · border: self · padding: none (layout role: controls). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- A 20px box (18px compact) 8px (7px) before its label; hint and error align with the label text.
+- A 20px box (18px compact) 8px (7px) before its label; hint and error align with the label text. Stack standalone Checkboxes in a List gap="xs" (8px), the same 28px pitch as RadioGroup choices.
 
 ## Accessibility
 

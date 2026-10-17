@@ -1942,7 +1942,7 @@ export const COMPONENTS = {
       {
         id: 'vertical',
         label: 'Stacked Choices with Hints',
-        height: 189,
+        height: 177,
         render: () =>
           RadioGroup({
             label: 'Layout Density',

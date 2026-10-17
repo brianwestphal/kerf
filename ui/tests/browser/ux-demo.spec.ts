@@ -3521,12 +3521,17 @@ test('puts Web Awesome checkbox and radio groups on the Kerf toggle control colu
           window.getComputedStyle(
             element.shadowRoot!.querySelector(`[part~="${name}"]`)!,
           );
-        const first = element
-          .querySelector(control)!
-          .shadowRoot!.querySelector('[part~="control"]')!;
+        const [first, second, third] = [
+          ...element.querySelectorAll(control),
+        ].map((option) =>
+          option
+            .shadowRoot!.querySelector('[part~="control"]')!
+            .getBoundingClientRect(),
+        );
         return {
           host: element.getBoundingClientRect().x,
-          control: first.getBoundingClientRect().x,
+          control: first!.x,
+          pitches: [second!.y - first!.y, third!.y - second!.y],
           inputMargin: part('form-control-input').marginInlineStart,
           labelPadding: part('form-control-label').paddingInlineStart,
           hintPadding: part('hint').paddingInlineStart,
@@ -3540,6 +3545,11 @@ test('puts Web Awesome checkbox and radio groups on the Kerf toggle control colu
       expect(geometry.control).toBeCloseTo(kerfBox, 0);
       expect(geometry.labelPadding).toBe('9px');
       expect(geometry.hintPadding).toBe('9px');
+      // Stacked options share Kerf's 28px pitch: the checkbox group's 8px
+      // gap, and radios at 0.25em block margins instead of Web Awesome's
+      // 0.375em, so a radio column matches RadioGroup and a Checkbox List.
+      expect(geometry.pitches[0]).toBeCloseTo(28, 0);
+      expect(geometry.pitches[1]).toBeCloseTo(28, 0);
     }
   }
 });

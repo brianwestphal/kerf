@@ -495,7 +495,7 @@ trigger flush, so each box, circle, or swatch sits on the host's inline-start
 edge like Kerf's `Checkbox`, `RadioGroup`, and `ColorField`, with the label and
 hint on the 9px text column; bordered fields and Switch draw their border or
 track on that same edge like `TextField`, `Select`, and `Switch`, so place a
-Web Awesome field exactly where the Kerf field would go. Known Date field captions and bordered text-like
+Web Awesome field exactly where the Kerf field would go. Stacked radios sit 8px apart for the same 28px pitch as `RadioGroup`. Known Date field captions and bordered text-like
 field hints align with their values at the 9px border-plus-padding inset. OTP
 Input's label uses the same uppercase xs/650 treatment, and its label and hint
 both use that inset. Slider's complete interactive region uses the shared 8px

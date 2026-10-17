@@ -2,7 +2,8 @@
    label, the native radio invisibly over the circle), and hint and error text
    below. Each circle sits on the group's inline-start edge, where a
    Checkbox draws its box, so stacked checkboxes and radios share one control
-   column. */
+   column, and stacked choices sit 8px apart: the same 28px pitch as Checkboxes
+   in a List gap="xs". */
 .kui-radio-group {
   --_kui-radio-group-size: remify(20px);
   --_kui-radio-group-gap: remify(8px);
@@ -38,7 +39,7 @@
 .kui-radio-group__choices {
   display: flex;
   flex-direction: column;
-  gap: remify(12px);
+  gap: var(--kui-space-xs);
 }
 .kui-radio-group[data-orientation="horizontal"] .kui-radio-group__choices {
   flex-direction: row;
