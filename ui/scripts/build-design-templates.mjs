@@ -2385,7 +2385,10 @@ function staticSwatch(markup) {
 // discards the contents (label, icon, divider) of a button left at
 // `appearance: auto`. Reset it in the fixture so every button captures the way
 // browsers paint it, whether or not its component also sets the reset.
-const captureCss = `:root { --kui-font-mono: "Courier New", monospace; } button { appearance: none; }`;
+// A running animation would be captured at whatever frame the capture lands
+// on, so a busy spinner's angle drifted on every rebuild; the template shows
+// the spinner's own reduced-motion presentation instead (loading-spinner.css).
+const captureCss = `:root { --kui-font-mono: "Courier New", monospace; } button { appearance: none; } .kui-loading-spinner path { animation: none; }`;
 
 const escapeHtml = (value) =>
   String(value)
