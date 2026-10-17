@@ -132,6 +132,31 @@
   }
 }
 
+/* A sibling of an expanded trailing control yields to the trailing-priority
+   row the Toolbar moves that control onto: the same container queries and
+   responsiveAt keys as the Toolbar's own row (toolbar.css), so the group
+   hides exactly while the row is active and never wraps onto a third row at
+   a threshold restated with hideBelow. */
+@container kui-toolbar (max-width: remify(832px)) {
+  .kui-toolbar[data-responsive="trailing-priority"][data-responsive-at="narrow"]
+    > .kui-toolbar__trailing:has(> [data-expanded="true"])
+    > .kui-toolbar-control-group[data-visibility="yield-to-priority-row"]:not(
+      [data-expanded="true"]
+    ) {
+    display: none;
+  }
+}
+
+@container kui-toolbar (max-width: remify(704px)) {
+  .kui-toolbar[data-responsive="trailing-priority"][data-responsive-at="compact"]
+    > .kui-toolbar__trailing:has(> [data-expanded="true"])
+    > .kui-toolbar-control-group[data-visibility="yield-to-priority-row"]:not(
+      [data-expanded="true"]
+    ) {
+    display: none;
+  }
+}
+
 /* `shape="rounded"` swaps the default pill radius for the design system's softer
    rounded rectangle. The shared highlight contract derives every inner hover or
    selected surface from this outer radius and the group's full inset. */

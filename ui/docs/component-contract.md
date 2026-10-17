@@ -641,7 +641,14 @@ preferences remove that entrance animation.
 Use `visibility="yield-to-expanded-sibling"` on trailing groups that should
 leave a 480px-or-narrower toolbar while a sibling trailing group is expanded.
 They return when it collapses or the toolbar widens; leading and center zones
-remain visible.
+remain visible. In a `responsive="trailing-priority"` Toolbar, use
+`visibility="yield-to-priority-row"` instead: the group leaves exactly while
+the expanded trailing control has its own row, from the same container query
+as the row at the Toolbar's `responsiveAt` (832px for `narrow`, 704px for
+`compact`, both inclusive). Do not restate that width with `hideBelow`, which
+hides strictly below its threshold: at exactly 704px the row is active while
+`hideBelow={rem(44)}` still shows the group, which then wraps onto a third
+row.
 A group's controls are plain `<button>`s (a standalone `Button` belongs outside a group); a popup menu is a `PopupMenu`, which renders its own
 trigger. By default a group stays on one row: each icon sits beside its label,
 and the enclosing `Toolbar`'s responsive policy relocates whole groups. Set

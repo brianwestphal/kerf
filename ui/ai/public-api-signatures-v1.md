@@ -352,7 +352,7 @@ type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 type ToolbarControlGroupOverflow = 'visible' | 'scroll' | 'wrap';
 type ToolbarControlGroupExpandedOverflow = 'clip' | 'visible';
 type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
-type ToolbarControlGroupVisibility = 'always' | 'compact-only' | 'hide-collapsed-tiny' | 'yield-to-expanded-sibling';
+type ToolbarControlGroupVisibility = 'always' | 'compact-only' | 'hide-collapsed-tiny' | 'yield-to-expanded-sibling' | 'yield-to-priority-row';
 type ToolbarControlGroupSizing = 'content' | 'grow' | 'fill';
 type ToolbarControlGroupPlacement = 'start' | 'end';
 interface ToolbarActionLinkProps {
@@ -415,7 +415,13 @@ interface ToolbarControlGroupProps {
     overflow?: ToolbarControlGroupOverflow;
     /** Let app-owned anchored surfaces extend outside an expanded search group. Collapsed searches retain their clipping. */
     expandedOverflow?: ToolbarControlGroupExpandedOverflow;
-    /** Responsive visibility owned by the enclosing Toolbar container. */
+    /**
+     * Responsive visibility owned by the enclosing Toolbar container.
+     * `yield-to-priority-row` hides this trailing group exactly while its
+     * Toolbar's `responsive="trailing-priority"` row is active (an expanded
+     * trailing sibling at the Toolbar's `responsiveAt` width), so the app never
+     * restates that breakpoint with `hideBelow`.
+     */
     visibility?: ToolbarControlGroupVisibility;
     /** Hide below this Toolbar content width; requires wireToolbarVisibility. */
     hideBelow?: CssLength;
