@@ -42,7 +42,10 @@ edge. Its focus ring sits just outside the row.
 
 The content starts on the title's text column, 8px below the summary. Inside
 an item, content brings no inset of its own: use a `flush` `Text` or other
-inline content rather than a block `Text`.
+inline content rather than a block `Text`. `kerf-ui-doctor` (through
+`eslint-plugin-kerfjs`'s `ui-composition` rule) reports a block `Text`, or any
+other child that brings its own content-item inset, directly inside an
+embedded Disclosure as `KUI-L204`.
 
 ```tsx
 <ContentItem frame="framed">

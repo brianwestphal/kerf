@@ -122,6 +122,17 @@
     },
     "zones": []
   },
+  "@kerfjs/ui:text": {
+    "_source": "docs/disclosure.md#embedded-in-a-content-item",
+    "insetFreeWhen": [
+      { "prop": "flush", "equals": true },
+      { "prop": "variant", "equals": "span" }
+    ]
+  },
+  "@kerfjs/ui:disclosure": {
+    "_source": "docs/disclosure.md#embedded-in-a-content-item",
+    "insetFreeChildren": [{ "prop": "appearance", "equals": "embedded" }]
+  },
   "@kerfjs/ui:list-header": {
     "_source": "docs/accessibility.md#shared-rules",
     "contexts": ["navigation-list"],

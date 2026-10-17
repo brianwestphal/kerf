@@ -169,6 +169,18 @@
           "minItems": 1,
           "uniqueItems": true
         },
+        "insetFreeChildren": {
+          "description": "Prop values under which the entry's direct JSX children must bring no content-item inset. While any condition holds, a child whose layout.geometry owns its margin, border, and padding (self on all three) double-insets the entry's own geometry unless one of the child's insetFreeWhen conditions holds; eslint-plugin-kerfjs reports it as KUI-L204.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/propCondition" },
+          "minItems": 1
+        },
+        "insetFreeWhen": {
+          "description": "Prop values that render this inset-bearing entry with no margin, border, or padding of its own (Text flush). Any one condition makes the element inset-free.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/propCondition" },
+          "minItems": 1
+        },
         "rendersAs": {
           "description": "For a wrapper component: the cataloged roots it renders (package-qualified keys), any one of them or nothing. Composition checks treat an element of this entry as each declared root: a zone accepts it only if it accepts every root, and each root's parent contract applies to where it is placed.",
           "type": "array",
@@ -365,6 +377,26 @@
             "composition": { "type": "string", "minLength": 1 }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "propCondition": {
+      "type": "object",
+      "required": ["prop", "equals"],
+      "properties": {
+        "prop": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9]*$",
+          "description": "A JSX prop of the element."
+        },
+        "equals": {
+          "anyOf": [
+            { "type": "string" },
+            { "type": "number" },
+            { "type": "boolean" }
+          ],
+          "description": "The statically written value that satisfies the condition. A bare boolean prop (<Text flush />) equals true."
         }
       },
       "additionalProperties": false

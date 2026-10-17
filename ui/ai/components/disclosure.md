@@ -62,6 +62,8 @@ Margin: self · border: self · padding: self (layout role: structure). `self` m
 - The root takes the content-item geometry (8px inline margin, a 1px border, 8px padding); the content starts on the title's text column.
 - appearance embedded drops that geometry inside a ContentItem, which already owns it: the arrow sits on the item's content inset, the summary row is at least 24px tall, and the content (a flush Text or other content without an inset) starts on the title's text column 8px below the summary. Do not use embedded outside owner chrome.
 
+While `appearance="embedded"` is set, direct children must bring no content-item inset: a child that owns its margin, border, and padding double-insets this one. Use an inset-free form such as `Text flush`, or inline content (`KUI-L204`).
+
 ## Accessibility
 
 - The native summary is a button that Enter and Space toggle and that reports its expanded state; the DisclosureArrow is decorative.

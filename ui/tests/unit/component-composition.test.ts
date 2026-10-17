@@ -74,6 +74,40 @@ describe('component composition catalog contract', () => {
     );
   });
 
+  it('declares the embedded Disclosure inset-free children contract and validates its conditions', async () => {
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
+    );
+    const entry = (id: string) =>
+      composition.entries.find((item) => item.id === id)!;
+    expect(entry('disclosure').insetFreeChildren).toEqual([
+      { prop: 'appearance', equals: 'embedded' },
+    ]);
+    expect(entry('text').insetFreeWhen).toEqual([
+      { prop: 'flush', equals: true },
+      { prop: 'variant', equals: 'span' },
+    ]);
+    // The children it constrains are the entries owning all three sides.
+    expect(entry('text').layout.geometry).toMatchObject({
+      margin: 'self',
+      border: 'self',
+      padding: 'self',
+    });
+    expect(validateComposition(composition)).toEqual([]);
+    for (const invalid of [
+      [],
+      [{ prop: 'appearance' }],
+      [{ prop: 'appearance', equals: null }],
+      [{ prop: 'data-appearance', equals: 'embedded' }],
+      [{ prop: 'appearance', equals: 'embedded', extra: true }],
+    ]) {
+      Object.assign(entry('disclosure'), { insetFreeChildren: invalid });
+      expect(validateComposition(composition)).toContain(
+        '@kerfjs/ui:disclosure insetFreeChildren must be a non-empty list of { prop, equals } conditions',
+      );
+    }
+  });
+
   it('accepts required wiring that is root-delegated actions and rejects empty required wiring', async () => {
     const composition = await readJson<ComponentComposition>(
       '../../ai/component-composition.json',

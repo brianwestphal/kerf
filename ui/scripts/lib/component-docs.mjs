@@ -308,7 +308,32 @@ function layoutSection(contract) {
     `Margin: ${geometry.margin} · border: ${geometry.border} · padding: ${geometry.padding} (layout role: ${roles.join(', ')}). \`self\` means the component already owns it — do not add wrapper padding, margin, or borders around it.`,
   ];
   if (geometry.notes?.length) parts.push('', bullets(geometry.notes.map(text)));
+  if (contract.insetFreeChildren?.length)
+    parts.push(
+      '',
+      `While ${propConditions(contract.insetFreeChildren)} is set, direct children must bring no content-item inset: a child that owns its margin, border, and padding double-insets this one. Use an inset-free form such as \`Text flush\`, or inline content (\`KUI-L204\`).`,
+    );
+  if (contract.insetFreeWhen?.length)
+    parts.push(
+      '',
+      `Inset-free (no margin, border, or padding) when ${propConditions(contract.insetFreeWhen)}: the form to use inside a parent that expects inset-free content (\`KUI-L204\`).`,
+    );
   return parts.join('\n');
+}
+
+// `flush`, `variant="span"`, `level={2}`, joined as alternatives.
+function propConditions(conditions) {
+  return conditions
+    .map(({ prop, equals }) =>
+      code(
+        equals === true
+          ? prop
+          : typeof equals === 'string'
+            ? `${prop}="${equals}"`
+            : `${prop}={${equals}}`,
+      ),
+    )
+    .join(' or ');
 }
 
 function accessibilitySection(contract) {

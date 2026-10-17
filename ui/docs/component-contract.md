@@ -65,6 +65,14 @@ diagnostic even when both the wrapper and a rendered root reject that parent.
 When one catalog entry exports another JSX component with different placement,
 `jsxExports` gives that export its own parent contract. The extra export does
 not stand for the entry's root when a parent zone is checked.
+An entry whose own geometry an owner already provides in some configuration
+declares `insetFreeChildren`: `{ prop, equals }` conditions under which its
+direct JSX children must bring no content-item inset (`Disclosure` with
+`appearance="embedded"`). A child brings that inset when its
+`layout.geometry` owns its margin, border, and padding (`self` on all three),
+unless one of its own `insetFreeWhen` conditions holds (`Text` with `flush` or
+`variant="span"`). `ui-composition` reports a child that statically brings the
+inset as `KUI-L204` and names the child's inset-free form when it has one.
 Generated `boundaries.rootClass` prefers the public `kui-<entry-id>` class when
 present, so a sibling export's class cannot become the entry's root class.
 

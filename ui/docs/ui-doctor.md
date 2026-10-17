@@ -18,6 +18,16 @@ The catalog stage discovers the package-default application UI profile and works
 
 TypeScript uses the compiler API with `noEmit`. ESLint loads the installed `eslint-plugin-kerfjs` `recommended-ui` preset (`--eslint strict-ui` opts into advisory rules as errors). This is deliberately an isolated Kerf lint pass rather than the consumer's complete ESLint configuration. For each file, the doctor projects the applicable core ESLint rules and `linterOptions` from the consumer configuration so core-rule suppression directives retain the same used/unused semantics as the application's normal lint command. Consumer plugin rules are not executed, and inline directives for plugins such as `@typescript-eslint` therefore do not produce false "rule definition not found" diagnostics; the consumer's normal ESLint command remains authoritative for those rules. Unknown `kerfjs/*` directives still fail the doctor pass. Stable KUI identifiers come from the packaged `application-ui-diagnostic-ids-v1.json` registry; the doctor also reads installed ESLint message metadata for semantic conflict detection instead of duplicating rule definitions. The analyzer calls the public `@kerfjs/ui/analyzer` contract. None of these stages executes generated application code.
 
+Composition findings come from the same catalogs. `KUI-L201`–`KUI-L203`
+report a cataloged component under a disallowed parent, a zone child the zone
+does not accept, and a provable zone cardinality violation. `KUI-L204` reports
+a direct child that brings its own content-item inset (1px border + 8px
+padding) into a parent configured to expect inset-free content, such as a
+block `Text` inside `Disclosure appearance="embedded"`, which double-insets the
+owner chrome; the message names the child's inset-free form (`Text flush`) or
+inline content. Values the rule cannot read statically, such as a spread or an
+expression, are not reported.
+
 Property-specific CSS values are evaluated from each first- or third-party
 catalog entry's `cssValueProps`. `KUI-L013`–`KUI-L016` are blocking grammar
 violations and name a preferred shorthand/helper; `KUI-L017` keeps an

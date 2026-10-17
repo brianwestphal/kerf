@@ -23,8 +23,8 @@
   },
   "artifactDigests": {
     "selectionCatalog": "8a701d05b22eda56e5fe7df07cccbd123e98154627adfcc48c710a470fda2cc5",
-    "behaviorCatalog": "58ae01247b7e3e4810d1e78d1ff6ac782b0529e5a7cc3a84764c5864bbabf493",
-    "diagnosticRegistry": "69d03729ca2c7f2e5def8c03ff8cbbf57f1afd035b40b455d6b3e0ac76652b56",
+    "behaviorCatalog": "46b7282bb9356d961107f8d0e6d6d4e97d77b7424d45560566e4dcffcd8db6c9",
+    "diagnosticRegistry": "4f882d5bc27249ccc3345453b6232aa0e95bbd34e5514116f6919738e91569cf",
     "qualityContract": "826cab70c896a6fd685ff5d5cc0707400d88a7632991de261dfb6237710ce5dc",
     "guidanceContext": "9831f6bf3951d15adf079a3f3a34f10a7a422ce71a740efbf3b9a2a258105891"
   },

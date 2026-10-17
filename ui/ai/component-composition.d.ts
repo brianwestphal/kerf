@@ -39,6 +39,11 @@ export type CatalogCssValueProp = {
   unsafeHelper?: string;
   examples: string[];
 };
+/** A statically written JSX prop value; a bare boolean prop equals `true`. */
+export type CatalogPropCondition = {
+  prop: string;
+  equals: string | number | boolean;
+};
 export interface CatalogCompositionEntry {
   key: CatalogQualifiedKey;
   package: string;
@@ -52,6 +57,12 @@ export interface CatalogCompositionEntry {
   /** For a wrapper component: the cataloged roots it renders (any one of
    *  them, or nothing). Composition checks treat its elements as each root. */
   rendersAs?: CatalogQualifiedKey[];
+  /** Prop values under which direct JSX children must bring no content-item
+   *  inset; a child owning its margin, border, and padding reports KUI-L204
+   *  unless one of its `insetFreeWhen` conditions holds. */
+  insetFreeChildren?: CatalogPropCondition[];
+  /** Prop values that render this inset-bearing entry without its inset. */
+  insetFreeWhen?: CatalogPropCondition[];
   /** Additional JSX exports in this selection entry with their own placement. */
   jsxExports?: Record<
     string,

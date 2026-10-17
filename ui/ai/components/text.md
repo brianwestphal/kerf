@@ -64,6 +64,8 @@ Margin: self · border: self · padding: self (layout role: structure). `self` m
 - Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin by default, border, or padding. FieldLabel mirrors the themed Web Awesome label typography, 9px inline inset, and bottom gap.
 - controlMargins adds the shared control gutter outside selected physical edges without changing border or padding; avoid duplicating a parent inset. Spans retain inline display and native inline margin behavior.
 
+Inset-free (no margin, border, or padding) when `flush` or `variant="span"`: the form to use inside a parent that expects inset-free content (`KUI-L204`).
+
 ## Accessibility
 
 - Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance, or span for inline secondary text.

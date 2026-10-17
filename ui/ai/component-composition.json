@@ -2653,8 +2653,12 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
-      }
+        "composition": "docs/disclosure.md#embedded-in-a-content-item"
+      },
+      "insetFreeWhen": [
+        { "prop": "flush", "equals": true },
+        { "prop": "variant", "equals": "span" }
+      ]
     },
     {
       "key": "@kerfjs/ui:headers",
@@ -4174,8 +4178,9 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
-      }
+        "composition": "docs/disclosure.md#embedded-in-a-content-item"
+      },
+      "insetFreeChildren": [{ "prop": "appearance", "equals": "embedded" }]
     },
     {
       "key": "@kerfjs/ui:application-tabs",

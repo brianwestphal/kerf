@@ -72,6 +72,46 @@ const thirdPartySettings = uiSettings({
   profile: { schemaVersion: 1, scope: 'package' },
 });
 
+// A synthetic catalog whose Card declares inset-free children while
+// mode="bare" and whose Note declares `plain` as its inset-free form.
+const insetEntry = (id, name, overrides = {}) => ({
+  key: `@acme/ui:${id}`,
+  package: '@acme/ui',
+  id,
+  name,
+  parents: { mode: 'any', entries: [] },
+  wiring: { required: false, helpers: [] },
+  boundaries: { publicClasses: [], publicTokens: [] },
+  layout: {
+    roles: ['structure'],
+    geometry: { margin: 'self', border: 'self', padding: 'self' },
+  },
+  ...overrides,
+});
+const insetCatalogSettings = uiSettings({
+  catalog: {
+    schemaVersion: 1,
+    package: '@acme/ui',
+    entries: [
+      insetEntry('card', 'Card', {
+        insetFreeChildren: [{ prop: 'mode', equals: 'bare' }],
+      }),
+      insetEntry('note', 'Note', {
+        insetFreeWhen: [{ prop: 'plain', equals: true }],
+      }),
+    ],
+  },
+  selectionCatalog: {
+    schemaVersion: 1,
+    package: '@acme/ui',
+    entries: [
+      { id: 'card', publicExports: ['Card'], wiring: [] },
+      { id: 'note', publicExports: ['Note'], wiring: [] },
+    ],
+  },
+  profile: { schemaVersion: 1, scope: 'package' },
+});
+
 const wiringRoot = mkdtempSync(join(tmpdir(), 'kerf-wiring-'));
 const wiringEntry = join(wiringRoot, 'main.tsx');
 const wiringEntryTwo = join(wiringRoot, 'other.tsx');
@@ -833,6 +873,103 @@ const appCase = (code, extra = {}) => ({
   filename: appFile,
   settings: appSettings,
   ...extra,
+});
+
+// The shipped catalog declares Disclosure's embedded appearance as expecting
+// inset-free children, and Text's flush/span forms as inset-free.
+const embedded = (children, props = "appearance='embedded'") => ({
+  code: `import { ContentItem, Disclosure, List, Text, ValueTable } from '@kerfjs/ui'; const ready = true; <ContentItem><Disclosure title='AI Feedback' ${props}>${children}</Disclosure></ContentItem>;`,
+  settings: shippedUiSettings,
+});
+const insetMessage = (child, fix) =>
+  `KUI-L204: \`@kerfjs/ui:${child}\` brings its own content-item inset (1px border + 8px padding) into \`@kerfjs/ui:disclosure\` with \`appearance="embedded"\`, which expects inset-free content and double-insets it; ${fix}.`;
+tester.run('ui-composition inset-free children', composition, {
+  valid: [
+    embedded('<Text flush>Group Export.</Text>'),
+    embedded('<Text flush={true}>Group Export.</Text>'),
+    embedded("<Text variant='span'>Group Export.</Text>"),
+    embedded('Group Export and Share in one control group.'),
+    embedded('<strong>Group</strong> Export.'),
+    // A List owns no inset of its own, and only direct children are checked.
+    embedded('<List><Text>One</Text></List>'),
+    // Other appearances keep the geometry block content lands on.
+    embedded('<Text>Proxy and retry limits.</Text>', ''),
+    embedded('<Text>Proxy.</Text>', "appearance='framed'"),
+    embedded('<ValueTable rows={[]} />', "appearance='sunken'"),
+    // Values the rule cannot read statically are not reported.
+    embedded('<Text>Proxy.</Text>', 'appearance={appearance}'),
+    embedded('<Text>Proxy.</Text>', '{...props}'),
+    embedded('<Text flush={compact}>Proxy.</Text>'),
+    embedded('<Text {...textProps}>Proxy.</Text>'),
+  ],
+  invalid: [
+    {
+      ...embedded('<Text>Group Export and Share.</Text>'),
+      errors: [
+        { message: insetMessage('text', 'set `flush` or `variant="span"`') },
+      ],
+    },
+    {
+      ...embedded(
+        "<Text flush={false} tone='quiet'>Group Export.</Text>",
+        'appearance={"embedded"}',
+      ),
+      errors: [{ messageId: 'inset' }],
+    },
+    {
+      ...embedded("<Text variant='h3'>Title</Text>", 'appearance={`embedded`}'),
+      errors: [{ messageId: 'inset' }],
+    },
+    {
+      ...embedded('<ValueTable rows={[]} />'),
+      errors: [
+        {
+          message: insetMessage(
+            'value-table',
+            'use an inset-free child such as `Text flush`, or inline content',
+          ),
+        },
+      ],
+    },
+    // Fragments, arrays, and conditional branches are direct children too.
+    {
+      ...embedded('<><Text flush>Fine</Text><Text>Inset</Text></>'),
+      errors: [{ messageId: 'inset' }],
+    },
+    {
+      ...embedded(
+        '{ready ? <Text>Inset</Text> : <Text flush>Fine</Text>}{[<ContentItem />]}',
+      ),
+      errors: [{ messageId: 'inset' }, { messageId: 'inset' }],
+    },
+  ],
+});
+
+// The check is catalog-driven: it applies to any entry that declares it.
+tester.run('ui-composition catalog-declared inset-free children', composition, {
+  valid: [
+    {
+      code: "import { Card, Note } from '@acme/ui'; <Card mode='bare'><Note plain /></Card>;",
+      settings: insetCatalogSettings,
+    },
+    {
+      code: "import { Card, Note } from '@acme/ui'; <Card><Note /></Card>;",
+      settings: insetCatalogSettings,
+    },
+  ],
+  invalid: [
+    {
+      code: "import { Card, Note } from '@acme/ui'; <Card mode='bare'><Note /><Card /></Card>;",
+      settings: insetCatalogSettings,
+      errors: [
+        {
+          message:
+            'KUI-L204: `@acme/ui:note` brings its own content-item inset (1px border + 8px padding) into `@acme/ui:card` with `mode="bare"`, which expects inset-free content and double-insets it; set `plain`.',
+        },
+        { messageId: 'inset' },
+      ],
+    },
+  ],
 });
 
 tester.run('ui-composition rendersAs wrappers', composition, {

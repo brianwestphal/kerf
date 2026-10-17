@@ -1,6 +1,6 @@
 # `ui-composition`
 
-Enforces composition facts published by the versioned UI catalog. `KUI-L201` reports a catalog component under a known, disallowed direct parent. `KUI-L202` reports a statically visible zone child—including an intrinsic or unknown JSX element—that is not one of the zone's cataloged `accepts` entries. `KUI-L203` reports a statically provable zone cardinality violation. A zone participates only when it declares an explicit `jsx.prop` binding, including `children`; the rule never guesses that a zone id is a JSX prop. Toolbar, Pane, TabBar, TabBarItem, feedback, search, and layout validation is therefore catalog-driven rather than duplicated in rule-local component cases.
+Enforces composition facts published by the versioned UI catalog. `KUI-L201` reports a catalog component under a known, disallowed direct parent. `KUI-L202` reports a statically visible zone child—including an intrinsic or unknown JSX element—that is not one of the zone's cataloged `accepts` entries. `KUI-L203` reports a statically provable zone cardinality violation. `KUI-L204` reports a direct child that brings its own content-item inset into a parent configured to expect inset-free content. A zone participates only when it declares an explicit `jsx.prop` binding, including `children`; the rule never guesses that a zone id is a JSX prop. Toolbar, Pane, TabBar, TabBarItem, feedback, search, and layout validation is therefore catalog-driven rather than duplicated in rule-local component cases.
 
 The parent check is intentionally conservative about the child: it runs only for a child that resolves to a cataloged entry (or a declared wrapper's roots) whose parents are `listed`. Its direct JSX parent may be any element the rule can see: a cataloged component, a declared wrapper (which counts as each of its roots), an intrinsic element such as `<div>`, or an unresolved component, and any parent that is not a listed parent reports `KUI-L201`. Bound zone checks understand aliases, namespace imports, fragments, arrays, and conditional/logical branches, but expressions whose content cannot be resolved statically remain runtime and accessibility work. Accepted concepts that do not identify a catalog entry remain machine-readable guidance while the rule enforces their statically provable cardinality only. No autofix is offered because wrapping or moving UI changes structure and behavior.
 Toolbar zones accept `KerfUiContent`, so the zone rule allows direct JSX
@@ -14,6 +14,35 @@ fragments, arrays, and conditional branches. It does not follow a local binding
 such as `const actions = <div />; <TabBar trailing={actions} />`. Review those
 bindings against the zone's catalog contract; an unknown expression produces
 no zone-child diagnostic.
+
+## Inset-free children (`KUI-L204`)
+
+An entry may declare `insetFreeChildren`: prop conditions under which its
+direct children must bring no content-item inset, because owner chrome already
+provides that geometry. `@kerfjs/ui` declares it for `Disclosure` with
+`appearance="embedded"`. A direct child (including through fragments, arrays,
+and conditional branches) reports `KUI-L204` when its catalog geometry owns
+its margin, border, and padding (`self` on all three) and none of its own
+`insetFreeWhen` conditions holds. `Text` declares `flush` and
+`variant="span"` as its inset-free forms, so the message tells you to set one
+of them; a child with no inset-free form should be replaced with inline
+content or a `Text flush`.
+
+```tsx
+import { ContentItem, Disclosure, Text } from '@kerfjs/ui';
+
+<ContentItem>
+  <Disclosure title="AI Feedback" appearance="embedded">
+    <Text>Group Export and Share.</Text> {/* KUI-L204: set `flush` */}
+    <Text flush>Keep Delete in the overflow menu.</Text> {/* valid */}
+  </Disclosure>
+</ContentItem>;
+```
+
+The check reads only statically written props: a parent `appearance` or a
+child prop supplied by an expression or a spread is not reported. Uncataloged
+children (intrinsic elements, text) and entries whose geometry is not owned on
+all three sides, such as `List`, are not checked.
 
 ## Application and third-party wrappers
 

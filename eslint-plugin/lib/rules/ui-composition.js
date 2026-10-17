@@ -12,6 +12,7 @@ import {
 const PARENT_CODE = 'KUI-L201';
 const ZONE_CODE = 'KUI-L202';
 const CARDINALITY_CODE = 'KUI-L203';
+const INSET_CODE = 'KUI-L204';
 
 const emptyShape = () => ({ min: 0, max: 0, items: [] });
 
@@ -60,7 +61,13 @@ function zoneShape(node, registry, contract) {
     return {
       min: 1,
       max: 1,
-      items: [{ key, label: key ?? jsxLabel(node.openingElement.name) }],
+      items: [
+        {
+          key,
+          label: key ?? jsxLabel(node.openingElement.name),
+          element: node.openingElement,
+        },
+      ],
     };
   }
   if (node.type === 'JSXFragment')
@@ -117,6 +124,56 @@ function directParentKey(node, registry, contract) {
     : undefined;
 }
 
+// A prop's statically written value: `{ known: true, value }`, where a bare
+// boolean prop is `true` and an absent one is `undefined`, or
+// `{ known: false }` when a spread or an expression could supply it.
+function staticProp(openingElement, prop) {
+  const attribute = openingElement.attributes.find(
+    (candidate) =>
+      candidate.type === 'JSXAttribute' && candidate.name.name === prop,
+  );
+  if (!attribute)
+    return openingElement.attributes.some(
+      (candidate) => candidate.type === 'JSXSpreadAttribute',
+    )
+      ? { known: false }
+      : { known: true, value: undefined };
+  if (attribute.value === null) return { known: true, value: true };
+  const value =
+    attribute.value.type === 'JSXExpressionContainer'
+      ? attribute.value.expression
+      : attribute.value;
+  if (value.type === 'Literal') return { known: true, value: value.value };
+  if (value.type === 'TemplateLiteral' && value.expressions.length === 0)
+    return { known: true, value: value.quasis[0].value.cooked };
+  return { known: false };
+}
+
+const conditionLabel = ({ prop, equals }) =>
+  equals === true
+    ? `\`${prop}\``
+    : typeof equals === 'string'
+      ? `\`${prop}="${equals}"\``
+      : `\`${prop}={${equals}}\``;
+
+// An element owns the shared content-item inset when its geometry owns its
+// margin, border, and padding, unless one of its inset-free conditions holds.
+// A condition the rule cannot read statically counts as holding.
+function bringsInset(entry, element) {
+  const geometry = entry?.layout?.geometry;
+  if (
+    !geometry ||
+    !['margin', 'border', 'padding'].every(
+      (dimension) => geometry[dimension] === 'self',
+    )
+  )
+    return false;
+  return !(entry.insetFreeWhen ?? []).some((condition) => {
+    const prop = staticProp(element, condition.prop);
+    return !prop.known || prop.value === condition.equals;
+  });
+}
+
 // The cataloged roots an element stands for: a declared wrapper's `rendersAs`,
 // otherwise the element's own entry.
 const rootsOf = (key, contract) =>
@@ -160,6 +217,8 @@ export default {
       zone: 'KUI-L202: `{{component}}` zone `{{zone}}` does not accept {{child}}; catalog accepts: {{accepts}}.',
       cardinality:
         'KUI-L203: `{{component}}` zone `{{zone}}` requires {{cardinality}} direct children; statically found {{count}}.',
+      inset:
+        'KUI-L204: `{{child}}` brings its own content-item inset (1px border + 8px padding) into `{{component}}` with {{condition}}, which expects inset-free content and double-insets it; {{fix}}.',
     },
   },
   create(context) {
@@ -227,6 +286,34 @@ export default {
               });
           }
         }
+        const insetCondition = exportContract
+          ? undefined
+          : entry.insetFreeChildren?.find((condition) => {
+              const prop = staticProp(node, condition.prop);
+              return prop.known && prop.value === condition.equals;
+            });
+        if (insetCondition && !isExcepted(contract, INSET_CODE, filename))
+          for (const child of combine(
+            (node.parent?.children ?? []).map((child) =>
+              zoneShape(child, registry, contract),
+            ),
+          ).items) {
+            const childEntry = child.element && contract.entries.get(child.key);
+            if (!childEntry || !bringsInset(childEntry, child.element))
+              continue;
+            context.report({
+              node: child.element.name,
+              messageId: 'inset',
+              data: {
+                child: child.key,
+                component: key,
+                condition: conditionLabel(insetCondition),
+                fix: childEntry.insetFreeWhen?.length
+                  ? `set ${childEntry.insetFreeWhen.map(conditionLabel).join(' or ')}`
+                  : 'use an inset-free child such as `Text flush`, or inline content',
+              },
+            });
+          }
         for (const zone of exportContract ? [] : (entry.zones ?? [])) {
           const bound = boundZone(node, zone, registry, contract);
           if (!bound) continue;

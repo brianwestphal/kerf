@@ -1056,6 +1056,95 @@ test(
 );
 
 test(
+  'the doctor reports a block Text inside an embedded Disclosure and clears after flush',
+  async () => {
+    const root = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-embedded-inset-'),
+    );
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"embedded-inset-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, 'tsconfig.json'),
+        JSON.stringify({
+          compilerOptions: {
+            jsx: 'react-jsx',
+            jsxImportSource: 'kerfjs',
+            noEmit: true,
+            module: 'esnext',
+            moduleResolution: 'bundler',
+            target: 'es2022',
+            skipLibCheck: true,
+          },
+          include: ['src'],
+        }),
+      );
+      const view = (feedback: string) =>
+        [
+          "import { ContentItem } from '@kerfjs/ui/content-item';",
+          "import { Disclosure } from '@kerfjs/ui/disclosure';",
+          "import { Text } from '@kerfjs/ui/text';",
+          'export const view = () => (',
+          '  <ContentItem frame="framed">',
+          '    <Disclosure title="AI Feedback" appearance="embedded">',
+          `      ${feedback}`,
+          '    </Disclosure>',
+          '    <Disclosure title="Advanced Settings">',
+          '      <Text>Proxy, request timeout, and retry limits.</Text>',
+          '    </Disclosure>',
+          '  </ContentItem>',
+          ');',
+          '',
+        ].join('\n');
+      await writeFile(
+        resolve(root, 'src/view.tsx'),
+        view('<Text tone="quiet">Group Export and Share.</Text>'),
+      );
+      for (const name of ['typescript', 'eslint', 'kerfjs'])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      for (const name of [
+        '@typescript-eslint/eslint-plugin',
+        '@typescript-eslint/parser',
+      ])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      await link(
+        root,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+      await link(root, '@kerfjs/ui', uiRoot);
+
+      const broken = await doctor(root);
+      expect(broken.status).toBe(1);
+      expect(broken.report.diagnostics).toMatchObject([
+        {
+          id: 'KUI-L204',
+          severity: 'error',
+          location: { file: 'src/view.tsx', line: 7 },
+        },
+      ]);
+      expect(broken.report.diagnostics[0].message).toContain(
+        'set `flush` or `variant="span"`',
+      );
+
+      await writeFile(
+        resolve(root, 'src/view.tsx'),
+        view('<Text flush tone="quiet">Group Export and Share.</Text>'),
+      );
+      const clean = await doctor(root);
+      expect(clean.report.diagnostics).toEqual([]);
+      expect(clean.status).toBe(0);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor accepts an app wrapper in an open Toolbar zone with or without a declared root',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-renders-as-'));

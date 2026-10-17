@@ -73,6 +73,30 @@ export function validateComposition(catalog, options = {}) {
         else if (root === entry.key)
           fail(`${at} rendersAs cannot name the entry itself`);
     }
+    for (const field of ['insetFreeChildren', 'insetFreeWhen'])
+      if (field in entry) {
+        const conditions = entry[field];
+        if (
+          !Array.isArray(conditions) ||
+          !conditions.length ||
+          conditions.some(
+            (condition) =>
+              !condition ||
+              typeof condition !== 'object' ||
+              Object.keys(condition).some(
+                (name) => !['prop', 'equals'].includes(name),
+              ) ||
+              typeof condition.prop !== 'string' ||
+              !/^[A-Za-z][A-Za-z0-9]*$/.test(condition.prop) ||
+              !['string', 'number', 'boolean'].includes(
+                typeof condition.equals,
+              ),
+          )
+        )
+          fail(
+            `${at} ${field} must be a non-empty list of { prop, equals } conditions`,
+          );
+      }
     if (!['any', 'root', 'listed'].includes(entry?.parents?.mode))
       fail(`${at} has invalid parents.mode`);
     if (!isStringList(entry?.parents?.entries))
