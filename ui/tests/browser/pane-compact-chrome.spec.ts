@@ -139,10 +139,64 @@ test('wirePaneChrome closes open overlay chrome on Escape or an outside press', 
   // An outside press closes it; the toggle itself still toggles.
   await stack.getByRole('button', { name: 'Show Filters' }).click();
   await expect(header).toBeVisible();
-  await stack.locator('.kui-list-item').nth(4).click();
+  await stack
+    .locator(
+      '.kui-nav-stack__chrome:not([data-nav-chrome-copy]) .kui-toolbar-text',
+    )
+    .first()
+    .click();
   await expect(header).toBeHidden();
   await stack.getByRole('button', { name: 'Show Filters' }).click();
   await expect(header).toBeVisible();
   await stack.getByRole('button', { name: 'Hide Filters' }).click();
   await expect(header).toBeHidden();
+});
+
+// KF-C891G3: a row pushes its thread, whose own Pane declares a different
+// compactChrome, so the example shows the policy applying per view.
+test('the Compact Chrome example pushes a thread with its own chrome policy and pops back', async ({
+  page,
+}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=nav-stack');
+    const stack = page.locator('#catalog-nav-stack-compact-chrome');
+    await stack.scrollIntoViewIfNeeded();
+    // Open filters close as the thread covers the list.
+    await stack.getByRole('button', { name: 'Show Filters' }).click();
+    await stack
+      .getByRole('button', { name: 'Storage Almost Full' })
+      .first()
+      .click();
+    const active = stack.locator(
+      '.kui-nav-stack__view[data-nav-active="true"]:not([data-nav-exiting="true"])',
+    );
+    await expect(active).toHaveCount(1);
+    await expect(
+      stack.locator('.kui-nav-stack__chrome:not([data-nav-chrome-copy])'),
+    ).toContainText('Storage Almost Full');
+    const thread = active.locator('.kui-pane');
+    await expect(thread).toHaveAttribute('data-compact-header', 'scroll');
+    await expect(thread).not.toHaveAttribute('data-compact-footer', /.*/);
+    await expect(stack.locator('[data-nav-focus]').last()).toBeFocused();
+    // The sender line scrolls away with the replies; the reply hint stays.
+    const header = thread.locator('.kui-pane__header');
+    const footer = thread.locator('.kui-pane__footer');
+    const footBefore = await footer.boundingBox();
+    await thread.evaluate((element) =>
+      element.scrollTo(0, element.scrollHeight),
+    );
+    await expect(header).not.toBeInViewport();
+    await expect(footer).toBeInViewport();
+    expect((await footer.boundingBox())!.y).toBeCloseTo(footBefore!.y, 0);
+
+    await stack.getByRole('button', { name: 'Back to Messages' }).click();
+    await expect(stack.locator('.kui-nav-stack__view')).toHaveCount(1);
+    await expect(
+      stack.getByRole('button', { name: 'Show Filters' }),
+    ).toBeVisible();
+    await expect(
+      stack.locator('.kui-pane').first().locator('.kui-pane__header'),
+    ).toBeHidden();
+  }
 });

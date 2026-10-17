@@ -245,6 +245,8 @@ const overlayDetailView = (label: string): NavStackView => ({
 
 /** The delegated action that shows and hides the compact example's filters. */
 export const TOGGLE_COMPACT_CHROME_DEMO_ACTION = 'toggle-compact-chrome-demo';
+/** The delegated action a compact example row runs to push its thread. */
+export const OPEN_COMPACT_CHROME_MESSAGE_ACTION = 'open-compact-chrome-message';
 /** The compact example's filter overlay; `wirePaneChrome` closes it. */
 export const compactFiltersOpen = signal(false);
 
@@ -289,8 +291,56 @@ const compactChromeView = (open: boolean): NavStackView => ({
     compactChrome: { header: 'overlay', footer: 'scroll' },
     compactChromeOpen: { header: open },
   },
-  content: inboxList('log-inbox'),
+  content: inboxList(OPEN_COMPACT_CHROME_MESSAGE_ACTION),
 });
+
+/** Replies in the pushed message's thread, long enough to scroll. */
+const THREAD = [
+  ['Avery', '9:02 AM', 'Moved the review to Thursday so design can join.'],
+  ['Jordan', '9:15 AM', 'Thursday works. I will bring the navigation flows.'],
+  ['Sam', '9:31 AM', 'Can we cover the compact layouts first?'],
+  ['Avery', '9:40 AM', 'Yes, compact first, then the desktop workbench.'],
+  ['Riley', '10:05 AM', 'I added the open questions to the agenda.'],
+  ['Jordan', '10:22 AM', 'Thanks. I will share the prototype link tomorrow.'],
+  ['Sam', '11:10 AM', 'Booked the large room with the projector.'],
+  ['Avery', '11:48 AM', 'Great, see everyone Thursday at 10.'],
+] as const;
+
+// The pushed message's Pane declares its own policy: the sender line scrolls
+// away with the thread, and the reply hint stays fixed below it.
+const compactMessageView = (label: string): NavStackView => ({
+  key: 'compact-message',
+  toolbar: { title: label },
+  header: (
+    <Text size="compact" tone="quiet" flush>
+      From the design team, 8 replies this morning
+    </Text>
+  ),
+  headerList: { textInsets: 'trbl' },
+  footer: (
+    <Text size="compact" tone="quiet" flush>
+      Replies go to everyone on the thread
+    </Text>
+  ),
+  footerList: { textInsets: 'trbl' },
+  pane: { compactChrome: { header: 'scroll', footer: 'fixed' } },
+  content: (
+    <List>
+      {THREAD.map(([sender, time, text], index) => (
+        <DemoContentItem
+          title={sender}
+          eyebrow={time}
+          detail={text}
+          focusTarget={index === 0}
+          rootAttributes={index === 0 ? { 'data-nav-focus': '' } : undefined}
+        />
+      ))}
+    </List>
+  ),
+});
+
+/** The message the compact example has pushed, if any. */
+const compactMessage = signal<string | null>(null);
 
 const demoViews = signal<NavStackView[]>([rootView()]);
 const configuredViews = signal<NavStackView[]>([configuredRootView()]);
@@ -298,6 +348,7 @@ const overlayViews = signal<NavStackView[]>([overlayRootView()]);
 
 export function resetNavStackDemo(): void {
   compactFiltersOpen.value = false;
+  compactMessage.value = null;
   demoViews.value = [rootView()];
   configuredViews.value = [configuredRootView()];
   overlayViews.value = [overlayRootView()];
@@ -316,6 +367,19 @@ export function pushOverlayNavStackDemo(messageId: string): void {
 export function popOverlayNavStackDemo(): void {
   if (overlayViews.value.length > 1)
     overlayViews.value = overlayViews.value.slice(0, -1);
+}
+
+export function pushCompactChromeDemo(messageId: string): void {
+  if (compactMessage.value !== null) return;
+  const message = INBOX.find(({ id }) => id === messageId);
+  if (!message) return;
+  // The filters belong to the list, so they close as the thread covers it.
+  compactFiltersOpen.value = false;
+  compactMessage.value = message.label;
+}
+
+export function popCompactChromeDemo(): void {
+  compactMessage.value = null;
 }
 
 export function pushConfiguredNavStackDemo(projectId: string): void {
@@ -407,7 +471,7 @@ export function NavStackDemo() {
       </CatalogExample>
       <CatalogExample
         label="Compact Chrome"
-        note="A view's Pane declares compactChrome and the stack applies it in its compact presentation: the filter header (overlay) lies over the messages until Filter opens it, and the status footer (scroll) settles after the last message instead of taking room from the list."
+        note="Each view's Pane declares compactChrome and the stack applies it in its compact presentation. In the list, the filter header (overlay) lies over the messages until Filter opens it, and the status footer (scroll) settles after the last message instead of taking room from the list. Choose a message to push its thread: its sender line (scroll) scrolls away with the replies, its reply hint (fixed) stays pinned, and Back pops to the list."
         viewport={{
           layout: 'grid',
           width: 'compact',
@@ -418,7 +482,13 @@ export function NavStackDemo() {
         <NavStack
           id="catalog-nav-stack-compact-chrome"
           label="Compact Chrome Messages"
-          views={[compactChromeView(compactFiltersOpen.value)]}
+          views={[
+            compactChromeView(compactFiltersOpen.value),
+            ...(compactMessage.value === null
+              ? []
+              : [compactMessageView(compactMessage.value)]),
+          ]}
+          backLabel="Back to Messages"
         />
       </CatalogExample>
     </CatalogExampleStack>

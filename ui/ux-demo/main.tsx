@@ -134,9 +134,12 @@ import {
 import { SEND_COMPOSER_DEMO_ACTION } from './demos/message-composer.js';
 import {
   compactFiltersOpen,
+  OPEN_COMPACT_CHROME_MESSAGE_ACTION,
+  popCompactChromeDemo,
   popConfiguredNavStackDemo,
   popNavStackDemo,
   popOverlayNavStackDemo,
+  pushCompactChromeDemo,
   pushConfiguredNavStackDemo,
   pushNavStackDemo,
   pushOverlayNavStackDemo,
@@ -810,6 +813,11 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = toggleCompactChromeDemo()
       ? 'Filters shown'
       : 'Filters hidden';
+  },
+  [OPEN_COMPACT_CHROME_MESSAGE_ACTION]: (_event, target) => {
+    const messageId = target.getAttribute('data-item-id') ?? '';
+    pushCompactChromeDemo(messageId);
+    actionLog.value = `Opened ${messageId}`;
   },
   [SELECT_WORKBENCH_DIALOG_LAYER_ACTION]: (_event, target) => {
     const id = target.getAttribute('data-item-id');
@@ -1691,6 +1699,7 @@ const routeWires: Partial<Record<string, RouteWire>> = {
         ['#catalog-nav-stack', popNavStackDemo],
         ['#catalog-nav-stack-configured', popConfiguredNavStackDemo],
         ['#catalog-nav-stack-overlay', popOverlayNavStackDemo],
+        ['#catalog-nav-stack-compact-chrome', popCompactChromeDemo],
       ];
       const stops = stacks.map(([selector, onBack]) => {
         const stack = canvas.querySelector(selector);
